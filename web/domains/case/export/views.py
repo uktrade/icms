@@ -19,6 +19,7 @@ from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
+    get_application_form,
     view_application_file,
 )
 from web.domains.cat.models import CertificateApplicationTemplate
@@ -45,10 +46,11 @@ from .forms import (
     CreateExportApplicationForm,
     EditCFScheduleForm,
     EditCFSForm,
+    EditCOMForm,
     EditGMPForm,
     GMPBrandForm,
-    PrepareCertManufactureForm,
     ProductsFileUploadForm,
+    SubmitCOMForm,
     form_class_for_application_type,
 )
 from .models import (
@@ -254,19 +256,16 @@ def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         check_application_permission(application, request.user, "export")
         task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
-        if request.method == "POST":
-            form = PrepareCertManufactureForm(data=request.POST, instance=application)
+        form = get_application_form(application, request, EditCOMForm, SubmitCOMForm)
 
+        if request.method == "POST":
             if form.is_valid():
                 form.save()
+                messages.success(request, "Application data saved")
 
                 return redirect(
                     reverse("export:com-edit", kwargs={"application_pk": application_pk})
                 )
-
-        else:
-            initial = {} if application.contact else {"contact": request.user}
-            form = PrepareCertManufactureForm(instance=application, initial=initial)
 
         context = {
             "process_template": "web/domains/case/export/partials/process.html",
@@ -289,13 +288,13 @@ def submit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
         errors = ApplicationErrors()
-        page_errors = PageErrors(
-            page_name="Application details",
-            url=reverse("export:com-edit", kwargs={"application_pk": application_pk}),
-        )
+
+        edit_url = reverse("export:com-edit", kwargs={"application_pk": application_pk})
+        edit_url = f"{edit_url}?validate"
+
+        page_errors = PageErrors(page_name="Application details", url=edit_url)
         create_page_errors(
-            PrepareCertManufactureForm(data=model_to_dict(application), instance=application),
-            page_errors,
+            SubmitCOMForm(data=model_to_dict(application), instance=application), page_errors
         )
         errors.add(page_errors)
 
