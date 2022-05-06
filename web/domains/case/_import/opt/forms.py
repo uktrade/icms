@@ -8,6 +8,7 @@ from web.domains.case.forms import application_contacts
 from web.domains.commodity.models import Commodity
 from web.domains.commodity.widgets import CommodityWidget
 from web.domains.country.models import Country
+from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import DateInput
 from web.models.shared import YesNoChoices, YesNoNAChoices
 
@@ -15,7 +16,7 @@ from . import models
 from .widgets import OptCompensatingProductsCommodityWidget
 
 
-class EditOPTForm(forms.ModelForm):
+class OptFormBase(forms.ModelForm):
     class Meta:
         model = models.OutwardProcessingTradeApplication
 
@@ -45,6 +46,20 @@ class EditOPTForm(forms.ModelForm):
 
         self.fields["contact"].queryset = application_contacts(self.instance)
 
+
+class EditOPTForm(OptionalFormMixin, OptFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
+
+
+class SubmitOptForm(OptFormBase):
+    """Form used when submitting the application.
+
+    All fields are fully validated to ensure form is correct.
+    """
+
     def clean_last_export_day(self):
         day = self.cleaned_data["last_export_day"]
 
@@ -54,7 +69,7 @@ class EditOPTForm(forms.ModelForm):
         return day
 
 
-class CompensatingProductsOPTForm(forms.ModelForm):
+class CompensatingProductsOPTFormBase(forms.ModelForm):
     class Meta:
         model = models.OutwardProcessingTradeApplication
 
@@ -75,6 +90,28 @@ class CompensatingProductsOPTForm(forms.ModelForm):
                 },
             )
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        opt_coo_countries = Country.objects.filter(country_groups__name="OPT COOs", is_active=True)
+
+        self.fields["cp_origin_country"].queryset = opt_coo_countries
+        self.fields["cp_processing_country"].queryset = opt_coo_countries
+
+
+class EditCompensatingProductsOPTForm(OptionalFormMixin, CompensatingProductsOPTFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
+
+
+class SubmitCompensatingProductsOPTForm(CompensatingProductsOPTFormBase):
+    """Form used when submitting the application.
+
+    All fields are fully validated to ensure form is correct.
+    """
 
     def clean(self):
         """Validate commodities and category to ensure they match."""
@@ -99,16 +136,8 @@ class CompensatingProductsOPTForm(forms.ModelForm):
 
         return cleaned_data
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
-        opt_coo_countries = Country.objects.filter(country_groups__name="OPT COOs", is_active=True)
-
-        self.fields["cp_origin_country"].queryset = opt_coo_countries
-        self.fields["cp_processing_country"].queryset = opt_coo_countries
-
-
-class TemporaryExportedGoodsOPTForm(forms.ModelForm):
+class TemporaryExportedGoodsOPTFormBase(forms.ModelForm):
     class Meta:
         model = models.OutwardProcessingTradeApplication
 
@@ -138,7 +167,21 @@ class TemporaryExportedGoodsOPTForm(forms.ModelForm):
         )
 
 
-class FurtherQuestionsOPTForm(forms.ModelForm):
+class EditTemporaryExportedGoodsOPTForm(OptionalFormMixin, TemporaryExportedGoodsOPTFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
+
+
+class SubmitTemporaryExportedGoodsOPTForm(TemporaryExportedGoodsOPTFormBase):
+    """Form used when submitting the application.
+
+    All fields are fully validated to ensure form is correct.
+    """
+
+
+class FurtherQuestionsOPTFormBase(forms.ModelForm):
     class Meta:
         model = models.OutwardProcessingTradeApplication
 
@@ -152,6 +195,20 @@ class FurtherQuestionsOPTForm(forms.ModelForm):
         widgets = {
             "fq_maintained_in_eu_reasons": forms.Textarea({"rows": 3}),
         }
+
+
+class EditFurtherQuestionsOPTForm(OptionalFormMixin, FurtherQuestionsOPTFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
+
+
+class SubmitFurtherQuestionsOPTForm(FurtherQuestionsOPTFormBase):
+    """Form used when submitting the application.
+
+    All fields are fully validated to ensure form is correct.
+    """
 
     def clean(self):
         cleaned_data = super().clean()
