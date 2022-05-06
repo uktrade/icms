@@ -50,6 +50,7 @@ from .forms import (
     EditGMPForm,
     GMPBrandForm,
     ProductsFileUploadForm,
+    SubmitCFSScheduleForm,
     SubmitCOMForm,
     form_class_for_application_type,
 )
@@ -401,6 +402,7 @@ def cfs_edit_schedule(
 
             if form.is_valid():
                 form.save()
+                messages.success(request, "Schedule data saved")
 
                 return redirect(
                     reverse(
@@ -410,7 +412,14 @@ def cfs_edit_schedule(
                 )
 
         else:
-            form = EditCFScheduleForm(instance=schedule)
+            form_kwargs = {"instance": schedule}
+
+            # query param to fully validate the form.
+            if "validate" in request.GET:
+                form_kwargs["data"] = model_to_dict(application)
+                form = SubmitCFSScheduleForm(**form_kwargs)
+            else:
+                form = EditCFScheduleForm(**form_kwargs)
 
         schedule_legislations = schedule.legislations.filter(is_active=True)
 
@@ -1212,15 +1221,15 @@ def _get_cfs_errors(application: CertificateOfFreeSaleApplication) -> Applicatio
 
     else:
         for idx, schedule in enumerate(schedules, start=1):
-            schedule_page_errors = PageErrors(
-                page_name=f"Schedule {idx}",
-                url=reverse(
-                    "export:cfs-schedule-edit",
-                    kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
-                ),
+            edit_schedule_url = reverse(
+                "export:cfs-schedule-edit",
+                kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
             )
+            edit_schedule_url = f"{edit_schedule_url}?validate"
+
+            schedule_page_errors = PageErrors(page_name=f"Schedule {idx}", url=edit_schedule_url)
             create_page_errors(
-                EditCFScheduleForm(data=model_to_dict(schedule), instance=schedule),
+                SubmitCFSScheduleForm(data=model_to_dict(schedule), instance=schedule),
                 schedule_page_errors,
             )
 
