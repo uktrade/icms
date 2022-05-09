@@ -1236,8 +1236,9 @@ def _get_cfs_errors(application: CertificateOfFreeSaleApplication) -> Applicatio
 
             errors.add(schedule_page_errors)
 
-            # Check that the schedule has products
-            if not schedule.products.exists():
+            # Check that the schedule has products if legislation has been set
+            schedule_legislations = schedule.legislations.filter(is_active=True)
+            if schedule_legislations.exists() and not schedule.products.exists():
                 product_page_errors = PageErrors(
                     page_name=f"Schedule {idx} - Product",
                     url=reverse(
