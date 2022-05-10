@@ -5,6 +5,7 @@ from django_filters import CharFilter, ChoiceFilter, FilterSet
 
 from web.domains.importer.fields import PersonWidget
 from web.domains.importer.models import Importer
+from web.errors import APIError
 from web.utils.companieshouse import api_get_company
 
 
@@ -62,7 +63,10 @@ class ImporterOrganisationForm(ModelForm):
         registered_number = self.cleaned_data["registered_number"]
 
         # this is parsed in save()
-        self.company = api_get_company(registered_number)
+        try:
+            self.company = api_get_company(registered_number)
+        except APIError as e:
+            raise ValidationError(e.error_msg)
 
         if not self.company:
             raise ValidationError("Company is not present in Companies House records")

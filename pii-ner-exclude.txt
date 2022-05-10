@@ -1425,3 +1425,9 @@ f"{edit_schedule_url}?validate
 CFS Template
 GMP Template
 GMPFile
+COMPANIES_HOUSE_DOMAIN
+https://api.companieshouse.gov.uk/
+https://developer.company-information.service.gov.uk
+https://developer-specs.company-information.service.gov.uk/companies-house-public-data-api/reference/company-profile/company-profile
+https://developer-specs.company-information.service.gov.uk/companies-house-public-data-api/reference/search/search-companies
+COMPANIES_HOUSE_DOMAIN}search/companies?q={query}&items_per_page=20

@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelChoiceField, ModelForm, Textarea
 from django_filters import CharFilter, FilterSet
 
+from web.errors import APIError
 from web.utils.companieshouse import api_get_company
 
 from .models import Exporter
@@ -32,7 +33,10 @@ class ExporterForm(ModelForm):
         registered_number = self.cleaned_data["registered_number"]
 
         # this is parsed in save()
-        self.company = api_get_company(registered_number)
+        try:
+            self.company = api_get_company(registered_number)
+        except APIError as e:
+            raise ValidationError(e.error_msg)
 
         if not self.company:
             raise ValidationError("Company is not present in Companies House records")

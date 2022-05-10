@@ -263,6 +263,14 @@ SELECT2_CACHE_BACKEND = "default"
 SELECT2_CSS = os.path.join(STATIC_URL, "3rdparty/select2/select2.min.css")
 SELECT2_JS = os.path.join(STATIC_URL, "3rdparty/select2/select2.min.js")
 
+COMPANIES_HOUSE_DOMAIN = os.environ.get(
+    "COMPANIES_HOUSE_DOMAIN", "https://api.companieshouse.gov.uk/"
+)
+
+# To view / change this token log in to the following: https://developer.company-information.service.gov.uk
+# Login details can be found in passman, this requires icms group access.
+# Once logged in, navigate to the following
+# Manage Applications  -> View All Applications -> ICMS
 COMPANIES_HOUSE_TOKEN = os.environ.get("COMPANIES_HOUSE_TOKEN", "changeme")
 
 # guardian config
