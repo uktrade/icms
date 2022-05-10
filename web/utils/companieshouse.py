@@ -5,42 +5,55 @@ import requests
 import structlog as logging
 from django.conf import settings
 
+from web.errors import APIError
+
 logger = logging.getLogger(__name__)
 
 
-URL = "https://api.companieshouse.gov.uk/search/companies?q={query}&items_per_page=20"
-URL_COMPANY = "https://api.companieshouse.gov.uk/company/{company_number}"
-TOKEN = base64.b64encode(bytes(settings.COMPANIES_HOUSE_TOKEN, "utf-8")).decode(  # /PS-IGNORE
-    "utf-8"
-)
-
-
-class CompaniesHouseException(Exception):
-    pass
-
-
 def api_get_companies(query_string: str) -> dict[str, Any]:
-    headers = {"Authorization": f"Basic {TOKEN}"}
-    response = requests.get(URL.format(query=query_string), headers=headers)
+    url = _get_companies_url(query_string)
+    response = requests.get(url, headers=_get_auth_header())
 
     if response.status_code != 200:
-        logger.error(f"Companies house responded with {response.status_code} - {response.text}")
+        error_msg = "Unable to lookup company"
+        logger.error("Companies house responded with %s - %s", response.status_code, response.text)
 
-        raise CompaniesHouseException("Invalid response from companies house")
+        raise APIError(error_msg, "", response.status_code)
 
     return response.json()
 
 
 def api_get_company(company_number: str) -> dict[str, Any]:
-    headers = {"Authorization": f"Basic {TOKEN}"}
-    response = requests.get(URL_COMPANY.format(company_number=company_number), headers=headers)
+    url = _get_company_profile_url(company_number)
+    response = requests.get(url, headers=_get_auth_header())
 
     if response.status_code != 200:
-        logger.error(f"Companies house responded with {response.status_code} - {response.text}")
+        if response.status_code == 404:
+            error_msg = f"No company found for company number {company_number!r}"
+        else:
+            error_msg = "Unable to lookup company"
+            logger.error(
+                "Companies house responded with %s - %s", response.status_code, response.text
+            )
 
-        raise CompaniesHouseException("Invalid response from companies house")
-
-    if not response.json():
-        raise CompaniesHouseException(f"No company found for company number '{company_number}'")
+        raise APIError(error_msg, "", response.status_code)
 
     return response.json()
+
+
+def _get_company_profile_url(company_number: str) -> str:
+    """https://developer-specs.company-information.service.gov.uk/companies-house-public-data-api/reference/company-profile/company-profile"""
+    return f"{settings.COMPANIES_HOUSE_DOMAIN}company/{company_number}"
+
+
+def _get_companies_url(query: str) -> str:
+    """https://developer-specs.company-information.service.gov.uk/companies-house-public-data-api/reference/search/search-companies"""
+    return f"{settings.COMPANIES_HOUSE_DOMAIN}search/companies?q={query}&items_per_page=20"
+
+
+def _get_auth_header() -> dict[str, str]:
+    token = base64.b64encode(bytes(settings.COMPANIES_HOUSE_TOKEN, "utf-8")).decode(  # /PS-IGNORE
+        "utf-8"
+    )
+
+    return {"Authorization": f"Basic {token}"}
