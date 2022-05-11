@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pytz
 from compressor.contrib.jinja2ext import CompressorExtension
+from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -87,6 +88,26 @@ def verbose_name(obj: Model, field_name: str) -> str:
     return getattr(field, "verbose_name", field.name)
 
 
+def show_optional_label(bound: forms.BoundField, show_optional: bool) -> bool:
+    """Used in icms/web/templates/forms/fields.html to show the optional label.
+
+    :param bound: The bound form field
+    :param show_optional: Set in template - defaults to true
+    :return: True if optional label should be shown
+    """
+
+    form = bound.form
+    field = bound.field
+
+    # OptionalFormMixin attribute.
+    required_fields: list[str] = getattr(form, "required_fields", [])
+
+    if show_optional and not field.required and bound.name not in required_fields:
+        return True
+
+    return False
+
+
 def environment(**options):
     env = Environment(extensions=[CompressorExtension], **options)
     env.globals.update(
@@ -97,6 +118,7 @@ def environment(**options):
             "get_messages": messages.get_messages,
             "modify_query": modify_query,
             "menu": menu,
+            "show_optional_label": show_optional_label,
         }
     )
     env.filters["show_all_attrs"] = show_all_attrs
