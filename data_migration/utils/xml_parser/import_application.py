@@ -441,10 +441,10 @@ class ReportFirearmParser(BaseXmlParser):
         if not cls.MODEL:
             raise NotImplementedError("MODEL must be defined on the class")
 
-        serial_number = get_xml_val(xml, ".//SERIAL_NUMBER/text()")
-        calibre = get_xml_val(xml, ".//CALIBRE/text()")
-        model = get_xml_val(xml, ".//MAKE_MODEL/text()")
-        proofing = get_xml_val(xml, ".//PROOFING/text()")
+        serial_number = get_xml_val(xml, "./SERIAL_NUMBER/text()")
+        calibre = get_xml_val(xml, "./CALIBRE/text()")
+        model = get_xml_val(xml, "./MAKE_MODEL/text()")
+        proofing = get_xml_val(xml, "./PROOFING/text()")
 
         return cls.MODEL(
             **{
@@ -557,10 +557,10 @@ class SILReportFirearmParser(BaseXmlParser):
         </FIREARMS_DETAILS>
         """
 
-        serial_number = get_xml_val(xml, ".//SERIAL_NUMBER/text()")
-        calibre = get_xml_val(xml, ".//CALIBRE/text()")
-        model = get_xml_val(xml, ".//MAKE_MODEL/text()")
-        proofing = get_xml_val(xml, ".//PROOFING/text()")
+        serial_number = get_xml_val(xml, "./SERIAL_NUMBER/text()")
+        calibre = get_xml_val(xml, "./CALIBRE/text()")
+        model = get_xml_val(xml, "./MAKE_MODEL/text()")
+        proofing = get_xml_val(xml, "./PROOFING/text()")
 
         return goods_model(
             **{
@@ -662,3 +662,218 @@ class DFLGoodsCertificateParser(BaseXmlParser):
                 "issuing_country_id": int_or_none(issuing_country),
             }
         )
+
+
+class OILApplicationFirearmAuthorityParser(BaseXmlParser):
+    MODEL = dm.OILApplicationFirearmAuthority
+    PARENT = dm.OpenIndividualLicenceApplication
+    FIELD = "fa_authorities_xml"
+    ROOT_NODE = "/AUTHORITY_LIST/AUTHORITY"
+
+    @classmethod
+    def parse_xml_fields(
+        cls, parent_pk: int, xml: etree.ElementTree
+    ) -> Optional[dm.OILApplicationFirearmAuthority]:
+        """Example XML structure
+
+        <AUTHORITY>
+          <IA_ID />
+          <SELECTED />
+        </AUTHORITY>
+        """
+
+        ia_id = int_or_none(get_xml_val(xml, "./IA_ID/text()"))
+        selected = str_to_bool(get_xml_val(xml, "./SELECTED/text()"))
+
+        if not selected or not ia_id:
+            return None
+
+        return cls.MODEL(
+            **{"openindividuallicenceapplication_id": parent_pk, "firearmsauthority_id": ia_id}
+        )
+
+
+class SILApplicationFirearmAuthorityParser(BaseXmlParser):
+    MODEL = dm.SILApplicationFirearmAuthority
+    PARENT = dm.SILApplication
+    FIELD = "fa_authorities_xml"
+    ROOT_NODE = "/AUTHORITY_LIST/AUTHORITY"
+
+    @classmethod
+    def parse_xml_fields(
+        cls, parent_pk: int, xml: etree.ElementTree
+    ) -> Optional[dm.SILApplicationFirearmAuthority]:
+        """Example XML structure
+
+        <AUTHORITY>
+          <IA_ID />
+          <SELECTED />
+        </AUTHORITY>
+        """
+
+        ia_id = int_or_none(get_xml_val(xml, "./IA_ID/text()"))
+        selected = str_to_bool(get_xml_val(xml, "./SELECTED/text()"))
+
+        if not selected or not ia_id:
+            return None
+
+        return cls.MODEL(**{"silapplication_id": parent_pk, "firearmsauthority_id": ia_id})
+
+
+class SILApplicationSection5AuthorityParser(BaseXmlParser):
+    MODEL = dm.SILApplicationSection5Authority
+    PARENT = dm.SILApplication
+    FIELD = "section5_authorities_xml"
+    ROOT_NODE = "/AUTHORITY_LIST/AUTHORITY"
+
+    @classmethod
+    def parse_xml_fields(
+        cls, parent_pk: int, xml: etree.ElementTree
+    ) -> Optional[dm.SILApplicationFirearmAuthority]:
+        """Example XML structure
+
+        <AUTHORITY>
+          <IA_ID />
+          <SELECTED />
+        </AUTHORITY>
+        """
+
+        ia_id = int_or_none(get_xml_val(xml, "./IA_ID/text()"))
+        selected = str_to_bool(get_xml_val(xml, "./SELECTED/text()"))
+
+        if not selected or not ia_id:
+            return None
+
+        return cls.MODEL(**{"silapplication_id": parent_pk, "section5authority_id": ia_id})
+
+
+class ClauseQuantityParser(BaseXmlParser):
+    MODEL = dm.ClauseQuantity
+    PARENT = dm.Section5Authority
+    FIELD = "clause_quantity_xml"
+    ROOT_NODE = "/GOODS_CATEGORY_LIST/GOODS_CATEGORY"
+
+    @classmethod
+    def parse_xml_fields(
+        cls, parent_pk: int, xml: etree.ElementTree
+    ) -> Optional[dm.ClauseQuantity]:
+        """Example XML structure
+
+        <GOODS_CATEGORY>
+          <CATEGORY_ID />
+          <QUANTITY_WRAPPER>
+            <QUANTITY />
+            <UNLIMITED_QUANTITY />
+          </QUANTITY_WRAPPER>
+        </GOODS_CATEGORY>
+        """
+
+        clause_id = int_or_none(get_xml_val(xml, "./CATEGORY_ID/text()"))
+        quantity = int_or_none(get_xml_val(xml, "./QUANTITY_WRAPPER/QUANTITY/text()"))
+        infinity = str_to_bool(get_xml_val(xml, "./QUANTITY_WRAPPER/UNLIMITED_QUANTITY/text()"))
+
+        if not clause_id:
+            return None
+
+        if not quantity and not infinity:
+            return None
+
+        return cls.MODEL(
+            **{
+                "section5authority_id": parent_pk,
+                "section5clause_id": clause_id,
+                "quantity": quantity,
+                "infinity": infinity,
+            }
+        )
+
+
+class ActQuantityParser(BaseXmlParser):
+    MODEL = dm.ActQuantity
+    PARENT = dm.Section5Authority
+    FIELD = "act_quantity_xml"
+    ROOT_NODE = "/GOODS_CATEGORY_LIST/GOODS_CATEGORY"
+
+    @classmethod
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional[dm.ActQuantity]:
+        """Example XML structure
+
+        <GOODS_CATEGORY>
+          <CATEGORY_ID />
+          <QUANTITY_WRAPPER>
+            <QUANTITY />
+            <UNLIMITED_QUANTITY />
+          </QUANTITY_WRAPPER>
+        </GOODS_CATEGORY>
+        """
+
+        act_id = int_or_none(get_xml_val(xml, "./CATEGORY_ID/text()"))
+        quantity = int_or_none(get_xml_val(xml, "./QUANTITY_WRAPPER/QUANTITY/text()"))
+        infinity = str_to_bool(get_xml_val(xml, "./QUANTITY_WRAPPER/UNLIMITED_QUANTITY/text()"))
+
+        if not act_id:
+            return None
+
+        if not quantity and not infinity:
+            return None
+
+        return cls.MODEL(
+            **{
+                "firearmsauthority_id": parent_pk,
+                "firearmsact_id": act_id,
+                "quantity": quantity,
+                "infinity": infinity,
+            }
+        )
+
+
+class FirearmsAuthorityFileParser(BaseXmlParser):
+    MODEL = dm.FirearmsAuthorityFile
+    PARENT = dm.FirearmsAuthority
+    FIELD = "file_target_xml"
+    ROOT_NODE = "/FF_TARGET_LIST/FF_TARGET"
+
+    @classmethod
+    def parse_xml_fields(
+        cls, parent_pk: int, xml: etree.ElementTree
+    ) -> Optional[dm.FirearmsAuthorityFile]:
+        """Example XML structure
+
+        <FF_TARGET>
+          <FFT_ID />
+          <VERSION />
+        </FF_TARGET>
+        """
+
+        target_id = int_or_none(get_xml_val(xml, "./FFT_ID"))
+
+        if not target_id:
+            return None
+
+        return cls.MODEL(**{"firearmsauthority_id": parent_pk, "filetarget_id": target_id})
+
+
+class Section5AuthorityFileParser(BaseXmlParser):
+    MODEL = dm.Section5AuthorityFile
+    PARENT = dm.Section5Authority
+    FIELD = "file_target_xml"
+    ROOT_NODE = "/FF_TARGET_LIST/FF_TARGET"
+
+    @classmethod
+    def parse_xml_fields(
+        cls, parent_pk: int, xml: etree.ElementTree
+    ) -> Optional[dm.Section5AuthorityFile]:
+        """Example XML structure
+
+        <FF_TARGET>
+          <FFT_ID />
+          <VERSION />
+        </FF_TARGET>
+        """
+
+        target_id = int_or_none(get_xml_val(xml, "./FFT_ID"))
+
+        if not target_id:
+            return None
+
+        return cls.MODEL(**{"section5authority_id": parent_pk, "filetarget_id": target_id})

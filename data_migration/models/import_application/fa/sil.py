@@ -7,6 +7,7 @@ from data_migration.models.base import MigrationBase
 from data_migration.models.reference import ObsoleteCalibre
 
 from ..import_application import ImportApplication
+from .authorities import FirearmsAuthority, Section5Authority
 from .base import (
     FirearmBase,
     SupplementaryInfoBase,
@@ -33,15 +34,25 @@ class SILApplication(FirearmBase):
     eu_single_market = models.BooleanField(null=True)
     manufactured = models.BooleanField(null=True)
     additional_comments = models.CharField(max_length=4000, null=True)
+    section5_authorities_xml = models.TextField(null=True)
 
     @classmethod
     def models_to_populate(cls) -> list[str]:
         return ["Process", "ImportApplication", cls.__name__, "SILSupplementaryInfo"]
 
 
-# TODO ICMSLST-1548: SILUserSection5 M2M
-# TODO ICMSLST-1548: Section5Authority M2M
-# TODO ICMSLST-1548: FirearmAuthorityM2M
+class SILApplicationFirearmAuthority(MigrationBase):
+    silapplication = models.ForeignKey(SILApplication, on_delete=models.CASCADE)
+    firearmsauthority = models.ForeignKey(FirearmsAuthority, on_delete=models.CASCADE)
+
+
+class SILApplicationSection5Authority(MigrationBase):
+    silapplication = models.ForeignKey(SILApplication, on_delete=models.CASCADE)
+    section5authority = models.ForeignKey(Section5Authority, on_delete=models.CASCADE)
+
+
+# TODO ICMSLST-1585: SILUserSection5 M2M
+# TODO ICMSLST-1585: UserImportCertificate M2M
 
 
 class SILSection(MigrationBase):

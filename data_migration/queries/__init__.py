@@ -64,6 +64,11 @@ ref_m2m = [
 ia_query_model = [
     QueryModel(import_application.fa_file_target, dm.FileTarget),
     QueryModel(import_application.fa_certificates, dm.File),
+    QueryModel(import_application.fa_authorities, dm.FirearmsAuthority),
+    # QueryModel(import_application.fa_authority_linked_offices, dm.FirearmsAuthorityOffice),   TODO
+    QueryModel(import_application.section5_clauses, dm.Section5Clause),
+    QueryModel(import_application.section5_authorities, dm.Section5Authority),
+    # QueryModel(import_application.section5_linked_offices, dm.Section5AuthorityOffice),
     QueryModel(import_application.sil_application, dm.SILApplication),
     QueryModel(import_application.dfl_application, dm.DFLApplication),
     QueryModel(import_application.oil_application, dm.OpenIndividualLicenceApplication),
@@ -81,6 +86,12 @@ ia_source_target = source_target_list(
         "Process",
         "ImportApplication",
         "ImportContact",
+        "FirearmsAuthority",
+        "FirearmsAct",
+        "ActQuantity",
+        "Section5Clause",
+        "Section5Authority",
+        "ClauseQuantity",
         "SILApplication",
         "SILGoodsSection1",
         "SILGoodsSection2",
@@ -114,6 +125,23 @@ ia_source_target = source_target_list(
 
 ia_m2m = [
     M2M(
+        dm.OILApplicationFirearmAuthority,
+        web.OpenIndividualLicenceApplication,
+        "verified_certificates",
+    ),
+    M2M(
+        dm.SILApplicationFirearmAuthority,
+        web.SILApplication,
+        "verified_certificates",
+    ),
+    M2M(
+        dm.SILApplicationSection5Authority,
+        web.SILApplication,
+        "verified_section5",
+    ),
+    # M2M(dm.SILUserSection5, web.SILApplication, "user_section5"),
+    # TODO Section5 and auth linked offices
+    M2M(
         dm.UserImportCertificate,
         web.SILApplication,
         "user_imported_certificates",
@@ -131,6 +159,12 @@ ia_m2m = [
 ]
 
 ia_xml = [
+    xml_parser.OILApplicationFirearmAuthorityParser,
+    xml_parser.SILApplicationFirearmAuthorityParser,
+    xml_parser.SILApplicationSection5AuthorityParser,
+    xml_parser.FirearmsAuthorityFileParser,
+    xml_parser.Section5AuthorityFileParser,
+    xml_parser.ClauseQuantityParser,
     xml_parser.ImportContactParser,
     xml_parser.UserImportCertificateParser,
     xml_parser.SILGoodsParser,
