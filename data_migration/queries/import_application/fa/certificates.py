@@ -10,8 +10,9 @@ SELECT
   , fft.target_mnem target_type
 FROM decmgr.file_folder_targets fft
 INNER JOIN decmgr.file_folders ff ON fft.ff_id = ff.id
-WHERE fft.target_mnem = 'IMP_FIREARMS_CERTIFICATE'
+WHERE fft.target_mnem IN ('IMP_FIREARMS_CERTIFICATE', 'IMP_FIREARMS_AUTHORITY', 'IMP_SECTION5_AUTHORITY')
 """
+
 
 fa_certificates = """
 SELECT
@@ -22,7 +23,7 @@ SELECT
   , fv.path
   , created_datetime
   , 2 created_by_id
-FROM DECMGR.FILE_FOLDER_TARGETS fft
+FROM decmgr.file_folder_targets fft
 INNER JOIN (
   SELECT
     fft_id target_id
@@ -32,7 +33,7 @@ INNER JOIN (
     , create_by_wua_id created_by
     , CONCAT(id, CONCAT('-', x.filename)) path
     , x.*
-  FROM DECMGR.FILE_VERSIONS fv,
+  FROM decmgr.file_versions fv,
     XMLTABLE('/*'
     PASSING metadata_xml
     COLUMNS
@@ -41,6 +42,6 @@ INNER JOIN (
       , file_size NUMBER PATH '/file-metadata/size/text()'
     ) x
  ) fv ON fv.target_id = fft.ID
-WHERE TARGET_MNEM  = 'IMP_FIREARMS_CERTIFICATE'
-AND fv.STATUS_CONTROL = 'C'
+WHERE target_mnem  IN ('IMP_FIREARMS_CERTIFICATE', 'IMP_SECTION5_AUTHORITY')
+AND fv.status_control = 'C'
 """

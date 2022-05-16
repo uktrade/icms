@@ -1,11 +1,13 @@
 from django.db import models
 
+from data_migration.models.base import MigrationBase
 from data_migration.models.file import File
 from data_migration.models.import_application.import_application import (
     ChecklistBase,
     ImportApplication,
 )
 
+from .authorities import FirearmsAuthority
 from .base import (
     FirearmBase,
     SupplementaryInfoBase,
@@ -56,6 +58,13 @@ class OILSupplementaryInfo(SupplementaryInfoBase):
         related_name="+",
         to_field="imad_id",
     )
+
+
+class OILApplicationFirearmAuthority(MigrationBase):
+    openindividuallicenceapplication = models.ForeignKey(
+        OpenIndividualLicenceApplication, on_delete=models.CASCADE
+    )
+    firearmsauthority = models.ForeignKey(FirearmsAuthority, on_delete=models.CASCADE)
 
 
 class OILSupplementaryReport(SupplementaryReportBase):

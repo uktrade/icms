@@ -1,5 +1,7 @@
 from datetime import datetime
 
+import pytest
+
 from data_migration import models as dm
 from data_migration.utils import xml_parser
 
@@ -188,3 +190,71 @@ def test_sil_report_firearms_parse_xml():
     assert sec5_2.is_upload is False
     assert sec5_2.is_manual is True
     assert sec5_2.is_no_firearm is False
+
+
+@pytest.mark.parametrize(
+    "parser,parent,authority",
+    [
+        (
+            xml_parser.OILApplicationFirearmAuthorityParser,
+            "openindividuallicenceapplication_id",
+            "firearmsauthority_id",
+        ),
+        (
+            xml_parser.SILApplicationFirearmAuthorityParser,
+            "silapplication_id",
+            "firearmsauthority_id",
+        ),
+        (
+            xml_parser.SILApplicationSection5AuthorityParser,
+            "silapplication_id",
+            "section5authority_id",
+        ),
+    ],
+)
+def test_authority_parser(parser, parent, authority):
+    data = parser.parse_xml([(1, xml_data.authority_ids)])
+    assert len(data[parser.MODEL]) == 2
+    auth1, auth2 = data[parser.MODEL]
+
+    assert getattr(auth1, parent) == 1
+    assert getattr(auth1, authority) == 123
+
+    assert getattr(auth2, parent) == 1
+    assert getattr(auth2, authority) == 456
+
+
+@pytest.mark.parametrize(
+    "parser,authority,clause",
+    [
+        (
+            xml_parser.ClauseQuantityParser,
+            "section5authority_id",
+            "section5clause_id",
+        ),
+        (
+            xml_parser.ActQuantityParser,
+            "firearmsauthority_id",
+            "firearmsact_id",
+        ),
+    ],
+)
+def test_quantity_parser(parser, authority, clause):
+    data = parser.parse_xml([(1, xml_data.quantity_list)])
+    assert len(data[parser.MODEL]) == 3
+    q1, q2, q3 = data[parser.MODEL]
+
+    assert getattr(q1, authority) == 1
+    assert getattr(q1, clause) == 1
+    assert getattr(q1, "quantity") == 5
+    assert getattr(q1, "infinity") is False
+
+    assert getattr(q2, authority) == 1
+    assert getattr(q2, clause) == 2
+    assert getattr(q2, "quantity") == 10
+    assert getattr(q2, "infinity") is False
+
+    assert getattr(q3, authority) == 1
+    assert getattr(q3, clause) == 3
+    assert getattr(q3, "quantity") is None
+    assert getattr(q3, "infinity") is True

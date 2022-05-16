@@ -1431,3 +1431,19 @@ https://developer.company-information.service.gov.uk
 https://developer-specs.company-information.service.gov.uk/companies-house-public-data-api/reference/company-profile/company-profile
 https://developer-specs.company-information.service.gov.uk/companies-house-public-data-api/reference/search/search-companies
 COMPANIES_HOUSE_DOMAIN}search/companies?q={query}&items_per_page=20
+/AUTHORITY_LIST/AUTHORITY
+IA_ID
+firearmauthority_id
+GOODS_CATEGORY
+firearmsauthority_id
+FFT_ID
+filetarget_id"
+FirearmsAct
+iad.status
+issuing_constabulary_id INTEGER PATH '
+INTEGER PATH '
+/AUTHORITY/DOCUMENTS_FF_ID
+ia_id firearmsauthority_id
+ON xialo.ia_id
+SECTION5
+section5_authorities_xml XMLTYPE PATH '
