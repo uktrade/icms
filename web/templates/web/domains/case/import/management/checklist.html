@@ -20,6 +20,17 @@
       </li>
     </ul>
   </div>
+
+  {% if show_take_ownership_url(request, process, "import") %}
+    <form
+      method="post"
+      action="{{ icms_url('case:take-ownership', kwargs={'application_pk': process.pk, 'case_type': "import"}) }}"
+      class="form-inline">
+      {{ csrf_input }}
+      <input type="submit" class="button" value="Take Ownership"/>
+    </form>
+  {% endif %}
+
 {% endblock %}
 
 {% block sidebar %}

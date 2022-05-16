@@ -14,7 +14,10 @@ from django.utils.formats import get_format
 from jinja2 import Environment, pass_eval_context
 from markupsafe import Markup, escape
 
+from web.domains.case.types import ImpOrExp
+from web.domains.workbasket.actions.ilb_admin_actions import TakeOwnershipAction
 from web.menu import Menu
+from web.types import AuthenticatedHttpRequest
 
 
 @pass_eval_context
@@ -108,6 +111,26 @@ def show_optional_label(bound: forms.BoundField, show_optional: bool) -> bool:
     return False
 
 
+def show_take_ownership_url(
+    request: AuthenticatedHttpRequest, application: ImpOrExp, case_type: str
+) -> bool:
+    if case_type not in ["import", "export"]:
+        return False
+
+    user = request.user
+
+    action = TakeOwnershipAction(
+        user=user,
+        case_type=case_type,
+        application=application,
+        tasks=application.get_active_task_list(),
+        is_ilb_admin=user.has_perm("web.ilb_admin"),
+        is_importer_user=user.has_perm("web.importer_access"),
+    )
+
+    return action.show_link()
+
+
 def environment(**options):
     env = Environment(extensions=[CompressorExtension], **options)
     env.globals.update(
@@ -119,6 +142,8 @@ def environment(**options):
             "modify_query": modify_query,
             "menu": menu,
             "show_optional_label": show_optional_label,
+            # Reuse the workbasket logic to show url.
+            "show_take_ownership_url": show_take_ownership_url,
         }
     )
     env.filters["show_all_attrs"] = show_all_attrs
