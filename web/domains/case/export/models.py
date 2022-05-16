@@ -298,7 +298,9 @@ class CFSSchedule(models.Model):
         help_text="Only choose 'Yes' if the product is a material used in the manufacture of a finished product.",
     )
 
-    final_product_end_use = models.CharField(null=True, blank=True, max_length=4000)
+    final_product_end_use = models.CharField(
+        null=True, blank=True, max_length=4000, verbose_name="End Use or Final Product"
+    )
 
     country_of_manufacture = models.ForeignKey(
         Country,
