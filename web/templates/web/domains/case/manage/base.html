@@ -21,16 +21,31 @@
     </ul>
   </div>
 
-  {% if case_type != "access" and not readonly_view %}
-    <form
-      method="post"
-      action="{{ icms_url('case:release-ownership', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}"
-      class="form-inline">
+  {% if case_type != "access" %}
+    {% if show_take_ownership_url(request, process, case_type) %}
+      <form
+        method="post"
+        action="{{ icms_url('case:take-ownership', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}"
+        class="form-inline">
         {{ csrf_input }}
-        <input type="submit" class="button" value="Release Ownership" />
-    </form>
-    <a href="#" class="button">Reassign</a>
-    <a href="#" class="button primary-button" disabled=disabled>Quick Issue</a>
+        <input type="submit" class="button" value="Take Ownership"/>
+      </form>
+    {% endif %}
+
+    {% if not readonly_view %}
+      <form
+        method="post"
+        action="{{ icms_url('case:release-ownership', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}"
+        class="form-inline">
+        {{ csrf_input }}
+        <input type="submit" class="button" value="Release Ownership"/>
+      </form>
+
+      {# TODO: Consider writing a function to return case actions when Reassign and Quick Issue are implemented. #}
+      {# This template would then only be responsible for iterating over the actions. #}
+      <a href="#" class="button">Reassign</a>
+      <a href="#" class="button primary-button" disabled>Quick Issue</a>
+    {% endif %}
   {% endif %}
 {% endblock %}
 
