@@ -234,8 +234,9 @@ def _get_export_app_config(type_code: str) -> CreateExportApplicationConfig:
                 "If you are supplying the product to a client in the UK then you do not require a certificate."
                 " Your client may need to apply for a certificate if they subsequently export"
                 " it to one of their clients outside of the UK."
-                "\n\nDIT does not issue Certificates of Free sale for food, drinks, supplements,"
-                " medical devices or pesticides."
+                "\n\nDIT does not issue Certificates of Free sale for food, drinks, supplements, CE marked"
+                " medical devices or pesticides. If you require a certificate for pesticides, please"
+                " submit a Certificate of Manufacture application."
             ),
         )
 
