@@ -38,8 +38,9 @@ class OpenIndividualLicenceApplication(ImportApplication):
     )
 
     commodity_code = models.CharField(
-        max_length=40,
+        max_length=13,
         null=True,
+        default=FirearmCommodity.EX_CHAPTER_93,
         choices=FirearmCommodity.choices,
         verbose_name="Commodity Code",
         help_text=(

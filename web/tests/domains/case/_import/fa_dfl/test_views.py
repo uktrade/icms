@@ -81,7 +81,6 @@ def test_validate_query_param_shows_errors(client, dfl_app_pk):
     assertFormError(response, "form", "origin_country", "You must enter this item")
     assertFormError(response, "form", "consignment_country", "You must enter this item")
     assertFormError(response, "form", "contact", "You must enter this item")
-    assertFormError(response, "form", "commodity_code", "You must enter this item")
     assertFormError(response, "form", "constabulary", "You must enter this item")
 
 
@@ -294,7 +293,6 @@ def test_submit_dfl_get(client, dfl_app_pk):
             "Country Of Origin",
             "Country Of Consignment",
             "Contact",
-            "Commodity Code",
             "Constabulary",
         ],
     )
@@ -331,7 +329,6 @@ def test_submit_dfl_post_invalid(client, dfl_app_pk, importer_contact):
             "Country Of Origin",
             "Country Of Consignment",
             "Contact",
-            "Commodity Code",
             "Constabulary",
         ],
     )
