@@ -23,6 +23,7 @@ class RadioSelectInline(RadioSelect):
     display_inline = True
 
 
+# Used for boolean fields
 YesNoRadioSelectInline = RadioSelectInline(choices=((True, "Yes"), (False, "No")))
 
 #  class Textarea(Textarea):

@@ -209,6 +209,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
         max_length=3,
         choices=YesNoNAChoices.choices,
         null=True,
+        default=None,
         verbose_name=(
             "Do you manufacture goods which are similar to and at the same stage of"
             " processing in your own factory within the EU as the products to be"
@@ -221,6 +222,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
         max_length=3,
         choices=YesNoNAChoices.choices,
         null=True,
+        default=None,
         verbose_name=(
             "Are the main manufacturing processes of the similar goods performed in"
             " your own factory within the EU (i.e. sewing and assembly or knitting in"
@@ -234,6 +236,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
         max_length=3,
         choices=YesNoNAChoices.choices,
         null=True,
+        default=None,
         verbose_name=(
             "Have you maintained your textile manufacturing activity in the EU with"
             " respect to the nature of the products and their quantities? (Article 3 (3)"
@@ -254,6 +257,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
         max_length=3,
         choices=YesNoNAChoices.choices,
         null=True,
+        default=None,
         verbose_name="Has your level of employment decreased? (Article 5 (4) of Regulation (EC) No. 3036/94)",
         help_text=_ONCE_PER_YEAR,
     )
@@ -274,6 +278,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
             "Have you applied for a prior authorisation in another Member State"
             " for the same quota period? (Article 3(4) or (5) of Regulation (EC) No. 3036/94)"
         ),
+        default=None,
     )
 
     # if above is "Yes" this must be filled
@@ -288,6 +293,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
         max_length=3,
         choices=YesNoChoices.choices,
         null=True,
+        default=None,
         verbose_name=(
             "Are you applying as a past beneficiary with regard to the category and"
             " country concerned? (Article 3(4) of Regulation (EC) No. 3036/94)"
@@ -306,6 +312,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
         max_length=3,
         choices=YesNoChoices.choices,
         null=True,
+        default=None,
         verbose_name=(
             "Is this a new application with regard to the category and country"
             " concerned? (Article 3(5) (2) and (3) of Regulation (EC) No. 3036/94)"
@@ -328,6 +335,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
         max_length=3,
         choices=YesNoChoices.choices,
         null=True,
+        default=None,
         verbose_name=(
             "Are you applying for a further authorisation with regard to the category"
             " and country concerned? (Article 3(5) (4) of Regulation (EC) No. 3036/94)"
@@ -350,6 +358,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
         max_length=3,
         choices=YesNoNAChoices.choices,
         null=True,
+        default=None,
         verbose_name=(
             "Does the value of your Community production in the previous year include"
             " subcontract production? (If so and you have not yet given this"
