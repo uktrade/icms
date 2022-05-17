@@ -62,10 +62,7 @@ class SILApplication(ImportApplication):
         null=True,
         blank=True,
         verbose_name="Other Section Description",
-        help_text=(
-            "If you have selected Other in Firearms Act Sections. Please explain why you are making"
-            " this request under this 'Other' section."
-        ),
+        help_text="Please explain why you are making this request under this 'Other' section.",
     )
 
     # Question related to the firearms
