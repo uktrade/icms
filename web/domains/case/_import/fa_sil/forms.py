@@ -60,6 +60,15 @@ class FirearmSILFormBase(forms.ModelForm):
         for f in ["military_police", "eu_single_market", "manufactured"]:
             self.fields[f].required = True
 
+    def clean_other_description(self):
+        section58_other = self.cleaned_data["section58_other"]
+        other_description = self.cleaned_data["other_description"]
+
+        if section58_other and not other_description:
+            raise forms.ValidationError("This field is required.")
+
+        return other_description
+
 
 class EditFaSILForm(OptionalFormMixin, FirearmSILFormBase):
     """Form used when editing the application.
