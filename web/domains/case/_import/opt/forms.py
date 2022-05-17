@@ -3,13 +3,13 @@ from typing import Any
 
 from django import forms
 
+import web.forms.widgets as icms_widgets
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
 from web.domains.commodity.models import Commodity
 from web.domains.commodity.widgets import CommodityWidget
 from web.domains.country.models import Country
 from web.forms.mixins import OptionalFormMixin
-from web.forms.widgets import DateInput
 from web.models.shared import YesNoChoices, YesNoNAChoices
 
 from . import models
@@ -34,7 +34,7 @@ class OptFormBase(forms.ModelForm):
         )
 
         widgets = {
-            "last_export_day": DateInput(),
+            "last_export_day": icms_widgets.DateInput,
             "customs_office_address": forms.Textarea({"rows": 4}),
             "rate_of_yield_calc_method": forms.Textarea({"rows": 2}),
             "nature_process_ops": forms.Textarea({"rows": 2}),
@@ -193,6 +193,9 @@ class FurtherQuestionsOPTFormBase(forms.ModelForm):
         )
 
         widgets = {
+            "fq_similar_to_own_factory": icms_widgets.RadioSelectInline,
+            "fq_manufacturing_within_eu": icms_widgets.RadioSelectInline,
+            "fq_maintained_in_eu": icms_widgets.RadioSelectInline,
             "fq_maintained_in_eu_reasons": forms.Textarea({"rows": 3}),
         }
 
@@ -239,6 +242,7 @@ class FurtherQuestionsEmploymentDecreasedOPTForm(FurtherQuestionsBaseOPTForm):
         )
 
         widgets = {
+            "fq_employment_decreased": icms_widgets.RadioSelectInline,
             "fq_employment_decreased_reasons": forms.Textarea({"rows": 3}),
         }
 
@@ -267,6 +271,7 @@ class FurtherQuestionsPriorAuthorisationOPTForm(FurtherQuestionsBaseOPTForm):
         )
 
         widgets = {
+            "fq_prior_authorisation": icms_widgets.RadioSelectInline,
             "fq_prior_authorisation_reasons": forms.Textarea({"rows": 3}),
         }
 
@@ -295,6 +300,7 @@ class FurtherQuestionsPastBeneficiaryOPTForm(FurtherQuestionsBaseOPTForm):
         )
 
         widgets = {
+            "fq_past_beneficiary": icms_widgets.RadioSelectInline,
             "fq_past_beneficiary_reasons": forms.Textarea({"rows": 3}),
         }
 
@@ -323,6 +329,7 @@ class FurtherQuestionsNewApplicationOPTForm(FurtherQuestionsBaseOPTForm):
         )
 
         widgets = {
+            "fq_new_application": icms_widgets.RadioSelectInline,
             "fq_new_application_reasons": forms.Textarea({"rows": 3}),
         }
 
@@ -351,6 +358,7 @@ class FurtherQuestionsFurtherAuthorisationOPTForm(FurtherQuestionsBaseOPTForm):
         )
 
         widgets = {
+            "fq_further_authorisation": icms_widgets.RadioSelectInline,
             "fq_further_authorisation_reasons": forms.Textarea({"rows": 3}),
         }
 
@@ -375,9 +383,7 @@ class FurtherQuestionsSubcontractProductionOPTForm(FurtherQuestionsBaseOPTForm):
 
         fields = ("fq_subcontract_production",)
 
-        widgets = {
-            "_reasons": forms.Textarea({"rows": 3}),
-        }
+        widgets = {"fq_subcontract_production": icms_widgets.RadioSelectInline}
 
     def clean(self):
         cleaned_data = super().clean()
