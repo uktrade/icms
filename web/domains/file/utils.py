@@ -27,13 +27,18 @@ EXTENSION_BLACKLIST = [
     "wsh",
 ]
 
+HELP_TEXT = "The following file extensions (types) are not allowed to be uploaded: " + ", ".join(
+    EXTENSION_BLACKLIST
+)
+
 
 class ICMSFileField(forms.FileField):
-    def __init__(self, *, validators=(), **kwargs) -> None:
+    def __init__(self, *, validators=(), help_text=HELP_TEXT, **kwargs) -> None:
         super().__init__(
             # order is important: validate_file_extension can delete the file
             # from S3, so has to be after the virus check
             validators=[validate_virus_check_result, validate_file_extension, *validators],
+            help_text=help_text,
             **kwargs,
         )
 
