@@ -1,17 +1,8 @@
 <div class="filter-bar">
     <div class="container setoutForm noBottomMargin">
         <div class="row">
-            <div class="two columns" style="white-space:nowrap;">
-                <label for="country-set-select" class="prompt west">Country Set
-                </label>
-            </div>
-            <div class="three columns setoutForm">
-                <select id="country-set-select" name="country-set" aria-required="true">
-                    <option value="all-countries" selected="selected">All Countries</option>
-                </select></div>
             <div class="two columns">
-                <label for="country-group-select" class="prompt west">Country Group
-                </label>
+                <label for="country-group-select" class="prompt west">Country Group</label>
             </div>
             <div class="three columns setoutForm">
                 <select id="country-group-select" name="country-group" aria-required="true">
@@ -20,7 +11,8 @@
                             {{group.name}}
                         </option>
                     {% endfor %}
-                </select></div>
+                </select>
+            </div>
             <div class="two columns"></div>
         </div>
     </div>

@@ -1,42 +1,36 @@
 {% extends "model/edit.html" %}
 {% from "web/domains/country/country-selections.html" import country_selector %}
 
-
 {% block sidebar %}
   {% include "web/domains/country/sidebar.html" %}
 {% endblock %}
 
-{% block  fields %}
-    {% include "web/domains/country/groups/filter-bar.html" %}
-    {{super()}}
+{% block fields %}
+  {% include "web/domains/country/groups/filter-bar.html" %}
+  {{ super() }}
 {% endblock %}
 
 {% block additional_content %}
-<div class="list-actions">
-  <ul class="menu-out flow-across">
-    <li>
-      <button id="add-country" name="action" type="submit" value="add_country" class="small-button icon-plus button">
-        Add Country
-      </button>
-    </li>
-    <li>
-      <button id="remove-countries" name="remove-countries" type="button" class="small-button icon-bin button">
-        Remove Selected Countries
-      </button>
-    </li>
-  </ul>
-</div>
-{{country_selector(countries)}}
+  <div class="list-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <button id="add-country" name="action" type="submit" value="add_country" class="small-button icon-plus button">
+          Add Country
+        </button>
+      </li>
+      <li>
+        <button id="remove-countries" name="remove-countries" type="button" class="small-button icon-bin button">
+          Remove Selected Countries
+        </button>
+      </li>
+    </ul>
+  </div>
+  {{ country_selector(countries) }}
 {% endblock %}
-
 
 {% block actions %}
   <li>
     <button type="submit" name="action" value="save" class="primary-button button">Save</button>
   </li>
-  <li>
-    <a href="{{view.get_cancel_url()}}" class="button link-button">Cancel</a>
-  </li>
+  <li><a href="{{ object.get_absolute_url() }}" class="button link-button">Cancel</a></li>
 {% endblock %}
-
-

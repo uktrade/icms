@@ -92,6 +92,14 @@ class View(LinkAction):
     icon = "icon-eye"
 
 
+class ViewObject(LinkAction):
+    label = "View"
+    icon = "icon-eye"
+
+    def href(self, obj):
+        return obj.get_absolute_url()
+
+
 class Edit(LinkAction):
     label = "Edit"
     icon = "icon-pencil"

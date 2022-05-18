@@ -6,19 +6,23 @@
 {% endblock %}
 
 {% block  fields %}
-{% include "web/domains/country/groups/filter-bar.html" %}
-{{super()}}
+  {% include "web/domains/country/groups/filter-bar.html" %}
+  {{ super() }}
 {% endblock %}
 
 {% block additional_content %}
-<div class="list-actions">
+  <div class="list-actions">
     <ul class="menu-out flow-across">
-        <li>
-            <a id="edit-group" href="{{ icms_url('country-group-edit', args=[object.id])}}" class="small-button icon-pencil button">
-                Edit Group
-            </a>
-        </li>
+      <li>
+        <a id="edit-group" href="{{ icms_url('country:group-edit', kwargs={"pk": object.id}) }}"
+           class="small-button icon-pencil button">
+          Edit Group
+        </a>
+      </li>
     </ul>
-</div>
-{{country_selector(object.countries.all(), readonly=True)}}
+  </div>
+  {{ country_selector(object.countries.all(), readonly=True) }}
 {% endblock %}
+
+
+{% block actions %}{% endblock %}

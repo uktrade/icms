@@ -93,7 +93,7 @@
             <div class="container setoutForm">
               <div class="row">
                 <div class="twelve columns">
-                  {% set target=icms_url('country-translation-edit', args=[object.id, country.id]) %}
+                  {% set target=icms_url('country:translation-edit', args=[object.id, country.id]) %}
                   <a href="{{target}}" class="truncate-ellipsis country-name link-button inline-link-button button">
                     {{country.name}}
                   </a>

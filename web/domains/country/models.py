@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 from web.models.mixins import Archivable
 
@@ -30,9 +31,16 @@ class Country(models.Model):
 
 
 class CountryGroup(models.Model):
-    name = models.CharField(max_length=4000, blank=False, null=False, unique=True)
-    comments = models.CharField(max_length=4000, blank=True, null=True)
+    name = models.CharField(
+        max_length=4000, blank=False, null=False, unique=True, verbose_name="Group Name"
+    )
+    comments = models.CharField(
+        max_length=4000, blank=True, null=True, verbose_name="Group Comments"
+    )
     countries = models.ManyToManyField(Country, blank=True, related_name="country_groups")
+
+    def get_absolute_url(self):
+        return reverse("country:group-view", kwargs={"pk": self.pk})
 
     def __str__(self):
         return f"{self.name} - ({self.countries.count()} countries)"
