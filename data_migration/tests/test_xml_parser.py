@@ -258,3 +258,22 @@ def test_quantity_parser(parser, authority, clause):
     assert getattr(q3, clause) == 3
     assert getattr(q3, "quantity") is None
     assert getattr(q3, "infinity") is True
+
+
+def test_sanction_goods_parser():
+    data = xml_parser.SanctionGoodsParser.parse_xml([(1, xml_data.sanction_goods)])
+    goods = data[dm.SanctionsAndAdhocApplicationGoods]
+    assert len(goods) == 2
+    g1, g2 = goods
+
+    assert g1.import_application_id == 1
+    assert g1.commodity_id == 1
+    assert g1.goods_description == "GOODS"
+    assert g1.quantity_amount == 5.00
+    assert g1.value == 100.00
+
+    assert g2.import_application_id == 1
+    assert g2.commodity_id == 2
+    assert g2.goods_description == "MORE"
+    assert g2.quantity_amount == 10
+    assert g2.value == 40.23

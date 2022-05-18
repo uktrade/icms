@@ -7,7 +7,7 @@ from django.utils import timezone
 from data_migration.management.commands.utils.db import bulk_create, new_process_pk
 from data_migration.management.commands.utils.format import format_name, format_row
 from data_migration.models import Process
-from data_migration.utils.format import date_or_none
+from data_migration.utils.format import date_or_none, float_or_none
 
 
 @pytest.mark.parametrize(
@@ -78,3 +78,19 @@ def test_date_or_none_exception():
     with pytest.raises(ValidationError) as excinfo:
         date_or_none("2014-10-01T00:00:00")
     assert "Date not in parsable format" in str(excinfo.value)
+
+
+@pytest.mark.parametrize(
+    "test,expected",
+    [
+        (None, None),
+        ("", None),
+        ("nan", None),
+        ("1", 1),
+        ("1.0", 1.0),
+        ("1.1", 1.1),
+        ("1.11", 1.11),
+    ],
+)
+def test_float_or_none(test, expected):
+    assert float_or_none(test) == expected
