@@ -118,9 +118,7 @@ class CountryGroupDefaultViewTest(AuthTestCase):
     def test_page_title(self):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
-        self.assertEqual(
-            response.context_data["page_title"], "Viewing American Countries - (0 countries)"
-        )
+        self.assertEqual(response.context_data["page_title"], "Maintain Country Groups")
 
 
 class CountryGroupViewTest(AuthTestCase):

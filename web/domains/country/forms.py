@@ -17,6 +17,16 @@ class CountryNameFilter(FilterSet):
         fields = []
 
 
+class CountryGroupNameFilter(FilterSet):
+    country_group_name = CharFilter(
+        field_name="name", lookup_expr="icontains", label="Country Group Name"
+    )
+
+    class Meta:
+        model = CountryGroup
+        fields = []
+
+
 class CountryCreateForm(ModelForm):
     class Meta:
         model = Country

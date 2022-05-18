@@ -2,23 +2,26 @@ from typing import TYPE_CHECKING, Any, TypedDict
 
 import structlog as logging
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse, reverse_lazy
-from django.views.generic.list import ListView
+from django.views.generic import CreateView, ListView
 
 from web.auth.mixins import RequireRegisteredMixin
 from web.types import AuthenticatedHttpRequest
-from web.views import ModelCreateView, ModelDetailView, ModelUpdateView
+from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView
+from web.views.actions import Edit, ViewObject
 from web.views.mixins import PageTitleMixin, PostActionMixin
 
 from .forms import (
     CountryCreateForm,
     CountryEditForm,
     CountryGroupEditForm,
+    CountryGroupNameFilter,
     CountryNameFilter,
     CountryTranslationEditForm,
     CountryTranslationSetEditForm,
@@ -51,7 +54,7 @@ class CountryEditView(ModelUpdateView):
     model = Country
     template_name = "web/domains/country/edit.html"
     form_class = CountryEditForm
-    success_url = reverse_lazy("country-list")
+    success_url = reverse_lazy("country:list")
     cancel_url = success_url
     permission_required = "web.ilb_admin"
 
@@ -60,7 +63,7 @@ class CountryCreateView(ModelCreateView):
     model = Country
     template_name = "web/domains/country/edit.html"
     form_class = CountryCreateForm
-    success_url = reverse_lazy("country-list")
+    success_url = reverse_lazy("country:list")
     cancel_url = success_url
     page_title = "New Country"
     permission_required = "web.ilb_admin"
@@ -86,20 +89,46 @@ def search_countries(request, selected_countries):
     return TemplateResponse(request, "web/domains/country/search.html", context).render()
 
 
+class EditCountryGroup(Edit):
+    def href(self, obj):
+        return reverse("country:group-edit", kwargs={"pk": obj.pk})
+
+
+class CountryGroupListView(ModelFilterView):
+    page_title = "Maintain Country Groups"
+    template_name = "web/domains/country/groups/list.html"
+    permission_required = "web.ilb_admin"
+    model = CountryGroup
+    filterset_class = CountryGroupNameFilter
+
+    class Display:
+        fields = ["name"]
+        fields_config = {
+            "name": {"header": "Country Group Name"},
+        }
+        opts = {"inline": True, "icon_only": True}
+        actions = [ViewObject(**opts), EditCountryGroup(**opts)]
+
+
+class CountryGroupCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
+    # PermissionRequiredMixin config
+    permission_required = "web.ilb_admin"
+
+    # CreateView config
+    model = CountryGroup
+    fields = ("name", "comments")
+    template_name = "web/domains/country/groups/add.html"
+
+    extra_context = {"page_sub_title": "New Country Group"}
+
+
 class CountryGroupView(ModelDetailView):
     model = CountryGroup
     template_name = "web/domains/country/groups/view.html"
 
     form_class = CountryGroupEditForm
-    cancel_url = reverse_lazy("country-group-view")
+    cancel_url = reverse_lazy("country:group-list")
     permission_required = "web.ilb_admin"
-
-    def get_object(self):
-        pk = self.kwargs.get(self.pk_url_kwarg)
-        if pk:
-            return CountryGroup.objects.filter(pk=pk).get()
-
-        return CountryGroup.objects.first()
 
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -113,23 +142,16 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
     form_class = CountryGroupEditForm
     permission_required = "web.ilb_admin"
 
-    def get_object(self):
-        pk = self.kwargs.get(self.pk_url_kwarg)
-        if pk:
-            return CountryGroup.objects.filter(pk=pk).get()
-        return CountryGroup.objects.first()
-
     def _get_posted_countries(self):
         countries = self.request.POST.getlist("countries")
         return Country.objects.filter(pk__in=countries)
 
     def _get_countries(self):
         request = self.request
+
         if not request.POST:  # First request
-            if self.object.id:
-                return self.object.countries.all()
-            else:
-                return Country.objects.none()
+            return self.object.countries.all()
+
         elif request.POST.get("action") == "accept_countries":
             country_selection = request.POST.getlist("country-selection")
             return Country.objects.filter(pk__in=country_selection)
@@ -169,13 +191,6 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
         self.form = CountryGroupEditForm(instance=self.get_object())
         return self._render()
 
-    def get_success_url(self):
-        view_name = "country-group-view"
-        if self.object.id:
-            return reverse_lazy(view_name, args=(self.object.id,))
-        else:
-            return reverse_lazy(view_name)
-
     def get_cancel_url(self):
         return self.get_success_url()
 
@@ -186,20 +201,10 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
             country_group = form.save()
             countries = request.POST.getlist("countries")
             country_group.countries.set(countries)
-            return redirect(reverse("country-group-view", args=[country_group.id]))
+            return redirect(reverse("country:group-view", kwargs={"pk": country_group.id}))
 
         self.form = form
         return self._render()
-
-
-class CountryGroupCreateView(CountryGroupEditView):
-    permission_required = "web.ilb_admin"
-
-    def get_object(self):
-        return CountryGroup()
-
-    def get_page_title(self):
-        return "New Country Group"
 
 
 class CountryTranslationSetListView(PostActionMixin, ModelCreateView):
@@ -208,7 +213,7 @@ class CountryTranslationSetListView(PostActionMixin, ModelCreateView):
     template_name = "web/domains/country/translations/list.html"
     page_title = "Manage Country Translation Sets"
     permission_required = "web.ilb_admin"
-    success_url = reverse_lazy("country-translation-set-list")
+    success_url = reverse_lazy("country:translation-set-list")
 
     def archive(self, request):
         translation_set = CountryTranslationSet.objects.get(pk=request.POST.get("item"))
@@ -240,13 +245,13 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
     model = CountryTranslationSet
     template_name = "web/domains/country/translations/edit.html"
     form_class = CountryTranslationSetEditForm
-    success_url = "country-translation-set-edit"
+    success_url = "country:translation-set-edit"
     permission_required = "web.ilb_admin"
 
     def get(self, request, pk=None):
         set = super().get_object()
         if not set.is_active:
-            return redirect(reverse("country-translation-set-list"))
+            return redirect(reverse("country:translation-set-list"))
 
         return super().get(request)
 
@@ -291,7 +296,7 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
 
     def archive(self, request, pk):
         super().get_object().archive()
-        return redirect(reverse("country-translation-set-list"))
+        return redirect(reverse("country:translation-set-list"))
 
 
 class CountryTranslationCreateUpdateView(ModelUpdateView):
@@ -323,7 +328,7 @@ class CountryTranslationCreateUpdateView(ModelUpdateView):
         return context
 
     def get_success_url(self):
-        return reverse("country-translation-set-edit", args=[self.translation_set.id])
+        return reverse("country:translation-set-edit", args=[self.translation_set.id])
 
     def get_cancel_url(self):
         return self.get_success_url()

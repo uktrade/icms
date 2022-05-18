@@ -1,18 +1,14 @@
 <h4>Countries</h4>
 <ul class="menu-out">
-    <li> <a href="{{ icms_url('country-new')}}">New Country</a></li>
-    <li> <a href="{{ icms_url('country-list')}}">Manage Countries</a></li>
+    {{ icms_link(request, icms_url('country:add'), "New Country") }}
+    {{ icms_link(request, icms_url('country:list'), "Manage Countries") }}
 </ul>
 <h4>Country Groups</h4>
 <ul class="menu-out">
-    <li> <a href="{{ icms_url('country-group-new')}}">New Country Group</a></li>
-    <li> <a href="{{ icms_url('country-group-view')}}">Manage Country Groups</a></li>
+  {{ icms_link(request, icms_url('country:group-add'), "New Country Group") }}
+  {{ icms_link(request, icms_url('country:group-list'), "Manage Country Groups") }}
 </ul>
 <h4>Country Translations</h4>
 <ul class="menu-out">
-    <li>
-        <a href="{{ icms_url('country-translation-set-list')}}">
-        Manage Country Translation Sets
-        </a>
-    </li>
+  {{ icms_link(request, icms_url('country:translation-set-list'), "Manage Country Translation Sets") }}
 </ul>

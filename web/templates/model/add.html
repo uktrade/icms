@@ -1,0 +1,38 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block main_content %}
+  {% if page_sub_title %}<h3>{{ page_sub_title }}</h3>{% endif %}
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+
+    {# Form fields #}
+    {% block fields %}
+      {% for field in form %}
+        {{ fields.field(field) }}
+      {% endfor %}
+    {% endblock %}
+
+    {# Extra form fields #}
+    {% block additional_content %}{% endblock %}
+    <div class="section-break"></div>
+
+    {# Form submit button and actions #}
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            {% block actions %}
+              <li>
+                <button id="btn-submit" type="submit" class="primary-button button">Save</button>
+              </li>
+            {% endblock %}
+          </ul>
+        </div>
+        <div class="one columns"></div>
+      </div>
+    </div>
+  {% endcall %}
+{% endblock %}

@@ -220,7 +220,7 @@ class Menu:
                         SubMenuLink(label="Section 5 Clauses", view="section5:list"),
                         SubMenuLink(label="Product legislation", view="product-legislation-list"),
                         SubMenuLink(label="Templates", view="template-list"),
-                        SubMenuLink(label="Countries", view="country-list"),
+                        SubMenuLink(label="Countries", view="country:list"),
                     ],
                 ),
                 SubMenu(
