@@ -6,6 +6,7 @@ from lxml import etree
 from data_migration import models as dm
 from data_migration.utils.format import (
     date_or_none,
+    float_or_none,
     get_xml_val,
     int_or_none,
     str_to_bool,
@@ -877,3 +878,43 @@ class Section5AuthorityFileParser(BaseXmlParser):
             return None
 
         return cls.MODEL(**{"section5authority_id": parent_pk, "filetarget_id": target_id})
+
+
+class SanctionGoodsParser(BaseXmlParser):
+    MODEL = dm.SanctionsAndAdhocApplicationGoods
+    PARENT = dm.SanctionsAndAdhocApplication
+    FIELD = "commodities_xml"
+    ROOT_NODE = "/COMMODITY_LIST/COMMODITY"
+
+    @classmethod
+    def parse_xml_fields(
+        cls, parent_pk: int, xml: etree.ElementTree
+    ) -> Optional[dm.SanctionsAndAdhocApplicationGoods]:
+        """Example XML structure
+
+        <COMMODITY>
+          <COMMODITY_ID />
+          <COMMODITY_DESC />
+          <QUANTITY />
+          <UNIT />
+          <VALUE />
+        </COMMODITY>
+        """
+
+        commodity_id = int_or_none(get_xml_val(xml, "./COMMODITY_ID/text()"))
+        commodity_desc = get_xml_val(xml, "./COMMODITY_DESC/text()")
+        quantity = float_or_none(get_xml_val(xml, "./QUANTITY/text()"))
+        value = float_or_none(get_xml_val(xml, "./VALUE/text()"))
+
+        if None in (commodity_id, commodity_desc, quantity, value):
+            return None
+
+        return cls.MODEL(
+            **{
+                "import_application_id": parent_pk,
+                "commodity_id": commodity_id,
+                "goods_description": commodity_desc,
+                "quantity_amount": quantity,
+                "value": value,
+            }
+        )

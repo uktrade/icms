@@ -69,6 +69,7 @@ ia_query_model = [
     QueryModel(import_application.section5_clauses, dm.Section5Clause),
     QueryModel(import_application.section5_authorities, dm.Section5Authority),
     # QueryModel(import_application.section5_linked_offices, dm.Section5AuthorityOffice),
+    QueryModel(import_application.sanctions_application, dm.SanctionsAndAdhocApplication),
     QueryModel(import_application.sil_application, dm.SILApplication),
     QueryModel(import_application.dfl_application, dm.DFLApplication),
     QueryModel(import_application.oil_application, dm.OpenIndividualLicenceApplication),
@@ -86,6 +87,8 @@ ia_source_target = source_target_list(
         "Process",
         "ImportApplication",
         "ImportContact",
+        "SanctionsAndAdhocApplication",
+        "SanctionsAndAdhocApplicationGoods",
         "FirearmsAuthority",
         "FirearmsAct",
         "ActQuantity",
@@ -159,6 +162,7 @@ ia_m2m = [
 ]
 
 ia_xml = [
+    xml_parser.SanctionGoodsParser,
     xml_parser.OILApplicationFirearmAuthorityParser,
     xml_parser.SILApplicationFirearmAuthorityParser,
     xml_parser.SILApplicationSection5AuthorityParser,

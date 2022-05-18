@@ -47,6 +47,21 @@ def date_or_none(date_str: Optional[str]) -> Optional[date]:
     return datetime.strptime(date_str, date_format).date()
 
 
+def float_or_none(float_str: Optional[str]) -> Optional[float]:
+    if not float_str:
+        return None
+
+    parsed = float(float_str)
+
+    # Validate parsed is a number by trying to parse to int
+    try:
+        int(parsed)
+    except ValueError:
+        return None
+
+    return parsed
+
+
 def int_or_none(int_str: Optional[str]) -> Optional[int]:
     if not int_str:
         return None

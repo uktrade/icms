@@ -1447,3 +1447,6 @@ ia_id firearmsauthority_id
 ON xialo.ia_id
 SECTION5
 section5_authorities_xml XMLTYPE PATH '
+COMMODITY_ID>2</COMMODITY_ID
+COMMODITY_ID>3</COMMODITY_ID
+ADHOC1
