@@ -83,7 +83,7 @@ def test_import_ref_data():
         ]
     )
 
-    call_command("import_v1_data", "--skip_user", "--skip_ia", "--skip_task")
+    call_command("import_v1_data", "--skip_user", "--skip_ia", "--skip_task", "--skip_file")
     assert web.CountryGroup.objects.filter(name__in=["A", "B", "C"]).count() == 3
     assert web.CountryGroup.objects.get(name="A").countries.count() == 1
     assert web.CountryGroup.objects.get(name="B").countries.count() == 2
@@ -153,7 +153,7 @@ def test_import_wood_application_data():
 
         dm.WoodQuotaApplication.objects.create(pk=pk, imad=ia)
 
-    call_command("import_v1_data")
+    call_command("import_v1_data", "--skip_file")
 
     assert web.Process.objects.filter(id__in=pk_range).count() == 6
     assert web.ImportApplication.objects.filter(id__in=pk_range).count() == 6
@@ -183,7 +183,6 @@ oil_data_source_target = {
         (dm.Country, web.Country),
         (dm.CountryGroup, web.CountryGroup),
         (dm.Constabulary, web.Constabulary),
-        (dm.File, web.File),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -194,6 +193,9 @@ oil_data_source_target = {
         (dm.OILSupplementaryInfo, web.OILSupplementaryInfo),
         (dm.OILSupplementaryReport, web.OILSupplementaryReport),
         (dm.OILSupplementaryReportFirearm, web.OILSupplementaryReportFirearm),
+    ],
+    "file": [
+        (dm.File, web.File),
     ],
 }
 
@@ -301,7 +303,6 @@ dfl_data_source_target = {
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
         (dm.Process, web.Process),
-        (dm.File, web.File),
         (dm.ImportApplication, web.ImportApplication),
         (dm.ImportContact, web.ImportContact),
         (dm.DFLApplication, web.DFLApplication),
@@ -309,6 +310,9 @@ dfl_data_source_target = {
         (dm.DFLSupplementaryInfo, web.DFLSupplementaryInfo),
         (dm.DFLSupplementaryReport, web.DFLSupplementaryReport),
         (dm.DFLSupplementaryReportFirearm, web.DFLSupplementaryReportFirearm),
+    ],
+    "file": [
+        (dm.File, web.File),
     ],
 }
 
@@ -422,7 +426,6 @@ uic_data_source_target = {
         (dm.Country, web.Country),
         (dm.CountryGroup, web.CountryGroup),
         (dm.Constabulary, web.Constabulary),
-        (dm.File, web.File),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -432,6 +435,9 @@ uic_data_source_target = {
         (dm.OpenIndividualLicenceApplication, web.OpenIndividualLicenceApplication),
         (dm.SILApplication, web.SILApplication),
         (dm.UserImportCertificate, web.UserImportCertificate),
+    ],
+    "file": [
+        (dm.File, web.File),
     ],
 }
 

@@ -1453,3 +1453,15 @@ ADHOC1
 add.html
 Manage Countries
 Maintain Country Groups
+ON xid.ima_id
+ON fft.ff_id = ff.id AND fft.status = '
+RECEIVED
+ON fft.ff_id
+folder_id
+DATA_TYPE_XML
+F1"
+sanction_application_files
+fa_authorities
+ON fft.ff_id = ff.id
+fv.id version_id
+fv.version_id

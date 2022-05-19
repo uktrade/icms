@@ -22,6 +22,7 @@ FROM impmgr.import_application_details ad,
     , contract_files_xml XMLTYPE PATH '/IMA/APP_DETAILS/WOOD_DETAILS/CONTRACT_LIST'
     , export_certs_xml XMLTYPE PATH '/IMA/APP_DETAILS/WOOD_DETAILS/EXPORT_CERTIFICATE_LIST'
     , cover_letter VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER/text()'
+    , file_folder_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
   ) x
 WHERE status_control = 'C'
 """
@@ -59,6 +60,7 @@ FROM impmgr.import_application_details ad,
     , goods_description VARCHAR2(4000) PATH '/IMA/APP_DETAILS/TEX_DETAILS/COMMODITY_LIST/COMMODITY/COMMODITY_DESC/text()'
     , quantity VARCHAR2(4000) PATH '/IMA/APP_DETAILS/TEX_DETAILS/COMMODITY_LIST/COMMODITY/QUANTITY/text()'
     , shipping_year VARCHAR2(4) PATH '/IMA/APP_DETAILS/TEX_DETAILS/YEAR/text()'
+    , file_folder_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
   ) x
 WHERE status_control = 'C'
 """

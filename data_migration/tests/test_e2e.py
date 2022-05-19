@@ -38,7 +38,6 @@ sil_data_source_target = {
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
         (dm.Process, web.Process),
-        (dm.File, web.File),
         (dm.ImportApplication, web.ImportApplication),
         (dm.ImportContact, web.ImportContact),
         (dm.SILApplication, web.SILApplication),
@@ -61,13 +60,16 @@ sil_data_source_target = {
             web.SILSupplementaryReportFirearmSection582Other,  # /PS-IGNORE
         ),
     ],
+    "file": [
+        (dm.File, web.File),
+    ],
 }
 
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
 @override_settings(APP_ENV="production")
 @pytest.mark.django_db
-@mock.patch.dict(DATA_TYPE_QUERY_MODEL, {"import_application": []})
+@mock.patch.dict(DATA_TYPE_QUERY_MODEL, {"import_application": [], "file": []})
 @mock.patch.dict(DATA_TYPE_XML, {"import_application": sil_xml_parsers})
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, sil_data_source_target)
 @mock.patch.dict(DATA_TYPE_M2M, {})
