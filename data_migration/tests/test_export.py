@@ -6,8 +6,7 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import override_settings
 
-from data_migration import models
-from data_migration.queries import DATA_TYPE_QUERY_MODEL, DATA_TYPE_XML
+from data_migration import models, queries
 from data_migration.utils import xml_parser
 
 from . import factory, utils, xml_data
@@ -39,7 +38,7 @@ def test_data_migration_not_enabled_non_prod():
 @mock.patch.object(cx_Oracle, "connect")
 def test_create_user_no_username(mock_connect):
     with pytest.raises(CommandError, match="No user details found for this environment"):
-        call_command("export_from_v1", "--skip_ref", "--skip_ia")
+        call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file")
 
     assert not models.User.objects.exists()
     assert not models.Office.objects.exists()
@@ -54,7 +53,7 @@ def test_create_user_no_username(mock_connect):
 @mock.patch.object(cx_Oracle, "connect")
 def test_create_user_no_pw(mock_connect):
     with pytest.raises(CommandError, match="No user details found for this environment"):
-        call_command("export_from_v1", "--skip_ref", "--skip_ia")
+        call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file")
 
     assert not models.User.objects.exists()
     assert not models.Office.objects.exists()
@@ -68,7 +67,7 @@ def test_create_user_no_pw(mock_connect):
 @pytest.mark.django_db
 @mock.patch.object(cx_Oracle, "connect")
 def test_create_user(mock_connect):
-    call_command("export_from_v1", "--skip_ref", "--skip_ia")
+    call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file")
 
     assert models.User.objects.exists()
     assert models.Office.objects.exists()
@@ -83,7 +82,7 @@ def test_create_user(mock_connect):
 @mock.patch.object(cx_Oracle, "connect")
 def test_create_user_exists(mock_connect):
     models.User.objects.create(username="Username")
-    call_command("export_from_v1", "--skip_ref", "--skip_ia")
+    call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file")
 
     assert models.User.objects.count() == 1
 
@@ -91,20 +90,23 @@ def test_create_user_exists(mock_connect):
 @override_settings(ALLOW_DATA_MIGRATION=True)
 @override_settings(APP_ENV="production")
 @pytest.mark.django_db
-@mock.patch.dict(DATA_TYPE_QUERY_MODEL, {"reference": [("REF", models.CountryGroup)]})
+@mock.patch.dict(
+    queries.DATA_TYPE_QUERY_MODEL,
+    {"reference": [(queries, "ref_source_target", models.CountryGroup)], "file": []},
+)
 @mock.patch.object(cx_Oracle, "connect")
 def test_export_data(mock_connect):
     mock_connect.return_value = utils.MockConnect()
-    call_command("export_from_v1", "--skip_user", "--skip_ia")
+    call_command("export_from_v1", "--skip_user", "--skip_ia", "--skip_file")
     assert models.CountryGroup.objects.filter(country_group_id__in=["A", "B", "C"]).count() == 3
 
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
 @override_settings(APP_ENV="production")
 @pytest.mark.django_db
-@mock.patch.dict(DATA_TYPE_QUERY_MODEL, {"import_application": []})
+@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, {"import_application": [], "file": []})
 @mock.patch.dict(
-    DATA_TYPE_XML,
+    queries.DATA_TYPE_XML,
     {
         "import_application": [
             xml_parser.ImportContactParser,
@@ -152,7 +154,7 @@ def test_extract_xml(mock_connect):
 
         factory.OILSupplementaryInfoFactory(imad=ia, supplementary_report_xml=supp_xmls[i])
 
-    call_command("export_from_v1", "--skip_user", "--skip_ref")
+    call_command("export_from_v1", "--skip_user", "--skip_ref", "--skip_file")
 
     reports = models.OILSupplementaryReport.objects.filter(supplementary_info__imad_id__in=pk_range)
     assert reports.count() == 4
@@ -164,3 +166,60 @@ def test_extract_xml(mock_connect):
     assert firearms.count() == 5
     assert firearms.filter(is_upload=True, is_manual=False, is_no_firearm=False).count() == 1
     assert firearms.filter(is_upload=False, is_manual=True, is_no_firearm=False).count() == 4
+
+
+@override_settings(ALLOW_DATA_MIGRATION=True)
+@override_settings(APP_ENV="production")
+@pytest.mark.django_db
+@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, {"file": []})
+@mock.patch.object(
+    queries,
+    "FILE_MODELS",
+    [
+        models.FileFolder,
+        models.FileTarget,
+        models.File,
+    ],
+)
+@mock.patch.object(cx_Oracle, "connect")
+def test_export_files_data(mock_connect):
+
+    mock_connect.return_value = utils.MockConnect()
+    user_pk = models.User.objects.count() + 1
+    user = models.User.objects.create(id=user_pk, username="test_import_user")
+    user_id = user.id
+
+    models.FileCombined.objects.bulk_create(
+        [
+            models.FileCombined(
+                folder_id=f_id,
+                folder_type=f_type,
+                target_id=t_type and f_id * t_id,
+                target_type=t_type,
+                status=t_type and "RECEIVED",
+                version_id=t_type and v_id * t_id,
+                filename=t_type and v,
+                content_type=t_type and v,
+                file_size=t_type and v_id,
+                path=t_type and v,
+                created_by_id=user_id,
+            )
+            for f_id, f_type in enumerate(["F1", "F2"], start=1)
+            for t_id, t_type in enumerate(["T1", "T2", None], start=3)
+            for v_id, v in enumerate(["a", "b", "c"], start=9)
+        ]
+    )
+
+    call_command("export_from_v1", "--skip_user", "--skip_ref", "--skip_ia")
+
+    assert models.FileFolder.objects.count() == 2
+    assert models.FileTarget.objects.count() == 4
+    assert models.File.objects.count() == 12
+
+    assert models.FileFolder.objects.get(folder_id=1).file_targets.count() == 2
+    assert models.FileFolder.objects.get(folder_id=2).file_targets.count() == 2
+
+    assert models.FileTarget.objects.get(target_id=3).files.count() == 3
+    assert models.FileTarget.objects.get(target_id=4).files.count() == 3
+    assert models.FileTarget.objects.get(target_id=6).files.count() == 3
+    assert models.FileTarget.objects.get(target_id=8).files.count() == 3

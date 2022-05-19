@@ -8,7 +8,12 @@ from django.core.management.base import BaseCommand, CommandError
 
 from data_migration import models
 from data_migration.models.user import Importer, Office, User
-from data_migration.queries import DATA_TYPE, DATA_TYPE_QUERY_MODEL, DATA_TYPE_XML
+from data_migration.queries import (
+    DATA_TYPE,
+    DATA_TYPE_QUERY_MODEL,
+    DATA_TYPE_XML,
+    FILE_MODELS,
+)
 
 from .utils.db import new_process_pk
 from .utils.format import format_name, format_row
@@ -32,6 +37,11 @@ class Command(BaseCommand):
         parser.add_argument(
             "--skip_ref",
             help="Skip reference data export",
+            action="store_true",
+        )
+        parser.add_argument(
+            "--skip_file",
+            help="Skip file data export",
             action="store_true",
         )
         parser.add_argument(
@@ -64,6 +74,7 @@ class Command(BaseCommand):
             cursor = connection.cursor()
 
             self._export_data("reference", cursor, options["skip_ref"])
+            self._export_data("file", cursor, options["skip_file"])
             self._export_data("import_application", cursor, options["skip_ia"])
 
             cursor.close()
@@ -85,8 +96,9 @@ class Command(BaseCommand):
 
         self.stdout.write(f"Exporting {name} Data...")
 
-        for query, model in query_models:
-            self.stdout.write(f"Exporting to {model.__name__} model")
+        for module, query_name, model in query_models:
+            self.stdout.write(f"Exporting {query_name} to {model.__name__} model")
+            query = getattr(module, query_name)
             cursor.execute(query)
             columns = [col[0].lower() for col in cursor.description]
 
@@ -97,7 +109,11 @@ class Command(BaseCommand):
 
                 self._export_model_data(columns, rows, model)
 
-        self._extract_xml_data(data_type)
+        if data_type == "file":
+            self._extract_file_data()
+
+        else:
+            self._extract_xml_data(data_type)
 
         self.stdout.write(f"{name} Data Export Complete!")
 
@@ -127,6 +143,18 @@ class Command(BaseCommand):
                 model.objects.bulk_create(
                     [model(**format_row(columns, row, fields)) for row in rows]
                 )
+
+    def _extract_file_data(self) -> None:
+        """Normalises file data as per V1 structure"""
+
+        self.stdout.write("Extracting file data")
+
+        for model in FILE_MODELS:
+            self.stdout.write(f"Extracting {model.__name__}")
+            data = model.get_from_combined()
+            model.objects.bulk_create([model(**obj) for obj in data], batch_size=self.batchsize)
+
+        self.stdout.write("File data extracted")
 
     def _extract_xml_data(self, data_type: DATA_TYPE) -> None:
         """Iterates over the models listed for the specified data_type and parses the xml from their parent"""

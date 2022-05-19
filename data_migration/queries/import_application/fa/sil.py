@@ -31,6 +31,7 @@ SELECT
   , TO_DATE(x.completed_datetime, 'YYYY-MM-DD') completed_datetime
   , XMLTYPE.getClobVal(commodities_xml) commodities_xml
   , XMLTYPE.getClobVal(fa_certs_xml) fa_goods_certs_xml
+  , x.file_folder_id
 FROM impmgr.import_application_details ad,
   XMLTABLE('/*'
   PASSING ad.xml_data
@@ -60,6 +61,7 @@ FROM impmgr.import_application_details ad,
       '/IMA/FA_REPORTS/HISTORICAL_REPORT_COMPLETION_LIST/HISTORICAL_REPORT_COMPLETION[last()]/REPORT_COMPLETED_BY_WUA_ID[last()]/text()'
     , completed_datetime VARCHAR(20) PATH
       '/IMA/FA_REPORTS/HISTORICAL_REPORT_COMPLETION_LIST/HISTORICAL_REPORT_COMPLETION[last()]/REPORT_COMPLETED_DATETIME[last()]/text()'
+    , file_folder_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
   ) x
   WHERE status_control = 'C'
 """

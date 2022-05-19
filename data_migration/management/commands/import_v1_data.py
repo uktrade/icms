@@ -33,6 +33,11 @@ class Command(BaseCommand):
             action="store_true",
         )
         parser.add_argument(
+            "--skip_file",
+            help="Skip file data import",
+            action="store_true",
+        )
+        parser.add_argument(
             "--skip_ia",
             help="Skip import application data import",
             action="store_true",
@@ -56,6 +61,7 @@ class Command(BaseCommand):
 
         self._import_data("user", options["skip_user"])
         self._import_data("reference", options["skip_ref"])
+        self._import_data("file", options["skip_file"])
         self._import_data("import_application", options["skip_ia"])
         self._create_draft_ia_licences(options["skip_ia"])
         self._create_tasks(options["skip_task"])
@@ -68,7 +74,9 @@ class Command(BaseCommand):
             return
 
         self._import_model(data_type)
-        self._import_m2m(data_type)
+
+        if data_type != "file":
+            self._import_m2m(data_type)
 
         self.stdout.write(f"{name} Data Imported!")
 

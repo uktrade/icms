@@ -3,6 +3,7 @@ from typing import Any
 from django.db import models
 
 from data_migration.models.base import MigrationBase, Process
+from data_migration.models.file import FileFolder
 from data_migration.models.reference import CommodityGroup, Country
 from data_migration.models.user import Importer, Office, User
 
@@ -12,6 +13,9 @@ from .import_application_type import ImportApplicationType
 class ImportApplication(MigrationBase):
     PROCESS_PK = True
 
+    file_folder = models.OneToOneField(
+        FileFolder, on_delete=models.PROTECT, related_name="import_application", null=True
+    )
     ima = models.OneToOneField(Process, on_delete=models.PROTECT, to_field="ima_id")
     imad_id = models.IntegerField(unique=True)
     status = models.CharField(max_length=30)
@@ -81,7 +85,7 @@ class ImportApplication(MigrationBase):
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return ["ima_id", "imad_id"]
+        return ["ima_id", "imad_id", "file_folder_id"]
 
     @classmethod
     def get_includes(cls) -> list[str]:
