@@ -1,23 +1,6 @@
 {% extends "web/domains/country/country-base.html" %}
 
 {% block main_content %}
-
-  <div class="filter-bar">
-    <div class="container setoutForm noBottomMargin">
-      <div class="row">
-        <div class="four columns">
-            <label id="pg48" for="g48" class="prompt west">Country Set</label>
-        </div>
-        <div class="four columns setoutForm">
-          <select name="country-set" aria-required="true">
-            <option value="all-countries" selected="selected">All Countries</option>
-          </select>
-        </div>
-        <div class="four columns"></div>
-      </div>
-    </div>
-  </div>
-
   {% set batch_size=(object_list.count()/4)|round(0, 'ceil') %}
   <div class="container">
     <div class="row">
