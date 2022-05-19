@@ -213,7 +213,9 @@ class CountryTranslationSetListView(PostActionMixin, ModelCreateView):
     template_name = "web/domains/country/translations/list.html"
     page_title = "Manage Country Translation Sets"
     permission_required = "web.ilb_admin"
-    success_url = reverse_lazy("country:translation-set-list")
+
+    def get_success_url(self):
+        return reverse("country:translation-set-edit", kwargs={"pk": self.object.pk})
 
     def archive(self, request):
         translation_set = CountryTranslationSet.objects.get(pk=request.POST.get("item"))
