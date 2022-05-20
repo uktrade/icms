@@ -95,12 +95,14 @@ def _get_queryset_admin(user: User) -> chain[QuerySet]:
 
     export_applications = (
         ExportApplication.objects.filter(is_active=True)
+        .exclude(status=ImpExpStatus.STOPPED)
         .select_related("exporter", "contact", "application_type", "submitted_by", "case_owner")
         .annotate(active_tasks=ACTIVE_TASK_ANNOTATION)
     )
 
     import_applications = (
         ImportApplication.objects.filter(is_active=True)
+        .exclude(status=ImpExpStatus.STOPPED)
         .select_related("importer", "contact", "application_type", "submitted_by", "case_owner")
         .annotate(active_tasks=ACTIVE_TASK_ANNOTATION)
     )

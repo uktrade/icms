@@ -352,6 +352,12 @@ def manage_case(
 
                     send_email(subject, body, recipients)
 
+                messages.success(
+                    request,
+                    "This case has been stopped and removed from your workbasket."
+                    " It will still be available from the search screen.",
+                )
+
                 return redirect(reverse("workbasket"))
         else:
             form = forms.CloseCaseForm()
