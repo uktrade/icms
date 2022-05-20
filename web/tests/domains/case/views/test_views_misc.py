@@ -71,14 +71,23 @@ def test_manage_case_get(icms_admin_client: "Client", wood_application):
 
 
 def test_manage_case_close_case(icms_admin_client: "Client", wood_application):
-
     post_data = {"send_email": False}
-    resp = icms_admin_client.post(CaseURLS.close_case(wood_application.pk), post_data)
-    assertRedirects(resp, reverse("workbasket"), status_code=302)
+    response = icms_admin_client.post(
+        CaseURLS.close_case(wood_application.pk), post_data, follow=True
+    )
+    assertRedirects(response, reverse("workbasket"), status_code=302)
 
     wood_application.refresh_from_db()
 
     assert wood_application.status == ImpExpStatus.STOPPED
+
+    messages = list(response.context["messages"])
+    success_msg = str(messages[0])
+
+    assert success_msg == (
+        "This case has been stopped and removed from your workbasket."
+        " It will still be available from the search screen."
+    )
 
 
 def test_manage_withdrawals_get(
