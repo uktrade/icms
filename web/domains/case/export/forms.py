@@ -139,6 +139,23 @@ class CreateExportApplicationForm(forms.Form):
 
 
 class PrepareCertManufactureFormBase(forms.ModelForm):
+    is_pesticide_on_free_sale_uk_error_msg = mark_safe(
+        '<div class="info-box info-box-danger"><div class="screen-reader-only">Warning information box,</div>'
+        "<p>A Certificate of Manufacture cannot be completed for a pesticide on free sale in the UK.</p>"
+        "<p>To process this request contact the following:</p>"
+        "<ul>"
+        '<li>Agricultural pesticides - <a href="mailto:asg@hse.gsi.gov.uk">asg@hse.gsi.gov.uk</a>'  # /PS-IGNORE
+        '<li>Non-agricultural pesticides - <a href="mailto:biocidesenquiries@hse.gsi.gov.uk">biocidesenquiries@hse.gsi.gov.uk</a>'  # /PS-IGNORE
+        "</ul>"
+        "</div>"
+    )
+
+    is_manufacturer_error_msg = mark_safe(
+        '<div class="info-box info-box-danger"><div class="screen-reader-only">Warning information box,</div>'
+        "<p>A Certificate of Manufacture can only be applied for by the manufacturer of the pesticide.</p>"
+        "</div>"
+    )
+
     class Meta:
         model = CertificateOfManufactureApplication
 
@@ -184,6 +201,26 @@ class EditCOMForm(OptionalFormMixin, PrepareCertManufactureFormBase):
     All fields are optional to allow partial record saving.
     """
 
+    def clean_is_pesticide_on_free_sale_uk(self):
+        """Perform extra logic even thought this is the edit form where every field is optional"""
+
+        val: Optional[bool] = self.cleaned_data["is_pesticide_on_free_sale_uk"]
+
+        if val:
+            raise forms.ValidationError(self.is_pesticide_on_free_sale_uk_error_msg)
+
+        return val
+
+    def clean_is_manufacturer(self):
+        """Perform extra logic even thought this is the edit form where every field is optional"""
+
+        val: Optional[bool] = self.cleaned_data["is_manufacturer"]
+
+        if val is False:
+            raise forms.ValidationError(self.is_manufacturer_error_msg)
+
+        return val
+
 
 class SubmitCOMForm(PrepareCertManufactureFormBase):
     """Form used when submitting the application.
@@ -198,18 +235,7 @@ class SubmitCOMForm(PrepareCertManufactureFormBase):
             raise forms.ValidationError("You must enter this item.")
 
         if val:
-            raise forms.ValidationError(
-                mark_safe(
-                    '<div class="info-box info-box-danger"><div class="screen-reader-only">Warning information box,</div>'
-                    "<p>A Certificate of Manufacture cannot be completed for a pesticide on free sale in the UK.</p>"
-                    "<p>To process this request contact the following:</p>"
-                    "<ul>"
-                    '<li>Agricultural pesticides - <a href="mailto:asg@hse.gsi.gov.uk">asg@hse.gsi.gov.uk</a>'  # /PS-IGNORE
-                    '<li>Non-agricultural pesticides - <a href="mailto:biocidesenquiries@hse.gsi.gov.uk">biocidesenquiries@hse.gsi.gov.uk</a>'  # /PS-IGNORE
-                    "</ul>"
-                    "</div>"
-                )
-            )
+            raise forms.ValidationError(self.is_pesticide_on_free_sale_uk_error_msg)
 
         return val
 
@@ -220,15 +246,7 @@ class SubmitCOMForm(PrepareCertManufactureFormBase):
             raise forms.ValidationError("You must enter this item.")
 
         if not val:
-            raise forms.ValidationError(
-                mark_safe(
-                    """
-                    <div class="info-box info-box-danger"><div class="screen-reader-only">Warning information box,</div>
-
-                    <p>A Certificate of Manufacture can only be applied for by the manufacturer of the pesticide.</p>
-                    </div>"""
-                )
-            )
+            raise forms.ValidationError(self.is_manufacturer_error_msg)
 
         return val
 
