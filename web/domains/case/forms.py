@@ -82,19 +82,20 @@ class WithdrawForm(forms.ModelForm):
 
 
 class WithdrawResponseForm(forms.ModelForm):
-    STATUSES = (WithdrawApplication.ACCEPTED, WithdrawApplication.REJECTED)
+    WITHDRAW_STATUSES = [
+        ("", "--------"),
+        (WithdrawApplication.STATUS_ACCEPTED, "Accepted"),
+        (WithdrawApplication.STATUS_REJECTED, "Rejected"),
+    ]
 
-    status = forms.ChoiceField(label="Withdraw Decision", choices=STATUSES)
+    status = forms.ChoiceField(label="Withdraw Decision", choices=WITHDRAW_STATUSES)
     response = forms.CharField(
         required=False, label="Withdraw Reject Reason", widget=forms.Textarea
     )
 
     class Meta:
         model = WithdrawApplication
-        fields = (
-            "status",
-            "response",
-        )
+        fields = ("status", "response")
 
     def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()

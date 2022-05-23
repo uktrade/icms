@@ -1,26 +1,13 @@
-document.addEventListener("DOMContentLoaded", function (event) { // doesn't work in IE8: https://caniuse.com/#feat=domcontentloaded
-    "use strict";
+"use strict";
 
-    var dropdown = document.getElementById('id_status');
+window.addEventListener("load", function (event) {
+  const status = document.querySelector("#id_status");
 
-    var container = document.getElementsByClassName('row_id_response')[0];
-    showOrHide(dropdown, container);
+  // The div row containing the response field
+  const showResponse = UTILS.getShowElementFunc("div.row_id_response");
+  showResponse(status.value === "rejected");
 
-    dropdown.onchange = function () {
-        showOrHide(dropdown, container);
-    };
-
+  status.addEventListener("change", function (e) {
+    showResponse(e.target.value === "rejected");
+  });
 });
-
-function showOrHide(dropdown, container) {
-    "use strict";
-    if (dropdown.options.length === 3) {
-        dropdown.remove(0);
-    }
-
-    if (dropdown.selectedIndex === 0) {
-        container.classList.add('hidden');
-    } else {
-        container.classList.remove('hidden');
-    }
-}

@@ -37,7 +37,7 @@
         </div>
         <div class="six columns">
           <span class="text-widget">
-            {{ form.instance.reason }}
+            {{ current_withdrawal.reason }}
           </span>
         </div>
         <div class="three columns"></div>
@@ -50,7 +50,7 @@
         </div>
         <div class="six columns">
           <span class="text-widget">
-            {{ form.instance.created_datetime.strftime('%d-%b-%Y') }}
+            {{ current_withdrawal.created_datetime.strftime('%d-%b-%Y') }}
           </span>
         </div>
         <div class="three columns"></div>
@@ -63,7 +63,7 @@
         </div>
         <div class="six columns">
           <span class="text-widget">
-            {{ form.instance.request_by }}
+            {{ current_withdrawal.request_by }}
           </span>
         </div>
         <div class="three columns"></div>
