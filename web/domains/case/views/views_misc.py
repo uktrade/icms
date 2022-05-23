@@ -172,7 +172,7 @@ def manage_withdrawals(
             application, case_type, request.user, Task.TaskType.PROCESS
         )
 
-        withdrawals = application.withdrawals.filter(is_active=True)
+        withdrawals = application.withdrawals.filter(is_active=True).order_by("-created_datetime")
         current_withdrawal = withdrawals.filter(status=WithdrawApplication.STATUS_OPEN).first()
 
         if request.POST and not readonly_view:
