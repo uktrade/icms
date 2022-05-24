@@ -22,9 +22,8 @@
   {% include "partial/certificates/list.html" %}
 
   {# Application specific certificates #}
-  {% if process.process_type == "SILApplication" %}
-    <h3>Section 5 Authorities</h3>
-    {% if process.section5 %}
+  {% if process.process_type == "SILApplication" and process.section5 %}
+      <h3>Section 5 Authorities</h3>
       {% if verified_section5 %}
         {% with read_only = False %}
           {% include "web/domains/case/import/partials/fa-sil/verified-section5-authorities.html" %}
@@ -35,11 +34,5 @@
           {% include "web/domains/case/import/partials/fa-sil/user-section5-authorities.html" %}
         {% endwith %}
       {% endif %}
-    {% else %}
-      <div class="info-box info-box-info">
-        Please choose Section 5 in the "Licence For" section if you wish to upload Section 5 Authority Documents.
-      </div>
-    {% endif %}
   {% endif %}
-
 {% endblock %}
