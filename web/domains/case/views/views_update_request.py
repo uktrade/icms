@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case import forms, models
@@ -25,9 +25,48 @@ from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
 
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
+@require_GET
+def list_update_requests(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
+    model_class = get_class_imp_or_exp(case_type)
+
+    application: ImpOrExp = get_object_or_404(model_class, pk=application_pk)
+
+    task, readonly_view = get_current_task_and_readonly_status(
+        application, case_type, request.user, Task.TaskType.PROCESS, select_for_update=False
+    )
+
+    update_requests = application.update_requests.filter(is_active=True)
+    update_request = update_requests.filter(
+        status__in=[models.UpdateRequest.Status.OPEN, models.UpdateRequest.Status.RESPONDED]
+    ).first()
+    previous_update_requests = update_requests.filter(status=models.UpdateRequest.Status.CLOSED)
+
+    context = {
+        "process": application,
+        "task": task,
+        "page_title": get_case_page_title(case_type, application, "Update Requests"),
+        "previous_update_requests": previous_update_requests,
+        "update_request": update_request,
+        "case_type": case_type,
+        "readonly_view": readonly_view,
+    }
+
+    return render(
+        request=request,
+        template_name="web/domains/case/manage/list-update-requests.html",
+        context=context,
+    )
+
+
+@login_required
+@permission_required("web.ilb_admin", raise_exception=True)
 def manage_update_requests(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
+    """Allows admin to submit an update request to the applicant"""
+
     model_class = get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
@@ -166,7 +205,7 @@ def close_update_request(
 
     return redirect(
         reverse(
-            "case:manage-update-requests",
+            "case:list-update-requests",
             kwargs={"application_pk": application_pk, "case_type": case_type},
         )
     )

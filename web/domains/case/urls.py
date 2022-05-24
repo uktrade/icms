@@ -220,6 +220,7 @@ further_information_requests_urls = [
 ]
 
 update_requests_urls = [
+    path("list/", views_update_request.list_update_requests, name="list-update-requests"),
     path("manage/", views_update_request.manage_update_requests, name="manage-update-requests"),
     path("respond/", views_update_request.respond_update_request, name="respond-update-request"),
     path(
