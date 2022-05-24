@@ -238,7 +238,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         )
         checklist, created = TextilesChecklist.objects.get_or_create(import_application=application)
 
-        if request.POST and not readonly_view:
+        if request.method == "POST" and not readonly_view:
             form: TextilesChecklistForm = TextilesChecklistOptionalForm(
                 request.POST, instance=checklist
             )

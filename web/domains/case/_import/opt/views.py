@@ -529,7 +529,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         checklist, created = OPTChecklist.objects.get_or_create(import_application=application)
 
-        if request.POST and not readonly_view:
+        if request.method == "POST" and not readonly_view:
             form: OPTChecklistForm = OPTChecklistOptionalForm(request.POST, instance=checklist)
 
             if form.is_valid():

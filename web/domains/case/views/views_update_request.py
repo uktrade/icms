@@ -64,7 +64,7 @@ def manage_update_requests(
         email_subject = template.get_title({"CASE_REFERENCE": application.reference})
         email_content = template.get_content(placeholder_content)
 
-        if request.POST and not readonly_view:
+        if request.method == "POST" and not readonly_view:
             form = forms.UpdateRequestForm(request.POST)
             if form.is_valid():
                 update_request = form.save(commit=False)
