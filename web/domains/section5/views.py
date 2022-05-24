@@ -9,6 +9,11 @@ from web.views import ModelFilterView
 from web.views.actions import Archive, Edit, Unarchive
 
 
+class EditSection5Action(Edit):
+    def href(self, obj):
+        return reverse("section5:edit", kwargs={"pk": obj.pk})
+
+
 class ListSection5(ModelFilterView):
     template_name = "web/domains/section5/list.html"
     filterset_class = Section5Filter
@@ -23,7 +28,12 @@ class ListSection5(ModelFilterView):
             "description": {"header": "Description"},
         }
         opts = {"inline": True, "icon_only": True}
-        actions = [Edit(**opts), Archive(**opts), Unarchive(**opts)]
+        actions = [EditSection5Action(**opts), Archive(**opts), Unarchive(**opts)]
+
+    def get_queryset(self):
+        qs = super().get_queryset().order_by("-is_active", "-created_datetime")
+
+        return qs
 
 
 @login_required
