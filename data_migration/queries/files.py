@@ -5,8 +5,10 @@
 import_application_files_base = """
 SELECT
   ff.id folder_id
-  , ff.file_folder_type
+  , ff.file_folder_type folder_type
   , fft.target_mnem target_type
+  , fft.status
+  , fft.id target_id
   , fv.*
 FROM decmgr.file_folders ff
 INNER JOIN (
@@ -23,7 +25,7 @@ INNER JOIN impmgr.xview_ima_details xid ON xid.ima_id = ima.ima_id AND xid.ima_t
 LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
 LEFT JOIN (
   SELECT
-    fft_id target_id
+    fft_id
     , fv.id version_id
     , create_start_datetime created_datetime
     , 2 created_by_id
@@ -38,7 +40,7 @@ LEFT JOIN (
       , file_size NUMBER PATH '/file-metadata/size/text()'
     ) x
   WHERE status_control = 'C'
-) fv ON fv.target_id = fft.id
+) fv ON fv.fft_id = fft.id
 """
 
 dfl_application_files = import_application_files_base.format(
@@ -89,6 +91,7 @@ SELECT
   , ff.file_folder_type folder_type
   , fft.target_mnem target_type
   , fft.id target_id
+  , fft.status
   , fv.version_id
   , fv.filename
   , fv.content_type

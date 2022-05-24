@@ -41,6 +41,7 @@ sil_data_source_target = {
         (dm.ImportApplication, web.ImportApplication),
         (dm.ImportContact, web.ImportContact),
         (dm.SILApplication, web.SILApplication),
+        (dm.SILUserSection5, web.SILUserSection5),
         (dm.SILGoodsSection1, web.SILGoodsSection1),
         (dm.SILGoodsSection2, web.SILGoodsSection2),
         (dm.SILGoodsSection5, web.SILGoodsSection5),
@@ -72,7 +73,10 @@ sil_data_source_target = {
 @mock.patch.dict(DATA_TYPE_QUERY_MODEL, {"import_application": [], "file": []})
 @mock.patch.dict(DATA_TYPE_XML, {"import_application": sil_xml_parsers})
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, sil_data_source_target)
-@mock.patch.dict(DATA_TYPE_M2M, {})
+@mock.patch.dict(
+    DATA_TYPE_M2M,
+    {"import_application": [(dm.SILUserSection5, web.SILApplication, "user_section5")]},
+)
 @mock.patch.object(cx_Oracle, "connect")
 def test_import_sil_data(mock_connect):
     mock_connect.return_value = utils.MockConnect()
@@ -94,6 +98,31 @@ def test_import_sil_data(mock_connect):
 
     for i, pk in enumerate(pk_range):
         process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.FA_SIL, ima_id=pk + 7)
+        folder = dm.FileFolder.objects.create(folder_type="IMP_APP_DOCUMENTS")
+
+        if i == 0:
+            target1 = dm.FileTarget.objects.create(
+                folder=folder, target_type="IMP_SECTION5_AUTHORITY"
+            )
+            target2 = dm.FileTarget.objects.create(
+                folder=folder, target_type="IMP_SECTION5_AUTHORITY"
+            )
+            f1 = dm.File.objects.create(
+                target=target1,
+                filename="Test User Sec 5",
+                content_type="pdf",
+                file_size=100,
+                path="test",
+                created_by_id=user_pk,
+            )
+            f2 = dm.File.objects.create(
+                target=target2,
+                filename="Test User Sec 5 2",
+                content_type="pdf",
+                file_size=50,
+                path="test2",
+                created_by_id=user_pk,
+            )
 
         ia = factory.ImportApplicationFactory(
             pk=pk,
@@ -104,6 +133,7 @@ def test_import_sil_data(mock_connect):
             created_by_id=user_pk,
             last_updated_by_id=user_pk,
             importer_id=importer_pk,
+            file_folder=folder,
         )
 
         dm.ImportApplicationLicence.objects.create(imad=ia, status="AC")
@@ -165,6 +195,12 @@ def test_import_sil_data(mock_connect):
     )
 
     call_command("import_v1_data")
+
+    sil1, sil2 = web.SILApplication.objects.filter(pk__in=pk_range).order_by("pk")
+
+    assert sil1.user_section5.count() == 2
+    assert sil1.user_section5.filter(pk__in=(f1.pk, f2.pk)).count() == 2
+    assert sil2.user_section5.count() == 0
 
     sil1_f = {"import_application_id": sil1.pk}
     sil2_f = {"import_application_id": sil2.pk}

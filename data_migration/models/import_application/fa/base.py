@@ -18,7 +18,7 @@ class FirearmBase(ImportApplicationBase):
     know_bought_from = models.BooleanField(null=True)
     commodity_group = models.ForeignKey(CommodityGroup, on_delete=models.SET_NULL, null=True)
     commodities_xml = models.TextField(null=True)
-    fa_certs_xml = models.TextField(null=True)
+    user_import_certs_xml = models.TextField(null=True)
     fa_authorities_xml = models.TextField(null=True)
     bought_from_details_xml = models.TextField(null=True)
     fa_goods_certs_xml = models.TextField(null=True)
@@ -78,19 +78,19 @@ class UserImportCertificate(MigrationBase):
         values = cls.get_values() + ["file_ptr_id", "created_datetime"]
         sub_query = File.objects.filter(target_id=OuterRef("target_id"))
 
-        # Exclude unsubmitted applications where reference, constabulary or expiry_date are null
-        exclude_query = Q(import_application__submit_datetime__isnull=True) & Q(
-            Q(reference__isnull=True) | Q(constabulary__isnull=True) | Q(expiry_date__isnull=True)
+        # Exclude records with no file or unsubmitted applications where reference is null
+        exclude_query = Q(file_ptr_id__isnull=True) | Q(
+            Q(import_application__submit_datetime__isnull=True) & Q(reference__isnull=True)
         )
 
         return (
             cls.objects.select_related("target")
             .prefetch_related("target__files")
+            .filter(constabulary__isnull=False)
             .annotate(
                 file_ptr_id=Subquery(sub_query.values("pk")[:1]),
                 created_datetime=Subquery(sub_query.values("created_datetime")[:1]),
             )
-            .exclude(file_ptr_id__isnull=True)
             .exclude(exclude_query)
             .values(*values)
             .iterator()
@@ -99,17 +99,16 @@ class UserImportCertificate(MigrationBase):
     @classmethod
     def get_m2m_data(cls, target: models.Model) -> Generator:
         sub_query = File.objects.filter(target_id=OuterRef("target_id"))
-
-        # Exclude unsubmitted applications where reference, constabulary or expiry_date are null
-        exclude_query = Q(import_application__submit_datetime__isnull=True) & Q(
-            Q(reference__isnull=True) | Q(constabulary__isnull=True) | Q(expiry_date__isnull=True)
-        )
         m2m_id = f"{target._meta.model_name}_id"
+
         return (
             cls.objects.select_related("target")
             .prefetch_related("target__files")
-            .filter(import_application__ima__process_type=target.PROCESS_TYPE)
-            .exclude(exclude_query)
+            .filter(
+                import_application__ima__process_type=target.PROCESS_TYPE,
+                constabulary__isnull=False,
+            )
+            .exclude(import_application__submit_datetime__isnull=True, reference__isnull=True)
             .annotate(
                 userimportcertificate_id=Subquery(sub_query.values("pk")[:1]),
                 **{m2m_id: F("import_application_id")},

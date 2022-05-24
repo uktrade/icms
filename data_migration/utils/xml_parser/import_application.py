@@ -22,8 +22,8 @@ if TYPE_CHECKING:
 FA_TYPE_CODES = {
     "DEACTIVATED": "deactivated",
     "RFD": "registered",
-    # "SHOTGUN": "shotgun", TODO ICMSLST-1519 correct the key to match V1
-    # "FA": "firearms",  TODO ICMSLST-1519 correct the key to match V1
+    "SHOTGUN": "shotgun",
+    "FIREARMS": "firearms",
 }
 
 
@@ -95,7 +95,7 @@ class ImportContactParser(BaseXmlParser):
 class UserImportCertificateParser(BaseXmlParser):
     MODEL = dm.UserImportCertificate
     PARENT = [dm.SILApplication, dm.OpenIndividualLicenceApplication]
-    FIELD = "fa_certs_xml"
+    FIELD = "user_import_certs_xml"
     ROOT_NODE = "/FIREARMS_CERTIFICATE_LIST/FIREARMS_CERTIFICATE"
 
     @classmethod

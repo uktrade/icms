@@ -29,7 +29,7 @@ class UserImportCertificate(File):
     )
     constabulary = models.ForeignKey("web.Constabulary", on_delete=models.PROTECT)
     date_issued = models.DateField(verbose_name="Date Issued", null=True)
-    expiry_date = models.DateField(verbose_name="Expiry Date")
+    expiry_date = models.DateField(verbose_name="Expiry Date", null=True)
     updated_datetime = models.DateTimeField(auto_now=True)
 
 
