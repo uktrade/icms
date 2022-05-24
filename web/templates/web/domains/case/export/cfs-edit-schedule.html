@@ -69,7 +69,7 @@
   </div>
 
   {% if not schedule.manufacturer_name %}
-    <p>Optionally include manufacturer information on the issued certificate schedule</p>
+    <p>Include Manufacturer Information?</p>
     <a class="button small-button icon-plus"
        href="{{ icms_url('export:cfs-schedule-set-manufacturer', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}">Add
       Manufacturer</a>
