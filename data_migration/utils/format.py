@@ -25,11 +25,14 @@ def date_or_none(date_str: Optional[str]) -> Optional[date]:
     :param date_str: A string of the date. Can come in a variety of formats
 
                     Examples: '14/10/24', '14/10/2024', '14-10-2024',
-                              '14-10-24', '2024-10-14'
+                              '14-10-24', '2024-10-14', '14 October 2024'
     """
 
     if not date_str:
         return None
+
+    if " " in date_str and len(date_str) > 10:
+        return datetime.strptime(date_str, "%d %B %Y").date()
 
     date_str = date_str.replace("/", "-")
     date_split = date_str.split("-")

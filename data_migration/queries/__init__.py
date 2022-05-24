@@ -102,6 +102,7 @@ ia_source_target = source_target_list(
         "ActQuantity",
         "Section5Clause",
         "Section5Authority",
+        "SILUserSection5",
         "ClauseQuantity",
         "SILApplication",
         "SILGoodsSection1",
@@ -150,7 +151,7 @@ ia_m2m = [
         web.SILApplication,
         "verified_section5",
     ),
-    # M2M(dm.SILUserSection5, web.SILApplication, "user_section5"),
+    M2M(dm.SILUserSection5, web.SILApplication, "user_section5"),
     # TODO Section5 and auth linked offices
     M2M(
         dm.UserImportCertificate,

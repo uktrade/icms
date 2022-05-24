@@ -20,7 +20,7 @@ SELECT
   , x.additional_comments
   , x.cover_letter
   , x.commodities_xml
-  , x.fa_certs_xml
+  , x.user_import_certs_xml
   , x.fa_authorities_xml
   , x.bought_from_details_xml
   , XMLTYPE.getClobVal(x.supplementary_report_xml) supplementary_report_xml
@@ -39,7 +39,7 @@ FROM impmgr.import_application_details ad,
     , know_bought_from VARCHAR2(10) PATH '/IMA/APP_DETAILS/SH_DETAILS/IS_SELLER_HOLDER_PROVIDED[not(fox-error)]/text()'
     , additional_comments VARCHAR2(4000) PATH '/IMA/APP_DETAILS/FA_DETAILS/ADDITIONAL_INFORMATION[not(fox-error)]/text()'
     , commodities_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/COMMODITY_LIST'
-    , fa_certs_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/FIREARMS_CERTIFICATE_LIST'
+    , user_import_certs_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/FIREARMS_CERTIFICATE_LIST'
     , fa_authorities_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/FIREARMS_AUTHORITIES/AUTHORITY_LIST'
     , bought_from_details_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/SH_DETAILS/SELLER_HOLDER_LIST'
     , no_report_reason VARCHAR2(4000) PATH '/IMA/FA_REPORTS/NO_FIREARMS_REPORTED_DETAILS/NO_FIREARMS_REPORTED_REASON[not(fox-error)]/text()'

@@ -24,8 +24,8 @@
         <td>{{ certificate.reference }}</td>
         <td>{{ certificate.get_certificate_type_display() }}</td>
         <td>{{ certificate.constabulary.name }}</td>
-        <td>{{ certificate.date_issued and certificate.date_issued.strftime('%d-%b-%Y') }}</td>
-        <td>{{ certificate.expiry_date.strftime('%d-%b-%Y') }}</td>
+        <td>{% if certificate.date_issued %}{{ certificate.date_issued.strftime('%d-%b-%Y') }}{% endif %}</td>
+        <td>{% if certificate.expiry_date %}{{ certificate.expiry_date.strftime('%d-%b-%Y') }}{% endif %}</td>
         <td>
             <a
               href="{{ icms_url('import:fa:view-certificate-document', kwargs={'application_pk': process.pk, 'certificate_pk': certificate.pk}) }}">

@@ -68,6 +68,7 @@ def test_bulk_create():
         ("01-10-14", datetime(2014, 10, 1).date()),
         ("01/10/2014", datetime(2014, 10, 1).date()),
         ("01/10/14", datetime(2014, 10, 1).date()),
+        ("01 October 2014", datetime(2014, 10, 1).date()),
     ],
 )
 def test_date_or_none(test_input, expected):

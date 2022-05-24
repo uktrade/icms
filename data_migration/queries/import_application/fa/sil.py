@@ -30,7 +30,7 @@ SELECT
   , CASE WHEN x.completed_by_id IS NOT NULL THEN 2 ELSE NULL END completed_by_id
   , TO_DATE(x.completed_datetime, 'YYYY-MM-DD') completed_datetime
   , XMLTYPE.getClobVal(commodities_xml) commodities_xml
-  , XMLTYPE.getClobVal(fa_certs_xml) fa_goods_certs_xml
+  , XMLTYPE.getClobVal(user_import_certs_xml) user_import_certs_xml
   , x.file_folder_id
 FROM impmgr.import_application_details ad,
   XMLTABLE('/*'
@@ -49,7 +49,7 @@ FROM impmgr.import_application_details ad,
     , know_bought_from VARCHAR2(10) PATH '/IMA/APP_DETAILS/SH_DETAILS/IS_SELLER_HOLDER_PROVIDED[not(fox-error)]/text()'
     , additional_comments VARCHAR2(4000) PATH '/IMA/APP_DETAILS/FA_DETAILS/ADDITIONAL_INFORMATION[not(fox-error)]/text()'
     , commodities_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/COMMODITY_LIST'
-    , fa_certs_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/FIREARMS_CERTIFICATE_LIST'
+    , user_import_certs_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/FIREARMS_CERTIFICATE_LIST'
     , fa_authorities_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/FIREARMS_AUTHORITIES/AUTHORITY_LIST'
     , section5_authorities_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/SECTION5_AUTHORITIES/AUTHORITY_LIST'
     , bought_from_details_xml XMLTYPE PATH 'IMA/APP_DETAILS/FA_DETAILS/SH_DETAILS/SELLER_HOLDER_LIST'

@@ -68,12 +68,16 @@ class File(MigrationBase):
 
     @classmethod
     def get_from_combined(cls) -> "QuerySet":
-        return FileCombined.objects.filter(version_id__isnull=False).values(
-            "filename",
-            "content_type",
-            "file_size",
-            "path",
-            "created_datetime",
-            "created_by_id",
-            "target_id",
+        return (
+            FileCombined.objects.filter(version_id__isnull=False, status="RECEIVED")
+            .values(
+                "filename",
+                "content_type",
+                "file_size",
+                "path",
+                "created_datetime",
+                "created_by_id",
+                "target_id",
+            )
+            .distinct()
         )

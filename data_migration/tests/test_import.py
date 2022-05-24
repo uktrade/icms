@@ -536,7 +536,7 @@ def test_import_user_import_certificate_data():
 
     assert web.OpenIndividualLicenceApplication.objects.filter(pk__in=pk_range).count() == 1
     oil = web.OpenIndividualLicenceApplication.objects.filter(pk__in=pk_range).first()
-    assert oil.user_imported_certificates.count() == 1
+    assert oil.user_imported_certificates.count() == 2
     assert oil.user_imported_certificates.filter(reference="ABC").count() == 1
 
     assert web.SILApplication.objects.filter(pk__in=pk_range).count() == 1
