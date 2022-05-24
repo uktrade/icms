@@ -58,10 +58,10 @@ class CaseURLS:
 
     # web/domains/case/views/views_update_request.py urls
     @staticmethod
-    def manage_update_requests(application_pk: int, case_type: str = "import") -> str:
+    def list_update_requests(application_pk: int, case_type: str = "import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 
-        return reverse("case:manage-update-requests", kwargs=kwargs)
+        return reverse("case:list-update-requests", kwargs=kwargs)
 
     # web/domains/case/views/views_fir.py urls
     @staticmethod

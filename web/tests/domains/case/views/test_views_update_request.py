@@ -10,14 +10,14 @@ if TYPE_CHECKING:
     from web.domains.case._import.wood.models import WoodQuotaApplication
 
 
-def test_manage_update_requests_get(
+def test_list_update_requests_get(
     icms_admin_client: "Client", wood_app_submitted: "WoodQuotaApplication"
 ) -> None:
-    resp = icms_admin_client.get(CaseURLS.manage_update_requests(wood_app_submitted.pk))
+    resp = icms_admin_client.get(CaseURLS.list_update_requests(wood_app_submitted.pk))
     assert resp.status_code == 200
 
     assertContains(resp, "Wood (Quota) - Update Requests")
-    assertTemplateUsed(resp, "web/domains/case/manage/update-requests.html")
+    assertTemplateUsed(resp, "web/domains/case/manage/list-update-requests.html")
 
     assert resp.context["previous_update_requests"].count() == 0
     assert resp.context["update_request"] is None

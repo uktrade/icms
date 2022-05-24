@@ -387,7 +387,7 @@ def _get_update_request_errors(application: ImpOrExp, case_type: str) -> PageErr
     update_request_errors = PageErrors(
         page_name="Application Updates",
         url=reverse(
-            "case:manage-update-requests",
+            "case:list-update-requests",
             kwargs={"application_pk": application.pk, "case_type": case_type},
         ),
     )

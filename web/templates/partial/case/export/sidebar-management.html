@@ -26,7 +26,7 @@
 
   {% with total = process.update_requests.count(),
           processed = process.update_requests.exclude(status="OPEN").count() %}
-    {{ icms_link(request, icms_url('case:manage-update-requests', kwargs={'application_pk': process.pk, 'case_type': 'export'}),
+    {{ icms_link(request, icms_url('case:list-update-requests', kwargs={'application_pk': process.pk, 'case_type': 'export'}),
                  'Application Updates (' + processed|string + '/' + total|string + ')') }}
   {% endwith %}
 
