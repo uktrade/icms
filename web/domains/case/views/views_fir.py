@@ -115,7 +115,7 @@ def add_fir(request, *, application_pk: int, case_type: str) -> HttpResponse:
             "REQUEST_REFERENCE": application.pk,
         }
 
-        application.further_information_requests.create(
+        fir = application.further_information_requests.create(
             status=FurtherInformationRequest.DRAFT,
             requested_by=request.user,
             request_subject=template.get_title(title_mapping),
@@ -123,7 +123,12 @@ def add_fir(request, *, application_pk: int, case_type: str) -> HttpResponse:
             process_type=FurtherInformationRequest.PROCESS_TYPE,
         )
 
-    return _manage_fir_redirect(application_pk, case_type)
+    return redirect(
+        reverse(
+            "case:edit-fir",
+            kwargs={"application_pk": application_pk, "fir_pk": fir.pk, "case_type": case_type},
+        )
+    )
 
 
 @login_required

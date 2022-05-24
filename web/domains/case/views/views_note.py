@@ -62,11 +62,12 @@ def add_note(
 
         get_application_current_task(application, case_type, Task.TaskType.PROCESS)
 
-        application.case_notes.create(status=models.CASE_NOTE_DRAFT, created_by=request.user)
+        note = application.case_notes.create(status=models.CASE_NOTE_DRAFT, created_by=request.user)
 
     return redirect(
         reverse(
-            "case:list-notes", kwargs={"application_pk": application_pk, "case_type": case_type}
+            "case:edit-note",
+            kwargs={"application_pk": application_pk, "note_pk": note.pk, "case_type": case_type},
         )
     )
 
