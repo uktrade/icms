@@ -118,6 +118,11 @@ def withdraw_case(
                 application.update_order_datetime()
                 application.save()
 
+                messages.success(
+                    request,
+                    "You have requested that this application be withdrawn. Your request has been sent to ILB.",
+                )
+
                 return redirect(reverse("workbasket"))
         else:
             form = forms.WithdrawForm()
@@ -152,6 +157,10 @@ def archive_withdrawal(
         withdrawal = get_object_or_404(application.withdrawals, pk=withdrawal_pk)
         withdrawal.is_active = False
         withdrawal.save()
+
+        messages.success(
+            request, "You have retracted your request for this application to be withdrawn."
+        )
 
         return redirect(reverse("workbasket"))
 
