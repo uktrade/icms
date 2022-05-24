@@ -255,7 +255,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
             checklist_form = DerogationsChecklistForm
             checklist_optional_form = DerogationsChecklistOptionalForm
 
-        if request.POST and not readonly_view:
+        if request.method == "POST" and not readonly_view:
             form: DerogationsChecklistForm = checklist_optional_form(
                 request.POST, instance=checklist
             )

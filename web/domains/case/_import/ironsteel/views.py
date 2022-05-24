@@ -410,7 +410,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
             import_application=application
         )
 
-        if request.POST and not readonly_view:
+        if request.method == "POST" and not readonly_view:
             form = IronSteelChecklistOptionalForm(request.POST, instance=checklist)
 
             if form.is_valid():

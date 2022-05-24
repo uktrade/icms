@@ -796,7 +796,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
             import_application=application
         )
 
-        if request.POST and not readonly_view:
+        if request.method == "POST" and not readonly_view:
             form: forms.SILChecklistForm = forms.SILChecklistOptionalForm(
                 request.POST, instance=checklist
             )

@@ -175,7 +175,7 @@ def manage_withdrawals(
         withdrawals = application.withdrawals.filter(is_active=True).order_by("-created_datetime")
         current_withdrawal = withdrawals.filter(status=WithdrawApplication.STATUS_OPEN).first()
 
-        if request.POST and not readonly_view:
+        if request.method == "POST" and not readonly_view:
             form = forms.WithdrawResponseForm(request.POST, instance=current_withdrawal)
 
             if form.is_valid():

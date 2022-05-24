@@ -43,7 +43,7 @@ def register(request):
     When an unexpected error occurs the whole transaction is rolled back
     """
     # Handle security question
-    data = request.POST.copy() if request.POST else None
+    data = request.POST.copy() if request.method == "POST" else None
     selected = request.POST.get("security_question_list", None)
     if selected and selected != RegistrationForm.OWN_QUESTION:
         data["security_question"] = selected
@@ -83,7 +83,7 @@ def update_password(request):
 
 @user_passes_test(lambda u: u.is_anonymous, login_url="home")
 def reset_password(request):
-    action = request.POST.get("action") if request.POST else None
+    action = request.POST.get("action") if request.method == "POST" else None
     login_id = request.POST.get("login_id", None)
 
     if action == "reset_password":

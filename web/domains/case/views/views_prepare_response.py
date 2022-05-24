@@ -62,7 +62,7 @@ def prepare_response(
             application, case_type, request.user, Task.TaskType.PROCESS
         )
 
-        if request.POST and not readonly_view:
+        if request.method == "POST" and not readonly_view:
             form = form_class(request.POST, instance=application)
 
             if form.is_valid():
