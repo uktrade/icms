@@ -69,4 +69,7 @@
     {% endcall %}
   {% endfor %}
 
+  {% if not has_any_update_requests %}
+    <div class="info-box info-box-info">There aren't any application updates.</div>
+  {% endif %}
 {% endblock %}

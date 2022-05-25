@@ -20,10 +20,12 @@
   {% if not readonly_view %}
     <div class="list-actions">
       <ul class="menu-out flow-across">
-        <form method="post" action="{{ icms_url('case:add-note', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}" class="form-inline">
-          <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
-          <button type="submit" class="small-button icon-plus">New Case note</button>
-        </form>
+        <li>
+          <form method="post" action="{{ icms_url('case:add-note', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}" class="form-inline">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+            <button type="submit" class="small-button icon-plus">New Case note</button>
+          </form>
+        </li>
       </ul>
     </div>
   {% endif %}
@@ -38,4 +40,8 @@
       {% include 'partial/case/case-note-box.html' %}
     {% endfor %}
   </div>
+
+  {% if not has_any_case_notes %}
+    <div class="info-box info-box-info">There aren't any case notes.</div>
+  {% endif %}
 {% endblock %}

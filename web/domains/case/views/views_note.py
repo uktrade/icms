@@ -35,6 +35,7 @@ def list_notes(
         context = {
             "process": application,
             "notes": application.case_notes,
+            "has_any_case_notes": application.case_notes.exists(),
             "case_type": case_type,
             "page_title": get_case_page_title(case_type, application, "Notes"),
             "readonly_view": readonly_view,

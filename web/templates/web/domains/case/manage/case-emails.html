@@ -32,5 +32,7 @@
 
   {% for object in case_emails %}
     {% include 'web/domains/case/manage/case-email-box.html' %}
+  {% else %}
+    <div class="info-box info-box-info">There aren't any emails.</div>
   {% endfor %}
 {% endblock %}

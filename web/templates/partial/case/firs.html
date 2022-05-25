@@ -25,4 +25,6 @@
 
 {% for fir in firs.all() %}
   {% include 'partial/case/case-fir-box.html' %}
+{% else %}
+  <div class="info-box info-box-info">There aren't any further information requests.</div>
 {% endfor %}
