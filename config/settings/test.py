@@ -28,3 +28,17 @@ APP_ENV = "test"
 
 # Add so we can test the bypass chief views.
 ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD = True
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+}
