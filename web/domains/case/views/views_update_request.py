@@ -49,6 +49,7 @@ def list_update_requests(
         "page_title": get_case_page_title(case_type, application, "Update Requests"),
         "previous_update_requests": previous_update_requests,
         "update_request": update_request,
+        "has_any_update_requests": update_requests.exists(),
         "case_type": case_type,
         "readonly_view": readonly_view,
     }
@@ -166,6 +167,7 @@ def manage_update_requests(
             "form": form,
             "previous_update_requests": previous_update_requests,
             "update_request": update_request,
+            "has_any_update_requests": update_requests.exists(),
             "case_type": case_type,
             "readonly_view": readonly_view,
         }
