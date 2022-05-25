@@ -1,6 +1,4 @@
 # flake8: noqa: F405
-import structlog
-
 from web.utils.sentry import init_sentry
 
 from .base import *
@@ -31,34 +29,6 @@ ELASTIC_APM = {
     "SERVER_URL": env.str("ELASTIC_APM_URL"),
     "ENVIRONMENT": env.str("ELASTIC_APM_ENVIRONMENT", default="development"),
     "SERVER_TIMEOUT": env.str("ELASTIC_APM_SERVER_TIMEOUT", default="20s"),
-}
-
-# Print json formatted logs to console
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "json_formatter": {
-            "()": structlog.stdlib.ProcessorFormatter,
-            "processor": structlog.processors.JSONRenderer(),
-        },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "json_formatter",
-        },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["console"],
-            "level": "ERROR",
-        },
-        "web": {
-            "handlers": ["console"],
-            "level": "INFO",
-        },
-    },
 }
 
 init_sentry()

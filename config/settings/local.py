@@ -87,3 +87,17 @@ COMPRESS_OFFLINE = False
 
 # Need to use the local docker-compose network name to access the static files.
 PDF_DEFAULT_DOMAIN = "http://web:8080/"
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+}
