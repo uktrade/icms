@@ -3,11 +3,20 @@ from datetime import datetime
 import pytest
 from django.forms import ValidationError
 from django.utils import timezone
+from lxml import etree
 
 from data_migration.management.commands.utils.db import bulk_create, new_process_pk
 from data_migration.management.commands.utils.format import format_name, format_row
 from data_migration.models import Process
-from data_migration.utils.format import date_or_none, float_or_none
+from data_migration.utils.format import (
+    date_or_none,
+    float_or_none,
+    get_xml_val,
+    int_or_none,
+    str_to_bool,
+    str_to_yes_no,
+    xml_str_or_none,
+)
 
 
 @pytest.mark.parametrize(
@@ -95,3 +104,84 @@ def test_date_or_none_exception():
 )
 def test_float_or_none(test, expected):
     assert float_or_none(test) == expected
+
+
+@pytest.mark.parametrize(
+    "int_str,expected",
+    [
+        (None, None),
+        ("", None),
+        ("1", 1),
+    ],
+)
+def test_int_or_none(int_str, expected):
+    assert int_or_none(int_str) == expected
+
+
+@pytest.mark.parametrize(
+    "xml_str,xpath,expected",
+    [
+        ("<ROOT><A>a</A><B>b</B></ROOT>", "/ROOT/A/text()", "a"),
+        ("<ROOT><A>a</A><B>b</B></ROOT>", "//A/text()", "a"),
+        ("<ROOT><A>a</A><B>b</B></ROOT>", "./A/text()", "a"),
+        ("<ROOT><A>a</A><B> b\n</B></ROOT>", "/ROOT/B/text()", "b"),
+        ("<ROOT><A>a</A><B> b </B></ROOT>", "ROOT/C/text()", None),
+    ],
+)
+def test_get_xml_val(xml_str, xpath, expected):
+    xml = etree.fromstring(xml_str)
+    assert expected == get_xml_val(xml, xpath)
+
+
+@pytest.mark.parametrize(
+    "xml_str",
+    [
+        ("<ROOT><A>a</A><B>b</B></ROOT>"),
+        ("\n<ROOT><A>a</A><B>b</B></ROOT> "),
+        (None),
+    ],
+)
+def test_xml_str_or_none(xml_str):
+    if xml_str:
+        xml = etree.fromstring(xml_str)
+        assert xml_str.strip() == xml_str_or_none(xml)
+    else:
+        assert xml_str_or_none(xml_str) is None
+
+
+@pytest.mark.parametrize(
+    "bool_str,expected",
+    [
+        ("Y", True),
+        ("N", False),
+        ("y", True),
+        ("n", False),
+        ("TRUE", True),
+        ("true", True),
+        ("FALSE", False),
+        ("false", False),
+        ("", None),
+        (None, None),
+    ],
+)
+def test_str_to_bool(bool_str, expected):
+    assert str_to_bool(bool_str) is expected
+
+
+@pytest.mark.parametrize(
+    "y_n_str,expected",
+    [
+        ("Y", "yes"),
+        ("N", "no"),
+        ("y", "yes"),
+        ("n", "no"),
+        ("TRUE", "yes"),
+        ("true", "yes"),
+        ("FALSE", "no"),
+        ("false", "no"),
+        ("", None),
+        (None, None),
+    ],
+)
+def test_str_to_yes_no(y_n_str, expected):
+    assert str_to_yes_no(y_n_str) is expected
