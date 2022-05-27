@@ -155,7 +155,7 @@ def test_import_sil_data(mock_connect):
             "section5": i == 0,
             "section58_obsolete": i == 0,
             "section58_other": i == 0,
-            "bought_from_details_xml": xml_data.import_contact_xml,
+            "bought_from_details_xml": xml_data.import_contact_xml if i == 1 else None,
         }
         dm.SILApplication.objects.create(**sil_data)
         dm.SILSupplementaryInfo.objects.create(
@@ -202,6 +202,15 @@ def test_import_sil_data(mock_connect):
     assert sil1.user_section5.filter(pk__in=(f1.pk, f2.pk)).count() == 2
     assert sil2.user_section5.count() == 0
 
+    assert sil1.importapplication_ptr.importcontact_set.count() == 0
+    assert sil2.importapplication_ptr.importcontact_set.count() == 2
+    ic = sil2.importapplication_ptr.importcontact_set.first()
+
+    assert ic.entity == "legal"
+    assert ic.first_name == "FIREARMS DEALER"
+    assert ic.street == "123 FAKE ST"
+    assert ic.dealer == "yes"
+
     sil1_f = {"import_application_id": sil1.pk}
     sil2_f = {"import_application_id": sil2.pk}
 
@@ -228,3 +237,119 @@ def test_import_sil_data(mock_connect):
     assert web.SILSupplementaryReportFirearmSection5.objects.filter(**sil1_f).count() == 2
     assert webRFObsolete.objects.filter(**sil1_f).count() == 1
     assert webRFOther.objects.filter(**sil1_f).count() == 2
+
+
+oil_xml_parsers = [
+    xml_parser.ImportContactParser,
+    xml_parser.OILSupplementaryReportParser,
+    xml_parser.OILReportFirearmParser,
+]
+
+oil_data_source_target = {
+    "user": [
+        (dm.User, web.User),
+        (dm.Importer, web.Importer),
+    ],
+    "reference": [
+        (dm.Country, web.Country),
+        (dm.CountryGroup, web.CountryGroup),
+    ],
+    "import_application": [
+        (dm.ImportApplicationType, web.ImportApplicationType),
+        (dm.Process, web.Process),
+        (dm.ImportApplication, web.ImportApplication),
+        (dm.ImportContact, web.ImportContact),
+        (dm.OpenIndividualLicenceApplication, web.OpenIndividualLicenceApplication),
+        (dm.OILSupplementaryInfo, web.OILSupplementaryInfo),
+        (dm.OILSupplementaryReport, web.OILSupplementaryReport),
+        (dm.OILSupplementaryReportFirearm, web.OILSupplementaryReportFirearm),
+    ],
+    "file": [
+        (dm.File, web.File),
+    ],
+}
+
+
+@override_settings(ALLOW_DATA_MIGRATION=True)
+@override_settings(APP_ENV="production")
+@pytest.mark.django_db
+@mock.patch.dict(DATA_TYPE_QUERY_MODEL, {"import_application": [], "file": []})
+@mock.patch.dict(DATA_TYPE_XML, {"import_application": oil_xml_parsers})
+@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, oil_data_source_target)
+@mock.patch.dict(DATA_TYPE_M2M, {"import_application": []})
+@mock.patch.object(cx_Oracle, "connect")
+def test_import_oil_data(mock_connect):
+    mock_connect.return_value = utils.MockConnect()
+    user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
+    dm.User.objects.create(id=user_pk, username="test_user")
+
+    importer_pk = max(web.Importer.objects.count(), dm.Importer.objects.count()) + 1
+    dm.Importer.objects.create(id=importer_pk, name="test_org", type="ORGANISATION")
+
+    factory.CountryFactory(id=1000, name="My Test Country")
+    cg = dm.CountryGroup.objects.create(country_group_id="OIL", name="OIL")
+
+    process_pk = max(web.Process.objects.count(), dm.Process.objects.count()) + 1
+    pk_range = list(range(process_pk, process_pk + 2))
+    iat = factory.ImportApplicationTypeFactory(master_country_group=cg)
+
+    for i, pk in enumerate(pk_range):
+        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.FA_SIL, ima_id=pk + 7)
+        folder = dm.FileFolder.objects.create(folder_type="IMP_APP_DOCUMENTS")
+
+        ia = factory.ImportApplicationFactory(
+            pk=pk,
+            ima=process,
+            status="COMPLETE",
+            imad_id=pk + 7,
+            application_type=iat,
+            created_by_id=user_pk,
+            last_updated_by_id=user_pk,
+            importer_id=importer_pk,
+            file_folder=folder,
+        )
+
+        dm.ImportApplicationLicence.objects.create(imad=ia, status="AB")
+
+        oil_data = {
+            "pk": pk,
+            "imad": ia,
+            "section1": True,
+            "section2": i == 0,
+            "bought_from_details_xml": xml_data.import_contact_xml if i == 1 else None,
+        }
+        dm.OpenIndividualLicenceApplication.objects.create(**oil_data)
+        dm.OILSupplementaryInfo.objects.create(
+            imad=ia,
+            supplementary_report_xml=xml_data.sr_upload_xml if i == 0 else xml_data.sr_manual_xml,
+        )
+
+    call_command("export_from_v1", "--skip_ref", "--skip_user")
+
+    oil1, oil2 = dm.OpenIndividualLicenceApplication.objects.filter(pk__in=pk_range).order_by("pk")
+
+    assert oil1.section1 is True
+    assert oil1.section2 is True
+    assert oil2.section1 is True
+    assert oil2.section2 is False
+
+    call_command("import_v1_data")
+
+    oil1, oil2 = web.OpenIndividualLicenceApplication.objects.filter(pk__in=pk_range).order_by("pk")
+
+    assert oil1.section1 is True
+    assert oil1.section2 is True
+    assert oil2.section1 is True
+    assert oil2.section2 is False
+
+    assert oil1.importapplication_ptr.importcontact_set.count() == 0
+    assert oil2.importapplication_ptr.importcontact_set.count() == 2
+    ic = oil2.importapplication_ptr.importcontact_set.first()
+
+    assert ic.entity == "legal"
+    assert ic.first_name == "FIREARMS DEALER"
+    assert ic.street == "123 FAKE ST"
+    assert ic.dealer == "yes"
+
+    assert oil1.supplementary_info.reports.count() == 1
+    assert oil2.supplementary_info.reports.count() == 2

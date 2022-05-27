@@ -60,7 +60,7 @@ class ImportContactParser(BaseXmlParser):
 
         legacy_id = get_xml_val(xml, "./SELLER_HOLDER_ID/text()")
         entity = get_xml_val(xml, "./PERSON_DETAILS/PERSON_TYPE/text()")
-        entity = entity.lower().strip("_person")
+        entity = entity.lower().removesuffix("_person")
         if entity == "legal":
             first_name = get_xml_val(xml, "./PERSON_DETAILS/LEGAL_PERSON_NAME/text()")
         else:
