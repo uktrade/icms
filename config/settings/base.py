@@ -234,7 +234,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 
 # Age in seconds
-SESSION_COOKIE_AGE = 60 * 30
+SESSION_COOKIE_AGE = env.int("DJANGO_SESSION_COOKIE_AGE", default=60 * 30)
 
 # Default domain is used in email templates to point users to ICMS from emails
 DEFAULT_DOMAIN = env.str("ICMS_DEFAULT_DOMAIN", default="http://localhost:8080/")
