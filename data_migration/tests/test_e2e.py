@@ -40,6 +40,7 @@ sil_data_source_target = {
         (dm.Process, web.Process),
         (dm.ImportApplication, web.ImportApplication),
         (dm.ImportContact, web.ImportContact),
+        (dm.Section5Clause, web.Section5Clause),
         (dm.SILApplication, web.SILApplication),
         (dm.SILUserSection5, web.SILUserSection5),
         (dm.SILGoodsSection1, web.SILGoodsSection1),
@@ -95,6 +96,13 @@ def test_import_sil_data(mock_connect):
     process_pk = max(web.Process.objects.count(), dm.Process.objects.count()) + 1
     pk_range = list(range(process_pk, process_pk + 2))
     iat = factory.ImportApplicationTypeFactory(master_country_group=cg)
+
+    dm.Section5Clause.objects.create(
+        clause="Test Clause",
+        legacy_code="5_1_ABA",
+        description="Test Description",
+        created_by_id=user_pk,
+    )
 
     for i, pk in enumerate(pk_range):
         process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.FA_SIL, ima_id=pk + 7)
@@ -159,20 +167,22 @@ def test_import_sil_data(mock_connect):
 
     call_command("export_from_v1", "--skip_ref", "--skip_user")
 
+    # Get the personal / sensitive ignores out the way
+    dmGoodsObsolete = dm.SILGoodsSection582Obsolete  # /PS-IGNORE
+    dmGoodsOther = dm.SILGoodsSection582Other  # /PS-IGNORE
+    dmRFObsolete = dm.SILSupplementaryReportFirearmSection582Obsolete  # /PS-IGNORE
+    dmRFOther = dm.SILSupplementaryReportFirearmSection582Other  # /PS-IGNORE
+    webRFObsolete = web.SILSupplementaryReportFirearmSection582Obsolete  # /PS-IGNORE
+    webRFOther = web.SILSupplementaryReportFirearmSection582Other  # /PS-IGNORE
+
     sil1, sil2 = dm.SILApplication.objects.filter(pk__in=pk_range).order_by("pk")
 
     assert dm.SILGoodsSection1.objects.filter(import_application=sil1).count() == 1
     assert dm.SILGoodsSection1.objects.filter(import_application=sil2).count() == 1
     assert dm.SILGoodsSection2.objects.filter(import_application=sil1).count() == 1
     assert dm.SILGoodsSection5.objects.filter(import_application=sil1).count() == 1
-    assert (
-        dm.SILGoodsSection582Obsolete.objects.filter(import_application=sil1).count()  # /PS-IGNORE
-        == 1
-    )
-    assert (
-        dm.SILGoodsSection582Other.objects.filter(import_application=sil1).count()  # /PS-IGNORE
-        == 1
-    )
+    assert dmGoodsObsolete.objects.filter(import_application=sil1).count() == 1
+    assert dmGoodsOther.objects.filter(import_application=sil1).count() == 1
 
     sil1_f = {"report__supplementary_info__imad": sil1.imad}
     sil2_f = {"report__supplementary_info__imad": sil2.imad}
@@ -181,18 +191,8 @@ def test_import_sil_data(mock_connect):
     assert dm.SILSupplementaryReportFirearmSection1.objects.filter(**sil2_f).count() == 1
     assert dm.SILSupplementaryReportFirearmSection2.objects.filter(**sil1_f).count() == 1
     assert dm.SILSupplementaryReportFirearmSection5.objects.filter(**sil1_f).count() == 2
-    assert (
-        dm.SILSupplementaryReportFirearmSection582Obsolete.objects.filter(  # /PS-IGNORE
-            **sil1_f
-        ).count()
-        == 1
-    )
-    assert (
-        dm.SILSupplementaryReportFirearmSection582Other.objects.filter(  # /PS-IGNORE
-            **sil1_f
-        ).count()
-        == 2
-    )
+    assert dmRFObsolete.objects.filter(**sil1_f).count() == 1
+    assert dmRFOther.objects.filter(**sil1_f).count() == 2
 
     call_command("import_v1_data")
 
@@ -209,6 +209,8 @@ def test_import_sil_data(mock_connect):
     assert web.SILGoodsSection1.objects.filter(**sil2_f).count() == 1
     assert web.SILGoodsSection2.objects.filter(**sil1_f).count() == 1
     assert web.SILGoodsSection5.objects.filter(**sil1_f).count() == 1
+    sec5 = web.SILGoodsSection5.objects.filter(**sil1_f).first()
+    assert sec5.subsection == "Test Description"
     assert web.SILGoodsSection582Obsolete.objects.filter(**sil1_f).count() == 1  # /PS-IGNORE
     sil_oc = web.SILGoodsSection582Obsolete.objects.filter(**sil1_f).first()  # /PS-IGNORE
     assert sil_oc.obsolete_calibre == "Test OC"
@@ -224,15 +226,5 @@ def test_import_sil_data(mock_connect):
     assert web.SILSupplementaryReportFirearmSection1.objects.filter(**sil2_f).count() == 1
     assert web.SILSupplementaryReportFirearmSection2.objects.filter(**sil1_f).count() == 1
     assert web.SILSupplementaryReportFirearmSection5.objects.filter(**sil1_f).count() == 2
-    assert (
-        web.SILSupplementaryReportFirearmSection582Obsolete.objects.filter(  # /PS-IGNORE
-            **sil1_f
-        ).count()
-        == 1
-    )
-    assert (
-        web.SILSupplementaryReportFirearmSection582Other.objects.filter(  # /PS-IGNORE
-            **sil1_f
-        ).count()
-        == 2
-    )
+    assert webRFObsolete.objects.filter(**sil1_f).count() == 1
+    assert webRFOther.objects.filter(**sil1_f).count() == 2

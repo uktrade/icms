@@ -11,8 +11,8 @@ SELECT
   , CASE x.section1 WHEN 'SEC1' THEN 1 ELSE 0 END section1
   , CASE x.section2 WHEN 'SEC2' THEN 1 ELSE 0 END section2
   , CASE x.section5 WHEN 'SEC5' THEN 1 ELSE 0 END section5
-  , CASE x.section58_obsolete WHEN 'SEC5_OBSOLETE' THEN 1 ELSE 0 END section58_obsolete
-  , CASE x.section58_other WHEN 'SECTION_OTHER' THEN 1 ELSE 0 END section58_other
+  , CASE x.section58_obsolete WHEN 'OBSOLETE_CALIBRE' THEN 1 ELSE 0 END section58_obsolete
+  , CASE x.section58_other WHEN 'OTHER' THEN 1 ELSE 0 END section58_other
   , x.other_description
   , CASE x.military_police WHEN 'Y' THEN 1 WHEN 'N' THEN 0 ELSE NULL END military_police
   , CASE x.eu_single_market WHEN 'Y' THEN 1 WHEN 'N' THEN 0 ELSE NULL END eu_single_market
@@ -23,7 +23,7 @@ SELECT
   , x.cover_letter
   , x.fa_authorities_xml
   , x.section5_authorities_xml
-  , x.bought_from_details_xml
+  , XMLTYPE.getClobVal(x.bought_from_details_xml) bought_from_details_xml
   , XMLTYPE.getClobVal(x.supplementary_report_xml) supplementary_report_xml
   , CASE x.is_complete WHEN 'true' THEN 1 ELSE 0 END is_complete
   , x.no_report_reason
@@ -52,7 +52,7 @@ FROM impmgr.import_application_details ad,
     , user_import_certs_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/FIREARMS_CERTIFICATE_LIST'
     , fa_authorities_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/FIREARMS_AUTHORITIES/AUTHORITY_LIST'
     , section5_authorities_xml XMLTYPE PATH '/IMA/APP_DETAILS/FA_DETAILS/SECTION5_AUTHORITIES/AUTHORITY_LIST'
-    , bought_from_details_xml XMLTYPE PATH 'IMA/APP_DETAILS/FA_DETAILS/SH_DETAILS/SELLER_HOLDER_LIST'
+    , bought_from_details_xml XMLTYPE PATH '/IMA/APP_DETAILS/SH_DETAILS/SELLER_HOLDER_LIST'
     , no_report_reason VARCHAR2(4000) PATH '/IMA/FA_REPORTS/NO_FIREARMS_REPORTED_DETAILS/NO_FIREARMS_REPORTED_REASON[not(fox-error)]/text()'
     , supplementary_report_xml XMLTYPE PATH '/IMA/FA_REPORTS/FA_SUPPLEMENTARY_REPORT_LIST'
     , cover_letter VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER/text()'
