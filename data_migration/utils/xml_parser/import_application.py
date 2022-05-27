@@ -243,14 +243,13 @@ class SILGoodsParser(BaseXmlParser):
     @classmethod
     def parse_sec5(cls, parent_pk: int, xml: etree.ElementTree) -> Optional["Model"]:
         data = cls.parse_sec_base(parent_pk, xml)
-
-        subsection = get_xml_val(xml, "./SECTION_5_CLAUSE/text()")
+        section_5_clause = get_xml_val(xml, "./SECTION_5_CLAUSE/text()")
         unlimited_quantity = get_xml_val(xml, "./QUANTITY_UNLIMITED_FLAG/text()")
 
         return dm.SILGoodsSection5(
             **data
             | {
-                "subsection": subsection,
+                "section_5_clause_id": section_5_clause,
                 "unlimited_quantity": bool(str_to_bool(unlimited_quantity)),
             }
         )
@@ -258,7 +257,6 @@ class SILGoodsParser(BaseXmlParser):
     @classmethod
     def parse_obsolete_calibre(cls, parent_pk: int, xml: etree.ElementTree) -> Optional["Model"]:
         data = cls.parse_sec_base(parent_pk, xml)
-
         acknowledgement = get_xml_val(xml, "./CURIOSITY_STATEMENT_AGREED/text()")
         centrefire = get_xml_val(xml, "./BREECH_LOADING_CENTREFIRE/text()")
         curiosity_ornament = get_xml_val(xml, "./CURIOSITY_OR_ORNAMENT/text()")

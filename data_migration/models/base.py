@@ -73,6 +73,12 @@ class MigrationBase(models.Model):
         return values
 
     @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        """Dict of values to be returned when querying the model for the V2 import"""
+
+        return {}
+
+    @classmethod
     def get_related(cls) -> list[str]:
         """Generates the the related models to include from get_includes"""
 
@@ -84,8 +90,9 @@ class MigrationBase(models.Model):
         """Queries the model to get the queryset of data for the V2 import"""
 
         values = cls.get_values()
+        values_kwargs = cls.get_values_kwargs()
         related = cls.get_related()
-        return cls.objects.select_related(*related).values(*values).iterator()
+        return cls.objects.select_related(*related).values(*values, **values_kwargs).iterator()
 
     @classmethod
     def get_m2m_data(cls, target: models.Model) -> Generator:

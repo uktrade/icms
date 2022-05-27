@@ -23,6 +23,7 @@ SELECT
   , xiad.refuse_reason
   , xiad.applicant_reference
   , ia.created_datetime create_datetime
+  , ia.created_datetime created
   , xiad.variation_no
   , xiad.legacy_case_flag
   , xiad.chief_usage_status

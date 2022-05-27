@@ -75,6 +75,7 @@ INNER JOIN (
 section5_clauses = """
 SELECT
   name clause
+  , mnemonic legacy_code
   , description
   , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
   , created_datetime

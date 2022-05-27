@@ -85,12 +85,17 @@ class Section5Authority(MigrationBase):
 
 class Section5Clause(MigrationBase):
     clause = models.CharField(max_length=100)
+    legacy_code = models.CharField(max_length=100, unique=True)
     description = models.TextField()
     is_active = models.BooleanField(default=True)
     created_datetime = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
     updated_datetime = models.DateTimeField(auto_now=True)
     updated_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+", null=True)
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["legacy_code"]
 
 
 class ClauseQuantity(MigrationBase):

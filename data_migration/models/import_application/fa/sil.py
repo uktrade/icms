@@ -10,7 +10,7 @@ from data_migration.models.file import File
 from data_migration.models.reference import ObsoleteCalibre
 
 from ..import_application import ImportApplication
-from .authorities import FirearmsAuthority, Section5Authority
+from .authorities import FirearmsAuthority, Section5Authority, Section5Clause
 from .base import (
     FirearmBase,
     SupplementaryInfoBase,
@@ -134,12 +134,22 @@ class SILGoodsSection5(MigrationBase):
         SILApplication, on_delete=models.PROTECT, related_name="goods_section5"
     )
     is_active = models.BooleanField(default=True)
-    subsection = models.CharField(max_length=300)
+    section_5_clause = models.ForeignKey(
+        Section5Clause, on_delete=models.PROTECT, to_field="legacy_code"
+    )
     manufacture = models.BooleanField(null=True)
     description = models.CharField(max_length=4096)
     quantity = models.PositiveBigIntegerField(null=True)
     unlimited_quantity = models.BooleanField(default=False)
     legacy_ordinal = models.PositiveIntegerField()
+
+    @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        return {"subsection": F("section_5_clause__description")}
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["section_5_clause_id"]
 
 
 class SILGoodsSection582Obsolete(MigrationBase):  # /PS-IGNORE
