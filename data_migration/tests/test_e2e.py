@@ -166,6 +166,7 @@ def test_import_sil_data(mock_connect):
         )
 
     call_command("export_from_v1", "--skip_ref", "--skip_user")
+    call_command("extract_v1_xml")
 
     # Get the personal / sensitive ignores out the way
     dmGoodsObsolete = dm.SILGoodsSection582Obsolete  # /PS-IGNORE
@@ -325,6 +326,7 @@ def test_import_oil_data(mock_connect):
         )
 
     call_command("export_from_v1", "--skip_ref", "--skip_user")
+    call_command("extract_v1_xml")
 
     oil1, oil2 = dm.OpenIndividualLicenceApplication.objects.filter(pk__in=pk_range).order_by("pk")
 

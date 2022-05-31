@@ -1,5 +1,4 @@
 import argparse
-from itertools import islice
 from typing import TYPE_CHECKING, Optional
 
 import cx_Oracle
@@ -8,12 +7,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from data_migration import models
 from data_migration.models.user import Importer, Office, User
-from data_migration.queries import (
-    DATA_TYPE,
-    DATA_TYPE_QUERY_MODEL,
-    DATA_TYPE_XML,
-    FILE_MODELS,
-)
+from data_migration.queries import DATA_TYPE, DATA_TYPE_QUERY_MODEL, FILE_MODELS
 
 from .utils.db import new_process_pk
 from .utils.format import format_name, format_row
@@ -112,9 +106,6 @@ class Command(BaseCommand):
         if data_type == "file":
             self._extract_file_data()
 
-        else:
-            self._extract_xml_data(data_type)
-
         self.stdout.write(f"{name} Data Export Complete!")
 
     def _export_model_data(
@@ -155,29 +146,6 @@ class Command(BaseCommand):
             model.objects.bulk_create([model(**obj) for obj in data], batch_size=self.batchsize)
 
         self.stdout.write("File data extracted")
-
-    def _extract_xml_data(self, data_type: DATA_TYPE) -> None:
-        """Iterates over the models listed for the specified data_type and parses the xml from their parent"""
-
-        parser_list = DATA_TYPE_XML[data_type]
-        name = format_name(data_type)
-
-        self.stdout.write(f"Extracting xml data for {name}")
-
-        for parser in parser_list:
-            self.stdout.write(parser.log_message())
-            objs = parser.get_queryset()
-
-            while True:
-                batch = list(islice(objs, self.batchsize))
-
-                if not batch:
-                    break
-
-                for model, data in parser.parse_xml(batch).items():
-                    model.objects.bulk_create(data)
-
-        self.stdout.write("XML extraction complete")
 
     def _create_user_data(self):
         """Creates dummy user data prior to users being migrated"""
