@@ -154,7 +154,7 @@ def test_extract_xml(mock_connect):
 
         factory.OILSupplementaryInfoFactory(imad=ia, supplementary_report_xml=supp_xmls[i])
 
-    call_command("export_from_v1", "--skip_user", "--skip_ref", "--skip_file")
+    call_command("extract_v1_xml")
 
     reports = models.OILSupplementaryReport.objects.filter(supplementary_info__imad_id__in=pk_range)
     assert reports.count() == 4
