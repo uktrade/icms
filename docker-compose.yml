@@ -2,7 +2,7 @@
 # Production deployment does not use this configuration.
 #
 # see https://hub.docker.com/ for the images used here
-version: "3"
+version: "3.8"
 services:
     db:
         image: postgres:11.11
@@ -13,6 +13,8 @@ services:
             - POSTGRES_PASSWORD=password
         ports:
             - "6000:5432"
+        networks:
+            - icms_backend
 
     web:
         restart: unless-stopped
@@ -56,6 +58,10 @@ services:
             - SHOW_DB_QUERIES
             - WORKBASKET_PER_PAGE
             - DJANGO_SESSION_COOKIE_AGE
+            - ICMS_HMRC_DOMAIN
+            - ICMS_HMRC_UPDATE_LICENCE_ENDPOINT
+            - HAWK_AUTH_ID
+            - HAWK_AUTH_KEY
         # stdin_open: true
         # tty: true
         ports:
@@ -66,6 +72,8 @@ services:
         volumes:
             - ./test-reports:/code/test-reports # needed for ci
             - .:/code
+        networks:
+            - icms_backend
 
     redis:
         # NOTE: Match what we currently have deployed in cloud foundry (Upgrade when needed).
@@ -74,6 +82,8 @@ services:
             - redis_data:/data
         ports:
             - "6379:6379"
+        networks:
+            - icms_backend
 
     celery:
         build:
@@ -87,6 +97,8 @@ services:
             - redis
         volumes:
             - .:/code
+        networks:
+            - icms_backend
 
     localstack:
         container_name: localstack_main
@@ -104,6 +116,8 @@ services:
         volumes:
             - ls_data:/tmp/localstack
             - "/var/run/docker.sock:/var/run/docker.sock"
+        networks:
+            - icms_backend
 
     # selenium-hub:
     #     image: selenium/hub:3.141.59-vanadium
@@ -125,6 +139,11 @@ services:
     #         - HUB_PORT=4444
     #     ports:
     #         - "5900:5900"
+
+
+networks:
+    icms_backend:
+        name: "icms_backend"
 
 volumes:
     pgdata:

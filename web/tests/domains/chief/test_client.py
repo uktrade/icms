@@ -7,18 +7,23 @@ from web.domains.chief import client
 
 class TestChiefClient:
     def test_client_request(self, requests_mock):
-        chief_url = "http://example.com/update"
+        example_domain = "http://example.com/"
+        chief_url = "update"
+        url = f"{example_domain}{chief_url}"
+
         mock_response_headers = {
             "Content-Type": "text/plain",
             "Server-Authorization": 'Hawk mac="fake-mac", hash="fake-hash"',
         }
-        requests_mock.post(chief_url, headers=mock_response_headers, text="OK")
+        requests_mock.post(url, headers=mock_response_headers, text="OK")
         # Finished mocking the API response.
 
         data = {"foo": "bar"}
 
         with mock.patch("mohawk.sender.Sender.accept_response"):
-            with override_settings(CHIEF_LICENSE_URL=chief_url):
+            with override_settings(
+                ICMS_HMRC_DOMAIN=example_domain, ICMS_HMRC_UPDATE_LICENCE_ENDPOINT=chief_url
+            ):
                 response = client.request_license(data)
 
         assert response.status_code == 200
