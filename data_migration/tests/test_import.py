@@ -11,7 +11,7 @@ from data_migration.queries import DATA_TYPE_M2M, DATA_TYPE_SOURCE_TARGET
 from data_migration.utils import xml_parser
 from web import models as web
 
-from . import factory, xml_data
+from . import factory, utils, xml_data
 
 
 @override_settings(ALLOW_DATA_MIGRATION=False)
@@ -543,3 +543,78 @@ def test_import_user_import_certificate_data():
     sil = web.SILApplication.objects.filter(pk__in=pk_range).first()
     assert sil.user_imported_certificates.count() == 1
     assert sil.user_imported_certificates.filter(reference="DEF").count() == 1
+
+
+start_test_source_target = {
+    "user": [],
+    "reference": [
+        (dm.Country, web.Country),
+        (dm.CountryGroup, web.CountryGroup),
+        (dm.Constabulary, web.Constabulary),
+    ],
+    "import_application": [
+        (dm.Unit, web.Unit),
+        (dm.ObsoleteCalibreGroup, web.ObsoleteCalibreGroup),
+    ],
+    "file": [],
+}
+
+
+start_test_data_m2m = {
+    "reference": [
+        (
+            dm.CountryGroupCountry,
+            web.CountryGroup,
+            "countries",
+        ),
+    ],
+    "import_application": [],
+}
+
+
+@override_settings(ALLOW_DATA_MIGRATION=True)
+@override_settings(APP_ENV="production")
+@pytest.mark.django_db
+@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, start_test_source_target)
+@mock.patch.dict(DATA_TYPE_M2M, start_test_data_m2m)
+def test_start_reference_1():
+    utils.create_test_dm_models()
+    call_command("import_v1_data", "--start=reference.1")
+    assert web.Country.objects.count() == 4
+    assert web.CountryGroup.objects.count() == 3
+    assert web.CountryGroup.countries.through.objects.count() == 5
+    assert web.Constabulary.objects.count() == 3
+    assert web.Unit.objects.count() == 3
+    assert web.ObsoleteCalibreGroup.objects.count() == 3
+
+
+@override_settings(ALLOW_DATA_MIGRATION=True)
+@override_settings(APP_ENV="production")
+@pytest.mark.django_db
+@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, start_test_source_target)
+@mock.patch.dict(DATA_TYPE_M2M, start_test_data_m2m)
+def test_start_import_application_1():
+    utils.create_test_dm_models()
+    call_command("import_v1_data", "--start=import_application.1")
+    assert web.Country.objects.count() == 0
+    assert web.CountryGroup.objects.count() == 0
+    assert web.CountryGroup.countries.through.objects.count() == 0
+    assert web.Constabulary.objects.count() == 0
+    assert web.Unit.objects.count() == 3
+    assert web.ObsoleteCalibreGroup.objects.count() == 3
+
+
+@override_settings(ALLOW_DATA_MIGRATION=True)
+@override_settings(APP_ENV="production")
+@pytest.mark.django_db
+@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, start_test_source_target)
+@mock.patch.dict(DATA_TYPE_M2M, start_test_data_m2m)
+def test_start_ref_2():
+    utils.create_test_dm_models()
+    call_command("import_v1_data", "--start=ia.2")
+    assert web.Country.objects.count() == 0
+    assert web.CountryGroup.objects.count() == 0
+    assert web.CountryGroup.countries.through.objects.count() == 0
+    assert web.Constabulary.objects.count() == 0
+    assert web.Unit.objects.count() == 0
+    assert web.ObsoleteCalibreGroup.objects.count() == 3

@@ -82,5 +82,5 @@ class BaseXmlParser:
         raise NotImplementedError("XML parsing must be defined")
 
     @classmethod
-    def log_message(cls) -> str:
-        return f"Running {cls.__name__}"
+    def log_message(cls, idx: int) -> str:
+        return f"{idx} - Running {cls.__name__}"

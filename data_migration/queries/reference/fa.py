@@ -20,7 +20,7 @@ FROM (
     id legacy_id
     , calibre_name name
     , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
-    , ordinal "ORDER"
+    , ordinal "order"
     {0}
   FROM impmgr.obsolete_calibres oc
   WHERE parent_oc_id IS {1}

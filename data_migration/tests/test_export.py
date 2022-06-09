@@ -7,6 +7,7 @@ from django.core.management.base import CommandError
 from django.test import override_settings
 
 from data_migration import models, queries
+from data_migration.queries import import_application, reference
 from data_migration.utils import xml_parser
 
 from . import factory, utils, xml_data
@@ -92,7 +93,7 @@ def test_create_user_exists(mock_connect):
 @pytest.mark.django_db
 @mock.patch.dict(
     queries.DATA_TYPE_QUERY_MODEL,
-    {"reference": [(queries, "ref_source_target", models.CountryGroup)], "file": []},
+    {"reference": [(reference, "country_group", models.CountryGroup)], "file": []},
 )
 @mock.patch.object(cx_Oracle, "connect")
 def test_export_data(mock_connect):
@@ -104,7 +105,6 @@ def test_export_data(mock_connect):
 @override_settings(ALLOW_DATA_MIGRATION=True)
 @override_settings(APP_ENV="production")
 @pytest.mark.django_db
-@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, {"import_application": [], "file": []})
 @mock.patch.dict(
     queries.DATA_TYPE_XML,
     {
@@ -223,3 +223,118 @@ def test_export_files_data(mock_connect):
     assert models.FileTarget.objects.get(target_id=4).files.count() == 3
     assert models.FileTarget.objects.get(target_id=6).files.count() == 3
     assert models.FileTarget.objects.get(target_id=8).files.count() == 3
+
+
+test_query_model = {
+    "reference": [
+        (reference, "country", models.Country),
+        (reference, "country_group", models.CountryGroup),
+        (reference, "unit", models.Unit),
+    ],
+    "file": [],
+    "import_application": [
+        (reference, "constabularies", models.Constabulary),
+        (reference, "obsolete_calibre_group", models.ObsoleteCalibreGroup),
+        (import_application, "section5_clauses", models.Section5Clause),
+    ],
+}
+
+
+@override_settings(ALLOW_DATA_MIGRATION=True)
+@override_settings(APP_ENV="production")
+@override_settings(ICMS_PROD_USER="test@example.com")  # /PS-IGNORE
+@override_settings(ICMS_PROD_PASSWORD="testpass")
+@pytest.mark.django_db
+@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, test_query_model)
+@mock.patch.object(cx_Oracle, "connect")
+def test_export_from_ref_2(mock_connect):
+    mock_connect.return_value = utils.MockConnect()
+
+    call_command("export_from_v1", "--start=ref.2")
+
+    assert models.Country.objects.count() == 0
+    assert models.CountryGroup.objects.count() == 3
+    assert models.Unit.objects.count() == 3
+    assert models.Constabulary.objects.count() == 3
+    assert models.ObsoleteCalibreGroup.objects.count() == 3
+    assert models.Section5Clause.objects.count() == 3
+
+
+@override_settings(ALLOW_DATA_MIGRATION=True)
+@override_settings(APP_ENV="production")
+@override_settings(ICMS_PROD_USER="test@example.com")  # /PS-IGNORE
+@override_settings(ICMS_PROD_PASSWORD="testpass")
+@pytest.mark.django_db
+@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, test_query_model)
+@mock.patch.object(cx_Oracle, "connect")
+def test_export_from_r_3(mock_connect):
+    mock_connect.return_value = utils.MockConnect()
+
+    call_command("export_from_v1", "--start=r.3")
+
+    assert models.Country.objects.count() == 0
+    assert models.CountryGroup.objects.count() == 0
+    assert models.Unit.objects.count() == 3
+    assert models.Constabulary.objects.count() == 3
+    assert models.ObsoleteCalibreGroup.objects.count() == 3
+    assert models.Section5Clause.objects.count() == 3
+
+
+@override_settings(ALLOW_DATA_MIGRATION=True)
+@override_settings(APP_ENV="production")
+@override_settings(ICMS_PROD_USER="test@example.com")  # /PS-IGNORE
+@override_settings(ICMS_PROD_PASSWORD="testpass")
+@pytest.mark.django_db
+@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, test_query_model)
+@mock.patch.object(cx_Oracle, "connect")
+def test_export_from_import_application(mock_connect):
+    mock_connect.return_value = utils.MockConnect()
+
+    call_command("export_from_v1", "--start=import_application.0")
+
+    assert models.Country.objects.count() == 0
+    assert models.CountryGroup.objects.count() == 0
+    assert models.Unit.objects.count() == 0
+    assert models.Constabulary.objects.count() == 3
+    assert models.ObsoleteCalibreGroup.objects.count() == 3
+    assert models.Section5Clause.objects.count() == 3
+
+
+@override_settings(ALLOW_DATA_MIGRATION=True)
+@override_settings(APP_ENV="production")
+@override_settings(ICMS_PROD_USER="test@example.com")  # /PS-IGNORE
+@override_settings(ICMS_PROD_PASSWORD="testpass")
+@pytest.mark.django_db
+@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, test_query_model)
+@mock.patch.object(cx_Oracle, "connect")
+def test_export_from_ia(mock_connect):
+    mock_connect.return_value = utils.MockConnect()
+
+    call_command("export_from_v1", "--start=ia.1")
+
+    assert models.Country.objects.count() == 0
+    assert models.CountryGroup.objects.count() == 0
+    assert models.Unit.objects.count() == 0
+    assert models.Constabulary.objects.count() == 3
+    assert models.ObsoleteCalibreGroup.objects.count() == 3
+    assert models.Section5Clause.objects.count() == 3
+
+
+@override_settings(ALLOW_DATA_MIGRATION=True)
+@override_settings(APP_ENV="production")
+@override_settings(ICMS_PROD_USER="test@example.com")  # /PS-IGNORE
+@override_settings(ICMS_PROD_PASSWORD="testpass")
+@pytest.mark.django_db
+@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, test_query_model)
+@mock.patch.object(cx_Oracle, "connect")
+def test_export_from_ia_2(mock_connect):
+    mock_connect.return_value = utils.MockConnect()
+
+    call_command("export_from_v1", "--start=ia.2")
+
+    assert models.Country.objects.count() == 0
+    assert models.CountryGroup.objects.count() == 0
+    assert models.Unit.objects.count() == 0
+    assert models.Constabulary.objects.count() == 0
+    assert models.ObsoleteCalibreGroup.objects.count() == 3
+    assert models.Section5Clause.objects.count() == 3
