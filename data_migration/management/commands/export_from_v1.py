@@ -1,14 +1,14 @@
-import argparse
 from typing import TYPE_CHECKING, Optional
 
 import cx_Oracle
 from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import CommandError
 
 from data_migration import models
 from data_migration.models.user import Importer, Office, User
 from data_migration.queries import DATA_TYPE, DATA_TYPE_QUERY_MODEL, FILE_MODELS
 
+from ._base import MigrationBaseCommand
 from .utils.db import new_process_pk
 from .utils.format import format_name, format_row
 
@@ -16,44 +16,19 @@ if TYPE_CHECKING:
     from django.db.models import Model
 
 
-class Command(BaseCommand):
+class Command(MigrationBaseCommand):
     help = (
         """Connects to the V1 replica database and exports the data to the data_migration schema"""
     )
 
-    def add_arguments(self, parser: argparse.ArgumentParser):
-        parser.add_argument(
-            "--batchsize",
-            help="Number of results per query batch",
-            default=1000,
-            type=int,
-        )
-        parser.add_argument(
-            "--skip_ref",
-            help="Skip reference data export",
-            action="store_true",
-        )
-        parser.add_argument(
-            "--skip_file",
-            help="Skip file data export",
-            action="store_true",
-        )
-        parser.add_argument(
-            "--skip_ia",
-            help="Skip import application data export",
-            action="store_true",
-        )
-        parser.add_argument(
-            "--skip_user",
-            help="Skip user data export",
-            action="store_true",
-        )
+    DATA_TYPE_START = {
+        "reference": ["r", "ref", "reference"],
+        "file": ["f", "file"],
+        "import_application": ["ia", "import_application"],
+    }
 
     def handle(self, *args, **options):
-        if not settings.ALLOW_DATA_MIGRATION or not settings.APP_ENV == "production":
-            raise CommandError("Data migration has not been enabled for this environment")
-
-        self.batchsize = options["batchsize"]
+        super().handle(*args, **options)
 
         connection_config = {
             "user": settings.ICMS_V1_REPLICA_USER,
@@ -81,7 +56,12 @@ class Command(BaseCommand):
         :param batchsize: The number of records handled per batch
         :param skip: Skips the export of the current data_type
         """
+        if not self._get_start_type(data_type):
+            return
+
         query_models = DATA_TYPE_QUERY_MODEL[data_type]
+        start, query_models = self._get_data_list(query_models)
+
         name = format_name(data_type)
 
         if skip:
@@ -90,14 +70,14 @@ class Command(BaseCommand):
 
         self.stdout.write(f"Exporting {name} Data...")
 
-        for module, query_name, model in query_models:
-            self.stdout.write(f"Exporting {query_name} to {model.__name__} model")
+        for idx, (module, query_name, model) in enumerate(query_models, start=start):
+            self.stdout.write(f"{idx} - Exporting {query_name} to {model.__name__} model")
             query = getattr(module, query_name)
             cursor.execute(query)
             columns = [col[0].lower() for col in cursor.description]
 
             while True:
-                rows = cursor.fetchmany(self.batchsize)
+                rows = cursor.fetchmany(self.batch_size)
                 if not rows:
                     break
 
@@ -143,7 +123,7 @@ class Command(BaseCommand):
         for model in FILE_MODELS:
             self.stdout.write(f"Extracting {model.__name__}")
             data = model.get_from_combined()
-            model.objects.bulk_create([model(**obj) for obj in data], batch_size=self.batchsize)
+            model.objects.bulk_create([model(**obj) for obj in data], batch_size=self.batch_size)
 
         self.stdout.write("File data extracted")
 

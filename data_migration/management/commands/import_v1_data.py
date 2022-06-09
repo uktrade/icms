@@ -1,9 +1,6 @@
 import argparse
 from itertools import islice
 
-from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
-
 from data_migration import models as dm
 from data_migration.queries import (
     DATA_TYPE,
@@ -13,51 +10,31 @@ from data_migration.queries import (
 )
 from web import models as web
 
+from ._base import MigrationBaseCommand
 from .utils.db import bulk_create
 from .utils.format import format_name
 
 
-class Command(BaseCommand):
+class Command(MigrationBaseCommand):
     help = """Import the V1 data from the data migration models"""
 
+    DATA_TYPE_START = {
+        "reference": ["r", "ref", "reference", "r-m2m", "ref-m2m", "reference-m2m"],
+        "file": ["f", "file"],
+        "import_application": ["ia", "import_application", "ia-m2m", "import_application-m2m"],
+    }
+
     def add_arguments(self, parser: argparse.ArgumentParser):
-        parser.add_argument(
-            "--batchsize",
-            help="Number of results per query batch",
-            default=1000,
-            type=int,
-        )
-        parser.add_argument(
-            "--skip_ref",
-            help="Skip reference data import",
-            action="store_true",
-        )
-        parser.add_argument(
-            "--skip_file",
-            help="Skip file data import",
-            action="store_true",
-        )
-        parser.add_argument(
-            "--skip_ia",
-            help="Skip import application data import",
-            action="store_true",
-        )
+        super().add_arguments(parser)
+
         parser.add_argument(
             "--skip_task",
             help="Skip the creation of tasks",
             action="store_true",
         )
-        parser.add_argument(
-            "--skip_user",
-            help="Skip user data import",
-            action="store_true",
-        )
 
     def handle(self, *args, **options):
-        if not settings.ALLOW_DATA_MIGRATION or not settings.APP_ENV == "production":
-            raise CommandError("Data migration has not been enabled for this environment")
-
-        self.batch_size = options["batchsize"]
+        super().handle(*args, **options)
 
         self._import_data("user", options["skip_user"])
         self._import_data("reference", options["skip_ref"])
@@ -67,13 +44,19 @@ class Command(BaseCommand):
         self._create_tasks(options["skip_task"])
 
     def _import_data(self, data_type: DATA_TYPE, skip: bool) -> None:
+        start_m2m = self.start_type.endswith("m2m")
+
+        if not self._get_start_type(data_type):
+            return
+
         name = format_name(data_type)
 
         if skip:
             self.stdout.write(f"Skipping {name} Data Import")
             return
 
-        self._import_model(data_type)
+        if not start_m2m:
+            self._import_model(data_type)
 
         if data_type != "file":
             self._import_m2m(data_type)
@@ -81,12 +64,12 @@ class Command(BaseCommand):
         self.stdout.write(f"{name} Data Imported!")
 
     def _import_model(self, data_type: DATA_TYPE) -> None:
-        source_target_list = DATA_TYPE_SOURCE_TARGET[data_type]
+        start, source_target_list = self._get_data_list(DATA_TYPE_SOURCE_TARGET[data_type])
         name = format_name(data_type)
-
         self.stdout.write(f"Importing {name} Data")
-        for source, target in source_target_list:
-            self.stdout.write(f"Importing {target.__name__} from {source.__name__}")
+
+        for idx, (source, target) in enumerate(source_target_list, start=start):
+            self.stdout.write(f"{idx} - Importing {target.__name__} from {source.__name__}")
 
             objs = source.get_source_data()
 
@@ -98,12 +81,12 @@ class Command(BaseCommand):
                 bulk_create(target, batch)
 
     def _import_m2m(self, data_type: DATA_TYPE) -> None:
-        m2m_list = DATA_TYPE_M2M[data_type]
+        start, m2m_list = self._get_data_list(DATA_TYPE_M2M[data_type])
         name = format_name(data_type)
         self.stdout.write(f"Importing {name} M2M relationships")
 
-        for source, target, field in m2m_list:
-            self.stdout.write(f"Importing {target.__name__}_{field} from {source.__name__}")
+        for idx, (source, target, field) in enumerate(m2m_list, start=start):
+            self.stdout.write(f"{idx} - Importing {target.__name__}_{field} from {source.__name__}")
 
             through_table = getattr(target, field).through
             objs = source.get_m2m_data(target)
