@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Generator
 
 from django.db import models
 
@@ -6,6 +6,7 @@ from data_migration.models.base import MigrationBase, Process
 from data_migration.models.file import FileFolder
 from data_migration.models.reference import CommodityGroup, Country
 from data_migration.models.user import Importer, Office, User
+from data_migration.utils.format import str_to_bool, str_to_yes_no
 
 from .import_application_type import ImportApplicationType
 
@@ -118,14 +119,41 @@ class ChecklistBase(MigrationBase):
     authorisation = models.CharField(max_length=5, null=True)
 
     @classmethod
+    def y_n_fields(cls) -> list[str]:
+        """Return a list of fields to be parsed to yes, no or n/a"""
+        return ["case_update", "fir_required", "validity_period_correct", "endorsements_listed"]
+
+    @classmethod
+    def bool_fields(cls) -> list[str]:
+        """Return a list of fields to be parsed to bool"""
+        return ["response_preparation", "authorisation"]
+
+    @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
         data["import_application_id"] = data.pop("imad__id")
 
         for field in data.keys():
-            if field in ["response_preparation", "authorisation"]:
-                value = data[field]
-                data[field] = bool(value) and value.lower() == "true"
+            if field in cls.bool_fields():
+                data[field] = str_to_bool(data[field]) or False
+            elif field in cls.y_n_fields():
+                data[field] = str_to_yes_no(data[field])
         return data
+
+    @classmethod
+    def get_source_data(cls) -> Generator:
+        """Queries the model to get the queryset of data for the V2 import"""
+
+        values = cls.get_values()
+        values_kwargs = cls.get_values_kwargs()
+        related = cls.get_related()
+        cl_excludes = {f"{f}__isnull": True for f in values if not f.endswith("id")}
+
+        return (
+            cls.objects.select_related(*related)
+            .exclude(**cl_excludes)
+            .values(*values, **values_kwargs)
+            .iterator()
+        )
 
     @classmethod
     def get_includes(cls) -> list[str]:

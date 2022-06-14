@@ -39,7 +39,7 @@ The commands can be run with flags to skip parts of the export where relevant
 * `--skip_file` to skip migrating file data
 * `--skip_task` to skip the creation of tasks (import_v1_data only)
 
-The export can also be restarted from a specific point using the `--start` parameter in the format `--start=<data_type>.<index>`
+The migration scripts can also be restarted from a specific point using the `--start` parameter in the format `--start=<data_type>.<index>`
 e.g. `./manage.py export_from_v1 --start=ia.2`  will start the export from point 2 of the import_application data type
 
 The following data_types are valid in the `--start` parameter

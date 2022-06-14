@@ -80,12 +80,15 @@ ia_query_model = [
     # QueryModel(import_application, "section5_linked_offices", dm.Section5AuthorityOffice),
     QueryModel(import_application, "sanctions_application", dm.SanctionsAndAdhocApplication),
     QueryModel(import_application, "sil_application", dm.SILApplication),
+    QueryModel(import_application, "sil_checklist", dm.SILChecklist),
     QueryModel(import_application, "dfl_application", dm.DFLApplication),
+    QueryModel(import_application, "dfl_checklist", dm.DFLChecklist),
     QueryModel(import_application, "oil_application", dm.OpenIndividualLicenceApplication),
+    QueryModel(import_application, "oil_checklist", dm.ChecklistFirearmsOILApplication),
     QueryModel(import_application, "wood_application", dm.WoodQuotaApplication),
-    # QueryModel(import_application, "wood_checklist", dm.WoodQuotaChecklist),  TODO ICMSLST-1510
+    QueryModel(import_application, "wood_checklist", dm.WoodQuotaChecklist),
     QueryModel(import_application, "textiles_application", dm.TextilesApplication),
-    # QueryModel(import_application, "textiles_checklist", dm.TextilesChecklist), TODO ICMSLST-1510
+    QueryModel(import_application, "textiles_checklist", dm.TextilesChecklist),
     QueryModel(import_application, "import_application_licence", dm.ImportApplicationLicence),
 ]
 
@@ -105,6 +108,7 @@ ia_source_target = source_target_list(
         "SILUserSection5",
         "ClauseQuantity",
         "SILApplication",
+        "SILChecklist",
         "SILGoodsSection1",
         "SILGoodsSection2",
         "SILGoodsSection5",
@@ -118,18 +122,20 @@ ia_source_target = source_target_list(
         "SILSupplementaryReportFirearmSection582Obsolete",  # /PS-IGNORE
         "SILSupplementaryReportFirearmSection582Other",  # /PS-IGNORE
         "DFLApplication",
+        "DFLChecklist",
         "DFLGoodsCertificate",
         "DFLSupplementaryInfo",
         "DFLSupplementaryReport",
         "DFLSupplementaryReportFirearm",
         "OpenIndividualLicenceApplication",
+        "ChecklistFirearmsOILApplication",
         "OILSupplementaryInfo",
         "OILSupplementaryReport",
         "OILSupplementaryReportFirearm",
         "WoodQuotaApplication",
-        # "WoodQuotaChecklist", TODO ICMSLST-1510
+        "WoodQuotaChecklist",
         "TextilesApplication",
-        # "TextilesChecklist", TODO ICMSLST-1510
+        "TextilesChecklist",
         "ImportApplicationLicence",
         "UserImportCertificate",
     ]

@@ -12,6 +12,7 @@ from data_migration.queries import (
     DATA_TYPE_SOURCE_TARGET,
     DATA_TYPE_XML,
 )
+from data_migration.queries import import_application as q_ia
 from data_migration.utils import xml_parser
 from web import models as web
 
@@ -42,6 +43,7 @@ sil_data_source_target = {
         (dm.ImportContact, web.ImportContact),
         (dm.Section5Clause, web.Section5Clause),
         (dm.SILApplication, web.SILApplication),
+        (dm.SILChecklist, web.SILChecklist),
         (dm.SILUserSection5, web.SILUserSection5),
         (dm.SILGoodsSection1, web.SILGoodsSection1),
         (dm.SILGoodsSection2, web.SILGoodsSection2),
@@ -71,7 +73,9 @@ sil_data_source_target = {
 @override_settings(ALLOW_DATA_MIGRATION=True)
 @override_settings(APP_ENV="production")
 @pytest.mark.django_db
-@mock.patch.dict(DATA_TYPE_QUERY_MODEL, {"import_application": [], "file": []})
+@mock.patch.dict(
+    DATA_TYPE_QUERY_MODEL, {"import_application": [(q_ia, "sil_checklist", dm.SILChecklist)]}
+)
 @mock.patch.dict(DATA_TYPE_XML, {"import_application": sil_xml_parsers})
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, sil_data_source_target)
 @mock.patch.dict(
@@ -136,7 +140,7 @@ def test_import_sil_data(mock_connect):
             pk=pk,
             ima=process,
             status="COMPLETE",
-            imad_id=pk + 7,
+            imad_id=i + 1000,
             application_type=iat,
             created_by_id=user_pk,
             last_updated_by_id=user_pk,
@@ -165,7 +169,7 @@ def test_import_sil_data(mock_connect):
             else xml_data.sr_upload_xml,
         )
 
-    call_command("export_from_v1", "--skip_ref", "--skip_user")
+    call_command("export_from_v1", "--skip_ref", "--skip_user", "--skip_file")
     call_command("extract_v1_xml")
 
     # Get the personal / sensitive ignores out the way
@@ -198,6 +202,17 @@ def test_import_sil_data(mock_connect):
     call_command("import_v1_data")
 
     sil1, sil2 = web.SILApplication.objects.filter(pk__in=pk_range).order_by("pk")
+
+    assert sil1.checklist.authority_required == "yes"
+    assert sil1.checklist.authority_received == "yes"
+    assert sil1.checklist.authority_police == "n/a"
+    assert sil1.checklist.quantities_within_authority_restrictions == "yes"
+    assert sil1.checklist.authority_cover_items_listed == "yes"
+    assert sil2.checklist.authority_required == "no"
+    assert sil2.checklist.authority_received == "no"
+    assert sil2.checklist.authority_police == "no"
+    assert sil2.checklist.quantities_within_authority_restrictions == "no"
+    assert sil2.checklist.authority_cover_items_listed == "no"
 
     assert sil1.user_section5.count() == 2
     assert sil1.user_section5.filter(pk__in=(f1.pk, f2.pk)).count() == 2
@@ -261,6 +276,7 @@ oil_data_source_target = {
         (dm.ImportApplication, web.ImportApplication),
         (dm.ImportContact, web.ImportContact),
         (dm.OpenIndividualLicenceApplication, web.OpenIndividualLicenceApplication),
+        (dm.ChecklistFirearmsOILApplication, web.ChecklistFirearmsOILApplication),
         (dm.OILSupplementaryInfo, web.OILSupplementaryInfo),
         (dm.OILSupplementaryReport, web.OILSupplementaryReport),
         (dm.OILSupplementaryReportFirearm, web.OILSupplementaryReportFirearm),
@@ -274,7 +290,10 @@ oil_data_source_target = {
 @override_settings(ALLOW_DATA_MIGRATION=True)
 @override_settings(APP_ENV="production")
 @pytest.mark.django_db
-@mock.patch.dict(DATA_TYPE_QUERY_MODEL, {"import_application": [], "file": []})
+@mock.patch.dict(
+    DATA_TYPE_QUERY_MODEL,
+    {"import_application": [(q_ia, "oil_checklist", dm.ChecklistFirearmsOILApplication)]},
+)
 @mock.patch.dict(DATA_TYPE_XML, {"import_application": oil_xml_parsers})
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, oil_data_source_target)
 @mock.patch.dict(DATA_TYPE_M2M, {"import_application": []})
@@ -302,7 +321,7 @@ def test_import_oil_data(mock_connect):
             pk=pk,
             ima=process,
             status="COMPLETE",
-            imad_id=pk + 7,
+            imad_id=i + 1000,
             application_type=iat,
             created_by_id=user_pk,
             last_updated_by_id=user_pk,
@@ -325,7 +344,7 @@ def test_import_oil_data(mock_connect):
             supplementary_report_xml=xml_data.sr_upload_xml if i == 0 else xml_data.sr_manual_xml,
         )
 
-    call_command("export_from_v1", "--skip_ref", "--skip_user")
+    call_command("export_from_v1", "--skip_ref", "--skip_user", "--skip_file")
     call_command("extract_v1_xml")
 
     oil1, oil2 = dm.OpenIndividualLicenceApplication.objects.filter(pk__in=pk_range).order_by("pk")
@@ -338,6 +357,13 @@ def test_import_oil_data(mock_connect):
     call_command("import_v1_data")
 
     oil1, oil2 = web.OpenIndividualLicenceApplication.objects.filter(pk__in=pk_range).order_by("pk")
+
+    assert oil1.checklist.authority_required == "yes"
+    assert oil1.checklist.authority_received == "yes"
+    assert oil1.checklist.authority_police == "n/a"
+    assert oil2.checklist.authority_required == "no"
+    assert oil2.checklist.authority_received == "no"
+    assert oil2.checklist.authority_police == "no"
 
     assert oil1.section1 is True
     assert oil1.section2 is True
@@ -355,3 +381,87 @@ def test_import_oil_data(mock_connect):
 
     assert oil1.supplementary_info.reports.count() == 1
     assert oil2.supplementary_info.reports.count() == 2
+
+
+tex_data_source_target = {
+    "user": [
+        (dm.User, web.User),
+        (dm.Importer, web.Importer),
+    ],
+    "reference": [
+        (dm.Country, web.Country),
+        (dm.CountryGroup, web.CountryGroup),
+    ],
+    "import_application": [
+        (dm.ImportApplicationType, web.ImportApplicationType),
+        (dm.Process, web.Process),
+        (dm.ImportApplication, web.ImportApplication),
+        (dm.TextilesApplication, web.TextilesApplication),
+        (dm.TextilesChecklist, web.TextilesChecklist),
+    ],
+    "file": [
+        (dm.File, web.File),
+    ],
+}
+
+
+@override_settings(ALLOW_DATA_MIGRATION=True)
+@override_settings(APP_ENV="production")
+@pytest.mark.django_db
+@mock.patch.dict(
+    DATA_TYPE_QUERY_MODEL,
+    {"import_application": [(q_ia, "textiles_checklist", dm.TextilesChecklist)]},
+)
+@mock.patch.dict(DATA_TYPE_XML, {"import_application": []})
+@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, tex_data_source_target)
+@mock.patch.dict(DATA_TYPE_M2M, {"import_application": []})
+@mock.patch.object(cx_Oracle, "connect")
+def test_import_textiles_data(mock_connect):
+    mock_connect.return_value = utils.MockConnect()
+    user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
+    dm.User.objects.create(id=user_pk, username="test_user")
+
+    importer_pk = max(web.Importer.objects.count(), dm.Importer.objects.count()) + 1
+    dm.Importer.objects.create(id=importer_pk, name="test_org", type="ORGANISATION")
+
+    factory.CountryFactory(id=1000, name="My Test Country")
+    cg = dm.CountryGroup.objects.create(country_group_id="TEX", name="TEX")
+
+    process_pk = max(web.Process.objects.count(), dm.Process.objects.count()) + 1
+    pk_range = list(range(process_pk, process_pk + 3))
+    iat = factory.ImportApplicationTypeFactory(master_country_group=cg, type="TEX")
+
+    for i, pk in enumerate(pk_range):
+        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.FA_SIL, ima_id=pk + 7)
+        folder = dm.FileFolder.objects.create(folder_type="IMP_APP_DOCUMENTS")
+
+        ia = factory.ImportApplicationFactory(
+            pk=pk,
+            ima=process,
+            status="COMPLETE",
+            imad_id=1234 + i,
+            application_type=iat,
+            created_by_id=user_pk,
+            last_updated_by_id=user_pk,
+            importer_id=importer_pk,
+            file_folder=folder,
+        )
+
+        dm.ImportApplicationLicence.objects.create(imad=ia, status="TX TEST")
+        dm.TextilesApplication.objects.create(imad=ia)
+
+    call_command("export_from_v1", "--skip_ref", "--skip_user", "--skip_file")
+    call_command("import_v1_data")
+
+    tex1, tex2, tex3 = web.TextilesApplication.objects.filter(pk__in=pk_range).order_by("pk")
+    assert tex1.checklist.case_update == "no"
+    assert tex1.checklist.fir_required == "n/a"
+    assert tex1.checklist.response_preparation is True
+    assert tex1.checklist.authorisation is True
+
+    assert tex2.checklist.case_update == "yes"
+    assert tex2.checklist.fir_required == "no"
+    assert tex2.checklist.response_preparation is True
+    assert tex2.checklist.authorisation is False
+
+    assert hasattr(tex3, "checklist") is False

@@ -179,9 +179,13 @@ def test_str_to_bool(bool_str, expected):
         ("true", "yes"),
         ("FALSE", "no"),
         ("false", "no"),
+        ("N/A", "n/a"),
+        ("NA", "n/a"),
+        ("n/a", "n/a"),
+        ("na", "n/a"),
         ("", None),
         (None, None),
     ],
 )
 def test_str_to_yes_no(y_n_str, expected):
-    assert str_to_yes_no(y_n_str) is expected
+    assert str_to_yes_no(y_n_str) == expected

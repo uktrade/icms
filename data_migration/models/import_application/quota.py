@@ -5,6 +5,7 @@ from django.db import models
 from data_migration.models.base import MigrationBase
 from data_migration.models.file import File
 from data_migration.models.reference import Commodity, CommodityGroup
+from data_migration.utils.format import str_to_bool
 
 from .import_application import ChecklistBase, ImportApplication, ImportApplicationBase
 
@@ -41,11 +42,8 @@ class WoodQuotaChecklist(ChecklistBase):
     sigl_wood_application_logged = models.CharField(max_length=5, null=True)
 
     @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data = super().data_export(data)
-        sigl = data.pop("sigl_wood_application_logged")
-        data["sigl_wood_application_logged"] = bool(sigl) and sigl.lower() == "true"
-        return data
+    def bool_fields(cls) -> list[str]:
+        return super().bool_fields() + ["sigl_wood_application_logged"]
 
 
 class TextilesApplication(ImportApplicationBase):
@@ -69,8 +67,7 @@ class TextilesApplication(ImportApplicationBase):
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
         data = super().data_export(data)
-        goods_cleared = data.pop("goods_cleared")
-        data["goods_cleared"] = goods_cleared and goods_cleared.lower() == "true"
+        data["goods_cleared"] = str_to_bool(data["goods_cleared"])
         return data
 
 
@@ -82,8 +79,5 @@ class TextilesChecklist(ChecklistBase):
     within_maximum_amount_limit = models.CharField(max_length=5, null=True)
 
     @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data = super().data_export(data)
-        max_lim = data.pop("within_maximum_amount_limit")
-        data["within_maximum_amount_limit"] = bool(max_lim) and max_lim.lower() == "true"
-        return data
+    def bool_fields(cls) -> list[str]:
+        return super().bool_fields() + ["within_maximum_amount_limit"]
