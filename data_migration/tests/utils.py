@@ -90,6 +90,63 @@ query_result = {
             ),
         ],
     ),
+    import_application.textiles_checklist: (
+        [
+            ("imad_id",),
+            ("case_update",),
+            ("fir_required",),
+            ("response_preparation",),
+            ("validity_period_correct",),
+            ("endorsements_listed",),
+            ("authorisation",),
+            ("within_maximum_amount_limit",),
+        ],
+        [
+            (1234, "N", "N/A", "true", "Y", "Y", "true", "true"),
+            (1235, "Y", "N", "true", "Y", "Y", None, "false"),
+            (1236, None, None, None, None, None, None, None),
+        ],
+    ),
+    import_application.oil_checklist: (
+        [
+            ("imad_id",),
+            ("case_update",),
+            ("fir_required",),
+            ("response_preparation",),
+            ("validity_period_correct",),
+            ("endorsements_listed",),
+            ("authorisation",),
+            ("within_maximum_amount_limit",),
+            ("authority_required",),
+            ("authority_received",),
+            ("authority_police",),
+        ],
+        [
+            (1000, "N", "N/A", "true", "Y", "Y", "true", "true", "Y", "Y", "NA"),
+            (1001, "Y", "N", "true", "Y", "Y", None, "false", "N", "N", "N"),
+        ],
+    ),
+    import_application.sil_checklist: (
+        [
+            ("imad_id",),
+            ("case_update",),
+            ("fir_required",),
+            ("response_preparation",),
+            ("validity_period_correct",),
+            ("endorsements_listed",),
+            ("authorisation",),
+            ("within_maximum_amount_limit",),
+            ("authority_required",),
+            ("authority_received",),
+            ("authority_police",),
+            ("auth_cover_items_listed",),
+            ("within_auth_restrictions",),
+        ],
+        [
+            (1000, "N", "N/A", "true", "Y", "Y", "true", "true", "Y", "Y", "NA", "Y", "Y"),
+            (1001, "Y", "N", "true", "Y", "Y", None, "false", "N", "N", "N", "N", "N"),
+        ],
+    ),
 }
 
 

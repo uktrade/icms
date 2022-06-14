@@ -72,12 +72,6 @@ sil_checklist_columns = """
       , auth_cover_items_listed VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/FA_AUTHORITY_TO_POSSESS_COVERS_LISTED[not(fox-error)]/text()'
       , within_auth_restrictions VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/FA_WITHIN_AUTHORITY[not(fox-error)]/text()'
       , authority_police VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/FA_AUTHORITY_TO_POSSESS_CHECK[not(fox-error)]/text()'
-      , update_required VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/GEN_UPDATE_REQUIRED[not(fox-error)]/text()'
-      , fir_required VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/GEN_FIR_REQUIRED[not(fox-error)]/text()'
-      , response_preparation VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/GEN_DECISION_RESPONSE[not(fox-error)]/text()'
-      , validity_period_correct VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/GEN_VALIDITY_PERIOD[not(fox-error)]/text()'
-      , endorsements_listed VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/GEN_ENDORSEMENTS[not(fox-error)]/text()'
-      , authorisation VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/GEN_AUTHORISATION[not(fox-error)]/text()'
 """
 
 

@@ -38,17 +38,22 @@ class ChecklistFirearmsOILApplication(ChecklistBase):
     )
 
     authority_required = models.CharField(
-        max_length=10,
+        max_length=3,
         null=True,
     )
     authority_received = models.CharField(
-        max_length=10,
+        max_length=3,
         null=True,
     )
     authority_police = models.CharField(
-        max_length=10,
+        max_length=3,
         null=True,
     )
+
+    @classmethod
+    def y_n_fields(cls) -> list[str]:
+        fields = super().y_n_fields()
+        return fields + ["authority_required", "authority_received", "authority_police"]
 
 
 class OILSupplementaryInfo(SupplementaryInfoBase):

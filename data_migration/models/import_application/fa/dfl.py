@@ -103,8 +103,20 @@ class DFLChecklist(ChecklistBase):
     imad = models.OneToOneField(
         ImportApplication, on_delete=models.PROTECT, to_field="imad_id", related_name="+"
     )
-    deactivation_certificate_attached = models.CharField(max_length=3, null=True)
-    deactivation_certificate_issued = models.CharField(max_length=3, null=True)
+    certificate_attached = models.CharField(max_length=3, null=True)
+    certificate_issued = models.CharField(max_length=3, null=True)
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data = super().data_export(data)
+        data["deactivation_certificate_attached"] = data.pop("certificate_attached")
+        data["deactivation_certificate_issued"] = data.pop("certificate_issued")
+
+        return data
+
+    @classmethod
+    def y_n_fields(cls) -> list[str]:
+        return super().y_n_fields() + ["certificate_attached", "certificate_issued"]
 
 
 class DFLSupplementaryInfo(SupplementaryInfoBase):

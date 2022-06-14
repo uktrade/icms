@@ -67,7 +67,7 @@ SELECT cl.*
 FROM impmgr.xview_ima_details xiad
 INNER JOIN (
   SELECT
-    ad.id import_application_id, x.*
+    ad.id imad_id, x.*
   FROM impmgr.import_application_details ad,
     XMLTABLE('/*'
     PASSING ad.xml_data
@@ -81,11 +81,12 @@ INNER JOIN (
       {columns}
     ) x
     WHERE status_control = 'C'
-  ) cl ON cl.import_application_id = xiad.imad_id
+  ) cl ON cl.imad_id = xiad.imad_id
 WHERE
   xiad.ima_type = '{ima_type}'
   AND xiad.IMA_SUB_TYPE = '{ima_sub_type}'
   AND xiad.status_control = 'C'
+  AND xiad.submitted_datetime IS NOT NULL
 """
 
 

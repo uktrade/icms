@@ -9,7 +9,7 @@ from data_migration.models.base import MigrationBase
 from data_migration.models.file import File
 from data_migration.models.reference import ObsoleteCalibre
 
-from ..import_application import ImportApplication
+from ..import_application import ChecklistBase, ImportApplication
 from .authorities import FirearmsAuthority, Section5Authority, Section5Clause
 from .base import (
     FirearmBase,
@@ -42,6 +42,52 @@ class SILApplication(FirearmBase):
     @classmethod
     def models_to_populate(cls) -> list[str]:
         return ["Process", "ImportApplication", cls.__name__, "SILSupplementaryInfo"]
+
+
+class SILChecklist(ChecklistBase):
+    imad = models.OneToOneField(
+        ImportApplication,
+        on_delete=models.PROTECT,
+        to_field="imad_id",
+        related_name="+",
+    )
+    authority_required = models.CharField(
+        max_length=3,
+        null=True,
+    )
+    authority_received = models.CharField(
+        max_length=3,
+        null=True,
+    )
+    authority_police = models.CharField(
+        max_length=3,
+        null=True,
+    )
+    auth_cover_items_listed = models.CharField(
+        max_length=3,
+        null=True,
+    )
+    within_auth_restrictions = models.CharField(
+        max_length=3,
+        null=True,
+    )
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data = super().data_export(data)
+        data["quantities_within_authority_restrictions"] = data.pop("within_auth_restrictions")
+        data["authority_cover_items_listed"] = data.pop("auth_cover_items_listed")
+        return data
+
+    @classmethod
+    def y_n_fields(cls) -> list[str]:
+        return super().y_n_fields() + [
+            "authority_required",
+            "authority_received",
+            "authority_police",
+            "auth_cover_items_listed",
+            "within_auth_restrictions",
+        ]
 
 
 class SILApplicationFirearmAuthority(MigrationBase):
