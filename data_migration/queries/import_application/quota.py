@@ -2,6 +2,9 @@ from web.flow.models import ProcessTypes
 
 from .import_application import import_application_base, import_checklist_base
 
+__all__ = ["textiles_application", "textiles_checklist", "wood_application", "wood_checklist"]
+
+
 wood_application_subquery = """
 SELECT
   ad.ima_id, ad.id imad_id, x.*
@@ -27,9 +30,11 @@ FROM impmgr.import_application_details ad,
 WHERE status_control = 'C'
 """
 
+
 wood_checklist_columns = """
   , sigl_wood_application_logged VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/SIGL/SIGL_FLAG/text()'
 """
+
 
 wood_application = import_application_base.format(
     **{
@@ -39,6 +44,8 @@ wood_application = import_application_base.format(
         "process_type": ProcessTypes.WOOD,
     }
 )
+
+
 wood_checklist = import_checklist_base.format(
     **{"columns": wood_checklist_columns, "ima_type": "WD", "ima_sub_type": "QUOTA"}
 )
@@ -65,9 +72,11 @@ FROM impmgr.import_application_details ad,
 WHERE status_control = 'C'
 """
 
+
 textiles_checklist_columns = """
   , within_maximum_amount_limit VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/TEX_CHECK_AMOUNTS/text()'
 """
+
 
 textiles_application = import_application_base.format(
     **{
@@ -77,6 +86,8 @@ textiles_application = import_application_base.format(
         "process_type": ProcessTypes.TEXTILES,
     }
 )
+
+
 textiles_checklist = import_checklist_base.format(
     **{"columns": textiles_checklist_columns, "ima_type": "TEX", "ima_sub_type": "QUOTA"}
 )

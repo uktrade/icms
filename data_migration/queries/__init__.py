@@ -1,5 +1,4 @@
-from types import ModuleType
-from typing import Literal, NamedTuple, Type
+from typing import Literal, Type
 
 from django.db.models import Model
 
@@ -9,15 +8,7 @@ from data_migration.utils import xml_parser
 from web import models as web
 
 from . import files, import_application, reference
-
-QueryModel = NamedTuple("QueryModel", [("module", ModuleType), ("query", str), ("model", Model)])
-SourceTarget = NamedTuple("SourceTarget", [("source", Model), ("target", Model)])
-M2M = NamedTuple("M2M", [("source", Model), ("target", Model), ("field", str)])
-
-
-def source_target_list(lst: list[str]):
-    return [SourceTarget(getattr(dm, model_name), getattr(web, model_name)) for model_name in lst]
-
+from .types import M2M, QueryModel, SourceTarget, source_target_list
 
 user_source_target = source_target_list(["User", "Importer", "Office"])
 

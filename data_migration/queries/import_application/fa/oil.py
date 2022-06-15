@@ -4,10 +4,8 @@ from data_migration.queries.import_application.import_application import (
 )
 from web.flow.models import ProcessTypes
 
-# report_completed_datetime VARCHAR2(20) PATH '/IMA/FA_REPORTS//HISTORICAL_REPORT_COMPLETION/REPORT_COMPLETED_DATETIME[not(fox-error)]/text()'
-# report_completed_by_id VARCHAR2(10) PATH '/IMA/FA_REPORTS//HISTORICAL_REPORT_COMPLETION/REPORT_COMPLETED_BY_WUA_ID[not(fox-error)]/text()'
-# completed_by VARCHAR(10) PATH '/IMA/FA_REPORTS/FA_SUPPLEMENTARY_REPORT/FA_SUPPLEMENTARY_REPORT_DETAILS/SUBMITTED_BY_WUA_ID[not(fox-error)]/text()'
-# completed_datetime VARCHAR(20) PATH '/IMA/FA_REPORTS/FA_SUPPLEMENTARY_REPORT/FA_SUPPLEMENTARY_REPORT_DETAILS/SUBMITTED_DATETIME[not(fox-error)]/text()'
+__all__ = ["oil_application", "oil_checklist"]
+
 
 oil_application_subquery = """
 SELECT
@@ -55,11 +53,13 @@ FROM impmgr.import_application_details ad,
 WHERE status_control = 'C'
 """
 
+
 oil_checklist_columns = """
   , authority_required VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/FA_AUTHORITY_TO_POSSESS_REQ[not(fox-error)]/text()'
   , authority_received VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/FA_AUTHORITY_TO_POSSESS_REC[not(fox-error)]/text()'
   , authority_police VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/FA_AUTHORITY_TO_POSSESS_CHECK[not(fox-error)]/text()'
 """
+
 
 oil_application = import_application_base.format(
     **{
@@ -69,6 +69,8 @@ oil_application = import_application_base.format(
         "process_type": ProcessTypes.FA_OIL,
     }
 )
+
+
 oil_checklist = import_checklist_base.format(
     **{"columns": oil_checklist_columns, "ima_type": "FA", "ima_sub_type": "OIL"}
 )

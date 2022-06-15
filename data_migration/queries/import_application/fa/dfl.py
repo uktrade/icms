@@ -4,7 +4,8 @@ from data_migration.queries.import_application.import_application import (
 )
 from web.flow.models import ProcessTypes
 
-# TODO: Work out what data for web_silapplication_user_section5 is
+__all__ = ["dfl_application", "dfl_checklist"]
+
 
 dfl_application_subquery = """
 SELECT
@@ -51,6 +52,7 @@ FROM impmgr.import_application_details ad,
 WHERE status_control = 'C'
 """
 
+
 dfl_checklist_columns = """
       , deactivation_certificate_attached VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/DAF_DEACTIVATION_CERTIFICATE_ATTACHED[not(fox-error)]/text()'
       , deactivation_certificate_issued VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/DAF_DEACTIVATION_CERTIFICATE_ISSUED[not(fox-error)]/text()'
@@ -65,6 +67,7 @@ dfl_application = import_application_base.format(
         "process_type": ProcessTypes.FA_DFL,
     }
 )
+
 
 dfl_checklist = import_checklist_base.format(
     **{"columns": dfl_checklist_columns, "ima_type": "FA", "ima_sub_type": "DEACTIVATED"}

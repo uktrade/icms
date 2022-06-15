@@ -2,6 +2,9 @@ from web.flow.models import ProcessTypes
 
 from .import_application import import_application_base
 
+__all__ = ["sanctions_application"]
+
+
 sanctions_application_subquery = """
 SELECT
   ad.ima_id, ad.id imad_id, x.*

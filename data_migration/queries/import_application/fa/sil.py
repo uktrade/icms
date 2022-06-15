@@ -4,6 +4,9 @@ from data_migration.queries.import_application.import_application import (
 )
 from web.flow.models import ProcessTypes
 
+__all__ = ["sil_application", "sil_checklist"]
+
+
 sil_application_subquery = """
 SELECT
   ad.ima_id
@@ -66,6 +69,7 @@ FROM impmgr.import_application_details ad,
   WHERE status_control = 'C'
 """
 
+
 sil_checklist_columns = """
       , authority_required VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/FA_AUTHORITY_TO_POSSESS_REQ[not(fox-error)]/text()'
       , authority_received VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/FA_AUTHORITY_TO_POSSESS_REC[not(fox-error)]/text()'
@@ -83,6 +87,7 @@ sil_application = import_application_base.format(
         "process_type": ProcessTypes.FA_SIL,
     }
 )
+
 
 sil_checklist = import_checklist_base.format(
     **{"columns": sil_checklist_columns, "ima_type": "FA", "ima_sub_type": "SIL"}

@@ -1,3 +1,12 @@
+__all__ = [
+    "country",
+    "country_group",
+    "country_group_country",
+    "country_translation_set",
+    "country_translation",
+]
+
+
 country = """
   SELECT country_id id, x.*
   FROM bpmmgr.country_details cd,
