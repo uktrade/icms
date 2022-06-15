@@ -1,3 +1,14 @@
+__all__ = [
+    "dfl_application_files",
+    "oil_application_files",
+    "sil_application_files",
+    "sanction_application_files",
+    "wood_application_files",
+    "textiles_application_files",
+    "fa_certificate_files",
+]
+
+
 # Join to SECURE_LOB_DATA when retrieving the file data
 # INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(fv.secure_lob_ref).id
 # , create_by_wua_id created_by_id

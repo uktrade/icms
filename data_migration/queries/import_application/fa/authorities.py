@@ -1,3 +1,11 @@
+__all__ = [
+    "fa_authorities",
+    "fa_authority_linked_offices",
+    "section5_authorities",
+    "section5_clauses",
+    "section5_linked_offices",
+]
+
 fa_authorities = """
 SELECT iad.*, 2 importer_id
 FROM impmgr.importer_authorities ia
