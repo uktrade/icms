@@ -167,6 +167,11 @@ ia_m2m = [
         "user_imported_certificates",
     ),
     M2M(
+        dm.SanctionsAndAdhocSupportingDoc,
+        web.SanctionsAndAdhocApplication,
+        "supporting_documents",
+    ),
+    M2M(
         dm.TextilesSupportingDoc,
         web.TextilesApplication,
         "supporting_documents",

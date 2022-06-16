@@ -83,7 +83,7 @@ sanction_application_files = import_application_files_base.format(
     **{
         "ima_type": "ADHOC",
         "ima_sub_type": "ADHOC1",
-        "app_model": "sanctionsapplication",
+        "app_model": "sanctionsandadhocapplication",
     }
 )
 

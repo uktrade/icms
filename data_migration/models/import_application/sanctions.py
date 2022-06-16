@@ -1,6 +1,7 @@
 from django.db import models
 
 from data_migration.models.base import MigrationBase
+from data_migration.models.file import FileM2MBase
 from data_migration.models.reference import Commodity
 
 from .import_application import ImportApplication, ImportApplicationBase
@@ -25,3 +26,10 @@ class SanctionsAndAdhocApplicationGoods(MigrationBase):
     goods_description = models.CharField(max_length=4096)
     quantity_amount = models.DecimalField(max_digits=9, decimal_places=2)
     value = models.DecimalField(max_digits=9, decimal_places=2)
+
+
+class SanctionsAndAdhocSupportingDoc(FileM2MBase):
+    APP_MODEL = "sanctionsandadhocapplication"
+
+    class Meta:
+        abstract = True
