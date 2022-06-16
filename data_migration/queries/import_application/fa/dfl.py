@@ -54,8 +54,8 @@ WHERE status_control = 'C'
 
 
 dfl_checklist_columns = """
-      , deactivation_certificate_attached VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/DAF_DEACTIVATION_CERTIFICATE_ATTACHED[not(fox-error)]/text()'
-      , deactivation_certificate_issued VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/DAF_DEACTIVATION_CERTIFICATE_ISSUED[not(fox-error)]/text()'
+      , certificate_attached VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/DAF_DEACTIVATION_CERTIFICATE_ATTACHED[not(fox-error)]/text()'
+      , certificate_issued VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/DAF_DEACTIVATION_CERTIFICATE_ISSUED[not(fox-error)]/text()'
 """
 
 

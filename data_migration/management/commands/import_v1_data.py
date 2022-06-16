@@ -69,7 +69,7 @@ class Command(MigrationBaseCommand):
         self.stdout.write(f"Importing {name} Data")
 
         for idx, (source, target) in enumerate(source_target_list, start=start):
-            self.stdout.write(f"{idx} - Importing {target.__name__} from {source.__name__}")
+            self.stdout.write(f"\t{idx} - Importing {target.__name__} from {source.__name__}")
 
             objs = source.get_source_data()
 
@@ -86,7 +86,9 @@ class Command(MigrationBaseCommand):
         self.stdout.write(f"Importing {name} M2M relationships")
 
         for idx, (source, target, field) in enumerate(m2m_list, start=start):
-            self.stdout.write(f"{idx} - Importing {target.__name__}_{field} from {source.__name__}")
+            self.stdout.write(
+                f"\t{idx} - Importing {target.__name__}_{field} from {source.__name__}"
+            )
 
             through_table = getattr(target, field).through
             objs = source.get_m2m_data(target)
@@ -108,7 +110,7 @@ class Command(MigrationBaseCommand):
         self.stdout.write("Creating Task Data")
 
         for task in TASK_LIST:
-            self.stdout.write(f"Creating {task.TASK_TYPE} tasks")
+            self.stdout.write(f"\tCreating {task.TASK_TYPE} tasks")
 
             web.Task.objects.bulk_create(task.task_batch(), batch_size=self.batch_size)
 

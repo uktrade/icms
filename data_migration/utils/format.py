@@ -34,11 +34,11 @@ def date_or_none(date_str: Optional[str]) -> Optional[date]:
     if " " in date_str and len(date_str) > 10:
         return datetime.strptime(date_str, "%d %B %Y").date()
 
-    date_str = date_str.replace("/", "-")
-    date_split = date_str.split("-")
+    p_date_str = date_str.replace("/", "-")
+    date_split = p_date_str.split("-")
 
     if len(date_split) > 3 or len(date_split[-1]) > 4:
-        raise ValidationError("Date not in parsable format")
+        raise ValidationError(f"Date {date_str} not in parsable format")
 
     if len(date_split[0]) == 4:
         date_format = "%Y-%m-%d"
@@ -47,7 +47,7 @@ def date_or_none(date_str: Optional[str]) -> Optional[date]:
     else:
         date_format = "%d-%m-%y"
 
-    return datetime.strptime(date_str, date_format).date()
+    return datetime.strptime(p_date_str, date_format).date()
 
 
 def float_or_none(float_str: Optional[str]) -> Optional[float]:

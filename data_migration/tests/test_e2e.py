@@ -110,7 +110,9 @@ def test_import_sil_data(mock_connect):
 
     for i, pk in enumerate(pk_range):
         process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.FA_SIL, ima_id=pk + 7)
-        folder = dm.FileFolder.objects.create(folder_type="IMP_APP_DOCUMENTS")
+        folder = dm.FileFolder.objects.create(
+            folder_type="IMP_APP_DOCUMENTS", app_model="silapplication"
+        )
 
         if i == 0:
             target1 = dm.FileTarget.objects.create(
@@ -315,7 +317,9 @@ def test_import_oil_data(mock_connect):
 
     for i, pk in enumerate(pk_range):
         process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.FA_SIL, ima_id=pk + 7)
-        folder = dm.FileFolder.objects.create(folder_type="IMP_APP_DOCUMENTS")
+        folder = dm.FileFolder.objects.create(
+            folder_type="IMP_APP_DOCUMENTS", app_model="openindividuallicenceapplication"
+        )
 
         ia = factory.ImportApplicationFactory(
             pk=pk,
@@ -433,7 +437,9 @@ def test_import_textiles_data(mock_connect):
 
     for i, pk in enumerate(pk_range):
         process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.FA_SIL, ima_id=pk + 7)
-        folder = dm.FileFolder.objects.create(folder_type="IMP_APP_DOCUMENTS")
+        folder = dm.FileFolder.objects.create(
+            folder_type="IMP_APP_DOCUMENTS", app_model="textilesapplication"
+        )
 
         ia = factory.ImportApplicationFactory(
             pk=pk,

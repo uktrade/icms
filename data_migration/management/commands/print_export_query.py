@@ -22,18 +22,13 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        if options["l"]:
+        query_name = options["query_name"]
+
+        if options["l"] or not query_name:
             all_queries = sorted(q for mod in self.QUERY_MODULES for q in mod.__all__)
 
             for q in all_queries:
                 self.stdout.write(str(q))
-
-            return
-
-        query_name = options["query_name"]
-
-        if not query_name:
-            self.stdout.write("Please provide a query name. Use -l to list all query names")
 
             return
 

@@ -87,7 +87,7 @@ def test_date_or_none(test_input, expected):
 def test_date_or_none_exception():
     with pytest.raises(ValidationError) as excinfo:
         date_or_none("2014-10-01T00:00:00")
-    assert "Date not in parsable format" in str(excinfo.value)
+    assert "Date 2014-10-01T00:00:00 not in parsable format" in str(excinfo.value)
 
 
 @pytest.mark.parametrize(

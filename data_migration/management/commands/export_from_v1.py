@@ -71,7 +71,7 @@ class Command(MigrationBaseCommand):
         self.stdout.write(f"Exporting {name} Data...")
 
         for idx, (module, query_name, model) in enumerate(query_models, start=start):
-            self.stdout.write(f"{idx} - Exporting {query_name} to {model.__name__} model")
+            self.stdout.write(f"\t{idx} - Exporting {query_name} to {model.__name__} model")
             query = getattr(module, query_name)
             cursor.execute(query)
             columns = [col[0].lower() for col in cursor.description]
@@ -121,7 +121,7 @@ class Command(MigrationBaseCommand):
         self.stdout.write("Extracting file data")
 
         for model in FILE_MODELS:
-            self.stdout.write(f"Extracting {model.__name__}")
+            self.stdout.write(f"\tExtracting {model.__name__}")
             data = model.get_from_combined()
             model.objects.bulk_create([model(**obj) for obj in data], batch_size=self.batch_size)
 
