@@ -35,7 +35,7 @@ class Command(MigrationBaseCommand):
         self.stdout.write(f"Extracting xml data for {name}")
 
         for idx, parser in enumerate(parser_list, start=start):
-            self.stdout.write(parser.log_message(idx))
+            self.stdout.write("\t" + parser.log_message(idx))
             objs = parser.get_queryset()
 
             while True:

@@ -18,6 +18,7 @@ from .base import BaseXmlParser, BatchT, ModelListT
 
 if TYPE_CHECKING:
     from django.db.models import Model
+    from lxml.etree import ElementTree as ET
 
 FA_TYPE_CODES = {
     "DEACTIVATED": "deactivated",
@@ -34,7 +35,7 @@ class ImportContactParser(BaseXmlParser):
     ROOT_NODE = "/SELLER_HOLDER_LIST/SELLER_HOLDER"
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> dm.ImportContact:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> dm.ImportContact:
         """Example XML structure
 
         <SELLER_HOLDER>
@@ -99,9 +100,7 @@ class UserImportCertificateParser(BaseXmlParser):
     ROOT_NODE = "/FIREARMS_CERTIFICATE_LIST/FIREARMS_CERTIFICATE"
 
     @classmethod
-    def parse_xml_fields(
-        cls, parent_pk: int, xml: etree.ElementTree
-    ) -> Optional[dm.UserImportCertificate]:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.UserImportCertificate]:
         """Example XML structure
 
         <FIREARMS_CERTIFICATE>
@@ -185,7 +184,7 @@ class SILGoodsParser(BaseXmlParser):
         return model_lists
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional["Model"]:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional["Model"]:
         """
         <COMMODITY>
           <SECTION />
@@ -233,15 +232,15 @@ class SILGoodsParser(BaseXmlParser):
         }
 
     @classmethod
-    def parse_sec1(cls, parent_pk: int, xml: etree.ElementTree) -> Optional["Model"]:
+    def parse_sec1(cls, parent_pk: int, xml: "ET") -> Optional["Model"]:
         return dm.SILGoodsSection1(**cls.parse_sec_base(parent_pk, xml))
 
     @classmethod
-    def parse_sec2(cls, parent_pk: int, xml: etree.ElementTree) -> Optional["Model"]:
+    def parse_sec2(cls, parent_pk: int, xml: "ET") -> Optional["Model"]:
         return dm.SILGoodsSection2(**cls.parse_sec_base(parent_pk, xml))
 
     @classmethod
-    def parse_sec5(cls, parent_pk: int, xml: etree.ElementTree) -> Optional["Model"]:
+    def parse_sec5(cls, parent_pk: int, xml: "ET") -> Optional["Model"]:
         data = cls.parse_sec_base(parent_pk, xml)
         section_5_clause = get_xml_val(xml, "./SECTION_5_CLAUSE/text()")
         unlimited_quantity = get_xml_val(xml, "./QUANTITY_UNLIMITED_FLAG/text()")
@@ -255,7 +254,7 @@ class SILGoodsParser(BaseXmlParser):
         )
 
     @classmethod
-    def parse_obsolete_calibre(cls, parent_pk: int, xml: etree.ElementTree) -> Optional["Model"]:
+    def parse_obsolete_calibre(cls, parent_pk: int, xml: "ET") -> Optional["Model"]:
         data = cls.parse_sec_base(parent_pk, xml)
         acknowledgement = get_xml_val(xml, "./CURIOSITY_STATEMENT_AGREED/text()")
         centrefire = get_xml_val(xml, "./BREECH_LOADING_CENTREFIRE/text()")
@@ -277,7 +276,7 @@ class SILGoodsParser(BaseXmlParser):
         )
 
     @classmethod
-    def parse_other(cls, parent_pk: int, xml: etree.ElementTree) -> Optional["Model"]:
+    def parse_other(cls, parent_pk: int, xml: "ET") -> Optional["Model"]:
         data = cls.parse_sec_base(parent_pk, xml)
 
         acknowledgement = get_xml_val(xml, "./CURIOSITY_STATEMENT_AGREED/text()")
@@ -317,7 +316,7 @@ class SupplementaryReportParser(BaseXmlParser):
     ROOT_NODE = "/FA_SUPPLEMENTARY_REPORT_LIST/FA_SUPPLEMENTARY_REPORT"
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> dm.SupplementaryReportBase:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> dm.SupplementaryReportBase:
         """Example XML structure
 
         <FA_SUPPLEMENTARY_REPORT>
@@ -426,7 +425,7 @@ class ReportFirearmParser(BaseXmlParser):
         return model_list
 
     @classmethod
-    def parse_manual_xml(cls, parent_pk: int, xml: etree.ElementTree) -> "Model":
+    def parse_manual_xml(cls, parent_pk: int, xml: "ET") -> "Model":
         """Exmaple XML structure
 
         <FIREARMS_DETAILS>
@@ -543,9 +542,7 @@ class SILReportFirearmParser(BaseXmlParser):
         return model_list
 
     @classmethod
-    def parse_manual_xml(
-        cls, parent_pk: int, goods_model: "Model", xml: etree.ElementTree
-    ) -> "Model":
+    def parse_manual_xml(cls, parent_pk: int, goods_model: "Model", xml: "ET") -> "Model":
         """Exmaple XML structure
 
         <FIREARMS_DETAILS>
@@ -623,7 +620,7 @@ class DFLGoodsCertificateParser(BaseXmlParser):
         return model_list
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> dm.DFLGoodsCertificate:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> dm.DFLGoodsCertificate:
         """Example XML structure
 
         <FA_GOODS_CERT>
@@ -671,7 +668,7 @@ class OILApplicationFirearmAuthorityParser(BaseXmlParser):
 
     @classmethod
     def parse_xml_fields(
-        cls, parent_pk: int, xml: etree.ElementTree
+        cls, parent_pk: int, xml: "ET"
     ) -> Optional[dm.OILApplicationFirearmAuthority]:
         """Example XML structure
 
@@ -700,7 +697,7 @@ class SILApplicationFirearmAuthorityParser(BaseXmlParser):
 
     @classmethod
     def parse_xml_fields(
-        cls, parent_pk: int, xml: etree.ElementTree
+        cls, parent_pk: int, xml: "ET"
     ) -> Optional[dm.SILApplicationFirearmAuthority]:
         """Example XML structure
 
@@ -727,7 +724,7 @@ class SILApplicationSection5AuthorityParser(BaseXmlParser):
 
     @classmethod
     def parse_xml_fields(
-        cls, parent_pk: int, xml: etree.ElementTree
+        cls, parent_pk: int, xml: "ET"
     ) -> Optional[dm.SILApplicationFirearmAuthority]:
         """Example XML structure
 
@@ -753,9 +750,7 @@ class ClauseQuantityParser(BaseXmlParser):
     ROOT_NODE = "/GOODS_CATEGORY_LIST/GOODS_CATEGORY"
 
     @classmethod
-    def parse_xml_fields(
-        cls, parent_pk: int, xml: etree.ElementTree
-    ) -> Optional[dm.ClauseQuantity]:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.ClauseQuantity]:
         """Example XML structure
 
         <GOODS_CATEGORY>
@@ -794,7 +789,7 @@ class ActQuantityParser(BaseXmlParser):
     ROOT_NODE = "/GOODS_CATEGORY_LIST/GOODS_CATEGORY"
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional[dm.ActQuantity]:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.ActQuantity]:
         """Example XML structure
 
         <GOODS_CATEGORY>
@@ -833,9 +828,7 @@ class FirearmsAuthorityFileParser(BaseXmlParser):
     ROOT_NODE = "/FF_TARGET_LIST/FF_TARGET"
 
     @classmethod
-    def parse_xml_fields(
-        cls, parent_pk: int, xml: etree.ElementTree
-    ) -> Optional[dm.FirearmsAuthorityFile]:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.FirearmsAuthorityFile]:
         """Example XML structure
 
         <FF_TARGET>
@@ -844,7 +837,7 @@ class FirearmsAuthorityFileParser(BaseXmlParser):
         </FF_TARGET>
         """
 
-        target_id = int_or_none(get_xml_val(xml, "./FFT_ID"))
+        target_id = int_or_none(get_xml_val(xml, "./FFT_ID/text()"))
 
         if not target_id:
             return None
@@ -859,9 +852,7 @@ class Section5AuthorityFileParser(BaseXmlParser):
     ROOT_NODE = "/FF_TARGET_LIST/FF_TARGET"
 
     @classmethod
-    def parse_xml_fields(
-        cls, parent_pk: int, xml: etree.ElementTree
-    ) -> Optional[dm.Section5AuthorityFile]:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.Section5AuthorityFile]:
         """Example XML structure
 
         <FF_TARGET>
@@ -870,7 +861,7 @@ class Section5AuthorityFileParser(BaseXmlParser):
         </FF_TARGET>
         """
 
-        target_id = int_or_none(get_xml_val(xml, "./FFT_ID"))
+        target_id = int_or_none(get_xml_val(xml, "./FFT_ID/text()"))
 
         if not target_id:
             return None
@@ -886,7 +877,7 @@ class SanctionGoodsParser(BaseXmlParser):
 
     @classmethod
     def parse_xml_fields(
-        cls, parent_pk: int, xml: etree.ElementTree
+        cls, parent_pk: int, xml: "ET"
     ) -> Optional[dm.SanctionsAndAdhocApplicationGoods]:
         """Example XML structure
 
@@ -914,5 +905,39 @@ class SanctionGoodsParser(BaseXmlParser):
                 "goods_description": commodity_desc,
                 "quantity_amount": quantity,
                 "value": value,
+            }
+        )
+
+
+class WoodContractParser(BaseXmlParser):
+    MODEL = dm.WoodContractFile
+    PARENT = dm.WoodQuotaApplication
+    FIELD = "contract_files_xml"
+    ROOT_NODE = "/CONTRACT_LIST/CONTRACT"
+
+    @classmethod
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.WoodContractFile]:
+        """Example XML structure
+
+        <CONTRACT>
+          <TARGET_ID />
+          <CONTRACT_DATE />
+          <CONTRACT_REFERENCE />
+        </CONTRACT>
+        """
+
+        target_id = int_or_none(get_xml_val(xml, "./TARGET_ID[not(fox-error)]/text()"))
+        contract_date = date_or_none(get_xml_val(xml, "./CONTRACT_DATE[not(fox-error)]/text()"))
+        reference = get_xml_val(xml, "./CONTRACT_REFERENCE[not(fox-error)]/text()")
+
+        if None in (target_id, contract_date, reference):
+            return None
+
+        return cls.MODEL(
+            **{
+                "import_application_id": parent_pk,
+                "target_id": target_id,
+                "contract_date": contract_date,
+                "reference": reference,
             }
         )

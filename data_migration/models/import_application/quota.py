@@ -1,9 +1,10 @@
-from typing import Any
+from typing import Any, Generator
 
 from django.db import models
+from django.db.models import F, OuterRef, Subquery
 
 from data_migration.models.base import MigrationBase
-from data_migration.models.file import File
+from data_migration.models.file import File, FileM2MBase, FileTarget
 from data_migration.models.reference import Commodity, CommodityGroup
 from data_migration.utils.format import str_to_bool
 
@@ -11,12 +12,6 @@ from .import_application import ChecklistBase, ImportApplication, ImportApplicat
 
 # TODO ICMSLST-1496: Add wood supporting documents and contract documents
 # TODO ICMSLST-1496: Add textiles supporting documents
-
-
-class WoodContractFile(MigrationBase):
-    file_ptr = models.ForeignKey(File, on_delete=models.CASCADE)
-    reference = models.CharField(max_length=100)
-    contract_date = models.DateField()
 
 
 class WoodQuotaApplication(ImportApplicationBase):
@@ -32,6 +27,69 @@ class WoodQuotaApplication(ImportApplicationBase):
     additional_comments = models.CharField(max_length=4000, null=True)
     contract_files_xml = models.TextField(null=True)
     export_certs_xml = models.TextField(null=True)
+
+
+class WoodContractFile(MigrationBase):
+    import_application = models.ForeignKey(WoodQuotaApplication, on_delete=models.CASCADE)
+    target = models.ForeignKey(FileTarget, on_delete=models.CASCADE)
+    reference = models.CharField(max_length=100)
+    contract_date = models.DateField()
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+
+        # Remove id and set file_ptr_id because V2 inherits from File model
+        data.pop("id")
+
+        # This is a M2M field in V2
+        data.pop("import_application_id")
+
+        return data
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["target_id"]
+
+    @classmethod
+    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        return data
+
+    @classmethod
+    def get_source_data(cls) -> Generator:
+        """Queries the model to get the queryset of data for the V2 import"""
+
+        values = cls.get_values() + ["file_ptr_id"]
+        sub_query = File.objects.filter(target_id=OuterRef("target_id"))
+
+        return (
+            cls.objects.select_related("target")
+            .prefetch_related("target__files")
+            .annotate(file_ptr_id=Subquery(sub_query.values("pk")[:1]))
+            .values(*values)
+            .iterator()
+        )
+
+    @classmethod
+    def get_m2m_data(cls, target: models.Model) -> Generator:
+        sub_query = File.objects.filter(target_id=OuterRef("target_id"))
+
+        return (
+            cls.objects.select_related("target")
+            .prefetch_related("target__files")
+            .annotate(
+                woodcontractfile_id=Subquery(sub_query.values("pk")[:1]),
+                woodquotaapplication_id=F("import_application_id"),
+            )
+            .values("woodcontractfile_id", "id", "woodquotaapplication_id")
+            .iterator()
+        )
+
+
+class WoodSupportingDoc(FileM2MBase):
+    APP_MODEL = "woodquotaapplication"
+
+    class Meta:
+        abstract = True
 
 
 class WoodQuotaChecklist(ChecklistBase):
@@ -81,3 +139,10 @@ class TextilesChecklist(ChecklistBase):
     @classmethod
     def bool_fields(cls) -> list[str]:
         return super().bool_fields() + ["within_maximum_amount_limit"]
+
+
+class TextilesSupportingDoc(FileM2MBase):
+    APP_MODEL = "textilesapplication"
+
+    class Meta:
+        abstract = True

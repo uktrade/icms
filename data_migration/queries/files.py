@@ -17,6 +17,7 @@ import_application_files_base = """
 SELECT
   ff.id folder_id
   , ff.file_folder_type folder_type
+  , '{app_model}' app_model
   , fft.target_mnem target_type
   , fft.status
   , fft.id target_id
@@ -58,6 +59,7 @@ dfl_application_files = import_application_files_base.format(
     **{
         "ima_type": "FA",
         "ima_sub_type": "DEACTIVATED",
+        "app_model": "dflapplication",
     }
 )
 
@@ -65,6 +67,7 @@ oil_application_files = import_application_files_base.format(
     **{
         "ima_type": "FA",
         "ima_sub_type": "OIL",
+        "app_model": "openindividuallicenceapplication",
     }
 )
 
@@ -72,6 +75,7 @@ sil_application_files = import_application_files_base.format(
     **{
         "ima_type": "FA",
         "ima_sub_type": "SIL",
+        "app_model": "silapplication",
     }
 )
 
@@ -79,6 +83,7 @@ sanction_application_files = import_application_files_base.format(
     **{
         "ima_type": "ADHOC",
         "ima_sub_type": "ADHOC1",
+        "app_model": "sanctionsapplication",
     }
 )
 
@@ -86,6 +91,7 @@ wood_application_files = import_application_files_base.format(
     **{
         "ima_type": "WD",
         "ima_sub_type": "QUOTA",
+        "app_model": "woodquotaapplication",
     }
 )
 
@@ -93,6 +99,7 @@ textiles_application_files = import_application_files_base.format(
     **{
         "ima_type": "TEX",
         "ima_sub_type": "QUOTA",
+        "app_model": "textilesapplication",
     }
 )
 

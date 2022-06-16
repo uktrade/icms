@@ -1,6 +1,9 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Generator
 
 from django.db import models
+from django.db.models import F
+from django.db.models.expressions import Window
+from django.db.models.functions import RowNumber
 
 from .base import MigrationBase
 from .user import User
@@ -10,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class FileCombined(MigrationBase):
+    app_model = models.CharField(max_length=40, null=True)
     folder_id = models.IntegerField()
     folder_type = models.CharField(max_length=30)
     target_id = models.IntegerField(null=True)
@@ -25,12 +29,13 @@ class FileCombined(MigrationBase):
 
 
 class FileFolder(MigrationBase):
+    app_model = models.CharField(max_length=40, null=True)
     folder_id = models.AutoField(auto_created=True, primary_key=True)
     folder_type = models.CharField(max_length=30)
 
     @classmethod
     def get_from_combined(cls) -> "QuerySet":
-        return FileCombined.objects.values("folder_type", "folder_id").distinct()
+        return FileCombined.objects.values("app_model", "folder_type", "folder_id").distinct()
 
 
 class FileTarget(MigrationBase):
@@ -80,4 +85,47 @@ class File(MigrationBase):
                 "target_id",
             )
             .distinct()
+        )
+
+
+class FileM2MBase(MigrationBase):
+    TARGET_TYPE: str = "IMP_SUPPORTING_DOC"
+    FOLDER_TYPE: str = "IMP_APP_DOCUMENTS"
+    FILE_MODEL: str = "file"
+    APP_MODEL: str = ""
+    FILTER_APP_MODEL = True
+
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data["id"] = data.pop("row_number")
+        return data
+
+    @classmethod
+    def get_m2m_data(cls, target: models.Model) -> Generator:
+        if not cls.APP_MODEL:
+            raise NotImplementedError("APP_MODEL must be defined on the model")
+
+        filter_kwargs = {
+            "target__target_type": cls.TARGET_TYPE,
+            "target__folder__folder_type": cls.FOLDER_TYPE,
+        }
+
+        if cls.FILTER_APP_MODEL:
+            filter_kwargs["target__folder__app_model"] = cls.APP_MODEL
+
+        return (
+            File.objects.select_related("target__folder__import_application")
+            .filter(**filter_kwargs)
+            .annotate(row_number=Window(expression=RowNumber()))
+            .values(
+                "row_number",
+                **{
+                    f"{cls.FILE_MODEL}_id": F("pk"),
+                    f"{cls.APP_MODEL}_id": F("target__folder__import_application__pk"),
+                },
+            )
+            .iterator()
         )

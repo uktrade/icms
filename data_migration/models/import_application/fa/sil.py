@@ -2,11 +2,9 @@ from typing import Any, Generator, Optional, Type
 
 from django.db import models
 from django.db.models import F, OuterRef, Subquery
-from django.db.models.expressions import Window
-from django.db.models.functions import RowNumber
 
 from data_migration.models.base import MigrationBase
-from data_migration.models.file import File
+from data_migration.models.file import File, FileM2MBase
 from data_migration.models.reference import ObsoleteCalibre
 
 from ..import_application import ChecklistBase, ImportApplication
@@ -100,14 +98,14 @@ class SILApplicationSection5Authority(MigrationBase):
     section5authority = models.ForeignKey(Section5Authority, on_delete=models.CASCADE)
 
 
-class SILUserSection5(MigrationBase):
+class SILUserSection5(FileM2MBase):
+    TARGET_TYPE = "IMP_SECTION5_AUTHORITY"
+    FILE_MODEL = "silusersection5"
+    APP_MODEL = "silapplication"
+    FILTER_APP_MODEL = False
+
     class Meta:
         abstract = True
-
-    @classmethod
-    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["id"] = data.pop("row_number")
-        return data
 
     @classmethod
     def get_source_data(cls) -> Generator:
@@ -120,23 +118,6 @@ class SILUserSection5(MigrationBase):
                 target__folder__folder_type="IMP_APP_DOCUMENTS",
             )
             .values(file_ptr_id=F("pk"))
-            .iterator()
-        )
-
-    @classmethod
-    def get_m2m_data(cls, target: models.Model) -> Generator:
-        return (
-            File.objects.select_related("target__folder__import_application")
-            .filter(
-                target__target_type="IMP_SECTION5_AUTHORITY",
-                target__folder__folder_type="IMP_APP_DOCUMENTS",
-            )
-            .annotate(row_number=Window(expression=RowNumber()))
-            .values(
-                "row_number",
-                silusersection5_id=F("pk"),
-                silapplication_id=F("target__folder__import_application__pk"),
-            )
             .iterator()
         )
 

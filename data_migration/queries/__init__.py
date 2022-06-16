@@ -125,6 +125,7 @@ ia_source_target = source_target_list(
         "OILSupplementaryReportFirearm",
         "WoodQuotaApplication",
         "WoodQuotaChecklist",
+        "WoodContractFile",
         "TextilesApplication",
         "TextilesChecklist",
         "ImportApplicationLicence",
@@ -165,6 +166,21 @@ ia_m2m = [
         web.OpenIndividualLicenceApplication,
         "user_imported_certificates",
     ),
+    M2M(
+        dm.TextilesSupportingDoc,
+        web.TextilesApplication,
+        "supporting_documents",
+    ),
+    M2M(
+        dm.WoodContractFile,
+        web.WoodQuotaApplication,
+        "contract_documents",
+    ),
+    M2M(
+        dm.WoodSupportingDoc,
+        web.WoodQuotaApplication,
+        "supporting_documents",
+    ),
 ]
 
 ia_xml = [
@@ -185,6 +201,7 @@ ia_xml = [
     xml_parser.DFLReportFirearmParser,
     xml_parser.OILSupplementaryReportParser,
     xml_parser.OILReportFirearmParser,
+    xml_parser.WoodContractParser,
 ]
 
 DATA_TYPE = Literal["reference", "import_application", "user", "file"]
