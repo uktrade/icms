@@ -1484,3 +1484,6 @@ SILGoodsSection5
 ON cl.imad_id =
 NA
 IMP_SUPPORTING_DOC
+fq_manufacturing_within_eu
+IMP_OPT_FURTHER_AUTH_DOC
+IMP_OPT_BENEFICIARY_DOC"
