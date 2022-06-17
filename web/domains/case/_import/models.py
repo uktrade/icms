@@ -1,3 +1,4 @@
+import uuid
 from typing import TYPE_CHECKING, Optional
 
 from django.contrib.postgres.indexes import BTreeIndex
@@ -460,3 +461,12 @@ class ImportApplicationLicence(CaseLicenceCertificateBase):
     def __str__(self):
         ia_pk, st, ca = (self.import_application_id, self.status, self.created_at)
         return f"ImportApplicationLicence(import_application={ia_pk}, status={st}, created_at={ca})"
+
+
+class LiteChiefReference(models.Model):
+    import_application = models.ForeignKey(
+        "ImportApplication", on_delete=models.CASCADE, related_name="chief_references"
+    )
+
+    lite_hmrc_id = models.UUIDField(default=uuid.uuid4, editable=False)
+    case_reference = models.CharField(max_length=100, unique=True, verbose_name="Case Reference")

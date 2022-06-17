@@ -1,9 +1,10 @@
 import logging
-from typing import Any
+import uuid
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
+from web.domains.chief import types as chief_types
 from web.domains.chief.client import make_request, request_license
 
 logger = logging.getLogger(__name__)
@@ -24,7 +25,51 @@ class Command(BaseCommand):
         self.stdout.write(f"healthcheck response content: {response.content!r}")
 
         self.stdout.write("CHIEF update licence url")
-        data: dict[str, Any] = {}
-        response = request_license(data, check_response=False)
+
+        payload = self.get_sample_request()
+        response = request_license(payload)
+
         self.stdout.write(f"update-licence status code: {response.status_code}")
         self.stdout.write(f"update-licence response content: {response.json()}")
+
+    def get_sample_request(self) -> chief_types.CreateLicenceData:
+        data = {
+            "type": "OIL",
+            "action": "insert",
+            "id": str(uuid.uuid4()),
+            "reference": "GBOIL9089667C",
+            "case_reference": "IMA/2022/00001",
+            "start_date": "2022-06-06",
+            "end_date": "2025-05-30",
+            "organisation": {
+                "eori_number": "112233445566",
+                "name": "org name",
+                "address": {
+                    "line_1": "line_1",
+                    "line_2": "line_2",
+                    "line_3": "line_3",
+                    "line_4": "line_4",
+                    "line_5": "line_5",
+                    "postcode": "S118ZZ",  # /PS-IGNORE
+                },
+            },
+            "country_group": "G001",
+            "restrictions": "Some restrictions.\n\n Some more restrictions",
+            "goods": [
+                {
+                    "name": "not-used",  # It's forcing a value
+                    "quantity": 0,  # It's forcing me to send a number
+                    "unit": "ITG",  # ITG(30) is intangible
+                    "description": (
+                        "Firearms, component parts thereof, or ammunition of"
+                        " any applicable commodity code, other than those"
+                        " falling under Section 5 of the Firearms Act 1968"
+                        " as amended."
+                    ),
+                }
+            ],
+        }
+
+        payload = chief_types.CreateLicenceData(**{"licence": data})
+
+        return payload

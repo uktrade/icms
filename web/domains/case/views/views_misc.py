@@ -638,6 +638,10 @@ class CheckCaseDocumentGenerationView(
         elif Task.TaskType.DOCUMENT_SIGNING in active_tasks:
             msg = "Documents are still being generated"
 
+        elif Task.TaskType.CHIEF_ERROR in active_tasks:
+            msg = "Unable to send licence details to HMRC"
+            reload_workbasket = True
+
         else:
             # TODO: Sent a sentry message instead to handle the error gracefully
             raise Exception("Unknown state for application")

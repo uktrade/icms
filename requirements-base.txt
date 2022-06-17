@@ -34,3 +34,4 @@ structlog==20.1.0
 WeasyPrint==52.4
 whitenoise==5.2.0
 xlsxwriter==3.0.1
+pydantic==1.9.1

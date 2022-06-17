@@ -13,6 +13,7 @@ from web.domains.case.utils import (
     end_process_task,
     set_application_licence_or_certificate_active,
 )
+from web.domains.chief import client
 from web.domains.file.models import File
 from web.domains.user.models import User
 from web.flow.models import Process, Task
@@ -107,9 +108,7 @@ def create_document_pack_on_success(application_pk, user_pk):
         is_import = application.is_import_application()
 
         if is_import and application.application_type.chief_flag:
-            Task.objects.create(
-                process=application, task_type=Task.TaskType.CHIEF_WAIT, previous=task
-            )
+            client.send_application_to_chief(application, task)
         else:
             if application.status == ImpExpStatus.VARIATION_REQUESTED:
                 vr = application.variation_requests.get(status=VariationRequest.OPEN)
