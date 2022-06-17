@@ -18,8 +18,7 @@ class TestChiefClient:
         requests_mock.post(url, headers=mock_response_headers, text="OK")
         # Finished mocking the API response.
 
-        data = {"foo": "bar"}
-
+        data = FakeData()
         with mock.patch("mohawk.sender.Sender.accept_response"):
             with override_settings(
                 ICMS_HMRC_DOMAIN=example_domain, ICMS_HMRC_UPDATE_LICENCE_ENDPOINT=chief_url
@@ -29,3 +28,8 @@ class TestChiefClient:
         assert response.status_code == 200
         assert response.content == b"OK"
         assert response.headers["Content-type"] == "text/plain"
+
+
+class FakeData:
+    def json(self):
+        return '{"foo": "bar"}'

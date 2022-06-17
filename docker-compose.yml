@@ -62,6 +62,7 @@ services:
             - ICMS_HMRC_UPDATE_LICENCE_ENDPOINT
             - HAWK_AUTH_ID
             - HAWK_AUTH_KEY
+            - SEND_LICENCE_TO_CHIEF
         # stdin_open: true
         # tty: true
         ports:
@@ -93,6 +94,11 @@ services:
             - DJANGO_SETTINGS_MODULE
             - AWS_SES_ACCESS_KEY_ID
             - AWS_SES_SECRET_ACCESS_KEY
+            - ICMS_HMRC_DOMAIN
+            - ICMS_HMRC_UPDATE_LICENCE_ENDPOINT
+            - HAWK_AUTH_ID
+            - HAWK_AUTH_KEY
+            - SEND_LICENCE_TO_CHIEF
         depends_on:
             - redis
         volumes:

@@ -290,6 +290,7 @@ HTML_MINIFY = True
 COMPRESS_OFFLINE = True
 
 # ICMS-HMRC settings
+SEND_LICENCE_TO_CHIEF = env.bool("SEND_LICENCE_TO_CHIEF", default=False)
 ICMS_HMRC_DOMAIN = env.str(
     "ICMS_HMRC_DOMAIN", default="https://icms-hmrc.trade.dev.uktrade.digital/"
 )

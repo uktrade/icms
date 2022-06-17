@@ -1,13 +1,23 @@
-import typing
+import logging
+from typing import TYPE_CHECKING, Callable, Literal, Optional
 from urllib.parse import urljoin
 
 import mohawk
 import requests
 from django.conf import settings
 
+from web.domains.case._import.models import LiteChiefReference
 from web.domains.chief.views import seen_nonce
+from web.flow.models import ProcessTypes, Task
+from web.utils.sentry import capture_exception
 
-HTTPMethod = typing.Literal["GET", "OPTIONS", "HEAD", "POST", "PUT", "PATCH", "DELETE"]
+from . import serializers, types
+
+if TYPE_CHECKING:
+    from web.models import ImportApplication
+
+
+HTTPMethod = Literal["GET", "OPTIONS", "HEAD", "POST", "PUT", "PATCH", "DELETE"]
 
 
 def make_hawk_sender(method: HTTPMethod, url: str, **kwargs) -> mohawk.Sender:
@@ -45,15 +55,20 @@ def make_request(method: HTTPMethod, url: str, **kwargs) -> tuple[mohawk.Sender,
     return hawk_sender, response
 
 
-def request_license(data: dict, check_response=True) -> requests.Response:
+def request_license(data: types.CreateLicenceData) -> requests.Response:
     """Send data as JSON to icms-hmrc's CHIEF end-point, signed by Hawk auth."""
 
     url = urljoin(settings.ICMS_HMRC_DOMAIN, settings.ICMS_HMRC_UPDATE_LICENCE_ENDPOINT)
-    hawk_sender, response = make_request("POST", url, json=data)
 
-    # TODO: ICMSLST-1628 Remove this before completing
-    if check_response:
-        response.raise_for_status()
+    hawk_sender, response = make_request(
+        "POST", url, data=data.json(), headers={"Content-Type": "application/json"}
+    )
+
+    # TODO: ICMSLST-1660 Remove this when chief integration is finished
+    # log the response in case `raise_for_status` throws an error
+    logging.info(str(response.content))
+
+    response.raise_for_status()
 
     # Verify the response signature.
     server_auth = response.headers["Server-authorization"]
@@ -62,3 +77,37 @@ def request_license(data: dict, check_response=True) -> requests.Response:
     )
 
     return response
+
+
+def send_application_to_chief(
+    application: "ImportApplication", previous_task: Optional[Task]
+) -> None:
+    """Sends licence data to CHIEF if enabled."""
+
+    next_task = Task.TaskType.CHIEF_WAIT
+
+    try:
+        if settings.SEND_LICENCE_TO_CHIEF:
+            # For now use get_or_create (although we will need to revisit this when doing updates)
+            chief_ref, _ = LiteChiefReference.objects.get_or_create(
+                import_application=application, case_reference=application.reference
+            )
+            serialize = get_serializer(application.process_type)
+            data = serialize(application.get_specific_model(), str(chief_ref.lite_hmrc_id))
+            response = request_license(data)
+
+            print(response.status_code)
+            print(response.json())
+
+    except Exception:
+        capture_exception()
+        next_task = Task.TaskType.CHIEF_ERROR
+        chief_ref.delete()
+
+    Task.objects.create(process=application, task_type=next_task, previous=previous_task)
+
+
+def get_serializer(process_type) -> Callable[["ImportApplication", str], types.CreateLicenceData]:
+    serializer_map = {ProcessTypes.FA_OIL: serializers.fa_oil_serializer}
+
+    return serializer_map[process_type]
