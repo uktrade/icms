@@ -293,7 +293,9 @@ def get_commodity_details(rec: ImportApplication) -> types.CommodityDetails:
         opt_app: OutwardProcessingTradeApplication = rec
 
         # cp_commodity_codes & teg_commodity_codes are annotations
-        commodity_codes = sorted(opt_app.cp_commodity_codes + opt_app.teg_commodity_codes)
+        cp_commodity_codes = opt_app.cp_commodity_codes or []
+        teg_commodity_codes = opt_app.teg_commodity_codes or []
+        commodity_codes = sorted(cp_commodity_codes + teg_commodity_codes)
 
         details = types.CommodityDetails(
             origin_country=opt_app.cp_origin_country.name,

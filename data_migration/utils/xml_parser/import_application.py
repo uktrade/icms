@@ -941,3 +941,41 @@ class WoodContractParser(BaseXmlParser):
                 "reference": reference,
             }
         )
+
+
+class OPTCommodity(BaseXmlParser):
+    PARENT = dm.OutwardProcessingTradeApplication
+    MODEL = dm.OPTCpCommodity
+    ROOT_NODE = "/COMMODITIY_LIST/COMMODITY"
+
+    @classmethod
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional["Model"]:
+        """Example XML structure
+
+        <COMMODITY>
+          <COMMODITY_ID />
+        </COMMODITY>
+        """
+
+        commodity_id = int_or_none(
+            get_xml_val(xml, "./COMMODITY/COMMODITY_ID[not(fox-error)]/text()")
+        )
+
+        if not commodity_id:
+            return None
+
+        return cls.MODEL(
+            **{
+                "outwardprocessingtradeapplication_id": parent_pk,
+                "commodity_id": commodity_id,
+            }
+        )
+
+
+class OPTCpCommodity(OPTCommodity):
+    FIELD = "cp_commodities_xml"
+
+
+class OPTTegCommodity(OPTCommodity):
+    MODEL = dm.OPTTegCommodity
+    FIELD = "teg_commodities_xml"

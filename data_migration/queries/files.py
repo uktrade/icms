@@ -6,6 +6,7 @@ __all__ = [
     "wood_application_files",
     "textiles_application_files",
     "fa_certificate_files",
+    "opt_application_files",
 ]
 
 
@@ -84,6 +85,14 @@ sanction_application_files = import_application_files_base.format(
         "ima_type": "ADHOC",
         "ima_sub_type": "ADHOC1",
         "app_model": "sanctionsandadhocapplication",
+    }
+)
+
+opt_application_files = import_application_files_base.format(
+    **{
+        "ima_type": "OPT",
+        "ima_sub_type": "QUOTA",
+        "app_model": "outwardprocessingtradeapplication",
     }
 )
 

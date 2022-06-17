@@ -54,6 +54,7 @@ ref_m2m = [
 ]
 
 file_query_model = [
+    QueryModel(files, "opt_application_files", dm.FileCombined),
     QueryModel(files, "dfl_application_files", dm.FileCombined),
     QueryModel(files, "oil_application_files", dm.FileCombined),
     QueryModel(files, "sil_application_files", dm.FileCombined),
@@ -64,6 +65,8 @@ file_query_model = [
 ]
 
 ia_query_model = [
+    QueryModel(import_application, "opt_application", dm.OutwardProcessingTradeApplication),
+    QueryModel(import_application, "opt_checklist", dm.OPTChecklist),
     QueryModel(import_application, "fa_authorities", dm.FirearmsAuthority),
     # QueryModel(import_application, "fa_authority_linked_offices", dm.FirearmsAuthorityOffice),
     QueryModel(import_application, "section5_clauses", dm.Section5Clause),
@@ -89,6 +92,9 @@ ia_source_target = source_target_list(
         "Process",
         "ImportApplication",
         "ImportContact",
+        "OutwardProcessingTradeApplication",
+        "OPTChecklist",
+        "OutwardProcessingTradeFile",
         "SanctionsAndAdhocApplication",
         "SanctionsAndAdhocApplicationGoods",
         "FirearmsAuthority",
@@ -134,6 +140,17 @@ ia_source_target = source_target_list(
 )
 
 ia_m2m = [
+    M2M(
+        dm.OPTCpCommodity,
+        web.OutwardProcessingTradeApplication,
+        "cp_commodities",
+    ),
+    M2M(
+        dm.OPTTegCommodity,
+        web.OutwardProcessingTradeApplication,
+        "teg_commodities",
+    ),
+    M2M(dm.OutwardProcessingTradeFile, web.OutwardProcessingTradeApplication, "documents"),
     M2M(
         dm.OILApplicationFirearmAuthority,
         web.OpenIndividualLicenceApplication,
@@ -189,6 +206,8 @@ ia_m2m = [
 ]
 
 ia_xml = [
+    xml_parser.OPTCpCommodity,
+    xml_parser.OPTTegCommodity,
     xml_parser.SanctionGoodsParser,
     xml_parser.OILApplicationFirearmAuthorityParser,
     xml_parser.SILApplicationFirearmAuthorityParser,

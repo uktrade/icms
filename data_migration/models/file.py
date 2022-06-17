@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Generator
+from typing import TYPE_CHECKING, Any, Generator, Union
 
 from django.db import models
 from django.db.models import F
@@ -89,7 +89,7 @@ class File(MigrationBase):
 
 
 class FileM2MBase(MigrationBase):
-    TARGET_TYPE: str = "IMP_SUPPORTING_DOC"
+    TARGET_TYPE: Union[str, list[str]] = "IMP_SUPPORTING_DOC"
     FOLDER_TYPE: str = "IMP_APP_DOCUMENTS"
     FILE_MODEL: str = "file"
     APP_MODEL: str = ""
@@ -108,10 +108,14 @@ class FileM2MBase(MigrationBase):
         if not cls.APP_MODEL:
             raise NotImplementedError("APP_MODEL must be defined on the model")
 
-        filter_kwargs = {
-            "target__target_type": cls.TARGET_TYPE,
+        filter_kwargs: dict[str, Union[str, list[str]]] = {
             "target__folder__folder_type": cls.FOLDER_TYPE,
         }
+
+        if isinstance(cls.TARGET_TYPE, list):
+            filter_kwargs["target__target_type__in"] = cls.TARGET_TYPE
+        else:
+            filter_kwargs["target__target_type"] = cls.TARGET_TYPE
 
         if cls.FILTER_APP_MODEL:
             filter_kwargs["target__folder__app_model"] = cls.APP_MODEL
