@@ -56,6 +56,14 @@ LEFT JOIN (
 ) fv ON fv.fft_id = fft.id
 """
 
+derogations_application_files = import_application_files_base.format(
+    **{
+        "ima_type": "SAN",
+        "ima_sub_type": "SAN1",
+        "app_model": "derogationsapplication",
+    }
+)
+
 dfl_application_files = import_application_files_base.format(
     **{
         "ima_type": "FA",

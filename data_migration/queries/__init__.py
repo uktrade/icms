@@ -54,6 +54,7 @@ ref_m2m = [
 ]
 
 file_query_model = [
+    QueryModel(files, "derogations_application_files", dm.FileCombined),
     QueryModel(files, "opt_application_files", dm.FileCombined),
     QueryModel(files, "dfl_application_files", dm.FileCombined),
     QueryModel(files, "oil_application_files", dm.FileCombined),
@@ -65,6 +66,8 @@ file_query_model = [
 ]
 
 ia_query_model = [
+    QueryModel(import_application, "derogations_application", dm.DerogationsApplication),
+    QueryModel(import_application, "derogations_checklist", dm.DerogationsChecklist),
     QueryModel(import_application, "opt_application", dm.OutwardProcessingTradeApplication),
     QueryModel(import_application, "opt_checklist", dm.OPTChecklist),
     QueryModel(import_application, "fa_authorities", dm.FirearmsAuthority),
@@ -92,6 +95,8 @@ ia_source_target = source_target_list(
         "Process",
         "ImportApplication",
         "ImportContact",
+        "DerogationsApplication",
+        "DerogationsChecklist",
         "OutwardProcessingTradeApplication",
         "OPTChecklist",
         "OutwardProcessingTradeFile",
@@ -140,6 +145,11 @@ ia_source_target = source_target_list(
 )
 
 ia_m2m = [
+    M2M(
+        dm.DerogationsSupportingDoc,
+        web.DerogationsApplication,
+        "supporting_documents",
+    ),
     M2M(
         dm.OPTCpCommodity,
         web.OutwardProcessingTradeApplication,

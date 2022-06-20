@@ -122,7 +122,7 @@ class DerogationsChecklist(ChecklistBase):
     )
 
     supporting_document_received = models.CharField(
-        max_length=10,
+        max_length=3,
         choices=YesNoNAChoices.choices,
         null=True,
         verbose_name="Supporting documentation received?",
