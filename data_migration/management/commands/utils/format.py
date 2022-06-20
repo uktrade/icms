@@ -2,6 +2,8 @@ from typing import Any, Optional
 
 from django.utils import timezone
 
+from data_migration.utils.format import date_or_none
+
 
 def format_row(
     columns: list[str],
@@ -26,6 +28,8 @@ def format_row(
             # TODO ICMSLST-1493: Check timezone how timezones work in django.
             # Assumption that source is UTC and datetime is passed to models with source tz
             value = timezone.utc.localize(value)
+        elif value and column.endswith("_date"):
+            value = date_or_none(value)
 
         data[column] = value
 

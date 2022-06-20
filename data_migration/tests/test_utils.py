@@ -15,6 +15,7 @@ from data_migration.utils.format import (
     int_or_none,
     str_to_bool,
     str_to_yes_no,
+    validate_decimal,
     xml_str_or_none,
 )
 
@@ -72,12 +73,16 @@ def test_bulk_create():
     [
         (None, None),
         ("", None),
+        (datetime(2014, 10, 1).date(), datetime(2014, 10, 1).date()),
+        (datetime(2014, 10, 1), datetime(2014, 10, 1).date()),
         ("2014-10-01", datetime(2014, 10, 1).date()),
         ("01-10-2014", datetime(2014, 10, 1).date()),
         ("01-10-14", datetime(2014, 10, 1).date()),
         ("01/10/2014", datetime(2014, 10, 1).date()),
         ("01/10/14", datetime(2014, 10, 1).date()),
         ("01 October 2014", datetime(2014, 10, 1).date()),
+        ("01.10.2014", datetime(2014, 10, 1).date()),
+        ("01.10.14", datetime(2014, 10, 1).date()),
     ],
 )
 def test_date_or_none(test_input, expected):
@@ -189,3 +194,18 @@ def test_str_to_bool(bool_str, expected):
 )
 def test_str_to_yes_no(y_n_str, expected):
     assert str_to_yes_no(y_n_str) == expected
+
+
+@pytest.mark.parametrize(
+    "fields,data,expected",
+    [
+        (["a"], {"a": "1.2", "b": "1.2a"}, {"a": "1.2", "b": "1.2a"}),
+        (["b"], {"a": "1.2", "b": "1.2a"}, {"a": "1.2"}),
+        (["a", "b"], {"a": "1", "b": "1.2a"}, {"a": "1"}),
+        (["a", "b"], {"a": "11111111111", "b": "1.23412"}, {}),
+        (["a"], {"a": None, "b": "1.2a"}, {"a": None, "b": "1.2a"}),
+    ],
+)
+def test_validate_decimal(fields, data, expected):
+    validate_decimal(fields, data)
+    assert data == expected

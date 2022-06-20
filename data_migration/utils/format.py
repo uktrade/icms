@@ -1,7 +1,9 @@
 from datetime import date, datetime
-from typing import Any, Optional
+from decimal import Decimal, InvalidOperation
+from typing import Any, Optional, Union
 
-from django.forms import ValidationError
+from django.core.exceptions import ValidationError
+from django.core.validators import DecimalValidator
 from lxml import etree
 
 
@@ -19,22 +21,29 @@ def get_xml_val(xml: etree.ElementTree, xpath: str) -> Any:
     return val
 
 
-def date_or_none(date_str: Optional[str]) -> Optional[date]:
+def date_or_none(date_str: Union[Optional[str], date, datetime]) -> Optional[date]:
     """Convert a date string into a date
 
     :param date_str: A string of the date. Can come in a variety of formats
 
                     Examples: '14/10/24', '14/10/2024', '14-10-2024',
-                              '14-10-24', '2024-10-14', '14 October 2024'
+                              '14-10-24', '2024-10-14', '14 October 2024',
+                              '14.10.24', '14.10.2024',
     """
 
     if not date_str:
         return None
 
+    if isinstance(date_str, datetime):
+        return date_str.date()
+
+    if isinstance(date_str, date):
+        return date_str
+
     if " " in date_str and len(date_str) > 10:
         return datetime.strptime(date_str, "%d %B %Y").date()
 
-    p_date_str = date_str.replace("/", "-")
+    p_date_str = date_str.replace("/", "-").replace(".", "-")
     date_split = p_date_str.split("-")
 
     if len(date_split) > 3 or len(date_split[-1]) > 4:
@@ -106,3 +115,24 @@ def str_to_yes_no(y_n_str: Optional[str]) -> Optional[str]:
         return "n/a"
 
     return None
+
+
+def validate_decimal(
+    fields: list[str], data: dict[str, Any], max_digits=9, decimal_places=2
+) -> None:
+    """Pops the field from the dictionary of data if it is not a valid decimal"""
+
+    for field in fields:
+        if data[field] is None:
+            continue
+        try:
+            dv = DecimalValidator(max_digits, decimal_places)
+            dv(
+                Decimal(data[field]),
+            )
+        except InvalidOperation:
+            data.pop(field)
+        except ValueError:
+            data.pop(field)
+        except ValidationError:
+            data.pop(field)

@@ -1494,3 +1494,17 @@ TRADER_ID
 Enum
 SEND_LICENCE_TO_CHIEF"
 ICMSLST-1657 - Work
+commodity_id VARCHAR2(100
+VARCHAR2(100
+Humanitarian
+DerogationsChecklist
+Contract Sign Date"
+Contract Completion Date
+Provide the name
+Revolutionary Forces
+Article 2 of"
+EU Regulations 2580/2001
+881/2002
+Article 14
+Syrian
+"Syria National Coalition for Opposition and Revolutionary Forces (SNCORF

@@ -6,6 +6,7 @@ from django.db.models import F
 from data_migration.models.base import MigrationBase
 from data_migration.models.file import File, FileM2MBase
 from data_migration.models.reference import Commodity, CommodityGroup, Country
+from data_migration.utils.format import validate_decimal
 
 from .import_application import ChecklistBase, ImportApplication, ImportApplicationBase
 
@@ -66,13 +67,7 @@ class OutwardProcessingTradeApplication(ImportApplicationBase):
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
         data = super().data_export(data)
-        to_validate = ["rate_of_yield", "reimport_period"]
-
-        for field in to_validate:
-            try:
-                data[field] and int(float(data[field]))
-            except ValueError:
-                data.pop(field)
+        validate_decimal(["rate_of_yield", "reimport_period"], data)
 
         return data
 
