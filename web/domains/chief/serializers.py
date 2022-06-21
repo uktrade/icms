@@ -57,14 +57,7 @@ def fa_oil_serializer(
         country_group=country_code,
         country_code="",
         restrictions="\n\n".join(endorsements),
-        goods=[
-            types.GoodsData(
-                description=application.goods_description(),
-                name="not-used",  # It's forcing a value
-                quantity=0,  # It's forcing me to send a number
-                unit="ITG",  # ITG(30) is intangible
-            )
-        ],
+        goods=[types.GoodsData(description=application.goods_description())],
     )
 
     return types.CreateLicenceData(licence=licence_data)
