@@ -57,9 +57,6 @@ class Command(BaseCommand):
             "restrictions": "Some restrictions.\n\n Some more restrictions",
             "goods": [
                 {
-                    "name": "not-used",  # It's forcing a value
-                    "quantity": 0,  # It's forcing me to send a number
-                    "unit": "ITG",  # ITG(30) is intangible
                     "description": (
                         "Firearms, component parts thereof, or ammunition of"
                         " any applicable commodity code, other than those"

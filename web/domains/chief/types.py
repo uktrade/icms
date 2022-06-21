@@ -28,10 +28,11 @@ class OrganisationData(BaseModel):
 
 
 class GoodsData(BaseModel):
-    name: str
     description: str
-    quantity: float
-    unit: str  # Enum
+    # Enable when needed
+    # name: str
+    # quantity: float
+    # unit: str  # Enum
 
 
 # This has been tested for OIL only atm.
