@@ -15,9 +15,6 @@ from .base import (
     SupplementaryReportFirearmBase,
 )
 
-# TODO ICMSLST-1496: M2M to UserImportCertificate
-# TODO ICMSLST-1496: M2M to FirearmsAuthority
-
 
 class OpenIndividualLicenceApplication(FirearmBase):
     imad = models.OneToOneField(ImportApplication, on_delete=models.PROTECT, to_field="imad_id")

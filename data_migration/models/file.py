@@ -35,7 +35,11 @@ class FileFolder(MigrationBase):
 
     @classmethod
     def get_from_combined(cls) -> "QuerySet":
-        return FileCombined.objects.values("app_model", "folder_type", "folder_id").distinct()
+        return (
+            FileCombined.objects.values("app_model", "folder_type", "folder_id")
+            .distinct()
+            .iterator()
+        )
 
 
 class FileTarget(MigrationBase):
@@ -52,6 +56,7 @@ class FileTarget(MigrationBase):
             FileCombined.objects.filter(target_id__isnull=False)
             .values("folder_id", "target_type", "status", "target_id")
             .distinct()
+            .iterator()
         )
 
 
@@ -74,7 +79,9 @@ class File(MigrationBase):
     @classmethod
     def get_from_combined(cls) -> "QuerySet":
         return (
-            FileCombined.objects.filter(version_id__isnull=False, status="RECEIVED")
+            FileCombined.objects.filter(
+                version_id__isnull=False, status="RECEIVED", content_type__isnull=False
+            )
             .values(
                 "filename",
                 "content_type",
@@ -85,6 +92,7 @@ class File(MigrationBase):
                 "target_id",
             )
             .distinct()
+            .iterator()
         )
 
 

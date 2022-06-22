@@ -16,6 +16,7 @@ from data_migration.utils.format import (
     str_to_bool,
     str_to_yes_no,
     validate_decimal,
+    validate_int,
     xml_str_or_none,
 )
 
@@ -208,4 +209,19 @@ def test_str_to_yes_no(y_n_str, expected):
 )
 def test_validate_decimal(fields, data, expected):
     validate_decimal(fields, data)
+    assert data == expected
+
+
+@pytest.mark.parametrize(
+    "fields,data,expected",
+    [
+        (["a"], {"a": "12", "b": "1.2a"}, {"a": "12", "b": "1.2a"}),
+        (["b"], {"a": "1.2", "b": "1.2a"}, {"a": "1.2"}),
+        (["a", "b"], {"a": "1", "b": "1.2a"}, {"a": "1"}),
+        (["a", "b"], {"a": "11111111111", "b": "1.23412"}, {"a": "11111111111"}),
+        (["a"], {"a": None, "b": "1.2a"}, {"a": None, "b": "1.2a"}),
+    ],
+)
+def test_validate_int(fields, data, expected):
+    validate_int(fields, data)
     assert data == expected

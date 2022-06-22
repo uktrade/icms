@@ -7,7 +7,7 @@ __all__ = ["derogations_application", "derogations_checklist"]
 
 derogations_application_subquery = """
   SELECT
-    ad.ima_id, ad.id imad_id, xml_data, x.*
+    ad.ima_id, ad.id imad_id, x.*
   FROM impmgr.import_application_details ad,
     XMLTABLE('/*'
     PASSING ad.xml_data
@@ -25,6 +25,7 @@ derogations_application_subquery = """
       , purpose_of_request VARCHAR2(4000) PATH '/IMA/APP_DETAILS/SAN_DETAILS/SYRIA/REQUEST_PURPOSE/text()'
       , civilian_purpose_details  VARCHAR2(4000) PATH '/IMA/APP_DETAILS/SAN_DETAILS/SYRIA/REQUEST_PURPOSE_OTHER/text()'
       , cover_letter VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER/text()'
+      , file_folder_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
     ) x
     WHERE status_control = 'C'
 """

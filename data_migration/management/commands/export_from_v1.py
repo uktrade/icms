@@ -1,3 +1,4 @@
+from itertools import islice
 from typing import TYPE_CHECKING, Optional
 
 import cx_Oracle
@@ -40,13 +41,10 @@ class Command(MigrationBaseCommand):
             self._create_user_data()
 
         with cx_Oracle.connect(**connection_config) as connection:
-            cursor = connection.cursor()
-
-            self._export_data("reference", cursor, options["skip_ref"])
-            self._export_data("file", cursor, options["skip_file"])
-            self._export_data("import_application", cursor, options["skip_ia"])
-
-            cursor.close()
+            with connection.cursor() as cursor:
+                self._export_data("reference", cursor, options["skip_ref"])
+                self._export_data("file", cursor, options["skip_file"])
+                self._export_data("import_application", cursor, options["skip_ia"])
 
     def _export_data(self, data_type: DATA_TYPE, cursor: cx_Oracle.Cursor, skip: bool) -> None:
         """Retrives data from V1 and creates the objects in the data_migration models
@@ -123,7 +121,14 @@ class Command(MigrationBaseCommand):
         for model in FILE_MODELS:
             self.stdout.write(f"\tExtracting {model.__name__}")
             data = model.get_from_combined()
-            model.objects.bulk_create([model(**obj) for obj in data], batch_size=self.batch_size)
+
+            while True:
+                batch = [model(**obj) for obj in islice(data, self.batch_size)]
+
+                if not batch:
+                    break
+
+                model.objects.bulk_create(batch)
 
         self.stdout.write("File data extracted")
 
