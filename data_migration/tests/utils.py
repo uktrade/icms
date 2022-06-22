@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from data_migration import models as dm
-from data_migration.queries import import_application, reference
+from data_migration.queries import files, import_application, reference
 from web import models as web
 
 query_result = {
@@ -147,6 +147,106 @@ query_result = {
             (1001, "Y", "N", "true", "Y", "Y", None, "false", "N", "N", "N", "N", "N"),
         ],
     ),
+    files.sps_application_files: (
+        [
+            ("folder_id",),
+            ("folder_type",),
+            ("app_model",),
+            ("target_type",),
+            ("status",),
+            ("target_id",),
+            ("fft_id",),
+            ("version_id",),
+            ("created_datetime",),
+            ("created_by_id",),
+            ("path",),
+            ("filename",),
+            ("content_type",),
+            ("file_size",),
+        ],
+        [
+            (
+                100,
+                "IMP_APP_DOCUMENTS",
+                "priorsurveillanceapplication",
+                "IMP_SPS_DOC",
+                "RECEIVED",
+                1000,
+                1000,
+                10000,
+                datetime(2022, 4, 27),
+                2,
+                "contract/file",
+                "contract.pdf",
+                "pdf",
+                100,
+            ),
+            (
+                101,
+                "IMP_APP_DOCUMENTS",
+                "priorsurveillanceapplication",
+                "IMP_SPS_DOC",
+                "RECEIVED",
+                1001,
+                1001,
+                10001,
+                datetime(2022, 4, 27),
+                2,
+                "contract/file",
+                "contract.pdf",
+                "pdf",
+                100,
+            ),
+            (
+                100,
+                "IMP_APP_DOCUMENTS",
+                "priorsurveillanceapplication",
+                "IMP_SUPPORTING_DOC",
+                "RECEIVED",
+                1003,
+                1003,
+                10003,
+                datetime(2022, 4, 27),
+                2,
+                "contract/file",
+                "contract.pdf",
+                "pdf",
+                100,
+            ),
+            (
+                100,
+                "IMP_APP_DOCUMENTS",
+                "priorsurveillanceapplication",
+                "IMP_SUPPORTING_DOC",
+                "RECEIVED",
+                1002,
+                1002,
+                10002,
+                datetime(2022, 4, 27),
+                2,
+                "contract/file",
+                "contract.pdf",
+                "pdf",
+                100,
+            ),
+            (
+                101,
+                "IMP_APP_DOCUMENTS",
+                "priorsurveillanceapplication",
+                "IMP_SUPPORTING_DOC",
+                "RECEIVED",
+                1004,
+                1004,
+                10004,
+                datetime(2022, 4, 27),
+                2,
+                "contract/file",
+                "contract.pdf",
+                "pdf",
+                100,
+            ),
+        ],
+    ),
 }
 
 
@@ -156,6 +256,15 @@ class MockCursor:
         self.rows = None
         self.data = None
         self.description = None
+
+    def __enter__(self, *args, **kwargs):
+        return self
+
+    def __exit__(self, *args):
+        pass
+
+    def cursor(self):
+        return self
 
     def execute(self, query):
         self.description, self.data = query_result.get(query, (None, None))

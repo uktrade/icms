@@ -54,6 +54,8 @@ ref_m2m = [
 ]
 
 file_query_model = [
+    QueryModel(files, "sps_application_files", dm.FileCombined),
+    QueryModel(files, "sps_docs", dm.FileCombined),
     QueryModel(files, "derogations_application_files", dm.FileCombined),
     QueryModel(files, "opt_application_files", dm.FileCombined),
     QueryModel(files, "dfl_application_files", dm.FileCombined),
@@ -66,6 +68,7 @@ file_query_model = [
 ]
 
 ia_query_model = [
+    QueryModel(import_application, "sps_application", dm.PriorSurveillanceApplication),
     QueryModel(import_application, "derogations_application", dm.DerogationsApplication),
     QueryModel(import_application, "derogations_checklist", dm.DerogationsChecklist),
     QueryModel(import_application, "opt_application", dm.OutwardProcessingTradeApplication),
@@ -95,6 +98,8 @@ ia_source_target = source_target_list(
         "Process",
         "ImportApplication",
         "ImportContact",
+        "PriorSurveillanceContractFile",
+        "PriorSurveillanceApplication",
         "DerogationsApplication",
         "DerogationsChecklist",
         "OutwardProcessingTradeApplication",
@@ -145,6 +150,11 @@ ia_source_target = source_target_list(
 )
 
 ia_m2m = [
+    M2M(
+        dm.SPSSupportingDoc,
+        web.PriorSurveillanceApplication,
+        "supporting_documents",
+    ),
     M2M(
         dm.DerogationsSupportingDoc,
         web.DerogationsApplication,

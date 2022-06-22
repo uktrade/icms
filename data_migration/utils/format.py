@@ -136,3 +136,13 @@ def validate_decimal(
             data.pop(field)
         except ValidationError:
             data.pop(field)
+
+
+def validate_int(fields: list[str], data: dict[str, Any]) -> None:
+    for field in fields:
+        if data[field] is None:
+            continue
+        try:
+            int(data[field])
+        except ValueError:
+            data.pop(field)

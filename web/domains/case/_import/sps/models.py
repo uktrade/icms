@@ -43,7 +43,7 @@ class PriorSurveillanceApplication(ImportApplication):
         ),
     )
 
-    quantity = models.PositiveIntegerField(
+    quantity = models.PositiveBigIntegerField(
         null=True,
         verbose_name="Quantity",
         help_text=(
@@ -52,7 +52,7 @@ class PriorSurveillanceApplication(ImportApplication):
         ),
     )
 
-    value_gbp = models.PositiveIntegerField(
+    value_gbp = models.PositiveBigIntegerField(
         null=True,
         verbose_name="Value (GBP/£)",
         help_text=(
@@ -62,7 +62,7 @@ class PriorSurveillanceApplication(ImportApplication):
         ),
     )
 
-    value_eur = models.PositiveIntegerField(null=True, verbose_name="Value (EUR/€)")
+    value_eur = models.PositiveBigIntegerField(null=True, verbose_name="Value (EUR/€)")
 
     #  supporting documents
     supporting_documents = models.ManyToManyField(File, related_name="+")
