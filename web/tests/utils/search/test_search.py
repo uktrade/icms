@@ -299,6 +299,44 @@ def test_opt_commodity_details_correct(import_fixture_data: FixtureData):
     )
 
 
+def test_opt_app_with_no_cp_commodities(import_fixture_data: FixtureData):
+    app = _create_opt_application("opt app 1", import_fixture_data, cp_commodity_codes=[])
+
+    search_terms = SearchTerms(case_type="import", app_type=ImportApplicationType.Types.OPT)  # type: ignore[arg-type]
+    results = search_applications(search_terms, import_fixture_data.request.user)
+
+    assert results.total_rows == 1
+    check_application_references(results.records, "opt app 1")
+    check_commodity_details(
+        results.records[0].commodity_details,
+        expected_origin_country="Uruguay",
+        expected_consignment_country="USA",
+        expected_shipping_year=app.submit_datetime.year,
+        expected_goods_category=CP_CATEGORIES[0],
+        expected_commodity_codes=["5006009000", "5007206190", "5112301000"],
+    )
+
+
+def test_opt_app_with_no_teg_commodities(import_fixture_data: FixtureData):
+    app = _create_opt_application("opt app 1", import_fixture_data, teg_commodity_codes=[])
+
+    search_terms = SearchTerms(
+        case_type="import", app_type=ImportApplicationType.Types.OPT
+    )  # type: ignore[arg-type]
+    results = search_applications(search_terms, import_fixture_data.request.user)
+
+    assert results.total_rows == 1
+    check_application_references(results.records, "opt app 1")
+    check_commodity_details(
+        results.records[0].commodity_details,
+        expected_origin_country="Uruguay",
+        expected_consignment_country="USA",
+        expected_shipping_year=app.submit_datetime.year,
+        expected_goods_category=CP_CATEGORIES[0],
+        expected_commodity_codes=["6205200010", "6205908010"],
+    )
+
+
 def test_sanctionadhoc_commodity_details_correct(import_fixture_data: FixtureData):
     app = _create_sanctionadhoc_application("sanctionsadhoc app 1", import_fixture_data)
 

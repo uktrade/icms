@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.aggregates import ArrayAgg, JSONBAgg
 from django.db.models import F, FilteredRelation, Func, OuterRef, Q, Subquery
+from django.db.models.expressions import RawSQL
+from django.db.models.functions import Coalesce
 
 from web.domains.case._import.derogations.models import DerogationsApplication
 from web.domains.case._import.fa_dfl.models import DFLApplication
@@ -117,9 +119,11 @@ def get_opt_applications(search_ids: list[int]) -> "QuerySet[OutwardProcessingTr
         .values("commodity_array")
     )
 
+    # Create a default value for historic records that don't have cp / teg commodities
+    default_sub_query_val = RawSQL("'{}'", [])
     applications = applications.annotate(
-        cp_commodity_codes=Subquery(cp_commodity_codes_sq),
-        teg_commodity_codes=Subquery(teg_commodity_codes_sq),
+        cp_commodity_codes=Coalesce(Subquery(cp_commodity_codes_sq), default_sub_query_val),
+        teg_commodity_codes=Coalesce(Subquery(teg_commodity_codes_sq), default_sub_query_val),
     )
 
     applications = _add_import_licence_data(applications)
@@ -293,9 +297,7 @@ def get_commodity_details(rec: ImportApplication) -> types.CommodityDetails:
         opt_app: OutwardProcessingTradeApplication = rec
 
         # cp_commodity_codes & teg_commodity_codes are annotations
-        cp_commodity_codes = opt_app.cp_commodity_codes or []
-        teg_commodity_codes = opt_app.teg_commodity_codes or []
-        commodity_codes = sorted(cp_commodity_codes + teg_commodity_codes)
+        commodity_codes = sorted(opt_app.cp_commodity_codes + opt_app.teg_commodity_codes)
 
         details = types.CommodityDetails(
             origin_country=opt_app.cp_origin_country.name,
