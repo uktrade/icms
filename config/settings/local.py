@@ -98,6 +98,22 @@ LOGGING = {
     },
     "root": {
         "handlers": ["console"],
-        "level": "DEBUG",
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {
+            "level": "INFO",
+        },
+        # We don't want this noise locally
+        "django_structlog": {
+            "propagate": False,
+        },
+        # Uncomment if needed (Used when debugging mohawk stuff)
+        # "mohawk": {
+        #     'handlers': ['console'], "level": "DEBUG"
+        # },
+        # "urllib3": {
+        #     'handlers': ['console'], "level": "DEBUG"
+        # },
     },
 }
