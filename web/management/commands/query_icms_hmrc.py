@@ -13,24 +13,35 @@ logger = logging.getLogger(__name__)
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         """Run with the following command: `make manage COMMAND="query_icms_hmrc"`"""
-
-        # Debug logging by default - It's rather noisy!
-        root_logger = logging.getLogger("")
-        root_logger.setLevel(logging.INFO)
-
+        self.stdout.write("*" * 160)
         self.stdout.write("CHIEF healthcheck url")
         hawk_sender, response = make_request("GET", f"{settings.ICMS_HMRC_DOMAIN}healthcheck/")
         response.raise_for_status()
-        self.stdout.write(f"healthcheck status code: {response.status_code}")
-        self.stdout.write(f"healthcheck response content: {response.content!r}")
+        self.stdout.write(f"Response status code: {response.status_code}")
+        self.stdout.write(f"Response response content: {response.content!r}")
 
+        self.stdout.write("*" * 160)
         self.stdout.write("CHIEF update licence url")
-
         payload = self.get_sample_request()
         response = request_license(payload)
+        self.stdout.write(f"Response status code: {response.status_code}")
+        self.stdout.write(f"Response response content: {response.json()}")
 
-        self.stdout.write(f"update-licence status code: {response.status_code}")
-        self.stdout.write(f"update-licence response content: {response.json()}")
+        self.stdout.write("*" * 160)
+        self.stdout.write("CHIEF trigger send email task")
+        hawk_sender, response = make_request(
+            "GET", f"{settings.ICMS_HMRC_DOMAIN}mail/send-licence-updates-to-hmrc/"
+        )
+        self.stdout.write(f"response status code: {response.status_code}")
+        self.stdout.write(f"response response content: {response.content!r}")
+
+        self.stdout.write("*" * 160)
+        self.stdout.write("CHIEF get licence mail details")
+        hawk_sender, response = make_request(
+            "GET", f"{settings.ICMS_HMRC_DOMAIN}mail/licence/", params={"id": "GBOIL9089667C"}
+        )
+        self.stdout.write(f"Response status code: {response.status_code}")
+        self.stdout.write(f"Response response content: {response.content!r}")
 
     def get_sample_request(self) -> chief_types.CreateLicenceData:
         data = {

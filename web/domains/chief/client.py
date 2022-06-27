@@ -16,6 +16,7 @@ from . import serializers, types
 if TYPE_CHECKING:
     from web.models import ImportApplication
 
+logger = logging.getLogger(__name__)
 
 HTTPMethod = Literal["GET", "OPTIONS", "HEAD", "POST", "PUT", "PATCH", "DELETE"]
 
@@ -43,9 +44,17 @@ def make_request(method: HTTPMethod, url: str, **kwargs) -> tuple[mohawk.Sender,
             "content_type": prepped.headers["Content-type"],
         }
     else:
-        kwargs = {"always_hash_content": False}
+        kwargs = {
+            "content": "",
+            # We have to have a default content_type value for hawk to work
+            "content_type": prepped.headers.get("Content-type", "text/plain"),
+        }
 
-    hawk_sender = make_hawk_sender(method, url, seen_nonce=seen_nonce, **kwargs)
+    # Use prepped.url to ensure stuff like query params are included when comparing generated MACs
+    hawk_sender = make_hawk_sender(
+        method, prepped.url, seen_nonce=seen_nonce, **kwargs  # type:ignore[arg-type]
+    )
+
     prepped.headers["Authorization"] = hawk_sender.request_header
     prepped.headers["Hawk-Authentication"] = hawk_sender.request_header
 
@@ -66,7 +75,7 @@ def request_license(data: types.CreateLicenceData) -> requests.Response:
 
     # TODO: ICMSLST-1660 Remove this when chief integration is finished
     # log the response in case `raise_for_status` throws an error
-    logging.info(str(response.content))
+    logger.info(str(response.content))
 
     response.raise_for_status()
 
