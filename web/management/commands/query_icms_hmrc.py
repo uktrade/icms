@@ -21,8 +21,15 @@ class Command(BaseCommand):
         self.stdout.write(f"Response response content: {response.content!r}")
 
         self.stdout.write("*" * 160)
-        self.stdout.write("CHIEF update licence url")
-        payload = self.get_sample_request()
+        self.stdout.write("CHIEF update licence url (FA-OIL)")
+        payload = get_sample_fa_oil_request()
+        response = request_license(payload)
+        self.stdout.write(f"Response status code: {response.status_code}")
+        self.stdout.write(f"Response response content: {response.json()}")
+
+        self.stdout.write("*" * 160)
+        self.stdout.write("CHIEF update licence url (FA-DFL)")
+        payload = get_sample_fa_dfl_request()
         response = request_license(payload)
         self.stdout.write(f"Response status code: {response.status_code}")
         self.stdout.write(f"Response response content: {response.json()}")
@@ -43,41 +50,82 @@ class Command(BaseCommand):
         self.stdout.write(f"Response status code: {response.status_code}")
         self.stdout.write(f"Response response content: {response.content!r}")
 
-    def get_sample_request(self) -> chief_types.CreateLicenceData:
-        data = {
-            "type": "OIL",
-            "action": "insert",
-            "id": str(uuid.uuid4()),
-            "reference": "GBOIL9089667C",
-            "case_reference": "IMA/2022/00001",
-            "start_date": "2022-06-06",
-            "end_date": "2025-05-30",
-            "organisation": {
-                "eori_number": "112233445566",
-                "name": "org name",
-                "address": {
-                    "line_1": "line_1",
-                    "line_2": "line_2",
-                    "line_3": "line_3",
-                    "line_4": "line_4",
-                    "line_5": "line_5",
-                    "postcode": "S118ZZ",  # /PS-IGNORE
-                },
+
+def get_sample_fa_oil_request() -> chief_types.CreateLicenceData:
+    data = {
+        "type": "OIL",
+        "action": "insert",
+        "id": str(uuid.uuid4()),
+        "reference": "GBOIL9089667C",
+        "case_reference": "IMA/2022/00001",
+        "start_date": "2022-06-06",
+        "end_date": "2025-05-30",
+        "organisation": {
+            "eori_number": "112233445566",
+            "name": "org name",
+            "address": {
+                "line_1": "line_1",
+                "line_2": "line_2",
+                "line_3": "line_3",
+                "line_4": "line_4",
+                "line_5": "line_5",
+                "postcode": "S118ZZ",  # /PS-IGNORE
             },
-            "country_group": "G001",
-            "restrictions": "Some restrictions.\n\n Some more restrictions",
-            "goods": [
-                {
-                    "description": (
-                        "Firearms, component parts thereof, or ammunition of"
-                        " any applicable commodity code, other than those"
-                        " falling under Section 5 of the Firearms Act 1968"
-                        " as amended."
-                    ),
-                }
-            ],
-        }
+        },
+        "country_group": "G001",
+        "restrictions": "Some restrictions.\n\n Some more restrictions",
+        "goods": [
+            {
+                "description": (
+                    "Firearms, component parts thereof, or ammunition of"
+                    " any applicable commodity code, other than those"
+                    " falling under Section 5 of the Firearms Act 1968"
+                    " as amended."
+                ),
+            }
+        ],
+    }
 
-        payload = chief_types.CreateLicenceData(**{"licence": data})
+    payload = chief_types.CreateLicenceData(**{"licence": data})
 
-        return payload
+    return payload
+
+
+def get_sample_fa_dfl_request() -> chief_types.CreateLicenceData:
+    data = {
+        "type": "DFL",
+        "action": "insert",
+        "id": str(uuid.uuid4()),
+        "reference": "GBSIL9089277C",
+        "case_reference": "IMA/2022/00002",
+        "start_date": "2022-01-14",
+        "end_date": "2022-07-14",
+        "organisation": {
+            "eori_number": "665544332211",
+            "name": "DFL Organisation",
+            "address": {
+                "line_1": "line_1",
+                "line_2": "line_2",
+                "line_3": "line_3",
+                "line_4": "line_4",
+                "line_5": "",
+                "postcode": "S881ZZ",  # /PS-IGNORE
+            },
+        },
+        "country_code": "US",
+        "restrictions": (
+            "Not valid for items originating in or consigned from Iran, North"
+            " Korea, Libya, Syria or the Russian Federation.(including any"
+            " previous name by which these territories have been known)."
+        ),
+        "goods": [
+            {
+                "description": "Penn Arms 40mm multi shot launcher Model PGL6-40LR. serial No PGR 123"
+            },
+            {"description": "Penn Arms 40 mm single shot launcher serial No GSC 1234"},
+        ],
+    }
+
+    payload = chief_types.CreateLicenceData(**{"licence": data})
+
+    return payload

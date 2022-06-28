@@ -37,7 +37,7 @@ class GoodsData(BaseModel):
 
 # This has been tested for OIL only atm.
 class LicenceData(BaseModel):
-    type: Literal["OIL"]
+    type: Literal["OIL", "DFL"]
     action: Literal["insert", "cancel", "update"]
 
     id: str  # This is the uuid
