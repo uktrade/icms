@@ -93,6 +93,7 @@ def send_application_to_chief(
 ) -> None:
     """Sends licence data to CHIEF if enabled."""
 
+    chief_ref = None
     next_task = Task.TaskType.CHIEF_WAIT
 
     try:
@@ -103,20 +104,24 @@ def send_application_to_chief(
             )
             serialize = get_serializer(application.process_type)
             data = serialize(application.get_specific_model(), str(chief_ref.lite_hmrc_id))
-            response = request_license(data)
-
-            print(response.status_code)
-            print(response.json())
+            request_license(data)
 
     except Exception:
         capture_exception()
         next_task = Task.TaskType.CHIEF_ERROR
-        chief_ref.delete()
+
+        if chief_ref:
+            chief_ref.delete()
 
     Task.objects.create(process=application, task_type=next_task, previous=previous_task)
 
 
-def get_serializer(process_type) -> Callable[["ImportApplication", str], types.CreateLicenceData]:
-    serializer_map = {ProcessTypes.FA_OIL: serializers.fa_oil_serializer}
+def get_serializer(
+    process_type: str,
+) -> Callable[["ImportApplication", str], types.CreateLicenceData]:
+    serializer_map = {
+        ProcessTypes.FA_OIL: serializers.fa_oil_serializer,  # type: ignore[dict-item]
+        ProcessTypes.FA_DFL: serializers.fa_dfl_serializer,  # type: ignore[dict-item]
+    }
 
-    return serializer_map[process_type]
+    return serializer_map[process_type]  # type: ignore[index]
