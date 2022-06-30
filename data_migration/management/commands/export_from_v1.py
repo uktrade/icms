@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.management.base import CommandError
 
 from data_migration import models
-from data_migration.models.user import Importer, Office, User
+from data_migration.models.user import Office, User
 from data_migration.queries import DATA_TYPE, DATA_TYPE_QUERY_MODEL, FILE_MODELS
 
 from ._base import MigrationBaseCommand
@@ -158,14 +158,6 @@ class Command(MigrationBaseCommand):
         )
         user.set_password(password)
         user.save()
-
-        Importer.objects.create(
-            id=2,
-            is_active=True,
-            name="Prod org",
-            registered_number="42",
-            type="ORGANISATION",
-        )
 
         Office.objects.create(
             id=2,
