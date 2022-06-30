@@ -43,7 +43,6 @@ def test_create_user_no_username(mock_connect):
 
     assert not models.User.objects.exists()
     assert not models.Office.objects.exists()
-    assert not models.Importer.objects.exists()
 
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
@@ -58,7 +57,6 @@ def test_create_user_no_pw(mock_connect):
 
     assert not models.User.objects.exists()
     assert not models.Office.objects.exists()
-    assert not models.Importer.objects.exists()
 
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
@@ -72,7 +70,6 @@ def test_create_user(mock_connect):
 
     assert models.User.objects.exists()
     assert models.Office.objects.exists()
-    assert models.Importer.objects.exists()
 
 
 @override_settings(ALLOW_DATA_MIGRATION=True)

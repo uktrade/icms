@@ -7,7 +7,7 @@ __all__ = [
 ]
 
 fa_authorities = """
-SELECT iad.*, 2 importer_id
+SELECT iad.*, imp_id importer_id
 FROM impmgr.importer_authorities ia
 INNER JOIN (
   SELECT
@@ -51,8 +51,7 @@ AND ia.authority_type = 'FIREARMS'
 # ia.imp_id  importer_id
 section5_authorities = """
 SELECT
-  iad.*
-  , 2 importer_id
+  iad.*, imp_id importer_id
 FROM impmgr.importer_authorities ia
 INNER JOIN (
   SELECT

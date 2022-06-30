@@ -519,7 +519,10 @@ sps_data_source_target = {
 def test_import_sps_data(mock_connect):
     mock_connect.return_value = utils.MockConnect()
 
-    call_command("export_from_v1", "--skip_ref", "--skip_ia")
+    dm.User.objects.create(id=2, username="test_user")
+    dm.Importer.objects.create(id=2, name="test_org", type="ORGANISATION")
+
+    call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_user")
 
     factory.CountryFactory(id=1000, name="My Test Country")
     cg = dm.CountryGroup.objects.create(country_group_id="SPS", name="SPS")

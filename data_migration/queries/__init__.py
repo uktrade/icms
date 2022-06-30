@@ -7,7 +7,7 @@ from data_migration.models import task
 from data_migration.utils import xml_parser
 from web import models as web
 
-from . import files, import_application, reference
+from . import files, import_application, reference, user
 from .types import M2M, QueryModel, SourceTarget, source_target_list
 
 user_source_target = source_target_list(["User", "Importer", "Office"])
@@ -68,6 +68,7 @@ file_query_model = [
 ]
 
 ia_query_model = [
+    QueryModel(user, "importers", dm.Importer),
     QueryModel(import_application, "sps_application", dm.PriorSurveillanceApplication),
     QueryModel(import_application, "derogations_application", dm.DerogationsApplication),
     QueryModel(import_application, "derogations_checklist", dm.DerogationsChecklist),
