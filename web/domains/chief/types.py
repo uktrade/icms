@@ -29,15 +29,12 @@ class OrganisationData(BaseModel):
 
 class GoodsData(BaseModel):
     description: str
-    # Enable when needed
-    # name: str
-    # quantity: float
-    # unit: str  # Enum
+    quantity: Optional[float] = None
+    controlled_by: Optional[Literal["O", "Q"]] = None
 
 
-# This has been tested for OIL only atm.
 class LicenceData(BaseModel):
-    type: Literal["OIL", "DFL"]
+    type: Literal["OIL", "DFL", "SIL"]
     action: Literal["insert", "cancel", "update"]
 
     id: str  # This is the uuid
