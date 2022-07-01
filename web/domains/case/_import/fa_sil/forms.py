@@ -148,6 +148,7 @@ class SILGoodsSection2Form(forms.ModelForm):
 
 
 class SILGoodsSection5Form(forms.ModelForm):
+    # TODO: Revisit when implementing ICMSLT-1686
     SUBSECTION_CHOICES = (
         "5(1)(a) Any firearm capable of burst- or fully automatic fire and component parts of these.",
         "5(1)(ab) Any semi-automatic, self-loading or pump action rifled gun and carbines but not pistols.",

@@ -1519,3 +1519,5 @@ Model PGL6-40LR
 No PGR 123
 Section 5(1)(aba
 GBSIL3333333H
+Section 5(1)(a
+15.2mm
