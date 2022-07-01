@@ -1,49 +1,25 @@
 from typing import TYPE_CHECKING
 
-from web.domains.case._import.fa_dfl.models import DFLApplication
-from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case.models import CaseDocumentReference
 
 from . import types
 
 if TYPE_CHECKING:
-    from web.models import ImportApplication, Importer, Office
+    from django.db.models import QuerySet
 
-
-def fa_oil_serializer(
-    application: OpenIndividualLicenceApplication, chief_id: str
-) -> types.CreateLicenceData:
-    """Return FA OIL licence data to send to chief."""
-
-    organisation = _get_organisation(application)
-    licence = application.get_most_recent_licence()
-    licence_ref: CaseDocumentReference = licence.document_references.get(
-        document_type=CaseDocumentReference.Type.LICENCE
+    from web.models import SILGoodsSection582Obsolete  # /PS-IGNORE
+    from web.models import (
+        DFLApplication,
+        ImportApplication,
+        Importer,
+        Office,
+        OpenIndividualLicenceApplication,
+        SILApplication,
+        SILGoodsSection5,
     )
 
-    # fa-oil hard codes the value to any country so it is a group
-    country_code = application.origin_country.hmrc_code
-    restrictions = _get_restrictions(application)
 
-    licence_data = types.LicenceData(
-        type="OIL",
-        action="insert",
-        id=chief_id,
-        reference=licence_ref.reference,
-        case_reference=application.reference,
-        start_date=licence.licence_start_date,
-        end_date=licence.licence_end_date,
-        organisation=organisation,
-        country_group=country_code,
-        country_code="",
-        restrictions=restrictions,
-        goods=[types.GoodsData(description=application.goods_description())],
-    )
-
-    return types.CreateLicenceData(licence=licence_data)
-
-
-def fa_dfl_serializer(application: DFLApplication, chief_id: str) -> types.CreateLicenceData:
+def fa_dfl_serializer(application: "DFLApplication", chief_id: str) -> types.CreateLicenceData:
     """Return FA DFL licence data to send to chief."""
 
     organisation = _get_organisation(application)
@@ -56,6 +32,7 @@ def fa_dfl_serializer(application: DFLApplication, chief_id: str) -> types.Creat
         for g in application.goods_certificates.all()
     ]
 
+    country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
     licence_data = types.LicenceData(
         type="DFL",
         action="insert",
@@ -65,12 +42,154 @@ def fa_dfl_serializer(application: DFLApplication, chief_id: str) -> types.Creat
         start_date=licence.licence_start_date,
         end_date=licence.licence_end_date,
         organisation=organisation,
-        country_code=application.origin_country.hmrc_code,
         restrictions=_get_restrictions(application),
         goods=goods,
+        **country_kwargs,
     )
 
     return types.CreateLicenceData(licence=licence_data)
+
+
+def fa_oil_serializer(
+    application: "OpenIndividualLicenceApplication", chief_id: str
+) -> types.CreateLicenceData:
+    """Return FA OIL licence data to send to chief."""
+
+    organisation = _get_organisation(application)
+    licence = application.get_most_recent_licence()
+    licence_ref: CaseDocumentReference = licence.document_references.get(
+        document_type=CaseDocumentReference.Type.LICENCE
+    )
+
+    # fa-oil hard codes the value to any country so it is a group
+    country_group_code = application.origin_country.hmrc_code
+    restrictions = _get_restrictions(application)
+
+    licence_data = types.LicenceData(
+        type="OIL",
+        action="insert",
+        id=chief_id,
+        reference=licence_ref.reference,
+        case_reference=application.reference,
+        start_date=licence.licence_start_date,
+        end_date=licence.licence_end_date,
+        organisation=organisation,
+        country_group=country_group_code,
+        country_code="",
+        restrictions=restrictions,
+        goods=[types.GoodsData(description=application.goods_description())],
+    )
+
+    return types.CreateLicenceData(licence=licence_data)
+
+
+def fa_sil_serializer(application: "SILApplication", chief_id: str) -> types.CreateLicenceData:
+    organisation = _get_organisation(application)
+    licence = application.get_most_recent_licence()
+    licence_ref: CaseDocumentReference = licence.document_references.get(
+        document_type=CaseDocumentReference.Type.LICENCE
+    )
+
+    goods = []
+
+    if application.section1:
+        goods.extend(
+            _get_section_goods(application.goods_section1.filter(is_active=True), "Section 1")
+        )
+
+    if application.section2:
+        goods.extend(
+            _get_section_goods(application.goods_section2.filter(is_active=True), "Section 2")
+        )
+
+    if application.section5:
+        goods.extend(_get_section_5_goods(application.goods_section5.filter(is_active=True)))
+
+    if application.section58_obsolete:
+        goods.extend(
+            _get_section_58_obsolete_goods(
+                application.goods_section582_obsoletes.filter(is_active=True)
+            )
+        )
+
+    if application.section58_other:
+        goods.extend(
+            _get_section_goods(
+                application.goods_section582_others.filter(is_active=True), "Section 58(2)"
+            )
+        )
+
+    country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
+    licence_data = types.LicenceData(
+        type="SIL",
+        action="insert",
+        id=chief_id,
+        reference=licence_ref.reference,
+        case_reference=application.reference,
+        start_date=licence.licence_start_date,
+        end_date=licence.licence_end_date,
+        organisation=organisation,
+        restrictions=_get_restrictions(application),
+        goods=goods,
+        **country_kwargs,
+    )
+
+    return types.CreateLicenceData(licence=licence_data)
+
+
+def _get_section_goods(goods_qs, section):
+    return [
+        types.GoodsData(
+            description=f"{g.description} to which {section} of the Firearms Act 1968, as amended, applies.",
+            quantity=g.quantity,
+            controlled_by="Q",
+        )
+        for g in goods_qs
+    ]
+
+
+def _get_section_5_goods(goods_qs: "QuerySet[SILGoodsSection5]"):
+    goods = []
+
+    for g in goods_qs:
+        # TODO: Revisit when implementing ICMSLT-1686
+        # This shouldn't use the full subsection but they are currently hardcoded.
+        # The hardcoded list needs resolving before we can fix this.
+        section = f"Section 5({g.subsection})"
+        description = (
+            f"{g.description} to which {section} of the Firearms Act 1968, as amended, applies."
+        )
+
+        if g.unlimited_quantity:
+            kwargs = {"controlled_by": "O"}
+        else:
+            kwargs = {"quantity": g.quantity, "controlled_by": "Q"}
+
+        goods.append(types.GoodsData(description=description, **kwargs))
+
+    return goods
+
+
+def _get_section_58_obsolete_goods(goods_qs: "QuerySet[SILGoodsSection582Obsolete]"):  # /PS-IGNORE
+    goods = []
+
+    for g in goods_qs:
+        gd = g.description
+        oc = g.obsolete_calibre
+        description = (
+            f"{gd} chambered in the obsolete calibre {oc} to which Section 58(2)"
+            f" of the Firearms Act 1968, as amended, applies."
+        )
+
+        goods.append(
+            types.GoodsData(description=description, quantity=g.quantity, controlled_by="Q")
+        )
+
+    return goods
+
+
+def _get_fa_sil_description(goods_description: str, section: str) -> str:
+    return f"{goods_description} to which {section} of the Firearms Act 1968, as amended, applies."
 
 
 def _get_organisation(application: "ImportApplication") -> types.OrganisationData:
@@ -127,3 +246,10 @@ def _get_restrictions(application: "ImportApplication") -> str:
     endorsements = [e.content for e in application.endorsements.all()]
 
     return "\n\n".join(endorsements)
+
+
+def _get_country_kwargs(code) -> dict[str, str]:
+    if len(code) == 2:
+        return {"country_code": code}
+    else:
+        return {"country_group": code}
