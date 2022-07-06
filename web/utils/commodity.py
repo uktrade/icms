@@ -100,7 +100,10 @@ def annotate_commodity_unit(model: "QuerySet[Model]", commodity_path=""):
         pk=OuterRef(f"{commodity_path}commoditygroup__unit")
     ).order_by("-pk")
 
-    return model.annotate(unit_description=Subquery(commodity_unit.values("description")[:1]))
+    return model.annotate(
+        unit_description=Subquery(commodity_unit.values("description")[:1]),
+        hmrc_code=Subquery(commodity_unit.values("hmrc_code")[:1]),
+    )
 
 
 def get_commodity_group_data(
