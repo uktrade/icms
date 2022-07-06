@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from web.domains.case.models import CaseDocumentReference
+from web.utils.commodity import annotate_commodity_unit
 
 from . import types
 
@@ -14,9 +15,52 @@ if TYPE_CHECKING:
         Importer,
         Office,
         OpenIndividualLicenceApplication,
+        SanctionsAndAdhocApplication,
+        SanctionsAndAdhocApplicationGoods,
         SILApplication,
         SILGoodsSection5,
     )
+
+
+def sanction_serializer(
+    application: "SanctionsAndAdhocApplication", chief_id: str
+) -> types.CreateLicenceData:
+    organisation = _get_organisation(application)
+    licence = application.get_most_recent_licence()
+    licence_ref: CaseDocumentReference = licence.document_references.get(
+        document_type=CaseDocumentReference.Type.LICENCE
+    )
+
+    sanction_goods: "QuerySet[SanctionsAndAdhocApplicationGoods]" = (
+        application.sanctionsandadhocapplicationgoods_set.all().select_related("commodity")
+    )
+    goods_qs = annotate_commodity_unit(sanction_goods, "commodity__").distinct()
+
+    goods = [
+        types.SanctionGoodsData(
+            commodity=g.commodity.commodity_code,
+            quantity=g.quantity_amount,
+            unit=g.hmrc_code,  # This is an annotation
+        )
+        for g in goods_qs
+    ]
+
+    country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
+    licence_data = types.SanctionsLicenceData(
+        type="SAN",
+        action="insert",
+        id=chief_id,
+        reference=licence_ref.reference,
+        case_reference=application.reference,
+        start_date=licence.licence_start_date,
+        end_date=licence.licence_end_date,
+        organisation=organisation,
+        restrictions=_get_restrictions(application),
+        goods=goods,
+        **country_kwargs,
+    )
+
+    return types.CreateLicenceData(licence=licence_data)
 
 
 def fa_dfl_serializer(application: "DFLApplication", chief_id: str) -> types.CreateLicenceData:
@@ -28,12 +72,12 @@ def fa_dfl_serializer(application: "DFLApplication", chief_id: str) -> types.Cre
         document_type=CaseDocumentReference.Type.LICENCE
     )
     goods = [
-        types.GoodsData(description=g.goods_description)
+        types.FirearmGoodsData(description=g.goods_description)
         for g in application.goods_certificates.all()
     ]
 
     country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
-    licence_data = types.LicenceData(
+    licence_data = types.FirearmLicenceData(
         type="DFL",
         action="insert",
         id=chief_id,
@@ -61,11 +105,11 @@ def fa_oil_serializer(
         document_type=CaseDocumentReference.Type.LICENCE
     )
 
-    # fa-oil hard codes the value to any country so it is a group
+    # fa-oil hard codes the value to any country therefore it is a group
     country_group_code = application.origin_country.hmrc_code
     restrictions = _get_restrictions(application)
 
-    licence_data = types.LicenceData(
+    licence_data = types.FirearmLicenceData(
         type="OIL",
         action="insert",
         id=chief_id,
@@ -75,9 +119,8 @@ def fa_oil_serializer(
         end_date=licence.licence_end_date,
         organisation=organisation,
         country_group=country_group_code,
-        country_code="",
         restrictions=restrictions,
-        goods=[types.GoodsData(description=application.goods_description())],
+        goods=[types.FirearmGoodsData(description=application.goods_description())],
     )
 
     return types.CreateLicenceData(licence=licence_data)
@@ -120,7 +163,7 @@ def fa_sil_serializer(application: "SILApplication", chief_id: str) -> types.Cre
         )
 
     country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
-    licence_data = types.LicenceData(
+    licence_data = types.FirearmLicenceData(
         type="SIL",
         action="insert",
         id=chief_id,
@@ -139,10 +182,11 @@ def fa_sil_serializer(application: "SILApplication", chief_id: str) -> types.Cre
 
 def _get_section_goods(goods_qs, section):
     return [
-        types.GoodsData(
+        types.FirearmGoodsData(
             description=f"{g.description} to which {section} of the Firearms Act 1968, as amended, applies.",
             quantity=g.quantity,
-            controlled_by="Q",
+            controlled_by=types.ControlledByEnum.QUANTITY,
+            unit=types.QuantityCodeEnum.NUMBER,
         )
         for g in goods_qs
     ]
@@ -161,11 +205,15 @@ def _get_section_5_goods(goods_qs: "QuerySet[SILGoodsSection5]"):
         )
 
         if g.unlimited_quantity:
-            kwargs = {"controlled_by": "O"}
+            kwargs: dict[str, Any] = {"controlled_by": types.ControlledByEnum.OPEN}
         else:
-            kwargs = {"quantity": g.quantity, "controlled_by": "Q"}
+            kwargs = {
+                "quantity": g.quantity,
+                "controlled_by": types.ControlledByEnum.QUANTITY,
+                "unit": types.QuantityCodeEnum.NUMBER,
+            }
 
-        goods.append(types.GoodsData(description=description, **kwargs))
+        goods.append(types.FirearmGoodsData(description=description, **kwargs))
 
     return goods
 
@@ -182,7 +230,12 @@ def _get_section_58_obsolete_goods(goods_qs: "QuerySet[SILGoodsSection582Obsolet
         )
 
         goods.append(
-            types.GoodsData(description=description, quantity=g.quantity, controlled_by="Q")
+            types.FirearmGoodsData(
+                description=description,
+                quantity=g.quantity,
+                controlled_by=types.ControlledByEnum.QUANTITY,
+                unit=types.QuantityCodeEnum.NUMBER,
+            )
         )
 
     return goods

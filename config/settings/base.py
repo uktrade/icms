@@ -299,6 +299,7 @@ ICMS_HMRC_UPDATE_LICENCE_ENDPOINT = env.str(
 )
 HAWK_AUTH_ID = env.str("HAWK_AUTH_ID", default="icms")
 HAWK_AUTH_KEY = env.str("HAWK_AUTH_KEY", default="secret")
+CHIEF_MAX_QUANTITY = 99_999_999_999.999
 
 # Data migration settings
 ALLOW_DATA_MIGRATION = env.bool("ALLOW_DATA_MIGRATION", default=False)

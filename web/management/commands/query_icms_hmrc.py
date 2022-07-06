@@ -9,6 +9,14 @@ from web.domains.chief.client import make_request, request_license
 
 logger = logging.getLogger(__name__)
 
+# Controlled by values
+HMRC_OPEN = chief_types.ControlledByEnum.OPEN
+HMRC_QUANTITY = chief_types.ControlledByEnum.QUANTITY
+
+# quantity code values
+HMRC_NUM = chief_types.QuantityCodeEnum.NUMBER
+HMRC_KG = chief_types.QuantityCodeEnum.KG
+
 
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
@@ -37,6 +45,13 @@ class Command(BaseCommand):
         self.stdout.write("*" * 160)
         self.stdout.write("CHIEF update licence url (FA-SIL)")
         payload = get_sample_fa_sil_request()
+        response = request_license(payload)
+        self.stdout.write(f"Response status code: {response.status_code}")
+        self.stdout.write(f"Response response content: {response.json()}")
+
+        self.stdout.write("*" * 160)
+        self.stdout.write("CHIEF update licence url (SAN)")
+        payload = get_sample_sanction_request()
         response = request_license(payload)
         self.stdout.write(f"Response status code: {response.status_code}")
         self.stdout.write(f"Response response content: {response.json()}")
@@ -143,29 +158,34 @@ def get_sample_fa_sil_request() -> chief_types.CreateLicenceData:
         {
             "description": "9mm Pistol. Part number: 1 to which Section 5(1)(aba) of the Firearms Act 1968, as amended, applies.",
             "quantity": 1,
-            "controlled_by": "Q",
+            "controlled_by": HMRC_QUANTITY,
+            "unit": HMRC_NUM,
         },
         {
             "description": "9mm Pistol. Part number: 2 to which Section 5(1)(aba) of the Firearms Act 1968, as amended, applies.",
             "quantity": 2,
-            "controlled_by": "Q",
+            "controlled_by": HMRC_QUANTITY,
+            "unit": HMRC_NUM,
         },
         {
             "description": "9mm Pistol. Part number: 3 to which Section 5(1)(aba) of the Firearms Act 1968, as amended, applies.",
             "quantity": 3,
-            "controlled_by": "Q",
+            "controlled_by": HMRC_QUANTITY,
+            "unit": HMRC_NUM,
         },
         {
             "description": "9mm Pistol. Part number: 4 to which Section 5(1)(aba) of the Firearms Act 1968, as amended, applies.",
             "quantity": 4,
-            "controlled_by": "Q",
+            "controlled_by": HMRC_QUANTITY,
+            "unit": HMRC_NUM,
         },
         {
             "description": "9mm Pistol. Part number: 5 to which Section 5(1)(aba) of the Firearms Act 1968, as amended, applies.",
             "quantity": 5,
-            "controlled_by": "Q",
+            "controlled_by": HMRC_QUANTITY,
+            "unit": HMRC_NUM,
         },
-        {"description": "Unlimited Description goods line", "controlled_by": "O"},
+        {"description": "Unlimited Description goods line", "controlled_by": HMRC_OPEN},
     ]
 
     data = {
@@ -190,6 +210,58 @@ def get_sample_fa_sil_request() -> chief_types.CreateLicenceData:
         },
         "country_code": "US",
         "restrictions": "Sample restrictions",
+        "goods": goods,
+    }
+
+    payload = chief_types.CreateLicenceData(**{"licence": data})
+
+    return payload
+
+
+def get_sample_sanction_request() -> chief_types.CreateLicenceData:
+    goods = [
+        {
+            "commodity": "7214993100",
+            "quantity": 26710,
+            "controlled_by": HMRC_QUANTITY,
+            "unit": HMRC_KG,
+        },
+        {
+            "commodity": "7214997100",
+            "quantity": 48042,
+            "controlled_by": HMRC_QUANTITY,
+            "unit": HMRC_KG,
+        },
+        {
+            "commodity": "7215508000",
+            "quantity": 4952,
+            "controlled_by": HMRC_QUANTITY,
+            "unit": HMRC_KG,
+        },
+    ]
+
+    data = {
+        "type": "SAN",
+        "action": "insert",
+        "id": str(uuid.uuid4()),
+        "reference": "GBSAN4444444A",
+        "case_reference": "IMA/2022/00004",
+        "start_date": "2022-06-29",
+        "end_date": "2024-12-29",
+        "organisation": {
+            "eori_number": "112233445566",
+            "name": "Sanction Organisation",
+            "address": {
+                "line_1": "line_1",
+                "line_2": "line_2",
+                "line_3": "line_3",
+                "line_4": "",
+                "line_5": "",
+                "postcode": "S227ZZ",  # /PS-IGNORE
+            },
+        },
+        "country_code": "RU",
+        "restrictions": "",
         "goods": goods,
     }
 

@@ -123,6 +123,7 @@ def get_serializer(
         ProcessTypes.FA_OIL: serializers.fa_oil_serializer,  # type: ignore[dict-item]
         ProcessTypes.FA_DFL: serializers.fa_dfl_serializer,  # type: ignore[dict-item]
         ProcessTypes.FA_SIL: serializers.fa_sil_serializer,  # type: ignore[dict-item]
+        ProcessTypes.SANCTIONS: serializers.sanction_serializer,  # type: ignore[dict-item]
     }
 
     return serializer_map[process_type]  # type: ignore[index]

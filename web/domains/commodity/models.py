@@ -6,6 +6,12 @@ from web.models.mixins import Archivable
 
 
 class Unit(models.Model):
+    """Unit is a class used to describe a unit with various labels that ultimately have the same hmrc_code
+
+    e.g. "Pieces" and "Units" both have the same hmrc_code of 30
+    The codes are defined here: https://www.gov.uk/government/publications/uk-trade-tariff-quantity-codes/uk-trade-tariff-quantity-codes
+    """
+
     unit_type = models.CharField(max_length=20)
     description = models.CharField(max_length=100)
     short_description = models.CharField(max_length=30)

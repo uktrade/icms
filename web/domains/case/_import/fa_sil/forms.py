@@ -1,6 +1,7 @@
 from typing import Any
 
 from django import forms
+from django.conf import settings
 from django.utils.safestring import mark_safe
 from django_select2 import forms as s2forms
 
@@ -110,6 +111,8 @@ class SILGoodsSection1Form(forms.ModelForm):
             "description": forms.Textarea({"rows": 3}),
         }
 
+    quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["manufacture"].required = True
@@ -132,6 +135,8 @@ class SILGoodsSection2Form(forms.ModelForm):
             "manufacture": YesNoRadioSelectInline,
             "description": forms.Textarea({"rows": 3}),
         }
+
+    quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -184,6 +189,8 @@ class SILGoodsSection5Form(forms.ModelForm):
             "manufacture": YesNoRadioSelectInline,
             "description": forms.Textarea({"rows": 3}),
         }
+
+    quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -242,6 +249,8 @@ class SILGoodsSection582ObsoleteForm(forms.ModelForm):  # /PS-IGNORE
             "description": forms.Textarea({"rows": 3}),
             "obsolete_calibre": s2forms.Select2Widget,
         }
+
+    quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -337,6 +346,8 @@ class SILGoodsSection582OtherForm(forms.ModelForm):  # /PS-IGNORE
             "bore": YesNoRadioSelectInline,
             "description": forms.Textarea({"rows": 3}),
         }
+
+    quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -449,6 +460,8 @@ class ResponsePrepBaseForm(forms.ModelForm):
 
     class Meta:
         fields = ("description", "quantity")
+
+    quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY)
 
 
 class ResponsePrepSILGoodsSection1Form(ResponsePrepBaseForm):
