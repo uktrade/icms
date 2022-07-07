@@ -12,8 +12,7 @@ FROM impmgr.importer_authorities ia
 INNER JOIN (
   SELECT
     iad.ia_id id
-    , iad.xml_data
-    , iad.status
+    , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
     , x.*
   FROM impmgr.importer_authority_details iad,
     XMLTABLE('/*'
@@ -27,7 +26,7 @@ INNER JOIN (
       , further_details VARCHAR2(4000) PATH '/AUTHORITY/UNCATEGORIZED_DETAILS/text()'
       , issuing_constabulary_id INTEGER PATH '/AUTHORITY/ISSUING_CONSTABULARY/text()'
       , act_quantity_xml XMLTYPE PATH '/AUTHORITY/GOODS_CATEGORY_LIST'
-      , documents_ff_id INTEGER PATH '/AUTHORITY/DOCUMENTS_FF_ID/text()'
+      , file_folder_id INTEGER PATH '/AUTHORITY/DOCUMENTS_FF_ID/text()'
       , start_date VARCHAR2(4000) PATH '/AUTHORITY/START_DATE/text()'
       , end_date VARCHAR2(4000) PATH '/AUTHORITY/END_DATE/text()'
     ) x
@@ -40,7 +39,7 @@ INNER JOIN (
 fa_authority_linked_offices = """
 SELECT
   ia_id firearmsauthority_id
-  , office_id
+  , imp_id || '-' || office_id office_legacy_id
 FROM impmgr.xview_imp_auth_linked_offices xialo
 INNER JOIN impmgr.importer_authorities ia ON xialo.ia_id = ia.id
 WHERE status_control = 'C'
@@ -48,7 +47,6 @@ AND ia.authority_type = 'FIREARMS'
 """
 
 
-# ia.imp_id  importer_id
 section5_authorities = """
 SELECT
   iad.*, imp_id importer_id
@@ -69,7 +67,7 @@ INNER JOIN (
       , certificate_type VARCHAR2(4000) PATH '/AUTHORITY/CERTIFICATE_TYPE/text()'
       , further_details VARCHAR2(4000) PATH '/AUTHORITY/UNCATEGORIZED_DETAILS/text()'
       , clause_quantity_xml XMLTYPE PATH '/AUTHORITY/GOODS_CATEGORY_LIST'
-      , documents_ff_id INTEGER PATH '/AUTHORITY/DOCUMENTS_FF_ID/text()'
+      , file_folder_id INTEGER PATH '/AUTHORITY/DOCUMENTS_FF_ID/text()'
       , start_date VARCHAR2(4000) PATH '/AUTHORITY/START_DATE/text()'
       , end_date VARCHAR2(4000) PATH '/AUTHORITY/END_DATE/text()'
     ) x
@@ -96,7 +94,7 @@ FROM impmgr.section_5_clauses
 section5_linked_offices = """
 SELECT
   ia_id section5authority_id
-  , office_id
+  , imp_id || '-' || office_id office_legacy_id
 FROM impmgr.xview_imp_auth_linked_offices xialo
 INNER JOIN impmgr.importer_authorities ia ON xialo.ia_id = ia.id
 WHERE status_control = 'C'

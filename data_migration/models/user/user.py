@@ -1,5 +1,8 @@
+from typing import Any, Generator
+
 from django.contrib.auth.hashers import make_password
 from django.db import models
+from django.db.models import F
 from django.utils import timezone
 
 from data_migration.models.base import MigrationBase
@@ -42,7 +45,7 @@ class User(MigrationBase):
 class Importer(MigrationBase):
     is_active = models.BooleanField(default=True)
     type = models.CharField(max_length=20)
-    name = models.TextField(default="")
+    name = models.TextField(null=True)
     registered_number = models.CharField(max_length=15, null=True)
     eori_number = models.CharField(max_length=20, null=True)
     eori_number_ni = models.CharField(max_length=20, null=True)
@@ -58,10 +61,27 @@ class Importer(MigrationBase):
         "self", on_delete=models.SET_NULL, null=True, related_name="+"
     )
 
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data = super().data_export(data)
+        data["name"] = data["name"] or ""
+        return data
+
 
 class Office(MigrationBase):
+    importer = models.ForeignKey(Importer, on_delete=models.CASCADE)
+    legacy_id = models.CharField(max_length=30, unique=True)
     is_active = models.BooleanField(null=False, default=True)
     postcode = models.CharField(max_length=30, null=True)
     address = models.CharField(max_length=4000, null=True)
     eori_number = models.CharField(max_length=20, null=True)
     address_entry_type = models.CharField(max_length=10, null=False, default="EMPTY")
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["importer_id"]
+
+    @classmethod
+    def get_m2m_data(cls, target: models.Model) -> Generator:
+        # TODO ICMSLST-1689 - This will need to be reworked for exporter offices
+        return cls.objects.values("importer_id", "id", office_id=F("id")).iterator()

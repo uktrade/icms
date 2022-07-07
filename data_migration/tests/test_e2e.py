@@ -14,6 +14,7 @@ from data_migration.queries import (
 )
 from data_migration.queries import files as q_f
 from data_migration.queries import import_application as q_ia
+from data_migration.queries import user as q_u
 from data_migration.utils import xml_parser
 from web import models as web
 
@@ -30,6 +31,7 @@ sil_data_source_target = {
     "user": [
         (dm.User, web.User),
         (dm.Importer, web.Importer),
+        (dm.Office, web.Office),
     ],
     "reference": [
         (dm.Country, web.Country),
@@ -42,6 +44,8 @@ sil_data_source_target = {
         (dm.Process, web.Process),
         (dm.ImportApplication, web.ImportApplication),
         (dm.ImportContact, web.ImportContact),
+        (dm.FirearmsAuthority, web.FirearmsAuthority),
+        (dm.Section5Authority, web.Section5Authority),
         (dm.Section5Clause, web.Section5Clause),
         (dm.SILApplication, web.SILApplication),
         (dm.SILChecklist, web.SILChecklist),
@@ -73,24 +77,44 @@ sil_data_source_target = {
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
 @override_settings(APP_ENV="production")
+@override_settings(ICMS_PROD_USER="TestUser")
+@override_settings(ICMS_PROD_PASSWORD="1234")
 @pytest.mark.django_db
 @mock.patch.dict(
-    DATA_TYPE_QUERY_MODEL, {"import_application": [(q_ia, "sil_checklist", dm.SILChecklist)]}
+    DATA_TYPE_QUERY_MODEL,
+    {
+        "file": [(q_f, "fa_certificate_files", dm.FileCombined)],
+        "import_application": [
+            (q_u, "importers", dm.Importer),
+            (q_u, "offices", dm.Office),
+            (q_ia, "fa_authorities", dm.FirearmsAuthority),
+            (q_ia, "fa_authority_linked_offices", dm.FirearmsAuthorityOffice),
+            (q_ia, "section5_authorities", dm.Section5Authority),
+            (q_ia, "section5_linked_offices", dm.Section5AuthorityOffice),
+            (q_ia, "sil_checklist", dm.SILChecklist),
+        ],
+    },
 )
 @mock.patch.dict(DATA_TYPE_XML, {"import_application": sil_xml_parsers})
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, sil_data_source_target)
 @mock.patch.dict(
     DATA_TYPE_M2M,
-    {"import_application": [(dm.SILUserSection5, web.SILApplication, "user_section5")]},
+    {
+        "import_application": [
+            (dm.Office, web.Importer, "offices"),
+            (dm.FirearmsAuthorityOffice, web.FirearmsAuthority, "linked_offices"),
+            (dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
+            (dm.Section5AuthorityOffice, web.Section5Authority, "linked_offices"),
+            (dm.Section5AuthorityFile, web.Section5Authority, "files"),
+            (dm.SILUserSection5, web.SILApplication, "user_section5"),
+        ]
+    },
 )
 @mock.patch.object(cx_Oracle, "connect")
 def test_import_sil_data(mock_connect):
     mock_connect.return_value = utils.MockConnect()
-    user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
-    dm.User.objects.create(id=user_pk, username="test_user")
 
-    importer_pk = max(web.Importer.objects.count(), dm.Importer.objects.count()) + 1
-    dm.Importer.objects.create(id=importer_pk, name="test_org", type="ORGANISATION")
+    call_command("export_from_v1", "--skip_ref")
 
     factory.CountryFactory(id=1000, name="My Test Country")
     cg = dm.CountryGroup.objects.create(country_group_id="SIL", name="SIL")
@@ -106,7 +130,7 @@ def test_import_sil_data(mock_connect):
         clause="Test Clause",
         legacy_code="5_1_ABA",
         description="Test Description",
-        created_by_id=user_pk,
+        created_by_id=2,
     )
 
     for i, pk in enumerate(pk_range):
@@ -128,7 +152,7 @@ def test_import_sil_data(mock_connect):
                 content_type="pdf",
                 file_size=100,
                 path="test",
-                created_by_id=user_pk,
+                created_by_id=2,
             )
             f2 = dm.File.objects.create(
                 target=target2,
@@ -136,7 +160,7 @@ def test_import_sil_data(mock_connect):
                 content_type="pdf",
                 file_size=50,
                 path="test2",
-                created_by_id=user_pk,
+                created_by_id=2,
             )
 
         ia = factory.ImportApplicationFactory(
@@ -145,9 +169,9 @@ def test_import_sil_data(mock_connect):
             status="COMPLETE",
             imad_id=i + 1000,
             application_type=iat,
-            created_by_id=user_pk,
-            last_updated_by_id=user_pk,
-            importer_id=importer_pk,
+            created_by_id=2,
+            last_updated_by_id=2,
+            importer_id=2,
             file_folder=folder,
         )
 
@@ -172,7 +196,6 @@ def test_import_sil_data(mock_connect):
             else xml_data.sr_upload_xml,
         )
 
-    call_command("export_from_v1", "--skip_ref", "--skip_user", "--skip_file")
     call_command("extract_v1_xml")
 
     # Get the personal / sensitive ignores out the way
@@ -203,6 +226,30 @@ def test_import_sil_data(mock_connect):
     assert dmRFOther.objects.filter(**sil1_f).count() == 2
 
     call_command("import_v1_data")
+
+    importers = web.Importer.objects.order_by("pk")
+    assert importers.count() == 3
+    assert importers[0].offices.count() == 0
+    assert importers[1].offices.count() == 2
+    assert importers[2].offices.count() == 1
+
+    assert web.Office.objects.count() == 3
+
+    fa_auth = web.FirearmsAuthority.objects.order_by("pk")
+    assert fa_auth.count() == 2
+    fa_auth1, fa_auth2 = fa_auth
+    assert fa_auth1.linked_offices.count() == 2
+    assert fa_auth1.files.count() == 1
+    assert fa_auth2.linked_offices.count() == 1
+    assert fa_auth2.files.count() == 2
+
+    sec5_auth = web.Section5Authority.objects.order_by("pk")
+    assert sec5_auth.count() == 2
+    sec5_auth1, sec5_auth2 = sec5_auth
+    assert sec5_auth1.linked_offices.count() == 2
+    assert sec5_auth1.files.count() == 1
+    assert sec5_auth2.linked_offices.count() == 1
+    assert sec5_auth2.files.count() == 1
 
     sil1, sil2 = web.SILApplication.objects.filter(pk__in=pk_range).order_by("pk")
 

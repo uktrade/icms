@@ -6,8 +6,6 @@
 # xiad.submitted_by_wua_id submitted_by_id
 # xiad.created_by_wua_id created_by_id
 # xiad.last_updated_by_wua_id last_updated_by_id
-# xiad.importer_office_id
-# xiad.agent_office_id
 # xiad.contact_rp_id contact_id
 # xiad.provided_to_imi_by_wua_id imi_submitted_by_id
 
@@ -35,10 +33,10 @@ SELECT
   , 2 submitted_by_id
   , 2 created_by_id
   , 2 last_updated_by_id
-  , xiad.importer_id importer_id
-  , 2 importer_office_id
-  , xiad.agent_id agent_id
-  , 2 agent_office_id
+  , xiad.importer_id
+  , xiad.importer_office_id
+  , xiad.agent_id
+  , xiad.agent_office_id
   , 2 contact_id
   , xiad.coo_country_id origin_country_id
   , xiad.coc_country_id consignment_country_id

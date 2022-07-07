@@ -1,10 +1,12 @@
-from typing import Generator
+from typing import Any, Generator
 
 from django.db import models
-from django.db.models import OuterRef, Subquery
+from django.db.models import F
+from django.db.models.expressions import Window
+from django.db.models.functions import RowNumber
 
 from data_migration.models.base import MigrationBase
-from data_migration.models.file import File, FileTarget
+from data_migration.models.file import FileFolder
 from data_migration.models.reference import Constabulary
 from data_migration.models.user import Importer, Office, User
 
@@ -22,7 +24,11 @@ class FirearmsAuthority(MigrationBase):
     issuing_constabulary = models.ForeignKey(Constabulary, on_delete=models.PROTECT, null=True)
     importer = models.ForeignKey(Importer, on_delete=models.PROTECT, null=False)
     act_quantity_xml = models.TextField(null=True)
-    file_target_xml = models.TextField(null=True)
+    file_folder = models.ForeignKey(FileFolder, null=True, on_delete=models.SET_NULL)
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["file_folder_id"]
 
 
 class FirearmsAct(MigrationBase):
@@ -44,27 +50,38 @@ class ActQuantity(MigrationBase):
 
 class FirearmsAuthorityOffice(MigrationBase):
     firearmsauthority = models.ForeignKey(FirearmsAuthority, on_delete=models.CASCADE)
-    office = models.ForeignKey(Office, on_delete=models.CASCADE)
+    office_legacy = models.ForeignKey(Office, on_delete=models.CASCADE, to_field="legacy_id")
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["office_legacy_id"]
+
+    @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        return super().get_values_kwargs() | {"office_id": F("office_legacy__id")}
 
 
 class FirearmsAuthorityFile(MigrationBase):
-    firearmsauthority = models.ForeignKey(FirearmsAuthority, on_delete=models.CASCADE)
-    filetarget = models.ForeignKey(FileTarget, on_delete=models.CASCADE)
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data["id"] = data.pop("row_number")
+        return data
 
     @classmethod
     def get_source_data(cls) -> Generator:
-        """Queries the model to get the queryset of data for the V2 import"""
-
-        sub_query = File.objects.filter(target_id=OuterRef("filetarget_id"))
-
         return (
-            cls.objects.select_related("target")
-            .prefetch_related("target__files")
-            .annotate(
-                file_id=Subquery(sub_query.values("pk")[:1]),
+            FirearmsAuthority.objects.select_related("file_folder")
+            .prefetch_related("file_folder__file_targets__files")
+            .annotate(row_number=Window(expression=RowNumber()))
+            .exclude(file_folder__file_targets__files__id__isnull=True)
+            .values(
+                "row_number",
+                file_id=F("file_folder__file_targets__files__id"),
+                firearmsauthority_id=F("id"),
             )
-            .exclude(file_id__isnull=True)
-            .values("id", "firearmsauthority_id", "file_id")
             .iterator()
         )
 
@@ -80,7 +97,11 @@ class Section5Authority(MigrationBase):
     further_details = models.CharField(max_length=4000, null=True)
     importer = models.ForeignKey(Importer, on_delete=models.PROTECT, null=False)
     clause_quantity_xml = models.TextField(null=True)
-    file_target_xml = models.TextField(null=True)
+    file_folder = models.ForeignKey(FileFolder, null=True, on_delete=models.SET_NULL)
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["file_folder_id"]
 
 
 class Section5Clause(MigrationBase):
@@ -106,27 +127,38 @@ class ClauseQuantity(MigrationBase):
 
 
 class Section5AuthorityOffice(MigrationBase):
-    section5authority = models.ForeignKey(FirearmsAuthority, on_delete=models.CASCADE)
-    office = models.ForeignKey(Office, on_delete=models.CASCADE)
+    section5authority = models.ForeignKey(Section5Authority, on_delete=models.CASCADE)
+    office_legacy = models.ForeignKey(Office, on_delete=models.CASCADE, to_field="legacy_id")
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["office_legacy_id"]
+
+    @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        return super().get_values_kwargs() | {"office_id": F("office_legacy__id")}
 
 
 class Section5AuthorityFile(MigrationBase):
-    section5authority = models.ForeignKey(FirearmsAuthority, on_delete=models.CASCADE)
-    filetarget = models.ForeignKey(FileTarget, on_delete=models.CASCADE)
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data["id"] = data.pop("row_number")
+        return data
 
     @classmethod
     def get_source_data(cls) -> Generator:
-        """Queries the model to get the queryset of data for the V2 import"""
-
-        sub_query = File.objects.filter(target_id=OuterRef("filetarget_id"))
-
         return (
-            cls.objects.select_related("target")
-            .prefetch_related("target__files")
-            .annotate(
-                file_id=Subquery(sub_query.values("pk")[:1]),
+            Section5Authority.objects.select_related("file_folder")
+            .prefetch_related("file_folder__file_targets__files")
+            .annotate(row_number=Window(expression=RowNumber()))
+            .exclude(file_folder__file_targets__files__id__isnull=True)
+            .values(
+                "row_number",
+                file_id=F("file_folder__file_targets__files__id"),
+                section5authority_id=F("id"),
             )
-            .exclude(file_id__isnull=True)
-            .values("id", "section5authority_id", "file_id")
             .iterator()
         )
