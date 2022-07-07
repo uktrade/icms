@@ -10,7 +10,7 @@ from web import models as web
 from . import files, import_application, reference, user
 from .types import M2M, QueryModel, SourceTarget, source_target_list
 
-user_source_target = source_target_list(["User", "Importer", "Office"])
+user_source_target = source_target_list(["User"])
 
 ref_query_model = [
     QueryModel(reference, "country", dm.Country),
@@ -69,16 +69,17 @@ file_query_model = [
 
 ia_query_model = [
     QueryModel(user, "importers", dm.Importer),
+    QueryModel(user, "offices", dm.Office),
     QueryModel(import_application, "sps_application", dm.PriorSurveillanceApplication),
     QueryModel(import_application, "derogations_application", dm.DerogationsApplication),
     QueryModel(import_application, "derogations_checklist", dm.DerogationsChecklist),
     QueryModel(import_application, "opt_application", dm.OutwardProcessingTradeApplication),
     QueryModel(import_application, "opt_checklist", dm.OPTChecklist),
     QueryModel(import_application, "fa_authorities", dm.FirearmsAuthority),
-    # QueryModel(import_application, "fa_authority_linked_offices", dm.FirearmsAuthorityOffice),
+    QueryModel(import_application, "fa_authority_linked_offices", dm.FirearmsAuthorityOffice),
     QueryModel(import_application, "section5_clauses", dm.Section5Clause),
     QueryModel(import_application, "section5_authorities", dm.Section5Authority),
-    # QueryModel(import_application, "section5_linked_offices", dm.Section5AuthorityOffice),
+    QueryModel(import_application, "section5_linked_offices", dm.Section5AuthorityOffice),
     QueryModel(import_application, "sanctions_application", dm.SanctionsAndAdhocApplication),
     QueryModel(import_application, "sil_application", dm.SILApplication),
     QueryModel(import_application, "sil_checklist", dm.SILChecklist),
@@ -96,6 +97,8 @@ ia_query_model = [
 # Possibly refactor to import process and import application by process type
 ia_source_target = source_target_list(
     [
+        "Importer",
+        "Office",
         "Process",
         "ImportApplication",
         "ImportContact",
@@ -150,7 +153,13 @@ ia_source_target = source_target_list(
     ]
 )
 
+
 ia_m2m = [
+    M2M(dm.Office, web.Importer, "offices"),
+    M2M(dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
+    M2M(dm.Section5AuthorityFile, web.Section5Authority, "files"),
+    M2M(dm.FirearmsAuthorityOffice, web.FirearmsAuthority, "linked_offices"),
+    M2M(dm.Section5AuthorityOffice, web.Section5Authority, "linked_offices"),
     M2M(
         dm.SPSSupportingDoc,
         web.PriorSurveillanceApplication,
@@ -188,7 +197,6 @@ ia_m2m = [
         "verified_section5",
     ),
     M2M(dm.SILUserSection5, web.SILApplication, "user_section5"),
-    # TODO Section5 and auth linked offices
     M2M(
         dm.UserImportCertificate,
         web.SILApplication,
@@ -233,8 +241,6 @@ ia_xml = [
     xml_parser.OILApplicationFirearmAuthorityParser,
     xml_parser.SILApplicationFirearmAuthorityParser,
     xml_parser.SILApplicationSection5AuthorityParser,
-    xml_parser.FirearmsAuthorityFileParser,
-    xml_parser.Section5AuthorityFileParser,
     xml_parser.ClauseQuantityParser,
     xml_parser.ImportContactParser,
     xml_parser.UserImportCertificateParser,

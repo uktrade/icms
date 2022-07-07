@@ -137,10 +137,6 @@ class ImportContact(MigrationBase):
     created_datetime = models.DateTimeField(auto_now_add=True)
     updated_datetime = models.DateTimeField(auto_now=True)
 
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["legacy_id"]
-
 
 class SupplementaryInfoBase(MigrationBase):
     class Meta:

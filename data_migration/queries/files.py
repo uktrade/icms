@@ -26,18 +26,8 @@ SELECT
   , fft.status
   , fft.id target_id
   , fv.*
-FROM decmgr.file_folders ff
-INNER JOIN (
-  SELECT ad.ima_id, x.ff_id
-  FROM impmgr.import_application_details ad,
-    XMLTABLE('/*'
-    PASSING ad.xml_data
-    COLUMNS
-      ff_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
-    ) x
-  WHERE status_control = 'C'
-) ima ON ima.ff_id = ff.id
-INNER JOIN impmgr.xview_ima_details xid ON xid.ima_id = ima.ima_id AND xid.ima_type = '{ima_type}' AND xid.ima_sub_type = '{ima_sub_type}'
+FROM impmgr.xview_ima_details xid
+INNER JOIN decmgr.file_folders ff ON ff.id = xid.app_docs_ff_id
 LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
 LEFT JOIN (
   SELECT
@@ -58,15 +48,21 @@ LEFT JOIN (
   WHERE status_control = 'C'
 ) fv ON fv.fft_id = fft.id
 WHERE fft.target_mnem IN ({target_types})
+AND xid.ima_type = '{ima_type}'
+AND xid.ima_sub_type = '{ima_sub_type}'
+AND xid.status_control = 'C'
 """
 
-derogations_application_files = import_application_files_base.format(
-    **{
-        "ima_type": "SAN",
-        "ima_sub_type": "SAN1",
-        "app_model": "derogationsapplication",
-        "target_types": "'IMP_SUPPORTING_DOC'",
-    }
+derogations_application_files = (
+    import_application_files_base.format(
+        **{
+            "ima_type": "SAN",
+            "ima_sub_type": "SAN1",
+            "app_model": "derogationsapplication",
+            "target_types": "'IMP_SUPPORTING_DOC'",
+        }
+    )
+    + "  AND xid.submitted_datetime IS NOT NULL"
 )
 
 sps_application_files = (
@@ -162,8 +158,19 @@ SELECT
   , fv.path
   , created_datetime
   , 2 created_by_id
-FROM decmgr.file_folder_targets fft
-INNER JOIN decmgr.file_folders ff ON fft.ff_id = ff.id
+FROM impmgr.importer_authorities ia
+INNER JOIN (
+  SELECT ia_id, x.*
+  FROM impmgr.importer_authority_details iad,
+    XMLTABLE('/*'
+    PASSING iad.xml_data
+    COLUMNS
+      file_folder_id INTEGER PATH '/AUTHORITY/DOCUMENTS_FF_ID/text()'
+    ) x
+  WHERE iad.status_control = 'C'
+) iad ON iad.ia_id = ia.id
+INNER JOIN decmgr.file_folders ff ON iad.file_folder_id = ff.id
+LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
 LEFT JOIN (
   SELECT
     fft_id target_id
@@ -181,9 +188,7 @@ LEFT JOIN (
       , file_size NUMBER PATH '/file-metadata/size/text()'
     ) x
   WHERE status_control = 'C'
- ) fv ON fv.target_id = fft.ID
-WHERE fft.target_mnem IN ('IMP_FIREARMS_CERTIFICATE', 'IMP_FIREARMS_AUTHORITY', 'IMP_SECTION5_AUTHORITY')
-AND ff.file_folder_type <> 'IMP_APP_DOCUMENTS'
+) fv ON fv.target_id = fft.id
 """
 
 sps_docs = """

@@ -821,54 +821,6 @@ class ActQuantityParser(BaseXmlParser):
         )
 
 
-class FirearmsAuthorityFileParser(BaseXmlParser):
-    MODEL = dm.FirearmsAuthorityFile
-    PARENT = dm.FirearmsAuthority
-    FIELD = "file_target_xml"
-    ROOT_NODE = "/FF_TARGET_LIST/FF_TARGET"
-
-    @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.FirearmsAuthorityFile]:
-        """Example XML structure
-
-        <FF_TARGET>
-          <FFT_ID />
-          <VERSION />
-        </FF_TARGET>
-        """
-
-        target_id = int_or_none(get_xml_val(xml, "./FFT_ID/text()"))
-
-        if not target_id:
-            return None
-
-        return cls.MODEL(**{"firearmsauthority_id": parent_pk, "filetarget_id": target_id})
-
-
-class Section5AuthorityFileParser(BaseXmlParser):
-    MODEL = dm.Section5AuthorityFile
-    PARENT = dm.Section5Authority
-    FIELD = "file_target_xml"
-    ROOT_NODE = "/FF_TARGET_LIST/FF_TARGET"
-
-    @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.Section5AuthorityFile]:
-        """Example XML structure
-
-        <FF_TARGET>
-          <FFT_ID />
-          <VERSION />
-        </FF_TARGET>
-        """
-
-        target_id = int_or_none(get_xml_val(xml, "./FFT_ID/text()"))
-
-        if not target_id:
-            return None
-
-        return cls.MODEL(**{"section5authority_id": parent_pk, "filetarget_id": target_id})
-
-
 class SanctionGoodsParser(BaseXmlParser):
     MODEL = dm.SanctionsAndAdhocApplicationGoods
     PARENT = dm.SanctionsAndAdhocApplication

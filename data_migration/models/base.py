@@ -53,7 +53,9 @@ class MigrationBase(models.Model):
         """List of fields to be excluded in the V2 import"""
 
         return [
-            field for field in cls.fields() if field.endswith("_xml") or field == "legacy_ordinal"
+            field
+            for field in cls.fields()
+            if field.endswith("_xml") or field in ["legacy_ordinal", "legacy_id"]
         ]
 
     @classmethod

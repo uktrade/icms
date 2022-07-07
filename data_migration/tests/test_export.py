@@ -56,7 +56,6 @@ def test_create_user_no_pw(mock_connect):
         call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file")
 
     assert not models.User.objects.exists()
-    assert not models.Office.objects.exists()
 
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
@@ -69,7 +68,6 @@ def test_create_user(mock_connect):
     call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file")
 
     assert models.User.objects.exists()
-    assert models.Office.objects.exists()
 
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
