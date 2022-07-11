@@ -26,8 +26,12 @@ class ExporterListView(ModelFilterView):
         fields = ["name", "offices", "agents"]
         fields_config = {
             "name": {"header": "Exporter Name", "link": True},
-            "offices": {"header": "Addresses", "show_all": True},
-            "agents": {"header": "Agent", "show_all": True},
+            "offices": {
+                "header": "Addresses",
+                "show_all": True,
+                "query_filter": {"is_active": True},
+            },
+            "agents": {"header": "Agent", "show_all": True, "query_filter": {"is_active": True}},
         }
         opts = {"inline": True, "icon_only": True}
         actions = [Edit(**opts), CreateExporterAgent(**opts), Archive(**opts), Unarchive(**opts)]

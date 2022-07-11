@@ -89,11 +89,19 @@ class ImporterOrganisationForm(ModelForm):
         if commit:
             office_address = self.company.get("registered_office_address", {})
             address_line_1 = office_address.get("address_line_1")
+            address_line_2 = office_address.get("address_line_2")
             locality = office_address.get("locality")
             postcode = office_address.get("postal_code")
 
             if address_line_1 and postcode:
-                instance.offices.create(address=f"{address_line_1}\n{locality}", postcode=postcode)
+                instance.offices.get_or_create(
+                    address_1=address_line_1,
+                    postcode=postcode,
+                    defaults={
+                        "address_2": address_line_2,
+                        "address_4": locality,
+                    },
+                )
 
         return instance
 

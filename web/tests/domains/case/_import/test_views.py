@@ -56,7 +56,10 @@ def test_preview_licence():
     ilb_admin = user_factories.ActiveUserFactory.create(permission_codenames=["ilb_admin"])
     user = user_factories.ActiveUserFactory.create(permission_codenames=["importer_access"])
     office = office_factories.OfficeFactory.create(
-        postcode="S93bl", address="""22 Some Avenue\nSome Way\nSome Town"""  # /PS-IGNORE
+        address_1="22 Some Avenue",
+        address_2="Some Way",
+        address_3="Some Town",
+        postcode="S93bl",  # /PS-IGNORE
     )
     importer = importer_factories.ImporterFactory.create(
         type=Importer.ORGANISATION, user=user, eori_number="GB123456789", name="Importer Name"

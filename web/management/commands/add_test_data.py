@@ -167,7 +167,8 @@ class Command(BaseCommand):
     def create_importer(self, main_importer=None, name="UK based importer"):
         office, _ = Office.objects.get_or_create(
             is_active=True,
-            address="47 some way, someplace",
+            address_1="47 some way",
+            address_2="someplace",
             eori_number="GB1234567890",
             postcode="BT180LZ",  # /PS-IGNORE
         )
@@ -187,7 +188,10 @@ class Command(BaseCommand):
 
     def create_exporter(self, main_exporter=None, name="UK based exporter"):
         office, _ = Office.objects.get_or_create(
-            is_active=True, address="47 some way, someplace", postcode="S410SG"  # /PS-IGNORE
+            is_active=True,
+            address_1="47 some way",
+            address_2="someplace",
+            postcode="S410SG",  # /PS-IGNORE
         )
 
         exporter, created = Exporter.objects.get_or_create(

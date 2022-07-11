@@ -48,7 +48,7 @@ def create_import_organisation(context, name):
 @given('importer "{name}" has an office with address "{address}" and postcode "{postcode}"')
 def create_importer_office(context, name, address, postcode):
     importer = Importer.objects.get(name=name)
-    importer.offices.add(OfficeFactory(is_active=True, address=address, postcode=postcode))
+    importer.offices.add(OfficeFactory(is_active=True, address_1=address, postcode=postcode))
 
 
 @given('"{agent_name}" is an agent of "{importer_name}"')
