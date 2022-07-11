@@ -52,12 +52,18 @@ class Command(BaseCommand):
         )
 
         office = Office.objects.create(
-            is_active=True, postcode="SW1A 1AA", address="Buckingham Palace, London"  # /PS-IGNORE
+            is_active=True,
+            address_1="Buckingham Palace",
+            address_2="London",
+            postcode="SW1A 1AA",  # /PS-IGNORE
         )
         exporter.offices.add(office)
 
         office = Office.objects.create(
-            is_active=True, postcode="BT12 5QB", address="209 Roden St, Belfast"  # /PS-IGNORE
+            is_active=True,
+            address_1="209 Roden St",
+            address_2="Belfast",
+            postcode="BT12 5QB",  # /PS-IGNORE
         )
         exporter.offices.add(office)
 
@@ -72,13 +78,18 @@ class Command(BaseCommand):
 
         office = Office.objects.create(
             is_active=True,
+            address_1="3 Whitehall Pl",
+            address_2="Westminster",
+            address_3="London",
             postcode="SW1A 2HP",  # /PS-IGNORE
-            address="3 Whitehall Pl, Westminster, London",  # /PS-IGNORE
         )
         importer.offices.add(office)
 
         office = Office.objects.create(
-            is_active=True, postcode="BT12 5QB", address="902 Some place, Belfast"  # /PS-IGNORE
+            is_active=True,
+            address_1="902 Some place",
+            address_2="Belfast",
+            postcode="BT12 5QB",  # /PS-IGNORE
         )
         importer.offices.add(office)
 
@@ -94,7 +105,10 @@ class Command(BaseCommand):
         )
 
         office = Office.objects.create(
-            is_active=True, postcode="WT6 2AL", address="Some office road, London"  # /PS-IGNORE
+            is_active=True,
+            address_1="Some office road",
+            address_2="London",
+            postcode="WT6 2AL",  # /PS-IGNORE
         )
         agent_importer.offices.add(office)
 
@@ -107,7 +121,10 @@ class Command(BaseCommand):
         )
 
         office = Office.objects.create(
-            is_active=True, postcode="S44 3SS", address="14 some way, Townsville"  # /PS-IGNORE
+            is_active=True,
+            address_1="14 some way",
+            address_2="Townsville",
+            postcode="S44 3SS",  # /PS-IGNORE
         )
         agent_exporter.offices.add(office)
 

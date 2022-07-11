@@ -23,43 +23,54 @@
 </script>
 
 <script>
-  $('#lookup_postcode').on('click', '.icon-search', function(evt) {
-      evt.preventDefault();
-      $ta = $('textarea[name=address]');
+  $('#lookup_postcode').on('click', '.icon-search', function (evt) {
+    evt.preventDefault();
 
-      data = {
-          postcode: $('#lookup_postcode').find('input[name=postcode]').val(),
-          csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
+    let data = {
+      postcode: $('#lookup_postcode').find('input[name=postcode]').val(),
+      csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
+    }
+    let $ui = $($('#office-postcode-lookup-ui').html()).clone();
+
+    $('body').append($ui);
+    $ui.show()
+
+    $ui.find('.abort').on('click', function () {
+      $ui.remove()
+    })
+    $ui.find('.approve').on('click', function () {
+      const address = JSON.parse($('#address_list :selected').val());
+
+      document.getElementById("id_address_1").value = address[0];
+      document.getElementById("id_address_2").value = address[1];
+      document.getElementById("id_address_3").value = address[2];
+      document.getElementById("id_address_4").value = address[3];
+      document.getElementById("id_address_5").value = address[4];
+      $ui.remove()
+    })
+
+    $.ajax({
+      method: 'POST',
+      url: '{{ icms_url("misc:postcode-lookup") }}',
+      data: data,
+      success: function (data, status, xhr) {
+        const $addrList = $('#address_list')
+        $addrList.empty();
+
+        for (let row of data) {
+          let address = row['formatted_address'];
+          let address_json = JSON.stringify(address);
+          let address_joined = address.join(' ');
+
+          $addrList.append(
+            `<option value='${address_json}'>${address_joined}</option>`
+          );
         }
-
-      $ui = $($('#office-postcode-lookup-ui').html()).clone();
-      $('body').append($ui);
-      $ui.show()
-
-      $ui.find('.abort').on('click', function() {
-          $ui.remove()
-        })
-      $ui.find('.approve').on('click', function() {
-          addr = $('#address_list :selected').val()
-          $ta.text(addr)
-          $ui.remove()
-        })
-
-      $.ajax({
-          method: 'POST',
-          url: '{{ icms_url("misc:postcode-lookup") }}',
-          data: data,
-          success: function(data, status, xhr) {
-              $('#address_list').empty();
-              for (row of data) {
-                  addr = row['formatted_address'].join(' ')
-                  $('#address_list').append('<option value="' + addr + '">' + addr + '</option>')
-                }
-            },
-          error: function() {
-              $ui.remove()
-              alert('Invalid Postcode')
-            }
-        })
-    });
+      },
+      error: function () {
+        $ui.remove()
+        alert('Invalid Postcode')
+      }
+    })
+  });
 </script>

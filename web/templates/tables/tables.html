@@ -31,12 +31,19 @@
       {{ caller() }}
     {% endwith %}
   {% elif config and config.show_all %}
+
+    {% if config.query_filter %}
+      {% set _objects = object[field].filter(**config.query_filter) %}
+    {% else %}
+      {% set _objects = object[field].all() %}
+    {% endif %}
+
     {% if config.separator %}
-      {% for entry in object[field].all() %}
+      {% for entry in _objects %}
         {{ _field_value(entry, config)|trim }}{{ config.separator if not loop.last }}
       {% endfor %}
     {% else %}
-      {% for entry in object[field].all() %}
+      {% for entry in _objects %}
         {{ _field_value(entry, config)|nl2br }}
       {% endfor %}
     {% endif %}

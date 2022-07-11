@@ -16,7 +16,12 @@ def importer():
 
 @pytest.fixture()
 def importer_office():
-    return Office(postcode="S93bl", address="""22 Some Avenue\nSome Way\nSome Town""")  # /PS-IGNORE
+    return Office(
+        address_1="22 Some Avenue",
+        address_2="Some Way",
+        address_3="Some Town",
+        postcode="S93bl",  # /PS-IGNORE
+    )
 
 
 @pytest.fixture()

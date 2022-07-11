@@ -38,8 +38,10 @@ class Command(BaseCommand):
 
         office = Office.objects.create(
             is_active=True,
+            address_1="3 Whitehall Pl",
+            address_2="Westminster",
+            address_3="London",
             postcode="SW1A 2HP",  # /PS-IGNORE
-            address="3 Whitehall Pl, Westminster, London",  # /PS-IGNORE
         )
         exporter.offices.add(office)
         self.stdout.write(f"Created exporter user with login/pass: {username}/password")

@@ -285,14 +285,15 @@ def _get_eori_number(importer: "Importer") -> str:
     return eori_number
 
 
-# TODO: ICMSLST-1659 We need a consistent way of saving address fields (this isn't accurate enough)
 def _get_address_lines(office: "Office") -> dict[str, str]:
-    address_lines = {
-        f"line_{i}": line.strip("\r")
-        for i, line in enumerate(office.address.split("\n")[:5], start=1)
+    return {
+        "line_1": office.address_1,
+        # The following fields are nullable and we require strings
+        "line_2": office.address_2 or "",
+        "line_3": office.address_3 or "",
+        "line_4": office.address_4 or "",
+        "line_5": office.address_5 or "",
     }
-
-    return address_lines
 
 
 def _get_restrictions(application: "ImportApplication") -> str:

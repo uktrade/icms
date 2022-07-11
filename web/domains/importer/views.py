@@ -44,7 +44,7 @@ class ImporterListView(ModelFilterView):
     template_name = "web/domains/importer/list.html"
     filterset_class = ImporterFilter
     model = Importer
-    queryset = Importer.objects.prefetch_related("offices").select_related("main_importer")
+    queryset = Importer.objects.select_related("main_importer")
     page_title = "Maintain Importers"
     permission_required = "web.ilb_admin"
 
@@ -56,7 +56,11 @@ class ImporterListView(ModelFilterView):
             "registered_number": {"header": "Importer Reg No"},
             "entity_type": {"header": "Importer Entity Type"},
             "status": {"header": "Status", "bold": True},
-            "offices": {"header": "Addresses", "show_all": True},
+            "offices": {
+                "header": "Addresses",
+                "show_all": True,
+                "query_filter": {"is_active": True},
+            },
         }
         opts = {"inline": True, "icon_only": True}
         actions = [

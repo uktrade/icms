@@ -135,7 +135,10 @@ def exporter_contact(django_user_model):
 def office():
     """Fixture to get an office model instance (linked to importer)."""
     return Office.objects.get(
-        is_active=True, address="47 some way, someplace", postcode="BT180LZ"  # /PS-IGNORE
+        is_active=True,
+        address_1="47 some way",
+        address_2="someplace",
+        postcode="BT180LZ",  # /PS-IGNORE
     )
 
 
@@ -143,7 +146,10 @@ def office():
 def exporter_office():
     """Fixture to get an office model instance (linked to exporter)."""
     return Office.objects.get(
-        is_active=True, address="47 some way, someplace", postcode="S410SG"  # /PS-IGNORE
+        is_active=True,
+        address_1="47 some way",
+        address_2="someplace",
+        postcode="S410SG",  # /PS-IGNORE
     )
 
 
