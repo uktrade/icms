@@ -6,6 +6,7 @@ from django.db.models import F
 from django.utils import timezone
 
 from data_migration.models.base import MigrationBase
+from data_migration.utils.format import split_address
 
 
 class User(MigrationBase):
@@ -85,3 +86,17 @@ class Office(MigrationBase):
     def get_m2m_data(cls, target: models.Model) -> Generator:
         # TODO ICMSLST-1689 - This will need to be reworked for exporter offices
         return cls.objects.values("importer_id", "id", office_id=F("id")).iterator()
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data = super().data_export(data)
+        address = data.pop("address")
+
+        for i, address_line in enumerate(split_address(address), start=1):
+            data[f"address_{i}"] = address_line
+
+        return data
+
+    @classmethod
+    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        return data
