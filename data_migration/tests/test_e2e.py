@@ -234,6 +234,25 @@ def test_import_sil_data(mock_connect):
     assert importers[2].offices.count() == 1
 
     assert web.Office.objects.count() == 3
+    office1, office2, office3 = web.Office.objects.all()
+
+    assert office1.address_1 == "123 Test"
+    assert office1.address_2 == "Test City"
+    assert office1.address_3 is None
+    assert office1.address_4 is None
+    assert office1.address_5 is None
+
+    assert office2.address_1 == "456 Test"
+    assert office2.address_2 is None
+    assert office2.address_3 is None
+    assert office2.address_4 is None
+    assert office2.address_5 is None
+
+    assert office3.address_1 == "ABC Test"
+    assert office3.address_2 == "Test Town"
+    assert office3.address_3 == "Test City"
+    assert office3.address_4 is None
+    assert office3.address_5 is None
 
     fa_auth = web.FirearmsAuthority.objects.order_by("pk")
     assert fa_auth.count() == 2

@@ -400,9 +400,9 @@ query_result = {
             ("address_entry_type",),
         ],
         [
-            (1, 2, "2-1", 1, "ABC", "123 Test", "GB123456789015", "SEARCH"),
+            (1, 2, "2-1", 1, "ABC", "123 Test\nTest City", "GB123456789015", "SEARCH"),
             (2, 2, "2-2", 1, "DEF", "456 Test", "GB123456789016", "MANUAL"),
-            (3, 3, "3-1", 1, "TEST", "ABC Test", "GB123456789017", "MANUAL"),
+            (3, 3, "3-1", 1, "TEST", "ABC Test\nTest Town\nTest City", "GB123456789017", "MANUAL"),
         ],
     ),
     import_application.fa_authority_linked_offices: (

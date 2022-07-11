@@ -146,3 +146,14 @@ def validate_int(fields: list[str], data: dict[str, Any]) -> None:
             int(data[field])
         except ValueError:
             data.pop(field)
+
+
+def split_address(address: str) -> list[str]:
+    """Splits an address by newline characters
+
+    123 Test
+    Test Town  --->  ["123 Test", "Test Town", "Test City"]
+    Test City
+    """
+
+    return [address_line for address_line in address.split("\n") if address_line]
