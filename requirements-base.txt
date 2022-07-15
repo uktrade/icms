@@ -1,7 +1,7 @@
 boto3==1.21.29
 celery[redis]==5.2.3
 cx-Oracle==8.2.1
-django-celery-results==2.3.0
+django-celery-results==2.4.0
 django-chunk-upload-handlers==0.0.11
 django-compressor==2.4
 django-environ==0.4.5
