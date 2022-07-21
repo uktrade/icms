@@ -23,7 +23,7 @@ ref_query_model = [
     QueryModel(reference, "commodity_group", dm.CommodityGroup),
     QueryModel(reference, "commodity", dm.Commodity),
     QueryModel(reference, "commodity_group_commodity", dm.CommodityGroupCommodity),
-    QueryModel(import_application, "import_application_type", dm.ImportApplicationType),
+    QueryModel(import_application, "ia_type", dm.ImportApplicationType),
     QueryModel(import_application, "usage", dm.Usage),
     QueryModel(reference, "constabularies", dm.Constabulary),
     QueryModel(reference, "obsolete_calibre_group", dm.ObsoleteCalibreGroup),
@@ -91,67 +91,79 @@ ia_query_model = [
     QueryModel(import_application, "wood_checklist", dm.WoodQuotaChecklist),
     QueryModel(import_application, "textiles_application", dm.TextilesApplication),
     QueryModel(import_application, "textiles_checklist", dm.TextilesChecklist),
-    QueryModel(import_application, "import_application_licence", dm.ImportApplicationLicence),
+    QueryModel(import_application, "ia_licence", dm.ImportApplicationLicence),
+    QueryModel(import_application, "ia_licence_docs", dm.ImportCaseDocument),
 ]
 
 # Possibly refactor to import process and import application by process type
-ia_source_target = source_target_list(
-    [
-        "Importer",
-        "Office",
-        "Process",
-        "ImportApplication",
-        "ImportContact",
-        "PriorSurveillanceContractFile",
-        "PriorSurveillanceApplication",
-        "DerogationsApplication",
-        "DerogationsChecklist",
-        "OutwardProcessingTradeApplication",
-        "OPTChecklist",
-        "OutwardProcessingTradeFile",
-        "SanctionsAndAdhocApplication",
-        "SanctionsAndAdhocApplicationGoods",
-        "FirearmsAuthority",
-        "FirearmsAct",
-        "ActQuantity",
-        "Section5Clause",
-        "Section5Authority",
-        "SILUserSection5",
-        "ClauseQuantity",
-        "SILApplication",
-        "SILChecklist",
-        "SILGoodsSection1",
-        "SILGoodsSection2",
-        "SILGoodsSection5",
-        "SILGoodsSection582Obsolete",  # /PS-IGNORE
-        "SILGoodsSection582Other",  # /PS-IGNORE
-        "SILSupplementaryInfo",
-        "SILSupplementaryReport",
-        "SILSupplementaryReportFirearmSection1",
-        "SILSupplementaryReportFirearmSection2",
-        "SILSupplementaryReportFirearmSection5",
-        "SILSupplementaryReportFirearmSection582Obsolete",  # /PS-IGNORE
-        "SILSupplementaryReportFirearmSection582Other",  # /PS-IGNORE
-        "DFLApplication",
-        "DFLChecklist",
-        "DFLGoodsCertificate",
-        "DFLSupplementaryInfo",
-        "DFLSupplementaryReport",
-        "DFLSupplementaryReportFirearm",
-        "OpenIndividualLicenceApplication",
-        "ChecklistFirearmsOILApplication",
-        "OILSupplementaryInfo",
-        "OILSupplementaryReport",
-        "OILSupplementaryReportFirearm",
-        "WoodQuotaApplication",
-        "WoodQuotaChecklist",
-        "WoodContractFile",
-        "TextilesApplication",
-        "TextilesChecklist",
-        "ImportApplicationLicence",
-        "UserImportCertificate",
-    ]
-)
+ia_source_target = [
+    SourceTarget(dm.Importer, web.Importer),
+    SourceTarget(dm.Office, web.Office),
+    SourceTarget(dm.Process, web.Process),
+    SourceTarget(dm.ImportApplication, web.ImportApplication),
+    SourceTarget(dm.ImportApplicationLicence, web.ImportApplicationLicence),
+    SourceTarget(dm.ImportCaseDocument, web.CaseDocumentReference),
+    SourceTarget(dm.ImportContact, web.ImportContact),
+    SourceTarget(dm.PriorSurveillanceContractFile, web.PriorSurveillanceContractFile),
+    SourceTarget(dm.PriorSurveillanceApplication, web.PriorSurveillanceApplication),
+    SourceTarget(dm.DerogationsApplication, web.DerogationsApplication),
+    SourceTarget(dm.DerogationsChecklist, web.DerogationsChecklist),
+    SourceTarget(dm.OutwardProcessingTradeApplication, web.OutwardProcessingTradeApplication),
+    SourceTarget(dm.OPTChecklist, web.OPTChecklist),
+    SourceTarget(dm.OutwardProcessingTradeFile, web.OutwardProcessingTradeFile),
+    SourceTarget(dm.SanctionsAndAdhocApplication, web.SanctionsAndAdhocApplication),
+    SourceTarget(dm.SanctionsAndAdhocApplicationGoods, web.SanctionsAndAdhocApplicationGoods),
+    SourceTarget(dm.FirearmsAuthority, web.FirearmsAuthority),
+    SourceTarget(dm.FirearmsAct, web.FirearmsAct),
+    SourceTarget(dm.ActQuantity, web.ActQuantity),
+    SourceTarget(dm.Section5Clause, web.Section5Clause),
+    SourceTarget(dm.Section5Authority, web.Section5Authority),
+    SourceTarget(dm.SILUserSection5, web.SILUserSection5),
+    SourceTarget(dm.ClauseQuantity, web.ClauseQuantity),
+    SourceTarget(dm.SILApplication, web.SILApplication),
+    SourceTarget(dm.SILChecklist, web.SILChecklist),
+    SourceTarget(dm.SILGoodsSection1, web.SILGoodsSection1),
+    SourceTarget(dm.SILGoodsSection2, web.SILGoodsSection2),
+    SourceTarget(dm.SILGoodsSection5, web.SILGoodsSection5),
+    SourceTarget(dm.SILGoodsSection582Obsolete, web.SILGoodsSection582Obsolete),  # /PS-IGNORE
+    SourceTarget(dm.SILGoodsSection582Other, web.SILGoodsSection582Other),  # /PS-IGNORE
+    SourceTarget(dm.SILSupplementaryInfo, web.SILSupplementaryInfo),
+    SourceTarget(dm.SILSupplementaryReport, web.SILSupplementaryReport),
+    SourceTarget(
+        dm.SILSupplementaryReportFirearmSection1, web.SILSupplementaryReportFirearmSection1
+    ),
+    SourceTarget(
+        dm.SILSupplementaryReportFirearmSection2, web.SILSupplementaryReportFirearmSection2
+    ),
+    SourceTarget(
+        dm.SILSupplementaryReportFirearmSection5, web.SILSupplementaryReportFirearmSection5
+    ),
+    SourceTarget(
+        dm.SILSupplementaryReportFirearmSection582Obsolete,  # /PS-IGNORE
+        web.SILSupplementaryReportFirearmSection582Obsolete,  # /PS-IGNORE
+    ),
+    SourceTarget(
+        dm.SILSupplementaryReportFirearmSection582Other,  # /PS-IGNORE
+        web.SILSupplementaryReportFirearmSection582Other,  # /PS-IGNORE
+    ),
+    SourceTarget(dm.DFLApplication, web.DFLApplication),
+    SourceTarget(dm.DFLChecklist, web.DFLChecklist),
+    SourceTarget(dm.DFLGoodsCertificate, web.DFLGoodsCertificate),
+    SourceTarget(dm.DFLSupplementaryInfo, web.DFLSupplementaryInfo),
+    SourceTarget(dm.DFLSupplementaryReport, web.DFLSupplementaryReport),
+    SourceTarget(dm.DFLSupplementaryReportFirearm, web.DFLSupplementaryReportFirearm),
+    SourceTarget(dm.OpenIndividualLicenceApplication, web.OpenIndividualLicenceApplication),
+    SourceTarget(dm.ChecklistFirearmsOILApplication, web.ChecklistFirearmsOILApplication),
+    SourceTarget(dm.OILSupplementaryInfo, web.OILSupplementaryInfo),
+    SourceTarget(dm.OILSupplementaryReport, web.OILSupplementaryReport),
+    SourceTarget(dm.OILSupplementaryReportFirearm, web.OILSupplementaryReportFirearm),
+    SourceTarget(dm.WoodQuotaApplication, web.WoodQuotaApplication),
+    SourceTarget(dm.WoodQuotaChecklist, web.WoodQuotaChecklist),
+    SourceTarget(dm.WoodContractFile, web.WoodContractFile),
+    SourceTarget(dm.TextilesApplication, web.TextilesApplication),
+    SourceTarget(dm.TextilesChecklist, web.TextilesChecklist),
+    SourceTarget(dm.UserImportCertificate, web.UserImportCertificate),
+]
 
 
 ia_m2m = [

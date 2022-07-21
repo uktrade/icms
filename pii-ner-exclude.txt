@@ -1538,3 +1538,22 @@ Townsville
 address_1
 address_5
 Test Town
+ON ird.ir_id = ir.id
+importer_office_legacy__id
+document_id"
+version_id
+q_ia
+xiad.print_documents_flag
+licence_id
+dd.id
+xdd.title
+dd.created_datetime
+ON xiad.imad_id
+ON xird.ir_id
+ON xdd.di_id
+ON dd.id
+ON sld.id = DEREF(dd.secure_lob_ref).id
+xdd.dd_id
+Skipping Creating Missing Import Application Licences
+Creating Archived Import Application Licences
+ON ird.ir_id

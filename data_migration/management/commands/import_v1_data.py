@@ -40,7 +40,7 @@ class Command(MigrationBaseCommand):
         self._import_data("reference", options["skip_ref"])
         self._import_data("file", options["skip_file"])
         self._import_data("import_application", options["skip_ia"])
-        self._create_draft_ia_licences(options["skip_ia"])
+        self._create_missing_ia_licences(options["skip_ia"])
         self._create_tasks(options["skip_task"])
 
     def _import_data(self, data_type: DATA_TYPE, skip: bool) -> None:
@@ -116,22 +116,23 @@ class Command(MigrationBaseCommand):
 
         self.stdout.write("Task Data Created!")
 
-    def _create_draft_ia_licences(self, skip: bool) -> None:
+    def _create_missing_ia_licences(self, skip: bool) -> None:
         if skip:
-            self.stdout.write("Skipping Creating Draft Import Application Licences")
+            self.stdout.write("Skipping Creating Missing Import Application Licences")
             return
 
-        self.stdout.write("Creating Draft Import Application Licences")
-        ia_pks = (
-            dm.ImportApplication.objects.filter(licences__isnull=True)
-            .values_list("pk", flat=True)
-            .iterator()
+        ia_qs = dm.ImportApplication.objects.filter(
+            submit_datetime__isnull=False, licences__isnull=True
         )
+
+        draft_statuses = ["VARIATION_REQUESTED", "PROCESSING", "SUBMITTED"]
+        draft_pks = ia_qs.filter(status__in=draft_statuses).values_list("pk", flat=True).iterator()
+        self.stdout.write("Creating Draft Import Application Licences")
 
         while True:
             batch = [
                 web.ImportApplicationLicence(import_application_id=pk, status="DR")
-                for pk in islice(ia_pks, self.batch_size)
+                for pk in islice(draft_pks, self.batch_size)
             ]
 
             if not batch:
@@ -139,4 +140,20 @@ class Command(MigrationBaseCommand):
 
             web.ImportApplicationLicence.objects.bulk_create(batch)
 
-        self.stdout.write("Draft Import Application Licence Data Created!")
+        archived_pks = (
+            ia_qs.exclude(status__in=draft_statuses).values_list("pk", flat=True).iterator()
+        )
+        self.stdout.write("Creating Archived Import Application Licences")
+
+        while True:
+            batch = [
+                web.ImportApplicationLicence(import_application_id=pk, status="AR")
+                for pk in islice(archived_pks, self.batch_size)
+            ]
+
+            if not batch:
+                break
+
+            web.ImportApplicationLicence.objects.bulk_create(batch)
+
+        self.stdout.write("Missing Import Application Licence Data Created!")

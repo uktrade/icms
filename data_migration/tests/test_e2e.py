@@ -14,11 +14,14 @@ from data_migration.queries import (
 )
 from data_migration.queries import files as q_f
 from data_migration.queries import import_application as q_ia
+from data_migration.queries import reference as q_ref
 from data_migration.queries import user as q_u
 from data_migration.utils import xml_parser
 from web import models as web
 
 from . import factory, utils, xml_data
+
+web.CaseDocumentReference
 
 sil_xml_parsers = [
     xml_parser.ImportContactParser,
@@ -43,6 +46,8 @@ sil_data_source_target = {
         (dm.ImportApplicationType, web.ImportApplicationType),
         (dm.Process, web.Process),
         (dm.ImportApplication, web.ImportApplication),
+        (dm.ImportApplicationLicence, web.ImportApplicationLicence),
+        (dm.ImportCaseDocument, web.CaseDocumentReference),
         (dm.ImportContact, web.ImportContact),
         (dm.FirearmsAuthority, web.FirearmsAuthority),
         (dm.Section5Authority, web.Section5Authority),
@@ -83,10 +88,21 @@ sil_data_source_target = {
 @mock.patch.dict(
     DATA_TYPE_QUERY_MODEL,
     {
-        "file": [(q_f, "fa_certificate_files", dm.FileCombined)],
+        "reference": [
+            (q_ref, "country", dm.Country),
+            (q_ref, "country_group", dm.CountryGroup),
+        ],
+        "file": [
+            (q_f, "sil_application_files", dm.FileCombined),
+            (q_f, "fa_certificate_files", dm.FileCombined),
+        ],
         "import_application": [
             (q_u, "importers", dm.Importer),
             (q_u, "offices", dm.Office),
+            (q_ia, "ia_type", dm.ImportApplicationType),
+            (q_ia, "sil_application", dm.SILApplication),
+            (q_ia, "ia_licence", dm.ImportApplicationLicence),
+            (q_ia, "ia_licence_docs", dm.ImportCaseDocument),
             (q_ia, "fa_authorities", dm.FirearmsAuthority),
             (q_ia, "fa_authority_linked_offices", dm.FirearmsAuthorityOffice),
             (q_ia, "section5_authorities", dm.Section5Authority),
@@ -113,18 +129,10 @@ sil_data_source_target = {
 @mock.patch.object(cx_Oracle, "connect")
 def test_import_sil_data(mock_connect):
     mock_connect.return_value = utils.MockConnect()
-
-    call_command("export_from_v1", "--skip_ref")
-
-    factory.CountryFactory(id=1000, name="My Test Country")
-    cg = dm.CountryGroup.objects.create(country_group_id="SIL", name="SIL")
-
     ocg = dm.ObsoleteCalibreGroup.objects.create(name="Test OC Group", order=1, legacy_id=1)
     dm.ObsoleteCalibre.objects.create(legacy_id=444, calibre_group=ocg, name="Test OC", order=1)
 
-    process_pk = max(web.Process.objects.count(), dm.Process.objects.count()) + 1
-    pk_range = list(range(process_pk, process_pk + 2))
-    iat = factory.ImportApplicationTypeFactory(master_country_group=cg)
+    call_command("export_from_v1")
 
     dm.Section5Clause.objects.create(
         clause="Test Clause",
@@ -132,69 +140,6 @@ def test_import_sil_data(mock_connect):
         description="Test Description",
         created_by_id=2,
     )
-
-    for i, pk in enumerate(pk_range):
-        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.FA_SIL, ima_id=pk + 7)
-        folder = dm.FileFolder.objects.create(
-            folder_type="IMP_APP_DOCUMENTS", app_model="silapplication"
-        )
-
-        if i == 0:
-            target1 = dm.FileTarget.objects.create(
-                folder=folder, target_type="IMP_SECTION5_AUTHORITY"
-            )
-            target2 = dm.FileTarget.objects.create(
-                folder=folder, target_type="IMP_SECTION5_AUTHORITY"
-            )
-            f1 = dm.File.objects.create(
-                target=target1,
-                filename="Test User Sec 5",
-                content_type="pdf",
-                file_size=100,
-                path="test",
-                created_by_id=2,
-            )
-            f2 = dm.File.objects.create(
-                target=target2,
-                filename="Test User Sec 5 2",
-                content_type="pdf",
-                file_size=50,
-                path="test2",
-                created_by_id=2,
-            )
-
-        ia = factory.ImportApplicationFactory(
-            pk=pk,
-            ima=process,
-            status="COMPLETE",
-            imad_id=i + 1000,
-            application_type=iat,
-            created_by_id=2,
-            last_updated_by_id=2,
-            importer_id=2,
-            file_folder=folder,
-        )
-
-        dm.ImportApplicationLicence.objects.create(imad=ia, status="AC")
-
-        sil_data = {
-            "pk": pk,
-            "imad": ia,
-            "commodities_xml": xml_data.sil_goods if i == 0 else xml_data.sil_goods_sec_1,
-            "section1": True,
-            "section2": i == 0,
-            "section5": i == 0,
-            "section58_obsolete": i == 0,
-            "section58_other": i == 0,
-            "bought_from_details_xml": xml_data.import_contact_xml if i == 1 else None,
-        }
-        dm.SILApplication.objects.create(**sil_data)
-        dm.SILSupplementaryInfo.objects.create(
-            imad=ia,
-            supplementary_report_xml=xml_data.sr_manual_xml_5_goods
-            if i == 0
-            else xml_data.sr_upload_xml,
-        )
 
     call_command("extract_v1_xml")
 
@@ -206,7 +151,8 @@ def test_import_sil_data(mock_connect):
     webRFObsolete = web.SILSupplementaryReportFirearmSection582Obsolete  # /PS-IGNORE
     webRFOther = web.SILSupplementaryReportFirearmSection582Other  # /PS-IGNORE
 
-    sil1, sil2 = dm.SILApplication.objects.filter(pk__in=pk_range).order_by("pk")
+    assert dm.SILApplication.objects.count() == 2
+    sil1, sil2 = dm.SILApplication.objects.order_by("pk")
 
     assert dm.SILGoodsSection1.objects.filter(import_application=sil1).count() == 1
     assert dm.SILGoodsSection1.objects.filter(import_application=sil2).count() == 1
@@ -270,7 +216,17 @@ def test_import_sil_data(mock_connect):
     assert sec5_auth2.linked_offices.count() == 1
     assert sec5_auth2.files.count() == 1
 
-    sil1, sil2 = web.SILApplication.objects.filter(pk__in=pk_range).order_by("pk")
+    assert web.SILApplication.objects.count() == 2
+    sil1, sil2 = web.SILApplication.objects.order_by("pk")
+
+    assert sil1.licences.count() == 1
+    assert sil2.licences.count() == 1
+
+    l1 = sil1.licences.first()
+    l2 = sil2.licences.first()
+
+    assert l1.document_references.count() == 1
+    assert l2.document_references.count() == 2
 
     assert sil1.checklist.authority_required == "yes"
     assert sil1.checklist.authority_received == "yes"
@@ -284,7 +240,7 @@ def test_import_sil_data(mock_connect):
     assert sil2.checklist.authority_cover_items_listed == "no"
 
     assert sil1.user_section5.count() == 2
-    assert sil1.user_section5.filter(pk__in=(f1.pk, f2.pk)).count() == 2
+    assert sil1.user_section5.count() == 2
     assert sil2.user_section5.count() == 0
 
     assert sil1.importapplication_ptr.importcontact_set.count() == 0
@@ -375,7 +331,7 @@ def test_import_oil_data(mock_connect):
     importer_pk = max(web.Importer.objects.count(), dm.Importer.objects.count()) + 1
     dm.Importer.objects.create(id=importer_pk, name="test_org", type="ORGANISATION")
 
-    factory.CountryFactory(id=1000, name="My Test Country")
+    factory.CountryFactory(id=1, name="My Test Country")
     cg = dm.CountryGroup.objects.create(country_group_id="OIL", name="OIL")
 
     process_pk = max(web.Process.objects.count(), dm.Process.objects.count()) + 1
@@ -400,7 +356,7 @@ def test_import_oil_data(mock_connect):
             file_folder=folder,
         )
 
-        dm.ImportApplicationLicence.objects.create(imad=ia, status="AB")
+        dm.ImportApplicationLicence.objects.create(imad=ia, status="AB", legacy_id=i + 1)
 
         oil_data = {
             "pk": pk,
@@ -495,7 +451,7 @@ def test_import_textiles_data(mock_connect):
     importer_pk = max(web.Importer.objects.count(), dm.Importer.objects.count()) + 1
     dm.Importer.objects.create(id=importer_pk, name="test_org", type="ORGANISATION")
 
-    factory.CountryFactory(id=1000, name="My Test Country")
+    factory.CountryFactory(id=1, name="My Test Country")
     cg = dm.CountryGroup.objects.create(country_group_id="TEX", name="TEX")
 
     process_pk = max(web.Process.objects.count(), dm.Process.objects.count()) + 1
@@ -520,7 +476,7 @@ def test_import_textiles_data(mock_connect):
             file_folder=folder,
         )
 
-        dm.ImportApplicationLicence.objects.create(imad=ia, status="TX TEST")
+        dm.ImportApplicationLicence.objects.create(imad=ia, status="TX TEST", legacy_id=i + 1)
         dm.TextilesApplication.objects.create(imad=ia)
 
     call_command("export_from_v1", "--skip_ref", "--skip_user", "--skip_file")
@@ -590,7 +546,7 @@ def test_import_sps_data(mock_connect):
 
     call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_user")
 
-    factory.CountryFactory(id=1000, name="My Test Country")
+    factory.CountryFactory(id=1, name="My Test Country")
     cg = dm.CountryGroup.objects.create(country_group_id="SPS", name="SPS")
 
     process_pk = max(web.Process.objects.count(), dm.Process.objects.count()) + 1
@@ -611,7 +567,7 @@ def test_import_sps_data(mock_connect):
             file_folder_id=i + 100,
         )
 
-        dm.ImportApplicationLicence.objects.create(imad=ia, status="AC")
+        dm.ImportApplicationLicence.objects.create(imad=ia, status="AC", legacy_id=i + 1)
 
         dm.PriorSurveillanceContractFile.objects.create(
             imad=ia,

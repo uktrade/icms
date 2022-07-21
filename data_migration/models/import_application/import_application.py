@@ -1,9 +1,11 @@
 from typing import Any, Generator
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models import F, Value
 
 from data_migration.models.base import MigrationBase, Process
-from data_migration.models.file import FileFolder
+from data_migration.models.file import File, FileFolder
 from data_migration.models.reference import CommodityGroup, Country
 from data_migration.models.user import Importer, Office, User
 from data_migration.utils.format import str_to_bool, str_to_yes_no
@@ -48,8 +50,6 @@ class ImportApplication(MigrationBase):
     variation_refuse_reason = models.CharField(max_length=4000, null=True)
     issue_date = models.DateField(null=True)
     licence_extended_flag = models.CharField(max_length=5, null=True)
-    # TODO ICMSLST-1494: licence_reference is now a FK
-    licence_reference = models.CharField(max_length=100, null=True, unique=True)
     last_update_datetime = models.DateTimeField(null=False, auto_now=True)
     application_type = models.ForeignKey(
         ImportApplicationType, on_delete=models.PROTECT, null=False
@@ -60,10 +60,12 @@ class ImportApplication(MigrationBase):
     last_updated_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
     importer = models.ForeignKey(Importer, on_delete=models.PROTECT, null=True, related_name="+")
     agent = models.ForeignKey(Importer, on_delete=models.PROTECT, null=True, related_name="+")
-    importer_office = models.ForeignKey(
-        Office, on_delete=models.PROTECT, null=True, related_name="+"
+    importer_office_legacy = models.ForeignKey(
+        Office, on_delete=models.PROTECT, null=True, related_name="+", to_field="legacy_id"
     )
-    agent_office = models.ForeignKey(Office, on_delete=models.PROTECT, null=True, related_name="+")
+    agent_office_legacy = models.ForeignKey(
+        Office, on_delete=models.PROTECT, null=True, related_name="+", to_field="legacy_id"
+    )
     contact = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
 
     origin_country = models.ForeignKey(
@@ -84,13 +86,33 @@ class ImportApplication(MigrationBase):
 
     imi_submit_datetime = models.DateTimeField(null=True)
 
+    # TODO ICMSLST-1694: licence_reference is FK to CaseReference
+    # TODO ICMSLST-1677: variation_requests M2M
+    # TODO ICMSLST-1678: further_information_requests M2M
+    # TODO ICMSLST-1675: update_requests M2M
+    # TODO ICMSLST-1675: case_notes M2M
+    # TODO ICMSLST-1675: case_emails M2M
+
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return ["ima_id", "imad_id", "file_folder_id"]
+        return [
+            "ima_id",
+            "imad_id",
+            "file_folder_id",
+            "importer_office_legacy_id",
+            "agent_office_legacy_id",
+        ]
 
     @classmethod
     def get_includes(cls) -> list[str]:
         return ["ima__id"]
+
+    @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        return {
+            "importer_office_id": F("importer_office_legacy__id"),
+            "agent_office_id": F("agent_office_legacy__id"),
+        }
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
@@ -173,13 +195,13 @@ class ImportApplicationLicence(MigrationBase):
     licence_start_date = models.DateField(null=True)
     licence_end_date = models.DateField(null=True)
     case_completion_date = models.DateField(null=True)
-    created_datetime = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    case_reference = models.CharField(max_length=100, null=True, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    legacy_id = models.IntegerField(unique=True)
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
         data["import_application_id"] = data.pop("imad__id")
-        data["created_at"] = data.pop("created_datetime")
 
         return data
 
@@ -190,6 +212,37 @@ class ImportApplicationLicence(MigrationBase):
     @classmethod
     def get_excludes(cls) -> list[str]:
         return super().get_excludes() + ["imad_id"]
+
+
+class ImportCaseDocument(MigrationBase):
+    licence = models.ForeignKey(
+        ImportApplicationLicence, on_delete=models.CASCADE, to_field="legacy_id"
+    )
+    document_legacy = models.OneToOneField(
+        File, on_delete=models.SET_NULL, null=True, to_field="document_legacy_id"
+    )
+    document_type = models.CharField(max_length=12)
+    reference = models.CharField(max_length=20, null=True)
+
+    @classmethod
+    def models_to_populate(cls) -> list[str]:
+        return ["File", cls.__name__]
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["licence_id", "document_legacy_id"]
+
+    @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        content_type_id = ContentType.objects.get(
+            app_label="web", model="importapplicationlicence"
+        ).id
+
+        return {
+            "object_id": F("licence__pk"),
+            "document_id": F("document_legacy__pk"),
+            "content_type_id": Value(content_type_id),
+        }
 
 
 class ImportApplicationBase(MigrationBase):

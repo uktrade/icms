@@ -1,5 +1,4 @@
 # TODO ICMSLST-1493: Investigate case_owner_id
-# TODO ICMSLST-1493: Find issue paper licence only
 # TODO ICMSLST-1498: User fields need updating when user data is migrated
 # TODO ICMSLST-1493: Determine if process is active from data
 
@@ -34,9 +33,9 @@ SELECT
   , 2 created_by_id
   , 2 last_updated_by_id
   , xiad.importer_id
-  , xiad.importer_office_id
+  , CASE WHEN xiad.importer_id IS NULL THEN NULL ELSE xiad.importer_id || '-' || xiad.importer_office_id END importer_office_legacy_id
   , xiad.agent_id
-  , xiad.agent_office_id
+  , CASE WHEN xiad.agent_id IS NULL THEN NULL ELSE xiad.agent_id || '-' || xiad.agent_office_id END agent_office_legacy_id
   , 2 contact_id
   , xiad.coo_country_id origin_country_id
   , xiad.coc_country_id consignment_country_id

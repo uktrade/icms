@@ -148,12 +148,18 @@ def validate_int(fields: list[str], data: dict[str, Any]) -> None:
             data.pop(field)
 
 
-def split_address(address: str) -> list[str]:
+def split_address(address: str, prefix="address_", max_lines=5) -> dict[str, str]:
     """Splits an address by newline characters
 
     123 Test
-    Test Town  --->  ["123 Test", "Test Town", "Test City"]
+    Test Town  --->  {"address_1": "123 Test", "address_2": "Test Town", "address_3": "Test City"}
     Test City
     """
 
-    return [address_line for address_line in address.split("\n") if address_line]
+    # TODO ICMSLST-1692: ILB to fix addresses which are more than 5 lines
+    # TODO ICMSLST-1692: ILB to fix address lines which are more than 35 characters
+    return {
+        f"{prefix}{i}": address_line.strip()[:35]
+        for i, address_line in enumerate(address.split("\n"), start=1)
+        if address_line and address_line.strip() and i <= max_lines
+    }
