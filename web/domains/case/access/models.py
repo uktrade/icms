@@ -175,9 +175,6 @@ class ImporterAccessRequest(AccessRequest):
         verbose_name="EORI Number",
         help_text="EORI number should include the GB prefix for organisation or GBPR for individual",
     )
-    eori_number_ni = models.CharField(
-        max_length=20, blank=True, default="", verbose_name="NI EORI Number"
-    )
 
     link = models.ForeignKey(
         Importer, on_delete=models.PROTECT, blank=True, null=True, related_name="access_requests"

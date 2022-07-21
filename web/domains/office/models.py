@@ -28,7 +28,9 @@ class Office(models.Model):
     )
     postcode = models.CharField(max_length=8, null=True)
 
-    eori_number = models.CharField(max_length=20, blank=True, null=True)
+    eori_number = models.CharField(
+        max_length=20, blank=True, null=True, verbose_name="Override EORI Number"
+    )
     address_entry_type = models.CharField(max_length=10, blank=False, null=False, default=EMPTY)
 
     def get_status(self):

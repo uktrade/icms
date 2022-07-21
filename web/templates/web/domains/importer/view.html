@@ -38,8 +38,6 @@
       <dd>{{ object.registered_number }}
       <dt class="bold">Importer EORI Number</dt>
       <dd>{{ object.eori_number|default("N/A", True) }}
-      <dt class="bold">Importer NI EORI Number</dt>
-      <dd>{{ object.eori_number_ni|default("N/A", True) }}
       <dt class="bold">Importer Region Origin</dt>
       <dd>{{ object.get_region_origin_display()|default("N/A", True) }}
       <dt class="bold">Comments</dt>
@@ -68,8 +66,6 @@
       </dd>
       <dt class="bold">Importer EORI Number</dt>
       <dd>{{ object.eori_number|default("N/A", True) }}
-      <dt class="bold">Importer NI EORI Number</dt>
-      <dd>{{ object.eori_number_ni|default("N/A", True) }}
       <dt class="bold">Importer Region Origin</dt>
       <dd>{{ object.get_region_origin_display()|default("N/A", True) }}
       <dt class="bold">Comments</dt>

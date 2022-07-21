@@ -6,7 +6,6 @@ class ImporterWidget(s2forms.ModelSelect2Widget):
         "name__icontains",
         "registered_number__icontains",
         "eori_number__icontains",
-        "eori_number_ni__icontains",
         "user__first_name__icontains",
         "user__email__icontains",
     ]

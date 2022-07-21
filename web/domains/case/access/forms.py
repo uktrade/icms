@@ -52,7 +52,6 @@ class ImporterAccessRequestForm(ModelForm):
             "organisation_address",
             "organisation_registered_number",
             "eori_number",
-            "eori_number_ni",
             "request_reason",
             "agent_name",
             "agent_address",

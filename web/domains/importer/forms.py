@@ -12,7 +12,7 @@ from web.utils.companieshouse import api_get_company
 class ImporterIndividualForm(ModelForm):
     class Meta:
         model = Importer
-        fields = ["user", "eori_number", "eori_number_ni", "region_origin", "comments"]
+        fields = ["user", "eori_number", "region_origin", "comments"]
         widgets = {"user": PersonWidget}
         help_texts = {"eori_number": "EORI number should include the GBPR prefix"}
 
@@ -42,7 +42,6 @@ class ImporterOrganisationForm(ModelForm):
             "name",
             "registered_number",
             "eori_number",
-            "eori_number_ni",
             "region_origin",
             "comments",
         ]

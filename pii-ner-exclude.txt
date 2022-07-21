@@ -1557,3 +1557,6 @@ xdd.dd_id
 Skipping Creating Missing Import Application Licences
 Creating Archived Import Application Licences
 ON ird.ir_id
+Override EORI Number
+EORI
+GBN
