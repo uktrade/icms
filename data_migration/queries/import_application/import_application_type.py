@@ -1,6 +1,6 @@
-__all__ = ["import_application_type", "usage"]
+__all__ = ["ia_type", "usage"]
 
-import_application_type = """
+ia_type = """
 SELECT
   id
   , status

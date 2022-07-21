@@ -4,14 +4,56 @@ from data_migration import models as dm
 from data_migration.queries import files, import_application, reference, user
 from web import models as web
 
+from . import xml_data as xd
+
+IA_FILES_COLUMNS = [
+    ("folder_id",),
+    ("folder_type",),
+    ("app_model",),
+    ("target_type",),
+    ("status",),
+    ("target_id",),
+    ("fft_id",),
+    ("version_id",),
+    ("created_datetime",),
+    ("created_by_id",),
+    ("path",),
+    ("filename",),
+    ("content_type",),
+    ("file_size",),
+]
+
+IA_BASE_COLUMNS = [
+    ("ima_id",),
+    ("imad_id",),
+    ("file_folder_id",),
+    ("reference",),
+    ("status",),
+    ("submit_datetime",),
+    ("create_datetime",),
+    ("created",),
+    ("variation_no",),
+    ("issue_date",),
+    ("licence_reference",),
+    ("submitted_by_id",),
+    ("created_by_id",),
+    ("last_updated_by_id",),
+    ("importer_id",),
+    ("importer_office_legacy_id",),
+    ("contact_id",),
+    ("application_type_id",),
+    ("process_type",),
+]
+
+
 query_result = {
     reference.country: (
-        [("name",), ("status",), ("type",), ("commission_code",), ("hmrc_code",)],
+        [("id",), ("name",), ("status",), ("type",), ("commission_code",), ("hmrc_code",)],
         [
-            ("CA", "ACTIVE", "A", 100, "CA"),
-            ("CB", "ACTIVE", "A", 101, "CB"),
-            ("CC", "ACTIVE", "B", 102, "CC"),
-            ("CD", "INACTIVE", "A", 103, "CD"),
+            (1, "CA", "ACTIVE", "A", 100, "CA"),
+            (2, "CB", "ACTIVE", "A", 101, "CB"),
+            (3, "CC", "ACTIVE", "B", 102, "CC"),
+            (4, "CD", "INACTIVE", "A", 103, "CD"),
         ],
     ),
     reference.country_group: (
@@ -143,27 +185,12 @@ query_result = {
             ("within_auth_restrictions",),
         ],
         [
-            (1000, "N", "N/A", "true", "Y", "Y", "true", "true", "Y", "Y", "NA", "Y", "Y"),
-            (1001, "Y", "N", "true", "Y", "Y", None, "false", "N", "N", "N", "N", "N"),
+            (11, "N", "N/A", "true", "Y", "Y", "true", "true", "Y", "Y", "NA", "Y", "Y"),
+            (12, "Y", "N", "true", "Y", "Y", None, "false", "N", "N", "N", "N", "N"),
         ],
     ),
     files.sps_application_files: (
-        [
-            ("folder_id",),
-            ("folder_type",),
-            ("app_model",),
-            ("target_type",),
-            ("status",),
-            ("target_id",),
-            ("fft_id",),
-            ("version_id",),
-            ("created_datetime",),
-            ("created_by_id",),
-            ("path",),
-            ("filename",),
-            ("content_type",),
-            ("file_size",),
-        ],
+        IA_FILES_COLUMNS,
         [
             (
                 100,
@@ -412,6 +439,291 @@ query_result = {
     import_application.section5_linked_offices: (
         [("section5authority_id",), ("office_legacy_id",)],
         [(1, "2-1"), (1, "2-2"), (2, "3-1")],
+    ),
+    import_application.ia_licence: (
+        [
+            ("imad_id",),
+            ("licence_start_date",),
+            ("licence_end_date",),
+            ("case_reference",),
+            ("is_paper_only",),
+            ("legacy_id",),
+            ("status",),
+        ],
+        [
+            (
+                11,  # imad_id
+                datetime(2022, 4, 27).date(),  # licence_start_date
+                datetime(2023, 4, 27).date(),  # licence_end_date
+                "IMA/2022/1234",  # case_reference
+                0,  # is_paper_only
+                1,  # legacy_id
+                "AC",
+            ),
+            (
+                12,
+                datetime(2022, 4, 27).date(),
+                datetime(2023, 4, 27).date(),
+                "IMA/2022/2345",
+                0,
+                2,
+                "AC",
+            ),
+        ],
+    ),
+    import_application.ia_licence_docs: (
+        [
+            ("reference",),
+            ("content_type_id",),
+            ("licence_id",),
+            ("document_legacy_id",),
+            ("document_type",),
+            ("filename",),
+            ("content_type",),
+            ("file_size",),
+            ("path",),
+            ("created_datetime",),
+            ("created_by_id",),
+            ("signed_datetime",),
+            ("signed_by_id",),
+        ],
+        [
+            (
+                "1234A",  # reference
+                32,  # content_type_id
+                1,  # licence_id
+                1,  # document_legacy_id
+                "LICENCE",  # document_type
+                "Firearms Licence",  # filename
+                "application/pdf",  # content_type
+                100,  # file_size
+                "firearms-licence-1.pdf",  # path
+                datetime(2022, 4, 27),  # created_datetime
+                2,  # created_by_id
+                datetime(2022, 4, 27),  # signed_datetime
+                2,  # signed_by
+            ),
+            (
+                "1235B",
+                32,  # content_type_id
+                2,
+                2,
+                "LICENCE",
+                "Firearms Licence",
+                "application/pdf",
+                100,
+                "firearms-licence-2.pdf",
+                datetime(2022, 4, 27),
+                2,
+                datetime(2022, 4, 27),
+                2,
+            ),
+            (
+                "1236C",
+                32,  # content_type_id
+                2,
+                3,
+                "LICENCE",
+                "Firearms Licence",
+                "application/pdf",
+                100,
+                "firearms-licence-3.pdf",
+                datetime(2022, 4, 27),
+                2,
+                datetime(2022, 4, 27),
+                2,
+            ),
+        ],
+    ),
+    files.sil_application_files: (
+        IA_FILES_COLUMNS,
+        [
+            (
+                1,  # folder_id
+                "IMP_APP_DOCUMENTS",  # folder_type
+                "silapplication",  # app_model
+                "IMP_SECTION5_AUTHORITY",  # target_type
+                "RECEIVED",  # status
+                1000,  # target_id
+                1000,  # fft_id
+                10000,  # version_id
+                datetime(2022, 4, 27),  # created_date
+                2,  # created_by_id
+                "contract/file",  # path
+                "Test User Sec 5.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+            ),
+            (
+                1,  # folder_id
+                "IMP_APP_DOCUMENTS",  # folder_type
+                "silapplication",  # app_model
+                "IMP_SECTION5_AUTHORITY",  # target_type
+                "RECEIVED",  # status
+                1001,  # target_id
+                1001,  # fft_id
+                10001,  # version_id
+                datetime(2022, 4, 27),  # created_date
+                2,  # created_by_id
+                "contract/file",  # path
+                "Test User Sec 5 2.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+            ),
+            (
+                2,  # folder_id
+                "IMP_APP_DOCUMENTS",  # folder_type
+                "silapplication",  # app_model
+                "IMP_SECTION5_AUTHORITY",  # target_type
+                "EMPTY",  # status
+                1003,  # target_id
+                1003,  # fft_id
+                None,  # version_id
+                None,  # created_date
+                None,  # created_by_id
+                None,  # path
+                None,  # filename
+                None,  # content_type
+                None,  # file_size
+            ),
+        ],
+    ),
+    import_application.sil_application: (
+        IA_BASE_COLUMNS
+        + [
+            ("section1",),
+            ("section2",),
+            ("section5",),
+            ("section58_obsolete",),
+            ("section58_other",),
+            ("bought_from_details_xml",),
+            ("supplementary_report_xml",),
+            ("commodities_xml",),
+        ],
+        [
+            (
+                1,  # ima_id
+                11,  # imad_id
+                1,  # file_folder_id
+                "IMA/2022/1234",  # reference
+                "COMPLETE",  # status
+                datetime(2022, 4, 23),  # submit_datetime
+                datetime(2022, 4, 22),  # create_datetime
+                datetime(2022, 4, 22),  # created
+                0,  # vartiation_no
+                datetime(2022, 4, 24),  # issue_date
+                5678,  # licence_reference
+                2,  # submitted_by_id
+                2,  # creeated_by_id
+                2,  # last_updated_by_id
+                2,  # importer_id
+                "2-1",  # importer_office_legacy_id
+                2,  # contact_id
+                1,  # application_type
+                "SILApplication",  # process_type
+                1,  # section1
+                1,  # section2
+                1,  # section5
+                1,  # section58_obsolete
+                1,  # section58_other
+                None,  # bought_from_details_xml
+                xd.sr_manual_xml_5_goods,  # supplementary_report_xml
+                xd.sil_goods,  # commodities_xml
+            ),
+            (
+                2,  # ima_id
+                12,  # imad_id
+                2,  # file_folder_id
+                "IMA/2022/2345",  # reference
+                "COMPLETE",  # status
+                datetime(2022, 4, 23),  # submit_datetime
+                datetime(2022, 4, 22),  # create_datetime
+                datetime(2022, 4, 22),  # created
+                0,  # vartiation_no
+                datetime(2022, 4, 24),  # issue_date
+                8901,  # licence_reference
+                2,  # submitted_by_id
+                2,  # creeated_by_id
+                2,  # last_updated_by_id
+                2,  # importer_id
+                "2-1",  # importer_office_legacy_id
+                2,  # contact_id
+                1,  # application_type
+                "SILApplication",  # process_type
+                1,  # section1
+                1,  # section2
+                1,  # section5
+                1,  # section58_obsolete
+                1,  # section58_other
+                xd.import_contact_xml,  # bought_from_details_xml
+                xd.sr_upload_xml,  # supplementary_report_xml
+                xd.sil_goods_sec_1,  # commodities_xml
+            ),
+        ],
+    ),
+    import_application.ia_type: (
+        [
+            ("id",),
+            ("status",),
+            ("type",),
+            ("sub_type",),
+            ("licence_type_code",),
+            ("sigl_flag",),
+            ("chief_flag",),
+            ("chief_licence_prefix",),
+            ("paper_licence_flag",),
+            ("electronic_licence_flag",),
+            ("cover_letter_flag",),
+            ("cover_letter_schedule_flag",),
+            ("category_flag",),
+            ("default_licence_length_months",),
+            ("quantity_unlimited_flag",),
+            ("exp_cert_upload_flag",),
+            ("supporting_docs_upload_flag",),
+            ("multiple_commodities_flag",),
+            ("guidance_file_url",),
+            ("usage_auto_category_desc_flag",),
+            ("case_checklist_flag",),
+            ("importer_printable",),
+            ("commodity_type_id",),
+            ("consignment_country_group_id",),
+            ("declaration_template_mnem",),
+            ("default_commodity_group_id",),
+            ("master_country_group_id",),
+            ("origin_country_group_id",),
+        ],
+        [
+            (
+                1,  # id
+                "ACTIVE",  # status
+                "FA",  # type
+                "SIL",  # sub_type
+                "FIREARMS",  # licence_type_code
+                False,  # sigl_flag
+                True,  # chief_flag
+                "GBSIL",  # chief_licence_prefix
+                True,  # paper_licence_flag
+                True,  # electronic_licence_flag
+                True,  # cover_letter_flag
+                True,  # cover_letter_schedule_flag
+                True,  # category_flag
+                6,  # default_licence_length_months
+                False,  # quantity_unlimited_flag
+                False,  # exp_cert_upload_flag
+                False,  # supporting_docs_upload_flag
+                True,  # multiple_commodities_flag
+                "/docs/file.pdf",  # guidance_file_url
+                False,  # usage_auto_category_desc_flag
+                True,  # case_checklist_flag
+                False,  # importer_printable
+                None,  # commodity_type_id
+                "A",  # consignment_country_group_id
+                "IMA_GEN_DECLARATION",  # declaration_template_mnem
+                None,  # default_commodity_group_id
+                "A",  # master_country_group_id
+                "A",  # origin_country_group_id
+            )
+        ],
     ),
 }
 

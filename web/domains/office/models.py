@@ -26,7 +26,7 @@ class Office(models.Model):
     address_5 = models.CharField(
         max_length=35, null=True, blank=True, verbose_name="Address line 5"
     )
-    postcode = models.CharField(max_length=8)
+    postcode = models.CharField(max_length=8, null=True)
 
     eori_number = models.CharField(max_length=20, blank=True, null=True)
     address_entry_type = models.CharField(max_length=10, blank=False, null=False, default=EMPTY)

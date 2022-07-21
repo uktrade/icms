@@ -10,8 +10,11 @@ class ImporterManager(models.Manager):
         return self.filter(main_importer__isnull=False)
 
 
+# TODO ICMSLST-1692: Add importer code to model
 # TODO: explore if we should use the "direct foreign keys" for django-guardian
 # for efficiency; see https://django-guardian.readthedocs.io/en/stable/userguide/performance.html
+
+
 class Importer(Archivable, models.Model):
     # Regions
     INDIVIDUAL = "INDIVIDUAL"

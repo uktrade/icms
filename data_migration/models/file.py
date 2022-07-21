@@ -71,10 +71,11 @@ class File(MigrationBase):
     target = models.ForeignKey(
         FileTarget, on_delete=models.CASCADE, related_name="files", null=True
     )
+    document_legacy_id = models.IntegerField(unique=True, null=True)
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["target_id"]
+        return super().get_excludes() + ["target_id", "document_legacy_id"]
 
     @classmethod
     def get_from_combined(cls) -> "QuerySet":

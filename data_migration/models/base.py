@@ -103,6 +103,12 @@ class MigrationBase(models.Model):
         return cls.get_source_data()
 
 
+class CaseReference(MigrationBase):
+    prefix = models.CharField(max_length=8)
+    year = models.IntegerField(null=True)
+    reference = models.IntegerField()
+
+
 class Process(MigrationBase):
     PROCESS_PK = True
 

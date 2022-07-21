@@ -95,23 +95,21 @@ class Command(MigrationBaseCommand):
         :param rows: The rows of data returned from the query
         :param model: The model being targeted for creation
         """
-        process_pk: Optional[int] = new_process_pk() if base_model.PROCESS_PK else None
+        process_pk_start: Optional[int] = new_process_pk() if base_model.PROCESS_PK else None
 
         for name in base_model.models_to_populate():
             model = getattr(models, name)
             fields = model.fields()
+            batch = []
 
-            if process_pk:
-                model.objects.bulk_create(
-                    [
-                        model(**format_row(columns, row, fields, pk=process_pk + i))
-                        for i, row in enumerate(rows)
-                    ]
-                )
-            else:
-                model.objects.bulk_create(
-                    [model(**format_row(columns, row, fields)) for row in rows]
-                )
+            for i, row in enumerate(rows):
+                process_pk = process_pk_start + i if process_pk_start else None
+                model_data = format_row(columns, row, fields, pk=process_pk)
+
+                if model_data:
+                    batch.append(model(**model_data))
+
+            model.objects.bulk_create(batch)
 
     def _extract_file_data(self) -> None:
         """Normalises file data as per V1 structure"""

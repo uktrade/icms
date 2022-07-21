@@ -90,12 +90,14 @@ class Office(MigrationBase):
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
         data = super().data_export(data)
+
+        # TODO ICMSLST-1692: ILB to fix postcodes which are more than 8 characters
+        postcode = data.pop("postcode")
+        data["postcode"] = postcode and postcode[:8]
+
         address = data.pop("address")
 
-        for i, address_line in enumerate(split_address(address), start=1):
-            data[f"address_{i}"] = address_line
-
-        return data
+        return data | split_address(address)
 
     @classmethod
     def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
