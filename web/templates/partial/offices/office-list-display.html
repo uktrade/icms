@@ -4,7 +4,16 @@
       <th scope="col">Address</th>
       <th scope="col">Postcode</th>
       {% if has_eori %}
-        <th scope="col">EORI Number</th>
+        <th scope="col">
+          Override EORI Number
+          <div id="eori-hint-content" role="tooltip" class="hint-content">
+            <div class="screen-reader-only">Hint text,</div>
+            Optionally enter an EORI number to be used in licences for this office.
+            When no override EORI is entered the main EORI number will be used.
+            The EORI number should include the GB or GBN prefix.
+          </div>
+          <div aria-describedby="eori-hint-content" class="hint icon-info tooltipstered" tabindex="0" role="link" aria-label="Hint for Override EORI Number"></div>
+        </th>
       {% endif %}
       {% if not read_only %}
         <th scope="col">Actions</th>

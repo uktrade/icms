@@ -85,12 +85,6 @@
     <div class="two columns">
       <span>{{ process.eori_number|default("N/A", True) }}</span>
     </div>
-    <div class="two columns">
-      <label>XI EORI Number</label>
-    </div>
-    <div class="two columns">
-      <span>{{ process.eori_number_ni|default("N/A", True) }}</span>
-    </div>
   {% elif process.process_type == "ExporterAccessRequest" %}
     <div class="two columns" >
       <label class="capitalize">Linked Exporter</label>

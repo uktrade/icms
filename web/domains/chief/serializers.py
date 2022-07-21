@@ -248,7 +248,7 @@ def _get_fa_sil_description(goods_description: str, section: str) -> str:
 def _get_organisation(application: "ImportApplication") -> types.OrganisationData:
     importer = _get_importer(application)
     office = _get_office(application)
-    eori_number = _get_eori_number(importer)
+    eori_number = _get_eori_number(importer, office)
     address_lines = _get_address_lines(office)
 
     return types.OrganisationData(
@@ -279,10 +279,12 @@ def _get_office(application: "ImportApplication") -> "Office":
 
 
 # TODO: ICMSLST-1658 Revisit this (see icms/web/utils/pdf/utils.py -> _get_importer_eori_numbers)
-def _get_eori_number(importer: "Importer") -> str:
-    eori_number = importer.eori_number or importer.eori_number_ni
+def _get_eori_number(importer: "Importer", office: "Office") -> str:
 
-    return eori_number
+    # Use office override if set
+    main_eori_number = office.eori_number or importer.eori_number
+
+    return main_eori_number
 
 
 def _get_address_lines(office: "Office") -> dict[str, str]:

@@ -49,7 +49,6 @@ class Importer(MigrationBase):
     name = models.TextField(null=True)
     registered_number = models.CharField(max_length=15, null=True)
     eori_number = models.CharField(max_length=20, null=True)
-    eori_number_ni = models.CharField(max_length=20, null=True)
     region_origin = models.CharField(max_length=1, null=True)
     user = models.ForeignKey(
         User,

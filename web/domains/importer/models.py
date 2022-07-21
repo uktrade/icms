@@ -46,9 +46,6 @@ class Importer(Archivable, models.Model):
         verbose_name="EORI Number",
         help_text="EORI number should include the GB prefix",
     )
-    eori_number_ni = models.CharField(
-        max_length=20, blank=True, null=True, verbose_name="NI EORI Number"
-    )
     region_origin = models.CharField(max_length=1, choices=REGIONS, blank=True, null=True)
 
     # only set for individuals
