@@ -1179,7 +1179,6 @@ CFS Product Upload
 CFS Product Upload Biocide
 ForeignKeys
 Product Type Numbers"
-ICMSLST-1344
 Firearms and Ammunition - Certificates"
 Firearms and Ammunition - Create Certificate
 Edit Firearm Supplementary Report
@@ -1493,7 +1492,6 @@ DEV
 TRADER_ID
 Enum
 SEND_LICENCE_TO_CHIEF"
-ICMSLST-1657 - Work
 commodity_id VARCHAR2(100
 VARCHAR2(100
 Humanitarian

@@ -12,19 +12,18 @@ class Office(models.Model):
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
 
-    # These max_length values match the lengths that we can send CHIEF.
-    address_1 = models.CharField(max_length=35, verbose_name="Address line 1")
+    address_1 = models.CharField(max_length=100, verbose_name="Address line 1")
     address_2 = models.CharField(
-        max_length=35, null=True, blank=True, verbose_name="Address line 2"
+        max_length=100, null=True, blank=True, verbose_name="Address line 2"
     )
     address_3 = models.CharField(
-        max_length=35, null=True, blank=True, verbose_name="Address line 3"
+        max_length=100, null=True, blank=True, verbose_name="Address line 3"
     )
     address_4 = models.CharField(
-        max_length=35, null=True, blank=True, verbose_name="Address line 4"
+        max_length=100, null=True, blank=True, verbose_name="Address line 4"
     )
     address_5 = models.CharField(
-        max_length=35, null=True, blank=True, verbose_name="Address line 5"
+        max_length=100, null=True, blank=True, verbose_name="Address line 5"
     )
     postcode = models.CharField(max_length=8, null=True)
 

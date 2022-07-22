@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 from web.domains.case.models import CaseDocumentReference
 from web.utils.commodity import annotate_commodity_unit
@@ -264,16 +264,18 @@ def _get_organisation(application: "ImportApplication") -> types.OrganisationDat
     )
 
 
-# TODO: ICMSLST-1657 - Work out correct importer
 def _get_importer(application: "ImportApplication") -> "Importer":
-    importer = application.importer  # or application.agent
+    """ICMS V1 always sends the main importer details to CHIEF (Even if an agent is also chosen)"""
+
+    importer = application.importer
 
     return importer
 
 
-# TODO: ICMSLST-1657 - Work out correct office
 def _get_office(application: "ImportApplication") -> "Office":
-    office = application.importer_office  # or application.agent_office
+    """ICMS V1 always sends the main importer office details to CHIEF (Even if an agent is also chosen)"""
+
+    office = application.importer_office
 
     return office
 
@@ -289,13 +291,26 @@ def _get_eori_number(importer: "Importer", office: "Office") -> str:
 
 def _get_address_lines(office: "Office") -> dict[str, str]:
     return {
-        "line_1": office.address_1,
-        # The following fields are nullable and we require strings
-        "line_2": office.address_2 or "",
-        "line_3": office.address_3 or "",
-        "line_4": office.address_4 or "",
-        "line_5": office.address_5 or "",
+        "line_1": _get_address_line(office.address_1),
+        "line_2": _get_address_line(office.address_2),
+        "line_3": _get_address_line(office.address_3),
+        "line_4": _get_address_line(office.address_4),
+        "line_5": _get_address_line(office.address_5),
     }
+
+
+def _get_address_line(line: Optional[str]) -> str:
+    """Return a chief formatted address line.
+
+    The CHIEF API limits each line to 35 characters.
+    For legacy data migration reasons we may be storing more than 35 characters in each
+    address line.
+    """
+
+    if not line:
+        return ""
+
+    return line[:35]
 
 
 def _get_restrictions(application: "ImportApplication") -> str:
