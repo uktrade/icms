@@ -25,6 +25,18 @@ class Office(models.Model):
     address_5 = models.CharField(
         max_length=100, null=True, blank=True, verbose_name="Address line 5"
     )
+
+    # Extra address_x fields that appear for exporters only
+    address_6 = models.CharField(
+        max_length=100, null=True, blank=True, verbose_name="Address line 6"
+    )
+    address_7 = models.CharField(
+        max_length=100, null=True, blank=True, verbose_name="Address line 7"
+    )
+    address_8 = models.CharField(
+        max_length=100, null=True, blank=True, verbose_name="Address line 8"
+    )
+
     postcode = models.CharField(max_length=8, null=True)
 
     eori_number = models.CharField(
@@ -45,5 +57,14 @@ class Office(models.Model):
         Maintain existing behaviour using an address property.
         """
 
-        fields = [self.address_1, self.address_2, self.address_3, self.address_4, self.address_5]
+        fields = [
+            self.address_1,
+            self.address_2,
+            self.address_3,
+            self.address_4,
+            self.address_5,
+            self.address_6,
+            self.address_7,
+            self.address_8,
+        ]
         return "\n".join(f for f in fields if f)

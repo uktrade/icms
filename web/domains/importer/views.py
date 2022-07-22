@@ -19,7 +19,7 @@ from web.domains.importer.forms import (
     ImporterOrganisationForm,
 )
 from web.domains.importer.models import Importer
-from web.domains.office.forms import OfficeEORIForm, OfficeForm
+from web.domains.office.forms import ImporterOfficeEORIForm, ImporterOfficeForm
 from web.domains.section5.forms import ClauseQuantityForm, Section5AuthorityForm
 from web.domains.section5.models import (
     ClauseQuantity,
@@ -315,12 +315,13 @@ def delete_document_section5(
 def create_office(request, pk):
     importer = get_object_or_404(Importer, pk=pk)
     if importer.is_agent() or importer.type == Importer.INDIVIDUAL:
-        Form = OfficeForm
+        form_cls = ImporterOfficeForm
     else:
-        Form = OfficeEORIForm
+        form_cls = ImporterOfficeEORIForm
 
     if request.method == "POST":
-        form = Form(request.POST)
+        form = form_cls(request.POST)
+
         if form.is_valid():
             office = form.save()
             importer.offices.add(office)
@@ -331,7 +332,7 @@ def create_office(request, pk):
                 )
             )
     else:
-        form = Form()
+        form = form_cls()
 
     context = {"object": importer, "form": form}
 
@@ -344,9 +345,9 @@ def edit_office(request, importer_pk, office_pk):
     importer = get_object_or_404(Importer, pk=importer_pk)
     office = get_object_or_404(importer.offices, pk=office_pk)
     if importer.is_agent() or importer.type == Importer.INDIVIDUAL:
-        Form = OfficeForm
+        Form = ImporterOfficeForm
     else:
-        Form = OfficeEORIForm
+        Form = ImporterOfficeEORIForm
 
     if request.method == "POST":
         form = Form(request.POST, instance=office)

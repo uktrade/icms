@@ -2,9 +2,9 @@
 
 {% block context_header %}
   {% if object.is_agent() %}
-    Edit Office for Agent '{{ object.name }}'
+    Edit Office for Exporter Agent '{{ object.name }}'
   {% else %}
-    Edit Office for Importer '{{ object.name }}'
+    Edit Office for Exporter '{{ object.name }}'
   {% endif %}
 {% endblock %}
 

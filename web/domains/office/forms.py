@@ -3,7 +3,7 @@ from django import forms
 from web.domains.office.models import Office
 
 
-class OfficeEORIForm(forms.ModelForm):
+class ImporterOfficeEORIForm(forms.ModelForm):
     class Meta:
         model = Office
         fields = [
@@ -17,7 +17,30 @@ class OfficeEORIForm(forms.ModelForm):
         ]
 
 
-class OfficeForm(forms.ModelForm):
+class ImporterOfficeForm(forms.ModelForm):
     class Meta:
         model = Office
         fields = ["address_1", "address_2", "address_3", "address_4", "address_5", "postcode"]
+
+
+class ExporterOfficeForm(forms.ModelForm):
+    """Exporter office address can contain more than 5 address lines"""
+
+    class Meta:
+        model = Office
+        fields = [
+            "address_1",
+            "address_2",
+            "address_3",
+            "address_4",
+            "address_5",
+            "address_6",
+            "address_7",
+            "address_8",
+            "postcode",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["postcode"].required = False

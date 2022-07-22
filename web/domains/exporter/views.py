@@ -7,7 +7,7 @@ from django.views.decorators.http import require_POST
 from web.domains.contacts.forms import ContactForm
 from web.domains.contacts.views import current_contacts
 from web.domains.exporter.forms import AgentForm, ExporterFilter, ExporterForm
-from web.domains.office.forms import OfficeForm
+from web.domains.office.forms import ExporterOfficeForm
 from web.types import AuthenticatedHttpRequest
 from web.views import ModelFilterView
 from web.views.actions import Archive, CreateExporterAgent, Edit, Unarchive
@@ -97,7 +97,8 @@ def create_office(request, pk):
     exporter = get_object_or_404(Exporter, pk=pk)
 
     if request.method == "POST":
-        form = OfficeForm(request.POST)
+        form = ExporterOfficeForm(request.POST)
+
         if form.is_valid():
             office = form.save()
             exporter.offices.add(office)
@@ -108,7 +109,7 @@ def create_office(request, pk):
                 )
             )
     else:
-        form = OfficeForm()
+        form = ExporterOfficeForm()
 
     context = {"object": exporter, "form": form}
 
@@ -122,11 +123,12 @@ def edit_office(request, exporter_pk, office_pk):
     office = get_object_or_404(exporter.offices, pk=office_pk)
 
     if request.method == "POST":
-        form = OfficeForm(request.POST, instance=office)
+        form = ExporterOfficeForm(request.POST, instance=office)
+
         if form.is_valid():
             form.save()
     else:
-        form = OfficeForm(instance=office)
+        form = ExporterOfficeForm(instance=office)
 
     context = {
         "object": exporter,
