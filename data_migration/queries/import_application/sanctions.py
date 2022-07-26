@@ -1,6 +1,6 @@
 from web.flow.models import ProcessTypes
 
-from .import_application import import_application_base
+from .import_application import common_xml_fields, import_application_base
 
 __all__ = ["sanctions_application"]
 
@@ -16,11 +16,12 @@ FROM impmgr.import_application_details ad,
     , exporter_address VARCHAR2(4000) PATH '/IMA/APP_DETAILS/ADHOC_DETAILS/EXPORTER_ADDRESS/text()'
     , commodities_xml XMLTYPE PATH '/IMA/APP_DETAILS/ADHOC_DETAILS/COMMODITY_LIST'
     , sanction_emails_xml XMLTYPE PATH '/IMA/APP_PROCESSING/SANCTION_EMAIL_MASTER/SANCTION_EMAIL_LIST'
-    , cover_letter VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER/text()'
-    , file_folder_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
+{common_xml_fields}
   ) x
 WHERE status_control = 'C'
-"""
+""".format(
+    common_xml_fields=common_xml_fields
+)
 
 
 sanctions_application = import_application_base.format(

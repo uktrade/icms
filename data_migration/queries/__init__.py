@@ -167,6 +167,7 @@ ia_source_target = [
 
 
 ia_m2m = [
+    M2M(dm.VariationRequest, web.ImportApplication, "variation_requests"),
     M2M(dm.Office, web.Importer, "offices"),
     M2M(dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
     M2M(dm.Section5AuthorityFile, web.Section5Authority, "files"),
@@ -247,6 +248,7 @@ ia_m2m = [
 ]
 
 ia_xml = [
+    xml_parser.VariationImportParser,
     xml_parser.OPTCpCommodity,
     xml_parser.OPTTegCommodity,
     xml_parser.SanctionGoodsParser,

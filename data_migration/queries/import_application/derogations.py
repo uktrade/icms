@@ -1,6 +1,10 @@
 from web.flow.models import ProcessTypes
 
-from .import_application import import_application_base, import_checklist_base
+from .import_application import (
+    common_xml_fields,
+    import_application_base,
+    import_checklist_base,
+)
 
 __all__ = ["derogations_application", "derogations_checklist"]
 
@@ -24,11 +28,12 @@ derogations_application_subquery = """
       , activity_benefit_anyone VARCHAR2(4000) PATH '/IMA/APP_DETAILS/SAN_DETAILS/SYRIA/EU_BENEFICIARIES/text()'
       , purpose_of_request VARCHAR2(4000) PATH '/IMA/APP_DETAILS/SAN_DETAILS/SYRIA/REQUEST_PURPOSE/text()'
       , civilian_purpose_details  VARCHAR2(4000) PATH '/IMA/APP_DETAILS/SAN_DETAILS/SYRIA/REQUEST_PURPOSE_OTHER/text()'
-      , cover_letter VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER/text()'
-      , file_folder_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
+{common_xml_fields}
     ) x
     WHERE status_control = 'C'
-"""
+""".format(
+    common_xml_fields=common_xml_fields
+)
 
 derogations_checklist_columns = """
       , supporting_document_received VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/SAN_SUPPORTING_DOCS/text()'

@@ -59,21 +59,21 @@ class ImportContactParser(BaseXmlParser):
         </SELLER_HOLDER>
         """
 
-        legacy_id = get_xml_val(xml, "./SELLER_HOLDER_ID/text()")
-        entity = get_xml_val(xml, "./PERSON_DETAILS/PERSON_TYPE/text()")
+        legacy_id = get_xml_val(xml, "./SELLER_HOLDER_ID")
+        entity = get_xml_val(xml, "./PERSON_DETAILS/PERSON_TYPE")
         entity = entity.lower().removesuffix("_person")
         if entity == "legal":
-            first_name = get_xml_val(xml, "./PERSON_DETAILS/LEGAL_PERSON_NAME/text()")
+            first_name = get_xml_val(xml, "./PERSON_DETAILS/LEGAL_PERSON_NAME")
         else:
-            first_name = get_xml_val(xml, "./PERSON_DETAILS/FIRST_NAME/text()")
-        last_name = get_xml_val(xml, "./PERSON_DETAILS/SURNAME/text()")
-        registration_number = get_xml_val(xml, "./PERSON_DETAILS/REGISTRATION_NUMBER/text()")
-        street = get_xml_val(xml, "./ADDRESS/STREET_AND_NUMBER/text()")
-        city = get_xml_val(xml, "./ADDRESS/TOWN_CITY/text()")
-        postcode = get_xml_val(xml, "./ADDRESS/POSTCODE/text()")
-        region = get_xml_val(xml, "./ADDRESS/REGION/text()")
-        dealer = get_xml_val(xml, "./IS_DEALER_FLAG/text()")
-        country_id = get_xml_val(xml, "./ADDRESS/COUNTRY/text()")
+            first_name = get_xml_val(xml, "./PERSON_DETAILS/FIRST_NAME")
+        last_name = get_xml_val(xml, "./PERSON_DETAILS/SURNAME")
+        registration_number = get_xml_val(xml, "./PERSON_DETAILS/REGISTRATION_NUMBER")
+        street = get_xml_val(xml, "./ADDRESS/STREET_AND_NUMBER")
+        city = get_xml_val(xml, "./ADDRESS/TOWN_CITY")
+        postcode = get_xml_val(xml, "./ADDRESS/POSTCODE")
+        region = get_xml_val(xml, "./ADDRESS/REGION")
+        dealer = get_xml_val(xml, "./IS_DEALER_FLAG")
+        country_id = get_xml_val(xml, "./ADDRESS/COUNTRY")
 
         return cls.MODEL(
             **{
@@ -113,17 +113,17 @@ class UserImportCertificateParser(BaseXmlParser):
           <ISSUING_COUNTRY />
         </FIREARMS_CERTIFICATE>
         """
-        target_id = get_xml_val(xml, "./TARGET_ID/text()")
-        certificate_type = get_xml_val(xml, "./CERTIFICATE_TYPE/text()")
+        target_id = get_xml_val(xml, "./TARGET_ID")
+        certificate_type = get_xml_val(xml, "./CERTIFICATE_TYPE")
 
         if not target_id or not certificate_type:
             # There needs to be an file and certificate_type associated with the data
             return None
 
-        reference = get_xml_val(xml, "./CERTIFICATE_REF/text()")
-        constabulary_id = get_xml_val(xml, "./CONSTABULARY/text()")
-        date_issued = get_xml_val(xml, "./DATE_ISSUED/text()")
-        expiry_date = get_xml_val(xml, "./EXPIRY_DATE/text()")
+        reference = get_xml_val(xml, "./CERTIFICATE_REF")
+        constabulary_id = get_xml_val(xml, "./CONSTABULARY")
+        date_issued = get_xml_val(xml, "./DATE_ISSUED")
+        expiry_date = get_xml_val(xml, "./EXPIRY_DATE")
 
         return cls.MODEL(
             **{
@@ -158,7 +158,7 @@ class SILGoodsParser(BaseXmlParser):
             commodity_list = xml_tree.xpath(cls.ROOT_NODE)
 
             for i, xml in enumerate(commodity_list, start=1):
-                section = get_xml_val(xml, "./SECTION/text()")
+                section = get_xml_val(xml, "./SECTION")
 
                 if not section:
                     continue
@@ -215,14 +215,14 @@ class SILGoodsParser(BaseXmlParser):
         </COMMODITY>
         """
 
-        section = get_xml_val(xml, "./SECTION/text()")
+        section = get_xml_val(xml, "./SECTION")
         return getattr(cls, f"parse_{section.lower()}")(parent_pk, xml)
 
     @classmethod
     def parse_sec_base(cls, parent_pk, xml) -> dict[str, Any]:
-        description = get_xml_val(xml, "./COMMODITY_DESC/text()")
-        manufacture = get_xml_val(xml, "./MANUFACTURED_BEFORE_1900/text()")
-        quantity = get_xml_val(xml, "./QUANTITY/text()")
+        description = get_xml_val(xml, "./COMMODITY_DESC")
+        manufacture = get_xml_val(xml, "./MANUFACTURED_BEFORE_1900")
+        quantity = get_xml_val(xml, "./QUANTITY")
 
         return {
             "import_application_id": parent_pk,
@@ -242,8 +242,8 @@ class SILGoodsParser(BaseXmlParser):
     @classmethod
     def parse_sec5(cls, parent_pk: int, xml: "ET") -> Optional["Model"]:
         data = cls.parse_sec_base(parent_pk, xml)
-        section_5_clause = get_xml_val(xml, "./SECTION_5_CLAUSE/text()")
-        unlimited_quantity = get_xml_val(xml, "./QUANTITY_UNLIMITED_FLAG/text()")
+        section_5_clause = get_xml_val(xml, "./SECTION_5_CLAUSE")
+        unlimited_quantity = get_xml_val(xml, "./QUANTITY_UNLIMITED_FLAG")
 
         return dm.SILGoodsSection5(
             **data
@@ -256,12 +256,12 @@ class SILGoodsParser(BaseXmlParser):
     @classmethod
     def parse_obsolete_calibre(cls, parent_pk: int, xml: "ET") -> Optional["Model"]:
         data = cls.parse_sec_base(parent_pk, xml)
-        acknowledgement = get_xml_val(xml, "./CURIOSITY_STATEMENT_AGREED/text()")
-        centrefire = get_xml_val(xml, "./BREECH_LOADING_CENTREFIRE/text()")
-        curiosity_ornament = get_xml_val(xml, "./CURIOSITY_OR_ORNAMENT/text()")
-        manufacture = get_xml_val(xml, "./MANUFACTURED_AFTER_1899_BEFORE_1939/text()")
-        obsolete_calibre = get_xml_val(xml, "./OBSOLETE_CALIBRE/OC_ID/text()")
-        original_chambering = get_xml_val(xml, "./ORIGINAL_CHAMBERING/text()")
+        acknowledgement = get_xml_val(xml, "./CURIOSITY_STATEMENT_AGREED")
+        centrefire = get_xml_val(xml, "./BREECH_LOADING_CENTREFIRE")
+        curiosity_ornament = get_xml_val(xml, "./CURIOSITY_OR_ORNAMENT")
+        manufacture = get_xml_val(xml, "./MANUFACTURED_AFTER_1899_BEFORE_1939")
+        obsolete_calibre = get_xml_val(xml, "./OBSOLETE_CALIBRE/OC_ID")
+        original_chambering = get_xml_val(xml, "./ORIGINAL_CHAMBERING")
 
         return dm.SILGoodsSection582Obsolete(  # /PS-IGNORE
             **data
@@ -279,18 +279,18 @@ class SILGoodsParser(BaseXmlParser):
     def parse_other(cls, parent_pk: int, xml: "ET") -> Optional["Model"]:
         data = cls.parse_sec_base(parent_pk, xml)
 
-        acknowledgement = get_xml_val(xml, "./CURIOSITY_STATEMENT_AGREED/text()")
-        bore = get_xml_val(xml, "./SHOTGUN_PUNTGUN_RIFLE_OVER_10_BORE/text()")
-        bore_details = get_xml_val(xml, "./SHOTGUN_PUNTGUN_RIFLE_OVER_10_BORE_SPECIFIED/text()")
-        chamber = get_xml_val(xml, "./SHOTGUN_PUNTGUN_RIFLE_LISTED_CARTRIDGES/text()")
-        curiosity_ornament = get_xml_val(xml, "./CURIOSITY_OR_ORNAMENT/text()")
-        ignition = get_xml_val(xml, "./OTHER_IGNITION_SYSTEM/text()")
-        ignition_details = get_xml_val(xml, "./OTHER_IGNITION_SYSTEM_SPECIFIED/text()")
-        ignition_other = get_xml_val(xml, "./OTHER_IGNITION_SYSTEM_SPECIFIED_OTHER/text()")
-        manufacture = get_xml_val(xml, "./MANUFACTURED_AFTER_1899_BEFORE_1939/text()")
-        muzzle_loading = get_xml_val(xml, "./MUZZLE_LOADING/text()")
-        rimfire = get_xml_val(xml, "./OTHER_BREECH_RIMFIRE_CARTRIDGE/text()")
-        rimfire_details = get_xml_val(xml, "./OTHER_BREECH_RIMFIRE_CARTRIDGE_SPECIFIED/text()")
+        acknowledgement = get_xml_val(xml, "./CURIOSITY_STATEMENT_AGREED")
+        bore = get_xml_val(xml, "./SHOTGUN_PUNTGUN_RIFLE_OVER_10_BORE")
+        bore_details = get_xml_val(xml, "./SHOTGUN_PUNTGUN_RIFLE_OVER_10_BORE_SPECIFIED")
+        chamber = get_xml_val(xml, "./SHOTGUN_PUNTGUN_RIFLE_LISTED_CARTRIDGES")
+        curiosity_ornament = get_xml_val(xml, "./CURIOSITY_OR_ORNAMENT")
+        ignition = get_xml_val(xml, "./OTHER_IGNITION_SYSTEM")
+        ignition_details = get_xml_val(xml, "./OTHER_IGNITION_SYSTEM_SPECIFIED")
+        ignition_other = get_xml_val(xml, "./OTHER_IGNITION_SYSTEM_SPECIFIED_OTHER")
+        manufacture = get_xml_val(xml, "./MANUFACTURED_AFTER_1899_BEFORE_1939")
+        muzzle_loading = get_xml_val(xml, "./MUZZLE_LOADING")
+        rimfire = get_xml_val(xml, "./OTHER_BREECH_RIMFIRE_CARTRIDGE")
+        rimfire_details = get_xml_val(xml, "./OTHER_BREECH_RIMFIRE_CARTRIDGE_SPECIFIED")
 
         return dm.SILGoodsSection582Other(  # /PS-IGNORE
             **data
@@ -337,10 +337,10 @@ class SupplementaryReportParser(BaseXmlParser):
         if not cls.MODEL:
             raise NotImplementedError("MODEL must be defined on the class")
 
-        transport = get_xml_val(xml, ".//MODE_OF_TRANSPORT[not(fox-error)]/text()")
-        date_received = get_xml_val(xml, ".//RECEIVED_DATE[not(fox-error)]/text()")
-        report_firearms_xml = get_xml_val(xml, ".//GOODS_LINE_LIST")
-        bought_from_legacy_id = get_xml_val(xml, ".//REPORT_SELLER_HOLDER[not(fox-error)]/text()")
+        transport = get_xml_val(xml, ".//MODE_OF_TRANSPORT[not(fox-error)]")
+        date_received = get_xml_val(xml, ".//RECEIVED_DATE[not(fox-error)]")
+        report_firearms_xml = get_xml_val(xml, ".//GOODS_LINE_LIST", text=False)
+        bought_from_legacy_id = get_xml_val(xml, ".//REPORT_SELLER_HOLDER[not(fox-error)]")
 
         return cls.MODEL(
             **{
@@ -394,7 +394,7 @@ class ReportFirearmParser(BaseXmlParser):
             xml_tree = etree.fromstring(xml)
             goods_xml_list = xml_tree.xpath(cls.ROOT_NODE)
             for ordinal, goods_xml in enumerate(goods_xml_list, start=1):
-                reporting_mode = get_xml_val(goods_xml, "./FA_REPORTING_MODE/text()")
+                reporting_mode = get_xml_val(goods_xml, "./FA_REPORTING_MODE")
 
                 if reporting_mode == "MANUAL":
                     report_firearm_xml_list = goods_xml.xpath(".//FIREARMS_DETAILS")
@@ -439,10 +439,10 @@ class ReportFirearmParser(BaseXmlParser):
         if not cls.MODEL:
             raise NotImplementedError("MODEL must be defined on the class")
 
-        serial_number = get_xml_val(xml, "./SERIAL_NUMBER/text()")
-        calibre = get_xml_val(xml, "./CALIBRE/text()")
-        model = get_xml_val(xml, "./MAKE_MODEL/text()")
-        proofing = get_xml_val(xml, "./PROOFING/text()")
+        serial_number = get_xml_val(xml, "./SERIAL_NUMBER")
+        calibre = get_xml_val(xml, "./CALIBRE")
+        model = get_xml_val(xml, "./MAKE_MODEL")
+        proofing = get_xml_val(xml, "./PROOFING")
 
         return cls.MODEL(
             **{
@@ -511,7 +511,7 @@ class SILReportFirearmParser(BaseXmlParser):
             goods_index = ordinal - 1
             goods_xml_list = xml_tree.xpath(cls.ROOT_NODE)
             goods_xml = goods_xml_list[goods_index]
-            reporting_mode = get_xml_val(goods_xml, "./FA_REPORTING_MODE/text()")
+            reporting_mode = get_xml_val(goods_xml, "./FA_REPORTING_MODE")
 
             model = cls.SECTION_MODEL[section]
 
@@ -553,10 +553,10 @@ class SILReportFirearmParser(BaseXmlParser):
         </FIREARMS_DETAILS>
         """
 
-        serial_number = get_xml_val(xml, "./SERIAL_NUMBER/text()")
-        calibre = get_xml_val(xml, "./CALIBRE/text()")
-        model = get_xml_val(xml, "./MAKE_MODEL/text()")
-        proofing = get_xml_val(xml, "./PROOFING/text()")
+        serial_number = get_xml_val(xml, "./SERIAL_NUMBER")
+        calibre = get_xml_val(xml, "./CALIBRE")
+        model = get_xml_val(xml, "./MAKE_MODEL")
+        proofing = get_xml_val(xml, "./PROOFING")
 
         return goods_model(
             **{
@@ -644,10 +644,10 @@ class DFLGoodsCertificateParser(BaseXmlParser):
         </FA_GOODS_CERT>
         """
 
-        target_id = get_xml_val(xml, "./FIREARMS_CERTIFICATE/TARGET_ID/text()")
-        reference = get_xml_val(xml, "./FIREARMS_CERTIFICATE/CERTIFICATE_REF/text()")
-        issuing_country = get_xml_val(xml, "./FIREARMS_CERTIFICATE/ISSUING_COUNTRY/text()")
-        description = get_xml_val(xml, "./COMMODITY/COMMODITY_DESC/text()")
+        target_id = get_xml_val(xml, "./FIREARMS_CERTIFICATE/TARGET_ID")
+        reference = get_xml_val(xml, "./FIREARMS_CERTIFICATE/CERTIFICATE_REF")
+        issuing_country = get_xml_val(xml, "./FIREARMS_CERTIFICATE/ISSUING_COUNTRY")
+        description = get_xml_val(xml, "./COMMODITY/COMMODITY_DESC")
 
         return cls.MODEL(
             **{
@@ -678,8 +678,8 @@ class OILApplicationFirearmAuthorityParser(BaseXmlParser):
         </AUTHORITY>
         """
 
-        ia_id = int_or_none(get_xml_val(xml, "./IA_ID/text()"))
-        selected = str_to_bool(get_xml_val(xml, "./SELECTED/text()"))
+        ia_id = int_or_none(get_xml_val(xml, "./IA_ID"))
+        selected = str_to_bool(get_xml_val(xml, "./SELECTED"))
 
         if not selected or not ia_id:
             return None
@@ -707,8 +707,8 @@ class SILApplicationFirearmAuthorityParser(BaseXmlParser):
         </AUTHORITY>
         """
 
-        ia_id = int_or_none(get_xml_val(xml, "./IA_ID/text()"))
-        selected = str_to_bool(get_xml_val(xml, "./SELECTED/text()"))
+        ia_id = int_or_none(get_xml_val(xml, "./IA_ID"))
+        selected = str_to_bool(get_xml_val(xml, "./SELECTED"))
 
         if not selected or not ia_id:
             return None
@@ -734,8 +734,8 @@ class SILApplicationSection5AuthorityParser(BaseXmlParser):
         </AUTHORITY>
         """
 
-        ia_id = int_or_none(get_xml_val(xml, "./IA_ID/text()"))
-        selected = str_to_bool(get_xml_val(xml, "./SELECTED/text()"))
+        ia_id = int_or_none(get_xml_val(xml, "./IA_ID"))
+        selected = str_to_bool(get_xml_val(xml, "./SELECTED"))
 
         if not selected or not ia_id:
             return None
@@ -762,9 +762,9 @@ class ClauseQuantityParser(BaseXmlParser):
         </GOODS_CATEGORY>
         """
 
-        clause_id = int_or_none(get_xml_val(xml, "./CATEGORY_ID/text()"))
-        quantity = int_or_none(get_xml_val(xml, "./QUANTITY_WRAPPER/QUANTITY/text()"))
-        infinity = str_to_bool(get_xml_val(xml, "./QUANTITY_WRAPPER/UNLIMITED_QUANTITY/text()"))
+        clause_id = int_or_none(get_xml_val(xml, "./CATEGORY_ID"))
+        quantity = int_or_none(get_xml_val(xml, "./QUANTITY_WRAPPER/QUANTITY"))
+        infinity = str_to_bool(get_xml_val(xml, "./QUANTITY_WRAPPER/UNLIMITED_QUANTITY"))
 
         if not clause_id:
             return None
@@ -801,9 +801,9 @@ class ActQuantityParser(BaseXmlParser):
         </GOODS_CATEGORY>
         """
 
-        act_id = int_or_none(get_xml_val(xml, "./CATEGORY_ID/text()"))
-        quantity = int_or_none(get_xml_val(xml, "./QUANTITY_WRAPPER/QUANTITY/text()"))
-        infinity = str_to_bool(get_xml_val(xml, "./QUANTITY_WRAPPER/UNLIMITED_QUANTITY/text()"))
+        act_id = int_or_none(get_xml_val(xml, "./CATEGORY_ID"))
+        quantity = int_or_none(get_xml_val(xml, "./QUANTITY_WRAPPER/QUANTITY"))
+        infinity = str_to_bool(get_xml_val(xml, "./QUANTITY_WRAPPER/UNLIMITED_QUANTITY"))
 
         if not act_id:
             return None
@@ -842,10 +842,10 @@ class SanctionGoodsParser(BaseXmlParser):
         </COMMODITY>
         """
 
-        commodity_id = int_or_none(get_xml_val(xml, "./COMMODITY_ID/text()"))
-        commodity_desc = get_xml_val(xml, "./COMMODITY_DESC/text()")
-        quantity = float_or_none(get_xml_val(xml, "./QUANTITY/text()"))
-        value = float_or_none(get_xml_val(xml, "./VALUE/text()"))
+        commodity_id = int_or_none(get_xml_val(xml, "./COMMODITY_ID"))
+        commodity_desc = get_xml_val(xml, "./COMMODITY_DESC")
+        quantity = float_or_none(get_xml_val(xml, "./QUANTITY"))
+        value = float_or_none(get_xml_val(xml, "./VALUE"))
 
         if None in (commodity_id, commodity_desc, quantity, value):
             return None
@@ -878,9 +878,9 @@ class WoodContractParser(BaseXmlParser):
         </CONTRACT>
         """
 
-        target_id = int_or_none(get_xml_val(xml, "./TARGET_ID[not(fox-error)]/text()"))
-        contract_date = date_or_none(get_xml_val(xml, "./CONTRACT_DATE[not(fox-error)]/text()"))
-        reference = get_xml_val(xml, "./CONTRACT_REFERENCE[not(fox-error)]/text()")
+        target_id = int_or_none(get_xml_val(xml, "./TARGET_ID[not(fox-error)]"))
+        contract_date = date_or_none(get_xml_val(xml, "./CONTRACT_DATE[not(fox-error)]"))
+        reference = get_xml_val(xml, "./CONTRACT_REFERENCE[not(fox-error)]")
 
         if None in (target_id, contract_date, reference):
             return None
@@ -909,9 +909,7 @@ class OPTCommodity(BaseXmlParser):
         </COMMODITY>
         """
 
-        commodity_id = int_or_none(
-            get_xml_val(xml, "./COMMODITY/COMMODITY_ID[not(fox-error)]/text()")
-        )
+        commodity_id = int_or_none(get_xml_val(xml, "./COMMODITY/COMMODITY_ID[not(fox-error)]"))
 
         if not commodity_id:
             return None

@@ -1559,3 +1559,8 @@ Override EORI Number
 EORI
 GBN
 Edit Office for Exporter '
+ird.variation_no
+REQUEST_BY_WUA_ID></REQUEST_BY_WUA_ID
+1235D"
+xiad.print_documents_flag issue_paper_only
+ON xird.ird_id

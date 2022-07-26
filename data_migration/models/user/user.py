@@ -90,10 +90,15 @@ class Office(MigrationBase):
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
         data = super().data_export(data)
 
-        # TODO ICMSLST-1692: ILB to fix postcodes which are more than 8 characters
+        # Some extra data is in some postcode fields from a previous data migration
+        # Postcodes can be a max of 8 characters
+        # TODO ICMSLST-1689: Move postcode in address field for exporters with long postcodes
         postcode = data.pop("postcode")
-        data["postcode"] = postcode and postcode[:8]
+        postcode = postcode and postcode.strip()[-8:]
 
+        data["postcode"] = postcode
+
+        # Addresses are split 1 field per line in V2
         address = data.pop("address")
 
         return data | split_address(address)

@@ -144,7 +144,7 @@ def test_extract_xml(mock_connect):
             importer_id=importer_pk,
         )
 
-        models.ImportApplicationLicence.objects.create(imad=ia, status="AC", legacy_id=i + 1)
+        models.ImportApplicationLicence.objects.create(ima=process, status="AC", legacy_id=i + 1)
         models.OpenIndividualLicenceApplication.objects.create(pk=pk, imad=ia)
 
         factory.OILSupplementaryInfoFactory(imad=ia, supplementary_report_xml=supp_xmls[i])

@@ -43,6 +43,7 @@ IA_BASE_COLUMNS = [
     ("contact_id",),
     ("application_type_id",),
     ("process_type",),
+    ("variations_xml",),
 ]
 
 
@@ -442,39 +443,61 @@ query_result = {
     ),
     import_application.ia_licence: (
         [
-            ("imad_id",),
+            ("ima_id",),
             ("licence_start_date",),
             ("licence_end_date",),
             ("case_reference",),
             ("is_paper_only",),
             ("legacy_id",),
             ("status",),
+            ("variation_no",),
         ],
         [
             (
-                11,  # imad_id
+                1,  # ima_id
                 datetime(2022, 4, 27).date(),  # licence_start_date
                 datetime(2023, 4, 27).date(),  # licence_end_date
                 "IMA/2022/1234",  # case_reference
                 0,  # is_paper_only
                 1,  # legacy_id
                 "AC",
+                0,
             ),
             (
-                12,
+                2,
                 datetime(2022, 4, 27).date(),
-                datetime(2023, 4, 27).date(),
+                datetime(2023, 4, 30).date(),
                 "IMA/2022/2345",
                 0,
                 2,
+                "AR",
+                0,
+            ),
+            (
+                2,
+                datetime(2022, 4, 27).date(),
+                datetime(2023, 5, 30).date(),
+                "IMA/2022/2345/1",
+                0,
+                3,
+                "AR",
+                1,
+            ),
+            (
+                2,
+                datetime(2022, 4, 27).date(),
+                datetime(2023, 6, 30).date(),
+                "IMA/2022/2345/2",
+                0,
+                4,
                 "AC",
+                2,
             ),
         ],
     ),
     import_application.ia_licence_docs: (
         [
             ("reference",),
-            ("content_type_id",),
             ("licence_id",),
             ("document_legacy_id",),
             ("document_type",),
@@ -490,7 +513,6 @@ query_result = {
         [
             (
                 "1234A",  # reference
-                32,  # content_type_id
                 1,  # licence_id
                 1,  # document_legacy_id
                 "LICENCE",  # document_type
@@ -505,7 +527,6 @@ query_result = {
             ),
             (
                 "1235B",
-                32,  # content_type_id
                 2,
                 2,
                 "LICENCE",
@@ -520,7 +541,6 @@ query_result = {
             ),
             (
                 "1236C",
-                32,  # content_type_id
                 2,
                 3,
                 "LICENCE",
@@ -531,6 +551,34 @@ query_result = {
                 datetime(2022, 4, 27),
                 2,
                 datetime(2022, 4, 27),
+                2,
+            ),
+            (
+                "1235D",
+                4,
+                4,
+                "LICENCE",
+                "Firearms Licence",
+                "application/pdf",
+                100,
+                "firearms-licence-4.pdf",
+                datetime(2022, 4, 30),
+                2,
+                datetime(2022, 4, 30),
+                2,
+            ),
+            (
+                "1236E",
+                4,
+                5,
+                "LICENCE",
+                "Firearms Licence",
+                "application/pdf",
+                100,
+                "firearms-licence-5.pdf",
+                datetime(2022, 4, 30),
+                2,
+                datetime(2022, 4, 30),
                 2,
             ),
         ],
@@ -621,6 +669,7 @@ query_result = {
                 2,  # contact_id
                 1,  # application_type
                 "SILApplication",  # process_type
+                None,  # variations_xml
                 1,  # section1
                 1,  # section2
                 1,  # section5
@@ -650,6 +699,7 @@ query_result = {
                 2,  # contact_id
                 1,  # application_type
                 "SILApplication",  # process_type
+                xd.open_variation,  # variations_xml
                 1,  # section1
                 1,  # section2
                 1,  # section5

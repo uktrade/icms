@@ -28,6 +28,7 @@ sil_xml_parsers = [
     xml_parser.SILGoodsParser,
     xml_parser.SILSupplementaryReportParser,
     xml_parser.SILReportFirearmParser,
+    xml_parser.VariationImportParser,
 ]
 
 sil_data_source_target = {
@@ -47,6 +48,7 @@ sil_data_source_target = {
         (dm.Process, web.Process),
         (dm.ImportApplication, web.ImportApplication),
         (dm.ImportApplicationLicence, web.ImportApplicationLicence),
+        (dm.VariationRequest, web.VariationRequest),
         (dm.ImportCaseDocument, web.CaseDocumentReference),
         (dm.ImportContact, web.ImportContact),
         (dm.FirearmsAuthority, web.FirearmsAuthority),
@@ -117,6 +119,7 @@ sil_data_source_target = {
     DATA_TYPE_M2M,
     {
         "import_application": [
+            (dm.VariationRequest, web.ImportApplication, "variation_requests"),
             (dm.Office, web.Importer, "offices"),
             (dm.FirearmsAuthorityOffice, web.FirearmsAuthority, "linked_offices"),
             (dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
@@ -153,6 +156,8 @@ def test_import_sil_data(mock_connect):
 
     assert dm.SILApplication.objects.count() == 2
     sil1, sil2 = dm.SILApplication.objects.order_by("pk")
+
+    assert dm.VariationRequest.objects.count() == 2
 
     assert dm.SILGoodsSection1.objects.filter(import_application=sil1).count() == 1
     assert dm.SILGoodsSection1.objects.filter(import_application=sil2).count() == 1
@@ -220,13 +225,16 @@ def test_import_sil_data(mock_connect):
     sil1, sil2 = web.SILApplication.objects.order_by("pk")
 
     assert sil1.licences.count() == 1
-    assert sil2.licences.count() == 1
+    assert sil2.licences.count() == 3
+    assert sil2.licences.filter(status="AC").count() == 1
 
     l1 = sil1.licences.first()
-    l2 = sil2.licences.first()
+    l2, l3, l4 = sil2.licences.all()
 
     assert l1.document_references.count() == 1
     assert l2.document_references.count() == 2
+    assert l3.document_references.count() == 0
+    assert l4.document_references.count() == 2
 
     assert sil1.checklist.authority_required == "yes"
     assert sil1.checklist.authority_received == "yes"
@@ -356,7 +364,7 @@ def test_import_oil_data(mock_connect):
             file_folder=folder,
         )
 
-        dm.ImportApplicationLicence.objects.create(imad=ia, status="AB", legacy_id=i + 1)
+        dm.ImportApplicationLicence.objects.create(ima=process, status="AB", legacy_id=i + 1)
 
         oil_data = {
             "pk": pk,
@@ -476,7 +484,7 @@ def test_import_textiles_data(mock_connect):
             file_folder=folder,
         )
 
-        dm.ImportApplicationLicence.objects.create(imad=ia, status="TX TEST", legacy_id=i + 1)
+        dm.ImportApplicationLicence.objects.create(ima=process, status="TX TEST", legacy_id=i + 1)
         dm.TextilesApplication.objects.create(imad=ia)
 
     call_command("export_from_v1", "--skip_ref", "--skip_user", "--skip_file")
@@ -567,7 +575,7 @@ def test_import_sps_data(mock_connect):
             file_folder_id=i + 100,
         )
 
-        dm.ImportApplicationLicence.objects.create(imad=ia, status="AC", legacy_id=i + 1)
+        dm.ImportApplicationLicence.objects.create(ima=process, status="AC", legacy_id=i + 1)
 
         dm.PriorSurveillanceContractFile.objects.create(
             imad=ia,
