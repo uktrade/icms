@@ -7,7 +7,10 @@ from django.core.validators import DecimalValidator
 from lxml import etree
 
 
-def get_xml_val(xml: etree.ElementTree, xpath: str) -> Any:
+def get_xml_val(xml: etree.ElementTree, xpath: str, text=True) -> Any:
+    if text and not xpath.endswith("/text()"):
+        xpath = xpath + "/text()"
+
     val_list = xml.xpath(xpath)
 
     if not val_list:
@@ -157,9 +160,8 @@ def split_address(address: str, prefix="address_", max_lines=5) -> dict[str, str
     """
 
     # TODO ICMSLST-1692: ILB to fix addresses which are more than 5 lines
-    # TODO ICMSLST-1692: ILB to fix address lines which are more than 35 characters
     return {
-        f"{prefix}{i}": address_line.strip()[:35]
+        f"{prefix}{i}": address_line.strip()
         for i, address_line in enumerate(address.split("\n"), start=1)
         if address_line and address_line.strip() and i <= max_lines
     }

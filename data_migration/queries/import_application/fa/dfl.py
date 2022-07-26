@@ -1,4 +1,5 @@
 from data_migration.queries.import_application.import_application import (
+    common_xml_fields,
     import_application_base,
     import_checklist_base,
 )
@@ -47,10 +48,12 @@ FROM impmgr.import_application_details ad,
       '/IMA/FA_REPORTS/HISTORICAL_REPORT_COMPLETION_LIST/HISTORICAL_REPORT_COMPLETION[last()]/REPORT_COMPLETED_BY_WUA_ID[last()]/text()'
     , completed_datetime VARCHAR(20) PATH
       '/IMA/FA_REPORTS/HISTORICAL_REPORT_COMPLETION_LIST/HISTORICAL_REPORT_COMPLETION[last()]/REPORT_COMPLETED_DATETIME[last()]/text()'
-    , file_folder_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
+{common_xml_fields}
   ) x
 WHERE status_control = 'C'
-"""
+""".format(
+    common_xml_fields=common_xml_fields
+)
 
 
 dfl_checklist_columns = """

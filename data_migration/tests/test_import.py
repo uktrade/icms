@@ -153,7 +153,7 @@ def test_import_wood_application_data():
         )
 
         if status == "COMPLETE":
-            dm.ImportApplicationLicence.objects.create(imad=ia, status="AC", legacy_id=1)
+            dm.ImportApplicationLicence.objects.create(ima=process, status="AC", legacy_id=1)
 
         dm.WoodQuotaApplication.objects.create(pk=pk, imad=ia)
 
@@ -234,7 +234,7 @@ def test_import_oil_data():
             importer_id=importer_pk,
             submit_datetime=None if i == 0 else timezone.now(),
         )
-        dm.ImportApplicationLicence.objects.create(imad=ia, status="AC", legacy_id=i + 1)
+        dm.ImportApplicationLicence.objects.create(ima=process, status="AC", legacy_id=i + 1)
         dm.OpenIndividualLicenceApplication.objects.create(pk=pk, imad=ia)
         data = xml_parser.ImportContactParser.parse_xml([(pk, xml_data.import_contact_xml)])
         dm.ImportContact.objects.bulk_create(data[dm.ImportContact])
@@ -365,7 +365,7 @@ def test_import_dfl_data():
             importer_id=importer_pk,
         )
 
-        dm.ImportApplicationLicence.objects.create(imad=ia, status="AC", legacy_id=i + 1)
+        dm.ImportApplicationLicence.objects.create(ima=process, status="AC", legacy_id=i + 1)
 
         dfl = dm.DFLApplication.objects.create(pk=pk, imad=ia)
         data = xml_parser.ImportContactParser.parse_xml([(pk, xml_data.import_contact_xml)])
@@ -495,7 +495,7 @@ def test_import_user_import_certificate_data():
             importer_id=importer_pk,
             submit_datetime=None if i == 0 else timezone.now(),
         )
-        dm.ImportApplicationLicence.objects.create(imad=ia, status="AC", legacy_id=i + 1)
+        dm.ImportApplicationLicence.objects.create(ima=process, status="AC", legacy_id=i + 1)
 
         if i == 0:
             dm.OpenIndividualLicenceApplication.objects.create(pk=pk, imad=ia)

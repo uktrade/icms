@@ -4,8 +4,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import F, Value
 
-from data_migration.models.base import MigrationBase, Process
+from data_migration.models.base import MigrationBase
 from data_migration.models.file import File, FileFolder
+from data_migration.models.flow import Process
 from data_migration.models.reference import CommodityGroup, Country
 from data_migration.models.user import Importer, Office, User
 from data_migration.utils.format import str_to_bool, str_to_yes_no
@@ -85,6 +86,7 @@ class ImportApplication(MigrationBase):
     )
 
     imi_submit_datetime = models.DateTimeField(null=True)
+    variations_xml = models.TextField(null=True)
 
     # TODO ICMSLST-1694: licence_reference is FK to CaseReference
     # TODO ICMSLST-1677: variation_requests M2M
@@ -101,6 +103,7 @@ class ImportApplication(MigrationBase):
             "file_folder_id",
             "importer_office_legacy_id",
             "agent_office_legacy_id",
+            "variations_xml",
         ]
 
     @classmethod
@@ -123,7 +126,7 @@ class ImportApplication(MigrationBase):
                 value = data[field]
                 data[field] = bool(value) and value.lower() == "true"
 
-        # TODO ICMSLST-1494: Fix when addressing licences. Nullify for now
+        # TODO ICMSLST-1694: Nullify for now
         data["licence_reference"] = None
 
         return data
@@ -187,8 +190,8 @@ class ChecklistBase(MigrationBase):
 
 
 class ImportApplicationLicence(MigrationBase):
-    imad = models.ForeignKey(
-        ImportApplication, on_delete=models.PROTECT, related_name="licences", to_field="imad_id"
+    ima = models.ForeignKey(
+        Process, on_delete=models.PROTECT, related_name="licences", to_field="ima_id"
     )
     status = models.TextField(max_length=2, default="DR")
     issue_paper_licence_only = models.BooleanField(null=True)
@@ -201,17 +204,17 @@ class ImportApplicationLicence(MigrationBase):
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["import_application_id"] = data.pop("imad__id")
+        data["import_application_id"] = data.pop("ima__id")
 
         return data
 
     @classmethod
     def get_includes(cls) -> list[str]:
-        return ["imad__id"]
+        return ["ima__id"]
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["imad_id"]
+        return super().get_excludes() + ["ima_id"]
 
 
 class ImportCaseDocument(MigrationBase):

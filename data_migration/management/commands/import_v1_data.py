@@ -122,7 +122,7 @@ class Command(MigrationBaseCommand):
             return
 
         ia_qs = dm.ImportApplication.objects.filter(
-            submit_datetime__isnull=False, licences__isnull=True
+            submit_datetime__isnull=False, ima__licences__isnull=True
         )
 
         draft_statuses = ["VARIATION_REQUESTED", "PROCESSING", "SUBMITTED"]

@@ -1,6 +1,10 @@
 from web.flow.models import ProcessTypes
 
-from .import_application import import_application_base, import_checklist_base
+from .import_application import (
+    common_xml_fields,
+    import_application_base,
+    import_checklist_base,
+)
 
 __all__ = ["textiles_application", "textiles_checklist", "wood_application", "wood_checklist"]
 
@@ -24,11 +28,12 @@ FROM impmgr.import_application_details ad,
     , additional_comments VARCHAR2(4000) PATH '/IMA/APP_DETAILS/WOOD_DETAILS/ADDITIONAL_COMMENTS[not(contains(text(), "<script>alert"))]/text()'
     , contract_files_xml XMLTYPE PATH '/IMA/APP_DETAILS/WOOD_DETAILS/CONTRACT_LIST'
     , export_certs_xml XMLTYPE PATH '/IMA/APP_DETAILS/WOOD_DETAILS/EXPORT_CERTIFICATE_LIST'
-    , cover_letter VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER/text()'
-    , file_folder_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
+{common_xml_fields}
   ) x
 WHERE status_control = 'C'
-"""
+""".format(
+    common_xml_fields=common_xml_fields
+)
 
 
 wood_checklist_columns = """
@@ -67,10 +72,12 @@ FROM impmgr.import_application_details ad,
     , goods_description VARCHAR2(4000) PATH '/IMA/APP_DETAILS/TEX_DETAILS/COMMODITY_LIST/COMMODITY/COMMODITY_DESC/text()'
     , quantity VARCHAR2(4000) PATH '/IMA/APP_DETAILS/TEX_DETAILS/COMMODITY_LIST/COMMODITY/QUANTITY/text()'
     , shipping_year VARCHAR2(4) PATH '/IMA/APP_DETAILS/TEX_DETAILS/YEAR/text()'
-    , file_folder_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
+{common_xml_fields}
   ) x
 WHERE status_control = 'C'
-"""
+""".format(
+    common_xml_fields=common_xml_fields
+)
 
 
 textiles_checklist_columns = """

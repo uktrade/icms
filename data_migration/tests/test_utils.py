@@ -128,9 +128,9 @@ def test_int_or_none(int_str, expected):
     "xml_str,xpath,expected",
     [
         ("<ROOT><A>a</A><B>b</B></ROOT>", "/ROOT/A/text()", "a"),
-        ("<ROOT><A>a</A><B>b</B></ROOT>", "//A/text()", "a"),
+        ("<ROOT><A>a</A><B>b</B></ROOT>", "//A", "a"),
         ("<ROOT><A>a</A><B>b</B></ROOT>", "./A/text()", "a"),
-        ("<ROOT><A>a</A><B> b\n</B></ROOT>", "/ROOT/B/text()", "b"),
+        ("<ROOT><A>a</A><B> b\n</B></ROOT>", "/ROOT/B", "b"),
         ("<ROOT><A>a</A><B> b </B></ROOT>", "ROOT/C/text()", None),
     ],
 )
