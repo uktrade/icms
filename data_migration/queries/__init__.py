@@ -93,6 +93,7 @@ ia_query_model = [
     QueryModel(import_application, "textiles_checklist", dm.TextilesChecklist),
     QueryModel(import_application, "ia_licence", dm.ImportApplicationLicence),
     QueryModel(import_application, "ia_licence_docs", dm.ImportCaseDocument),
+    QueryModel(import_application, "constabulary_emails", dm.CaseEmail),
 ]
 
 # Possibly refactor to import process and import application by process type
@@ -103,6 +104,7 @@ ia_source_target = [
     SourceTarget(dm.ImportApplication, web.ImportApplication),
     SourceTarget(dm.ImportApplicationLicence, web.ImportApplicationLicence),
     SourceTarget(dm.ImportCaseDocument, web.CaseDocumentReference),
+    SourceTarget(dm.CaseEmail, web.CaseEmail),
     SourceTarget(dm.ImportContact, web.ImportContact),
     SourceTarget(dm.PriorSurveillanceContractFile, web.PriorSurveillanceContractFile),
     SourceTarget(dm.PriorSurveillanceApplication, web.PriorSurveillanceApplication),
@@ -168,6 +170,7 @@ ia_source_target = [
 
 ia_m2m = [
     M2M(dm.VariationRequest, web.ImportApplication, "variation_requests"),
+    M2M(dm.CaseEmail, web.ImportApplication, "case_emails"),
     M2M(dm.Office, web.Importer, "offices"),
     M2M(dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
     M2M(dm.Section5AuthorityFile, web.Section5Authority, "files"),

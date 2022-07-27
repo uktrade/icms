@@ -1564,3 +1564,4 @@ REQUEST_BY_WUA_ID></REQUEST_BY_WUA_ID
 1235D"
 xiad.print_documents_flag issue_paper_only
 ON xird.ird_id
+ON cd.con_id

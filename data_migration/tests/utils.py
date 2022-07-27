@@ -775,6 +775,42 @@ query_result = {
             )
         ],
     ),
+    import_application.constabulary_emails: (
+        [
+            ("imad_id",),
+            ("status",),
+            ("to",),
+            ("cc_address_list_str",),
+            ("subject",),
+            ("body",),
+        ],
+        [
+            (
+                11,  # imad_id
+                "DRAFT",  # status
+                None,  # to
+                None,  # cc_address_list_str
+                None,  # subject
+                None,  # body
+            ),
+            (
+                11,  # imad_id
+                "OPEN",  # status
+                "a@example.com",  # to /PS-IGNORE
+                "b@example.com;c@example.com",  # cc_address_list_str /PS-IGNORE
+                "test a",  # subject
+                "test a body",  # body
+            ),
+            (
+                11,  # imad_id
+                "CLOSED",  # status
+                "a@example.com",  # to /PS-IGNORE
+                "b@example.com",  # cc_address_list_str /PS-IGNORE
+                "test b",  # subject
+                "test b body",  # body
+            ),
+        ],
+    ),
 }
 
 

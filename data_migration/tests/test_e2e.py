@@ -48,6 +48,7 @@ sil_data_source_target = {
         (dm.Process, web.Process),
         (dm.ImportApplication, web.ImportApplication),
         (dm.ImportApplicationLicence, web.ImportApplicationLicence),
+        (dm.CaseEmail, web.CaseEmail),
         (dm.VariationRequest, web.VariationRequest),
         (dm.ImportCaseDocument, web.CaseDocumentReference),
         (dm.ImportContact, web.ImportContact),
@@ -110,6 +111,7 @@ sil_data_source_target = {
             (q_ia, "section5_authorities", dm.Section5Authority),
             (q_ia, "section5_linked_offices", dm.Section5AuthorityOffice),
             (q_ia, "sil_checklist", dm.SILChecklist),
+            (q_ia, "constabulary_emails", dm.CaseEmail),
         ],
     },
 )
@@ -120,6 +122,7 @@ sil_data_source_target = {
     {
         "import_application": [
             (dm.VariationRequest, web.ImportApplication, "variation_requests"),
+            (dm.CaseEmail, web.ImportApplication, "case_emails"),
             (dm.Office, web.Importer, "offices"),
             (dm.FirearmsAuthorityOffice, web.FirearmsAuthority, "linked_offices"),
             (dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
@@ -156,8 +159,6 @@ def test_import_sil_data(mock_connect):
 
     assert dm.SILApplication.objects.count() == 2
     sil1, sil2 = dm.SILApplication.objects.order_by("pk")
-
-    assert dm.VariationRequest.objects.count() == 2
 
     assert dm.SILGoodsSection1.objects.filter(import_application=sil1).count() == 1
     assert dm.SILGoodsSection1.objects.filter(import_application=sil2).count() == 1
@@ -251,9 +252,12 @@ def test_import_sil_data(mock_connect):
     assert sil1.user_section5.count() == 2
     assert sil2.user_section5.count() == 0
 
-    assert sil1.importapplication_ptr.importcontact_set.count() == 0
-    assert sil2.importapplication_ptr.importcontact_set.count() == 2
-    ic = sil2.importapplication_ptr.importcontact_set.first()
+    ia1 = sil1.importapplication_ptr
+    ia2 = sil2.importapplication_ptr
+
+    assert ia1.importcontact_set.count() == 0
+    assert ia2.importcontact_set.count() == 2
+    ic = ia2.importcontact_set.first()
 
     assert ic.entity == "legal"
     assert ic.first_name == "FIREARMS DEALER"
@@ -286,6 +290,18 @@ def test_import_sil_data(mock_connect):
     assert web.SILSupplementaryReportFirearmSection5.objects.filter(**sil1_f).count() == 2
     assert webRFObsolete.objects.filter(**sil1_f).count() == 1
     assert webRFOther.objects.filter(**sil1_f).count() == 2
+
+    assert ia1.case_emails.count() == 3
+    assert ia2.case_emails.count() == 0
+
+    open_email = ia1.case_emails.get(status="OPEN")
+    assert len(open_email.cc_address_list) == 2
+
+    closed_email = ia1.case_emails.get(status="CLOSED")
+    assert len(closed_email.cc_address_list) == 1
+
+    assert ia1.variation_requests.count() == 0
+    assert ia2.variation_requests.count() == 2
 
 
 oil_xml_parsers = [
