@@ -155,10 +155,24 @@
     <div class="three columns"></div>
   </div>
 
+  {% if object.response %}
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">
+          Response
+        </label>
+      </div>
+      <div class="six columns">
+          {{ object.response|nl2br }}
+      </div>
+      <div class="three columns"></div>
+    </div>
+  {% endif %}
+
   <div class="row">
     <div class="three columns">
       <label class="prompt west">
-        Response Date
+        Closed Date
       </label>
     </div>
     <div class="six columns">
