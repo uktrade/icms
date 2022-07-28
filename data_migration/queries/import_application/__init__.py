@@ -1,4 +1,5 @@
 from . import (
+    case,
     derogations,
     fa,
     import_application_type,
@@ -8,6 +9,7 @@ from . import (
     sanctions,
     sps,
 )
+from .case import *  # NOQA
 from .derogations import *  # NOQA
 from .fa import *  # NOQA
 from .import_application_type import *  # NOQA
@@ -18,6 +20,7 @@ from .sanctions import *  # NOQA
 from .sps import *  # NOQA
 
 __all__ = [
+    *case.__all__,
     *derogations.__all__,
     *fa.__all__,
     *import_application_type.__all__,

@@ -1565,3 +1565,10 @@ REQUEST_BY_WUA_ID></REQUEST_BY_WUA_ID
 xiad.print_documents_flag issue_paper_only
 ON xird.ird_id
 ON cd.con_id
+SELECT xid.imad_id
+ON xid.ima_id =
+xid.status_control
+WHERE fft.target_mnem = 'IMP_SPS_DOC' AND fft.status = 'RECEIVED
+Test Case Note 1.pdf
+Test Case Note 2.pdf
+Test Case Note

@@ -811,6 +811,90 @@ query_result = {
             ),
         ],
     ),
+    import_application.case_note: (
+        [
+            ("imad_id",),
+            ("status",),
+            ("note",),
+            ("created_by_id",),
+            ("create_datetime",),
+            ("file_folder_id",),
+        ],
+        [
+            (11, "OPEN", "Some note", 2, "2020-01-01T11:12:13", 10),
+            (12, "CLOSED", "Some other note", 2, "2021-02-02T12:13:14", 11),
+            (12, "DRAFT", "Some draft note", 2, "2022-03-03T13:14:15", 12),
+        ],
+    ),
+    files.case_note_files: (
+        IA_FILES_COLUMNS,
+        [
+            (
+                10,  # folder_id
+                "IMP_CASE_NOTE_DOCUMENTS",  # folder_type
+                "",  # app_model
+                "CASE_NOTE_DOCUMENT",  # target_type
+                "RECEIVED",  # status
+                2000,  # target_id
+                2000,  # fft_id
+                20000,  # version_id
+                datetime(2022, 4, 27),  # created_date
+                2,  # created_by_id
+                "case_note/file1",  # path
+                "Test Case Note 1.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+            ),
+            (
+                10,  # folder_id
+                "IMP_CASE_NOTE_DOCUMENTS",  # folder_type
+                "",  # app_model
+                "CASE_NOTE_DOCUMENT",  # target_type
+                "RECEIVED",  # status
+                2001,  # target_id
+                2001,  # fft_id
+                20001,  # version_id
+                datetime(2022, 4, 27),  # created_date
+                2,  # created_by_id
+                "case_note/file2",  # path
+                "Test Case Note 2.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+            ),
+            (
+                11,  # folder_id
+                "IMP_CASE_NOTE_DOCUMENTS",  # folder_type
+                "",  # app_model
+                "CASE_NOTE_DOCUMENT",  # target_type
+                "RECEIVED",  # status
+                2003,  # target_id
+                2003,  # fft_id
+                20003,  # version_id
+                datetime(2022, 4, 27),  # created_date
+                2,  # created_by_id
+                "case_note/file3",  # path
+                "Test Case Note 3.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+            ),
+            (
+                12,  # folder_id
+                "IMP_CASE_NOTE_DOCUMENTS",  # folder_type
+                "",  # app_model
+                "CASE_NOTE_DOCUMENT",  # target_type
+                "EMPTY",  # status
+                2004,  # target_id
+                2004,  # fft_id
+                None,  # version_id
+                None,  # created_date
+                None,  # created_by_id
+                None,  # path
+                None,  # filename
+                None,  # content_type
+                None,  # file_size
+            ),
+        ],
+    ),
 }
 
 

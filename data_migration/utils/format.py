@@ -62,6 +62,19 @@ def date_or_none(date_str: Union[Optional[str], date, datetime]) -> Optional[dat
     return datetime.strptime(p_date_str, date_format).date()
 
 
+def datetime_or_none(dt_str: Optional[str]) -> Optional[datetime]:
+    """Convert a datetime string to datetime
+
+    :param dt_str: A string of the datetime. Example: 2022-07-25T11:05:59
+    """
+
+    if not dt_str:
+        return None
+
+    str_format = "%Y-%m-%dT%H:%M:%S"
+    return datetime.strptime(dt_str, str_format)
+
+
 def float_or_none(float_str: Optional[str]) -> Optional[float]:
     if not float_str:
         return None

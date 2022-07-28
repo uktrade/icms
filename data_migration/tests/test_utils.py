@@ -10,6 +10,7 @@ from data_migration.management.commands.utils.format import format_name, format_
 from data_migration.models import Process
 from data_migration.utils.format import (
     date_or_none,
+    datetime_or_none,
     float_or_none,
     get_xml_val,
     int_or_none,
@@ -94,6 +95,18 @@ def test_date_or_none_exception():
     with pytest.raises(ValidationError) as excinfo:
         date_or_none("2014-10-01T00:00:00")
     assert "Date 2014-10-01T00:00:00 not in parsable format" in str(excinfo.value)
+
+
+@pytest.mark.parametrize(
+    "test_input,expected",
+    [
+        (None, None),
+        ("", None),
+        ("2014-10-01T01:02:03", datetime(2014, 10, 1, 1, 2, 3)),
+    ],
+)
+def test_datetime_or_none(test_input, expected):
+    assert datetime_or_none(test_input) == expected
 
 
 @pytest.mark.parametrize(
