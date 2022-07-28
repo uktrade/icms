@@ -49,6 +49,7 @@ sil_data_source_target = {
         (dm.ImportApplication, web.ImportApplication),
         (dm.ImportApplicationLicence, web.ImportApplicationLicence),
         (dm.CaseEmail, web.CaseEmail),
+        (dm.CaseNote, web.CaseNote),
         (dm.VariationRequest, web.VariationRequest),
         (dm.ImportCaseDocument, web.CaseDocumentReference),
         (dm.ImportContact, web.ImportContact),
@@ -96,6 +97,7 @@ sil_data_source_target = {
             (q_ref, "country_group", dm.CountryGroup),
         ],
         "file": [
+            (q_f, "case_note_files", dm.FileCombined),
             (q_f, "sil_application_files", dm.FileCombined),
             (q_f, "fa_certificate_files", dm.FileCombined),
         ],
@@ -112,6 +114,7 @@ sil_data_source_target = {
             (q_ia, "section5_linked_offices", dm.Section5AuthorityOffice),
             (q_ia, "sil_checklist", dm.SILChecklist),
             (q_ia, "constabulary_emails", dm.CaseEmail),
+            (q_ia, "case_note", dm.CaseNote),
         ],
     },
 )
@@ -121,6 +124,8 @@ sil_data_source_target = {
     DATA_TYPE_M2M,
     {
         "import_application": [
+            (dm.CaseNote, web.ImportApplication, "case_notes"),
+            (dm.CaseNoteFile, web.CaseNote, "files"),
             (dm.VariationRequest, web.ImportApplication, "variation_requests"),
             (dm.CaseEmail, web.ImportApplication, "case_emails"),
             (dm.Office, web.Importer, "offices"),
@@ -302,6 +307,14 @@ def test_import_sil_data(mock_connect):
 
     assert ia1.variation_requests.count() == 0
     assert ia2.variation_requests.count() == 2
+
+    assert ia1.case_notes.count() == 1
+    assert ia2.case_notes.count() == 2
+
+    cn1, cn2, cn3 = web.CaseNote.objects.order_by("pk")
+    assert cn1.files.count() == 2
+    assert cn2.files.count() == 1
+    assert cn3.files.count() == 0
 
 
 oil_xml_parsers = [

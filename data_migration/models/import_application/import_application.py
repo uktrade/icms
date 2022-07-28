@@ -91,7 +91,6 @@ class ImportApplication(MigrationBase):
     # TODO ICMSLST-1694: licence_reference is FK to CaseReference
     # TODO ICMSLST-1678: further_information_requests M2M
     # TODO ICMSLST-1675: update_requests M2M
-    # TODO ICMSLST-1675: case_notes M2M
 
     @classmethod
     def get_excludes(cls) -> list[str]:

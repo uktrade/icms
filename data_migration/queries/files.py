@@ -2,6 +2,7 @@ __all__ = [
     "derogations_application_files",
     "dfl_application_files",
     "fa_certificate_files",
+    "case_note_files",
     "oil_application_files",
     "opt_application_files",
     "sanction_application_files",
@@ -191,7 +192,7 @@ LEFT JOIN (
 ) fv ON fv.target_id = fft.id
 """
 
-sps_docs = """
+files_base = """
 SELECT
   ff.id folder_id
   , ff.file_folder_type folder_type
@@ -226,6 +227,15 @@ LEFT JOIN (
     ) x
   WHERE status_control = 'C'
  ) fv ON fv.target_id = fft.ID
+"""
+
+sps_docs = (
+    files_base
+    + """
 WHERE fft.target_mnem = 'IMP_SPS_DOC'
 AND fft.status = 'RECEIVED'
-"""
+""".strip()
+)
+
+
+case_note_files = files_base + "WHERE ff.file_folder_type = 'IMP_CASE_NOTE_DOCUMENTS'"
