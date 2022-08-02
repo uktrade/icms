@@ -444,52 +444,52 @@ query_result = {
     import_application.ia_licence: (
         [
             ("ima_id",),
+            ("imad_id",),
             ("licence_start_date",),
             ("licence_end_date",),
             ("case_reference",),
             ("is_paper_only",),
-            ("legacy_id",),
             ("status",),
             ("variation_no",),
         ],
         [
             (
                 1,  # ima_id
+                11,  # imad_id
                 datetime(2022, 4, 27).date(),  # licence_start_date
                 datetime(2023, 4, 27).date(),  # licence_end_date
                 "IMA/2022/1234",  # case_reference
                 0,  # is_paper_only
-                1,  # legacy_id
                 "AC",
                 0,
             ),
             (
                 2,
+                9,
                 datetime(2022, 4, 27).date(),
                 datetime(2023, 4, 30).date(),
                 "IMA/2022/2345",
                 0,
-                2,
                 "AR",
                 0,
             ),
             (
                 2,
+                10,
                 datetime(2022, 4, 27).date(),
                 datetime(2023, 5, 30).date(),
                 "IMA/2022/2345/1",
                 0,
-                3,
                 "AR",
                 1,
             ),
             (
                 2,
+                12,
                 datetime(2022, 4, 27).date(),
                 datetime(2023, 6, 30).date(),
                 "IMA/2022/2345/2",
                 0,
-                4,
                 "AC",
                 2,
             ),
@@ -513,7 +513,7 @@ query_result = {
         [
             (
                 "1234A",  # reference
-                1,  # licence_id
+                11,  # licence_id
                 1,  # document_legacy_id
                 "LICENCE",  # document_type
                 "Firearms Licence",  # filename
@@ -526,8 +526,22 @@ query_result = {
                 2,  # signed_by
             ),
             (
+                None,  # reference
+                11,  # licence_id
+                6,  # document_legacy_id
+                "COVER_LETTER",  # document_type
+                "Firearms Cover",  # filename
+                "application/pdf",  # content_type
+                100,  # file_size
+                "firearms-cover-1.pdf",  # path
+                datetime(2022, 4, 27),  # created_datetime
+                2,  # created_by_id
+                datetime(2022, 4, 27),  # signed_datetime
+                2,  # signed_by
+            ),
+            (
                 "1235B",
-                2,
+                9,
                 2,
                 "LICENCE",
                 "Firearms Licence",
@@ -541,7 +555,7 @@ query_result = {
             ),
             (
                 "1236C",
-                2,
+                9,
                 3,
                 "LICENCE",
                 "Firearms Licence",
@@ -555,7 +569,7 @@ query_result = {
             ),
             (
                 "1235D",
-                4,
+                12,
                 4,
                 "LICENCE",
                 "Firearms Licence",
@@ -569,7 +583,7 @@ query_result = {
             ),
             (
                 "1236E",
-                4,
+                12,
                 5,
                 "LICENCE",
                 "Firearms Licence",
@@ -580,6 +594,20 @@ query_result = {
                 2,
                 datetime(2022, 4, 30),
                 2,
+            ),
+            (
+                None,  # reference
+                12,  # licence_id
+                7,  # document_legacy_id
+                "COVER_LETTER",  # document_type
+                "Firearms Cover",  # filename
+                "application/pdf",  # content_type
+                100,  # file_size
+                "firearms-cover-2.pdf",  # path
+                datetime(2022, 4, 27),  # created_datetime
+                2,  # created_by_id
+                datetime(2022, 4, 27),  # signed_datetime
+                2,  # signed_by
             ),
         ],
     ),

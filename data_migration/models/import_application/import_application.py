@@ -190,6 +190,8 @@ class ImportApplicationLicence(MigrationBase):
     ima = models.ForeignKey(
         Process, on_delete=models.PROTECT, related_name="licences", to_field="ima_id"
     )
+    # Each variation has a different imad_id so can use it to link documents to the same variation
+    imad_id = models.PositiveIntegerField(unique=True)
     status = models.TextField(max_length=2, default="DR")
     issue_paper_licence_only = models.BooleanField(null=True)
     licence_start_date = models.DateField(null=True)
@@ -197,7 +199,6 @@ class ImportApplicationLicence(MigrationBase):
     case_completion_date = models.DateField(null=True)
     case_reference = models.CharField(max_length=100, null=True, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    legacy_id = models.IntegerField(unique=True)
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
@@ -211,12 +212,12 @@ class ImportApplicationLicence(MigrationBase):
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["ima_id"]
+        return super().get_excludes() + ["ima_id", "imad_id"]
 
 
 class ImportCaseDocument(MigrationBase):
     licence = models.ForeignKey(
-        ImportApplicationLicence, on_delete=models.CASCADE, to_field="legacy_id"
+        ImportApplicationLicence, on_delete=models.CASCADE, to_field="imad_id"
     )
     document_legacy = models.OneToOneField(
         File, on_delete=models.SET_NULL, null=True, to_field="document_legacy_id"

@@ -5,6 +5,7 @@ __all__ = ["ia_licence", "ia_licence_docs"]
 ia_licence = """
 SELECT
   ir.ima_id
+  , ird.imad_id
   , ird.licence_start_date
   , ird.licence_end_date
   , CASE
@@ -35,18 +36,14 @@ ORDER BY ir.ima_id, ird.variation_no
 
 ia_licence_docs = """
 SELECT
-  ird.id licence_id
-  , CASE
-    WHEN xiad.print_documents_flag = 'Y' THEN ''
-    WHEN xiad.ima_sub_type = 'OIL' THEN 'GBOIL'
-    WHEN xiad.ima_type = 'FA' THEN 'GBSIL'
-    WHEN xiad.ima_type = 'SPS' THEN 'GBAOG'
-    WHEN xiad.ima_type = 'TEX' THEN 'GBTEX'
-    WHEN xiad.ima_type = 'SAN' THEN 'GBSAN'
-    WHEN xiad.ima_type = 'ADHOC' THEN 'GBSAN'
-  END || ir.licence_ref || ir.licence_check_letter reference
+  ird.imad_id licence_id
   , dd.id document_legacy_id
-  , 'LICENCE' document_type
+  , CASE
+      WHEN ir.response_type LIKE '%_COVER' THEN ''
+      WHEN xiad.print_documents_flag = 'Y' THEN ''
+      ELSE iat.chief_licence_prefix
+  END || ir.licence_ref || ir.licence_check_letter reference
+  , CASE WHEN ir.response_type LIKE '%_COVER' THEN 'COVER_LETTER' ELSE 'LICENCE' END document_type
   , xdd.title filename
   , xdd.content_type
   , dbms_lob.getlength(sld.blob_data) file_size
@@ -56,10 +53,11 @@ SELECT
 FROM impmgr.ima_responses ir
   INNER JOIN impmgr.ima_response_details ird ON ird.ir_id = ir.id
   INNER JOIN impmgr.xview_ima_details xiad ON xiad.imad_id = ird.imad_id
+  INNER JOIN impmgr.import_application_types iat ON iat.ima_type = xiad.ima_type AND iat.ima_sub_type = xiad.ima_sub_type
   INNER JOIN impmgr.xview_ima_rd_di_details xird ON xird.ird_id = ird.id
   INNER JOIN decmgr.xview_document_data xdd ON xdd.di_id = xird.di_id AND xdd.system_document = 'N' AND xdd.content_description = 'PDF'
   INNER JOIN decmgr.document_data dd ON dd.id = xdd.dd_id
   INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(dd.secure_lob_ref).id
-WHERE ir.response_type LIKE '%_LICENCE'
+WHERE ir.response_type LIKE '%_LICENCE' OR ir.response_type LIKE '%_COVER'
 ORDER BY ir.id, dd.id
 """

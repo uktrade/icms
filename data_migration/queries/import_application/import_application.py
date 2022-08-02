@@ -60,6 +60,7 @@ WHERE
 common_xml_fields = """
     , variations_xml XMLTYPE PATH '/IMA/RESPONSE/VARIATIONS/VARIATION_REQUEST_LIST'
     , file_folder_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
+    , cover_letter XMLTYPE PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER/*'
 """.strip()
 
 import_checklist_base = """
