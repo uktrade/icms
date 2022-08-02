@@ -7,8 +7,8 @@ from django.db.models.functions import RowNumber
 
 from .base import MigrationBase
 from .file import File, FileFolder
-from .import_application.import_application import ImportApplication
-from .user.user import User
+from .import_application import ImportApplication
+from .user import User
 
 
 class CaseReference(MigrationBase):

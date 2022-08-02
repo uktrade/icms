@@ -237,8 +237,12 @@ def test_import_sil_data(mock_connect):
     l1 = sil1.licences.first()
     l2, l3, l4 = sil2.licences.all()
 
-    assert l1.document_references.count() == 1
-    assert l2.document_references.count() == 2
+    assert l1.document_references.count() == 2
+    assert l1.document_references.filter(document_type="LICENCE").count() == 1
+    assert l1.document_references.filter(document_type="COVER_LETTER").count() == 1
+    assert l2.document_references.count() == 3
+    assert l2.document_references.filter(document_type="LICENCE").count() == 2
+    assert l2.document_references.filter(document_type="COVER_LETTER").count() == 1
     assert l3.document_references.count() == 0
     assert l4.document_references.count() == 2
 
@@ -393,7 +397,7 @@ def test_import_oil_data(mock_connect):
             file_folder=folder,
         )
 
-        dm.ImportApplicationLicence.objects.create(ima=process, status="AB", legacy_id=i + 1)
+        dm.ImportApplicationLicence.objects.create(ima=process, status="AB", imad_id=ia.imad_id)
 
         oil_data = {
             "pk": pk,
@@ -513,7 +517,9 @@ def test_import_textiles_data(mock_connect):
             file_folder=folder,
         )
 
-        dm.ImportApplicationLicence.objects.create(ima=process, status="TX TEST", legacy_id=i + 1)
+        dm.ImportApplicationLicence.objects.create(
+            ima=process, status="TX TEST", imad_id=ia.imad_id
+        )
         dm.TextilesApplication.objects.create(imad=ia)
 
     call_command("export_from_v1", "--skip_ref", "--skip_user", "--skip_file")
@@ -604,7 +610,7 @@ def test_import_sps_data(mock_connect):
             file_folder_id=i + 100,
         )
 
-        dm.ImportApplicationLicence.objects.create(ima=process, status="AC", legacy_id=i + 1)
+        dm.ImportApplicationLicence.objects.create(ima=process, status="AC", imad_id=ia.imad_id)
 
         dm.PriorSurveillanceContractFile.objects.create(
             imad=ia,

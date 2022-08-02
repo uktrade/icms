@@ -17,7 +17,7 @@ SELECT
   , x.commodity_code commodity_group_id
   , CASE x.know_bought_from WHEN 'Y' THEN 1 WHEN 'N' THEN 0 ELSE NULL END know_bought_from
   , x.additional_comments
-  , x.cover_letter
+  , XMLTYPE.getClobVal(x.cover_letter) cover_letter
   , x.fa_authorities_xml
   , XMLTYPE.getClobVal(x.bought_from_details_xml) bought_from_details_xml
   , XMLTYPE.getClobVal(x.supplementary_report_xml) supplementary_report_xml
@@ -42,7 +42,6 @@ FROM impmgr.import_application_details ad,
     , bought_from_details_xml XMLTYPE PATH '/IMA/APP_DETAILS/SH_DETAILS/SELLER_HOLDER_LIST'
     , no_report_reason VARCHAR2(4000) PATH '/IMA/FA_REPORTS/NO_FIREARMS_REPORTED_DETAILS/NO_FIREARMS_REPORTED_REASON[not(fox-error)]/text()'
     , supplementary_report_xml XMLTYPE PATH '/IMA/FA_REPORTS/FA_SUPPLEMENTARY_REPORT_LIST'
-    , cover_letter VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER/text()'
     , is_complete VARCHAR2(5) PATH '/IMA/FA_REPORTS/REPORT_COMPLETED_FLAG[not(fox-error)]/text()'
     , completed_by_id NUMBER PATH
       '/IMA/FA_REPORTS/HISTORICAL_REPORT_COMPLETION_LIST/HISTORICAL_REPORT_COMPLETION[last()]/REPORT_COMPLETED_BY_WUA_ID[last()]/text()'
