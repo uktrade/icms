@@ -50,6 +50,7 @@ sil_data_source_target = {
         (dm.ImportApplicationLicence, web.ImportApplicationLicence),
         (dm.CaseEmail, web.CaseEmail),
         (dm.CaseNote, web.CaseNote),
+        (dm.UpdateRequest, web.UpdateRequest),
         (dm.VariationRequest, web.VariationRequest),
         (dm.ImportCaseDocument, web.CaseDocumentReference),
         (dm.ImportContact, web.ImportContact),
@@ -115,6 +116,7 @@ sil_data_source_target = {
             (q_ia, "sil_checklist", dm.SILChecklist),
             (q_ia, "constabulary_emails", dm.CaseEmail),
             (q_ia, "case_note", dm.CaseNote),
+            (q_ia, "update_request", dm.UpdateRequest),
         ],
     },
 )
@@ -128,6 +130,7 @@ sil_data_source_target = {
             (dm.CaseNoteFile, web.CaseNote, "files"),
             (dm.VariationRequest, web.ImportApplication, "variation_requests"),
             (dm.CaseEmail, web.ImportApplication, "case_emails"),
+            (dm.UpdateRequest, web.ImportApplication, "update_requests"),
             (dm.Office, web.Importer, "offices"),
             (dm.FirearmsAuthorityOffice, web.FirearmsAuthority, "linked_offices"),
             (dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
@@ -314,6 +317,9 @@ def test_import_sil_data(mock_connect):
 
     assert ia1.case_notes.count() == 1
     assert ia2.case_notes.count() == 2
+
+    assert ia1.update_requests.count() == 3
+    assert ia2.update_requests.count() == 0
 
     cn1, cn2, cn3 = web.CaseNote.objects.order_by("pk")
     assert cn1.files.count() == 2

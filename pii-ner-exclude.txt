@@ -1573,3 +1573,5 @@ Test Case Note 1.pdf
 Test Case Note 2.pdf
 Test Case Note
 COVER
+Test Open
+Open Details

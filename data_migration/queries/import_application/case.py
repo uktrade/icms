@@ -1,4 +1,4 @@
-__all__ = ["case_note"]
+__all__ = ["case_note", "update_request"]
 
 case_note = """
 SELECT
@@ -17,4 +17,21 @@ INNER JOIN (
   WHERE status_control = 'C'
 ) cnd ON cnd.cn_id = cn.id
 INNER JOIN impmgr.xview_ima_details xid ON xid.ima_id = cn.ima_id AND xid.status_control = 'C'
+"""
+
+
+update_request = """
+SELECT
+  ima_id
+  , update_status status
+  , request_subject
+  , request_body request_detail
+  , response_details
+  , request_date request_datetime
+  , 2 request_by_id
+  , response_date response_datetime
+  , 2 response_by_id
+  , closed_date closed_datetime
+  , 2 closed_by_id
+FROM impmgr.xview_ima_updates
 """

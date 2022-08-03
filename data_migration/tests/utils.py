@@ -923,6 +923,62 @@ query_result = {
             ),
         ],
     ),
+    import_application.update_request: (
+        [
+            ("ima_id",),
+            ("status",),
+            ("request_subject",),
+            ("request_detail",),
+            ("response_details",),
+            ("request_datetime",),
+            ("request_by_id",),
+            ("response_datetime",),
+            ("response_by_id",),
+            ("closed_datetime",),
+            ("closed_by_id",),
+        ],
+        [
+            (
+                1,  # ima_id
+                "CLOSED",  # status
+                "Test Closed",  # request_subject
+                "Closed Details",  # request_detail
+                "AA",  # response_detail
+                datetime(2021, 1, 2),  # request_datetime
+                2,  # request_by_id
+                datetime(2021, 1, 3),  # response_datetime
+                2,  # response_by_id
+                datetime(2021, 1, 4),  # closed_datetime
+                2,  # closed_by_id
+            ),
+            (
+                1,  # ima_id
+                "OPEN",  # status
+                "Test Open",  # request_subject
+                "Open Details",  # request_detail
+                None,  # response_detail
+                datetime(2021, 2, 2),  # request_datetime
+                2,  # request_by_id
+                None,  # response_datetime
+                None,  # response_by_id
+                None,  # closed_datetime
+                None,  # closed_by_id
+            ),
+            (
+                1,  # ima_id
+                "DRAFT",  # status
+                None,  # request_subject
+                None,  # request_detail
+                None,  # response_detail
+                None,  # request_datetime
+                None,  # request_by_id
+                None,  # response_datetime
+                None,  # response_by_id
+                None,  # closed_datetime
+                None,  # closed_by_id
+            ),
+        ],
+    ),
 }
 
 
