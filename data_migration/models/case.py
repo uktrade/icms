@@ -7,6 +7,7 @@ from django.db.models.functions import RowNumber
 
 from .base import MigrationBase
 from .file import File, FileFolder
+from .flow import Process
 from .import_application import ImportApplication
 from .user import User
 
@@ -146,5 +147,36 @@ class CaseNoteFile(MigrationBase):
                 file_id=F("pk"),
                 casenote_id=F("target__folder__case_note__pk"),
             )
+            .iterator()
+        )
+
+
+class UpdateRequest(MigrationBase):
+    ima = models.ForeignKey(Process, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True)
+    status = models.CharField(max_length=30)
+    request_subject = models.CharField(max_length=100, null=True)
+    request_detail = models.TextField(null=True)
+    response_detail = models.TextField(null=True)
+    request_datetime = models.DateTimeField(null=True)
+    requested_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
+    response_datetime = models.DateTimeField(null=True)
+    response_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
+    closed_datetime = models.DateTimeField(null=True)
+    closed_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["ima_id"]
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        return data
+
+    @classmethod
+    def get_m2m_data(cls, target: models.Model) -> Generator:
+        return (
+            cls.objects.select_related("ima")
+            .values("id", importapplication_id=F("ima__id"), updaterequest_id=F("id"))
             .iterator()
         )

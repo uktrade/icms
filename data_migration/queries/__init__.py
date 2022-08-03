@@ -96,6 +96,7 @@ ia_query_model = [
     QueryModel(import_application, "ia_licence_docs", dm.ImportCaseDocument),
     QueryModel(import_application, "constabulary_emails", dm.CaseEmail),
     QueryModel(import_application, "case_note", dm.CaseNote),
+    QueryModel(import_application, "update_request", dm.UpdateRequest),
 ]
 
 # Possibly refactor to import process and import application by process type
@@ -108,6 +109,7 @@ ia_source_target = [
     SourceTarget(dm.ImportCaseDocument, web.CaseDocumentReference),
     SourceTarget(dm.CaseEmail, web.CaseEmail),
     SourceTarget(dm.CaseNote, web.CaseNote),
+    SourceTarget(dm.UpdateRequest, web.UpdateRequest),
     SourceTarget(dm.ImportContact, web.ImportContact),
     SourceTarget(dm.PriorSurveillanceContractFile, web.PriorSurveillanceContractFile),
     SourceTarget(dm.PriorSurveillanceApplication, web.PriorSurveillanceApplication),
@@ -175,6 +177,7 @@ ia_m2m = [
     M2M(dm.VariationRequest, web.ImportApplication, "variation_requests"),
     M2M(dm.CaseEmail, web.ImportApplication, "case_emails"),
     M2M(dm.CaseNote, web.ImportApplication, "case_notes"),
+    M2M(dm.UpdateRequest, web.ImportApplication, "update_requests"),
     M2M(dm.CaseNoteFile, web.CaseNote, "files"),
     M2M(dm.Office, web.Importer, "offices"),
     M2M(dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
