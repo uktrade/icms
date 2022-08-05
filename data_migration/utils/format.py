@@ -178,3 +178,8 @@ def split_address(address: str, prefix="address_", max_lines=5) -> dict[str, str
         for i, address_line in enumerate(address.split("\n"), start=1)
         if address_line and address_line.strip() and i <= max_lines
     }
+
+
+def str_to_list(list_str: str, delimiter: str = ";"):
+    lst = [x for x in list_str.split(delimiter) if x]
+    return lst or None

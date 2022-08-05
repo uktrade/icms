@@ -1575,3 +1575,10 @@ Test Case Note
 COVER
 Test Open
 Open Details
+email_cc_address_list_str
+target__folder__fir__pk
+ia_ima_id
+RFI_DOCUMENT
+ON xid.ima_id = u.ima_id
+cnd
+SELECT xir.ima_id ia_ima_id

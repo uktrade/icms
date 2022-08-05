@@ -805,7 +805,7 @@ query_result = {
     ),
     import_application.constabulary_emails: (
         [
-            ("imad_id",),
+            ("ima_id",),
             ("status",),
             ("to",),
             ("cc_address_list_str",),
@@ -814,7 +814,7 @@ query_result = {
         ],
         [
             (
-                11,  # imad_id
+                1,  # ima_id
                 "DRAFT",  # status
                 None,  # to
                 None,  # cc_address_list_str
@@ -822,7 +822,7 @@ query_result = {
                 None,  # body
             ),
             (
-                11,  # imad_id
+                1,  # ima_id
                 "OPEN",  # status
                 "a@example.com",  # to /PS-IGNORE
                 "b@example.com;c@example.com",  # cc_address_list_str /PS-IGNORE
@@ -830,7 +830,7 @@ query_result = {
                 "test a body",  # body
             ),
             (
-                11,  # imad_id
+                1,  # ima_id
                 "CLOSED",  # status
                 "a@example.com",  # to /PS-IGNORE
                 "b@example.com",  # cc_address_list_str /PS-IGNORE
@@ -841,7 +841,7 @@ query_result = {
     ),
     import_application.case_note: (
         [
-            ("imad_id",),
+            ("ima_id",),
             ("status",),
             ("note",),
             ("created_by_id",),
@@ -849,9 +849,9 @@ query_result = {
             ("file_folder_id",),
         ],
         [
-            (11, "OPEN", "Some note", 2, "2020-01-01T11:12:13", 10),
-            (12, "CLOSED", "Some other note", 2, "2021-02-02T12:13:14", 11),
-            (12, "DRAFT", "Some draft note", 2, "2022-03-03T13:14:15", 12),
+            (1, "OPEN", "Some note", 2, "2020-01-01T11:12:13", 10),
+            (2, "CLOSED", "Some other note", 2, "2021-02-02T12:13:14", 11),
+            (2, "DRAFT", "Some draft note", 2, "2022-03-03T13:14:15", 12),
         ],
     ),
     files.case_note_files: (
@@ -976,6 +976,143 @@ query_result = {
                 None,  # response_by_id
                 None,  # closed_datetime
                 None,  # closed_by_id
+            ),
+        ],
+    ),
+    import_application.fir: (
+        [
+            ("ia_ima_id",),
+            ("status",),
+            ("request_subject",),
+            ("request_detail",),
+            ("response_details",),
+            ("request_datetime",),
+            ("request_by_id",),
+            ("response_datetime",),
+            ("response_by_id",),
+            ("closed_datetime",),
+            ("closed_by_id",),
+            ("folder_id",),
+            ("email_cc_address_list_str",),
+            ("process_type",),
+        ],
+        [
+            (
+                1,  # ia_ima_id
+                "CLOSED",  # status
+                "Test Closed",  # request_subject
+                "Closed Details",  # request_detail
+                "AA",  # response_detail
+                datetime(2021, 1, 2),  # request_datetime
+                2,  # request_by_id
+                datetime(2021, 1, 3),  # response_datetime
+                2,  # response_by_id
+                datetime(2021, 1, 4),  # closed_datetime
+                2,  # closed_by_id
+                20,  # folder_id
+                "b@example.com;c@example.com",  # email_cc_address_list_str /PS-IGNORE
+                "FurtherInformationRequest",  # process_type
+            ),
+            (
+                1,  # ia_ima_id
+                "RESPONDED",  # status
+                "Test Responded",  # request_subject
+                "Responded Details",  # request_detail
+                "BB",  # response_detail
+                datetime(2021, 1, 2),  # request_datetime
+                2,  # request_by_id
+                datetime(2021, 1, 3),  # response_datetime
+                2,  # response_by_id
+                None,  # closed_datetime
+                None,  # closed_by_id
+                21,  # folder_id
+                "b@example.com",  # email_cc_address_list_str /PS-IGNORE
+                "FurtherInformationRequest",  # process_type
+            ),
+            (
+                1,  # ia_ima_id
+                "OPEN",  # status
+                "Test Open",  # request_subject
+                "Open Details",  # request_detail
+                None,  # response_detail
+                datetime(2021, 2, 2),  # request_datetime
+                2,  # request_by_id
+                None,  # response_datetime
+                None,  # response_by_id
+                None,  # closed_datetime
+                None,  # closed_by_id
+                22,  # folder_id
+                None,  # email_cc_address_list_str
+                "FurtherInformationRequest",  # process_type
+            ),
+        ],
+    ),
+    files.fir_files: (
+        IA_FILES_COLUMNS,
+        [
+            (
+                20,  # folder_id
+                "IMP_RFI_DOCUMENTS",  # folder_type
+                None,  # app_model
+                "RFI_DOCUMENT",  # target_type
+                "RECEIVED",  # status
+                3000,  # target_id
+                3000,  # fft_id
+                30000,  # version_id
+                datetime(2022, 4, 27),  # created_date
+                2,  # created_by_id
+                "fir/file1",  # path
+                "Test FIR 1.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+            ),
+            (
+                20,  # folder_id
+                "IMP_RFI_DOCUMENTS",  # folder_type
+                None,  # app_model
+                "RFI_DOCUMENT",  # target_type
+                "RECEIVED",  # status
+                3001,  # target_id
+                3001,  # fft_id
+                30001,  # version_id
+                datetime(2022, 4, 27),  # created_date
+                2,  # created_by_id
+                "fir/file2",  # path
+                "Test FIR 2.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+            ),
+            (
+                21,  # folder_id
+                "IMP_RFI_DOCUMENTS",  # folder_type
+                None,  # app_model
+                "RFI_DOCUMENT",  # target_type
+                "RECEIVED",  # status
+                3003,  # target_id
+                3003,  # fft_id
+                30003,  # version_id
+                datetime(2022, 4, 27),  # created_date
+                2,  # created_by_id
+                "fir/file3",  # path
+                "Test FIR 3.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+            ),
+            (
+                22,  # folder_id
+                "IMP_RFI_DOCUMENTS",  # folder_type
+                None,  # app_model
+                "RFI_DOCUMENT",  # target_type
+                "EMPTY",  # status
+                3004,  # target_id
+                3004,  # fft_id
+                None,  # version_id
+                None,  # created_date
+                None,  # created_by_id
+                None,  # path
+                None,  # filename
+                None,  # content_type
+                None,  # file_size
             ),
         ],
     ),

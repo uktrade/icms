@@ -15,6 +15,7 @@ from data_migration.utils.format import (
     get_xml_val,
     int_or_none,
     str_to_bool,
+    str_to_list,
     str_to_yes_no,
     validate_decimal,
     validate_int,
@@ -238,3 +239,10 @@ def test_validate_decimal(fields, data, expected):
 def test_validate_int(fields, data, expected):
     validate_int(fields, data)
     assert data == expected
+
+
+def test_str_to_list():
+    assert str_to_list("a;b;c") == ["a", "b", "c"]
+    assert str_to_list("a/b/c", "/") == ["a", "b", "c"]
+    assert str_to_list("a;;b;c;;") == ["a", "b", "c"]
+    assert str_to_list("") is None

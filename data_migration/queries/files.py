@@ -2,6 +2,7 @@ __all__ = [
     "derogations_application_files",
     "dfl_application_files",
     "fa_certificate_files",
+    "fir_files",
     "case_note_files",
     "oil_application_files",
     "opt_application_files",
@@ -192,7 +193,7 @@ LEFT JOIN (
 ) fv ON fv.target_id = fft.id
 """
 
-files_base = """
+sps_docs = """
 SELECT
   ff.id folder_id
   , ff.file_folder_type folder_type
@@ -227,15 +228,82 @@ LEFT JOIN (
     ) x
   WHERE status_control = 'C'
  ) fv ON fv.target_id = fft.ID
-"""
-
-sps_docs = (
-    files_base
-    + """
 WHERE fft.target_mnem = 'IMP_SPS_DOC'
 AND fft.status = 'RECEIVED'
-""".strip()
-)
+"""
 
 
-case_note_files = files_base + "WHERE ff.file_folder_type = 'IMP_CASE_NOTE_DOCUMENTS'"
+case_note_files = """
+SELECT
+  ff.id folder_id
+  , ff.file_folder_type folder_type
+  , fft.target_mnem target_type
+  , fft.id target_id
+  , fft.status
+  , fv.version_id
+  , fv.filename
+  , fv.content_type
+  , fv.file_size
+  , fv.path
+  , created_datetime
+  , 2 created_by_id
+FROM decmgr.file_folder_targets fft
+INNER JOIN decmgr.file_folders ff ON fft.ff_id = ff.id
+LEFT JOIN (
+  SELECT
+    fft_id target_id
+    , fv.id version_id
+    , create_start_datetime created_datetime
+    , create_by_wua_id created_by
+    , CONCAT(id, CONCAT('-', x.filename)) path
+    , x.*
+  FROM decmgr.file_versions fv,
+    XMLTABLE('/*'
+    PASSING metadata_xml
+    COLUMNS
+      filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
+      , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
+      , file_size NUMBER PATH '/file-metadata/size/text()'
+    ) x
+  WHERE status_control = 'C'
+ ) fv ON fv.target_id = fft.ID
+WHERE ff.file_folder_type = 'IMP_CASE_NOTE_DOCUMENTS'
+"""
+
+
+fir_files = """
+SELECT
+  ff.id folder_id
+  , ff.file_folder_type folder_type
+  , fft.target_mnem target_type
+  , fft.id target_id
+  , fft.status
+  , fv.version_id
+  , fv.filename
+  , fv.content_type
+  , fv.file_size
+  , fv.path
+  , created_datetime
+  , 2 created_by_id
+FROM impmgr.xview_ima_rfis xir
+INNER JOIN decmgr.file_folders ff ON ff.id = xir.file_folder_id
+LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
+LEFT JOIN (
+  SELECT
+    fft_id target_id
+    , fv.id version_id
+    , create_start_datetime created_datetime
+    , create_by_wua_id created_by
+    , CONCAT(id, CONCAT('-', x.filename)) path
+    , x.*
+  FROM decmgr.file_versions fv,
+    XMLTABLE('/*'
+    PASSING metadata_xml
+    COLUMNS
+      filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
+      , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
+      , file_size NUMBER PATH '/file-metadata/size/text()'
+    ) x
+  WHERE status_control = 'C'
+ ) fv ON fv.target_id = fft.ID
+ """
