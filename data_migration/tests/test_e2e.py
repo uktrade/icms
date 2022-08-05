@@ -50,6 +50,7 @@ sil_data_source_target = {
         (dm.ImportApplicationLicence, web.ImportApplicationLicence),
         (dm.CaseEmail, web.CaseEmail),
         (dm.CaseNote, web.CaseNote),
+        (dm.FurtherInformationRequest, web.FurtherInformationRequest),
         (dm.UpdateRequest, web.UpdateRequest),
         (dm.VariationRequest, web.VariationRequest),
         (dm.ImportCaseDocument, web.CaseDocumentReference),
@@ -99,6 +100,7 @@ sil_data_source_target = {
         ],
         "file": [
             (q_f, "case_note_files", dm.FileCombined),
+            (q_f, "fir_files", dm.FileCombined),
             (q_f, "sil_application_files", dm.FileCombined),
             (q_f, "fa_certificate_files", dm.FileCombined),
         ],
@@ -117,6 +119,7 @@ sil_data_source_target = {
             (q_ia, "constabulary_emails", dm.CaseEmail),
             (q_ia, "case_note", dm.CaseNote),
             (q_ia, "update_request", dm.UpdateRequest),
+            (q_ia, "fir", dm.FurtherInformationRequest),
         ],
     },
 )
@@ -131,6 +134,8 @@ sil_data_source_target = {
             (dm.VariationRequest, web.ImportApplication, "variation_requests"),
             (dm.CaseEmail, web.ImportApplication, "case_emails"),
             (dm.UpdateRequest, web.ImportApplication, "update_requests"),
+            (dm.FurtherInformationRequest, web.ImportApplication, "further_information_requests"),
+            (dm.FIRFile, web.FurtherInformationRequest, "files"),
             (dm.Office, web.Importer, "offices"),
             (dm.FirearmsAuthorityOffice, web.FirearmsAuthority, "linked_offices"),
             (dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
@@ -325,6 +330,19 @@ def test_import_sil_data(mock_connect):
     assert cn1.files.count() == 2
     assert cn2.files.count() == 1
     assert cn3.files.count() == 0
+
+    assert ia1.further_information_requests.count() == 3
+    assert ia2.further_information_requests.count() == 0
+
+    fir1, fir2, fir3 = ia1.further_information_requests.order_by("pk")
+
+    assert len(fir1.email_cc_address_list) == 2
+    assert len(fir2.email_cc_address_list) == 1
+    assert fir3.email_cc_address_list is None
+
+    assert fir1.files.count() == 2
+    assert fir2.files.count() == 1
+    assert fir3.files.count() == 0
 
 
 oil_xml_parsers = [
