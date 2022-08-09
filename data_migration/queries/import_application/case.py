@@ -1,4 +1,4 @@
-__all__ = ["case_note", "fir", "update_request"]
+__all__ = ["case_note", "endorsement", "fir", "update_request"]
 
 case_note = """
 SELECT
@@ -59,4 +59,11 @@ SELECT
 FROM impmgr.xview_ima_rfis xir
 INNER JOIN impmgr.xview_ima_details xid ON xid.ima_id = xir.ima_id AND xid.status_control = 'C'
 WHERE xir.status_control = 'C'
+"""
+
+
+endorsement = """
+SELECT imad_id, endorsement_text content
+FROM impmgr.xview_ima_endorsements xie
+WHERE xie.status_control = 'C'
 """

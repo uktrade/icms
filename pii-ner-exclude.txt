@@ -1582,3 +1582,4 @@ RFI_DOCUMENT
 ON xid.ima_id = u.ima_id
 cnd
 SELECT xir.ima_id ia_ima_id
+Content A"

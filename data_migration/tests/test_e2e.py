@@ -50,6 +50,7 @@ sil_data_source_target = {
         (dm.ImportApplicationLicence, web.ImportApplicationLicence),
         (dm.CaseEmail, web.CaseEmail),
         (dm.CaseNote, web.CaseNote),
+        (dm.EndorsementImportApplication, web.EndorsementImportApplication),
         (dm.FurtherInformationRequest, web.FurtherInformationRequest),
         (dm.UpdateRequest, web.UpdateRequest),
         (dm.VariationRequest, web.VariationRequest),
@@ -120,6 +121,7 @@ sil_data_source_target = {
             (q_ia, "case_note", dm.CaseNote),
             (q_ia, "update_request", dm.UpdateRequest),
             (q_ia, "fir", dm.FurtherInformationRequest),
+            (q_ia, "endorsement", dm.EndorsementImportApplication),
         ],
     },
 )
@@ -343,6 +345,9 @@ def test_import_sil_data(mock_connect):
     assert fir1.files.count() == 2
     assert fir2.files.count() == 1
     assert fir3.files.count() == 0
+
+    assert ia1.endorsements.count() == 2
+    assert ia2.endorsements.count() == 0
 
 
 oil_xml_parsers = [

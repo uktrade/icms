@@ -1116,6 +1116,10 @@ query_result = {
             ),
         ],
     ),
+    import_application.endorsement: (
+        [("imad_id",), ("content",)],
+        [(11, "Content A"), (11, "Content B")],
+    ),
 }
 
 

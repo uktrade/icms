@@ -1,6 +1,10 @@
 from .derogations import *  # NOQA
 from .fa import *  # NOQA
-from .import_application import ImportApplicationLicence, ImportCaseDocument  # NOQA
+from .import_application import (  # NOQA
+    EndorsementImportApplication,
+    ImportApplicationLicence,
+    ImportCaseDocument,
+)
 from .import_application_type import *  # NOQA
 from .opt import *  # NOQA
 from .quota import *  # NOQA

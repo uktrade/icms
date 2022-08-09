@@ -246,6 +246,21 @@ class ImportCaseDocument(MigrationBase):
         }
 
 
+class EndorsementImportApplication(MigrationBase):
+    imad = models.ForeignKey(ImportApplication, on_delete=models.PROTECT, to_field="imad_id")
+    content = models.TextField()
+    created_datetime = models.DateTimeField(auto_now_add=True)
+    updated_datetime = models.DateTimeField(auto_now=True)
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["imad_id"]
+
+    @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        return {"import_application_id": F("imad__id")}
+
+
 class ImportApplicationBase(MigrationBase):
     PROCESS_PK = True
 
