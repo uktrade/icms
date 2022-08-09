@@ -99,6 +99,7 @@ ia_query_model = [
     QueryModel(import_application, "case_note", dm.CaseNote),
     QueryModel(import_application, "update_request", dm.UpdateRequest),
     QueryModel(import_application, "fir", dm.FurtherInformationRequest),
+    QueryModel(import_application, "endorsement", dm.EndorsementImportApplication),
 ]
 
 # Possibly refactor to import process and import application by process type
@@ -173,6 +174,7 @@ ia_source_target = [
     SourceTarget(dm.TextilesApplication, web.TextilesApplication),
     SourceTarget(dm.TextilesChecklist, web.TextilesChecklist),
     SourceTarget(dm.UserImportCertificate, web.UserImportCertificate),
+    SourceTarget(dm.EndorsementImportApplication, web.EndorsementImportApplication),
 ]
 
 
