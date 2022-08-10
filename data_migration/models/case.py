@@ -257,3 +257,62 @@ class FIRFile(MigrationBase):
             )
             .iterator()
         )
+
+
+class Mailshot(MigrationBase):
+    is_active = models.BooleanField(default=True)
+    status = models.CharField(max_length=20)
+    title = models.CharField(max_length=200, null=True)
+    description = models.CharField(max_length=4000, null=True)
+    is_email = models.BooleanField(default=True)
+    email_subject = models.CharField(max_length=200)
+    email_body = models.CharField(max_length=4000, null=True)
+    is_retraction_email = models.BooleanField(default=True)
+    retract_email_subject = models.CharField(max_length=78, null=True)
+    retract_email_body = models.CharField(max_length=4000, null=True)
+    is_to_importers = models.BooleanField(default=False)
+    is_to_exporters = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
+    create_datetime = models.DateTimeField(auto_now_add=True)
+    published_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
+    published_datetime = models.DateTimeField(null=True)
+    retracted_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
+    retracted_datetime = models.DateTimeField(null=True)
+    reference = models.CharField(max_length=100, null=True)
+    version = models.PositiveIntegerField(default=0)
+    folder = models.OneToOneField(FileFolder, on_delete=models.CASCADE, related_name="mailshot")
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        return data
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["folder_id"]
+
+
+class MailshotDoc(MigrationBase):
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data["id"] = data.pop("row_number")
+        return data
+
+    @classmethod
+    def get_m2m_data(cls, target: models.Model) -> Generator:
+        return (
+            File.objects.select_related("target__folder__mailshot_id")
+            .filter(
+                target__folder__folder_type="MAILSHOT_DOCUMENTS",
+                target__folder__mailshot__isnull=False,
+            )
+            .annotate(row_number=Window(expression=RowNumber()))
+            .values(
+                "row_number",
+                file_id=F("pk"),
+                mailshot_id=F("target__folder__mailshot__pk"),
+            )
+            .iterator()
+        )

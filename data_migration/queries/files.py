@@ -1,9 +1,10 @@
 __all__ = [
+    "case_note_files",
     "derogations_application_files",
     "dfl_application_files",
     "fa_certificate_files",
     "fir_files",
-    "case_note_files",
+    "mailshot_files",
     "oil_application_files",
     "opt_application_files",
     "sanction_application_files",
@@ -307,3 +308,42 @@ LEFT JOIN (
   WHERE status_control = 'C'
  ) fv ON fv.target_id = fft.ID
  """
+
+
+mailshot_files = """
+SELECT
+  ff.id folder_id
+  , ff.file_folder_type folder_type
+  , fft.target_mnem target_type
+  , fft.id target_id
+  , fft.status
+  , fv.version_id
+  , fv.filename
+  , fv.content_type
+  , fv.file_size
+  , fv.path
+  , created_datetime
+  , 2 created_by_id
+FROM mailshotmgr.xview_mailshot_details xmd
+INNER JOIN decmgr.file_folders ff ON ff.id = xmd.documents_ff_id
+LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
+LEFT JOIN (
+  SELECT
+    fft_id target_id
+    , fv.id version_id
+    , create_start_datetime created_datetime
+    , create_by_wua_id created_by
+    , CONCAT(id, CONCAT('-', x.filename)) path
+    , x.*
+  FROM decmgr.file_versions fv,
+    XMLTABLE('/*'
+    PASSING metadata_xml
+    COLUMNS
+      filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
+      , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
+      , file_size NUMBER PATH '/file-metadata/size/text()'
+    ) x
+  WHERE status_control = 'C'
+ ) fv ON fv.target_id = fft.ID
+WHERE xmd.status_control = 'C'
+"""

@@ -54,6 +54,7 @@ ref_m2m = [
 ]
 
 file_query_model = [
+    QueryModel(files, "mailshot_files", dm.FileCombined),
     QueryModel(files, "case_note_files", dm.FileCombined),
     QueryModel(files, "fir_files", dm.FileCombined),
     QueryModel(files, "sps_application_files", dm.FileCombined),
@@ -70,6 +71,7 @@ file_query_model = [
 ]
 
 ia_query_model = [
+    QueryModel(user, "mailshots", dm.Mailshot),
     QueryModel(user, "importers", dm.Importer),
     QueryModel(user, "offices", dm.Office),
     QueryModel(import_application, "sps_application", dm.PriorSurveillanceApplication),
@@ -104,6 +106,7 @@ ia_query_model = [
 
 # Possibly refactor to import process and import application by process type
 ia_source_target = [
+    SourceTarget(dm.Mailshot, web.Mailshot),
     SourceTarget(dm.Importer, web.Importer),
     SourceTarget(dm.Office, web.Office),
     SourceTarget(dm.Process, web.Process),
@@ -179,6 +182,7 @@ ia_source_target = [
 
 
 ia_m2m = [
+    M2M(dm.MailshotDoc, web.Mailshot, "documents"),
     M2M(dm.VariationRequest, web.ImportApplication, "variation_requests"),
     M2M(dm.CaseEmail, web.ImportApplication, "case_emails"),
     M2M(dm.CaseNote, web.ImportApplication, "case_notes"),
