@@ -33,9 +33,9 @@ SELECT
   , 2 created_by_id
   , 2 last_updated_by_id
   , xiad.importer_id
-  , CASE WHEN xiad.importer_id IS NULL THEN NULL ELSE xiad.importer_id || '-' || xiad.importer_office_id END importer_office_legacy_id
+  , CASE WHEN xiad.importer_id IS NULL THEN NULL ELSE 'i-' || xiad.importer_id || '-' || xiad.importer_office_id END importer_office_legacy_id
   , xiad.agent_id
-  , CASE WHEN xiad.agent_id IS NULL THEN NULL ELSE xiad.agent_id || '-' || xiad.agent_office_id END agent_office_legacy_id
+  , CASE WHEN xiad.agent_id IS NULL THEN NULL ELSE 'i-' || xiad.agent_id || '-' || xiad.agent_office_id END agent_office_legacy_id
   , 2 contact_id
   , xiad.coo_country_id origin_country_id
   , xiad.coc_country_id consignment_country_id

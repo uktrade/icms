@@ -416,9 +416,8 @@ query_result = {
             (3, 1, "INDIVIDUAL", "Test Agent", 125, "GB123456789014", 2, 2, None),
         ],
     ),
-    user.offices: (
+    user.importer_offices: (
         [
-            ("id",),
             ("importer_id",),
             ("legacy_id",),
             ("is_active",),
@@ -428,18 +427,62 @@ query_result = {
             ("address_entry_type",),
         ],
         [
-            (1, 2, "2-1", 1, "ABC", "123 Test\nTest City", "GB123456789015", "SEARCH"),
-            (2, 2, "2-2", 1, "DEF", "456 Test", "GB123456789016", "MANUAL"),
-            (3, 3, "3-1", 1, "TEST", "ABC Test\nTest Town\nTest City", "GB123456789017", "MANUAL"),
+            (2, "i-2-1", 1, "ABC", "123 Test\nTest City", "GB123456789015", "SEARCH"),
+            (2, "i-2-2", 1, "DEF", "456 Test", "GB123456789016", "MANUAL"),
+            (
+                3,
+                "i-3-1",
+                1,
+                "deletethisTESTLONG",
+                "ABC Test\nTest Town\nTest City",
+                "GB123456789017",
+                "MANUAL",
+            ),
+        ],
+    ),
+    user.exporters: (
+        [
+            ("id",),
+            ("is_active",),
+            ("name",),
+            ("registered_number",),
+            ("main_importer_id",),
+        ],
+        [
+            (1, 1, "Test Org", 123, 2, None),
+            (2, 1, "Test Agent", 124, "GB123456789013", 2, 1),
+            (3, 0, "Test Inactive", 125, "GB123456789014", 2, None),
+        ],
+    ),
+    user.exporter_offices: (
+        [
+            ("exporter_id",),
+            ("legacy_id",),
+            ("is_active",),
+            ("postcode",),
+            ("address",),
+            ("address_entry_type",),
+        ],
+        [
+            (2, "e-2-1", 1, "Exp A", "123 Test\nTest City", "SEARCH"),
+            (2, "e-2-2", 1, "Very Long Postcode", "456 Test", "MANUAL"),
+            (
+                3,
+                "e-3-1",
+                0,
+                "TEST",
+                "ABC Test\nTest Town\nTest City",
+                "MANUAL",
+            ),
         ],
     ),
     import_application.fa_authority_linked_offices: (
         [("firearmsauthority_id",), ("office_legacy_id",)],
-        [(1, "2-1"), (1, "2-2"), (2, "3-1")],
+        [(1, "i-2-1"), (1, "i-2-2"), (2, "i-3-1")],
     ),
     import_application.section5_linked_offices: (
         [("section5authority_id",), ("office_legacy_id",)],
-        [(1, "2-1"), (1, "2-2"), (2, "3-1")],
+        [(1, "i-2-1"), (1, "i-2-2"), (2, "i-3-1")],
     ),
     import_application.ia_licence: (
         [
@@ -693,7 +736,7 @@ query_result = {
                 2,  # creeated_by_id
                 2,  # last_updated_by_id
                 2,  # importer_id
-                "2-1",  # importer_office_legacy_id
+                "i-2-1",  # importer_office_legacy_id
                 2,  # contact_id
                 1,  # application_type
                 "SILApplication",  # process_type
@@ -723,7 +766,7 @@ query_result = {
                 2,  # creeated_by_id
                 2,  # last_updated_by_id
                 2,  # importer_id
-                "2-1",  # importer_office_legacy_id
+                "i-2-1",  # importer_office_legacy_id
                 2,  # contact_id
                 1,  # application_type
                 "SILApplication",  # process_type

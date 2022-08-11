@@ -35,6 +35,7 @@ sil_data_source_target = {
     "user": [
         (dm.User, web.User),
         (dm.Importer, web.Importer),
+        (dm.Exporter, web.Exporter),
         (dm.Office, web.Office),
     ],
     "reference": [
@@ -107,7 +108,9 @@ sil_data_source_target = {
         ],
         "import_application": [
             (q_u, "importers", dm.Importer),
-            (q_u, "offices", dm.Office),
+            (q_u, "importer_offices", dm.Office),
+            (q_u, "exporters", dm.Exporter),
+            (q_u, "exporter_offices", dm.Office),
             (q_ia, "ia_type", dm.ImportApplicationType),
             (q_ia, "sil_application", dm.SILApplication),
             (q_ia, "ia_licence", dm.ImportApplicationLicence),
@@ -139,6 +142,7 @@ sil_data_source_target = {
             (dm.FurtherInformationRequest, web.ImportApplication, "further_information_requests"),
             (dm.FIRFile, web.FurtherInformationRequest, "files"),
             (dm.Office, web.Importer, "offices"),
+            (dm.Office, web.Exporter, "offices"),
             (dm.FirearmsAuthorityOffice, web.FirearmsAuthority, "linked_offices"),
             (dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
             (dm.Section5AuthorityOffice, web.Section5Authority, "linked_offices"),
@@ -200,26 +204,51 @@ def test_import_sil_data(mock_connect):
     assert importers[1].offices.count() == 2
     assert importers[2].offices.count() == 1
 
-    assert web.Office.objects.count() == 3
-    office1, office2, office3 = web.Office.objects.all()
+    assert web.Office.objects.count() == 6
+    office1, office2, office3 = web.Office.objects.filter(importer__isnull=False).order_by("pk")
 
     assert office1.address_1 == "123 Test"
     assert office1.address_2 == "Test City"
     assert office1.address_3 is None
     assert office1.address_4 is None
     assert office1.address_5 is None
+    assert office1.postcode == "ABC"
 
     assert office2.address_1 == "456 Test"
     assert office2.address_2 is None
     assert office2.address_3 is None
     assert office2.address_4 is None
     assert office2.address_5 is None
+    assert office2.postcode == "DEF"
 
     assert office3.address_1 == "ABC Test"
     assert office3.address_2 == "Test Town"
     assert office3.address_3 == "Test City"
     assert office3.address_4 is None
     assert office3.address_5 is None
+    assert office3.postcode == "TESTLONG"
+
+    office4, office5, office6 = web.Office.objects.filter(exporter__isnull=False).order_by("pk")
+    assert office4.address_1 == "123 Test"
+    assert office4.address_2 == "Test City"
+    assert office4.address_3 is None
+    assert office4.address_4 is None
+    assert office4.address_5 is None
+    assert office4.postcode == "Exp A"
+
+    assert office5.address_1 == "456 Test"
+    assert office5.address_2 == "Very Long Postcode"
+    assert office5.address_3 is None
+    assert office5.address_4 is None
+    assert office5.address_5 is None
+    assert office5.postcode is None
+
+    assert office6.address_1 == "ABC Test"
+    assert office6.address_2 == "Test Town"
+    assert office6.address_3 == "Test City"
+    assert office6.address_4 is None
+    assert office6.address_5 is None
+    assert office6.postcode == "TEST"
 
     fa_auth = web.FirearmsAuthority.objects.order_by("pk")
     assert fa_auth.count() == 2
