@@ -68,6 +68,16 @@ class Importer(MigrationBase):
         return data
 
 
+class Exporter(MigrationBase):
+    is_active = models.BooleanField(null=False, default=True)
+    name = models.TextField()
+    registered_number = models.CharField(max_length=15, null=True)
+    comments = models.TextField(null=True)
+    main_exporter = models.ForeignKey(
+        "self", on_delete=models.SET_NULL, null=True, related_name="agents"
+    )
+
+
 class Office(MigrationBase):
     importer = models.ForeignKey(Importer, on_delete=models.CASCADE)
     legacy_id = models.CharField(max_length=30, unique=True)
