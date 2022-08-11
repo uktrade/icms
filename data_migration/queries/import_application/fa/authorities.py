@@ -39,7 +39,7 @@ INNER JOIN (
 fa_authority_linked_offices = """
 SELECT
   ia_id firearmsauthority_id
-  , imp_id || '-' || office_id office_legacy_id
+  , 'i-' || imp_id || '-' || office_id office_legacy_id
 FROM impmgr.xview_imp_auth_linked_offices xialo
 INNER JOIN impmgr.importer_authorities ia ON xialo.ia_id = ia.id
 WHERE status_control = 'C'
@@ -94,7 +94,7 @@ FROM impmgr.section_5_clauses
 section5_linked_offices = """
 SELECT
   ia_id section5authority_id
-  , imp_id || '-' || office_id office_legacy_id
+  , 'i-' || imp_id || '-' || office_id office_legacy_id
 FROM impmgr.xview_imp_auth_linked_offices xialo
 INNER JOIN impmgr.importer_authorities ia ON xialo.ia_id = ia.id
 WHERE status_control = 'C'

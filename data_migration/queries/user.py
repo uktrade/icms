@@ -1,4 +1,4 @@
-__all__ = ["exporters", "importers", "mailshots", "offices"]
+__all__ = ["exporters", "importers", "mailshots", "importer_offices", "exporter_offices"]
 
 # After users migrated
 # , wua_id user_id
@@ -20,12 +20,11 @@ ORDER BY imp_id
 """
 
 
-offices = """
+importer_offices = """
 SELECT
-  rownum id
-  , imp_id importer_id
-  , imp_id || '-' || office_id legacy_id
-  , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
+  imp_id importer_id
+  , 'i-' || imp_id || '-' || office_id legacy_id
+  , CASE office_status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
   , postcode
   , address
   , eori_number
@@ -48,6 +47,20 @@ FROM impmgr.exporters e
 INNER JOIN impmgr.xview_exporter_details xed ON xed.e_id = e.id
 WHERE status_control = 'C'
 ORDER BY e.id
+"""
+
+
+exporter_offices = """
+SELECT
+  e_id exporter_id
+  , 'e-' || e_id || '-' || office_id legacy_id
+  , CASE office_status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
+  , postcode
+  , address
+  , address_entry_type
+FROM impmgr.xview_exporter_offices xio
+WHERE status_control = 'C'
+ORDER BY e_id, office_id
 """
 
 

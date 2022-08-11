@@ -3,6 +3,8 @@ from typing import Any, Generator
 from django.contrib.auth.hashers import make_password
 from django.db import models
 from django.db.models import F
+from django.db.models.expressions import Window
+from django.db.models.functions import RowNumber
 from django.utils import timezone
 
 from data_migration.models.base import MigrationBase
@@ -79,7 +81,8 @@ class Exporter(MigrationBase):
 
 
 class Office(MigrationBase):
-    importer = models.ForeignKey(Importer, on_delete=models.CASCADE)
+    importer = models.ForeignKey(Importer, on_delete=models.CASCADE, null=True)
+    exporter = models.ForeignKey(Exporter, on_delete=models.CASCADE, null=True)
     legacy_id = models.CharField(max_length=30, unique=True)
     is_active = models.BooleanField(null=False, default=True)
     postcode = models.CharField(max_length=30, null=True)
@@ -88,31 +91,46 @@ class Office(MigrationBase):
     address_entry_type = models.CharField(max_length=10, null=False, default="EMPTY")
 
     @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["importer_id"]
-
-    @classmethod
     def get_m2m_data(cls, target: models.Model) -> Generator:
-        # TODO ICMSLST-1689 - This will need to be reworked for exporter offices
-        return cls.objects.values("importer_id", "id", office_id=F("id")).iterator()
+        m2m_id = f"{target._meta.model_name}_id"
+
+        return (
+            cls.objects.exclude(**{f"{m2m_id}__isnull": True})
+            .annotate(row_number=Window(expression=RowNumber()))
+            .values(
+                "row_number",
+                m2m_id,
+                office_id=F("id"),
+            )
+            .iterator()
+        )
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
         data = super().data_export(data)
 
-        # Some extra data is in some postcode fields from a previous data migration
-        # Postcodes can be a max of 8 characters
-        # TODO ICMSLST-1689: Move postcode in address field for exporters with long postcodes
-        postcode = data.pop("postcode")
-        postcode = postcode and postcode.strip()[-8:]
+        importer = data.pop("importer_id")
+        exporter = data.pop("exporter_id")
 
-        data["postcode"] = postcode
+        if importer:
+            # Some extra data is in some postcode fields from a previous data migration
+            # Postcodes can be a max of 8 characters
+            postcode = data.pop("postcode")
+            postcode = postcode and postcode.strip()[-8:]
+            data["postcode"] = postcode
 
-        # Addresses are split 1 field per line in V2
+        elif exporter:
+            # Exporters with long postcodes need postcode added to address field and postcode nullified
+            if len(data["postcode"] or "") > 8:
+                postcode = data.pop("postcode")
+                data["address"] = data["address"] + "\n" + postcode
+
+        # Addresses are split one field per line in V2
         address = data.pop("address")
 
         return data | split_address(address)
 
     @classmethod
     def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data["id"] = data.pop("row_number")
         return data
