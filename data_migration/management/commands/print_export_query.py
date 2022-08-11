@@ -2,11 +2,17 @@ import argparse
 
 from django.core.management.base import BaseCommand
 
-from data_migration.queries import files, import_application, reference
+from data_migration.queries import (
+    export_application,
+    files,
+    import_application,
+    reference,
+    user,
+)
 
 
 class Command(BaseCommand):
-    QUERY_MODULES = [files, import_application, reference]
+    QUERY_MODULES = [files, import_application, reference, export_application, user]
 
     def add_arguments(self, parser: argparse.ArgumentParser):
         parser.add_argument(
