@@ -1,4 +1,4 @@
-__all__ = ["importers", "mailshots", "offices"]
+__all__ = ["exporters", "importers", "mailshots", "offices"]
 
 # After users migrated
 # , wua_id user_id
@@ -33,6 +33,21 @@ SELECT
 FROM impmgr.xview_importer_offices xio
 WHERE status_control = 'C'
 ORDER BY imp_id, office_id
+"""
+
+
+exporters = """
+SELECT
+  e.id
+  , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
+  , organisation_name name
+  , organisation_registered_number registered_number
+  , comments
+  , e.main_e_id main_exporter_id
+FROM impmgr.exporters e
+INNER JOIN impmgr.xview_exporter_details xed ON xed.e_id = e.id
+WHERE status_control = 'C'
+ORDER BY e.id
 """
 
 

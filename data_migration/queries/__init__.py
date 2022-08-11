@@ -73,6 +73,7 @@ file_query_model = [
 ia_query_model = [
     QueryModel(user, "mailshots", dm.Mailshot),
     QueryModel(user, "importers", dm.Importer),
+    QueryModel(user, "exporters", dm.Exporter),
     QueryModel(user, "offices", dm.Office),
     QueryModel(import_application, "sps_application", dm.PriorSurveillanceApplication),
     QueryModel(import_application, "derogations_application", dm.DerogationsApplication),
@@ -108,6 +109,7 @@ ia_query_model = [
 ia_source_target = [
     SourceTarget(dm.Mailshot, web.Mailshot),
     SourceTarget(dm.Importer, web.Importer),
+    SourceTarget(dm.Exporter, web.Exporter),
     SourceTarget(dm.Office, web.Office),
     SourceTarget(dm.Process, web.Process),
     SourceTarget(dm.ImportApplication, web.ImportApplication),

@@ -1590,3 +1590,4 @@ xmd.published_by_wua
 ON xmd
 M_ID =
 ri.m_id
+ON xed.e_id
