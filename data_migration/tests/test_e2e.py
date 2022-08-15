@@ -157,7 +157,7 @@ def test_import_sil_data(mock_connect):
     ocg = dm.ObsoleteCalibreGroup.objects.create(name="Test OC Group", order=1, legacy_id=1)
     dm.ObsoleteCalibre.objects.create(legacy_id=444, calibre_group=ocg, name="Test OC", order=1)
 
-    call_command("export_from_v1")
+    call_command("export_from_v1", "--skip_export")
 
     dm.Section5Clause.objects.create(
         clause="Test Clause",
@@ -166,7 +166,7 @@ def test_import_sil_data(mock_connect):
         created_by_id=2,
     )
 
-    call_command("extract_v1_xml")
+    call_command("extract_v1_xml", "--skip_export")
 
     # Get the personal / sensitive ignores out the way
     dmGoodsObsolete = dm.SILGoodsSection582Obsolete  # /PS-IGNORE
@@ -196,7 +196,7 @@ def test_import_sil_data(mock_connect):
     assert dmRFObsolete.objects.filter(**sil1_f).count() == 1
     assert dmRFOther.objects.filter(**sil1_f).count() == 2
 
-    call_command("import_v1_data")
+    call_command("import_v1_data", "--skip_export")
 
     importers = web.Importer.objects.order_by("pk")
     assert importers.count() == 3
@@ -470,8 +470,8 @@ def test_import_oil_data(mock_connect):
             supplementary_report_xml=xml_data.sr_upload_xml if i == 0 else xml_data.sr_manual_xml,
         )
 
-    call_command("export_from_v1", "--skip_ref", "--skip_user", "--skip_file")
-    call_command("extract_v1_xml")
+    call_command("export_from_v1", "--skip_ref", "--skip_user", "--skip_file", "--skip_export")
+    call_command("extract_v1_xml", "--skip_export")
 
     oil1, oil2 = dm.OpenIndividualLicenceApplication.objects.filter(pk__in=pk_range).order_by("pk")
 
@@ -480,7 +480,7 @@ def test_import_oil_data(mock_connect):
     assert oil2.section1 is True
     assert oil2.section2 is False
 
-    call_command("import_v1_data")
+    call_command("import_v1_data", "--skip_export")
 
     oil1, oil2 = web.OpenIndividualLicenceApplication.objects.filter(pk__in=pk_range).order_by("pk")
 
@@ -580,8 +580,8 @@ def test_import_textiles_data(mock_connect):
         )
         dm.TextilesApplication.objects.create(imad=ia)
 
-    call_command("export_from_v1", "--skip_ref", "--skip_user", "--skip_file")
-    call_command("import_v1_data")
+    call_command("export_from_v1", "--skip_ref", "--skip_user", "--skip_file", "--skip_export")
+    call_command("import_v1_data", "--skip_export")
 
     tex1, tex2, tex3 = web.TextilesApplication.objects.filter(pk__in=pk_range).order_by("pk")
     assert tex1.checklist.case_update == "no"
@@ -645,7 +645,7 @@ def test_import_sps_data(mock_connect):
     dm.User.objects.create(id=2, username="test_user")
     dm.Importer.objects.create(id=2, name="test_org", type="ORGANISATION")
 
-    call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_user")
+    call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_user", "--skip_export")
 
     factory.CountryFactory(id=1, name="My Test Country")
     cg = dm.CountryGroup.objects.create(country_group_id="SPS", name="SPS")
@@ -684,7 +684,7 @@ def test_import_sps_data(mock_connect):
         }
         dm.PriorSurveillanceApplication.objects.create(**sps_data)
 
-    call_command("import_v1_data")
+    call_command("import_v1_data", "--skip_export")
 
     assert web.PriorSurveillanceApplication.objects.count() == 2
     assert web.PriorSurveillanceContractFile.objects.count() == 2

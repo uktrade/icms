@@ -33,6 +33,11 @@ class MigrationBaseCommand(BaseCommand):
             action="store_true",
         )
         parser.add_argument(
+            "--skip_export",
+            help="Skip export application data type",
+            action="store_true",
+        )
+        parser.add_argument(
             "--skip_user",
             help="Skip user data type",
             action="store_true",

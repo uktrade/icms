@@ -26,6 +26,7 @@ class Command(MigrationBaseCommand):
         "reference": ["r", "ref", "reference"],
         "file": ["f", "file"],
         "import_application": ["ia", "import_application"],
+        "export_application": ["ea", "export_application"],
     }
 
     def handle(self, *args, **options):
@@ -45,6 +46,7 @@ class Command(MigrationBaseCommand):
                 self._export_data("reference", cursor, options["skip_ref"])
                 self._export_data("file", cursor, options["skip_file"])
                 self._export_data("import_application", cursor, options["skip_ia"])
+                self._export_data("export_application", cursor, options["skip_export"])
 
     def _export_data(self, data_type: DATA_TYPE, cursor: cx_Oracle.Cursor, skip: bool) -> None:
         """Retrives data from V1 and creates the objects in the data_migration models

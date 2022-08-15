@@ -39,7 +39,7 @@ def test_data_migration_not_enabled_non_prod():
 @mock.patch.object(cx_Oracle, "connect")
 def test_create_user_no_username(mock_connect):
     with pytest.raises(CommandError, match="No user details found for this environment"):
-        call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file")
+        call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file", "--skip_export")
 
     assert not models.User.objects.exists()
     assert not models.Office.objects.exists()
@@ -53,7 +53,7 @@ def test_create_user_no_username(mock_connect):
 @mock.patch.object(cx_Oracle, "connect")
 def test_create_user_no_pw(mock_connect):
     with pytest.raises(CommandError, match="No user details found for this environment"):
-        call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file")
+        call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file", "--skip_export")
 
     assert not models.User.objects.exists()
 
@@ -65,7 +65,7 @@ def test_create_user_no_pw(mock_connect):
 @pytest.mark.django_db
 @mock.patch.object(cx_Oracle, "connect")
 def test_create_user(mock_connect):
-    call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file")
+    call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file", "--skip_export")
 
     assert models.User.objects.exists()
 
@@ -78,7 +78,7 @@ def test_create_user(mock_connect):
 @mock.patch.object(cx_Oracle, "connect")
 def test_create_user_exists(mock_connect):
     models.User.objects.create(username="Username")
-    call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file")
+    call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file", "--skip_export")
 
     assert models.User.objects.count() == 1
 
@@ -93,7 +93,7 @@ def test_create_user_exists(mock_connect):
 @mock.patch.object(cx_Oracle, "connect")
 def test_export_data(mock_connect):
     mock_connect.return_value = utils.MockConnect()
-    call_command("export_from_v1", "--skip_user", "--skip_ia", "--skip_file")
+    call_command("export_from_v1", "--skip_user", "--skip_ia", "--skip_file", "--skip_export")
     assert models.CountryGroup.objects.filter(country_group_id__in=["A", "B", "C"]).count() == 3
 
 
@@ -149,7 +149,7 @@ def test_extract_xml(mock_connect):
 
         factory.OILSupplementaryInfoFactory(imad=ia, supplementary_report_xml=supp_xmls[i])
 
-    call_command("extract_v1_xml")
+    call_command("extract_v1_xml", "--skip_export")
 
     reports = models.OILSupplementaryReport.objects.filter(supplementary_info__imad_id__in=pk_range)
     assert reports.count() == 4
@@ -205,7 +205,7 @@ def test_export_files_data(mock_connect):
         ]
     )
 
-    call_command("export_from_v1", "--skip_user", "--skip_ref", "--skip_ia")
+    call_command("export_from_v1", "--skip_user", "--skip_ref", "--skip_ia", "--skip_export")
 
     assert models.FileFolder.objects.count() == 2
     assert models.FileTarget.objects.count() == 4
@@ -245,7 +245,7 @@ test_query_model = {
 def test_export_from_ref_2(mock_connect):
     mock_connect.return_value = utils.MockConnect()
 
-    call_command("export_from_v1", "--start=ref.2")
+    call_command("export_from_v1", "--start=ref.2", "--skip_export")
 
     assert models.Country.objects.count() == 0
     assert models.CountryGroup.objects.count() == 3
@@ -265,7 +265,7 @@ def test_export_from_ref_2(mock_connect):
 def test_export_from_r_3(mock_connect):
     mock_connect.return_value = utils.MockConnect()
 
-    call_command("export_from_v1", "--start=r.3")
+    call_command("export_from_v1", "--start=r.3", "--skip_export")
 
     assert models.Country.objects.count() == 0
     assert models.CountryGroup.objects.count() == 0
@@ -285,7 +285,7 @@ def test_export_from_r_3(mock_connect):
 def test_export_from_import_application(mock_connect):
     mock_connect.return_value = utils.MockConnect()
 
-    call_command("export_from_v1", "--start=import_application.0")
+    call_command("export_from_v1", "--start=import_application.0", "--skip_export")
 
     assert models.Country.objects.count() == 0
     assert models.CountryGroup.objects.count() == 0
@@ -305,7 +305,7 @@ def test_export_from_import_application(mock_connect):
 def test_export_from_ia(mock_connect):
     mock_connect.return_value = utils.MockConnect()
 
-    call_command("export_from_v1", "--start=ia.1")
+    call_command("export_from_v1", "--start=ia.1", "--skip_export")
 
     assert models.Country.objects.count() == 0
     assert models.CountryGroup.objects.count() == 0
@@ -325,7 +325,7 @@ def test_export_from_ia(mock_connect):
 def test_export_from_ia_2(mock_connect):
     mock_connect.return_value = utils.MockConnect()
 
-    call_command("export_from_v1", "--start=ia.2")
+    call_command("export_from_v1", "--start=ia.2", "--skip_export")
 
     assert models.Country.objects.count() == 0
     assert models.CountryGroup.objects.count() == 0
