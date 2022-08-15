@@ -320,8 +320,9 @@ class CFSScheduleFormBase(forms.ModelForm):
 
         legislation_qs = ProductLegislation.objects.filter(is_active=True)
 
-        exporter_office = self.instance.application.exporter_office
-        if exporter_office.postcode.upper().startswith("BT"):
+        postcode = self.instance.application.exporter_office.postcode
+
+        if postcode and postcode.upper().startswith("BT"):
             legislation_qs = legislation_qs.filter(ni_legislation=True)
         else:
             legislation_qs = legislation_qs.filter(gb_legislation=True)

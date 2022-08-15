@@ -202,7 +202,8 @@ def _get_importer_eori_numbers(application) -> list[str]:
 
     importer = application.importer
     office = application.importer_office
-    is_northern_ireland = office.postcode.upper().startswith("BT")
+    postcode = office.postcode
+    is_northern_ireland = postcode and postcode.upper().startswith("BT") or False
 
     # Use override if set
     main_eori_num = office.eori_number or importer.eori_number
