@@ -18,6 +18,7 @@
 
 {% block main_content %}
   <h4>{{ page_title }}</h4>
+    {% call forms.form(action='', method='post', csrf_input=csrf_input, id='id_cfs-product-form') -%}
     {% if product and is_biocidal %}
       <br/>
       <table class="setoutList">
@@ -31,9 +32,7 @@
         </thead>
         <tbody>
           <tr>
-            {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data', id='id_cfs-product-form') -%}
-              {{ fields.inline_field(form.product_name) }}
-            {% endcall %}
+            {{ fields.inline_field(form.product_name) }}
             {% if product_type_numbers %}
               <td>
                 <table class="nestedListWithHeader setoutList nestedList">
@@ -158,4 +157,5 @@
       {% endcall %}
     {% endif %}
     <input type="submit" name="action" form="id_cfs-product-form" class="primary-button button" value="Save" />
+  {% endcall %}
 {% endblock %}

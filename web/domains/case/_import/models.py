@@ -459,8 +459,16 @@ class ImportApplicationLicence(CaseLicenceCertificateBase):
     case_completion_date = models.DateField(verbose_name="Case Completion Date", null=True)
 
     def __str__(self):
-        ia_pk, st, ca = (self.import_application_id, self.status, self.created_at)
-        return f"ImportApplicationLicence(import_application={ia_pk}, status={st}, created_at={ca})"
+        ia_pk = self.import_application_id
+        st = self.status
+        cr = self.case_reference
+        ca = self.created_at
+
+        return (
+            f"ImportApplicationLicence("
+            f"import_application={ia_pk}, status={st}, case_reference={cr}, created_at={ca}"
+            f")"
+        )
 
 
 class LiteChiefReference(models.Model):
