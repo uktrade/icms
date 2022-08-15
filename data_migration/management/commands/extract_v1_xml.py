@@ -11,12 +11,14 @@ class Command(MigrationBaseCommand):
 
     DATA_TYPE_START = {
         "import_application": ["ia", "import_application"],
+        "export_application": ["ea", "export_application"],
     }
 
     def handle(self, *args, **options):
         super().handle(*args, **options)
 
         self._extract_xml_data("import_application", options["skip_ia"])
+        self._extract_xml_data("export_application", options["skip_export"])
 
     def _extract_xml_data(self, data_type: DATA_TYPE, skip: bool) -> None:
         """Iterates over the models listed for the specified data_type and parses the xml from their parent"""

@@ -10,7 +10,14 @@ from web import models as web
 from . import export_application, files, import_application, reference, user
 from .types import M2M, QueryModel, SourceTarget, source_target_list
 
-user_source_target = source_target_list(["User"])
+user_source_target = [
+    SourceTarget(dm.User, web.User),
+    SourceTarget(dm.Mailshot, web.Mailshot),
+    SourceTarget(dm.Importer, web.Importer),
+    SourceTarget(dm.Exporter, web.Exporter),
+    SourceTarget(dm.Office, web.Office),
+    SourceTarget(dm.Process, web.Process),
+]
 
 ref_query_model = [
     QueryModel(reference, "country", dm.Country),
@@ -73,10 +80,7 @@ file_query_model = [
 ia_query_model = [
     QueryModel(user, "mailshots", dm.Mailshot),
     QueryModel(user, "importers", dm.Importer),
-    QueryModel(user, "exporters", dm.Exporter),
     QueryModel(user, "importer_offices", dm.Office),
-    QueryModel(user, "exporter_offices", dm.Office),
-    QueryModel(export_application, "product_legislation", dm.ProductLegislation),
     QueryModel(import_application, "sps_application", dm.PriorSurveillanceApplication),
     QueryModel(import_application, "derogations_application", dm.DerogationsApplication),
     QueryModel(import_application, "derogations_checklist", dm.DerogationsChecklist),
@@ -107,14 +111,7 @@ ia_query_model = [
     QueryModel(import_application, "endorsement", dm.EndorsementImportApplication),
 ]
 
-# Possibly refactor to import process and import application by process type
 ia_source_target = [
-    SourceTarget(dm.ProductLegislation, web.ProductLegislation),
-    SourceTarget(dm.Mailshot, web.Mailshot),
-    SourceTarget(dm.Importer, web.Importer),
-    SourceTarget(dm.Exporter, web.Exporter),
-    SourceTarget(dm.Office, web.Office),
-    SourceTarget(dm.Process, web.Process),
     SourceTarget(dm.ImportApplication, web.ImportApplication),
     SourceTarget(dm.ImportApplicationLicence, web.ImportApplicationLicence),
     SourceTarget(dm.ImportCaseDocument, web.CaseDocumentReference),
@@ -196,7 +193,6 @@ ia_m2m = [
     M2M(dm.FIRFile, web.FurtherInformationRequest, "files"),
     M2M(dm.CaseNoteFile, web.CaseNote, "files"),
     M2M(dm.Office, web.Importer, "offices"),
-    M2M(dm.Office, web.Exporter, "offices"),
     M2M(dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
     M2M(dm.Section5AuthorityFile, web.Section5Authority, "files"),
     M2M(dm.FirearmsAuthorityOffice, web.FirearmsAuthority, "linked_offices"),
@@ -297,31 +293,54 @@ ia_xml = [
     xml_parser.WoodContractParser,
 ]
 
-DATA_TYPE = Literal["reference", "import_application", "user", "file"]
+export_query_model = [
+    QueryModel(user, "exporters", dm.Exporter),
+    QueryModel(user, "exporter_offices", dm.Office),
+    QueryModel(export_application, "product_legislation", dm.ProductLegislation),
+    QueryModel(export_application, "export_application_type", dm.ExportApplicationType),
+]
+
+export_source_target = [
+    SourceTarget(dm.ProductLegislation, web.ProductLegislation),
+    SourceTarget(dm.ExportApplicationType, web.ExportApplicationType),
+]
+
+export_m2m = [
+    M2M(dm.Office, web.Exporter, "offices"),
+]
+
+export_xml = []
+
+
+DATA_TYPE = Literal["reference", "import_application", "user", "file", "export_application"]
 
 DATA_TYPE_QUERY_MODEL: dict[str, list[QueryModel]] = {
-    "reference": ref_query_model,
-    "import_application": ia_query_model,
+    "export_application": export_query_model,
     "file": file_query_model,
+    "import_application": ia_query_model,
+    "reference": ref_query_model,
 }
 
 DATA_TYPE_SOURCE_TARGET: dict[str, list[SourceTarget]] = {
-    "user": user_source_target,
-    "reference": ref_source_target,
-    "import_application": ia_source_target,
+    "export_application": export_source_target,
     "file": source_target_list(["File"]),
+    "import_application": ia_source_target,
+    "reference": ref_source_target,
+    "user": user_source_target,
 }
 
 DATA_TYPE_M2M: dict[str, list[M2M]] = {
-    "user": [],
-    "reference": ref_m2m,
+    "export_application": export_m2m,
     "import_application": ia_m2m,
+    "reference": ref_m2m,
+    "user": [],
 }
 
 DATA_TYPE_XML: dict[str, list[Type[xml_parser.BaseXmlParser]]] = {
-    "user": [],
-    "reference": [],
+    "export_application": export_xml,
     "import_application": ia_xml,
+    "reference": [],
+    "user": [],
 }
 
 TASK_LIST = [

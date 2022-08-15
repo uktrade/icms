@@ -22,6 +22,7 @@ class Command(MigrationBaseCommand):
         "reference": ["r", "ref", "reference", "r-m2m", "ref-m2m", "reference-m2m"],
         "file": ["f", "file"],
         "import_application": ["ia", "import_application", "ia-m2m", "import_application-m2m"],
+        "export_application": ["ea", "export_application", "ea-m2m", "export_application-m2m"],
     }
 
     def add_arguments(self, parser: argparse.ArgumentParser):
@@ -41,6 +42,7 @@ class Command(MigrationBaseCommand):
         self._import_data("file", options["skip_file"])
         self._import_data("import_application", options["skip_ia"])
         self._create_missing_ia_licences(options["skip_ia"])
+        self._import_data("export_application", options["skip_export"])
         self._create_tasks(options["skip_task"])
 
     def _import_data(self, data_type: DATA_TYPE, skip: bool) -> None:

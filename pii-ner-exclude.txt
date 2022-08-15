@@ -1592,3 +1592,8 @@ M_ID =
 ri.m_id
 ON xed.e_id
 Exp A"
+ea-m2
+country_of_manufacture_cg_id"
+ca_type
+country_group_legacy_id
+country_group_id country_group_legacy_id
