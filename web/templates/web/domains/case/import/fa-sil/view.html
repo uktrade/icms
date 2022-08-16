@@ -130,15 +130,12 @@
     <hr />
 
     <h5>Section 5 Authorities</h5>
-    {% if verified_section5 %}
       {% with read_only = True %}
         {% include "web/domains/case/import/partials/fa-sil/verified-section5-authorities.html" %}
       {% endwith %}
-    {% else %}
       {% with read_only = True %}
         {% include "web/domains/case/import/partials/fa-sil/user-section5-authorities.html" %}
       {% endwith %}
-    {% endif %}
   {% endcall %}
 
 
