@@ -40,12 +40,18 @@
     })
     $ui.find('.approve').on('click', function () {
       const address = JSON.parse($('#address_list :selected').val());
+      let addressTextArea = document.querySelector("#id_address");
 
-      document.getElementById("id_address_1").value = address[0];
-      document.getElementById("id_address_2").value = address[1];
-      document.getElementById("id_address_3").value = address[2];
-      document.getElementById("id_address_4").value = address[3];
-      document.getElementById("id_address_5").value = address[4];
+      if (addressTextArea !== null) {
+        addressTextArea.value = address.filter(line => line !== "").join("\n");
+      } else {
+        document.querySelector("#id_address_1").value = address[0];
+        document.querySelector("#id_address_2").value = address[1];
+        document.querySelector("#id_address_3").value = address[2];
+        document.querySelector("#id_address_4").value = address[3];
+        document.querySelector("#id_address_5").value = address[4];
+      }
+
       $ui.remove()
     })
 
