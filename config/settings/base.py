@@ -236,6 +236,10 @@ SESSION_CACHE_ALIAS = "default"
 # Age in seconds
 SESSION_COOKIE_AGE = env.int("DJANGO_SESSION_COOKIE_AGE", default=60 * 30)
 
+# Secure cookies only
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
 # Default domain is used in email templates to point users to ICMS from emails
 DEFAULT_DOMAIN = env.str("ICMS_DEFAULT_DOMAIN", default="http://localhost:8080/")
 
