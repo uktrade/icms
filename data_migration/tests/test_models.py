@@ -149,7 +149,7 @@ def test_import_application_get_data_export():
     assert result["under_appeal_flag"] is False
     assert result["licence_extended_flag"] is False
 
-    assert sorted(result.keys()) == [
+    expected = [
         "acknowledged_by_id",
         "acknowledged_datetime",
         "agent_id",
@@ -175,7 +175,6 @@ def test_import_application_get_data_export():
         "licence_extended_flag",
         "licence_reference",
         "origin_country_id",
-        "process_ptr_id",
         "reference",
         "refuse_reason",
         "status",
@@ -186,6 +185,7 @@ def test_import_application_get_data_export():
         "variation_no",
         "variation_refuse_reason",
     ]
+    assert sorted(result.keys()) == expected
 
 
 @pytest.mark.django_db
