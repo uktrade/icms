@@ -61,6 +61,7 @@ ref_m2m = [
 ]
 
 file_query_model = [
+    QueryModel(files, "gmp_files", dm.FileCombined),
     QueryModel(files, "mailshot_files", dm.FileCombined),
     QueryModel(files, "case_note_files", dm.FileCombined),
     QueryModel(files, "fir_files", dm.FileCombined),
@@ -298,15 +299,25 @@ export_query_model = [
     QueryModel(user, "exporter_offices", dm.Office),
     QueryModel(export_application, "product_legislation", dm.ProductLegislation),
     QueryModel(export_application, "export_application_type", dm.ExportApplicationType),
+    QueryModel(export_application, "gmp", dm.CertificateOfGoodManufacturingPracticeApplication),
+    QueryModel(export_application, "export_application_countries", dm.ExportApplicationType),
 ]
 
 export_source_target = [
     SourceTarget(dm.ProductLegislation, web.ProductLegislation),
     SourceTarget(dm.ExportApplicationType, web.ExportApplicationType),
+    SourceTarget(dm.ExportApplication, web.ExportApplication),
+    SourceTarget(
+        dm.CertificateOfGoodManufacturingPracticeApplication,
+        web.CertificateOfGoodManufacturingPracticeApplication,
+    ),
+    SourceTarget(dm.GMPFile, web.GMPFile),
 ]
 
 export_m2m = [
     M2M(dm.Office, web.Exporter, "offices"),
+    M2M(dm.ExportApplicationCountries, web.ExportApplication, "countries"),
+    M2M(dm.GMPFile, web.CertificateOfGoodManufacturingPracticeApplication, "supporting_documents"),
 ]
 
 export_xml = []

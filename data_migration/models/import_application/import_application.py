@@ -104,20 +104,15 @@ class ImportApplication(MigrationBase):
         ]
 
     @classmethod
-    def get_includes(cls) -> list[str]:
-        return ["ima__id"]
-
-    @classmethod
     def get_values_kwargs(cls) -> dict[str, Any]:
         return {
             "importer_office_id": F("importer_office_legacy__id"),
             "agent_office_id": F("agent_office_legacy__id"),
+            "process_ptr_id": F("id"),
         }
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["process_ptr_id"] = data.pop("ima__id")
-
         for field in data.keys():
             if field.endswith("_flag"):
                 value = data[field]

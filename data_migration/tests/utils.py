@@ -1,7 +1,13 @@
 from datetime import datetime
 
 from data_migration import models as dm
-from data_migration.queries import files, import_application, reference, user
+from data_migration.queries import (
+    export_application,
+    files,
+    import_application,
+    reference,
+    user,
+)
 from web import models as web
 
 from . import xml_data as xd
@@ -1162,6 +1168,205 @@ query_result = {
     import_application.endorsement: (
         [("imad_id",), ("content",)],
         [(11, "Content A"), (11, "Content B")],
+    ),
+    export_application.export_application_type: (
+        [
+            ("id",),
+            ("is_active",),
+            ("type_code",),
+            ("type",),
+            ("allow_multiple_products",),
+            ("generate_cover_letter",),
+            ("allow_hse_authorization",),
+            ("country_group_legacy_id",),
+            ("country_of_manufacture_cg_id"),
+        ],
+        [
+            (1, 1, "CFS", "Certificate of Free Sale", 1, 0, 0, "A", None),
+            (2, 1, "COM", "Certificate of Manufacture", 0, 0, 0, "B", None),
+            (21, 1, "GMP", "Certificate of Good Manufacturing Practice", 1, 0, 0, "C", None),
+        ],
+    ),
+    files.gmp_files: (
+        IA_FILES_COLUMNS,
+        [
+            (
+                31,  # folder_id
+                "GMP_SUPPORTING_DOCUMENTS",  # folder_type
+                None,  # app_model
+                "ISO17021",  # target_type
+                "EMPTY",  # status
+                4000,  # target_id
+                4000,  # fft_id
+                None,  # version_id
+                None,  # created_date
+                None,  # created_by_id
+                None,  # path
+                None,  # filename
+                None,  # content_type
+                None,  # file_size
+            ),
+            (
+                32,  # folder_id
+                "GMP_SUPPORTING_DOCUMENTS",  # folder_type
+                None,  # app_model
+                "ISO17065",  # target_type
+                "RECEIVED",  # status
+                4001,  # target_id
+                4001,  # fft_id
+                40001,  # version_id
+                datetime(2022, 4, 27),  # created_date
+                2,  # created_by_id
+                "gmp2/ISO17065",  # path
+                "ISO17065.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+            ),
+            (
+                32,  # folder_id
+                "GMP_SUPPORTING_DOCUMENTS",  # folder_type
+                None,  # app_model
+                "ISO22716",  # target_type
+                "RECEIVED",  # status
+                4002,  # target_id
+                4002,  # fft_id
+                40002,  # version_id
+                datetime(2022, 4, 27),  # created_date
+                2,  # created_by_id
+                "gmp2/ISO22716",  # path
+                "ISO22716.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+            ),
+            (
+                32,  # folder_id
+                "GMP_SUPPORTING_DOCUMENTS",  # folder_type
+                None,  # app_model
+                "ISO17021",  # target_type
+                "EMPTY",  # status
+                4003,  # target_id
+                4003,  # fft_id
+                None,  # version_id
+                None,  # created_date
+                None,  # created_by_id
+                None,  # path
+                None,  # filename
+                None,  # content_type
+                None,  # file_size
+            ),
+            (
+                33,  # folder_id
+                "GMP_SUPPORTING_DOCUMENTS",  # folder_type
+                None,  # app_model
+                "ISO17021",  # target_type
+                "RECEIVED",  # status
+                4004,  # target_id
+                4004,  # fft_id
+                40004,  # version_id
+                datetime(2022, 4, 27),  # created_date
+                2,  # created_by_id
+                "gmp3/ISO17021",  # path
+                "ISO17021.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+            ),
+            (
+                31,  # folder_id
+                "GMP_SUPPORTING_DOCUMENTS",  # folder_type
+                None,  # app_model
+                "BRCGS",  # target_type
+                "RECEIVED",  # status
+                4005,  # target_id
+                4005,  # fft_id
+                40005,  # version_id
+                datetime(2022, 4, 27),  # created_date
+                2,  # created_by_id
+                "gmp1/BRCGS",  # path
+                "BRCGS.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+            ),
+        ],
+    ),
+    export_application.gmp: (
+        [
+            ("ca_id",),
+            ("cad_id",),
+            ("process_type",),
+            ("reference",),
+            ("status",),
+            ("submit_datetime",),
+            ("create_datetime",),
+            ("created_by_id",),
+            ("last_updated_by_id",),
+            ("last_updated_datetime",),
+            ("created",),
+            ("variation_no",),
+            ("file_folder_id",),
+            ("application_type_id",),
+            ("exporter_id",),
+            ("exporter_office_legacy_id",),
+        ],
+        [
+            (
+                7,
+                17,
+                "CertificateofGoodManufacturingPractice",
+                "CA/2022/9901",
+                "IN PROGRESS",
+                None,
+                datetime(2022, 4, 27),
+                2,
+                2,
+                datetime(2022, 4, 27),
+                datetime(2022, 4, 27),
+                0,
+                31,
+                21,
+                2,
+                "e-2-1",
+            ),
+            (
+                8,
+                18,
+                "CertificateofGoodManufacturingPractice",
+                "CA/2022/9902",
+                "PROCESSING",
+                datetime(2022, 4, 29),
+                datetime(2022, 4, 28),
+                2,
+                2,
+                datetime(2022, 4, 29),
+                datetime(2022, 4, 28),
+                0,
+                32,
+                21,
+                3,
+                "e-3-1",
+            ),
+            (
+                9,
+                19,
+                "CertificateofGoodManufacturingPractice",
+                "CA/2022/9903",
+                "COMPELTED",
+                datetime(2022, 4, 29),
+                datetime(2022, 4, 28),
+                2,
+                2,
+                datetime(2022, 4, 29),
+                datetime(2022, 4, 28),
+                0,
+                33,
+                21,
+                2,
+                "e-2-2",
+            ),
+        ],
+    ),
+    export_application.export_application_countries: (
+        [("cad_id",), ("country_id",)],
+        [(18, 1), (18, 2), (18, 3), (19, 1)],
     ),
 }
 

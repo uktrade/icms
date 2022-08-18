@@ -11,7 +11,8 @@ class Process(MigrationBase):
     created = models.DateTimeField(auto_now_add=True)
     finished = models.DateTimeField(null=True)
     ima_id = models.IntegerField(null=True, unique=True)
+    ca_id = models.IntegerField(null=True, unique=True)
 
     @classmethod
     def get_excludes(cls):
-        return ["ima_id"]
+        return ["ima_id", "ca_id"]

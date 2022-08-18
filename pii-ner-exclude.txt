@@ -1597,3 +1597,21 @@ country_of_manufacture_cg_id"
 ca_type
 country_group_legacy_id
 country_group_id country_group_legacy_id
+gmp_files
+gmp2/ISO17065
+ISO22716
+BRCGS
+CA/2022/9901
+exportapplication_ptr_id"
+ON xcad.cad_id
+xcad.variation_number variation_no
+xcad.created_by_wua_id created_by_id
+xcad.contact_rp_id contact_id
+/CA/
+/CA/APPLICATION/GMP_DETAILS
+/CA/APPLICATION/GMP_DETAILS/MANUFACTURER_ADDRESS_DETAILS
+/CA/APPLICATION/GMP_DETAILS/GMP_DOCUMENTS
+PATH '/CA/
+/CA/APPLICATION
+ON cad.cad_id =
+xcad.exporter_office_id

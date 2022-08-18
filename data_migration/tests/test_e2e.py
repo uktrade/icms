@@ -12,6 +12,7 @@ from data_migration.queries import (
     DATA_TYPE_SOURCE_TARGET,
     DATA_TYPE_XML,
 )
+from data_migration.queries import export_application as q_ex
 from data_migration.queries import files as q_f
 from data_migration.queries import import_application as q_ia
 from data_migration.queries import reference as q_ref
@@ -20,8 +21,6 @@ from data_migration.utils import xml_parser
 from web import models as web
 
 from . import factory, utils, xml_data
-
-web.CaseDocumentReference
 
 sil_xml_parsers = [
     xml_parser.ImportContactParser,
@@ -702,3 +701,88 @@ def test_import_sps_data(mock_connect):
     assert sps2.quantity == 100
     assert sps2.value_gbp == 100
     assert sps2.value_eur == 100
+
+
+gmp_data_source_target = {
+    "user": [
+        (dm.User, web.User),
+        (dm.Exporter, web.Exporter),
+        (dm.Office, web.Office),
+        (dm.Process, web.Process),
+    ],
+    "reference": [
+        (dm.Country, web.Country),
+        (dm.CountryGroup, web.CountryGroup),
+    ],
+    "import_application": [],
+    "export_application": [
+        (dm.ExportApplicationType, web.ExportApplicationType),
+        (dm.ExportApplication, web.ExportApplication),
+        (
+            dm.CertificateOfGoodManufacturingPracticeApplication,
+            web.CertificateOfGoodManufacturingPracticeApplication,
+        ),
+        (dm.GMPFile, web.GMPFile),
+    ],
+    "file": [
+        (dm.File, web.File),
+    ],
+}
+
+gmp_query_model = {
+    "user": [],
+    "file": [(q_f, "gmp_files", dm.FileCombined)],
+    "import_application": [],
+    "export_application": [
+        (q_u, "exporters", dm.Exporter),
+        (q_u, "exporter_offices", dm.Office),
+        (q_ex, "export_application_type", dm.ExportApplicationType),
+        (q_ex, "gmp", dm.CertificateOfGoodManufacturingPracticeApplication),
+        (q_ex, "export_application_countries", dm.ExportApplicationCountries),
+    ],
+    "reference": [
+        (q_ref, "country_group", dm.CountryGroup),
+        (q_ref, "country", dm.Country),
+    ],
+}
+
+gmp_m2m = {
+    "export_application": [
+        (dm.ExportApplicationCountries, web.ExportApplication, "countries"),
+        (dm.GMPFile, web.CertificateOfGoodManufacturingPracticeApplication, "supporting_documents"),
+    ],
+    "import_application": [],
+}
+
+
+@override_settings(ALLOW_DATA_MIGRATION=True)
+@override_settings(APP_ENV="production")
+@override_settings(ICMS_PROD_USER="TestUser")
+@override_settings(ICMS_PROD_PASSWORD="1234")
+@pytest.mark.django_db
+@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, gmp_data_source_target)
+@mock.patch.dict(DATA_TYPE_M2M, gmp_m2m)
+@mock.patch.dict(DATA_TYPE_QUERY_MODEL, gmp_query_model)
+def test_import_gmp_data(mock_connect):
+    mock_connect.return_value = utils.MockConnect()
+    call_command("export_from_v1")
+    call_command("import_v1_data")
+
+    assert web.CertificateOfGoodManufacturingPracticeApplication.objects.count() == 3
+    ea1, ea2, ea3 = web.ExportApplication.objects.order_by("pk")
+    assert ea1.countries.count() == 0
+    assert ea2.countries.count() == 3
+    assert ea3.countries.count() == 1
+
+    gmp1, gmp2, gmp3 = web.CertificateOfGoodManufacturingPracticeApplication.objects.order_by("pk")
+
+    assert gmp1.supporting_documents.count() == 1
+    assert gmp1.supporting_documents.first().file_type == "BRC_GSOCP"
+
+    assert gmp2.supporting_documents.count() == 2
+    assert gmp2.supporting_documents.filter(file_type="ISO_22716").count() == 1
+    assert gmp2.supporting_documents.filter(file_type="ISO_17065").count() == 1
+
+    assert gmp3.supporting_documents.count() == 1
+    assert gmp3.supporting_documents.first().file_type == "ISO_17021"
