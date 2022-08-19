@@ -43,6 +43,7 @@ class Command(MigrationBaseCommand):
         self._import_data("import_application", options["skip_ia"])
         self._create_missing_ia_licences(options["skip_ia"])
         self._import_data("export_application", options["skip_export"])
+        self._create_missing_export_certificates(options["skip_export"])
         self._create_tasks(options["skip_task"])
 
     def _import_data(self, data_type: DATA_TYPE, skip: bool) -> None:
@@ -159,3 +160,47 @@ class Command(MigrationBaseCommand):
             web.ImportApplicationLicence.objects.bulk_create(batch)
 
         self.stdout.write("Missing Import Application Licence Data Created!")
+
+    def _create_missing_export_certificates(self, skip: bool) -> None:
+        if skip:
+            self.stdout.write("Skipping Creating Missing Export Application Certificates")
+            return
+
+        export_qs = dm.ExportApplication.objects.filter(
+            submit_datetime__isnull=False, ca__licences__isnull=True
+        )
+
+        draft_statuses = ["VARIATION_REQUESTED", "PROCESSING", "SUBMITTED"]
+        draft_pks = (
+            export_qs.filter(status__in=draft_statuses).values_list("pk", flat=True).iterator()
+        )
+        self.stdout.write("Creating Draft Export Application Certificates")
+
+        while True:
+            batch = [
+                web.ExportApplicationCertificate(export_application_id=pk, status="DR")
+                for pk in islice(draft_pks, self.batch_size)
+            ]
+
+            if not batch:
+                break
+
+            web.ExportApplicationCertificate.objects.bulk_create(batch)
+
+        archived_pks = (
+            export_qs.exclude(status__in=draft_statuses).values_list("pk", flat=True).iterator()
+        )
+        self.stdout.write("Creating Archived Export Application Certificates")
+
+        while True:
+            batch = [
+                web.ExportApplicationCertificate(export_application_id=pk, status="AR")
+                for pk in islice(archived_pks, self.batch_size)
+            ]
+
+            if not batch:
+                break
+
+            web.ExportApplicationCertificate.objects.bulk_create(batch)
+
+        self.stdout.write("Missing Export Application Certificate Data Created!")

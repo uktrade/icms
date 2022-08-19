@@ -1,4 +1,6 @@
-from data_migration.models import ImportApplication
+from django.db.models import Q
+
+from data_migration.models import Process
 from web.models import Task
 
 
@@ -25,9 +27,12 @@ class PrepareTask(TaskBase):
 
     @staticmethod
     def get_process_pks() -> list[int]:
-        # TODO: Extend to include other process children (e.g ExportApplication)
-        ia_pks = ImportApplication.objects.filter(status="IN_PROGRESS").values_list("pk", flat=True)
-        return ia_pks
+        # TODO: Extend to include other process children (e.g FIR)
+        pks = Process.objects.filter(
+            Q(importapplication__status="IN_PROGRESS") | Q(exportapplication__status="IN_PROGRESS")
+        ).values_list("pk", flat=True)
+
+        return pks
 
 
 class ProcessTask(TaskBase):
@@ -35,9 +40,11 @@ class ProcessTask(TaskBase):
 
     @staticmethod
     def get_process_pks() -> list[int]:
-        # TODO: Extend to include other process children (e.g ExportApplication)
+        # TODO: Extend to include other process children (e.g. FIR)
         # TODO: Refine to not overlap with other tasks (e.g authorise, chief_wait)
-        ia_pks = ImportApplication.objects.filter(
-            status__in=["SUBMITTED", "PROCESSING"]
+        pks = Process.objects.filter(
+            Q(importapplication__status__in=["SUBMITTED", "PROCESSING"])
+            | Q(exportapplication__status__in=["SUBMITTED", "PROCESSING"])
         ).values_list("pk", flat=True)
-        return ia_pks
+
+        return pks
