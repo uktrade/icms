@@ -1288,7 +1288,7 @@ query_result = {
             ),
         ],
     ),
-    export_application.gmp: (
+    export_application.gmp_application: (
         [
             ("ca_id",),
             ("cad_id",),
@@ -1306,6 +1306,7 @@ query_result = {
             ("application_type_id",),
             ("exporter_id",),
             ("exporter_office_legacy_id",),
+            ("brand_name",),
         ],
         [
             (
@@ -1325,6 +1326,7 @@ query_result = {
                 21,
                 2,
                 "e-2-1",
+                None,
             ),
             (
                 8,
@@ -1343,6 +1345,7 @@ query_result = {
                 21,
                 3,
                 "e-3-1",
+                "A brand",
             ),
             (
                 9,
@@ -1361,6 +1364,7 @@ query_result = {
                 21,
                 2,
                 "e-2-2",
+                "Another brand",
             ),
         ],
     ),

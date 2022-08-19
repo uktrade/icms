@@ -299,7 +299,9 @@ export_query_model = [
     QueryModel(user, "exporter_offices", dm.Office),
     QueryModel(export_application, "product_legislation", dm.ProductLegislation),
     QueryModel(export_application, "export_application_type", dm.ExportApplicationType),
-    QueryModel(export_application, "gmp", dm.CertificateOfGoodManufacturingPracticeApplication),
+    QueryModel(
+        export_application, "gmp_application", dm.CertificateOfGoodManufacturingPracticeApplication
+    ),
     QueryModel(export_application, "export_application_countries", dm.ExportApplicationType),
 ]
 
@@ -312,6 +314,7 @@ export_source_target = [
         web.CertificateOfGoodManufacturingPracticeApplication,
     ),
     SourceTarget(dm.GMPFile, web.GMPFile),
+    SourceTarget(dm.GMPBrand, web.GMPBrand),
 ]
 
 export_m2m = [
