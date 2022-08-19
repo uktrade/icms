@@ -1,0 +1,35 @@
+{% for section in process.goods_legacy.filter(is_active=True) %}
+  <div class="container setoutForm">
+    <h5>{{ section.description }}</h5>
+
+    {% if not read_only %}
+      <form
+        method="POST"
+        action="{{ icms_url('import:fa-sil:delete-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section_legacy', 'section_pk': section.pk}) }}"
+        class="form-inline">
+        {{ csrf_input }}
+        <button
+          type="submit"
+          class="button link-button icon-bin">
+          Remove
+        </button>
+      </form>
+    {% endif %}
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Quantity</label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget ">
+          {% if section.unlimited_quantity %}
+            Unlimited
+          {% else %}
+            {{ section.quantity }}
+          {% endif %}
+        </span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+  </div>
+  <hr />
+{% endfor %}

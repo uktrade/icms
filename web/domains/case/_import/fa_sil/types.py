@@ -8,6 +8,7 @@ GoodsModel = Union[
     models.SILGoodsSection5,
     models.SILGoodsSection582Obsolete,  # /PS-IGNORE
     models.SILGoodsSection582Other,  # /PS-IGNORE
+    models.SILLegacyGoods,
 ]
 GoodsModelT = Type[GoodsModel]
 
@@ -36,6 +37,7 @@ SILReportFirearmModel = Union[
     models.SILSupplementaryReportFirearmSection5,
     models.SILSupplementaryReportFirearmSection582Obsolete,  # /PS-IGNORE
     models.SILSupplementaryReportFirearmSection582Other,  # /PS-IGNORE
+    models.SILSupplementaryReportFirearmSectionLegacy,
 ]
 
 SILReportFirearmModelT = Type[SILReportFirearmModel]
@@ -47,5 +49,6 @@ SILReportFirearmFormT = Type[
         forms.SILSupplementaryReportFirearmSection5Form,
         forms.SILSupplementaryReportFirearmSection582ObsoleteForm,  # /PS-IGNORE
         forms.SILSupplementaryReportFirearmSection582OtherForm,  # /PS-IGNORE
+        forms.SILSupplementaryReportFirearmSectionLegacyForm,
     ]
 ]

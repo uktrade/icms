@@ -129,6 +129,22 @@
           {% endif %}
         </tr>
       {% endfor %}
+
+      {% for row in section_legacy %}
+        <tr class="result-row">
+          <td>{{ row.description }}</td>
+          <td></td>
+          <td>
+            {% if row.unlimited_quantity %}
+              Unlimited
+            {% else %}
+              {{ row.quantity }}
+            {% endif %}
+          </td>
+          <td>units</td>
+          <td></td>
+        </tr>
+      {% endfor %}
     </table>
 
   {% else %}

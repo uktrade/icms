@@ -57,6 +57,11 @@ class SILApplication(ImportApplication):
         verbose_name="Section 58(2) - Obsolete Calibre", default=False
     )
     section58_other = models.BooleanField(verbose_name="Section 58(2) - Other", default=False)
+
+    # Section for old legacy applications from v1 - Never populated in V2
+    # Earlier records didn't record the section the goods apply for.
+    section_legacy = models.BooleanField("Unknown Section", default=False)
+
     other_description = models.CharField(
         max_length=4000,
         null=True,
@@ -300,6 +305,18 @@ class SILGoodsSection582Other(models.Model):  # /PS-IGNORE
     quantity = models.PositiveBigIntegerField(help_text="Enter a whole number")
 
 
+class SILLegacyGoods(models.Model):
+    """Model to hold historic SIL goods where we can't determine the section they apply to"""
+
+    import_application = models.ForeignKey(
+        SILApplication, on_delete=models.PROTECT, related_name="goods_legacy"
+    )
+    is_active = models.BooleanField(default=True)
+    description = models.CharField(max_length=4096)
+    quantity = models.PositiveBigIntegerField(null=True, help_text="Enter a whole number")
+    unlimited_quantity = models.BooleanField(verbose_name="Unlimited Quantity", default=False)
+
+
 class SILChecklist(ChecklistBase):
     import_application = models.OneToOneField(
         SILApplication, on_delete=models.PROTECT, related_name="checklist"
@@ -359,29 +376,27 @@ class SILSupplementaryReport(SupplementaryReportBase):
             "section5",
             "section582-obsolete",
             "section582-other",
+            "section_legacy",
         ]
 
     def get_section_certificates(self, section_type: str) -> SectionCertificates:
-        if section_type == "section1":
-            return self.supplementary_info.import_application.goods_section1.filter(is_active=True)
+        section_mapping = {
+            "section1": "goods_section1",
+            "section2": "goods_section2",
+            "section5": "goods_section5",
+            "section582-obsolete": "goods_section582_obsoletes",
+            "section582-other": "goods_section582_others",
+            "section_legacy": "goods_legacy",
+        }
 
-        if section_type == "section2":
-            return self.supplementary_info.import_application.goods_section2.filter(is_active=True)
+        app = self.supplementary_info.import_application
 
-        if section_type == "section5":
-            return self.supplementary_info.import_application.goods_section5.filter(is_active=True)
+        try:
+            app_section = section_mapping[section_type]
+        except KeyError:
+            raise NotImplementedError(f"section_type is not supported: {section_type}")
 
-        if section_type == "section582-obsolete":
-            return self.supplementary_info.import_application.goods_section582_obsoletes.filter(
-                is_active=True
-            )
-
-        if section_type == "section582-other":
-            return self.supplementary_info.import_application.goods_section582_others.filter(
-                is_active=True
-            )
-
-        raise NotImplementedError(f"section_type is not supported: {section_type}")
+        return getattr(app, app_section).filter(is_active=True)
 
     def get_report_firearms(
         self, is_manual: bool = False, is_upload: bool = False, is_no_firearm: bool = False
@@ -408,6 +423,9 @@ class SILSupplementaryReport(SupplementaryReportBase):
                     is_manual=is_manual, is_upload=is_upload, is_no_firearm=is_no_firearm
                 ),
                 self.section582_other_firearms.filter(
+                    is_manual=is_manual, is_upload=is_upload, is_no_firearm=is_no_firearm
+                ),
+                self.section_legacy_firearms.filter(
                     is_manual=is_manual, is_upload=is_upload, is_no_firearm=is_no_firearm
                 ),
             )
@@ -498,6 +516,17 @@ class SILSupplementaryReportFirearmSection582Other(SILSupplementaryReportFirearm
     )
     goods_certificate = models.ForeignKey(
         SILGoodsSection582Other,  # /PS-IGNORE
+        related_name="supplementary_report_firearms",
+        on_delete=models.CASCADE,
+    )
+
+
+class SILSupplementaryReportFirearmSectionLegacy(SILSupplementaryReportFirearmBase):
+    report = models.ForeignKey(
+        SILSupplementaryReport, related_name="section_legacy_firearms", on_delete=models.CASCADE
+    )
+    goods_certificate = models.ForeignKey(
+        SILLegacyGoods,
         related_name="supplementary_report_firearms",
         on_delete=models.CASCADE,
     )

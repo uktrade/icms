@@ -35,7 +35,7 @@ class ExportApplicationTypeConverter:
 
 
 class SILSectionTypeConverter:
-    regex = "section1|section2|section5|section582-obsolete|section582-other"
+    regex = "section1|section2|section5|section582-obsolete|section582-other|section_legacy"
 
     def to_python(self, value):
         return value
@@ -47,6 +47,7 @@ class SILSectionTypeConverter:
             "section5",
             "section582-obsolete",
             "section582-other",
+            "section_legacy",
         ]:
             raise ValueError
 
