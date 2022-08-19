@@ -22,15 +22,15 @@
   </div>
   <hr />
 
-  {{ fields.field(form.origin_country) }}
-  {{ fields.field(form.consignment_country) }}
+  {{ fields.field(form.origin_country, show_optional_indicator=False) }}
+  {{ fields.field(form.consignment_country, show_optional_indicator=False) }}
 
-  {{ fields.field(form.military_police) }}
-  {{ fields.field(form.eu_single_market) }}
-  {{ fields.field(form.manufactured) }}
+  {{ fields.field(form.military_police, show_optional_indicator=False) }}
+  {{ fields.field(form.eu_single_market, show_optional_indicator=False) }}
+  {{ fields.field(form.manufactured, show_optional_indicator=False) }}
 
   <h4>Goods</h4>
-  {{ fields.field(form.commodity_code) }}
+  {{ fields.field(form.commodity_code, show_optional_indicator=False) }}
 
   <h4>Misc</h4>
   {{ fields.field(form.additional_comments) }}
