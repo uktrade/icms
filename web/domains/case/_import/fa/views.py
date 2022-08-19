@@ -866,6 +866,7 @@ def _validate_firearms_details(
             report.section5_firearms,
             report.section582_obsolete_firearms,
             report.section582_other_firearms,
+            report.section_legacy_firearms,
         ]
 
         if any(

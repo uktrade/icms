@@ -84,6 +84,15 @@ def _get_sil_section_app_config(sil_section_type: str) -> CreateSILSectionConfig
             form_class=forms.SILGoodsSection582OtherForm,  # /PS-IGNORE
             template="web/domains/case/import/fa-sil/goods/section582-other.html",
         )
+
+    elif sil_section_type == "section_legacy":
+        return CreateSILSectionConfig(
+            model_class=models.SILLegacyGoods,
+            # These are invalid, but we don't want to be able to edit them
+            form_class=None,  # type: ignore[arg-type]
+            template=None,  # type: ignore[arg-type]
+        )
+
     raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
 
 
@@ -137,6 +146,9 @@ def _get_report_firearm_form_class(sil_section_type: str) -> types.SILReportFire
     elif sil_section_type == "section582-other":
         return forms.SILSupplementaryReportFirearmSection582OtherForm  # /PS-IGNORE
 
+    elif sil_section_type == "section_legacy":
+        return forms.SILSupplementaryReportFirearmSectionLegacyForm
+
     raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
 
 
@@ -155,6 +167,9 @@ def _get_report_firearm_model(sil_section_type: str) -> types.SILReportFirearmMo
 
     elif sil_section_type == "section582-other":
         return models.SILSupplementaryReportFirearmSection582Other  # /PS-IGNORE
+
+    elif sil_section_type == "section_legacy":
+        return models.SILSupplementaryReportFirearmSectionLegacy
 
     raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
 

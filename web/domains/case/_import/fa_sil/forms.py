@@ -614,3 +614,9 @@ class SILSupplementaryReportFirearmSection582OtherForm(forms.ModelForm):  # /PS-
     class Meta:
         model = models.SILSupplementaryReportFirearmSection582Other  # /PS-IGNORE
         fields = ("serial_number", "calibre", "model", "proofing")
+
+
+class SILSupplementaryReportFirearmSectionLegacyForm(forms.ModelForm):
+    class Meta:
+        model = models.SILSupplementaryReportFirearmSectionLegacy
+        fields = ("serial_number", "calibre", "model", "proofing")

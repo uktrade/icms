@@ -207,9 +207,13 @@ def _prepare_fa_sil_response(
     section_5 = application.goods_section5.filter(is_active=True)
     section_58 = application.goods_section582_obsoletes.filter(is_active=True)
     section_58_other = application.goods_section582_others.filter(is_active=True)
+    section_legacy = application.goods_legacy.filter(is_active=True)
 
     has_goods = any(
-        (s.exists() for s in (section_1, section_2, section_5, section_58, section_58_other))
+        (
+            s.exists()
+            for s in (section_1, section_2, section_5, section_58, section_58_other, section_legacy)
+        )
     )
 
     context.update(
@@ -221,6 +225,7 @@ def _prepare_fa_sil_response(
             "goods_section_5": section_5,
             "goods_section_58": section_58,
             "goods_section_58_other": section_58_other,
+            "section_legacy": section_legacy,
         }
     )
 

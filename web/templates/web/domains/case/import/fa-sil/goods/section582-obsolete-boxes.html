@@ -1,8 +1,8 @@
 {% for section in process.goods_section582_obsoletes.filter(is_active=True) %}
   <div class="container setoutForm">
+    <h5>Section 58(2) - Obsolete - {{ section.description }}</h5>
 
     {% if not read_only %}
-      <h5>Section 58(2) - Obsolete - {{ section.description }}</h5>
       <a
         href="{{ icms_url('import:fa-sil:edit-section', kwargs={'application_pk': process.pk, 'sil_section_type': 'section582-obsolete', 'section_pk': section.pk}) }}"
         class="link-button icon-pencil button">
