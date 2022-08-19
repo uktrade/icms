@@ -30,6 +30,10 @@ class CertificateOfGoodManufacturingPracticeApplication(ExportBase):
     auditor_accredited = models.CharField(max_length=3, null=True)
     auditor_certified = models.CharField(max_length=3, null=True)
 
+    @classmethod
+    def models_to_populate(cls) -> list[str]:
+        return super().models_to_populate() + ["GMPBrand"]
+
 
 class GMPFile(MigrationBase):
     class Meta:
@@ -78,5 +82,18 @@ class GMPFile(MigrationBase):
                 gmpfile_id=F("pk"),
                 certificateofgoodmanufacturingpracticeapplication_id=F("target__folder__gmp__pk"),
             )
+            .iterator()
+        )
+
+
+class GMPBrand(MigrationBase):
+    cad = models.ForeignKey(ExportApplication, on_delete=models.CASCADE, to_field="cad_id")
+    brand_name = models.CharField(max_length=100, null=True)
+
+    @classmethod
+    def get_source_data(cls) -> Generator:
+        return (
+            cls.objects.filter(brand_name__isnull=False)
+            .values("id", "brand_name", application_id=F("cad__id"))
             .iterator()
         )

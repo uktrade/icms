@@ -522,7 +522,7 @@ class GMPBrand(models.Model):
         on_delete=models.CASCADE,
     )
 
-    brand_name = models.CharField(max_length=20, verbose_name="Name of the brand")
+    brand_name = models.CharField(max_length=100, verbose_name="Name of the brand")
 
 
 class ExportApplicationCertificate(CaseLicenceCertificateBase):
