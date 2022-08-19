@@ -786,3 +786,9 @@ def test_import_gmp_data(mock_connect):
 
     assert gmp3.supporting_documents.count() == 1
     assert gmp3.supporting_documents.first().file_type == "ISO_17021"
+
+    assert ea1.certificates.count() == 0
+    assert ea2.certificates.count() == 1
+    assert ea2.certificates.first().status == "DR"
+    assert ea3.certificates.count() == 1
+    assert ea3.certificates.first().status == "AR"
