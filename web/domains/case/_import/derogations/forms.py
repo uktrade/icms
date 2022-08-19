@@ -50,6 +50,18 @@ class DerogationsFormBase(forms.ModelForm):
             "civilian_purpose_details": forms.Textarea(attrs={"cols": 50, "rows": 3}),
         }
 
+        help_texts = {
+            "origin_country": (
+                "Select the country that the goods originate from. Please consult the"
+                " Guidance or relevant Notice to Importers to ensure that a derogation"
+                " is applicable and the terms of that derogation for the goods you wish"
+                " to import."
+            ),
+            "consignment_country": (
+                "Country from which the goods will be physically consigned or despatched."
+            ),
+        }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

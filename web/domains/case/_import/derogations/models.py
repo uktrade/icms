@@ -24,13 +24,29 @@ class DerogationsApplication(ImportApplication):
     PROCESS_TYPE = ProcessTypes.DEROGATIONS
     IS_FINAL = True
 
-    contract_sign_date = models.DateField(verbose_name="Contract Sign Date", null=True)
-    contract_completion_date = models.DateField(verbose_name="Contract Completion Date", null=True)
+    contract_sign_date = models.DateField(
+        verbose_name="Contract Sign Date",
+        null=True,
+        help_text=(
+            "Date upon which the contract was signed. Please check the relevant Notice to"
+            " Importers or Guidance that these dates are within the derogation period allowed.",
+        ),
+    )
+    contract_completion_date = models.DateField(
+        verbose_name="Contract Completion Date",
+        null=True,
+        help_text=(
+            "Date upon which the contract will be completed. A copy of the contract"
+            " is required as proof. Please check the relevant Notice to Importers"
+            " or Guidance that these dates are within the derogation period allowed."
+        ),
+    )
 
     explanation = models.CharField(
         max_length=4096,
         null=True,
         verbose_name="Provide details of why this is a pre-existing contract",
+        help_text="A copy of the contract is required as proof.",
     )
 
     # Goods
