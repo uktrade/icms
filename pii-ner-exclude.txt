@@ -1619,3 +1619,8 @@ Skipping Creating Missing Export Application Certificates"
 Creating Draft Export Application Certificates
 Creating Archived Export Application Certificates
 Importers or Guidance
+x.chemical_name
+CA/2022/9905
+CA/2022/9906
+x.type
+x.commission_code

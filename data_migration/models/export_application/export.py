@@ -136,9 +136,5 @@ class ExportBase(MigrationBase):
         return super().get_excludes() + ["cad_id", "file_folder_id"]
 
     @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        return data
-
-    @classmethod
     def get_values_kwargs(cls) -> dict[str, Any]:
         return {"exportapplication_ptr_id": F("id")}

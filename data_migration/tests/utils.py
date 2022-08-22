@@ -52,15 +52,32 @@ IA_BASE_COLUMNS = [
     ("variations_xml",),
 ]
 
+EA_BASE_COLUMNS = [
+    ("ca_id",),
+    ("cad_id",),
+    ("process_type",),
+    ("reference",),
+    ("status",),
+    ("created_by_id",),
+    ("create_datetime",),
+    ("created",),
+    ("submit_datetime",),
+    ("last_updated_by_id",),
+    ("last_updated_datetime",),
+    ("variation_no",),
+    ("application_type_id",),
+    ("exporter_id",),
+    ("exporter_office_legacy_id",),
+]
 
 query_result = {
     reference.country: (
-        [("id",), ("name",), ("status",), ("type",), ("commission_code",), ("hmrc_code",)],
+        [("id",), ("name",), ("is_active",), ("type",), ("commission_code",), ("hmrc_code",)],
         [
-            (1, "CA", "ACTIVE", "A", 100, "CA"),
-            (2, "CB", "ACTIVE", "A", 101, "CB"),
-            (3, "CC", "ACTIVE", "B", 102, "CC"),
-            (4, "CD", "INACTIVE", "A", 103, "CD"),
+            (1, "CA", 1, "A", 100, "CA"),
+            (2, "CB", 1, "A", 101, "CB"),
+            (3, "CC", 1, "B", 102, "CC"),
+            (4, "CD", 0, "A", 103, "CD"),
         ],
     ),
     reference.country_group: (
@@ -791,7 +808,7 @@ query_result = {
     import_application.ia_type: (
         [
             ("id",),
-            ("status",),
+            ("is_active",),
             ("type",),
             ("sub_type",),
             ("licence_type_code",),
@@ -822,7 +839,7 @@ query_result = {
         [
             (
                 1,  # id
-                "ACTIVE",  # status
+                1,  # is_active
                 "FA",  # type
                 "SIL",  # sub_type
                 "FIREARMS",  # licence_type_code
@@ -1289,44 +1306,30 @@ query_result = {
         ],
     ),
     export_application.gmp_application: (
-        [
-            ("ca_id",),
-            ("cad_id",),
-            ("process_type",),
-            ("reference",),
-            ("status",),
-            ("submit_datetime",),
-            ("create_datetime",),
-            ("created_by_id",),
-            ("last_updated_by_id",),
-            ("last_updated_datetime",),
-            ("created",),
-            ("variation_no",),
-            ("file_folder_id",),
-            ("application_type_id",),
-            ("exporter_id",),
-            ("exporter_office_legacy_id",),
+        EA_BASE_COLUMNS
+        + [
             ("brand_name",),
+            ("file_folder_id",),
         ],
         [
             (
-                7,
-                17,
-                "CertificateofGoodManufacturingPractice",
-                "CA/2022/9901",
-                "IN PROGRESS",
-                None,
-                datetime(2022, 4, 27),
-                2,
-                2,
-                datetime(2022, 4, 27),
-                datetime(2022, 4, 27),
-                0,
-                31,
-                21,
-                2,
-                "e-2-1",
-                None,
+                7,  # ca_id
+                17,  # cad_id
+                "CertificateofGoodManufacturingPractice",  # process_type
+                "CA/2022/9901",  # reference
+                "IN PROGRESS",  # status
+                2,  # created_by_id
+                datetime(2022, 4, 27),  # create_datetime
+                datetime(2022, 4, 27),  # created
+                None,  # submit_datetime
+                2,  # last_updated_by_id
+                datetime(2022, 4, 27),  # last_updated_datetime
+                0,  # variation_no
+                21,  # application_type_id
+                2,  # exporter_id
+                "e-2-1",  # export_office_legacy_id
+                None,  # brand_name
+                31,  # file_folder_id
             ),
             (
                 8,
@@ -1334,18 +1337,18 @@ query_result = {
                 "CertificateofGoodManufacturingPractice",
                 "CA/2022/9902",
                 "PROCESSING",
-                datetime(2022, 4, 29),
-                datetime(2022, 4, 28),
                 2,
+                datetime(2022, 4, 28),
+                datetime(2022, 4, 28),
+                datetime(2022, 4, 29),
                 2,
                 datetime(2022, 4, 29),
-                datetime(2022, 4, 28),
                 0,
-                32,
                 21,
                 3,
                 "e-3-1",
                 "A brand",
+                32,
             ),
             (
                 9,
@@ -1353,24 +1356,102 @@ query_result = {
                 "CertificateofGoodManufacturingPractice",
                 "CA/2022/9903",
                 "COMPELTED",
-                datetime(2022, 4, 29),
-                datetime(2022, 4, 28),
                 2,
+                datetime(2022, 4, 28),
+                datetime(2022, 4, 28),
+                datetime(2022, 4, 29),
                 2,
                 datetime(2022, 4, 29),
-                datetime(2022, 4, 28),
                 0,
-                33,
                 21,
                 2,
                 "e-2-2",
                 "Another brand",
+                33,
             ),
         ],
     ),
     export_application.export_application_countries: (
         [("cad_id",), ("country_id",)],
         [(18, 1), (18, 2), (18, 3), (19, 1)],
+    ),
+    export_application.com_application: (
+        EA_BASE_COLUMNS
+        + [
+            ("is_pesticide_on_free_sale_uk",),
+            ("is_manufacturer",),
+            ("product_name",),
+            ("chemical_name",),
+            ("manufacturing_process",),
+        ],
+        [
+            (
+                10,  # ca_id
+                20,  # cad_id
+                "CertificateOfManufactureApplication",  # process_type
+                "CA/2022/9904",  # reference
+                "IN PROGRESS",  # status
+                2,  # created_by_id
+                datetime(2022, 4, 27),  # create_datetime
+                datetime(2022, 4, 27),  # created
+                None,  # submit_datetime
+                2,  # last_updated_by_id
+                datetime(2022, 4, 27),  # last_updated_datetime
+                0,  # variation_no
+                2,  # application_type_id
+                2,  # exporter_id
+                "e-2-1",  # export_office_legacy_id
+                None,  # is_pesticide_on_free_sale_uk
+                None,  # is_manufacturer
+                None,  # product_name
+                None,  # chemical_name
+                None,  # manufacturing_process
+            ),
+            (
+                11,
+                21,
+                "CertificateOfManufactureApplication",
+                "CA/2022/9905",
+                "PROCESSING",
+                2,
+                datetime(2022, 4, 28),
+                datetime(2022, 4, 28),
+                datetime(2022, 4, 29),
+                2,
+                datetime(2022, 4, 29),
+                0,
+                2,
+                3,
+                "e-3-1",
+                1,  # is_pesticide_on_free_sale_uk
+                0,  # is_manufacturer
+                "A product",  # product_name
+                "A chemical",  # chemical_name
+                "Test",  # manufacturing_process
+            ),
+            (
+                12,
+                22,
+                "CertificateOfManufactureApplication",
+                "CA/2022/9906",
+                "COMPELTED",
+                2,
+                datetime(2022, 4, 28),
+                datetime(2022, 4, 28),
+                datetime(2022, 4, 29),
+                2,
+                datetime(2022, 4, 29),
+                0,
+                2,
+                2,
+                "e-2-2",
+                0,  # is_pesticide_on_free_sale_uk
+                1,  # is_manufacturer
+                "Another product",  # product_name
+                "Another chemical",  # chemical_name
+                "Test process",  # manufacturing_process
+            ),
+        ],
     ),
 }
 
@@ -1430,13 +1511,13 @@ def create_test_dm_models():
     dm.Country.objects.bulk_create(
         [
             dm.Country(
-                **dict(zip(["id", "name", "status", "type", "commission_code", "hmrc_code"], c))
+                **dict(zip(["id", "name", "is_active", "type", "commission_code", "hmrc_code"], c))
             )
             for c in [
-                (100, "CA", "ACTIVE", "A", 100, "CA"),
-                (101, "CB", "ACTIVE", "A", 101, "CB"),
-                (102, "CC", "ACTIVE", "B", 102, "CC"),
-                (103, "CD", "INACTIVE", "A", 103, "CD"),
+                (100, "CA", 1, "A", 100, "CA"),
+                (101, "CB", 1, "A", 101, "CB"),
+                (102, "CC", 1, "B", 102, "CC"),
+                (103, "CD", 0, "A", 103, "CD"),
             ]
         ]
     )

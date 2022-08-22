@@ -4,8 +4,8 @@ from data_migration.models.base import MigrationBase
 
 
 class Country(MigrationBase):
+    is_active = models.BooleanField(default=True)
     name = models.CharField(max_length=4000, null=False)
-    status = models.CharField(max_length=10, null=False)
     type = models.CharField(max_length=30, null=False)
     commission_code = models.CharField(max_length=20, null=False)
     hmrc_code = models.CharField(max_length=20, null=False)
@@ -27,8 +27,8 @@ class CountryGroupCountry(MigrationBase):
 
 
 class CountryTranslationSet(MigrationBase):
+    is_active = models.BooleanField(default=True)
     name = models.CharField(max_length=100, null=False)
-    status = models.CharField(max_length=10, null=False)
 
 
 class CountryTranslation(MigrationBase):

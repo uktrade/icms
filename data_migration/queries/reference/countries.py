@@ -8,7 +8,13 @@ __all__ = [
 
 
 country = """
-  SELECT country_id id, x.*
+  SELECT
+    country_id id
+    , x.name
+    , CASE x.status WHEN 'ACTIVE' THEN 1 ELSE 0 END is_active
+    , x.type
+    , x.commission_code
+    , x.hmrc_code
   FROM bpmmgr.country_details cd,
     XMLTABLE('/*'
       PASSING cd.xml_data
@@ -38,7 +44,7 @@ country_group_country = """
 """
 
 
-country_translation_set = "SELECT id, name, status FROM bpmmgr.country_translation_sets cts"
+country_translation_set = "SELECT id, name, CASE status WHEN 'ACTIVE' THEN 1 ELSE 0 END is_active FROM bpmmgr.country_translation_sets cts"
 
 
 country_translation = """

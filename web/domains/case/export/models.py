@@ -202,9 +202,9 @@ class CertificateOfManufactureApplication(ExportApplication):
     is_pesticide_on_free_sale_uk = models.BooleanField(null=True)
     is_manufacturer = models.BooleanField(null=True)
 
-    product_name = models.CharField(max_length=1000, blank=False)
-    chemical_name = models.CharField(max_length=500, blank=False)
-    manufacturing_process = models.TextField(max_length=4000, blank=False)
+    product_name = models.CharField(max_length=1000, blank=False, null=True)
+    chemical_name = models.CharField(max_length=500, blank=False, null=True)
+    manufacturing_process = models.TextField(max_length=4000, blank=False, null=True)
 
 
 @final
