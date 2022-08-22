@@ -190,7 +190,7 @@ class SILGoodsSection5Form(forms.ModelForm):
             "description": forms.Textarea({"rows": 3}),
         }
 
-    quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY)
+    quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY, required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
