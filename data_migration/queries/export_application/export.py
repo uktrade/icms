@@ -20,7 +20,6 @@ SELECT xcac.cad_id, xcac.country_id
 FROM impmgr.xview_cert_app_countries xcac
 INNER JOIN impmgr.xview_certificate_app_details xcad ON xcad.cad_id = xcac.cad_id
 WHERE xcac.status_control = 'C'
-AND xcad.application_type IN ('COM', 'GMP')
 """
 
 
@@ -44,11 +43,13 @@ SELECT
   , xcad.agent_office_id
   , '{process_type}' process_type
   , cat.id application_type_id
-  {cad}
+  , cad.*
 FROM impmgr.xview_certificate_app_details xcad
 INNER JOIN impmgr.certificate_applications ca ON ca.id = xcad.ca_id
 INNER JOIN impmgr.certificate_application_types cat ON cat.ca_type = xcad.application_type
+INNER JOIN (
 {application_details}
+) cad on cad.cad_id = xcad.cad_id
 WHERE xcad.status_control = 'C'
 AND xcad.application_type = '{application_type}'
 AND xcad.status <> 'DELETED'

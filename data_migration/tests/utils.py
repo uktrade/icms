@@ -1355,7 +1355,7 @@ query_result = {
                 19,
                 "CertificateofGoodManufacturingPractice",
                 "CA/2022/9903",
-                "COMPELTED",
+                "COMPLETED",
                 2,
                 datetime(2022, 4, 28),
                 datetime(2022, 4, 28),
@@ -1434,7 +1434,7 @@ query_result = {
                 22,
                 "CertificateOfManufactureApplication",
                 "CA/2022/9906",
-                "COMPELTED",
+                "COMPLETED",
                 2,
                 datetime(2022, 4, 28),
                 datetime(2022, 4, 28),
@@ -1450,6 +1450,65 @@ query_result = {
                 "Another product",  # product_name
                 "Another chemical",  # chemical_name
                 "Test process",  # manufacturing_process
+            ),
+        ],
+    ),
+    export_application.cfs_application: (
+        EA_BASE_COLUMNS + ["schedule_xml"],
+        [
+            (
+                13,  # ca_id
+                23,  # cad_id
+                "CertificateOfFreeSaleApplication",  # process_type
+                "CA/2022/9907",  # reference
+                "IN PROGRESS",  # status
+                2,  # created_by_id
+                datetime(2022, 4, 27),  # create_datetime
+                datetime(2022, 4, 27),  # created
+                None,  # submit_datetime
+                2,  # last_updated_by_id
+                datetime(2022, 4, 27),  # last_updated_datetime
+                0,  # variation_no
+                2,  # application_type_id
+                2,  # exporter_id
+                "e-2-1",  # export_office_legacy_id
+                None,  # schedule_xml
+            ),
+            (
+                14,
+                24,
+                "CertificateOfManufactureApplication",
+                "CA/2022/9908",
+                "PROCESSING",
+                2,
+                datetime(2022, 4, 28),
+                datetime(2022, 4, 28),
+                datetime(2022, 4, 29),
+                2,
+                datetime(2022, 4, 29),
+                0,
+                2,
+                3,
+                "e-3-1",
+                None,  # schedule_xml
+            ),
+            (
+                15,
+                25,
+                "CertificateOfManufactureApplication",
+                "CA/2022/9909",
+                "COMPLETED",
+                2,
+                datetime(2022, 4, 28),
+                datetime(2022, 4, 28),
+                datetime(2022, 4, 29),
+                2,
+                datetime(2022, 4, 29),
+                0,
+                2,
+                2,
+                "e-2-2",
+                None,  # schedule_xml
             ),
         ],
     ),

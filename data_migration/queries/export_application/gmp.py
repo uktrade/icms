@@ -3,7 +3,6 @@ from .export import export_application_base
 __all__ = ["gmp_application"]
 
 gmp_subquery = """
-INNER JOIN (
   SELECT
     cad.id cad_id
     , brand_name
@@ -46,13 +45,11 @@ INNER JOIN (
       , gmp_certificate_issued VARCHAR(4000) PATH '/CA/APPLICATION/GMP_DETAILS/GMP_DOCUMENTS/MAIN_DOCUMENT_CERTIFICATE[not(fox-error)]/text()'
       , file_folder_id INTEGER PATH '/CA/APPLICATION/FILE_FOLDER_ID/text()'
     ) x
-) cad ON cad.cad_id = xcad.cad_id
-""".strip()
+"""
 
 gmp_application = export_application_base.format(
     **{
         "process_type": "CertificateofGoodManufacturingPractice",
-        "cad": ", cad.*",
         "application_details": gmp_subquery,
         "application_type": "GMP",
     }

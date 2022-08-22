@@ -703,7 +703,7 @@ def test_import_sps_data(mock_connect):
     assert sps2.value_eur == 100
 
 
-gmp_com_data_source_target = {
+export_data_source_target = {
     "user": [
         (dm.User, web.User),
         (dm.Exporter, web.Exporter),
@@ -725,13 +725,14 @@ gmp_com_data_source_target = {
         (dm.CertificateOfManufactureApplication, web.CertificateOfManufactureApplication),
         (dm.GMPFile, web.GMPFile),
         (dm.GMPBrand, web.GMPBrand),
+        (dm.CertificateOfFreeSaleApplication, web.CertificateOfFreeSaleApplication),
     ],
     "file": [
         (dm.File, web.File),
     ],
 }
 
-gmp_com_query_model = {
+export_query_model = {
     "user": [],
     "file": [(q_f, "gmp_files", dm.FileCombined)],
     "import_application": [],
@@ -741,6 +742,7 @@ gmp_com_query_model = {
         (q_ex, "export_application_type", dm.ExportApplicationType),
         (q_ex, "gmp_application", dm.CertificateOfGoodManufacturingPracticeApplication),
         (q_ex, "com_application", dm.CertificateOfManufactureApplication),
+        (q_ex, "cfs_application", dm.CertificateOfFreeSaleApplication),
         (q_ex, "export_application_countries", dm.ExportApplicationCountries),
     ],
     "reference": [
@@ -749,7 +751,7 @@ gmp_com_query_model = {
     ],
 }
 
-gmp_com_m2m = {
+export_m2m = {
     "export_application": [
         (dm.ExportApplicationCountries, web.ExportApplication, "countries"),
         (dm.GMPFile, web.CertificateOfGoodManufacturingPracticeApplication, "supporting_documents"),
@@ -764,10 +766,10 @@ gmp_com_m2m = {
 @override_settings(ICMS_PROD_PASSWORD="1234")
 @pytest.mark.django_db
 @mock.patch.object(cx_Oracle, "connect")
-@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, gmp_com_data_source_target)
-@mock.patch.dict(DATA_TYPE_M2M, gmp_com_m2m)
-@mock.patch.dict(DATA_TYPE_QUERY_MODEL, gmp_com_query_model)
-def test_import_gmp_com_data(mock_connect):
+@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, export_data_source_target)
+@mock.patch.dict(DATA_TYPE_M2M, export_m2m)
+@mock.patch.dict(DATA_TYPE_QUERY_MODEL, export_query_model)
+def test_import_export_data(mock_connect):
     mock_connect.return_value = utils.MockConnect()
     call_command("export_from_v1")
     call_command("import_v1_data")
@@ -823,3 +825,5 @@ def test_import_gmp_com_data(mock_connect):
     assert com3.product_name == "Another product"
     assert com3.chemical_name == "Another chemical"
     assert com3.manufacturing_process == "Test process"
+
+    assert web.CertificateOfFreeSaleApplication.objects.count() == 3
