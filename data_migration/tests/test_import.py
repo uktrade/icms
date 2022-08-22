@@ -49,7 +49,7 @@ def test_import_ref_data():
     c1 = dm.Country.objects.create(
         id=c_pk,
         name="A",
-        status="ACTIVE",
+        is_active=1,
         type="SOVEREIGN_TERRITORY",
         commission_code="A",
         hmrc_code="A",
@@ -57,7 +57,7 @@ def test_import_ref_data():
     c2 = dm.Country.objects.create(
         id=c_pk + 1,
         name="B",
-        status="INACTIVE",
+        is_active=0,
         type="SYSTEM",
         commission_code="B",
         hmrc_code="B",

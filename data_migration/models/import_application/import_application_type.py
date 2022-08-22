@@ -12,7 +12,7 @@ from data_migration.models.reference import (
 
 
 class ImportApplicationType(MigrationBase):
-    status = models.CharField(max_length=10)
+    is_active = models.BooleanField()
     type = models.CharField(max_length=70)
     sub_type = models.CharField(max_length=70, null=True)
     licence_type_code = models.CharField(max_length=20)

@@ -186,6 +186,9 @@ class PrepareCertManufactureFormBase(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["is_pesticide_on_free_sale_uk"].required = True
         self.fields["is_manufacturer"].required = True
+        self.fields["product_name"].required = True
+        self.fields["chemical_name"].required = True
+        self.fields["manufacturing_process"].required = True
 
         self.fields["contact"].queryset = application_contacts(self.instance)
 

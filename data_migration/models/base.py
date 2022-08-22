@@ -20,11 +20,6 @@ class MigrationBase(models.Model):
             new = field.replace("__", "_")
             data[new] = data.pop(field)
 
-        status = data.pop("status", None)
-
-        if status:
-            data["is_active"] = status.lower() == "active"
-
         return data
 
     @classmethod

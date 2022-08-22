@@ -703,7 +703,7 @@ def test_import_sps_data(mock_connect):
     assert sps2.value_eur == 100
 
 
-gmp_data_source_target = {
+gmp_com_data_source_target = {
     "user": [
         (dm.User, web.User),
         (dm.Exporter, web.Exporter),
@@ -722,6 +722,7 @@ gmp_data_source_target = {
             dm.CertificateOfGoodManufacturingPracticeApplication,
             web.CertificateOfGoodManufacturingPracticeApplication,
         ),
+        (dm.CertificateOfManufactureApplication, web.CertificateOfManufactureApplication),
         (dm.GMPFile, web.GMPFile),
         (dm.GMPBrand, web.GMPBrand),
     ],
@@ -730,7 +731,7 @@ gmp_data_source_target = {
     ],
 }
 
-gmp_query_model = {
+gmp_com_query_model = {
     "user": [],
     "file": [(q_f, "gmp_files", dm.FileCombined)],
     "import_application": [],
@@ -739,6 +740,7 @@ gmp_query_model = {
         (q_u, "exporter_offices", dm.Office),
         (q_ex, "export_application_type", dm.ExportApplicationType),
         (q_ex, "gmp_application", dm.CertificateOfGoodManufacturingPracticeApplication),
+        (q_ex, "com_application", dm.CertificateOfManufactureApplication),
         (q_ex, "export_application_countries", dm.ExportApplicationCountries),
     ],
     "reference": [
@@ -747,7 +749,7 @@ gmp_query_model = {
     ],
 }
 
-gmp_m2m = {
+gmp_com_m2m = {
     "export_application": [
         (dm.ExportApplicationCountries, web.ExportApplication, "countries"),
         (dm.GMPFile, web.CertificateOfGoodManufacturingPracticeApplication, "supporting_documents"),
@@ -762,16 +764,18 @@ gmp_m2m = {
 @override_settings(ICMS_PROD_PASSWORD="1234")
 @pytest.mark.django_db
 @mock.patch.object(cx_Oracle, "connect")
-@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, gmp_data_source_target)
-@mock.patch.dict(DATA_TYPE_M2M, gmp_m2m)
-@mock.patch.dict(DATA_TYPE_QUERY_MODEL, gmp_query_model)
-def test_import_gmp_data(mock_connect):
+@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, gmp_com_data_source_target)
+@mock.patch.dict(DATA_TYPE_M2M, gmp_com_m2m)
+@mock.patch.dict(DATA_TYPE_QUERY_MODEL, gmp_com_query_model)
+def test_import_gmp_com_data(mock_connect):
     mock_connect.return_value = utils.MockConnect()
     call_command("export_from_v1")
     call_command("import_v1_data")
 
     assert web.CertificateOfGoodManufacturingPracticeApplication.objects.count() == 3
-    ea1, ea2, ea3 = web.ExportApplication.objects.order_by("pk")
+    ea1, ea2, ea3 = web.ExportApplication.objects.filter(
+        process_ptr__process_type=web.ProcessTypes.GMP
+    ).order_by("pk")
     assert ea1.countries.count() == 0
     assert ea2.countries.count() == 3
     assert ea3.countries.count() == 1
@@ -798,3 +802,24 @@ def test_import_gmp_data(mock_connect):
     assert ea2.certificates.first().status == "DR"
     assert ea3.certificates.count() == 1
     assert ea3.certificates.first().status == "AR"
+
+    assert web.CertificateOfManufactureApplication.objects.count() == 3
+    com1, com2, com3 = web.CertificateOfManufactureApplication.objects.order_by("pk")
+
+    assert com1.is_pesticide_on_free_sale_uk is None
+    assert com1.is_manufacturer is None
+    assert com1.product_name is None
+    assert com1.chemical_name is None
+    assert com1.manufacturing_process is None
+
+    assert com2.is_pesticide_on_free_sale_uk is True
+    assert com2.is_manufacturer is False
+    assert com2.product_name == "A product"
+    assert com2.chemical_name == "A chemical"
+    assert com2.manufacturing_process == "Test"
+
+    assert com3.is_pesticide_on_free_sale_uk is False
+    assert com3.is_manufacturer is True
+    assert com3.product_name == "Another product"
+    assert com3.chemical_name == "Another chemical"
+    assert com3.manufacturing_process == "Test process"

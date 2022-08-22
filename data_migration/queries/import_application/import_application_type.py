@@ -3,7 +3,7 @@ __all__ = ["ia_type", "usage"]
 ia_type = """
 SELECT
   id
-  , status
+  , CASE status WHEN 'ACTIVE' THEN 1 ELSE 0 END is_active
   , ima_type type
   , ima_sub_type sub_type
   , licence_type licence_type_code

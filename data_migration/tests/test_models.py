@@ -6,28 +6,10 @@ from . import factory
 
 
 @pytest.mark.django_db
-def test_active_status_data_export():
-    data = {"id": 1, "name": "test", "status": "ACTIVE"}
-    result = dm.MigrationBase.data_export(data)
-    assert len(result.keys()) == 3
-    assert result["id"] == 1
-    assert result["name"] == "test"
-    assert result["is_active"] is True
-
-
-@pytest.mark.django_db
-def test_inactive_status_data_export():
-    data = {"id": 1, "name": "test", "status": "INACTIVE"}
-    result = dm.MigrationBase.data_export(data)
-    assert len(result.keys()) == 3
-    assert result["is_active"] is False
-
-
-@pytest.mark.django_db
 def test_country_get_values():
     country = factory.CountryFactory()
     values = country.get_values()
-    expected = ["commission_code", "hmrc_code", "id", "name", "status", "type"]
+    expected = ["commission_code", "hmrc_code", "id", "is_active", "name", "type"]
     assert sorted(values) == expected
 
 
@@ -40,7 +22,7 @@ def test_country_group_get_values():
 
 @pytest.mark.django_db
 def test_country_data_export():
-    country = factory.CountryFactory(status="ACTIVE")
+    country = factory.CountryFactory(is_active=True)
     data_dict = country.__dict__
     data_dict.pop("_state")
     data = country.data_export(data_dict)
@@ -94,6 +76,7 @@ def test_import_application_type_values():
         "guidance_file_url",
         "id",
         "importer_printable",
+        "is_active",
         "licence_category_description",
         "licence_type_code",
         "master_country_group__id",
@@ -105,7 +88,6 @@ def test_import_application_type_values():
         "quantity_unlimited_flag",
         "sigl_category_prefix",
         "sigl_flag",
-        "status",
         "sub_type",
         "supporting_docs_upload_flag",
         "type",

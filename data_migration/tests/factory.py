@@ -23,7 +23,7 @@ class CountryFactory(factory.django.DjangoModelFactory):
         model = models.Country
 
     name = factory.fuzzy.FuzzyText(length=6)
-    status = random.choice(["ACTIVE", "INACTIVE"])
+    is_active = random.choice([True, False])
     type = factory.fuzzy.FuzzyText(length=6)
     commission_code = factory.fuzzy.FuzzyText(length=6)
     hmrc_code = factory.fuzzy.FuzzyText(length=6)
@@ -42,7 +42,7 @@ class ImportApplicationTypeFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.ImportApplicationType
 
-    status = random.choice(["ACTIVE", "INACTIVE"])
+    is_active = random.choice([True, False])
     type = "WD"
     sub_type = factory.fuzzy.FuzzyText(length=6)
     licence_type_code = factory.fuzzy.FuzzyText(length=6)

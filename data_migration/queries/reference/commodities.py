@@ -8,7 +8,7 @@ commodity_type = (
 
 commodity_group = """
   SELECT cg_id id
-    , status
+    , CASE status WHEN 'ACTIVE' THEN 1 ELSE 0 END is_active
     , group_type
     , group_code
     , group_name
@@ -25,7 +25,7 @@ commodity_group = """
 commodity = """
   SELECT
     com_id id
-    , status
+    , CASE status WHEN 'ACTIVE' THEN 1 ELSE 0 END is_active
     , commodity_code
     , commodity_type commodity_type_id
     , validity_start_date

@@ -16,7 +16,7 @@ class CommodityType(MigrationBase):
 
 
 class Commodity(MigrationBase):
-    status = models.CharField(max_length=10, null=False)
+    is_active = models.BooleanField(default=True)
     commodity_code = models.CharField(max_length=10)
     validity_start_date = models.DateField()
     validity_end_date = models.DateField(null=True)
@@ -34,7 +34,7 @@ class Commodity(MigrationBase):
 
 
 class CommodityGroup(MigrationBase):
-    status = models.CharField(max_length=10, null=False)
+    is_active = models.BooleanField(default=True)
     group_type = models.CharField(max_length=20)
     group_code = models.CharField(max_length=25, unique=True)
     group_name = models.CharField(max_length=100, null=True)
