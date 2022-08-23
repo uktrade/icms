@@ -197,6 +197,7 @@ def _get_licence_number(application: "ImportApplication", doc_type: DocumentType
 
 
 def _get_importer_eori_numbers(application) -> list[str]:
+    # TODO: ICMSLST-580 Revisit the EORI numbers that appear on a licence.
     # TODO: Check the Country of Consignment logic for other firearm licence types
     # TODO: If the applicant’s address has a BT (Belfast) post code AND the Country of Consignment is an EU country:
 
