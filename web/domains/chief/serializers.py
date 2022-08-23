@@ -280,7 +280,6 @@ def _get_office(application: "ImportApplication") -> "Office":
     return office
 
 
-# TODO: ICMSLST-1658 Revisit this (see icms/web/utils/pdf/utils.py -> _get_importer_eori_numbers)
 def _get_eori_number(importer: "Importer", office: "Office") -> str:
 
     # Use office override if set

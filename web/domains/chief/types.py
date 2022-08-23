@@ -2,7 +2,7 @@ import datetime
 from enum import Enum, IntEnum
 from typing import Literal, Optional, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 
 
 # https://www.gov.uk/government/publications/uk-trade-tariff-quantity-codes/uk-trade-tariff-quantity-codes
@@ -37,18 +37,31 @@ class AddressData(BaseModel):
     postcode: str
 
 
-# TODO: ICMSLST-1658 All examples in DEV supply TRADER_ID instead of TURN for the
-#       Work out what field it should be
-# <TURN/>
-# <TRADER_ID>GBN1234567890123</TRADER_ID>
 class OrganisationData(BaseModel):
     eori_number: str
-    # turn: Optional[str] # (eori_number or turn)
-
     name: str
     address: AddressData
     start_date: Optional[datetime.date] = None
     end_date: Optional[datetime.date] = None
+
+    @validator("eori_number")
+    def eori_number_must_be_valid(cls, v):
+        """Basic validation for EORI number.
+
+        https://www.tax.service.gov.uk/check-eori-number
+        """
+
+        # This may need to be extended to include other prefixes (XI) in the future.
+        if not v.upper().startswith("GB"):
+            raise ValueError("Must start with 'GB' prefix")
+
+        # Example value: GB123456789012345
+        eori_number_length = len(v[2:])
+
+        if eori_number_length != 12 and eori_number_length != 15:
+            raise ValueError("Must start with 'GB' followed by 12 or 15 numbers")
+
+        return v
 
 
 class LicenceDataBase(BaseModel):
