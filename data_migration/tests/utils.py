@@ -1454,7 +1454,7 @@ query_result = {
         ],
     ),
     export_application.cfs_application: (
-        EA_BASE_COLUMNS + ["schedule_xml"],
+        EA_BASE_COLUMNS,
         [
             (
                 13,  # ca_id
@@ -1472,7 +1472,6 @@ query_result = {
                 2,  # application_type_id
                 2,  # exporter_id
                 "e-2-1",  # export_office_legacy_id
-                None,  # schedule_xml
             ),
             (
                 14,
@@ -1490,7 +1489,6 @@ query_result = {
                 2,
                 3,
                 "e-3-1",
-                None,  # schedule_xml
             ),
             (
                 15,
@@ -1508,7 +1506,78 @@ query_result = {
                 2,
                 2,
                 "e-2-2",
-                None,  # schedule_xml
+            ),
+        ],
+    ),
+    export_application.cfs_schedule: (
+        [
+            ("cad_id",),
+            ("schedule_ordinal",),
+            ("exporter_status",),
+            ("brand_name_holder",),
+            ("product_eligibility",),
+            ("goods_placed_on_uk_market",),
+            ("goods_export_only",),
+            ("any_raw_materials",),
+            ("final_product_end_use",),
+            ("country_of_manufacture_id",),
+            ("accordance_with_standards",),
+            ("is_responsible_person",),
+            ("manufacturer_name",),
+            ("manufacturer_address_type",),
+            ("created_by_id",),
+        ],
+        [
+            (
+                24,  # cad_id
+                1,  # schedule_ordinal
+                "MANUFACTURER",  # exporter_status
+                None,  # brand_name_holder
+                "ON_SALE",  # product_eligibility
+                "no",  # goods_placed_on_uk_market
+                "yes",  # goods_export_only
+                "no",  # any_raw_materials
+                None,  # final_product_end_use
+                1,  # country_of_manufacture_id
+                1,  # accordance_with_standards
+                0,  # is_repsonsible_person
+                "Manufacturer",  # manufacturer_name
+                "MANUAL",  # manufacturer_address_type
+                2,  # created_by_id
+            ),
+            (
+                25,  # cad_id
+                1,  # schedule_ordinal
+                "NOT_MANUFACTURER",  # exporter_status
+                "yes",  # brand_name_holder
+                "MAY_BE_SOLD",  # product_eligibility
+                "yes",  # goods_placed_on_uk_market
+                "no",  # goods_export_only
+                "yes",  # any_raw_materials
+                "A product",  # final_product_end_use
+                1,  # country_of_manufacture_id
+                0,  # accordance_with_standards
+                1,  # is_repsonsible_person
+                None,  # manufacturer_name
+                "MANUAL",  # manufacturer_address_type
+                2,  # created_by_id
+            ),
+            (
+                25,  # cad_id
+                2,  # schedule_ordinal
+                "MANUFACTURER",  # exporter_status
+                "no",  # brand_name_holder
+                "ON_SALE",  # product_eligibility
+                "no",  # goods_placed_on_uk_market
+                "yes",  # goods_export_only
+                "no",  # any_raw_materials
+                None,  # final_product_end_use
+                1,  # country_of_manufacture_id
+                1,  # accordance_with_standards
+                0,  # is_repsonsible_person
+                "Manufacturer",  # manufacturer_name
+                "MANUAL",  # manufacturer_address_type
+                2,  # created_by_id
             ),
         ],
     ),

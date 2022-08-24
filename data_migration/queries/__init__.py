@@ -304,6 +304,7 @@ export_query_model = [
         export_application, "gmp_application", dm.CertificateOfGoodManufacturingPracticeApplication
     ),
     QueryModel(export_application, "cfs_application", dm.CertificateOfFreeSaleApplication),
+    QueryModel(export_application, "cfs_schedule", dm.CFSSchedule),
     QueryModel(export_application, "export_application_countries", dm.ExportApplicationType),
 ]
 
@@ -319,6 +320,7 @@ export_source_target = [
     SourceTarget(dm.GMPFile, web.GMPFile),
     SourceTarget(dm.GMPBrand, web.GMPBrand),
     SourceTarget(dm.CertificateOfFreeSaleApplication, web.CertificateOfFreeSaleApplication),
+    SourceTarget(dm.CFSSchedule, web.CFSSchedule),
 ]
 
 export_m2m = [
