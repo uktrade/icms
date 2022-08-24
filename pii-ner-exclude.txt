@@ -1629,3 +1629,17 @@ CA/2022/9909
 XMLTYPE PATH '/CA/APPLICATION/PRODUCTS/SCHEDULE_LIST'
 cat.id application_type_id
 GB123456789012345
+accordance_with_standards
+manufacturer_address_type
+final_product_end_use
+is_repsonsible_person
+application_id"
+schedules.final_product_end_use
+xcas.start_datetime created_at
+xcas.last_updated_datetime updated_at
+schedules.legislation_xml
+ON xcas.cad_id
+XMLTABLE('/CA/APPLICATION/PRODUCTS/SCHEDULE_LIST/
+uk_market
+ON schedules.cad_id = xcas.cad_id
+ON st_rp.cad_id =

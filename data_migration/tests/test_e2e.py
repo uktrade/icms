@@ -726,6 +726,7 @@ export_data_source_target = {
         (dm.GMPFile, web.GMPFile),
         (dm.GMPBrand, web.GMPBrand),
         (dm.CertificateOfFreeSaleApplication, web.CertificateOfFreeSaleApplication),
+        (dm.CFSSchedule, web.CFSSchedule),
     ],
     "file": [
         (dm.File, web.File),
@@ -743,6 +744,7 @@ export_query_model = {
         (q_ex, "gmp_application", dm.CertificateOfGoodManufacturingPracticeApplication),
         (q_ex, "com_application", dm.CertificateOfManufactureApplication),
         (q_ex, "cfs_application", dm.CertificateOfFreeSaleApplication),
+        (q_ex, "cfs_schedule", dm.CFSSchedule),
         (q_ex, "export_application_countries", dm.ExportApplicationCountries),
     ],
     "reference": [
@@ -827,3 +829,8 @@ def test_import_export_data(mock_connect):
     assert com3.manufacturing_process == "Test process"
 
     assert web.CertificateOfFreeSaleApplication.objects.count() == 3
+    cfs1, cfs2, cfs3 = web.CertificateOfFreeSaleApplication.objects.order_by("pk")
+
+    assert cfs1.schedules.count() == 0
+    assert cfs2.schedules.count() == 1
+    assert cfs3.schedules.count() == 2
