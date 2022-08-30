@@ -30,5 +30,5 @@ selenium==3.141.0
 sqlparse==0.4.2
 types-pytz==2021.1.0
 types-requests==2.25.0
-pre-commit==2.16.0
+pre-commit==2.20.0
 types-python-dateutil
