@@ -321,6 +321,9 @@ export_source_target = [
     SourceTarget(dm.GMPBrand, web.GMPBrand),
     SourceTarget(dm.CertificateOfFreeSaleApplication, web.CertificateOfFreeSaleApplication),
     SourceTarget(dm.CFSSchedule, web.CFSSchedule),
+    SourceTarget(dm.CFSProduct, web.CFSProduct),
+    SourceTarget(dm.CFSProductType, web.CFSProductType),
+    SourceTarget(dm.CFSProductActiveIngredient, web.CFSProductActiveIngredient),
 ]
 
 export_m2m = [
@@ -329,7 +332,11 @@ export_m2m = [
     M2M(dm.GMPFile, web.CertificateOfGoodManufacturingPracticeApplication, "supporting_documents"),
 ]
 
-export_xml = []
+export_xml = [
+    xml_parser.CFSProductParser,
+    xml_parser.ProductTypeParser,
+    xml_parser.ActiveIngredientParser,
+]
 
 
 DATA_TYPE = Literal["reference", "import_application", "user", "file", "export_application"]

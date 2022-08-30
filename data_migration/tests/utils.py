@@ -1526,6 +1526,7 @@ query_result = {
             ("manufacturer_name",),
             ("manufacturer_address_type",),
             ("created_by_id",),
+            ("product_xml",),
         ],
         [
             (
@@ -1544,6 +1545,7 @@ query_result = {
                 "Manufacturer",  # manufacturer_name
                 "MANUAL",  # manufacturer_address_type
                 2,  # created_by_id
+                xd.cfs_product,  # product_xml
             ),
             (
                 25,  # cad_id
@@ -1561,6 +1563,7 @@ query_result = {
                 None,  # manufacturer_name
                 "MANUAL",  # manufacturer_address_type
                 2,  # created_by_id
+                None,  # product_xml
             ),
             (
                 25,  # cad_id
@@ -1578,6 +1581,7 @@ query_result = {
                 "Manufacturer",  # manufacturer_name
                 "MANUAL",  # manufacturer_address_type
                 2,  # created_by_id
+                xd.cfs_product_biocide,  # product_xml
             ),
         ],
     ),
