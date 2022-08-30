@@ -57,3 +57,21 @@ class CFSSchedule(MigrationBase):
             "schedule_statements_is_responsible_person": F("is_responsible_person"),
             "manufacturer_address_entry_type": F("manufacturer_address_type"),
         }
+
+
+class CFSProduct(MigrationBase):
+    schedule = models.ForeignKey(CFSSchedule, on_delete=models.CASCADE)
+    product_name = models.CharField(max_length=1000)
+    product_type_xml = models.TextField(null=True)
+    active_ingredient_xml = models.TextField(null=True)
+
+
+class CFSProductType(MigrationBase):
+    product_type_number = models.IntegerField()
+    product = models.ForeignKey(CFSProduct, on_delete=models.CASCADE)
+
+
+class CFSProductActiveIngredient(MigrationBase):
+    name = models.CharField(max_length=500)
+    cas_number = models.CharField(max_length=50)
+    product = models.ForeignKey(CFSProduct, on_delete=models.CASCADE)

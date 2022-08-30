@@ -47,7 +47,7 @@ INNER JOIN impmgr.xview_cert_app_schedules xcas ON xcas.cad_id = xcad.cad_id
 INNER JOIN (
   SELECT
     cad.id cad_id
-    , schedule_ordinal
+    , x.schedule_ordinal
     , CASE x.brand_name_holder WHEN 'true' THEN 'yes' WHEN 'false' THEN 'no' ELSE NULL END brand_name_holder
     , x.eligibility product_eligibility
     , CASE x.uk_market WHEN 'true' THEN 'yes' WHEN 'false' THEN 'no' ELSE NULL END goods_placed_on_uk_market
@@ -55,7 +55,6 @@ INNER JOIN (
     , CASE x.any_raw_materials WHEN 'true' THEN 'yes' WHEN 'false' THEN 'no' ELSE NULL END any_raw_materials
     , x.final_product_end_use
     , CASE x.manufacturer_address_type WHEN 'SEARCH' THEN 'SEARCH' ELSE 'MANUAL' END manufacturer_address_type
-    , x.manufacturer_address_type
     , XMLTYPE.getClobVal(legislation_xml) legislation_xml
     , XMLTYPE.getClobVal(product_xml) product_xml
   FROM

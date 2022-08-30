@@ -1643,3 +1643,5 @@ XMLTABLE('/CA/APPLICATION/PRODUCTS/SCHEDULE_LIST/
 uk_market
 ON schedules.cad_id = xcas.cad_id
 ON st_rp.cad_id =
+A</NAME
+x.schedule_ordinal

@@ -727,6 +727,9 @@ export_data_source_target = {
         (dm.GMPBrand, web.GMPBrand),
         (dm.CertificateOfFreeSaleApplication, web.CertificateOfFreeSaleApplication),
         (dm.CFSSchedule, web.CFSSchedule),
+        (dm.CFSProduct, web.CFSProduct),
+        (dm.CFSProductType, web.CFSProductType),
+        (dm.CFSProductActiveIngredient, web.CFSProductActiveIngredient),
     ],
     "file": [
         (dm.File, web.File),
@@ -761,6 +764,15 @@ export_m2m = {
     "import_application": [],
 }
 
+export_xml = {
+    "export_application": [
+        xml_parser.CFSProductParser,
+        xml_parser.ProductTypeParser,
+        xml_parser.ActiveIngredientParser,
+    ],
+    "import_application": [],
+}
+
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
 @override_settings(APP_ENV="production")
@@ -771,9 +783,11 @@ export_m2m = {
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, export_data_source_target)
 @mock.patch.dict(DATA_TYPE_M2M, export_m2m)
 @mock.patch.dict(DATA_TYPE_QUERY_MODEL, export_query_model)
+@mock.patch.dict(DATA_TYPE_XML, export_xml)
 def test_import_export_data(mock_connect):
     mock_connect.return_value = utils.MockConnect()
     call_command("export_from_v1")
+    call_command("extract_v1_xml")
     call_command("import_v1_data")
 
     assert web.CertificateOfGoodManufacturingPracticeApplication.objects.count() == 3
@@ -834,3 +848,21 @@ def test_import_export_data(mock_connect):
     assert cfs1.schedules.count() == 0
     assert cfs2.schedules.count() == 1
     assert cfs3.schedules.count() == 2
+
+    sch1 = cfs2.schedules.first()
+    sch2, sch3 = cfs3.schedules.order_by("pk")
+
+    assert sch1.products.count() == 3
+    assert sch2.products.count() == 0
+    assert sch3.products.count() == 2
+
+    for p in sch1.products.all():
+        assert p.active_ingredients.count() == 0
+        assert p.product_type_numbers.count() == 0
+
+    p1, p2 = sch3.products.order_by("pk")
+
+    assert p1.active_ingredients.count() == 2
+    assert p1.product_type_numbers.count() == 2
+    assert p2.active_ingredients.count() == 1
+    assert p2.product_type_numbers.count() == 1
