@@ -11,7 +11,7 @@ sentry_initialized = False
 def init_sentry() -> None:
     """Initialize Sentry client."""
 
-    sentry_sdk.init(
+    sentry_sdk.init(  # type: ignore[abstract]
         dsn=os.environ.get("SENTRY_DSN"),
         environment=os.environ.get("SENTRY_ENVIRONMENT"),
         integrations=[DjangoIntegration()],
