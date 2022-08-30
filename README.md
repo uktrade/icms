@@ -94,24 +94,30 @@ ICMS uses [Black](https://pypi.org/project/black/) for code formatting and
 - `make black_format` - Reformat all code
 - `make isort_format` - Orders imports
 - `make flake8` - Check code quality is up to scratch
+- `pre-commit run --all-files` - Check all pre-commit hooks
+
+## pre-commit hooks
+ICMS uses the following tool: [pre-commit](https://pre-commit.com/)
+
+pre-commit config file: `.pre-commit-config.yaml`
+
+Common commands (local venv must be activated):
+- `pre-commit autoupdate` - Get the latest version of all hooks
+- `pre-commit run` - Check files staged for commit (git add)
+- `pre-commit run --all-files` - Runs all pre-commit hooks
 
 ## PII Secret Check Hooks tool
 ICMS uses the following tool: [PII Secret Check Hooks](https://github.com/uktrade/pii-secret-check-hooks)
 
+It runs as a pre-commit hook defined in the above section
+- `pre-commit gc; pre-commit clean` - Run if the hooks pass but the git commit fails
+
 PII tool files:
-- `.pre-commit-config.yaml` - Uncomment `args` line to send NER entities to a file (for easier viewing)
 - `pii-custom-regex.txt` - Add custom regexes for finding secret or PII identification
 - `pii-ner-exclude.txt` - False positives to exclude
 - `pii-secret-exclude.txt` - Files to exclude from the pii checks
 
-Common commands (local venv must be activated):
-- `pre-commit run --all-files` - Runs all pii check
-- `pre-commit run` - Check files staged for commit (git add)
-- `pre-commit autoupdate` - Get the latest version of the tool
-- `pre-commit gc; pre-commit clean` - Run if the hooks pass but the git commit fails
-
-Refer to its documentation for further details 
-
+Refer to its documentation for further details
 
 ## Database schema generation
 
