@@ -77,3 +77,18 @@ cfs_product_biocide = """
   </PRODUCT>
 </PRODUCT_LIST>
 """
+
+
+cfs_legislation = """
+<LEGISLATION_LIST>
+  <LEGISLATION>1</LEGISLATION>
+  <LEGISLATION>3</LEGISLATION>
+</LEGISLATION_LIST>
+"""
+
+
+cfs_legislation_biocide = """
+<LEGISLATION_LIST>
+  <LEGISLATION>2</LEGISLATION>
+</LEGISLATION_LIST>
+"""

@@ -8,6 +8,7 @@ from data_migration.models.reference import Country
 from data_migration.models.user import User
 
 from .export import ExportApplication, ExportBase
+from .legislation import ProductLegislation
 
 
 class CertificateOfFreeSaleApplication(ExportBase):
@@ -75,3 +76,8 @@ class CFSProductActiveIngredient(MigrationBase):
     name = models.CharField(max_length=500)
     cas_number = models.CharField(max_length=50)
     product = models.ForeignKey(CFSProduct, on_delete=models.CASCADE)
+
+
+class CFSLegislation(MigrationBase):
+    cfsschedule = models.ForeignKey(CFSSchedule, on_delete=models.CASCADE)
+    productlegislation = models.ForeignKey(ProductLegislation, on_delete=models.CASCADE)

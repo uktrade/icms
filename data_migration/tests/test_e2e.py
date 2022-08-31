@@ -716,6 +716,7 @@ export_data_source_target = {
     ],
     "import_application": [],
     "export_application": [
+        (dm.ProductLegislation, web.ProductLegislation),
         (dm.ExportApplicationType, web.ExportApplicationType),
         (dm.ExportApplication, web.ExportApplication),
         (
@@ -743,6 +744,7 @@ export_query_model = {
     "export_application": [
         (q_u, "exporters", dm.Exporter),
         (q_u, "exporter_offices", dm.Office),
+        (q_ex, "product_legislation", dm.ProductLegislation),
         (q_ex, "export_application_type", dm.ExportApplicationType),
         (q_ex, "gmp_application", dm.CertificateOfGoodManufacturingPracticeApplication),
         (q_ex, "com_application", dm.CertificateOfManufactureApplication),
@@ -758,6 +760,7 @@ export_query_model = {
 
 export_m2m = {
     "export_application": [
+        (dm.CFSLegislation, web.CFSSchedule, "legislations"),
         (dm.ExportApplicationCountries, web.ExportApplication, "countries"),
         (dm.GMPFile, web.CertificateOfGoodManufacturingPracticeApplication, "supporting_documents"),
     ],
@@ -766,6 +769,7 @@ export_m2m = {
 
 export_xml = {
     "export_application": [
+        xml_parser.CFSLegislationParser,
         xml_parser.CFSProductParser,
         xml_parser.ProductTypeParser,
         xml_parser.ActiveIngredientParser,
@@ -851,6 +855,13 @@ def test_import_export_data(mock_connect):
 
     sch1 = cfs2.schedules.first()
     sch2, sch3 = cfs3.schedules.order_by("pk")
+
+    assert sch1.legislations.count() == 0
+    assert sch1.is_biocidal() is False
+    assert sch2.legislations.count() == 2
+    assert sch2.is_biocidal() is False
+    assert sch3.legislations.count() == 1
+    assert sch3.is_biocidal() is True
 
     assert sch1.products.count() == 3
     assert sch2.products.count() == 0

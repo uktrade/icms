@@ -1186,6 +1186,50 @@ query_result = {
         [("imad_id",), ("content",)],
         [(11, "Content A"), (11, "Content B")],
     ),
+    export_application.product_legislation: (
+        [
+            ("id",),
+            ("name",),
+            ("is_active",),
+            ("is_biocidal",),
+            ("is_biocidal_claim",),
+            ("is_eu_cosmetics_regulation",),
+            ("gb_legislation",),
+            ("ni_legislation",),
+        ],
+        [
+            (
+                1,  # id
+                "Test",  # name
+                1,  # is_active
+                0,  # is_biocidal
+                0,  # is_biocidal_claim
+                1,  # is_eu_cosmetics_regulation
+                1,  # gb_legislation
+                1,  # ni_legislation
+            ),
+            (
+                2,  # id
+                "Test Biocide",  # name
+                1,  # is_active
+                1,  # is_biocidal
+                0,  # is_biocidal_claim
+                0,  # is_eu_cosmetics_regulation
+                1,  # gb_legislation
+                0,  # ni_legislation
+            ),
+            (
+                3,  # id
+                "Test Inactive",  # name
+                0,  # is_active
+                0,  # is_biocidal
+                0,  # is_biocidal_claim
+                0,  # is_eu_cosmetics_regulation
+                0,  # gb_legislation
+                1,  # ni_legislation
+            ),
+        ],
+    ),
     export_application.export_application_type: (
         [
             ("id",),
@@ -1527,6 +1571,7 @@ query_result = {
             ("manufacturer_address_type",),
             ("created_by_id",),
             ("product_xml",),
+            ("legislation_xml",),
         ],
         [
             (
@@ -1546,6 +1591,7 @@ query_result = {
                 "MANUAL",  # manufacturer_address_type
                 2,  # created_by_id
                 xd.cfs_product,  # product_xml
+                None,  # legislation_xml
             ),
             (
                 25,  # cad_id
@@ -1564,6 +1610,7 @@ query_result = {
                 "MANUAL",  # manufacturer_address_type
                 2,  # created_by_id
                 None,  # product_xml
+                xd.cfs_legislation,  # legislation_xml
             ),
             (
                 25,  # cad_id
@@ -1582,6 +1629,7 @@ query_result = {
                 "MANUAL",  # manufacturer_address_type
                 2,  # created_by_id
                 xd.cfs_product_biocide,  # product_xml
+                xd.cfs_legislation_biocide,  # legislation_xml
             ),
         ],
     ),
