@@ -47,3 +47,9 @@ repos:
         - types-pytz==2021.1.0
         - types-requests==2.25.0
         - types-python-dateutil
+- repo: local
+  hooks:
+    - id: check-django-migrations
+      name: django-migrations
+      entry: make check_migrations
+      language: system
