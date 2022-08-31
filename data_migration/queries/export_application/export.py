@@ -20,6 +20,7 @@ SELECT xcac.cad_id, xcac.country_id
 FROM impmgr.xview_cert_app_countries xcac
 INNER JOIN impmgr.xview_certificate_app_details xcad ON xcad.cad_id = xcac.cad_id
 WHERE xcac.status_control = 'C'
+AND xcac.status <> 'DELETED'
 """
 
 

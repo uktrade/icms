@@ -305,7 +305,7 @@ export_query_model = [
     ),
     QueryModel(export_application, "cfs_application", dm.CertificateOfFreeSaleApplication),
     QueryModel(export_application, "cfs_schedule", dm.CFSSchedule),
-    QueryModel(export_application, "export_application_countries", dm.ExportApplicationType),
+    QueryModel(export_application, "export_application_countries", dm.ExportApplicationCountries),
 ]
 
 export_source_target = [
