@@ -1647,3 +1647,5 @@ A</NAME
 x.schedule_ordinal
 0.0.0.34
 Test Biocide
+IP
+Stops

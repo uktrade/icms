@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import TemplateView
+from ratelimit import UNSAFE
+from ratelimit.decorators import ratelimit
 
 from web.domains.case.access.filters import (
     ExporterAccessRequestFilter,
@@ -88,6 +90,7 @@ class ListExporterAccessRequest(ModelFilterView):
 
 
 @login_required
+@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def importer_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
     with transaction.atomic():
         if request.method == "POST":
@@ -131,6 +134,7 @@ def importer_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @login_required
+@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def exporter_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
     with transaction.atomic():
         form = forms.ExporterAccessRequestForm()
