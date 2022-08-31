@@ -22,6 +22,8 @@ SELENIUM_BROWSER = "chrome"
 SELENIUM_HUB_HOST = "selenium-hub"
 SELENIUM_HOST = "web"
 
+# django-ratelimit
+RATELIMIT_ENABLE = False
 
 FILE_UPLOAD_HANDLERS = ("web.tests.file_upload_handler.DummyFileUploadHandler",)  # type: ignore[assignment]
 APP_ENV = "test"

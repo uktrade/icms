@@ -13,6 +13,8 @@ from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import TemplateView
 from guardian.shortcuts import get_objects_for_user
+from ratelimit import UNSAFE
+from ratelimit.decorators import ratelimit
 
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
@@ -92,6 +94,7 @@ def _exporters_with_agents(user: User) -> List[int]:
 
 @login_required
 @permission_required("web.exporter_access", raise_exception=True)
+@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_export_application(
     request: AuthenticatedHttpRequest, *, type_code: str, template_pk: int = None
 ) -> HttpResponse:

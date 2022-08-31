@@ -16,6 +16,8 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView, TemplateView
 from guardian.shortcuts import get_objects_for_user
+from ratelimit import UNSAFE
+from ratelimit.decorators import ratelimit
 
 from web.domains.case.models import CaseDocumentReference, VariationRequest
 from web.domains.case.utils import (
@@ -92,6 +94,7 @@ class ImportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
+@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_derogations(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
@@ -102,6 +105,7 @@ def create_derogations(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
+@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_sanctions(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
@@ -112,6 +116,7 @@ def create_sanctions(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
+@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_firearms_oil(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
@@ -123,6 +128,7 @@ def create_firearms_oil(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
+@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_firearms_dfl(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
@@ -134,6 +140,7 @@ def create_firearms_dfl(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
+@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_firearms_sil(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
@@ -145,6 +152,7 @@ def create_firearms_sil(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
+@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_wood_quota(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
@@ -156,6 +164,7 @@ def create_wood_quota(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
+@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_opt(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
@@ -166,6 +175,7 @@ def create_opt(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
+@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_textiles(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
@@ -176,6 +186,7 @@ def create_textiles(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
+@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_sps(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
@@ -186,6 +197,7 @@ def create_sps(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 @login_required
 @permission_required("web.importer_access", raise_exception=True)
+@ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_ironsteel(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,

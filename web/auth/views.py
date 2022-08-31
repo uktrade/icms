@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.shortcuts import redirect, render
+from django.utils.decorators import method_decorator
+from ratelimit.decorators import ratelimit
 
 from web.auth.decorators import require_registered
 from web.domains.user import PersonalEmail, User
@@ -27,6 +29,18 @@ class LoginView(auth_views.LoginView):
     template_name = "auth/login.html"
     redirect_authenticated_user = True
     authentication_form = LoginForm
+
+    @method_decorator(ratelimit(key="ip", rate="20/m", block=True))
+    @method_decorator(ratelimit(key="post:username", rate="10/m", block=True))
+    def post(self, request, *args, **kwargs):
+        """Rate limit users by IP and username.
+
+        Stops a user trying to brute force a single username as well as trying different usernames from the same IP.
+        Consider this in the future to create a soft blocking mechanism:
+        https://django-ratelimit.readthedocs.io/en/stable/security.html#denial-of-service
+        """
+
+        return super(LoginView, self).post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
