@@ -330,9 +330,11 @@ export_m2m = [
     M2M(dm.Office, web.Exporter, "offices"),
     M2M(dm.ExportApplicationCountries, web.ExportApplication, "countries"),
     M2M(dm.GMPFile, web.CertificateOfGoodManufacturingPracticeApplication, "supporting_documents"),
+    M2M(dm.CFSLegislation, web.CFSSchedule, "legislations"),
 ]
 
 export_xml = [
+    xml_parser.CFSLegislationParser,
     xml_parser.CFSProductParser,
     xml_parser.ProductTypeParser,
     xml_parser.ActiveIngredientParser,

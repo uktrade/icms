@@ -106,3 +106,31 @@ class ProductTypeParser(BaseXmlParser):
                 "product_type_number": number,
             }
         )
+
+
+class CFSLegislationParser(BaseXmlParser):
+    MODEL = dm.CFSLegislation
+    PARENT = dm.CFSSchedule
+    FIELD = "legislation_xml"
+    ROOT_NODE = "/LEGISLATION_LIST/LEGISLATION"
+
+    @classmethod
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.CFSLegislation]:
+        """Example XML structure
+
+        <LEGISLATION_LIST>
+            <LEGISLATION />
+        </LEGISLATION_LIST>
+        """
+
+        legislation = int_or_none(get_xml_val(xml, "."))
+
+        if not legislation:
+            return None
+
+        return cls.MODEL(
+            **{
+                "cfsschedule_id": parent_pk,
+                "productlegislation_id": legislation,
+            }
+        )
