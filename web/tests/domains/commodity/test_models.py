@@ -2,6 +2,7 @@ import datetime
 from datetime import date
 
 from django.test import TestCase
+from django.utils.timezone import now
 
 from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
 from web.tests.domains.commodity.factory import CommodityFactory, CommodityGroupFactory
@@ -49,10 +50,9 @@ class CommodityGroupTest(TestCase):
         is_active=True,
         group_type=CommodityGroup.AUTO,
         group_code="12",
-        group_name="Test group",
         group_description="Test group description",
-        start_datetime=date.today(),
-        end_datetime=date.today() + datetime.timedelta(days=20),
+        start_datetime=now(),
+        end_datetime=now() + datetime.timedelta(days=20),
     ):
         return CommodityGroupFactory.create(
             is_active=is_active,

@@ -27,6 +27,7 @@ class AccessRequest(WorkbasketBase, Process):
 
     class Meta:
         indexes = [models.Index(fields=["status"], name="AccR_status_idx")]
+        ordering = ["submit_datetime"]
 
     # TODO: ICMSLST-634 see if we can remove the type:ignores once we have django-stubs
     class Statuses(models.TextChoices):
