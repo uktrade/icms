@@ -9,7 +9,7 @@
         <th>Commodity Code</th>
         <th>Quantity</th>
         <th>Unit</th>
-        {% if not readonly_view %}<th>Action</th>{% endif %}
+        {% if not readonly_view and not variation_refused %}<th>Action</th>{% endif %}
       </tr>
     </thead>
     <tbody>
@@ -23,7 +23,7 @@
         <td>
           Kilos
         </td>
-        {% if not readonly_view %}
+        {% if not readonly_view and not variation_refused %}
           <td>
             <a
               href={{ icms_url('import:sps:response-prep-edit-goods', kwargs={'application_pk': process.pk}) }}>

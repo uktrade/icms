@@ -10,7 +10,7 @@
         <th>Goods Description</th>
         <th>Quantity</th>
         <th>Unit</th>
-        {% if not readonly_view %}
+        {% if not readonly_view and not variation_refused %}
           <th>Action</th>
         {% endif %}
       </tr>
@@ -29,7 +29,7 @@
         <td>
           {{ process.goods_unit }}
         </td>
-        {% if not readonly_view %}
+        {% if not readonly_view and not variation_refused %}
           <td>
             <a
               href={{ icms_url('import:wood:edit-goods-licence', kwargs={'application_pk': process.pk}) }}>

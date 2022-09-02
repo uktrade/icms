@@ -10,7 +10,7 @@
         <th>Goods Description</th>
         <th>Quantity</th>
         <th>Unit</th>
-        {% if not readonly_view %}<th>Action</th>{% endif %}
+        {% if not readonly_view and not variation_refused %}<th>Action</th>{% endif %}
       </tr>
     </thead>
     <tbody>
@@ -27,7 +27,7 @@
         <td>
           Kilos
         </td>
-        {% if not readonly_view %}
+        {% if not readonly_view and not variation_refused %}
           <td>
             <a
               class="link-button icon-pencil button"
@@ -46,7 +46,7 @@
 {% block certificates_content %}
   <h4>Export Certificates</h4>
 
-  {% with read_only = readonly_view, manage_case=True %}
+  {% with read_only = (readonly_view or variation_refused), manage_case=True %}
     {% include "web/domains/case/import/partials/ironsteel/certificates_list.html" %}
   {% endwith %}
 

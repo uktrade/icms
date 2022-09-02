@@ -99,8 +99,6 @@ def prepare_response(
             "readonly_view": readonly_view,
         }
 
-    # TODO: ICMSLST-1477 Disable actions when a variation request has been refused.
-
     # Get the latest active licence if the variation is refused.
     if application.is_import_application():
         if (
@@ -110,6 +108,8 @@ def prepare_response(
             context["licence"] = application.licences.get(
                 status=ImportApplicationLicence.Status.ACTIVE
             )
+            context["variation_refused"] = True
+
         else:
             context["licence"] = application.get_most_recent_licence()
 
