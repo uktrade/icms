@@ -1,7 +1,7 @@
 {% extends "web/domains/case/manage/prepare-response.html" %}
 
 {% block cover_letter_actions %}
-  {% if not readonly_view %}
+  {% if not readonly_view and not variation_refused %}
     <a
       href="{{ icms_url('import:fa-sil:set-cover-letter', kwargs={'application_pk': process.pk}) }}"
       class="button small-button">
@@ -35,7 +35,7 @@
         <th>Obsolete Calibre</th>
         <th>Quantity</th>
         <th>Units</th>
-        {% if not readonly_view %}<th>Actions</th>{% endif %}
+        {% if not readonly_view and not variation_refused%}<th>Actions</th>{% endif %}
       </tr>
       </thead>
 
@@ -46,7 +46,7 @@
           <td></td>
           <td>{{ row.quantity }}</td>
           <td>units</td>
-          {% if not readonly_view %}
+          {% if not readonly_view and not variation_refused %}
             <td>
               <a class="link-button button icon-pencil" data-input_action="edit"
                  href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section1"}) }}"
@@ -63,7 +63,7 @@
           <td></td>
           <td>{{ row.quantity }}</td>
           <td>units</td>
-          {% if not readonly_view %}
+          {% if not readonly_view and not variation_refused %}
             <td>
               <a class="link-button button icon-pencil" data-input_action="edit"
                  href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section2"}) }}"
@@ -86,7 +86,7 @@
             {% endif %}
           </td>
           <td>units</td>
-          {% if not readonly_view %}
+          {% if not readonly_view and not variation_refused %}
             <td>
               <a class="link-button button icon-pencil" data-input_action="edit"
                  href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section5"}) }}"
@@ -103,7 +103,7 @@
           <td>{{ row.obsolete_calibre }}</td>
           <td>{{ row.quantity }}</td>
           <td>units</td>
-          {% if not readonly_view %}
+          {% if not readonly_view and not variation_refused %}
             <td>
               <a class="link-button button icon-pencil" data-input_action="edit"
                  href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section582-obsolete"}) }}"
@@ -120,7 +120,7 @@
           <td></td>
           <td>{{ row.quantity }}</td>
           <td>units</td>
-          {% if not readonly_view %}
+          {% if not readonly_view and not variation_refused %}
             <td>
               <a class="link-button button icon-pencil" data-input_action="edit"
                  href="{{ icms_url('import:fa-sil:response-prep-edit-goods', kwargs={'application_pk': process.pk, 'section_pk': row.pk, "sil_section_type": "section582-other"}) }}"

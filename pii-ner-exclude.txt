@@ -789,7 +789,6 @@ return isEUCosmeticsRegulation && notExportOnly
 Maintain Importers
 Importer Reg No
 Quota
-ICMSLST-1477 Disable
 Application Reference
 Exporter Address
 application_field(process.exporter_vat_nr

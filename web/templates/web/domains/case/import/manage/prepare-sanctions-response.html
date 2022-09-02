@@ -11,7 +11,7 @@
         <th>Quantity</th>
         <th>Unit</th>
         <th>Value (GBP CIF)</th>
-        {% if not readonly_view %}<th>Action</th>{% endif %}
+        {% if not readonly_view and not variation_refused %}<th>Action</th>{% endif %}
       </tr>
     </thead>
     <tbody>
@@ -30,7 +30,7 @@
           <td>
             {{ goods_item.value}}
           </td>
-          {% if not readonly_view %}
+          {% if not readonly_view and not variation_refused %}
             <td>
               <a
                 href={{ icms_url('import:sanctions:edit-goods-licence', args=[process.pk, goods_item.pk]) }}>
