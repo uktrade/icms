@@ -1,171 +1,344 @@
-Maintain Contact Edit Address{%
-class="three columns"></div
-checkbox_label="These
-the Good Manufacturing Practice
-Cosmetic Regulation
-schedule</p
+kwargs={'mailshot_pk
 class="button
-Address
-application_field((schedule.manufacturer_address
->Products</h4
-class="icon
-Download Template
-Reopen
-Report Completed
-application_field(process.supplementary_info.completed_datetime.strftime('%d-%b-%Y
-Date Reporting Completed
-fields.field(form.no_report_reason
-Address</h3
-value="save_address
-Mordor
-Shire
-TST
-Dothraki
-date_of_birth
-Organisation Name (Employer
-Date of Birth
-the Exporting Company
-a Certificate of Good Manufacturing Process
-GB
-NI
-the Department for International Trade
-GMP
-the Office for Product Safety and Standards
-Good Manufacturing Practice
-Product Safety and Standards
-CLAM_AV_DOMAIN=
-CLAM_AV_PASSWORD=
-ICMSLST-16 Workbasket
-Importer Access Request
-Access Request
-section 1 and 2
-section 5
-Home Office
-the Home Office Guide on Firearms Licensing Law
-class="prompt west">Is
+hadErrors
+FormData(form
+event.preventDefault
+Convert
+convertToSet(formData
+class="three columns"></div
 class="prompt
-class="prompt west">Obsolete
-Ammunition</h4
-commoditySelect2
-CFS
-document.querySelector("#id_variation_refuse_reason
-Maintain Templates
-Application Domain
-Template Type
-Template Status
-non-CFS_SCHEDULE
-New Endorsement
-Approval Request Flow
-Resume Task
-@access
-ILB Case Officers
-ILB Case Officers:Import Application Case Officer
-application_pk
-kwargs={"pk
-section5_files
-Maintain Commodity
-Response Preparation
-process.status}}</span></div
-Email Subject
-Email Body
-Mailshot (New
--pk
-an Import Company
-"van Rossum
+x.type
+x.commission_code
+XMLTABLE('/
+PATH
+VARCHAR2
+NULL
+country_group_id
+ON xcg.country_group_detail_id
+Content-Disposition"
+Config
+Admin
+"Load the SearchTerms
+Import and Export
+submitted_to
+licence_to
+issue_to
+closed_to
+Test Constabulary
+That Constabulary
 ExporterAccessRequest
-Request
-Linked
->Emails</h4>
-Home 2
-Home.as_view
-Consignment</label></div
+By</dt
+application_pk
+Approval Request
+date_of_birth
+LETTER_FRAGMENT
+ENDORSEMENT
+ImporterApprovalRequest
+Name / Address
+request.pk}}</span
+Licences</h4
+li><a
+download">Download
+elasticapm
+SERVICE_NAME
+ELASTIC_APM_SECRET_TOKEN
+ELASTIC_APM_ENVIRONMENT
+\n\ - FOR
+United
+STD NUMBER\n\
++36
+12345678\n\ - FOR International
+Strip
+V2
+target_id
+file_ptr_id
+ImportContact
+V1
+LO
+RU
+SC
+SE
+East Midlands
+Eastern
+North East
+South East
+West Midlands
+>Checklist</h4
+0.0.0.34
+ner_output_file.txt
+AIR
+REF
+Test Rifle
+5_1_ABA
+Test Revolver
+firearmsauthority_id
+Edit Note
+process.get_reference
+HSE Emails'
+Response Preparation'
+View Application'
+Endorsement Usage Template (ICMSLST-638
+Add Firearm Details
+Edit Firearm Details
 web.tests.file_upload_handler
-web.domains.template.urls
-web.domains.firearms.urls
-web.domains.exporter.urls
-kwargs={"case_type
-button">Save</button
-300px
-Customs
-State
-Section 5
-the Firearms Act 1968
-Section 58(2) of the Firearms Act 1968
-Government
+StreamHandler
+Maintain Web User Accounts
+job_title"
+Account Status
+Password Disposition"
+Account Status Changed
+Organisation Address
+save_manual_address
+POST
+GDS
+DIT
+name__icontains
+Commodity
+>Cancel</button>' +
+e.preventDefault
+this.d.find('.approve').click
+el.on('click
+get_workbasket_applicant_sections
+Access Request
+Matching Matching Obsolete Calibres</th>
+fields.field(form.password
+value="Sign and Authorise" />
+Import Case Management System{%
+Case Management System</p>
+View Config
+application_pk: Application
+Best Importers Ltd.
+Outward Processing Trade Import Licence - Edit
+Outward Processing Trade Import Licence - Edit Compensating Products
+Outward Processing Trade Import Licence - Edit Temporary Exported Goods
+Outward Processing Trade Import Licence - Edit Further Questions
+OPT
+Compensating Products
+Temporary Exported Goods
+Further Questions - "
+Outward Processing Trade Import Licence - Submit
+f"Invalid
+Outward Processing Trade Licence - Add
+Outward Processing Trade Licence - Checklist
+the View Application
+View Application
+Submit Update
 mkdir
-http://stellarchariot.com/blog/2011/02/dynamically-add-form-to-formset-using-javascript-and-django/
-function addForm(btn
-Insert
-row).removeAttr('id').hide().insertAfter(".item
-class="prompt west
-Chapter 93
+DFL
+IMA/2022/00002
+DFL Organisation
+Russian
+Model PGL6-40LR
+No PGR 123
+Section 5 of the Firearms Act 1968
+9mm
+Section 5(1)(aba
+the Firearms Act 1968
+GBSIL3333333H
+GBSAN4444444A
+mandatory_files - List
+file.get_file_type_display
+ICMS - Data Migration
+extract_v1_xml
+/user
+f"/user
+cubic metres
+Customs Integrated Tariff Book
+the Stationery Office
+the Classification Advisory Service
+SIGL Wood
+container.classList.add('hidden
+gmp_files
+sanction_application_files
+ON sld.id = DEREF(fv.secure_lob_ref).id
+ON fft.ff_id = ff.id
+fv.id version_id
+CONCAT(id
+NUMBER PATH '
+ON fv.fft_id
+SPS
+ADHOC1
+TEX
+fv.version_id
+fv.path
+ia_id
+INTEGER PATH '
+/AUTHORITY/DOCUMENTS_FF_ID
+create_by_wua_id created_by
+ON fv.target_id
+ON fft.ff_id
+RECEIVED
+customs_office_address
+cp_commodities
+Copy Recipients
+class="prompt west">Acknowledgement
+workbasket.</li
+Authorised Contacts
+Information Contacts
+notifications.</li
+x.commodity_code commodity_group_id
+x.additional_comments
+x.no_report_reason
+XMLTYPE.getClobVal(XMLELEMENT("FA_GOODS_CERTS
+fa_certs_xml
+know_bought_from VARCHAR2(10
+fa_certs_xml XMLTYPE PATH '
+fa_authorities_xml XMLTYPE PATH '
+XMLTYPE PATH '
+is_complete
+FA_REPORTS/HISTORICAL_REPORT_COMPLETION_LIST/HISTORICAL_REPORT_COMPLETION[last()]/REPORT_COMPLETED_BY_WUA_ID[last()]/text
+FA_REPORTS/HISTORICAL_REPORT_COMPLETION_LIST
+user__first_name__icontains
+user__email__icontains
+Firearms and Ammunition - Certificates"
+Firearms and Ammunition - Create Certificate
+Edit Firearm Supplementary Report
+f"Unknown Firearm
+kls
+submit-inline.html' %
+x.chemical_name
+country_group_legacy_id
+country_of_manufacture_cg_id"
+process_ptr_id
+exportapplication_ptr_id"
+GMPBrand
+BRCGS
+param
+-pk
+npm
+Ownership" class="button
+R1C1
+R1C2
+R2C2
+R3C1
+R3C3
+ST</STREET_AND_NUMBER> <
+REGION</REGION
+TOWN</TOWN_CITY
+TARGET_ID>1234</TARGET_ID
+REF A</CERTIFICATE_REF
+REF B</CERTIFICATE_REF
+AUTHORITY
+COMMODITY_ID>2</COMMODITY_ID
+COMMODITY_ID>3</COMMODITY_ID
+r"(?:\r\n|\r|\n){2
+f'<li class="{class_attr}"><a
+show_all_attrs
+Response Preparation
+Test Legislation
+an Import Case Management System
+fields.field(form.email
+>Wood
+Firearm
+Goods Description
+Application Type
+the Health and Safety Executive
+f"CaseEmail
+CAS
+"Write the pdf data
+Split
+Cover Letter Preview
+section 5
+>SIGL</h4
+EC SIGLWood
+fa_authorities
+issuing_constabulary_id INTEGER PATH '
+ON xialo.ia_id
+SECTION5
+Received Mailshots
+Title"
+Maintain Mailshots
+QuerySet[Mailshot]"
+mailshot_pk
+Next
+Buckingham Palace
+Roden St
+Townsville
+Stevens
+Dave
+Jones
+Sally
+Davis
+Cameron
+GMP
+Old Admiralty Building\nLondon\n
+Acme Wonder Product
+/></li>
+header(field
+config.date_format %
+config.show_all %
+headers(display
+docker_flake8
+-O codecov.sh https://codecov.io/bash
+Create{%
+obsolete calibre
+Commodity Code
+Ammunition</h4
 class="tabs
 note</button
 aria-labelledby="tks1Kzx6n_plrnqVW43-tg-notesARCHIVED
-value="Add"/>
-"Creates Usage records for several application types
-130A
-146A
-146B
-151A
-151B"
-TEX
-the Outward Processing Trade
-OPT
-the Derogation From Sanctions Import Ban
-SAN2
-Russian
-SAN4
-the Iron and Steel (Quota
-Sanctions
-Adhoc Licence
-Derogation From Sanctions Import Ban
-Assert
-Assert ICMS
-is_superuser
-Name / Address
-request.pk}}</span
-Papua Awesome Guinea
-EU
-French
-Sindarin
-Remove
-Access Request</h3
-kls
-Maintain Importers
-Importer Reg No
-Importer Entity Type
-Content-Disposition"
-By</dt
-Approval Request
-Marker
-sys.stdin
-name__icontains
-user__first_name__icontains
-user__email__icontains
-Pa11y
-Puppeteer
-function(err
-function report(url
-report('http://web:8080
-Firearm
-Goods Description
+import_order_style
+E203
+downloadForm.addEventListener("click
+A</NAME
+\s
+Matches
+Case Reference
+Licence Reference
+Reassignment User
+Case Status
+Applicant's Reference
+Application Contact
+Pending Further Information Requests
+Pending Update Requests
+Closed Date"
+Certificate Reference
+CFS
+schedules.final_product_end_use
+xcas.start_datetime created_at
+xcas.last_updated_datetime updated_at
+schedules.legislation_xml
+ON xcas.cad_id
+x.schedule_ordinal
+XMLTABLE('/CA/APPLICATION/PRODUCTS/SCHEDULE_LIST/
+uk_market
+ON schedules.cad_id = xcas.cad_id
+ON st_rp.cad_id =
+Wood
+Import Licence - Add
+Contract Document"
+Edit Goods
+firearms/<int
+Importer Agents
+ca_type
+country_group_id country_group_legacy_id
+ON xcad.cad_id
+xcad.variation_number variation_no
+xcad.exporter_office_id
+2 contact_id
+cat.id application_type_id
+Invokes
+p)!r
+ICMSMiddlewareContext
+LockManager
+Respond
+Mobile
+Central Contact
+kwargs={'org_type
+the Exporting Company
+Schedule
+id="btnLogout">Logout</button
+reassignmentCB
+#id_reassignment_user").djangoSelect2().empty
 ref 1
 ref 2
 7208370010
 6205908010
 Jordan
 222222
-Wood
 Sheet 1
-Case Reference
-Applicant's Reference
-Licence Reference
 Licence Start Date
-Application Type
 Application Sub-Type
-Case Status
-Application Contact
 Commodity Code(s
 Certificate Countries
 Countries of Manufacture
@@ -177,235 +350,281 @@ bar/1110
 xx555555xx
 xx888888xx
 xx5%5xx"
+GBSIL0000002C
+CFS/2021/00003
 Test Export
 Sort
 created_by
-Iron and Steel (Quota
-Endorsement Usage Template (ICMSLST-638
-ICMS1
-Import Licence - Add
-Import Licence - Edit Goods
-Import Licence - Edit Certificate
-Importer Edit
-non-European
-| Field         | Value        
-Non-European
-Hey Ltd
-Elm Street
-Hey Ltd"
-Bad Imports
-Email Address
-QuerySet[Mailshot]"
-an Export Company
-File</th
-Verified Firearms Authority
+Maintain Constabularies
+New Constabulary
+f"/constabulary/{self.constabulary.id}/edit/
+Edit Firearms Authority
+firearms_authority.pk
+class="small-button
+Create Organisation
+Declaration Title
+Declaration Text
+Email Template Name
+Email Subject
+Email Body
+Endorsement Name
+Endorsement Text
+Letter Template Name
+Fragment Name
+Fragment Text
+Application Domain
+Template Type
+Template Title
+Template Status
+f"These
+r"\[\[[A-Z_]+\]\
+Section 1
+Section 2
+Section 5
+Section 58(2) - Other
 Section 5 Authority
-item.</div
-Quota
-Application Reference
-Exporter Address
-application_field(process.exporter_vat_nr
-Exporter VAT Number
-Commodity Code
-Unit
-An Access Request
-MAC
-PUT
-\n\ - FOR
-United
-STD NUMBER\n\
-+36
-12345678\n\ - FOR International
-Strip
-LO
-RU
-SC
-SE
-East Midlands
-Eastern
-North East
-South East
-West Midlands
-var
-el = $
+Section 5 Authorities
+Firearms and Ammunition (Specific Import Licence
+AC & AY
+LICENCE_NUMBER
+COUNTRY_OF_CONSIGNMENT
+Export Certificate Reference
+the European Union
+Customs
+Integrated Tariff Book
+Classification Advisory Service
+Goods Description"
+AC
+ON ird.ir_id =
+ON xiad.imad_id
+ON ia.id =
+ird.variation_no
+dd.id
+COVER
+xdd.title
+dd.created_datetime
+ON ird.ir_id
+ON
+ON xird.ird_id
+ON xdd.di_id
+ON dd.id
+xdd.dd_id
+ON sld.id = DEREF(dd.secure_lob_ref).id
+LICENCE
+class="small-button">Close</button
+fir.status
+manual_add_button(report
+Manual Add Firearm
+upload_document_button(report
+delete_firearm_button(firearm
+Firearms and Ammunition (Open Individual Import Licence
+IAR
+Import Applications
+Access Requests
+"Paragraphs for Certificate of Free Sale Schedule and Certificate of Free Sale Schedule Translation
+Edit Commodity Group
+kwargs={"pk
+commodity_id VARCHAR2(100
+VARCHAR2(100
+purpose_of_request
+Main Application
+@access
+ILB Case Officers
+ILB Case Officers:Import Application Case Officer
+Resume Task
 Review
 Pal Ltd
 Close Request
 Access Approval
 Approved"
-Import & Export
-WITHDRAWN
-"Firearms Specific Import Licence Application
-Section 1
-Section 2
-Chapter 97
-the Firearms Act
-Unlimited Quantity"
-Cup
-6mm
-9mm
-2 7/8 inch
-f"Invalid
-f"import
-Schedule
-name="close_request
->Wood
-Biocidal
-EU Cosmetics Regulation
-Biocidal Claim
-GB Legislation
-Product Legislation (new)
-Test Constabulary
-That Constabulary
-Prior Authorisation
-Past Beneficiary"
-"Deactivated Firearms Licence Goods
-Goods Description"
-Deactivated Certificate Reference
-Deactivated Firearm
-Proof Checked"
-Checklist
-Application Updates
-Respond
-Firearm Reports Management
-Archived Endorsement
-Endorsement Title
-Active Letter Template
-Letter Title
-Email Title
-Test Endorsement
-name=
-aria-required="true
-aria-required="false
-aria-label="Click
-Maintain Web User Accounts
-job_title"
-Account Status
-Password Disposition"
-Account Status Changed
-Organisation Address
-save_manual_address
-POST
-action.as_html(item
-Months)</th
-process.licence_start_date.strftime('%d-%b-%Y
-process.licence_end_date.strftime('%d-%b-%Y
-Block
-RFD
-aria-labelledby="tks1Kzx6n_plrnqVW43-tg-authoritiesARCHIVED
-view_mailshot.css
-Convert GBP
-container.classList.add('hidden
-class="prompt west">Section
 Constabulary Region
-Maintain Commodities
-Commodity Type
-Maintain Product Legislation
-New Product Legislation
-Importer Limited
-GB3423453234
-sanctions/{self.process.pk}/edit/
-Adhoc Licence Application
-function(evt
-ta.val
-function(data
-class="calibre
-class="calibre-status">{{calibre.status}}</td
-firearms_authorities_list
-Shotgun Certificate
-Certificate Reference
-Legal Person
-Street and Number
-Town/City
-Road
-f"{self.date_received:%d-%b-%Y
-Make and Model"
-reassignmentCB
-#id_reassignment_user").djangoSelect2().empty
-Create Usage for Commodity Group
-OpenSans/OpenSans.css'
-UAT
-target="blank
-Preview Licence
->Endorsement</h4
-bin button
-aria-label="Delete
-npm
-Customs Integrated Tariff Book
-the Stationery Office
-the Classification Advisory Service
+Email Address
+Section 5 Clauses
 Server-Authorization"
 f"Invalid Hawk ID {access_id
 Raise Django's
 BadRequest
 MULTI STATUS
-href="{{view.cancel_url
-Main Importer
-fir.email_cc_address_list
-ICMSMiddlewareContext
-LockManager
-id="pg37
-for="g37
-id="pg39
-for="g39
-west">Address
-aria-describedby=
-DIT Import
-Licensing Branch
-rg41 hint50-content
-aria-describedby="hint50-content
-for="g42
-class="prompt west">Telephone
-R1C1
-R1C2
-R2C2
-R3C1
-R3C3
-Case Management System</p>
-an Import Case Management System
-fields.field(form.email
-manual_add_button(report
-Manual Add Firearm
-upload_document_button(report
-delete_firearm_button(firearm
-Edit Note
-DIT
-name="login_id
-value='reset_password
-Reset
-Iron, Steel and Aluminium
-Precious Metals and Stones
-Global Trade Tariff: Look
-VAT
+OPTIONS
+PUT
+Hawk
+ImportApplication
+get_or_create
+this.usages.hasOwnProperty(category) && this.usages[category].hasOwnProperty(country
+&& quantity > maxAllocation
+Create Office
+class="content">Unlimited</p>
+Retracted Mailshot"
+web.domains.template.urls
+web.domains.firearms.urls
+web.domains.exporter.urls
+Maintain Obsolete Calibres
+Obsolete Calibre Group
+VersionsPanel
+debug_toolbar.panels.timer
+TimerPanel
+ProfilingPanel
+html5shiv.min.js
+src/jquery.formset.js"
+minifi html
+document.querySelector("#id_variation_refuse_reason
+legacy_id
+parent_oc_id calibre_group_id
+Document Pack
+west">Proof checked</label
+EU
+Constabulary
+Certificates of Free Sale
+Template Description"
+/CA/APPLICATION/GMP_DETAILS
+/CA/APPLICATION/GMP_DETAILS/MANUFACTURER_ADDRESS_DETAILS
+/CA/APPLICATION/GMP_DETAILS/GMP_DOCUMENTS
+/CA/
+PATH '/CA/
+/CA/APPLICATION
+Countries
+Kilos
+View Case
+Application View
+button">Save</button
+form.instance.offices.all
+"Return FA DFL
+"Return FA OIL
+Section 58(2
+Matrix
+value="Start Authorisation (Close Case Processing
+assign_to
+button.addEventListener('click'
+Sanctions Import Ban")
+Applicant Reference
+Contract Sign Date
+Provide
+the Syrian National Coalition for Opposition and
+Revolutionary Forces
+Article 2 of
+EU Regulations 2580/2001
+881/2002
+Article 14 of
+EU Regulation
+Syrian
+Unit
+FA
+Reopen
+Report Completed
+application_field(process.supplementary_info.completed_datetime.strftime('%d-%b-%Y
+Date Reporting Completed
+fields.field(form.no_report_reason
+name="add_to_role
+this).closest('.country').remove
+Content-Type'
+id_importer').change(post_form
+class="prompt west">Country
+value="{{group.id}
+CLAM_AV_DOMAIN=
+CLAM_AV_PASSWORD=
+DJANGO_SESSION_COOKIE_AGE=7200
+test_agent_export_user
+GB1234567890
+Maintain Templates
+New Endorsement
+address_1
+Test Town
+an Import Company
+"van Rossum
+newCountry
+has_search_permission(user
+imp_or_exp
+ilb_admin
+Security Answer
+Organisation Name (Employer
+Share Contact Deails
+Floor/Room/Bay/Location
+Work Address
+Ms
+Robert (Bob
+Baz"
+responsible_person_postcode"
+TestUser
+F1"
+/></button
+inline_field_with_label(field
+HiddenInput
+class="prompt {
+name=
+name="name_field
+name="postcode_field
+name="row_available_addresses
+class="prompt west">Please
+item.</div
+International Trade
+Log in</a>
+Jodit('textarea
+Admin Case
+view_mailshot.css
+target="blank
+Dear
+Create Firearms Authority
+act_form
+class="nine
+Don
+ON cd.con_id
+UID=$(shell
+@awk
+\nUsage:\n  make \033[36m
+substr($$0
+unset UID && .venv/bin
+unset UID && \
+ICMS_ALLOWED_HOSTS="unset" && \
+SQL
+python manage.py npm &&
+shell
+##
+@unset UID && \
+PGPASSWORD
+http://localhost:4566
+s3
+--rm
+release_patch
+address_5
+>Commodities</h4
+Display Archived
+Start Date"
+updates.</div
+Humanitarian
+Contract Sign Date"
+Importers or Guidance
+Contract Completion Date
+Provide the name
+Article 2 of"
+Article 14
+"Syria National Coalition for Opposition and Revolutionary Forces (SNCORF
+certificate</h4
+class="calibre
+class="calibre-status">{{calibre.status}}</td
+ContentLength
+New Product Legislation
+Eu Test Cosmetics Regulation
+skip_ia
+XML Parsing
+BDD
+Jane
+Hey Ltd"'
+non-European
+id_status
+f'[data-label="{field
+Address
+f"Unknown Office
+Importer Name / Importer Entity Type
+search_records|length
+case.</p></div
 document.cookie && document.cookie
 function(boolean
-kwargs={'mailshot_pk
-Request Importer/
-Access Request Type                                         | True    
-| Organisation
-Test Imports
-event.preventDefault
-method='POST
-sensitive</div>'
-Bhutan
-Botswana
-Myanmar (Burma
-Dem
-"European Union
-Falkland Islands
-Gibraltar
-Guernsey
-"Irish Republic"
-Liechtenstein
-Occupied Palestinian Territories
-Paraguay
-Saint Helena
-Tajikistan
-Trinidad & Tobago
-United Arab Emirates
-Authority
-section5.further_details
-Countries
+ICMS</h1
+The DIT Import Licensing Branch's
+Import Case Management System
+Guidance</h2
+Need an Import Licence?</a
+Login Failed
 DLL
 var/
 PyInstaller
@@ -421,65 +640,186 @@ ENV/
 # Rope
 dmypy.json
 Pyre
-The Exporters Ltd.
-Maintain Constabularies
-New Constabulary
-text</th>
-Endorsement</h4
-\s
-Matches
-Reassignment User
-submitted_to
-licence_to
-issue_to
-Pending Further Information Requests
-Pending Update Requests
-Closed Date"
-closed_to
-mandatory_files - List
-file.get_file_type_display
-Regulation
->Commodities</h4
-{ category_descriptions|tojson }
-page_no=1
+Add Licence
+Create Import Application
+Import Case Management System Account
+Iron and Steel (Quota
+ICMS1
+Import Licence - Edit Goods
+Import Licence - Edit Certificate
+Archived Endorsement
+Endorsement Title
+Active Letter Template
+Letter Title
+Email Title
+Test Endorsement
+TODO Add
+f"IMA/{year}/00003
+GBSAN0000001B
+GBSIL0000004E
+GBAOG0000005F
+GBTEX0000009J
+0000010K
+0000014B
+Firearm Reports Management
+value="Add"/>
+ABC
+CTest
+NA
+submitted_by_email
+Request Type
+fields.inline_field_with_label(form.issue_to
+fields.field(form.reassignment
+north">Case Reference</label></div>
+target="_blank
+"Load the commodity details section
+the ON clause
+Prior Authorisation
+Past Beneficiary"
+Barrel
+Latin
+Arabic
+x.section58_other
+x.other_description
+XMLTYPE.getClobVal(user_import_certs_xml
+section5_authorities_xml XMLTYPE PATH '
+hash="fake
 Group Comments
-Translation Set Name
-Maintain Exporters
-Commodity
-fir.status
-class="nine
-<li><button
-kwargs={'case_type
-users.</p></div
+Approval Request Flow
+Resume
+Application Submitted
+Application Update Requested
+Resume Update
+Application Update in Progress
+Pending Withdrawal"
+Request Withdrawal
+VariationRequest
+Revisit
+Acknowledge
+View
+View Notification
+Acknowledge Notification
+Provide Report
+Checklist
+Supporting Documents
+Create Usage for Commodity Group
+>Countries</h4
+>Manufacturer</h4
+name="close_request
+ISO
+action.as_html(item
+Adhoc License Application - Edit
+Adhoc License Application
+Commodity List
+Goods - Commodity Code
+# Specific
+DerogationsApplication
+TextilesApplication
+Common
+value="Send Request
+non-CFS_SCHEDULE
+Access Request</h3
+aria-required="true
+aria-required="false
+aria-label="Click
+OpenSans/OpenSans.css'
+UAT
+name="login_id
+value='reset_password
+Reset
+Test OC Group
+report__supplementary_info__imad
+Exp A"
+TX
+Variation Request
+application_field(vr.requested_datetime.strftime('%d-%b-%Y
+Request Date
+application_field(vr.when_varied.strftime('%d-%b-%Y
+Closed Date
+kwargs={"case_type
+Request</button>
+Reject/Cancel Variation Request
+Opened Date
+Closed Date" %
+vr.closed_by
+Editing All Countries
+Maintain Country Groups
+add.html
+New Country Group
+Chapter 97
+f"import
+scope="col">Is Dealer?</th>
+contact.last_name
+page_no=1
+PermissionRequiredMixin
+Dashboard
+Search Mailshots
+Importers/Exporters
+Importer Access Requests
+Exporter Access Requests
+Obsolete Calibres
+Certificate Application Templates
+section 1 and 2
+Home Office
+the Home Office Guide on Firearms Licensing Law
+fields.field(form.acknowledgement
+Companies House
+Importer Entity Type
+filter_agent_name
+Filter
+class="prompt west
+Chapter 93
+Revisit this - See
+Section 1 of the Firearms Act 1968
+Section 2 of the Firearms Act 1968
+Section 5(1)(ac
+Section 58(2) of the Firearms Act 1968
+EORI
+"Firearms Specific Import Licence Application
+the Firearms Act
+Unlimited Quantity"
+Cup
+6mm
+2 7/8 inch
+RFD
+Maintain Commodity
+goodsOnUKMarketRadios.forEach
+constructor(legislationSelect2
+return isEUCosmeticsRegulation && notExportOnly
+Maintain Importers
+Importer Reg No
+Quota
+ICMSLST-1477 Disable
+Application Reference
+Exporter Address
+application_field(process.exporter_vat_nr
+Exporter VAT Number
+OPEN & VariationRequest
+ProcessTypes
+AOG
+"Creates an export application certificate reference
+f"{xxx}/{timezone.now().year}/{next_sequence_value:05
+Override EORI Number
+f"{object.id}/edit/
+CFS_SCHEDULE
+Initialize Sentry
+GET/POST
+style="width
+class="bold">End Date</span
 Compensating Products'
 Prior Authorisation'
 New Application'
 Further Authorisation'
-fields.inline_field_with_label(form.issue_to
-fields.field(form.reassignment
-ICMS</h1
-The DIT Import Licensing Branch's
-Import Case Management System
-Certificates of Free Sale
-fields.field(form.password
-Guidance</h2
-Need an Import Licence?</a
-Edit Firearms Authority
-/></li>
-Import Case Management System Account
-OPTIONS
-Hawk
-method='get'
-hash="fake
-mailshot_pk
-Republish
-Initialize Sentry
-param
-PYTHONPATH
+acknowledged_by
+fir.email_cc_address_list
+Exporter Access Approval
+Importer Access Approval
+f"/importer/{self.importer.id}/edit/
 Commodity Types
 gte
 Valid
 quantity_threshold
+Iron, Steel and Aluminium
 "Mandatory for Iron, Steel, Aluminium and Textile
 the Group Code
 " For Auto Groups
@@ -487,37 +827,116 @@ Category Groups
 Group
 Display Name
 Pick an Application Type
-"Load the commodity details section
-formats:<br/>-
-United Kingdom:<br
-id="pg48
-class="prompt west">Country
+LD_LIBRARY_PATH=$ORACLE_HOME:$LD_LIBRARY_PATH
+Request Importer/
 som_user
 Access Request Type
+Access Request Type                                         | True    
+| Organisation
 Agents Ltd
+Test Imports
 Agents Ltd"
 Export Agents Ltd
-4402100010"
-Retracted Mailshot"
-Cover Letter</h3
-Jodit('textarea
-certificate</h4
-has_search_permission(user
-imp_or_exp
-ilb_admin
-Ownership" class="button
-Edit Section5 Authority
-Section5 Authority
-Login Failed
-el =
+text</th>
+Endorsement</h4
+Cover Letter
+View Case'
+Submit Variation Request'
+Assert
+Assert ICMS
+is_superuser
+Shotgun Certificate
+Legal Person
+Street and Number
+Town/City
+Road
+f"{self.date_received:%d-%b-%Y
+Make and Model"
+Response
+firearms/{firearms.pk}/edit/
+http://stellarchariot.com/blog/2011/02/dynamically-add-form-to-formset-using-javascript-and-django/
+function addForm(btn
+Insert
+row).removeAttr('id').hide().insertAfter(".item
+Exporter
+access_request.response_reason
+Manage Countries
+Importers and Agents
+Exporters and Agents
 Steel (Quota
-Exporter Access Requests
-Editing All Countries
-New Country Group
-Section 5 of the Firearms Act 1968
-f"clause
-Create Commodity Group
-Maintain Commodity Groups
+Editing Astoria
+Asian
+American
+European Countries
+European
+African Countries
+f"/country/groups/{self.group.id}/edit/
+African
+Chinese
+Persian
+Editing Arabic Translation Set
+Editing New Country 4
+New Country 5
+Logs in the test_import_user
+"Creates a fa-dfl
+Firearms and Ammunition (Deactivated Firearms Licence) - Edit
+f"{url}?validate
+Firearms and Ammunition (Deactivated) Issuing Countries
+Firearms and Ammunition (Deactivated Firearms Licence
+Firearms and Ammunition (Deactivated Firearms Licence) - Edit Goods Certificate
+test-file.txt
+Proof Checked"
+Goods Certificate
+Save
+section5_files
+bin button
+Exporter Status
+Brand
+Product Eligibility
+Schedule Statements
+Address Type
+NIR
+Cosmetic Products Legislation
+NI
+Country of Responsible Person
+Good Manufacturing Practice
+ISO 17021
+Export Application
+https://developer-specs.company-information.service.gov.uk/companies-house-public-data-api/reference/company-profile/company-profile
+https://developer-specs.company-information.service.gov.uk/companies-house-public-data-api/reference/search/search-companies
+COMPANIES_HOUSE_DOMAIN}search/companies?q={query}&items_per_page=20
+Section 1</p>{%
+Section 5</p>{%
+process.military_police
+Country of Origin
+f"Obsolete Calibre Group
+f"Obsolete Calibre
+Obsolete Calibre (New
+{ category_descriptions|tojson }
+Logout
+File</th
+ILB Case Officers:Certificate Application Case Officer
+Link Exporter
+checkbox_label="These
+the Good Manufacturing Practice
+Cosmetic Regulation
+application_field((schedule.manufacturer_address
+>Products</h4
+class="icon
+Download Template
+Home 2
+Home.as_view
+Queensway House
+node index.js
+Success / Error
+*************************** SKIPPING FOR NOW
+exc
+"HMRC Controlled
+QUANTITY
+GB
+GB123456789012345
+folder_id
+IMP_SUPPORTING_DOC
 CFS Products
 Product Type Numbers
 Spreadsheet
@@ -525,217 +944,93 @@ CFS Products'
 ProductData
 CFSProductForm
 product_type_number
-id="btnLogout">Logout</button
-/user
-f"/user
-Edit Office
-this.usages.hasOwnProperty(category) && this.usages[category].hasOwnProperty(country
-&& quantity > maxAllocation
-Consent (Art
-Issuing Country
-Licence Document
-application_field(app.licence_start_date.strftime('%d-%b-%Y
-Revisit
-application_section("Purchaser / Acquirer of Firearms
-Not Set"
-Firearms</h4
-the IMI Case Management
-r"(?:\r\n|\r|\n){2
-f'<li class="{class_attr}"><a
-show_all_attrs
-update &&
-ENV
-https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-COPY requirements-*.txt
-requirements-dev.txt
-CMD
-customs_office_address
-cp_commodities
-Kilos
-Edit Group
-cellpadding="0
-Queensway House
-CommodityType
-Firearms and Ammunition
-2714
-Oil and Petrochemicals
-4402"
-password_update(_form
-Applicant Reference
-pdf
-details</h4>
-Create Exporter
-Another Archived Exporter
-Another Active Exporter
-Commodity Management
-Commodity Groups Management
-Create Office
-Text
-Title
-Title'
+Create Certificate Application
+Maintain Sanction Emails
+Create Sanction Email
+Edit Sanction Email
 Display"
-ILB Case Officers:Certificate Application Case Officer
-Link Exporter
-h3
-General Details</h3
-aria-describedby="edit
-Work Address
-Non-DIT ILB
-non-DIT
-Email Addresses
-class="small-button
-Create Organisation
-Security Answer
-Share Contact Deails
-Floor/Room/Bay/Location
-Ms
-Robert (Bob
-Set Cover Letter
-Section 58
-import_order_style
-E203
-Central Contact
-kwargs={'org_type
+Add Goods Certificate
+Edit Goods Certificate
+Submit Application
+Blind Forest
+Bros. Plumbers Ltd.
+Windsor House
+Applicant Case Management" Views
+ILB Admin
+Close Case Processing
+get_import_licence_reference
+CaseReference
+"Creates document reference records for Export
+f"Authorise Success: Application
+PermissionRequiredMixin Config
+Application {self.application.reference}
+name</label></td>
 value="Send
-WSGI
-exporter_vat_nr
-Dummy Description"
-no_firearms
-header(field
-config.date_format %
-config.show_all %
-headers(display
-Main Application
-Exporter Agents
-Maintain Obsolete Calibres
-firearms/{firearms.pk}/edit/
-Baz"
-responsible_person_postcode"
-agents</p></td
-elasticapm
-SERVICE_NAME
-ELASTIC_APM_SECRET_TOKEN
-ELASTIC_APM_ENVIRONMENT
-StreamHandler
-Don
-4,5,6
-CAS
-f"/constabulary/{self.constabulary.id}/edit/
-GDS
-approve">OK</button
->Cancel</button>
-addr =
-addr = row['formatted_address'].join(' '
-Postcode
-Create Import Application
-Import Case Management System{%
-LETTER_FRAGMENT
-IAR
-Import Applications
-Access Requests
-"Paragraphs for Certificate of Free Sale Schedule and Certificate of Free Sale Schedule Translation
-Create Office for Exporter '
-Marks
-Importer</h4
-Main Individual Importer
-Manufacture
-process.is_pesticide_on_free_sale_uk
-VersionsPanel
-debug_toolbar.panels.timer
-TimerPanel
-ProfilingPanel
-html5shiv.min.js
-src/jquery.formset.js"
-minifi html
-CountryType[process.responsible_person_country].label
+LICENCE_PREVIEW
+COVER_LETTER
+pdf
 Supplementary Report
-firearms_authority.pk
-goods.</p
-Published Date
-Importer Search
-@importer
-@search @importer-search
-Old Toby Imports Ltd
-Dissolved Importers Ltd
-Agile Importers
-Dissolved Importers Ltd"
-Archived"
-Agile Importers Ltd
-Stevens
-Dave
-Jones
-Sally
-Davis
-Cameron
-Old Admiralty Building\nLondon\n
-Acme Wonder Product
-Create{%
->Countries</h4
->Schedules</h4
-Section 5 Clauses
->Cancel</button>' +
-e.preventDefault
-el.on('click'
-submitted_by_email
-Request Type
-EAR
 Create Commodity
->Further Questions</h4
-fields.field(form.fq_maintained_in_eu
+Request
+location.reload(
+Application Updates
+Sent Further Information Requests
+Biocidal
+EU Cosmetics Regulation
+Biocidal Claim
+GB Legislation
+Product Legislation (new)
+MAC
+Convert Django
+FieldError
+PageErrors
+./OBSOLETE_CALIBRE/OC_ID
+dfl_application_id
+/AUTHORITY_LIST/AUTHORITY
+GOODS_CATEGORY
+Importer Limited
+GB3423453234
+4402100010"
+importer_office_legacy__id
+document_id"
+Create Commodity Group
+Maintain Commodity Groups
 north disabledLink">Case Reference</span></div>
-target="_blank
 north">Licence Validity</label></div>
 cs.application_sub_type
-CC
-Request CC Email Addresses
-Request Date"
-Best Importers Ltd.
-process.contract_file
-the European Union
-"Create File
-related_file_manager
-Firearms and Ammunition (Open Individual Import Licence
-git-hooks
-name</label></td>
-kwargs={'cat_pk
-Application
-Create Application
-title="Edit Template">Edit</a>
-Template">Restore</button
-f"Obsolete Calibre Group
-Obsolete Calibre Group
-f"Obsolete Calibre
-Obsolete Calibre (New
-ni_legislation
->Checklist</h4
-WhiteNoiseMiddleware
-RequestMiddleware
-ICMSMiddleware
-DIRS
-DjangoTemplates
-NAME
-AWS_SES_SECRET_ACCESS_KEY
-ICMS_ILB_CONTACT_EMAIL
-Europe
-s3
-Celery & Redis
-ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD
-ICMS_RECAPTCHA_PUBLIC_KEY
-https://icms-hmrc.trade.dev.uktrade.digital/mail/update-licence/
-Test Legislation
-Eu Test Cosmetics Regulation
-Exporter Access Approval
-Importer Access Approval
-Certificate Application Templates
-Create Certificate Application Template
-PKs
-Import Case Management System Login
-Edit Commodity Group
-Field                
-Access Request Type  |
-Start Date"
-Firearms and Ammunition (Deactivated Firearms Licence) - Response Preparation
-CFS Declaration Translation</h3
+Import & Export
+WITHDRAWN
+Maintain Exporters
+Create Exporter
+Precious Metals and Stones
+Global Trade Tariff: Look
+VAT
+master_country_group
+consignment_country_group_id
+paper_licence_flag
+quantity_unlimited_flag
+under_appeal_flag
+agent_id"
+variation_no
+exporter_vat_nr
+Republish
+Edit Obsolete Calibre Group
+Marker
+sys.stdin
+Group 2
+Maintain Commodities
+TBC
+function(evt
+ta.val
+function(data
+Cover Letter</h3
+Main Exporter
+A Certificate of Manufacture
+CFS Template
+Select Legislation
+Postcode
+GMP Template
+href="{{view.cancel_url
 Exit
 Git
 dev_head=
@@ -753,50 +1048,12 @@ INT # Run on_error
 ERR # Run on_error
 BUMP
 git checkout --quiet -b
-# File
-HERE="$(cd
-View Application'
-NOPE
-Received Mailshots
-Title"
-Maintain Mailshots
-Editing Astoria
-Asian
-American
-European Countries
-European
-African Countries
-f"/country/groups/{self.group.id}/edit/
-African
-Chinese
-Persian
-Editing Arabic Translation Set
-Editing New Country 4
-New Country 5
-Logs in the test_import_user
-"Creates a fa-dfl
-Firearms and Ammunition (Deactivated Firearms Licence) - Edit
-Firearms and Ammunition (Deactivated) Issuing Countries
-Firearms and Ammunition (Deactivated Firearms Licence
-Firearms and Ammunition (Deactivated Firearms Licence) - Edit Goods Certificate
-test-file.txt
-Goods Certificate
-Create Obsolete Calibre Group
-Create Certificate Application
-Matrix
-value="Start Authorisation (Close Case Processing
-Main Exporter
-A Certificate of Manufacture
-Select Legislation
 N/A'
-Supporting Documents
 Copy of Prior Authorisation
 Evidence/Past Correspondence
 Last Export Day
 Country Of Processing"
 Category Description
-Integrated Tariff Book
-Classification Advisory Service
 Article 2 (2
 EC
 Article 3 (3
@@ -806,370 +1063,402 @@ Article 3(4) of Regulation (EC)
 Article 3(5
 Article 2(2)(a) of Regulation
 European Commission
-Dear
-the Health and Safety Executive
-f"CaseEmail
-https://stackoverflow.com/questions/7432142/django-template-display-model-verbose-names-objects
-default=
-aria-disabled="{%if
-PermissionRequiredMixin
-Dashboard
-Search Mailshots
-Importers/Exporters
-Importer Access Requests
-Obsolete Calibres
-class="prompt west">Case
-class="eight columns"></div
-firearms/<int
-Importer Agents
-Importer/Exporter Access Request{%
-cubic metres
-SIGL Wood
-Countries</label></div
->Manufacturer</h4
-ISO
-assign_to
-button.addEventListener('click'
-NIR
-Logout
-Obsolete Calibre (Test
-node.querySelector("div[name='address_type_field
-div.input
-choicesSelect[0
-Blind Forest
-Bros. Plumbers Ltd.
-Jane
-Windsor House
-Add Licence
-Group 2
-form.instance.offices.all
-Next
-li><a
-" Search Importer Access Requests
-" Search Exporter Access Requests
-group_for_australia
-Create a Commodity
-"Create a Usage
-Display Archived
-newCountry
-f"{object.id}/edit/
-CFS_SCHEDULE
-class="prompt west">Telephone(s)</label
-Derogation from Sanctions Import Ban'
-Outward Processing Trade'
-Prior Surveillance'
-Adhoc Licence Application'
-template:</div
-Sharing
-rec.certificates %
-Admin Case
-search_records|length
-case.</p></div
-west">Proof checked</label
-Constabulary
-Importers and Agents
-Exporters and Agents
-f"/mailshot/{self.mailshot.id}/edit/
-f"/mailshot/{self.mailshot.pk}/retract/
-MAIL/44
-class="small-button">Close</button
-the Home Office
-section.start_date.strftime('%d-%b-%Y
-Convert Django
-FieldError
-PageErrors
-Exporter
-access_request.response_reason
-Firearms and Ammunition (OIL
-class="prompt west">Country Group
-value="{{group.id}
-Matching Matching Obsolete Calibres</th>
-International Trade
-Log in</a>
-value="Sign and Authorise" />
-ImportApplication
-ExportApplication
-Import and Export
-CommodityGroup
-Export Certificate Reference
-Document Pack
-Copy Recipients
-goodsOnUKMarketRadios.forEach
-constructor(legislationSelect2
-return isEUCosmeticsRegulation && notExportOnly
-Maintain Sanction Emails
-Create Sanction Email
-Edit Sanction Email
-Invokes
-submit-inline.html' %
-obsolete calibre
-fields.field(form.is_biocidal
-BDD
-Hey Ltd"'
-id_status
-f'[data-label="{field
-f"Unknown Office
-Importer Name / Importer Entity Type
-Edit Obsolete Calibre Group
-Section 1</p>{%
-Section 5</p>{%
-process.military_police
-ENDORSEMENT
-north">Case Reference</label></div>
-abc
-is_active
-f"id
-RUN mkdir
-update -y &&
--y && \
-libpangocairo-1.0-0
-Surveillance
-GBP/£
-node index.js
-Edit CFS
-inch
-Create Firearms Authority
-act_form
-Template - Test Template
-ImporterApprovalRequest
-Template Description"
-name="add_to_role
-this).closest('.country').remove
-Content-Type'
-id_importer').change(post_form
-TOML
-py37
-Mobile
-/></button
-inline_field_with_label(field
-HiddenInput
-class="prompt {
-name="name_field
-name="postcode_field
-name="row_available_addresses
-class="prompt west">Please
-class="prompt west">Acknowledgement
-workbasket.</li
-Authorised Contacts
-Information Contacts
-notifications.</li
-style="width
-Companies House
-Beneficiary</a></li
-Exported Goods
-labels["fq_maintained_in_eu"]) }}
->Commodity</h4
-filter_agent_name
-Filter
-House of Jon"
-Floor 18
-f"/import/
-Search</a
-process.request_reason
-downloadForm.addEventListener("click
-value="Send Request
-scope="col">Is Dealer?</th>
-contact.last_name
-ner_output_file.txt
-f"/importer/{self.importer.id}/edit/
-Country of Origin
-Somewhere"
-Manchester"
-PBKDF2
-Generate
-the HM Revenue & Customs
-Declaration Title
-Declaration Text
-Email Template Name
-Endorsement Name
-Endorsement Text
-Letter Template Name
-Fragment Name
-Fragment Text
-Template Title
-f"These
-r"\[\[[A-Z_]+\]\
-Config
-View Config
-Cover Letter Response Preparation
-Endorsement Response Preparation
-EU Countries
-IMI
-Application Authorisation
-Acknowledge Notification
-"Load the expected current task
-Cover Letter Preview
-UID=$(shell
-@awk
-\nUsage:\n  make \033[36m
-substr($$0
-unset UID && .venv/bin
-unset UID && \
-ICMS_ALLOWED_HOSTS="unset" && \
-docker_flake8
-SQL
-python manage.py npm &&
-shell
-##
-@unset UID && \
-PGPASSWORD
---rm
-release_patch
-test_agent_export_user
-Commodity Data
-LD_LIBRARY_PATH=$ORACLE_HOME:$LD_LIBRARY_PATH
-V1
-XMLTABLE('/
-PATH
-VARCHAR2
-country_group_id
-xcgd
-validity_end_date
-QueryModel
-Import the V1
-Importing Reference Data
-NULL
-Customs.</p
-No.</p
-Country</p
-class="content">Unlimited</p>
-Import Licensing Branch</p
-State</p
-above.</li
-given.</li
-the Department for International
-GB123456789
-LICENCE_PREVIEW
-COVER_LETTER
-Wood App Reference
-Certificate Reference Value
-GB1234567890
-Collection of Case Urls
-Revisit this - See
-Data Export
-skip_ia
-Import Application Data Imported
-paper_licence_flag
+ILD
+ECD
+EAR
+Commodity Management
+Commodity Groups Management
+version_id"
+grams
+Kgs
+LN2"
+GB123456789012
+GB123456789013
+GB123456789014
+GB123456789015
+GB123456789016
+GB123456789017
+1235D"
+fft_id
+version_id
 category_flag
-quantity_unlimited_flag
-units_list_csv unit_list_csv
-multiple_commodities_flag
-coo_country_group_id origin_country_group_id
-xcgu.end_date
-impmgr.import_application_types
-ON
-master_country_group
-ON xcg.country_group_detail_id
-Data Import
-consignment_country_group_id
-DETAILS
-DocumentTypes
-Split
-Article 2,
-Import of Goods (Control) Order
-Date</td
-rowspan="2">7.</td>
-H.M. Revenue
-Import Licensing Branch
-Department for International Trade
-Section 1 of the Firearms Act 1968
-Section 2 of the Firearms Act 1968
-Section 5(1)(ac
-Processing (Update
-ORM
-Map
-Application Processing (IMA3) / Case Officer
-Authorise Documents (G2) / Authoriser
-Application Processing
-CFS/2021/00003
-COM/2021/00005
-9001809L (Paper
-Import Application's
-Import Application
-Exporter / Exporter
-Standard User
-Request Variation
-Reopen Case
-Export Application
-Exporter / Exporter’s
-Copy Application
-Create Template
-get_import_record_actions
-Extra
-Barrel
-Latin
-Arabic
-class="content">For
-Applicant Case Management" Views
-ILB Admin
-Close Case Processing
-f"Authorise Success: Application
-Withdrawal
-nth)s
-"Reuse the Variation Request Cancel
-the wood quota application
-purpose_of_request
-f"Quantity
-TODO Add
-Resume
-Application Submitted
-Application View
-View Application
-Application Update Requested
-Resume Update Request
-Resume Update
-Application Update in Progress
-WithdrawApplication
-Pending Withdrawal"
-Request Withdrawal
-VariationRequest
-Submit Update
-Acknowledge
-View
-View Notification
-Provide Report
-Import/ExportApplication
-DB
-the "Case Reference
-Active Tasks
-View Case
-Outward Processing Trade
-SPS
-Prior Surveillance
-Deactivated Firearms Import Licence
-import_application_types_to
-Surrendered
-Variation Refusal Reason
-Exporter Status
-Brand
-Product Eligibility
-Schedule Statements
-Address Type
-Cosmetic Products Legislation
-Country of Responsible Person
-ISO 17021
-Admin
-"Load the SearchTerms
-Section 58(2) - Other
-Application Details - Certificates - Section 5
-Application Details - Documents - Section 5
-Section 5 Authorities
-Firearms and Ammunition (Specific Import Licence
-AC & AY
-LICENCE_NUMBER
-COUNTRY_OF_CONSIGNMENT
-Add Firearm Details
-Edit Firearm Details
+Test Case Note 1.pdf
+Test Case Note 2.pdf
+Test Case Note
+Test Open
+Open Details
+email_cc_address_list_str
+ia_ima_id
+RFI_DOCUMENT
+Content A"
+ni_legislation
+Test Biocide
+gmp2/ISO17065
+ISO22716
+CA/2022/9901
+CA/2022/9905
+CA/2022/9906
+CA/2022/9907
+CA/2022/9909
+accordance_with_standards
+manufacturer_address_type
+final_product_end_use
+is_repsonsible_person
+formats:<br/>-
+United Kingdom:<br
+update &&
+ENV
+https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+COPY requirements-*.txt
+requirements-dev.txt
+CMD
+fq_manufacturing_within_eu
+class="prompt west">Telephone(s)</label
+Adhoc Licence Application
+GB123456789
 Calibre 1
 Calibre 2
-Contract Document"
-Edit Goods
-Provide
+Maintain Contact Edit Address{%
+TOML
+sensitive</div>'
+no_firearms
+Pa11y
+Puppeteer
+function(err
+function report(url
+report('http://web:8080
+rec.certificates %
+Edit Section5 Authority
+Section5 Authority
+Regulation
+Import Case Management System Login
+>Further Questions</h4
+fields.field(form.fq_maintained_in_eu
+Somewhere"
+Manchester"
+password_update(_form
+IP
+Date of Birth
+Edit Office
+Edit Office for Exporter '
 Prior Surveillance Import Licence - Edit
 Prior Surveillance Import Licence - Submit
 Prior Surveillance Import Licence - Add
 Prior Surveillance Import Licence - Edit Goods
+Papua Awesome Guinea
+French
+Sindarin
+aria-disabled="{%if
+a Certificate of Good Manufacturing Process
+the Department for International Trade
+the Office for Product Safety and Standards
+Product Safety and Standards
+CFS Declaration Translation</h3
+Importer Search
+@importer
+@search @importer-search
+Old Toby Imports Ltd
+Dissolved Importers Ltd
+Agile Importers
+Dissolved Importers Ltd"
+Archived"
+Agile Importers Ltd
+Countries</label></div
+xcgd
+validity_end_date
+agents</p></td
+Template - Test Template
+process.status}}</span></div
+process.request_reason
+class="eight columns"></div
+NOPE
+<li><button
+kwargs={'case_type
+users.</p></div
+ICMSLST-16 Workbasket
+Importer Access Request
+>Emails</h4>
+Edit CFS
+the wood quota application
+RUN mkdir
+update -y &&
+-y && \
+libpangocairo-1.0-0
+Search</a
+4,5,6
+template:</div
+Sharing
+>Commodity</h4
+ExportApplication
+CommodityGroup
+Title
+Published Date
+exporter_vat_nr VARCHAR2(4000
+CC
+Request CC Email Addresses
+Request Date"
+>Schedules</h4
+aria-label="Delete
+Firearms and Ammunition (Deactivated Firearms Licence) - Response Preparation
+Authority
+Derogation from Sanctions Import Ban'
+Outward Processing Trade'
+Prior Surveillance'
+Adhoc Licence Application'
 commodity_group_unit
+var
+el = $
+Authorise Documents
+App
+Recreate Case Documents
+commoditySelect2
+f"Import
+Cover Letter Response Preparation
+Endorsement Response Preparation
+EU Countries
+IMI
+aria-labelledby="tks1Kzx6n_plrnqVW43-tg-authoritiesARCHIVED
+Beneficiary</a></li
+Exported Goods
+labels["fq_maintained_in_eu"]) }}
+Import the V1
+ref-m2
+ia-m2
+ea-m2
+m2
+Data Import
+Creating Task Data
+Task Data Created
+Skipping Creating Missing Import Application Licences
+Creating Draft Import Application Licences
+Creating Archived Import Application Licences
+Skipping Creating Missing Export Application Certificates"
+Creating Draft Export Application Certificates
+Creating Archived Export Application Certificates
+class="prompt west">Is
+inch
+Create Office for Exporter '
+GBN
+an Export Company
+f"/mailshot/{self.mailshot.id}/edit/
+f"/mailshot/{self.mailshot.pk}/retract/
+MAIL/44
+process.contract_file
+class="prompt west">Section
+f"clause
+group_for_australia
+Create a Commodity
+"Create a Usage
+Bhutan
+Botswana
+Myanmar (Burma
+Dem
+"European Union
+Falkland Islands
+Gibraltar
+Guernsey
+"Irish Republic"
+Liechtenstein
+Occupied Palestinian Territories
+Paraguay
+Saint Helena
+Tajikistan
+Trinidad & Tobago
+United Arab Emirates
+300px
+State
+Government
+House of Jon"
+Floor 18
+Text
+Title'
+Withdrawal
+Application
+nth)s
+"Reuse the Variation Request Cancel
+Marks
+"Prepare Task
+Refine
+Months)</th
+licence.licence_start_date.strftime('%d-%b-%Y
+Block
+Address</h3
+value="save_address
+WhiteNoiseMiddleware
+RequestMiddleware
+ICMSMiddleware
+DIRS
+DjangoTemplates
+NAME
+AWS_SES_SECRET_ACCESS_KEY
+ICMS_ILB_CONTACT_EMAIL
+Europe
+Celery & Redis
+COMPANIES_HOUSE_DOMAIN
+https://api.companieshouse.gov.uk/
+https://developer.company-information.service.gov.uk
+ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD
+https://github.com/torchbox/django-recaptcha
+ICMS_RECAPTCHA_PUBLIC_KEY
+SEND_LICENCE_TO_CHIEF"
+Convert GBP
+f"Quantity
+Workbasket{%
+class="prompt north">Transaction /
+Ref
+for="g27
+value="g27/3">Importer Access
+class="prompt north">Company
+id="pg31
+for="g31
+class="prompt north">Filter Tag
+href="?page=
+type="radio
+Information
+xiad.last_updated_by_wua_id
+xiad.legacy_case_flag
+xiad.variation_refuse_reason
+xiad.issue_date
+licence_extended_flag
+xiad.last_updated_datetime last_update_datetime
+impmgr.import_application_types
+xiad.ima_id LEFT JOIN
+ir.ima_id
+ON cl.imad_id =
+the Home Office
+section.start_date.strftime('%d-%b-%Y
+Import/ExportApplication
+WithdrawApplication
+DB
+the "Case Reference
+Active Tasks
+Import Licences and Export Certificates
+Commodity Type
+Firearms and Ammunition
+less than 60 cm
+less than 24 inches
+less than 40 inches
+5(1)(c
+5(1A)(g
+Section 2 or Section 5
+Obsolete Calibre
+COVER_FIREARMS_SEC5"
+Mordor
+Shire
+TST
+Dothraki
+Another Archived Exporter
+Another Active Exporter
+Obsolete Calibre (Test
+Create Obsolete Calibre Group
+PBKDF2
+Generate
+Preview Licence
+>Endorsement</h4
+section5.further_details
+Values for Process.process_type
+Firearms and Ammunition (Specific Individual Import Licence
+Outward Processing Trade
+Prior Surveillance
+FIRs
+Digital
+Application Processing
+Digital Signing Failed"
+ICMSLST-1533 - Popup
+Show Licence Details
+" Search Importer Access Requests
+" Search Exporter Access Requests
+Remove
+IMP_OPT_FURTHER_AUTH_DOC
+IMP_OPT_BENEFICIARY_DOC"
+kwargs={'cat_pk
+Create Application
+title="Edit Template">Edit</a>
+Template">Restore</button
+FIELD
+Consignment</label></div
+Maintain Product Legislation
+CountryType[process.responsible_person_country].label
+Main Importer
+fields.field(form.is_biocidal
+h3
+General Details</h3
+aria-describedby="edit
+Non-DIT ILB
+non-DIT
+Email Addresses
+sanctions/{self.process.pk}/edit/
+application_id"
+update_request_reason
+details</h4>
+section 58
+REQUEST_BY_WUA_ID></REQUEST_BY_WUA_ID
+Consent (Art
+Issuing Country
+Licence Document
+application_section("Purchaser / Acquirer of Firearms
+Not Set"
+Firearms</h4
+the IMI Case Management
+Article 2,
+Import of Goods (Control) Order
+Customs.</p
+No.</p
+Extra
+Import Licensing Branch</p
+State</p
+DETAILS
+above.</li
+given.</li
+the Department for International
+cellpadding="0
+approve">OK</button
+>Cancel</button>
+addrList.empty
+ON xed.e_id
+xmd.status
+xmd.subject
+xmd.description
+xmd.published_by_wua
+ON xmd
+M_ID =
+ri.m_id
+Importer Edit
+| Field         | Value        
+Non-European
+Hey Ltd
+Elm Street
+Hey Ltd"
+Bad Imports
+WSGI
+QueryModel
+PYTHONPATH
+Importer</h4
+Main Individual Importer
+Exporter Agents
+target__folder__fir__pk
+Dummy Description"
+goods.</p
+f"/import/
+Wood App Reference
+Certificate Reference Value
+Section 58
+Deactivated Firearms Import Licence
+import_application_types_to
+Surrendered
+Variation Refusal Reason
+Import Application
+Case Completion Date
+An Access Request
+firearms_authorities_list
+Linked
+method='POST
+Surveillance
+GBP/£
+Application Authorisation
+class="prompt west">Case
+units_list_csv unit_list_csv
+multiple_commodities_flag
 Application Template
 Edit Product
 Add Active Ingredient
@@ -1178,474 +1467,81 @@ Edit Product Type Number
 CFS Product Upload
 CFS Product Upload Biocide
 ForeignKeys
+f"{edit_schedule_url}?validate
 Product Type Numbers"
-Firearms and Ammunition - Certificates"
-Firearms and Ammunition - Create Certificate
-Edit Firearm Supplementary Report
-f"Unknown Firearm
-Add Goods Certificate
-Edit Goods Certificate
-Submit Application
-Adhoc License Application - Edit
-Adhoc License Application
-Commodity List
-Goods - Commodity Code
-Outward Processing Trade Import Licence - Edit
-Outward Processing Trade Import Licence - Edit Compensating Products
-Outward Processing Trade Import Licence - Edit Temporary Exported Goods
-Outward Processing Trade Import Licence - Edit Further Questions
-Compensating Products
-Temporary Exported Goods
-Further Questions - "
-Outward Processing Trade Import Licence - Submit
-Outward Processing Trade Licence - Add
-Outward Processing Trade Licence - Checklist
-AOG
-GBSAN0000001B
-GBSIL0000002C
-GBSIL0000004E
-GBAOG0000005F
-0000010K
-0000014B
-ProcessTypes
-"Creates an export application certificate reference
-f"Prod
-f"User Data Created
-xiad.legacy_case_flag
-xiad.variation_refuse_reason
-xiad.issue_date
-xiad.created_by_wua_id created_by_id
-xiad.last_updated_by_wua_id update_by_id
-xiad.coc_country_id consignment_country_id --
-ON ia.id =
-exporter_vat_nr VARCHAR2(4000
-XMLTYPE PATH '
-XMLTYPE PATH '/IMA
-xiad.ima_id LEFT JOIN
-ir.ima_id
-variation_no
-under_appeal_flag
-acknowledged_by
-licence_extended_flag
-xiad.last_updated_datetime last_update_datetime
-ON cl.import_application_id
-xiad.last_updated_by_wua_id
-xiad.agent_office_id
-process_ptr_id
-imad__created_by_id
-imad__last_updated_by_id
-agent_id"
-2 contact_id
-param db
-V2
-ILBDOTI
-Licences</h4
-download">Download
-TBC
-ChiefRequest
-Case Completion Date
-Cover Letter
-LICENCE
-f"IMA/{year}/00003
-LicenceDocument
-licence.licence_start_date.strftime('%d-%b-%Y
-Refactor
-AC
-Sent Further Information Requests
-Authorise Documents
+GMPFile
+Set Cover Letter
+"Deactivated Firearms Licence Goods
+Deactivated Certificate Reference
+Deactivated Firearm
+Collection of Case Urls
+The Exporters Ltd.
+Processing (Update
+ORM
+Map
+Application Processing (IMA3) / Case Officer
+Authorise Documents (G2) / Authoriser
 Import Application Licence
-coalesce(max("id
-TestUser
-REF
-OPEN & VariationRequest
-ILD
+Exporter / Exporter
+Standard User
+Request Variation
+Reopen Case
+Exporter / Exporter’s
+Copy Application
+Create Template
+abc
+is_active
+f"id
+Adhoc Licence
+id="pg37
+for="g37
+id="pg39
+for="g39
+west">Address
+aria-describedby=
+DIT Import
+Licensing Branch
+rg41 hint50-content
+aria-describedby="hint50-content
+for="g42
+class="prompt west">Telephone
+the HM Revenue & Customs
+Edit Group
+Firearms and Ammunition (OIL
+Field                
+Access Request Type  |
 ApplicationAndTaskRelatedObjectMixin Config
-update_request_reason
-f"LicenceDocumentReference(licence={l_pk}
-gmp_app
-GBTEX0000009J
-ECD
-Import Licences and Export Certificates
-f"{xxx}/{timezone.now().year}/{next_sequence_value:05
-Task Data Import
-Task Data
-Creating Task Data
-Task Data Created
-"Prepare Task
-Refine
-Start Authorisation
-Skipping Creating Draft Import Application Licences
-Creating Draft Import Application Licences
-ON ird.ir_id =
-updated_at
-Convert
--O codecov.sh https://codecov.io/bash
-get_import_licence_reference
-CaseReference
-ICMSLST-1477 Disable
-GMPBrand
-"Creates document reference records for Export
-FirearmsAuthority
-report_completed_by_id VARCHAR2(10
-know_bought_from VARCHAR2(10
-fa_authorities XMLTYPE PATH '
-is_complete"
-OILSupplementaryReport
-report_firearm_xml
-AIR
-is_complete VARCHAR(20
-x.know_bought_from
-x.additional_comments
-x.cover_letter
-x.constabulary_certs_xml
-x.is_complete
-x.no_report_reason
-fa_authorities_xml XMLTYPE PATH '
-XMLTYPE PATH 'IMA/APP_DETAILS/FA_DETAILS/SH_DETAILS/SELLER_HOLDER_LIST/*'
-is_complete
-NUMBER PATH '
-FA_REPORTS/HISTORICAL_REPORT_COMPLETION_LIST/HISTORICAL_REPORT_COMPLETION[last()]/REPORT_COMPLETED_BY_WUA_ID[last()]/text
-FA_REPORTS/HISTORICAL_REPORT_COMPLETION_LIST
-x.commodity_code
-XMLTYPE PATH 'IMA/APP_DETAILS/FA_DETAILS/SH_DETAILS/SELLER_HOLDER_LIST'
-ST</STREET_AND_NUMBER> <
-REGION</REGION
-TOWN</TOWN_CITY
-ImportContact
-CONSTABULARY>1000</CONSTABULARY
-DFLSupplementaryReport
-DFL
-WoodQuotaChecklist
-TextilesChecklist
-Values for Process.process_type
-Firearms and Ammunition (Specific Individual Import Licence
-FIRs
-Digital
-https://github.com/torchbox/django-recaptcha
-Digital Signing Failed"
-Show Licence Details
-Recreate Case Documents
-App
-self.get_kwargs
-Task {0!r
-p)!r
-"Write the pdf data
-Success / Error
-exc
-ICMSLST-1533 - Popup
-*************************** SKIPPING FOR NOW
-http://localhost:4566
+method='get'
+get_import_record_actions
+Manufacture
+process.is_pesticide_on_free_sale_uk
+Verified Firearms Authority
 CI
 GOV PaaS
 redis_data
-ContentLength
-application_pk: Application
-PermissionRequiredMixin Config
-Application {self.application.reference}
-process.get_reference
-# Specific
-DerogationsApplication
-TextilesApplication
-Common
-Response Preparation'
-class="three
-west">Start Date</label></div>
-class="bold">End Date</span
-FA
-HSE Emails'
-fa_certs_xml
-fa_certs_xml XMLTYPE PATH '
-target_id
-TARGET_ID>1234</TARGET_ID
-REF A</CERTIFICATE_REF
-REF B</CERTIFICATE_REF
-ON sld.id = DEREF(fv.secure_lob_ref).id
-fv.path
-create_by_wua_id created_by
-CONCAT(id
-ON fv.target_id
-file_ptr_id
-dfl_application_id
-ON fft.ff_id =
-FileTarget
-CTest
-x.commodity_code commodity_group_id
-certificate.date_issued.strftime('%d-%b-%Y
-el.on('click
-Workbasket{%
-class="prompt north">Transaction /
-for="g27
-value="g27/3">Importer Access
-class="prompt north">Company
-id="pg31
-for="g31
-class="prompt north">Filter Tag
-type="radio
-Information
-GET/POST
-this.d.find('.approve').click
-location.reload(
-less than 60 cm
-less than 24 inches
-less than 40 inches
-5(1)(c
-5(1A)(g
-Section 58(2
-Section 2 or Section 5
-COVER_FIREARMS_SEC5"
-Save
-report__supplementary_info__imad
-XMLTYPE.getClobVal(XMLELEMENT("FA_GOODS_CERTS
-Section 5 Authority Documents
-SILSupplementaryReport
-M2M
-x.section58_other
-x.other_description
-XMLTYPE.getClobVal(fa_certs_xml
-FormData(form
-convertToSet(formData
-hadErrors
-the ON clause
-SILGoodsSection5"
-Test Rifle
-Migration of ObsoleteCalibre model
-./OBSOLETE_CALIBRE/OC_ID
-Test Revolver
-5_1_ABA
-href="?page=
-f"{url}?validate
-parent_oc_id
-fields.field(form.acknowledgement
-"OC Group
-legacy_id
-Test OC Group
-parent_oc_id calibre_group_id
-f"{edit_schedule_url}?validate
-CFS Template
-GMP Template
-GMPFile
-COMPANIES_HOUSE_DOMAIN
-https://api.companieshouse.gov.uk/
-https://developer.company-information.service.gov.uk
-https://developer-specs.company-information.service.gov.uk/companies-house-public-data-api/reference/company-profile/company-profile
-https://developer-specs.company-information.service.gov.uk/companies-house-public-data-api/reference/search/search-companies
-COMPANIES_HOUSE_DOMAIN}search/companies?q={query}&items_per_page=20
-/AUTHORITY_LIST/AUTHORITY
-IA_ID
-firearmauthority_id
-GOODS_CATEGORY
-firearmsauthority_id
-FFT_ID
-filetarget_id"
-FirearmsAct
-iad.status
-issuing_constabulary_id INTEGER PATH '
-INTEGER PATH '
-/AUTHORITY/DOCUMENTS_FF_ID
-ia_id firearmsauthority_id
-ON xialo.ia_id
-SECTION5
-section5_authorities_xml XMLTYPE PATH '
-COMMODITY_ID>2</COMMODITY_ID
-COMMODITY_ID>3</COMMODITY_ID
-ADHOC1
-add.html
-Manage Countries
-Maintain Country Groups
-ON xid.ima_id
-ON fft.ff_id = ff.id AND fft.status = '
-RECEIVED
-ON fft.ff_id
-folder_id
-DATA_TYPE_XML
-F1"
-sanction_application_files
-fa_authorities
-ON fft.ff_id = ff.id
-fv.id version_id
-fv.version_id
->SIGL</h4
-EC SIGLWood
-XMLTYPE.getClobVal(user_import_certs_xml
-ON fv.fft_id = fft.id
-certificate.expiry_date.strftime('%d-%b-%Y
-updates.</div
-extract_v1_xml
-ref-m2
-ia-m2
-m2
-grams
-Kgs
-XML Parsing
-ICMS - Data Migration
-TX
-SILGoodsSection5
-ON cl.imad_id =
-NA
-IMP_SUPPORTING_DOC
-fq_manufacturing_within_eu
-IMP_OPT_FURTHER_AUTH_DOC
-IMP_OPT_BENEFICIARY_DOC"
-DJANGO_SESSION_COOKIE_AGE=7200
-get_or_create
-DEV
-TRADER_ID
-Enum
-SEND_LICENCE_TO_CHIEF"
-commodity_id VARCHAR2(100
-VARCHAR2(100
-Humanitarian
-DerogationsChecklist
-Contract Sign Date"
-Contract Completion Date
-Provide the name
-Revolutionary Forces
-Article 2 of"
-EU Regulations 2580/2001
-881/2002
-Article 14
-Syrian
-"Syria National Coalition for Opposition and Revolutionary Forces (SNCORF
-imad__sps_contract_file__id"
-version_id"
-ON fv.fft_id
-"Return FA OIL
-"Return FA DFL
-IMA/2022/00002
-DFL Organisation
-Model PGL6-40LR
-No PGR 123
-Section 5(1)(aba
-GBSIL3333333H
-Section 5(1)(a
-15.2mm
-LN2"
-GB123456789012
-GB123456789013
-GB123456789014
-GB123456789015
-GB123456789016
-GB123456789017
-GBSAN4444444A
-"HMRC Controlled
-QUANTITY
-addrList.empty
-Buckingham Palace
-Roden St
-Townsville
-address_1
-address_5
-Test Town
-ON ird.ir_id = ir.id
-importer_office_legacy__id
-document_id"
-version_id
-q_ia
-xiad.print_documents_flag
-licence_id
-dd.id
-xdd.title
-dd.created_datetime
-ON xiad.imad_id
-ON xird.ir_id
-ON xdd.di_id
-ON dd.id
-ON sld.id = DEREF(dd.secure_lob_ref).id
-xdd.dd_id
-Skipping Creating Missing Import Application Licences
-Creating Archived Import Application Licences
-ON ird.ir_id
-Override EORI Number
-EORI
-GBN
-Edit Office for Exporter '
-ird.variation_no
-REQUEST_BY_WUA_ID></REQUEST_BY_WUA_ID
-1235D"
-xiad.print_documents_flag issue_paper_only
-ON xird.ird_id
-ON cd.con_id
-SELECT xid.imad_id
+Date</td
+rowspan="2">7.</td>
+H.M. Revenue
+Import Licensing Branch
+Department for International Trade
+Create Certificate Application Template
+PKs
+cnd
 ON xid.ima_id =
 xid.status_control
-WHERE fft.target_mnem = 'IMP_SPS_DOC' AND fft.status = 'RECEIVED
-Test Case Note 1.pdf
-Test Case Note 2.pdf
-Test Case Note
-COVER
-Test Open
-Open Details
-email_cc_address_list_str
-target__folder__fir__pk
-ia_ima_id
-RFI_DOCUMENT
 ON xid.ima_id = u.ima_id
-cnd
 SELECT xir.ima_id ia_ima_id
-Content A"
-xmd.status
-xmd.subject
-xmd.description
-xmd.published_by_wua
-ON xmd
-M_ID =
-ri.m_id
-ON xed.e_id
-Exp A"
-ea-m2
-country_of_manufacture_cg_id"
-ca_type
-country_group_legacy_id
-country_group_id country_group_legacy_id
-gmp_files
-gmp2/ISO17065
-ISO22716
-BRCGS
-CA/2022/9901
-exportapplication_ptr_id"
-ON xcad.cad_id
-xcad.variation_number variation_no
-xcad.created_by_wua_id created_by_id
-xcad.contact_rp_id contact_id
-/CA/
-/CA/APPLICATION/GMP_DETAILS
-/CA/APPLICATION/GMP_DETAILS/MANUFACTURER_ADDRESS_DETAILS
-/CA/APPLICATION/GMP_DETAILS/GMP_DOCUMENTS
-PATH '/CA/
-/CA/APPLICATION
-ON cad.cad_id =
-xcad.exporter_office_id
-Skipping Creating Missing Export Application Certificates"
-Creating Draft Export Application Certificates
-Creating Archived Export Application Certificates
-Importers or Guidance
-x.chemical_name
-CA/2022/9905
-CA/2022/9906
-x.type
-x.commission_code
-CA/2022/9907
-CA/2022/9909
-XMLTYPE PATH '/CA/APPLICATION/PRODUCTS/SCHEDULE_LIST'
-cat.id application_type_id
-GB123456789012345
-accordance_with_standards
-manufacturer_address_type
-final_product_end_use
-is_repsonsible_person
-application_id"
-schedules.final_product_end_use
-xcas.start_datetime created_at
-xcas.last_updated_datetime updated_at
-schedules.legislation_xml
-ON xcas.cad_id
-XMLTABLE('/CA/APPLICATION/PRODUCTS/SCHEDULE_LIST/
-uk_market
-ON schedules.cad_id = xcas.cad_id
-ON st_rp.cad_id =
-A</NAME
-x.schedule_ordinal
-0.0.0.34
-Test Biocide
-IP
-Stops
+ON xid.ima_id
+el =
+node.querySelector("div[name='address_type_field
+div.input
+choicesSelect[0
+Importer/Exporter Access Request{%
+https://stackoverflow.com/questions/7432142/django-template-display-model-verbose-names-objects
+default=
+"Load the expected current task
+"Create File
+related_file_manager
+Translation Set Name
+Mailshot (New
+class="prompt west">Obsolete
