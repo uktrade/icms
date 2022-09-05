@@ -367,6 +367,13 @@ urlpatterns = [
                             # Acknowledge Notification (import/export)
                             path("ack-notification/", include(ack_notification_urls)),
                             #
+                            # View Issued Case Documents (import/export)
+                            path(
+                                "issued-case-documents/<int:issued_document_pk>/",
+                                views_misc.ViewIssuedCaseDocumentsView.as_view(),
+                                name="view-issued-case-documents",
+                            ),
+                            #
                             # Emails (import/export)
                             path("emails/", include(email_urls)),
                             #

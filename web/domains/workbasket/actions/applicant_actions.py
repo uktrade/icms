@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from django.urls import reverse
 from django.utils.dateparse import parse_datetime
@@ -11,6 +11,8 @@ from .base import Action, ActionT
 
 if TYPE_CHECKING:
     from web.domains.case._import.fa.models import SupplementaryInfoBase
+    from web.domains.case._import.models import ImportApplicationLicence
+    from web.domains.case.export.models import ExportApplicationCertificate
 
 """Actions that only apply to importer/exporter users are added here"""
 
@@ -245,6 +247,7 @@ class SubmitVariationUpdateAction(Action):
         ]
 
 
+# TODO: This action needs deleting and the new ones need testing
 # TODO: Revisit when implementing ICMSLST-1400
 # Each notification needs a "Acknowledge" "View" and "Clear" action
 class AcknowledgeNotificationAction(Action):
@@ -278,6 +281,90 @@ class AcknowledgeNotificationAction(Action):
                 section_label=action_name,
             )
         ]
+
+
+class ViewIssuedDocumentsAction(Action):
+    def show_link(self) -> bool:
+        show_link = False
+
+        if self.status == ImpExpStatus.COMPLETED and not self.application.is_rejected(
+            self.active_tasks
+        ):
+            show_link = True
+
+        return show_link
+
+    def get_workbasket_actions(self) -> list[WorkbasketAction]:
+        kwargs = self.get_kwargs()
+        issued_documents = self.application.get_specific_model().get_issued_documents()
+
+        return [
+            WorkbasketAction(
+                is_post=False,
+                name="View Issued Documents",
+                url=reverse(
+                    "case:view-issued-case-documents", kwargs=kwargs | {"issued_document_pk": i.pk}
+                ),
+                section_label=self.section_label(i),
+            )
+            for i in issued_documents
+        ]
+
+    def section_label(
+        self, issued_document: Union["ImportApplicationLicence", "ExportApplicationCertificate"]
+    ) -> str:
+        if self.application.is_import_application():
+            d = issued_document.case_completion_date
+        else:
+            d = issued_document.issue_date
+
+        id_date = d.strftime("%d-%b-%Y")
+
+        # TODO: Replace with a single datetime field
+        fixed_time = "12:45"
+
+        return f"Documents Issued {id_date} {fixed_time}"
+
+
+class ClearIssuedDocumentsAction(Action):
+    def show_link(self) -> bool:
+        show_link = False
+
+        if self.status == ImpExpStatus.COMPLETED and not self.application.is_rejected(
+            self.active_tasks
+        ):
+            show_link = True
+
+        return show_link
+
+    def get_workbasket_actions(self) -> list[WorkbasketAction]:
+        issued_documents = self.application.get_specific_model().get_issued_documents()
+
+        return [
+            WorkbasketAction(
+                is_post=False,
+                name="Clear",
+                # TODO: Create a view to clear this notification
+                url="#",
+                section_label=self.section_label(i),
+            )
+            for i in issued_documents
+        ]
+
+    def section_label(
+        self, issued_document: Union["ImportApplicationLicence", "ExportApplicationCertificate"]
+    ) -> str:
+        if self.application.is_import_application():
+            d = issued_document.case_completion_date
+        else:
+            d = issued_document.issue_date
+
+        id_date = d.strftime("%d-%b-%Y")
+
+        # TODO: Replace with a single datetime field
+        fixed_time = "12:45"
+
+        return f"Documents Issued {id_date} {fixed_time}"
 
 
 class ProvideFirearmsReportAction(Action):
@@ -342,5 +429,7 @@ REQUEST_VARIATION_APPLICANT_ACTIONS: list[ActionT] = [
     ResumeUpdateRequestAction,
     SubmitVariationUpdateAction,
     AcknowledgeNotificationAction,
+    ViewIssuedDocumentsAction,
+    ClearIssuedDocumentsAction,
     ProvideFirearmsReportAction,
 ]
