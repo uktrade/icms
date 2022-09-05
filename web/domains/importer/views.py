@@ -157,7 +157,11 @@ def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
         form = Section5AuthorityForm(importer)
 
         # Create a formset to specify quantity for each section5clauses
-        initial = Section5Clause.objects.annotate(section5clause=F("pk")).values("section5clause")
+        initial = (
+            Section5Clause.objects.filter(is_active=True)
+            .annotate(section5clause=F("pk"))
+            .values("section5clause")
+        )
         ClauseQuantityFormSet = inlineformset_factory(
             Section5Authority,
             ClauseQuantity,
