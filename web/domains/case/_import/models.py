@@ -368,6 +368,17 @@ class ImportApplication(ApplicationBase):
             ]
         ).latest("created_at")
 
+    def get_issued_documents(self) -> "QuerySet[ImportApplicationLicence]":
+        """Return all completed documents past and present."""
+
+        return self.licences.filter(
+            case_completion_date__isnull=False,
+            status__in=[
+                ImportApplicationLicence.Status.ACTIVE,
+                ImportApplicationLicence.Status.ARCHIVED,
+            ],
+        ).order_by("created_at")
+
 
 def get_paper_licence_only(app_t: ImportApplicationType) -> Optional[bool]:
     """Get initial value for `issue_paper_licence_only` field.
@@ -455,6 +466,7 @@ class ImportApplicationLicence(CaseLicenceCertificateBase):
     licence_start_date = models.DateField(verbose_name="Start Date", null=True)
     licence_end_date = models.DateField(verbose_name="End Date", null=True)
 
+    # TODO - Why is this different to issue_date (Update it to have a common field)
     # Set when the case is marked as complete
     case_completion_date = models.DateField(verbose_name="Case Completion Date", null=True)
 

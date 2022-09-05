@@ -13,7 +13,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_POST
-from django.views.generic import View
+from django.views.generic import TemplateView, View
 from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case import forms
@@ -56,6 +56,8 @@ from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
+    from web.domains.case._import.models import ImportApplicationLicence
+    from web.domains.case.export.models import ExportApplicationCertificate
     from web.utils.lock_manager import LockManager
 
 
@@ -726,11 +728,14 @@ def view_document_packs(
         )
 
 
-def get_document_context(application: ImpOrExp) -> dict[str, str]:
+def get_document_context(
+    application: ImpOrExp,
+    issued_document: Union["ImportApplicationLicence", "ExportApplicationCertificate"] = None,
+) -> dict[str, str]:
     at = application.application_type
 
     if application.is_import_application():
-        licence = application.get_most_recent_licence()
+        licence = issued_document or application.get_most_recent_licence()
         licence_doc = licence.document_references.get(
             document_type=CaseDocumentReference.Type.LICENCE
         )
@@ -738,7 +743,8 @@ def get_document_context(application: ImpOrExp) -> dict[str, str]:
             document_type=CaseDocumentReference.Type.COVER_LETTER
         )
 
-        if application.status == ImpExpStatus.COMPLETED:
+        # If issued_document is not None then we are viewing completed documents
+        if application.status == ImpExpStatus.COMPLETED or issued_document:
             licence_url = reverse(
                 "case:view-case-document",
                 kwargs={
@@ -777,7 +783,8 @@ def get_document_context(application: ImpOrExp) -> dict[str, str]:
             "cover_letter_url": cover_letter_url,
         }
     else:
-        certificate_docs = application.get_most_recent_certificate().document_references.filter(
+        certificate = issued_document or application.get_most_recent_certificate()
+        certificate_docs = certificate.document_references.filter(
             document_type=CaseDocumentReference.Type.CERTIFICATE
         )
         document_reference = ", ".join(c.reference for c in certificate_docs)
@@ -889,6 +896,52 @@ def ack_notification(
             template_name="web/domains/case/ack-notification.html",
             context=context,
         )
+
+
+class ViewIssuedCaseDocumentsView(
+    ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, TemplateView
+):
+    # ApplicationTaskMixin Config
+    current_status = [ImpExpStatus.COMPLETED]
+
+    # TemplateView Config
+    http_method_names = ["get"]
+    template_name = "web/domains/case/view-case-documents.html"
+
+    def has_permission(self):
+        application = self.get_object().get_specific_model()
+
+        try:
+            check_application_permission(application, self.request.user, self.kwargs["case_type"])
+        except PermissionDenied:
+            return False
+
+        return True
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        application = self.application
+        is_import_app = application.is_import_application()
+
+        case_type = self.kwargs["case_type"]
+        context["page_title"] = get_case_page_title(case_type, application, "Issued Documents")
+        context["process_template"] = f"web/domains/case/{case_type}/partials/process.html"
+        context["process"] = self.application
+        context["primary_recipients"] = _get_primary_recipients(application)
+        context["copy_recipients"] = _get_copy_recipients(application)
+        context["case_type"] = case_type
+        context["acknowledged"] = application.acknowledged_by and application.acknowledged_datetime
+        context["org"] = application.importer if is_import_app else application.exporter
+        issued_doc = self.application.get_issued_documents().get(
+            pk=self.kwargs["issued_document_pk"]
+        )
+
+        context["issue_date"] = (
+            issued_doc.case_completion_date if is_import_app else issued_doc.issue_date
+        )
+
+        return context | get_document_context(self.application, issued_doc)
 
 
 def _get_primary_recipients(application: ImpOrExp) -> "QuerySet[User]":
