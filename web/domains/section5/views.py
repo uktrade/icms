@@ -19,7 +19,7 @@ class ListSection5(ModelFilterView):
     filterset_class = Section5Filter
     model = Section5Clause
     permission_required = "web.ilb_admin"
-    page_title = "Maintain Commodities"
+    page_title = "Maintain Section 5 Clauses"
 
     class Display:
         fields = ["clause", "description"]
