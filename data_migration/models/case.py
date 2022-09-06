@@ -1,16 +1,19 @@
 from typing import Any, Generator
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models import F
+from django.db.models import F, OuterRef, Subquery, Value
 from django.db.models.expressions import Window
 from django.db.models.functions import RowNumber
 
 from data_migration.utils.format import str_to_list
 
 from .base import MigrationBase
+from .export_application import ExportApplicationCertificate, GMPBrand
 from .file import File, FileFolder
 from .flow import Process
-from .import_application import ImportApplication
+from .import_application import ImportApplication, ImportApplicationLicence
+from .reference import Country
 from .user import User
 
 
@@ -18,6 +21,125 @@ class CaseReference(MigrationBase):
     prefix = models.CharField(max_length=8)
     year = models.IntegerField(null=True)
     reference = models.IntegerField()
+
+
+class CaseDocument(MigrationBase):
+    licence = models.ForeignKey(
+        ImportApplicationLicence, on_delete=models.CASCADE, to_field="imad_id", null=True
+    )
+    cad = models.ForeignKey(
+        ExportApplicationCertificate, on_delete=models.CASCADE, to_field="cad_id", null=True
+    )
+    certificate_id = models.PositiveIntegerField(null=True, unique=True)
+    document_legacy = models.OneToOneField(
+        File, on_delete=models.SET_NULL, null=True, to_field="document_legacy_id"
+    )
+    document_type = models.CharField(max_length=12)
+    reference = models.CharField(max_length=20, null=True)
+
+    @classmethod
+    def models_to_populate(cls) -> list[str]:
+        return ["File", cls.__name__]
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + [
+            "licence_id",
+            "cad_id",
+            "document_legacy_id",
+            "casedocument_ptr_id",
+            "certificate_id",
+        ]
+
+    @classmethod
+    def exclude_kwargs(cls) -> dict[str, Any]:
+        return {}
+
+    @classmethod
+    def get_source_data(cls) -> Generator:
+        exclude_kwargs = cls.exclude_kwargs()
+        values = cls.get_values()
+        values_kwargs = cls.get_values_kwargs()
+
+        return (
+            CaseDocument.objects.exclude(**exclude_kwargs)
+            .values(*values, **values_kwargs)
+            .iterator()
+        )
+
+
+class ImportCaseDocument(CaseDocument):
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def exclude_kwargs(cls) -> dict[str, Any]:
+        return {"licence__isnull": True}
+
+    @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        content_type_id = ContentType.objects.get(
+            app_label="web", model="importapplicationlicence"
+        ).id
+
+        return {
+            "object_id": F("licence__pk"),
+            "document_id": F("document_legacy__pk"),
+            "content_type_id": Value(content_type_id),
+        }
+
+
+class ExportCaseDocument(CaseDocument):
+    class Meta:
+        abstract = True
+
+    @classmethod
+    def exclude_kwargs(cls) -> dict[str, Any]:
+        return {"cad__isnull": True}
+
+    @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        content_type_id = ContentType.objects.get(
+            app_label="web", model="exportapplicationcertificate"
+        ).id
+
+        return {
+            "object_id": F("cad__pk"),
+            "document_id": F("document_legacy__pk"),
+            "content_type_id": Value(content_type_id),
+        }
+
+
+class ExportCertificateCaseDocumentReferenceData(MigrationBase):
+    certificate = models.OneToOneField(
+        CaseDocument, on_delete=models.CASCADE, to_field="certificate_id"
+    )
+    country = models.ForeignKey(Country, on_delete=models.PROTECT)
+
+    @classmethod
+    def get_source_data(cls) -> Generator:
+        sub_query = GMPBrand.objects.filter(cad_id=OuterRef("certificate__cad_id")).values("pk")
+
+        values = cls.get_values()
+        values_kwargs = cls.get_values_kwargs()
+
+        return (
+            cls.objects.annotate(gmp_brand_id=Subquery(sub_query[:1]))
+            .values("gmp_brand_id", *values, **values_kwargs)
+            .iterator()
+        )
+
+    @classmethod
+    def models_to_populate(cls) -> list[str]:
+        return ["File", "CaseDocument", cls.__name__]
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["certificate_id"]
+
+    @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        return {"case_document_reference_id": F("certificate__id")}
 
 
 class VariationRequest(MigrationBase):

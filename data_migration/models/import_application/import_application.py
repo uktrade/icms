@@ -1,11 +1,10 @@
 from typing import Any, Generator
 
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models import F, Value
+from django.db.models import F
 
 from data_migration.models.base import MigrationBase
-from data_migration.models.file import File, FileFolder
+from data_migration.models.file import FileFolder
 from data_migration.models.flow import Process
 from data_migration.models.reference import CommodityGroup, Country
 from data_migration.models.user import Importer, Office, User
@@ -208,37 +207,6 @@ class ImportApplicationLicence(MigrationBase):
     @classmethod
     def get_excludes(cls) -> list[str]:
         return super().get_excludes() + ["ima_id", "imad_id"]
-
-
-class ImportCaseDocument(MigrationBase):
-    licence = models.ForeignKey(
-        ImportApplicationLicence, on_delete=models.CASCADE, to_field="imad_id"
-    )
-    document_legacy = models.OneToOneField(
-        File, on_delete=models.SET_NULL, null=True, to_field="document_legacy_id"
-    )
-    document_type = models.CharField(max_length=12)
-    reference = models.CharField(max_length=20, null=True)
-
-    @classmethod
-    def models_to_populate(cls) -> list[str]:
-        return ["File", cls.__name__]
-
-    @classmethod
-    def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["licence_id", "document_legacy_id"]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        content_type_id = ContentType.objects.get(
-            app_label="web", model="importapplicationlicence"
-        ).id
-
-        return {
-            "object_id": F("licence__pk"),
-            "document_id": F("document_legacy__pk"),
-            "content_type_id": Value(content_type_id),
-        }
 
 
 class EndorsementImportApplication(MigrationBase):

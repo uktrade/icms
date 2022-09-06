@@ -113,7 +113,7 @@ sil_data_source_target = {
             (q_ia, "ia_type", dm.ImportApplicationType),
             (q_ia, "sil_application", dm.SILApplication),
             (q_ia, "ia_licence", dm.ImportApplicationLicence),
-            (q_ia, "ia_licence_docs", dm.ImportCaseDocument),
+            (q_ia, "ia_licence_docs", dm.CaseDocument),
             (q_ia, "fa_authorities", dm.FirearmsAuthority),
             (q_ia, "fa_authority_linked_offices", dm.FirearmsAuthorityOffice),
             (q_ia, "section5_authorities", dm.Section5Authority),
@@ -731,6 +731,12 @@ export_data_source_target = {
         (dm.CFSProduct, web.CFSProduct),
         (dm.CFSProductType, web.CFSProductType),
         (dm.CFSProductActiveIngredient, web.CFSProductActiveIngredient),
+        (dm.ExportApplicationCertificate, web.ExportApplicationCertificate),
+        (dm.ExportCaseDocument, web.CaseDocumentReference),
+        (
+            dm.ExportCertificateCaseDocumentReferenceData,
+            web.ExportCertificateCaseDocumentReferenceData,
+        ),
     ],
     "file": [
         (dm.File, web.File),
@@ -751,6 +757,8 @@ export_query_model = {
         (q_ex, "cfs_application", dm.CertificateOfFreeSaleApplication),
         (q_ex, "cfs_schedule", dm.CFSSchedule),
         (q_ex, "export_application_countries", dm.ExportApplicationCountries),
+        (q_ex, "export_certificate", dm.ExportApplicationCertificate),
+        (q_ex, "export_certificate_docs", dm.ExportCertificateCaseDocumentReferenceData),
     ],
     "reference": [
         (q_ref, "country_group", dm.CountryGroup),
@@ -802,6 +810,31 @@ def test_import_export_data(mock_connect):
     assert ea2.countries.count() == 3
     assert ea3.countries.count() == 1
 
+    assert ea1.certificates.count() == 0
+    assert ea2.certificates.count() == 1
+    cert1 = ea2.certificates.first()
+    assert cert1.status == "DR"
+    refs = cert1.document_references.order_by("pk")
+    assert refs.count() == 3
+    assert refs[0].reference == "GMP/2022/00001"
+    assert refs[0].reference_data.gmp_brand_id == 2
+    assert refs[0].reference_data.country_id == 1
+    assert refs[1].reference == "GMP/2022/00002"
+    assert refs[1].reference_data.gmp_brand_id == 2
+    assert refs[1].reference_data.country_id == 2
+    assert refs[2].reference == "GMP/2022/00003"
+    assert refs[2].reference_data.gmp_brand_id == 2
+    assert refs[2].reference_data.country_id == 3
+
+    assert ea3.certificates.count() == 1
+    cert2 = ea3.certificates.first()
+    assert cert2.status == "AC"
+    assert cert2.document_references.count() == 1
+    ref2 = cert2.document_references.first()
+    assert ref2.reference == "GMP/2022/00004"
+    assert ref2.reference_data.gmp_brand_id == 3
+    assert ref2.reference_data.country_id == 1
+
     gmp1, gmp2, gmp3 = web.CertificateOfGoodManufacturingPracticeApplication.objects.order_by("pk")
 
     assert gmp1.supporting_documents.count() == 1
@@ -819,14 +852,36 @@ def test_import_export_data(mock_connect):
     assert gmp3.brands.count() == 1
     assert gmp3.brands.first().brand_name == "Another brand"
 
-    assert ea1.certificates.count() == 0
-    assert ea2.certificates.count() == 1
-    assert ea2.certificates.first().status == "DR"
-    assert ea3.certificates.count() == 1
-    assert ea3.certificates.first().status == "AR"
-
     assert web.CertificateOfManufactureApplication.objects.count() == 3
     com1, com2, com3 = web.CertificateOfManufactureApplication.objects.order_by("pk")
+
+    ea4, ea5, ea6 = web.ExportApplication.objects.filter(
+        process_ptr__process_type=web.ProcessTypes.COM
+    ).order_by("pk")
+
+    assert ea4.countries.count() == 0
+    assert ea5.countries.count() == 1
+    assert ea6.countries.count() == 1
+
+    assert ea4.certificates.count() == 0
+
+    assert ea5.certificates.count() == 1
+    cert3 = ea5.certificates.first()
+    assert cert3.status == "DR"
+    assert cert3.document_references.count() == 1
+    ref3 = cert3.document_references.first()
+    assert ref3.reference == "COM/2022/00001"
+    assert ref3.reference_data.gmp_brand_id is None
+    assert ref3.reference_data.country_id == 1
+
+    assert ea6.certificates.count() == 1
+    cert4 = ea6.certificates.first()
+    assert cert4.status == "AC"
+    assert cert4.document_references.count() == 1
+    ref4 = cert4.document_references.first()
+    assert ref4.reference == "COM/2022/00002"
+    assert ref4.reference_data.gmp_brand_id is None
+    assert ref4.reference_data.country_id == 1
 
     assert com1.is_pesticide_on_free_sale_uk is None
     assert com1.is_manufacturer is None
@@ -848,6 +903,34 @@ def test_import_export_data(mock_connect):
 
     assert web.CertificateOfFreeSaleApplication.objects.count() == 3
     cfs1, cfs2, cfs3 = web.CertificateOfFreeSaleApplication.objects.order_by("pk")
+
+    ea7, ea8, ea9 = web.ExportApplication.objects.filter(
+        process_ptr__process_type=web.ProcessTypes.CFS
+    ).order_by("pk")
+
+    assert ea7.countries.count() == 0
+    assert ea8.countries.count() == 1
+    assert ea9.countries.count() == 1
+
+    assert ea7.certificates.count() == 0
+
+    assert ea8.certificates.count() == 1
+    cert5 = ea8.certificates.first()
+    assert cert5.status == "DR"
+    assert cert5.document_references.count() == 1
+    ref5 = cert5.document_references.first()
+    assert ref5.reference == "CFS/2022/00001"
+    assert ref5.reference_data.gmp_brand_id is None
+    assert ref5.reference_data.country_id == 1
+
+    assert ea9.certificates.count() == 1
+    cert6 = ea9.certificates.first()
+    assert cert6.status == "AC"
+    assert cert6.document_references.count() == 1
+    ref6 = cert6.document_references.first()
+    assert ref6.reference == "CFS/2022/00002"
+    assert ref6.reference_data.gmp_brand_id is None
+    assert ref6.reference_data.country_id == 1
 
     assert cfs1.schedules.count() == 0
     assert cfs2.schedules.count() == 1

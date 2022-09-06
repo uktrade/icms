@@ -1417,7 +1417,7 @@ query_result = {
     ),
     export_application.export_application_countries: (
         [("cad_id",), ("country_id",)],
-        [(18, 1), (18, 2), (18, 3), (19, 1)],
+        [(18, 1), (18, 2), (18, 3), (19, 1), (21, 1), (22, 1), (24, 1), (25, 1)],
     ),
     export_application.com_application: (
         EA_BASE_COLUMNS
@@ -1520,7 +1520,7 @@ query_result = {
             (
                 14,
                 24,
-                "CertificateOfManufactureApplication",
+                "CertificateOfFreeSaleApplication",  # process_type
                 "CA/2022/9908",
                 "PROCESSING",
                 2,
@@ -1537,7 +1537,7 @@ query_result = {
             (
                 15,
                 25,
-                "CertificateOfManufactureApplication",
+                "CertificateOfFreeSaleApplication",  # process_type
                 "CA/2022/9909",
                 "COMPLETED",
                 2,
@@ -1630,6 +1630,156 @@ query_result = {
                 2,  # created_by_id
                 xd.cfs_product_biocide,  # product_xml
                 xd.cfs_legislation_biocide,  # legislation_xml
+            ),
+        ],
+    ),
+    export_application.export_certificate: (
+        [("ca_id",), ("cad_id",), ("issue_date",), ("status",), ("case_reference",)],
+        [
+            (8, 18, datetime(2022, 4, 29), "DR", "CA/2022/9902"),
+            (9, 19, datetime(2022, 4, 29), "AC", "CA/2022/9903"),
+            (11, 21, datetime(2022, 4, 29), "DR", "CA/2022/9905"),
+            (12, 22, datetime(2022, 4, 29), "AC", "CA/2022/9906"),
+            (14, 24, datetime(2022, 4, 29), "DR", "CA/2022/9908"),
+            (15, 25, datetime(2022, 4, 29), "AC", "CA/2022/9909"),
+        ],
+    ),
+    export_application.export_certificate_docs: (
+        [
+            ("cad_id",),
+            ("certificate_id",),
+            ("document_legacy_id",),
+            ("reference",),
+            ("case_document_ref_id",),
+            ("document_type",),
+            ("country_id",),
+            ("filename",),
+            ("content_type",),
+            ("file_size",),
+            ("path",),
+            ("created_datetime",),
+            ("created_by_id",),
+        ],
+        [
+            (
+                18,  # cad_id
+                1,  # certificate_id
+                101,  # document_legacy_id
+                "GMP/2022/00001",  # reference
+                "GMP/2022/00001",  # case_document_ref_id
+                "CERTIFICATE",  # documnet_type
+                1,  # country_id
+                "gmp-cert-1.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+                "path/to/gmp-cert-1.pdf",  # path
+                datetime.now(),  # created_datetime
+                2,  # created_by_id
+            ),
+            (
+                18,  # cad_id
+                2,  # certificate_id
+                102,  # document_legacy_id
+                "GMP/2022/00002",  # reference
+                "GMP/2022/00002",  # case_document_ref_id
+                "CERTIFICATE",  # documnet_type
+                2,  # country_id
+                "gmp-cert-2.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+                "path/to/gmp-cert-2.pdf",  # path
+                datetime.now(),  # created_datetime
+                2,  # created_by_id
+            ),
+            (
+                18,  # cad_id
+                3,  # certificate_id
+                103,  # document_legacy_id
+                "GMP/2022/00003",  # reference
+                "GMP/2022/00003",  # case_document_ref_id
+                "CERTIFICATE",  # documnet_type
+                3,  # country_id
+                "gmp-cert-1.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+                "path/to/gmp-cert-3.pdf",  # path
+                datetime.now(),  # created_datetime
+                2,  # created_by_id
+            ),
+            (
+                19,  # cad_id
+                4,  # certificate_id
+                104,  # document_legacy_id
+                "GMP/2022/00004",  # reference
+                "GMP/2022/00004",  # case_document_ref_id
+                "CERTIFICATE",  # documnet_type
+                1,  # country_id
+                "gmp-cert-4.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+                "path/to/gmp-cert-4.pdf",  # path
+                datetime.now(),  # created_datetime
+                2,  # created_by_id
+            ),
+            (
+                21,  # cad_id
+                5,  # certificate_id
+                105,  # document_legacy_id
+                "COM/2022/00001",  # reference
+                "COM/2022/00001",  # case_document_ref_id
+                "CERTIFICATE",  # documnet_type
+                1,  # country_id
+                "com-cert-1.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+                "path/to/com-cert-1.pdf",  # path
+                datetime.now(),  # created_datetime
+                2,  # created_by_id
+            ),
+            (
+                22,  # cad_id
+                6,  # certificate_id
+                106,  # document_legacy_id
+                "COM/2022/00002",  # reference
+                "COM/2022/00002",  # case_document_ref_id
+                "CERTIFICATE",  # documnet_type
+                1,  # country_id
+                "com-cert-2.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+                "path/to/com-cert-2.pdf",  # path
+                datetime.now(),  # created_datetime
+                2,  # created_by_id
+            ),
+            (
+                24,  # cad_id
+                7,  # certificate_id
+                107,  # document_legacy_id
+                "CFS/2022/00001",  # reference
+                "CFS/2022/00001",  # case_document_ref_id
+                "CERTIFICATE",  # documnet_type
+                1,  # country_id
+                "cfs-cert-1.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+                "path/to/cfs-cert-1.pdf",  # path
+                datetime.now(),  # created_datetime
+                2,  # created_by_id
+            ),
+            (
+                25,  # cad_id
+                8,  # certificate_id
+                108,  # document_legacy_id
+                "CFS/2022/00002",  # reference
+                "CFS/2022/00002",  # case_document_ref_id
+                "CERTIFICATE",  # documnet_type
+                1,  # country_id
+                "cfs-cert-2.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+                "path/to/cfs-cert-2.pdf",  # path
+                datetime.now(),  # created_datetime
+                2,  # created_by_id
             ),
         ],
     ),

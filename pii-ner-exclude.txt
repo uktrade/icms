@@ -1544,3 +1544,10 @@ related_file_manager
 Translation Set Name
 Mailshot (New
 class="prompt west">Obsolete
+gmp_brand_id
+ON card.car_id = car.id INNER JOIN
+ON ca.id = car.ca_id INNER
+ON card.car_id = car.id INNER JOIN impmgr.cert_app_response_detail_certs cardc
+ON cardc.card_id
+COM/2022/00002
+ON sld.id = DEREF(dd.secure_lob_ref).id WHERE card.status_control = 'C' ORDER

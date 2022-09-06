@@ -167,7 +167,7 @@ class Command(MigrationBaseCommand):
             return
 
         export_qs = dm.ExportApplication.objects.filter(
-            submit_datetime__isnull=False, ca__licences__isnull=True
+            submit_datetime__isnull=False, ca__certificates__isnull=True
         )
 
         draft_statuses = ["VARIATION_REQUESTED", "PROCESSING", "SUBMITTED"]
