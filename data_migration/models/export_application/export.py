@@ -121,6 +121,26 @@ class ExportApplicationCountries(MigrationBase):
         return {"exportapplication_id": F("cad__id")}
 
 
+class ExportApplicationCertificate(MigrationBase):
+    ca = models.ForeignKey(
+        Process, on_delete=models.PROTECT, related_name="certificates", to_field="ca_id"
+    )
+    cad_id = models.PositiveIntegerField(unique=True)
+    issue_date = models.DateField(null=True)
+    status = models.TextField(max_length=2, default="DR")
+    case_reference = models.CharField(max_length=100, null=True, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["ca_id", "cad_id"]
+
+    @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        return {"export_application_id": F("ca__id")}
+
+
 class ExportBase(MigrationBase):
     PROCESS_PK = True
 

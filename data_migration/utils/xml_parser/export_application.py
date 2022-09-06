@@ -119,7 +119,7 @@ class CFSLegislationParser(BaseXmlParser):
         """Example XML structure
 
         <LEGISLATION_LIST>
-            <LEGISLATION />
+          <LEGISLATION />
         </LEGISLATION_LIST>
         """
 

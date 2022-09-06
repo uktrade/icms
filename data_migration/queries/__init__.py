@@ -104,7 +104,7 @@ ia_query_model = [
     QueryModel(import_application, "textiles_application", dm.TextilesApplication),
     QueryModel(import_application, "textiles_checklist", dm.TextilesChecklist),
     QueryModel(import_application, "ia_licence", dm.ImportApplicationLicence),
-    QueryModel(import_application, "ia_licence_docs", dm.ImportCaseDocument),
+    QueryModel(import_application, "ia_licence_docs", dm.CaseDocument),
     QueryModel(import_application, "constabulary_emails", dm.CaseEmail),
     QueryModel(import_application, "case_note", dm.CaseNote),
     QueryModel(import_application, "update_request", dm.UpdateRequest),
@@ -306,6 +306,10 @@ export_query_model = [
     QueryModel(export_application, "cfs_application", dm.CertificateOfFreeSaleApplication),
     QueryModel(export_application, "cfs_schedule", dm.CFSSchedule),
     QueryModel(export_application, "export_application_countries", dm.ExportApplicationCountries),
+    QueryModel(export_application, "export_certificate", dm.ExportApplicationCertificate),
+    QueryModel(
+        export_application, "export_certificate_docs", dm.ExportCertificateCaseDocumentReferenceData
+    ),
 ]
 
 export_source_target = [
@@ -324,6 +328,12 @@ export_source_target = [
     SourceTarget(dm.CFSProduct, web.CFSProduct),
     SourceTarget(dm.CFSProductType, web.CFSProductType),
     SourceTarget(dm.CFSProductActiveIngredient, web.CFSProductActiveIngredient),
+    SourceTarget(dm.ExportApplicationCertificate, web.ExportApplicationCertificate),
+    SourceTarget(dm.ExportCaseDocument, web.CaseDocumentReference),
+    SourceTarget(
+        dm.ExportCertificateCaseDocumentReferenceData,
+        web.ExportCertificateCaseDocumentReferenceData,
+    ),
 ]
 
 export_m2m = [
