@@ -313,17 +313,10 @@ class ViewIssuedDocumentsAction(Action):
     def section_label(
         self, issued_document: Union["ImportApplicationLicence", "ExportApplicationCertificate"]
     ) -> str:
-        if self.application.is_import_application():
-            d = issued_document.case_completion_date
-        else:
-            d = issued_document.issue_date
+        cd = issued_document.case_completion_datetime
+        issue_datetime = cd.strftime("%d-%b-%Y %H:%M")
 
-        id_date = d.strftime("%d-%b-%Y")
-
-        # TODO: Replace with a single datetime field
-        fixed_time = "12:45"
-
-        return f"Documents Issued {id_date} {fixed_time}"
+        return f"Documents Issued {issue_datetime}"
 
 
 class ClearIssuedDocumentsAction(Action):
@@ -354,17 +347,10 @@ class ClearIssuedDocumentsAction(Action):
     def section_label(
         self, issued_document: Union["ImportApplicationLicence", "ExportApplicationCertificate"]
     ) -> str:
-        if self.application.is_import_application():
-            d = issued_document.case_completion_date
-        else:
-            d = issued_document.issue_date
+        cd = issued_document.case_completion_datetime
+        issue_datetime = cd.strftime("%d-%b-%Y %H:%M")
 
-        id_date = d.strftime("%d-%b-%Y")
-
-        # TODO: Replace with a single datetime field
-        fixed_time = "12:45"
-
-        return f"Documents Issued {id_date} {fixed_time}"
+        return f"Documents Issued {issue_datetime}"
 
 
 class ProvideFirearmsReportAction(Action):

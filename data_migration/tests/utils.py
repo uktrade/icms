@@ -1634,7 +1634,7 @@ query_result = {
         ],
     ),
     export_application.export_certificate: (
-        [("ca_id",), ("cad_id",), ("issue_date",), ("status",), ("case_reference",)],
+        [("ca_id",), ("cad_id",), ("case_completion_datetime",), ("status",), ("case_reference",)],
         [
             (8, 18, datetime(2022, 4, 29), "DR", "CA/2022/9902"),
             (9, 19, datetime(2022, 4, 29), "AC", "CA/2022/9903"),

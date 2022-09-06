@@ -126,7 +126,7 @@ class ExportApplicationCertificate(MigrationBase):
         Process, on_delete=models.PROTECT, related_name="certificates", to_field="ca_id"
     )
     cad_id = models.PositiveIntegerField(unique=True)
-    issue_date = models.DateField(null=True)
+    case_completion_datetime = models.DateTimeField(null=True)
     status = models.TextField(max_length=2, default="DR")
     case_reference = models.CharField(max_length=100, null=True, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
