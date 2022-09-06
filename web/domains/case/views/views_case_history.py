@@ -9,8 +9,16 @@ from web.domains.case.utils import check_application_permission
 from web.flow.models import Process, ProcessTypes
 
 if TYPE_CHECKING:
-    from web.domains.case._import.models import ImportApplication
-    from web.domains.case.export.models import ExportApplication
+    from django.db.models import QuerySet
+
+    from web.domains.case._import.models import (
+        ImportApplication,
+        ImportApplicationLicence,
+    )
+    from web.domains.case.export.models import (
+        ExportApplication,
+        ExportApplicationCertificate,
+    )
     from web.domains.case.models import CaseDocumentReference
 
 
@@ -61,7 +69,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
         return base_context | common_context | app_context
 
     def _get_licence_context(self, application: "ImportApplication"):
-        licences = (
+        licences: "QuerySet[ImportApplicationLicence]" = (
             application.licences.filter(case_reference__isnull=False)
             .prefetch_related("document_references")
             .order_by("-created_at")
@@ -75,7 +83,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
                     "issue_paper_licence_only": lic.issue_paper_licence_only,
                     "licence_start_date": lic.licence_start_date.strftime(self.licence_date_format),
                     "licence_end_date": lic.licence_end_date.strftime(self.licence_date_format),
-                    "case_completion_date": lic.case_completion_date.strftime(
+                    "case_completion_date": lic.case_completion_datetime.strftime(
                         self.licence_date_format
                     ),
                     "documents": [
@@ -100,7 +108,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
         }
 
     def _get_certificate_context(self, application: "ExportApplication"):
-        certificates = (
+        certificates: "QuerySet[ExportApplicationCertificate]" = (
             application.certificates.filter(case_reference__isnull=False)
             .prefetch_related("document_references")
             .order_by("-created_at")
@@ -110,7 +118,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
             "certificates": [
                 {
                     "reference": cert.case_reference,
-                    "issue_date": cert.issue_date.strftime("%d-%b-%Y"),
+                    "issue_date": cert.case_completion_datetime.strftime("%d-%b-%Y"),
                     "documents": [
                         {
                             "name": _get_cdr_name(application, doc),

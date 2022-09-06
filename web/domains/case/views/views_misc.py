@@ -936,10 +936,7 @@ class ViewIssuedCaseDocumentsView(
         issued_doc = self.application.get_issued_documents().get(
             pk=self.kwargs["issued_document_pk"]
         )
-
-        context["issue_date"] = (
-            issued_doc.case_completion_date if is_import_app else issued_doc.issue_date
-        )
+        context["issue_date"] = issued_doc.case_completion_datetime
 
         return context | get_document_context(self.application, issued_doc)
 

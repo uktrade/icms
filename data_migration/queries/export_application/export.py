@@ -66,7 +66,7 @@ export_certificate = """
 SELECT
   car.ca_id
   , card.cad_id
-  , card.issue_datetime issue_date
+  , card.issue_datetime case_completion_datetime
   , CASE card.status
     WHEN 'DRAFT' THEN 'DR'
     WHEN 'DELETED' THEN 'AR'

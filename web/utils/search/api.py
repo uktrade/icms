@@ -34,6 +34,7 @@ if TYPE_CHECKING:
 from . import app_data, types, utils
 
 THREE_YEARS_AGO = timezone.now().date() - relativedelta.relativedelta(years=3)
+THREE_YEARS_AGO_DT = datetime.datetime.combine(THREE_YEARS_AGO, datetime.time.min)
 
 
 def search_applications(
@@ -612,12 +613,12 @@ def _apply_import_application_filter(
         )
 
     if terms.issue_date_start:
-        # TODO: Raise ticket to search by issue date when implemented
+        # TODO: ICMSLST-1743: Add search by issue date
         # model = model.filter(issue_date__gte=terms.issue_date_start)
         pass
 
     if terms.issue_date_end:
-        # TODO: Raise ticket to search by issue date when implemented
+        # TODO: ICMSLST-1743: Add search by issue date
         # model = model.filter(issue_date__lte=terms.issue_date_end)
         pass
 
@@ -924,7 +925,7 @@ def get_export_record_actions(rec: "ExportApplication", user: User) -> list[type
 
             elif (
                 rec.process_type == ProcessTypes.GMP
-                and rec.latest_certificate_issue_date > THREE_YEARS_AGO
+                and rec.latest_certificate_issue_datetime > THREE_YEARS_AGO_DT
             ):
                 actions.extend([open_variation_action, revoke_certificate_action])
 

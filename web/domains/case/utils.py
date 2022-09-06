@@ -171,19 +171,18 @@ def set_application_licence_or_certificate_active(application: ImpOrExp) -> None
             status=CaseLicenceCertificateBase.Status.ACTIVE
         ).first()
         l_or_c = application.get_most_recent_licence()
-        l_or_c.case_completion_date = timezone.now().date()
 
     else:
         active_l_or_c = application.certificates.filter(
             status=CaseLicenceCertificateBase.Status.ACTIVE
         ).first()
         l_or_c = application.get_most_recent_certificate()
-        l_or_c.issue_date = timezone.now().date()
 
     if active_l_or_c:
         active_l_or_c.status = CaseLicenceCertificateBase.Status.ARCHIVED
         active_l_or_c.save()
 
+    l_or_c.case_completion_datetime = timezone.now()
     l_or_c.status = CaseLicenceCertificateBase.Status.ACTIVE
 
     # Record the case_reference to see when viewing the application history

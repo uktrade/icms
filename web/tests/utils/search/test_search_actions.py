@@ -109,7 +109,12 @@ def test_get_export_application_search_actions(
         user = test_export_user
 
     # Add a fake annotation to the application record.
-    application.latest_certificate_issue_date = issue_date
+    if issue_date:
+        application.latest_certificate_issue_datetime = datetime.datetime.combine(
+            issue_date, datetime.time.min
+        )
+    else:
+        application.latest_certificate_issue_datetime = issue_date
 
     # Set the process type
     application.process_type = application.PROCESS_TYPE

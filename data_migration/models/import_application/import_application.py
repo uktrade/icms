@@ -190,7 +190,7 @@ class ImportApplicationLicence(MigrationBase):
     issue_paper_licence_only = models.BooleanField(null=True)
     licence_start_date = models.DateField(null=True)
     licence_end_date = models.DateField(null=True)
-    case_completion_date = models.DateField(null=True)
+    case_completion_datetime = models.DateTimeField(null=True)
     case_reference = models.CharField(max_length=100, null=True, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

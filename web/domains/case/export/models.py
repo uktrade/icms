@@ -197,7 +197,7 @@ class ExportApplication(ApplicationBase):
         """Return all completed documents past and present."""
 
         return self.certificates.filter(
-            issue_date__isnull=False,
+            case_completion_datetime__isnull=False,
             status__in=[
                 ExportApplicationCertificate.Status.ACTIVE,
                 ExportApplicationCertificate.Status.ARCHIVED,
@@ -541,8 +541,8 @@ class ExportApplicationCertificate(CaseLicenceCertificateBase):
         "ExportApplication", on_delete=models.CASCADE, related_name="certificates"
     )
 
-    # TODO - Why is this different to case_completion_date (Update it to have a common field)
-    issue_date = models.DateField(verbose_name="Issue Date", null=True)
+    # Set when certificate is marked active.
+    case_completion_datetime = models.DateTimeField(verbose_name="Issue Date", null=True)
 
     def __str__(self):
         ea_pk, st, ca = (self.export_application_id, self.status, self.created_at)

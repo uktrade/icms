@@ -372,7 +372,7 @@ class ImportApplication(ApplicationBase):
         """Return all completed documents past and present."""
 
         return self.licences.filter(
-            case_completion_date__isnull=False,
+            case_completion_datetime__isnull=False,
             status__in=[
                 ImportApplicationLicence.Status.ACTIVE,
                 ImportApplicationLicence.Status.ARCHIVED,
@@ -466,9 +466,8 @@ class ImportApplicationLicence(CaseLicenceCertificateBase):
     licence_start_date = models.DateField(verbose_name="Start Date", null=True)
     licence_end_date = models.DateField(verbose_name="End Date", null=True)
 
-    # TODO - Why is this different to issue_date (Update it to have a common field)
-    # Set when the case is marked as complete
-    case_completion_date = models.DateField(verbose_name="Case Completion Date", null=True)
+    # Set when licence is marked active.
+    case_completion_datetime = models.DateTimeField(verbose_name="Case Completion Date", null=True)
 
     def __str__(self):
         ia_pk = self.import_application_id
