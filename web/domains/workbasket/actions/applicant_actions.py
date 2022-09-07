@@ -283,24 +283,46 @@ class AcknowledgeNotificationAction(Action):
         ]
 
 
-class ViewIssuedDocumentsAction(Action):
+class IssuedDocumentsBaseAction(Action):
+    """Base class for viewing issued documents and clearing those documents from the workbasket"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.issued_documents_qs = (
+            self.application.get_specific_model()
+            .get_issued_documents()
+            .filter(show_in_workbasket=True)
+        )
+
     def show_link(self) -> bool:
         show_link = False
 
-        if self.status == ImpExpStatus.COMPLETED and not self.application.is_rejected(
-            self.active_tasks
+        if (
+            self.status == ImpExpStatus.COMPLETED
+            and not self.application.is_rejected(self.active_tasks)
+            and self.issued_documents_qs.exists()
         ):
             show_link = True
 
         return show_link
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
+        raise NotImplementedError
+
+    @staticmethod
+    def section_label(
+        issued_document: Union["ImportApplicationLicence", "ExportApplicationCertificate"]
+    ) -> str:
+        cd = issued_document.case_completion_datetime
+        issue_datetime = cd.strftime("%d-%b-%Y %H:%M")
+
+        return f"Documents Issued {issue_datetime}"
+
+
+class ViewIssuedDocumentsAction(IssuedDocumentsBaseAction):
+    def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
-        issued_documents = (
-            self.application.get_specific_model()
-            .get_issued_documents()
-            .filter(show_in_workbasket=True)
-        )
 
         return [
             WorkbasketAction(
@@ -311,36 +333,15 @@ class ViewIssuedDocumentsAction(Action):
                 ),
                 section_label=self.section_label(i),
             )
-            for i in issued_documents
+            for i in self.issued_documents_qs.values_list(
+                "pk", "case_completion_datetime", named=True
+            )
         ]
 
-    def section_label(
-        self, issued_document: Union["ImportApplicationLicence", "ExportApplicationCertificate"]
-    ) -> str:
-        cd = issued_document.case_completion_datetime
-        issue_datetime = cd.strftime("%d-%b-%Y %H:%M")
 
-        return f"Documents Issued {issue_datetime}"
-
-
-class ClearIssuedDocumentsAction(Action):
-    def show_link(self) -> bool:
-        show_link = False
-
-        if self.status == ImpExpStatus.COMPLETED and not self.application.is_rejected(
-            self.active_tasks
-        ):
-            show_link = True
-
-        return show_link
-
+class ClearIssuedDocumentsAction(IssuedDocumentsBaseAction):
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
-        issued_documents = (
-            self.application.get_specific_model()
-            .get_issued_documents()
-            .filter(show_in_workbasket=True)
-        )
 
         return [
             WorkbasketAction(
@@ -351,16 +352,10 @@ class ClearIssuedDocumentsAction(Action):
                 ),
                 section_label=self.section_label(i),
             )
-            for i in issued_documents
+            for i in self.issued_documents_qs.values_list(
+                "pk", "case_completion_datetime", named=True
+            )
         ]
-
-    def section_label(
-        self, issued_document: Union["ImportApplicationLicence", "ExportApplicationCertificate"]
-    ) -> str:
-        cd = issued_document.case_completion_datetime
-        issue_datetime = cd.strftime("%d-%b-%Y %H:%M")
-
-        return f"Documents Issued {issue_datetime}"
 
 
 class ProvideFirearmsReportAction(Action):
