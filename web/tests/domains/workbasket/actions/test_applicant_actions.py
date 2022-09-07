@@ -6,8 +6,10 @@ from web.domains.case.models import VariationRequest
 from web.domains.case.shared import ImpExpStatus
 from web.domains.user.models import User
 from web.domains.workbasket.actions.applicant_actions import (
+    ClearIssuedDocumentsAction,
     SubmitVariationUpdateAction,
     ViewApplicationAction,
+    ViewIssuedDocumentsAction,
 )
 from web.domains.workbasket.actions.shared_actions import ClearApplicationAction
 from web.flow.models import Task
@@ -101,5 +103,62 @@ class TestApplicantActions:
             else:
                 assert not action.show_link()
 
-    def test_acknowledge_complete_notification_is_shown(self, wood_app_submitted):
-        ...
+    def test_view_issued_documents_is_shown(self, completed_app):
+        active_tasks = []
+        action = ViewIssuedDocumentsAction(
+            self.user, "import", completed_app, active_tasks, False, True
+        )
+
+        assert action.show_link()
+
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.name == "View Issued Documents"
+        assert wb_action.section_label.startswith("Documents Issued ")
+
+    def test_view_issued_documents_not_shown(self, completed_app):
+        active_tasks = []
+
+        # Use the wood app in `self.app` to show it not showing
+        action = ViewIssuedDocumentsAction(self.user, "import", self.app, active_tasks, False, True)
+        assert not action.show_link()
+
+        # Test completed app is no longer shown
+        licence = completed_app.get_issued_documents().first()
+        licence.show_in_workbasket = False
+        licence.save()
+
+        action = ViewIssuedDocumentsAction(
+            self.user, "import", completed_app, active_tasks, False, True
+        )
+        assert not action.show_link()
+
+    def test_clear_issued_documents_is_shown(self, completed_app):
+        active_tasks = []
+        action = ClearIssuedDocumentsAction(
+            self.user, "import", completed_app, active_tasks, False, True
+        )
+
+        assert action.show_link()
+
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.name == "Clear"
+        assert wb_action.section_label.startswith("Documents Issued ")
+
+    def test_clear_issued_documents_not_shown(self, completed_app):
+        active_tasks = []
+
+        # Use the wood app in `self.app` to show it not showing
+        action = ClearIssuedDocumentsAction(
+            self.user, "import", self.app, active_tasks, False, True
+        )
+        assert not action.show_link()
+
+        # Test completed app is no longer shown
+        licence = completed_app.get_issued_documents().first()
+        licence.show_in_workbasket = False
+        licence.save()
+
+        action = ClearIssuedDocumentsAction(
+            self.user, "import", completed_app, active_tasks, False, True
+        )
+        assert not action.show_link()
