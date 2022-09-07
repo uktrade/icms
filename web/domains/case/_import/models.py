@@ -188,6 +188,9 @@ class ImportApplication(ApplicationBase):
     variation_refuse_reason = models.CharField(
         max_length=4000, blank=True, null=True, verbose_name="Variation Refusal Reason"
     )
+
+    # TODO: ICMSLST-1743: Add search by issue date
+    # This field is also on the licence model - either use that or rename this to `latest_issue_date`
     issue_date = models.DateField(blank=True, null=True)
     licence_extended_flag = models.BooleanField(blank=False, null=False, default=False)
 
@@ -352,6 +355,7 @@ class ImportApplication(ApplicationBase):
     def application_approved(self):
         return self.decision == self.APPROVE
 
+    # TODO: Revisit when doing ICMSLST-1744 - It needs removing
     @property
     def licence_issue_date(self):
         # NOTE: This field is never set but is used in two places

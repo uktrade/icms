@@ -90,7 +90,9 @@ class PdfGenerator:
         if self.doc_type == DocumentTypes.COVER_LETTER:
             extra = {
                 "page_title": "Cover Letter Preview",
-                # TODO: licence_issue_date is a property and should probably be application.licence_start_date
+                # TODO: Revisit when doing ICMSLST-1744
+                #       licence_issue_date is a property and should probably be
+                #       application.licence_start_date or case_completion_datetime
                 "issue_date": self.application.licence_issue_date.strftime("%d %B %Y"),
                 "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
                 "licence_start_date": "TODO: SET THIS VALUE",
@@ -121,7 +123,9 @@ class PdfGenerator:
             else:
                 extra = {
                     "page_title": "Licence Preview",
-                    # TODO: licence_issue_date is a property and should probably be application.licence_start_date
+                    # TODO: Revisit when doing ICMSLST-1744
+                    #       licence_issue_date is a property and should probably be
+                    #       application.licence_start_date or case_completion_datetime
                     "issue_date": self.application.licence_issue_date.strftime("%d %B %Y"),
                 }
         else:
