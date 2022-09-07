@@ -13,7 +13,7 @@ export ICMS_DEBUG=False
 # --create-db" to force re-creation of the test database.
 #
 # For speed run with --dist=no when testing a single file
-docker-compose run --rm web pytest --tb=short --dist=loadfile --tx=4*popen "$@"
+docker-compose run --rm web pytest --tb=short --dist=loadfile --tx=4*popen --disable-warnings "$@"
 
 # With coverage (terminal report)
 #docker-compose run --rm web \

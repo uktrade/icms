@@ -1,21 +1,28 @@
+import datetime
 from typing import TYPE_CHECKING
 
 import pytest
 from django.core.management import call_command
 from django.test import signals
 from django.test.client import Client
+from django.urls import reverse
 from jinja2 import Template as Jinja2Template
+from pytest_django.asserts import assertRedirects
 
 from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
-from web.domains.case._import.fa_sil.models import SILApplication
+from web.domains.case._import.fa_sil.models import SILApplication, SILChecklist
 from web.domains.case._import.models import ImportApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.access.models import ExporterAccessRequest, ImporterAccessRequest
+from web.domains.case.shared import ImpExpStatus
+from web.domains.case.utils import set_application_licence_or_certificate_active
 from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.flow.models import Task
+from web.models.shared import YesNoNAChoices
+from web.tests.helpers import CaseURLS
 
 from .application_utils import (
     create_in_progress_com_app,
@@ -352,3 +359,56 @@ def com_app_submitted(
     app.get_expected_task(Task.TaskType.PROCESS)
 
     return app
+
+
+@pytest.fixture
+def completed_app(fa_sil_app_submitted, icms_admin_client):
+    """A completed firearms sil application."""
+    app = fa_sil_app_submitted
+
+    icms_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    app.refresh_from_db()
+    app.cover_letter = "Example Cover letter"
+    app.decision = app.APPROVE
+    app.save()
+
+    _set_valid_licence(app)
+    _add_valid_checklist(app)
+
+    # Now start authorisation
+    response = icms_admin_client.post(CaseURLS.start_authorisation(app.pk))
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    # Now fake complete the app
+    app.status = ImpExpStatus.COMPLETED
+    app.save()
+    set_application_licence_or_certificate_active(app)
+
+    return app
+
+
+def _set_valid_licence(app):
+    licence = app.get_most_recent_licence()
+    licence.case_completion_datetime = datetime.datetime(2020, 1, 1)
+    licence.licence_start_date = datetime.date(2020, 6, 1)
+    licence.licence_end_date = datetime.date(2024, 12, 31)
+    licence.issue_paper_licence_only = False
+    licence.save()
+
+
+def _add_valid_checklist(app):
+    app.checklist = SILChecklist.objects.create(
+        import_application=app,
+        case_update=YesNoNAChoices.yes,
+        fir_required=YesNoNAChoices.yes,
+        response_preparation=True,
+        validity_period_correct=YesNoNAChoices.yes,
+        endorsements_listed=YesNoNAChoices.yes,
+        authorisation=True,
+        authority_required=YesNoNAChoices.yes,
+        authority_received=YesNoNAChoices.yes,
+        authority_cover_items_listed=YesNoNAChoices.yes,
+        quantities_within_authority_restrictions=YesNoNAChoices.yes,
+        authority_police=YesNoNAChoices.yes,
+    )

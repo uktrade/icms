@@ -1555,3 +1555,5 @@ View Issued Documents
 ICMSLST-1743
 case_completion_datetime
 export_application_id
+Firearms and Ammunition Cover Letter
+Firearms and Ammunition Licence
