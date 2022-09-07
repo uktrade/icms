@@ -374,6 +374,13 @@ urlpatterns = [
                                 name="view-issued-case-documents",
                             ),
                             #
+                            # Clear Issued Case Documents from workbasket (import/export)
+                            path(
+                                "issued-case-documents/<int:issued_document_pk>/clear/",
+                                views_misc.ClearIssuedCaseDocumentsFromWorkbasket.as_view(),
+                                name="clear-issued-case-documents",
+                            ),
+                            #
                             # Emails (import/export)
                             path("emails/", include(email_urls)),
                             #

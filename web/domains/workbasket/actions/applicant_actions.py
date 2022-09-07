@@ -296,7 +296,11 @@ class ViewIssuedDocumentsAction(Action):
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
-        issued_documents = self.application.get_specific_model().get_issued_documents()
+        issued_documents = (
+            self.application.get_specific_model()
+            .get_issued_documents()
+            .filter(show_in_workbasket=True)
+        )
 
         return [
             WorkbasketAction(
@@ -331,14 +335,20 @@ class ClearIssuedDocumentsAction(Action):
         return show_link
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
-        issued_documents = self.application.get_specific_model().get_issued_documents()
+        kwargs = self.get_kwargs()
+        issued_documents = (
+            self.application.get_specific_model()
+            .get_issued_documents()
+            .filter(show_in_workbasket=True)
+        )
 
         return [
             WorkbasketAction(
-                is_post=False,
+                is_post=True,
                 name="Clear",
-                # TODO: Create a view to clear this notification
-                url="#",
+                url=reverse(
+                    "case:clear-issued-case-documents", kwargs=kwargs | {"issued_document_pk": i.pk}
+                ),
                 section_label=self.section_label(i),
             )
             for i in issued_documents

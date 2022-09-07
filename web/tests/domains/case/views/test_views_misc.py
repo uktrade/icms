@@ -1,4 +1,5 @@
 import datetime
+from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import pytest
@@ -66,7 +67,7 @@ def test_take_ownership_in_progress(icms_admin_client: "Client", wood_app_in_pro
 def test_manage_case_get(icms_admin_client: "Client", wood_application):
     resp = icms_admin_client.get(CaseURLS.manage(wood_application.pk))
 
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
     assertContains(resp, "Wood (Quota) - Manage")
     assertTemplateUsed(resp, "web/domains/case/manage/manage.html")
 
@@ -95,7 +96,7 @@ def test_manage_withdrawals_get(
     icms_admin_client: "Client", wood_app_submitted: "WoodQuotaApplication"
 ):
     resp = icms_admin_client.get(CaseURLS.manage_withdrawals(wood_app_submitted.pk))
-    assert resp.status_code == 200
+    assert resp.status_code == HTTPStatus.OK
 
     assertContains(resp, "Wood (Quota) - Withdrawals")
     assertTemplateUsed(resp, "web/domains/case/manage/withdrawals.html")
@@ -119,7 +120,7 @@ def test_start_authorisation_approved_application_has_errors(icms_admin_client, 
     wood_application.save()
 
     response = icms_admin_client.get(CaseURLS.start_authorisation(wood_application.pk))
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
 
     errors: ApplicationErrors = response.context["errors"]
     assert errors.has_errors()
@@ -146,14 +147,14 @@ def test_start_authorisation_approved_application_has_no_errors(
     wood_application.save()
 
     response = icms_admin_client.get(CaseURLS.start_authorisation(wood_application.pk))
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     errors: ApplicationErrors = response.context["errors"]
     assert errors is None
 
     # Now start authorisation
     response = icms_admin_client.post(CaseURLS.start_authorisation(wood_application.pk))
 
-    assertRedirects(response, reverse("workbasket"), 302)
+    assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
 
     wood_application.refresh_from_db()
 
@@ -188,14 +189,14 @@ def test_start_authorisation_approved_application_has_no_errors_export_app(
     pk_to_delete = dr.id
 
     response = icms_admin_client.get(CaseURLS.start_authorisation(com_app.pk, case_type="export"))
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     errors: ApplicationErrors = response.context["errors"]
     assert errors is None
 
     # Now start authorisation
     response = icms_admin_client.post(CaseURLS.start_authorisation(com_app.pk, case_type="export"))
 
-    assertRedirects(response, reverse("workbasket"), 302)
+    assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
 
     com_app.refresh_from_db()
 
@@ -236,7 +237,7 @@ def test_start_authorisation_refused_application_has_errors(icms_admin_client, w
     wood_application.save()
 
     response = icms_admin_client.get(CaseURLS.start_authorisation(wood_application.pk))
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
 
     errors: ApplicationErrors = response.context["errors"]
     assert errors.has_errors()
@@ -252,14 +253,14 @@ def test_start_authorisation_refused_application_has_no_errors(icms_admin_client
     wood_application.save()
 
     response = icms_admin_client.get(CaseURLS.start_authorisation(wood_application.pk))
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
 
     errors: ApplicationErrors = response.context["errors"]
     assert errors is None
 
     # Now start authorisation
     response = icms_admin_client.post(CaseURLS.start_authorisation(wood_application.pk))
-    assertRedirects(response, reverse("workbasket"), 302)
+    assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
 
     wood_application.refresh_from_db()
 
@@ -291,7 +292,7 @@ def test_start_authorisation_approved_variation_requested_application(
 
     # Now start authorisation
     response = icms_admin_client.post(CaseURLS.start_authorisation(wood_application.pk))
-    assertRedirects(response, reverse("workbasket"), 302)
+    assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
     wood_application.refresh_from_db()
 
     wood_application.check_expected_status([ImpExpStatus.VARIATION_REQUESTED])
@@ -325,7 +326,7 @@ def test_start_authorisation_rejected_variation_requested_application(
 
     # Now start authorisation
     response = icms_admin_client.post(CaseURLS.start_authorisation(wood_application.pk))
-    assertRedirects(response, reverse("workbasket"), 302)
+    assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
     wood_application.refresh_from_db()
 
     wood_application.check_expected_status([ImpExpStatus.COMPLETED])
@@ -448,17 +449,17 @@ class TestCheckCaseDocumentGenerationView:
 
         # self.client is an ilb_admin client
         response = self.client.get(url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
 
         response = importer_client.get(url)
-        assert response.status_code == 403
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
         response = exporter_client.get(url)
-        assert response.status_code == 403
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
     def test_document_signing_in_progress(self):
         resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
-        assert resp.status_code == 200
+        assert resp.status_code == HTTPStatus.OK
 
         resp_data = resp.json()
         assert resp_data["msg"] == "Documents are still being generated"
@@ -468,7 +469,7 @@ class TestCheckCaseDocumentGenerationView:
         self._create_new_task(Task.TaskType.DOCUMENT_ERROR)
 
         resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
-        assert resp.status_code == 200
+        assert resp.status_code == HTTPStatus.OK
 
         resp_data = resp.json()
         assert resp_data["msg"] == "Failed to generate documents"
@@ -484,7 +485,7 @@ class TestCheckCaseDocumentGenerationView:
         task.save()
 
         resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
-        assert resp.status_code == 200
+        assert resp.status_code == HTTPStatus.OK
 
         resp_data = resp.json()
         assert resp_data["msg"] == "Documents generated successfully"
@@ -494,7 +495,7 @@ class TestCheckCaseDocumentGenerationView:
         self._create_new_task(Task.TaskType.CHIEF_WAIT)
 
         resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
-        assert resp.status_code == 200
+        assert resp.status_code == HTTPStatus.OK
 
         resp_data = resp.json()
         assert resp_data["msg"] == "Documents generated successfully"
@@ -504,7 +505,7 @@ class TestCheckCaseDocumentGenerationView:
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
         self.wood_app.save()
         resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
-        assert resp.status_code == 200
+        assert resp.status_code == HTTPStatus.OK
 
         resp_data = resp.json()
         assert resp_data["msg"] == "Documents are still being generated"
@@ -516,7 +517,7 @@ class TestCheckCaseDocumentGenerationView:
         self._create_new_task(Task.TaskType.DOCUMENT_ERROR)
 
         resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
-        assert resp.status_code == 200
+        assert resp.status_code == HTTPStatus.OK
 
         resp_data = resp.json()
         assert resp_data["msg"] == "Failed to generate documents"
@@ -528,7 +529,7 @@ class TestCheckCaseDocumentGenerationView:
         self._create_new_task(Task.TaskType.CHIEF_WAIT)
 
         resp = self.client.get(CaseURLS.check_document_generation(self.wood_app.pk))
-        assert resp.status_code == 200
+        assert resp.status_code == HTTPStatus.OK
 
         resp_data = resp.json()
         assert resp_data["msg"] == "Documents generated successfully"
@@ -562,26 +563,30 @@ class TestViewIssuedCaseDocumentsView:
         task.finished = timezone.now()
         task.save()
 
-    def test_permissions_required(self, admin_client, exporter_client):
+    def test_permission(self, admin_client, exporter_client):
         # self.client is an importer_client client
         response = self.client.get(self.url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
 
         response = admin_client.get(self.url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
 
         # Exporter doesn't have access to application therefore 403
         response = exporter_client.get(self.url)
-        assert response.status_code == 403
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
-    def test_licence_shown_in_html(self):
+    def test_get_only(self, importer_client):
+        response = importer_client.post(self.url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_get_success(self):
         self.licence.case_completion_datetime = datetime.datetime(
             2020, 6, 15, 11, 44, 0, tzinfo=pytz.utc
         )
         self.licence.save()
 
         response = self.client.get(self.url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "web/domains/case/view-case-documents.html")
         assertContains(
             response,
@@ -590,6 +595,44 @@ class TestViewIssuedCaseDocumentsView:
         assertContains(response, "<h3>Issued documents (15-Jun-2020 11:44)</h3>")
         assertContains(response, "Firearms and Ammunition Cover Letter")
         assertContains(response, "Firearms and Ammunition Licence")
+
+
+class TestClearIssuedCaseDocumentsFromWorkbasketView:
+    @pytest.fixture(autouse=True)
+    def set_client(self, importer_client):
+        self.client = importer_client
+
+    @pytest.fixture(autouse=True)
+    def set_app(self, completed_app):
+        self.app = completed_app
+        self.licence = self.app.get_issued_documents().get(status="AC")
+        self.url = CaseURLS.clear_issued_case_documents_from_workbasket(
+            self.app.pk, issued_document_pk=self.licence.pk
+        )
+
+        # No active tasks when complete
+        task = self.app.tasks.get(is_active=True)
+        task.is_active = False
+        task.finished = timezone.now()
+        task.save()
+
+    def test_permission(self, exporter_client):
+        # Exporter doesn't have access to application therefore 403
+        response = exporter_client.post(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_post_only(self, importer_client):
+        response = importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_post_success(self, admin_client, exporter_client):
+        assert self.licence.show_in_workbasket is True
+
+        response = self.client.post(self.url)
+        assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
+
+        self.licence.refresh_from_db()
+        assert self.licence.show_in_workbasket is False
 
 
 def _set_valid_licence(wood_application):
