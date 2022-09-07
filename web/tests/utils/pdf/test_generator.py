@@ -204,6 +204,7 @@ def test_get_fa_sil_licence_pre_sign_context(sil_app, licence, sil_expected_prev
 
 # TODO: Remove the default tests when every app type has been implemented
 def test_get_default_preview_licence_context(licence):
+    # TODO: Revisit when doing ICMSLST-1744 The issue date is incorrect (it should use the licence issue date)
     app = WoodQuotaApplication(
         process_type=WoodQuotaApplication.PROCESS_TYPE, issue_date=datetime.date(2022, 4, 21)
     )
@@ -224,6 +225,7 @@ def test_get_default_preview_licence_context(licence):
 
 # TODO: Remove the default tests when every app type has been implemented
 def test_get_default_cover_letter_context(licence):
+    # TODO: Revisit when doing ICMSLST-1744 The issue date is incorrect (it should use the licence issue date)
     app = DFLApplication(
         process_type=DFLApplication.PROCESS_TYPE, issue_date=datetime.date(2022, 4, 21)
     )
