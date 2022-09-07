@@ -2,6 +2,7 @@ import datetime
 from typing import TYPE_CHECKING
 
 import pytest
+import pytz
 from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertContains, assertRedirects, assertTemplateUsed
@@ -540,6 +541,55 @@ class TestCheckCaseDocumentGenerationView:
         task.save()
 
         Task.objects.create(process=self.wood_app, task_type=new_task, previous=task)
+
+
+class TestViewIssuedCaseDocumentsView:
+    @pytest.fixture(autouse=True)
+    def set_client(self, importer_client):
+        self.client = importer_client
+
+    @pytest.fixture(autouse=True)
+    def set_app(self, completed_app):
+        self.app = completed_app
+        self.licence = self.app.get_issued_documents().get(status="AC")
+        self.url = CaseURLS.view_issued_case_documents(
+            self.app.pk, issued_document_pk=self.licence.pk
+        )
+
+        # No active tasks when complete
+        task = self.app.tasks.get(is_active=True)
+        task.is_active = False
+        task.finished = timezone.now()
+        task.save()
+
+    def test_permissions_required(self, admin_client, exporter_client):
+        # self.client is an importer_client client
+        response = self.client.get(self.url)
+        assert response.status_code == 200
+
+        response = admin_client.get(self.url)
+        assert response.status_code == 200
+
+        # Exporter doesn't have access to application therefore 403
+        response = exporter_client.get(self.url)
+        assert response.status_code == 403
+
+    def test_licence_shown_in_html(self):
+        self.licence.case_completion_datetime = datetime.datetime(
+            2020, 6, 15, 11, 44, 0, tzinfo=pytz.utc
+        )
+        self.licence.save()
+
+        response = self.client.get(self.url)
+        assert response.status_code == 200
+        assertTemplateUsed(response, "web/domains/case/view-case-documents.html")
+        assertContains(
+            response,
+            "Firearms and Ammunition (Specific Individual Import Licence) - Issued Documents",
+        )
+        assertContains(response, "<h3>Issued documents (15-Jun-2020 11:44)</h3>")
+        assertContains(response, "Firearms and Ammunition Cover Letter")
+        assertContains(response, "Firearms and Ammunition Licence")
 
 
 def _set_valid_licence(wood_application):

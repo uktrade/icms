@@ -179,6 +179,18 @@ class CaseURLS:
         return reverse("case:check-document-generation", kwargs=kwargs)
 
     @staticmethod
+    def view_issued_case_documents(
+        application_pk: int, issued_document_pk: int, case_type="import"
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "case_type": case_type,
+            "issued_document_pk": issued_document_pk,
+        }
+
+        return reverse("case:view-issued-case-documents", kwargs=kwargs)
+
+    @staticmethod
     def get_application_history(application_pk: int, case_type="import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 
