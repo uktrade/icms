@@ -50,7 +50,7 @@ from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import delete_file_from_s3, get_s3_client
 from web.utils.validation import ApplicationErrors
 
-from .mixins import ApplicationTaskMixin
+from .mixins import ApplicationAndTaskRelatedObjectMixin, ApplicationTaskMixin
 from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
 
 if TYPE_CHECKING:
@@ -939,6 +939,44 @@ class ViewIssuedCaseDocumentsView(
         context["issue_date"] = issued_doc.case_completion_datetime
 
         return context | get_document_context(self.application, issued_doc)
+
+
+@method_decorator(transaction.atomic, name="post")
+class ClearIssuedCaseDocumentsFromWorkbasket(
+    ApplicationAndTaskRelatedObjectMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+):
+    # ApplicationAndTaskRelatedObjectMixin Config
+    current_status = [ImpExpStatus.COMPLETED]
+
+    # View Config
+    http_method_names = ["post"]
+
+    def has_permission(self):
+        self.set_application_and_task()
+
+        try:
+            check_application_permission(
+                self.application, self.request.user, self.kwargs["case_type"]
+            )
+        except PermissionDenied:
+            return False
+
+        return True
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> Any:
+        """Remove the document pack from the workbasket."""
+        id_pk = self.kwargs["issued_document_pk"]
+
+        issued_doc = get_object_or_404(
+            self.application.get_issued_documents().select_for_update(), pk=id_pk
+        )
+
+        issued_doc.show_in_workbasket = False
+        issued_doc.save()
+
+        self.update_application_tasks()
+
+        return redirect(reverse("workbasket"))
 
 
 def _get_primary_recipients(application: ImpOrExp) -> "QuerySet[User]":
