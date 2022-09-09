@@ -181,6 +181,7 @@ ia_source_target = [
     SourceTarget(dm.TextilesChecklist, web.TextilesChecklist),
     SourceTarget(dm.UserImportCertificate, web.UserImportCertificate),
     SourceTarget(dm.EndorsementImportApplication, web.EndorsementImportApplication),
+    SourceTarget(dm.VariationRequest, web.VariationRequest),
 ]
 
 
@@ -310,6 +311,7 @@ export_query_model = [
     QueryModel(
         export_application, "export_certificate_docs", dm.ExportCertificateCaseDocumentReferenceData
     ),
+    QueryModel(export_application, "export_variations", dm.VariationRequest),
 ]
 
 export_source_target = [
@@ -338,6 +340,7 @@ export_source_target = [
 
 export_m2m = [
     M2M(dm.Office, web.Exporter, "offices"),
+    M2M(dm.VariationRequest, web.ExportApplication, "variation_requests"),
     M2M(dm.ExportApplicationCountries, web.ExportApplication, "countries"),
     M2M(dm.GMPFile, web.CertificateOfGoodManufacturingPracticeApplication, "supporting_documents"),
     M2M(dm.CFSLegislation, web.CFSSchedule, "legislations"),

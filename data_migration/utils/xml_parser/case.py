@@ -9,11 +9,11 @@ from data_migration.utils.format import date_or_none, get_xml_val, str_to_bool
 from .base import BaseXmlParser
 
 
-class VariationBase(BaseXmlParser):
+class VariationImportParser(BaseXmlParser):
     MODEL = dm.VariationRequest
     FIELD = "variations_xml"
     ROOT_NODE = "/VARIATION_REQUEST_LIST/VARIATION_REQUEST"
-    TYPE: str = ""
+    PARENT = dm.ImportApplication
 
     @classmethod
     def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional[Model]:
@@ -54,7 +54,7 @@ class VariationBase(BaseXmlParser):
 
         return cls.MODEL(
             **{
-                f"{cls.TYPE}_id": parent_pk,
+                "import_application_id": parent_pk,
                 "status": status,
                 "is_active": is_active,
                 "requested_datetime": requested_date,
@@ -68,8 +68,3 @@ class VariationBase(BaseXmlParser):
                 "closed_by_id": closed_by_id,
             }
         )
-
-
-class VariationImportParser(VariationBase):
-    PARENT = dm.ImportApplication
-    TYPE = "import_application"
