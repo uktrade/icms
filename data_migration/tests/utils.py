@@ -1637,11 +1637,14 @@ query_result = {
         [("ca_id",), ("cad_id",), ("case_completion_datetime",), ("status",), ("case_reference",)],
         [
             (8, 18, datetime(2022, 4, 29), "DR", "CA/2022/9902"),
-            (9, 19, datetime(2022, 4, 29), "AC", "CA/2022/9903"),
+            (9, 10, datetime(2022, 4, 29), "AR", "CA/2022/9903"),
+            (9, 19, datetime(2022, 4, 29), "AC", "CA/2022/9903/1"),
             (11, 21, datetime(2022, 4, 29), "DR", "CA/2022/9905"),
             (12, 22, datetime(2022, 4, 29), "AC", "CA/2022/9906"),
             (14, 24, datetime(2022, 4, 29), "DR", "CA/2022/9908"),
-            (15, 25, datetime(2022, 4, 29), "AC", "CA/2022/9909"),
+            (15, 11, datetime(2022, 4, 29), "AR", "CA/2022/9909"),
+            (15, 12, datetime(2022, 4, 29), "AR", "CA/2022/9909/1"),
+            (15, 25, datetime(2022, 4, 29), "AC", "CA/2022/9909/2"),
         ],
     ),
     export_application.export_certificate_docs: (
@@ -1780,6 +1783,54 @@ query_result = {
                 "path/to/cfs-cert-2.pdf",  # path
                 datetime.now(),  # created_datetime
                 2,  # created_by_id
+            ),
+        ],
+    ),
+    export_application.export_variations: (
+        [
+            ("ca_id",),
+            ("is_active",),
+            ("case_reference",),
+            ("status",),
+            ("requested_datetime",),
+            ("requested_by_id",),
+            ("what_varied",),
+            ("closed_datetime",),
+            ("closed_by_id",),
+        ],
+        [
+            (
+                9,  # ca_id
+                0,  # is_active
+                "CA/2022/9903/1",  # case_reference
+                "CLOSED",  # status
+                datetime.now(),  # requested_datetime
+                2,  # requested_by_id
+                "Make changes",  # what_varied
+                datetime.now(),  # closed_datetime
+                2,  # closed_by_id
+            ),
+            (
+                15,  # ca_id
+                0,  # is_active
+                "CA/2022/9909/1",  # case_reference
+                "CLOSED",  # status
+                datetime.now(),  # requested_datetime
+                2,  # requested_by_id
+                "First changes",  # what_varied
+                datetime.now(),  # closed_datetime
+                2,  # closed_by_id
+            ),
+            (
+                15,  # ca_id
+                1,  # is_active
+                "CA/2022/9909/2",  # case_reference
+                "OPEN",  # status
+                datetime.now(),  # requested_datetime
+                2,  # requested_by_id
+                "Second changes",  # what_varied
+                datetime.now(),  # closed_datetime
+                2,  # closed_by_id
             ),
         ],
     ),

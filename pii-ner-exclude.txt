@@ -1558,3 +1558,8 @@ export_application_id
 Firearms and Ammunition Cover Letter
 Firearms and Ammunition Licence
 Documents Issued
+ON ia.id = ir.ima_id INNER JOIN
+ON xiad.ima_id = ia.id AND xiad.status_control
+CA/2022/9909/2
+ON sld.id = DEREF(dd.secure_lob_ref).id ORDER
+v.start_datetime

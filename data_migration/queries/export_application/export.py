@@ -3,6 +3,7 @@ __all__ = [
     "export_application_countries",
     "export_certificate",
     "export_certificate_docs",
+    "export_variations",
 ]
 
 export_application_type = """
@@ -67,9 +68,9 @@ SELECT
   car.ca_id
   , card.cad_id
   , card.issue_datetime case_completion_datetime
-  , CASE card.status
-    WHEN 'DRAFT' THEN 'DR'
-    WHEN 'DELETED' THEN 'AR'
+  , CASE
+    WHEN card.status = 'DRAFT' THEN 'DR'
+    WHEN card.is_last_issued = 'false' THEN 'AR'
     ELSE 'AC'
     END status
   , CASE
@@ -83,7 +84,8 @@ FROM impmgr.certificate_app_responses car
   INNER JOIN impmgr.cert_app_response_details card ON card.car_id = car.id
   INNER JOIN impmgr.certificate_applications ca ON ca.id = car.ca_id
   INNER JOIN impmgr.certificate_app_details cad ON cad.id = card.cad_id
-WHERE card.status_control = 'C'
+WHERE card.status <> 'DELETED'
+ORDER BY card.id
 """
 
 export_certificate_docs = """
@@ -106,6 +108,21 @@ FROM impmgr.certificate_app_responses car
   INNER JOIN decmgr.xview_document_data xdd ON xdd.di_id = cardc.document_instance_id AND xdd.system_document = 'N' AND xdd.content_description = 'PDF'
   INNER JOIN decmgr.document_data dd ON dd.id = xdd.dd_id
   INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(dd.secure_lob_ref).id
-WHERE card.status_control = 'C'
 ORDER BY cardc.id
+"""
+
+export_variations = """
+SELECT
+    ca_id
+    , CASE v.variation_status WHEN 'OPEN' THEN 1 ELSE 0 END is_active
+    , v.variation_status status
+    , v.start_datetime requested_datetime
+    , 2 requested_by_id
+    , v.variation_reason what_varied
+    , v.end_datetime closed_datetime
+    , 2 closed_by_id
+FROM impmgr.xview_cert_app_variations v
+WHERE status_control = 'C'
+AND variation_reason IS NOT NULL
+ORDER BY cad_id, variation_id
 """

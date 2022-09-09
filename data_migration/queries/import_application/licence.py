@@ -25,10 +25,10 @@ SELECT
   , ird.start_datetime case_completion_datetime
 FROM impmgr.ima_responses ir
   INNER JOIN impmgr.ima_response_details ird ON ird.ir_id = ir.id
-  INNER JOIN impmgr.xview_ima_details xiad ON xiad.imad_id = ird.imad_id
-  INNER JOIN impmgr.import_applications ia ON ia.id = xiad.ima_id
+  INNER JOIN impmgr.import_applications ia ON ia.id = ir.ima_id
+  INNER JOIN impmgr.xview_ima_details xiad ON xiad.ima_id = ia.id AND xiad.status_control = 'C'
 WHERE ir.response_type LIKE '%_LICENCE'
-ORDER BY ir.ima_id, ird.variation_no
+ORDER BY ird.id
 """
 
 #  , dd.signed_datetime
@@ -59,5 +59,5 @@ FROM impmgr.ima_responses ir
   INNER JOIN decmgr.document_data dd ON dd.id = xdd.dd_id
   INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(dd.secure_lob_ref).id
 WHERE ir.response_type LIKE '%_LICENCE' OR ir.response_type LIKE '%_COVER'
-ORDER BY ir.id, dd.id
+ORDER BY sld.id
 """
