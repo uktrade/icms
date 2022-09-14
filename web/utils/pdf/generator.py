@@ -5,6 +5,7 @@ from typing import Any, Optional
 import weasyprint
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.utils import timezone
 
 from web.domains.case._import.models import ImportApplicationLicence
 from web.domains.case.types import ImpOrExp
@@ -90,10 +91,7 @@ class PdfGenerator:
         if self.doc_type == DocumentTypes.COVER_LETTER:
             extra = {
                 "page_title": "Cover Letter Preview",
-                # TODO: Revisit when doing ICMSLST-1744
-                #       licence_issue_date is a property and should probably be
-                #       application.licence_start_date or case_completion_datetime
-                "issue_date": self.application.licence_issue_date.strftime("%d %B %Y"),
+                "issue_date": timezone.now().date().strftime("%d %B %Y"),
                 "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
                 "licence_start_date": "TODO: SET THIS VALUE",
                 "licence_end_date": "TODO: SET THIS VALUE",
@@ -123,10 +121,7 @@ class PdfGenerator:
             else:
                 extra = {
                     "page_title": "Licence Preview",
-                    # TODO: Revisit when doing ICMSLST-1744
-                    #       licence_issue_date is a property and should probably be
-                    #       application.licence_start_date or case_completion_datetime
-                    "issue_date": self.application.licence_issue_date.strftime("%d %B %Y"),
+                    "issue_date": timezone.now().date().strftime("%d %B %Y"),
                 }
         else:
             raise ValueError(f"Unsupported document type: {self.doc_type}")

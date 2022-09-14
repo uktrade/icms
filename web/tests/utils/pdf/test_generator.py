@@ -204,10 +204,7 @@ def test_get_fa_sil_licence_pre_sign_context(sil_app, licence, sil_expected_prev
 
 # TODO: Remove the default tests when every app type has been implemented
 def test_get_default_preview_licence_context(licence):
-    # TODO: Revisit when doing ICMSLST-1744 The issue date is incorrect (it should use the licence issue date)
-    app = WoodQuotaApplication(
-        process_type=WoodQuotaApplication.PROCESS_TYPE, issue_date=datetime.date(2022, 4, 21)
-    )
+    app = WoodQuotaApplication(process_type=WoodQuotaApplication.PROCESS_TYPE)
 
     generator = PdfGenerator(app, licence, types.DocumentTypes.LICENCE_PREVIEW)
 
@@ -216,7 +213,7 @@ def test_get_default_preview_licence_context(licence):
         "page_title": "Licence Preview",
         "preview_licence": True,
         "paper_licence_only": False,
-        "issue_date": "21 April 2022",
+        "issue_date": datetime.date.today().strftime("%d %B %Y"),
     }
 
     actual_context = generator.get_document_context()
@@ -225,10 +222,7 @@ def test_get_default_preview_licence_context(licence):
 
 # TODO: Remove the default tests when every app type has been implemented
 def test_get_default_cover_letter_context(licence):
-    # TODO: Revisit when doing ICMSLST-1744 The issue date is incorrect (it should use the licence issue date)
-    app = DFLApplication(
-        process_type=DFLApplication.PROCESS_TYPE, issue_date=datetime.date(2022, 4, 21)
-    )
+    app = DFLApplication(process_type=DFLApplication.PROCESS_TYPE)
 
     generator = PdfGenerator(app, licence, types.DocumentTypes.COVER_LETTER)
 
@@ -237,7 +231,7 @@ def test_get_default_cover_letter_context(licence):
         "page_title": "Cover Letter Preview",
         "preview_licence": False,
         "paper_licence_only": False,
-        "issue_date": "21 April 2022",
+        "issue_date": datetime.date.today().strftime("%d %B %Y"),
         "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
         "licence_start_date": "TODO: SET THIS VALUE",
         "licence_end_date": "TODO: SET THIS VALUE",
