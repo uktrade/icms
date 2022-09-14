@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, Optional
 
 from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
-from django.utils import timezone
 from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case.fir.models import FurtherInformationRequest
@@ -189,8 +188,7 @@ class ImportApplication(ApplicationBase):
         max_length=4000, blank=True, null=True, verbose_name="Variation Refusal Reason"
     )
 
-    # TODO: ICMSLST-1743: Add search by issue date
-    # This field is also on the licence model - either use that or rename this to `latest_issue_date`
+    # TODO: ICMSLST-1746: Remove this field
     issue_date = models.DateField(blank=True, null=True)
     licence_extended_flag = models.BooleanField(blank=False, null=False, default=False)
 
@@ -354,12 +352,6 @@ class ImportApplication(ApplicationBase):
     @property
     def application_approved(self):
         return self.decision == self.APPROVE
-
-    # TODO: Revisit when doing ICMSLST-1744 - It needs removing
-    @property
-    def licence_issue_date(self):
-        # NOTE: This field is never set but is used in two places
-        return self.issue_date or timezone.now().date()
 
     def get_specific_model(self) -> "ImportApplication":
         return super().get_specific_model()

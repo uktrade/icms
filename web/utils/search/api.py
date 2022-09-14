@@ -613,13 +613,11 @@ def _apply_import_application_filter(
         )
 
     if terms.issue_date_start:
-        # TODO: ICMSLST-1743: Add search by issue date
-        # model = model.filter(issue_date__gte=terms.issue_date_start)
+        # TODO: ICMSLST-1743: Add search by issue date (field on ImportApplicationlicence model)
         pass
 
     if terms.issue_date_end:
-        # TODO: ICMSLST-1743: Add search by issue date
-        # model = model.filter(issue_date__lte=terms.issue_date_end)
+        # TODO: ICMSLST-1743: Add search by issue date (field on ImportApplicationlicence model)
         pass
 
     return model
