@@ -50,7 +50,7 @@ data_migrations: ## make data_migration migrations
 
 check_migrations: ## Check for missing migrations:
 	unset UID && \
-	docker-compose run --rm web python ./manage.py makemigrations --check --dry-run
+	docker-compose run --rm -it web python ./manage.py makemigrations --check --dry-run
 
 migrate: ## execute db migration
 	unset UID && \
