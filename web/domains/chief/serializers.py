@@ -26,7 +26,7 @@ def sanction_serializer(
     application: "SanctionsAndAdhocApplication", chief_id: str
 ) -> types.CreateLicenceData:
     organisation = _get_organisation(application)
-    licence = application.get_most_recent_licence()
+    licence = application.get_latest_issued_document()
     licence_ref: CaseDocumentReference = licence.document_references.get(
         document_type=CaseDocumentReference.Type.LICENCE
     )
@@ -67,7 +67,7 @@ def fa_dfl_serializer(application: "DFLApplication", chief_id: str) -> types.Cre
     """Return FA DFL licence data to send to chief."""
 
     organisation = _get_organisation(application)
-    licence = application.get_most_recent_licence()
+    licence = application.get_latest_issued_document()
     licence_ref: CaseDocumentReference = licence.document_references.get(
         document_type=CaseDocumentReference.Type.LICENCE
     )
@@ -100,7 +100,7 @@ def fa_oil_serializer(
     """Return FA OIL licence data to send to chief."""
 
     organisation = _get_organisation(application)
-    licence = application.get_most_recent_licence()
+    licence = application.get_latest_issued_document()
     licence_ref: CaseDocumentReference = licence.document_references.get(
         document_type=CaseDocumentReference.Type.LICENCE
     )
@@ -128,7 +128,7 @@ def fa_oil_serializer(
 
 def fa_sil_serializer(application: "SILApplication", chief_id: str) -> types.CreateLicenceData:
     organisation = _get_organisation(application)
-    licence = application.get_most_recent_licence()
+    licence = application.get_latest_issued_document()
     licence_ref: CaseDocumentReference = licence.document_references.get(
         document_type=CaseDocumentReference.Type.LICENCE
     )

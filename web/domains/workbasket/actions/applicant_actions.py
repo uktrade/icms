@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional
 
 from django.urls import reverse
 from django.utils.dateparse import parse_datetime
@@ -11,8 +11,7 @@ from .base import Action, ActionT
 
 if TYPE_CHECKING:
     from web.domains.case._import.fa.models import SupplementaryInfoBase
-    from web.domains.case._import.models import ImportApplicationLicence
-    from web.domains.case.export.models import ExportApplicationCertificate
+    from web.domains.case.types import IssuedDocument
 
 """Actions that only apply to importer/exporter users are added here"""
 
@@ -311,9 +310,7 @@ class IssuedDocumentsBaseAction(Action):
         raise NotImplementedError
 
     @staticmethod
-    def section_label(
-        issued_document: Union["ImportApplicationLicence", "ExportApplicationCertificate"]
-    ) -> str:
+    def section_label(issued_document: "IssuedDocument") -> str:
         cd = issued_document.case_completion_datetime
         issue_datetime = cd.strftime("%d-%b-%Y %H:%M")
 

@@ -99,7 +99,7 @@ def test_ilb_admin_permission_required(
 
 
 def _add_pre_sign_document_reference(application):
-    licence = application.get_most_recent_licence()
+    licence = application.get_latest_issued_document()
     licence.document_references.create(
         document_type=CaseDocumentReference.Type.LICENCE, reference="0000001B"
     )

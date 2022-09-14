@@ -389,7 +389,7 @@ def completed_app(fa_sil_app_submitted, icms_admin_client):
 
 
 def _set_valid_licence(app):
-    licence = app.get_most_recent_licence()
+    licence = app.get_latest_issued_document()
     licence.case_completion_datetime = datetime.datetime(2020, 1, 1)
     licence.licence_start_date = datetime.date(2020, 6, 1)
     licence.licence_end_date = datetime.date(2024, 12, 31)

@@ -251,7 +251,7 @@ def test_get_application_case_and_licence_references(
     ]
 
     for app in import_apps:
-        licence = app.get_most_recent_licence()
+        licence = app.get_latest_issued_document()
         ref = reference.get_import_licence_reference(lock_manager, app)
         licence.document_references.create(document_type=l_type, reference=ref)
 
@@ -287,7 +287,7 @@ def test_get_application_case_and_licence_references(
 
     c_type = CaseDocumentReference.Type.CERTIFICATE
     for app in [com_app, cfs_app, gmp_app]:
-        certificate = app.get_most_recent_certificate()
+        certificate = app.get_latest_issued_document()
         ref = reference.get_export_certificate_reference(lock_manager, app)
         certificate.document_references.create(document_type=c_type, reference=ref)
 
@@ -334,13 +334,13 @@ def test_import_application_licence_reference_is_reused(
 
 
 def _get_licence_document(app):
-    return app.get_most_recent_licence().document_references.get(
+    return app.get_latest_issued_document().document_references.get(
         document_type=CaseDocumentReference.Type.LICENCE
     )
 
 
 def _get_certificate_document(app):
-    return app.get_most_recent_certificate().document_references.get(
+    return app.get_latest_issued_document().document_references.get(
         document_type=CaseDocumentReference.Type.CERTIFICATE
     )
 

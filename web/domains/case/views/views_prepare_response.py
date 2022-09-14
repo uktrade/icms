@@ -111,7 +111,7 @@ def prepare_response(
             context["variation_refused"] = True
 
         else:
-            context["licence"] = application.get_most_recent_licence()
+            context["licence"] = application.get_latest_issued_document()
 
     # Import applications
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:

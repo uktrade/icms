@@ -34,7 +34,7 @@ def wood_application(icms_admin_client, wood_app_submitted):
     """A submitted wood application owned by the ICMS admin user."""
     icms_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
     wood_app_submitted.refresh_from_db()
-    licence = wood_app_submitted.get_most_recent_licence()
+    licence = wood_app_submitted.get_latest_issued_document()
     licence.issue_paper_licence_only = True
     licence.save()
 
@@ -163,7 +163,7 @@ def test_start_authorisation_approved_application_has_no_errors(
     )
     assert current_task is not None
 
-    licence_doc = wood_application.get_most_recent_licence().document_references.get(
+    licence_doc = wood_application.get_latest_issued_document().document_references.get(
         document_type=CaseDocumentReference.Type.LICENCE
     )
     assert licence_doc.reference == "0000001B"
@@ -184,7 +184,7 @@ def test_start_authorisation_approved_application_has_no_errors_export_app(
 
     # start authorisation should clear any document_references
     # create a dummy one here to test it.
-    cert = com_app.get_most_recent_certificate()
+    cert = com_app.get_latest_issued_document()
     dr = cert.document_references.create(document_type=CaseDocumentReference.Type.CERTIFICATE)
     pk_to_delete = dr.id
 
@@ -205,7 +205,7 @@ def test_start_authorisation_approved_application_has_no_errors_export_app(
     )
     assert current_task is not None
 
-    cert = com_app.get_most_recent_certificate()
+    cert = com_app.get_latest_issued_document()
 
     assert cert.status == CaseLicenceCertificateBase.Status.DRAFT
     assert cert.document_references.count() == 3
@@ -302,7 +302,7 @@ def test_start_authorisation_approved_variation_requested_application(
 
     assert expected_task is not None
 
-    licence_doc = wood_application.get_most_recent_licence().document_references.get(
+    licence_doc = wood_application.get_latest_issued_document().document_references.get(
         document_type=CaseDocumentReference.Type.LICENCE
     )
     assert licence_doc.reference == "0000001B"
@@ -371,7 +371,7 @@ class TestAuthoriseDocumentsView:
 
         self.wood_app = wood_app_submitted
 
-        licence = self.wood_app.get_most_recent_licence()
+        licence = self.wood_app.get_latest_issued_document()
         assert licence.status == CaseLicenceCertificateBase.Status.DRAFT
 
     def test_authorise_post_valid(self):
@@ -385,7 +385,7 @@ class TestAuthoriseDocumentsView:
         self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
         self.wood_app.get_expected_task(Task.TaskType.ACK)
 
-        latest_licence = self.wood_app.get_most_recent_licence()
+        latest_licence = self.wood_app.get_latest_issued_document()
         assert latest_licence.status == CaseLicenceCertificateBase.Status.ACTIVE
 
     def test_authorise_variation_request_post_valid(self, test_icms_admin_user):
@@ -406,7 +406,7 @@ class TestAuthoriseDocumentsView:
         vr = self.wood_app.variation_requests.first()
         assert vr.status == VariationRequest.ACCEPTED
 
-        latest_licence = self.wood_app.get_most_recent_licence()
+        latest_licence = self.wood_app.get_latest_issued_document()
         assert latest_licence.status == CaseLicenceCertificateBase.Status.ACTIVE
 
     def test_authorise_post_valid_for_app_requiring_chief(self):
@@ -426,7 +426,7 @@ class TestAuthoriseDocumentsView:
         self.wood_app.get_expected_task(Task.TaskType.CHIEF_WAIT)
 
         # Latest licence is still draft until after chief submission.
-        latest_licence = self.wood_app.get_most_recent_licence()
+        latest_licence = self.wood_app.get_latest_issued_document()
         assert latest_licence.status == CaseLicenceCertificateBase.Status.DRAFT
 
 
@@ -636,7 +636,7 @@ class TestClearIssuedCaseDocumentsFromWorkbasketView:
 
 
 def _set_valid_licence(wood_application):
-    licence = wood_application.get_most_recent_licence()
+    licence = wood_application.get_latest_issued_document()
     licence.licence_start_date = datetime.date.today()
     licence.licence_end_date = datetime.date(datetime.date.today().year + 1, 12, 1)
     licence.issue_paper_licence_only = True

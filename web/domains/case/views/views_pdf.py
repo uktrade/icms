@@ -43,7 +43,7 @@ class PreviewLicenceView(GenerateLicenceBase):
 
         pdf_gen = PdfGenerator(
             application=self.application,
-            licence=self.application.get_most_recent_licence(),
+            licence=self.application.get_latest_issued_document(),
             doc_type=document_type,
         )
 
@@ -62,7 +62,7 @@ class PreviewCoverLetterView(GenerateLicenceBase):
 
         pdf_gen = PdfGenerator(
             application=self.application,
-            licence=self.application.get_most_recent_licence(),
+            licence=self.application.get_latest_issued_document(),
             doc_type=DocumentTypes.COVER_LETTER,
         )
 

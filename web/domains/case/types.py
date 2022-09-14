@@ -11,8 +11,10 @@ from web.models import (
     DerogationsApplication,
     DFLApplication,
     ExportApplication,
+    ExportApplicationCertificate,
     ExportApplicationType,
     ImportApplication,
+    ImportApplicationLicence,
     ImportApplicationType,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
@@ -53,6 +55,8 @@ ApplicationsWithCaseEmail = Union[
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
 ]
+
+IssuedDocument = Union["ImportApplicationLicence", "ExportApplicationCertificate"]
 
 
 class CaseEmailConfig(NamedTuple):

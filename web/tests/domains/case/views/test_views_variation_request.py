@@ -87,7 +87,7 @@ class TestVariationRequestCancelView:
 
         # Set the draft licence active and create a second one
         set_application_licence_or_certificate_active(self.wood_app)
-        self.active_licence = self.wood_app.get_most_recent_licence()
+        self.active_licence = self.wood_app.get_latest_issued_document()
         self.draft_licence = self.wood_app.licences.create()
 
     def test_cancel_variation_request_get(self):
@@ -147,7 +147,7 @@ class TestVariationRequestCancelViewForExportApplication:
 
         # Set the draft licence active and create a second one
         set_application_licence_or_certificate_active(self.app)
-        self.active_certificate = self.app.get_most_recent_certificate()
+        self.active_certificate = self.app.get_latest_issued_document()
         self.draft_certificate = self.app.certificates.create()
 
     def test_cancel_variation_request_post(self, test_icms_admin_user):
