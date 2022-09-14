@@ -16,7 +16,6 @@ isort==5.10.1
 mypy==0.971
 pip-check==2.6
 Pygments==2.8.1
-pygraphviz==1.7
 pyparsing==2.4.7
 pytest==7.1.2
 pytest-cov==3.0.0
