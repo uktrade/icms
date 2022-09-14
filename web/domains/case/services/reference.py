@@ -66,7 +66,7 @@ def get_import_licence_reference(lock_manager: "LockManager", application: "Impo
         )
         application.save()
 
-    licence = application.get_most_recent_licence()
+    licence = application.get_latest_issued_document()
 
     licence_type = "paper" if licence.issue_paper_licence_only else "electronic"
 

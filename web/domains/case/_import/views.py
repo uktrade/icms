@@ -336,7 +336,7 @@ def edit_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
 
         task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
-        form_kwargs: dict[str, Any] = {"instance": application.get_most_recent_licence()}
+        form_kwargs: dict[str, Any] = {"instance": application.get_latest_issued_document()}
 
         if application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
             form_class = OPTLicenceForm
@@ -627,7 +627,7 @@ class IMICaseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
     )
 
     def get_context_data(self, **kwargs):
-        licence: ImportApplicationLicence = self.object.get_most_recent_licence()
+        licence: ImportApplicationLicence = self.object.get_latest_issued_document()
         licence_doc = licence.document_references.filter(
             document_type=CaseDocumentReference.Type.LICENCE
         ).first()

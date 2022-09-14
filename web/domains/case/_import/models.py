@@ -364,7 +364,13 @@ class ImportApplication(ApplicationBase):
     def get_specific_model(self) -> "ImportApplication":
         return super().get_specific_model()
 
-    def get_most_recent_licence(self) -> "ImportApplicationLicence":
+    def get_latest_issued_document(self) -> "ImportApplicationLicence":
+        """Return the latest import licence.
+
+        This will be for either an active application or a draft one for an open
+        variation request.
+        """
+
         return self.licences.filter(
             status__in=[
                 ImportApplicationLicence.Status.DRAFT,

@@ -5,7 +5,7 @@ from web.domains.case.utils import set_application_licence_or_certificate_active
 def test_set_application_licence_or_certificate_active(wood_app_submitted):
     assert wood_app_submitted.licences.count() == 1
 
-    licence_1 = wood_app_submitted.get_most_recent_licence()
+    licence_1 = wood_app_submitted.get_latest_issued_document()
     assert licence_1.status == CaseLicenceCertificateBase.Status.DRAFT
 
     # Set this licence as active so we can test making the second licence active

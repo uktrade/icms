@@ -151,7 +151,7 @@ class TestRequestVariationUpdateView:
     def test_post_updates_status(self, test_icms_admin_user):
         url = SearchURLS.request_variation(self.wood_app.pk)
 
-        live_licence = self.wood_app.get_most_recent_licence()
+        live_licence = self.wood_app.get_latest_issued_document()
         assert live_licence.status == ImportApplicationLicence.Status.ACTIVE
 
         form_data = {
@@ -181,7 +181,7 @@ class TestRequestVariationUpdateView:
         self.wood_app.get_expected_task(Task.TaskType.PROCESS)
 
         # Check the application's latest licence status is draft
-        latest_licence = self.wood_app.get_most_recent_licence()
+        latest_licence = self.wood_app.get_latest_issued_document()
         assert latest_licence.status == ImportApplicationLicence.Status.DRAFT
 
         # All the old values should have been copied over

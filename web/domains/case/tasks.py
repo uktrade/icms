@@ -31,13 +31,13 @@ def create_case_document_pack(application: ImpOrExp, user: User) -> None:
 
     # Create the tasks that will generate the documents
     if application.is_import_application():
-        licence = application.get_most_recent_licence()
+        licence = application.get_latest_issued_document()
         header = [
             create_import_application_document.si(application.id, licence.pk, cdr.pk, user.id)
             for cdr in licence.document_references.all()
         ]
     else:
-        certificate = application.get_most_recent_certificate()
+        certificate = application.get_latest_issued_document()
         header = [
             create_export_application_document.si(application.id, certificate.pk, cdr.pk, user.id)
             for cdr in certificate.document_references.all()

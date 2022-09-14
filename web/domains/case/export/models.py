@@ -185,7 +185,13 @@ class ExportApplication(ApplicationBase):
 
         return super().get_status_display()
 
-    def get_most_recent_certificate(self) -> "ExportApplicationCertificate":
+    def get_latest_issued_document(self) -> "ExportApplicationCertificate":
+        """Return the latest export certificate.
+
+        This will be for either an active application or a draft one for an open
+        variation request.
+        """
+
         return self.certificates.filter(
             status__in=[
                 ExportApplicationCertificate.Status.DRAFT,

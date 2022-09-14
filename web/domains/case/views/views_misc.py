@@ -56,8 +56,7 @@ from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from web.domains.case._import.models import ImportApplicationLicence
-    from web.domains.case.export.models import ExportApplicationCertificate
+    from web.domains.case.types import IssuedDocument
     from web.utils.lock_manager import LockManager
 
 
@@ -275,7 +274,8 @@ def take_ownership(
 
             if case_type == "import":
                 # Licence start date is set when ILB Admin takes the case
-                licence = application.get_most_recent_licence()
+                licence = application.get_latest_issued_document()
+
                 if not licence.licence_start_date:
                     licence.licence_start_date = timezone.now().date()
                     licence.save()
@@ -476,7 +476,7 @@ def create_application_document_references(
     """Create the document references for the draft licence."""
 
     if application.is_import_application():
-        licence = application.get_most_recent_licence()
+        licence = application.get_latest_issued_document()
 
         if licence.status != CaseLicenceCertificateBase.Status.DRAFT:
             raise ValueError("Can only create references for a draft application")
@@ -502,7 +502,7 @@ def _create_export_application_document_references(
 ):
     """Creates document reference records for Export applications."""
 
-    certificate = application.get_most_recent_certificate()
+    certificate = application.get_latest_issued_document()
 
     if certificate.status != CaseLicenceCertificateBase.Status.DRAFT:
         raise ValueError("Can only create references for a draft application")
@@ -669,11 +669,7 @@ class RecreateCaseDocumentsView(
     def post(self, request: HttpRequest, *args, **kwargs) -> Any:
         """Deletes existing draft PDFs and regenerates case document pack"""
         self.set_application_and_task()
-
-        if self.application.is_import_application():
-            l_or_c = self.application.get_most_recent_licence()
-        else:
-            l_or_c = self.application.get_most_recent_certificate()
+        l_or_c = self.application.get_latest_issued_document()
 
         s3_client = get_s3_client()
         for cdr in l_or_c.document_references.all():
@@ -730,12 +726,12 @@ def view_document_packs(
 
 def get_document_context(
     application: ImpOrExp,
-    issued_document: Union["ImportApplicationLicence", "ExportApplicationCertificate"] = None,
+    issued_document: "IssuedDocument" = None,
 ) -> dict[str, str]:
     at = application.application_type
 
     if application.is_import_application():
-        licence = issued_document or application.get_most_recent_licence()
+        licence = issued_document or application.get_latest_issued_document()
         licence_doc = licence.document_references.get(
             document_type=CaseDocumentReference.Type.LICENCE
         )
@@ -783,7 +779,7 @@ def get_document_context(
             "cover_letter_url": cover_letter_url,
         }
     else:
-        certificate = issued_document or application.get_most_recent_certificate()
+        certificate = issued_document or application.get_latest_issued_document()
         certificate_docs = certificate.document_references.filter(
             document_type=CaseDocumentReference.Type.CERTIFICATE
         )
