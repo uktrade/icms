@@ -1,4 +1,4 @@
-from .export import export_application_base
+from .export import common_xml_fields, export_application_base
 
 __all__ = ["com_application"]
 
@@ -10,6 +10,7 @@ com_subquery = """
     , x.product_name
     , x.chemical_name
     , x.manufacturing_process
+    , x.case_note_xml
   FROM
     impmgr.certificate_app_details cad,
     XMLTABLE('/*'
@@ -20,8 +21,11 @@ com_subquery = """
       , product_name VARCHAR2(4000) PATH '/CA/APPLICATION//SCHEDULE//PRODUCT/NAME[not(fox-error)]/text()'
       , chemical_name VARCHAR2(4000) PATH '/CA/APPLICATION//SCHEDULE//PRODUCT/CHEMICAL_NAME[not(fox-error)]/text()'
       , manufacturing_process VARCHAR2(4000) PATH '/CA/APPLICATION//SCHEDULE//PRODUCT/MANUFACTURING_PROCESS[not(fox-error)]/text()'
+      , {common_xml_fields}
     ) x
-"""
+""".format(
+    common_xml_fields=common_xml_fields
+)
 
 com_application = export_application_base.format(
     **{

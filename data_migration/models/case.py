@@ -2,15 +2,16 @@ from typing import Any, Generator
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models import F, OuterRef, Subquery, Value
+from django.db.models import F, OuterRef, QuerySet, Subquery, Value
 from django.db.models.expressions import Window
 from django.db.models.functions import RowNumber
 
+from data_migration.models.export_application.export import ExportApplication
 from data_migration.utils.format import str_to_list
 
 from .base import MigrationBase
 from .export_application import ExportApplicationCertificate, GMPBrand
-from .file import File, FileFolder
+from .file import DocFolder, File, FileFolder
 from .flow import Process
 from .import_application import ImportApplication, ImportApplicationLicence
 from .reference import Country
@@ -225,7 +226,8 @@ class CaseEmail(MigrationBase):
 
 
 class CaseNote(MigrationBase):
-    ima = models.ForeignKey(Process, on_delete=models.CASCADE, to_field="ima_id")
+    ima = models.ForeignKey(Process, on_delete=models.CASCADE, to_field="ima_id", null=True)
+    export_application = models.ForeignKey(ExportApplication, on_delete=models.CASCADE, null=True)
     is_active = models.BooleanField(null=False, default=True)
     status = models.CharField(max_length=20, null=False, default="DRAFT")
     note = models.TextField(null=True)
@@ -235,11 +237,23 @@ class CaseNote(MigrationBase):
         FileFolder,
         on_delete=models.CASCADE,
         related_name="case_note",
+        null=True,
+    )
+    doc_folder = models.OneToOneField(
+        DocFolder,
+        on_delete=models.CASCADE,
+        related_name="case_note",
+        null=True,
     )
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["ima_id", "file_folder_id"]
+        return super().get_excludes() + [
+            "ima_id",
+            "export_application_id",
+            "file_folder_id",
+            "doc_folder_id",
+        ]
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
@@ -247,8 +261,18 @@ class CaseNote(MigrationBase):
 
     @classmethod
     def get_m2m_data(cls, target: models.Model) -> Generator:
+        target_name = target._meta.model_name
+
+        if target_name == "exportapplication":
+            return (
+                cls.objects.exclude(export_application__isnull=True)
+                .values("id", exportapplication_id=F("export_application_id"), casenote_id=F("id"))
+                .iterator()
+            )
+
         return (
             cls.objects.select_related("ima")
+            .exclude(ima__isnull=True)
             .values("id", importapplication_id=F("ima__id"), casenote_id=F("id"))
             .iterator()
         )
@@ -260,25 +284,37 @@ class CaseNoteFile(MigrationBase):
 
     @classmethod
     def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data["id"] = data.pop("row_number")
+        data["id"] = data.pop("row_number") + data.pop("start")
         return data
 
     @classmethod
     def get_m2m_data(cls, target: models.Model) -> Generator:
-        return (
-            File.objects.select_related("target__folder__case_note_id")
-            .filter(
-                target__folder__folder_type="IMP_CASE_NOTE_DOCUMENTS",
-                target__folder__case_note__isnull=False,
-            )
+        ia_case_note_qs = (
+            File.objects.select_related("target__folder__case_note__pk")
+            .filter(target__folder__case_note__isnull=False)
             .annotate(row_number=Window(expression=RowNumber()))
             .values(
                 "row_number",
+                start=Value(0, output_field=models.IntegerField()),
                 file_id=F("pk"),
                 casenote_id=F("target__folder__case_note__pk"),
             )
-            .iterator()
         )
+
+        ea_start = ia_case_note_qs.count()
+        ea_case_note_qs = (
+            File.objects.select_related("doc_folder__case_note__pk")
+            .filter(doc_folder__case_note__isnull=False)
+            .annotate(row_number=Window(expression=RowNumber()))
+            .values(
+                "row_number",
+                start=Value(ea_start, output_field=models.IntegerField()),
+                file_id=F("pk"),
+                casenote_id=F("doc_folder__case_note__pk"),
+            )
+        )
+
+        return QuerySet.union(ia_case_note_qs, ea_case_note_qs).iterator()
 
 
 class UpdateRequest(MigrationBase):

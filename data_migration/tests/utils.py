@@ -29,6 +29,18 @@ IA_FILES_COLUMNS = [
     ("file_size",),
 ]
 
+EA_FILES_COLUMNS = [
+    ("doc_folder_id",),
+    ("folder_title",),
+    ("file_id",),
+    ("filename",),
+    ("content_type",),
+    ("file_size",),
+    ("path",),
+    ("created_datetime",),
+    ("created_by_id",),
+]
+
 IA_BASE_COLUMNS = [
     ("ima_id",),
     ("imad_id",),
@@ -68,6 +80,7 @@ EA_BASE_COLUMNS = [
     ("application_type_id",),
     ("exporter_id",),
     ("exporter_office_legacy_id",),
+    ("case_note_xml",),
 ]
 
 query_result = {
@@ -1372,6 +1385,7 @@ query_result = {
                 21,  # application_type_id
                 2,  # exporter_id
                 "e-2-1",  # export_office_legacy_id
+                None,  # case_note_xml
                 None,  # brand_name
                 31,  # file_folder_id
             ),
@@ -1391,6 +1405,7 @@ query_result = {
                 21,
                 3,
                 "e-3-1",
+                xd.export_case_note_1,
                 "A brand",
                 32,
             ),
@@ -1410,6 +1425,7 @@ query_result = {
                 21,
                 2,
                 "e-2-2",
+                None,  # case_note_xml
                 "Another brand",
                 33,
             ),
@@ -1445,6 +1461,7 @@ query_result = {
                 2,  # application_type_id
                 2,  # exporter_id
                 "e-2-1",  # export_office_legacy_id
+                None,  # case_note_xml
                 None,  # is_pesticide_on_free_sale_uk
                 None,  # is_manufacturer
                 None,  # product_name
@@ -1467,6 +1484,7 @@ query_result = {
                 2,
                 3,
                 "e-3-1",
+                None,  # case_note_xml
                 1,  # is_pesticide_on_free_sale_uk
                 0,  # is_manufacturer
                 "A product",  # product_name
@@ -1489,6 +1507,7 @@ query_result = {
                 2,
                 2,
                 "e-2-2",
+                None,  # case_note_xml
                 0,  # is_pesticide_on_free_sale_uk
                 1,  # is_manufacturer
                 "Another product",  # product_name
@@ -1516,6 +1535,7 @@ query_result = {
                 2,  # application_type_id
                 2,  # exporter_id
                 "e-2-1",  # export_office_legacy_id
+                None,  # case_note_xml
             ),
             (
                 14,
@@ -1533,6 +1553,7 @@ query_result = {
                 2,
                 3,
                 "e-3-1",
+                None,  # case_note_xml
             ),
             (
                 15,
@@ -1550,6 +1571,7 @@ query_result = {
                 2,
                 2,
                 "e-2-2",
+                xd.export_case_note_2,
             ),
         ],
     ),
@@ -1831,6 +1853,66 @@ query_result = {
                 "Second changes",  # what_varied
                 datetime.now(),  # closed_datetime
                 2,  # closed_by_id
+            ),
+        ],
+    ),
+    files.export_case_note_docs: (
+        EA_FILES_COLUMNS,
+        [
+            (
+                1,  # doc_folder_id
+                "Case Note 1",  # folder_title
+                1,  # file_id
+                "Case Note File.pdf",  # filename
+                "pdf",  # content_type
+                1000,  # file_size
+                "1-Case Note File.pdf",  # path
+                datetime.now(),  # created_datetime
+                2,  # created_by_id
+            ),
+            (
+                2,  # doc_folder_id
+                "Case Note 1",  # folder_title
+                None,  # file_id
+                None,  # filename
+                None,  # content_type
+                None,  # file_size
+                None,  # path
+                None,  # created_datetime
+                None,  # created_by_id
+            ),
+            (
+                3,  # doc_folder_id
+                "Case Note 2",  # folder_title
+                2,  # file_id
+                "Case Note 2 File 1.pdf",  # filename
+                "pdf",  # content_type
+                1000,  # file_size
+                "2-Case Note File.pdf",  # path
+                datetime.now(),  # created_datetime
+                2,  # created_by_id
+            ),
+            (
+                3,  # doc_folder_id
+                "Case Note 2",  # folder_title
+                3,  # file_id
+                "Case Note 2 File 2.pdf",  # filename
+                "pdf",  # content_type
+                1000,  # file_size
+                "3-Case Note File.pdf",  # path
+                datetime.now(),  # created_datetime
+                2,  # created_by_id
+            ),
+            (
+                4,  # doc_folder_id
+                "Case Note 2",  # folder_title
+                None,  # file_id
+                None,  # filename
+                None,  # content_type
+                None,  # file_size
+                None,  # path
+                None,  # created_datetime
+                None,  # created_by_id
             ),
         ],
     ),

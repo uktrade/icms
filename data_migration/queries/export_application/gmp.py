@@ -1,4 +1,4 @@
-from .export import export_application_base
+from .export import common_xml_fields, export_application_base
 
 __all__ = ["gmp_application"]
 
@@ -22,6 +22,7 @@ gmp_subquery = """
     , manufacturer_country
     , gmp_certificate_issued
     , file_folder_id
+    , case_note_xml
   FROM
     impmgr.certificate_app_details cad,
     XMLTABLE('/*'
@@ -44,8 +45,11 @@ gmp_subquery = """
       , manufacturer_country VARCHAR(10) PATH '/CA/APPLICATION/GMP_DETAILS/MANUFACTURER_ADDRESS_DETAILS/COUNTRY_OF_MANUFACTURE[not(fox-error)]/text()'
       , gmp_certificate_issued VARCHAR(4000) PATH '/CA/APPLICATION/GMP_DETAILS/GMP_DOCUMENTS/MAIN_DOCUMENT_CERTIFICATE[not(fox-error)]/text()'
       , file_folder_id INTEGER PATH '/CA/APPLICATION/FILE_FOLDER_ID/text()'
+      , {common_xml_fields}
     ) x
-"""
+""".format(
+    common_xml_fields=common_xml_fields
+)
 
 gmp_application = export_application_base.format(
     **{
