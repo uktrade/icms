@@ -2,6 +2,7 @@ __all__ = [
     "case_note_files",
     "derogations_application_files",
     "dfl_application_files",
+    "export_case_note_docs",
     "fa_certificate_files",
     "fir_files",
     "gmp_files",
@@ -385,4 +386,26 @@ LEFT JOIN (
   WHERE status_control = 'C'
  ) fv ON fv.target_id = fft.ID
 WHERE ff.file_folder_type = 'GMP_SUPPORTING_DOCUMENTS'
+"""
+
+
+# To access blob file in secure_lob_data
+# INNER JOIN DOCLIBMGR.FILE_versions fv ON fv.id = vf.file_id
+# INNER JOIN securemgr.secure_lob_data sld ON sld.id = fv.secure_lob_id
+
+export_case_note_docs = """
+SELECT
+  fd.f_id doc_folder_id
+  , fd.folder_title
+  , vf.file_id
+  , vf.filename
+  , vf.content_type
+  , vf.created_datetime
+  , 2 created_by_id
+  , EXTRACTVALUE(vf.metadata_xml, '/file-metadata/size') file_size
+  , vf.file_id || '-' || vf.filename path
+FROM doclibmgr.folder_details fd
+LEFT JOIN doclibmgr.vw_file_folders vff ON vff.f_id = fd.f_id
+LEFT JOIN doclibmgr.vw_files vf ON vf.file_id = vff.file_id
+WHERE fd.folder_title LIKE 'Case Note %'
 """

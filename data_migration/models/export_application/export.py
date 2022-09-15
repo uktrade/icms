@@ -83,6 +83,7 @@ class ExportApplication(MigrationBase):
         Office, on_delete=models.PROTECT, null=True, related_name="+", to_field="legacy_id"
     )
     case_owner = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
+    case_note_xml = models.TextField(null=True)
 
     @classmethod
     def get_excludes(cls) -> list[str]:
@@ -101,8 +102,6 @@ class ExportApplication(MigrationBase):
             "agent_office_id": F("agent_office_legacy__id"),
         }
 
-    # TODO variation_requests = models.ManyToManyField(VariationRequest)
-    # TODO case_notes = models.ManyToManyField(CaseNote)
     # TODO further_information_requests = models.ManyToManyField(FurtherInformationRequest)
     # TODO update_requests = models.ManyToManyField(UpdateRequest)
     # TODO case_emails = models.ManyToManyField(CaseEmail, related_name="+")

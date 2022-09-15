@@ -1,25 +1,25 @@
-from typing import TYPE_CHECKING, Any, Generator, Union
+from typing import Any, Generator, Union
 
 from django.db import models
-from django.db.models import F
+from django.db.models import F, Q, QuerySet
 from django.db.models.expressions import Window
 from django.db.models.functions import RowNumber
 
 from .base import MigrationBase
 from .user import User
 
-if TYPE_CHECKING:
-    from django.db.models import QuerySet
-
 
 class FileCombined(MigrationBase):
     app_model = models.CharField(max_length=40, null=True)
-    folder_id = models.IntegerField()
+    doc_folder_id = models.IntegerField(null=True)
+    folder_id = models.IntegerField(null=True)
     folder_type = models.CharField(max_length=30)
+    folder_title = models.CharField(max_length=30, null=True)
     target_id = models.IntegerField(null=True)
     target_type = models.CharField(max_length=30, null=True)
     status = models.CharField(max_length=20, null=True)
     version_id = models.IntegerField(null=True)
+    file_id = models.IntegerField(null=True)
     filename = models.CharField(max_length=300, null=True)
     content_type = models.CharField(max_length=100, null=True)
     file_size = models.IntegerField(null=True)
@@ -29,20 +29,25 @@ class FileCombined(MigrationBase):
 
 
 class FileFolder(MigrationBase):
+    """This model is for DECMGR.FILE_FOLDERS"""
+
     app_model = models.CharField(max_length=40, null=True)
     folder_id = models.AutoField(auto_created=True, primary_key=True)
     folder_type = models.CharField(max_length=30)
 
     @classmethod
-    def get_from_combined(cls) -> "QuerySet":
+    def get_from_combined(cls) -> QuerySet:
         return (
-            FileCombined.objects.values("app_model", "folder_type", "folder_id")
+            FileCombined.objects.exclude(folder_id__isnull=True)
+            .values("app_model", "folder_type", "folder_id")
             .distinct()
             .iterator()
         )
 
 
 class FileTarget(MigrationBase):
+    """This model is for DECMGR.FILE_TARGETS"""
+
     target_id = models.AutoField(auto_created=True, primary_key=True)
     folder = models.ForeignKey(
         FileFolder, on_delete=models.CASCADE, related_name="file_targets", null=True
@@ -51,10 +56,26 @@ class FileTarget(MigrationBase):
     status = models.CharField(max_length=20, null=True)
 
     @classmethod
-    def get_from_combined(cls) -> "QuerySet":
+    def get_from_combined(cls) -> QuerySet:
         return (
             FileCombined.objects.filter(target_id__isnull=False)
             .values("folder_id", "target_type", "status", "target_id")
+            .distinct()
+            .iterator()
+        )
+
+
+class DocFolder(MigrationBase):
+    """This model is for DOCLIBMGR.FOLDERS folders"""
+
+    doc_folder_id = models.AutoField(auto_created=True, primary_key=True)
+    folder_title = models.CharField(max_length=30)
+
+    @classmethod
+    def get_from_combined(cls) -> QuerySet:
+        return (
+            FileCombined.objects.exclude(doc_folder_id__isnull=True)
+            .values("folder_title", "doc_folder_id")
             .distinct()
             .iterator()
         )
@@ -71,18 +92,20 @@ class File(MigrationBase):
     target = models.ForeignKey(
         FileTarget, on_delete=models.CASCADE, related_name="files", null=True
     )
+    doc_folder = models.ForeignKey(
+        DocFolder, on_delete=models.CASCADE, related_name="files", null=True
+    )
     document_legacy_id = models.IntegerField(unique=True, null=True)
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["target_id", "document_legacy_id"]
+        return super().get_excludes() + ["target_id", "doc_folder_id", "document_legacy_id"]
 
     @classmethod
-    def get_from_combined(cls) -> "QuerySet":
+    def get_from_combined(cls) -> QuerySet:
         return (
-            FileCombined.objects.filter(
-                version_id__isnull=False, status="RECEIVED", content_type__isnull=False
-            )
+            FileCombined.objects.exclude(content_type__isnull=True)
+            .filter(Q(file_id__isnull=False) | (Q(version_id__isnull=False) & Q(status="RECEIVED")))
             .values(
                 "filename",
                 "content_type",
@@ -91,8 +114,8 @@ class File(MigrationBase):
                 "created_datetime",
                 "created_by_id",
                 "target_id",
+                "doc_folder_id",
             )
-            .distinct()
             .iterator()
         )
 

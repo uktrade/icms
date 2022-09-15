@@ -1,11 +1,18 @@
-from .export import export_application_base
+from .export import common_xml_fields, export_application_base
 
 __all__ = ["cfs_application", "cfs_schedule"]
 
 cfs_subquery = """
-  SELECT cad.id cad_id
-  FROM impmgr.certificate_app_details cad
-"""
+  SELECT cad.id cad_id, x.*
+  FROM impmgr.certificate_app_details cad,
+    XMLTABLE('/*'
+    PASSING cad.xml_data
+    COLUMNS
+      {common_xml_fields}
+    ) x
+""".format(
+    common_xml_fields=common_xml_fields
+)
 
 cfs_application = export_application_base.format(
     **{

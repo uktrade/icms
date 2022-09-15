@@ -714,6 +714,7 @@ export_data_source_target = {
         (dm.Country, web.Country),
         (dm.CountryGroup, web.CountryGroup),
         (dm.VariationRequest, web.VariationRequest),
+        (dm.CaseNote, web.CaseNote),
     ],
     "import_application": [],
     "export_application": [
@@ -746,7 +747,7 @@ export_data_source_target = {
 
 export_query_model = {
     "user": [],
-    "file": [(q_f, "gmp_files", dm.FileCombined)],
+    "file": [(q_f, "gmp_files", dm.FileCombined), (q_f, "export_case_note_docs", dm.FileCombined)],
     "import_application": [],
     "export_application": [
         (q_u, "exporters", dm.Exporter),
@@ -770,6 +771,8 @@ export_query_model = {
 
 export_m2m = {
     "export_application": [
+        (dm.CaseNote, web.ExportApplication, "case_notes"),
+        (dm.CaseNoteFile, web.CaseNote, "files"),
         (dm.VariationRequest, web.ExportApplication, "variation_requests"),
         (dm.CFSLegislation, web.CFSSchedule, "legislations"),
         (dm.ExportApplicationCountries, web.ExportApplication, "countries"),
@@ -784,6 +787,7 @@ export_xml = {
         xml_parser.CFSProductParser,
         xml_parser.ProductTypeParser,
         xml_parser.ActiveIngredientParser,
+        xml_parser.CaseNoteExportParser,
     ],
     "import_application": [],
 }
@@ -817,11 +821,32 @@ def test_import_export_data(mock_connect):
     assert ea2.variation_requests.count() == 0
     assert ea3.variation_requests.count() == 1
 
+    assert ea1.case_notes.count() == 0
+    assert ea2.case_notes.count() == 2
+    assert ea2.case_notes.filter(is_active=True).count() == 1
+    assert ea3.case_notes.count() == 0
+
+    case_note1 = ea2.case_notes.filter(is_active=True).first()
+    assert case_note1.note == "This is a case note"
+    # assert case_note1.create_datetime == datetime(2022, 9, 20, 8, 31, 34)
+    assert case_note1.files.count() == 1
+
     assert ea1.certificates.count() == 0
     assert ea2.certificates.count() == 1
+    assert ea3.certificates.count() == 2
+
     cert1 = ea2.certificates.first()
+    cert2, cert3 = ea3.certificates.order_by("pk")
+
     assert cert1.status == "DR"
+    assert cert2.status == "AR"
+    assert cert2.document_references.count() == 0
+    assert cert3.status == "AC"
+    assert cert3.document_references.count() == 1
+
     refs = cert1.document_references.order_by("pk")
+    ref2 = cert3.document_references.first()
+
     assert refs.count() == 3
     assert refs[0].reference == "GMP/2022/00001"
     assert refs[0].reference_data.gmp_brand_id == 2
@@ -833,16 +858,6 @@ def test_import_export_data(mock_connect):
     assert refs[2].reference_data.gmp_brand_id == 2
     assert refs[2].reference_data.country_id == 3
 
-    assert ea3.certificates.count() == 2
-    cert2, cert3 = ea3.certificates.order_by("pk")
-
-    assert cert2.status == "AR"
-    assert cert2.document_references.count() == 0
-
-    assert cert3.status == "AC"
-    assert cert3.document_references.count() == 1
-
-    ref2 = cert3.document_references.first()
     assert ref2.reference == "GMP/2022/00004"
     assert ref2.reference_data.gmp_brand_id == 3
     assert ref2.reference_data.country_id == 1
@@ -879,22 +894,29 @@ def test_import_export_data(mock_connect):
     assert ea5.variation_requests.count() == 0
     assert ea6.variation_requests.count() == 0
 
+    assert ea4.case_notes.count() == 0
+    assert ea5.case_notes.count() == 0
+    assert ea6.case_notes.count() == 0
+
     assert ea4.certificates.count() == 0
     assert ea5.certificates.count() == 1
+    assert ea6.certificates.count() == 1
+
     cert4 = ea5.certificates.first()
+    cert5 = ea6.certificates.first()
+
     assert cert4.status == "DR"
     assert cert4.document_references.count() == 1
+    assert cert5.status == "AC"
+    assert cert5.document_references.count() == 1
+
     ref3 = cert4.document_references.first()
+    ref4 = cert5.document_references.first()
 
     assert ref3.reference == "COM/2022/00001"
     assert ref3.reference_data.gmp_brand_id is None
     assert ref3.reference_data.country_id == 1
 
-    assert ea6.certificates.count() == 1
-    cert5 = ea6.certificates.first()
-    assert cert5.status == "AC"
-    assert cert5.document_references.count() == 1
-    ref4 = cert5.document_references.first()
     assert ref4.reference == "COM/2022/00002"
     assert ref4.reference_data.gmp_brand_id is None
     assert ref4.reference_data.country_id == 1
@@ -932,27 +954,35 @@ def test_import_export_data(mock_connect):
     assert ea8.variation_requests.count() == 0
     assert ea9.variation_requests.count() == 2
 
+    assert ea7.case_notes.count() == 0
+    assert ea8.case_notes.count() == 0
+    assert ea9.case_notes.count() == 2
+
+    case_note2, case_note3 = ea9.case_notes.order_by("pk")
+    assert case_note2.files.count() == 0
+    assert case_note3.files.count() == 2
+
     assert ea7.certificates.count() == 0
-
     assert ea8.certificates.count() == 1
-    cert6 = ea8.certificates.first()
-    assert cert6.status == "DR"
-    assert cert6.document_references.count() == 1
-    ref5 = cert6.document_references.first()
-    assert ref5.reference == "CFS/2022/00001"
-    assert ref5.reference_data.gmp_brand_id is None
-    assert ref5.reference_data.country_id == 1
-
     assert ea9.certificates.count() == 3
+
+    cert6 = ea8.certificates.first()
     cert7, cert8, cert9 = ea9.certificates.order_by("pk")
 
+    assert cert6.status == "DR"
+    assert cert6.document_references.count() == 1
     assert cert7.status == "AR"
     assert cert7.document_references.count() == 0
     assert cert8.status == "AR"
     assert cert8.document_references.count() == 0
     assert cert9.status == "AC"
-
     assert cert9.document_references.count() == 1
+
+    ref5 = cert6.document_references.first()
+    assert ref5.reference == "CFS/2022/00001"
+    assert ref5.reference_data.gmp_brand_id is None
+    assert ref5.reference_data.country_id == 1
+
     ref6 = cert9.document_references.first()
     assert ref6.reference == "CFS/2022/00002"
     assert ref6.reference_data.gmp_brand_id is None

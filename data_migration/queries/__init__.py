@@ -52,6 +52,7 @@ ref_source_target = source_target_list(
         "Constabulary",
         "ObsoleteCalibreGroup",
         "ObsoleteCalibre",
+        "CaseNote",
     ]
 )
 
@@ -76,6 +77,7 @@ file_query_model = [
     QueryModel(files, "wood_application_files", dm.FileCombined),
     QueryModel(files, "textiles_application_files", dm.FileCombined),
     QueryModel(files, "fa_certificate_files", dm.FileCombined),
+    QueryModel(files, "export_case_note_docs", dm.FileCombined),
 ]
 
 ia_query_model = [
@@ -117,7 +119,6 @@ ia_source_target = [
     SourceTarget(dm.ImportApplicationLicence, web.ImportApplicationLicence),
     SourceTarget(dm.ImportCaseDocument, web.CaseDocumentReference),
     SourceTarget(dm.CaseEmail, web.CaseEmail),
-    SourceTarget(dm.CaseNote, web.CaseNote),
     SourceTarget(dm.UpdateRequest, web.UpdateRequest),
     SourceTarget(dm.FurtherInformationRequest, web.FurtherInformationRequest),
     SourceTarget(dm.ImportContact, web.ImportContact),
@@ -344,6 +345,7 @@ export_m2m = [
     M2M(dm.ExportApplicationCountries, web.ExportApplication, "countries"),
     M2M(dm.GMPFile, web.CertificateOfGoodManufacturingPracticeApplication, "supporting_documents"),
     M2M(dm.CFSLegislation, web.CFSSchedule, "legislations"),
+    M2M(dm.CaseNote, web.ExportApplication, "case_notes"),
 ]
 
 export_xml = [
@@ -351,6 +353,7 @@ export_xml = [
     xml_parser.CFSProductParser,
     xml_parser.ProductTypeParser,
     xml_parser.ActiveIngredientParser,
+    xml_parser.CaseNoteExportParser,
 ]
 
 
@@ -390,4 +393,4 @@ TASK_LIST = [
     task.ProcessTask,
 ]
 
-FILE_MODELS: list[Type[Model]] = [dm.FileFolder, dm.FileTarget, dm.File]
+FILE_MODELS: list[Type[Model]] = [dm.FileFolder, dm.FileTarget, dm.DocFolder, dm.File]

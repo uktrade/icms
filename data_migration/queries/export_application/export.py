@@ -6,6 +6,9 @@ __all__ = [
     "export_variations",
 ]
 
+
+common_xml_fields = "case_note_xml XMLTYPE PATH '/CA/CASE/NOTES/NOTE_LIST'"
+
 export_application_type = """
 SELECT
   id
@@ -88,6 +91,7 @@ WHERE card.status <> 'DELETED'
 ORDER BY card.id
 """
 
+
 export_certificate_docs = """
 SELECT
   card.cad_id
@@ -110,6 +114,7 @@ FROM impmgr.certificate_app_responses car
   INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(dd.secure_lob_ref).id
 ORDER BY cardc.id
 """
+
 
 export_variations = """
 SELECT

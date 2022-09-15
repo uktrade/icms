@@ -4,7 +4,13 @@ from django.db.models import Model
 from lxml import etree
 
 from data_migration import models as dm
-from data_migration.utils.format import date_or_none, get_xml_val, str_to_bool
+from data_migration.utils.format import (
+    date_or_none,
+    datetime_or_none,
+    get_xml_val,
+    int_or_none,
+    str_to_bool,
+)
 
 from .base import BaseXmlParser
 
@@ -66,5 +72,50 @@ class VariationImportParser(BaseXmlParser):
                 "reject_cancellation_reason": reject_cancellation_reason,
                 "closed_datetime": closed_date,
                 "closed_by_id": closed_by_id,
+            }
+        )
+
+
+class CaseNoteExportParser(BaseXmlParser):
+    MODEL = dm.CaseNote
+    PARENT = dm.ExportApplication
+    FIELD = "case_note_xml"
+    ROOT_NODE = "/NOTE_LIST/NOTE"
+
+    @classmethod
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional[Model]:
+        """Example XML
+
+        <NOTE>
+          <NOTE_ID />
+          <STATUS />
+          <IS_FOR_ATTENTION />
+          <BODY />
+          <CREATE>
+           <CREATED_DATETIME />
+           <CREATED_BY_WUA_ID />
+          </CREATE>
+          <LAST_UPDATE>
+            <LAST_UPDATED_DATETIME />
+            <LAST_UPDATED_BY_WUA_ID />
+          </LAST_UPDATE>
+          <FOLDER_ID />
+        </NOTE>
+        """
+        status = get_xml_val(xml, "./STATUS")
+        note = get_xml_val(xml, "./BODY")
+        create_datetime = datetime_or_none(get_xml_val(xml, "./CREATE/CREATED_DATETIME"))
+        created_by_id = 2  # int_or_none(get_xml_val(xml, './CREATE/CREATED_BY_WUA_ID'))
+        folder_id = int_or_none(get_xml_val(xml, "./FOLDER_ID"))
+
+        return cls.MODEL(
+            **{
+                "export_application_id": parent_pk,
+                "is_active": status != "DELETED",
+                "status": status if status == "COMPLETED" else "DRAFT",
+                "note": note,
+                "create_datetime": create_datetime,
+                "created_by_id": created_by_id,
+                "doc_folder_id": folder_id,
             }
         )
