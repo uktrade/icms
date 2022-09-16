@@ -5,10 +5,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.exceptions import PermissionDenied
-from django.db import models, transaction
-from django.db.models.functions import Concat
+from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -20,6 +18,7 @@ from ratelimit import UNSAFE
 from ratelimit.decorators import ratelimit
 
 from web.domains.case.models import CaseDocumentReference, VariationRequest
+from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     create_acknowledge_notification_task,
     get_application_current_task,
@@ -586,26 +585,14 @@ class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     def get_queryset(self) -> "QuerySet[ImportApplication]":
         """Return all applications that have been acknowledged."""
         imi_eu_countries = CountryGroup.objects.get(name="EU Countries (IMI Cases)").countries.all()
-
-        qs = (
-            ImportApplication.objects.filter(
-                application_type__type=ImportApplicationType.Types.FIREARMS,
-                tasks__task_type=Task.TaskType.ACK,
-                importer_office__postcode__istartswith="BT",
-                consignment_country__in=imi_eu_countries,
-                imi_submitted_by__isnull=True,
-            )
-            .annotate(
-                authorised_date=models.F("tasks__created"),
-                import_contacts=ArrayAgg(
-                    Concat(
-                        models.F("importcontact__first_name"),
-                        models.Value(" "),
-                        models.F("importcontact__last_name"),
-                    ),
-                ),
-            )
-            .values_list("pk", "reference", "import_contacts", "authorised_date", named=True)
+        qs = ImportApplication.objects.filter(
+            application_type__type=ImportApplicationType.Types.FIREARMS,
+            application_type__sub_type=ImportApplicationType.SubTypes.SIL,
+            status=ImpExpStatus.COMPLETED,
+            decision=ImportApplication.APPROVE,
+            importer_office__postcode__istartswith="BT",
+            consignment_country__in=imi_eu_countries,
+            imi_submitted_by__isnull=True,
         )
 
         return qs

@@ -39,7 +39,7 @@
     {{ application_field(importer.display_name, "Name of Person") }}
 
     {{ application_field(
-          application.importer_office.eori_number or importer.eori_number or "Not Set",
+          process.importer_office.eori_number or importer.eori_number or "Not Set",
           "Registration Number") }}
     {{ application_field(app.importer_office.address, "Address") }}
 
