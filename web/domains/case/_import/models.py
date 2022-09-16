@@ -274,7 +274,7 @@ class ImportApplication(ApplicationBase):
 
     cover_letter = models.TextField(blank=True, null=True)
 
-    # Only relevant to firearms applications
+    # Only relevant to FA-SIL firearms applications
     imi_submitted_by = models.ForeignKey(
         User, on_delete=models.PROTECT, null=True, related_name="+", verbose_name="IMI Submitter"
     )
