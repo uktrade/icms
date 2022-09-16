@@ -1,7 +1,6 @@
 #!/bin/sh -e
 ICMS_WEB_PORT="${ICMS_WEB_PORT:-8080}"
 ICMS_DEBUG="${ICMS_DEBUG:-False}"
-ICMS_MIGRATE="${ICMS_MIGRATE:-True}"
 APP_ENV="${APP_ENV:-dev}"
 ALLOW_DATA_MIGRATION="${ALLOW_DATA_MIGRATION:-False}"
 
@@ -25,11 +24,7 @@ python manage.py migrate
 if [ "$ICMS_DEBUG" = 'False' ]; then
   python manage.py collectstatic --noinput --traceback
   python manage.py compress --engine jinja2
-fi
-
-if [ "$ICMS_DEBUG" = 'True' ]; then
-  python manage.py runserver 0:"$ICMS_WEB_PORT"
+  gunicorn config.wsgi --config config/gunicorn.py
 else
-  gunicorn config.wsgi \
-           --config config/gunicorn.py
+  python manage.py runserver 0:"$ICMS_WEB_PORT"
 fi

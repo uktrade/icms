@@ -261,10 +261,8 @@ In case of importer access requests it is `access:importer:fir-list` and `access
 
 | Environment variable              | Default                                    | Notes                                                  |
 | --------------------------------- | ------------------------------------------ | ---------------------------------                      |
-| ICMS_DEBUG                        | False                                      |                                                        |
 | ICMS_WEB_PORT                     | 8080                                       |                                                        |
 | DATABASE_URL                      | postgres://postgres@db:5432/postgres       | Format postgres://username/password@host:port/database |
-| ICMS_MIGRATE                      | True                                       | Runs Django migrate before starting the app            |
 | ICMS_SECRET_KEY                   | random                                     | Django secret key                                      |
 | ICMS_ALLOWED_HOSTS                | localhost                                  | Comma separated list of hosts                          |
 | AWS_REGION                        |                                            | E.g. eu-west-2                                         |

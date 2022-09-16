@@ -1,9 +1,10 @@
+# Default command
 .DEFAULT_GOAL := help
 
-TEST_TARGET ?= web/tests
+# Simply by being mentioned as a target, this tells make to export all variables to child processes by default.
 .EXPORT_ALL_VARIABLES:
 
-DJANGO_SETTINGS_MODULE=config.settings.local
+# https://docs.docker.com/compose/reference/envvars/#compose_project_name
 COMPOSE_PROJECT_NAME=icms
 
 # TODO: understand what this is for and whether it's still needed
@@ -50,7 +51,7 @@ data_migrations: ## make data_migration migrations
 
 check_migrations: ## Check for missing migrations:
 	unset UID && \
-	docker-compose run --rm -it web python ./manage.py makemigrations --check --dry-run
+	docker-compose run --no-TTY --rm web python ./manage.py makemigrations --check --dry-run
 
 migrate: ## execute db migration
 	unset UID && \
@@ -101,22 +102,18 @@ setup: ## sets up system for first use
 
 docker_flake8: ## run flake8
 	unset UID && \
-	ICMS_DEBUG=False \
 	docker-compose run --rm web python -m flake8
 
 docker_black: ## run Black in check mode
 	unset UID && \
-	ICMS_DEBUG=False \
 	docker-compose run --rm web python -m black --check .
 
 docker_isort: ## run isort in check mode
 	unset UID && \
-	ICMS_DEBUG=False \
 	docker-compose run --rm web python -m isort -j 4 --check .
 
 docker_mypy: ## run mypy
 	unset UID && \
-	ICMS_DEBUG=False \
 	docker-compose run --rm web mypy web data_migration config
 
 docker_drop_all_tables: ## drop all tables
@@ -136,8 +133,6 @@ clean: ## removes python cache files from project
 
 requirements-web: ## install javascript dependencies
 	unset UID && \
-	ICMS_DEBUG=True \
-	ICMS_MIGRATE=False \
 	docker-compose run --rm web sh -c "python manage.py npm && python manage.py collect_npm"
 
 collectstatic: ## copies static files to STATIC_ROOT
@@ -149,8 +144,6 @@ build: ## build docker containers
 
 shell: ## Starts the Python interactive interpreter
 	unset UID && \
-	ICMS_DEBUG=True \
-	ICMS_MIGRATE=False \
 	docker-compose run --rm web python ./manage.py shell -i python
 
 psql: ## Starts psql
@@ -169,15 +162,11 @@ list_s3: ## list S3 bucket contents on localstack container
 
 query_task_result: ## local development tool to query task results
 	unset UID && \
-	ICMS_DEBUG=True \
-	ICMS_MIGRATE=False \
 	docker-compose run --rm web python ./manage.py query_task_result
 
 
 ##@ Server
 debug: ## runs system in debug mode
-	ICMS_DEBUG=True \
-	ICMS_MIGRATE=False \
 	docker-compose up
 
 down: ## Stops and downs containers
@@ -207,14 +196,3 @@ bdd: ## runs functional tests
 		--junit-directory test-reports --junit \
 		--tags ~@skip \
 	"
-
-##@ Releases
-
-release_major: ## create major release
-	./scripts/release.sh major
-
-release_minor: ## create minor release
-	./scripts/release.sh minor
-
-release_patch: ## create patch release
-	./scripts/release.sh patch
