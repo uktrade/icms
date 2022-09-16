@@ -3,7 +3,6 @@
 set -e
 
 export DJANGO_SETTINGS_MODULE=config.settings.test
-export ICMS_DEBUG=False
 
 # we are using this work flow:
 # https://pytest-django.readthedocs.io/en/latest/database.html#example-work-flow-with-reuse-db-and-create-db
