@@ -25,7 +25,6 @@ SELECT
   , xiad.under_appeal_flag
   , xiad.variation_decision
   , xiad.variation_refuse_reason
-  , xiad.issue_date
   , xiad.licence_extended licence_extended_flag
   , ir.licence_ref licence_reference
   , xiad.last_updated_datetime last_update_datetime

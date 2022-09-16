@@ -48,7 +48,6 @@ class ImportApplication(MigrationBase):
     under_appeal_flag = models.CharField(max_length=5, null=True)
     variation_decision = models.CharField(max_length=10, null=True)
     variation_refuse_reason = models.CharField(max_length=4000, null=True)
-    issue_date = models.DateField(null=True)
     licence_extended_flag = models.CharField(max_length=5, null=True)
     last_update_datetime = models.DateTimeField(null=False, auto_now=True)
     application_type = models.ForeignKey(

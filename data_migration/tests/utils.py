@@ -51,7 +51,6 @@ IA_BASE_COLUMNS = [
     ("create_datetime",),
     ("created",),
     ("variation_no",),
-    ("issue_date",),
     ("licence_reference",),
     ("submitted_by_id",),
     ("created_by_id",),
@@ -766,7 +765,6 @@ query_result = {
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
-                datetime(2022, 4, 24),  # issue_date
                 5678,  # licence_reference
                 2,  # submitted_by_id
                 2,  # creeated_by_id
@@ -796,7 +794,6 @@ query_result = {
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
-                datetime(2022, 4, 24),  # issue_date
                 8901,  # licence_reference
                 2,  # submitted_by_id
                 2,  # creeated_by_id
