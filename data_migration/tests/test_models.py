@@ -150,7 +150,6 @@ def test_import_application_get_data_export():
         "imi_submit_datetime",
         "imi_submitted_by_id",
         "importer_id",
-        "issue_date",
         "last_update_datetime",
         "last_updated_by_id",
         "legacy_case_flag",

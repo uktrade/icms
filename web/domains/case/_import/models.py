@@ -188,8 +188,6 @@ class ImportApplication(ApplicationBase):
         max_length=4000, blank=True, null=True, verbose_name="Variation Refusal Reason"
     )
 
-    # TODO: ICMSLST-1746: Remove this field
-    issue_date = models.DateField(blank=True, null=True)
     licence_extended_flag = models.BooleanField(blank=False, null=False, default=False)
 
     licence_reference = models.OneToOneField(
