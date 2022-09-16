@@ -268,15 +268,6 @@ class ApplicationBase(WorkbasketBase, Process):
         max_length=4000, blank=True, null=True, verbose_name="Refusal reason"
     )
 
-    acknowledged_by = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        null=True,
-        related_name="+",
-    )
-
-    acknowledged_datetime = models.DateTimeField(null=True)
-
     def is_import_application(self) -> bool:
         raise NotImplementedError
 

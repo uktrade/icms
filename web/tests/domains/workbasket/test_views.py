@@ -115,6 +115,7 @@ def test_importer_workbasket(
     assert response.status_code == 200
 
     html = response.content.decode()
+
     assert '<div class="result-count">2 workbasket items</div>' in html
 
     _check_in_progress_workbasket(in_progress_imp_appl, html)

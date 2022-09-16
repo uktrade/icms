@@ -383,7 +383,7 @@ class TestAuthoriseDocumentsView:
         self.wood_app.refresh_from_db()
 
         self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
-        self.wood_app.get_expected_task(Task.TaskType.ACK)
+        assert self.wood_app.get_active_tasks(False).count() == 0
 
         latest_licence = self.wood_app.get_latest_issued_document()
         assert latest_licence.status == CaseLicenceCertificateBase.Status.ACTIVE
@@ -401,7 +401,7 @@ class TestAuthoriseDocumentsView:
         self.wood_app.refresh_from_db()
 
         self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
-        self.wood_app.get_expected_task(Task.TaskType.ACK)
+        assert self.wood_app.get_active_tasks(False).count() == 0
 
         vr = self.wood_app.variation_requests.first()
         assert vr.status == VariationRequest.ACCEPTED

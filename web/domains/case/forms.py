@@ -229,23 +229,6 @@ class CaseEmailResponseForm(forms.ModelForm):
         fields = ("response",)
 
 
-class AckReceiptForm(forms.Form):
-    confirmation = forms.BooleanField(
-        label=(
-            "By acknowledging receipt of this notification, you agree you are authorised to receive"
-            " it and able to act upon it as necessary."
-        )
-    )
-
-    def clean_confirmation(self):
-        confirmation = self.cleaned_data["confirmation"]
-
-        if not confirmation:
-            raise forms.ValidationError("You must enter this item.")
-
-        return confirmation
-
-
 def application_contacts(application: ImpOrExp) -> "QuerySet[User]":
     if application.agent:
         users = application.get_agent_contacts()

@@ -258,10 +258,6 @@ case_progress_urls = [
     ),
 ]
 
-ack_notification_urls = [
-    path("", views_misc.ack_notification, name="ack-notification"),
-]
-
 email_urls = [
     path("manage/", views_email.manage_case_emails, name="manage-case-emails"),
     path("create/", views_email.create_case_email, name="create-case-email"),
@@ -363,9 +359,6 @@ urlpatterns = [
                             #
                             # Progress urls (import/export)
                             path("progress/", include(case_progress_urls)),
-                            #
-                            # Acknowledge Notification (import/export)
-                            path("ack-notification/", include(ack_notification_urls)),
                             #
                             # View Issued Case Documents (import/export)
                             path(

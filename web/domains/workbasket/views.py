@@ -181,7 +181,7 @@ def _get_queryset_user(user: User) -> chain[QuerySet]:
 
     # Import Applications
     import_applications = ImportApplication.objects.all().select_related(
-        "importer", "contact", "application_type", "submitted_by", "acknowledged_by"
+        "importer", "contact", "application_type", "submitted_by"
     )
 
     # Add annotations
@@ -207,13 +207,11 @@ def _get_queryset_user(user: User) -> chain[QuerySet]:
         )
         # or applications managed by agents
         | (Q(importer__in=importers_managed_by_agents) & Q(agent__isnull=False))
-        # or applications acknowledged by agents
-        | (Q(importer__in=importers) & Q(agent__isnull=False) & Q(acknowledged_by__isnull=False))
     )
 
     # Export Applications
     export_applications = ExportApplication.objects.all().select_related(
-        "exporter", "contact", "application_type", "submitted_by", "acknowledged_by"
+        "exporter", "contact", "application_type", "submitted_by"
     )
 
     # Add annotations

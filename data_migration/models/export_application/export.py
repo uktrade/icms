@@ -51,13 +51,6 @@ class ExportApplication(MigrationBase):
     reference = models.CharField(max_length=100, null=True, unique=True)
     decision = models.CharField(max_length=10, null=True)
     refuse_reason = models.CharField(max_length=4000, null=True)
-    acknowledged_by = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        null=True,
-        related_name="+",
-    )
-    acknowledged_datetime = models.DateTimeField(null=True)
     application_type = models.ForeignKey(
         ExportApplicationType, on_delete=models.PROTECT, null=False
     )

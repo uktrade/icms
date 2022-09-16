@@ -31,15 +31,6 @@ class ImportApplication(MigrationBase):
         null=True,
     )
 
-    # TODO ICMSLST-1493: Find acknowledged fields in source or remove from model
-    acknowledged_by = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        null=True,
-        related_name="+",
-    )
-
-    acknowledged_datetime = models.DateTimeField(null=True)
     applicant_reference = models.CharField(max_length=500, null=True)
     create_datetime = models.DateTimeField(null=False)
     variation_no = models.IntegerField(null=False, default=0)

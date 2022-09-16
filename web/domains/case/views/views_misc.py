@@ -829,71 +829,6 @@ def cancel_authorisation(
         return redirect(reverse("workbasket"))
 
 
-@login_required
-def ack_notification(
-    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
-) -> HttpResponse:
-    model_class = get_class_imp_or_exp(case_type)
-
-    with transaction.atomic():
-        application: ImpOrExp = get_object_or_404(
-            model_class.objects.select_for_update(), pk=application_pk
-        )
-
-        check_application_permission(application, request.user, case_type)
-        application.check_expected_status([ImpExpStatus.COMPLETED])
-
-        if request.method == "POST":
-            task = application.get_expected_task(Task.TaskType.ACK, select_for_update=True)
-            form = forms.AckReceiptForm(request.POST)
-
-            if form.is_valid():
-                application.acknowledged_by = request.user
-                application.acknowledged_datetime = timezone.now()
-                application.update_order_datetime()
-                application.save()
-
-                end_process_task(task)
-
-                # TODO: ICMSLST-20
-                # Notification is not cleared and still appear in the workbasket
-                # It can be cleared with the generic 'Clear' feature in workbasket
-
-                return redirect(
-                    reverse(
-                        "case:ack-notification",
-                        kwargs={"application_pk": application_pk, "case_type": case_type},
-                    )
-                )
-        else:
-            form = forms.AckReceiptForm()
-
-        if case_type == "import":
-            org = application.importer
-        else:
-            org = application.exporter
-
-        context = {
-            "process": application,
-            "process_template": f"web/domains/case/{case_type}/partials/process.html",
-            "form": form,
-            "primary_recipients": _get_primary_recipients(application),
-            "copy_recipients": _get_copy_recipients(application),
-            "case_type": case_type,
-            "page_title": get_case_page_title(case_type, application, "Response"),
-            "acknowledged": application.acknowledged_by and application.acknowledged_datetime,
-            "org": org,
-            "show_generation_status": False,
-            **get_document_context(application),
-        }
-
-        return render(
-            request=request,
-            template_name="web/domains/case/ack-notification.html",
-            context=context,
-        )
-
-
 class ViewIssuedCaseDocumentsView(
     ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, TemplateView
 ):
@@ -927,7 +862,6 @@ class ViewIssuedCaseDocumentsView(
         context["primary_recipients"] = _get_primary_recipients(application)
         context["copy_recipients"] = _get_copy_recipients(application)
         context["case_type"] = case_type
-        context["acknowledged"] = application.acknowledged_by and application.acknowledged_datetime
         context["org"] = application.importer if is_import_app else application.exporter
         issued_doc = self.application.get_issued_documents().get(
             pk=self.kwargs["issued_document_pk"]
