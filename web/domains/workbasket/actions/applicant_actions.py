@@ -246,42 +246,6 @@ class SubmitVariationUpdateAction(Action):
         ]
 
 
-# TODO: This action needs deleting and the new ones need testing
-# TODO: Revisit when implementing ICMSLST-1400
-# Each notification needs a "Acknowledge" "View" and "Clear" action
-class AcknowledgeNotificationAction(Action):
-    def show_link(self) -> bool:
-        show_link = False
-
-        if self.status == ImpExpStatus.COMPLETED and not self.application.is_rejected(
-            self.active_tasks
-        ):
-            show_link = True
-
-        return show_link
-
-    def get_workbasket_actions(self) -> list[WorkbasketAction]:
-        kwargs = self.get_kwargs()
-
-        if self.application.acknowledged_by and self.application.acknowledged_datetime:
-            action_name = "View Notification"
-        else:
-            action_name = "Acknowledge Notification"
-
-        # TODO: Revisit when implementing ICMSLST-1400
-        # Use this format for each application acknowledgement
-        # section_label = f"{action_name}, Notification of {FOO.strftime('%d %b %Y %H:%M:%S')}"
-
-        return [
-            WorkbasketAction(
-                is_post=False,
-                name=action_name,
-                url=reverse("case:ack-notification", kwargs=kwargs),
-                section_label=action_name,
-            )
-        ]
-
-
 class IssuedDocumentsBaseAction(Action):
     """Base class for viewing issued documents and clearing those documents from the workbasket"""
 
@@ -416,7 +380,6 @@ REQUEST_VARIATION_APPLICANT_ACTIONS: list[ActionT] = [
     RespondToUpdateRequestAction,
     ResumeUpdateRequestAction,
     SubmitVariationUpdateAction,
-    AcknowledgeNotificationAction,
     ViewIssuedDocumentsAction,
     ClearIssuedDocumentsAction,
     ProvideFirearmsReportAction,

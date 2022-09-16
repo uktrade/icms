@@ -132,8 +132,6 @@ def test_import_application_get_data_export():
     assert result["licence_extended_flag"] is False
 
     expected = [
-        "acknowledged_by_id",
-        "acknowledged_datetime",
         "agent_id",
         "applicant_reference",
         "application_type_id",

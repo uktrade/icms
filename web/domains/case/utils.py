@@ -1,4 +1,4 @@
-from typing import Any, Optional, Type
+from typing import Any, Type
 
 from django import forms
 from django.core.exceptions import PermissionDenied
@@ -197,22 +197,6 @@ def archive_application_licence_or_certificate(application: ImpOrExp) -> None:
     issued_doc = application.get_latest_issued_document()
     issued_doc.status = issued_doc.Status.ARCHIVED
     issued_doc.save()
-
-
-# TODO: Revisit when implementing ICMSLST-1400
-def create_acknowledge_notification_task(application: ImpOrExp, previous_task: Optional[Task]):
-    """Create an ack task and clear the application acknowledged fields.
-
-    This will be updated in ICMSLST-1400 to support keeping a history of multiple notifications.
-    """
-
-    Task.objects.create(process=application, task_type=Task.TaskType.ACK, previous=previous_task)
-
-    if application.acknowledged_by or application.acknowledged_datetime:
-        application.acknowledged_by = None
-        application.acknowledged_datetime = None
-
-    application.save()
 
 
 def get_application_form(

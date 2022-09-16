@@ -226,8 +226,6 @@ class Task(models.Model):
         CHIEF_WAIT: str = ("chief_wait", "CHIEF_WAIT")  # type:ignore[assignment]
         CHIEF_ERROR: str = ("chief_error", "CHIEF_ERROR")  # type:ignore[assignment]
 
-        # TODO: This needs removing - but it has dependencies
-        ACK: str = ("acknowledge", "Acknowledge")  # type:ignore[assignment]
         REJECTED: str = ("rejected", "Rejected")  # type:ignore[assignment]
 
     process = models.ForeignKey(Process, on_delete=models.CASCADE, related_name="tasks")

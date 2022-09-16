@@ -20,7 +20,6 @@ from ratelimit.decorators import ratelimit
 from web.domains.case.models import CaseDocumentReference, VariationRequest
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
-    create_acknowledge_notification_task,
     get_application_current_task,
     set_application_licence_or_certificate_active,
 )
@@ -561,8 +560,6 @@ def bypass_chief(
             application.save()
 
             set_application_licence_or_certificate_active(application)
-
-            create_acknowledge_notification_task(application, task)
 
         elif chief_status == "failure":
             Task.objects.create(

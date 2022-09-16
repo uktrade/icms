@@ -697,8 +697,6 @@ VariationRequest
 Revisit
 Acknowledge
 View
-View Notification
-Acknowledge Notification
 Provide Report
 Checklist
 Supporting Documents
@@ -809,7 +807,6 @@ Compensating Products'
 Prior Authorisation'
 New Application'
 Further Authorisation'
-acknowledged_by
 fir.email_cc_address_list
 Exporter Access Approval
 Importer Access Approval

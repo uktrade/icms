@@ -9,7 +9,6 @@ from web.domains.case.models import CaseDocumentReference, VariationRequest
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import (
-    create_acknowledge_notification_task,
     end_process_task,
     set_application_licence_or_certificate_active,
 )
@@ -125,7 +124,6 @@ def create_document_pack_on_success(application_pk, user_pk):
             application.save()
 
             set_application_licence_or_certificate_active(application)
-            create_acknowledge_notification_task(application, task)
 
 
 @app.task(name="web.domains.case.tasks.create_document_pack_on_error")

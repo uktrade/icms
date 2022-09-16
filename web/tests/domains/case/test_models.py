@@ -2,7 +2,6 @@ from unittest.mock import patch
 
 import pytest
 from django.test import override_settings
-from django.utils import timezone
 
 from web.domains.case._import.models import ImportApplicationType
 from web.domains.case._import.wood.models import WoodQuotaApplication
@@ -125,35 +124,7 @@ def test_actions_completed(app_completed, test_import_user):
 
     _check_actions(
         user_row.sections,
-        expected_actions={"Acknowledge Notification", "View Application", "Clear"},
-    )
-
-
-def test_actions_completed_acknowledged(app_completed, test_import_user):
-    app_completed.acknowledged_by = test_import_user
-    app_completed.acknowledged_datetime = timezone.now()
-    user_row = app_completed.get_workbasket_row(test_import_user, False)
-
-    _check_actions(
-        user_row.sections, expected_actions={"View Notification", "View Application", "Clear"}
-    )
-
-
-def test_actions_completed_acknowledged_agent(
-    app_completed_agent, test_import_user, test_agent_import_user
-):
-    app_completed_agent.acknowledged_by = test_agent_import_user
-    app_completed_agent.acknowledged_datetime = timezone.now()
-    agent_row = app_completed_agent.get_workbasket_row(test_agent_import_user, False)
-
-    _check_actions(
-        agent_row.sections, expected_actions={"View Notification", "View Application", "Clear"}
-    )
-
-    user_row = app_completed_agent.get_workbasket_row(test_import_user, False)
-
-    _check_actions(
-        user_row.sections, expected_actions={"View Notification", "View Application", "Clear"}
+        expected_actions={"View Application", "Clear"},
     )
 
 
