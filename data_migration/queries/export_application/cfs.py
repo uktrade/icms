@@ -1,6 +1,6 @@
 from .export import common_xml_fields, export_application_base
 
-__all__ = ["cfs_application", "cfs_schedule"]
+__all__ = ["cfs_application", "cfs_schedule", "hse_emails"]
 
 cfs_subquery = """
   SELECT cad.id cad_id, x.*
@@ -95,4 +95,22 @@ WHERE xcad.status_control = 'C'
   AND xcad.application_type = 'CFS'
   AND xcad.status <> 'DELETED'
 ORDER BY xcas.cad_id, xcas.schedule_ordinal
+"""
+
+hse_emails = """
+SELECT
+  e.ca_id
+  , CASE e.email_status WHEN 'DELETED' THEN 0 ELSE 1 END is_active
+  , e.email_status status
+  , r.email_address  "to"
+  , e.email_subject subject
+  , e.email_body body
+  , e.response_body response
+  , e.start_datetime sent_datetime
+  , CASE e.email_status WHEN 'CLOSED' THEN e.last_updated_datetime ELSE NULL END closed_datetime
+FROM impmgr.xview_cert_app_hse_emails e
+INNER JOIN impmgr.hse_email_recipients r ON r.status = 'CURRENT'
+WHERE e.status_control = 'C'
+AND e.status <> ' DELETED'
+ORDER BY e.cad_id, e.email_id
 """

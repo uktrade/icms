@@ -715,6 +715,7 @@ export_data_source_target = {
         (dm.CountryGroup, web.CountryGroup),
         (dm.VariationRequest, web.VariationRequest),
         (dm.CaseNote, web.CaseNote),
+        (dm.CaseEmail, web.CaseEmail),
     ],
     "import_application": [],
     "export_application": [
@@ -762,6 +763,8 @@ export_query_model = {
         (q_ex, "export_certificate", dm.ExportApplicationCertificate),
         (q_ex, "export_certificate_docs", dm.ExportCertificateCaseDocumentReferenceData),
         (q_ex, "export_variations", dm.VariationRequest),
+        (q_ex, "beis_emails", dm.CaseEmail),
+        (q_ex, "hse_emails", dm.CaseEmail),
     ],
     "reference": [
         (q_ref, "country_group", dm.CountryGroup),
@@ -772,6 +775,7 @@ export_query_model = {
 export_m2m = {
     "export_application": [
         (dm.CaseNote, web.ExportApplication, "case_notes"),
+        (dm.CaseEmail, web.ExportApplication, "case_emails"),
         (dm.CaseNoteFile, web.CaseNote, "files"),
         (dm.VariationRequest, web.ExportApplication, "variation_requests"),
         (dm.CFSLegislation, web.CFSSchedule, "legislations"),
@@ -825,6 +829,10 @@ def test_import_export_data(mock_connect):
     assert ea2.case_notes.count() == 2
     assert ea2.case_notes.filter(is_active=True).count() == 1
     assert ea3.case_notes.count() == 0
+
+    assert ea1.case_emails.count() == 0
+    assert ea2.case_emails.count() == 0
+    assert ea3.case_emails.count() == 2
 
     case_note1 = ea2.case_notes.filter(is_active=True).first()
     assert case_note1.note == "This is a case note"
@@ -898,6 +906,10 @@ def test_import_export_data(mock_connect):
     assert ea5.case_notes.count() == 0
     assert ea6.case_notes.count() == 0
 
+    assert ea4.case_emails.count() == 0
+    assert ea5.case_emails.count() == 0
+    assert ea6.case_emails.count() == 0
+
     assert ea4.certificates.count() == 0
     assert ea5.certificates.count() == 1
     assert ea6.certificates.count() == 1
@@ -957,6 +969,10 @@ def test_import_export_data(mock_connect):
     assert ea7.case_notes.count() == 0
     assert ea8.case_notes.count() == 0
     assert ea9.case_notes.count() == 2
+
+    assert ea7.case_emails.count() == 0
+    assert ea8.case_emails.count() == 0
+    assert ea9.case_emails.count() == 2
 
     case_note2, case_note3 = ea9.case_notes.order_by("pk")
     assert case_note2.files.count() == 0

@@ -188,7 +188,16 @@ class VariationRequest(MigrationBase):
 
 
 class CaseEmail(MigrationBase):
-    ima = models.ForeignKey(Process, on_delete=models.CASCADE, to_field="ima_id")
+    ima = models.ForeignKey(
+        Process,
+        on_delete=models.CASCADE,
+        to_field="ima_id",
+        null=True,
+        related_name="ia_caseemails",
+    )
+    ca = models.ForeignKey(
+        Process, on_delete=models.CASCADE, to_field="ca_id", null=True, related_name="ea_caseemails"
+    )
     is_active = models.BooleanField(default=True)
     status = models.CharField(max_length=30)
     to = models.EmailField(max_length=254, null=True)
@@ -203,7 +212,7 @@ class CaseEmail(MigrationBase):
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["ima_id"]
+        return super().get_excludes() + ["ima_id", "ca_id"]
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
@@ -218,6 +227,15 @@ class CaseEmail(MigrationBase):
 
     @classmethod
     def get_m2m_data(cls, target: models.Model) -> Generator:
+        target_name = target._meta.model_name
+
+        if target_name == "exportapplication":
+            return (
+                cls.objects.exclude(ca__isnull=True)
+                .values("id", caseemail_id=F("id"), exportapplication_id=F("ca__id"))
+                .iterator()
+            )
+
         return (
             cls.objects.select_related("ima")
             .values("id", importapplication_id=F("ima__id"), caseemail_id=F("id"))
