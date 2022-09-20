@@ -313,6 +313,8 @@ export_query_model = [
         export_application, "export_certificate_docs", dm.ExportCertificateCaseDocumentReferenceData
     ),
     QueryModel(export_application, "export_variations", dm.VariationRequest),
+    QueryModel(export_application, "beis_emails", dm.CaseEmail),
+    QueryModel(export_application, "hse_emails", dm.CaseEmail),
 ]
 
 export_source_target = [
@@ -346,6 +348,7 @@ export_m2m = [
     M2M(dm.GMPFile, web.CertificateOfGoodManufacturingPracticeApplication, "supporting_documents"),
     M2M(dm.CFSLegislation, web.CFSSchedule, "legislations"),
     M2M(dm.CaseNote, web.ExportApplication, "case_notes"),
+    M2M(dm.CaseEmail, web.ExportApplication, "case_emails"),
 ]
 
 export_xml = [

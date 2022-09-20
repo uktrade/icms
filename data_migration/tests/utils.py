@@ -1913,6 +1913,74 @@ query_result = {
             ),
         ],
     ),
+    export_application.beis_emails: (
+        [
+            ("ca_id",),
+            ("status",),
+            ("to",),
+            ("subject",),
+            ("body",),
+            ("response",),
+            ("sent_datetime",),
+            ("closed_datetime",),
+        ],
+        [
+            (
+                9,  # ca_id
+                "CLOSED",  # status
+                "a@example.com",  # to /PS-IGNORE
+                "subject",  # subject
+                "body",  # body
+                "response",  # response
+                datetime.now(),  # sent_datetime
+                datetime.now(),  # closed_datetime
+            ),
+            (
+                9,  # ca_id
+                "OPEN",  # status
+                "a@example.com",  # to /PS-IGNORE
+                "subject",  # subject
+                "body",  # body
+                None,  # response
+                datetime.now(),  # sent_datetime
+                None,  # closed_datetime
+            ),
+        ],
+    ),
+    export_application.hse_emails: (
+        [
+            ("ca_id",),
+            ("status",),
+            ("to",),
+            ("subject",),
+            ("body",),
+            ("response",),
+            ("sent_datetime",),
+            ("closed_datetime",),
+        ],
+        [
+            (
+                15,  # ca_id
+                "CLOSED",  # status
+                "a@example.com",  # to /PS-IGNORE
+                "subject",  # subject
+                "body",  # body
+                "response",  # response
+                datetime.now(),  # sent_datetime
+                datetime.now(),  # closed_datetime
+            ),
+            (
+                15,  # ca_id
+                "OPEN",  # status
+                "a@example.com",  # to /PS-IGNORE
+                "subject",  # subject
+                "body",  # body
+                None,  # response
+                datetime.now(),  # sent_datetime
+                None,  # closed_datetime
+            ),
+        ],
+    ),
 }
 
 
