@@ -634,6 +634,7 @@ class IMICaseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
         context = {
             "page_title": f"Case {self.object.get_reference()}",
             "case_type": "import",
+            "show_imi_detail": True,
             "contacts": self.object.importcontact_set.all(),
             "licence": licence,
             "licence_reference": reference,

@@ -71,6 +71,12 @@
 
   {{ icms_link(request, icms_url('case:prepare-response', kwargs={'case_type': 'import', 'application_pk': process.pk}), 'Response Preparation') }}
 
+  {% set show_imi_historical = process.status == "COMPLETED" and process.process_type == "SILApplication" and process.imi_submit_datetime %}
+  {% if show_imi_detail or show_imi_historical %}
+    {{ icms_link(request, icms_url('import:imi-case-detail', kwargs={'application_pk': process.pk}), 'IMI Summary') }}
+  {% endif %}
+
+
   {% if not readonly_view %}
     {{ icms_link(request, icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Authorisation') }}
   {% endif %}
