@@ -80,6 +80,7 @@ EA_BASE_COLUMNS = [
     ("exporter_id",),
     ("exporter_office_legacy_id",),
     ("case_note_xml",),
+    ("fir_xml",),
 ]
 
 query_result = {
@@ -1383,6 +1384,7 @@ query_result = {
                 2,  # exporter_id
                 "e-2-1",  # export_office_legacy_id
                 None,  # case_note_xml
+                None,  # fir_xml
                 None,  # brand_name
                 31,  # file_folder_id
             ),
@@ -1403,6 +1405,7 @@ query_result = {
                 3,
                 "e-3-1",
                 xd.export_case_note_1,
+                None,  # fir_xml
                 "A brand",
                 32,
             ),
@@ -1423,6 +1426,7 @@ query_result = {
                 2,
                 "e-2-2",
                 None,  # case_note_xml
+                None,  # fir_xml
                 "Another brand",
                 33,
             ),
@@ -1459,6 +1463,7 @@ query_result = {
                 2,  # exporter_id
                 "e-2-1",  # export_office_legacy_id
                 None,  # case_note_xml
+                None,  # fir_xml
                 None,  # is_pesticide_on_free_sale_uk
                 None,  # is_manufacturer
                 None,  # product_name
@@ -1482,6 +1487,7 @@ query_result = {
                 3,
                 "e-3-1",
                 None,  # case_note_xml
+                None,  # fir_xml
                 1,  # is_pesticide_on_free_sale_uk
                 0,  # is_manufacturer
                 "A product",  # product_name
@@ -1505,6 +1511,7 @@ query_result = {
                 2,
                 "e-2-2",
                 None,  # case_note_xml
+                xd.export_fir_xml_1,  # fir_xml
                 0,  # is_pesticide_on_free_sale_uk
                 1,  # is_manufacturer
                 "Another product",  # product_name
@@ -1533,6 +1540,7 @@ query_result = {
                 2,  # exporter_id
                 "e-2-1",  # export_office_legacy_id
                 None,  # case_note_xml
+                None,  # fir_xml
             ),
             (
                 14,
@@ -1551,6 +1559,7 @@ query_result = {
                 3,
                 "e-3-1",
                 None,  # case_note_xml
+                xd.export_fir_xml_2,  # fir_xml
             ),
             (
                 15,
@@ -1568,7 +1577,8 @@ query_result = {
                 2,
                 2,
                 "e-2-2",
-                xd.export_case_note_2,
+                xd.export_case_note_2,  # case_note_xml
+                None,  # fir_xml
             ),
         ],
     ),

@@ -41,7 +41,9 @@ INNER JOIN impmgr.xview_ima_details xid ON xid.ima_id = u.ima_id AND xid.status_
 fir = """
 SELECT
   xir.ima_id ia_ima_id
+  , CASE rfi_status WHEN 'DELETED' THEN 0 ELSE 1 END is_active
   , rfi_status status
+  , request_date created
   , request_subject
   , request_body request_detail
   , request_cc_email_list email_cc_address_list_str

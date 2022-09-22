@@ -716,6 +716,7 @@ export_data_source_target = {
         (dm.VariationRequest, web.VariationRequest),
         (dm.CaseNote, web.CaseNote),
         (dm.CaseEmail, web.CaseEmail),
+        (dm.FurtherInformationRequest, web.FurtherInformationRequest),
     ],
     "import_application": [],
     "export_application": [
@@ -776,6 +777,7 @@ export_m2m = {
     "export_application": [
         (dm.CaseNote, web.ExportApplication, "case_notes"),
         (dm.CaseEmail, web.ExportApplication, "case_emails"),
+        (dm.FurtherInformationRequest, web.ExportApplication, "further_information_requests"),
         (dm.CaseNoteFile, web.CaseNote, "files"),
         (dm.VariationRequest, web.ExportApplication, "variation_requests"),
         (dm.CFSLegislation, web.CFSSchedule, "legislations"),
@@ -792,6 +794,7 @@ export_xml = {
         xml_parser.ProductTypeParser,
         xml_parser.ActiveIngredientParser,
         xml_parser.CaseNoteExportParser,
+        xml_parser.FIRExportParser,
     ],
     "import_application": [],
 }
@@ -833,6 +836,10 @@ def test_import_export_data(mock_connect):
     assert ea1.case_emails.count() == 0
     assert ea2.case_emails.count() == 0
     assert ea3.case_emails.count() == 2
+
+    assert ea1.further_information_requests.count() == 0
+    assert ea2.further_information_requests.count() == 0
+    assert ea3.further_information_requests.count() == 0
 
     case_note1 = ea2.case_notes.filter(is_active=True).first()
     assert case_note1.note == "This is a case note"
@@ -910,6 +917,14 @@ def test_import_export_data(mock_connect):
     assert ea5.case_emails.count() == 0
     assert ea6.case_emails.count() == 0
 
+    assert ea4.further_information_requests.count() == 0
+    assert ea5.further_information_requests.count() == 0
+    assert ea6.further_information_requests.count() == 1
+
+    fir1 = ea6.further_information_requests.first()
+    assert fir1.status == "CLOSED"
+    assert len(fir1.email_cc_address_list) == 1
+
     assert ea4.certificates.count() == 0
     assert ea5.certificates.count() == 1
     assert ea6.certificates.count() == 1
@@ -973,6 +988,15 @@ def test_import_export_data(mock_connect):
     assert ea7.case_emails.count() == 0
     assert ea8.case_emails.count() == 0
     assert ea9.case_emails.count() == 2
+
+    assert ea7.further_information_requests.count() == 0
+    assert ea8.further_information_requests.count() == 2
+    assert ea9.further_information_requests.count() == 0
+
+    fir2, fir3 = ea8.further_information_requests.order_by("pk")
+    assert fir2.status == "DELETED"
+    assert fir3.status == "OPEN"
+    assert len(fir3.email_cc_address_list) == 2
 
     case_note2, case_note3 = ea9.case_notes.order_by("pk")
     assert case_note2.files.count() == 0
