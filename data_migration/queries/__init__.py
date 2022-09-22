@@ -349,6 +349,7 @@ export_m2m = [
     M2M(dm.CFSLegislation, web.CFSSchedule, "legislations"),
     M2M(dm.CaseNote, web.ExportApplication, "case_notes"),
     M2M(dm.CaseEmail, web.ExportApplication, "case_emails"),
+    M2M(dm.FurtherInformationRequest, web.ExportApplication, "further_information_requests"),
 ]
 
 export_xml = [
@@ -357,6 +358,7 @@ export_xml = [
     xml_parser.ProductTypeParser,
     xml_parser.ActiveIngredientParser,
     xml_parser.CaseNoteExportParser,
+    xml_parser.FIRExportParser,
 ]
 
 

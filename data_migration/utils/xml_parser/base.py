@@ -4,6 +4,9 @@ from typing import Generator, Optional, Type, Union
 from django.db.models import Model, QuerySet
 from lxml import etree
 
+from data_migration.management.commands.utils.db import new_process_pk
+from data_migration.models.flow import Process
+
 BatchT = list[tuple]
 ModelListT = dict[Type[Model], list[Model]]
 
@@ -20,6 +23,8 @@ class BaseXmlParser:
 
     # The name of the field the xml data is stored under
     FIELD: str = ""
+
+    IS_PROCESS: bool = False
 
     @classmethod
     def get_queryset(cls) -> Generator:
@@ -58,6 +63,8 @@ class BaseXmlParser:
         """
         model_lists: ModelListT = defaultdict(list)
 
+        process_pk = int(cls.IS_PROCESS and new_process_pk())
+
         for pk, xml_str in batch:
             xml_tree = etree.fromstring(xml_str)
             xml_list = xml_tree.xpath(cls.ROOT_NODE)
@@ -68,9 +75,19 @@ class BaseXmlParser:
                 if not obj:
                     continue
 
+                if cls.IS_PROCESS:
+                    process = cls.add_process_model(process_pk, xml)
+                    model_lists[Process].append(process)
+                    obj.id = process_pk
+                    process_pk += 1
+
                 model_lists[obj._meta.model].append(obj)
 
         return model_lists
+
+    @classmethod
+    def add_process_model(cls, process_pk: int, xml: etree.ElementTree) -> Process:
+        raise NotImplementedError("Extracting process model from XML must be defined")
 
     @classmethod
     def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional[Model]:

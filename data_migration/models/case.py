@@ -238,6 +238,7 @@ class CaseEmail(MigrationBase):
 
         return (
             cls.objects.select_related("ima")
+            .exclude(ima__isnull=True)
             .values("id", importapplication_id=F("ima__id"), caseemail_id=F("id"))
             .iterator()
         )
@@ -369,7 +370,8 @@ class UpdateRequest(MigrationBase):
 class FurtherInformationRequest(MigrationBase):
     PROCESS_PK = True
 
-    ia_ima = models.ForeignKey(Process, on_delete=models.CASCADE, to_field="ima_id")
+    ia_ima = models.ForeignKey(Process, on_delete=models.CASCADE, to_field="ima_id", null=True)
+    export_application = models.ForeignKey(ExportApplication, on_delete=models.CASCADE, null=True)
     status = models.CharField(max_length=20)
     request_subject = models.CharField(max_length=100, null=True)
     request_detail = models.TextField(null=True)
@@ -393,7 +395,7 @@ class FurtherInformationRequest(MigrationBase):
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["ia_ima_id", "folder_id"]
+        return super().get_excludes() + ["ia_ima_id", "folder_id", "export_application_id"]
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
@@ -409,8 +411,22 @@ class FurtherInformationRequest(MigrationBase):
 
     @classmethod
     def get_m2m_data(cls, target: models.Model) -> Generator:
+        target_name = target._meta.model_name
+
+        if target_name == "exportapplication":
+            return (
+                cls.objects.exclude(export_application_id__isnull=True)
+                .values(
+                    "id",
+                    exportapplication_id=F("export_application_id"),
+                    furtherinformationrequest_id=F("id"),
+                )
+                .iterator()
+            )
+
         return (
             cls.objects.select_related("ia_ima")
+            .exclude(ia_ima__isnull=True)
             .values(
                 "id", importapplication_id=F("ia_ima__id"), furtherinformationrequest_id=F("id")
             )

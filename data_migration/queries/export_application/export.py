@@ -7,7 +7,9 @@ __all__ = [
 ]
 
 
-common_xml_fields = "case_note_xml XMLTYPE PATH '/CA/CASE/NOTES/NOTE_LIST'"
+common_xml_fields = """case_note_xml XMLTYPE PATH '/CA/CASE/NOTES/NOTE_LIST'
+      , fir_xml XMLTYPE PATH '/CA/CASE/RFIS/RFI_LIST'
+""".strip()
 
 export_application_type = """
 SELECT
