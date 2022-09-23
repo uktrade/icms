@@ -53,6 +53,9 @@ ref_source_target = source_target_list(
         "ObsoleteCalibreGroup",
         "ObsoleteCalibre",
         "CaseNote",
+        "CaseEmail",
+        "UpdateRequest",
+        "FurtherInformationRequest",
     ]
 )
 
@@ -118,9 +121,6 @@ ia_source_target = [
     SourceTarget(dm.ImportApplication, web.ImportApplication),
     SourceTarget(dm.ImportApplicationLicence, web.ImportApplicationLicence),
     SourceTarget(dm.ImportCaseDocument, web.CaseDocumentReference),
-    SourceTarget(dm.CaseEmail, web.CaseEmail),
-    SourceTarget(dm.UpdateRequest, web.UpdateRequest),
-    SourceTarget(dm.FurtherInformationRequest, web.FurtherInformationRequest),
     SourceTarget(dm.ImportContact, web.ImportContact),
     SourceTarget(dm.PriorSurveillanceContractFile, web.PriorSurveillanceContractFile),
     SourceTarget(dm.PriorSurveillanceApplication, web.PriorSurveillanceApplication),
@@ -350,6 +350,7 @@ export_m2m = [
     M2M(dm.CaseNote, web.ExportApplication, "case_notes"),
     M2M(dm.CaseEmail, web.ExportApplication, "case_emails"),
     M2M(dm.FurtherInformationRequest, web.ExportApplication, "further_information_requests"),
+    M2M(dm.UpdateRequest, web.ExportApplication, "update_requests"),
 ]
 
 export_xml = [
@@ -359,6 +360,7 @@ export_xml = [
     xml_parser.ActiveIngredientParser,
     xml_parser.CaseNoteExportParser,
     xml_parser.FIRExportParser,
+    xml_parser.UpdateExportParser,
 ]
 
 

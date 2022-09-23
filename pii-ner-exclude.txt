@@ -1577,3 +1577,6 @@ XMLTYPE PATH '/CA/CASE/RFIS/RFI_LIST'
 RFI
 REQUESTED_BY_WUA_ID
 DELETED_BY_WUA_ID
+update_request_xml
+CaseEmail
+UpdateRequest

@@ -337,7 +337,8 @@ class CaseNoteFile(MigrationBase):
 
 
 class UpdateRequest(MigrationBase):
-    ima = models.ForeignKey(Process, on_delete=models.CASCADE, to_field="ima_id")
+    ima = models.ForeignKey(Process, on_delete=models.CASCADE, to_field="ima_id", null=True)
+    export_application = models.ForeignKey(ExportApplication, on_delete=models.CASCADE, null=True)
     is_active = models.BooleanField(default=True)
     status = models.CharField(max_length=30)
     request_subject = models.CharField(max_length=100, null=True)
@@ -352,7 +353,7 @@ class UpdateRequest(MigrationBase):
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["ima_id"]
+        return super().get_excludes() + ["ima_id", "export_application_id"]
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
@@ -360,8 +361,20 @@ class UpdateRequest(MigrationBase):
 
     @classmethod
     def get_m2m_data(cls, target: models.Model) -> Generator:
+        target_name = target._meta.model_name
+
+        if target_name == "exportapplication":
+            return (
+                cls.objects.exclude(export_application__isnull=True)
+                .values(
+                    "id", exportapplication_id=F("export_application_id"), updaterequest_id=F("id")
+                )
+                .iterator()
+            )
+
         return (
             cls.objects.select_related("ima")
+            .exclude(ima__isnull=True)
             .values("id", importapplication_id=F("ima__id"), updaterequest_id=F("id"))
             .iterator()
         )

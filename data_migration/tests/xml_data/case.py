@@ -65,6 +65,7 @@ export_case_note_2 = """
 </NOTE_LIST>
 """
 
+
 export_fir_xml_1 = """
 <RFI_LIST>
   <RFI>
@@ -95,6 +96,7 @@ export_fir_xml_1 = """
   </RFI>
 </RFI_LIST>
 """
+
 
 export_fir_xml_2 = """
 <RFI_LIST>
@@ -150,4 +152,90 @@ export_fir_xml_2 = """
     <WITHDRAW_LIST/>
   </RFI>
 </RFI_LIST>
+"""
+
+
+export_update_xml_1 = """
+<UPDATE_LIST>
+  <UPDATE>
+    <UPDATE_ID>1</UPDATE_ID>
+    <STATUS>CLOSED</STATUS>
+    <REQUEST>
+      <REQUESTED_DATETIME>2022-09-21T08:31:34</REQUESTED_DATETIME>
+      <REQUESTED_BY_WUA_ID>2</REQUESTED_BY_WUA_ID>
+      <SUBJECT>Subject</SUBJECT>
+      <CC_EMAIL_LIST>abc</CC_EMAIL_LIST>
+      <BODY>body</BODY>
+    </REQUEST>
+    <RESPONSE>
+      <RESPONDED_DATETIME>2022-09-21T08:31:34</RESPONDED_DATETIME>
+      <RESPONDED_BY_WUA_ID>2</RESPONDED_BY_WUA_ID>
+      <RESPONSE_DETAILS>response</RESPONSE_DETAILS>
+    </RESPONSE>
+    <CLOSE>
+      <CLOSED_DATETIME>2022-09-21T08:31:34</CLOSED_DATETIME>
+      <CLOSED_BY_WUA_ID>2</CLOSED_BY_WUA_ID>
+    </CLOSE>
+    <DELETE>
+      <DELETED_DATETIME />
+      <DELETED_BY_WUA_ID />
+    </DELETE>
+    <WITHDRAW_LIST/>
+  </UPDATE>
+</UPDATE_LIST>
+"""
+
+
+export_update_xml_2 = """
+<UPDATE_LIST>
+  <UPDATE>
+    <UPDATE_ID>2</UPDATE_ID>
+    <STATUS>DELETED</STATUS>
+    <REQUEST>
+      <REQUESTED_DATETIME />
+      <REQUESTED_BY_WUA_ID />
+      <SUBJECT />
+      <CC_EMAIL_LIST/>
+      <BODY />
+    </REQUEST>
+    <RESPONSE>
+      <RESPONDED_DATETIME />
+      <RESPONDED_BY_WUA_ID />
+      <RESPONSE_DETAILS />
+    </RESPONSE>
+    <CLOSE>
+      <CLOSED_DATETIME />
+      <CLOSED_BY_WUA_ID />
+    </CLOSE>
+    <DELETE>
+      <DELETED_DATETIME>2022-09-21T08:31:34</DELETED_DATETIME>
+      <DELETED_BY_WUA_ID>2</DELETED_BY_WUA_ID>
+    </DELETE>
+  </UPDATE>
+  <UPDATE>
+    <UPDATE_ID>3</UPDATE_ID>
+    <STATUS>OPEN</STATUS>
+    <REQUEST>
+      <REQUESTED_DATETIME>2022-09-21T08:31:34</REQUESTED_DATETIME>
+      <REQUESTED_BY_WUA_ID>2</REQUESTED_BY_WUA_ID>
+      <SUBJECT>Subject</SUBJECT>
+      <CC_EMAIL_LIST>ab; cd</CC_EMAIL_LIST>
+      <BODY>body</BODY>
+    </REQUEST>
+    <RESPONSE>
+      <RESPONDED_DATETIME />
+      <RESPONDED_BY_WUA_ID />
+      <RESPONSE_DETAILS />
+    </RESPONSE>
+    <CLOSE>
+      <CLOSED_DATETIME />
+      <CLOSED_BY_WUA_ID />
+    </CLOSE>
+    <DELETE>
+      <DELETED_DATETIME />
+      <DELETED_BY_WUA_ID />
+    </DELETE>
+    <WITHDRAW_LIST/>
+  </UPDATE>
+</UPDATE_LIST>
 """

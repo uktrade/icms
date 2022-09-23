@@ -81,6 +81,7 @@ EA_BASE_COLUMNS = [
     ("exporter_office_legacy_id",),
     ("case_note_xml",),
     ("fir_xml",),
+    ("update_request_xml",),
 ]
 
 query_result = {
@@ -1385,6 +1386,7 @@ query_result = {
                 "e-2-1",  # export_office_legacy_id
                 None,  # case_note_xml
                 None,  # fir_xml
+                None,  # update_request_xml
                 None,  # brand_name
                 31,  # file_folder_id
             ),
@@ -1406,6 +1408,7 @@ query_result = {
                 "e-3-1",
                 xd.export_case_note_1,
                 None,  # fir_xml
+                xd.export_update_xml_1,  # update_request_xml
                 "A brand",
                 32,
             ),
@@ -1427,6 +1430,7 @@ query_result = {
                 "e-2-2",
                 None,  # case_note_xml
                 None,  # fir_xml
+                None,  # update_request_xml
                 "Another brand",
                 33,
             ),
@@ -1464,6 +1468,7 @@ query_result = {
                 "e-2-1",  # export_office_legacy_id
                 None,  # case_note_xml
                 None,  # fir_xml
+                None,  # update_request_xml
                 None,  # is_pesticide_on_free_sale_uk
                 None,  # is_manufacturer
                 None,  # product_name
@@ -1488,6 +1493,7 @@ query_result = {
                 "e-3-1",
                 None,  # case_note_xml
                 None,  # fir_xml
+                xd.export_update_xml_2,  # update_request_xml
                 1,  # is_pesticide_on_free_sale_uk
                 0,  # is_manufacturer
                 "A product",  # product_name
@@ -1512,6 +1518,7 @@ query_result = {
                 "e-2-2",
                 None,  # case_note_xml
                 xd.export_fir_xml_1,  # fir_xml
+                None,  # update_request_xml
                 0,  # is_pesticide_on_free_sale_uk
                 1,  # is_manufacturer
                 "Another product",  # product_name
@@ -1541,6 +1548,7 @@ query_result = {
                 "e-2-1",  # export_office_legacy_id
                 None,  # case_note_xml
                 None,  # fir_xml
+                None,  # update_request_xml
             ),
             (
                 14,
@@ -1560,6 +1568,7 @@ query_result = {
                 "e-3-1",
                 None,  # case_note_xml
                 xd.export_fir_xml_2,  # fir_xml
+                None,  # update_request_xml
             ),
             (
                 15,
@@ -1579,6 +1588,7 @@ query_result = {
                 "e-2-2",
                 xd.export_case_note_2,  # case_note_xml
                 None,  # fir_xml
+                None,  # update_request_xml
             ),
         ],
     ),

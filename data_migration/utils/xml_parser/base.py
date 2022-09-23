@@ -26,6 +26,8 @@ class BaseXmlParser:
 
     IS_PROCESS: bool = False
 
+    REVERSE_LIST: bool = False
+
     @classmethod
     def get_queryset(cls) -> Generator:
         """Generates the queryset of values for the xml data.
@@ -68,6 +70,9 @@ class BaseXmlParser:
         for pk, xml_str in batch:
             xml_tree = etree.fromstring(xml_str)
             xml_list = xml_tree.xpath(cls.ROOT_NODE)
+
+            if cls.REVERSE_LIST:
+                xml_list = xml_list[::-1]
 
             for xml in xml_list:
                 obj = cls.parse_xml_fields(pk, xml)
