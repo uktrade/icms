@@ -126,6 +126,7 @@ class FIRExportParser(BaseXmlParser):
     PARENT = dm.ExportApplication
     FIELD = "fir_xml"
     ROOT_NODE = "/RFI_LIST/RFI"
+    REVERSE_LIST = True
 
     @classmethod
     def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional[Model]:
@@ -199,4 +200,71 @@ class FIRExportParser(BaseXmlParser):
             process_type="FurtherInformationRequest",
             is_active=status != "DELETED",
             created=created,
+        )
+
+
+class UpdateExportParser(BaseXmlParser):
+    MODEL = dm.UpdateRequest
+    PARENT = dm.ExportApplication
+    FIELD = "update_request_xml"
+    ROOT_NODE = "/UPDATE_LIST/UPDATE"
+    REVERSE_LIST = True
+
+    @classmethod
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional[Model]:
+        """Example XML
+
+        <UPDATE>
+          <UPDATE_ID />
+          <STATUS />
+          <REQUEST>
+            <REQUESTED_DATETIME />
+            <REQUESTED_BY_WUA_ID />
+            <SUBJECT />
+            <CC_EMAIL_LIST />
+            <BODY />
+          </REQUEST>
+          <RESPONSE>
+            <RESPONDED_DATETIME />
+            <RESPONDED_BY_WUA_ID />
+            <SUMMARY_OF_CHANGES />
+          </RESPONSE>
+          <CLOSE>
+            <CLOSED_DATETIME/>
+            <CLOSED_BY_WUA_ID/>
+          </CLOSE>
+          <DELETE>
+            <DELETED_DATETIME />
+            <DELETED_BY_WUA_ID />
+          </DELETE>
+          <WITHDRAW_LIST/>
+        </UPDATE>
+        """
+
+        status = get_xml_val(xml, "./STATUS")
+        request_subject = get_xml_val(xml, "./REQUEST/SUBJECT")
+        request_detail = get_xml_val(xml, "./REQUEST/BODY")
+        request_datetime = datetime_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_DATETIME"))
+        requested_by_id = 2  # int_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_BY_WUA_ID"))
+        response_detail = get_xml_val(xml, "./RESPONSE/RESPONSE_DETAILS")
+        response_datetime = datetime_or_none(get_xml_val(xml, "./RESPONSE/RESPONSED_DATETIME"))
+        response_by_id = 2  # int_or_none(get_xml_val(xml, "./RESPONSE/RESPONDED_BY_WUA"))
+        closed_datetime = datetime_or_none(get_xml_val(xml, "./CLOSE/CLOSED_DATETIME"))
+        closed_by_id = 2  # int_or_none(get_xml_val(xml, "./CLOSE/CLOSED_BY_WUA_ID"))
+
+        return cls.MODEL(
+            **{
+                "export_application_id": parent_pk,
+                "is_active": status != "DELETED",
+                "status": status,
+                "request_subject": request_subject,
+                "request_detail": request_detail,
+                "requested_by_id": requested_by_id,
+                "request_datetime": request_datetime,
+                "response_detail": response_detail,
+                "response_datetime": response_datetime,
+                "response_by_id": response_by_id,
+                "closed_datetime": closed_datetime,
+                "closed_by_id": closed_by_id,
+            }
         )

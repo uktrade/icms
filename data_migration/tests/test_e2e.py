@@ -717,6 +717,7 @@ export_data_source_target = {
         (dm.CaseNote, web.CaseNote),
         (dm.CaseEmail, web.CaseEmail),
         (dm.FurtherInformationRequest, web.FurtherInformationRequest),
+        (dm.UpdateRequest, web.UpdateRequest),
     ],
     "import_application": [],
     "export_application": [
@@ -778,6 +779,7 @@ export_m2m = {
         (dm.CaseNote, web.ExportApplication, "case_notes"),
         (dm.CaseEmail, web.ExportApplication, "case_emails"),
         (dm.FurtherInformationRequest, web.ExportApplication, "further_information_requests"),
+        (dm.UpdateRequest, web.ExportApplication, "update_requests"),
         (dm.CaseNoteFile, web.CaseNote, "files"),
         (dm.VariationRequest, web.ExportApplication, "variation_requests"),
         (dm.CFSLegislation, web.CFSSchedule, "legislations"),
@@ -795,6 +797,7 @@ export_xml = {
         xml_parser.ActiveIngredientParser,
         xml_parser.CaseNoteExportParser,
         xml_parser.FIRExportParser,
+        xml_parser.UpdateExportParser,
     ],
     "import_application": [],
 }
@@ -827,6 +830,10 @@ def test_import_export_data(mock_connect):
     assert ea1.variation_requests.count() == 0
     assert ea2.variation_requests.count() == 0
     assert ea3.variation_requests.count() == 1
+
+    assert ea1.update_requests.count() == 0
+    assert ea2.update_requests.count() == 1
+    assert ea3.update_requests.count() == 0
 
     assert ea1.case_notes.count() == 0
     assert ea2.case_notes.count() == 2
@@ -909,6 +916,14 @@ def test_import_export_data(mock_connect):
     assert ea5.variation_requests.count() == 0
     assert ea6.variation_requests.count() == 0
 
+    assert ea4.update_requests.count() == 0
+    assert ea5.update_requests.count() == 2
+    assert ea6.update_requests.count() == 0
+
+    vr2, vr3 = ea5.update_requests.order_by("pk")
+    assert vr2.status == "OPEN"
+    assert vr3.status == "DELETED"
+
     assert ea4.case_notes.count() == 0
     assert ea5.case_notes.count() == 0
     assert ea6.case_notes.count() == 0
@@ -981,6 +996,10 @@ def test_import_export_data(mock_connect):
     assert ea8.variation_requests.count() == 0
     assert ea9.variation_requests.count() == 2
 
+    assert ea7.update_requests.count() == 0
+    assert ea8.update_requests.count() == 0
+    assert ea9.update_requests.count() == 0
+
     assert ea7.case_notes.count() == 0
     assert ea8.case_notes.count() == 0
     assert ea9.case_notes.count() == 2
@@ -994,9 +1013,9 @@ def test_import_export_data(mock_connect):
     assert ea9.further_information_requests.count() == 0
 
     fir2, fir3 = ea8.further_information_requests.order_by("pk")
-    assert fir2.status == "DELETED"
-    assert fir3.status == "OPEN"
-    assert len(fir3.email_cc_address_list) == 2
+    assert fir2.status == "OPEN"
+    assert fir3.status == "DELETED"
+    assert len(fir2.email_cc_address_list) == 2
 
     case_note2, case_note3 = ea9.case_notes.order_by("pk")
     assert case_note2.files.count() == 0

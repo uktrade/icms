@@ -78,6 +78,7 @@ class ExportApplication(MigrationBase):
     case_owner = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
     case_note_xml = models.TextField(null=True)
     fir_xml = models.TextField(null=True)
+    update_request_xml = models.TextField(null=True)
 
     @classmethod
     def get_excludes(cls) -> list[str]:
@@ -95,8 +96,6 @@ class ExportApplication(MigrationBase):
             "exporter_office_id": F("exporter_office_legacy__id"),
             "agent_office_id": F("agent_office_legacy__id"),
         }
-
-    # TODO update_requests = models.ManyToManyField(UpdateRequest)
 
 
 class ExportApplicationCountries(MigrationBase):
