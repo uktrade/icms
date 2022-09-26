@@ -42,6 +42,7 @@ sil_data_source_target = {
         (dm.CountryGroup, web.CountryGroup),
         (dm.ObsoleteCalibreGroup, web.ObsoleteCalibreGroup),
         (dm.ObsoleteCalibre, web.ObsoleteCalibre),
+        (dm.CommodityType, web.CommodityType),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -98,6 +99,7 @@ sil_data_source_target = {
         "reference": [
             (q_ref, "country", dm.Country),
             (q_ref, "country_group", dm.CountryGroup),
+            (q_ref, "commodity_type", dm.CommodityType),
         ],
         "file": [
             (q_f, "case_note_files", dm.FileCombined),
@@ -594,113 +596,6 @@ def test_import_textiles_data(mock_connect):
     assert tex2.checklist.authorisation is False
 
     assert hasattr(tex3, "checklist") is False
-
-
-sps_data_source_target = {
-    "user": [
-        (dm.User, web.User),
-        (dm.Importer, web.Importer),
-    ],
-    "reference": [
-        (dm.Country, web.Country),
-        (dm.CountryGroup, web.CountryGroup),
-    ],
-    "import_application": [
-        (dm.ImportApplicationType, web.ImportApplicationType),
-        (dm.Process, web.Process),
-        (dm.ImportApplication, web.ImportApplication),
-        (dm.PriorSurveillanceContractFile, web.PriorSurveillanceContractFile),
-        (dm.PriorSurveillanceApplication, web.PriorSurveillanceApplication),
-    ],
-    "file": [
-        (dm.File, web.File),
-    ],
-}
-
-
-@override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
-@override_settings(ICMS_PROD_USER="TestUser")
-@override_settings(ICMS_PROD_PASSWORD="1234")
-@pytest.mark.django_db
-@mock.patch.object(cx_Oracle, "connect")
-@mock.patch.dict(DATA_TYPE_XML, {"import_application": []})
-@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, sps_data_source_target)
-@mock.patch.dict(
-    DATA_TYPE_M2M,
-    {
-        "import_application": [
-            (dm.SPSSupportingDoc, web.PriorSurveillanceApplication, "supporting_documents")
-        ]
-    },
-)
-@mock.patch.dict(
-    DATA_TYPE_QUERY_MODEL,
-    {"file": [(q_f, "sps_application_files", dm.FileCombined)]},
-)
-def test_import_sps_data(mock_connect):
-    mock_connect.return_value = utils.MockConnect()
-
-    dm.User.objects.create(id=2, username="test_user")
-    dm.Importer.objects.create(id=2, name="test_org", type="ORGANISATION")
-
-    call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_user", "--skip_export")
-
-    factory.CountryFactory(id=1, name="My Test Country")
-    cg = dm.CountryGroup.objects.create(country_group_id="SPS", name="SPS")
-
-    process_pk = max(web.Process.objects.count(), dm.Process.objects.count()) + 1
-    pk_range = list(range(process_pk, process_pk + 2))
-    iat = factory.ImportApplicationTypeFactory(master_country_group=cg)
-
-    for i, pk in enumerate(pk_range):
-        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.FA_SIL, ima_id=pk + 7)
-        ia = factory.ImportApplicationFactory(
-            pk=pk,
-            ima=process,
-            status="COMPLETE",
-            imad_id=i + 1000,
-            application_type=iat,
-            created_by_id=2,
-            last_updated_by_id=2,
-            importer_id=2,
-            file_folder_id=i + 100,
-        )
-
-        dm.ImportApplicationLicence.objects.create(ima=process, status="AC", imad_id=ia.imad_id)
-
-        dm.PriorSurveillanceContractFile.objects.create(
-            imad=ia,
-            file_type="PRO_FORMA_INVOICE" if i == 0 else "SUPPLY_CONTRACT",
-            target_id=i + 1000,
-        )
-        sps_data = {
-            "pk": pk,
-            "imad": ia,
-            "quantity": "NONSENSE" if i == 0 else 100,
-            "value_gbp": "NONSENSE" if i == 0 else 100,
-            "value_eur": "NONSENSE" if i == 0 else 100,
-        }
-        dm.PriorSurveillanceApplication.objects.create(**sps_data)
-
-    call_command("import_v1_data", "--skip_export")
-
-    assert web.PriorSurveillanceApplication.objects.count() == 2
-    assert web.PriorSurveillanceContractFile.objects.count() == 2
-
-    sps1, sps2 = web.PriorSurveillanceApplication.objects.order_by("pk").all()
-
-    assert sps1.contract_file.file_type == "pro_forma_invoice"
-    assert sps1.supporting_documents.count() == 2
-    assert sps1.quantity is None
-    assert sps1.value_gbp is None
-    assert sps1.value_eur is None
-
-    assert sps2.contract_file.file_type == "supply_contract"
-    assert sps2.supporting_documents.count() == 1
-    assert sps2.quantity == 100
-    assert sps2.value_gbp == 100
-    assert sps2.value_eur == 100
 
 
 export_data_source_target = {

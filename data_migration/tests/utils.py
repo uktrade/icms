@@ -126,6 +126,34 @@ query_result = {
             (3, "C", 1, 3),
         ],
     ),
+    reference.commodity_type: (
+        [
+            ("type_code",),
+            ("com_type_title",),
+        ],
+        [("TYPE_A", "Type A"), ("TYPE_B", "Type B"), ("TYPE_C", "Type C")],
+    ),
+    reference.commodity: (
+        [
+            ("id",),
+            ("is_active",),
+            ("commodity_code",),
+            ("commodity_type_id",),
+            ("validity_start_date",),
+            ("validity_end_date",),
+            ("quantity_threshold",),
+            ("sigl_product_type",),
+            ("start_datetime",),
+            ("end_datetime",),
+        ],
+        [
+            (1, 1, 1000, "TYPE_A", datetime.now(), None, None, "TEX", datetime.now(), None),
+            (2, 1, 1001, "TYPE_A", datetime.now(), None, None, "TEX", datetime.now(), None),
+            (3, 1, 1002, "TYPE_B", datetime.now(), None, None, None, datetime.now(), None),
+            (4, 1, 1003, "TYPE_B", datetime.now(), None, None, None, datetime.now(), None),
+            (5, 1, 1004, "TYPE_C", datetime.now(), None, None, None, datetime.now(), None),
+        ],
+    ),
     import_application.section5_clauses: (
         [
             ("clause",),
@@ -744,6 +772,194 @@ query_result = {
             ),
         ],
     ),
+    files.opt_application_files: (
+        IA_FILES_COLUMNS,
+        [
+            (
+                10,  # folder_id
+                "IMP_APP_DOCUMENTS",  # folder_type
+                "outwardprocessingtradeapplication",  # app_model
+                "IMP_SUPPORTING_DOC",  # target_type
+                "RECEIVED",  # status
+                2000,  # target_id
+                2000,  # fft_id
+                20000,  # version_id
+                datetime(2022, 4, 27),  # created_date
+                2,  # created_by_id
+                "contract/file",  # path
+                "Test OPT supporting doc.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+            ),
+            (
+                11,  # folder_id
+                "IMP_APP_DOCUMENTS",  # folder_type
+                "outwardprocessingtradeapplication",  # app_model
+                "IMP_SUPPORTING_DOC",  # target_type
+                "RECEIVED",  # status
+                2001,  # target_id
+                2001,  # fft_id
+                20001,  # version_id
+                datetime(2022, 4, 27),  # created_date
+                2,  # created_by_id
+                "contract/file",  # path
+                "Test OPT supporting doc 2.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+            ),
+        ],
+    ),
+    import_application.opt_application: (
+        IA_BASE_COLUMNS
+        + [
+            ("customs_office_name",),
+            ("customs_office_address",),
+            ("rate_of_yield",),
+            ("rate_of_yield_calc_method",),
+            ("last_export_day",),
+            ("reimport_period",),
+            ("nature_process_ops",),
+            ("suggested_id",),
+            ("cp_origin_country_id",),
+            ("cp_processing_country_id",),
+            ("commodity_group",),
+            ("cp_total_quantity",),
+            ("cp_total_value",),
+            ("cp_commodities_xml",),
+            ("teg_origin_country_id",),
+            ("teg_total_quantity",),
+            ("teg_total_value",),
+            ("teg_goods_description",),
+            ("teg_commodities_xml",),
+            ("fq_similar_to_own_factory",),
+            ("fq_manufacturing_within_eu",),
+            ("fq_maintained_in_eu",),
+            ("fq_maintained_in_eu_r",),
+            ("fq_employment_decreased",),
+            ("fq_employment_decreased_r",),
+            ("fq_prior_authorisation",),
+            ("fq_prior_authorisation_r",),
+            ("fq_past_beneficiary",),
+            ("fq_past_beneficiary_r",),
+            ("fq_new_application",),
+            ("fq_new_application_reasons",),
+            ("fq_further_authorisation",),
+            ("fq_further_auth_reasons",),
+            ("fq_subcontract_production",),
+        ],
+        [
+            (
+                11,  # ima_id
+                21,  # imad_id
+                10,  # file_folder_id
+                "IMA/2022/2234",  # reference
+                "COMPLETE",  # status
+                datetime(2022, 4, 23),  # submit_datetime
+                datetime(2022, 4, 22),  # create_datetime
+                datetime(2022, 4, 22),  # created
+                0,  # vartiation_no
+                3456,  # licence_reference
+                2,  # submitted_by_id
+                2,  # created_by_id
+                2,  # last_updated_by_id
+                2,  # importer_id
+                "i-2-1",  # importer_office_legacy_id
+                2,  # contact_id
+                3,  # application_type
+                "OutwardProcessingTradeApplication",  # process_type
+                None,  # variations_xml
+                "Test",  # customs_office_name
+                "Test Address",  # customs_office_address
+                0.5,  # rate_of_yield
+                "abc",  # rate_of_yield_calc_method
+                datetime(2023, 4, 23).date(),  # last_export_day
+                12,  # reimport_period
+                "test",  # nature_process_ops
+                "test",  # suggested_id
+                1,  # cp_origin_country_id
+                1,  # cp_processing_country_id
+                1,  # commodity_group
+                123,  # cp_total_quantity
+                100,  # cp_total_value
+                xd.opt_commodities,  # cp_commodities_xml
+                1,  # teg_origin_country_id
+                100,  # teg_total_quantity
+                500,  # teg_total_value
+                "test",  # teg_goods_description
+                xd.opt_commodities,  # teg_commodities_xml
+                "Y",  # fq_similar_to_own_factory
+                "Y",  # fq_manufacturing_within_eu
+                "Y",  # fq_maintained_in_eu
+                "test eu",  # fq_maintained_in_eu_r
+                "N",  # fq_employment_decreased
+                "test em",  # fq_employment_decreased_r
+                "Y",  # fq_prior_authorisation
+                "test pa",  # fq_prior_authorisation_r
+                "Y",  # fq_past_beneficiary
+                "test pb",  # fq_past_beneficiary_r
+                "Y",  # fq_new_application
+                "test na",  # fq_new_application_reasons
+                "Y",  # fq_further_authorisation
+                "test fa",  # fq_further_auth_reasons
+                "Y",  # fq_subcontract_production
+            ),
+            (
+                12,  # ima_id
+                22,  # imad_id
+                11,  # file_folder_id
+                "IMA/2022/2235",  # reference
+                "COMPLETE",  # status
+                datetime(2022, 4, 23),  # submit_datetime
+                datetime(2022, 4, 22),  # create_datetime
+                datetime(2022, 4, 22),  # created
+                0,  # vartiation_no
+                3456,  # licence_reference
+                2,  # submitted_by_id
+                2,  # created_by_id
+                2,  # last_updated_by_id
+                2,  # importer_id
+                "i-2-1",  # importer_office_legacy_id
+                2,  # contact_id
+                3,  # application_type
+                "OutwardProcessingTradeApplication",  # process_type
+                None,  # variations_xml
+                "Test",  # customs_office_name
+                "Test Address",  # customs_office_address
+                0.5,  # rate_of_yield
+                "abc",  # rate_of_yield_calc_method
+                datetime(2023, 4, 23).date(),  # last_export_day
+                12,  # reimport_period
+                "test",  # nature_process_ops
+                "test",  # suggested_id
+                1,  # cp_origin_country_id
+                1,  # cp_processing_country_id
+                1,  # commodity_group
+                None,  # cp_total_quantity
+                None,  # cp_total_value
+                None,  # cp_commodities_xml
+                1,  # teg_origin_country_id
+                None,  # teg_total_quantity
+                None,  # teg_total_value
+                None,  # teg_goods_description
+                None,  # teg_commodities_xml
+                "N",  # fq_similar_to_own_factory
+                "N",  # fq_manufacturing_within_eu
+                "N",  # fq_maintained_in_eu
+                None,  # fq_maintained_in_eu_r
+                "N",  # fq_employment_decreased
+                None,  # fq_employment_decreased_r
+                "N",  # fq_prior_authorisation
+                None,  # fq_prior_authorisation_r
+                "N",  # fq_past_beneficiary
+                None,  # fq_past_beneficiary_r
+                "N",  # fq_new_application
+                None,  # fq_new_application_reasons
+                "N",  # fq_further_authorisation
+                None,  # fq_further_auth_reasons
+                "N",  # fq_subcontract_production
+            ),
+        ],
+    ),
     import_application.sil_application: (
         IA_BASE_COLUMNS
         + [
@@ -774,7 +990,7 @@ query_result = {
                 2,  # importer_id
                 "i-2-1",  # importer_office_legacy_id
                 2,  # contact_id
-                1,  # application_type
+                6,  # application_type
                 "SILApplication",  # process_type
                 None,  # variations_xml
                 1,  # section1
@@ -803,7 +1019,7 @@ query_result = {
                 2,  # importer_id
                 "i-2-1",  # importer_office_legacy_id
                 2,  # contact_id
-                1,  # application_type
+                6,  # application_type
                 "SILApplication",  # process_type
                 xd.open_variation,  # variations_xml
                 1,  # section1
@@ -850,35 +1066,65 @@ query_result = {
         ],
         [
             (
-                1,  # id
+                3,  # id
+                0,  # is_active
+                "OPT",  # type
+                "QUOTA",  # sub_type
+                "OPT",  # licence_type_code
+                "true",  # sigl_flag
+                "false",  # chief_flag
+                None,  # chief_licence_prefix
+                "true",  # paper_licence_flag
+                "false",  # electronic_licence_flag
+                "false",  # cover_letter_flag
+                "false",  # cover_letter_schedule_flag
+                "true",  # category_flag
+                9,  # default_licence_length_months
+                "false",  # quantity_unlimited_flag
+                "false",  # exp_cert_upload_flag
+                "true",  # supporting_docs_upload_flag
+                "false",  # multiple_commodities_flag
+                "/docs/file.pdf",  # guidence_file_url
+                "false",  # usage_auto_category_desc_flag
+                "true",  # case_checklist_flag
+                "false",  # importer_printable
+                "TYPE_A",  # commodity_type_id
+                "A",  # consignment_country_group_id
+                "IMA_OPT_DECLARATION",  # declaration_template_mnem
+                None,  # default_commodity_group_id
+                None,  # master_country_group_id
+                "A",  # origin_country_group_id
+            ),
+            (
+                6,  # id
                 1,  # is_active
                 "FA",  # type
                 "SIL",  # sub_type
                 "FIREARMS",  # licence_type_code
-                False,  # sigl_flag
-                True,  # chief_flag
+                "false",  # sigl_flag
+                "true",  # chief_flag
                 "GBSIL",  # chief_licence_prefix
-                True,  # paper_licence_flag
-                True,  # electronic_licence_flag
-                True,  # cover_letter_flag
-                True,  # cover_letter_schedule_flag
-                True,  # category_flag
+                "true",  # paper_licence_flag
+                "true",  # electronic_licence_flag
+                "true",  # cover_letter_flag
+                "true",  # cover_letter_schedule_flag
+                "true",  # category_flag
                 6,  # default_licence_length_months
-                False,  # quantity_unlimited_flag
-                False,  # exp_cert_upload_flag
-                False,  # supporting_docs_upload_flag
-                True,  # multiple_commodities_flag
+                "false",  # quantity_unlimited_flag
+                "false",  # exp_cert_upload_flag
+                "false",  # supporting_docs_upload_flag
+                "true",  # multiple_commodities_flag
                 "/docs/file.pdf",  # guidance_file_url
-                False,  # usage_auto_category_desc_flag
-                True,  # case_checklist_flag
-                False,  # importer_printable
-                None,  # commodity_type_id
+                "false",  # usage_auto_category_desc_flag
+                "true",  # case_checklist_flag
+                "false",  # importer_printable
+                "TYPE_B",  # commodity_type_id
                 "A",  # consignment_country_group_id
                 "IMA_GEN_DECLARATION",  # declaration_template_mnem
                 None,  # default_commodity_group_id
                 "A",  # master_country_group_id
                 "A",  # origin_country_group_id
-            )
+            ),
         ],
     ),
     import_application.constabulary_emails: (

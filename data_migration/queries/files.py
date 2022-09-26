@@ -56,6 +56,7 @@ WHERE fft.target_mnem IN ({target_types})
 AND xid.ima_type = '{ima_type}'
 AND xid.ima_sub_type = '{ima_sub_type}'
 AND xid.status_control = 'C'
+ORDER by fft.id
 """
 
 derogations_application_files = (
@@ -194,6 +195,7 @@ LEFT JOIN (
     ) x
   WHERE status_control = 'C'
 ) fv ON fv.target_id = fft.id
+ORDER by fft.id
 """
 
 sps_docs = """
@@ -233,6 +235,7 @@ LEFT JOIN (
  ) fv ON fv.target_id = fft.ID
 WHERE fft.target_mnem = 'IMP_SPS_DOC'
 AND fft.status = 'RECEIVED'
+ORDER by fft.id
 """
 
 
@@ -271,6 +274,7 @@ LEFT JOIN (
   WHERE status_control = 'C'
  ) fv ON fv.target_id = fft.ID
 WHERE ff.file_folder_type = 'IMP_CASE_NOTE_DOCUMENTS'
+ORDER by fft.id
 """
 
 
@@ -309,6 +313,7 @@ LEFT JOIN (
     ) x
   WHERE status_control = 'C'
  ) fv ON fv.target_id = fft.ID
+ORDER by fft.id
  """
 
 
@@ -348,6 +353,7 @@ LEFT JOIN (
   WHERE status_control = 'C'
  ) fv ON fv.target_id = fft.ID
 WHERE xmd.status_control = 'C'
+ORDER by fft.id
 """
 
 
@@ -386,12 +392,13 @@ LEFT JOIN (
   WHERE status_control = 'C'
  ) fv ON fv.target_id = fft.ID
 WHERE ff.file_folder_type = 'GMP_SUPPORTING_DOCUMENTS'
+ORDER by fft.id
 """
 
 
 # To access blob file in secure_lob_data
 # INNER JOIN DOCLIBMGR.FILE_versions fv ON fv.id = vf.file_id
-# INNER JOIN securemgr.secure_lob_data sld ON sld.id = fv.secure_lob_id
+# INNER JOIN securemgr.secure_lob_data sld ON sld.id = vf.secure_lob_id
 
 export_case_note_docs = """
 SELECT
@@ -408,4 +415,5 @@ FROM doclibmgr.folder_details fd
 LEFT JOIN doclibmgr.vw_file_folders vff ON vff.f_id = fd.f_id
 LEFT JOIN doclibmgr.vw_files vf ON vf.file_id = vff.file_id
 WHERE fd.folder_title LIKE 'Case Note %'
+ORDER BY vf.file_id
 """

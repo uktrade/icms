@@ -898,7 +898,7 @@ class WoodContractParser(BaseXmlParser):
 class OPTCommodity(BaseXmlParser):
     PARENT = dm.OutwardProcessingTradeApplication
     MODEL = dm.OPTCpCommodity
-    ROOT_NODE = "/COMMODITIY_LIST/COMMODITY"
+    ROOT_NODE = "/COMMODITY_LIST/COMMODITY"
 
     @classmethod
     def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional["Model"]:
@@ -909,7 +909,7 @@ class OPTCommodity(BaseXmlParser):
         </COMMODITY>
         """
 
-        commodity_id = int_or_none(get_xml_val(xml, "./COMMODITY/COMMODITY_ID[not(fox-error)]"))
+        commodity_id = int_or_none(get_xml_val(xml, "./COMMODITY_ID[not(fox-error)]"))
 
         if not commodity_id:
             return None
