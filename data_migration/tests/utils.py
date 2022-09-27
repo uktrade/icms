@@ -770,6 +770,22 @@ query_result = {
                 None,  # content_type
                 None,  # file_size
             ),
+            (
+                3,  # folder_id
+                "IMP_APP_DOCUMENTS",  # folder_type
+                "silapplication",  # app_model
+                "IMP_SECTION5_AUTHORITY",  # target_type
+                "EMPTY",  # status
+                1004,  # target_id
+                1004,  # fft_id
+                None,  # version_id
+                None,  # created_date
+                None,  # created_by_id
+                None,  # path
+                None,  # filename
+                None,  # content_type
+                None,  # file_size
+            ),
         ],
     ),
     files.opt_application_files: (
@@ -1030,6 +1046,35 @@ query_result = {
                 xd.import_contact_xml,  # bought_from_details_xml
                 xd.sr_upload_xml,  # supplementary_report_xml
                 xd.sil_goods_sec_1,  # commodities_xml
+            ),
+            (
+                3,  # ima_id
+                13,  # imad_id
+                3,  # file_folder_id
+                "IMA/2022/2346",  # reference
+                "COMPLETE",  # status
+                datetime(2022, 4, 23),  # submit_datetime
+                datetime(2022, 4, 22),  # create_datetime
+                datetime(2022, 4, 22),  # created
+                0,  # vartiation_no
+                8901,  # licence_reference
+                2,  # submitted_by_id
+                2,  # creeated_by_id
+                2,  # last_updated_by_id
+                2,  # importer_id
+                "i-2-1",  # importer_office_legacy_id
+                2,  # contact_id
+                6,  # application_type
+                "SILApplication",  # process_type
+                xd.open_variation,  # variations_xml
+                1,  # section1
+                0,  # section2
+                0,  # section5
+                1,  # section58_obsolete
+                0,  # section58_other
+                xd.import_contact_xml,  # bought_from_details_xml
+                xd.sr_manual_xml_legacy,  # supplementary_report_xml
+                xd.sil_goods_legacy,  # commodities_xml
             ),
         ],
     ),

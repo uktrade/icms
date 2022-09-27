@@ -145,6 +145,7 @@ ia_source_target = [
     SourceTarget(dm.SILGoodsSection5, web.SILGoodsSection5),
     SourceTarget(dm.SILGoodsSection582Obsolete, web.SILGoodsSection582Obsolete),  # /PS-IGNORE
     SourceTarget(dm.SILGoodsSection582Other, web.SILGoodsSection582Other),  # /PS-IGNORE
+    SourceTarget(dm.SILLegacyGoods, web.SILLegacyGoods),  # /PS-IGNORE
     SourceTarget(dm.SILSupplementaryInfo, web.SILSupplementaryInfo),
     SourceTarget(dm.SILSupplementaryReport, web.SILSupplementaryReport),
     SourceTarget(
@@ -163,6 +164,10 @@ ia_source_target = [
     SourceTarget(
         dm.SILSupplementaryReportFirearmSection582Other,  # /PS-IGNORE
         web.SILSupplementaryReportFirearmSection582Other,  # /PS-IGNORE
+    ),
+    SourceTarget(
+        dm.SILSupplementaryReportFirearmSectionLegacy,
+        web.SILSupplementaryReportFirearmSectionLegacy,
     ),
     SourceTarget(dm.DFLApplication, web.DFLApplication),
     SourceTarget(dm.DFLChecklist, web.DFLChecklist),

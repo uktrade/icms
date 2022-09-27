@@ -161,7 +161,13 @@ class SILGoodsParser(BaseXmlParser):
                 section = get_xml_val(xml, "./SECTION")
 
                 if not section:
-                    continue
+                    commodity_desc = get_xml_val(xml, "./COMMODITY_DESC")
+
+                    if not commodity_desc:
+                        continue
+
+                    # If there is a commodity description this is an older record with no section
+                    section = "LEGACY"
 
                 obj = cls.parse_xml_fields(parent_pk, xml)
 
@@ -215,7 +221,7 @@ class SILGoodsParser(BaseXmlParser):
         </COMMODITY>
         """
 
-        section = get_xml_val(xml, "./SECTION")
+        section = get_xml_val(xml, "./SECTION") or "LEGACY"
         return getattr(cls, f"parse_{section.lower()}")(parent_pk, xml)
 
     @classmethod
@@ -270,7 +276,7 @@ class SILGoodsParser(BaseXmlParser):
                 "centrefire": str_to_bool(centrefire),
                 "curiosity_ornament": str_to_bool(curiosity_ornament),
                 "manufacture": str_to_bool(manufacture),
-                "obsolete_calibre_id": int_or_none(obsolete_calibre),
+                "obsolete_calibre_legacy_id": int_or_none(obsolete_calibre),
                 "original_chambering": str_to_bool(original_chambering),
             }
         )
@@ -307,6 +313,39 @@ class SILGoodsParser(BaseXmlParser):
                 "muzzle_loading": str_to_bool(muzzle_loading),
                 "rimfire": str_to_bool(rimfire),
                 "rimfire_details": rimfire_details or "",
+            }
+        )
+
+    @classmethod
+    def parse_legacy(cls, parent_pk: int, xml: "ET") -> Optional["Model"]:
+        """Example XML
+
+        <COMMODITY>
+          <COMMODITY_DESC />
+          <QUANTITY />
+          <QUANTITY_UNLIMITED />
+          <QUANTITY_UNLIMITED_FLAG />
+          <UNIT />
+          <OBSOLETE_CALIBRE>
+            <OC_ID />
+            <OC_ID_ERROR />
+            <NA_FLAG />
+          </OBSOLETE_CALIBRE>
+        </COMMODITY>
+        """
+
+        description = get_xml_val(xml, "./COMMODITY_DESC")
+        quantity = get_xml_val(xml, "./QUANTITY")
+        unlimited_quantity = get_xml_val(xml, "./QUANTITY_UNLIMITED_FLAG")
+        obsolete_calibre = get_xml_val(xml, "./OBSOLETE_CALIBRE/OC_ID")
+
+        return dm.SILLegacyGoods(
+            **{
+                "import_application_id": parent_pk,
+                "description": description,
+                "quantity": int_or_none(quantity),
+                "unlimited_quantity": bool(str_to_bool(unlimited_quantity)),
+                "obsolete_calibre_legacy_id": int_or_none(obsolete_calibre),
             }
         )
 
@@ -409,7 +448,7 @@ class ReportFirearmParser(BaseXmlParser):
                             report_id=parent_pk, is_upload=True, goods_certificate_legacy_id=ordinal
                         )
                     )
-                    # TODO ICMSLST-1496: Report firearms need to connect to documents
+                    # TODO ICMSLST-1756: Report firearms need to connect to documents
                     # report_firearm_xml_list = goods_xml.xpath("/FIREARMS_DETAILS_LIST")
 
                 else:
@@ -474,6 +513,7 @@ class SILReportFirearmParser(BaseXmlParser):
         "SEC5": dm.SILSupplementaryReportFirearmSection5,
         "OBSOLETE_CALIBRE": dm.SILSupplementaryReportFirearmSection582Obsolete,  # /PS-IGNORE
         "OTHER": dm.SILSupplementaryReportFirearmSection582Other,  # /PS-IGNORE
+        "LEGACY": dm.SILSupplementaryReportFirearmSectionLegacy,
     }
 
     @classmethod

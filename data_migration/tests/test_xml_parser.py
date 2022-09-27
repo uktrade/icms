@@ -110,7 +110,7 @@ def test_sil_goods_parse_xml():
     assert len(sec5_obs_goods) == 1
     sec5_obs = sec5_obs_goods[0]
     assert sec5_obs.description == "Test Revolver"
-    assert sec5_obs.obsolete_calibre_id == 444
+    assert sec5_obs.obsolete_calibre_legacy_id == 444
     assert sec5_obs.quantity == 1
     assert sec5_obs.manufacture is True
     assert sec5_obs.legacy_ordinal == 4

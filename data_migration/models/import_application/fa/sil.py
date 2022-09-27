@@ -189,7 +189,7 @@ class SILGoodsSection582Obsolete(MigrationBase):  # /PS-IGNORE
     centrefire = models.BooleanField(null=True)
     manufacture = models.BooleanField(null=True)
     original_chambering = models.BooleanField(null=True)
-    obsolete_calibre = models.ForeignKey(
+    obsolete_calibre_legacy = models.ForeignKey(
         ObsoleteCalibre, on_delete=models.PROTECT, to_field="legacy_id"
     )
     description = models.CharField(max_length=4096)
@@ -197,18 +197,12 @@ class SILGoodsSection582Obsolete(MigrationBase):  # /PS-IGNORE
     legacy_ordinal = models.PositiveIntegerField()
 
     @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        data = super().data_export(data)
-        data["obsolete_calibre"] = data.pop("obsolete_calibre_name")
-        return data
-
-    @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["obsolete_calibre_id"]
+        return super().get_excludes() + ["obsolete_calibre_legacy_id"]
 
     @classmethod
-    def get_includes(cls) -> list[str]:
-        return super().get_includes() + ["obsolete_calibre__name"]
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        return {"obsolete_calibre": F("obsolete_calibre_legacy__name")}
 
 
 class SILGoodsSection582Other(MigrationBase):  # /PS-IGNORE
@@ -231,6 +225,28 @@ class SILGoodsSection582Other(MigrationBase):  # /PS-IGNORE
     description = models.CharField(max_length=4096)
     quantity = models.PositiveBigIntegerField()
     legacy_ordinal = models.PositiveIntegerField()
+
+
+class SILLegacyGoods(MigrationBase):
+    import_application = models.ForeignKey(
+        SILApplication, on_delete=models.PROTECT, related_name="goods_legacy"
+    )
+    is_active = models.BooleanField(default=True)
+    description = models.CharField(max_length=4096)
+    quantity = models.PositiveBigIntegerField(null=True, help_text="Enter a whole number")
+    unlimited_quantity = models.BooleanField(verbose_name="Unlimited Quantity", default=False)
+    obsolete_calibre_legacy = models.ForeignKey(
+        ObsoleteCalibre, on_delete=models.SET_NULL, to_field="legacy_id", null=True
+    )
+    legacy_ordinal = models.PositiveIntegerField()
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["obsolete_calibre_legacy_id"]
+
+    @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        return {"obsolete_calibre": F("obsolete_calibre_legacy__name")}
 
 
 class SILSupplementaryInfo(SupplementaryInfoBase):
@@ -317,4 +333,12 @@ class SILSupplementaryReportFirearmSection582Other(SILReportFirearmBase):  # /PS
 
     report = models.ForeignKey(
         SILSupplementaryReport, related_name="section582_other_firearms", on_delete=models.CASCADE
+    )
+
+
+class SILSupplementaryReportFirearmSectionLegacy(SILReportFirearmBase):
+    GOODS_MODEL = SILLegacyGoods
+
+    report = models.ForeignKey(
+        SILSupplementaryReport, related_name="section_legacy_firearms", on_delete=models.CASCADE
     )
