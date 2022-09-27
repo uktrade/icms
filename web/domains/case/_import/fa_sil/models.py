@@ -315,6 +315,7 @@ class SILLegacyGoods(models.Model):
     description = models.CharField(max_length=4096)
     quantity = models.PositiveBigIntegerField(null=True, help_text="Enter a whole number")
     unlimited_quantity = models.BooleanField(verbose_name="Unlimited Quantity", default=False)
+    obsolete_calibre = models.CharField(max_length=200, verbose_name="Obsolete Calibre", null=True)
 
 
 class SILChecklist(ChecklistBase):

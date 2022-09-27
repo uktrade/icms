@@ -68,6 +68,7 @@ sil_data_source_target = {
         (dm.SILGoodsSection5, web.SILGoodsSection5),
         (dm.SILGoodsSection582Obsolete, web.SILGoodsSection582Obsolete),  # /PS-IGNORE
         (dm.SILGoodsSection582Other, web.SILGoodsSection582Other),  # /PS-IGNORE
+        (dm.SILLegacyGoods, web.SILLegacyGoods),
         (dm.SILSupplementaryInfo, web.SILSupplementaryInfo),
         (dm.SILSupplementaryReport, web.SILSupplementaryReport),
         (dm.SILSupplementaryReportFirearmSection1, web.SILSupplementaryReportFirearmSection1),
@@ -80,6 +81,10 @@ sil_data_source_target = {
         (
             dm.SILSupplementaryReportFirearmSection582Other,  # /PS-IGNORE
             web.SILSupplementaryReportFirearmSection582Other,  # /PS-IGNORE
+        ),
+        (
+            dm.SILSupplementaryReportFirearmSectionLegacy,
+            web.SILSupplementaryReportFirearmSectionLegacy,
         ),
     ],
     "file": [
@@ -177,8 +182,8 @@ def test_import_sil_data(mock_connect):
     webRFObsolete = web.SILSupplementaryReportFirearmSection582Obsolete  # /PS-IGNORE
     webRFOther = web.SILSupplementaryReportFirearmSection582Other  # /PS-IGNORE
 
-    assert dm.SILApplication.objects.count() == 2
-    sil1, sil2 = dm.SILApplication.objects.order_by("pk")
+    assert dm.SILApplication.objects.count() == 3
+    sil1, sil2, sil3 = dm.SILApplication.objects.order_by("pk")
 
     assert dm.SILGoodsSection1.objects.filter(import_application=sil1).count() == 1
     assert dm.SILGoodsSection1.objects.filter(import_application=sil2).count() == 1
@@ -186,9 +191,11 @@ def test_import_sil_data(mock_connect):
     assert dm.SILGoodsSection5.objects.filter(import_application=sil1).count() == 1
     assert dmGoodsObsolete.objects.filter(import_application=sil1).count() == 1
     assert dmGoodsOther.objects.filter(import_application=sil1).count() == 1
+    assert dm.SILLegacyGoods.objects.filter(import_application=sil3).count() == 2
 
     sil1_f = {"report__supplementary_info__imad": sil1.imad}
     sil2_f = {"report__supplementary_info__imad": sil2.imad}
+    sil3_f = {"report__supplementary_info__imad": sil3.imad}
 
     assert dm.SILSupplementaryReportFirearmSection1.objects.filter(**sil1_f).count() == 2
     assert dm.SILSupplementaryReportFirearmSection1.objects.filter(**sil2_f).count() == 1
@@ -196,6 +203,7 @@ def test_import_sil_data(mock_connect):
     assert dm.SILSupplementaryReportFirearmSection5.objects.filter(**sil1_f).count() == 2
     assert dmRFObsolete.objects.filter(**sil1_f).count() == 1
     assert dmRFOther.objects.filter(**sil1_f).count() == 2
+    assert dm.SILSupplementaryReportFirearmSectionLegacy.objects.filter(**sil3_f).count() == 2
 
     call_command("import_v1_data", "--skip_export")
 
@@ -267,8 +275,8 @@ def test_import_sil_data(mock_connect):
     assert sec5_auth2.linked_offices.count() == 1
     assert sec5_auth2.files.count() == 1
 
-    assert web.SILApplication.objects.count() == 2
-    sil1, sil2 = web.SILApplication.objects.order_by("pk")
+    assert web.SILApplication.objects.count() == 3
+    sil1, sil2, sil3 = web.SILApplication.objects.order_by("pk")
 
     assert sil1.licences.count() == 1
     assert sil2.licences.count() == 3
@@ -315,6 +323,7 @@ def test_import_sil_data(mock_connect):
 
     sil1_f = {"import_application_id": sil1.pk}
     sil2_f = {"import_application_id": sil2.pk}
+    sil3_f = {"import_application_id": sil3.pk}
 
     assert web.SILGoodsSection1.objects.filter(**sil1_f).count() == 1
     assert web.SILGoodsSection1.objects.filter(**sil2_f).count() == 1
@@ -326,6 +335,19 @@ def test_import_sil_data(mock_connect):
     sil_oc = web.SILGoodsSection582Obsolete.objects.filter(**sil1_f).first()  # /PS-IGNORE
     assert sil_oc.obsolete_calibre == "Test OC"
     assert web.SILGoodsSection582Other.objects.filter(**sil1_f).count() == 1  # /PS-IGNORE
+
+    assert web.SILLegacyGoods.objects.filter(**sil3_f).count() == 2
+    lg1, lg2 = web.SILLegacyGoods.objects.filter(**sil3_f).order_by("pk")
+
+    assert lg1.description == "Legacy Commodity"
+    assert lg1.quantity == 25
+    assert lg1.unlimited_quantity is False
+    assert lg1.obsolete_calibre is None
+
+    assert lg2.description == "Legacy Commodity OC"
+    assert lg2.quantity is None
+    assert lg2.unlimited_quantity is True
+    assert lg2.obsolete_calibre == "Test OC"
 
     oc = web.ObsoleteCalibre.objects.get(name="Test OC")
     assert oc.calibre_group.name == "Test OC Group"

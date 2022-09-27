@@ -1586,3 +1586,6 @@ IMA/2022/2234
 Test Address
 teg_origin_country_id
 fq_prior_authorisation_r
+Legacy Commodity
+Legacy Commodity OC
+LEGACY
