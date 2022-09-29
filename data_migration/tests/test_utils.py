@@ -132,6 +132,7 @@ def test_float_or_none(test, expected):
         (None, None),
         ("", None),
         ("1", 1),
+        ("1.0", 1),
     ],
 )
 def test_int_or_none(int_str, expected):

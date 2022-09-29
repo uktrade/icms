@@ -32,6 +32,8 @@ SELECT
   , fft.id target_id
   , fv.*
 FROM impmgr.xview_ima_details xid
+INNER JOIN impmgr.import_application_types iat
+  ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
 INNER JOIN decmgr.file_folders ff ON ff.id = xid.app_docs_ff_id
 LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
 LEFT JOIN (
@@ -56,31 +58,34 @@ WHERE fft.target_mnem IN ({target_types})
 AND xid.ima_type = '{ima_type}'
 AND xid.ima_sub_type = '{ima_sub_type}'
 AND xid.status_control = 'C'
+AND xid.status <> 'DELETED'
+AND (
+  (iat.status = 'ARCHIVED' AND xid.submitted_datetime IS NOT NULL)
+  OR (
+    iat.status = 'CURRENT'
+    AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
+  )
+)
 ORDER by fft.id
 """
 
-derogations_application_files = (
-    import_application_files_base.format(
-        **{
-            "ima_type": "SAN",
-            "ima_sub_type": "SAN1",
-            "app_model": "derogationsapplication",
-            "target_types": "'IMP_SUPPORTING_DOC'",
-        }
-    )
-    + "  AND xid.submitted_datetime IS NOT NULL"
+
+derogations_application_files = import_application_files_base.format(
+    **{
+        "ima_type": "SAN",
+        "ima_sub_type": "SAN1",
+        "app_model": "derogationsapplication",
+        "target_types": "'IMP_SUPPORTING_DOC'",
+    }
 )
 
-sps_application_files = (
-    import_application_files_base.format(
-        **{
-            "ima_type": "SPS",
-            "ima_sub_type": "SPS1",
-            "app_model": "priorsurveillanceapplication",
-            "target_types": "'IMP_SUPPORTING_DOC'",
-        }
-    )
-    + "  AND xid.submitted_datetime IS NOT NULL"
+sps_application_files = import_application_files_base.format(
+    **{
+        "ima_type": "SPS",
+        "ima_sub_type": "SPS1",
+        "app_model": "priorsurveillanceapplication",
+        "target_types": "'IMP_SUPPORTING_DOC'",
+    }
 )
 
 dfl_application_files = import_application_files_base.format(
