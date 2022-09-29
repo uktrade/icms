@@ -30,9 +30,10 @@ FROM impmgr.certificate_application_types
 export_application_countries = """
 SELECT xcac.cad_id, xcac.country_id
 FROM impmgr.xview_cert_app_countries xcac
-INNER JOIN impmgr.xview_certificate_app_details xcad ON xcad.cad_id = xcac.cad_id
+  INNER JOIN impmgr.xview_certificate_app_details xcad ON xcad.cad_id = xcac.cad_id
 WHERE xcac.status_control = 'C'
-AND xcac.status <> 'DELETED'
+  AND xcac.status <> 'DELETED'
+  AND (xcad.submitted_datetime IS NOT NULL OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
 """
 
 
@@ -58,14 +59,15 @@ SELECT
   , cat.id application_type_id
   , cad.*
 FROM impmgr.xview_certificate_app_details xcad
-INNER JOIN impmgr.certificate_applications ca ON ca.id = xcad.ca_id
-INNER JOIN impmgr.certificate_application_types cat ON cat.ca_type = xcad.application_type
-INNER JOIN (
-{application_details}
-) cad on cad.cad_id = xcad.cad_id
+  INNER JOIN impmgr.certificate_applications ca ON ca.id = xcad.ca_id
+  INNER JOIN impmgr.certificate_application_types cat ON cat.ca_type = xcad.application_type
+  INNER JOIN (
+  {application_details}
+  ) cad on cad.cad_id = xcad.cad_id
 WHERE xcad.status_control = 'C'
-AND xcad.application_type = '{application_type}'
-AND xcad.status <> 'DELETED'
+  AND xcad.application_type = '{application_type}'
+  AND xcad.status <> 'DELETED'
+  AND (xcad.submitted_datetime IS NOT NULL OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
 """
 
 

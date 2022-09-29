@@ -94,7 +94,12 @@ def int_or_none(int_str: Optional[str]) -> Optional[int]:
     if not int_str:
         return None
 
-    return int(int_str)
+    try:
+        val = int(int_str)
+    except ValueError:
+        val = int(float(int_str))
+
+    return val
 
 
 def xml_str_or_none(xml: Optional[etree.ElementTree]) -> Optional[str]:

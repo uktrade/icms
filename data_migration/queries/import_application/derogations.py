@@ -43,16 +43,13 @@ derogations_checklist_columns = """
       , request_purpose_confirmed VARCHAR2(4000) PATH '/IMA/APP_PROCESSING/CHECKLIST/SYRIA_REQUEST_PURPOSE/text()'
 """
 
-derogations_application = (
-    import_application_base.format(
-        **{
-            "subquery": derogations_application_subquery,
-            "ima_type": "SAN",
-            "ima_sub_type": "SAN1",
-            "process_type": ProcessTypes.DEROGATIONS,
-        }
-    )
-    + "  AND xiad.submitted_datetime IS NOT NULL"
+derogations_application = import_application_base.format(
+    **{
+        "subquery": derogations_application_subquery,
+        "ima_type": "SAN",
+        "ima_sub_type": "SAN1",
+        "process_type": ProcessTypes.DEROGATIONS,
+    }
 )
 
 derogations_checklist = import_checklist_base.format(

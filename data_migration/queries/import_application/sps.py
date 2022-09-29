@@ -27,14 +27,11 @@ FROM impmgr.import_application_details ad,
     common_xml_fields=common_xml_fields
 )
 
-sps_application = (
-    import_application_base.format(
-        **{
-            "subquery": sps_application_subquery,
-            "ima_type": "SPS",
-            "ima_sub_type": "SPS1",
-            "process_type": ProcessTypes.SPS,
-        }
-    )
-    + "  AND xiad.submitted_datetime IS NOT NULL"
+sps_application = import_application_base.format(
+    **{
+        "subquery": sps_application_subquery,
+        "ima_type": "SPS",
+        "ima_sub_type": "SPS1",
+        "process_type": ProcessTypes.SPS,
+    }
 )

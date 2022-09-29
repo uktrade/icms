@@ -8,6 +8,10 @@
 # xiad.contact_rp_id contact_id
 # xiad.provided_to_imi_by_wua_id imi_submitted_by_id
 
+
+# Active application types only migrate unsubmitted applications that have been updated in the last two weeks
+# Inactive application types do not migrate unsubmitted applications
+
 import_application_base = """
 SELECT
   ia.case_ref reference
@@ -54,12 +58,22 @@ WHERE
   xiad.ima_type = '{ima_type}'
   AND xiad.IMA_SUB_TYPE = '{ima_sub_type}'
   AND xiad.status_control = 'C'
+  AND xiad.status <> 'DELETED'
+  AND (
+    (iat.status = 'ARCHIVED' AND xiad.submitted_datetime IS NOT NULL)
+    OR (
+      iat.status = 'CURRENT' AND (
+        xiad.submitted_datetime IS NOT NULL OR xiad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY
+      )
+    )
+  )
+ORDER BY xiad.imad_id
 """
 
 common_xml_fields = """
     , variations_xml XMLTYPE PATH '/IMA/RESPONSE/VARIATIONS/VARIATION_REQUEST_LIST'
     , file_folder_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
-    , cover_letter XMLTYPE PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER/*'
+    , cover_letter XMLTYPE PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER'
 """.strip()
 
 import_checklist_base = """
