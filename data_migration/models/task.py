@@ -48,3 +48,18 @@ class ProcessTask(TaskBase):
         ).values_list("pk", flat=True)
 
         return pks
+
+
+class RejectedTask(TaskBase):
+    TASK_TYPE = Task.TaskType.REJECTED
+
+    @staticmethod
+    def get_process_pks() -> list[int]:
+        # V1 ImportApplication with decsion REFUSE are status COMPLETED, REVOKED, WITHDRAWN
+        # V1 ExportApplication with decision REFUSED are status COMPLETED, STOPPED, WITHDRAWN
+
+        pks = Process.objects.filter(
+            Q(importapplication__decision="REFUSE") | Q(exportapplication__decision="REFUSE")
+        ).values_list("pk", flat=True)
+
+        return pks

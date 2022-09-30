@@ -20,7 +20,7 @@ from data_migration.queries import user as q_u
 from data_migration.utils import xml_parser
 from web import models as web
 
-from . import factory, utils, xml_data
+from . import factory, utils
 
 sil_xml_parsers = [
     xml_parser.ImportContactParser,
@@ -412,10 +412,12 @@ oil_data_source_target = {
     "user": [
         (dm.User, web.User),
         (dm.Importer, web.Importer),
+        (dm.Office, web.Office),
     ],
     "reference": [
         (dm.Country, web.Country),
         (dm.CountryGroup, web.CountryGroup),
+        (dm.CommodityType, web.CommodityType),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -436,67 +438,40 @@ oil_data_source_target = {
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
 @override_settings(APP_ENV="production")
+@override_settings(ICMS_PROD_USER="TestUser")
+@override_settings(ICMS_PROD_PASSWORD="1234")
 @pytest.mark.django_db
 @mock.patch.dict(
     DATA_TYPE_QUERY_MODEL,
-    {"import_application": [(q_ia, "oil_checklist", dm.ChecklistFirearmsOILApplication)]},
+    {
+        "import_application": [
+            (q_u, "importers", dm.Importer),
+            (q_u, "importer_offices", dm.Office),
+            (q_ia, "ia_type", dm.ImportApplicationType),
+            (q_ia, "oil_application", dm.OpenIndividualLicenceApplication),
+            (q_ia, "oil_checklist", dm.ChecklistFirearmsOILApplication),
+        ],
+        "reference": [
+            (q_ref, "country", dm.Country),
+            (q_ref, "country_group", dm.CountryGroup),
+            (q_ref, "commodity_type", dm.CommodityType),
+        ],
+        "file": [
+            (q_f, "oil_application_files", dm.FileCombined),
+        ],
+    },
 )
 @mock.patch.dict(DATA_TYPE_XML, {"import_application": oil_xml_parsers})
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, oil_data_source_target)
-@mock.patch.dict(DATA_TYPE_M2M, {"import_application": []})
+@mock.patch.dict(DATA_TYPE_M2M, {"import_application": [(dm.Office, web.Importer, "offices")]})
 @mock.patch.object(cx_Oracle, "connect")
 def test_import_oil_data(mock_connect):
     mock_connect.return_value = utils.MockConnect()
-    user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
-    dm.User.objects.create(id=user_pk, username="test_user")
 
-    importer_pk = max(web.Importer.objects.count(), dm.Importer.objects.count()) + 1
-    dm.Importer.objects.create(id=importer_pk, name="test_org", type="ORGANISATION")
-
-    factory.CountryFactory(id=1, name="My Test Country")
-    cg = dm.CountryGroup.objects.create(country_group_id="OIL", name="OIL")
-
-    process_pk = max(web.Process.objects.count(), dm.Process.objects.count()) + 1
-    pk_range = list(range(process_pk, process_pk + 2))
-    iat = factory.ImportApplicationTypeFactory(master_country_group=cg)
-
-    for i, pk in enumerate(pk_range):
-        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.FA_SIL, ima_id=pk + 7)
-        folder = dm.FileFolder.objects.create(
-            folder_type="IMP_APP_DOCUMENTS", app_model="openindividuallicenceapplication"
-        )
-
-        ia = factory.ImportApplicationFactory(
-            pk=pk,
-            ima=process,
-            status="COMPLETE",
-            imad_id=i + 1000,
-            application_type=iat,
-            created_by_id=user_pk,
-            last_updated_by_id=user_pk,
-            importer_id=importer_pk,
-            file_folder=folder,
-        )
-
-        dm.ImportApplicationLicence.objects.create(ima=process, status="AB", imad_id=ia.imad_id)
-
-        oil_data = {
-            "pk": pk,
-            "imad": ia,
-            "section1": True,
-            "section2": i == 0,
-            "bought_from_details_xml": xml_data.import_contact_xml if i == 1 else None,
-        }
-        dm.OpenIndividualLicenceApplication.objects.create(**oil_data)
-        dm.OILSupplementaryInfo.objects.create(
-            imad=ia,
-            supplementary_report_xml=xml_data.sr_upload_xml if i == 0 else xml_data.sr_manual_xml,
-        )
-
-    call_command("export_from_v1", "--skip_ref", "--skip_user", "--skip_file", "--skip_export")
+    call_command("export_from_v1", "--skip_export")
     call_command("extract_v1_xml", "--skip_export")
 
-    oil1, oil2 = dm.OpenIndividualLicenceApplication.objects.filter(pk__in=pk_range).order_by("pk")
+    oil1, oil2 = dm.OpenIndividualLicenceApplication.objects.order_by("pk")
 
     assert oil1.section1 is True
     assert oil1.section2 is True
@@ -505,7 +480,7 @@ def test_import_oil_data(mock_connect):
 
     call_command("import_v1_data", "--skip_export")
 
-    oil1, oil2 = web.OpenIndividualLicenceApplication.objects.filter(pk__in=pk_range).order_by("pk")
+    oil1, oil2 = web.OpenIndividualLicenceApplication.objects.order_by("pk")
 
     assert oil1.checklist.authority_required == "yes"
     assert oil1.checklist.authority_received == "yes"
@@ -530,6 +505,13 @@ def test_import_oil_data(mock_connect):
 
     assert oil1.supplementary_info.reports.count() == 1
     assert oil2.supplementary_info.reports.count() == 2
+
+    assert oil1.importapplication_ptr.process_ptr.tasks.count() == 0
+
+    assert oil2.importapplication_ptr.process_ptr.tasks.count() == 1
+    assert (
+        oil2.importapplication_ptr.process_ptr.tasks.first().task_type == web.Task.TaskType.REJECTED
+    )
 
 
 tex_data_source_target = {

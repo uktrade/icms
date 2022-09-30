@@ -60,6 +60,7 @@ IA_BASE_COLUMNS = [
     ("contact_id",),
     ("application_type_id",),
     ("process_type",),
+    ("decision",),
     ("variations_xml",),
 ]
 
@@ -230,8 +231,8 @@ query_result = {
             ("authority_police",),
         ],
         [
-            (1000, "N", "N/A", "true", "Y", "Y", "true", "true", "Y", "Y", "NA"),
-            (1001, "Y", "N", "true", "Y", "Y", None, "false", "N", "N", "N"),
+            (31, "N", "N/A", "true", "Y", "Y", "true", "true", "Y", "Y", "NA"),
+            (32, "Y", "N", "true", "Y", "Y", None, "false", "N", "N", "N"),
         ],
     ),
     import_application.sil_checklist: (
@@ -719,6 +720,59 @@ query_result = {
             ),
         ],
     ),
+    files.oil_application_files: (
+        IA_FILES_COLUMNS,
+        [
+            (
+                21,  # folder_id
+                "IMP_APP_DOCUMENTS",  # folder_type
+                "openindividuallicenceapplication",  # app_model
+                "IMP_SECTION5_AUTHORITY",  # target_type
+                "EMPTY",  # status
+                3000,  # target_id
+                3000,  # fft_id
+                None,  # version_id
+                None,  # created_date
+                None,  # created_by_id
+                None,  # path
+                None,  # filename
+                None,  # content_type
+                None,  # file_size
+            ),
+            (
+                22,  # folder_id
+                "IMP_APP_DOCUMENTS",  # folder_type
+                "openindividuallicenceapplication",  # app_model
+                "IMP_SECTION5_AUTHORITY",  # target_type
+                "EMPTY",  # status
+                3001,  # target_id
+                3001,  # fft_id
+                None,  # version_id
+                None,  # created_date
+                None,  # created_by_id
+                None,  # path
+                None,  # filename
+                None,  # content_type
+                None,  # file_size
+            ),
+            (
+                23,  # folder_id
+                "IMP_APP_DOCUMENTS",  # folder_type
+                "openindividuallicenceapplication",  # app_model
+                "IMP_SECTION5_AUTHORITY",  # target_type
+                "EMPTY",  # status
+                3002,  # target_id
+                3002,  # fft_id
+                None,  # version_id
+                None,  # created_date
+                None,  # created_by_id
+                None,  # path
+                None,  # filename
+                None,  # content_type
+                None,  # file_size
+            ),
+        ],
+    ),
     files.sil_application_files: (
         IA_FILES_COLUMNS,
         [
@@ -883,6 +937,7 @@ query_result = {
                 2,  # contact_id
                 3,  # application_type
                 "OutwardProcessingTradeApplication",  # process_type
+                "APPROVE",  # decision
                 None,  # variations_xml
                 "Test",  # customs_office_name
                 "Test Address",  # customs_office_address
@@ -938,6 +993,7 @@ query_result = {
                 2,  # contact_id
                 3,  # application_type
                 "OutwardProcessingTradeApplication",  # process_type
+                "APPROVE",  # decision
                 None,  # variations_xml
                 "Test",  # customs_office_name
                 "Test Address",  # customs_office_address
@@ -976,6 +1032,69 @@ query_result = {
             ),
         ],
     ),
+    import_application.oil_application: (
+        IA_BASE_COLUMNS
+        + [
+            ("section1",),
+            ("section2",),
+            ("bought_from_details_xml",),
+            ("supplementary_report_xml",),
+        ],
+        [
+            (
+                21,  # ima_id
+                31,  # imad_id
+                21,  # file_folder_id
+                "IMA/2022/3234",  # reference
+                "COMPLETE",  # status
+                datetime(2022, 4, 23),  # submit_datetime
+                datetime(2022, 4, 22),  # create_datetime
+                datetime(2022, 4, 22),  # created
+                0,  # vartiation_no
+                3234,  # licence_reference
+                2,  # submitted_by_id
+                2,  # created_by_id
+                2,  # last_updated_by_id
+                2,  # importer_id
+                "i-2-1",  # importer_office_legacy_id
+                2,  # contact_id
+                5,  # application_type
+                "OpenIndividualLicenceApplication",  # process_type
+                "APPROVE",  # decision
+                None,  # variations_xml
+                1,  # section1
+                1,  # section2
+                None,  # bought_from_details_xml
+                xd.sr_upload_xml,  # supplementary_report_xml
+            ),
+            (
+                22,  # ima_id
+                32,  # imad_id
+                22,  # file_folder_id
+                "IMA/2022/3235",  # reference
+                "COMPLETE",  # status
+                datetime(2022, 4, 23),  # submit_datetime
+                datetime(2022, 4, 22),  # create_datetime
+                datetime(2022, 4, 22),  # created
+                0,  # vartiation_no
+                3235,  # licence_reference
+                2,  # submitted_by_id
+                2,  # created_by_id
+                2,  # last_updated_by_id
+                2,  # importer_id
+                "i-2-1",  # importer_office_legacy_id
+                2,  # contact_id
+                5,  # application_type
+                "OpenIndividualLicenceApplication",  # process_type
+                "REFUSE",  # decision
+                None,  # variations_xml
+                1,  # section1
+                0,  # section2
+                xd.import_contact_xml,  # bought_from_details_xml
+                xd.sr_manual_xml,  # supplementary_report_xml
+            ),
+        ],
+    ),
     import_application.sil_application: (
         IA_BASE_COLUMNS
         + [
@@ -1001,13 +1120,14 @@ query_result = {
                 0,  # vartiation_no
                 5678,  # licence_reference
                 2,  # submitted_by_id
-                2,  # creeated_by_id
+                2,  # created_by_id
                 2,  # last_updated_by_id
                 2,  # importer_id
                 "i-2-1",  # importer_office_legacy_id
                 2,  # contact_id
                 6,  # application_type
                 "SILApplication",  # process_type
+                "APPROVE",  # decision
                 None,  # variations_xml
                 1,  # section1
                 1,  # section2
@@ -1030,13 +1150,14 @@ query_result = {
                 0,  # vartiation_no
                 8901,  # licence_reference
                 2,  # submitted_by_id
-                2,  # creeated_by_id
+                2,  # created_by_id
                 2,  # last_updated_by_id
                 2,  # importer_id
                 "i-2-1",  # importer_office_legacy_id
                 2,  # contact_id
                 6,  # application_type
                 "SILApplication",  # process_type
+                "APPROVE",  # decision
                 xd.open_variation,  # variations_xml
                 1,  # section1
                 1,  # section2
@@ -1059,13 +1180,14 @@ query_result = {
                 0,  # vartiation_no
                 8901,  # licence_reference
                 2,  # submitted_by_id
-                2,  # creeated_by_id
+                2,  # created_by_id
                 2,  # last_updated_by_id
                 2,  # importer_id
                 "i-2-1",  # importer_office_legacy_id
                 2,  # contact_id
                 6,  # application_type
                 "SILApplication",  # process_type
+                "APPROVE",  # decision
                 xd.open_variation,  # variations_xml
                 1,  # section1
                 0,  # section2
@@ -1138,6 +1260,36 @@ query_result = {
                 "IMA_OPT_DECLARATION",  # declaration_template_mnem
                 None,  # default_commodity_group_id
                 None,  # master_country_group_id
+                "A",  # origin_country_group_id
+            ),
+            (
+                5,  # id
+                1,  # is_active
+                "FA",  # type
+                "OIL",  # sub_type
+                "FIREARMS",  # licence_type_code
+                "false",  # sigl_flag
+                "true",  # chief_flag
+                "GBOIL",  # chief_licence_prefix
+                "true",  # paper_licence_flag
+                "true",  # electronic_licence_flag
+                "true",  # cover_letter_flag
+                "false",  # cover_letter_schedule_flag
+                "true",  # category_flag
+                6,  # default_licence_length_months
+                "true",  # quantity_unlimited_flag
+                "false",  # exp_cert_upload_flag
+                "false",  # supporting_docs_upload_flag
+                "true",  # multiple_commodities_flag
+                "/docs/file.pdf",  # guidance_file_url
+                "false",  # usage_auto_category_desc_flag
+                "true",  # case_checklist_flag
+                "false",  # importer_printable
+                "TYPE_B",  # commodity_type_id
+                "A",  # consignment_country_group_id
+                "IMA_GEN_DECLARATION",  # declaration_template_mnem
+                None,  # default_commodity_group_id
+                "A",  # master_country_group_id
                 "A",  # origin_country_group_id
             ),
             (
