@@ -3,16 +3,21 @@ from typing import Any
 
 import mohawk
 import mohawk.exc
+import pydantic
 from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core import exceptions
 from django.core.cache import cache
+from django.db import transaction
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.utils.crypto import constant_time_compare
 from django.views.generic import TemplateView, View
 
-from web.domains.case._import.models import ImportApplication
+from web.domains.case._import.models import ImportApplication, LiteHMRCChiefRequest
 from web.flow.models import Task
+from web.utils.sentry import capture_exception
+
+from . import types, utils
 
 HAWK_ALGO = "sha256"
 HAWK_NONCE_EXPIRY = 60  # seconds
@@ -63,26 +68,72 @@ def validate_request(request: HttpRequest) -> mohawk.Receiver:
 
 
 class LicenseDataCallback(View):
+    # View Config
+    http_method_names = ["post"]
+
     def dispatch(self, *args, **kwargs) -> HttpResponse:
+        # Validate sender request
         hawk_receiver = validate_request(self.request)
+
+        # Create response
         response = super().dispatch(*args, **kwargs)
+
+        # Create and set the response header
         hawk_response_header = hawk_receiver.respond(
             content=response.content, content_type=response.headers["Content-type"]
         )
-        response.headers.setdefault(HAWK_RESPONSE_HEADER, hawk_response_header)
+        response.headers[HAWK_RESPONSE_HEADER] = hawk_response_header
 
+        # return the response
         return response
 
-    def put(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-        # The accepted/rejected lists have objects with a key "id" and a value
-        # of the license data ID.
-        data: dict[str, list[Any]] = {
-            "accepted": [],
-            "rejected": [],
-        }
-        # On success return either 207 MULTI STATUS or 208 ALREADY REPORTED.
-        # 200 is a fail.
-        return JsonResponse(data, status=http.HTTPStatus.MULTI_STATUS.value)
+    def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+        try:
+            licence_replies = types.ChiefLicenceReplyResponseData.parse_raw(
+                request.body, content_type=request.content_type
+            )
+
+        except pydantic.ValidationError:
+            capture_exception()
+
+            return JsonResponse({}, status=http.HTTPStatus.BAD_REQUEST)
+
+        try:
+            with transaction.atomic():
+                for accepted in licence_replies.accepted:
+                    self.accept_application(accepted)
+
+                for rejected in licence_replies.rejected:
+                    self.reject_application(rejected)
+
+        except Exception:
+            capture_exception()
+
+            return JsonResponse({}, status=http.HTTPStatus.UNPROCESSABLE_ENTITY)
+
+        return JsonResponse({}, status=http.HTTPStatus.OK)
+
+    def accept_application(self, accepted_licence: types.AcceptedLicence) -> None:
+        chief_req = self.get_chief_request(accepted_licence.lite_hmrc_id)
+
+        utils.chief_licence_reply_approve_licence(chief_req.import_application)
+        utils.complete_chief_request(chief_req)
+
+    def reject_application(self, rejected_licence: types.RejectedLicence) -> None:
+        chief_req = self.get_chief_request(rejected_licence.lite_hmrc_id)
+
+        utils.chief_licence_reply_reject_licence(chief_req.import_application)
+        utils.fail_chief_request(chief_req, rejected_licence.error_code, rejected_licence.error_msg)
+
+    @staticmethod
+    def get_chief_request(lite_hmrc_id: str) -> LiteHMRCChiefRequest:
+        chief_req = (
+            LiteHMRCChiefRequest.objects.select_related("import_application")
+            .select_for_update()
+            .get(lite_hmrc_id=lite_hmrc_id)
+        )
+
+        return chief_req
 
 
 class _BaseTemplateView(PermissionRequiredMixin, TemplateView):

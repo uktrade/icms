@@ -2,6 +2,7 @@ import uuid
 from typing import TYPE_CHECKING, Optional
 
 from django.contrib.postgres.indexes import BTreeIndex
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from guardian.shortcuts import get_users_with_perms
 
@@ -482,10 +483,33 @@ class ImportApplicationLicence(CaseLicenceCertificateBase):
         )
 
 
-class LiteChiefReference(models.Model):
+class LiteHMRCChiefRequest(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["import_application", "case_reference"], name="app_reference_unique"
+            )
+        ]
+
+    class CHIEFStatus(models.TextChoices):
+        PROCESSING = ("P", "With CHIEF (Pending)")
+        SUCCESS = ("S", "CHIEF Success")
+        ERROR = ("E", "CHIEF Error")
+
     import_application = models.ForeignKey(
         "ImportApplication", on_delete=models.CASCADE, related_name="chief_references"
     )
-
-    lite_hmrc_id = models.UUIDField(default=uuid.uuid4, editable=False)
     case_reference = models.CharField(max_length=100, unique=True, verbose_name="Case Reference")
+    lite_hmrc_id = models.UUIDField(default=uuid.uuid4, editable=False)
+    status = models.CharField(
+        max_length=1, choices=CHIEFStatus.choices, default=CHIEFStatus.PROCESSING
+    )
+
+    # ------------- CHIEF Request fields --------------
+    request_data = models.JSONField(default=dict, encoder=DjangoJSONEncoder)
+    request_sent_datetime = models.DateTimeField()
+
+    # ------------- CHIEF Response fields -------------
+    response_received_datetime = models.DateTimeField(null=True)
+    response_error_code = models.CharField(null=True, max_length=8)
+    response_error_msg = models.CharField(null=True, max_length=255)

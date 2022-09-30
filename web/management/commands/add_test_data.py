@@ -169,7 +169,7 @@ class Command(BaseCommand):
             is_active=True,
             address_1="47 some way",
             address_2="someplace",
-            eori_number="GB1234567890",
+            eori_number="GB0123456789ABCDE",
             postcode="BT180LZ",  # /PS-IGNORE
         )
 

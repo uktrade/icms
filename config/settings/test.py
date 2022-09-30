@@ -46,4 +46,8 @@ LOGGING = {
         "handlers": ["console"],
         "level": "DEBUG",
     },
+    "loggers": {
+        "faker": {"level": "INFO"},
+        "mohawk": {"level": "INFO"},
+    },
 }

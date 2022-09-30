@@ -113,3 +113,19 @@ class SanctionsLicenceData(LicenceDataBase):
 
 class CreateLicenceData(BaseModel):
     licence: Union[FirearmLicenceData, SanctionsLicenceData]
+
+
+class AcceptedLicence(BaseModel):
+    lite_hmrc_id: str
+
+
+class RejectedLicence(BaseModel):
+    lite_hmrc_id: str
+    error_code: int
+    error_msg: str
+
+
+class ChiefLicenceReplyResponseData(BaseModel):
+    run_number: int
+    accepted: list[AcceptedLicence]
+    rejected: list[RejectedLicence]

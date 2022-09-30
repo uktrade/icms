@@ -17,12 +17,10 @@ from guardian.shortcuts import get_objects_for_user
 from ratelimit import UNSAFE
 from ratelimit.decorators import ratelimit
 
-from web.domains.case.models import CaseDocumentReference, VariationRequest
+from web.domains.case.models import CaseDocumentReference
 from web.domains.case.shared import ImpExpStatus
-from web.domains.case.utils import (
-    get_application_current_task,
-    set_application_licence_or_certificate_active,
-)
+from web.domains.case.utils import get_application_current_task
+from web.domains.chief import utils as chief_utils
 from web.domains.country.models import CountryGroup
 from web.domains.importer.models import Importer
 from web.domains.user.models import User
@@ -49,6 +47,7 @@ from .models import (
     ImportApplication,
     ImportApplicationLicence,
     ImportApplicationType,
+    LiteHMRCChiefRequest,
     get_paper_licence_only,
 )
 from .opt.models import OutwardProcessingTradeApplication
@@ -543,28 +542,21 @@ def bypass_chief(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.CHIEF_WAIT)
-        task.is_active = False
-        task.finished = timezone.now()
-        task.owner = request.user
-        task.save()
+        # Create a fake LiteHMRCChiefRequest record
+        chief_req = LiteHMRCChiefRequest.objects.create(
+            import_application=application,
+            case_reference=application.reference,
+            request_data={"foo": "bar"},
+            request_sent_datetime=timezone.now(),
+        )
 
         if chief_status == "success":
-            # TODO: The "real" chief success will have to do this too.
-            if application.status == ImportApplication.Statuses.VARIATION_REQUESTED:
-                vr = application.variation_requests.get(status=VariationRequest.OPEN)
-                vr.status = VariationRequest.ACCEPTED
-                vr.save()
-
-            application.status = ImportApplication.Statuses.COMPLETED
-            application.save()
-
-            set_application_licence_or_certificate_active(application)
+            chief_utils.chief_licence_reply_approve_licence(application)
+            chief_utils.complete_chief_request(chief_req)
 
         elif chief_status == "failure":
-            Task.objects.create(
-                process=application, task_type=Task.TaskType.CHIEF_ERROR, previous=task
-            )
+            chief_utils.chief_licence_reply_reject_licence(application)
+            chief_utils.fail_chief_request(chief_req, 999, "Test Failure")
 
         messages.success(
             request,
