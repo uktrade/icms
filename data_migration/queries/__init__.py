@@ -403,6 +403,7 @@ DATA_TYPE_XML: dict[str, list[Type[xml_parser.BaseXmlParser]]] = {
 TASK_LIST = [
     task.PrepareTask,
     task.ProcessTask,
+    task.RejectedTask,
 ]
 
 FILE_MODELS: list[Type[Model]] = [dm.FileFolder, dm.FileTarget, dm.DocFolder, dm.File]
