@@ -11,7 +11,8 @@ from data_migration.queries import DATA_TYPE_M2M, DATA_TYPE_SOURCE_TARGET
 from data_migration.utils import xml_parser
 from web import models as web
 
-from . import factory, utils, xml_data
+from . import factory, utils
+from .utils import xml_data
 
 
 @override_settings(ALLOW_DATA_MIGRATION=False)

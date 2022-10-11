@@ -10,7 +10,8 @@ from data_migration import models, queries
 from data_migration.queries import import_application, reference
 from data_migration.utils import xml_parser
 
-from . import factory, utils, xml_data
+from . import factory, utils
+from .utils import xml_data
 
 
 @override_settings(ALLOW_DATA_MIGRATION=False)
