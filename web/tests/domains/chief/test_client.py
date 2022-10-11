@@ -5,7 +5,7 @@ from django.test import override_settings
 
 from web.domains.chief import client
 from web.domains.chief.types import CreateLicenceData
-from web.models import LiteHMRCChiefRequest, Task
+from web.models import ImportApplicationLicence, LiteHMRCChiefRequest, Task
 
 
 @pytest.fixture(autouse=True)
@@ -44,6 +44,8 @@ class TestChiefClient:
     def test_send_application_to_chief(self, fa_sil_app_doc_signing, monkeypatch):
         # Setup
         app = fa_sil_app_doc_signing
+        licence = app.licences.get(status=ImportApplicationLicence.Status.DRAFT)
+
         current_task = app.get_expected_task(
             Task.TaskType.DOCUMENT_SIGNING, select_for_update=False
         )
@@ -87,7 +89,7 @@ class TestChiefClient:
                 },
                 "reference": "dummy-reference",
                 "restrictions": "",
-                "start_date": "2022-10-10",
+                "start_date": licence.licence_start_date.strftime("%Y-%m-%d"),
                 "type": "SIL",
             }
         }
