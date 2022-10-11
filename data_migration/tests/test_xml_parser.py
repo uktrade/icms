@@ -5,7 +5,7 @@ import pytest
 from data_migration import models as dm
 from data_migration.utils import xml_parser
 
-from . import xml_data
+from .utils import xml_data
 
 
 def test_oil_application_parse_xml():

@@ -30,11 +30,14 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         query_name = options["query_name"]
 
-        if options["l"] or not query_name:
+        if options["l"]:
             all_queries = sorted(q for mod in self.QUERY_MODULES for q in mod.__all__)
 
             for q in all_queries:
-                self.stdout.write(str(q))
+                if query_name and query_name not in q:
+                    continue
+
+                self.stdout.write("\t" + str(q))
 
             return
 
