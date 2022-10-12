@@ -19,6 +19,7 @@ class Command(MigrationBaseCommand):
 
         self._extract_xml_data("import_application", options["skip_ia"])
         self._extract_xml_data("export_application", options["skip_export"])
+        self._log_script_end()
 
     def _extract_xml_data(self, data_type: DATA_TYPE, skip: bool) -> None:
         """Iterates over the models listed for the specified data_type and parses the xml from their parent"""
@@ -48,5 +49,7 @@ class Command(MigrationBaseCommand):
 
                 for model, data in parser.parse_xml(batch).items():
                     model.objects.bulk_create(data)
+
+            self._log_time()
 
         self.stdout.write("XML extraction complete")
