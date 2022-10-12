@@ -1,4 +1,5 @@
 import argparse
+import time
 from typing import Any
 
 from django.conf import settings
@@ -55,6 +56,17 @@ class MigrationBaseCommand(BaseCommand):
 
         self.batch_size = options["batchsize"]
         self.start_type, self.start_index = options["start"].split(".")
+        self.start_time = time.perf_counter()
+        self.split_time = time.perf_counter()
+
+    def _log_time(self) -> None:
+        time_taken = time.perf_counter() - self.split_time
+        self.stdout.write(f"\t\t--> {time_taken} seconds", ending="\n\n")
+        self.split_time = time.perf_counter()
+
+    def _log_script_end(self) -> None:
+        time_taken = time.perf_counter() - self.start_time
+        self.stdout.write(f"Execuction Time --> {time_taken} seconds", ending="\n\n")
 
     def _get_data_list(self, data_list: list[Any]) -> tuple[int, list[Any]]:
         start = (self.start_index and int(self.start_index)) or 1

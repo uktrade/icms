@@ -45,6 +45,7 @@ class Command(MigrationBaseCommand):
         self._import_data("export_application", options["skip_export"])
         self._create_missing_export_certificates(options["skip_export"])
         self._create_tasks(options["skip_task"])
+        self._log_script_end()
 
     def _import_data(self, data_type: DATA_TYPE, skip: bool) -> None:
         start_m2m = self.start_type.endswith("m2m")
@@ -83,6 +84,8 @@ class Command(MigrationBaseCommand):
 
                 bulk_create(target, batch)
 
+            self._log_time()
+
     def _import_m2m(self, data_type: DATA_TYPE) -> None:
         start, m2m_list = self._get_data_list(DATA_TYPE_M2M[data_type])
         name = format_name(data_type)
@@ -105,6 +108,8 @@ class Command(MigrationBaseCommand):
 
                 bulk_create(through_table, batch)
 
+            self._log_time()
+
     def _create_tasks(self, skip: bool) -> None:
         if skip:
             self.stdout.write("Skipping Task Data Import")
@@ -116,6 +121,7 @@ class Command(MigrationBaseCommand):
             self.stdout.write(f"\tCreating {task.TASK_TYPE} tasks")
 
             web.Task.objects.bulk_create(task.task_batch(), batch_size=self.batch_size)
+            self._log_time()
 
         self.stdout.write("Task Data Created!")
 
@@ -146,6 +152,8 @@ class Command(MigrationBaseCommand):
         archived_pks = (
             ia_qs.exclude(status__in=draft_statuses).values_list("pk", flat=True).iterator()
         )
+        self._log_time()
+
         self.stdout.write("Creating Archived Import Application Licences")
 
         while True:
@@ -159,6 +167,7 @@ class Command(MigrationBaseCommand):
 
             web.ImportApplicationLicence.objects.bulk_create(batch)
 
+        self._log_time()
         self.stdout.write("Missing Import Application Licence Data Created!")
 
     def _create_missing_export_certificates(self, skip: bool) -> None:
@@ -190,6 +199,7 @@ class Command(MigrationBaseCommand):
         archived_pks = (
             export_qs.exclude(status__in=draft_statuses).values_list("pk", flat=True).iterator()
         )
+        self._log_time()
         self.stdout.write("Creating Archived Export Application Certificates")
 
         while True:
@@ -203,4 +213,5 @@ class Command(MigrationBaseCommand):
 
             web.ExportApplicationCertificate.objects.bulk_create(batch)
 
+        self._log_time()
         self.stdout.write("Missing Export Application Certificate Data Created!")

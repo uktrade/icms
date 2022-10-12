@@ -48,6 +48,8 @@ class Command(MigrationBaseCommand):
                 self._export_data("import_application", cursor, options["skip_ia"])
                 self._export_data("export_application", cursor, options["skip_export"])
 
+        self._log_script_end()
+
     def _export_data(self, data_type: DATA_TYPE, cursor: cx_Oracle.Cursor, skip: bool) -> None:
         """Retrives data from V1 and creates the objects in the data_migration models
 
@@ -82,6 +84,8 @@ class Command(MigrationBaseCommand):
                     break
 
                 self._export_model_data(columns, rows, model)
+
+            self._log_time()
 
         if data_type == "file":
             self._extract_file_data()
@@ -130,6 +134,8 @@ class Command(MigrationBaseCommand):
 
                 model.objects.bulk_create(batch)
 
+            self._log_time()
+
         self.stdout.write("File data extracted")
 
     def _create_user_data(self):
@@ -158,4 +164,5 @@ class Command(MigrationBaseCommand):
         )
         user.set_password(password)
         user.save()
+        self._log_time()
         self.stdout.write("User Data Created!")

@@ -139,7 +139,6 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert opt1.fq_further_authorisation == "Y"
     assert opt1.fq_further_authorisation_reasons == "test fa"
     assert opt1.fq_subcontract_production == "Y"
-
     assert opt1.cp_commodities.count() == 3
     assert opt1.teg_commodities.count() == 3
     assert opt2.cp_commodities.count() == 0
