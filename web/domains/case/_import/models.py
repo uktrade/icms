@@ -511,5 +511,11 @@ class LiteHMRCChiefRequest(models.Model):
 
     # ------------- CHIEF Response fields -------------
     response_received_datetime = models.DateTimeField(null=True)
-    response_error_code = models.CharField(null=True, max_length=8)
-    response_error_msg = models.CharField(null=True, max_length=255)
+
+
+class ChiefRequestResponseErrors(models.Model):
+    request = models.ForeignKey(
+        LiteHMRCChiefRequest, on_delete=models.PROTECT, related_name="response_errors"
+    )
+    error_code = models.CharField(null=True, max_length=8)
+    error_msg = models.CharField(null=True, max_length=255)

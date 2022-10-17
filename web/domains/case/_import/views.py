@@ -20,6 +20,7 @@ from ratelimit.decorators import ratelimit
 from web.domains.case.models import CaseDocumentReference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import get_application_current_task
+from web.domains.chief import types as chief_types
 from web.domains.chief import utils as chief_utils
 from web.domains.country.models import CountryGroup
 from web.domains.importer.models import Importer
@@ -556,7 +557,9 @@ def bypass_chief(
 
         elif chief_status == "failure":
             chief_utils.chief_licence_reply_reject_licence(application)
-            chief_utils.fail_chief_request(chief_req, 999, "Test Failure")
+            errors = [chief_types.ResponseError(error_code=999, error_msg="Test Failure")]
+
+            chief_utils.fail_chief_request(chief_req, errors)
 
         messages.success(
             request,

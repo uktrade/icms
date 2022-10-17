@@ -123,5 +123,8 @@ def check_fail_chief_request_correct(chief_request: LiteHMRCChiefRequest) -> Non
 
     assert chief_request.status == LiteHMRCChiefRequest.CHIEFStatus.ERROR
     assert chief_request.request_sent_datetime < chief_request.response_received_datetime
-    assert chief_request.response_error_code == "1"
-    assert chief_request.response_error_msg == "Test error message"
+    assert chief_request.response_errors.count() == 1
+
+    error = chief_request.response_errors.first()
+    assert error.error_code == "1"
+    assert error.error_msg == "Test error message"

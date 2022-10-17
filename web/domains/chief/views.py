@@ -114,23 +114,23 @@ class LicenseDataCallback(View):
         return JsonResponse({}, status=http.HTTPStatus.OK)
 
     def accept_application(self, accepted_licence: types.AcceptedLicence) -> None:
-        chief_req = self.get_chief_request(accepted_licence.lite_hmrc_id)
+        chief_req = self.get_chief_request(accepted_licence.reference)
 
         utils.chief_licence_reply_approve_licence(chief_req.import_application)
         utils.complete_chief_request(chief_req)
 
     def reject_application(self, rejected_licence: types.RejectedLicence) -> None:
-        chief_req = self.get_chief_request(rejected_licence.lite_hmrc_id)
+        chief_req = self.get_chief_request(rejected_licence.reference)
 
         utils.chief_licence_reply_reject_licence(chief_req.import_application)
-        utils.fail_chief_request(chief_req, rejected_licence.error_code, rejected_licence.error_msg)
+        utils.fail_chief_request(chief_req, rejected_licence.errors)
 
     @staticmethod
-    def get_chief_request(lite_hmrc_id: str) -> LiteHMRCChiefRequest:
+    def get_chief_request(reference: str) -> LiteHMRCChiefRequest:
         chief_req = (
             LiteHMRCChiefRequest.objects.select_related("import_application")
             .select_for_update()
-            .get(lite_hmrc_id=lite_hmrc_id)
+            .get(case_reference=reference)
         )
 
         return chief_req
