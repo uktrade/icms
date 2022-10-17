@@ -356,9 +356,9 @@ class ChiefShowLicenceDetailsAction(Action):
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         return [
             WorkbasketAction(
-                is_post=True,
+                is_post=False,
                 name="Show Licence Details",
-                url="#TODO: ICMSLST-1534 - CHIEF Dashboard",
+                url=reverse("chief:failed-licences"),
                 section_label="CHIEF Error",
             )
         ]

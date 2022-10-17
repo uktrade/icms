@@ -196,7 +196,7 @@ class Menu:
         MenuDropDown(
             label="Admin",
             sub_menu_list=[
-                SubMenuLink(label="CHIEF Dashboard", view="chief:pending-batches"),
+                SubMenuLink(label="CHIEF Dashboard", view="chief:pending-licences"),
                 SubMenu(
                     label="Importers/Exporters",
                     links=[

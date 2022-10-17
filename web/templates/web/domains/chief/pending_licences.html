@@ -2,43 +2,57 @@
 
 {% block main_chief %}
 
-<h4>Pending Licences</h4>
-<div class="extra-info">
-    The next batch will be sent on TBC unless a response has not been received
-    from the previous batch.
-</div>
-
-{% if pending_licences_count %}
-    <table>
-        <thead>
-            <tr>
-                <th>Reference</th>
-                <th>Status</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for row in pending_licences %}
-            <tr>
-                <td>
-                    <span class="text-widget">{{ row.id }}</span>
-                </td>
-                <td>
-                    <span class="text-widget label small-label white-label">PENDING</span>
-                </td>
-                <td>
-                    <ul class="menu-out">
-                        <li><a href="{{ icms_url('chief:pending-batches') }}" class="link-button icon-eye">View Case</a></li>
-                        <li><a href="{{ icms_url('chief:pending-batches') }}" class="link-button icon-download">Download request XML</a></li>
-                        <li><a href="{{ icms_url('chief:pending-batches') }}" class="link-button icon-pencil">Update importer details</a></li>
-                    </ul>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
+  <h4>Pending Licences</h4>
+  <div class="extra-info">
+    These licences are either waiting for a response from HMRC or are in a queue waiting to be sent to HMRC.
+  </div>
+  {% if pending_licences_count %}
+    <table class="setoutList">
+      <thead>
+      <tr>
+        <th scope="col">Reference</th>
+        <th scope="col">Status</th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for app in pending_licences %}
+        {% set cr = app.chief_references.latest("pk") %}
+        <tr>
+          <td>
+            <span class="text-widget">{{ app.reference }}</span>
+          </td>
+          <td>
+            <span class="text-widget label small-label white-label">PENDING</span>
+          </td>
+          <td>
+            <ul class="menu-out">
+              <li>
+                <a href="{{ icms_url('case:manage', kwargs={'application_pk': app.pk, 'case_type': "import"}) }}"
+                   target="_blank" class="button link-button icon-eye">
+                  View Case
+                </a>
+              </li>
+              <li>
+                <a href="{{ icms_url('chief:request-data', kwargs={'litehmrcchiefrequest_id': cr.pk}) }}"
+                   target="_blank" class="button link-button icon-download">
+                  View Request Data
+                </a>
+              </li>
+              <li>
+                <a href="{{ icms_url('importer-edit', kwargs={'pk': app.importer.pk}) }}" target="_blank"
+                   class="button link-button icon-pencil">
+                  Update importer details
+                </a>
+              </li>
+            </ul>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
     </table>
-{% else %}
+  {% else %}
     <div class="info-box info-box-success">There are no pending licences</div>
-{% endif %}
+  {% endif %}
 
 {% endblock %}

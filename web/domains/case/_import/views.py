@@ -543,13 +543,8 @@ def bypass_chief(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
 
-        # Create a fake LiteHMRCChiefRequest record
-        chief_req = LiteHMRCChiefRequest.objects.create(
-            import_application=application,
-            case_reference=application.reference,
-            request_data={"foo": "bar"},
-            request_sent_datetime=timezone.now(),
-        )
+        # Get the latest fake LiteHMRCChiefRequest record
+        chief_req = LiteHMRCChiefRequest.objects.latest("pk")
 
         if chief_status == "success":
             chief_utils.chief_licence_reply_approve_licence(application)

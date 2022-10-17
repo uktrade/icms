@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertRedirects
 
+from web.domains.case._import.models import LiteHMRCChiefRequest
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.models import VariationRequest
 from web.domains.case.shared import ImpExpStatus
@@ -119,6 +120,12 @@ class TestBypassChiefView:
         )
 
         self.wood_app = wood_app_submitted
+        LiteHMRCChiefRequest.objects.create(
+            import_application=self.wood_app,
+            case_reference=self.wood_app.reference,
+            request_data={"foo": "bar"},
+            request_sent_datetime=timezone.now(),
+        )
 
     def test_bypass_chief_success(self):
         url = reverse(
