@@ -8,6 +8,8 @@ from web.domains.case.utils import (
 )
 from web.flow.models import Task
 
+from .types import ResponseError
+
 
 def chief_licence_reply_approve_licence(application: ImportApplication) -> None:
     """Approve a licence that has been approved in CHIEF."""
@@ -50,11 +52,12 @@ def complete_chief_request(chief_req: LiteHMRCChiefRequest) -> None:
     chief_req.save()
 
 
-def fail_chief_request(chief_req: LiteHMRCChiefRequest, error_code: int, error_msg: str) -> None:
+def fail_chief_request(chief_req: LiteHMRCChiefRequest, errors: list[ResponseError]) -> None:
     """Mark a LiteHMRCChiefRequest record as a failure detailing the error code and message."""
 
     chief_req.status = LiteHMRCChiefRequest.CHIEFStatus.ERROR
     chief_req.response_received_datetime = timezone.now()
-    chief_req.response_error_code = error_code
-    chief_req.response_error_msg = error_msg
     chief_req.save()
+
+    for error in errors:
+        chief_req.response_errors.create(error_code=error.error_code, error_msg=error.error_msg)

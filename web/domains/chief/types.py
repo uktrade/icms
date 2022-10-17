@@ -116,13 +116,17 @@ class CreateLicenceData(BaseModel):
 
 
 class AcceptedLicence(BaseModel):
-    lite_hmrc_id: str
+    reference: str
+
+
+class ResponseError(BaseModel):
+    error_code: int
+    error_msg: str
 
 
 class RejectedLicence(BaseModel):
-    lite_hmrc_id: str
-    error_code: int
-    error_msg: str
+    reference: str
+    errors: list[ResponseError]
 
 
 class ChiefLicenceReplyResponseData(BaseModel):

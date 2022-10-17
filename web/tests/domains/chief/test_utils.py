@@ -3,7 +3,7 @@ import datetime
 import pytest
 
 from web.domains.case.shared import ImpExpStatus
-from web.domains.chief import utils
+from web.domains.chief import types, utils
 from web.models import ImportApplicationLicence, Task, VariationRequest
 
 from .conftest import (
@@ -68,6 +68,7 @@ class TestChiefUtils:
         check_complete_chief_request_correct(self.chief_req)
 
     def test_fail_chief_request(self):
-        utils.fail_chief_request(self.chief_req, 1, "Test error message")
+        errors = [types.ResponseError(error_code=1, error_msg="Test error message")]
+        utils.fail_chief_request(self.chief_req, errors)
 
         check_fail_chief_request_correct(self.chief_req)
