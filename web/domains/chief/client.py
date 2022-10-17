@@ -75,9 +75,9 @@ def request_license(data: types.CreateLicenceData) -> requests.Response:
         "POST", url, data=data.json(), headers={"Content-Type": "application/json"}
     )
 
-    # TODO: ICMSLST-1660 Remove this when chief integration is finished
     # log the response in case `raise_for_status` throws an error
-    logger.info(str(response.content))
+    # Enable this line if there are issues sending data to lite-hmrc
+    # logger.info(str(response.content))
 
     response.raise_for_status()
 
@@ -126,6 +126,15 @@ def send_application_to_chief(
             chief_req.save()
 
             request_license(data)
+
+        else:
+            # Create a dummy one for testing
+            chief_req = LiteHMRCChiefRequest.objects.create(
+                import_application=application,
+                case_reference=application.reference,
+                request_data={"foo": "bar", "test": "data"},
+                request_sent_datetime=timezone.now(),
+            )
 
     except Exception:
         capture_exception()

@@ -2,44 +2,82 @@
 
 {% block main_chief %}
 
-<h4>Failed Licences</h4>
+  <h4>Failed Licences</h4>
+  <div class="extra-info">
+    These licences have failed for issues specific to the application.
+  </div>
 
-{% if failed_licences_count %}
-    <table>
-        <thead>
-            <tr>
-                <th>Reference</th>
-                <th>Sent Date</th>
-                <th>Received Date</th>
-                <th>Status</th>
-                <th>Error Code</th>
-                <th>Error Description</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for row in failed_licences %}
-            <tr>
-                <td>{{ row }}</td>
-                <td>{{ row }}</td>
-                <td>{{ row }}</td>
-                <td>{{ row }}</td>
-                <td>{{ row }}</td>
-                <td>{{ row }}</td>
-                <td>
-                    <ul class="menu-out">
-                        <li><a href="{{ icms_url('chief:pending-batches') }}" class=""link-button icon-redo2">Resend licence</a></li>
-                        <li><a href="{{ icms_url('chief:pending-batches') }}" class="link-button icon-eye">View Case</a></li>
-                        <li><a href="{{ icms_url('chief:pending-batches') }}" class="link-button icon-download">Download request XML</a></li>
-                        <li><a href="{{ icms_url('chief:pending-batches') }}" class="link-button icon-pencil">Update importer details</a></li>
-                    </ul>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
+  {% if failed_licences_count %}
+    <table class="setoutList">
+      <thead>
+      <tr>
+        <th>Reference</th>
+        <th>Sent Date</th>
+        <th>Received Date</th>
+        <th>Status</th>
+        <th>Error Code</th>
+        <th>Error Description</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for app in failed_licences %}
+        {#
+        Make this an annotation if there is ever a performance issue
+        (there shouldn't be as the list should only ever be small)
+        #}
+        {% set cr = app.chief_references.latest("pk") %}
+        {% set errors = cr.response_errors.order_by("pk") %}
+        <tr>
+          <td>{{ app.reference }}</td>
+          <td>{{ cr.request_sent_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</td>
+          <td>{{ cr.response_received_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</td>
+          <td>
+            <span class="text-widget label small-label red-label">{{ cr.get_status_display() }}</span>
+          </td>
+          <td>
+            {% for error in errors %}
+              <p>{{ error.error_code }}</p>
+            {% endfor %}
+          </td>
+          <td>
+            {% for error in errors %}
+              <p>{{ error.error_msg }}</p>
+            {% endfor %}
+          </td>
+          <td>
+            <ul class="menu-out">
+              <li>
+                {# TODO: Revisit when implementing ICMSLST-1765 #}
+                {# It will need changing to a form #}
+                <a href="#" class="button link-button icon-redo2">Resend licence</a>
+              </li>
+              <li>
+                <a href="{{ icms_url('case:manage', kwargs={'application_pk': app.pk, 'case_type': "import"}) }}"
+                   target="_blank" class="button link-button icon-eye">
+                  View Case
+                </a>
+              </li>
+              <li>
+                <a href="{{ icms_url('chief:request-data', kwargs={'litehmrcchiefrequest_id': cr.pk}) }}"
+                   target="_blank" class="button link-button icon-download">
+                  View Request Data
+                </a>
+              </li>
+              <li>
+                <a href="{{ icms_url('importer-edit', kwargs={'pk': app.importer.pk}) }}" target="_blank"
+                   class="button link-button icon-pencil">
+                  Update importer details
+                </a>
+              </li>
+            </ul>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
     </table>
-{% else %}
+  {% else %}
     <div class="info-box info-box-success">There are no failed licences</div>
-{% endif %}
+  {% endif %}
 
 {% endblock %}

@@ -11,10 +11,11 @@ from django.core.cache import cache
 from django.db import transaction
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.utils.crypto import constant_time_compare
-from django.views.generic import TemplateView, View
+from django.views.generic import DetailView, TemplateView, View
 
 from web.domains.case._import.models import ImportApplication, LiteHMRCChiefRequest
 from web.flow.models import Task
+from web.types import AuthenticatedHttpRequest
 from web.utils.sentry import capture_exception
 
 from . import types, utils
@@ -149,12 +150,8 @@ class _BaseTemplateView(PermissionRequiredMixin, TemplateView):
         )
 
         context = {
-            "failed_batches_count": 0,
-            "failed_batches": [],
             "failed_licences_count": failed_licences.count(),
             "failed_licences": failed_licences,
-            "pending_batches_count": 0,
-            "pending_batches": [],
             "pending_licences_count": pending_licences.count(),
             "pending_licences": pending_licences,
         }
@@ -162,17 +159,26 @@ class _BaseTemplateView(PermissionRequiredMixin, TemplateView):
         return super().get_context_data(**kwargs) | context
 
 
-class PendingBatches(_BaseTemplateView):
-    template_name = "web/domains/chief/pending_batches.html"
-
-
-class FailedBatches(_BaseTemplateView):
-    template_name = "web/domains/chief/failed_batches.html"
-
-
 class PendingLicences(_BaseTemplateView):
+    """Licences that have been sent to lite-hmrc and therefore CHIEF."""
+
     template_name = "web/domains/chief/pending_licences.html"
 
 
 class FailedLicences(_BaseTemplateView):
+    """Licences that have failed for reasons that are application specific.
+
+    CHIEF protocol errors (file errors) should be handled in lite-hmrc.
+    """
+
     template_name = "web/domains/chief/failed_licences.html"
+
+
+class ChiefRequestDataView(PermissionRequiredMixin, DetailView):
+    permission_required = "web.ilb_admin"
+    http_method_names = ["get"]
+    pk_url_kwarg = "litehmrcchiefrequest_id"
+    model = LiteHMRCChiefRequest
+
+    def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+        return JsonResponse(data=self.get_object().request_data)

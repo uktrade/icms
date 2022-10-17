@@ -189,30 +189,6 @@ class TestLicenseDataCallbackView:
 
 
 @pytest.mark.django_db
-class TestPendingBatches:
-    def test_template_context(self, icms_admin_client):
-        url = reverse("chief:pending-batches")
-        response = icms_admin_client.get(url)
-
-        assert response.status_code == 200
-        assert response.context_data["pending_batches_count"] == 0
-        assert list(response.context_data["pending_batches"]) == []
-        assertTemplateUsed(response, "web/domains/chief/pending_batches.html")
-
-
-@pytest.mark.django_db
-class TestFailedBatches:
-    def test_template_context(self, icms_admin_client):
-        url = reverse("chief:failed-batches")
-        response = icms_admin_client.get(url)
-
-        assert response.status_code == 200
-        assert response.context_data["failed_batches_count"] == 0
-        assert list(response.context_data["failed_batches"]) == []
-        assertTemplateUsed(response, "web/domains/chief/failed_batches.html")
-
-
-@pytest.mark.django_db
 class TestPendingLicences:
     def test_template_context(self, icms_admin_client):
         url = reverse("chief:pending-licences")
@@ -234,3 +210,16 @@ class TestFailedLicences:
         assert response.context_data["failed_licences_count"] == 0
         assert list(response.context_data["failed_licences"]) == []
         assertTemplateUsed(response, "web/domains/chief/failed_licences.html")
+
+
+class TestChiefRequestDataView:
+    def test_can_see_request_data(self, db, fa_sil_app_with_chief, icms_admin_client):
+        chief_req = fa_sil_app_with_chief.chief_references.latest("pk")
+
+        url = reverse("chief:request-data", kwargs={"litehmrcchiefrequest_id": chief_req.pk})
+
+        response = icms_admin_client.get(url)
+
+        assert response.status_code == 200
+        assert response.headers["content-type"] == "application/json"
+        assert response.content == b'{"foo": "bar"}'
