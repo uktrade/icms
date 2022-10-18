@@ -4,6 +4,7 @@ from typing import Any, Optional, Union
 
 from django.core.exceptions import ValidationError
 from django.core.validators import DecimalValidator
+from django.utils import timezone
 from lxml import etree
 
 
@@ -72,7 +73,9 @@ def datetime_or_none(dt_str: Optional[str]) -> Optional[datetime]:
         return None
 
     str_format = "%Y-%m-%dT%H:%M:%S"
-    return datetime.strptime(dt_str, str_format)
+    dt = datetime.strptime(dt_str, str_format)
+
+    return timezone.utc.localize(dt)
 
 
 def float_or_none(float_str: Optional[str]) -> Optional[float]:

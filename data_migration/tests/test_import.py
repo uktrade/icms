@@ -1,3 +1,4 @@
+from datetime import datetime
 from unittest import mock
 
 import pytest
@@ -39,12 +40,10 @@ ref_data_source_target = {
 ref_m2m = {"reference": [(dm.CountryGroupCountry, web.CountryGroup, "countries")]}
 
 
-@override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, ref_data_source_target)
 @mock.patch.dict(DATA_TYPE_M2M, ref_m2m)
-def test_import_ref_data():
+def test_import_ref_data(dummy_dm_settings):
     last_c = web.Country.objects.order_by("pk").last()
     c_pk = (last_c and last_c.pk + 1) or 1
     c1 = dm.Country.objects.create(
@@ -109,12 +108,10 @@ ia_data_source_target = {
 }
 
 
-@override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, ia_data_source_target)
 @mock.patch.dict(DATA_TYPE_M2M, {"reference": []})
-def test_import_wood_application_data():
+def test_import_wood_application_data(dummy_dm_settings):
     user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
     dm.User.objects.create(id=user_pk, username="test_user")
 
@@ -205,12 +202,10 @@ oil_data_source_target = {
 }
 
 
-@override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, oil_data_source_target)
 @mock.patch.dict(DATA_TYPE_M2M, {})
-def test_import_oil_data():
+def test_import_oil_data(dummy_dm_settings):
     user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
     dm.User.objects.create(id=user_pk, username="test_user")
     importer_pk = max(web.Importer.objects.count(), dm.Importer.objects.count()) + 1
@@ -333,12 +328,10 @@ dfl_data_m2m = {
 }
 
 
-@override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, dfl_data_source_target)
 @mock.patch.dict(DATA_TYPE_M2M, dfl_data_m2m)
-def test_import_dfl_data():
+def test_import_dfl_data(dummy_dm_settings):
     user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
     dm.User.objects.create(id=user_pk, username="test_user")
 
@@ -461,12 +454,11 @@ uic_data_m2m = {
 }
 
 
-@override_settings(ALLOW_DATA_MIGRATION=True)
 @override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, uic_data_source_target)
 @mock.patch.dict(DATA_TYPE_M2M, uic_data_m2m)
-def test_import_user_import_certificate_data():
+def test_import_user_import_certificate_data(dummy_dm_settings):
     user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
     dm.User.objects.create(id=user_pk, username="test_user")
     importer_pk = max(web.Importer.objects.count(), dm.Importer.objects.count()) + 1
@@ -576,12 +568,10 @@ start_test_data_m2m = {
 }
 
 
-@override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, start_test_source_target)
 @mock.patch.dict(DATA_TYPE_M2M, start_test_data_m2m)
-def test_start_reference_1():
+def test_start_reference_1(dummy_dm_settings):
     utils.create_test_dm_models()
     call_command("import_v1_data", "--start=reference.1")
     assert web.Country.objects.count() == 4
@@ -592,12 +582,10 @@ def test_start_reference_1():
     assert web.ObsoleteCalibreGroup.objects.count() == 3
 
 
-@override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, start_test_source_target)
 @mock.patch.dict(DATA_TYPE_M2M, start_test_data_m2m)
-def test_start_import_application_1():
+def test_start_import_application_1(dummy_dm_settings):
     utils.create_test_dm_models()
     call_command("import_v1_data", "--start=import_application.1")
     assert web.Country.objects.count() == 0
@@ -608,12 +596,10 @@ def test_start_import_application_1():
     assert web.ObsoleteCalibreGroup.objects.count() == 3
 
 
-@override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, start_test_source_target)
 @mock.patch.dict(DATA_TYPE_M2M, start_test_data_m2m)
-def test_start_ref_2():
+def test_start_ref_2(dummy_dm_settings):
     utils.create_test_dm_models()
     call_command("import_v1_data", "--start=ia.2")
     assert web.Country.objects.count() == 0
@@ -622,3 +608,75 @@ def test_start_ref_2():
     assert web.Constabulary.objects.count() == 0
     assert web.Unit.objects.count() == 0
     assert web.ObsoleteCalibreGroup.objects.count() == 3
+
+
+@pytest.mark.django_db
+@mock.patch.dict(
+    DATA_TYPE_SOURCE_TARGET,
+    {
+        "import_application": [],
+        "export_application": [],
+        "reference": [(dm.Process, web.Process)],
+        "file": [],
+        "user": [],
+    },
+)
+def test_task_creation(dummy_dm_settings):
+    dm.Process.objects.bulk_create([dm.Process(ima_id=x, process_type="TEST") for x in range(1, 7)])
+
+    dm.Process.objects.bulk_create([dm.Process(ca_id=x, process_type="TEST") for x in range(1, 7)])
+
+    ima_wb_mnems = [
+        "1.IMA4.IMP_IMA",
+        "i.G2.AUTH_ISSUE",
+        "1.IMA25.IMP_IMA",
+        "1.IMA5.IMP_IMA",
+        "1.IMA6.IMP_IMA",
+        "2.IMA6.IMP_IMA",
+    ]
+    ca_wb_mnems = [
+        "10.CA110.IMP_CA",
+        "i.AAI30.AUTH_AUTO_ISSUE",
+        "i.G30.AUTH_ISSUE",
+        "i.AAI40.AUTH_AUTO_ISSUE",
+        "i.G50.AUTH_ISSUE",
+        "i.G40.AUTH_ISSUE",
+    ]
+
+    dm.WorkBasket.objects.bulk_create(
+        [
+            dm.WorkBasket(
+                is_active=True,
+                action_description="TEST",
+                start_datetime=datetime.now(),
+                ima_id=i,
+                action_mnem=mnem,
+            )
+            for i, mnem in enumerate(ima_wb_mnems, start=1)
+        ]
+    )
+
+    dm.WorkBasket.objects.bulk_create(
+        [
+            dm.WorkBasket(
+                is_active=True,
+                action_description="TEST",
+                start_datetime=datetime.now(),
+                ca_id=i,
+                action_mnem=mnem,
+            )
+            for i, mnem in enumerate(ca_wb_mnems, start=1)
+        ]
+    )
+
+    call_command("import_v1_data")
+
+    Task = web.Task
+    TaskType = web.Task.TaskType
+
+    assert Task.objects.filter(is_active=True, task_type=TaskType.AUTHORISE).count() == 3
+    assert Task.objects.filter(is_active=True, task_type=TaskType.VR_REQUEST_CHANGE).count() == 1
+    assert Task.objects.filter(is_active=True, task_type=TaskType.CHIEF_WAIT).count() == 1
+    assert Task.objects.filter(is_active=True, task_type=TaskType.CHIEF_ERROR).count() == 2
+    assert Task.objects.filter(is_active=True, task_type=TaskType.DOCUMENT_SIGNING).count() == 2
+    assert Task.objects.filter(is_active=True, task_type=TaskType.DOCUMENT_ERROR).count() == 3

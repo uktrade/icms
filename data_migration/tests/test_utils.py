@@ -103,7 +103,7 @@ def test_date_or_none_exception():
     [
         (None, None),
         ("", None),
-        ("2014-10-01T01:02:03", datetime(2014, 10, 1, 1, 2, 3)),
+        ("2014-10-01T01:02:03", datetime(2014, 10, 1, 1, 2, 3, tzinfo=timezone.utc)),
     ],
 )
 def test_datetime_or_none(test_input, expected):

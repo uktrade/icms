@@ -28,9 +28,11 @@ def format_row(
             if isinstance(value, str):
                 value = datetime_or_none(value)
 
-            # TODO ICMSLST-1493: Check timezone how timezones work in django.
-            # Assumption that source is UTC and datetime is passed to models with source tz
-            value = timezone.utc.localize(value)
+            if not value.tzinfo:
+                # TODO ICMSLST-1493: Check timezone how timezones work in django.
+                # Assumption that source is UTC and datetime is passed to models with source tz
+                value = timezone.utc.localize(value)
+
         elif value and column.endswith("_date"):
             value = date_or_none(value)
 
