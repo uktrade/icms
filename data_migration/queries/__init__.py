@@ -115,6 +115,7 @@ ia_query_model = [
     QueryModel(import_application, "update_request", dm.UpdateRequest),
     QueryModel(import_application, "fir", dm.FurtherInformationRequest),
     QueryModel(import_application, "endorsement", dm.EndorsementImportApplication),
+    QueryModel(import_application, "import_workbasket", dm.WorkBasket),
 ]
 
 ia_source_target = [
@@ -320,6 +321,7 @@ export_query_model = [
     QueryModel(export_application, "export_variations", dm.VariationRequest),
     QueryModel(export_application, "beis_emails", dm.CaseEmail),
     QueryModel(export_application, "hse_emails", dm.CaseEmail),
+    QueryModel(export_application, "export_workbasket", dm.WorkBasket),
 ]
 
 export_source_target = [
@@ -404,6 +406,12 @@ TASK_LIST = [
     task.PrepareTask,
     task.ProcessTask,
     task.RejectedTask,
+    task.VRRequestTask,
+    task.AuthTask,
+    task.CHIEFWaitTask,
+    task.CHIEFErrorTask,
+    task.DocumentErrorTask,
+    task.DocumentSignTask,
 ]
 
 FILE_MODELS: list[Type[Model]] = [dm.FileFolder, dm.FileTarget, dm.DocFolder, dm.File]

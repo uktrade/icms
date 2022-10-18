@@ -1603,3 +1603,9 @@ BC
 BD
 target="_blank" class="button
 View Request Data
+xwa.action_mnem
+1.IMA30.IMP_IMA
+2.IMA2.IMP_IMA"
+2.IMA6.IMP_IMA
+ON xiad.ima_id =
+ON xcad.ca_id
