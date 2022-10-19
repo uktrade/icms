@@ -23,7 +23,7 @@ repos:
         verbose: true
         require_serial: true
 -   repo: https://github.com/psf/black
-    rev: 22.8.0
+    rev: 22.10.0
     hooks:
     -   id: black
 -   repo: https://gitlab.com/pycqa/flake8
@@ -36,7 +36,7 @@ repos:
       - id: isort
         name: isort (python)
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.971
+    rev: v0.982
     hooks:
     - id: mypy
       args: [--ignore-missing-imports, --allow-untyped-globals, --check-untyped-defs]
