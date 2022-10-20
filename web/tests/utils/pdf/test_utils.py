@@ -1,5 +1,7 @@
 import datetime
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, create_autospec, patch
+
+import pytest
 
 from web.domains.case._import.fa_sil.models import (
     SILGoodsSection582Obsolete,  # /PS-IGNORE
@@ -11,6 +13,14 @@ from web.domains.case._import.fa_sil.models import (
     SILGoodsSection5,
 )
 from web.utils.pdf import types, utils
+
+
+# TODO: Revisit when doing ICMSLST-1428
+@pytest.fixture(autouse=True)
+def mock_get_licence_endorsements(monkeypatch):
+    mock_get_licence_endorsements = create_autospec(utils.get_licence_endorsements)
+    mock_get_licence_endorsements.return_value = []
+    monkeypatch.setattr(utils, "get_licence_endorsements", mock_get_licence_endorsements)
 
 
 def test_fa_oil_get_preview_context(oil_app, licence, oil_expected_preview_context):

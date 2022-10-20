@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.postgres.aggregates import ArrayAgg, JSONBAgg
 from django.core.paginator import Paginator
-from django.db.models import Exists, F, Func, OuterRef, Q, QuerySet, Subquery
+from django.db.models import Exists, F, Func, OuterRef, Q, QuerySet, Subquery, Value
 from django.http.response import HttpResponse
 from django.shortcuts import render
 from guardian.shortcuts import get_objects_for_user
@@ -58,7 +58,7 @@ def show_workbasket(request: AuthenticatedHttpRequest) -> HttpResponse:
 # Used to get a list of active tasks for the application
 # Prevents a call to get_active_task_list for every application record.
 ACTIVE_TASK_ANNOTATION = ArrayAgg(
-    "tasks__task_type", distinct=True, filter=Q(tasks__is_active=True)
+    "tasks__task_type", distinct=True, filter=Q(tasks__is_active=True), default=Value([])
 )
 
 
@@ -272,6 +272,7 @@ def _add_user_import_annotations(
         "update_requests__pk",
         distinct=True,
         filter=Q(**{"update_requests__status": UpdateRequest.Status.OPEN, "is_active": True}),
+        default=Value([]),
     )
 
     has_in_progress_ur = Exists(
@@ -324,6 +325,7 @@ def _add_user_export_annotations(
         "update_requests__pk",
         distinct=True,
         filter=Q(**{"update_requests__status": UpdateRequest.Status.OPEN, "is_active": True}),
+        default=Value([]),
     )
 
     has_in_progress_ur = Exists(
@@ -348,4 +350,5 @@ def _get_open_firs_pk_annotation(relationship: str) -> ArrayAgg:
         f"{relationship}__pk",
         filter=Q(**{f"{relationship}__status": FurtherInformationRequest.OPEN}),
         ordering=f"{relationship}__requested_datetime",
+        default=Value([]),
     )

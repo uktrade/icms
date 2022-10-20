@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
     from web.domains.case._import.fa_sil import models as sil_models
     from web.domains.case._import.models import ImportApplicationLicence
+    from web.domains.case.types import ImpOrExp
     from web.models import ImportApplication
 
     SILGoods = Union[
@@ -30,6 +31,7 @@ def get_fa_oil_licence_context(
 
     importer = application.importer
     office = application.importer_office
+    endorsements = get_licence_endorsements(application)
 
     return {
         "applicant_reference": application.applicant_reference,
@@ -43,11 +45,7 @@ def get_fa_oil_licence_context(
         "eori_numbers": _get_importer_eori_numbers(application),
         "importer_address": office.address.split("\n"),
         "importer_postcode": office.postcode,
-        # TODO: ICMSLST-1428 Revisit this - See nl2br
-        "endorsements": [
-            content.split("\r\n")
-            for content in application.endorsements.all().values_list("content", flat=True)
-        ],
+        "endorsements": endorsements,
     }
 
 
@@ -56,6 +54,7 @@ def get_fa_dfl_licence_context(
 ) -> dict[str, Any]:
     importer = application.importer
     office = application.importer_office
+    endorsements = get_licence_endorsements(application)
 
     return {
         "applicant_reference": application.applicant_reference,
@@ -69,11 +68,7 @@ def get_fa_dfl_licence_context(
         "eori_numbers": _get_importer_eori_numbers(application),
         "importer_address": office.address.split("\n"),
         "importer_postcode": office.postcode,
-        # TODO: ICMSLST-1428 Revisit this - See nl2br
-        "endorsements": [
-            content.split("\r\n")
-            for content in application.endorsements.all().values_list("content", flat=True)
-        ],
+        "endorsements": endorsements,
     }
 
 
@@ -84,6 +79,7 @@ def get_fa_sil_licence_context(
 ) -> dict[str, Any]:
     importer = application.importer
     office = application.importer_office
+    endorsements = get_licence_endorsements(application)
 
     return {
         "applicant_reference": application.applicant_reference,
@@ -97,12 +93,19 @@ def get_fa_sil_licence_context(
         "eori_numbers": _get_importer_eori_numbers(application),
         "importer_address": office.address.split("\n"),
         "importer_postcode": office.postcode,
-        # TODO: ICMSLST-1428 Revisit this - See nl2br
-        "endorsements": [
-            content.split("\r\n")
-            for content in application.endorsements.all().values_list("content", flat=True)
-        ],
+        "endorsements": endorsements,
     }
+
+
+# TODO: ICMSLST-1428 Revisit this - See nl2br
+#       Add proper test for this function
+def get_licence_endorsements(application: "ImpOrExp") -> list[str]:
+    endorsements = [
+        content.split("\r\n")
+        for content in application.endorsements.all().values_list("content", flat=True)
+    ]
+
+    return endorsements
 
 
 def _get_fa_dfl_goods(application: "DFLApplication") -> list[str]:

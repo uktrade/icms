@@ -81,15 +81,14 @@ class TestManageImportContactsView:
     def test_form_errors(self, importer_client):
         # Test field is required
         response = importer_client.post(self.url, data={"know_bought_from": ""})
-        assertFormError(response, "form", "know_bought_from", "This field is required.")
+        assertFormError(response.context["form"], "know_bought_from", "This field is required.")
 
         # Test setting to false errors when there are import contacts.
         self.app.know_bought_from = True
         self.app.save()
         response = importer_client.post(self.url, data={"know_bought_from": False})
         assertFormError(
-            response,
-            "form",
+            response.context["form"],
             "know_bought_from",
             "Please remove contacts before setting this to No.",
         )

@@ -1,5 +1,5 @@
 import datetime
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, create_autospec, patch
 
 import pytest
 from django.conf import settings
@@ -8,7 +8,15 @@ from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
-from web.utils.pdf import PdfGenerator, types
+from web.utils.pdf import PdfGenerator, types, utils
+
+
+# TODO: Revisit when doing ICMSLST-1428
+@pytest.fixture(autouse=True)
+def mock_get_licence_endorsements(monkeypatch):
+    mock_get_licence_endorsements = create_autospec(utils.get_licence_endorsements)
+    mock_get_licence_endorsements.return_value = []
+    monkeypatch.setattr(utils, "get_licence_endorsements", mock_get_licence_endorsements)
 
 
 @pytest.mark.parametrize(

@@ -77,11 +77,11 @@ def test_validate_query_param_shows_errors(client, dfl_app_pk):
     response = client.get(f"{url}?validate")
     assert response.status_code == 200
 
-    assertFormError(response, "form", "proof_checked", "You must enter this item")
-    assertFormError(response, "form", "origin_country", "You must enter this item")
-    assertFormError(response, "form", "consignment_country", "You must enter this item")
-    assertFormError(response, "form", "contact", "You must enter this item")
-    assertFormError(response, "form", "constabulary", "You must enter this item")
+    assertFormError(response.context["form"], "proof_checked", "You must enter this item")
+    assertFormError(response.context["form"], "origin_country", "You must enter this item")
+    assertFormError(response.context["form"], "consignment_country", "You must enter this item")
+    assertFormError(response.context["form"], "contact", "You must enter this item")
+    assertFormError(response.context["form"], "constabulary", "You must enter this item")
 
 
 def test_edit_dfl_post_valid(client, dfl_app_pk, importer_contact):
@@ -138,12 +138,12 @@ def test_add_goods_document_post_invalid(client, dfl_app_pk):
     form_data = {"foo": "bar"}
     response = client.post(url, form_data)
 
-    assertFormError(response, "form", "goods_description", "You must enter this item")
+    assertFormError(response.context["form"], "goods_description", "You must enter this item")
     assertFormError(
-        response, "form", "deactivated_certificate_reference", "You must enter this item"
+        response.context["form"], "deactivated_certificate_reference", "You must enter this item"
     )
-    assertFormError(response, "form", "issuing_country", "You must enter this item")
-    assertFormError(response, "form", "document", "You must enter this item")
+    assertFormError(response.context["form"], "issuing_country", "You must enter this item")
+    assertFormError(response.context["form"], "document", "You must enter this item")
 
 
 def test_add_goods_document_post_valid(client, dfl_app_pk):
@@ -210,15 +210,14 @@ def test_edit_goods_certificate_post_invalid(client, dfl_app_pk):
     response = client.post(url, form_data)
 
     assertFormError(
-        response, "form", "deactivated_certificate_reference", "You must enter this item"
+        response.context["form"], "deactivated_certificate_reference", "You must enter this item"
     )
     assertFormError(
-        response,
-        "form",
+        response.context["form"],
         "issuing_country",
         "Select a valid choice. That choice is not one of the available choices.",
     )
-    assertFormError(response, "form", "goods_description", "You must enter this item")
+    assertFormError(response.context["form"], "goods_description", "You must enter this item")
 
 
 def test_edit_goods_certificate_post_valid(client, dfl_app_pk):
@@ -341,12 +340,14 @@ def test_submit_dfl_post_invalid(client, dfl_app_pk, importer_contact):
         ["Do you know who you plan to buy/obtain these items from?"],
     )
 
-    assertFormError(response, "form", "confirmation", "You must enter this item")
+    assertFormError(response.context["form"], "confirmation", "You must enter this item")
 
     form_data = {"confirmation": "I will NEVER agree"}
     response = client.post(submit_url, form_data)
 
-    assertFormError(response, "form", "confirmation", "Please agree to the declaration of truth.")
+    assertFormError(
+        response.context["form"], "confirmation", "Please agree to the declaration of truth."
+    )
 
     # Test the know bought from check
     dfl_countries = Country.objects.filter(
