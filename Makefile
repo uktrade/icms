@@ -178,7 +178,7 @@ test: ## run tests (circleci; don't use locally as it produces a coverage report
 		--cov=config \
 		--cov-report xml:test-reports/cov.xml \
 		--numprocesses 2 \
-		--cov-fail-under 67
+		--cov-fail-under 66
 
 migration_test:
 	./run-tests.sh data_migration --create-db --numprocesses 2
