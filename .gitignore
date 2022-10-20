@@ -149,3 +149,5 @@ ner_output_file.txt
 # data migration
 oracle/
 
+# Added by pyenv after setting a local python version on mac
+.python-version
