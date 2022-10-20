@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.aggregates import ArrayAgg, JSONBAgg
-from django.db.models import F, FilteredRelation, Func, OuterRef, Q, Subquery
+from django.db.models import F, FilteredRelation, Func, OuterRef, Q, Subquery, Value
 from django.db.models.expressions import RawSQL
 from django.db.models.functions import Coalesce
 
@@ -107,7 +107,7 @@ def get_opt_applications(search_ids: list[int]) -> "QuerySet[OutwardProcessingTr
         CpCommodities.objects.filter(outwardprocessingtradeapplication_id=OuterRef("pk"))
         .order_by()
         .values("outwardprocessingtradeapplication")
-        .annotate(commodity_array=ArrayAgg("commodity__commodity_code"))
+        .annotate(commodity_array=ArrayAgg("commodity__commodity_code", default=Value([])))
         .values("commodity_array")
     )
 
@@ -115,7 +115,7 @@ def get_opt_applications(search_ids: list[int]) -> "QuerySet[OutwardProcessingTr
         TegCommodities.objects.filter(outwardprocessingtradeapplication_id=OuterRef("pk"))
         .order_by()
         .values("outwardprocessingtradeapplication")
-        .annotate(commodity_array=ArrayAgg("commodity__commodity_code"))
+        .annotate(commodity_array=ArrayAgg("commodity__commodity_code", default=Value([])))
         .values("commodity_array")
     )
 
@@ -145,7 +145,9 @@ def get_sanctionadhoc_applications(
         SanctionsAndAdhocApplicationGoods.objects.filter(import_application_id=OuterRef("id"))
         .order_by()
         .values("import_application")
-        .annotate(commodity_array=ArrayAgg("commodity__commodity_code", distinct=True))
+        .annotate(
+            commodity_array=ArrayAgg("commodity__commodity_code", distinct=True, default=Value([]))
+        )
         .values("commodity_array")
     )
     applications = applications.annotate(commodity_codes=Subquery(commodity_codes_sub_query))
@@ -198,7 +200,9 @@ def get_cfs_applications(search_ids: list[int]) -> "QuerySet[CertificateOfFreeSa
         .order_by()
         .values("application")
         .annotate(
-            manufacturer_countries_array=ArrayAgg("country_of_manufacture__name", distinct=True)
+            manufacturer_countries_array=ArrayAgg(
+                "country_of_manufacture__name", distinct=True, default=Value([])
+            )
         )
         .values("manufacturer_countries_array")
     )
@@ -360,7 +364,9 @@ def _apply_export_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
         ExportApplication.objects.filter(id=OuterRef("id"))
         .order_by()
         .values("id")
-        .annotate(origin_countries_array=ArrayAgg("countries__name", distinct=True))
+        .annotate(
+            origin_countries_array=ArrayAgg("countries__name", distinct=True, default=Value([]))
+        )
         .values("origin_countries_array")
     )
     model = model.annotate(

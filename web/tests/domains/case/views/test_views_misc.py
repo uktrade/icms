@@ -3,7 +3,6 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import pytest
-import pytz
 from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertContains, assertRedirects, assertTemplateUsed
@@ -581,7 +580,7 @@ class TestViewIssuedCaseDocumentsView:
 
     def test_get_success(self):
         self.licence.case_completion_datetime = datetime.datetime(
-            2020, 6, 15, 11, 44, 0, tzinfo=pytz.utc
+            2020, 6, 15, 11, 44, 0, tzinfo=datetime.timezone.utc
         )
         self.licence.save()
 

@@ -2,7 +2,7 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, TypedDict
 
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import F, Model, OuterRef, Subquery
+from django.db.models import F, Model, OuterRef, Subquery, Value
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 
@@ -112,7 +112,7 @@ def get_commodity_group_data(
     """Returns group data, specifically the linked commodities and the unit description"""
     groups = (
         get_usage_commodity_groups(application_usage)
-        .annotate(group_commodities=ArrayAgg("commodities__pk", distinct=True))
+        .annotate(group_commodities=ArrayAgg("commodities__pk", distinct=True, default=Value([])))
         .order_by("group_name")
     )
 
