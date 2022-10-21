@@ -31,7 +31,7 @@ class PriorSurveillanceContractFile(MigrationBase):
             .annotate(file_ptr_id=Subquery(sub_query.values("pk")[:1]))
             .exclude(file_ptr_id__isnull=True)
             .values("file_ptr_id", "file_type")
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
     @classmethod
@@ -73,7 +73,7 @@ class PriorSurveillanceApplication(ImportApplicationBase):
             cls.objects.select_related(*related)
             .annotate(contract_file_id=Subquery(sub_query.values("pk")[:1]))
             .values("contract_file_id", *values, **values_kwargs)
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
     @classmethod

@@ -93,7 +93,7 @@ class UserImportCertificate(MigrationBase):
             )
             .exclude(exclude_query)
             .values(*values)
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
     @classmethod
@@ -115,7 +115,7 @@ class UserImportCertificate(MigrationBase):
             )
             .exclude(userimportcertificate_id__isnull=True)
             .values("userimportcertificate_id", "id", m2m_id)
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 
@@ -202,7 +202,7 @@ class SupplementaryReportBase(MigrationBase):
             cls.objects.select_related("supplementary_info__imad")
             .annotate(bought_from_id=models.Subquery(sub_query.values("pk")[:1]))
             .values(*values)
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 

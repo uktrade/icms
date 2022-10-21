@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime as dt
 
 import pytest
 from django.forms import ValidationError
@@ -43,10 +43,11 @@ def test_format_row(columns, row, includes, pk, expected):
 
 
 def test_format_row_datetime():
-    dt = datetime.now()
-    tz = timezone.utc.localize(dt)
-    columns = ("a_datetime",)
-    row = (dt,)
+    dt_val = dt.datetime.now()
+    columns = ["a_datetime"]
+    row = [dt_val]
+
+    tz = timezone.make_aware(dt_val, dt.timezone.utc)
 
     assert format_row(columns, row) == {"a_datetime": tz}
 
@@ -76,16 +77,16 @@ def test_bulk_create():
     [
         (None, None),
         ("", None),
-        (datetime(2014, 10, 1).date(), datetime(2014, 10, 1).date()),
-        (datetime(2014, 10, 1), datetime(2014, 10, 1).date()),
-        ("2014-10-01", datetime(2014, 10, 1).date()),
-        ("01-10-2014", datetime(2014, 10, 1).date()),
-        ("01-10-14", datetime(2014, 10, 1).date()),
-        ("01/10/2014", datetime(2014, 10, 1).date()),
-        ("01/10/14", datetime(2014, 10, 1).date()),
-        ("01 October 2014", datetime(2014, 10, 1).date()),
-        ("01.10.2014", datetime(2014, 10, 1).date()),
-        ("01.10.14", datetime(2014, 10, 1).date()),
+        (dt.date(2014, 10, 1), dt.date(2014, 10, 1)),
+        (dt.datetime(2014, 10, 1), dt.date(2014, 10, 1)),
+        ("2014-10-01", dt.date(2014, 10, 1)),
+        ("01-10-2014", dt.date(2014, 10, 1)),
+        ("01-10-14", dt.date(2014, 10, 1)),
+        ("01/10/2014", dt.date(2014, 10, 1)),
+        ("01/10/14", dt.date(2014, 10, 1)),
+        ("01 October 2014", dt.date(2014, 10, 1)),
+        ("01.10.2014", dt.date(2014, 10, 1)),
+        ("01.10.14", dt.date(2014, 10, 1)),
     ],
 )
 def test_date_or_none(test_input, expected):
@@ -103,7 +104,7 @@ def test_date_or_none_exception():
     [
         (None, None),
         ("", None),
-        ("2014-10-01T01:02:03", datetime(2014, 10, 1, 1, 2, 3, tzinfo=timezone.utc)),
+        ("2014-10-01T01:02:03", dt.datetime(2014, 10, 1, 1, 2, 3, tzinfo=dt.timezone.utc)),
     ],
 )
 def test_datetime_or_none(test_input, expected):

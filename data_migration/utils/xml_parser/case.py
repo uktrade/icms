@@ -1,3 +1,4 @@
+import datetime as dt
 from typing import Optional
 
 from django.db.models import Model
@@ -56,6 +57,12 @@ class VariationImportParser(BaseXmlParser):
         extension_flag = str_to_bool(get_xml_val(xml, "./EXTENSION_FLAG"))
         reject_cancellation_reason = get_xml_val(xml, "./REJECT_REASON")
         closed_date = date_or_none(get_xml_val(xml, "./CLOSED_DATE"))
+
+        if closed_date:
+            closed_datetime = dt.datetime.combine(closed_date, dt.time.min, tzinfo=dt.timezone.utc)
+        else:
+            closed_datetime = None
+
         closed_by_id = 2  # TODO ICMSLST-1324
 
         return cls.MODEL(
@@ -70,7 +77,7 @@ class VariationImportParser(BaseXmlParser):
                 "when_varied": when_varied,
                 "extension_flag": extension_flag,
                 "reject_cancellation_reason": reject_cancellation_reason,
-                "closed_datetime": closed_date,
+                "closed_datetime": closed_datetime,
                 "closed_by_id": closed_by_id,
             }
         )

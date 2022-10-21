@@ -89,7 +89,11 @@ class MigrationBase(models.Model):
         values = cls.get_values()
         values_kwargs = cls.get_values_kwargs()
         related = cls.get_related()
-        return cls.objects.select_related(*related).values(*values, **values_kwargs).iterator()
+        return (
+            cls.objects.select_related(*related)
+            .values(*values, **values_kwargs)
+            .iterator(chunk_size=2000)
+        )
 
     @classmethod
     def get_m2m_data(cls, target: models.Model) -> Generator:

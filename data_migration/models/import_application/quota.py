@@ -66,7 +66,7 @@ class WoodContractFile(MigrationBase):
             .prefetch_related("target__files")
             .annotate(file_ptr_id=Subquery(sub_query.values("pk")[:1]))
             .values(*values)
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
     @classmethod
@@ -81,7 +81,7 @@ class WoodContractFile(MigrationBase):
                 woodquotaapplication_id=F("import_application_id"),
             )
             .values("woodcontractfile_id", "id", "woodquotaapplication_id")
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 

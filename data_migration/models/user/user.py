@@ -102,7 +102,7 @@ class Office(MigrationBase):
                 m2m_id,
                 office_id=F("id"),
             )
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
     @classmethod

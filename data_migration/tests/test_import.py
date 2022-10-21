@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime as dt
 from unittest import mock
 
 import pytest
@@ -648,7 +648,7 @@ def test_task_creation(dummy_dm_settings):
             dm.WorkBasket(
                 is_active=True,
                 action_description="TEST",
-                start_datetime=datetime.now(),
+                start_datetime=dt.datetime.now(dt.timezone.utc),
                 ima_id=i,
                 action_mnem=mnem,
             )
@@ -661,7 +661,7 @@ def test_task_creation(dummy_dm_settings):
             dm.WorkBasket(
                 is_active=True,
                 action_description="TEST",
-                start_datetime=datetime.now(),
+                start_datetime=dt.datetime.now(dt.timezone.utc),
                 ca_id=i,
                 action_mnem=mnem,
             )
