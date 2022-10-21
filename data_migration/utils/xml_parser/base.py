@@ -46,12 +46,12 @@ class BaseXmlParser:
                 )
                 for parent in cls.PARENT
             ]
-            return QuerySet.union(*querysets).iterator()
+            return QuerySet.union(*querysets).iterator(chunk_size=2000)
 
         return (
             cls.PARENT.objects.filter(**{f"{cls.FIELD}__isnull": False})
             .values_list("pk", cls.FIELD)
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
     @classmethod

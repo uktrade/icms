@@ -122,7 +122,7 @@ class OutwardProcessingTradeFile(FileM2MBase):
                 target__folder__app_model=cls.APP_MODEL,
             )
             .values(file_ptr_id=F("pk"), target_type=F("target__target_type"))
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
     @classmethod

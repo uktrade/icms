@@ -158,7 +158,7 @@ class ChecklistBase(MigrationBase):
             cls.objects.select_related(*related)
             .exclude(**cl_excludes)
             .values(*values, **values_kwargs)
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
     @classmethod

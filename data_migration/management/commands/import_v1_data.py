@@ -135,7 +135,11 @@ class Command(MigrationBaseCommand):
         )
 
         draft_statuses = ["VARIATION_REQUESTED", "PROCESSING", "SUBMITTED"]
-        draft_pks = ia_qs.filter(status__in=draft_statuses).values_list("pk", flat=True).iterator()
+        draft_pks = (
+            ia_qs.filter(status__in=draft_statuses)
+            .values_list("pk", flat=True)
+            .iterator(chunk_size=2000)
+        )
         self.stdout.write("Creating Draft Import Application Licences")
 
         while True:
@@ -150,7 +154,9 @@ class Command(MigrationBaseCommand):
             web.ImportApplicationLicence.objects.bulk_create(batch)
 
         archived_pks = (
-            ia_qs.exclude(status__in=draft_statuses).values_list("pk", flat=True).iterator()
+            ia_qs.exclude(status__in=draft_statuses)
+            .values_list("pk", flat=True)
+            .iterator(chunk_size=2000)
         )
         self._log_time()
 
@@ -181,7 +187,9 @@ class Command(MigrationBaseCommand):
 
         draft_statuses = ["VARIATION_REQUESTED", "PROCESSING", "SUBMITTED"]
         draft_pks = (
-            export_qs.filter(status__in=draft_statuses).values_list("pk", flat=True).iterator()
+            export_qs.filter(status__in=draft_statuses)
+            .values_list("pk", flat=True)
+            .iterator(chunk_size=2000)
         )
         self.stdout.write("Creating Draft Export Application Certificates")
 
@@ -197,7 +205,9 @@ class Command(MigrationBaseCommand):
             web.ExportApplicationCertificate.objects.bulk_create(batch)
 
         archived_pks = (
-            export_qs.exclude(status__in=draft_statuses).values_list("pk", flat=True).iterator()
+            export_qs.exclude(status__in=draft_statuses)
+            .values_list("pk", flat=True)
+            .iterator(chunk_size=2000)
         )
         self._log_time()
         self.stdout.write("Creating Archived Export Application Certificates")

@@ -82,7 +82,7 @@ class FirearmsAuthorityFile(MigrationBase):
                 file_id=F("file_folder__file_targets__files__id"),
                 firearmsauthority_id=F("id"),
             )
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 
@@ -160,5 +160,5 @@ class Section5AuthorityFile(MigrationBase):
                 file_id=F("file_folder__file_targets__files__id"),
                 section5authority_id=F("id"),
             )
-            .iterator()
+            .iterator(chunk_size=2000)
         )

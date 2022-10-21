@@ -41,7 +41,7 @@ class FileFolder(MigrationBase):
             FileCombined.objects.exclude(folder_id__isnull=True)
             .values("app_model", "folder_type", "folder_id")
             .distinct()
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 
@@ -61,7 +61,7 @@ class FileTarget(MigrationBase):
             FileCombined.objects.filter(target_id__isnull=False)
             .values("folder_id", "target_type", "status", "target_id")
             .distinct()
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 
@@ -77,7 +77,7 @@ class DocFolder(MigrationBase):
             FileCombined.objects.exclude(doc_folder_id__isnull=True)
             .values("folder_title", "doc_folder_id")
             .distinct()
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 
@@ -116,7 +116,7 @@ class File(MigrationBase):
                 "target_id",
                 "doc_folder_id",
             )
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 
@@ -163,5 +163,5 @@ class FileM2MBase(MigrationBase):
                     f"{cls.APP_MODEL}_id": F("target__folder__import_application__pk"),
                 },
             )
-            .iterator()
+            .iterator(chunk_size=2000)
         )

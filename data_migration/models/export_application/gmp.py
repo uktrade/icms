@@ -60,7 +60,7 @@ class GMPFile(MigrationBase):
                 target__folder__gmp__isnull=False,
             )
             .values(file_type=F("target__target_type"), file_ptr_id=F("id"))
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
     @classmethod
@@ -82,7 +82,7 @@ class GMPFile(MigrationBase):
                 gmpfile_id=F("pk"),
                 certificateofgoodmanufacturingpracticeapplication_id=F("target__folder__gmp__pk"),
             )
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 
@@ -95,5 +95,5 @@ class GMPBrand(MigrationBase):
         return (
             cls.objects.filter(brand_name__isnull=False)
             .values("id", "brand_name", application_id=F("cad__id"))
-            .iterator()
+            .iterator(chunk_size=2000)
         )

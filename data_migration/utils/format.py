@@ -1,4 +1,4 @@
-from datetime import date, datetime
+import datetime as dt
 from decimal import Decimal, InvalidOperation
 from typing import Any, Optional, Union
 
@@ -25,10 +25,10 @@ def get_xml_val(xml: etree.ElementTree, xpath: str, text=True) -> Any:
     return val
 
 
-def date_or_none(date_str: Union[Optional[str], date, datetime]) -> Optional[date]:
+def date_or_none(date_str: Union[Optional[str], dt.date, dt.datetime]) -> Optional[dt.date]:
     """Convert a date string into a date
 
-    :param date_str: A string of the date. Can come in a variety of formats
+    param date_str: A string of the date. Can come in a variety of formats
 
                     Examples: '14/10/24', '14/10/2024', '14-10-2024',
                               '14-10-24', '2024-10-14', '14 October 2024',
@@ -38,14 +38,14 @@ def date_or_none(date_str: Union[Optional[str], date, datetime]) -> Optional[dat
     if not date_str:
         return None
 
-    if isinstance(date_str, datetime):
+    if isinstance(date_str, dt.datetime):
         return date_str.date()
 
-    if isinstance(date_str, date):
+    if isinstance(date_str, dt.date):
         return date_str
 
     if " " in date_str and len(date_str) > 10:
-        return datetime.strptime(date_str, "%d %B %Y").date()
+        return dt.datetime.strptime(date_str, "%d %B %Y").date()
 
     p_date_str = date_str.replace("/", "-").replace(".", "-")
     date_split = p_date_str.split("-")
@@ -60,10 +60,11 @@ def date_or_none(date_str: Union[Optional[str], date, datetime]) -> Optional[dat
     else:
         date_format = "%d-%m-%y"
 
-    return datetime.strptime(p_date_str, date_format).date()
+    return dt.datetime.strptime(p_date_str, date_format).date()
 
 
-def datetime_or_none(dt_str: Optional[str]) -> Optional[datetime]:
+# TODO: ICMSLST-1769 Revisit this
+def datetime_or_none(dt_str: Optional[str]) -> Optional[dt.datetime]:
     """Convert a datetime string to datetime
 
     :param dt_str: A string of the datetime. Example: 2022-07-25T11:05:59
@@ -73,9 +74,9 @@ def datetime_or_none(dt_str: Optional[str]) -> Optional[datetime]:
         return None
 
     str_format = "%Y-%m-%dT%H:%M:%S"
-    dt = datetime.strptime(dt_str, str_format)
+    dt_val = dt.datetime.strptime(dt_str, str_format)
 
-    return timezone.utc.localize(dt)
+    return timezone.make_aware(dt_val, dt.timezone.utc)
 
 
 def float_or_none(float_str: Optional[str]) -> Optional[float]:

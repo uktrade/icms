@@ -1,3 +1,4 @@
+import datetime as dt
 from typing import Any, Optional
 
 from django.utils import timezone
@@ -29,9 +30,9 @@ def format_row(
                 value = datetime_or_none(value)
 
             if not value.tzinfo:
-                # TODO ICMSLST-1493: Check timezone how timezones work in django.
+                # TODO ICMSLST-1769: Check timezone how timezones work in django.
                 # Assumption that source is UTC and datetime is passed to models with source tz
-                value = timezone.utc.localize(value)
+                value = timezone.make_aware(value, dt.timezone.utc)
 
         elif value and column.endswith("_date"):
             value = date_or_none(value)

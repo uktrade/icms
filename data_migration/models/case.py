@@ -65,7 +65,7 @@ class CaseDocument(MigrationBase):
         return (
             CaseDocument.objects.exclude(**exclude_kwargs)
             .values(*values, **values_kwargs)
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 
@@ -127,7 +127,7 @@ class ExportCertificateCaseDocumentReferenceData(MigrationBase):
         return (
             cls.objects.annotate(gmp_brand_id=Subquery(sub_query[:1]))
             .values("gmp_brand_id", *values, **values_kwargs)
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
     @classmethod
@@ -175,7 +175,7 @@ class VariationRequest(MigrationBase):
             return (
                 cls.objects.exclude(ca__isnull=True)
                 .values("id", variationrequest_id=F("id"), exportapplication_id=F("ca__id"))
-                .iterator()
+                .iterator(chunk_size=2000)
             )
 
         return (
@@ -183,7 +183,7 @@ class VariationRequest(MigrationBase):
             .values(
                 "id", variationrequest_id=F("id"), importapplication_id=F("import_application__id")
             )
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 
@@ -233,14 +233,14 @@ class CaseEmail(MigrationBase):
             return (
                 cls.objects.exclude(ca__isnull=True)
                 .values("id", caseemail_id=F("id"), exportapplication_id=F("ca__id"))
-                .iterator()
+                .iterator(chunk_size=2000)
             )
 
         return (
             cls.objects.select_related("ima")
             .exclude(ima__isnull=True)
             .values("id", importapplication_id=F("ima__id"), caseemail_id=F("id"))
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 
@@ -286,14 +286,14 @@ class CaseNote(MigrationBase):
             return (
                 cls.objects.exclude(export_application__isnull=True)
                 .values("id", exportapplication_id=F("export_application_id"), casenote_id=F("id"))
-                .iterator()
+                .iterator(chunk_size=2000)
             )
 
         return (
             cls.objects.select_related("ima")
             .exclude(ima__isnull=True)
             .values("id", importapplication_id=F("ima__id"), casenote_id=F("id"))
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 
@@ -333,7 +333,7 @@ class CaseNoteFile(MigrationBase):
             )
         )
 
-        return QuerySet.union(ia_case_note_qs, ea_case_note_qs).iterator()
+        return QuerySet.union(ia_case_note_qs, ea_case_note_qs).iterator(chunk_size=2000)
 
 
 class UpdateRequest(MigrationBase):
@@ -369,14 +369,14 @@ class UpdateRequest(MigrationBase):
                 .values(
                     "id", exportapplication_id=F("export_application_id"), updaterequest_id=F("id")
                 )
-                .iterator()
+                .iterator(chunk_size=2000)
             )
 
         return (
             cls.objects.select_related("ima")
             .exclude(ima__isnull=True)
             .values("id", importapplication_id=F("ima__id"), updaterequest_id=F("id"))
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 
@@ -434,7 +434,7 @@ class FurtherInformationRequest(MigrationBase):
                     exportapplication_id=F("export_application_id"),
                     furtherinformationrequest_id=F("id"),
                 )
-                .iterator()
+                .iterator(chunk_size=2000)
             )
 
         return (
@@ -443,7 +443,7 @@ class FurtherInformationRequest(MigrationBase):
             .values(
                 "id", importapplication_id=F("ia_ima__id"), furtherinformationrequest_id=F("id")
             )
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 
@@ -470,7 +470,7 @@ class FIRFile(MigrationBase):
                 file_id=F("pk"),
                 furtherinformationrequest_id=F("target__folder__fir__pk"),
             )
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 
@@ -529,5 +529,5 @@ class MailshotDoc(MigrationBase):
                 file_id=F("pk"),
                 mailshot_id=F("target__folder__mailshot__pk"),
             )
-            .iterator()
+            .iterator(chunk_size=2000)
         )

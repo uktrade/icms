@@ -527,7 +527,7 @@ class SILReportFirearmParser(BaseXmlParser):
             .prefetch_related(reports)
             .filter(**{f"{xml_field}__isnull": False})
             .values_list(f"{reports}__pk", xml_field, "section", "legacy_ordinal")
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
     @classmethod

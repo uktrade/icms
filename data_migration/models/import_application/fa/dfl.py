@@ -74,7 +74,7 @@ class DFLGoodsCertificate(MigrationBase):
             .exclude(file_ptr_id__isnull=True)
             .exclude(exclude_query)
             .values(*values)
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
     @classmethod
@@ -159,5 +159,5 @@ class DFLSupplementaryReportFirearm(SupplementaryReportFirearmBase):
             )
             .exclude(goods_certificate_id__isnull=True)
             .values(*values)
-            .iterator()
+            .iterator(chunk_size=2000)
         )

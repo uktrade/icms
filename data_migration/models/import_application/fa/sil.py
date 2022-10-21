@@ -118,7 +118,7 @@ class SILUserSection5(FileM2MBase):
                 target__folder__folder_type="IMP_APP_DOCUMENTS",
             )
             .values(file_ptr_id=F("pk"))
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 
@@ -290,7 +290,7 @@ class SILReportFirearmBase(SupplementaryReportFirearmBase):
             )
             .exclude(goods_certificate_id__isnull=True)
             .values(*values)
-            .iterator()
+            .iterator(chunk_size=2000)
         )
 
 
