@@ -176,10 +176,8 @@ make isort_format
 
 ## Deployments
 
-- Dev deployment Jenkins job: https://jenkins.ci.uktrade.digital/job/icms/
+- ICMS Jenkins view: https://jenkins.ci.uktrade.digital/view/ICMS/
 - ci-pipeline config: https://github.com/uktrade/ci-pipeline-config/blob/master/icms.yaml
-
-## Business Processes
 
 ## File Uploads
 
@@ -187,77 +185,10 @@ Files are uploaded directly to S3 without being saved into file system of the
 app. The app in turn sends the file to ClamAV for malware/virus checking. See
 ICMSFileField.
 
-### Further Information Request Process
-
-Further Information Request process (FIR) are sent by case officers to importers/exporters as part of various access requests, import/export applications.
-
-A Further Information Request can not exist on it's own. It needs a parent process to be attached to.
-
-In order to add FIR processes to a parent process follow the steps below. Examples are from `ImporterAccessRequestProcess`
-
--   Add `FurtherInformationProcessMixin` to your process model with a generic relation for FIR processes named `fir_processes`
-
-```python
-from web.domains.case.fir.mixins import FurtherInformationProcessMixin
-from web.domains.case.fir.models import FurtherInformationRequestProcess
-
-class ImporterAccessRequestProcess(FurtherInformationProcessMixin, Process):
-	fir_processes = GenericRelation(FurtherInformationRequestProcess)
-```
-
-- Implement mixin's method interface to obtain necessary runtime data for the flow ( permissions, team, namespace etc.)
-
-```python
-
-def fir_config(self):
-    """Returns configuration required for FIR processes to run.
-
-        Example Config:
-
-          {
-            'requester_permission': 'web.IMP_CASE_OFFICER',
-            'responder_permission': 'web.IMP_EDIT_APP',
-            'responder_team': 'web.IMP_EDIT_APP',
-            'namespace': 'access:importer'
-          }"""
-        raise NotImplementedError
-
-    def fir_content(self, request):
-        """Returns initial FIR content for requester to edit.
-
-            Example:
-
-            {
-                'request_subject': 'subject',
-                'request_detail': 'detail',
-            }"""
-        raise NotImplementedError
-
-    def on_fir_create(self, fir):
-        """Invoked when a new FIR process is started.
-            Returns a FurtherInformationRequest instance
-
-            Parameter: fir - New Furhter Information Request"""
-        raise NotImplementedError
-```
-
-- Add FIR start and list urls to your process urls
-
-```python
-
-  from web.domains.case.fir.urls import fir_parent_urls
-
-  importer_access_request_urls = FlowViewSet(ImporterAccessRequestFlow).urls
-  importer_access_request_urls.extend(fir_parent_urls)
-
-```
-
-FIR views will be accessible with url name `<parent_process_namespace>:fir-list` and `<parent_process_namespace:fir-new>`.
-
-In case of importer access requests it is `access:importer:fir-list` and `access:importer:fir-new`
-
 
 ## Environment Variables
+
+See `.env.example`
 
 | Environment variable              | Default                                    | Notes                                                  |
 | --------------------------------- | ------------------------------------------ | ---------------------------------                      |
