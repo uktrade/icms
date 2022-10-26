@@ -4,6 +4,7 @@ from django.db.models import Model
 
 from data_migration import models as dm
 from data_migration.models import task
+from data_migration.models.import_application.import_application import SIGLTransmission
 from data_migration.utils import xml_parser
 from web import models as web
 
@@ -116,6 +117,7 @@ ia_query_model = [
     QueryModel(import_application, "fir", dm.FurtherInformationRequest),
     QueryModel(import_application, "endorsement", dm.EndorsementImportApplication),
     QueryModel(import_application, "import_workbasket", dm.WorkBasket),
+    QueryModel(import_application, "sigl_transmission", SIGLTransmission),
 ]
 
 ia_source_target = [
@@ -189,11 +191,13 @@ ia_source_target = [
     SourceTarget(dm.UserImportCertificate, web.UserImportCertificate),
     SourceTarget(dm.EndorsementImportApplication, web.EndorsementImportApplication),
     SourceTarget(dm.VariationRequest, web.VariationRequest),
+    SourceTarget(dm.SIGLTransmission, web.SIGLTransmission),
 ]
 
 
 ia_m2m = [
     M2M(dm.MailshotDoc, web.Mailshot, "documents"),
+    M2M(dm.SIGLTransmission, web.ImportApplication, "sigl_transmissions"),
     M2M(dm.VariationRequest, web.ImportApplication, "variation_requests"),
     M2M(dm.CaseEmail, web.ImportApplication, "case_emails"),
     M2M(dm.CaseNote, web.ImportApplication, "case_notes"),

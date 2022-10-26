@@ -48,6 +48,58 @@
           link:</p>
         <p><a href="https://webgate.ec.europa.eu/siglwood" target="_blank">https://webgate.ec.europa.eu/siglwood</a></p>
       </div>
+    {% elif process.application_type.sigl_flag %}
+      <table class="setoutList">
+        <thead>
+          <tr>
+            <th>Transmission Type</th>
+            <th>Request Type</th>
+            <th>Sent Date</th>
+            <th>Sent By</th>
+            <th>Response Details</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for st in process.sigl_transmissions.all() %}
+            <tr>
+              <td><span class="text-widget">{{ st.transmission_type }}</span></td>
+              <td><span class="text-widget">{{ st.request_type }}</span></td>
+              <td><span class="text-widget">{{ st.sent_datetime.strftime('%d-%b-%Y %H:%M') }}</span></td>
+              <td><span class="text-widget">{{ st.sent_by }}</span></td>
+              <td>
+                <div class="container setoutForm">
+                  <div class="row">
+                    <div class="three columns">
+                      <label class="prompt west">Date</label>
+                    </div>
+                    <div class="nine columns">
+                      <span class="text-widget">{{ st.response_datetime.strftime('%d-%b-%Y %H:%M') }}</span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="three columns">
+                      <label class="prompt west">Code</label>
+                    </div>
+                    <div class="nine columns">
+                      <span class="text-widget">{{ st.response_code }}</span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="three columns">
+                      <label class="prompt west">Message</label>
+                    </div>
+                    <div class="nine columns">
+                      <span class="text-widget">{{ st.response_message }}</span>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="text-widget">{{ st.status }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     {% else %}
       <p>This case type does not need to be sent to SIGL.</p>
     {% endif %}

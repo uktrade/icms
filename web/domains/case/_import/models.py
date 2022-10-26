@@ -19,6 +19,7 @@ from web.domains.commodity.models import CommodityGroup, CommodityType
 from web.domains.country.models import Country, CountryGroup
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
+from web.domains.sigl.models import SIGLTransmission
 from web.domains.template.models import Template
 from web.domains.user.models import User
 from web.flow.models import ProcessTypes
@@ -268,6 +269,7 @@ class ImportApplication(ApplicationBase):
     case_notes = models.ManyToManyField(CaseNote)
     commodity_group = models.ForeignKey(CommodityGroup, on_delete=models.PROTECT, null=True)
     case_emails = models.ManyToManyField(CaseEmail, related_name="+")
+    sigl_transmissions = models.ManyToManyField(SIGLTransmission)
 
     case_owner = models.ForeignKey(
         User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"

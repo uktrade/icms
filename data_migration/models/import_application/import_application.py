@@ -214,6 +214,28 @@ class EndorsementImportApplication(MigrationBase):
         return {"import_application_id": F("imad__id")}
 
 
+class SIGLTransmission(MigrationBase):
+    ima = models.ForeignKey(Process, on_delete=models.CASCADE, to_field="ima_id")
+    status = models.CharField(max_length=8)
+    transmission_type = models.CharField(max_length=12)
+    request_type = models.CharField(max_length=8)
+    sent_datetime = models.DateTimeField()
+    sent_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    response_datetime = models.DateTimeField(null=True)
+    response_message = models.CharField(max_length=120, null=True)
+    response_code = models.IntegerField(null=True)
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + ["ima_id"]
+
+    @classmethod
+    def get_m2m_data(cls, target: models.Model) -> Generator:
+        return cls.objects.values(
+            "id", sigltransmission_id=F("id"), importapplication_id=F("ima__id")
+        ).iterator(chunk_size=2000)
+
+
 class ImportApplicationBase(MigrationBase):
     PROCESS_PK = True
 

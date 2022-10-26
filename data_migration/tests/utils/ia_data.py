@@ -1933,4 +1933,74 @@ ia_query_result = {
         [("imad_id",), ("content",)],
         [(11, "Content A"), (11, "Content B")],
     ),
+    import_application.sigl_transmission: (
+        [
+            ("ima_id",),
+            ("status",),
+            ("transmission_type",),
+            ("request_type",),
+            ("sent_datetime",),
+            ("sent_by_id",),
+            ("response_datetime",),
+            ("response_message",),
+            ("response_code",),
+        ],
+        [
+            (
+                100,  # ima_id
+                "ACCEPTED",  # status
+                "WEB_SERVICE",  # transmission_type
+                "INSERT",  # request_type
+                datetime.now(),  # sent_datetime
+                2,  # sent_by_id
+                datetime.now(),  # response_datetime
+                "Successful processing",  # response_message
+                0,  # response_code
+            ),
+            (
+                100,  # ima_id
+                "ACCEPTED",  # status
+                "WEB_SERVICE",  # transmission_type
+                "CONFIRM",  # request_type
+                datetime.now(),  # sent_datetime
+                2,  # sent_by_id
+                datetime.now(),  # response_datetime
+                "Successful processing",  # response_message
+                0,  # response_code
+            ),
+            (
+                100,  # ima_id
+                "ACCEPTED",  # status
+                "WEB_SERVICE",  # transmission_type
+                "DELETE",  # request_type
+                datetime.now(),  # sent_datetime
+                2,  # sent_by_id
+                datetime.now(),  # response_datetime
+                "Successful processing",  # response_message
+                0,  # response_code
+            ),
+            (
+                101,  # ima_id
+                "REJECTED",  # status
+                "MANUAL",  # transmission_type
+                "INSERT",  # request_type
+                datetime.now(),  # sent_datetime
+                2,  # sent_by_id
+                datetime.now(),  # response_datetime
+                "Something missing",  # response_message
+                500,  # response_code
+            ),
+            (
+                101,  # ima_id
+                "ACCEPTED",  # status
+                "MANUAL",  # transmission_type
+                "INSERT",  # request_type
+                datetime.now(),  # sent_datetime
+                2,  # sent_by_id
+                None,  # response_datetime
+                None,  # response_message
+                None,  # response_code
+            ),
+        ],
+    ),
 }

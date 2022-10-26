@@ -1,4 +1,4 @@
-from typing import Any, Generator, Union
+from typing import Any, Generator
 
 from django.db import models
 from django.db.models import F, Q, QuerySet
@@ -121,7 +121,7 @@ class File(MigrationBase):
 
 
 class FileM2MBase(MigrationBase):
-    TARGET_TYPE: Union[str, list[str]] = "IMP_SUPPORTING_DOC"
+    TARGET_TYPE: str | list[str] = "IMP_SUPPORTING_DOC"
     FOLDER_TYPE: str = "IMP_APP_DOCUMENTS"
     FILE_MODEL: str = "file"
     APP_MODEL: str = ""
@@ -140,7 +140,7 @@ class FileM2MBase(MigrationBase):
         if not cls.APP_MODEL:
             raise NotImplementedError("APP_MODEL must be defined on the model")
 
-        filter_kwargs: dict[str, Union[str, list[str]]] = {
+        filter_kwargs: dict[str, str | list[str]] = {
             "target__folder__folder_type": cls.FOLDER_TYPE,
         }
 
