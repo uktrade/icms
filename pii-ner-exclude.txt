@@ -1610,3 +1610,5 @@ xwa.action_mnem
 ON xiad.ima_id =
 ON xcad.ca_id
 # Added
+ON cgd.cg_id
+class="prompt west">Code</label

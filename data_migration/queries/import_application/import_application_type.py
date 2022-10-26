@@ -51,6 +51,7 @@ SELECT
 FROM impmgr.xview_com_group_usages xcgu
 INNER JOIN impmgr.import_application_types iat
   ON iat.ima_type = xcgu.ima_type AND iat.ima_sub_type = xcgu.ima_sub_type
+INNER JOIN impmgr.commodity_group_details cgd ON cgd.cg_id = xcgu.cg_id AND cgd.status_control = 'C' AND cgd.status <> 'ARCHIVED'
 WHERE iat.ima_type <> 'GS'
 AND xcgu.country_id IS NOT NULL
 """

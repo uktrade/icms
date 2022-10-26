@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Generator, Optional, Type, Union
+from typing import Generator, Optional, Type
 
 from django.db.models import Model, QuerySet
 from lxml import etree
@@ -19,7 +19,7 @@ class BaseXmlParser:
     MODEL: Optional[Type[Model]] = None
 
     # The model or list of models in which the xml data stored
-    PARENT: Union[list[Type[Model]], Optional[Type[Model]]] = None
+    PARENT: list[Type[Model]] | Optional[Type[Model]] = None
 
     # The name of the field the xml data is stored under
     FIELD: str = ""

@@ -1,4 +1,11 @@
-__all__ = ["case_note", "endorsement", "fir", "update_request", "import_workbasket"]
+__all__ = [
+    "case_note",
+    "endorsement",
+    "fir",
+    "update_request",
+    "import_workbasket",
+    "sigl_transmission",
+]
 
 case_note = """
 SELECT
@@ -99,4 +106,19 @@ WHERE xwa.terminated_flag = 'N'
     )
   )
 ORDER BY xwa.wba_id
+"""
+
+
+sigl_transmission = """
+SELECT
+  ima_id
+  , status
+  , trans_type transmission_type
+  , request_type
+  , 2 sent_by_id
+  , created_datetime sent_datetime
+  , response_datetime
+  , response_code
+  , response_msg response_message
+FROM impmgr.sigl_transmissions
 """

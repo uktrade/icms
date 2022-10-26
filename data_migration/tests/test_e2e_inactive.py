@@ -165,6 +165,7 @@ sps_data_source_target = {
         (dm.PriorSurveillanceApplication, web.PriorSurveillanceApplication),
         (dm.SanctionsAndAdhocApplication, web.SanctionsAndAdhocApplication),
         (dm.SanctionsAndAdhocApplicationGoods, web.SanctionsAndAdhocApplicationGoods),
+        (dm.SIGLTransmission, web.SIGLTransmission),
     ],
     "file": [
         (dm.File, web.File),
@@ -187,7 +188,8 @@ sps_data_source_target = {
     DATA_TYPE_M2M,
     {
         "import_application": [
-            (dm.SPSSupportingDoc, web.PriorSurveillanceApplication, "supporting_documents")
+            (dm.SPSSupportingDoc, web.PriorSurveillanceApplication, "supporting_documents"),
+            (dm.SIGLTransmission, web.ImportApplication, "sigl_transmissions"),
         ]
     },
 )
@@ -205,6 +207,7 @@ sps_data_source_target = {
             (q_ia, "ia_type", dm.ImportApplicationType),
             (q_ia, "sps_application", dm.PriorSurveillanceApplication),
             (q_ia, "sanctions_application", dm.SanctionsAndAdhocApplication),
+            (q_ia, "sigl_transmission", dm.SIGLTransmission),
         ],
         "reference": [
             (q_ref, "country_group", dm.CountryGroup),
@@ -232,11 +235,39 @@ def test_import_sps_data(mock_connect, dummy_dm_settings):
     assert sps1.value_gbp is None
     assert sps1.value_eur is None
 
+    ia1 = sps1.importapplication_ptr
+    assert ia1.sigl_transmissions.count() == 3
+
+    st1, st2, st3 = ia1.sigl_transmissions.order_by("pk")
+    assert st1.status == "ACCEPTED"
+    assert st1.transmission_type == "WEB_SERVICE"
+    assert st1.request_type == "INSERT"
+    assert st1.response_message == "Successful processing"
+    assert st1.response_code == 0
+    assert st2.request_type == "CONFIRM"
+    assert st3.request_type == "DELETE"
+
     assert sps2.contract_file.file_type == "supply_contract"
     assert sps2.supporting_documents.count() == 1
     assert sps2.quantity == 100
     assert sps2.value_gbp == 100
     assert sps2.value_eur == 100
+
+    ia2 = sps2.importapplication_ptr
+    assert ia2.sigl_transmissions.count() == 2
+
+    st4, st5 = ia2.sigl_transmissions.order_by("pk")
+    assert st4.status == "REJECTED"
+    assert st4.transmission_type == "MANUAL"
+    assert st4.request_type == "INSERT"
+    assert st4.response_message == "Something missing"
+    assert st4.response_code == 500
+
+    assert st5.status == "ACCEPTED"
+    assert st5.transmission_type == "MANUAL"
+    assert st5.request_type == "INSERT"
+    assert st5.response_message is None
+    assert st5.response_code is None
 
     assert web.SanctionsAndAdhocApplication.objects.count() == 1
     san = web.SanctionsAndAdhocApplication.objects.first()

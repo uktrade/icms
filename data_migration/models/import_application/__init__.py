@@ -3,6 +3,7 @@ from .fa import *  # NOQA
 from .import_application import (  # NOQA
     EndorsementImportApplication,
     ImportApplicationLicence,
+    SIGLTransmission,
 )
 from .import_application_type import *  # NOQA
 from .opt import *  # NOQA
