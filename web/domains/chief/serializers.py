@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Literal, Optional, Protocol
 
 from web.domains.case.models import CaseDocumentReference
 from web.utils.commodity import annotate_commodity_unit
@@ -21,9 +21,30 @@ if TYPE_CHECKING:
         SILGoodsSection5,
     )
 
+    CHIEF_APPLICATIONS = (
+        SILApplication
+        | DFLApplication
+        | OpenIndividualLicenceApplication
+        | SanctionsAndAdhocApplication
+    )
+
+CHIEF_ACTION = Literal["insert", "replace"]
+
+
+class ChiefSerializer(Protocol):
+    """The protocol documenting all chief serializers"""
+
+    def __call__(
+        self,
+        application: "CHIEF_APPLICATIONS",
+        action: Literal["insert", "replace"],
+        chief_id: str,
+    ) -> types.CreateLicenceData:
+        ...
+
 
 def sanction_serializer(
-    application: "SanctionsAndAdhocApplication", chief_id: str
+    application: "SanctionsAndAdhocApplication", action: CHIEF_ACTION, chief_id: str
 ) -> types.CreateLicenceData:
     organisation = _get_organisation(application)
     licence = application.get_latest_issued_document()
@@ -46,12 +67,13 @@ def sanction_serializer(
     ]
 
     country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
+
     licence_data = types.SanctionsLicenceData(
         type="SAN",
-        action="insert",
+        action=action,
         id=chief_id,
-        reference=licence_ref.reference,
-        case_reference=application.reference,
+        reference=application.reference,
+        licence_reference=licence_ref.reference,
         start_date=licence.licence_start_date,
         end_date=licence.licence_end_date,
         organisation=organisation,
@@ -63,7 +85,9 @@ def sanction_serializer(
     return types.CreateLicenceData(licence=licence_data)
 
 
-def fa_dfl_serializer(application: "DFLApplication", chief_id: str) -> types.CreateLicenceData:
+def fa_dfl_serializer(
+    application: "DFLApplication", action: CHIEF_ACTION, chief_id: str
+) -> types.CreateLicenceData:
     """Return FA DFL licence data to send to chief."""
 
     organisation = _get_organisation(application)
@@ -77,12 +101,13 @@ def fa_dfl_serializer(application: "DFLApplication", chief_id: str) -> types.Cre
     ]
 
     country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
+
     licence_data = types.FirearmLicenceData(
         type="DFL",
-        action="insert",
+        action=action,
         id=chief_id,
-        reference=licence_ref.reference,
-        case_reference=application.reference,
+        reference=application.reference,
+        licence_reference=licence_ref.reference,
         start_date=licence.licence_start_date,
         end_date=licence.licence_end_date,
         organisation=organisation,
@@ -95,7 +120,7 @@ def fa_dfl_serializer(application: "DFLApplication", chief_id: str) -> types.Cre
 
 
 def fa_oil_serializer(
-    application: "OpenIndividualLicenceApplication", chief_id: str
+    application: "OpenIndividualLicenceApplication", action: CHIEF_ACTION, chief_id: str
 ) -> types.CreateLicenceData:
     """Return FA OIL licence data to send to chief."""
 
@@ -111,10 +136,10 @@ def fa_oil_serializer(
 
     licence_data = types.FirearmLicenceData(
         type="OIL",
-        action="insert",
+        action=action,
         id=chief_id,
-        reference=licence_ref.reference,
-        case_reference=application.reference,
+        reference=application.reference,
+        licence_reference=licence_ref.reference,
         start_date=licence.licence_start_date,
         end_date=licence.licence_end_date,
         organisation=organisation,
@@ -126,7 +151,9 @@ def fa_oil_serializer(
     return types.CreateLicenceData(licence=licence_data)
 
 
-def fa_sil_serializer(application: "SILApplication", chief_id: str) -> types.CreateLicenceData:
+def fa_sil_serializer(
+    application: "SILApplication", action: CHIEF_ACTION, chief_id: str
+) -> types.CreateLicenceData:
     organisation = _get_organisation(application)
     licence = application.get_latest_issued_document()
     licence_ref: CaseDocumentReference = licence.document_references.get(
@@ -163,12 +190,13 @@ def fa_sil_serializer(application: "SILApplication", chief_id: str) -> types.Cre
         )
 
     country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
+
     licence_data = types.FirearmLicenceData(
         type="SIL",
-        action="insert",
+        action=action,
         id=chief_id,
-        reference=licence_ref.reference,
-        case_reference=application.reference,
+        reference=application.reference,
+        licence_reference=licence_ref.reference,
         start_date=licence.licence_start_date,
         end_date=licence.licence_end_date,
         organisation=organisation,

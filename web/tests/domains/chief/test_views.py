@@ -66,7 +66,7 @@ class TestLicenseDataCallbackAuthentication:
 
         payload = types.ChiefLicenceReplyResponseData(
             run_number=1,
-            accepted=[types.AcceptedLicence(reference=self.chief_req.case_reference)],
+            accepted=[types.AcceptedLicence(id=str(self.chief_req.lite_hmrc_id))],
             rejected=[],
         )
 
@@ -122,7 +122,7 @@ class TestLicenseDataCallbackView:
     def test_callback_approves_licence(self):
         payload = types.ChiefLicenceReplyResponseData(
             run_number=1,
-            accepted=[types.AcceptedLicence(reference=self.chief_req.case_reference)],
+            accepted=[types.AcceptedLicence(id=str(self.chief_req.lite_hmrc_id))],
             rejected=[],
         )
         response = self.client.post(
@@ -140,7 +140,7 @@ class TestLicenseDataCallbackView:
             accepted=[],
             rejected=[
                 types.RejectedLicence(
-                    reference=self.chief_req.case_reference,
+                    id=str(self.chief_req.lite_hmrc_id),
                     errors=[
                         types.ResponseError(
                             error_code=1,
@@ -176,7 +176,7 @@ class TestLicenseDataCallbackView:
         mock_sentry.reset_mock()
         payload = types.ChiefLicenceReplyResponseData(
             run_number=1,
-            accepted=[types.AcceptedLicence(reference="unknown-key")],
+            accepted=[types.AcceptedLicence(id="unknown-key")],
             rejected=[],
         )
 

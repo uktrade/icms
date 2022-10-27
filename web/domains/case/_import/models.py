@@ -489,7 +489,8 @@ class LiteHMRCChiefRequest(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["import_application", "case_reference"], name="app_reference_unique"
+                fields=["import_application", "case_reference", "request_sent_datetime"],
+                name="app_reference_sent_at_unique",
             )
         ]
 
