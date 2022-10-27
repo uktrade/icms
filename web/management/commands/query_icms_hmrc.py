@@ -1,5 +1,6 @@
 import logging
 import uuid
+from urllib.parse import urljoin
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -23,38 +24,40 @@ class Command(BaseCommand):
         """Run with the following command: `make manage COMMAND="query_icms_hmrc"`"""
         self.stdout.write("*" * 160)
         self.stdout.write("CHIEF healthcheck url")
-        hawk_sender, response = make_request("GET", f"{settings.ICMS_HMRC_DOMAIN}healthcheck/")
+        hawk_sender, response = make_request(
+            "GET", urljoin(settings.ICMS_HMRC_DOMAIN, "healthcheck/")
+        )
         response.raise_for_status()
         self.stdout.write(f"Response status code: {response.status_code}")
-        self.stdout.write(f"Response response content: {response.content!r}")
+        self.stdout.write(f"Response content: {response.content!r}")
 
         self.stdout.write("*" * 160)
         self.stdout.write("CHIEF update licence url (FA-OIL)")
         payload = get_sample_fa_oil_request()
         response = request_license(payload)
         self.stdout.write(f"Response status code: {response.status_code}")
-        self.stdout.write(f"Response response content: {response.json()}")
+        self.stdout.write(f"Response content: {response.json()}")
 
         self.stdout.write("*" * 160)
         self.stdout.write("CHIEF update licence url (FA-DFL)")
         payload = get_sample_fa_dfl_request()
         response = request_license(payload)
         self.stdout.write(f"Response status code: {response.status_code}")
-        self.stdout.write(f"Response response content: {response.json()}")
+        self.stdout.write(f"Response content: {response.json()}")
 
         self.stdout.write("*" * 160)
         self.stdout.write("CHIEF update licence url (FA-SIL)")
         payload = get_sample_fa_sil_request()
         response = request_license(payload)
         self.stdout.write(f"Response status code: {response.status_code}")
-        self.stdout.write(f"Response response content: {response.json()}")
+        self.stdout.write(f"Response content: {response.json()}")
 
         self.stdout.write("*" * 160)
         self.stdout.write("CHIEF update licence url (SAN)")
         payload = get_sample_sanction_request()
         response = request_license(payload)
         self.stdout.write(f"Response status code: {response.status_code}")
-        self.stdout.write(f"Response response content: {response.json()}")
+        self.stdout.write(f"Response content: {response.json()}")
 
         self.stdout.write("*" * 160)
         self.stdout.write("CHIEF trigger send email task")
@@ -62,15 +65,17 @@ class Command(BaseCommand):
             "GET", f"{settings.ICMS_HMRC_DOMAIN}mail/send-licence-updates-to-hmrc/"
         )
         self.stdout.write(f"response status code: {response.status_code}")
-        self.stdout.write(f"response response content: {response.content!r}")
+        self.stdout.write(f"Response content: {response.content!r}")
 
         self.stdout.write("*" * 160)
         self.stdout.write("CHIEF get licence mail details")
         hawk_sender, response = make_request(
-            "GET", f"{settings.ICMS_HMRC_DOMAIN}mail/licence/", params={"id": "GBSIL1111111C"}
+            "GET",
+            urljoin(settings.ICMS_HMRC_DOMAIN, "mail/licence/"),
+            params={"id": "IMA/2022/00002"},
         )
         self.stdout.write(f"Response status code: {response.status_code}")
-        self.stdout.write(f"Response response content: {response.content!r}")
+        self.stdout.write(f"Response content: {response.content!r}")
 
 
 def get_sample_fa_dfl_request() -> chief_types.CreateLicenceData:
@@ -78,12 +83,12 @@ def get_sample_fa_dfl_request() -> chief_types.CreateLicenceData:
         "type": "DFL",
         "action": "insert",
         "id": str(uuid.uuid4()),
-        "reference": "GBSIL1111111C",
-        "case_reference": "IMA/2022/00002",
+        "reference": "IMA/2022/00002",
+        "licence_reference": "GBSIL1111111C",
         "start_date": "2022-01-14",
         "end_date": "2022-07-14",
         "organisation": {
-            "eori_number": "665544332211",
+            "eori_number": "GB665544332211",
             "name": "DFL Organisation",
             "address": {
                 "line_1": "line_1",
@@ -118,12 +123,12 @@ def get_sample_fa_oil_request() -> chief_types.CreateLicenceData:
         "type": "OIL",
         "action": "insert",
         "id": str(uuid.uuid4()),
-        "reference": "GBOIL2222222C",
-        "case_reference": "IMA/2022/00001",
+        "reference": "IMA/2022/00001",
+        "licence_reference": "GBOIL2222222C",
         "start_date": "2022-06-06",
         "end_date": "2025-05-30",
         "organisation": {
-            "eori_number": "112233445566",
+            "eori_number": "GB112233445566",
             "name": "org name",
             "address": {
                 "line_1": "line_1",
@@ -192,12 +197,12 @@ def get_sample_fa_sil_request() -> chief_types.CreateLicenceData:
         "type": "SIL",
         "action": "insert",
         "id": str(uuid.uuid4()),
-        "reference": "GBSIL3333333H",
-        "case_reference": "IMA/2022/00003",
+        "reference": "IMA/2022/00003",
+        "licence_reference": "GBSIL3333333H",
         "start_date": "2022-06-29",
         "end_date": "2024-12-29",
         "organisation": {
-            "eori_number": "123456654321",
+            "eori_number": "GB123456654321",
             "name": "SIL Organisation",
             "address": {
                 "line_1": "line_1",
@@ -244,12 +249,12 @@ def get_sample_sanction_request() -> chief_types.CreateLicenceData:
         "type": "SAN",
         "action": "insert",
         "id": str(uuid.uuid4()),
-        "reference": "GBSAN4444444A",
-        "case_reference": "IMA/2022/00004",
+        "reference": "IMA/2022/00004",
+        "licence_reference": "GBSAN4444444A",
         "start_date": "2022-06-29",
         "end_date": "2024-12-29",
         "organisation": {
-            "eori_number": "112233445566",
+            "eori_number": "GB112233445566",
             "name": "Sanction Organisation",
             "address": {
                 "line_1": "line_1",

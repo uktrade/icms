@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Callable, Literal, Optional
+from typing import TYPE_CHECKING, Literal, Optional
 from urllib.parse import urljoin
 
 import mohawk
@@ -100,18 +100,9 @@ def send_application_to_chief(
 
     try:
         if settings.SEND_LICENCE_TO_CHIEF:
-            # TODO: Revisit when implementing ICMSLST-1762
-            if application.status == ImpExpStatus.VARIATION_REQUESTED:
-                # Having looked at lite-hmrc we need to create a new lite_hmrc_id each time.
-                # CHIEF licence ingest view
-                # if data["action"] == LicenceActionEnum.UPDATE:
-                #     data["old_reference"] = LicenceIdMapping.objects.get(lite_id=data["old_id"]).reference
-
-                # 1. get lite_chief_id from the latest LiteHMRCChiefRequests record for this application.
-                # 2. Create a new record and serialise the data
-                # 3. Include the old lite_chief_id in the request data
-
-                raise NotImplementedError
+            action: serializers.CHIEF_ACTION = (
+                "replace" if application.status == ImpExpStatus.VARIATION_REQUESTED else "insert"
+            )
 
             chief_req = LiteHMRCChiefRequest.objects.create(
                 import_application=application,
@@ -119,7 +110,7 @@ def send_application_to_chief(
                 request_sent_datetime=timezone.now(),
             )
             serialize = get_serializer(application.process_type)
-            data = serialize(application.get_specific_model(), str(chief_req.lite_hmrc_id))
+            data = serialize(application.get_specific_model(), action, str(chief_req.lite_hmrc_id))
 
             # Django JSONField encodes python objects therefore data.json() can't be used
             chief_req.request_data = data.dict()
@@ -146,14 +137,15 @@ def send_application_to_chief(
     Task.objects.create(process=application, task_type=next_task, previous=previous_task)
 
 
-def get_serializer(
-    process_type: str,
-) -> Callable[["ImportApplication", str], types.CreateLicenceData]:
-    serializer_map = {
-        ProcessTypes.FA_OIL: serializers.fa_oil_serializer,  # type: ignore[dict-item]
-        ProcessTypes.FA_DFL: serializers.fa_dfl_serializer,  # type: ignore[dict-item]
-        ProcessTypes.FA_SIL: serializers.fa_sil_serializer,  # type: ignore[dict-item]
-        ProcessTypes.SANCTIONS: serializers.sanction_serializer,  # type: ignore[dict-item]
-    }
-
-    return serializer_map[process_type]  # type: ignore[index]
+def get_serializer(process_type: str) -> serializers.ChiefSerializer:
+    match process_type:
+        case ProcessTypes.FA_OIL:
+            return serializers.fa_oil_serializer
+        case ProcessTypes.FA_DFL:
+            return serializers.fa_dfl_serializer
+        case ProcessTypes.FA_SIL:
+            return serializers.fa_sil_serializer
+        case ProcessTypes.SANCTIONS:
+            return serializers.sanction_serializer
+        case _:
+            raise NotImplementedError(f"Unsupported process_type: {process_type}")

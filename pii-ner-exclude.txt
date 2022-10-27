@@ -1612,3 +1612,6 @@ ON xcad.ca_id
 # Added
 ON cgd.cg_id
 class="prompt west">Code</label
+GB112233445566
+GB123456654321
+UUID

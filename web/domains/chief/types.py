@@ -66,11 +66,11 @@ class OrganisationData(BaseModel):
 
 class LicenceDataBase(BaseModel):
     type: Literal["OIL", "DFL", "SIL", "SAN"]
-    action: Literal["insert", "cancel", "update"]
+    action: Literal["insert", "cancel", "replace"]
 
-    id: str  # This is the uuid
-    reference: str  # Licence reference
-    case_reference: str  # Transaction reference
+    id: str  # UUID for this licence payload
+    reference: str  # Case reference
+    licence_reference: str
 
     start_date: datetime.date
     end_date: datetime.date
@@ -80,10 +80,6 @@ class LicenceDataBase(BaseModel):
     country_group: Optional[str] = None
     country_code: Optional[str] = None
     restrictions: str
-
-    # Used when updating a licence
-    # Can't be none even though it's optional - lite-hmrc error: "This field may not be null."
-    # old_id: Optional[str] = None
 
 
 class FirearmGoodsData(BaseModel):
@@ -116,7 +112,7 @@ class CreateLicenceData(BaseModel):
 
 
 class AcceptedLicence(BaseModel):
-    reference: str
+    id: str
 
 
 class ResponseError(BaseModel):
@@ -125,7 +121,7 @@ class ResponseError(BaseModel):
 
 
 class RejectedLicence(BaseModel):
-    reference: str
+    id: str
     errors: list[ResponseError]
 
 
