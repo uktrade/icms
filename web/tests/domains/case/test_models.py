@@ -128,14 +128,12 @@ def test_actions_completed(app_completed, test_import_user):
     )
 
 
-@override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
 def test_admin_actions_in_progress_ilb_admin(app_in_progress, test_icms_admin_user):
     admin_row = app_in_progress.get_workbasket_row(test_icms_admin_user, True)
 
     assert admin_row.sections == []
 
 
-@override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
 def test_admin_actions_submitted(app_submitted, test_icms_admin_user):
     admin_row = app_submitted.get_workbasket_row(test_icms_admin_user, True)
 
@@ -144,14 +142,12 @@ def test_admin_actions_submitted(app_submitted, test_icms_admin_user):
     _test_view_endpoint_is_case_management(app_submitted, admin_row.sections)
 
 
-@override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
 def test_admin_actions_processing(app_processing, test_icms_admin_user):
     admin_row = app_processing.get_workbasket_row(test_icms_admin_user, True)
 
     _check_actions(admin_row.sections, expected_actions={"Manage"})
 
 
-@override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
 def test_admin_actions_fir_withdrawal_update_request(
     app_processing, test_import_user, test_icms_admin_user
 ):
@@ -170,7 +166,6 @@ def test_admin_actions_fir_withdrawal_update_request(
     assert admin_row.sections == []
 
 
-@override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
 def test_admin_actions_authorise(app_processing, test_icms_admin_user):
     _update_task(app_processing, Task.TaskType.AUTHORISE)
 
@@ -187,9 +182,7 @@ def test_admin_actions_authorise(app_processing, test_icms_admin_user):
     _test_view_endpoint_is_case_management(app_processing, admin_row.sections, "View Case")
 
 
-@override_settings(
-    DEBUG_SHOW_ALL_WORKBASKET_ROWS=False, ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD=True
-)
+@override_settings(ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD=True)
 def test_admin_actions_bypass_chief(app_processing, test_icms_admin_user):
     _update_task(app_processing, Task.TaskType.CHIEF_WAIT)
 
@@ -223,7 +216,6 @@ def test_admin_actions_bypass_chief(app_processing, test_icms_admin_user):
     _test_view_endpoint_is_case_management(app_processing, admin_row.sections)
 
 
-@override_settings(DEBUG_SHOW_ALL_WORKBASKET_ROWS=False)
 def test_admin_actions_completed(app_completed, test_icms_admin_user):
     admin_row = app_completed.get_workbasket_row(test_icms_admin_user, True)
 

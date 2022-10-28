@@ -76,8 +76,6 @@ GRAPH_MODELS = {
     "group_models": True,
 }
 
-DEBUG_SHOW_ALL_WORKBASKET_ROWS = env.bool("DEBUG_SHOW_ALL_WORKBASKET_ROWS", True)
-
 # minifi html (django-htmlmin)
 HTML_MINIFY = False
 
