@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -320,23 +319,17 @@ class ApplicationBase(WorkbasketBase, Process):
 
         r.company_agent = self.agent  # type: ignore[attr-defined]
 
-        include_applicant_rows = not is_ilb_admin or settings.DEBUG_SHOW_ALL_WORKBASKET_ROWS
-
         if is_ilb_admin:
-            admin_sections = get_workbasket_admin_sections(
+            sections = get_workbasket_admin_sections(
+                user=user, case_type=case_type, application=self
+            )
+        else:
+            sections = get_workbasket_applicant_sections(
                 user=user, case_type=case_type, application=self
             )
 
-            for section in admin_sections:
-                r.sections.append(section)
-
-        if include_applicant_rows:
-            applicant_sections = get_workbasket_applicant_sections(
-                user=user, case_type=case_type, application=self
-            )
-
-            for section in applicant_sections:
-                r.sections.append(section)
+        for section in sections:
+            r.sections.append(section)
 
         return r
 

@@ -275,9 +275,6 @@ ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD = env.bool(
     "ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD", default=False
 )
 
-# Shows caseworker and application rows if set
-DEBUG_SHOW_ALL_WORKBASKET_ROWS = False
-
 # getAddress.io api key
 ADDRESS_API_KEY = env.str("ICMS_ADDRESS_API_KEY", default="")
 
