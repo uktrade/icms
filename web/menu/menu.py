@@ -171,8 +171,6 @@ class Menu:
     items = [
         MenuLink(label="Workbasket", view="workbasket"),
         MenuLink(label="Dashboard"),
-        MenuLink(label="Reports"),
-        MenuLink(label="Search Mailshots", view="mailshot-received"),
         MenuDropDown(
             label="Search",
             sub_menu_list=[
@@ -188,6 +186,7 @@ class Menu:
                             view="case:search",
                             kwargs={"case_type": "export", "mode": "standard"},
                         ),
+                        SubMenuLink(label="Search Mailshots", view="mailshot-received"),
                         SubMenuLink(label="Manage IMI Cases", view="import:imi-case-list"),
                     ]
                 ),
