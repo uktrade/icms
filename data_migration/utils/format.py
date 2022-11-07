@@ -1,4 +1,5 @@
 import datetime as dt
+import zoneinfo
 from decimal import Decimal, InvalidOperation
 from typing import Any, Optional, Union
 
@@ -6,6 +7,8 @@ from django.core.exceptions import ValidationError
 from django.core.validators import DecimalValidator
 from django.utils import timezone
 from lxml import etree
+
+UK_TZ = zoneinfo.ZoneInfo("Europe/London")
 
 
 def get_xml_val(xml: etree.ElementTree, xpath: str, text=True) -> Any:
@@ -63,7 +66,6 @@ def date_or_none(date_str: Union[Optional[str], dt.date, dt.datetime]) -> Option
     return dt.datetime.strptime(p_date_str, date_format).date()
 
 
-# TODO: ICMSLST-1769 Revisit this
 def datetime_or_none(dt_str: Optional[str]) -> Optional[dt.datetime]:
     """Convert a datetime string to datetime
 
@@ -76,7 +78,40 @@ def datetime_or_none(dt_str: Optional[str]) -> Optional[dt.datetime]:
     str_format = "%Y-%m-%dT%H:%M:%S"
     dt_val = dt.datetime.strptime(dt_str, str_format)
 
-    return timezone.make_aware(dt_val, dt.timezone.utc)
+    return adjust_icms_v1_datetime(dt_val)
+
+
+def adjust_icms_v1_datetime(dt_val: dt.datetime) -> dt.datetime:
+    """Adjust an ICMS V1 naive datetime to an aware UTC datetime.
+
+    Assumption: For ambiguous datetime values we are using the default fold of 0.
+    E.g. We have no way of knowing if this `naive_dt` is GMT or BST
+    >>> naive_dt = dt.datetime(2022, 10, 30, 1, 30, 0)
+    >>> london = zoneinfo.ZoneInfo("Europe/London")
+    >>> bst_val = naive_dt.replace(tzinfo=london, fold=0)
+    >>> gmt_val = naive_dt.replace(tzinfo=london, fold=1)
+    >>> print(bst_val)
+        2022-10-30 01:30:00+01:00
+    >>> print(gmt_val)
+        2022-10-30 01:30:00+00:00
+    >>> print(bst_val.astimezone(dt.timezone.utc))
+        2022-10-30 00:30:00+00:00
+    >>> print(gmt_val.astimezone(dt.timezone.utc))
+        2022-10-30 01:30:00+00:00
+    """
+
+    if timezone.is_aware(dt_val):
+        raise ValueError(f"Unable to adjust an aware datetime value: {dt_val}")
+
+    # ICMS V1 datetime values are created using this:
+    # https://docs.oracle.com/database/121/SQLRF/functions207.htm#SQLRF06124
+    # Therefore replace the naive datetime with the correct timezone
+    aware_dt = dt_val.replace(tzinfo=UK_TZ)
+
+    # Return a datetime that has been offset to UTC
+    utc_dt = aware_dt.astimezone(dt.timezone.utc)
+
+    return utc_dt
 
 
 def float_or_none(float_str: Optional[str]) -> Optional[float]:

@@ -1615,3 +1615,8 @@ class="prompt west">Code</label
 GB112233445566
 GB123456654321
 UUID
+Adjust an ICMS V1
+https://docs.oracle.com/database/121/SQLRF/functions207.htm#SQLRF06124
+BST
+GMT
+fold=0
