@@ -3,7 +3,11 @@ from typing import Any, Optional
 
 from django.utils import timezone
 
-from data_migration.utils.format import date_or_none, datetime_or_none
+from data_migration.utils.format import (
+    adjust_icms_v1_datetime,
+    date_or_none,
+    datetime_or_none,
+)
 
 
 def format_row(
@@ -29,10 +33,10 @@ def format_row(
             if isinstance(value, str):
                 value = datetime_or_none(value)
 
-            if not value.tzinfo:
-                # TODO ICMSLST-1769: Check timezone how timezones work in django.
-                # Assumption that source is UTC and datetime is passed to models with source tz
-                value = timezone.make_aware(value, dt.timezone.utc)
+            if timezone.is_naive(value):
+                value = adjust_icms_v1_datetime(value)
+            else:
+                value = value.astimezone(dt.timezone.utc)
 
         elif value and column.endswith("_date"):
             value = date_or_none(value)
