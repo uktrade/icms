@@ -11,6 +11,8 @@
 ICMS is "Import Case Management System", and this repo contains the Python /
 Django / PostgreSQL port of it from the original Oracle-based system.
 
+See [ICMS Features](documentation/icms-features.md) for an overview of the system.
+
 ## Requirements
 
 - [Python 3.10.*](https://www.python.org/downloads/)
