@@ -3,7 +3,6 @@ __all__ = [
     "endorsement",
     "fir",
     "update_request",
-    "import_workbasket",
     "sigl_transmission",
 ]
 
@@ -75,37 +74,6 @@ endorsement = """
 SELECT imad_id, endorsement_text content
 FROM impmgr.xview_ima_endorsements xie
 WHERE xie.status_control = 'C'
-"""
-
-
-import_workbasket = """
-SELECT
-  u.ima_id
-  , CASE xwa.terminated_flag WHEN 'N' THEN 1 ELSE 0 END is_active
-  , xwa.action_mnem
-  , xwa.action_desc action_description
-  , xwa.start_datetime
-  , xwa.end_datetime
-FROM bpmmgr.xview_workbasket_actions xwa
-INNER JOIN bpmmgr.urefs u ON u.uref = xwa.primary_data_uref AND u.ima_id IS NOT NULL
-INNER JOIN impmgr.xview_ima_details xiad ON xiad.ima_id = u.ima_id AND xiad.status_control = 'C'
-INNER JOIN impmgr.import_application_types iat
-  ON iat.ima_type = xiad.ima_type AND iat.ima_sub_type = xiad.ima_sub_type
-WHERE xwa.terminated_flag = 'N'
-  AND xwa.action_mnem NOT IN (
-    'ii.H40.ACKNOWLEDGE', '1.IMA30.IMP_IMA', '1.IMA35.IMP_IMA',
-    'i.H2.ACKNOWLEDGE', 'i.H21.ACKNOWLEDGE', '1.IMA33.IMP_IMA'
-  )
-  AND xiad.status <> 'DELETED'
-  AND (
-    (iat.status = 'ARCHIVED' AND xiad.submitted_datetime IS NOT NULL)
-    OR (
-      iat.status = 'CURRENT' AND (
-        xiad.submitted_datetime IS NOT NULL OR xiad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY
-      )
-    )
-  )
-ORDER BY xwa.wba_id
 """
 
 
