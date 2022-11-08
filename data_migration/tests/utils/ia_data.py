@@ -1225,7 +1225,7 @@ ia_query_result = {
                 11,  # imad_id
                 1,  # file_folder_id
                 "IMA/2022/1234",  # reference
-                "COMPLETE",  # status
+                "PROCESSING",  # status
                 datetime(2022, 4, 23),  # submit_datetime
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created

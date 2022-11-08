@@ -4,7 +4,6 @@ __all__ = [
     "export_certificate",
     "export_certificate_docs",
     "export_variations",
-    "export_workbasket",
 ]
 
 
@@ -137,27 +136,4 @@ FROM impmgr.xview_cert_app_variations v
 WHERE status_control = 'C'
 AND variation_reason IS NOT NULL
 ORDER BY cad_id, variation_id
-"""
-
-
-export_workbasket = """
-SELECT
-  u.ima_id
-  , CASE xwa.terminated_flag WHEN 'N' THEN 1 ELSE 0 END is_active
-  , xwa.action_mnem
-  , xwa.action_desc action_description
-  , xwa.start_datetime
-  , xwa.end_datetime
-FROM bpmmgr.xview_workbasket_actions xwa
-INNER JOIN bpmmgr.urefs u ON u.uref = xwa.primary_data_uref AND u.ca_id IS NOT NULL
-INNER JOIN impmgr.xview_certificate_app_details xcad ON xcad.ca_id = u.ca_id AND xcad.status_control = 'C'
-WHERE xwa.terminated_flag = 'N'
-  AND xwa.action_mnem NOT IN (
-    '10.CA120.IMP_CA', '20.CA120.IMP_CA', 'ii.H40.ACKNOWLEDGE', 'i.H2.ACKNOWLEDGE', 'i.H21.ACKNOWLEDGE',
-    '20.CA50.IMP_CA', '30.CA50.IMP_CA', '40.CA50.IMP_CA', '50.CA50.IMP_CA', '60.CA50.IMP_CA',
-    '70.CA50.IMP_CA', '10.CA40.IMP_CA', '20.CA40.IMP_CA', '30.CA40.IMP_CA'
-  )
-  AND xcad.status <> 'DELETED'
-  AND (xcad.submitted_datetime IS NOT NULL OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
-ORDER BY xwa.wba_id
 """

@@ -388,6 +388,10 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert ia1.endorsements.count() == 2
     assert ia2.endorsements.count() == 0
 
+    assert ia1.process_ptr.tasks.count() == 1
+    assert ia1.process_ptr.tasks.first().task_type == web.Task.TaskType.PROCESS
+    assert ia2.process_ptr.tasks.count() == 0
+
 
 oil_xml_parsers = [
     xml_parser.ImportContactParser,
@@ -495,11 +499,7 @@ def test_import_oil_data(mock_connect, dummy_dm_settings):
     assert oil2.supplementary_info.reports.count() == 2
 
     assert oil1.importapplication_ptr.process_ptr.tasks.count() == 0
-
-    assert oil2.importapplication_ptr.process_ptr.tasks.count() == 1
-    assert (
-        oil2.importapplication_ptr.process_ptr.tasks.first().task_type == web.Task.TaskType.REJECTED
-    )
+    assert oil2.importapplication_ptr.process_ptr.tasks.count() == 0
 
     dfl = web.DFLApplication.objects.first()
     assert dfl.proof_checked is True
