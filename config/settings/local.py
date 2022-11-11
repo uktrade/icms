@@ -115,3 +115,6 @@ LOGGING = {
         # },
     },
 }
+
+# django-ratelimit
+RATELIMIT_ENABLE = False
