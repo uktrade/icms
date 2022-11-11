@@ -167,7 +167,7 @@ query_task_result: ## local development tool to query task results
 
 ##@ Server
 debug: ## runs system in debug mode
-	docker-compose up
+	docker-compose up -d
 
 down: ## Stops and downs containers
 	docker-compose down --remove-orphans
