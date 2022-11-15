@@ -10,8 +10,12 @@ from django.core import exceptions
 from django.core.cache import cache
 from django.db import transaction
 from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.utils import timezone
 from django.utils.crypto import constant_time_compare
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, TemplateView, View
+from mohawk.util import parse_authorization_header, prepare_header_val
 
 from web.domains.case._import.models import ImportApplication, LiteHMRCChiefRequest
 from web.flow.models import Task
@@ -49,10 +53,17 @@ def seen_nonce(access_id: str, nonce: str, timestamp: str) -> bool:
 
 def validate_request(request: HttpRequest) -> mohawk.Receiver:
     """Raise Django's BadRequest if the request has invalid credentials."""
+
     try:
-        auth_token = request.META["HTTP_AUTHORIZATION"]
+        auth_token = request.headers.get("HAWK_AUTHENTICATION")
+
+        if not auth_token:
+            raise KeyError
     except KeyError as err:
         raise exceptions.BadRequest from err
+
+    # lite-hmrc creates the payload hash before encoding the json, therefore decode it here to get the same hash.
+    content = request.body.decode()
 
     try:
         return mohawk.Receiver(
@@ -60,7 +71,7 @@ def validate_request(request: HttpRequest) -> mohawk.Receiver:
             auth_token,
             request.build_absolute_uri(),
             request.method,
-            content=request.body,
+            content=content,
             content_type=request.content_type,
             seen_nonce=seen_nonce,
         )
@@ -68,49 +79,65 @@ def validate_request(request: HttpRequest) -> mohawk.Receiver:
         raise exceptions.BadRequest from err
 
 
+# Hawk view (no CSRF)
+@method_decorator(csrf_exempt, name="dispatch")
 class LicenseDataCallback(View):
     # View Config
     http_method_names = ["post"]
 
-    def dispatch(self, *args, **kwargs) -> HttpResponse:
-        # Validate sender request
-        hawk_receiver = validate_request(self.request)
-
-        # Create response
-        response = super().dispatch(*args, **kwargs)
-
-        # Create and set the response header
-        hawk_response_header = hawk_receiver.respond(
-            content=response.content, content_type=response.headers["Content-type"]
-        )
-        response.headers[HAWK_RESPONSE_HEADER] = hawk_response_header
-
-        # return the response
-        return response
-
-    def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+    def dispatch(self, *args, **kwargs) -> JsonResponse:
         try:
-            licence_replies = types.ChiefLicenceReplyResponseData.parse_raw(
-                request.body, content_type=request.content_type
-            )
+            # Validate sender request
+            hawk_receiver = validate_request(self.request)
 
-        except pydantic.ValidationError:
+            # Create response
+            response = super().dispatch(*args, **kwargs)
+
+        except (pydantic.ValidationError, exceptions.BadRequest):
             capture_exception()
 
             return JsonResponse({}, status=http.HTTPStatus.BAD_REQUEST)
-
-        try:
-            with transaction.atomic():
-                for accepted in licence_replies.accepted:
-                    self.accept_application(accepted)
-
-                for rejected in licence_replies.rejected:
-                    self.reject_application(rejected)
 
         except Exception:
             capture_exception()
 
             return JsonResponse({}, status=http.HTTPStatus.UNPROCESSABLE_ENTITY)
+
+        # Create and set the response header
+        hawk_response_header = self._get_hawk_response_header(hawk_receiver, response)
+        response.headers[HAWK_RESPONSE_HEADER] = hawk_response_header
+
+        # return the response
+        return response
+
+    def _get_hawk_response_header(self, hawk_receiver: mohawk.Receiver, response: JsonResponse):
+        sender_nonce = hawk_receiver.parsed_header.get("nonce")
+
+        hawk_response_header = hawk_receiver.respond(
+            content=response.content, content_type=response.headers["Content-type"]
+        )
+
+        # Add the original sender nonce and ts to get around this bug
+        # https://github.com/kumar303/mohawk/issues/50
+        if not parse_authorization_header(hawk_response_header).get("nonce"):
+            sender_nonce = prepare_header_val(sender_nonce)
+            ts = prepare_header_val(str(timezone.now().timestamp()))
+
+            hawk_response_header = f'{hawk_response_header}, nonce="{sender_nonce}", ts="{ts}"'
+
+        return hawk_response_header
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+        licence_replies = types.ChiefLicenceReplyResponseData.parse_raw(
+            request.body, content_type=request.content_type
+        )
+
+        with transaction.atomic():
+            for accepted in licence_replies.accepted:
+                self.accept_application(accepted)
+
+            for rejected in licence_replies.rejected:
+                self.reject_application(rejected)
 
         return JsonResponse({}, status=http.HTTPStatus.OK)
 

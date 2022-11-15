@@ -132,7 +132,8 @@ def send_application_to_chief(
         next_task = Task.TaskType.CHIEF_ERROR
 
         if chief_req:
-            chief_req.delete()
+            chief_req.status = LiteHMRCChiefRequest.CHIEFStatus.INTERNAL_ERROR
+            chief_req.save()
 
     Task.objects.create(process=application, task_type=next_task, previous=previous_task)
 

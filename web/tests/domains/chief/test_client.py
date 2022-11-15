@@ -119,8 +119,10 @@ class TestChiefClient:
         app.refresh_from_db()
         app.get_expected_task(Task.TaskType.CHIEF_ERROR, select_for_update=False)
 
-        # The CDR should have been deleted
-        assert app.chief_references.count() == 0
+        assert app.chief_references.count() == 1
+        assert (
+            app.chief_references.first().status == LiteHMRCChiefRequest.CHIEFStatus.INTERNAL_ERROR
+        )
 
     def test_send_application_to_chief_variation_request(self, fa_sil_app_doc_signing, monkeypatch):
         # Setup
