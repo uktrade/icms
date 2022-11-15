@@ -3,7 +3,9 @@ from unittest.mock import create_autospec
 
 import mohawk
 import pytest
+from django.core import exceptions
 from django.urls import reverse
+from mohawk.util import parse_authorization_header
 from pytest_django.asserts import assertTemplateUsed
 
 from web.domains.chief import types
@@ -77,10 +79,11 @@ class TestLicenseDataCallbackAuthentication:
             self.url,
             payload.dict(),
             content_type=JSON_TYPE,
-            HTTP_AUTHORIZATION=sender.request_header,
+            HTTP_HAWK_AUTHENTICATION=sender.request_header,
         )
 
         assert response.status_code == HTTPStatus.OK
+        assert response.headers.get("Content-Type") == "application/json"
 
         # This will blow up if the signature does not match.
         sender.accept_response(
@@ -91,9 +94,10 @@ class TestLicenseDataCallbackAuthentication:
 
     def test_auth_invalid(self):
         url = reverse("chief:license-data-callback")
-        response = self.client.post(url, HTTP_AUTHORIZATION="Hawk foo")
+        response = self.client.post(url, HTTP_HAWK_AUTHENTICATION="Hawk foo")
 
         assert response.status_code == HTTPStatus.BAD_REQUEST
+        assert response.headers.get("Content-Type") == "application/json"
 
 
 class TestLicenseDataCallbackView:
@@ -108,6 +112,23 @@ class TestLicenseDataCallbackView:
         # Fake mohawk when testing the business logic for simplicity and speed.
         # See TestLicenseDataCallbackAuthentication above for authentication testing
         mohawk_mock = create_autospec(mohawk)
+
+        # Value mocked: mohawk.Receiver().parsed_header
+        mohawk_mock.Receiver.return_value.parsed_header = parse_authorization_header(
+            'Hawk id="dh37fgj492je"'  # /PS-IGNORE
+            ', ts="1367076201"'
+            ', nonce="NPHgnG"'
+            ', ext="foo bar"'
+            ', mac="CeWHy4d9kbLGhDlkyw2Nh3PJ7SDOdZDa267KH4ZaNMY="'  # /PS-IGNORE
+        )
+
+        # Value mocked: mohawk.Receiver().respond()
+        mohawk_mock.Receiver.return_value.respond.return_value = (
+            'Hawk id="ph37fgj492je"'  # /PS-IGNORE
+            ', ext="foo bar"'
+            ', mac="DeWHy4d9kbLGhDlkyw2Nh3PJ7SDOdZDa267KH4ZaNMY="'  # /PS-IGNORE
+        )
+
         self.monkeypatch.setattr(chief_views, "mohawk", mohawk_mock)
 
         # Current draft licence
@@ -126,10 +147,11 @@ class TestLicenseDataCallbackView:
             rejected=[],
         )
         response = self.client.post(
-            self.url, data=payload.dict(), content_type=JSON_TYPE, HTTP_AUTHORIZATION="foo"
+            self.url, data=payload.dict(), content_type=JSON_TYPE, HTTP_HAWK_AUTHENTICATION="foo"
         )
 
         assert response.status_code == HTTPStatus.OK
+        assert response.headers.get("Content-Type") == "application/json"
 
         check_licence_approve_correct(self.app, self.licence, self.chief_wait_task)
         check_complete_chief_request_correct(self.chief_req)
@@ -152,10 +174,11 @@ class TestLicenseDataCallbackView:
         )
 
         response = self.client.post(
-            self.url, data=payload.dict(), content_type=JSON_TYPE, HTTP_AUTHORIZATION="foo"
+            self.url, data=payload.dict(), content_type=JSON_TYPE, HTTP_HAWK_AUTHENTICATION="foo"
         )
 
         assert response.status_code == HTTPStatus.OK
+        assert response.headers.get("Content-Type") == "application/json"
         check_licence_reject_correct(self.app, self.licence, self.chief_wait_task)
         check_fail_chief_request_correct(self.chief_req)
 
@@ -166,10 +189,11 @@ class TestLicenseDataCallbackView:
         payload = {"invalid": "data"}
 
         response = self.client.post(
-            self.url, data=payload, content_type=JSON_TYPE, HTTP_AUTHORIZATION="foo"
+            self.url, data=payload, content_type=JSON_TYPE, HTTP_HAWK_AUTHENTICATION="foo"
         )
 
         assert response.status_code == HTTPStatus.BAD_REQUEST
+        assert response.headers.get("Content-Type") == "application/json"
         mock_sentry.assert_called_once()
 
         # test valid payload with unknown record
@@ -181,11 +205,25 @@ class TestLicenseDataCallbackView:
         )
 
         response = self.client.post(
-            self.url, data=payload.dict(), content_type=JSON_TYPE, HTTP_AUTHORIZATION="foo"
+            self.url, data=payload.dict(), content_type=JSON_TYPE, HTTP_HAWK_AUTHENTICATION="foo"
         )
 
         assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+        assert response.headers.get("Content-Type") == "application/json"
         mock_sentry.assert_called_once()
+
+        # An authentication error
+        mock_sentry.reset_mock()
+        mock_validate_request = create_autospec(
+            chief_views.validate_request, side_effect=exceptions.BadRequest
+        )
+        self.monkeypatch.setattr(chief_views, "validate_request", mock_validate_request)
+        response = self.client.post(
+            self.url, data={}, content_type=JSON_TYPE, HTTP_HAWK_AUTHENTICATION="foo"
+        )
+
+        assert response.status_code == HTTPStatus.BAD_REQUEST
+        assert response.headers.get("Content-Type") == "application/json"
 
 
 @pytest.mark.django_db
