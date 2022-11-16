@@ -6,6 +6,7 @@ from lxml import etree
 
 from data_migration.management.commands.utils.db import new_process_pk
 from data_migration.models.flow import Process
+from data_migration.utils.format import datetime_or_none, get_xml_val
 
 BatchT = list[tuple]
 ModelListT = dict[Type[Model], list[Model]]
@@ -106,3 +107,86 @@ class BaseXmlParser:
     @classmethod
     def log_message(cls, idx: int) -> str:
         return f"{idx} - Running {cls.__name__}"
+
+
+class FIRBaseParser(BaseXmlParser):
+    REVERSE_LIST = True
+    PARENT_MODEL_FIELD: str = ""
+    IS_PROCESS = True
+
+    @classmethod
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional[Model]:
+        """Example XML
+
+        <RFI>
+          <RFI_ID / >
+          <CASE_RFI_REFERENCE />
+          <STATUS />
+          <REQUEST>
+            <REQUESTED_DATETIME />
+            <REQUESTED_BY_WUA_ID />
+            <SUBJECT />
+            <CC_EMAIL_LIST />
+            <BODY />
+          </REQUEST>
+          <RESPONSE>
+            <RESPONDED_DATETIME />
+            <RESPONDED_BY_WUA_ID />
+            <RESPONSE_DETAILS />
+          </RESPONSE>
+          <CLOSE>
+            <CLOSED_DATETIME />
+            <CLOSED_BY_WUA_ID />
+          </CLOSE>
+          <DELETE>
+            <DELETED_DATETIME />
+            <DELETED_BY_WUA_ID />
+          </DELETE>
+          <WITHDRAW_LIST />
+        </RFI>
+        """
+        if not cls.MODEL:
+            raise NotImplementedError("MODEL must be defined on the parser")
+
+        status = get_xml_val(xml, "./STATUS")
+        request_subject = get_xml_val(xml, "./REQUEST/SUBJECT")
+        request_detail = get_xml_val(xml, "./REQUEST/BODY")
+        requested_by_id = 2  # int_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_BY_WUA_ID"))
+        email_cc_address_list_str = get_xml_val(xml, "./REQUEST/CC_EMAIL_LIST")
+        response_detail = get_xml_val(xml, "./RESPONSE/RESPONSE_DETAILS")
+        response_datetime = datetime_or_none(get_xml_val(xml, "./RESPONSE/RESPONSED_DATETIME"))
+        response_by_id = 2  # int_or_none(get_xml_val(xml, "./RESPONSE/RESPONDED_BY_WUA"))
+        closed_datetime = datetime_or_none(get_xml_val(xml, "./CLOSE/CLOSED_DATETIME"))
+        closed_by_id = 2  # int_or_none(get_xml_val(xml, "./CLOSE/CLOSED_BY_WUA_ID"))
+        deleted_datetime = datetime_or_none(get_xml_val(xml, "./DELETE/DELETED_DATETIME"))
+        deleted_by_id = 2  # int_or_none(get_xml_val(xml, "./DELETE/DELETED_BY_WUA_ID"))
+
+        return cls.MODEL(
+            **{
+                cls.PARENT_MODEL_FIELD: parent_pk,
+                "status": status,
+                "request_subject": request_subject,
+                "request_detail": request_detail,
+                "requested_by_id": requested_by_id,
+                "email_cc_address_list_str": email_cc_address_list_str,
+                "response_detail": response_detail,
+                "response_datetime": response_datetime,
+                "response_by_id": response_by_id,
+                "closed_datetime": closed_datetime,
+                "closed_by_id": closed_by_id,
+                "deleted_datetime": deleted_datetime,
+                "deleted_by_id": deleted_by_id,
+            }
+        )
+
+    @classmethod
+    def add_process_model(cls, process_pk: int, xml: etree.ElementTree) -> Process:
+        status = get_xml_val(xml, "./STATUS")
+        created = datetime_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_DATETIME"))
+
+        return Process(
+            id=process_pk,
+            process_type="FurtherInformationRequest",
+            is_active=status != "DELETED",
+            created=created,
+        )

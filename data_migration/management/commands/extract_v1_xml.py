@@ -10,6 +10,7 @@ class Command(MigrationBaseCommand):
     help = """Parses the XML for data stored in the data migration models xml columns"""
 
     DATA_TYPE_START = {
+        "user": ["u", "user"],
         "import_application": ["ia", "import_application"],
         "export_application": ["ea", "export_application"],
     }
@@ -17,6 +18,7 @@ class Command(MigrationBaseCommand):
     def handle(self, *args, **options):
         super().handle(*args, **options)
 
+        self._extract_xml_data("user", options["skip_user"])
         self._extract_xml_data("import_application", options["skip_ia"])
         self._extract_xml_data("export_application", options["skip_export"])
         self._log_script_end()

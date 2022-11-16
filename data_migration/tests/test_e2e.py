@@ -110,10 +110,6 @@ sil_data_source_target = {
             (q_f, "fa_certificate_files", dm.FileCombined),
         ],
         "import_application": [
-            (q_u, "importers", dm.Importer),
-            (q_u, "importer_offices", dm.Office),
-            (q_u, "exporters", dm.Exporter),
-            (q_u, "exporter_offices", dm.Office),
             (q_ia, "ia_type", dm.ImportApplicationType),
             (q_ia, "sil_application", dm.SILApplication),
             (q_ia, "ia_licence", dm.ImportApplicationLicence),
@@ -129,9 +125,15 @@ sil_data_source_target = {
             (q_ia, "fir", dm.FurtherInformationRequest),
             (q_ia, "endorsement", dm.EndorsementImportApplication),
         ],
+        "user": [
+            (q_u, "importers", dm.Importer),
+            (q_u, "importer_offices", dm.Office),
+            (q_u, "exporters", dm.Exporter),
+            (q_u, "exporter_offices", dm.Office),
+        ],
     },
 )
-@mock.patch.dict(DATA_TYPE_XML, {"import_application": sil_xml_parsers})
+@mock.patch.dict(DATA_TYPE_XML, {"import_application": sil_xml_parsers, "user": []})
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, sil_data_source_target)
 @mock.patch.dict(
     DATA_TYPE_M2M,
@@ -144,14 +146,16 @@ sil_data_source_target = {
             (dm.UpdateRequest, web.ImportApplication, "update_requests"),
             (dm.FurtherInformationRequest, web.ImportApplication, "further_information_requests"),
             (dm.FIRFile, web.FurtherInformationRequest, "files"),
-            (dm.Office, web.Importer, "offices"),
-            (dm.Office, web.Exporter, "offices"),
             (dm.FirearmsAuthorityOffice, web.FirearmsAuthority, "linked_offices"),
             (dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
             (dm.Section5AuthorityOffice, web.Section5Authority, "linked_offices"),
             (dm.Section5AuthorityFile, web.Section5Authority, "files"),
             (dm.SILUserSection5, web.SILApplication, "user_section5"),
-        ]
+        ],
+        "user": [
+            (dm.Office, web.Importer, "offices"),
+            (dm.Office, web.Exporter, "offices"),
+        ],
     },
 )
 @mock.patch.object(cx_Oracle, "connect")
@@ -434,8 +438,6 @@ oil_data_source_target = {
     DATA_TYPE_QUERY_MODEL,
     {
         "import_application": [
-            (q_u, "importers", dm.Importer),
-            (q_u, "importer_offices", dm.Office),
             (q_ia, "ia_type", dm.ImportApplicationType),
             (q_ia, "oil_application", dm.OpenIndividualLicenceApplication),
             (q_ia, "oil_checklist", dm.ChecklistFirearmsOILApplication),
@@ -451,11 +453,17 @@ oil_data_source_target = {
             (q_f, "oil_application_files", dm.FileCombined),
             (q_f, "dfl_application_files", dm.FileCombined),
         ],
+        "user": [
+            (q_u, "importers", dm.Importer),
+            (q_u, "importer_offices", dm.Office),
+        ],
     },
 )
-@mock.patch.dict(DATA_TYPE_XML, {"import_application": oil_xml_parsers})
+@mock.patch.dict(DATA_TYPE_XML, {"import_application": oil_xml_parsers, "user": []})
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, oil_data_source_target)
-@mock.patch.dict(DATA_TYPE_M2M, {"import_application": [(dm.Office, web.Importer, "offices")]})
+@mock.patch.dict(
+    DATA_TYPE_M2M, {"import_application": [(dm.Office, web.Importer, "offices")], "user": []}
+)
 @mock.patch.object(cx_Oracle, "connect")
 def test_import_oil_data(mock_connect, dummy_dm_settings):
     mock_connect.return_value = utils.MockConnect()
@@ -504,3 +512,134 @@ def test_import_oil_data(mock_connect, dummy_dm_settings):
     dfl = web.DFLApplication.objects.first()
     assert dfl.proof_checked is True
     assert dfl.constabulary_id == 1
+
+
+user_xml_parsers = {
+    "import_application": [],
+    "export_application": [],
+    "user": [
+        xml_parser.ApprovalRequestParser,
+        xml_parser.AccessFIRParser,
+    ],
+}
+
+user_data_source_target = {
+    "user": [
+        (dm.User, web.User),
+        (dm.Importer, web.Importer),
+        (dm.Exporter, web.Exporter),
+        (dm.Office, web.Office),
+        (dm.Process, web.Process),
+        (dm.AccessRequest, web.AccessRequest),
+        (dm.ImporterAccessRequest, web.ImporterAccessRequest),
+        (dm.ExporterAccessRequest, web.ExporterAccessRequest),
+        (dm.FurtherInformationRequest, web.FurtherInformationRequest),
+        (dm.ApprovalRequest, web.ApprovalRequest),
+        (dm.ImporterApprovalRequest, web.ImporterApprovalRequest),
+        (dm.ExporterApprovalRequest, web.ExporterApprovalRequest),
+    ],
+    "reference": [],
+    "import_application": [],
+    "export_application": [],
+    "file": [],
+}
+
+
+@pytest.mark.django_db
+@mock.patch.dict(
+    DATA_TYPE_QUERY_MODEL,
+    {
+        "import_application": [],
+        "export_application": [],
+        "reference": [],
+        "file": [],
+        "user": [
+            (q_u, "importers", dm.Importer),
+            (q_u, "importer_offices", dm.Office),
+            (q_u, "exporters", dm.Exporter),
+            (q_u, "exporter_offices", dm.Office),
+            (q_u, "access_requests", dm.AccessRequest),
+        ],
+    },
+)
+@mock.patch.dict(DATA_TYPE_XML, user_xml_parsers)
+@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, user_data_source_target)
+@mock.patch.dict(
+    DATA_TYPE_M2M,
+    {
+        "import_application": [],
+        "export_application": [],
+        "user": [
+            (dm.Office, web.Importer, "offices"),
+            (dm.Office, web.Exporter, "offices"),
+            (dm.FurtherInformationRequest, web.AccessRequest, "further_information_requests"),
+        ],
+    },
+)
+@mock.patch.object(cx_Oracle, "connect")
+def test_import_user(mock_connect, dummy_dm_settings):
+    mock_connect.return_value = utils.MockConnect()
+    call_command("export_from_v1")
+    call_command("extract_v1_xml")
+    call_command("import_v1_data")
+
+    ar1, ar2, ar3, ar4 = web.AccessRequest.objects.order_by("pk")
+
+    assert ar1.process_ptr.process_type == "ImporterAccessRequest"
+    assert ar1.process_ptr.tasks.count() == 1
+    assert ar1.reference == "IAR/0001"
+    assert ar1.status == "SUBMITTED"
+    assert ar1.organisation_name == "Test Org"
+    assert ar1.organisation_address == "Test Address"
+    assert ar1.agent_name is None
+    assert ar1.agent_address == ""
+    assert ar1.response is None
+    assert ar1.response_reason == ""
+    assert ar1.importeraccessrequest.request_type == "MAIN_IMPORTER_ACCESS"
+    assert ar1.importeraccessrequest.link_id == 2
+    assert ar1.further_information_requests.count() == 0
+    assert ar1.approval_requests.count() == 0
+
+    assert ar2.process_ptr.process_type == "ImporterAccessRequest"
+    assert ar2.process_ptr.tasks.count() == 0
+    assert ar2.reference == "IAR/0002"
+    assert ar2.status == "CLOSED"
+    assert ar2.agent_name == "Test Name"
+    assert ar2.agent_address == "Test Address"
+    assert ar2.request_reason == "Test Reason"
+    assert ar2.response == "APPROVED"
+    assert ar2.response_reason == "Test Reason"
+    assert ar2.importeraccessrequest.request_type == "AGENT_IMPORTER_ACCESS"
+    assert ar2.importeraccessrequest.link_id == 3
+    assert ar2.further_information_requests.count() == 0
+    assert ar2.approval_requests.count() == 1
+
+    ar2_ar = ar2.approval_requests.first()
+    assert ar2_ar.process_ptr.process_type == "ImporterApprovalRequest"
+    assert ar2_ar.status == "COMPLETED"
+    assert ar2_ar.response == "APPROVE"
+    assert ar2_ar.response_reason == "Test Reason"
+    assert ar2_ar.importerapprovalrequest.pk == ar2_ar.pk
+
+    assert ar3.process_ptr.process_type == "ExporterAccessRequest"
+    assert ar3.process_ptr.tasks.count() == 0
+    assert ar3.reference == "EAR/0003"
+    assert ar3.exporteraccessrequest.request_type == "MAIN_EXPORTER_ACCESS"
+    assert ar3.exporteraccessrequest.link_id == 2
+    assert ar3.further_information_requests.count() == 2
+    assert ar3.approval_requests.count() == 0
+
+    assert ar4.process_ptr.process_type == "ExporterAccessRequest"
+    assert ar4.process_ptr.tasks.count() == 0
+    assert ar4.reference == "EAR/0004"
+    assert ar4.exporteraccessrequest.request_type == "AGENT_EXPORTER_ACCESS"
+    assert ar4.exporteraccessrequest.link_id == 3
+    assert ar4.further_information_requests.count() == 0
+    assert ar4.approval_requests.count() == 1
+
+    ar4_ar = ar4.approval_requests.first()
+    assert ar4_ar.process_ptr.process_type == "ExporterApprovalRequest"
+    assert ar4_ar.status == "COMPLETED"
+    assert ar4_ar.response == "APPROVE"
+    assert ar4_ar.response_reason == "Test Reason"
+    assert ar4_ar.exporterapprovalrequest.pk == ar4_ar.pk

@@ -70,7 +70,7 @@ class ApprovalRequest(WorkbasketBase, Process):
         related_name="responded_approval_requests",
     )
     response_date = models.DateTimeField(blank=True, null=True)
-    response_reason = models.CharField(max_length=4000, blank=True, null=True)
+    response_reason = models.TextField(blank=True, null=True)
 
     @property
     def is_complete(self):

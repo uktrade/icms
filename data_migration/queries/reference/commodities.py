@@ -41,8 +41,10 @@ WHERE status_control = 'C'
 
 
 commodity_group_commodity = """
-SELECT DISTINCT cg_id commoditygroup_id, com_id commodity_id
-FROM impmgr.xview_com_group_commodities
+SELECT cg_id commoditygroup_id, com_id commodity_id
+FROM impmgr.xview_com_group_commodities cgc
+WHERE status_control = 'C'
+AND status <> 'ARCHIVED'
 """
 
 

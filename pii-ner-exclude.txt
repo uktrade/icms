@@ -1673,3 +1673,18 @@ Case > Application Withdrawals
 Case > Application Updates
 Case > Authorisation
 Case > View Application
+importer__id
+exporter__id
+iar.status
+IMPMGR.IMPORTER_ACCESS_REQUESTS
+CROSS
+/NEW_REQUEST
+/NEW_REQUEST/IMPORTER/ADDRESS/text
+exporter_id INTEGER PATH '
+/NEW_REQUEST/EXPORTER
+XMLTYPE PATH '/RFIS/RFI_LIST'
+IMPORTER/ADDRESS
+importer_id INTEGER PATH '
+IMPORTER/IMP_ID
+ELSE
+IMPORTER/LINK/IMP_ID

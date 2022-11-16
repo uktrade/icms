@@ -73,7 +73,7 @@ class FurtherInformationRequest(WorkbasketBase, Process):
     )
 
     requested_datetime = models.DateTimeField("Request Date", null=True, auto_now_add=True)
-    response_detail = models.CharField(verbose_name="Response Detail", max_length=4000, null=True)
+    response_detail = models.TextField(verbose_name="Response Detail", null=True)
     response_datetime = models.DateTimeField(null=True)
 
     requested_by = models.ForeignKey(

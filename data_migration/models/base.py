@@ -91,6 +91,7 @@ class MigrationBase(models.Model):
         related = cls.get_related()
         return (
             cls.objects.select_related(*related)
+            .order_by("pk")
             .values(*values, **values_kwargs)
             .iterator(chunk_size=2000)
         )
