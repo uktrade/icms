@@ -63,6 +63,7 @@ def test_create_user_no_pw(mock_connect):
 @override_settings(APP_ENV="production")
 @override_settings(ICMS_PROD_USER="TestUser")
 @override_settings(ICMS_PROD_PASSWORD="1234")
+@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, {"user": []})
 @pytest.mark.django_db
 @mock.patch.object(cx_Oracle, "connect")
 def test_create_user(mock_connect):
@@ -75,6 +76,7 @@ def test_create_user(mock_connect):
 @override_settings(APP_ENV="production")
 @override_settings(ICMS_PROD_USER="TestUser")
 @override_settings(ICMS_PROD_PASSWORD="1234")
+@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, {"user": []})
 @pytest.mark.django_db
 @mock.patch.object(cx_Oracle, "connect")
 def test_create_user_exists(mock_connect):
@@ -108,7 +110,8 @@ def test_export_data(mock_connect):
             xml_parser.ImportContactParser,
             xml_parser.OILSupplementaryReportParser,
             xml_parser.OILReportFirearmParser,
-        ]
+        ],
+        "user": [],
     },
 )
 @mock.patch.object(cx_Oracle, "connect")
@@ -228,6 +231,7 @@ test_query_model = {
         (reference, "unit", models.Unit),
     ],
     "file": [],
+    "user": [],
     "import_application": [
         (reference, "constabularies", models.Constabulary),
         (reference, "obsolete_calibre_group", models.ObsoleteCalibreGroup),

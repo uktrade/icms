@@ -23,6 +23,7 @@ class Command(MigrationBaseCommand):
     )
 
     DATA_TYPE_START = {
+        "user": ["u", "user"],
         "reference": ["r", "ref", "reference"],
         "file": ["f", "file"],
         "import_application": ["ia", "import_application"],
@@ -43,6 +44,7 @@ class Command(MigrationBaseCommand):
 
         with cx_Oracle.connect(**connection_config) as connection:
             with connection.cursor() as cursor:
+                self._export_data("user", cursor, options["skip_user"])
                 self._export_data("reference", cursor, options["skip_ref"])
                 self._export_data("file", cursor, options["skip_file"])
                 self._export_data("import_application", cursor, options["skip_ia"])

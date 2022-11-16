@@ -19,6 +19,7 @@ class Command(MigrationBaseCommand):
     help = """Import the V1 data from the data migration models"""
 
     DATA_TYPE_START = {
+        "user": ["u", "user"],
         "reference": ["r", "ref", "reference", "r-m2m", "ref-m2m", "reference-m2m"],
         "file": ["f", "file"],
         "import_application": ["ia", "import_application", "ia-m2m", "import_application-m2m"],

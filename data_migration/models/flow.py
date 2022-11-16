@@ -10,9 +10,16 @@ class Process(MigrationBase):
     is_active = models.BooleanField(default=True, db_index=True)
     created = models.DateTimeField(auto_now_add=True)
     finished = models.DateTimeField(null=True)
+
+    # import application id
     ima_id = models.IntegerField(null=True, unique=True)
+
+    # certificate (export) application id
     ca_id = models.IntegerField(null=True, unique=True)
+
+    # access request id
+    iar_id = models.IntegerField(null=True, unique=True)
 
     @classmethod
     def get_excludes(cls):
-        return ["ima_id", "ca_id", "uref"]
+        return ["ima_id", "ca_id", "iar_id"]

@@ -18,6 +18,32 @@ user_source_target = [
     SourceTarget(dm.Exporter, web.Exporter),
     SourceTarget(dm.Office, web.Office),
     SourceTarget(dm.Process, web.Process),
+    SourceTarget(dm.FurtherInformationRequest, web.FurtherInformationRequest),
+    SourceTarget(dm.AccessRequest, web.AccessRequest),
+    SourceTarget(dm.ImporterAccessRequest, web.ImporterAccessRequest),
+    SourceTarget(dm.ExporterAccessRequest, web.ExporterAccessRequest),
+    SourceTarget(dm.ApprovalRequest, web.ApprovalRequest),
+    SourceTarget(dm.ImporterApprovalRequest, web.ImporterApprovalRequest),
+    SourceTarget(dm.ExporterApprovalRequest, web.ExporterApprovalRequest),
+]
+
+user_query_model = [
+    QueryModel(user, "importers", dm.Importer),
+    QueryModel(user, "importer_offices", dm.Office),
+    QueryModel(user, "exporters", dm.Exporter),
+    QueryModel(user, "exporter_offices", dm.Office),
+    QueryModel(user, "access_requests", dm.AccessRequest),
+]
+
+user_m2m = [
+    M2M(dm.Office, web.Importer, "offices"),
+    M2M(dm.Office, web.Exporter, "offices"),
+    M2M(dm.FurtherInformationRequest, web.AccessRequest, "further_information_requests"),
+]
+
+user_xml = [
+    xml_parser.ApprovalRequestParser,
+    xml_parser.AccessFIRParser,
 ]
 
 ref_query_model = [
@@ -56,7 +82,6 @@ ref_source_target = source_target_list(
         "CaseNote",
         "CaseEmail",
         "UpdateRequest",
-        "FurtherInformationRequest",
     ]
 )
 
@@ -85,9 +110,6 @@ file_query_model = [
 ]
 
 ia_query_model = [
-    QueryModel(user, "mailshots", dm.Mailshot),
-    QueryModel(user, "importers", dm.Importer),
-    QueryModel(user, "importer_offices", dm.Office),
     QueryModel(import_application, "sps_application", dm.PriorSurveillanceApplication),
     QueryModel(import_application, "derogations_application", dm.DerogationsApplication),
     QueryModel(import_application, "derogations_checklist", dm.DerogationsChecklist),
@@ -117,6 +139,7 @@ ia_query_model = [
     QueryModel(import_application, "fir", dm.FurtherInformationRequest),
     QueryModel(import_application, "endorsement", dm.EndorsementImportApplication),
     QueryModel(import_application, "sigl_transmission", SIGLTransmission),
+    QueryModel(user, "mailshots", dm.Mailshot),
 ]
 
 ia_source_target = [
@@ -204,7 +227,6 @@ ia_m2m = [
     M2M(dm.FurtherInformationRequest, web.ImportApplication, "further_information_requests"),
     M2M(dm.FIRFile, web.FurtherInformationRequest, "files"),
     M2M(dm.CaseNoteFile, web.CaseNote, "files"),
-    M2M(dm.Office, web.Importer, "offices"),
     M2M(dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
     M2M(dm.Section5AuthorityFile, web.Section5Authority, "files"),
     M2M(dm.FirearmsAuthorityOffice, web.FirearmsAuthority, "linked_offices"),
@@ -306,8 +328,6 @@ ia_xml = [
 ]
 
 export_query_model = [
-    QueryModel(user, "exporters", dm.Exporter),
-    QueryModel(user, "exporter_offices", dm.Office),
     QueryModel(export_application, "product_legislation", dm.ProductLegislation),
     QueryModel(export_application, "export_application_type", dm.ExportApplicationType),
     QueryModel(export_application, "com_application", dm.CertificateOfManufactureApplication),
@@ -351,7 +371,6 @@ export_source_target = [
 ]
 
 export_m2m = [
-    M2M(dm.Office, web.Exporter, "offices"),
     M2M(dm.VariationRequest, web.ExportApplication, "variation_requests"),
     M2M(dm.ExportApplicationCountries, web.ExportApplication, "countries"),
     M2M(dm.GMPFile, web.CertificateOfGoodManufacturingPracticeApplication, "supporting_documents"),
@@ -380,6 +399,7 @@ DATA_TYPE_QUERY_MODEL: dict[str, list[QueryModel]] = {
     "file": file_query_model,
     "import_application": ia_query_model,
     "reference": ref_query_model,
+    "user": user_query_model,
 }
 
 DATA_TYPE_SOURCE_TARGET: dict[str, list[SourceTarget]] = {
@@ -394,14 +414,14 @@ DATA_TYPE_M2M: dict[str, list[M2M]] = {
     "export_application": export_m2m,
     "import_application": ia_m2m,
     "reference": ref_m2m,
-    "user": [],
+    "user": user_m2m,
 }
 
 DATA_TYPE_XML: dict[str, list[Type[xml_parser.BaseXmlParser]]] = {
     "export_application": export_xml,
     "import_application": ia_xml,
     "reference": [],
-    "user": [],
+    "user": user_xml,
 }
 
 TASK_LIST = [

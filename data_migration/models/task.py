@@ -27,7 +27,6 @@ class PrepareTask(TaskBase):
 
     @classmethod
     def get_process_pks(cls) -> list[int]:
-        # TODO: Extend to include other process children (e.g FIR)
         pks = Process.objects.filter(
             Q(importapplication__status="IN_PROGRESS") | Q(exportapplication__status="IN_PROGRESS")
         ).values_list("pk", flat=True)
@@ -44,6 +43,7 @@ class ProcessTask(TaskBase):
         pks = Process.objects.filter(
             Q(importapplication__status__in=["SUBMITTED", "PROCESSING", "VARIATION_REQUESTED"])
             | Q(exportapplication__status__in=["SUBMITTED", "PROCESSING"])
+            | Q(accessrequest__status__in=["SUBMITTED", "FIR_REQUESTED"])
         ).values_list("pk", flat=True)
 
         return pks

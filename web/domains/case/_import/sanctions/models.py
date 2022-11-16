@@ -37,8 +37,8 @@ class SanctionsAndAdhocApplicationGoods(models.Model):
     )
 
     goods_description = models.CharField(max_length=4096, verbose_name="Goods Description")
-    quantity_amount = models.DecimalField(max_digits=9, decimal_places=2, verbose_name="Quantity")
-    value = models.DecimalField(max_digits=9, decimal_places=2, verbose_name="Value (GBP CIF)")
+    quantity_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Quantity")
+    value = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Value (GBP CIF)")
 
     def __str__(self):
         return (

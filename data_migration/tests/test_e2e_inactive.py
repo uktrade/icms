@@ -48,13 +48,14 @@ opt_data_source_target = {
 }
 
 opt_query_model = {
-    "user": [],
+    "user": [
+        (q_u, "importers", dm.Importer),
+        (q_u, "importer_offices", dm.Office),
+    ],
     "file": [
         (q_f, "opt_application_files", dm.FileCombined),
     ],
     "import_application": [
-        (q_u, "importers", dm.Importer),
-        (q_u, "importer_offices", dm.Office),
         (q_ia, "ia_type", dm.ImportApplicationType),
         (q_ia, "opt_application", dm.OutwardProcessingTradeApplication),
     ],
@@ -83,6 +84,7 @@ opt_m2m = {
             "teg_commodities",
         ),
     ],
+    "user": [],
 }
 
 opt_xml = {
@@ -91,6 +93,7 @@ opt_xml = {
         xml_parser.OPTCpCommodity,
         xml_parser.OPTTegCommodity,
     ],
+    "user": [],
 }
 
 
@@ -175,13 +178,14 @@ sps_data_source_target = {
 
 @pytest.mark.django_db
 @mock.patch.object(cx_Oracle, "connect")
-@mock.patch.dict(DATA_TYPE_XML, {"import_application": []})
+@mock.patch.dict(DATA_TYPE_XML, {"import_application": [], "user": []})
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, sps_data_source_target)
 @mock.patch.dict(
     DATA_TYPE_XML,
     {
         "export_application": [],
         "import_application": [xml_parser.SanctionGoodsParser],
+        "user": [],
     },
 )
 @mock.patch.dict(
@@ -190,7 +194,8 @@ sps_data_source_target = {
         "import_application": [
             (dm.SPSSupportingDoc, web.PriorSurveillanceApplication, "supporting_documents"),
             (dm.SIGLTransmission, web.ImportApplication, "sigl_transmissions"),
-        ]
+        ],
+        "user": [],
     },
 )
 @mock.patch.dict(
@@ -202,8 +207,6 @@ sps_data_source_target = {
             (q_f, "sanction_application_files", dm.FileCombined),
         ],
         "import_application": [
-            (q_u, "importers", dm.Importer),
-            (q_u, "importer_offices", dm.Office),
             (q_ia, "ia_type", dm.ImportApplicationType),
             (q_ia, "sps_application", dm.PriorSurveillanceApplication),
             (q_ia, "sanctions_application", dm.SanctionsAndAdhocApplication),
@@ -214,6 +217,10 @@ sps_data_source_target = {
             (q_ref, "country", dm.Country),
             (q_ref, "commodity_type", dm.CommodityType),
             (q_ref, "commodity", dm.Commodity),
+        ],
+        "user": [
+            (q_u, "importers", dm.Importer),
+            (q_u, "importer_offices", dm.Office),
         ],
     },
 )
@@ -320,8 +327,6 @@ tex_data_source_target = {
             (q_f, "textiles_application_files", dm.FileCombined),
         ],
         "import_application": [
-            (q_u, "importers", dm.Importer),
-            (q_u, "importer_offices", dm.Office),
             (q_ia, "ia_type", dm.ImportApplicationType),
             (q_ia, "textiles_application", dm.TextilesApplication),
             (q_ia, "textiles_checklist", dm.TextilesChecklist),
@@ -332,6 +337,10 @@ tex_data_source_target = {
             (q_ref, "country", dm.Country),
             (q_ref, "commodity_type", dm.CommodityType),
             (q_ref, "commodity", dm.Commodity),
+        ],
+        "user": [
+            (q_u, "importers", dm.Importer),
+            (q_u, "importer_offices", dm.Office),
         ],
     },
 )

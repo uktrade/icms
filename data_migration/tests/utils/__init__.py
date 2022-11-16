@@ -4,8 +4,9 @@ from web import models as web
 from .ea_data import ea_query_result
 from .ia_data import ia_query_result
 from .reference_data import ref_query_result
+from .user_data import user_query_result
 
-query_result = ia_query_result | ea_query_result | ref_query_result
+query_result = ia_query_result | ea_query_result | ref_query_result | user_query_result
 
 
 class MockCursor:

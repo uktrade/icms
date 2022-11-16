@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from data_migration.queries import reference, user
+from data_migration.queries import reference
 
 ref_query_result = {
     reference.country: (
@@ -77,84 +77,6 @@ ref_query_result = {
             (3, 1, 1002, "TYPE_B", datetime.now(), None, None, None, datetime.now(), None),
             (4, 1, 1003, "TYPE_B", datetime.now(), None, None, None, datetime.now(), None),
             (5, 1, 1004, "TYPE_C", datetime.now(), None, None, None, datetime.now(), None),
-        ],
-    ),
-    user.importers: (
-        [
-            ("id",),
-            ("is_active",),
-            ("type",),
-            ("name",),
-            ("registered_number",),
-            ("eori_number",),
-            ("user_id",),
-            ("main_importer_id",),
-            ("region_origin",),
-        ],
-        [
-            (1, 1, "INDIVIDUAL", None, 123, "GB123456789012", 2, None, "O"),
-            (2, 1, "ORGANISATION", "Test Org", 124, "GB123456789013", 2, None, None),
-            (3, 1, "INDIVIDUAL", "Test Agent", 125, "GB123456789014", 2, 2, None),
-        ],
-    ),
-    user.importer_offices: (
-        [
-            ("importer_id",),
-            ("legacy_id",),
-            ("is_active",),
-            ("postcode",),
-            ("address",),
-            ("eori_number",),
-            ("address_entry_type",),
-        ],
-        [
-            (2, "i-2-1", 1, "ABC", "123 Test\nTest City", "GB123456789015", "SEARCH"),
-            (2, "i-2-2", 1, "DEF", "456 Test", "GB123456789016", "MANUAL"),
-            (
-                3,
-                "i-3-1",
-                1,
-                "deletethisTESTLONG",
-                "ABC Test\nTest Town\nTest City",
-                "GB123456789017",
-                "MANUAL",
-            ),
-        ],
-    ),
-    user.exporters: (
-        [
-            ("id",),
-            ("is_active",),
-            ("name",),
-            ("registered_number",),
-            ("main_importer_id",),
-        ],
-        [
-            (1, 1, "Test Org", 123, 2, None),
-            (2, 1, "Test Agent", 124, "GB123456789013", 2, 1),
-            (3, 0, "Test Inactive", 125, "GB123456789014", 2, None),
-        ],
-    ),
-    user.exporter_offices: (
-        [
-            ("exporter_id",),
-            ("legacy_id",),
-            ("is_active",),
-            ("postcode",),
-            ("address",),
-            ("address_entry_type",),
-        ],
-        [
-            (2, "e-2-1", 1, "Exp A", "123 Test\nTest City", "SEARCH"),
-            (2, "e-2-2", 1, "Very Long Postcode", "456 Test", "MANUAL"),
-            (
-                3,
-                "e-3-1",
-                0,
-                "TEST",
-                "ABC Test\nTest Town\nTest City",
-                "MANUAL",
-            ),
         ],
     ),
     reference.obsolete_calibre_group: (

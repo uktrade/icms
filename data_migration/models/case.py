@@ -15,7 +15,7 @@ from .file import DocFolder, File, FileFolder
 from .flow import Process
 from .import_application import ImportApplication, ImportApplicationLicence
 from .reference import Country
-from .user import User
+from .user import AccessRequest, User
 
 
 class CaseReference(MigrationBase):
@@ -385,12 +385,13 @@ class FurtherInformationRequest(MigrationBase):
 
     ia_ima = models.ForeignKey(Process, on_delete=models.CASCADE, to_field="ima_id", null=True)
     export_application = models.ForeignKey(ExportApplication, on_delete=models.CASCADE, null=True)
+    access_request = models.ForeignKey(AccessRequest, on_delete=models.CASCADE, null=True)
     status = models.CharField(max_length=20)
     request_subject = models.CharField(max_length=100, null=True)
     request_detail = models.TextField(null=True)
-    email_cc_address_list_str = models.TextField(max_length=4000, null=True)
+    email_cc_address_list_str = models.TextField(null=True)
     requested_datetime = models.DateTimeField(null=True, auto_now_add=True)
-    response_detail = models.CharField(max_length=4000, null=True)
+    response_detail = models.TextField(null=True)
     response_datetime = models.DateTimeField(null=True)
     requested_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
     response_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
@@ -408,7 +409,12 @@ class FurtherInformationRequest(MigrationBase):
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["ia_ima_id", "folder_id", "export_application_id"]
+        return super().get_excludes() + [
+            "ia_ima_id",
+            "folder_id",
+            "export_application_id",
+            "access_request_id",
+        ]
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
@@ -432,6 +438,17 @@ class FurtherInformationRequest(MigrationBase):
                 .values(
                     "id",
                     exportapplication_id=F("export_application_id"),
+                    furtherinformationrequest_id=F("id"),
+                )
+                .iterator(chunk_size=2000)
+            )
+
+        if target_name == "accessrequest":
+            return (
+                cls.objects.exclude(access_request_id__isnull=True)
+                .values(
+                    "id",
+                    accessrequest_id=F("access_request_id"),
                     furtherinformationrequest_id=F("id"),
                 )
                 .iterator(chunk_size=2000)
