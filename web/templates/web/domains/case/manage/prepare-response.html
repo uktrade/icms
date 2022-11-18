@@ -115,7 +115,7 @@
           </td>
           {% if not readonly_view and not variation_refused %}
             <td>
-              <a class="link-button button icon-pencil" data-input_action="edit"
+              <a class="link-button button icon-pencil" data-input_action="edit" data-test-id="edit-licence"
                  href="{{ icms_url('import:edit-licence', kwargs={'application_pk': process.pk}) }}"
               >Edit</a>
             </td>

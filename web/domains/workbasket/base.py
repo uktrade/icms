@@ -38,6 +38,8 @@ class WorkbasketRow:
     """Note that none of the fields are optional, they're just marked so to make
     constructing these items easier."""
 
+    id: Optional[int] = None
+
     # transaction / reference number
     reference: Optional[str] = None
 

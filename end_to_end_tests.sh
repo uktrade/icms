@@ -11,7 +11,7 @@ echo "Running end to end tests"
 
 # TODO: ICMSLST-1793 Use an Environment Variable for the base url.
 #You can specify the base URL by setting the PYTEST_BASE_URL environment variable.
-pytest --base-url http://localhost:8080 web/tests/end_to_end --numprocesses 4 "$@"
+pytest --base-url http://localhost:8080 web/tests/end_to_end "$@"
 
 echo "removing test cookies"
 rm importer_user.json

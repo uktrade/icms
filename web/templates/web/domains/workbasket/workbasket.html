@@ -194,7 +194,7 @@
 
       <tbody>
       {% for row in rows %}
-        <tr>
+        <tr data-test-id="workbasket-row-{{ row.id }}">
           <td>{{ row.reference }}</td>
 
           <td>{{ row.subject|nl2br }}</td>
