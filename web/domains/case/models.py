@@ -301,6 +301,7 @@ class ApplicationBase(WorkbasketBase, Process):
         """Get data to show in the workbasket."""
 
         r = WorkbasketRow()
+        r.id = self.id
 
         r.reference = self.get_reference()
 

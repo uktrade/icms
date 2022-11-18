@@ -78,6 +78,7 @@ class ApprovalRequest(WorkbasketBase, Process):
 
     def get_workbasket_row(self, user: User, is_ilb_admin: bool) -> WorkbasketRow:
         r = WorkbasketRow()
+        r.id = self.id
 
         r.reference = self.access_request.reference
 

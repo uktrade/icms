@@ -1,7 +1,9 @@
-from typing import TypedDict
+from contextlib import contextmanager
 
 import pytest
 from playwright.sync_api import Page, expect
+
+from . import types
 
 
 @pytest.fixture(scope="session")
@@ -37,43 +39,78 @@ def browser(browser, browser_context_args):
     yield browser
 
 
+class UserPages:
+    """Class to manage using multiple pages in a test."""
+
+    def __init__(self, browser, browser_context_args):
+        self.browser = browser
+        self.browser_context_args = browser_context_args
+
+    @contextmanager
+    def imp_page(self):
+        """Return a page logged in as an importer viewing the workbasket."""
+
+        page = self._get_page("importer_user.json")
+
+        yield page
+
+        page.close()
+
+    @contextmanager
+    def exp_page(self):
+        """Return a page logged in as an exporter viewing the workbasket."""
+
+        page = self._get_page("exporter_user.json")
+
+        yield page
+
+        page.close()
+
+    @contextmanager
+    def ilb_page(self):
+        """Return a page logged in as an ILB admin viewing the workbasket."""
+
+        page = self._get_page("ilb_admin.json")
+
+        yield page
+
+        page.close()
+
+    def _get_page(self, storage_state: str) -> Page:
+        context = self.browser.new_context(storage_state=storage_state, **self.browser_context_args)
+        page = context.new_page()
+
+        page.goto("/workbasket/")
+
+        _close_django_debug_toolbar(page)
+
+        return page
+
+
+@pytest.fixture(scope="session")
+def pages(browser, browser_context_args) -> UserPages:
+    return UserPages(browser, browser_context_args)
+
+
 @pytest.fixture()
-def imp_page(browser, browser_context_args) -> Page:
-    context = browser.new_context(storage_state="importer_user.json", **browser_context_args)
-    page = context.new_page()
-
-    page.goto("/workbasket/")
-
-    _close_django_debug_toolbar(page)
-
-    yield page
+def imp_page(users) -> Page:
+    with users.imp_page() as page:
+        yield page
 
 
 @pytest.fixture()
-def exp_page(browser, browser_context_args) -> Page:
-    context = browser.new_context(storage_state="exporter_user.json", **browser_context_args)
-    page = context.new_page()
-
-    page.goto("/workbasket/")
-
-    _close_django_debug_toolbar(page)
-
-    yield page
+def exp_page(users) -> Page:
+    with users.exp_page() as page:
+        yield page
 
 
 @pytest.fixture()
-def ilb_page(browser, browser_context_args) -> Page:
-    context = browser.new_context(storage_state="ilb_admin.json", **browser_context_args)
-    page = context.new_page()
-
-    page.goto("/workbasket/")
-
-    _close_django_debug_toolbar(page)
-
-    yield page
+def ilb_page(users) -> Page:
+    with users.ilb_page() as page:
+        yield page
 
 
-def _close_django_debug_toolbar(page):
+def _close_django_debug_toolbar(page: Page) -> None:
     # Close the django debug toolbar if it is shown
     debug_toolbar = page.get_by_role("link", name="Hide »")
 
@@ -81,13 +118,6 @@ def _close_django_debug_toolbar(page):
         debug_toolbar.click()
 
 
-# Taken from the playwright api_structures file
-class FilePayload(TypedDict):
-    name: str
-    mimeType: str
-    buffer: bytes
-
-
 @pytest.fixture()
-def sample_upload_file() -> list[FilePayload]:
+def sample_upload_file() -> list[types.FilePayload]:
     return [{"name": "test.txt", "mimeType": "text/plain", "buffer": b"test"}]

@@ -1703,3 +1703,19 @@ FIXME
 JsonResponse
 http://localhost:8080/
 rm ilb_admin.json
+f'[data
+name="Save").click
+name="Response Preparation").click
+expect(page).to_have_url("http://localhost:8080/case/import/5
+name="18-Nov-2022 Please
+Edit").get_by_role
+expect(page).to_have_url("http://localhost:8080/import/case/5/licence/edit
+Date").fill("20-Nov-2022
+name="Authorisation").click
+expect(page).to_have_url("http://localhost:8080/case/import/5/authorisation
+name="Start Authorisation (Close Case Processing)").click
+Documents").click
+Complete Response Preparation
+Complete Authorisation
+Start Authorisation (Close Case Processing
+Authorise Success: Application xxx/xxxx/xxxxx
