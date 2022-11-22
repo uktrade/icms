@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.utils import timezone
 
 from web.domains.case._import.models import ImportApplication, LiteHMRCChiefRequest
@@ -9,6 +10,19 @@ from web.domains.case.utils import (
 from web.flow.models import Task
 
 from .types import ResponseError
+
+HAWK_NONCE_EXPIRY = 60  # seconds
+NONCE_CACHE_PREFIX = "hawk-nonce"
+
+
+def seen_nonce(access_id: str, nonce: str, timestamp: str) -> bool:
+    """True if this nonce has been used already."""
+    key = f"{NONCE_CACHE_PREFIX}:{access_id}:{nonce}"
+    # Returns True if the key/value was added, False if it already existed. So
+    # we want to return False if the key/value was added, True if it existed.
+    value_was_stored = cache.add(key, timestamp, timeout=HAWK_NONCE_EXPIRY)
+
+    return not value_was_stored
 
 
 def chief_licence_reply_approve_licence(application: ImportApplication) -> None:

@@ -31,7 +31,7 @@
         <tr>
           <td>{{ app.reference }}</td>
           <td>{{ cr.request_sent_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</td>
-          <td>{{ cr.response_received_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</td>
+          <td>{{ cr.response_received_datetime.strftime('%d-%b-%Y %H:%M:%S') if cr.response_received_datetime else "N/a" }}</td>
           <td>
             <span class="text-widget label small-label red-label">{{ cr.get_status_display() }}</span>
           </td>
@@ -48,9 +48,15 @@
           <td>
             <ul class="menu-out">
               <li>
-                {# TODO: Revisit when implementing ICMSLST-1765 #}
-                {# It will need changing to a form #}
-                <a href="#" class="button link-button icon-redo2">Resend licence</a>
+                <form method="post" action="{{ icms_url("chief:resend-licence", kwargs={"application_pk": app.pk}) }}">
+                  {{ csrf_input }}
+                  <button
+                      type="submit" class="button link-button icon-redo2"
+                      data-confirm="Are you sure you want to resend this application to CHIEF?"
+                  >
+                    Resend Licence
+                  </button>
+                </form>
               </li>
               <li>
                 <a href="{{ icms_url('case:manage', kwargs={'application_pk': app.pk, 'case_type': "import"}) }}"

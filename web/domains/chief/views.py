@@ -5,11 +5,12 @@ import mohawk
 import mohawk.exc
 import pydantic
 from django.conf import settings
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core import exceptions
-from django.core.cache import cache
 from django.db import transaction
 from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.crypto import constant_time_compare
 from django.utils.decorators import method_decorator
@@ -18,6 +19,9 @@ from django.views.generic import DetailView, TemplateView, View
 from mohawk.util import parse_authorization_header, prepare_header_val
 
 from web.domains.case._import.models import ImportApplication, LiteHMRCChiefRequest
+from web.domains.case.shared import ImpExpStatus
+from web.domains.case.tasks import create_case_document_pack
+from web.domains.case.views.mixins import ApplicationTaskMixin
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.sentry import capture_exception
@@ -25,8 +29,6 @@ from web.utils.sentry import capture_exception
 from . import types, utils
 
 HAWK_ALGO = "sha256"
-HAWK_NONCE_EXPIRY = 60  # seconds
-NONCE_CACHE_PREFIX = "hawk-nonce"
 HAWK_RESPONSE_HEADER = "Server-Authorization"
 
 
@@ -39,16 +41,6 @@ def get_credentials_map(access_id: str) -> dict[str, Any]:
         "key": settings.HAWK_AUTH_KEY,
         "algorithm": HAWK_ALGO,
     }
-
-
-def seen_nonce(access_id: str, nonce: str, timestamp: str) -> bool:
-    """True if this nonce has been used already."""
-    key = f"{NONCE_CACHE_PREFIX}:{access_id}:{nonce}"
-    # Returns True if the key/value was added, False if it already existed. So
-    # we want to return False if the key/value was added, True if it existed.
-    value_was_stored = cache.add(key, timestamp, timeout=HAWK_NONCE_EXPIRY)
-
-    return not value_was_stored
 
 
 def validate_request(request: HttpRequest) -> mohawk.Receiver:
@@ -73,7 +65,7 @@ def validate_request(request: HttpRequest) -> mohawk.Receiver:
             request.method,
             content=content,
             content_type=request.content_type,
-            seen_nonce=seen_nonce,
+            seen_nonce=utils.seen_nonce,
         )
     except mohawk.exc.HawkFail as err:
         raise exceptions.BadRequest from err
@@ -82,6 +74,8 @@ def validate_request(request: HttpRequest) -> mohawk.Receiver:
 # Hawk view (no CSRF)
 @method_decorator(csrf_exempt, name="dispatch")
 class LicenseDataCallback(View):
+    """View used by LITE-HMRC to send application data back to ICMS."""
+
     # View Config
     http_method_names = ["post"]
 
@@ -162,6 +156,45 @@ class LicenseDataCallback(View):
         )
 
         return chief_req
+
+
+@method_decorator(transaction.atomic, name="post")
+class ResendLicenceToChiefView(
+    ApplicationTaskMixin,
+    PermissionRequiredMixin,
+    LoginRequiredMixin,
+    View,
+):
+    """View to resend a Licence to CHIEF.
+
+    This is achieved by regenerating the licence document pack.
+    """
+
+    # ApplicationTaskMixin
+    current_status = [ImpExpStatus.VARIATION_REQUESTED, ImpExpStatus.PROCESSING]
+    current_task_type = Task.TaskType.CHIEF_ERROR
+    next_task_type = Task.TaskType.DOCUMENT_SIGNING
+
+    # PermissionRequiredMixin
+    permission_required = ["web.ilb_admin"]
+
+    # View
+    http_method_names = ["post"]
+
+    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
+        self.set_application_and_task()
+
+        # Update the current task so `create_case_document_pack` will work correctly
+        self.update_application_tasks()
+
+        create_case_document_pack(self.application, self.request.user)
+
+        messages.success(
+            request,
+            "Once the licence has been regenerated it will be send to CHIEF for processing",
+        )
+
+        return redirect("chief:failed-licences")
 
 
 class _BaseTemplateView(PermissionRequiredMixin, TemplateView):

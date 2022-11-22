@@ -17,7 +17,7 @@ from web.domains.file.models import File
 from web.domains.user.models import User
 from web.flow.models import Process, Task
 from web.utils.pdf import DocumentTypes, PdfGenerator
-from web.utils.s3 import upload_file_obj_to_s3
+from web.utils.s3 import delete_file_from_s3, upload_file_obj_to_s3
 from web.utils.sentry import capture_exception, capture_message
 
 
@@ -71,6 +71,11 @@ def create_import_application_document(
             raise ValueError(
                 f"Unable to generate document - unsupported document type {document_reference.document_type}"
             )
+
+        # Delete old document if it exists.
+        # This happens if the application is sent to CHIEF but there is an error, and it is now being resent.
+        if document_reference.document:
+            delete_file_from_s3(path=document_reference.document.path)
 
         file_obj = io.BytesIO()
         pdf_gen = PdfGenerator(application=application, licence=licence, doc_type=doc_type)
