@@ -102,6 +102,7 @@ LOGGING = {
         "django": {
             "level": "INFO",
         },
+        "web": {"level": "DEBUG"},
         # We don't want this noise locally
         "django_structlog": {
             "propagate": False,
