@@ -11,6 +11,11 @@ urlpatterns = [
         views.ChiefRequestDataView.as_view(),
         name="request-data",
     ),
+    path(
+        "resend-licence/<int:application_pk>",
+        views.ResendLicenceToChiefView.as_view(),
+        name="resend-licence",
+    ),
     # The LITE_API_URL path configured in icms-hmrc.
     path(
         "license-data-callback", views.LicenseDataCallback.as_view(), name="license-data-callback"

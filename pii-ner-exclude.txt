@@ -1719,3 +1719,5 @@ Complete Response Preparation
 Complete Authorisation
 Start Authorisation (Close Case Processing
 Authorise Success: Application xxx/xxxx/xxxxx
+LITE-HMRC
+Resend Licence

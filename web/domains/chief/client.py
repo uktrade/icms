@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Literal, Optional
+from typing import TYPE_CHECKING, Literal
 from urllib.parse import urljoin
 
 import mohawk
@@ -9,7 +9,7 @@ from django.utils import timezone
 
 from web.domains.case._import.models import LiteHMRCChiefRequest
 from web.domains.case.shared import ImpExpStatus
-from web.domains.chief.views import seen_nonce
+from web.domains.chief.utils import seen_nonce
 from web.flow.models import ProcessTypes, Task
 from web.utils.sentry import capture_exception
 
@@ -21,6 +21,73 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 HTTPMethod = Literal["GET", "OPTIONS", "HEAD", "POST", "PUT", "PATCH", "DELETE"]
+
+
+def send_application_to_chief(application: "ImportApplication", previous_task: Task) -> None:
+    """Sends licence data to CHIEF if enabled."""
+
+    chief_req = None
+    next_task = Task.TaskType.CHIEF_WAIT
+
+    try:
+        if settings.SEND_LICENCE_TO_CHIEF:
+            action: serializers.CHIEF_ACTION = (
+                "replace" if application.status == ImpExpStatus.VARIATION_REQUESTED else "insert"
+            )
+
+            logger.debug(
+                "Sending application with reference %r to chief with action %r",
+                application.reference,
+                action,
+            )
+
+            chief_req = LiteHMRCChiefRequest.objects.create(
+                import_application=application,
+                case_reference=application.reference,
+                request_sent_datetime=timezone.now(),
+            )
+            serialize = get_serializer(application.process_type)
+            data = serialize(application.get_specific_model(), action, str(chief_req.lite_hmrc_id))
+
+            # Django JSONField encodes python objects therefore data.json() can't be used
+            chief_req.request_data = data.dict()
+            chief_req.save()
+
+            request_license(data)
+
+        else:
+            # Create a dummy one for testing
+            logger.debug("Faking chief request for application %r", application.reference)
+            chief_req = LiteHMRCChiefRequest.objects.create(
+                import_application=application,
+                case_reference=application.reference,
+                request_data={"foo": "bar", "test": "data"},
+                request_sent_datetime=timezone.now(),
+            )
+
+    except Exception:
+        capture_exception()
+        next_task = Task.TaskType.CHIEF_ERROR
+
+        if chief_req:
+            chief_req.status = LiteHMRCChiefRequest.CHIEFStatus.INTERNAL_ERROR
+            chief_req.save()
+
+    Task.objects.create(process=application, task_type=next_task, previous=previous_task)
+
+
+def get_serializer(process_type: str) -> serializers.ChiefSerializer:
+    match process_type:
+        case ProcessTypes.FA_OIL:
+            return serializers.fa_oil_serializer
+        case ProcessTypes.FA_DFL:
+            return serializers.fa_dfl_serializer
+        case ProcessTypes.FA_SIL:
+            return serializers.fa_sil_serializer
+        case ProcessTypes.SANCTIONS:
+            return serializers.sanction_serializer
+        case _:
+            raise NotImplementedError(f"Unsupported process_type: {process_type}")
 
 
 def make_hawk_sender(method: HTTPMethod, url: str, **kwargs) -> mohawk.Sender:
@@ -88,65 +155,3 @@ def request_license(data: types.CreateLicenceData) -> requests.Response:
     )
 
     return response
-
-
-def send_application_to_chief(
-    application: "ImportApplication", previous_task: Optional[Task]
-) -> None:
-    """Sends licence data to CHIEF if enabled."""
-
-    chief_req = None
-    next_task = Task.TaskType.CHIEF_WAIT
-
-    try:
-        if settings.SEND_LICENCE_TO_CHIEF:
-            action: serializers.CHIEF_ACTION = (
-                "replace" if application.status == ImpExpStatus.VARIATION_REQUESTED else "insert"
-            )
-
-            chief_req = LiteHMRCChiefRequest.objects.create(
-                import_application=application,
-                case_reference=application.reference,
-                request_sent_datetime=timezone.now(),
-            )
-            serialize = get_serializer(application.process_type)
-            data = serialize(application.get_specific_model(), action, str(chief_req.lite_hmrc_id))
-
-            # Django JSONField encodes python objects therefore data.json() can't be used
-            chief_req.request_data = data.dict()
-            chief_req.save()
-
-            request_license(data)
-
-        else:
-            # Create a dummy one for testing
-            chief_req = LiteHMRCChiefRequest.objects.create(
-                import_application=application,
-                case_reference=application.reference,
-                request_data={"foo": "bar", "test": "data"},
-                request_sent_datetime=timezone.now(),
-            )
-
-    except Exception:
-        capture_exception()
-        next_task = Task.TaskType.CHIEF_ERROR
-
-        if chief_req:
-            chief_req.status = LiteHMRCChiefRequest.CHIEFStatus.INTERNAL_ERROR
-            chief_req.save()
-
-    Task.objects.create(process=application, task_type=next_task, previous=previous_task)
-
-
-def get_serializer(process_type: str) -> serializers.ChiefSerializer:
-    match process_type:
-        case ProcessTypes.FA_OIL:
-            return serializers.fa_oil_serializer
-        case ProcessTypes.FA_DFL:
-            return serializers.fa_dfl_serializer
-        case ProcessTypes.FA_SIL:
-            return serializers.fa_sil_serializer
-        case ProcessTypes.SANCTIONS:
-            return serializers.sanction_serializer
-        case _:
-            raise NotImplementedError(f"Unsupported process_type: {process_type}")

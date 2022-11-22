@@ -1,3 +1,4 @@
+import logging
 from typing import IO, TYPE_CHECKING, Any
 
 import boto3
@@ -5,6 +6,8 @@ from django.conf import settings
 
 if TYPE_CHECKING:
     from mypy_boto3_s3 import Client as S3Client
+
+logger = logging.getLogger(__name__)
 
 
 def get_s3_client() -> "S3Client":
@@ -42,6 +45,7 @@ def delete_file_from_s3(path: str, client: "S3Client" = None) -> None:
         client = get_s3_client()
 
     client.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=path)
+    logger.debug("Removed file from S3: %s.", path)
 
 
 def upload_file_obj_to_s3(file_obj: IO[Any], key: str, client: "S3Client" = None) -> int:

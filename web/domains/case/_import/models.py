@@ -503,7 +503,7 @@ class LiteHMRCChiefRequest(models.Model):
     import_application = models.ForeignKey(
         "ImportApplication", on_delete=models.CASCADE, related_name="chief_references"
     )
-    case_reference = models.CharField(max_length=100, unique=True, verbose_name="Case Reference")
+    case_reference = models.CharField(max_length=100, verbose_name="Case Reference")
     lite_hmrc_id = models.UUIDField(default=uuid.uuid4, editable=False)
     status = models.CharField(
         max_length=1, choices=CHIEFStatus.choices, default=CHIEFStatus.PROCESSING
