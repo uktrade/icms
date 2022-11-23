@@ -1360,7 +1360,6 @@ FIRs
 Digital
 Application Processing
 Digital Signing Failed"
-ICMSLST-1533 - Popup
 Show Licence Details
 " Search Importer Access Requests
 " Search Exporter Access Requests
@@ -1721,3 +1720,4 @@ Start Authorisation (Close Case Processing
 Authorise Success: Application xxx/xxxx/xxxxx
 LITE-HMRC
 Resend Licence
+Awaiting Response - Licence

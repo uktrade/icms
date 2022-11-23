@@ -5,13 +5,16 @@ import mohawk
 import pytest
 from django.core import exceptions
 from django.urls import reverse
+from django.utils import timezone
 from mohawk.util import parse_authorization_header
 from pytest_django.asserts import assertTemplateUsed
 
+from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import types
 from web.domains.chief import views as chief_views
 from web.domains.chief.client import HTTPMethod, make_hawk_sender
 from web.models import ImportApplicationLicence, Task
+from web.tests.helpers import CaseURLS
 from web.utils.sentry import capture_exception
 
 from .conftest import (
@@ -261,3 +264,74 @@ class TestChiefRequestDataView:
         assert response.status_code == 200
         assert response.headers["content-type"] == "application/json"
         assert response.content == b'{"foo": "bar"}'
+
+
+class TestCheckChiefProgressView:
+    @pytest.fixture(autouse=True)
+    def set_client(self, icms_admin_client):
+        self.client = icms_admin_client
+
+    @pytest.fixture(autouse=True)
+    def set_app(self, fa_dfl_app_submitted):
+        """Using the submitted app override the app to the state we want."""
+        fa_dfl_app_submitted.status = ImpExpStatus.PROCESSING
+        fa_dfl_app_submitted.save()
+
+        self.app = fa_dfl_app_submitted
+        self._create_new_task(Task.TaskType.CHIEF_WAIT)
+
+    def test_ilb_admin_permission_required(self, importer_client, exporter_client):
+        url = CaseURLS.check_chief_progress(self.app.pk)
+
+        # self.client is an ilb_admin client
+        response = self.client.get(url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = importer_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = exporter_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_check_chief_progress_chief_wait(self):
+        resp = self.client.get(CaseURLS.check_chief_progress(self.app.pk))
+        assert resp.status_code == HTTPStatus.OK
+
+        resp_data = resp.json()
+        expected_msg = "Awaiting Response - Licence sent to CHIEF, we are awaiting a response"
+        assert resp_data["msg"] == expected_msg
+        assert resp_data["reload_workbasket"] is False
+
+    def test_check_chief_progress_chief_error(self):
+        self._create_new_task(Task.TaskType.CHIEF_ERROR)
+
+        resp = self.client.get(CaseURLS.check_chief_progress(self.app.pk))
+        assert resp.status_code == HTTPStatus.OK
+
+        resp_data = resp.json()
+        assert resp_data["msg"] == "Rejected - A rejected response has been received from CHIEF."
+        assert resp_data["reload_workbasket"] is True
+
+    def test_check_chief_progress_app_complete(self):
+        self.app.status = ImpExpStatus.COMPLETED
+        self.app.save()
+
+        task = self.app.tasks.get(is_active=True)
+        task.is_active = False
+        task.finished = timezone.now()
+        task.save()
+
+        resp = self.client.get(CaseURLS.check_chief_progress(self.app.pk))
+        assert resp.status_code == HTTPStatus.OK
+
+        resp_data = resp.json()
+        assert resp_data["msg"] == "Accepted - An accepted response has been received from CHIEF."
+        assert resp_data["reload_workbasket"] is True
+
+    def _create_new_task(self, new_task):
+        task = self.app.tasks.get(is_active=True)
+        task.is_active = False
+        task.finished = timezone.now()
+        task.save()
+
+        Task.objects.create(process=self.app, task_type=new_task, previous=task)

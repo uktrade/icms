@@ -242,3 +242,42 @@ class ChiefRequestDataView(PermissionRequiredMixin, DetailView):
 
     def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         return JsonResponse(data=self.get_object().request_data)
+
+
+class CheckChiefProgressView(
+    ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+):
+    # View Config
+    http_method_names = ["get"]
+
+    # ApplicationTaskMixin Config
+    current_status = [
+        ImpExpStatus.PROCESSING,
+        ImpExpStatus.VARIATION_REQUESTED,
+        ImpExpStatus.COMPLETED,
+    ]
+
+    # PermissionRequiredMixin Config
+    permission_required = ["web.ilb_admin"]
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> Any:
+        self.set_application_and_task()
+
+        active_tasks = self.application.get_active_task_list()
+        reload_workbasket = False
+
+        if self.application.status == ImpExpStatus.COMPLETED:
+            msg = "Accepted - An accepted response has been received from CHIEF."
+            reload_workbasket = True
+
+        elif Task.TaskType.CHIEF_ERROR in active_tasks:
+            msg = "Rejected - A rejected response has been received from CHIEF."
+            reload_workbasket = True
+
+        elif Task.TaskType.CHIEF_WAIT in active_tasks:
+            msg = "Awaiting Response - Licence sent to CHIEF, we are awaiting a response"
+
+        else:
+            raise Exception("Unknown state for application")
+
+        return JsonResponse(data={"msg": msg, "reload_workbasket": reload_workbasket})
