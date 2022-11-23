@@ -327,12 +327,18 @@ class ChiefMonitorProgressAction(Action):
 
         return show_link
 
+    def get_kwargs(self) -> dict[str, Any]:
+        return {"application_pk": self.application.pk}
+
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
+        kwargs = self.get_kwargs()
+
         return [
             WorkbasketAction(
-                is_post=True,
+                is_post=False,
                 name="Monitor Progress",
-                url="#TODO: ICMSLST-1533 - Popup showing progress",
+                url=reverse("chief:check-progress", kwargs=kwargs),
+                is_ajax=True,
                 section_label="CHIEF Wait",
             )
         ]

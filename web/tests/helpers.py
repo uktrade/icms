@@ -19,7 +19,7 @@ def check_page_errors(
     assert sorted(error_field_names) == actual_error_names, f"Actual errors: {actual_error_names}"
 
 
-def check_pages_checked(error: ApplicationErrors, expected_pages_checked: list[str]) -> bool:
+def check_pages_checked(error: ApplicationErrors, expected_pages_checked: list[str]) -> None:
     """Check if the supplied pages have been checked."""
 
     checked = sorted(e.page_name for e in error.page_errors)
@@ -47,7 +47,7 @@ class CaseURLS:
     def close_case(application_pk: int, case_type: str = "import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 
-        # Close case is the the "post" branch of the manage view
+        # Close case is the "post" branch of the manage view
         return reverse("case:manage", kwargs=kwargs)
 
     @staticmethod
@@ -207,6 +207,12 @@ class CaseURLS:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 
         return reverse("case:history", kwargs=kwargs)
+
+    @staticmethod
+    def check_chief_progress(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+
+        return reverse("chief:check-progress", kwargs=kwargs)
 
 
 class SearchURLS:
