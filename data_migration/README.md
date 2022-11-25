@@ -15,10 +15,9 @@ For creation of the dummy user during the export
 
 ## Scripts
 
-The following three scripts are used to run the data migration. For the export, the `.profile` file should be activated for the oracle connection. Oracle instant client must be installed at `oracle/instantclient_21_5`.
+The following three scripts are used to run the data migration.
 
 ```
-. .profile
 ./manage.py export_from_v1  # extracts the data from v1 into the data_migration models
 ./manage.py extract_v1_xml  # parses the data out of the xml fields in the data_migration models
 ./manage.py import_v1_data  # migrates the data from the data_migration models into the web models

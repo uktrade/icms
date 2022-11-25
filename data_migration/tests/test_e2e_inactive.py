@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest import mock
 
-import cx_Oracle
+import oracledb
 import pytest
 from django.core.management import call_command
 
@@ -98,7 +98,7 @@ opt_xml = {
 
 
 @pytest.mark.django_db
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, opt_data_source_target)
 @mock.patch.dict(DATA_TYPE_M2M, opt_m2m)
 @mock.patch.dict(DATA_TYPE_QUERY_MODEL, opt_query_model)
@@ -177,7 +177,7 @@ sps_data_source_target = {
 
 
 @pytest.mark.django_db
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 @mock.patch.dict(DATA_TYPE_XML, {"import_application": [], "user": []})
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, sps_data_source_target)
 @mock.patch.dict(
@@ -347,7 +347,7 @@ tex_data_source_target = {
 @mock.patch.dict(DATA_TYPE_XML, {"import_application": []})
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, tex_data_source_target)
 @mock.patch.dict(DATA_TYPE_M2M, {"import_application": []})
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 def test_import_textiles_data(mock_connect, dummy_dm_settings):
     mock_connect.return_value = utils.MockConnect()
 

@@ -1,6 +1,6 @@
 from unittest import mock
 
-import cx_Oracle
+import oracledb
 import pytest
 from django.core.management import call_command
 
@@ -121,7 +121,7 @@ export_xml = {
 
 
 @pytest.mark.django_db
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, export_data_source_target)
 @mock.patch.dict(DATA_TYPE_M2M, export_m2m)
 @mock.patch.dict(DATA_TYPE_QUERY_MODEL, export_query_model)
