@@ -3,6 +3,7 @@ from unittest import mock
 import oracledb
 import pytest
 from django.core.management import call_command
+from django.test import override_settings
 
 from data_migration import models as dm
 from data_migration.queries import (
@@ -554,6 +555,7 @@ user_data_source_target = {
         "reference": [],
         "file": [],
         "user": [
+            (q_u, "users", dm.User),
             (q_u, "importers", dm.Importer),
             (q_u, "importer_offices", dm.Office),
             (q_u, "exporters", dm.Exporter),
@@ -577,11 +579,33 @@ user_data_source_target = {
     },
 )
 @mock.patch.object(oracledb, "connect")
+@override_settings(
+    PASSWORD_HASHERS=[
+        "django.contrib.auth.hashers.MD5PasswordHasher",
+        "web.auth.fox_hasher.FOXPBKDF2SHA1Hasher",
+    ]
+)
 def test_import_user(mock_connect, dummy_dm_settings):
     mock_connect.return_value = utils.MockConnect()
     call_command("export_from_v1")
     call_command("extract_v1_xml")
     call_command("import_v1_data")
+
+    u1, u2 = web.User.objects.filter(pk__in=[3, 4]).order_by("pk")
+    assert u1.username == "test_user"
+    assert u1.first_name == "Test"
+    assert u1.last_name == "User"
+    assert u1.email == "test.user"
+    assert u1.check_password("password") is True
+    assert u1.title == "Mr"
+    assert u1.organisation == "Org"
+    assert u1.department == "Dept"
+    assert u1.job_title == "IT"
+    assert u1.account_status == "ACTIVE"
+    assert u1.account_status_by_id == 3
+
+    assert u2.check_password("password123") is True
+    assert u2.account_status_by_id == 3
 
     ar1, ar2, ar3, ar4 = web.AccessRequest.objects.order_by("pk")
 

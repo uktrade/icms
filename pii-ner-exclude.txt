@@ -1721,3 +1721,7 @@ Authorise Success: Application xxx/xxxx/xxxxx
 LITE-HMRC
 Resend Licence
 Awaiting Response - Licence
+is_staff
+wua.title
+Testtwo
+MIDDLE_INITIALS

@@ -11,6 +11,7 @@ from data_migration.models import Process
 from data_migration.utils.format import (
     date_or_none,
     datetime_or_none,
+    extract_int_substr,
     float_or_none,
     get_xml_val,
     int_or_none,
@@ -256,3 +257,15 @@ def test_str_to_list():
     assert str_to_list("a/b/c", "/") == ["a", "b", "c"]
     assert str_to_list("a;;b;c;;") == ["a", "b", "c"]
     assert str_to_list("") is None
+
+
+@pytest.mark.parametrize(
+    "int_str,substr,expected",
+    [
+        ("abc=1, fg=2", "abc=", 1),
+        ("abc=1, fg=2", "fg=", 2),
+        ("abc=1, fg=2", "h=", None),
+    ],
+)
+def test_extract_int_substr(int_str, substr, expected):
+    assert extract_int_substr(int_str, substr) == expected

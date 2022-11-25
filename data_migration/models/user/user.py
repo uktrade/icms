@@ -1,27 +1,26 @@
 from typing import Any, Generator
 
-from django.contrib.auth.hashers import make_password
 from django.db import models
-from django.db.models import F
+from django.db.models import F, Value
 from django.db.models.expressions import Window
-from django.db.models.functions import RowNumber
+from django.db.models.functions import Concat, RowNumber
 from django.utils import timezone
 
 from data_migration.models.base import MigrationBase
-from data_migration.utils.format import split_address
+from data_migration.utils.format import extract_int_substr, split_address
 
 
 class User(MigrationBase):
-    is_superuser = models.BooleanField(default=False)
     username = models.CharField(max_length=150, unique=True)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
     email = models.EmailField()
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    password = models.CharField(max_length=128)
-    last_login = models.DateTimeField(null=True)
-    date_joined = models.DateTimeField(default=timezone.now)
+    salt = models.CharField(max_length=16)
+    encrypted_password = models.CharField(max_length=32)
+    last_login_datetime = models.DateTimeField(null=True)
+    date_joined_datetime = models.DateTimeField(default=timezone.now)
     title = models.CharField(max_length=20, null=True)
     preferred_first_name = models.CharField(max_length=4000, null=True)
     middle_initials = models.CharField(max_length=40, null=True)
@@ -34,15 +33,53 @@ class User(MigrationBase):
     security_question = models.CharField(max_length=4000, null=True)
     security_answer = models.CharField(max_length=4000, null=True)
     share_contact_details = models.BooleanField(default=False)
-    account_status = models.CharField(max_length=20, null=False)
-    account_status_by = models.ForeignKey(
-        "self", on_delete=models.SET_NULL, null=True, related_name="+"
-    )
+    account_status = models.CharField(max_length=20)
+    account_status_by = models.CharField(max_length=255, null=True)
     account_status_date = models.DateField(null=True)
     password_disposition = models.CharField(max_length=20, null=True)
+    unsuccessful_login_attempts = models.PositiveSmallIntegerField(default=0)
 
-    def set_password(self, raw_password):
-        self.password = make_password(raw_password)
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        status_by = data.pop("account_status_by")
+
+        if not status_by:
+            return data
+
+        # account_status_by is in two different formats
+        # e.g. 1
+        # e.g. username(WUA_ID=1, WUAH_ID=2)
+
+        data["account_status_by_id"] = extract_int_substr(status_by, "WUA_ID=") or int(status_by)
+
+        return data
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return super().get_excludes() + [
+            "salt",
+            "encrypted_password",
+            "last_login_datetime",
+            "date_joined_datetime",
+        ]
+
+    @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        return {
+            "last_login": F("last_login_datetime"),
+            "date_joined": F("date_joined_datetime"),
+            "password": Concat(
+                Value("fox_pbkdf2_sha1$10000$"),
+                "id",
+                Value(":"),
+                "salt",
+                Value("$"),
+                "encrypted_password",
+                output_field=models.CharField(),
+            ),
+        }
+
+    # M2M groups / user permissions
 
 
 class Importer(MigrationBase):
