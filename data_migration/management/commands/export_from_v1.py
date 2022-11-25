@@ -1,7 +1,7 @@
 from itertools import islice
 from typing import TYPE_CHECKING, Optional
 
-import cx_Oracle
+import oracledb
 from django.conf import settings
 from django.core.management.base import CommandError
 
@@ -42,7 +42,7 @@ class Command(MigrationBaseCommand):
         if not options["skip_user"]:
             self._create_user_data()
 
-        with cx_Oracle.connect(**connection_config) as connection:
+        with oracledb.connect(**connection_config) as connection:
             with connection.cursor() as cursor:
                 self._export_data("user", cursor, options["skip_user"])
                 self._export_data("reference", cursor, options["skip_ref"])
@@ -52,11 +52,13 @@ class Command(MigrationBaseCommand):
 
         self._log_script_end()
 
-    def _export_data(self, data_type: DATA_TYPE, cursor: cx_Oracle.Cursor, skip: bool) -> None:
+    def _export_data(
+        self, data_type: DATA_TYPE, connection: oracledb.Connection, skip: bool
+    ) -> None:
         """Retrives data from V1 and creates the objects in the data_migration models
 
         :param data_type: The type of data being exported
-        :param cursor: The cursor for the connection to the V1
+        :param connection: The connection to the V1 replica db
         :param batchsize: The number of records handled per batch
         :param skip: Skips the export of the current data_type
         """
@@ -77,15 +79,19 @@ class Command(MigrationBaseCommand):
         for idx, (module, query_name, model) in enumerate(query_models, start=start):
             self.stdout.write(f"\t{idx} - Exporting {query_name} to {model.__name__} model")
             query = getattr(module, query_name)
-            cursor.execute(query)
-            columns = [col[0].lower() for col in cursor.description]
 
-            while True:
-                rows = cursor.fetchmany(self.batch_size)
-                if not rows:
-                    break
+            # Create a new cursor for each query
+            # oracledb sometimes throws `IndexError: list index out of range` when reusing cursor
+            with connection.cursor() as cursor:
+                cursor.execute(query)
+                columns = [col[0].lower() for col in cursor.description]
 
-                self._export_model_data(columns, rows, model)
+                while True:
+                    rows = cursor.fetchmany(self.batch_size)
+                    if not rows:
+                        break
+
+                    self._export_model_data(columns, rows, model)
 
             self._log_time()
 

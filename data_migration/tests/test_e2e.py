@@ -1,6 +1,6 @@
 from unittest import mock
 
-import cx_Oracle
+import oracledb
 import pytest
 from django.core.management import call_command
 
@@ -158,7 +158,7 @@ sil_data_source_target = {
         ],
     },
 )
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 def test_import_sil_data(mock_connect, dummy_dm_settings):
     mock_connect.return_value = utils.MockConnect()
 
@@ -464,7 +464,7 @@ oil_data_source_target = {
 @mock.patch.dict(
     DATA_TYPE_M2M, {"import_application": [(dm.Office, web.Importer, "offices")], "user": []}
 )
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 def test_import_oil_data(mock_connect, dummy_dm_settings):
     mock_connect.return_value = utils.MockConnect()
 
@@ -576,7 +576,7 @@ user_data_source_target = {
         ],
     },
 )
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 def test_import_user(mock_connect, dummy_dm_settings):
     mock_connect.return_value = utils.MockConnect()
     call_command("export_from_v1")

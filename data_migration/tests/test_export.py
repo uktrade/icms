@@ -1,6 +1,6 @@
 from unittest import mock
 
-import cx_Oracle
+import oracledb
 import pytest
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -37,7 +37,7 @@ def test_data_migration_not_enabled_non_prod():
 @override_settings(ICMS_PROD_USER="")
 @override_settings(ICMS_PROD_PASSWORD="1234")
 @pytest.mark.django_db
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 def test_create_user_no_username(mock_connect):
     with pytest.raises(CommandError, match="No user details found for this environment"):
         call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file", "--skip_export")
@@ -51,7 +51,7 @@ def test_create_user_no_username(mock_connect):
 @override_settings(ICMS_PROD_USER="TestUser")
 @override_settings(ICMS_PROD_PASSWORD="")
 @pytest.mark.django_db
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 def test_create_user_no_pw(mock_connect):
     with pytest.raises(CommandError, match="No user details found for this environment"):
         call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file", "--skip_export")
@@ -65,7 +65,7 @@ def test_create_user_no_pw(mock_connect):
 @override_settings(ICMS_PROD_PASSWORD="1234")
 @mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, {"user": []})
 @pytest.mark.django_db
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 def test_create_user(mock_connect):
     call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file", "--skip_export")
 
@@ -78,7 +78,7 @@ def test_create_user(mock_connect):
 @override_settings(ICMS_PROD_PASSWORD="1234")
 @mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, {"user": []})
 @pytest.mark.django_db
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 def test_create_user_exists(mock_connect):
     models.User.objects.create(username="Username")
     call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file", "--skip_export")
@@ -93,7 +93,7 @@ def test_create_user_exists(mock_connect):
     queries.DATA_TYPE_QUERY_MODEL,
     {"reference": [(reference, "country_group", models.CountryGroup)], "file": []},
 )
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 def test_export_data(mock_connect):
     mock_connect.return_value = utils.MockConnect()
     call_command("export_from_v1", "--skip_user", "--skip_ia", "--skip_file", "--skip_export")
@@ -114,7 +114,7 @@ def test_export_data(mock_connect):
         "user": [],
     },
 )
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 def test_extract_xml(mock_connect):
 
     mock_connect.return_value = utils.MockConnect()
@@ -180,7 +180,7 @@ def test_extract_xml(mock_connect):
         models.File,
     ],
 )
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 def test_export_files_data(mock_connect):
 
     mock_connect.return_value = utils.MockConnect()
@@ -246,7 +246,7 @@ test_query_model = {
 @override_settings(ICMS_PROD_PASSWORD="testpass")
 @pytest.mark.django_db
 @mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, test_query_model)
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 def test_export_from_ref_2(mock_connect):
     mock_connect.return_value = utils.MockConnect()
 
@@ -266,7 +266,7 @@ def test_export_from_ref_2(mock_connect):
 @override_settings(ICMS_PROD_PASSWORD="testpass")
 @pytest.mark.django_db
 @mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, test_query_model)
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 def test_export_from_r_3(mock_connect):
     mock_connect.return_value = utils.MockConnect()
 
@@ -286,7 +286,7 @@ def test_export_from_r_3(mock_connect):
 @override_settings(ICMS_PROD_PASSWORD="testpass")
 @pytest.mark.django_db
 @mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, test_query_model)
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 def test_export_from_import_application(mock_connect):
     mock_connect.return_value = utils.MockConnect()
 
@@ -306,7 +306,7 @@ def test_export_from_import_application(mock_connect):
 @override_settings(ICMS_PROD_PASSWORD="testpass")
 @pytest.mark.django_db
 @mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, test_query_model)
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 def test_export_from_ia(mock_connect):
     mock_connect.return_value = utils.MockConnect()
 
@@ -326,7 +326,7 @@ def test_export_from_ia(mock_connect):
 @override_settings(ICMS_PROD_PASSWORD="testpass")
 @pytest.mark.django_db
 @mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, test_query_model)
-@mock.patch.object(cx_Oracle, "connect")
+@mock.patch.object(oracledb, "connect")
 def test_export_from_ia_2(mock_connect):
     mock_connect.return_value = utils.MockConnect()
 
