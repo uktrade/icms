@@ -1,4 +1,5 @@
 import datetime as dt
+import re
 import zoneinfo
 from decimal import Decimal, InvalidOperation
 from typing import Any, Optional, Union
@@ -227,3 +228,19 @@ def split_address(address: str, prefix="address_", max_lines=5) -> dict[str, str
 def str_to_list(list_str: str, delimiter: str = ";"):
     lst = [x for x in list_str.split(delimiter) if x]
     return lst or None
+
+
+def extract_int_substr(int_str: str, substr: str) -> Optional[int]:
+    """Extract an integer from a string of kwargs
+
+    username(WUA_ID=1, WUAH_ID=2) -> 1
+    """
+
+    match = re.search(f"({substr})\\d+", int_str)
+
+    if not match:
+        return None
+
+    int_str = match[0].strip(substr)
+
+    return int(int_str)

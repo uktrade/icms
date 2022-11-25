@@ -8,6 +8,7 @@ from django.core.management.base import CommandError
 from data_migration import models
 from data_migration.models.user import User
 from data_migration.queries import DATA_TYPE, DATA_TYPE_QUERY_MODEL, FILE_MODELS
+from web.auth.fox_hasher import FOXPBKDF2SHA1Hasher
 
 from ._base import MigrationBaseCommand
 from .utils.db import new_process_pk
@@ -160,6 +161,11 @@ class Command(MigrationBaseCommand):
             self.stdout.write("User data exists. Skipping.")
             return
 
+        hasher = FOXPBKDF2SHA1Hasher()
+        salt = hasher.salt()
+        password_str = hasher.encode(password, "2:" + salt)
+        encrypted_password = hasher.decode(password_str)["hash"]
+
         user = User.objects.create(
             id=2,
             username=username,
@@ -169,8 +175,9 @@ class Command(MigrationBaseCommand):
             is_active=True,
             title="Mr",
             password_disposition="FULL",
+            salt=salt,
+            encrypted_password=encrypted_password,
         )
-        user.set_password(password)
         user.save()
         self._log_time()
         self.stdout.write("User Data Created!")

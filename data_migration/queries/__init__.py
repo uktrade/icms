@@ -28,6 +28,7 @@ user_source_target = [
 ]
 
 user_query_model = [
+    QueryModel(user, "users", dm.User),
     QueryModel(user, "importers", dm.Importer),
     QueryModel(user, "importer_offices", dm.Office),
     QueryModel(user, "exporters", dm.Exporter),

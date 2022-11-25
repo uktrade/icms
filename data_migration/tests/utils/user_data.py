@@ -5,6 +5,67 @@ from data_migration.queries import user
 from . import xml_data as xd
 
 user_query_result = {
+    user.users: (
+        [
+            ("id",),
+            ("username",),
+            ("first_name",),
+            ("last_name",),
+            ("email",),
+            ("is_active",),
+            ("salt",),
+            ("encrypted_password",),
+            ("title",),
+            ("organisation",),
+            ("department",),
+            ("job_title",),
+            ("account_status",),
+            ("account_status_by",),
+            ("account_status_date",),
+            ("last_login_datetime",),
+            ("password_disposition",),
+        ],
+        [
+            (
+                3,  # id
+                "test_user",  # username
+                "Test",  # first_name
+                "User",  # last_name
+                "test.user",  # email
+                1,  # is_active
+                "31323334",  # salt 1234
+                "FF1C40E64C643CE773BA6E6B3C2DA217",  # encrypted_password /PS-IGNORE
+                "Mr",  # title
+                "Org",  # Oranisation
+                "Dept",  # Department
+                "IT",  # job_title
+                "ACTIVE",  # account_status
+                "3",  # account_status_by
+                dt.date.today(),  # account_status_date
+                dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
+                "FULL",  # password_disposition
+            ),
+            (
+                4,  # id
+                "test_user_two",  # username
+                "Testtwo",  # first_name
+                "Usertwo",  # last_name
+                "test.usertwo",  # email
+                1,  # is_active
+                "35363738",  # salt 5678
+                "F52745CB49AB0BDFAFA106533142E867",  # encrypted_password /PS-IGNORE
+                "Ms",  # title
+                "Org",  # Oranisation
+                "Dept",  # Department
+                "IT",  # job_title
+                "ACTIVE",  # account_status
+                "test_user(WUA_ID=3, WUAH_ID=4)",  # account_status_by
+                dt.date.today(),  # account_status_date
+                dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
+                "FULL",  # password_disposition
+            ),
+        ],
+    ),
     user.importers: (
         [
             ("id",),

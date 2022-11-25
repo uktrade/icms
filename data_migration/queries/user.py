@@ -1,4 +1,5 @@
 __all__ = [
+    "users",
     "exporters",
     "importers",
     "mailshots",
@@ -7,9 +8,54 @@ __all__ = [
     "access_requests",
 ]
 
+# TODO: ICMSLST-1799
+#  -- work_address
+#  -- share_contact_details
+
+users = """
+SELECT
+  wua.id
+  , wua.login_id username
+  , wua.forename first_name
+  , wua.surname last_name
+  , wua.primary_email_address email
+  , CASE wua.account_status WHEN 'ACTIVE' THEN 1 ELSE 0 END is_active
+  , RAWTOHEX(wuah.encrypt_salt) salt
+  , wuah.encrypted_password
+  , wua.last_login_date_time last_login
+  , wua.title
+  , wua.middle_initials
+  , wua.organisation_name organisation
+  , wua.job_title
+  , wua.location_within_address location_at_address
+  , wua.account_status
+  , wua.account_status_by account_status_by_id
+  , wua.account_status_date
+  , wua.password_disposition
+  , wua.login_try_count unsuccessful_login_attempts
+  , x.*
+FROM securemgr.web_user_accounts wua
+INNER JOIN securemgr.web_user_account_histories wuah ON wuah.wua_id = wua.id AND wuah.status_control = 'C'
+INNER JOIN decmgr.resource_people_details rp ON rp.rp_id = wuah.resource_person_id AND rp.status_control = 'C'
+CROSS JOIN XMLTABLE('/*'
+  PASSING rp.xml_data
+  COLUMNS
+    preferred_first_name VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/PREFERRED_FORENAME/text()'
+    , middle_initials VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/MIDDLE_INITIALS/text()'
+    , date_of_birth VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/DATE_OF_BIRTH/text()'
+    , department VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/DEPARTMENT_DESCRIPTION/text()'
+    , date_joined_datetime VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/CREATED_DATE/text()'
+    , security_question VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/SECURITY_QUESTION/text()'
+    , security_answer VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/SECURITY_ANSWER/text()'
+) x
+WHERE wua.id > 1
+AND wua.account_status <> 'CANCELLED'
+ORDER BY wua.id
+"""
+
+
 # After users migrated
 # , wua_id user_id
-
 importers = """
 SELECT
   imp_id id
