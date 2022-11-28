@@ -1725,3 +1725,9 @@ is_staff
 wua.title
 Testtwo
 MIDDLE_INITIALS
+requirements-playwright.txt
+Cookies
+ipc
+rm -f importer_user.json && \
+rm -f ilb_admin.json
+} && \

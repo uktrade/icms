@@ -9,6 +9,7 @@ omit =
     *__init__.py
     *apps.py
     data_migration/queries/*
+    web/end_to_end/*
 
 [report]
 exclude_lines =

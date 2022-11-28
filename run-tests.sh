@@ -13,7 +13,7 @@ export DJANGO_SETTINGS_MODULE=config.settings.test
 #
 # For speed run with --dist=no when testing a single file
 # TODO: Revisit when implementing ICMSLST-1793
-docker-compose run --rm web pytest --ignore web/tests/end_to_end --tb=short --dist=loadfile --tx=4*popen "$@"
+docker-compose run --rm web pytest --ignore web/end_to_end --tb=short --dist=loadfile --tx=4*popen "$@"
 
 # With coverage (terminal report)
 #docker-compose run --rm web \
