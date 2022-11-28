@@ -164,14 +164,7 @@ query_task_result: ## local development tool to query task results
 	unset UID && \
 	docker-compose run --rm web python ./manage.py query_task_result
 
-
-##@ Server
-debug: ## runs system in debug mode
-	docker-compose up -d
-
-down: ## Stops and downs containers
-	docker-compose down --remove-orphans
-
+##@ Test
 test: ## run tests (circleci; don't use locally as it produces a coverage report)
 	./run-tests.sh \
 		--cov=web \
@@ -182,6 +175,31 @@ test: ## run tests (circleci; don't use locally as it produces a coverage report
 
 migration_test:
 	./run-tests.sh data_migration --create-db --numprocesses 2
+
+
+end_to_end_clear_session: ## Clears the session cookies stored after running end to end tests
+	rm -f importer_user.json && \
+	rm -f exporter_user.json && \
+	rm -f ilb_admin.json
+
+end_to_end_test: ## Run end to end tests in a container
+	docker-compose run -it --rm playwright-runner pytest -c playwright/pytest.ini web/end_to_end/ --base-url http://web:8080 ${args} && \
+	make end_to_end_clear_session
+
+end_to_end_test_local: ## Run end to end tests locally
+	.venv/bin/python -m pytest -c playwright/pytest.ini web/end_to_end/ --base-url http://localhost:8080 ${args} && \
+	make end_to_end_clear_session
+
+create_end_to_end: ## Create an end to end test using codegen
+	.venv/bin/python -m playwright codegen http://localhost:8080/ ${args}
+
+##@ Server
+debug: ## runs system in debug mode
+	docker-compose up -d
+
+down: ## Stops and downs containers
+	docker-compose down --remove-orphans
+
 
 accessibility: ## Generate accessibility reports
 	unset UID && \

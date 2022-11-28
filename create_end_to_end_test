@@ -1,8 +1,0 @@
-#!/bin/zsh
-
-clear
-. .venv/bin/activate
-echo "Loading codegen"
-
-playwright codegen http://localhost:8080/
-

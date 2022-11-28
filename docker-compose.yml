@@ -123,26 +123,15 @@ services:
         networks:
             - icms_backend
 
-    # selenium-hub:
-    #     image: selenium/hub:3.141.59-vanadium
-    #     container_name: selenium-hub
-    #     ports:
-    #         - "4444:4444"
-    #         - "49154:49154"
-    #     depends_on:
-    #         - web
-
-    # chrome:
-    #     image: selenium/node-chrome-debug:3.141.59-vanadium
-    #     volumes:
-    #         - /dev/shm:/dev/shm
-    #     depends_on:
-    #         - selenium-hub
-    #     environment:
-    #         - HUB_HOST=selenium-hub
-    #         - HUB_PORT=4444
-    #     ports:
-    #         - "5900:5900"
+    playwright-runner:
+        build:
+            context: .
+            dockerfile: playwright/Dockerfile
+        networks:
+            - icms_backend
+        ipc: host
+        volumes:
+            - .:/code
 
 
 networks:

@@ -22,3 +22,7 @@ ICMS_FIREARMS_HOMEOFFICE_EMAIL = env.str(
 )
 ICMS_CFS_HSE_EMAIL = env.str("ICMS_CFS_HSE_EMAIL", "HSE@example.com")  # /PS-IGNORE
 ICMS_GMP_BEIS_EMAIL = env.str("ICMS_GMP_BEIS_EMAIL", "BEIS@example.com")  # /PS-IGNORE
+
+# Override secure cookies to use playwright in non-prod environments
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
