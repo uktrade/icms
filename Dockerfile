@@ -1,4 +1,4 @@
-FROM python:3.10.7-slim
+FROM python:3.10.7
 
 # Install dependencies
 RUN apt-get update && apt-get install wget graphviz libgraphviz-dev gcc libpq-dev postgresql-client npm -y
