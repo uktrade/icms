@@ -1731,3 +1731,7 @@ ipc
 rm -f importer_user.json && \
 rm -f ilb_admin.json
 } && \
+Add Who Bought From (Legal Person
+Town
+Add Who Bought From (Natural Person
+Custom Endorsement

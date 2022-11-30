@@ -2,7 +2,7 @@ import datetime as dt
 import re
 from typing import Optional
 
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Locator, Page, expect
 
 
 def get_application_id(url: str, pattern: str, group_name: str = "app_pk") -> int:
@@ -34,3 +34,7 @@ def get_future_datetime() -> dt.datetime:
     now = dt.datetime.now()
 
     return dt.datetime(year=now.year + 1, month=1, day=1, hour=15, minute=30)
+
+
+def get_wb_row(page: Page, app_id: int) -> Locator:
+    return page.locator(f'[data-test-id="workbasket-row-{app_id}"]')

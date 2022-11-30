@@ -103,7 +103,7 @@ def _manage_case_and_authorise_documents(page: Page, dfl_id) -> None:
     #
     # Complete Take Ownership
     #
-    workbasket_row = page.locator(f'[data-test-id="workbasket-row-{dfl_id}"]')
+    workbasket_row = utils.get_wb_row(page, dfl_id)
     workbasket_row.get_by_role("button", name="Take Ownership").click()
     utils.assert_page_url(page, f"/case/import/{dfl_id}/admin/manage/")
 
@@ -170,7 +170,7 @@ def _manage_case_and_authorise_documents(page: Page, dfl_id) -> None:
     #
     # Authorise Documents
     #
-    workbasket_row = page.locator(f'[data-test-id="workbasket-row-{dfl_id}"]')
+    workbasket_row = utils.get_wb_row(page, dfl_id)
     workbasket_row.get_by_role("link", name="Authorise Documents").click()
     utils.assert_page_url(page, f"/case/import/{dfl_id}/authorisation/authorise-documents/")
 
@@ -187,9 +187,9 @@ def _manage_case_and_authorise_documents(page: Page, dfl_id) -> None:
     #
     # Bypass CHIEF and check application complete
     #
-    workbasket_row = page.locator(f'[data-test-id="workbasket-row-{dfl_id}"]')
+    workbasket_row = utils.get_wb_row(page, dfl_id)
     workbasket_row.get_by_role("button", name="(TEST) Bypass CHIEF", exact=True).click()
     utils.assert_page_url(page, "/workbasket/")
 
-    workbasket_row = page.locator(f'[data-test-id="workbasket-row-{dfl_id}"]')
+    workbasket_row = utils.get_wb_row(page, dfl_id)
     workbasket_row.get_by_role("cell", name="Completed ").is_visible()
