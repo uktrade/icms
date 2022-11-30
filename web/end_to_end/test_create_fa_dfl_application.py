@@ -183,3 +183,13 @@ def _manage_case_and_authorise_documents(page: Page, dfl_id) -> None:
     page.get_by_role("button", name="Close this message").click()
     page.get_by_role("link", name="Workbasket").click()
     utils.assert_page_url(page, "/workbasket/")
+
+    #
+    # Bypass CHIEF and check application complete
+    #
+    workbasket_row = page.locator(f'[data-test-id="workbasket-row-{dfl_id}"]')
+    workbasket_row.get_by_role("button", name="(TEST) Bypass CHIEF", exact=True).click()
+    utils.assert_page_url(page, "/workbasket/")
+
+    workbasket_row = page.locator(f'[data-test-id="workbasket-row-{dfl_id}"]')
+    workbasket_row.get_by_role("cell", name="Completed ").is_visible()
