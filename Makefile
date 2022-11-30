@@ -191,7 +191,7 @@ end_to_end_test_local: ## Run end to end tests locally
 	make end_to_end_clear_session
 
 create_end_to_end: ## Create an end to end test using codegen
-	.venv/bin/python -m playwright codegen http://localhost:8080/ ${args}
+	.venv/bin/python -m playwright codegen http://localhost:8080/ --viewport-size "1920, 1080" ${args}
 
 ##@ Server
 debug: ## runs system in debug mode
