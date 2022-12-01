@@ -45,7 +45,7 @@ class ObsoleteCalibreGroupListView(AuthTestCase):
         self.login_with_permissions(PERMISSIONS)
         response = self.client.get(self.url)
         results = response.context_data["results"]
-        self.assertEqual(len(results), 58)
+        self.assertEqual(len(results), 59)
 
 
 @pytest.mark.django_db

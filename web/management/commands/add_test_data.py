@@ -11,7 +11,7 @@ from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.user.models import User
 from web.management.commands.utils.load_data import load_app_test_data
-from web.models import ImportApplicationType
+from web.models import ImportApplicationType, ObsoleteCalibre, ObsoleteCalibreGroup
 
 
 class Command(BaseCommand):
@@ -68,6 +68,9 @@ class Command(BaseCommand):
                 ImportApplicationType.Types.TEXTILES,
             ]
         ).update(is_active=True)
+
+        group = ObsoleteCalibreGroup.objects.create(name="Group 1", order=1)
+        ObsoleteCalibre.objects.create(calibre_group=group, name="9mm", order=1)
 
     def create_user(self, username):
         try:

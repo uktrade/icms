@@ -6,27 +6,27 @@ from playwright.sync_api import Page
 from . import conftest, types, utils
 
 
-def test_can_create_fa_oil(
+def test_can_create_fa_sil(
     pages: conftest.UserPages, sample_upload_file: types.FilePayload
 ) -> None:
-    """End-to-end test for creating a FA-OIL application.
+    """End-to-end test for creating a FA-SIL application.
 
     This tests requires multiple pages as there is a back and forth between user types.
     """
 
     with pages.imp_page() as imp_page:
-        app_id = _create_fa_oil(imp_page, sample_upload_file)
+        app_id = _create_fa_sil(imp_page, sample_upload_file)
 
     with pages.ilb_page() as ilb_page:
         _manage_case_and_authorise_documents(ilb_page, app_id)
 
 
-def _create_fa_oil(page: Page, sample_upload_file: types.FilePayload) -> int:
+def _create_fa_sil(page: Page, sample_upload_file: types.FilePayload) -> int:
     #
     # Create application
     #
     page.get_by_role("link", name="New Import Application").click()
-    page.get_by_role("link", name="Open Individual Import Licence").click()
+    page.get_by_role("link", name="Specific Individual Import Licence").click()
 
     #
     # Set importer
@@ -40,13 +40,93 @@ def _create_fa_oil(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_role("button", name="Create").click()
 
     # store the primary key to return later
-    app_id = utils.get_application_id(page.url, r"import/firearms/oil/(?P<app_pk>\d+)/edit/")
+    app_id = utils.get_application_id(page.url, r"import/firearms/sil/(?P<app_pk>\d+)/edit/")
 
     #
     # Fill in main application page
     #
     page.get_by_label("Applicant's Reference").click()
-    page.get_by_label("Applicant's Reference").fill("Applicant's reference value")
+    page.get_by_label("Applicant's Reference").fill("Applicant reference value")
+    page.get_by_label("Section 1").check()
+    page.get_by_label("Section 2").check()
+    page.get_by_label("Section 5", exact=True).check()
+    page.get_by_label("Section 58(2) - Obsolete Calibre").check()
+    page.get_by_label("Section 58(2) - Other").check()
+    page.get_by_label("Other Section Description").click()
+    page.get_by_label("Other Section Description").fill("Other Section Description value")
+    page.get_by_role("combobox", name="Country Of Origin").select_option("1")
+    page.get_by_role("combobox", name="Country Of Consignment").select_option("2")
+    page.locator("#id_military_police_0").check()
+    page.locator("#id_eu_single_market").get_by_text("Yes").click()
+    page.locator("#id_eu_single_market").get_by_text("No").click()
+    page.locator("#id_manufactured").get_by_text("Yes").click()
+    page.get_by_label("Additional comments").click()
+    page.get_by_label("Additional comments").fill("Additional comments")
+    page.get_by_role("button", name="Save").click()
+
+    #
+    # Add goods for each section
+    #
+    page.get_by_role("link", name="Add Goods Item").click()
+    page.get_by_role("link", name="Section 1").click()
+    page.get_by_label("No").check()
+    page.get_by_label("Description").click()
+    page.get_by_label("Description").fill("Description")
+    page.get_by_label("Quantity").click()
+    page.get_by_label("Quantity").fill("5")
+    page.get_by_role("button", name="Save").click()
+
+    page.get_by_role("link", name="Add Goods Item").click()
+    page.get_by_role("link", name="Section 2").click()
+    page.get_by_label("No").check()
+    page.get_by_label("Description").click()
+    page.get_by_label("Description").fill("Description")
+    page.get_by_label("Quantity").click()
+    page.get_by_label("Quantity").fill("12345")
+    page.get_by_role("button", name="Save").click()
+
+    page.get_by_role("link", name="Add Goods Item").click()
+    page.get_by_role("link", name="Section 5").first.click()
+    page.get_by_role("textbox", name="---------").click()
+    page.get_by_role(
+        "option",
+        name="5(1)(a) Any firearm capable of burst- or fully automatic fire and component parts of these.",
+    ).click()
+    page.get_by_label("No").check()
+    page.get_by_label("Description").click()
+    page.get_by_label("Description").fill("Description")
+    page.get_by_label("Unlimited Quantity").check()
+    page.get_by_role("button", name="Save").click()
+
+    page.get_by_role("link", name="Add Goods Item").click()
+    page.get_by_role("link", name="Section 58(2) - Obsolete Calibre").click()
+    page.locator("#id_curiosity_ornament").get_by_text("Yes").click()
+    page.get_by_label("Do you acknowledge the above statement?").check()
+    page.locator("#id_centrefire").get_by_text("Yes").click()
+    page.locator("#id_manufacture").get_by_text("Yes").click()
+    page.locator("#id_original_chambering").get_by_text("Yes").click()
+    page.get_by_role("textbox", name="---------").click()
+    page.get_by_role("option", name="9mm").click()
+    page.get_by_label("Description").click()
+    page.get_by_label("Description").fill("Description")
+    page.get_by_label("Quantity").click()
+    page.get_by_label("Quantity").fill("54321")
+    page.get_by_role("button", name="Save").click()
+
+    page.get_by_role("link", name="Add Goods Item").click()
+    page.get_by_role("link", name="Section 58(2) - Other").click()
+    page.locator("#id_curiosity_ornament_0").check()
+    page.get_by_label("Do you acknowledge the above statement?").check()
+    page.locator("#id_manufacture_0").check()
+    page.get_by_label("Description").click()
+    page.get_by_label("Description").fill("Desc")
+    page.get_by_label("Quantity").click()
+    page.get_by_label("Quantity").fill("12345")
+    page.locator("#id_muzzle_loading_0").check()
+    page.locator("#id_rimfire").get_by_text("No").click()
+    page.locator("#id_ignition").get_by_text("No").click()
+    page.locator("#id_chamber").get_by_text("No").click()
+    page.locator("#id_bore").get_by_text("No").click()
     page.get_by_role("button", name="Save").click()
 
     #
@@ -55,7 +135,8 @@ def _create_fa_oil(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_role("link", name="Certificates").click()
     page.get_by_role("link", name="Add Certificate").click()
     page.get_by_label("Certificate Reference").click()
-    page.get_by_label("Certificate Reference").fill("Certificate reference value")
+    page.get_by_label("Certificate Reference").fill("reference")
+    page.get_by_role("combobox", name="Certificate Type").select_option("firearms")
     page.get_by_role("combobox", name="Constabulary").select_option("1")
 
     future_date = utils.get_future_datetime().date()
@@ -71,10 +152,18 @@ def _create_fa_oil(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_role("button", name="Save").click()
 
     #
+    # Add a section 5 authority
+    #
+    page.get_by_role("link", name="Add Section 5 Authority").click()
+    page.get_by_label("Document").set_input_files(sample_upload_file)
+    page.get_by_role("button", name="Save").click()
+
+    #
     # Complete Details of Who Bought From section
     #
     page.get_by_role("link", name="Details of Who Bought From").click()
     page.get_by_label("Yes").check()
+    page.get_by_text("Yes").click()
     page.get_by_role("button", name="Save").click()
 
     #
@@ -82,39 +171,19 @@ def _create_fa_oil(page: Page, sample_upload_file: types.FilePayload) -> int:
     #
     page.get_by_role("link", name="Add Who Bought From (Legal Person)").click()
     page.get_by_label("Name of Legal Person").click()
-    page.get_by_label("Name of Legal Person").fill("Legal Person value")
+    page.get_by_label("Name of Legal Person").fill("Legal person name")
     page.get_by_label("Registration Number").click()
-    page.get_by_label("Registration Number").fill("Registration Number value")
+    page.get_by_label("Registration Number").fill("Registration number")
     page.get_by_label("Street and Number").click()
     page.get_by_label("Street and Number").fill("1 street")
     page.get_by_label("Town/City").click()
     page.get_by_label("Town/City").fill("Town")
     page.get_by_label("Postcode").click()
-    page.get_by_label("Postcode").fill("s1122z")
+    page.get_by_label("Postcode").fill("S112ZZ")  # /PS-IGNORE
     page.get_by_label("Region").click()
     page.get_by_label("Region").fill("Yorkshire")
     page.get_by_role("combobox", name="Country").select_option("1")
-    page.get_by_role("combobox", name="Did you buy from a dealer?").select_option("no")
-    page.get_by_role("button", name="Save").click()
-
-    #
-    # Add a Natural Person
-    #
-    page.get_by_role("link", name="Add Who Bought From (Natural Person)").click()
-    page.get_by_label("First Name").click()  # /PS-IGNORE
-    page.get_by_label("First Name").fill("First name value")  # /PS-IGNORE
-    page.get_by_label("Surname").click()
-    page.get_by_label("Surname").fill("Surname value")
-    page.get_by_label("Street and Number").click()
-    page.get_by_label("Street and Number").fill("1 Street")
-    page.get_by_label("Town/City").click()
-    page.get_by_label("Town/City").fill("Town")
-    page.get_by_label("Postcode").click()
-    page.get_by_label("Postcode").fill("S12ZZ")  # /PS-IGNORE
-    page.get_by_label("Region").click()
-    page.get_by_label("Region").fill("Yorkshire")
-    page.get_by_role("combobox", name="Country").select_option("1")
-    page.get_by_role("combobox", name="Did you buy from a dealer?").select_option("no")
+    page.get_by_role("combobox", name="Did you buy from a dealer?").select_option("yes")
     page.get_by_role("button", name="Save").click()
 
     #
@@ -153,21 +222,25 @@ def _manage_case_and_authorise_documents(page: Page, app_id) -> None:
     page.get_by_role("link", name="Checklist").click()
     page.get_by_role("combobox", name="Authority to possess required?").select_option("yes")
     page.get_by_role("combobox", name="Authority to possess received?").select_option("no")
-    page.get_by_role("combobox", name="Authority to possess checked with police?").select_option(
+    page.get_by_role("combobox", name="Authority to possess covers items listed?").select_option(
         "n/a"
     )
-    page.get_by_role("combobox", name="Case update required from applicant?").select_option("yes")
-    page.get_by_role("combobox", name="Further information request required?").select_option("no")
+    page.get_by_role(
+        "combobox", name="Quantities listed within authority to possess restrictions?"
+    ).select_option("yes")
+    page.get_by_role("combobox", name="Authority to possess checked with police?").select_option(
+        "no"
+    )
+    page.get_by_role("combobox", name="Case update required from applicant?").select_option("n/a")
+    page.get_by_role("combobox", name="Further information request required?").select_option("yes")
     page.get_by_label(
         "Response Preparation - approve/refuse the request, edit details if necessary"
     ).check()
-    page.get_by_role(
-        "combobox", name="Validity period of licence matches that of the RFD certificate?"
-    ).select_option("n/a")
+    page.get_by_role("combobox", name="Validity period correct?").select_option("yes")
     page.get_by_role(
         "combobox",
         name="Correct endorsements listed? Add/edit/remove as required (changes are automatically saved)",
-    ).select_option("yes")
+    ).select_option("no")
     page.get_by_label(
         "Authorisation - start authorisation (close case processing) to authorise the licence. Errors logged must be resolved."
     ).check()
@@ -181,6 +254,13 @@ def _manage_case_and_authorise_documents(page: Page, app_id) -> None:
     page.get_by_role("button", name="Save").click()
 
     #
+    # Complete Response Preparation (Set Cover Letter)
+    #
+    page.get_by_role("link", name="Set Cover Letter").click()
+    page.get_by_role("combobox", name="Template").select_option("79")
+    page.get_by_role("button", name="Save").click()
+
+    #
     # Complete Response Preparation (Licence Details)
     #
     page.locator('[data-test-id="edit-licence"]').click()
@@ -189,6 +269,7 @@ def _manage_case_and_authorise_documents(page: Page, app_id) -> None:
     page.get_by_label("Licence End Date").click()
     page.get_by_label("Licence End Date").fill(future_date)
     page.get_by_role("button", name="Done").click()
+    page.get_by_role("combobox", name="Issue paper licence only?").select_option("false")
     page.get_by_role("button", name="Save").click()
 
     #
@@ -215,8 +296,7 @@ def _manage_case_and_authorise_documents(page: Page, app_id) -> None:
     #
     # Authorise Documents
     #
-    workbasket_row = utils.get_wb_row(page, app_id)
-    workbasket_row.get_by_role("link", name="Authorise Documents").click()
+    page.get_by_role("link", name="Authorise Documents").click()
     page.get_by_label("Password").click()
     page.get_by_label("Password").fill("admin")
     page.get_by_role("button", name="Sign and Authorise").click()
@@ -232,6 +312,5 @@ def _manage_case_and_authorise_documents(page: Page, app_id) -> None:
     # Bypass CHIEF and check application complete
     #
     page.get_by_role("button", name="(TEST) Bypass CHIEF").first.click()
-
     workbasket_row = utils.get_wb_row(page, app_id)
     workbasket_row.get_by_role("cell", name="Completed ").is_visible()
