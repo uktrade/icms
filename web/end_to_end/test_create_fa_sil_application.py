@@ -296,21 +296,23 @@ def _manage_case_and_authorise_documents(page: Page, app_id) -> None:
     #
     # Authorise Documents
     #
-    page.get_by_role("link", name="Authorise Documents").click()
+    workbasket_row = utils.get_wb_row(page, app_id)
+    workbasket_row.get_by_role("link", name="Authorise Documents").click()
     page.get_by_label("Password").click()
     page.get_by_label("Password").fill("admin")
     page.get_by_role("button", name="Sign and Authorise").click()
+    page.get_by_role("button", name="Close this message").click()
 
-    #
-    # Click monitor progress to reload workbasket
-    #
-    workbasket_row = utils.get_wb_row(page, app_id)
-    workbasket_row.get_by_role("link", name="Monitor Progress").click()
-    page.get_by_role("button", name="OK").click()
+    # Annoying bug causing test to fail.
+    # Wait for networkidle and then reload the workbasket to see the bypass CHIEF link
+    page.wait_for_load_state("networkidle")
+    page.get_by_role("link", name="Workbasket").click()
 
     #
     # Bypass CHIEF and check application complete
     #
-    page.get_by_role("button", name="(TEST) Bypass CHIEF").first.click()
+    workbasket_row = utils.get_wb_row(page, app_id)
+    workbasket_row.get_by_role("button", name="(TEST) Bypass CHIEF", exact=True).click()
+
     workbasket_row = utils.get_wb_row(page, app_id)
     workbasket_row.get_by_role("cell", name="Completed ").is_visible()
