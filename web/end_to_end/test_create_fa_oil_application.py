@@ -231,7 +231,8 @@ def _manage_case_and_authorise_documents(page: Page, app_id) -> None:
     #
     # Bypass CHIEF and check application complete
     #
-    page.get_by_role("button", name="(TEST) Bypass CHIEF").first.click()
+    workbasket_row = utils.get_wb_row(page, app_id)
+    workbasket_row.get_by_role("button", name="(TEST) Bypass CHIEF", exact=True).click()
 
     workbasket_row = utils.get_wb_row(page, app_id)
     workbasket_row.get_by_role("cell", name="Completed ").is_visible()
