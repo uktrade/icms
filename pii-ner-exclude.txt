@@ -1735,3 +1735,9 @@ Add Who Bought From (Legal Person
 Town
 Add Who Bought From (Natural Person
 Custom Endorsement
+Add Goods Item
+id_curiosity_ornament_0
+id_rimfire
+id_bore
+S112ZZ
+Group 1

@@ -13,7 +13,7 @@ from web.domains.importer.models import Importer
 from web.domains.office.models import Office
 from web.domains.user.models import User
 from web.management.commands.utils.load_data import load_app_test_data
-from web.models import ImportApplicationType
+from web.models import ImportApplicationType, ObsoleteCalibre, ObsoleteCalibreGroup
 
 
 class Command(BaseCommand):
@@ -204,6 +204,9 @@ class Command(BaseCommand):
 
         create_certificate_application_templates(ilb_admin_user)
         create_certificate_application_templates(exporter_user)
+
+        group = ObsoleteCalibreGroup.objects.create(name="Group 1", order=1)
+        ObsoleteCalibre.objects.create(calibre_group=group, name="9mm", order=1)
 
     def create_user(
         self,
