@@ -37,8 +37,13 @@ class SanctionsAndAdhocApplicationGoods(models.Model):
     )
 
     goods_description = models.CharField(max_length=4096, verbose_name="Goods Description")
-    quantity_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Quantity")
-    value = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Value (GBP CIF)")
+
+    # CHIEF spec:
+    # 9(n).9(m) decimal field with up to n digits before the decimal point and up to m digits after.
+    # quantityIssued 9(11).9(3)
+    quantity_amount = models.DecimalField(max_digits=14, decimal_places=3, verbose_name="Quantity")
+    # value issued: 9(10).9(2)
+    value = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Value (GBP CIF)")
 
     def __str__(self):
         return (
