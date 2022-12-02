@@ -23,7 +23,7 @@ class DerogationCountryOfOriginSelect(ModelSelect2Widget):
         return get_usage_countries(ImportApplicationType.Types.DEROGATION)  # type: ignore[arg-type]
 
     def build_attrs(
-        self, base_attrs: dict[str, Any], extra_attrs: dict[str, Any] = None
+        self, base_attrs: dict[str, Any], extra_attrs: Optional[dict[str, Any]] = None
     ) -> dict[str, Any]:
         attrs = super().build_attrs(base_attrs, extra_attrs)
 
@@ -44,7 +44,7 @@ class DerogationCommoditySelect(ModelSelect2Widget):
     dependent_fields = {"origin_country": "origin_country"}
 
     def build_attrs(
-        self, base_attrs: dict[str, Any], extra_attrs: dict[str, Any] = None
+        self, base_attrs: dict[str, Any], extra_attrs: Optional[dict[str, Any]] = None
     ) -> dict[str, Any]:
         attrs = super().build_attrs(base_attrs, extra_attrs)
 
@@ -59,7 +59,11 @@ class DerogationCommoditySelect(ModelSelect2Widget):
         )
 
     def filter_queryset(
-        self, request: HttpRequest, term: str, queryset: QuerySet = None, **dependent_fields
+        self,
+        request: HttpRequest,
+        term: str,
+        queryset: Optional[QuerySet] = None,
+        **dependent_fields,
     ) -> "QuerySet[Commodity]":
         """Filter the available Commodities depending on the origin country selected by the user."""
 

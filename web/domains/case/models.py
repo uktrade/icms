@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from django.contrib import messages
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
@@ -396,7 +396,7 @@ class ApplicationBase(WorkbasketBase, Process):
 
         print("*-" * 40)
 
-    def is_rejected(self, active_tasks: list[str] = None):
+    def is_rejected(self, active_tasks: Optional[list[str]] = None):
         """Is the application in a rejected state."""
 
         if not active_tasks:

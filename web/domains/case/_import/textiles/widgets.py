@@ -21,7 +21,11 @@ class TextilesCategoryCommodityGroupWidget(s2forms.ModelSelect2Widget):
     dependent_fields = {"origin_country": "origin_country"}
 
     def filter_queryset(
-        self, request: HttpRequest, term: str, queryset: QuerySet = None, **dependent_fields
+        self,
+        request: HttpRequest,
+        term: str,
+        queryset: Optional[QuerySet] = None,
+        **dependent_fields,
     ) -> "QuerySet[Commodity]":
         """Filter the available categories depending on the origin country selected by the user."""
 

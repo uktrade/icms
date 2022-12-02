@@ -1,5 +1,5 @@
 import logging
-from typing import IO, TYPE_CHECKING, Any
+from typing import IO, TYPE_CHECKING, Any, Optional
 
 import boto3
 from django.conf import settings
@@ -26,7 +26,7 @@ def get_s3_client() -> "S3Client":
     )
 
 
-def get_file_from_s3(path: str, client: "S3Client" = None) -> bytes:
+def get_file_from_s3(path: str, client: Optional["S3Client"] = None) -> bytes:
     """Get contents of an object in S3."""
 
     if not client:
@@ -38,7 +38,7 @@ def get_file_from_s3(path: str, client: "S3Client" = None) -> bytes:
     return contents
 
 
-def delete_file_from_s3(path: str, client: "S3Client" = None) -> None:
+def delete_file_from_s3(path: str, client: Optional["S3Client"] = None) -> None:
     """Delete object in S3."""
 
     if not client:
@@ -48,7 +48,7 @@ def delete_file_from_s3(path: str, client: "S3Client" = None) -> None:
     logger.debug("Removed file from S3: %s.", path)
 
 
-def upload_file_obj_to_s3(file_obj: IO[Any], key: str, client: "S3Client" = None) -> int:
+def upload_file_obj_to_s3(file_obj: IO[Any], key: str, client: Optional["S3Client"] = None) -> int:
     """Upload file obj to s3 and return the size of the file (bytes)."""
 
     if not client:

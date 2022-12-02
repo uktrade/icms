@@ -1,5 +1,5 @@
 from itertools import product
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -726,7 +726,7 @@ def view_document_packs(
 
 def get_document_context(
     application: ImpOrExp,
-    issued_document: "IssuedDocument" = None,
+    issued_document: Optional["IssuedDocument"] = None,
 ) -> dict[str, str]:
     at = application.application_type
 
