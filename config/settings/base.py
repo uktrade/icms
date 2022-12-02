@@ -301,6 +301,12 @@ ICMS_HMRC_UPDATE_LICENCE_ENDPOINT = env.str(
 )
 HAWK_AUTH_ID = env.str("HAWK_AUTH_ID", default="icms")
 HAWK_AUTH_KEY = env.str("HAWK_AUTH_KEY", default="secret")
+
+# CHIEF spec: quantityIssued n(11).n(3) decimal field with up to n digits before the decimal point and
+# up to m digits after.
+# This validation would normally be done in the model e.g. models.DecimalField(max_digits=14, decimal_places=3)
+# But PositiveBigIntegerField was required to migrate legacy records.
+# So this constant is used in the Firearm Goods forms
 CHIEF_MAX_QUANTITY = 99_999_999_999.999
 
 # Data migration settings
