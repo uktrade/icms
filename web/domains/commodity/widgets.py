@@ -42,7 +42,11 @@ class UsageCountryWidget(s2forms.ModelSelect2Widget):
     dependent_fields = {"application_type": "application_type"}
 
     def filter_queryset(
-        self, request: HttpRequest, term: str, queryset: QuerySet = None, **dependent_fields
+        self,
+        request: HttpRequest,
+        term: str,
+        queryset: Optional[QuerySet] = None,
+        **dependent_fields,
     ) -> QuerySet:
         """Filter the available countries depending on the application type selected by the user."""
 

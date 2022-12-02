@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, List, Type
+from typing import TYPE_CHECKING, Any, List, Optional, Type
 
 import django.forms as django_forms
 from django.conf import settings
@@ -213,9 +213,9 @@ def _create_application(
     request: AuthenticatedHttpRequest,
     *,
     application_type: ImportApplicationType.Types,
-    application_subtype: ImportApplicationType.SubTypes = None,
+    application_subtype: Optional[ImportApplicationType.SubTypes] = None,
     model_class: Type[ImportApplication],
-    form_class: Type[CreateImportApplicationForm] = None,
+    form_class: Optional[Type[CreateImportApplicationForm]] = None,
 ) -> HttpResponse:
     """Helper function to create one of several types of importer application.
 

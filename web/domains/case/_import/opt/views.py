@@ -412,7 +412,7 @@ def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 def _get_edit_url(application_pk: int, file_type: str) -> str:
     """Get edit URL to the page responsible for editing the given filetype."""
 
-    if file_type not in OutwardProcessingTradeFile.Type:  # type: ignore[operator]
+    if file_type not in OutwardProcessingTradeFile.Type:  # type: ignore[attr-defined]
         raise ValueError(f"Invalid file_type {file_type}")
 
     kwargs: dict[str, Any] = {"application_pk": application_pk}

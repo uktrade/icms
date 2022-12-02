@@ -96,7 +96,7 @@ def _exporters_with_agents(user: User) -> List[int]:
 @permission_required("web.exporter_access", raise_exception=True)
 @ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_export_application(
-    request: AuthenticatedHttpRequest, *, type_code: str, template_pk: int = None
+    request: AuthenticatedHttpRequest, *, type_code: str, template_pk: Optional[int] = None
 ) -> HttpResponse:
     """Create a certificate application.
 

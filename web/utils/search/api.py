@@ -631,7 +631,7 @@ def _get_goods_category_filter(terms: types.SearchTerms) -> models.Q:
 
     good_category: "CommodityGroup" = terms.goods_category  # type: ignore[assignment]
 
-    if good_category.group_name in FirearmCommodity:  # type: ignore[operator]
+    if good_category.group_name in FirearmCommodity:  # type: ignore[attr-defined]
         fa_dfl_query = models.Q(dflapplication__commodity_code=good_category.group_name)
         fa_oil_query = models.Q(
             openindividuallicenceapplication__commodity_code=good_category.group_name

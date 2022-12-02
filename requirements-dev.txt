@@ -12,7 +12,7 @@ faker==4.1.2
 flake8==5.0.4
 ipdb==0.13.3
 isort==5.10.1
-mypy==0.982
+mypy==0.991
 pip-check==2.7
 Pygments==2.8.1
 pyparsing==2.4.7

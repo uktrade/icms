@@ -1,6 +1,6 @@
 import datetime
 import io
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 import pytest
 from django.urls import reverse
@@ -1619,11 +1619,11 @@ def check_export_application_case_reference(
 def check_commodity_details(
     actual_details: types.CommodityDetails,
     *,
-    expected_origin_country: str = None,
-    expected_consignment_country: str = None,
-    expected_goods_category: str = None,
-    expected_shipping_year: int = None,
-    expected_commodity_codes: list[str] = None,
+    expected_origin_country: Optional[str] = None,
+    expected_consignment_country: Optional[str] = None,
+    expected_goods_category: Optional[str] = None,
+    expected_shipping_year: Optional[int] = None,
+    expected_commodity_codes: Optional[list[str]] = None,
 ):
 
     assert expected_origin_country == actual_details.origin_country
@@ -2061,7 +2061,7 @@ def _create_export_application(
     process_type: str,
     fixture_data: ExportFixtureData,
     submit: bool,
-    extra_kwargs: dict = None,
+    extra_kwargs: Optional[dict] = None,
     certificate_countries=("Aruba", "Maldives", "Zambia"),
 ):
     kwargs = {

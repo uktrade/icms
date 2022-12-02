@@ -1,4 +1,4 @@
-from typing import Any, Type
+from typing import Any, Optional, Type
 
 from django import forms
 from django.core.exceptions import PermissionDenied
@@ -110,7 +110,7 @@ def get_application_current_task(
     )
 
 
-def end_process_task(task: Task, user: "User" = None) -> None:
+def end_process_task(task: Task, user: Optional["User"] = None) -> None:
     """End the supplied task.
 
     :param task: Task instance

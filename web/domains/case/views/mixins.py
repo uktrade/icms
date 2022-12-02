@@ -65,7 +65,7 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
         # TODO ICMSLST-1240: a method could be called / overridden here.
         # self.check_application_permission()
 
-    def get_object(self, queryset: models.QuerySet = None) -> ImpOrExp:
+    def get_object(self, queryset: Optional[models.QuerySet] = None) -> ImpOrExp:
         """Downcast to specific model class."""
 
         application = super().get_object(queryset).get_specific_model()
