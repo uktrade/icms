@@ -1,5 +1,5 @@
 import datetime as dt
-from typing import Any, Optional
+from typing import Any
 
 from django.utils import timezone
 
@@ -13,8 +13,8 @@ from data_migration.utils.format import (
 def format_row(
     columns: list[str],
     row: list[Any],
-    includes: Optional[list[str]] = None,
-    pk: Optional[int] = None,
+    includes: list[str] | None = None,
+    pk: int | None = None,
 ) -> dict[str, Any]:
     """Applies formatting to a row of sql data to be able to import into Django models
 

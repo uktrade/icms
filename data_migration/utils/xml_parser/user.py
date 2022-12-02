@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.db.models import Model
 from lxml import etree
 
@@ -17,7 +15,7 @@ class ApprovalRequestParser(BaseXmlParser):
     IS_PROCESS = True
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional[Model]:
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Model | None:
         """Example XML
 
         <REQUEST_APPROVAL>

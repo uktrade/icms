@@ -1,4 +1,4 @@
-from typing import Any, Optional, Type
+from typing import Any, Optional
 
 from django import forms
 from django.core.exceptions import PermissionDenied
@@ -202,8 +202,8 @@ def archive_application_licence_or_certificate(application: ImpOrExp) -> None:
 def get_application_form(
     application: ImpOrExp,
     request: AuthenticatedHttpRequest,
-    edit_form: Type[forms.ModelForm],
-    submit_form: Type[forms.ModelForm],
+    edit_form: type[forms.ModelForm],
+    submit_form: type[forms.ModelForm],
 ) -> forms.ModelForm:
     """Create a form instance - Used in all edit application views."""
 

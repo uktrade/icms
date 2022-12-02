@@ -1,5 +1,5 @@
 from itertools import product
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -511,9 +511,9 @@ def _create_export_application_document_references(
     certificate.document_references.all().delete()
 
     if application.process_type in [ProcessTypes.COM, ProcessTypes.CFS]:
-        app: Union[
-            CertificateOfManufactureApplication, CertificateOfFreeSaleApplication
-        ] = application.get_specific_model()
+        app: (
+            CertificateOfManufactureApplication | CertificateOfFreeSaleApplication
+        ) = application.get_specific_model()
 
         for country in app.countries.all().order_by("name"):
             cdr: "CaseDocumentReference" = certificate.document_references.create(

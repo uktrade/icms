@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import structlog as logging
 from django.urls import resolve, reverse

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 from behave import given, then, when
 from django.contrib.auth.models import Permission

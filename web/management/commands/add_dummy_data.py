@@ -1,5 +1,6 @@
 import datetime
-from typing import Any, Collection
+from collections.abc import Collection
+from typing import Any
 
 from django.conf import settings
 from django.contrib.auth.models import Permission

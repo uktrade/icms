@@ -1,6 +1,5 @@
 import datetime
 from dataclasses import dataclass, field
-from typing import Optional
 
 from web.domains.user.models import User
 
@@ -20,11 +19,11 @@ class WorkbasketAction:
     is_ajax: bool = False
 
     # confirmation popup text
-    confirm: Optional[str] = None
+    confirm: str | None = None
 
     # Optional section label
     # Used to group actions of import / export applications
-    section_label: Optional[str] = None
+    section_label: str | None = None
 
 
 @dataclass
@@ -38,25 +37,25 @@ class WorkbasketRow:
     """Note that none of the fields are optional, they're just marked so to make
     constructing these items easier."""
 
-    id: Optional[int] = None
+    id: int | None = None
 
     # transaction / reference number
-    reference: Optional[str] = None
+    reference: str | None = None
 
     # subject / topic
-    subject: Optional[str] = None
+    subject: str | None = None
 
     # importer/exporter/etc name
-    company: Optional[str] = None
+    company: str | None = None
 
     # agent name
-    company_agent: Optional[str] = None
+    company_agent: str | None = None
 
     # status
-    status: Optional[str] = None
+    status: str | None = None
 
     # not sure whether this is create or last-update time
-    timestamp: Optional[datetime.datetime] = None
+    timestamp: datetime.datetime | None = None
 
     # not clear to me how this is different to status...
     # information: Optional[str] = None

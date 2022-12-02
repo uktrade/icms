@@ -1,7 +1,8 @@
 import datetime
 from collections import defaultdict
+from collections.abc import Iterable
 from operator import attrgetter
-from typing import TYPE_CHECKING, Any, Iterable, Union
+from typing import TYPE_CHECKING, Any
 
 from dateutil import relativedelta
 from django.db import models
@@ -64,7 +65,7 @@ def search_applications(
 def get_search_results_spreadsheet(case_type: str, results: types.SearchResults) -> bytes:
     """Return a spreadsheet of the supplied search results"""
 
-    rows: Iterable[Union[types.SpreadsheetRow, types.ExportSpreadsheetRow]]
+    rows: Iterable[types.SpreadsheetRow | types.ExportSpreadsheetRow]
 
     if case_type == "import":
         header_data = [

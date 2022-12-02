@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Type
+from typing import TYPE_CHECKING, Any
 
 from web.domains.workbasket.base import WorkbasketAction
 
@@ -43,4 +43,4 @@ class Action:
         return {"application_pk": self.application.pk, "case_type": self.case_type}
 
 
-ActionT = Type[Action]
+ActionT = type[Action]

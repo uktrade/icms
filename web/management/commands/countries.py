@@ -2,7 +2,8 @@ import argparse
 import csv
 import operator
 import sys
-from typing import Any, Iterable, TextIO
+from collections.abc import Iterable
+from typing import Any, TextIO
 
 from django.core.management.base import BaseCommand
 from django.db.models import QuerySet

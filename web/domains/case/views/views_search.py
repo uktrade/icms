@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Type, Union
+from typing import TYPE_CHECKING, Any, Union
 from urllib import parse
 
 from django.contrib.auth.decorators import login_required, permission_required
@@ -52,7 +52,7 @@ if TYPE_CHECKING:
 SearchForm = Union[
     ExportSearchAdvancedForm, ExportSearchForm, ImportSearchAdvancedForm, ImportSearchForm
 ]
-SearchFormT = Type[SearchForm]
+SearchFormT = type[SearchForm]
 
 
 @require_GET

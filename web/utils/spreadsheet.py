@@ -1,6 +1,5 @@
 import io
 from dataclasses import dataclass, field
-from typing import Optional, Union
 
 import xlsxwriter
 
@@ -8,15 +7,15 @@ import xlsxwriter
 @dataclass
 class XlsxHeaderData:
     data: list[str] = field(default_factory=list)
-    styles: dict[str, Union[bool, str, int]] = field(default_factory=dict)
+    styles: dict[str, bool | str | int] = field(default_factory=dict)
 
 
 @dataclass
 class XlsxConfig:
     header: XlsxHeaderData = field(repr=False, default=XlsxHeaderData())
-    column_width: Optional[int] = field(repr=False, default=None)
+    column_width: int | None = field(repr=False, default=None)
     sheet_name: str = field(default_factory=str)
-    rows: Optional[list[list[str]]] = field(repr=False, default=None)
+    rows: list[list[str]] | None = field(repr=False, default=None)
 
 
 def generate_xlsx_file(config: XlsxConfig) -> bytes:

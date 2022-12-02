@@ -1,5 +1,5 @@
 import uuid
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from django.contrib.postgres.indexes import BTreeIndex
 from django.core.serializers.json import DjangoJSONEncoder
@@ -383,7 +383,7 @@ class ImportApplication(ApplicationBase):
         ).order_by("created_at")
 
 
-def get_paper_licence_only(app_t: ImportApplicationType) -> Optional[bool]:
+def get_paper_licence_only(app_t: ImportApplicationType) -> bool | None:
     """Get initial value for `issue_paper_licence_only` field.
 
     Some application types have a fixed value, others can choose it in the response

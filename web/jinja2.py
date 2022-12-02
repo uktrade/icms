@@ -34,7 +34,7 @@ def nl2br(eval_ctx, value):
 def show_all_attrs(value):
     res = []
     for k in dir(value):
-        res.append("%r %r\n" % (k, getattr(value, k)))
+        res.append(f"{k!r} {getattr(value, k)!r}\n")
     return "\n".join(res)
 
 

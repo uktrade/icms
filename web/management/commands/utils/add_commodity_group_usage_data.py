@@ -1,7 +1,8 @@
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import date
 from itertools import islice
-from typing import Iterable, Type
+from typing import Type
 
 from django.utils import timezone
 

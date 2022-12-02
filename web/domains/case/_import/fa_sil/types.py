@@ -1,4 +1,4 @@
-from typing import Type, Union
+from typing import Union
 
 from . import forms, models
 
@@ -10,7 +10,7 @@ GoodsModel = Union[
     models.SILGoodsSection582Other,  # /PS-IGNORE
     models.SILLegacyGoods,
 ]
-GoodsModelT = Type[GoodsModel]
+GoodsModelT = type[GoodsModel]
 
 GoodsForm = Union[
     forms.SILGoodsSection1Form,
@@ -19,7 +19,7 @@ GoodsForm = Union[
     forms.SILGoodsSection582ObsoleteForm,  # /PS-IGNORE
     forms.SILGoodsSection582OtherForm,  # /PS-IGNORE
 ]
-GoodsFormT = Type[GoodsForm]
+GoodsFormT = type[GoodsForm]
 
 ResponsePrepGoodsForm = Union[
     forms.ResponsePrepSILGoodsSection1Form,
@@ -29,7 +29,7 @@ ResponsePrepGoodsForm = Union[
     forms.ResponsePrepSILGoodsSection582OtherForm,  # /PS-IGNORE
 ]
 
-ResponsePrepGoodsFormT = Type[ResponsePrepGoodsForm]
+ResponsePrepGoodsFormT = type[ResponsePrepGoodsForm]
 
 SILReportFirearmModel = Union[
     models.SILSupplementaryReportFirearmSection1,
@@ -40,9 +40,9 @@ SILReportFirearmModel = Union[
     models.SILSupplementaryReportFirearmSectionLegacy,
 ]
 
-SILReportFirearmModelT = Type[SILReportFirearmModel]
+SILReportFirearmModelT = type[SILReportFirearmModel]
 
-SILReportFirearmFormT = Type[
+SILReportFirearmFormT = type[
     Union[
         forms.SILSupplementaryReportFirearmSection1Form,
         forms.SILSupplementaryReportFirearmSection2Form,

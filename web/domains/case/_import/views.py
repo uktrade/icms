@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, List, Optional, Type
+from typing import TYPE_CHECKING, Any
 
 import django.forms as django_forms
 from django.conf import settings
@@ -204,7 +204,7 @@ def create_ironsteel(request: AuthenticatedHttpRequest) -> HttpResponse:
     )
 
 
-def _importers_with_agents(user: User) -> List[int]:
+def _importers_with_agents(user: User) -> list[int]:
     importers_with_agents = get_objects_for_user(user, ["web.is_agent_of_importer"], Importer)
     return [importer.pk for importer in importers_with_agents]
 
@@ -213,9 +213,9 @@ def _create_application(
     request: AuthenticatedHttpRequest,
     *,
     application_type: ImportApplicationType.Types,
-    application_subtype: Optional[ImportApplicationType.SubTypes] = None,
-    model_class: Type[ImportApplication],
-    form_class: Optional[Type[CreateImportApplicationForm]] = None,
+    application_subtype: ImportApplicationType.SubTypes | None = None,
+    model_class: type[ImportApplication],
+    form_class: type[CreateImportApplicationForm] | None = None,
 ) -> HttpResponse:
     """Helper function to create one of several types of importer application.
 
@@ -393,7 +393,7 @@ def add_custom_endorsement(
 
 
 def _add_endorsement(
-    request: AuthenticatedHttpRequest, application_pk: int, Form: Type[django_forms.ModelForm]
+    request: AuthenticatedHttpRequest, application_pk: int, Form: type[django_forms.ModelForm]
 ) -> HttpResponse:
     with transaction.atomic():
         application = get_object_or_404(

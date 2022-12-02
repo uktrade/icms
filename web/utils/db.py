@@ -1,5 +1,6 @@
+from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Iterator, List, TypedDict
+from typing import TypedDict
 
 import sqlparse
 from django.db import connections
@@ -39,7 +40,7 @@ def debug_queries(show_time: bool = True, fancy_print: bool = True) -> Iterator[
 
 
 def show_queries(ignore: int, show_time: bool, fancy_print: bool) -> None:
-    queries_to_debug: List[Query] = connections["default"].queries[ignore:]
+    queries_to_debug: list[Query] = connections["default"].queries[ignore:]
     total_queries = len(queries_to_debug)
     total_time = 0.0
 

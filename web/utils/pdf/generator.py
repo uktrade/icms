@@ -1,6 +1,6 @@
 import io
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 import weasyprint
 from django.conf import settings
@@ -21,7 +21,7 @@ class PdfGenerator:
     licence: ImportApplicationLicence
     doc_type: DocumentTypes
 
-    def get_pdf(self, target: Optional[io.BytesIO] = None) -> Optional[bytes]:
+    def get_pdf(self, target: io.BytesIO | None = None) -> bytes | None:
         """Write the pdf data to the optional target or return the PDF as bytes
 
         :param target: Optional target to write to

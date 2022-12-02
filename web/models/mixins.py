@@ -1,4 +1,4 @@
-class Archivable(object):
+class Archivable:
     def archive(self):
         self.is_active = False
         self.save()  # type: ignore[attr-defined]

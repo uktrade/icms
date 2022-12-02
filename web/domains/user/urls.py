@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 from django.urls import path
 
 from .views import UsersListView, current_user_details, user_details

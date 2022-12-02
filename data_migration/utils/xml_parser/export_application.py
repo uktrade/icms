@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from data_migration import models as dm
 from data_migration.utils.format import get_xml_val, int_or_none, xml_str_or_none
@@ -16,7 +16,7 @@ class CFSProductParser(BaseXmlParser):
     ROOT_NODE = "/PRODUCT_LIST/PRODUCT"
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.CFSProduct]:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> dm.CFSProduct | None:
         """Example XML structure
 
         <PRODUCT>
@@ -54,7 +54,7 @@ class ActiveIngredientParser(BaseXmlParser):
     ROOT_NODE = "/ACTIVE_INGREDIENT_LIST/ACTIVE_INGREDIENT"
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.CFSProductActiveIngredient]:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> dm.CFSProductActiveIngredient | None:
         """Example XML structure
 
         <ACTIVE_INGREDIENT>
@@ -86,7 +86,7 @@ class ProductTypeParser(BaseXmlParser):
     ROOT_NODE = "/PRODUCT_TYPE_NUMBER_LIST/PRODUCT_TYPE_NUMBER"
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.CFSProductType]:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> dm.CFSProductType | None:
         """Example XML structure
 
         <PRODUCT_TYPE_NUMBER>
@@ -115,7 +115,7 @@ class CFSLegislationParser(BaseXmlParser):
     ROOT_NODE = "/LEGISLATION_LIST/LEGISLATION"
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.CFSLegislation]:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> dm.CFSLegislation | None:
         """Example XML structure
 
         <LEGISLATION_LIST>

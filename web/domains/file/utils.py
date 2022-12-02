@@ -1,5 +1,5 @@
 import os.path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from django import forms
 from django.db import models
@@ -63,7 +63,7 @@ def create_file_model(
     f: S3Boto3StorageFile,
     created_by: User,
     related_file_manager: Any,
-    extra_args: Optional[Dict[str, Any]] = None,
+    extra_args: dict[str, Any] | None = None,
 ) -> models.Model:
     """Create File (or sub-class) model.
 

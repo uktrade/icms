@@ -1,6 +1,5 @@
 import random
 
-import factory
 import factory.fuzzy
 
 from web.domains.firearms.models import (

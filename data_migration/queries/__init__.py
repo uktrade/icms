@@ -1,4 +1,4 @@
-from typing import Literal, Type
+from typing import Literal
 
 from django.db.models import Model
 
@@ -418,7 +418,7 @@ DATA_TYPE_M2M: dict[str, list[M2M]] = {
     "user": user_m2m,
 }
 
-DATA_TYPE_XML: dict[str, list[Type[xml_parser.BaseXmlParser]]] = {
+DATA_TYPE_XML: dict[str, list[type[xml_parser.BaseXmlParser]]] = {
     "export_application": export_xml,
     "import_application": ia_xml,
     "reference": [],
@@ -430,4 +430,4 @@ TASK_LIST = [
     task.ProcessTask,
 ]
 
-FILE_MODELS: list[Type[Model]] = [dm.FileFolder, dm.FileTarget, dm.DocFolder, dm.File]
+FILE_MODELS: list[type[Model]] = [dm.FileFolder, dm.FileTarget, dm.DocFolder, dm.File]

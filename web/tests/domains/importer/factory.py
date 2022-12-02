@@ -1,4 +1,3 @@
-import factory
 import factory.fuzzy
 
 from web.domains.importer.models import Importer

@@ -17,41 +17,41 @@ class SearchTerms:
     case_type: str
 
     # ---- Common search fields (Import and Export applications) ----
-    app_type: Optional[str] = None
-    case_status: Optional[str] = None
-    case_ref: Optional[str] = None
-    licence_ref: Optional[str] = None
-    response_decision: Optional[str] = None
-    submitted_date_start: Optional[datetime.date] = None
-    submitted_date_end: Optional[datetime.date] = None
-    reassignment_search: Optional[bool] = False
+    app_type: str | None = None
+    case_status: str | None = None
+    case_ref: str | None = None
+    licence_ref: str | None = None
+    response_decision: str | None = None
+    submitted_date_start: datetime.date | None = None
+    submitted_date_end: datetime.date | None = None
+    reassignment_search: bool | None = False
     reassignment_user: Optional["User"] = None
-    application_contact: Optional[str] = None
-    pending_firs: Optional[str] = None
-    pending_update_reqs: Optional[str] = None
+    application_contact: str | None = None
+    pending_firs: str | None = None
+    pending_update_reqs: str | None = None
 
     # ---- Import application fields ----
     # icms_legacy_cases = str = None
-    app_sub_type: Optional[str] = None
-    applicant_ref: Optional[str] = None
-    importer_agent_name: Optional[str] = None
-    licence_type: Optional[str] = None
-    chief_usage_status: Optional[str] = None
+    app_sub_type: str | None = None
+    applicant_ref: str | None = None
+    importer_agent_name: str | None = None
+    licence_type: str | None = None
+    chief_usage_status: str | None = None
     origin_country: Optional["QuerySet[Country]"] = None
     consignment_country: Optional["QuerySet[Country]"] = None
-    shipping_year: Optional[str] = None
+    shipping_year: str | None = None
     goods_category: Optional["CommodityGroup"] = None
-    commodity_code: Optional[str] = None
-    under_appeal: Optional[str] = None
-    licence_date_start: Optional[datetime.date] = None
-    licence_date_end: Optional[datetime.date] = None
-    issue_date_start: Optional[datetime.date] = None
-    issue_date_end: Optional[datetime.date] = None
+    commodity_code: str | None = None
+    under_appeal: str | None = None
+    licence_date_start: datetime.date | None = None
+    licence_date_end: datetime.date | None = None
+    issue_date_start: datetime.date | None = None
+    issue_date_end: datetime.date | None = None
 
     # ---- Export application fields ----
-    exporter_agent_name: Optional[str] = None
-    closed_date_start: Optional[datetime.date] = None
-    closed_date_end: Optional[datetime.date] = None
+    exporter_agent_name: str | None = None
+    closed_date_start: datetime.date | None = None
+    closed_date_end: datetime.date | None = None
     certificate_country: Optional["QuerySet[Country]"] = None
     manufacture_country: Optional["QuerySet[Country]"] = None
 
@@ -68,29 +68,29 @@ class CaseStatus:
     application_sub_type: str
     status: str
     licence_type: str  # Used in spreadsheet
-    licence_start_date: Optional[str] = None  # Used in spreadsheet
-    licence_end_date: Optional[str] = None  # Used in spreadsheet
-    chief_usage_status: Optional[str] = None  # Used in spreadsheet
-    applicant_reference: Optional[str] = None
-    licence_reference: Optional[str] = None
-    licence_reference_link: Optional[str] = None
-    licence_validity: Optional[str] = None
+    licence_start_date: str | None = None  # Used in spreadsheet
+    licence_end_date: str | None = None  # Used in spreadsheet
+    chief_usage_status: str | None = None  # Used in spreadsheet
+    applicant_reference: str | None = None
+    licence_reference: str | None = None
+    licence_reference_link: str | None = None
+    licence_validity: str | None = None
 
 
 @dataclass
 class ApplicantDetails:
     organisation_name: str
     application_contact: str
-    agent_name: Optional[str] = None
+    agent_name: str | None = None
 
 
 @dataclass
 class CommodityDetails:
     origin_country: str
-    consignment_country: Optional[str] = None
-    goods_category: Optional[str] = None
-    shipping_year: Optional[int] = None
-    commodity_codes: Optional[list[str]] = None
+    consignment_country: str | None = None
+    goods_category: str | None = None
+    shipping_year: int | None = None
+    commodity_codes: list[str] | None = None
 
 
 @dataclass
@@ -98,7 +98,7 @@ class AssigneeDetails:
     title: str
     ownership_date: str
     assignee_name: str
-    reassignment_date: Optional[str] = None
+    reassignment_date: str | None = None
 
 
 @dataclass
@@ -154,7 +154,7 @@ class ExportResultRow:
     assignee_details: AssigneeDetails
 
     # Applicant details optional
-    agent_name: Optional[str] = None
+    agent_name: str | None = None
 
 
 ResultRow = Union[ImportResultRow, ExportResultRow]
@@ -168,24 +168,24 @@ class SearchResults:
 
 class SpreadsheetRow(NamedTuple):
     case_reference: str
-    applicant_reference: Optional[str]
-    licence_reference: Optional[str]
+    applicant_reference: str | None
+    licence_reference: str | None
     licence_type: str
-    licence_start_date: Optional[str]
-    licence_end_date: Optional[str]
+    licence_start_date: str | None
+    licence_end_date: str | None
     application_type: str
     application_sub_type: str
     case_status: str
-    chief_usage_status: Optional[str]
+    chief_usage_status: str | None
     submitted_date: str
     organisation_name: str
-    agent: Optional[str]
+    agent: str | None
     application_contact: str
     origin_country: str
-    country_of_consignment: Optional[str]
-    shipping_year: Optional[int]
-    goods_category: Optional[str]
-    commodity_codes: Optional[str]
+    country_of_consignment: str | None
+    shipping_year: int | None
+    goods_category: str | None
+    commodity_codes: str | None
 
 
 class ExportSpreadsheetRow(NamedTuple):

@@ -1,10 +1,8 @@
-from typing import Any, Optional
+from typing import Any
 
 
 class APIError(Exception):
-    def __init__(
-        self, error_msg: str, dev_error_msg: str, status_code: Optional[Any] = None
-    ) -> None:
+    def __init__(self, error_msg: str, dev_error_msg: str, status_code: Any | None = None) -> None:
         """Exception returned for known errors when interacting with 3rd party APIs.
 
         :param error_msg: Error message suitable to show user.

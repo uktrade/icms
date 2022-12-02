@@ -1,6 +1,6 @@
 import datetime
 import re
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
@@ -345,7 +345,7 @@ def save_app_data(
 
 
 def add_app_file(
-    *, client: "Client", view_name: str, app_pk: int, post_data: Optional[dict[str, Any]] = None
+    *, client: "Client", view_name: str, app_pk: int, post_data: dict[str, Any] | None = None
 ) -> None:
     """Add a document to an application."""
 

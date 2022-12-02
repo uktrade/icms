@@ -1,4 +1,4 @@
-from typing import Any, Type
+from typing import Any
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -226,8 +226,8 @@ def edit_further_questions(
 def _get_opt_form_instance(
     application: OutwardProcessingTradeApplication,
     request: AuthenticatedHttpRequest,
-    edit_form: Type[ModelForm],
-    submit_form: Type[ModelForm],
+    edit_form: type[ModelForm],
+    submit_form: type[ModelForm],
 ) -> ModelForm:
     """Create a form instance for one of several OPT forms."""
 

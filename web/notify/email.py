@@ -1,4 +1,4 @@
-from typing import Collection, Optional, Tuple
+from collections.abc import Collection
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -18,8 +18,8 @@ def send_email(
     body: str,
     recipients: Collection[str],
     cc: Collection[str] = (),
-    attachments: Collection[Tuple[str, bytes]] = (),
-    html_message: Optional[str] = None,
+    attachments: Collection[tuple[str, bytes]] = (),
+    html_message: str | None = None,
 ):
     message = EmailMultiAlternatives(
         subject, body, settings.EMAIL_FROM, recipients, cc=cc, attachments=attachments

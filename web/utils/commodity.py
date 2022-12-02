@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import TYPE_CHECKING, Optional, TypedDict
+from typing import TYPE_CHECKING, TypedDict
 
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import F, Model, OuterRef, Subquery, Value
@@ -18,7 +18,7 @@ class CommodityGroupData(TypedDict):
     group_commodities: list[int]
 
 
-def get_usage_records(app_type: str, app_sub_type: Optional[str] = None) -> "QuerySet[Usage]":
+def get_usage_records(app_type: str, app_sub_type: str | None = None) -> "QuerySet[Usage]":
     """Gets all Usage records for the supplied application type / subtype"""
 
     usage_records = Usage.objects.all()
@@ -28,7 +28,7 @@ def get_usage_records(app_type: str, app_sub_type: Optional[str] = None) -> "Que
 
 
 def add_usage_filter(
-    model: "QuerySet[Model]", app_type: str, app_sub_type: Optional[str] = None, usage_path=""
+    model: "QuerySet[Model]", app_type: str, app_sub_type: str | None = None, usage_path=""
 ):
     """Apply all required filters to filter usage records correctly.
 
@@ -68,7 +68,7 @@ def add_usage_filter(
     )
 
 
-def get_usage_countries(app_type: str, app_sub_type: Optional[str] = None) -> "QuerySet[Country]":
+def get_usage_countries(app_type: str, app_sub_type: str | None = None) -> "QuerySet[Country]":
     """Return countries linked to the usage records."""
     countries = Country.objects.filter(is_active=True)
     countries = add_usage_filter(countries, app_type, app_sub_type, "usage__")
@@ -164,9 +164,7 @@ def get_active_commodities(commodities: "QuerySet[Commodity]") -> "QuerySet[Comm
     )
 
 
-def get_usage_data(
-    app_type: str, app_sub_type: Optional[str] = None
-) -> dict[str, dict[str, float]]:
+def get_usage_data(app_type: str, app_sub_type: str | None = None) -> dict[str, dict[str, float]]:
     usages = (
         get_usage_records(app_type, app_sub_type)
         .exclude(maximum_allocation__isnull=True)
