@@ -1,5 +1,5 @@
 from itertools import islice
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 import oracledb
 from django.conf import settings
@@ -110,7 +110,7 @@ class Command(MigrationBaseCommand):
         :param rows: The rows of data returned from the query
         :param model: The model being targeted for creation
         """
-        process_pk_start: Optional[int] = new_process_pk() if base_model.PROCESS_PK else None
+        process_pk_start: int | None = new_process_pk() if base_model.PROCESS_PK else None
 
         for name in base_model.models_to_populate():
             model = getattr(models, name)

@@ -1,6 +1,6 @@
 import datetime
 from enum import Enum, IntEnum
-from typing import Literal, Optional, Union
+from typing import Literal
 
 from pydantic import BaseModel, validator
 
@@ -41,8 +41,8 @@ class OrganisationData(BaseModel):
     eori_number: str
     name: str
     address: AddressData
-    start_date: Optional[datetime.date] = None
-    end_date: Optional[datetime.date] = None
+    start_date: datetime.date | None = None
+    end_date: datetime.date | None = None
 
     @validator("eori_number")
     def eori_number_must_be_valid(cls, v):
@@ -77,16 +77,16 @@ class LicenceDataBase(BaseModel):
 
     organisation: OrganisationData
 
-    country_group: Optional[str] = None
-    country_code: Optional[str] = None
+    country_group: str | None = None
+    country_code: str | None = None
     restrictions: str
 
 
 class FirearmGoodsData(BaseModel):
     description: str
-    quantity: Optional[float] = None
-    controlled_by: Optional[ControlledByEnum] = None
-    unit: Optional[QuantityCodeEnum] = None
+    quantity: float | None = None
+    controlled_by: ControlledByEnum | None = None
+    unit: QuantityCodeEnum | None = None
 
 
 class FirearmLicenceData(LicenceDataBase):
@@ -108,7 +108,7 @@ class SanctionsLicenceData(LicenceDataBase):
 
 
 class CreateLicenceData(BaseModel):
-    licence: Union[FirearmLicenceData, SanctionsLicenceData]
+    licence: FirearmLicenceData | SanctionsLicenceData
 
 
 class AcceptedLicence(BaseModel):

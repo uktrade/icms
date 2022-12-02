@@ -6,9 +6,22 @@ from django.db.models import Model
 from data_migration import models as dm
 from web import models as web
 
-QueryModel = NamedTuple("QueryModel", [("module", ModuleType), ("query", str), ("model", Model)])
-SourceTarget = NamedTuple("SourceTarget", [("source", Model), ("target", Model)])
-M2M = NamedTuple("M2M", [("source", Model), ("target", Model), ("field", str)])
+
+class QueryModel(NamedTuple):
+    module: ModuleType
+    query: str
+    model: Model
+
+
+class SourceTarget(NamedTuple):
+    source: Model
+    target: Model
+
+
+class M2M(NamedTuple):
+    source: Model
+    target: Model
+    field: str
 
 
 def source_target_list(lst: list[str]):

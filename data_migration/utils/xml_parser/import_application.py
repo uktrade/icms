@@ -1,5 +1,6 @@
 from collections import defaultdict
-from typing import TYPE_CHECKING, Any, Generator, Optional
+from collections.abc import Generator
+from typing import TYPE_CHECKING, Any, Optional
 
 from lxml import etree
 
@@ -100,7 +101,7 @@ class UserImportCertificateParser(BaseXmlParser):
     ROOT_NODE = "/FIREARMS_CERTIFICATE_LIST/FIREARMS_CERTIFICATE"
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.UserImportCertificate]:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> dm.UserImportCertificate | None:
         """Example XML structure
 
         <FIREARMS_CERTIFICATE>
@@ -709,7 +710,7 @@ class OILApplicationFirearmAuthorityParser(BaseXmlParser):
     @classmethod
     def parse_xml_fields(
         cls, parent_pk: int, xml: "ET"
-    ) -> Optional[dm.OILApplicationFirearmAuthority]:
+    ) -> dm.OILApplicationFirearmAuthority | None:
         """Example XML structure
 
         <AUTHORITY>
@@ -738,7 +739,7 @@ class SILApplicationFirearmAuthorityParser(BaseXmlParser):
     @classmethod
     def parse_xml_fields(
         cls, parent_pk: int, xml: "ET"
-    ) -> Optional[dm.SILApplicationFirearmAuthority]:
+    ) -> dm.SILApplicationFirearmAuthority | None:
         """Example XML structure
 
         <AUTHORITY>
@@ -765,7 +766,7 @@ class SILApplicationSection5AuthorityParser(BaseXmlParser):
     @classmethod
     def parse_xml_fields(
         cls, parent_pk: int, xml: "ET"
-    ) -> Optional[dm.SILApplicationFirearmAuthority]:
+    ) -> dm.SILApplicationFirearmAuthority | None:
         """Example XML structure
 
         <AUTHORITY>
@@ -790,7 +791,7 @@ class ClauseQuantityParser(BaseXmlParser):
     ROOT_NODE = "/GOODS_CATEGORY_LIST/GOODS_CATEGORY"
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.ClauseQuantity]:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> dm.ClauseQuantity | None:
         """Example XML structure
 
         <GOODS_CATEGORY>
@@ -829,7 +830,7 @@ class ActQuantityParser(BaseXmlParser):
     ROOT_NODE = "/GOODS_CATEGORY_LIST/GOODS_CATEGORY"
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.ActQuantity]:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> dm.ActQuantity | None:
         """Example XML structure
 
         <GOODS_CATEGORY>
@@ -870,7 +871,7 @@ class SanctionGoodsParser(BaseXmlParser):
     @classmethod
     def parse_xml_fields(
         cls, parent_pk: int, xml: "ET"
-    ) -> Optional[dm.SanctionsAndAdhocApplicationGoods]:
+    ) -> dm.SanctionsAndAdhocApplicationGoods | None:
         """Example XML structure
 
         <COMMODITY>
@@ -908,7 +909,7 @@ class WoodContractParser(BaseXmlParser):
     ROOT_NODE = "/CONTRACT_LIST/CONTRACT"
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> Optional[dm.WoodContractFile]:
+    def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> dm.WoodContractFile | None:
         """Example XML structure
 
         <CONTRACT>

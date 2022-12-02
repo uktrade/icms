@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
 from django_select2 import forms as s2forms
@@ -45,7 +43,7 @@ class UsageCountryWidget(s2forms.ModelSelect2Widget):
         self,
         request: HttpRequest,
         term: str,
-        queryset: Optional[QuerySet] = None,
+        queryset: QuerySet | None = None,
         **dependent_fields,
     ) -> QuerySet:
         """Filter the available countries depending on the application type selected by the user."""
@@ -53,7 +51,7 @@ class UsageCountryWidget(s2forms.ModelSelect2Widget):
         if queryset is None:
             queryset = self.get_queryset()
 
-        application_type: Optional[str] = dependent_fields.get("application_type")
+        application_type: str | None = dependent_fields.get("application_type")
 
         if not application_type:
             return queryset.none()

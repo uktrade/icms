@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 from django import forms
 from django.utils import timezone
@@ -123,12 +123,12 @@ class CreateImportApplicationForm(forms.Form):
 class CreateWoodQuotaApplicationForm(CreateImportApplicationForm):
     """Create wood quota application form - Defines extra validation logic"""
 
-    def clean(self) -> Dict[str, Any]:
+    def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
 
         if not self.has_error("importer_office"):
             office: Office = cleaned_data["importer_office"]
-            postcode: Optional[str] = office.postcode
+            postcode: str | None = office.postcode
 
             if not postcode or (not postcode.upper().startswith("BT")):
                 self.add_error(

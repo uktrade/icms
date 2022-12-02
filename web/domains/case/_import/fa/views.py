@@ -1,5 +1,3 @@
-from typing import Type, Union
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
@@ -783,7 +781,7 @@ def _update_know_bought_from(firearms_application: FaImportApplication) -> None:
 
 def _get_entity_form(
     entity: str,
-) -> Type[Union[ImportContactLegalEntityForm, ImportContactPersonForm]]:
+) -> type[ImportContactLegalEntityForm | ImportContactPersonForm]:
 
     if entity == ImportContact.LEGAL:
         form_class = ImportContactLegalEntityForm

@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from typing import Optional
 
 from django.forms import BaseForm
 from django.forms.utils import pretty_name
@@ -21,7 +20,7 @@ class PageErrors:
     errors: list[FieldError] = field(default_factory=list)
 
     # URL of the page
-    url: Optional[str] = None
+    url: str | None = None
 
     def has_errors(self) -> bool:
         return len(self.errors) > 0
@@ -45,7 +44,7 @@ class ApplicationErrors:
     def add_many(self, page_errors: list[PageErrors]) -> None:
         self.page_errors.extend(page_errors)
 
-    def get_page_errors(self, page_name: str) -> Optional[PageErrors]:
+    def get_page_errors(self, page_name: str) -> PageErrors | None:
         for p in self.page_errors:
             if p.page_name == page_name:
                 return p

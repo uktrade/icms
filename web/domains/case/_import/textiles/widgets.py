@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
 from django_select2 import forms as s2forms
@@ -24,7 +22,7 @@ class TextilesCategoryCommodityGroupWidget(s2forms.ModelSelect2Widget):
         self,
         request: HttpRequest,
         term: str,
-        queryset: Optional[QuerySet] = None,
+        queryset: QuerySet | None = None,
         **dependent_fields,
     ) -> "QuerySet[Commodity]":
         """Filter the available categories depending on the origin country selected by the user."""
@@ -32,7 +30,7 @@ class TextilesCategoryCommodityGroupWidget(s2forms.ModelSelect2Widget):
         if queryset is None:
             queryset = self.get_queryset()
 
-        origin: Optional[str] = dependent_fields.get("origin_country")
+        origin: str | None = dependent_fields.get("origin_country")
 
         if not origin:
             return queryset.none()

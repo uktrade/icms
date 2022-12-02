@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
@@ -23,7 +23,7 @@ class DerogationCountryOfOriginSelect(ModelSelect2Widget):
         return get_usage_countries(ImportApplicationType.Types.DEROGATION)  # type: ignore[arg-type]
 
     def build_attrs(
-        self, base_attrs: dict[str, Any], extra_attrs: Optional[dict[str, Any]] = None
+        self, base_attrs: dict[str, Any], extra_attrs: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         attrs = super().build_attrs(base_attrs, extra_attrs)
 
@@ -44,7 +44,7 @@ class DerogationCommoditySelect(ModelSelect2Widget):
     dependent_fields = {"origin_country": "origin_country"}
 
     def build_attrs(
-        self, base_attrs: dict[str, Any], extra_attrs: Optional[dict[str, Any]] = None
+        self, base_attrs: dict[str, Any], extra_attrs: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         attrs = super().build_attrs(base_attrs, extra_attrs)
 
@@ -62,7 +62,7 @@ class DerogationCommoditySelect(ModelSelect2Widget):
         self,
         request: HttpRequest,
         term: str,
-        queryset: Optional[QuerySet] = None,
+        queryset: QuerySet | None = None,
         **dependent_fields,
     ) -> "QuerySet[Commodity]":
         """Filter the available Commodities depending on the origin country selected by the user."""
@@ -70,7 +70,7 @@ class DerogationCommoditySelect(ModelSelect2Widget):
         if queryset is None:
             queryset = self.get_queryset()
 
-        origin_country_pk: Optional[int] = dependent_fields.get("origin_country")
+        origin_country_pk: int | None = dependent_fields.get("origin_country")
 
         if not origin_country_pk:
             return queryset.none()

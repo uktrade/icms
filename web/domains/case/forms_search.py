@@ -1,5 +1,4 @@
 import datetime
-from typing import Optional
 
 from django import forms
 from django_select2.forms import Select2MultipleWidget
@@ -74,9 +73,7 @@ class SearchFormBase(forms.Form):
         self.fields["reassignment_user"].queryset = get_ilb_admin_users()
 
     @staticmethod
-    def dates_are_reversed(
-        date_from: Optional[datetime.date], date_to: Optional[datetime.date]
-    ) -> bool:
+    def dates_are_reversed(date_from: datetime.date | None, date_to: datetime.date | None) -> bool:
         """Check if two dates are in reversed (wrong) order."""
         if (date_from and date_to) and (date_from > date_to):
             return True

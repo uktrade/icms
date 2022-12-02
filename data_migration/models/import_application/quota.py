@@ -1,4 +1,5 @@
-from typing import Any, Generator
+from collections.abc import Generator
+from typing import Any
 
 from django.db import models
 from django.db.models import F, OuterRef, Subquery

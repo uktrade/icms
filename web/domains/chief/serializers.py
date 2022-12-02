@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Literal, Optional, Protocol
+from typing import TYPE_CHECKING, Any, Literal, Protocol
 
 from web.domains.case.models import CaseDocumentReference
 from web.utils.commodity import annotate_commodity_unit
@@ -326,7 +326,7 @@ def _get_address_lines(office: "Office") -> dict[str, str]:
     }
 
 
-def _get_address_line(line: Optional[str]) -> str:
+def _get_address_line(line: str | None) -> str:
     """Return a chief formatted address line.
 
     The CHIEF API limits each line to 35 characters.

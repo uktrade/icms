@@ -1,6 +1,5 @@
 import random
 
-import factory
 import factory.fuzzy
 
 from web.domains.country.models import (

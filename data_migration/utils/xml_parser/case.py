@@ -1,5 +1,4 @@
 import datetime as dt
-from typing import Optional
 
 from django.db.models import Model
 from lxml import etree
@@ -23,7 +22,7 @@ class VariationImportParser(BaseXmlParser):
     PARENT = dm.ImportApplication
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional[Model]:
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Model | None:
         """Example XML
 
         <VARIATION_REQUEST>
@@ -90,7 +89,7 @@ class CaseNoteExportParser(BaseXmlParser):
     ROOT_NODE = "/NOTE_LIST/NOTE"
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional[Model]:
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Model | None:
         """Example XML
 
         <NOTE>
@@ -144,7 +143,7 @@ class UpdateExportParser(BaseXmlParser):
     REVERSE_LIST = True
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional[Model]:
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Model | None:
         """Example XML
 
         <UPDATE>

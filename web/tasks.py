@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 # Celery tasks
 from web.domains.case.tasks import (  # NOQA

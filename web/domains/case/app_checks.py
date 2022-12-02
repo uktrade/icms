@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Sum
 from django.forms import model_to_dict
@@ -172,7 +170,7 @@ def _get_ironsteel_errors(application: IronSteelApplication) -> list[PageErrors]
     return errors
 
 
-def get_checklist_errors(application: ImpOrExp) -> Optional[PageErrors]:
+def get_checklist_errors(application: ImpOrExp) -> PageErrors | None:
     """Returns any checklist errors for the applications that have a checklist."""
 
     app_config = {
@@ -229,7 +227,7 @@ def get_checklist_errors(application: ImpOrExp) -> Optional[PageErrors]:
     return checklist_errors
 
 
-def get_response_preparation_errors(application: ImpOrExp, case_type) -> Optional[PageErrors]:
+def get_response_preparation_errors(application: ImpOrExp, case_type) -> PageErrors | None:
     """Returns any response preparation errors."""
 
     prepare_errors = PageErrors(

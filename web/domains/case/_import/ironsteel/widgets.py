@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
@@ -21,7 +21,7 @@ class IronSteelCommodityGroupSelect(s2forms.ModelSelect2Widget):
     dependent_fields = {"origin_country": "origin_country"}
 
     def build_attrs(
-        self, base_attrs: dict[str, Any], extra_attrs: Optional[dict[str, Any]] = None
+        self, base_attrs: dict[str, Any], extra_attrs: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         attrs = super().build_attrs(base_attrs, extra_attrs)
 
@@ -34,7 +34,7 @@ class IronSteelCommodityGroupSelect(s2forms.ModelSelect2Widget):
         self,
         request: HttpRequest,
         term: str,
-        queryset: Optional[QuerySet] = None,
+        queryset: QuerySet | None = None,
         **dependent_fields,
     ) -> QuerySet:
         """Filter the available categories depending on the origin country selected by the user."""
@@ -42,7 +42,7 @@ class IronSteelCommodityGroupSelect(s2forms.ModelSelect2Widget):
         if queryset is None:
             queryset = self.get_queryset()
 
-        origin_country: Optional[str] = dependent_fields.get("origin_country")
+        origin_country: str | None = dependent_fields.get("origin_country")
 
         if not origin_country:
             return queryset.none()
@@ -68,7 +68,7 @@ class IronSteelCommoditySelect(s2forms.ModelSelect2Widget):
     }
 
     def build_attrs(
-        self, base_attrs: dict[str, Any], extra_attrs: Optional[dict[str, Any]] = None
+        self, base_attrs: dict[str, Any], extra_attrs: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         attrs = super().build_attrs(base_attrs, extra_attrs)
 
@@ -81,7 +81,7 @@ class IronSteelCommoditySelect(s2forms.ModelSelect2Widget):
         self,
         request: HttpRequest,
         term: str,
-        queryset: Optional[QuerySet] = None,
+        queryset: QuerySet | None = None,
         **dependent_fields,
     ) -> "QuerySet[Commodity]":
         """Filter the available categories depending on the origin country selected by the user."""
@@ -89,12 +89,12 @@ class IronSteelCommoditySelect(s2forms.ModelSelect2Widget):
         if queryset is None:
             queryset = self.get_queryset()
 
-        origin_country: Optional[str] = dependent_fields.get("origin_country")
+        origin_country: str | None = dependent_fields.get("origin_country")
 
         if not origin_country:
             return queryset.none()
 
-        commodity_group: Optional[str] = dependent_fields.get("commodity_group")
+        commodity_group: str | None = dependent_fields.get("commodity_group")
 
         if not commodity_group:
             return queryset.none()

@@ -1,5 +1,3 @@
-from typing import Type
-
 from .forms import (
     FurtherQuestionsBaseOPTForm,
     FurtherQuestionsEmploymentDecreasedOPTForm,
@@ -12,7 +10,7 @@ from .forms import (
 from .models import OutwardProcessingTradeFile
 
 
-def get_fq_form(file_type: str) -> Type[FurtherQuestionsBaseOPTForm]:
+def get_fq_form(file_type: str) -> type[FurtherQuestionsBaseOPTForm]:
     """Get the edit form for a specific Further Questions type."""
 
     form_class_map = {

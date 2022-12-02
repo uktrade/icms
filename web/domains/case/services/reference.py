@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Literal, Optional
+from typing import TYPE_CHECKING, Literal
 
 from django.utils import timezone
 
@@ -118,7 +118,7 @@ def _get_next_reference(
 
     lock_manager.ensure_tables_are_locked([CaseReference])
 
-    year: Optional[int]
+    year: int | None
 
     if use_year:
         year = timezone.now().year

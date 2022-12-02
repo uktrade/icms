@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, NamedTuple, Optional, Tuple, Type, Union
+from typing import TYPE_CHECKING, NamedTuple, Union
 
 from web.domains.case._import.ironsteel.models import IronSteelApplication
 from web.domains.case.export.models import (
@@ -30,10 +30,10 @@ if TYPE_CHECKING:
 ImpTypeOrExpType = Union[ImportApplicationType, ExportApplicationType]
 
 ImpOrExp = Union[ImportApplication, ExportApplication]
-ImpOrExpT = Type[ImpOrExp]
+ImpOrExpT = type[ImpOrExp]
 
 ImpOrExpOrAccess = Union[ImportApplication, ExportApplication, AccessRequest]
-ImpOrExpOrAccessT = Type[ImpOrExpOrAccess]
+ImpOrExpOrAccessT = type[ImpOrExpOrAccess]
 
 
 ApplicationsWithChecklist = Union[
@@ -56,10 +56,10 @@ ApplicationsWithCaseEmail = Union[
     CertificateOfGoodManufacturingPracticeApplication,
 ]
 
-IssuedDocument = Union["ImportApplicationLicence", "ExportApplicationCertificate"]
+IssuedDocument = Union[ImportApplicationLicence, ExportApplicationCertificate]
 
 
 class CaseEmailConfig(NamedTuple):
     application: ApplicationsWithCaseEmail
     file_qs: "QuerySet[File]"
-    to_choices: Optional[List[Tuple[str, str]]] = None
+    to_choices: list[tuple[str, str]] | None = None

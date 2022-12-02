@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.contrib.auth.models import Permission
 
 # from django.contrib.contenttypes.models import ContentType
@@ -30,7 +28,7 @@ class AuthTestCase(TestCase):
         if not self.client.login(username="test_user", password="test"):
             raise Exception("Login Failed!")
 
-    def login_with_permissions(self, permissions: Optional[list[str]] = None):
+    def login_with_permissions(self, permissions: list[str] | None = None):
         """
         Log user in and grant defined permissions to user for testing
         """

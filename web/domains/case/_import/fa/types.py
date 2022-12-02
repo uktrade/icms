@@ -1,5 +1,3 @@
-from typing import Type, Union
-
 from web.domains.case._import.fa_dfl.forms import (
     DFLSupplementaryInfoForm,
     DFLSupplementaryReportForm,
@@ -28,17 +26,15 @@ from web.domains.case._import.fa_sil.models import (
     SILSupplementaryReport,
 )
 
-FaImportApplication = Union[OpenIndividualLicenceApplication, DFLApplication, SILApplication]
-FaSupplementaryInfo = Union[DFLSupplementaryInfo, OILSupplementaryInfo, SILSupplementaryInfo]
+FaImportApplication = OpenIndividualLicenceApplication | DFLApplication | SILApplication
+FaSupplementaryInfo = DFLSupplementaryInfo | OILSupplementaryInfo | SILSupplementaryInfo
 
-FaSupplementaryReport = Union[
-    DFLSupplementaryReport, OILSupplementaryReport, SILSupplementaryReport
+FaSupplementaryReport = DFLSupplementaryReport | OILSupplementaryReport | SILSupplementaryReport
+
+FaSupplementaryInfoFormT = type[
+    DFLSupplementaryInfoForm | OILSupplementaryInfoForm | SILSupplementaryInfoForm
 ]
 
-FaSupplementaryInfoFormT = Type[
-    Union[DFLSupplementaryInfoForm, OILSupplementaryInfoForm, SILSupplementaryInfoForm]
-]
-
-FaSupplementaryReportFormT = Type[
-    Union[DFLSupplementaryReportForm, OILSupplementaryReportForm, SILSupplementaryReportForm]
+FaSupplementaryReportFormT = type[
+    DFLSupplementaryReportForm | OILSupplementaryReportForm | SILSupplementaryReportForm
 ]

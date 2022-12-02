@@ -1,4 +1,4 @@
-from typing import Any, ClassVar, Optional
+from typing import Any, ClassVar
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
@@ -24,7 +24,7 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
     application: ImpOrExp
 
     # Current active task
-    task: Optional[Task]
+    task: Task | None
 
     # Used to fetch the object.
     model = Process
@@ -34,13 +34,13 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
     current_status: ClassVar[list[str]]
 
     # The expected current active task of the process record
-    current_task_type: ClassVar[Optional[str]] = None
+    current_task_type: ClassVar[str | None] = None
 
     # The next status to set.
-    next_status: ClassVar[Optional[str]] = None
+    next_status: ClassVar[str | None] = None
 
     # The next task type to set
-    next_task_type: ClassVar[Optional[str]] = None
+    next_task_type: ClassVar[str | None] = None
 
     http_method_names = ["get", "post"]
 
@@ -65,7 +65,7 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
         # TODO ICMSLST-1240: a method could be called / overridden here.
         # self.check_application_permission()
 
-    def get_object(self, queryset: Optional[models.QuerySet] = None) -> ImpOrExp:
+    def get_object(self, queryset: models.QuerySet | None = None) -> ImpOrExp:
         """Downcast to specific model class."""
 
         application = super().get_object(queryset).get_specific_model()
@@ -74,7 +74,7 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
 
         return application
 
-    def get_task(self) -> Optional[Task]:
+    def get_task(self) -> Task | None:
         """Load the expected current task"""
         task = None
         is_post = self.request.method == "POST"
@@ -133,19 +133,19 @@ class ApplicationAndTaskRelatedObjectMixin:
     """
 
     application: ImpOrExp
-    task: Optional[Task] = None
+    task: Task | None = None
 
     # The expected current status of the process record
     current_status: ClassVar[list[str]]
 
     # The expected current active task of the process record
-    current_task_type: ClassVar[Optional[str]] = None
+    current_task_type: ClassVar[str | None] = None
 
     # The next status to set.
-    next_status: ClassVar[Optional[str]] = None
+    next_status: ClassVar[str | None] = None
 
     # The next task type to set
-    next_task_type: ClassVar[Optional[str]] = None
+    next_task_type: ClassVar[str | None] = None
 
     def set_application_and_task(self) -> None:
         self.application = Process.objects.get(

@@ -1,5 +1,5 @@
 import re
-from typing import Any, Optional, Type
+from typing import Any
 
 import structlog as logging
 from django import forms
@@ -207,7 +207,7 @@ class EditCOMForm(OptionalFormMixin, PrepareCertManufactureFormBase):
     def clean_is_pesticide_on_free_sale_uk(self):
         """Perform extra logic even thought this is the edit form where every field is optional"""
 
-        val: Optional[bool] = self.cleaned_data["is_pesticide_on_free_sale_uk"]
+        val: bool | None = self.cleaned_data["is_pesticide_on_free_sale_uk"]
 
         if val:
             raise forms.ValidationError(self.is_pesticide_on_free_sale_uk_error_msg)
@@ -217,7 +217,7 @@ class EditCOMForm(OptionalFormMixin, PrepareCertManufactureFormBase):
     def clean_is_manufacturer(self):
         """Perform extra logic even thought this is the edit form where every field is optional"""
 
-        val: Optional[bool] = self.cleaned_data["is_manufacturer"]
+        val: bool | None = self.cleaned_data["is_manufacturer"]
 
         if val is False:
             raise forms.ValidationError(self.is_manufacturer_error_msg)
@@ -354,7 +354,7 @@ class SubmitCFSScheduleForm(CFSScheduleFormBase):
 
         # Check any raw materials field
         any_raw_materials: str = cleaned_data["any_raw_materials"]
-        final_product_end_use: Optional[str] = cleaned_data["final_product_end_use"]
+        final_product_end_use: str | None = cleaned_data["final_product_end_use"]
 
         if any_raw_materials == YesNoChoices.yes and not final_product_end_use:
             self.add_error("final_product_end_use", "You must enter this item")
@@ -662,8 +662,8 @@ class EditGMPTemplateForm(OptionalFormMixin, EditGMPFormBase):
     """GMP Template form."""
 
 
-def form_class_for_application_type(type_code: str) -> Type[ModelForm]:
-    types_forms: dict[Any, Type[ModelForm]] = {
+def form_class_for_application_type(type_code: str) -> type[ModelForm]:
+    types_forms: dict[Any, type[ModelForm]] = {
         # These form classes have no required fields, no data cleaning methods.
         ExportApplicationType.Types.FREE_SALE: EditCFSTemplateForm,
         ExportApplicationType.Types.GMP: EditGMPTemplateForm,

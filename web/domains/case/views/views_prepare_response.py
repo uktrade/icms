@@ -210,10 +210,8 @@ def _prepare_fa_sil_response(
     section_legacy = application.goods_legacy.filter(is_active=True)
 
     has_goods = any(
-        (
-            s.exists()
-            for s in (section_1, section_2, section_5, section_58, section_58_other, section_legacy)
-        )
+        s.exists()
+        for s in (section_1, section_2, section_5, section_58, section_58_other, section_legacy)
     )
 
     context.update(

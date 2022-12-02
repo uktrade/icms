@@ -1,4 +1,4 @@
-from typing import List, NamedTuple, Optional, Type
+from typing import NamedTuple
 
 import structlog as logging
 from django.contrib import messages
@@ -82,12 +82,12 @@ class ExportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
 
 
 class CreateExportApplicationConfig(NamedTuple):
-    model_class: Type[ExportApplication]
-    form_class: Type[CreateExportApplicationForm]
+    model_class: type[ExportApplication]
+    form_class: type[CreateExportApplicationForm]
     certificate_message: str
 
 
-def _exporters_with_agents(user: User) -> List[int]:
+def _exporters_with_agents(user: User) -> list[int]:
     exporters_with_agents = get_objects_for_user(user, ["web.is_agent_of_exporter"], Exporter)
     return [exporter.pk for exporter in exporters_with_agents]
 
@@ -96,7 +96,7 @@ def _exporters_with_agents(user: User) -> List[int]:
 @permission_required("web.exporter_access", raise_exception=True)
 @ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_export_application(
-    request: AuthenticatedHttpRequest, *, type_code: str, template_pk: Optional[int] = None
+    request: AuthenticatedHttpRequest, *, type_code: str, template_pk: int | None = None
 ) -> HttpResponse:
     """Create a certificate application.
 
@@ -106,7 +106,7 @@ def create_export_application(
     :param type_code: Type of application to create.
     :param template_pk: Optional PK of a template to populate application
     """
-    app_template: Optional[CertificateApplicationTemplate]
+    app_template: CertificateApplicationTemplate | None
     application_type: ExportApplicationType = ExportApplicationType.objects.get(type_code=type_code)
 
     config = _get_export_app_config(type_code)

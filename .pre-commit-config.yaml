@@ -22,6 +22,13 @@ repos:
         name: Checking local hooks against latest release
         verbose: true
         require_serial: true
+-   repo: https://github.com/asottile/pyupgrade
+    rev: v3.2.3
+    hooks:
+    -   id: pyupgrade
+        args: [--py310-plus]
+        # The end_to_end directory runs under python 3.8 and isn't suitable for pyupgrade
+        exclude: end_to_end
 -   repo: https://github.com/psf/black
     rev: 22.10.0
     hooks:

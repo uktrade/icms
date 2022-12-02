@@ -54,7 +54,7 @@ class RegistrationForm(ModelForm):
     security_question_list = CharField(label="Security Question", widget=Select(choices=QUESTIONS))
 
     def __init__(self, *args, **kwargs):
-        super(RegistrationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["email"].required = True
         self.fields["first_name"].required = True
         self.fields["last_name"].required = True
@@ -115,7 +115,7 @@ class ResetPasswordSecondForm(Form):
     date_of_birth = DateField(widget=DateInput())
 
     def __init__(self, user, *args, **kwargs):
-        super(ResetPasswordSecondForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["question"].initial = user.security_question
         self.user = user
 
@@ -142,7 +142,7 @@ class PasswordChangeForm(auth_forms.PasswordChangeForm):
     security_answer = CharField(max_length=4000, widget=PasswordInput())
 
     def __init__(self, *args, **kwargs):
-        super(PasswordChangeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # Remove default Django help text list for new password
         self.fields["new_password1"].help_text = None

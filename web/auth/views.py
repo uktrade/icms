@@ -40,7 +40,7 @@ class LoginView(auth_views.LoginView):
         https://django-ratelimit.readthedocs.io/en/stable/security.html#denial-of-service
         """
 
-        return super(LoginView, self).post(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)

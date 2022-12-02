@@ -2,7 +2,7 @@ import datetime as dt
 import re
 import zoneinfo
 from decimal import Decimal, InvalidOperation
-from typing import Any, Optional, Union
+from typing import Any
 
 from django.core.exceptions import ValidationError
 from django.core.validators import DecimalValidator
@@ -29,7 +29,7 @@ def get_xml_val(xml: etree.ElementTree, xpath: str, text=True) -> Any:
     return val
 
 
-def date_or_none(date_str: Union[Optional[str], dt.date, dt.datetime]) -> Optional[dt.date]:
+def date_or_none(date_str: str | None | dt.date | dt.datetime) -> dt.date | None:
     """Convert a date string into a date
 
     param date_str: A string of the date. Can come in a variety of formats
@@ -67,7 +67,7 @@ def date_or_none(date_str: Union[Optional[str], dt.date, dt.datetime]) -> Option
     return dt.datetime.strptime(p_date_str, date_format).date()
 
 
-def datetime_or_none(dt_str: Optional[str]) -> Optional[dt.datetime]:
+def datetime_or_none(dt_str: str | None) -> dt.datetime | None:
     """Convert a datetime string to datetime
 
     :param dt_str: A string of the datetime. Example: 2022-07-25T11:05:59
@@ -115,7 +115,7 @@ def adjust_icms_v1_datetime(dt_val: dt.datetime) -> dt.datetime:
     return utc_dt
 
 
-def float_or_none(float_str: Optional[str]) -> Optional[float]:
+def float_or_none(float_str: str | None) -> float | None:
     if not float_str:
         return None
 
@@ -130,7 +130,7 @@ def float_or_none(float_str: Optional[str]) -> Optional[float]:
     return parsed
 
 
-def int_or_none(int_str: Optional[str]) -> Optional[int]:
+def int_or_none(int_str: str | None) -> int | None:
     if not int_str:
         return None
 
@@ -142,7 +142,7 @@ def int_or_none(int_str: Optional[str]) -> Optional[int]:
     return val
 
 
-def xml_str_or_none(xml: Optional[etree.ElementTree]) -> Optional[str]:
+def xml_str_or_none(xml: "etree.ElementTree | None") -> str | None:
     if xml is None:
         return None
 
@@ -150,7 +150,7 @@ def xml_str_or_none(xml: Optional[etree.ElementTree]) -> Optional[str]:
     return xml_byte_str.decode().strip()
 
 
-def str_to_bool(bool_str: Optional[str]) -> Optional[bool]:
+def str_to_bool(bool_str: str | None) -> bool | None:
     if bool_str and bool_str.lower() in ("y", "true"):
         return True
 
@@ -160,7 +160,7 @@ def str_to_bool(bool_str: Optional[str]) -> Optional[bool]:
     return None
 
 
-def str_to_yes_no(y_n_str: Optional[str]) -> Optional[str]:
+def str_to_yes_no(y_n_str: str | None) -> str | None:
     if not y_n_str:
         return None
 
@@ -230,7 +230,7 @@ def str_to_list(list_str: str, delimiter: str = ";"):
     return lst or None
 
 
-def extract_int_substr(int_str: str, substr: str) -> Optional[int]:
+def extract_int_substr(int_str: str, substr: str) -> int | None:
     """Extract an integer from a string of kwargs
 
     username(WUA_ID=1, WUAH_ID=2) -> 1

@@ -24,7 +24,7 @@ class UserDetailsUpdateForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
-        super(UserDetailsUpdateForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["security_answer_repeat"].initial = self.instance.security_answer
         self.fields["first_name"].required = True
         self.fields["last_name"].required = True
@@ -99,7 +99,7 @@ class PhoneNumberForm(forms.ModelForm):
     telephone_number = forms.CharField(validators=PhoneNumberField().validators)
 
     def __init__(self, *args, **kwargs):
-        super(PhoneNumberForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["telephone_number"].initial = self.instance.phone
 
     def clean_telephone_number(self):
@@ -119,7 +119,7 @@ class AlternativeEmailsForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
-        super(AlternativeEmailsForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["notifications"].initial = self.instance.portal_notifications
 
     def clean_notifications(self):
@@ -144,7 +144,7 @@ class PersonalEmailForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
-        super(PersonalEmailForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.is_primary:
             self.fields["notifications"].initial = PersonalEmailForm.PRIMARY
         else:

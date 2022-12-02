@@ -15,10 +15,7 @@ def validate_security_answer(form):
     answer = form.cleaned_data.get("security_answer", None)
     if answer != form.user.security_answer:
         raise ValidationError(
-            (
-                "Your security answer didn't match the one you gave us when\
-            you created your account"
-            )
+            "Your security answer didn't match the one you gave us when you created your account"
         )
 
     return answer

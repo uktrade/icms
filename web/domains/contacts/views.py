@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Type, Union
+from typing import TYPE_CHECKING, Union
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import Permission
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from django.db.models import QuerySet
 
 Org = Union[Importer, Exporter]
-OrgT = Type[Org]
+OrgT = type[Org]
 
 
 def _get_class_imp_or_exp(org_type: str) -> OrgT:

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 from django.contrib.auth.views import LogoutView
 from django.urls import path

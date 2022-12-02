@@ -1,4 +1,5 @@
-from typing import Any, Generator, Optional, Type
+from collections.abc import Generator
+from typing import Any
 
 from django.db import models
 from django.db.models import F, OuterRef, Subquery
@@ -268,7 +269,7 @@ class SILReportFirearmBase(SupplementaryReportFirearmBase):
     class Meta:
         abstract = True
 
-    GOODS_MODEL: Optional[Type[models.Model]] = None
+    GOODS_MODEL: type[models.Model] | None = None
 
     @classmethod
     def get_source_data(cls) -> Generator:

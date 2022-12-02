@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Generator, Optional, Type
+from collections.abc import Generator
 
 from django.db.models import Model, QuerySet
 from lxml import etree
@@ -9,7 +9,7 @@ from data_migration.models.flow import Process
 from data_migration.utils.format import datetime_or_none, get_xml_val
 
 BatchT = list[tuple]
-ModelListT = dict[Type[Model], list[Model]]
+ModelListT = dict[type[Model], list[Model]]
 
 
 class BaseXmlParser:
@@ -17,10 +17,10 @@ class BaseXmlParser:
     ROOT_NODE: str = ""
 
     # The model to be populated by the parser
-    MODEL: Optional[Type[Model]] = None
+    MODEL: type[Model] | None = None
 
     # The model or list of models in which the xml data stored
-    PARENT: list[Type[Model]] | Optional[Type[Model]] = None
+    PARENT: list[type[Model]] | type[Model] | None = None
 
     # The name of the field the xml data is stored under
     FIELD: str = ""
@@ -96,7 +96,7 @@ class BaseXmlParser:
         raise NotImplementedError("Extracting process model from XML must be defined")
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional[Model]:
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Model | None:
         """Retrieves data for fields from an ElementTree object
 
         :param parent_pk: The pk of the parent model
@@ -115,7 +115,7 @@ class FIRBaseParser(BaseXmlParser):
     IS_PROCESS = True
 
     @classmethod
-    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional[Model]:
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Model | None:
         """Example XML
 
         <RFI>

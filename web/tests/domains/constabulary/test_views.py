@@ -12,7 +12,7 @@ class ConstabularyListViewTest(AuthTestCase):
     redirect_url = f"{LOGIN_URL}?next={url}"
 
     def setUp(self):
-        super(ConstabularyListViewTest, self).setUp()
+        super().setUp()
 
         # These tests pre-date the data migration that adds constabularies
         # therefore delete all real constabulary records before running these tests

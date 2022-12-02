@@ -1,5 +1,3 @@
-from typing import List, Union
-
 from django.conf import settings
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import models
@@ -86,7 +84,7 @@ class Process(models.Model):
             raise errors.ProcessStateError(f"Process is in the wrong state: {status}")
 
     def get_task(
-        self, expected_state: Union[str, List[str]], task_type: str, select_for_update: bool = True
+        self, expected_state: str | list[str], task_type: str, select_for_update: bool = True
     ) -> "Task":
         """Get the latest active task of the given type attached to this
         process, while also checking the process is in the expected state.

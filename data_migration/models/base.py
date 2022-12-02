@@ -1,4 +1,5 @@
-from typing import Any, Generator
+from collections.abc import Generator
+from typing import Any
 
 from django.db import models
 
@@ -80,7 +81,7 @@ class MigrationBase(models.Model):
         """Generates the the related models to include from get_includes"""
 
         includes = cls.get_includes()
-        return list(set(i.split("__")[0] for i in includes))
+        return list({i.split("__")[0] for i in includes})
 
     @classmethod
     def get_source_data(cls) -> Generator:

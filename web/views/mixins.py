@@ -34,7 +34,7 @@ class DataDisplayConfigMixin(PageTitleMixin, ListView):
         return context
 
 
-class PostActionMixin(object):
+class PostActionMixin:
     """Handle post requests with action variable: Calls method with the same
     name as action variable to handle action"""
 

@@ -1,7 +1,8 @@
 from itertools import chain
-from typing import TYPE_CHECKING, Literal, Union, final
+from typing import Literal, Union, final
 
 from django.db import models
+from django.db.models import QuerySet
 from django.urls import reverse
 
 from web.domains.case._import.fa.models import (
@@ -15,10 +16,6 @@ from web.domains.section5.models import Section5Authority
 from web.flow.models import ProcessTypes
 from web.models.shared import FirearmCommodity, YesNoNAChoices
 
-if TYPE_CHECKING:
-    from django.db.models import QuerySet
-
-
 ReportFirearms = list[
     Union[
         "SILSupplementaryReportFirearmSection1",
@@ -30,11 +27,11 @@ ReportFirearms = list[
 ]
 
 SectionCertificates = Union[
-    "QuerySet[SILGoodsSection1]",
-    "QuerySet[SILGoodsSection2]",
-    "QuerySet[SILGoodsSection5]",
-    "QuerySet[SILGoodsSection582Obsolete]",  # /PS-IGNORE
-    "QuerySet[SILGoodsSection582Other]",  # /PS-IGNORE
+    QuerySet["SILGoodsSection1"],
+    QuerySet["SILGoodsSection2"],
+    QuerySet["SILGoodsSection5"],
+    QuerySet["SILGoodsSection582Obsolete"],  # /PS-IGNORE
+    QuerySet["SILGoodsSection582Other"],  # /PS-IGNORE
 ]
 
 

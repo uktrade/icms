@@ -1,5 +1,3 @@
-from typing import Type
-
 from django.db import connection, models, transaction
 
 
@@ -13,7 +11,7 @@ class LockManager:
         # which tables are locked
         self.locked_tables: set[str] = set()
 
-    def lock_tables(self, tables: list[Type[models.Model]]) -> None:
+    def lock_tables(self, tables: list[type[models.Model]]) -> None:
         if not tables:
             raise RuntimeError("no tables given")
 
@@ -38,12 +36,12 @@ class LockManager:
             cursor.execute(f"LOCK TABLE {table}")
             self.locked_tables.add(table)
 
-    def is_table_locked(self, table: Type[models.Model]) -> bool:
+    def is_table_locked(self, table: type[models.Model]) -> bool:
         """Check if the table is locked."""
 
         return table._meta.db_table in self.locked_tables
 
-    def ensure_tables_are_locked(self, tables: list[Type[models.Model]]) -> None:
+    def ensure_tables_are_locked(self, tables: list[type[models.Model]]) -> None:
         """If some deeply nested code wants to:
 
           a) ensure some tables are locked

@@ -1,6 +1,6 @@
 import time
-from collections.abc import Iterable
-from typing import Callable, NamedTuple
+from collections.abc import Callable, Iterable
+from typing import NamedTuple
 
 from django.db import DatabaseError
 from django.http import HttpRequest, HttpResponse
