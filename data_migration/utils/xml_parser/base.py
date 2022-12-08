@@ -6,7 +6,7 @@ from lxml import etree
 
 from data_migration.management.commands.utils.db import new_process_pk
 from data_migration.models.flow import Process
-from data_migration.utils.format import datetime_or_none, get_xml_val
+from data_migration.utils.format import datetime_or_none, get_xml_val, int_or_none
 
 BatchT = list[tuple]
 ModelListT = dict[type[Model], list[Model]]
@@ -151,15 +151,15 @@ class FIRBaseParser(BaseXmlParser):
         status = get_xml_val(xml, "./STATUS")
         request_subject = get_xml_val(xml, "./REQUEST/SUBJECT")
         request_detail = get_xml_val(xml, "./REQUEST/BODY")
-        requested_by_id = 2  # int_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_BY_WUA_ID"))
+        requested_by_id = int_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_BY_WUA_ID"))
         email_cc_address_list_str = get_xml_val(xml, "./REQUEST/CC_EMAIL_LIST")
         response_detail = get_xml_val(xml, "./RESPONSE/RESPONSE_DETAILS")
         response_datetime = datetime_or_none(get_xml_val(xml, "./RESPONSE/RESPONSED_DATETIME"))
-        response_by_id = 2  # int_or_none(get_xml_val(xml, "./RESPONSE/RESPONDED_BY_WUA"))
+        response_by_id = int_or_none(get_xml_val(xml, "./RESPONSE/RESPONDED_BY_WUA"))
         closed_datetime = datetime_or_none(get_xml_val(xml, "./CLOSE/CLOSED_DATETIME"))
-        closed_by_id = 2  # int_or_none(get_xml_val(xml, "./CLOSE/CLOSED_BY_WUA_ID"))
+        closed_by_id = int_or_none(get_xml_val(xml, "./CLOSE/CLOSED_BY_WUA_ID"))
         deleted_datetime = datetime_or_none(get_xml_val(xml, "./DELETE/DELETED_DATETIME"))
-        deleted_by_id = 2  # int_or_none(get_xml_val(xml, "./DELETE/DELETED_BY_WUA_ID"))
+        deleted_by_id = int_or_none(get_xml_val(xml, "./DELETE/DELETED_BY_WUA_ID"))
 
         return cls.MODEL(
             **{

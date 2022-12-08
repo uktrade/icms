@@ -39,6 +39,25 @@ WHERE xcac.status_control = 'C'
 
 
 export_application_base = """
+WITH rp_wua AS (
+  SELECT uah.resource_person_id
+  , CASE
+    WHEN COUNT(wua_id) > 1
+    THEN (
+      SELECT sub.wua_id
+      FROM securemgr.web_user_account_histories sub
+      WHERE sub.person_id_current IS NOT NULL
+        AND sub.resource_person_primary_flag = 'Y'
+        AND sub.resource_person_id = uah.resource_person_id
+        AND sub.account_statuS = 'ACTIVE'
+    )
+    ELSE MAX(wua_id)
+  END wua_id
+  FROM SECUREMGR.WEB_USER_ACCOUNT_HISTORIES uah
+  WHERE uah.person_id_current IS NOT NULL
+    AND uah.resource_person_primary_flag = 'Y'
+  GROUP BY uah.resource_person_id
+)
 SELECT
   xcad.ca_id
   , xcad.status
@@ -47,13 +66,13 @@ SELECT
   , xcad.case_decision decision
   , xcad.refuse_reason
   , xcad.last_updated_datetime last_update_datetime
-  , 2 last_updated_by_id
+  , last_updated_by_wua_id last_updated_by_id
   , xcad.variation_number variation_no
-  , 2 submitted_by_id
-  , 2 created_by_id
+  , xcad.submitted_by_wua_id submitted_by_id
+  , xcad.created_by_wua_id created_by_id
   , xcad.exporter_id
   , xcad.exporter_office_id
-  , 2 contact_id
+  , rp_wua.wua_id contact_id
   , xcad.agent_id
   , xcad.agent_office_id
   , '{process_type}' process_type
@@ -65,9 +84,11 @@ FROM impmgr.xview_certificate_app_details xcad
   INNER JOIN (
   {application_details}
   ) cad on cad.cad_id = xcad.cad_id
+  LEFT JOIN rp_wua ON rp_wua.resource_person_id = xcad.contact_rp_id
 WHERE xcad.status_control = 'C'
   AND xcad.application_type = '{application_type}'
   AND xcad.status <> 'DELETED'
+  AND rp_wua.wua_id NOT IN (SELECT * FROM rp_dupes)
   AND (xcad.submitted_datetime IS NOT NULL OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
 """
 
@@ -111,7 +132,7 @@ SELECT
   , dbms_lob.getlength(sld.blob_data) file_size
   , sld.id || '-' || xdd.title path
   , dd.created_datetime
-  , 2 created_by_id
+  , created_by_wua_id created_by_id
 FROM impmgr.certificate_app_responses car
   INNER JOIN impmgr.cert_app_response_details card ON card.car_id = car.id
   INNER JOIN impmgr.cert_app_response_detail_certs cardc ON cardc.card_id = card.id
@@ -121,19 +142,19 @@ FROM impmgr.certificate_app_responses car
 ORDER BY cardc.id
 """
 
-
+# TODO: Check what status in V2 updates closed_by_id
 export_variations = """
 SELECT
     ca_id
     , CASE v.variation_status WHEN 'OPEN' THEN 1 ELSE 0 END is_active
     , v.variation_status status
     , v.start_datetime requested_datetime
-    , 2 requested_by_id
+    , created_by_wua_id requested_by_id
     , v.variation_reason what_varied
     , v.end_datetime closed_datetime
-    , 2 closed_by_id
+    , CASE v.variation_status WHEN 'CLOSED' THEN v.last_updated_by_wua_id ELSE NULL END closed_by_id
 FROM impmgr.xview_cert_app_variations v
 WHERE status_control = 'C'
-AND variation_reason IS NOT NULL
+AND v.variation_reason IS NOT NULL
 ORDER BY cad_id, variation_id
 """

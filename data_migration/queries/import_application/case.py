@@ -8,21 +8,17 @@ __all__ = [
 
 case_note = """
 SELECT
-  xid.ima_id, cnd.*
+  xid.ima_id, cnd.status, cnd.created_by_wua_id created_by_id, x.*
 FROM impmgr.case_notes cn
-INNER JOIN (
-  SELECT cn_id, status, 2 created_by_id, x.*
-  FROM impmgr.case_note_details cnd,
-    XMLTABLE('/*'
-    PASSING xml_data
-    COLUMNS
-      note CLOB PATH '/CASE_NOTE_DATA/REQUEST_BODY/text()'
-      , create_datetime VARCHAR(30) PATH '/CASE_NOTE_DATA/CREATED_DATETIME/text()'
-      , file_folder_id INTEGER PATH '/CASE_NOTE_DATA/FILE_FOLDER_ID/text()'
-  ) x
-  WHERE status_control = 'C'
-) cnd ON cnd.cn_id = cn.id
 INNER JOIN impmgr.xview_ima_details xid ON xid.ima_id = cn.ima_id AND xid.status_control = 'C'
+INNER JOIN impmgr.case_note_details cnd ON cnd.cn_id = cn.id AND cnd.status_control = 'C'
+CROSS JOIN XMLTABLE('/*'
+  PASSING xml_data
+  COLUMNS
+    note CLOB PATH '/CASE_NOTE_DATA/REQUEST_BODY/text()'
+    , create_datetime VARCHAR(30) PATH '/CASE_NOTE_DATA/CREATED_DATETIME/text()'
+    , file_folder_id INTEGER PATH '/CASE_NOTE_DATA/FILE_FOLDER_ID/text()'
+) x
 """
 
 
@@ -34,11 +30,11 @@ SELECT
   , request_body request_detail
   , response_details
   , request_date request_datetime
-  , 2 request_by_id
+  , u.request_by_wua_id request_by_id
   , response_date response_datetime
-  , 2 response_by_id
+  , u.response_by_wua_id response_by_id
   , closed_date closed_datetime
-  , 2 closed_by_id
+  , u.closed_by_wua_id closed_by_id
 FROM impmgr.xview_ima_updates u
 INNER JOIN impmgr.xview_ima_details xid ON xid.ima_id = u.ima_id AND xid.status_control = 'C'
 """
@@ -56,12 +52,12 @@ SELECT
   , request_date requested_datetime
   , response_details response_detail
   , response_date response_datetime
-  , 2 requested_by_id
-  , 2 response_by_id
+  , xir.request_by_wua_id requested_by_id
+  , xir.response_by_wua_id response_by_id
   , closed_date closed_datetime
-  , 2 closed_by_id
+  , xir.closed_by_wua_id closed_by_id
   , deleted_date deleted_datetime
-  , 2 deleted_by_id
+  , xir.deleted_by_wua_id deleted_by_id
   , 'FurtherInformationRequest' process_type
   , file_folder_id folder_id
 FROM impmgr.xview_ima_rfis xir
@@ -83,7 +79,7 @@ SELECT
   , status
   , trans_type transmission_type
   , request_type
-  , 2 sent_by_id
+  , created_by_wua_id sent_by_id
   , created_datetime sent_datetime
   , response_datetime
   , response_code

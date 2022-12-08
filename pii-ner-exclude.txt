@@ -1744,3 +1744,30 @@ Group 1
 Add Supporting Document"
 v3.2.3
 SILGoodsSection5"
+last_updated_by_wua_id last_updated_by_id
+xcad.created_by_wua_id created_by_id
+xiad.created_by_wua_id created_by_id
+xiad.last_updated_by_wua_id last_updated_by_id
+id. Need
+cnd.status
+xir.closed_by_wua_id closed_by_id
+xir.deleted_by_wua_id deleted_by_id
+create_by_wua_id created_by_id
+xmd.retract_email_body
+xmd.created_by_wua_id created_by_id
+xmd.published_by_wua published_by_id
+iar.requested_by_wua_id submitted_by_id
+iar.closed_by_wua_id closed_by_id
+resource_person_id HAVING COUNT(id
+wuah.encrypted_password
+account_status_by_id
+ORDER BY iar.id
+lu.id
+ON lu.id =
+resource_person_primary_flag
+rp_wua.wua_id contact_id
+lu ON lu.id
+ON rp_to_wua.resource_person_id
+SELECT xcad.ca_id
+Check rp_dupes
+uah.resource_person_primary_flag

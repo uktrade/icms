@@ -84,9 +84,9 @@ SELECT
   , description
   , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
   , created_datetime
-  , 2 created_by_id
+  , created_by_wua_id created_by_id
   , last_updated_datetime updated_datetime
-  , CASE last_updated_by_wua_id WHEN NULL THEN NULL ELSE 2 END updated_by_id
+  , last_updated_by_wua_id updated_by_id
 FROM impmgr.section_5_clauses
 """
 

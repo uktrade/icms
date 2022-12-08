@@ -12,8 +12,8 @@ __all__ = ["opt_application", "opt_checklist"]
 opt_application_subquery = """
 SELECT
   ad.ima_id, ad.id imad_id, x.*
-FROM impmgr.import_application_details ad,
-  XMLTABLE('/*'
+FROM impmgr.import_application_details ad
+CROSS JOIN XMLTABLE('/*'
   PASSING ad.xml_data
   COLUMNS
     customs_office_name VARCHAR2(4000) PATH '/IMA/APP_DETAILS/OPT_DETAILS/CUSTOMS_OFFICE_NAME[not(contains(text(), "<script>alert"))]/text()'

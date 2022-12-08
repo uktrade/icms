@@ -12,8 +12,8 @@ __all__ = ["textiles_application", "textiles_checklist", "wood_application", "wo
 wood_application_subquery = """
 SELECT
   ad.ima_id, ad.id imad_id, x.*
-FROM impmgr.import_application_details ad,
-  XMLTABLE('/*'
+FROM impmgr.import_application_details ad
+CROSS JOIN XMLTABLE('/*'
   PASSING ad.xml_data
   COLUMNS
     shipping_year VARCHAR2(4) PATH '/IMA/APP_DETAILS/WOOD_DETAILS/YEAR/text()'
@@ -60,8 +60,8 @@ wood_checklist = import_checklist_base.format(
 textiles_application_subquery = """
 SELECT
   ad.ima_id, ad.id imad_id, x.*
-FROM impmgr.import_application_details ad,
-  XMLTABLE('/*'
+FROM impmgr.import_application_details ad
+CROSS JOIN XMLTABLE('/*'
   PASSING ad.xml_data
   COLUMNS
     goods_cleared VARCHAR2(5) PATH '/IMA/APP_DETAILS/TEX_DETAILS/GOODS_CLEARED/text()'

@@ -12,8 +12,8 @@ __all__ = ["derogations_application", "derogations_checklist"]
 derogations_application_subquery = """
   SELECT
     ad.ima_id, ad.id imad_id, x.*
-  FROM impmgr.import_application_details ad,
-    XMLTABLE('/*'
+  FROM impmgr.import_application_details ad
+  CROSS JOIN XMLTABLE('/*'
     PASSING ad.xml_data
     COLUMNS
       contract_sign_date VARCHAR2(4000) PATH '/IMA/APP_DETAILS/SAN_DETAILS/CONTRACT_SIGN_DATE[not(fox-error)]/text()'

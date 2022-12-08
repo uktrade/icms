@@ -244,3 +244,17 @@ def extract_int_substr(int_str: str, substr: str) -> int | None:
     int_str = match[0].strip(substr)
 
     return int(int_str)
+
+
+def extract_bracket_substr(bracket_str: str) -> str | None:
+    """Extract text from paranthesis within a string
+
+    Test User (testuser) -> testuser  /PS-IGNORE
+    """
+
+    match = re.search("\\((.*?)\\)", bracket_str)
+
+    if not match:
+        return None
+
+    return match[1]

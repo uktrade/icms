@@ -7,7 +7,7 @@ from django.core.management.base import CommandError
 from django.test import override_settings
 
 from data_migration import models, queries
-from data_migration.queries import import_application, reference
+from data_migration.queries import import_application, reference, user
 from data_migration.utils import xml_parser
 
 from . import factory, utils
@@ -30,60 +30,6 @@ def test_data_migration_not_enabled_non_prod():
         CommandError, match="Data migration has not been enabled for this environment"
     ):
         call_command("export_from_v1")
-
-
-@override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
-@override_settings(ICMS_PROD_USER="")
-@override_settings(ICMS_PROD_PASSWORD="1234")
-@pytest.mark.django_db
-@mock.patch.object(oracledb, "connect")
-def test_create_user_no_username(mock_connect):
-    with pytest.raises(CommandError, match="No user details found for this environment"):
-        call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file", "--skip_export")
-
-    assert not models.User.objects.exists()
-    assert not models.Office.objects.exists()
-
-
-@override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
-@override_settings(ICMS_PROD_USER="TestUser")
-@override_settings(ICMS_PROD_PASSWORD="")
-@pytest.mark.django_db
-@mock.patch.object(oracledb, "connect")
-def test_create_user_no_pw(mock_connect):
-    with pytest.raises(CommandError, match="No user details found for this environment"):
-        call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file", "--skip_export")
-
-    assert not models.User.objects.exists()
-
-
-@override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
-@override_settings(ICMS_PROD_USER="TestUser")
-@override_settings(ICMS_PROD_PASSWORD="1234")
-@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, {"user": []})
-@pytest.mark.django_db
-@mock.patch.object(oracledb, "connect")
-def test_create_user(mock_connect):
-    call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file", "--skip_export")
-
-    assert models.User.objects.exists()
-
-
-@override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
-@override_settings(ICMS_PROD_USER="TestUser")
-@override_settings(ICMS_PROD_PASSWORD="1234")
-@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, {"user": []})
-@pytest.mark.django_db
-@mock.patch.object(oracledb, "connect")
-def test_create_user_exists(mock_connect):
-    models.User.objects.create(username="Username")
-    call_command("export_from_v1", "--skip_ref", "--skip_ia", "--skip_file", "--skip_export")
-
-    assert models.User.objects.count() == 1
 
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
@@ -119,7 +65,9 @@ def test_extract_xml(mock_connect):
 
     mock_connect.return_value = utils.MockConnect()
     user_pk = models.User.objects.count() + 1
-    models.User.objects.create(id=user_pk, username="test_import_user")
+    models.User.objects.create(
+        id=user_pk, username="test_import_user", salt="1234", encrypted_password="password"
+    )
 
     importer_pk = models.Importer.objects.count() + 1
     models.Importer.objects.create(id=importer_pk, name="test_import_org", type="ORGANISATION")
@@ -185,8 +133,9 @@ def test_export_files_data(mock_connect):
 
     mock_connect.return_value = utils.MockConnect()
     user_pk = models.User.objects.count() + 1
-    user = models.User.objects.create(id=user_pk, username="test_import_user")
-    user_id = user.id
+    models.User.objects.create(
+        id=user_pk, username="test_import_user", salt="1234", encrypted_password="password"
+    )
 
     models.FileCombined.objects.bulk_create(
         [
@@ -201,7 +150,7 @@ def test_export_files_data(mock_connect):
                 content_type=t_type and v,
                 file_size=t_type and v_id,
                 path=t_type and v,
-                created_by_id=user_id,
+                created_by_id=user_pk,
             )
             for f_id, f_type in enumerate(["F1", "F2"], start=1)
             for t_id, t_type in enumerate(["T1", "T2", None], start=3)
@@ -231,13 +180,28 @@ test_query_model = {
         (reference, "unit", models.Unit),
     ],
     "file": [],
-    "user": [],
+    "user": [user, "users", models.User],
     "import_application": [
         (reference, "constabularies", models.Constabulary),
         (reference, "obsolete_calibre_group", models.ObsoleteCalibreGroup),
         (import_application, "section5_clauses", models.Section5Clause),
     ],
 }
+
+
+def create_dummy_user():
+    models.User.objects.create(
+        id=2,
+        username="user",
+        first_name="Prod",
+        last_name="User",
+        email="test.user",
+        is_active=True,
+        title="Mr",
+        password_disposition="FULL",
+        salt="1234",
+        encrypted_password="abcd",
+    )
 
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
@@ -249,6 +213,7 @@ test_query_model = {
 @mock.patch.object(oracledb, "connect")
 def test_export_from_ref_2(mock_connect):
     mock_connect.return_value = utils.MockConnect()
+    create_dummy_user()
 
     call_command("export_from_v1", "--start=ref.2", "--skip_export")
 
@@ -269,6 +234,7 @@ def test_export_from_ref_2(mock_connect):
 @mock.patch.object(oracledb, "connect")
 def test_export_from_r_3(mock_connect):
     mock_connect.return_value = utils.MockConnect()
+    create_dummy_user()
 
     call_command("export_from_v1", "--start=r.3", "--skip_export")
 
@@ -289,6 +255,7 @@ def test_export_from_r_3(mock_connect):
 @mock.patch.object(oracledb, "connect")
 def test_export_from_import_application(mock_connect):
     mock_connect.return_value = utils.MockConnect()
+    create_dummy_user()
 
     call_command("export_from_v1", "--start=import_application.0", "--skip_export")
 
@@ -309,6 +276,7 @@ def test_export_from_import_application(mock_connect):
 @mock.patch.object(oracledb, "connect")
 def test_export_from_ia(mock_connect):
     mock_connect.return_value = utils.MockConnect()
+    create_dummy_user()
 
     call_command("export_from_v1", "--start=ia.1", "--skip_export")
 
@@ -329,6 +297,7 @@ def test_export_from_ia(mock_connect):
 @mock.patch.object(oracledb, "connect")
 def test_export_from_ia_2(mock_connect):
     mock_connect.return_value = utils.MockConnect()
+    create_dummy_user()
 
     call_command("export_from_v1", "--start=ia.2", "--skip_export")
 

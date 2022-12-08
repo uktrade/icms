@@ -1,18 +1,16 @@
 # TODO ICMSLST-1493: Investigate case_owner_id
-# TODO ICMSLST-1498: User fields need updating when user data is migrated
-# TODO ICMSLST-1493: Determine if process is active from data
-
-# xiad.submitted_by_wua_id submitted_by_id
-# xiad.created_by_wua_id created_by_id
-# xiad.last_updated_by_wua_id last_updated_by_id
-# xiad.contact_rp_id contact_id
-# xiad.provided_to_imi_by_wua_id imi_submitted_by_id
-
 
 # Active application types only migrate unsubmitted applications that have been updated in the last two weeks
 # Inactive application types do not migrate unsubmitted applications
 
 import_application_base = """
+WITH rp_wua AS (
+  SELECT resource_person_id, wua_id
+  FROM securemgr.web_user_account_histories
+  WHERE person_id_current IS NOT NULL
+  AND resource_person_primary_flag = 'Y'
+  GROUP BY resource_person_id, wua_id
+)
 SELECT
   ia.case_ref reference
   , 1 is_active
@@ -32,17 +30,17 @@ SELECT
   , xiad.licence_extended licence_extended_flag
   , ir.licence_ref licence_reference
   , xiad.last_updated_datetime last_update_datetime
-  , 2 submitted_by_id
-  , 2 created_by_id
-  , 2 last_updated_by_id
+  , xiad.submitted_by_wua_id submitted_by_id
+  , xiad.created_by_wua_id created_by_id
+  , lu.id last_updated_by_id
   , xiad.importer_id
   , CASE WHEN xiad.importer_id IS NULL THEN NULL ELSE 'i-' || xiad.importer_id || '-' || xiad.importer_office_id END importer_office_legacy_id
   , xiad.agent_id
   , CASE WHEN xiad.agent_id IS NULL THEN NULL ELSE 'i-' || xiad.agent_id || '-' || xiad.agent_office_id END agent_office_legacy_id
-  , 2 contact_id
+  , rp_wua.wua_id contact_id
   , xiad.coo_country_id origin_country_id
   , xiad.coc_country_id consignment_country_id
-  , NULL imi_submitted_by_id
+  , xiad.provided_to_imi_by_wua_id imi_submitted_by_id
   , xiad.date_provided_to_imi imi_submit_datetime
   , iat.id application_type_id
   , '{process_type}' process_type
@@ -54,6 +52,9 @@ INNER JOIN impmgr.import_application_types iat
   ON iat.ima_type = xiad.ima_type AND iat.ima_sub_type = xiad.ima_sub_type
 INNER JOIN ({subquery}) ia_details ON ia_details.ima_id = xiad.ima_id
 LEFT JOIN impmgr.ima_responses ir ON ir.ima_id = xiad.ima_id AND ir.licence_ref IS NOT NULL
+LEFT JOIN decmgr.resource_people_details rp ON rp.rp_id = xiad.contact_rp_id AND rp.status_control = 'C' AND rp.status <> 'DELETED'
+LEFT JOIN securemgr.web_user_accounts lu ON lu.id = xiad.last_updated_by_wua_id
+LEFT JOIN rp_wua ON rp_wua.resource_person_id = xiad.contact_rp_id
 WHERE
   xiad.ima_type = '{ima_type}'
   AND xiad.IMA_SUB_TYPE = '{ima_sub_type}'

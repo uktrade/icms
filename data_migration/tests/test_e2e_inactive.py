@@ -49,6 +49,7 @@ opt_data_source_target = {
 
 opt_query_model = {
     "user": [
+        (q_u, "users", dm.User),
         (q_u, "importers", dm.Importer),
         (q_u, "importer_offices", dm.Office),
     ],
@@ -219,6 +220,7 @@ sps_data_source_target = {
             (q_ref, "commodity", dm.Commodity),
         ],
         "user": [
+            (q_u, "users", dm.User),
             (q_u, "importers", dm.Importer),
             (q_u, "importer_offices", dm.Office),
         ],
@@ -339,6 +341,7 @@ tex_data_source_target = {
             (q_ref, "commodity", dm.Commodity),
         ],
         "user": [
+            (q_u, "users", dm.User),
             (q_u, "importers", dm.Importer),
             (q_u, "importer_offices", dm.Office),
         ],

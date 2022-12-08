@@ -83,13 +83,15 @@ class DocFolder(MigrationBase):
 
 
 class File(MigrationBase):
+    # TODO: created_by_str can be an email or id. Need to process and fix data
     is_active = models.BooleanField(default=True)
     filename = models.CharField(max_length=300)
     content_type = models.CharField(max_length=100)
     file_size = models.IntegerField()
     path = models.CharField(max_length=4000)
     created_datetime = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.PROTECT)
+    created_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
+    created_by_str = models.CharField(max_length=255, null=True)
     target = models.ForeignKey(
         FileTarget, on_delete=models.CASCADE, related_name="files", null=True
     )
@@ -100,7 +102,12 @@ class File(MigrationBase):
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["target_id", "doc_folder_id", "document_legacy_id"]
+        return super().get_excludes() + [
+            "target_id",
+            "doc_folder_id",
+            "document_legacy_id",
+            "created_by_str",
+        ]
 
     @classmethod
     def get_from_combined(cls) -> QuerySet:

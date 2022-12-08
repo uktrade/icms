@@ -65,12 +65,7 @@ class ExportApplication(MigrationBase):
     exporter_office_legacy = models.ForeignKey(
         Office, on_delete=models.PROTECT, null=True, related_name="+", to_field="legacy_id"
     )
-    contact = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        null=True,
-        related_name="+",
-    )
+    contact = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
     agent = models.ForeignKey(Exporter, on_delete=models.PROTECT, null=True, related_name="+")
     agent_office_legacy = models.ForeignKey(
         Office, on_delete=models.PROTECT, null=True, related_name="+", to_field="legacy_id"
