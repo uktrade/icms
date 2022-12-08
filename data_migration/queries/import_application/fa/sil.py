@@ -31,13 +31,13 @@ SELECT
   , XMLTYPE.getClobVal(x.supplementary_report_xml) supplementary_report_xml
   , CASE x.is_complete WHEN 'true' THEN 1 ELSE 0 END is_complete
   , x.no_report_reason
-  , CASE WHEN x.completed_by_id IS NOT NULL THEN 2 ELSE NULL END completed_by_id
+  , x.completed_by_id
   , TO_DATE(x.completed_datetime, 'YYYY-MM-DD') completed_datetime
   , XMLTYPE.getClobVal(commodities_xml) commodities_xml
   , XMLTYPE.getClobVal(user_import_certs_xml) user_import_certs_xml
   , x.file_folder_id
-FROM impmgr.import_application_details ad,
-  XMLTABLE('/*'
+FROM impmgr.import_application_details ad
+CROSS JOIN XMLTABLE('/*'
   PASSING ad.xml_data
   COLUMNS
     section1 VARCHAR2(4) PATH '/IMA/APP_DETAILS/FA_DETAILS/SECTION_LIST/SECTION[text()="SEC1"]/text()'

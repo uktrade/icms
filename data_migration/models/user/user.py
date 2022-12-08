@@ -18,8 +18,8 @@ class User(MigrationBase):
     email = models.EmailField()
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    salt = models.CharField(max_length=16)
-    encrypted_password = models.CharField(max_length=32)
+    salt = models.CharField(max_length=16, null=True)
+    encrypted_password = models.CharField(max_length=32, null=True)
     last_login_datetime = models.DateTimeField(null=True)
     date_joined_datetime = models.DateTimeField(default=timezone.now)
     title = models.CharField(max_length=20, null=True)
@@ -79,6 +79,20 @@ class User(MigrationBase):
                 output_field=models.CharField(),
             ),
         }
+
+    @classmethod
+    def get_source_data(cls) -> Generator:
+        """Queries the model to get the queryset of data for the V2 import"""
+
+        values = cls.get_values()
+        values_kwargs = cls.get_values_kwargs()
+        related = cls.get_related()
+        return (
+            cls.objects.select_related(*related)
+            .order_by("pk")
+            .values(*values, **values_kwargs)
+            .iterator(chunk_size=2000)
+        )
 
     # M2M groups / user permissions
 

@@ -44,7 +44,7 @@ SELECT
   , xcas.manufactured_at_postcode manufacturer_postcode
   , xcas.manufactured_at_address manufacturer_address
   , xcas.country_of_manufacture country_of_manufacture_id
-  , 2 created_by_id
+  , xcas.created_by_wua_id created_by_id
   , xcas.start_datetime created_at
   , xcas.last_updated_datetime updated_at
   , schedules.legislation_xml
@@ -65,8 +65,8 @@ INNER JOIN (
     , XMLTYPE.getClobVal(legislation_xml) legislation_xml
     , XMLTYPE.getClobVal(product_xml) product_xml
   FROM
-    impmgr.certificate_app_details cad,
-    XMLTABLE('/CA/APPLICATION/PRODUCTS/SCHEDULE_LIST/*'
+    impmgr.certificate_app_details cad
+    CROSS JOIN XMLTABLE('/CA/APPLICATION/PRODUCTS/SCHEDULE_LIST/*'
     PASSING cad.xml_data
     COLUMNS
       schedule_ordinal FOR ORDINALITY

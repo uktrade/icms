@@ -27,14 +27,14 @@ user_query_result = {
         ],
         [
             (
-                3,  # id
+                2,  # id
                 "test_user",  # username
                 "Test",  # first_name
                 "User",  # last_name
                 "test.user",  # email
                 1,  # is_active
                 "31323334",  # salt 1234
-                "FF1C40E64C643CE773BA6E6B3C2DA217",  # encrypted_password /PS-IGNORE
+                "FB8C301A3EBDA623029E0AACC9D3B21B",  # encrypted_password /PS-IGNORE
                 "Mr",  # title
                 "Org",  # Oranisation
                 "Dept",  # Department
@@ -46,14 +46,14 @@ user_query_result = {
                 "FULL",  # password_disposition
             ),
             (
-                4,  # id
+                3,  # id
                 "test_user_two",  # username
                 "Testtwo",  # first_name
                 "Usertwo",  # last_name
                 "test.usertwo",  # email
                 1,  # is_active
                 "35363738",  # salt 5678
-                "F52745CB49AB0BDFAFA106533142E867",  # encrypted_password /PS-IGNORE
+                "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
                 "Ms",  # title
                 "Org",  # Oranisation
                 "Dept",  # Department

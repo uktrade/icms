@@ -12,45 +12,51 @@ __all__ = [
 #  -- work_address
 #  -- share_contact_details
 
+
 users = """
+WITH login_id_dupes AS (
+  SELECT login_id
+  FROM securemgr.web_user_accounts wua
+  GROUP BY login_id
+  HAVING COUNT(id) > 1
+)
 SELECT
-  wua.id
-  , wua.login_id username
-  , wua.forename first_name
-  , wua.surname last_name
-  , wua.primary_email_address email
-  , CASE wua.account_status WHEN 'ACTIVE' THEN 1 ELSE 0 END is_active
+  wuam.wua_id id
+  , CASE WHEN ld.login_id IS NOT NULL THEN wuah.login_id || '_' || wuah.wua_id || '_cancelled' ELSE wuah.login_id END username
+  , CASE wuah.account_status WHEN 'ACTIVE' THEN 1 ELSE 0 END is_active
   , RAWTOHEX(wuah.encrypt_salt) salt
   , wuah.encrypted_password
-  , wua.last_login_date_time last_login
-  , wua.title
-  , wua.middle_initials
-  , wua.organisation_name organisation
-  , wua.job_title
-  , wua.location_within_address location_at_address
-  , wua.account_status
-  , wua.account_status_by account_status_by_id
-  , wua.account_status_date
-  , wua.password_disposition
-  , wua.login_try_count unsuccessful_login_attempts
+  , wuam.last_login_date_time last_login
+  , CASE WHEN wuam.wua_id = 0 THEN 'ARCHIVED' ELSE wuah.account_status END account_status
+  , wuah.account_status_by account_status_by_id
+  , wuah.account_status_date
+  , wuah.password_disposition
+  , wuah.login_try_count unsuccessful_login_attempts
   , x.*
-FROM securemgr.web_user_accounts wua
-INNER JOIN securemgr.web_user_account_histories wuah ON wuah.wua_id = wua.id AND wuah.status_control = 'C'
+FROM securemgr.web_user_account_master wuam
+INNER JOIN securemgr.web_user_account_histories wuah ON wuah.wua_id = wuam.wua_id AND wuah.status_control = 'C'
+LEFT JOIN login_id_dupes ld ON ld.login_id = wuah.login_id AND wuah.account_status = 'CANCELLED'
 INNER JOIN decmgr.resource_people_details rp ON rp.rp_id = wuah.resource_person_id AND rp.status_control = 'C'
 CROSS JOIN XMLTABLE('/*'
   PASSING rp.xml_data
   COLUMNS
-    preferred_first_name VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/PREFERRED_FORENAME/text()'
+    title VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/TITLE/text()'
+    , first_name VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/FORENAME/text()'
+    , preferred_first_name VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/PREFERRED_FORENAME/text()'
     , middle_initials VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/MIDDLE_INITIALS/text()'
+    , last_name VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/SURNAME/text()'
+    , primary_email_address VARCHAR2(4000) PATH
+        '/RESOURCE_PERSON_DETAIL/PERSONAL_EMAIL_LIST/PERSONAL_EMAIL[PORTAL_NOTIFICATIONS/text() = "Primary"]/EMAIL_ADDRESS/text()'
     , date_of_birth VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/DATE_OF_BIRTH/text()'
     , department VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/DEPARTMENT_DESCRIPTION/text()'
+    , organisation VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/ORGANISATION_DESCRIPTION/text()'
+    , job_title VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/JOB_DESCRIPTION/text()'
+    , location_at_address VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/LOCATION_AT_ADDRESS/text()'
     , date_joined_datetime VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/CREATED_DATE/text()'
     , security_question VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/SECURITY_QUESTION/text()'
     , security_answer VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/SECURITY_ANSWER/text()'
 ) x
-WHERE wua.id > 1
-AND wua.account_status <> 'CANCELLED'
-ORDER BY wua.id
+ORDER BY wuam.wua_id
 """
 
 
@@ -64,7 +70,7 @@ SELECT
   , organisation_name name
   , reg_number registered_number
   , eori_number
-  , 2 user_id
+  , wua_id user_id
   , main_imp_id main_importer_id
   , other_coo_code region_origin
 FROM impmgr.xview_importer_details xid
@@ -129,16 +135,16 @@ SELECT
   , CASE xmd.SEND_RETRACT_EMAILS WHEN 'true' THEN 1 ELSE 0 END is_retraction_email
   , xmd.retract_email_subject
   , xmd.retract_email_body
-  , 2 created_by_id
+  , xmd.created_by_wua_id created_by_id
   , xmd.start_datetime create_datetime
-  , CASE xmd.published_by_wua WHEN NULL THEN NULL ELSE 2 END published_by_id
+  , xmd.published_by_wua published_by_id
   , xmd.published_datetime
-  , CASE xmd.retracted_by_wua WHEN NULL THEN NULL ELSE 2 END retracted_by_id
+  , xmd.retracted_by_wua retracted_by_id
   , xmd.retracted_datetime
   , xmd.version
   , CASE ri.mr_id WHEN 1 THEN 1 ELSE 0 END is_to_importers
   , CASE re.mr_id WHEN 2 THEN 1 ELSE 0 END is_to_exporters
-FROM MAILSHOTMGR.mailshots m
+FROM mailshotmgr.mailshots m
 INNER JOIN mailshotmgr.xview_mailshot_details xmd ON xmd.M_ID = m.id
 LEFT JOIN mailshotmgr.xview_mailshot_selected_rcpts ri ON ri.m_id = xmd.m_id AND ri.mr_id = 1
 LEFT JOIN mailshotmgr.xview_mailshot_selected_rcpts re ON re.m_id = xmd.m_id AND re.mr_id = 2
@@ -159,15 +165,15 @@ SELECT
   , iar.status
   , iar.request_type
   , iar.requested_datetime submit_datetime
-  , 2 submitted_by_id
+  , iar.requested_by_wua_id submitted_by_id
   , iar.last_updated_datetime last_update_datetime
-  , 2 last_updated_by_id
+  , iar.last_updated_by_wua_id last_updated_by_id
   , iar.closed_datetime
-  , 2 closed_by_id
+  , iar.closed_by_wua_id closed_by_id
   , CASE WHEN i_org_name IS NULL THEN e_org_name ELSE i_org_name END organisation_name
   , CASE WHEN i_org_address IS NULL THEN e_org_address ELSE i_org_address END organisation_address
   , x.*
-FROM IMPMGR.IMPORTER_ACCESS_REQUESTS iar
+FROM impmgr.importer_access_requests iar
 CROSS JOIN XMLTABLE('/*'
   PASSING iar.xml_data
   COLUMNS
@@ -185,5 +191,6 @@ CROSS JOIN XMLTABLE('/*'
     , fir_xml XMLTYPE PATH '/IMPORTER_ACCESS_REQUEST/RFIS/RFI_LIST'
     , approval_xml XMLTYPE PATH '/IMPORTER_ACCESS_REQUEST/REQUEST_APPROVAL'
 ) x
+INNER JOIN securemgr.web_user_accounts wua ON wua.id = iar.requested_by_wua_id
 ORDER BY iar.id
 """

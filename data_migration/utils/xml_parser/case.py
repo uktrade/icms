@@ -47,9 +47,7 @@ class VariationImportParser(BaseXmlParser):
         status = get_xml_val(xml, "./STATUS")
         is_active = status == "OPEN"
         requested_date = date_or_none(get_xml_val(xml, "./REQUEST_DATE"))
-        requested_by_id = (
-            2  # TODO ICMSLST-1324 int_or_none(get_xml_val(xml, "./REQUEST_BY_WUA_ID"))
-        )
+        requested_by_id = int_or_none(get_xml_val(xml, "./REQUEST_BY_WUA_ID"))
         what_varied = get_xml_val(xml, "./WHAT_VARIED")
         why_varied = get_xml_val(xml, "./WHY_VARIED")
         when_varied = date_or_none(get_xml_val(xml, "./DATE_VARIED"))
@@ -62,7 +60,7 @@ class VariationImportParser(BaseXmlParser):
         else:
             closed_datetime = None
 
-        closed_by_id = 2  # TODO ICMSLST-1324
+        closed_by_id = int_or_none(get_xml_val(xml, "./CLOSED_BY_WUA_ID"))
 
         return cls.MODEL(
             **{
@@ -111,7 +109,7 @@ class CaseNoteExportParser(BaseXmlParser):
         status = get_xml_val(xml, "./STATUS")
         note = get_xml_val(xml, "./BODY")
         create_datetime = datetime_or_none(get_xml_val(xml, "./CREATE/CREATED_DATETIME"))
-        created_by_id = 2  # int_or_none(get_xml_val(xml, './CREATE/CREATED_BY_WUA_ID'))
+        created_by_id = int_or_none(get_xml_val(xml, "./CREATE/CREATED_BY_WUA_ID"))
         folder_id = int_or_none(get_xml_val(xml, "./FOLDER_ID"))
 
         return cls.MODEL(
@@ -177,12 +175,12 @@ class UpdateExportParser(BaseXmlParser):
         request_subject = get_xml_val(xml, "./REQUEST/SUBJECT")
         request_detail = get_xml_val(xml, "./REQUEST/BODY")
         request_datetime = datetime_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_DATETIME"))
-        requested_by_id = 2  # int_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_BY_WUA_ID"))
+        requested_by_id = int_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_BY_WUA_ID"))
         response_detail = get_xml_val(xml, "./RESPONSE/RESPONSE_DETAILS")
         response_datetime = datetime_or_none(get_xml_val(xml, "./RESPONSE/RESPONSED_DATETIME"))
-        response_by_id = 2  # int_or_none(get_xml_val(xml, "./RESPONSE/RESPONDED_BY_WUA"))
+        response_by_id = int_or_none(get_xml_val(xml, "./RESPONSE/RESPONDED_BY_WUA"))
         closed_datetime = datetime_or_none(get_xml_val(xml, "./CLOSE/CLOSED_DATETIME"))
-        closed_by_id = 2  # int_or_none(get_xml_val(xml, "./CLOSE/CLOSED_BY_WUA_ID"))
+        closed_by_id = int_or_none(get_xml_val(xml, "./CLOSE/CLOSED_BY_WUA_ID"))
 
         return cls.MODEL(
             **{

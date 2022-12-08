@@ -20,7 +20,6 @@ __all__ = [
 
 # Join to SECURE_LOB_DATA when retrieving the file data
 # INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(fv.secure_lob_ref).id
-# , create_by_wua_id created_by_id
 
 import_application_files_base = """
 SELECT
@@ -41,17 +40,17 @@ LEFT JOIN (
     fft_id
     , fv.id version_id
     , create_start_datetime created_datetime
-    , 2 created_by_id
+    , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
     , x.*
-  FROM decmgr.file_versions fv,
-    XMLTABLE('/*'
-    PASSING metadata_xml
+  FROM decmgr.file_versions fv
+  CROSS JOIN XMLTABLE('/*'
+    PASSING fv.metadata_xml
     COLUMNS
       filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
       , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
       , file_size NUMBER PATH '/file-metadata/size/text()'
-    ) x
+  ) x
   WHERE status_control = 'C'
 ) fv ON fv.fft_id = fft.id
 WHERE fft.target_mnem IN ({target_types})
@@ -168,7 +167,7 @@ SELECT
   , fv.file_size
   , fv.path
   , created_datetime
-  , 2 created_by_id
+  , fv.created_by_id
 FROM impmgr.importer_authorities ia
 INNER JOIN (
   SELECT ia_id, x.*
@@ -187,11 +186,11 @@ LEFT JOIN (
     fft_id target_id
     , fv.id version_id
     , create_start_datetime created_datetime
-    , create_by_wua_id created_by
+    , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
     , x.*
-  FROM decmgr.file_versions fv,
-    XMLTABLE('/*'
+  FROM decmgr.file_versions fv
+  CROSS JOIN XMLTABLE('/*'
     PASSING metadata_xml
     COLUMNS
       filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
@@ -217,7 +216,7 @@ SELECT
   , fv.file_size
   , fv.path
   , created_datetime
-  , 2 created_by_id
+  , fv.created_by_id
 FROM decmgr.file_folder_targets fft
 INNER JOIN decmgr.file_folders ff ON fft.ff_id = ff.id
 LEFT JOIN (
@@ -225,7 +224,7 @@ LEFT JOIN (
     fft_id target_id
     , fv.id version_id
     , create_start_datetime created_datetime
-    , create_by_wua_id created_by
+    , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
     , x.*
   FROM decmgr.file_versions fv,
@@ -257,7 +256,7 @@ SELECT
   , fv.file_size
   , fv.path
   , created_datetime
-  , 2 created_by_id
+  , fv.created_by_id
 FROM decmgr.file_folder_targets fft
 INNER JOIN decmgr.file_folders ff ON fft.ff_id = ff.id
 LEFT JOIN (
@@ -265,11 +264,11 @@ LEFT JOIN (
     fft_id target_id
     , fv.id version_id
     , create_start_datetime created_datetime
-    , create_by_wua_id created_by
+    , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
     , x.*
-  FROM decmgr.file_versions fv,
-    XMLTABLE('/*'
+  FROM decmgr.file_versions fv
+  CROSS JOIN XMLTABLE('/*'
     PASSING metadata_xml
     COLUMNS
       filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
@@ -296,7 +295,7 @@ SELECT
   , fv.file_size
   , fv.path
   , created_datetime
-  , 2 created_by_id
+  , fv.created_by_id
 FROM impmgr.xview_ima_rfis xir
 INNER JOIN decmgr.file_folders ff ON ff.id = xir.file_folder_id
 LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
@@ -305,11 +304,11 @@ LEFT JOIN (
     fft_id target_id
     , fv.id version_id
     , create_start_datetime created_datetime
-    , create_by_wua_id created_by
+    , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
     , x.*
-  FROM decmgr.file_versions fv,
-    XMLTABLE('/*'
+  FROM decmgr.file_versions fv
+  CROSS JOIN XMLTABLE('/*'
     PASSING metadata_xml
     COLUMNS
       filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
@@ -335,7 +334,7 @@ SELECT
   , fv.file_size
   , fv.path
   , created_datetime
-  , 2 created_by_id
+  , fv.created_by_id
 FROM mailshotmgr.xview_mailshot_details xmd
 INNER JOIN decmgr.file_folders ff ON ff.id = xmd.documents_ff_id
 LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
@@ -344,11 +343,11 @@ LEFT JOIN (
     fft_id target_id
     , fv.id version_id
     , create_start_datetime created_datetime
-    , create_by_wua_id created_by
+    , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
     , x.*
-  FROM decmgr.file_versions fv,
-    XMLTABLE('/*'
+  FROM decmgr.file_versions fv
+  CROSS JOIN XMLTABLE('/*'
     PASSING metadata_xml
     COLUMNS
       filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
@@ -375,7 +374,7 @@ SELECT
   , fv.file_size
   , fv.path
   , created_datetime
-  , 2 created_by_id
+  , fv.created_by_id
 FROM decmgr.file_folder_targets fft
 INNER JOIN decmgr.file_folders ff ON fft.ff_id = ff.id
 LEFT JOIN (
@@ -383,11 +382,11 @@ LEFT JOIN (
     fft_id target_id
     , fv.id version_id
     , create_start_datetime created_datetime
-    , create_by_wua_id created_by
+    , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
     , x.*
-  FROM decmgr.file_versions fv,
-    XMLTABLE('/*'
+  FROM decmgr.file_versions fv
+  CROSS JOIN XMLTABLE('/*'
     PASSING metadata_xml
     COLUMNS
       filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
@@ -413,7 +412,7 @@ SELECT
   , vf.filename
   , vf.content_type
   , vf.created_datetime
-  , 2 created_by_id
+  , vf.created_by_wua_id created_by_id
   , EXTRACTVALUE(vf.metadata_xml, '/file-metadata/size') file_size
   , vf.file_id || '-' || vf.filename path
 FROM doclibmgr.folder_details fd

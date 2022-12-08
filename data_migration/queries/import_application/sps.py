@@ -8,8 +8,8 @@ __all__ = ["sps_application"]
 sps_application_subquery = """
 SELECT
   ad.ima_id, ad.id imad_id, x.*
-FROM impmgr.import_application_details ad,
-  XMLTABLE('/*'
+FROM impmgr.import_application_details ad
+CROSS JOIN XMLTABLE('/*'
   PASSING ad.xml_data
   COLUMNS
     customs_cleared_to_uk VARCHAR2(5) PATH '/IMA/APP_DETAILS/SPS_DETAILS/GOODS_CLEARED[not(fox-error)]/text()'

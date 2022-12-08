@@ -127,6 +127,7 @@ sil_data_source_target = {
             (q_ia, "endorsement", dm.EndorsementImportApplication),
         ],
         "user": [
+            (q_u, "users", dm.User),
             (q_u, "importers", dm.Importer),
             (q_u, "importer_offices", dm.Office),
             (q_u, "exporters", dm.Exporter),
@@ -455,6 +456,7 @@ oil_data_source_target = {
             (q_f, "dfl_application_files", dm.FileCombined),
         ],
         "user": [
+            (q_u, "users", dm.User),
             (q_u, "importers", dm.Importer),
             (q_u, "importer_offices", dm.Office),
         ],
@@ -591,7 +593,7 @@ def test_import_user(mock_connect, dummy_dm_settings):
     call_command("extract_v1_xml")
     call_command("import_v1_data")
 
-    u1, u2 = web.User.objects.filter(pk__in=[3, 4]).order_by("pk")
+    u1, u2 = web.User.objects.filter(pk__in=[2, 3]).order_by("pk")
     assert u1.username == "test_user"
     assert u1.first_name == "Test"
     assert u1.last_name == "User"

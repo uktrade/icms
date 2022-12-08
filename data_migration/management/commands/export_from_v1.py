@@ -3,10 +3,8 @@ from typing import TYPE_CHECKING
 
 import oracledb
 from django.conf import settings
-from django.core.management.base import CommandError
 
 from data_migration import models
-from data_migration.models.user import User
 from data_migration.queries import DATA_TYPE, DATA_TYPE_QUERY_MODEL, FILE_MODELS
 from web.auth.fox_hasher import FOXPBKDF2SHA1Hasher
 
@@ -40,16 +38,12 @@ class Command(MigrationBaseCommand):
             "dsn": settings.ICMS_V1_REPLICA_DSN,
         }
 
-        if not options["skip_user"]:
-            self._create_user_data()
-
         with oracledb.connect(**connection_config) as connection:
-            with connection.cursor() as cursor:
-                self._export_data("user", cursor, options["skip_user"])
-                self._export_data("reference", cursor, options["skip_ref"])
-                self._export_data("file", cursor, options["skip_file"])
-                self._export_data("import_application", cursor, options["skip_ia"])
-                self._export_data("export_application", cursor, options["skip_export"])
+            self._export_data("user", connection, options["skip_user"])
+            self._export_data("reference", connection, options["skip_ref"])
+            self._export_data("file", connection, options["skip_file"])
+            self._export_data("import_application", connection, options["skip_ia"])
+            self._export_data("export_application", connection, options["skip_export"])
 
         self._log_script_end()
 
@@ -147,37 +141,26 @@ class Command(MigrationBaseCommand):
 
         self.stdout.write("File data extracted")
 
-    def _create_user_data(self):
-        """Creates dummy user data prior to users being migrated"""
+    def _post_export_tasks(self, skip: bool) -> None:
+        """Data fixes after export"""
 
-        self.stdout.write("Creating User Data...")
-        username = settings.ICMS_PROD_USER
-        password = settings.ICMS_PROD_PASSWORD
-
-        if not username or not password:
-            raise CommandError("No user details found for this environment")
-
-        if User.objects.exists():
-            self.stdout.write("User data exists. Skipping.")
+        if skip:
+            self.stdout.write("Skipping Post Export Tasks")
             return
 
-        hasher = FOXPBKDF2SHA1Hasher()
-        salt = hasher.salt()
-        password_str = hasher.encode(password, "2:" + salt)
-        encrypted_password = hasher.decode(password_str)["hash"]
+        # TODO ICMSLST-1811
+        models.File.objects.filter(created_by_id__isnull=True).update(created_by_id=0)
+        guest_user = models.User.objects.filter(pk=0).first()
 
-        user = User.objects.create(
-            id=2,
-            username=username,
-            first_name="Prod",
-            last_name="User",
-            email=username,
-            is_active=True,
-            title="Mr",
-            password_disposition="FULL",
-            salt=salt,
-            encrypted_password=encrypted_password,
-        )
-        user.save()
+        # TODO ICMSLST-1810: remove the guest user from the migration
+        if guest_user:
+            hasher = FOXPBKDF2SHA1Hasher()
+            password = settings.ICMS_PROD_PASSWORD
+            salt = hasher.salt()
+            password_str = hasher.encode(password, "0:" + salt)
+            encrypted_password = hasher.decode(password_str)["hash"]
+            guest_user.encrypted_password = encrypted_password
+            guest_user.salt = salt
+            guest_user.save()
+
         self._log_time()
-        self.stdout.write("User Data Created!")

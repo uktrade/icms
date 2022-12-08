@@ -36,10 +36,10 @@ class ApprovalRequestParser(BaseXmlParser):
 
         status = get_xml_val(xml, "./STATUS")
         request_date = datetime_or_none(get_xml_val(xml, "./REQUEST_DATE"))
-        requested_by = 2  # get_xml_val(xml, "./REQUEST_CREATED_BY_WUA_ID")
-        requested_from = 2  # get_xml_val(xml, "./CONTACT_WUA_ID") ?
+        requested_by = get_xml_val(xml, "./REQUEST_CREATED_BY_WUA_ID")
+        requested_from = get_xml_val(xml, "./CONTACT_WUA_ID")  # TODO check post-migrate
         response = get_xml_val(xml, "./RESPONSE")
-        response_by = 2  # get_xml_val(xml, "./RESPONDED_BY_WUA_ID")
+        response_by = get_xml_val(xml, "./RESPONDED_BY_WUA_ID")
         response_date = datetime_or_none(get_xml_val(xml, "./RESPONSE_DATE"))
         response_reason = get_xml_val(xml, "./RESPONSE_REASON")
 

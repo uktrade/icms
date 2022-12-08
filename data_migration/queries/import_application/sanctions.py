@@ -8,8 +8,8 @@ __all__ = ["sanctions_application"]
 sanctions_application_subquery = """
 SELECT
   ad.ima_id, ad.id imad_id, x.*
-FROM impmgr.import_application_details ad,
-  XMLTABLE('/*'
+FROM impmgr.import_application_details ad
+CROSS JOIN XMLTABLE('/*'
   PASSING ad.xml_data
   COLUMNS
     exporter_name VARCHAR2(4000) PATH '/IMA/APP_DETAILS/ADHOC_DETAILS/EXPORTER_NAME/text()'

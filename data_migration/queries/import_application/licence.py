@@ -32,7 +32,7 @@ ORDER BY ird.id
 """
 
 #  , dd.signed_datetime
-#  , CASE WHEN dd.signed_by_id IS NULL THEN NULL ELSE 2 END signed_by_id
+#  , dd.signed_by_id signed_by_str
 
 ia_licence_docs = """
 SELECT
@@ -49,7 +49,7 @@ SELECT
   , dbms_lob.getlength(sld.blob_data) file_size
   , sld.id || '-' || xdd.title path
   , dd.created_datetime
-  , 2 created_by_id
+  , dd.created_by created_by_str
 FROM impmgr.ima_responses ir
   INNER JOIN impmgr.ima_response_details ird ON ird.ir_id = ir.id
   INNER JOIN impmgr.xview_ima_details xiad ON xiad.imad_id = ird.imad_id

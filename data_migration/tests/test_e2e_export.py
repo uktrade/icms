@@ -66,7 +66,7 @@ export_data_source_target = {
 }
 
 export_query_model = {
-    "user": [],
+    "user": [(q_u, "users", dm.User)],
     "file": [(q_f, "gmp_files", dm.FileCombined), (q_f, "export_case_note_docs", dm.FileCombined)],
     "import_application": [],
     "export_application": [
