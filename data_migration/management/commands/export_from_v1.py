@@ -1,3 +1,4 @@
+import argparse
 from itertools import islice
 from typing import TYPE_CHECKING
 
@@ -6,7 +7,6 @@ from django.conf import settings
 
 from data_migration import models
 from data_migration.queries import DATA_TYPE, DATA_TYPE_QUERY_MODEL, FILE_MODELS
-from web.auth.fox_hasher import FOXPBKDF2SHA1Hasher
 
 from ._base import MigrationBaseCommand
 from .utils.db import new_process_pk
@@ -29,6 +29,15 @@ class Command(MigrationBaseCommand):
         "export_application": ["ea", "export_application"],
     }
 
+    def add_arguments(self, parser: argparse.ArgumentParser):
+        super().add_arguments(parser)
+
+        parser.add_argument(
+            "--skip_post",
+            help="Skip post exoprt tasks",
+            action="store_true",
+        )
+
     def handle(self, *args, **options):
         super().handle(*args, **options)
 
@@ -44,6 +53,7 @@ class Command(MigrationBaseCommand):
             self._export_data("file", connection, options["skip_file"])
             self._export_data("import_application", connection, options["skip_ia"])
             self._export_data("export_application", connection, options["skip_export"])
+            self._post_export_tasks(options["skip_post"])
 
         self._log_script_end()
 
@@ -150,17 +160,8 @@ class Command(MigrationBaseCommand):
 
         # TODO ICMSLST-1811
         models.File.objects.filter(created_by_id__isnull=True).update(created_by_id=0)
-        guest_user = models.User.objects.filter(pk=0).first()
-
-        # TODO ICMSLST-1810: remove the guest user from the migration
-        if guest_user:
-            hasher = FOXPBKDF2SHA1Hasher()
-            password = settings.ICMS_PROD_PASSWORD
-            salt = hasher.salt()
-            password_str = hasher.encode(password, "0:" + salt)
-            encrypted_password = hasher.decode(password_str)["hash"]
-            guest_user.encrypted_password = encrypted_password
-            guest_user.salt = salt
-            guest_user.save()
+        models.ImportApplication.objects.filter(last_updated_by_id__isnull=True).update(
+            last_updated_by_id=0
+        )
 
         self._log_time()

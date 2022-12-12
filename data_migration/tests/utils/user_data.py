@@ -27,6 +27,25 @@ user_query_result = {
         ],
         [
             (
+                0,  # id
+                "GUEST",  # username
+                "Guest",  # first_name
+                "User",  # last_name
+                "",  # email
+                0,  # is_active
+                None,  # salt 1234
+                None,  # encrypted_password /PS-IGNORE
+                None,  # title
+                None,  # Oranisation
+                None,  # Department
+                None,  # job_title
+                "INACTIVE",  # account_status
+                None,  # account_status_by
+                None,  # account_status_date
+                None,  # last_login_datetime
+                "FULL",  # password_disposition
+            ),
+            (
                 2,  # id
                 "test_user",  # username
                 "Test",  # first_name

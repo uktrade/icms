@@ -89,6 +89,7 @@ class User(MigrationBase):
         related = cls.get_related()
         return (
             cls.objects.select_related(*related)
+            .exclude(pk=0)
             .order_by("pk")
             .values(*values, **values_kwargs)
             .iterator(chunk_size=2000)

@@ -219,7 +219,7 @@ ia_query_result = {
                 1004,
                 10004,
                 datetime(2022, 4, 27),
-                2,
+                None,
                 "contract/file",
                 "contract.pdf",
                 "pdf",
@@ -1218,6 +1218,7 @@ ia_query_result = {
             ("bought_from_details_xml",),
             ("supplementary_report_xml",),
             ("commodities_xml",),
+            ("last_updated_datetime",),
         ],
         [
             (
@@ -1263,7 +1264,7 @@ ia_query_result = {
                 8901,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
-                2,  # last_updated_by_id
+                None,  # last_updated_by_id
                 2,  # importer_id
                 "i-2-1",  # importer_office_legacy_id
                 2,  # contact_id

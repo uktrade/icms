@@ -88,7 +88,6 @@ FROM impmgr.xview_certificate_app_details xcad
 WHERE xcad.status_control = 'C'
   AND xcad.application_type = '{application_type}'
   AND xcad.status <> 'DELETED'
-  AND rp_wua.wua_id NOT IN (SELECT * FROM rp_dupes)
   AND (xcad.submitted_datetime IS NOT NULL OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
 """
 

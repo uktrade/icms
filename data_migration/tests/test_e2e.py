@@ -305,6 +305,8 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     ia1 = sil1.importapplication_ptr
     ia2 = sil2.importapplication_ptr
 
+    assert ia1.last_updated_by_id == 2
+    assert ia2.last_updated_by_id == 0
     assert ia1.importcontact_set.count() == 0
     assert ia2.importcontact_set.count() == 2
     ic = ia2.importcontact_set.first()
