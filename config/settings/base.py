@@ -264,6 +264,7 @@ COMPANIES_HOUSE_TOKEN = os.environ.get("COMPANIES_HOUSE_TOKEN", "changeme")
 # guardian config
 GUARDIAN_MONKEY_PATCH = False
 GUARDIAN_RENDER_403 = True
+GUARDIAN_GET_INIT_ANONYMOUS_USER = "web.auth.models.get_anonymous_user_instance"
 
 # Used to add dummy test in non prod environments
 ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD = env.bool(

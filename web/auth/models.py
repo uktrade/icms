@@ -1,6 +1,18 @@
 from django.contrib.auth.backends import ModelBackend
+from guardian.conf import settings as guardian_settings
 
 from web.models import User
+
+
+def get_anonymous_user_instance(UserModel: type[User]) -> User:
+    # Change the guardian anonymous user pk to match V1 guest user
+    kwargs = {
+        "pk": 0,
+        UserModel.USERNAME_FIELD: guardian_settings.ANONYMOUS_USER_NAME,
+    }
+    user = UserModel(**kwargs)
+    user.set_unusable_password()
+    return user
 
 
 class CustomBackend(ModelBackend):
