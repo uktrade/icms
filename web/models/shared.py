@@ -1,3 +1,6 @@
+import enum
+
+from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -24,3 +27,14 @@ class FirearmCommodity(models.TextChoices):
 
 
 at_least_0 = MinValueValidator(limit_value=0.0)
+
+
+class EnumJsonEncoder(DjangoJSONEncoder):
+    """Extends DjangoJSONEncoder to support encoding Enum types."""
+
+    def default(self, o):
+        # This only works when o.value is JSON serializable (e.g. str and int)
+        if isinstance(o, enum.Enum):
+            return o.value
+        else:
+            return super().default(o)
