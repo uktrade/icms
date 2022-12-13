@@ -2,7 +2,6 @@ import uuid
 from typing import TYPE_CHECKING
 
 from django.contrib.postgres.indexes import BTreeIndex
-from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from guardian.shortcuts import get_users_with_perms
 
@@ -24,7 +23,7 @@ from web.domains.template.models import Template
 from web.domains.user.models import User
 from web.flow.models import ProcessTypes
 from web.models.models import CaseReference
-from web.models.shared import YesNoNAChoices
+from web.models.shared import EnumJsonEncoder, YesNoNAChoices
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -510,7 +509,7 @@ class LiteHMRCChiefRequest(models.Model):
     )
 
     # ------------- CHIEF Request fields --------------
-    request_data = models.JSONField(default=dict, encoder=DjangoJSONEncoder)
+    request_data = models.JSONField(default=dict, encoder=EnumJsonEncoder)
     request_sent_datetime = models.DateTimeField()
 
     # ------------- CHIEF Response fields -------------
