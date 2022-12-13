@@ -34,7 +34,12 @@ ORDER BY ird.id
 #  , dd.signed_datetime
 #  , dd.signed_by_id signed_by_str
 
-ia_licence_docs = """
+ia_licence_docs = r"""
+WITH wua_login AS (
+  SELECT distinct wua_id, login_id
+  FROM securemgr.web_user_account_histories
+  GROUP BY wua_id, login_id
+)
 SELECT
   ird.imad_id licence_id
   , dd.id document_legacy_id
@@ -50,6 +55,7 @@ SELECT
   , sld.id || '-' || xdd.title path
   , dd.created_datetime
   , dd.created_by created_by_str
+  , wl.wua_id created_by_id
 FROM impmgr.ima_responses ir
   INNER JOIN impmgr.ima_response_details ird ON ird.ir_id = ir.id
   INNER JOIN impmgr.xview_ima_details xiad ON xiad.imad_id = ird.imad_id
@@ -58,6 +64,7 @@ FROM impmgr.ima_responses ir
   INNER JOIN decmgr.xview_document_data xdd ON xdd.di_id = xird.di_id AND xdd.system_document = 'N' AND xdd.content_description = 'PDF'
   INNER JOIN decmgr.document_data dd ON dd.id = xdd.dd_id
   INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(dd.secure_lob_ref).id
+  INNER JOIN wua_login wl ON wl.login_id = REGEXP_SUBSTR(dd.created_by, '\((.+)\)', 1, 1, NULL, 1)
 WHERE ir.response_type LIKE '%_LICENCE' OR ir.response_type LIKE '%_COVER'
 ORDER BY sld.id
 """

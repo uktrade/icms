@@ -219,7 +219,7 @@ ia_query_result = {
                 1004,
                 10004,
                 datetime(2022, 4, 27),
-                None,
+                2,
                 "contract/file",
                 "contract.pdf",
                 "pdf",

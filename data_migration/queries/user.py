@@ -36,7 +36,7 @@ SELECT
 FROM securemgr.web_user_account_master wuam
 INNER JOIN securemgr.web_user_account_histories wuah ON wuah.wua_id = wuam.wua_id AND wuah.status_control = 'C'
 LEFT JOIN login_id_dupes ld ON ld.login_id = wuah.login_id AND wuah.account_status = 'CANCELLED'
-INNER JOIN decmgr.resource_people_details rp ON rp.rp_id = wuah.resource_person_id AND rp.status_control = 'C'
+INNER JOIN decmgr.resource_people_details rp ON rp.rp_id = wuah.resource_person_id AND (rp.status_control = 'C' OR rp.status = 'DELETE-DRAFT')
 CROSS JOIN XMLTABLE('/*'
   PASSING rp.xml_data
   COLUMNS

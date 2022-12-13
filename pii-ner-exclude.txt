@@ -1772,3 +1772,5 @@ SELECT xcad.ca_id
 Check rp_dupes
 uah.resource_person_primary_flag
 Guest
+ON sld.id = DEREF(dd.secure_lob_ref).id INNER JOIN
+ON wl.login_id =

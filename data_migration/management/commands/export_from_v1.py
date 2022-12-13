@@ -158,8 +158,6 @@ class Command(MigrationBaseCommand):
             self.stdout.write("Skipping Post Export Tasks")
             return
 
-        # TODO ICMSLST-1811
-        models.File.objects.filter(created_by_id__isnull=True).update(created_by_id=0)
         models.ImportApplication.objects.filter(last_updated_by_id__isnull=True).update(
             last_updated_by_id=0
         )
