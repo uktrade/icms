@@ -8,10 +8,6 @@ __all__ = [
     "access_requests",
 ]
 
-# TODO: ICMSLST-1799
-#  -- work_address
-#  -- share_contact_details
-
 
 users = """
 WITH login_id_dupes AS (
@@ -32,6 +28,8 @@ SELECT
   , wuah.account_status_date
   , wuah.password_disposition
   , wuah.login_try_count unsuccessful_login_attempts
+  , addr.address work_address
+  , CASE x.share_info WHEN 'true' THEN 1 ELSE 0 END share_contact_details
   , x.*
 FROM securemgr.web_user_account_master wuam
 INNER JOIN securemgr.web_user_account_histories wuah ON wuah.wua_id = wuam.wua_id AND wuah.status_control = 'C'
@@ -51,11 +49,16 @@ CROSS JOIN XMLTABLE('/*'
     , department VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/DEPARTMENT_DESCRIPTION/text()'
     , organisation VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/ORGANISATION_DESCRIPTION/text()'
     , job_title VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/JOB_DESCRIPTION/text()'
+    , work_address_id INTEGER PATH '/RESOURCE_PERSON_DETAIL/WORK_ADDRESS_ID/text()'
     , location_at_address VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/LOCATION_AT_ADDRESS/text()'
+    , share_info VARCHAR(4000) PATH '/RESOURCE_PERSON_DETAIL/SHARE_ADDRESS_INFO/text()'
     , date_joined_datetime VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/CREATED_DATE/text()'
     , security_question VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/SECURITY_QUESTION/text()'
     , security_answer VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/SECURITY_ANSWER/text()'
+    , email_address_xml XMLTYPE PATH '/RESOURCE_PERSON_DETAIL/PERSONAL_EMAIL_LIST'
+    , telephone_xml XMLTYPE PATH '/RESOURCE_PERSON_DETAIL/TELEPHONE_NO_LIST'
 ) x
+LEFT JOIN decmgr.resource_address_current addr ON addr.addr_id = x.work_address_id
 ORDER BY wuam.wua_id
 """
 

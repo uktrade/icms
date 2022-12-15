@@ -523,6 +523,8 @@ user_xml_parsers = {
     "import_application": [],
     "export_application": [],
     "user": [
+        xml_parser.EmailAddressParser,
+        xml_parser.PhoneNumberParser,
         xml_parser.ApprovalRequestParser,
         xml_parser.AccessFIRParser,
     ],
@@ -531,6 +533,9 @@ user_xml_parsers = {
 user_data_source_target = {
     "user": [
         (dm.User, web.User),
+        (dm.PhoneNumber, web.PhoneNumber),
+        (dm.AlternativeEmail, web.AlternativeEmail),
+        (dm.PersonalEmail, web.PersonalEmail),
         (dm.Importer, web.Importer),
         (dm.Exporter, web.Exporter),
         (dm.Office, web.Office),
@@ -599,17 +604,51 @@ def test_import_user(mock_connect, dummy_dm_settings):
     assert u1.username == "test_user"
     assert u1.first_name == "Test"
     assert u1.last_name == "User"
-    assert u1.email == "test.user"
+    assert u1.email == "test_a"
     assert u1.check_password("password") is True
     assert u1.title == "Mr"
     assert u1.organisation == "Org"
     assert u1.department == "Dept"
     assert u1.job_title == "IT"
     assert u1.account_status == "ACTIVE"
-    assert u1.account_status_by_id == 3
+    assert u1.account_status_by_id == 2
+    assert u1.share_contact_details is True
+    assert u1.phone_numbers.count() == 2
+    assert u1.alternative_emails.count() == 1
+    assert u1.personal_emails.count() == 2
+
+    pn1, pn2 = u1.phone_numbers.order_by("pk")
+    assert pn1.phone == "12345678"
+    assert pn1.type == "HOME"
+    assert pn1.comment == "My Home"
+    assert pn2.phone == "+212345678"
+    assert pn2.type == "MOBILE"
+    assert pn2.comment is None
+
+    ae1 = u1.alternative_emails.first()
+    assert ae1.email == "test_b"
+    assert ae1.type == "WORK"
+    assert ae1.portal_notifications is True
+    assert ae1.comment is None
+
+    pe1, pe2 = u1.personal_emails.order_by("pk")
+    assert pe1.email == "test_a"
+    assert pe1.type == "HOME"
+    assert pe1.portal_notifications is True
+    assert pe1.is_primary is True
+    assert pe1.comment == "A COMMENT"
+    assert pe2.email == "test_c"
+    assert pe2.type == "HOME"
+    assert pe2.portal_notifications is False
+    assert pe2.is_primary is False
+    assert pe2.comment is None
 
     assert u2.check_password("password123") is True
     assert u2.account_status_by_id == 3
+    assert u2.share_contact_details is False
+    assert u2.phone_numbers.count() == 0
+    assert u2.alternative_emails.count() == 0
+    assert u2.personal_emails.count() == 0
 
     ar1, ar2, ar3, ar4 = web.AccessRequest.objects.order_by("pk")
 

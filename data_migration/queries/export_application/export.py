@@ -141,7 +141,7 @@ FROM impmgr.certificate_app_responses car
 ORDER BY cardc.id
 """
 
-# TODO: Check what status in V2 updates closed_by_id
+# TODO ICMSLST-1815 Change to extract from XML
 export_variations = """
 SELECT
     ca_id
@@ -151,7 +151,7 @@ SELECT
     , created_by_wua_id requested_by_id
     , v.variation_reason what_varied
     , v.end_datetime closed_datetime
-    , CASE v.variation_status WHEN 'CLOSED' THEN v.last_updated_by_wua_id ELSE NULL END closed_by_id
+    , CASE v.variation_status WHEN 'CANCELLED' THEN v.last_updated_by_wua_id ELSE NULL END closed_by_id
 FROM impmgr.xview_cert_app_variations v
 WHERE status_control = 'C'
 AND v.variation_reason IS NOT NULL

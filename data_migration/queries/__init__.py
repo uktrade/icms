@@ -13,6 +13,8 @@ from .types import M2M, QueryModel, SourceTarget, source_target_list
 
 user_source_target = [
     SourceTarget(dm.User, web.User),
+    SourceTarget(dm.PersonalEmail, web.PersonalEmail),
+    SourceTarget(dm.AlternativeEmail, web.AlternativeEmail),
     SourceTarget(dm.Mailshot, web.Mailshot),
     SourceTarget(dm.Importer, web.Importer),
     SourceTarget(dm.Exporter, web.Exporter),
@@ -43,6 +45,8 @@ user_m2m = [
 ]
 
 user_xml = [
+    xml_parser.PhoneNumberParser,
+    xml_parser.EmailAddressParser,
     xml_parser.ApprovalRequestParser,
     xml_parser.AccessFIRParser,
 ]
