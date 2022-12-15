@@ -81,7 +81,7 @@ urlpatterns = [
     path("imi/", include(imi_urls)),
 ]
 
-if settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD:
+if not settings.SEND_LICENCE_TO_CHIEF and settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD:
     urlpatterns += [
         path(
             "case/<int:application_pk>/bypass-chief/<chiefstatus:chief_status>/",

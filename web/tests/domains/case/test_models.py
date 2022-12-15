@@ -106,7 +106,6 @@ def test_actions_authorise(app_processing, test_import_user):
     _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View Application"})
 
 
-@override_settings(ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD=True)
 def test_actions_bypass_chief(app_processing, test_import_user):
     _update_task(app_processing, Task.TaskType.CHIEF_WAIT)
     user_row = app_processing.get_workbasket_row(test_import_user, False)
@@ -202,6 +201,34 @@ def test_admin_actions_bypass_chief(app_processing, test_icms_admin_user):
             "View",
         },
     )
+
+    _test_view_endpoint_is_case_management(app_processing, admin_row.sections)
+
+    _update_task(app_processing, Task.TaskType.CHIEF_ERROR)
+
+    # fetch the app again as we've updated the tasks
+    app_processing = _get_wood_app_with_annotations(app_processing)
+
+    admin_row = app_processing.get_workbasket_row(test_icms_admin_user, True)
+
+    _check_actions(admin_row.sections, expected_actions={"Show Licence Details", "View"})
+    _test_view_endpoint_is_case_management(app_processing, admin_row.sections)
+
+
+@override_settings(ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD=True, SEND_LICENCE_TO_CHIEF=True)
+def test_admin_actions_bypass_chief_disabled_when_sending_to_chief(
+    app_processing, test_icms_admin_user
+):
+    _update_task(app_processing, Task.TaskType.CHIEF_WAIT)
+
+    # fetch the app again as we've updated the tasks
+    app_processing = _get_wood_app_with_annotations(app_processing)
+
+    # bypass-chief urls are not included
+    with patch("web.domains.case.models.reverse"):
+        admin_row = app_processing.get_workbasket_row(test_icms_admin_user, True)
+
+    _check_actions(admin_row.sections, expected_actions={"Monitor Progress", "View"})
 
     _test_view_endpoint_is_case_management(app_processing, admin_row.sections)
 

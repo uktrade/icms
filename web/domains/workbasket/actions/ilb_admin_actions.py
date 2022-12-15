@@ -64,17 +64,11 @@ class ViewApplicationCaseAction(Action):
                 self.section_label = "Authorise Documents"
 
             # App in CHIEF wait state
-            elif (
-                settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
-                and Task.TaskType.CHIEF_WAIT in self.active_tasks
-            ):
+            elif Task.TaskType.CHIEF_WAIT in self.active_tasks:
                 show_link = True
 
             # App in CHIEF error state
-            elif (
-                settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
-                and Task.TaskType.CHIEF_ERROR in self.active_tasks
-            ):
+            elif Task.TaskType.CHIEF_ERROR in self.active_tasks:
                 show_link = True
 
             elif (
@@ -257,7 +251,9 @@ class BypassChiefSuccessAction(Action):
             ImpExpStatus.VARIATION_REQUESTED,
         ]
         correct_task = Task.TaskType.CHIEF_WAIT in self.active_tasks
-        correct_setting = settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
+        correct_setting = (
+            not settings.SEND_LICENCE_TO_CHIEF and settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
+        )
 
         if correct_status and correct_task and correct_setting:
             show_link = True
@@ -289,7 +285,9 @@ class BypassChiefFailureAction(Action):
             ImpExpStatus.VARIATION_REQUESTED,
         ]
         correct_task = Task.TaskType.CHIEF_WAIT in self.active_tasks
-        correct_setting = settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
+        correct_setting = (
+            not settings.SEND_LICENCE_TO_CHIEF and settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
+        )
 
         if correct_status and correct_task and correct_setting:
             show_link = True
