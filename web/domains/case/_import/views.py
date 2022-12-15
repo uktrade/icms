@@ -535,7 +535,7 @@ def view_file(request, application, related_file_model, file_pk):
 def bypass_chief(
     request: AuthenticatedHttpRequest, *, application_pk: int, chief_status: str
 ) -> HttpResponse:
-    if not settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD:
+    if settings.SEND_LICENCE_TO_CHIEF or not settings.ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD:
         raise PermissionDenied
 
     with transaction.atomic():

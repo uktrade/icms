@@ -1,5 +1,4 @@
 import pytest
-from django.test import override_settings
 
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.shared import ImpExpStatus
@@ -71,7 +70,6 @@ class TestAdminActions:
         wb_action = action.get_workbasket_actions()[0]
         assert wb_action.name == "View Case"
 
-    @override_settings(ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD=True)
     def test_view_case_action_is_shown_for_chief_views(self):
         """Test view action is shown for chief views."""
         # setup
