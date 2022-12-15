@@ -1775,3 +1775,5 @@ Guest
 ON sld.id = DEREF(dd.secure_lob_ref).id INNER JOIN
 ON wl.login_id =
 Enum
+work_address_id INTEGER PATH '
+ON addr.addr_id

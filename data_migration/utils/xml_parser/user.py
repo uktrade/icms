@@ -79,3 +79,85 @@ class AccessFIRParser(FIRBaseParser):
     ROOT_NODE = "/RFI_LIST/RFI"
     PARENT = dm.AccessRequest
     PARENT_MODEL_FIELD = "access_request_id"
+
+
+class PhoneNumberParser(BaseXmlParser):
+    MODEL = dm.PhoneNumber
+    FIELD = "telephone_xml"
+    ROOT_NODE = "/TELEPHONE_NO_LIST/TELEPHONE_NO"
+    PARENT = dm.User
+
+    TYPES = {
+        "F": "FAX",
+        "H": "HOME",
+        "M": "MOBILE",
+        "W": "WORK",
+    }
+
+    @classmethod
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Model | None:
+        """Example XML
+
+        <TELEPHONE_NO>
+          <TELEPHONE_HASH_CODE />
+          <TYPE />
+          <COMMENT />
+        </TELEPHONE_NO>
+        """
+
+        phone_number = get_xml_val(xml, "./TELEPHONE_HASH_CODE")
+        phone_type = get_xml_val(xml, "./TYPE")
+        comment = get_xml_val(xml, "./COMMENT")
+
+        return cls.MODEL(
+            **{
+                "user_id": parent_pk,
+                "phone": phone_number,
+                "type": cls.TYPES[phone_type],
+                "comment": comment,
+            }
+        )
+
+
+class EmailAddressParser(BaseXmlParser):
+    FIELD = "email_address_xml"
+    ROOT_NODE = "/PERSONAL_EMAIL_LIST/PERSONAL_EMAIL"
+    PARENT = dm.User
+
+    MODELS = {
+        "H": dm.PersonalEmail,
+        "W": dm.AlternativeEmail,
+    }
+
+    TYPES = {
+        "H": "HOME",
+        "W": "WORK",
+    }
+
+    @classmethod
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Model | None:
+        """Example XML
+
+        <PERSONAL_EMAIL>
+          <EMAIL_ADDRESS />
+          <PORTAL_NOTIFICATIONS />
+          <TYPE />
+          <COMMENT />
+        </PERSONAL_EMAIL>
+        """
+
+        email_type = get_xml_val(xml, "./TYPE")
+        portal = get_xml_val(xml, "./PORTAL_NOTIFICATIONS")
+
+        data = {
+            "user_id": parent_pk,
+            "email": get_xml_val(xml, "./EMAIL_ADDRESS"),
+            "comment": get_xml_val(xml, "./COMMENT"),
+            "type": cls.TYPES[email_type],
+            "portal_notifications": portal in ("Primary", "Yes"),
+        }
+
+        if email_type == "H":
+            data["is_primary"] = portal == "Primary"
+
+        return cls.MODELS[email_type](**data)

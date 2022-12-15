@@ -24,6 +24,9 @@ user_query_result = {
             ("account_status_date",),
             ("last_login_datetime",),
             ("password_disposition",),
+            ("email_address_xml",),
+            ("telephone_xml",),
+            ("share_contact_details",),
         ],
         [
             (
@@ -44,13 +47,16 @@ user_query_result = {
                 None,  # account_status_date
                 None,  # last_login_datetime
                 "FULL",  # password_disposition
+                None,  # email_address_xml
+                None,  # telephone_xml
+                0,  # share_contact_details
             ),
             (
                 2,  # id
                 "test_user",  # username
                 "Test",  # first_name
                 "User",  # last_name
-                "test.user",  # email
+                "test_a",  # email
                 1,  # is_active
                 "31323334",  # salt 1234
                 "FB8C301A3EBDA623029E0AACC9D3B21B",  # encrypted_password /PS-IGNORE
@@ -59,10 +65,13 @@ user_query_result = {
                 "Dept",  # Department
                 "IT",  # job_title
                 "ACTIVE",  # account_status
-                "3",  # account_status_by
+                "2",  # account_status_by
                 dt.date.today(),  # account_status_date
                 dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
                 "FULL",  # password_disposition
+                xd.email_xml,  # email_address_xml
+                xd.phone_number_xml,  # telephone_xml
+                1,  # share_contact_details
             ),
             (
                 3,  # id
@@ -82,6 +91,9 @@ user_query_result = {
                 dt.date.today(),  # account_status_date
                 dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
                 "FULL",  # password_disposition
+                None,  # email_address_xml
+                None,  # telephone_xml
+                0,  # share_contact_details
             ),
         ],
     ),

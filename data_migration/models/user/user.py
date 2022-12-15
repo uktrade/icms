@@ -39,6 +39,8 @@ class User(MigrationBase):
     account_status_date = models.DateField(null=True)
     password_disposition = models.CharField(max_length=20, null=True)
     unsuccessful_login_attempts = models.PositiveSmallIntegerField(default=0)
+    email_address_xml = models.TextField(null=True)
+    telephone_xml = models.TextField(null=True)
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
@@ -96,6 +98,30 @@ class User(MigrationBase):
         )
 
     # M2M groups / user permissions
+
+
+class PhoneNumber(MigrationBase):
+    phone = models.CharField(max_length=60)
+    type = models.CharField(max_length=30)
+    comment = models.CharField(max_length=4000, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="phone_numbers")
+
+
+class AlternativeEmail(MigrationBase):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="alternative_emails")
+    email = models.EmailField(max_length=254)
+    type = models.CharField(max_length=30)
+    portal_notifications = models.BooleanField(default=False)
+    comment = models.CharField(max_length=4000, null=True)
+
+
+class PersonalEmail(MigrationBase):
+    is_primary = models.BooleanField(blank=False, null=False, default=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="personal_emails")
+    email = models.EmailField(max_length=254)
+    type = models.CharField(max_length=30)
+    portal_notifications = models.BooleanField(default=False)
+    comment = models.CharField(max_length=4000, null=True)
 
 
 class Importer(MigrationBase):
