@@ -11,6 +11,8 @@ def test_fa_dfl_licence_data_can_serialise_using_enum_json_encoder():
     This class get's used when saving the licence data to the database after the request is sent to chief.
     A new EnumJsonEncoder has been added to encode Enum values.
     """
+    today = dt.date.today()
+    today_str = today.strftime("%Y-%m-%d")
 
     fa_dfl_licence = types.FirearmLicenceData(
         type="DFL",
@@ -18,9 +20,9 @@ def test_fa_dfl_licence_data_can_serialise_using_enum_json_encoder():
         id="",
         reference="",
         licence_reference="",
-        start_date=dt.date.today(),
-        end_date=dt.date.today(),
-        organisation=_get_organisation(),
+        start_date=today,
+        end_date=today,
+        organisation=_get_organisation(today),
         country_group="Country Group",
         country_code="Country Code",
         restrictions="Some restrictions",
@@ -38,6 +40,7 @@ def test_fa_dfl_licence_data_can_serialise_using_enum_json_encoder():
 
     licence_json = json.dumps(dict_data, cls=EnumJsonEncoder)
     licence_data = json.loads(licence_json)
+
     assert licence_data == {
         "licence": {
             "type": "DFL",
@@ -45,8 +48,8 @@ def test_fa_dfl_licence_data_can_serialise_using_enum_json_encoder():
             "id": "",
             "reference": "",
             "licence_reference": "",
-            "start_date": "2022-12-13",
-            "end_date": "2022-12-13",
+            "start_date": today_str,
+            "end_date": today_str,
             "organisation": {
                 "eori_number": "GB123456789012345",
                 "name": "Org name",
@@ -58,8 +61,8 @@ def test_fa_dfl_licence_data_can_serialise_using_enum_json_encoder():
                     "line_5": "line_5",
                     "postcode": "postcode",
                 },
-                "start_date": "2022-12-13",
-                "end_date": "2022-12-13",
+                "start_date": today_str,
+                "end_date": today_str,
             },
             "country_group": "Country Group",
             "country_code": "Country Code",
@@ -76,7 +79,7 @@ def test_fa_dfl_licence_data_can_serialise_using_enum_json_encoder():
     }
 
 
-def _get_organisation() -> types.OrganisationData:
+def _get_organisation(today: dt.date) -> types.OrganisationData:
     return types.OrganisationData(
         eori_number="GB123456789012345",
         name="Org name",
@@ -88,6 +91,6 @@ def _get_organisation() -> types.OrganisationData:
             line_5="line_5",
             postcode="postcode",
         ),
-        start_date=dt.date.today(),
-        end_date=dt.date.today(),
+        start_date=today,
+        end_date=today,
     )
