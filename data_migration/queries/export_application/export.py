@@ -57,6 +57,31 @@ WITH rp_wua AS (
   WHERE uah.person_id_current IS NOT NULL
     AND uah.resource_person_primary_flag = 'Y'
   GROUP BY uah.resource_person_id
+), case_owner AS (
+  SELECT
+    REPLACE(xa.assignee_uref, 'WUA') wua_id
+    , bad.ca_id
+  FROM (
+    SELECT
+      MAX(bad.id) bad_id
+      , bas.ca_id
+    FROM bpmmgr.business_assignment_details bad
+    INNER JOIN (
+      SELECT bra.bas_id, REPLACE(xbc.primary_data_uref, 'CA') ca_id
+      FROM bpmmgr.xview_business_contexts xbc
+      INNER JOIN bpmmgr.business_routine_contexts brc ON xbc.bc_id = brc.bc_id
+      INNER JOIN bpmmgr.business_stages bs ON bs.brc_id = brc.id AND bs.end_datetime IS NULL
+      INNER JOIN bpmmgr.business_routine_assignments bra ON bra.brc_id = brc.id
+      INNER JOIN bpmmgr.xview_bpd_action_set_assigns xbasa ON xbasa.bpd_id = bs.bp_id
+        AND xbasa.stage_label = bs.stage_label
+        AND xbasa.assignment = bra.assignment
+        AND xbasa.workbasket = 'WORK'
+      WHERE  bs.stage_label LIKE 'CA%'
+        AND bra.assignment = 'CASE_OFFICER'
+      ) bas on bas.bas_id = bad.bas_id
+    GROUP BY bas.ca_id
+    ) bad
+  INNER JOIN bpmmgr.xview_assignees xa ON xa.bad_id = bad.bad_id
 )
 SELECT
   xcad.ca_id
@@ -77,6 +102,7 @@ SELECT
   , xcad.agent_office_id
   , '{process_type}' process_type
   , cat.id application_type_id
+  , case_owner.wua_id case_owner_id
   , cad.*
 FROM impmgr.xview_certificate_app_details xcad
   INNER JOIN impmgr.certificate_applications ca ON ca.id = xcad.ca_id
@@ -85,6 +111,7 @@ FROM impmgr.xview_certificate_app_details xcad
   {application_details}
   ) cad on cad.cad_id = xcad.cad_id
   LEFT JOIN rp_wua ON rp_wua.resource_person_id = xcad.contact_rp_id
+  LEFT JOIN case_owner ON case_owner.ca_id = xcad.ca_id
 WHERE xcad.status_control = 'C'
   AND xcad.application_type = '{application_type}'
   AND xcad.status <> 'DELETED'
