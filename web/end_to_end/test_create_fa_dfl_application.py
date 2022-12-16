@@ -99,7 +99,7 @@ def _create_fa_dfl(page: Page, sample_upload_file: types.FilePayload) -> int:
     return dfl_id
 
 
-def _manage_case_and_authorise_documents(page: Page, dfl_id) -> None:
+def _manage_case_and_authorise_documents(page: Page, dfl_id: int) -> None:
     #
     # Complete Take Ownership
     #
