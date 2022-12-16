@@ -67,6 +67,9 @@ class UserPages:
             storage_state=storage_state, **self.browser_context_args
         )
 
+        # Timeout in ms
+        context.set_default_timeout(5_000)
+
         page = context.new_page()
         page.goto("/workbasket/")
 
