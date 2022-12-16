@@ -1,5 +1,3 @@
-# TODO ICMSLST-1493: Investigate case_owner_id
-
 # Active application types only migrate unsubmitted applications that have been updated in the last two weeks
 # Inactive application types do not migrate unsubmitted applications
 
@@ -10,6 +8,31 @@ WITH rp_wua AS (
   WHERE person_id_current IS NOT NULL
   AND resource_person_primary_flag = 'Y'
   GROUP BY resource_person_id, wua_id
+), case_owner AS (
+  SELECT
+    REPLACE(xa.assignee_uref, 'WUA') wua_id
+    , bad.ima_id
+  FROM (
+    SELECT
+      MAX(bad.id) bad_id
+      , bas.ima_id
+    FROM bpmmgr.business_assignment_details bad
+    INNER JOIN (
+      SELECT bra.bas_id, REPLACE(xbc.primary_data_uref, 'IMA') ima_id
+      FROM bpmmgr.xview_business_contexts xbc
+      INNER JOIN bpmmgr.business_routine_contexts brc ON xbc.bc_id = brc.bc_id
+      INNER JOIN bpmmgr.business_stages bs ON bs.brc_id = brc.id AND bs.end_datetime IS NULL
+      INNER JOIN bpmmgr.business_routine_assignments bra ON bra.brc_id = brc.id
+      INNER JOIN bpmmgr.xview_bpd_action_set_assigns xbasa ON xbasa.bpd_id = bs.bp_id
+        AND xbasa.stage_label = bs.stage_label
+        AND xbasa.assignment = bra.assignment
+        AND xbasa.workbasket = 'WORK'
+      WHERE  bs.stage_label LIKE 'IMA%'
+        AND bra.assignment = 'CASE_OFFICER'
+      ) bas on bas.bas_id = bad.bas_id
+    GROUP BY bas.ima_id
+    ) bad
+  INNER JOIN bpmmgr.xview_assignees xa ON xa.bad_id = bad.bad_id
 )
 SELECT
   ia.case_ref reference
@@ -44,6 +67,7 @@ SELECT
   , xiad.date_provided_to_imi imi_submit_datetime
   , iat.id application_type_id
   , '{process_type}' process_type
+  , case_owner.wua_id case_owner_id
   , ia_details.*
 FROM
   impmgr.xview_ima_details xiad
@@ -55,6 +79,7 @@ LEFT JOIN impmgr.ima_responses ir ON ir.ima_id = xiad.ima_id AND ir.licence_ref 
 LEFT JOIN decmgr.resource_people_details rp ON rp.rp_id = xiad.contact_rp_id AND rp.status_control = 'C' AND rp.status <> 'DELETED'
 LEFT JOIN securemgr.web_user_accounts lu ON lu.id = xiad.last_updated_by_wua_id
 LEFT JOIN rp_wua ON rp_wua.resource_person_id = xiad.contact_rp_id
+LEFT JOIN case_owner ON case_owner.ima_id = xiad.ima_id
 WHERE
   xiad.ima_type = '{ima_type}'
   AND xiad.IMA_SUB_TYPE = '{ima_sub_type}'

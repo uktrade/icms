@@ -1777,3 +1777,15 @@ ON wl.login_id =
 Enum
 work_address_id INTEGER PATH '
 ON addr.addr_id
+ON xbc.bc_id
+ON bs.brc_id = brc.id AND bs.end_datetime
+ON bra.brc_id = brc.id
+ON xbasa.bpd_id
+bra.assignment
+ON xa.bad_id
+case_owner.wua_id
+ON case_owner.ca_id
+xcad.ca_id WHERE xcad.status_control
+case_owner.wua_id case_owner_id
+ia_details
+case_owner.ima_id

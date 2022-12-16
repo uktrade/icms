@@ -15,6 +15,7 @@ user_source_target = [
     SourceTarget(dm.User, web.User),
     SourceTarget(dm.PersonalEmail, web.PersonalEmail),
     SourceTarget(dm.AlternativeEmail, web.AlternativeEmail),
+    SourceTarget(dm.PhoneNumber, web.PhoneNumber),
     SourceTarget(dm.Mailshot, web.Mailshot),
     SourceTarget(dm.Importer, web.Importer),
     SourceTarget(dm.Exporter, web.Exporter),
