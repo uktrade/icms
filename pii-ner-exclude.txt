@@ -1790,3 +1790,5 @@ case_owner.wua_id case_owner_id
 ia_details
 case_owner.ima_id
 Chemical
+Manufacturer
+id_manufacturer_country_0

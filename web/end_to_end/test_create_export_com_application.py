@@ -49,8 +49,8 @@ def _create_com(page: Page) -> int:
     page.get_by_label("Manufacturing process").click()
     page.get_by_label("Manufacturing process").fill("Manufacturing process value")
     page.get_by_role("button", name="Save").click()
-    page.get_by_role("link", name="Submit").click()
 
+    page.get_by_role("link", name="Submit").click()
     page.get_by_label(
         'Confirm that you agree to the above by typing "I AGREE", in capitals, in this box'
     ).click()
