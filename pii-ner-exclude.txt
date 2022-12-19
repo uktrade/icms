@@ -1792,3 +1792,6 @@ case_owner.ima_id
 Chemical
 Manufacturer
 id_manufacturer_country_0
+Application Details
+Goods
+Check HSE Emails

@@ -152,7 +152,7 @@
         </tbody>
       </table>
     {% else %}
-      {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data', id='id_cfs-product-form') -%}
+      {% call forms.form(action='', method='post', csrf_input=csrf_input, id='id_cfs-product-form') -%}
         {{ fields.field(form.product_name) }}
       {% endcall %}
     {% endif %}

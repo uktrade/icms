@@ -45,7 +45,7 @@
       </thead>
       <tbody>
       {% for schedule in schedules %}
-        <tr>
+        <tr data-test-id="schedule-row-{{ schedule.id }}">
           <td>Schedule ({{ loop.index }}/{{ loop.length }})</td>
           <td>
             <a
