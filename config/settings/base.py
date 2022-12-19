@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 import os
+import ssl
 
 import environ
 import structlog
@@ -212,6 +213,8 @@ PATH_STORAGE_FIR = "/documents/fir/"  # start with /
 # Celery & Redis shared configuration
 if "redis" in VCAP_SERVICES:
     REDIS_URL = VCAP_SERVICES["redis"][0]["credentials"]["uri"]
+    CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_REQUIRED}
+
 else:
     REDIS_URL = env.str("REDIS_URL", default="redis://redis:6379")
 
