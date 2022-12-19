@@ -15,7 +15,7 @@ def get_application_id(url: str, pattern: str, group_name: str = "app_pk") -> in
     match: Optional[re.Match] = re.search(re.compile(pattern), url)
 
     if not match:
-        raise ValueError(f"Unable to find pattern {pattern} in url: {url}")
+        raise ValueError(f"Unable to find pattern {pattern!r} in url: {url}")
 
     return int(match.group(group_name))
 
