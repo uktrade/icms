@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Permissions(models.Model):
+class GlobalPermission(models.Model):
     """Contains global permissions that are not tied to a specific model.
 
     None of these should ever be assigned to users directly; all permissions
@@ -13,7 +13,6 @@ class Permissions(models.Model):
 
     class Meta:
         managed = False
-
         default_permissions = []
 
         permissions = (

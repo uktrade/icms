@@ -92,22 +92,19 @@ def assign_contact_perm(org: Org, contact: User) -> None:
         permission = Permission.objects.get(codename="importer_access")
         contact.user_permissions.add(permission)
 
-        if org.is_agent():
+        assign_perm("web.is_contact_of_importer", contact, org)
 
+        if org.is_agent():
             assign_perm("web.is_agent_of_importer", contact, org.main_importer)
-            assign_perm("web.is_contact_of_importer", contact, org)
-        else:
-            assign_perm("web.is_contact_of_importer", contact, org)
 
     elif isinstance(org, Exporter):
         permission = Permission.objects.get(codename="exporter_access")
         contact.user_permissions.add(permission)
 
+        assign_perm("web.is_contact_of_exporter", contact, org)
+
         if org.is_agent():
             assign_perm("web.is_agent_of_exporter", contact, org.main_exporter)
-            assign_perm("web.is_contact_of_exporter", contact, org)
-        else:
-            assign_perm("web.is_contact_of_exporter", contact, org)
 
     else:
         raise NotImplementedError(f"Unknown org {org}")
@@ -115,18 +112,15 @@ def assign_contact_perm(org: Org, contact: User) -> None:
 
 def delete_contact_perm(org: Org, contact: User) -> None:
     if isinstance(org, Importer):
+        remove_perm("web.is_contact_of_importer", contact, org)
+
         if org.is_agent():
             remove_perm("web.is_agent_of_importer", contact, org.main_importer)
-            remove_perm("web.is_contact_of_importer", contact, org)
-        else:
-            remove_perm("web.is_contact_of_importer", contact, org)
 
     elif isinstance(org, Exporter):
+        remove_perm("web.is_contact_of_exporter", contact, org)
+
         if org.is_agent():
             remove_perm("web.is_agent_of_exporter", contact, org.main_exporter)
-            remove_perm("web.is_contact_of_exporter", contact, org)
-        else:
-            remove_perm("web.is_contact_of_exporter", contact, org)
-
     else:
         raise NotImplementedError(f"Unknown org {org}")
