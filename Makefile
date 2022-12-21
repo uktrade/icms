@@ -190,9 +190,3 @@ debug: ## runs system in debug mode
 
 down: ## Stops and downs containers
 	docker-compose down --remove-orphans
-
-
-accessibility: ## Generate accessibility reports
-	unset UID && \
-	docker-compose run --rm pa11y node index.js
-
