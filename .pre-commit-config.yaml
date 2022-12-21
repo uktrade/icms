@@ -47,7 +47,7 @@ repos:
     hooks:
     - id: mypy
       args: [--ignore-missing-imports, --allow-untyped-globals, --check-untyped-defs]
-      exclude: migrations|tests|features
+      exclude: migrations|tests
       additional_dependencies:
         - boto3-stubs[essential]
         - types-requests==2.25.0

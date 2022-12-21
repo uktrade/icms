@@ -2,7 +2,6 @@
 
 # add packages needed only for development
 
-behave-django==1.4.0
 black==22.10.0
 boto3-stubs[essential]
 django-debug-toolbar==3.7

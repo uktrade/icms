@@ -606,7 +606,6 @@ New Product Legislation
 Eu Test Cosmetics Regulation
 skip_ia
 XML Parsing
-BDD
 Jane
 Hey Ltd"'
 non-European
