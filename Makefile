@@ -88,12 +88,7 @@ add_dummy_data: ## add dummy data
 
 ##@ Docker
 setup: ## sets up system for first use
-	# doing this here gives it the right permissions, e.g. the local user.
-	# that avoids problems with it being owned by root if docker creates it.
-	mkdir -p test-reports/bdd-screenshots
-
 	scripts/initial-setup.sh
-
 	make migrations migrate
 
 docker_flake8: ## run flake8
@@ -201,12 +196,3 @@ accessibility: ## Generate accessibility reports
 	unset UID && \
 	docker-compose run --rm pa11y node index.js
 
-bdd: ## runs functional tests
-	DJANGO_SETTINGS_MODULE=config.settings.test \
-	docker-compose exec web sh -c "\
-		dockerize -wait tcp://web:8080 -timeout 20s && \
-		python manage.py behave ${BEHAVE_OPTS} \
-		--no-capture --no-input  --settings=config.settings.test \
-		--junit-directory test-reports --junit \
-		--tags ~@skip \
-	"

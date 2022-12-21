@@ -1,10 +1,6 @@
 # flake8: noqa: F405
 from .non_prod_base import *
 
-INSTALLED_APPS += [
-    "behave_django",
-]
-
 SECRET_KEY = env.str("ICMS_SECRET_KEY", default="test")
 DATABASES = {
     "default": env.db("DATABASE_URL", "postgres://postgres:password@db:5432/postgres")  # /PS-IGNORE
