@@ -73,7 +73,7 @@ class TestChiefClient:
                 "licence_reference": "dummy-reference",
                 "country_code": "DE",
                 "country_group": None,
-                "end_date": "2023-12-01",
+                "end_date": "2024-12-01",
                 "goods": [],
                 "id": str(chief_req.lite_hmrc_id),
                 "organisation": {
@@ -166,7 +166,7 @@ class TestChiefClient:
                 "licence_reference": "dummy-reference",
                 "country_code": "DE",
                 "country_group": None,
-                "end_date": "2023-12-01",
+                "end_date": "2024-12-01",
                 "goods": [],
                 "id": str(chief_req.lite_hmrc_id),
                 "organisation": {

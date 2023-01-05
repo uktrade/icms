@@ -54,7 +54,7 @@ ref_query_result = {
             ("unit_id",),
         ],
         [
-            (1, 1, "AT", "AC", "AN", "AD", datetime.now(), None, "TYPE_A", "KGS"),
+            (1, 1, "AT", "AC", "AN", "AD", datetime(2022, 12, 31, 12, 30), None, "TYPE_A", "KGS"),
             (2, 1, "BT", "BC", "BN", "BD", datetime.now(), None, "TYPE_B", "KGS"),
         ],
     ),
@@ -72,7 +72,18 @@ ref_query_result = {
             ("end_datetime",),
         ],
         [
-            (1, 1, 1000, "TYPE_A", datetime.now(), None, None, "TEX", datetime.now(), None),
+            (
+                1,
+                1,
+                1000,
+                "TYPE_A",
+                datetime.now(),
+                None,
+                None,
+                "TEX",
+                datetime(2022, 12, 31, 12, 30),
+                None,
+            ),
             (2, 1, 1001, "TYPE_A", datetime.now(), None, None, "TEX", datetime.now(), None),
             (3, 1, 1002, "TYPE_B", datetime.now(), None, None, None, datetime.now(), None),
             (4, 1, 1003, "TYPE_B", datetime.now(), None, None, None, datetime.now(), None),

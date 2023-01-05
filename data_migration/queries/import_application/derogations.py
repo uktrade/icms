@@ -1,13 +1,6 @@
 from web.flow.models import ProcessTypes
 
-from .import_application import (
-    common_xml_fields,
-    import_application_base,
-    import_checklist_base,
-)
-
-__all__ = ["derogations_application", "derogations_checklist"]
-
+from .base import common_xml_fields, import_application_base, import_checklist_base
 
 derogations_application_subquery = """
   SELECT

@@ -1,13 +1,6 @@
 from web.flow.models import ProcessTypes
 
-from .import_application import (
-    common_xml_fields,
-    import_application_base,
-    import_checklist_base,
-)
-
-__all__ = ["opt_application", "opt_checklist"]
-
+from .base import common_xml_fields, import_application_base, import_checklist_base
 
 opt_application_subquery = """
 SELECT

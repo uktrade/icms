@@ -1793,3 +1793,7 @@ Application Details
 Goods
 Check HSE Emails
 GroupAdmin
+CFSSchedule
+FirearmsAct
+CertificateApplicationTemplate
+UPDATE web_approvalrequest

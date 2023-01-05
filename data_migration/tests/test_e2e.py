@@ -1,21 +1,20 @@
+import datetime as dt
 from unittest import mock
 
 import oracledb
 import pytest
 from django.core.management import call_command
+from django.db.models import QuerySet
 from django.test import override_settings
 
 from data_migration import models as dm
-from data_migration.queries import (
+from data_migration import queries
+from data_migration.management.commands._run_order import (
     DATA_TYPE_M2M,
     DATA_TYPE_QUERY_MODEL,
     DATA_TYPE_SOURCE_TARGET,
     DATA_TYPE_XML,
 )
-from data_migration.queries import files as q_f
-from data_migration.queries import import_application as q_ia
-from data_migration.queries import reference as q_ref
-from data_migration.queries import user as q_u
 from data_migration.utils import xml_parser
 from web import models as web
 
@@ -97,41 +96,41 @@ sil_data_source_target = {
     DATA_TYPE_QUERY_MODEL,
     {
         "reference": [
-            (q_ref, "country", dm.Country),
-            (q_ref, "country_group", dm.CountryGroup),
-            (q_ref, "commodity_type", dm.CommodityType),
-            (q_ref, "obsolete_calibre_group", dm.ObsoleteCalibreGroup),
-            (q_ref, "obsolete_calibre", dm.ObsoleteCalibre),
-            (q_ia, "section5_clauses", dm.Section5Clause),
+            (queries, "country", dm.Country),
+            (queries, "country_group", dm.CountryGroup),
+            (queries, "commodity_type", dm.CommodityType),
+            (queries, "obsolete_calibre_group", dm.ObsoleteCalibreGroup),
+            (queries, "obsolete_calibre", dm.ObsoleteCalibre),
+            (queries, "section5_clauses", dm.Section5Clause),
         ],
         "file": [
-            (q_f, "case_note_files", dm.FileCombined),
-            (q_f, "fir_files", dm.FileCombined),
-            (q_f, "sil_application_files", dm.FileCombined),
-            (q_f, "fa_certificate_files", dm.FileCombined),
+            (queries, "case_note_files", dm.FileCombined),
+            (queries, "fir_files", dm.FileCombined),
+            (queries, "sil_application_files", dm.FileCombined),
+            (queries, "fa_certificate_files", dm.FileCombined),
         ],
         "import_application": [
-            (q_ia, "ia_type", dm.ImportApplicationType),
-            (q_ia, "sil_application", dm.SILApplication),
-            (q_ia, "ia_licence", dm.ImportApplicationLicence),
-            (q_ia, "ia_licence_docs", dm.CaseDocument),
-            (q_ia, "fa_authorities", dm.FirearmsAuthority),
-            (q_ia, "fa_authority_linked_offices", dm.FirearmsAuthorityOffice),
-            (q_ia, "section5_authorities", dm.Section5Authority),
-            (q_ia, "section5_linked_offices", dm.Section5AuthorityOffice),
-            (q_ia, "sil_checklist", dm.SILChecklist),
-            (q_ia, "constabulary_emails", dm.CaseEmail),
-            (q_ia, "case_note", dm.CaseNote),
-            (q_ia, "update_request", dm.UpdateRequest),
-            (q_ia, "fir", dm.FurtherInformationRequest),
-            (q_ia, "endorsement", dm.EndorsementImportApplication),
+            (queries, "ia_type", dm.ImportApplicationType),
+            (queries, "sil_application", dm.SILApplication),
+            (queries, "ia_licence", dm.ImportApplicationLicence),
+            (queries, "ia_licence_docs", dm.CaseDocument),
+            (queries, "fa_authorities", dm.FirearmsAuthority),
+            (queries, "fa_authority_linked_offices", dm.FirearmsAuthorityOffice),
+            (queries, "section5_authorities", dm.Section5Authority),
+            (queries, "section5_linked_offices", dm.Section5AuthorityOffice),
+            (queries, "sil_checklist", dm.SILChecklist),
+            (queries, "constabulary_emails", dm.CaseEmail),
+            (queries, "case_note", dm.CaseNote),
+            (queries, "update_request", dm.UpdateRequest),
+            (queries, "fir", dm.FurtherInformationRequest),
+            (queries, "endorsement", dm.EndorsementImportApplication),
         ],
         "user": [
-            (q_u, "users", dm.User),
-            (q_u, "importers", dm.Importer),
-            (q_u, "importer_offices", dm.Office),
-            (q_u, "exporters", dm.Exporter),
-            (q_u, "exporter_offices", dm.Office),
+            (queries, "users", dm.User),
+            (queries, "importers", dm.Importer),
+            (queries, "importer_offices", dm.Office),
+            (queries, "exporters", dm.Exporter),
+            (queries, "exporter_offices", dm.Office),
         ],
     },
 )
@@ -252,17 +251,17 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert office6.address_5 is None
     assert office6.postcode == "TEST"
 
-    fa_auth = web.FirearmsAuthority.objects.order_by("pk")
-    assert fa_auth.count() == 2
-    fa_auth1, fa_auth2 = fa_auth
+    fa_auth1: web.FirearmsAuthority
+    fa_auth2: web.FirearmsAuthority
+    fa_auth1, fa_auth2 = web.FirearmsAuthority.objects.order_by("pk")
     assert fa_auth1.linked_offices.count() == 2
     assert fa_auth1.files.count() == 1
     assert fa_auth2.linked_offices.count() == 1
     assert fa_auth2.files.count() == 2
 
-    sec5_auth = web.Section5Authority.objects.order_by("pk")
-    assert sec5_auth.count() == 2
-    sec5_auth1, sec5_auth2 = sec5_auth
+    sec5_auth1: web.Section5Authority
+    sec5_auth2: web.Section5Authority
+    sec5_auth1, sec5_auth2 = web.Section5Authority.objects.order_by("pk")
     assert sec5_auth1.linked_offices.count() == 2
     assert sec5_auth1.files.count() == 1
     assert sec5_auth2.linked_offices.count() == 1
@@ -275,9 +274,11 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert sil2.licences.count() == 3
     assert sil2.licences.filter(status="AC").count() == 1
 
-    l1 = sil1.licences.first()
-    l2, l3, l4 = sil2.licences.all()
+    l1: web.ImportApplicationLicence = sil1.licences.first()
+    sil2_licences: QuerySet[web.ImportApplicationLicence] = sil2.licences.all()
+    l2, l3, l4 = sil2_licences
 
+    assert l1.created_at == dt.datetime(2022, 4, 27, 9, 43, tzinfo=dt.timezone.utc)
     assert l1.document_references.count() == 2
     assert l1.document_references.filter(document_type="LICENCE").count() == 1
     assert l1.document_references.filter(document_type="COVER_LETTER").count() == 1
@@ -299,16 +300,22 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert sil2.checklist.authority_cover_items_listed == "no"
 
     assert sil1.user_section5.count() == 2
-    assert sil1.user_section5.count() == 2
     assert sil2.user_section5.count() == 0
+
+    u_sec5_1, u_sec5_2 = sil1.user_section5.order_by("id")
+    assert u_sec5_1.created_datetime == dt.datetime(2022, 4, 27, 11, 30, tzinfo=dt.timezone.utc)
+    assert u_sec5_2.created_datetime == dt.datetime(2022, 3, 23, 11, 47, tzinfo=dt.timezone.utc)
 
     ia1 = sil1.importapplication_ptr
     ia2 = sil2.importapplication_ptr
 
     assert ia1.last_updated_by_id == 2
-    assert ia2.last_updated_by_id == 0
+    assert ia1.created == dt.datetime(2022, 4, 22, 8, 23, 22, tzinfo=dt.timezone.utc)
     assert ia1.importcontact_set.count() == 0
+
+    assert ia2.last_updated_by_id == 0
     assert ia2.importcontact_set.count() == 2
+    assert ia2.created == dt.datetime(2022, 4, 22, 7, 44, 44, tzinfo=dt.timezone.utc)
     ic = ia2.importcontact_set.first()
 
     assert ic.entity == "legal"
@@ -377,6 +384,7 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
 
     cn1, cn2, cn3 = web.CaseNote.objects.order_by("pk")
     assert cn1.files.count() == 2
+    assert cn1.create_datetime == dt.datetime(2020, 1, 1, 11, 12, 13, tzinfo=dt.timezone.utc)
     assert cn2.files.count() == 1
     assert cn3.files.count() == 0
 
@@ -386,6 +394,7 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     fir1, fir2, fir3 = ia1.further_information_requests.order_by("pk")
 
     assert len(fir1.email_cc_address_list) == 2
+    assert fir1.requested_datetime == dt.datetime(2021, 1, 2, 12, 23, tzinfo=dt.timezone.utc)
     assert len(fir2.email_cc_address_list) == 1
     assert fir3.email_cc_address_list is None
 
@@ -396,9 +405,14 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert ia1.endorsements.count() == 2
     assert ia2.endorsements.count() == 0
 
-    assert ia1.process_ptr.tasks.count() == 1
-    assert ia1.process_ptr.tasks.first().task_type == web.Task.TaskType.PROCESS
-    assert ia2.process_ptr.tasks.count() == 0
+    p1, p2 = ia1.process_ptr, ia2.process_ptr
+
+    assert p1.created == dt.datetime(2022, 4, 22, 8, 23, 22, tzinfo=dt.timezone.utc)
+    assert p1.tasks.count() == 1
+    assert p1.tasks.first().task_type == web.Task.TaskType.PROCESS
+
+    assert p2.created == dt.datetime(2022, 4, 22, 7, 44, 44, tzinfo=dt.timezone.utc)
+    assert p2.tasks.count() == 0
 
 
 oil_xml_parsers = [
@@ -442,25 +456,25 @@ oil_data_source_target = {
     DATA_TYPE_QUERY_MODEL,
     {
         "import_application": [
-            (q_ia, "ia_type", dm.ImportApplicationType),
-            (q_ia, "oil_application", dm.OpenIndividualLicenceApplication),
-            (q_ia, "oil_checklist", dm.ChecklistFirearmsOILApplication),
-            (q_ia, "dfl_application", dm.DFLApplication),
+            (queries, "ia_type", dm.ImportApplicationType),
+            (queries, "oil_application", dm.OpenIndividualLicenceApplication),
+            (queries, "oil_checklist", dm.ChecklistFirearmsOILApplication),
+            (queries, "dfl_application", dm.DFLApplication),
         ],
         "reference": [
-            (q_ref, "country", dm.Country),
-            (q_ref, "country_group", dm.CountryGroup),
-            (q_ref, "commodity_type", dm.CommodityType),
-            (q_ref, "constabularies", dm.Constabulary),
+            (queries, "country", dm.Country),
+            (queries, "country_group", dm.CountryGroup),
+            (queries, "commodity_type", dm.CommodityType),
+            (queries, "constabularies", dm.Constabulary),
         ],
         "file": [
-            (q_f, "oil_application_files", dm.FileCombined),
-            (q_f, "dfl_application_files", dm.FileCombined),
+            (queries, "oil_application_files", dm.FileCombined),
+            (queries, "dfl_application_files", dm.FileCombined),
         ],
         "user": [
-            (q_u, "users", dm.User),
-            (q_u, "importers", dm.Importer),
-            (q_u, "importer_offices", dm.Office),
+            (queries, "users", dm.User),
+            (queries, "importers", dm.Importer),
+            (queries, "importer_offices", dm.Office),
         ],
     },
 )
@@ -564,12 +578,12 @@ user_data_source_target = {
         "reference": [],
         "file": [],
         "user": [
-            (q_u, "users", dm.User),
-            (q_u, "importers", dm.Importer),
-            (q_u, "importer_offices", dm.Office),
-            (q_u, "exporters", dm.Exporter),
-            (q_u, "exporter_offices", dm.Office),
-            (q_u, "access_requests", dm.AccessRequest),
+            (queries, "users", dm.User),
+            (queries, "importers", dm.Importer),
+            (queries, "importer_offices", dm.Office),
+            (queries, "exporters", dm.Exporter),
+            (queries, "exporter_offices", dm.Office),
+            (queries, "access_requests", dm.AccessRequest),
         ],
     },
 )
@@ -666,6 +680,7 @@ def test_import_user(mock_connect, dummy_dm_settings):
     assert ar1.importeraccessrequest.link_id == 2
     assert ar1.further_information_requests.count() == 0
     assert ar1.approval_requests.count() == 0
+    assert ar1.created == dt.datetime(2022, 11, 14, 8, 24, tzinfo=dt.timezone.utc)
 
     assert ar2.process_ptr.process_type == "ImporterAccessRequest"
     assert ar2.process_ptr.tasks.count() == 0
@@ -680,6 +695,7 @@ def test_import_user(mock_connect, dummy_dm_settings):
     assert ar2.importeraccessrequest.link_id == 3
     assert ar2.further_information_requests.count() == 0
     assert ar2.approval_requests.count() == 1
+    assert ar2.created == dt.datetime(2022, 11, 14, 8, 47, tzinfo=dt.timezone.utc)
 
     ar2_ar = ar2.approval_requests.first()
     assert ar2_ar.process_ptr.process_type == "ImporterApprovalRequest"
@@ -687,14 +703,16 @@ def test_import_user(mock_connect, dummy_dm_settings):
     assert ar2_ar.response == "APPROVE"
     assert ar2_ar.response_reason == "Test Reason"
     assert ar2_ar.importerapprovalrequest.pk == ar2_ar.pk
+    assert ar2_ar.request_date == dt.datetime(2022, 11, 14, 14, 55, 14, tzinfo=dt.timezone.utc)
 
     assert ar3.process_ptr.process_type == "ExporterAccessRequest"
     assert ar3.process_ptr.tasks.count() == 0
     assert ar3.reference == "EAR/0003"
     assert ar3.exporteraccessrequest.request_type == "MAIN_EXPORTER_ACCESS"
     assert ar3.exporteraccessrequest.link_id == 2
-    assert ar3.further_information_requests.count() == 2
+    assert ar3.further_information_requests.count() == 1
     assert ar3.approval_requests.count() == 0
+    assert ar3.created == dt.datetime(2022, 11, 14, 10, 52, tzinfo=dt.timezone.utc)
 
     assert ar4.process_ptr.process_type == "ExporterAccessRequest"
     assert ar4.process_ptr.tasks.count() == 0
@@ -703,6 +721,7 @@ def test_import_user(mock_connect, dummy_dm_settings):
     assert ar4.exporteraccessrequest.link_id == 3
     assert ar4.further_information_requests.count() == 0
     assert ar4.approval_requests.count() == 1
+    assert ar4.created == dt.datetime(2022, 11, 14, 10, 52, tzinfo=dt.timezone.utc)
 
     ar4_ar = ar4.approval_requests.first()
     assert ar4_ar.process_ptr.process_type == "ExporterApprovalRequest"

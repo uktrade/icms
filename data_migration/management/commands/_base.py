@@ -5,7 +5,7 @@ from typing import Any
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from data_migration.queries import DATA_TYPE
+from ._run_order import DATA_TYPE
 
 
 class MigrationBaseCommand(BaseCommand):

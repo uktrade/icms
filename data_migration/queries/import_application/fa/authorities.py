@@ -1,11 +1,3 @@
-__all__ = [
-    "fa_authorities",
-    "fa_authority_linked_offices",
-    "section5_authorities",
-    "section5_clauses",
-    "section5_linked_offices",
-]
-
 fa_authorities = """
 SELECT iad.*, imp_id importer_id
 FROM impmgr.importer_authorities ia
@@ -99,4 +91,24 @@ FROM impmgr.xview_imp_auth_linked_offices xialo
 INNER JOIN impmgr.importer_authorities ia ON xialo.ia_id = ia.id
 WHERE status_control = 'C'
 AND ia.authority_type = 'SECTION5'
+"""
+
+
+firearms_act_timestamp_update = """
+UPDATE web_firearmsact SET created_datetime = data_migration_firearmsact.created_datetime
+FROM data_migration_firearmsact
+WHERE web_firearmsact.id = data_migration_firearmsact.id
+"""
+
+
+import_contact_timestamp_update = """
+UPDATE web_importcontact SET created_datetime = data_migration_importcontact.created_datetime
+FROM data_migration_importcontact
+WHERE web_importcontact.id = data_migration_importcontact.id
+"""
+
+section5_clause_timestamp_update = """
+UPDATE web_section5clause SET created_datetime = data_migration_section5clause.created_datetime
+FROM data_migration_section5clause
+WHERE web_section5clause.id = data_migration_section5clause.id
 """

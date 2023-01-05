@@ -1,6 +1,5 @@
 # Active application types only migrate unsubmitted applications that have been updated in the last two weeks
 # Inactive application types do not migrate unsubmitted applications
-
 import_application_base = """
 WITH rp_wua AS (
   SELECT resource_person_id, wua_id

@@ -1,5 +1,3 @@
-__all__ = ["constabulary_emails"]
-
 constabulary_emails = """
 SELECT
   ima_id

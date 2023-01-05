@@ -1,23 +1,3 @@
-__all__ = [
-    "case_note_files",
-    "derogations_application_files",
-    "dfl_application_files",
-    "export_case_note_docs",
-    "fa_certificate_files",
-    "fir_files",
-    "gmp_files",
-    "mailshot_files",
-    "oil_application_files",
-    "opt_application_files",
-    "sanction_application_files",
-    "sil_application_files",
-    "sps_application_files",
-    "sps_docs",
-    "textiles_application_files",
-    "wood_application_files",
-]
-
-
 # Join to SECURE_LOB_DATA when retrieving the file data
 # INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(fv.secure_lob_ref).id
 
@@ -420,4 +400,11 @@ LEFT JOIN doclibmgr.vw_file_folders vff ON vff.f_id = fd.f_id
 LEFT JOIN doclibmgr.vw_files vf ON vf.file_id = vff.file_id
 WHERE fd.folder_title LIKE 'Case Note %'
 ORDER BY vf.file_id
+"""
+
+
+file_timestamp_update = """
+UPDATE web_file SET created_datetime = data_migration_file.created_datetime
+FROM data_migration_file
+WHERE web_file.id = data_migration_file.id
 """

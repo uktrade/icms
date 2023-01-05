@@ -7,7 +7,10 @@ from django.test import override_settings
 from django.utils import timezone
 
 from data_migration import models as dm
-from data_migration.queries import DATA_TYPE_M2M, DATA_TYPE_SOURCE_TARGET
+from data_migration.management.commands._run_order import (
+    DATA_TYPE_M2M,
+    DATA_TYPE_SOURCE_TARGET,
+)
 from data_migration.utils import xml_parser
 from web import models as web
 
@@ -151,7 +154,9 @@ def test_import_wood_application_data(dummy_dm_settings):
         )
 
         if status == "COMPLETE":
-            dm.ImportApplicationLicence.objects.create(ima=process, status="AC", imad_id=ia.imad_id)
+            dm.ImportApplicationLicence.objects.create(
+                ima=process, status="AC", imad_id=ia.imad_id, created_at=timezone.now()
+            )
 
         dm.WoodQuotaApplication.objects.create(pk=pk, imad=ia)
 
@@ -232,7 +237,9 @@ def test_import_oil_data(dummy_dm_settings):
             importer_id=importer_pk,
             submit_datetime=None if i == 0 else timezone.now(),
         )
-        dm.ImportApplicationLicence.objects.create(ima=process, status="AC", imad_id=ia.imad_id)
+        dm.ImportApplicationLicence.objects.create(
+            ima=process, status="AC", imad_id=ia.imad_id, created_at=timezone.now()
+        )
         dm.OpenIndividualLicenceApplication.objects.create(pk=pk, imad=ia)
         data = xml_parser.ImportContactParser.parse_xml([(pk, xml_data.import_contact_xml)])
         dm.ImportContact.objects.bulk_create(data[dm.ImportContact])
@@ -362,7 +369,9 @@ def test_import_dfl_data(dummy_dm_settings):
             importer_id=importer_pk,
         )
 
-        dm.ImportApplicationLicence.objects.create(ima=process, status="AC", imad_id=ia.imad_id)
+        dm.ImportApplicationLicence.objects.create(
+            ima=process, status="AC", imad_id=ia.imad_id, created_at=timezone.now()
+        )
 
         dfl = dm.DFLApplication.objects.create(pk=pk, imad=ia)
         data = xml_parser.ImportContactParser.parse_xml([(pk, xml_data.import_contact_xml)])
@@ -493,7 +502,9 @@ def test_import_user_import_certificate_data(dummy_dm_settings):
             importer_id=importer_pk,
             submit_datetime=None if i == 0 else timezone.now(),
         )
-        dm.ImportApplicationLicence.objects.create(ima=process, status="AC", imad_id=ia.imad_id)
+        dm.ImportApplicationLicence.objects.create(
+            ima=process, status="AC", imad_id=ia.imad_id, created_at=timezone.now()
+        )
 
         if i == 0:
             dm.OpenIndividualLicenceApplication.objects.create(pk=pk, imad=ia)

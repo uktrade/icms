@@ -4,6 +4,7 @@ from typing import Any
 from django.db import models
 from django.db.models import F
 
+from data_migration import queries
 from data_migration.models.base import MigrationBase
 from data_migration.models.file import FileFolder
 from data_migration.models.flow import Process
@@ -16,6 +17,7 @@ from .import_application_type import ImportApplicationType
 
 class ImportApplication(MigrationBase):
     PROCESS_PK = True
+    UPDATE_TIMESTAMP_QUERY = queries.ia_timestamp_update
 
     file_folder = models.OneToOneField(
         FileFolder, on_delete=models.PROTECT, related_name="import_application", null=True
@@ -170,6 +172,8 @@ class ChecklistBase(MigrationBase):
 
 
 class ImportApplicationLicence(MigrationBase):
+    UPDATE_TIMESTAMP_QUERY = queries.ia_licence_timestamp_update
+
     ima = models.ForeignKey(
         Process, on_delete=models.PROTECT, related_name="licences", to_field="ima_id"
     )
@@ -181,7 +185,7 @@ class ImportApplicationLicence(MigrationBase):
     licence_end_date = models.DateField(null=True)
     case_completion_datetime = models.DateTimeField(null=True)
     case_reference = models.CharField(max_length=100, null=True, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
@@ -201,7 +205,7 @@ class ImportApplicationLicence(MigrationBase):
 class EndorsementImportApplication(MigrationBase):
     imad = models.ForeignKey(ImportApplication, on_delete=models.PROTECT, to_field="imad_id")
     content = models.TextField()
-    created_datetime = models.DateTimeField(auto_now_add=True)
+    created_datetime = models.DateTimeField(null=True)
     updated_datetime = models.DateTimeField(auto_now=True)
 
     @classmethod

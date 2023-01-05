@@ -1,6 +1,3 @@
-__all__ = ["constabularies", "obsolete_calibre_group", "obsolete_calibre"]
-
-
 constabularies = """
 SELECT
   con_id id

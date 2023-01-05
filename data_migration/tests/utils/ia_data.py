@@ -368,6 +368,7 @@ ia_query_result = {
             ("is_paper_only",),
             ("status",),
             ("variation_no",),
+            ("created_at",),
         ],
         [
             (
@@ -379,6 +380,7 @@ ia_query_result = {
                 0,  # is_paper_only
                 "AC",  # status
                 0,  # variation_number
+                datetime(2022, 4, 27, 10, 43),  # created_at
             ),
             (
                 2,
@@ -389,6 +391,7 @@ ia_query_result = {
                 0,
                 "AR",
                 0,
+                datetime(2022, 4, 27, 10, 43),  # created_at
             ),
             (
                 2,
@@ -399,6 +402,7 @@ ia_query_result = {
                 0,
                 "AR",
                 1,
+                datetime(2022, 4, 27, 10, 43),  # created_at
             ),
             (
                 2,
@@ -409,6 +413,7 @@ ia_query_result = {
                 0,
                 "AC",
                 2,
+                datetime(2022, 4, 27, 10, 43),  # created_at
             ),
         ],
     ),
@@ -688,7 +693,7 @@ ia_query_result = {
                 1000,  # target_id
                 1000,  # fft_id
                 10000,  # version_id
-                datetime(2022, 4, 27),  # created_date
+                datetime(2022, 4, 27, 12, 30),  # created_date
                 2,  # created_by_id
                 "contract/file",  # path
                 "Test User Sec 5.pdf",  # filename
@@ -704,7 +709,7 @@ ia_query_result = {
                 1001,  # target_id
                 1001,  # fft_id
                 10001,  # version_id
-                datetime(2022, 4, 27),  # created_date
+                datetime(2022, 3, 23, 11, 47),  # created_date
                 2,  # created_by_id
                 "contract/file",  # path
                 "Test User Sec 5 2.pdf",  # filename
@@ -1228,8 +1233,8 @@ ia_query_result = {
                 "IMA/2022/1234",  # reference
                 "PROCESSING",  # status
                 datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22),  # create_datetime
-                datetime(2022, 4, 22),  # created
+                datetime(2022, 4, 22, 9, 23, 22),  # create_datetime
+                datetime(2022, 4, 22, 9, 23, 22),  # created
                 0,  # vartiation_no
                 5678,  # licence_reference
                 2,  # submitted_by_id
@@ -1258,8 +1263,8 @@ ia_query_result = {
                 "IMA/2022/2345",  # reference
                 "COMPLETE",  # status
                 datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22),  # create_datetime
-                datetime(2022, 4, 22),  # created
+                datetime(2022, 4, 22, 8, 44, 44),  # create_datetime
+                datetime(2022, 4, 22, 8, 44, 44),  # created
                 0,  # vartiation_no
                 8901,  # licence_reference
                 2,  # submitted_by_id
@@ -1288,8 +1293,8 @@ ia_query_result = {
                 "IMA/2022/2346",  # reference
                 "COMPLETE",  # status
                 datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22),  # create_datetime
-                datetime(2022, 4, 22),  # created
+                datetime(2022, 4, 22, 7, 52, 4),  # create_datetime
+                datetime(2022, 4, 22, 7, 52, 4),  # created
                 0,  # vartiation_no
                 8901,  # licence_reference
                 2,  # submitted_by_id
@@ -1800,7 +1805,7 @@ ia_query_result = {
             ("request_subject",),
             ("request_detail",),
             ("response_details",),
-            ("request_datetime",),
+            ("requested_datetime",),
             ("request_by_id",),
             ("response_datetime",),
             ("response_by_id",),
@@ -1809,6 +1814,7 @@ ia_query_result = {
             ("folder_id",),
             ("email_cc_address_list_str",),
             ("process_type",),
+            ("created",),
         ],
         [
             (
@@ -1817,15 +1823,16 @@ ia_query_result = {
                 "Test Closed",  # request_subject
                 "Closed Details",  # request_detail
                 "AA",  # response_detail
-                datetime(2021, 1, 2),  # request_datetime
+                datetime(2021, 1, 2, 12, 23),  # requested_datetime
                 2,  # request_by_id
-                datetime(2021, 1, 3),  # response_datetime
+                datetime(2021, 1, 3, 13, 23),  # response_datetime
                 2,  # response_by_id
-                datetime(2021, 1, 4),  # closed_datetime
+                datetime(2021, 1, 4, 13, 23),  # closed_datetime
                 2,  # closed_by_id
                 20,  # folder_id
                 "b@example.com;c@example.com",  # email_cc_address_list_str /PS-IGNORE
                 "FurtherInformationRequest",  # process_type
+                datetime(2021, 1, 2, 12, 23),  # created
             ),
             (
                 1,  # ia_ima_id
@@ -1833,15 +1840,16 @@ ia_query_result = {
                 "Test Responded",  # request_subject
                 "Responded Details",  # request_detail
                 "BB",  # response_detail
-                datetime(2021, 1, 2),  # request_datetime
+                datetime(2021, 1, 2, 12, 23),  # requested_datetime
                 2,  # request_by_id
-                datetime(2021, 1, 3),  # response_datetime
+                datetime(2021, 1, 3, 13, 23),  # response_datetime
                 2,  # response_by_id
                 None,  # closed_datetime
                 None,  # closed_by_id
                 21,  # folder_id
                 "b@example.com",  # email_cc_address_list_str /PS-IGNORE
                 "FurtherInformationRequest",  # process_type
+                datetime(2021, 1, 2, 12, 23),  # created
             ),
             (
                 1,  # ia_ima_id
@@ -1849,7 +1857,7 @@ ia_query_result = {
                 "Test Open",  # request_subject
                 "Open Details",  # request_detail
                 None,  # response_detail
-                datetime(2021, 2, 2),  # request_datetime
+                datetime(2021, 2, 2, 12, 23),  # requested_datetime
                 2,  # request_by_id
                 None,  # response_datetime
                 None,  # response_by_id
@@ -1858,6 +1866,7 @@ ia_query_result = {
                 22,  # folder_id
                 None,  # email_cc_address_list_str
                 "FurtherInformationRequest",  # process_type
+                datetime(2021, 1, 2, 12, 23),  # created
             ),
         ],
     ),
@@ -1873,7 +1882,7 @@ ia_query_result = {
                 3000,  # target_id
                 3000,  # fft_id
                 30000,  # version_id
-                datetime(2022, 4, 27),  # created_date
+                datetime(2022, 4, 27, 12, 23),  # created_date
                 2,  # created_by_id
                 "fir/file1",  # path
                 "Test FIR 1.pdf",  # filename
@@ -1889,7 +1898,7 @@ ia_query_result = {
                 3001,  # target_id
                 3001,  # fft_id
                 30001,  # version_id
-                datetime(2022, 4, 27),  # created_date
+                datetime(2022, 4, 27, 12, 23),  # created_date
                 2,  # created_by_id
                 "fir/file2",  # path
                 "Test FIR 2.pdf",  # filename
@@ -1905,7 +1914,7 @@ ia_query_result = {
                 3003,  # target_id
                 3003,  # fft_id
                 30003,  # version_id
-                datetime(2022, 4, 27),  # created_date
+                datetime(2022, 4, 27, 12, 23),  # created_date
                 2,  # created_by_id
                 "fir/file3",  # path
                 "Test FIR 3.pdf",  # filename
@@ -1931,8 +1940,15 @@ ia_query_result = {
         ],
     ),
     import_application.endorsement: (
-        [("imad_id",), ("content",)],
-        [(11, "Content A"), (11, "Content B")],
+        [
+            ("imad_id",),
+            ("content",),
+            ("created_datetime",),
+        ],
+        [
+            (11, "Content A", datetime(2022, 4, 27, 12, 23)),
+            (11, "Content B", datetime(2022, 4, 27, 12, 23)),
+        ],
     ),
     import_application.sigl_transmission: (
         [

@@ -5,9 +5,14 @@ import pytest
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import override_settings
+from django.utils import timezone
 
 from data_migration import models, queries
-from data_migration.queries import import_application, reference, user
+from data_migration.management.commands import _run_order
+from data_migration.management.commands._run_order import (
+    DATA_TYPE_QUERY_MODEL,
+    DATA_TYPE_XML,
+)
 from data_migration.utils import xml_parser
 
 from . import factory, utils
@@ -36,8 +41,8 @@ def test_data_migration_not_enabled_non_prod():
 @override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(
-    queries.DATA_TYPE_QUERY_MODEL,
-    {"reference": [(reference, "country_group", models.CountryGroup)], "file": []},
+    DATA_TYPE_QUERY_MODEL,
+    {"reference": [(queries, "country_group", models.CountryGroup)], "file": []},
 )
 @mock.patch.object(oracledb, "connect")
 def test_export_data(mock_connect):
@@ -50,7 +55,7 @@ def test_export_data(mock_connect):
 @override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(
-    queries.DATA_TYPE_XML,
+    DATA_TYPE_XML,
     {
         "import_application": [
             xml_parser.ImportContactParser,
@@ -83,7 +88,9 @@ def test_extract_xml(mock_connect):
     supp_xmls = [xml_data.sr_upload_xml, xml_data.sr_manual_xml, xml_data.sr_list]
 
     for i, pk in enumerate(pk_range):
-        process = factory.ProcessFactory(pk=pk, process_type="OIL", ima_id=pk)
+        process = factory.ProcessFactory(
+            pk=pk, process_type="OIL", ima_id=pk, created=timezone.now()
+        )
 
         ia = factory.ImportApplicationFactory(
             pk=pk,
@@ -96,7 +103,9 @@ def test_extract_xml(mock_connect):
             importer_id=importer_pk,
         )
 
-        models.ImportApplicationLicence.objects.create(ima=process, status="AC", imad_id=ia.imad_id)
+        models.ImportApplicationLicence.objects.create(
+            ima=process, status="AC", imad_id=ia.imad_id, created_at=timezone.now()
+        )
         models.OpenIndividualLicenceApplication.objects.create(pk=pk, imad=ia)
 
         factory.OILSupplementaryInfoFactory(imad=ia, supplementary_report_xml=supp_xmls[i])
@@ -118,9 +127,9 @@ def test_extract_xml(mock_connect):
 @override_settings(ALLOW_DATA_MIGRATION=True)
 @override_settings(APP_ENV="production")
 @pytest.mark.django_db
-@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, {"file": []})
+@mock.patch.dict(DATA_TYPE_QUERY_MODEL, {"file": []})
 @mock.patch.object(
-    queries,
+    _run_order,
     "FILE_MODELS",
     [
         models.FileFolder,
@@ -151,6 +160,7 @@ def test_export_files_data(mock_connect):
                 file_size=t_type and v_id,
                 path=t_type and v,
                 created_by_id=user_pk,
+                created_datetime=timezone.now(),
             )
             for f_id, f_type in enumerate(["F1", "F2"], start=1)
             for t_id, t_type in enumerate(["T1", "T2", None], start=3)
@@ -175,16 +185,16 @@ def test_export_files_data(mock_connect):
 
 test_query_model = {
     "reference": [
-        (reference, "country", models.Country),
-        (reference, "country_group", models.CountryGroup),
-        (reference, "unit", models.Unit),
+        (queries, "country", models.Country),
+        (queries, "country_group", models.CountryGroup),
+        (queries, "unit", models.Unit),
     ],
     "file": [],
-    "user": [user, "users", models.User],
+    "user": [queries, "users", models.User],
     "import_application": [
-        (reference, "constabularies", models.Constabulary),
-        (reference, "obsolete_calibre_group", models.ObsoleteCalibreGroup),
-        (import_application, "section5_clauses", models.Section5Clause),
+        (queries, "constabularies", models.Constabulary),
+        (queries, "obsolete_calibre_group", models.ObsoleteCalibreGroup),
+        (queries, "section5_clauses", models.Section5Clause),
     ],
 }
 
@@ -209,7 +219,7 @@ def create_dummy_user():
 @override_settings(ICMS_PROD_USER="test@example.com")  # /PS-IGNORE
 @override_settings(ICMS_PROD_PASSWORD="testpass")
 @pytest.mark.django_db
-@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, test_query_model)
+@mock.patch.dict(DATA_TYPE_QUERY_MODEL, test_query_model)
 @mock.patch.object(oracledb, "connect")
 def test_export_from_ref_2(mock_connect):
     mock_connect.return_value = utils.MockConnect()
@@ -230,7 +240,7 @@ def test_export_from_ref_2(mock_connect):
 @override_settings(ICMS_PROD_USER="test@example.com")  # /PS-IGNORE
 @override_settings(ICMS_PROD_PASSWORD="testpass")
 @pytest.mark.django_db
-@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, test_query_model)
+@mock.patch.dict(DATA_TYPE_QUERY_MODEL, test_query_model)
 @mock.patch.object(oracledb, "connect")
 def test_export_from_r_3(mock_connect):
     mock_connect.return_value = utils.MockConnect()
@@ -251,7 +261,7 @@ def test_export_from_r_3(mock_connect):
 @override_settings(ICMS_PROD_USER="test@example.com")  # /PS-IGNORE
 @override_settings(ICMS_PROD_PASSWORD="testpass")
 @pytest.mark.django_db
-@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, test_query_model)
+@mock.patch.dict(DATA_TYPE_QUERY_MODEL, test_query_model)
 @mock.patch.object(oracledb, "connect")
 def test_export_from_import_application(mock_connect):
     mock_connect.return_value = utils.MockConnect()
@@ -272,7 +282,7 @@ def test_export_from_import_application(mock_connect):
 @override_settings(ICMS_PROD_USER="test@example.com")  # /PS-IGNORE
 @override_settings(ICMS_PROD_PASSWORD="testpass")
 @pytest.mark.django_db
-@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, test_query_model)
+@mock.patch.dict(DATA_TYPE_QUERY_MODEL, test_query_model)
 @mock.patch.object(oracledb, "connect")
 def test_export_from_ia(mock_connect):
     mock_connect.return_value = utils.MockConnect()
@@ -293,7 +303,7 @@ def test_export_from_ia(mock_connect):
 @override_settings(ICMS_PROD_USER="test@example.com")  # /PS-IGNORE
 @override_settings(ICMS_PROD_PASSWORD="testpass")
 @pytest.mark.django_db
-@mock.patch.dict(queries.DATA_TYPE_QUERY_MODEL, test_query_model)
+@mock.patch.dict(DATA_TYPE_QUERY_MODEL, test_query_model)
 @mock.patch.object(oracledb, "connect")
 def test_export_from_ia_2(mock_connect):
     mock_connect.return_value = utils.MockConnect()

@@ -1,5 +1,3 @@
-__all__ = ["product_legislation"]
-
 product_legislation = """
 SELECT
   id

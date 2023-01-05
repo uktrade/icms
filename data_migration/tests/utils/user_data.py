@@ -181,6 +181,7 @@ user_query_result = {
             ("process_type",),
             ("reference",),
             ("status",),
+            ("created",),
             ("request_type",),
             ("submit_datetime",),
             ("submitted_by_id",),
@@ -206,6 +207,7 @@ user_query_result = {
                 "ImporterAccessRequest",  # process_type
                 "IAR/0001",  # reference
                 "SUBMITTED",  # status
+                dt.datetime(2022, 11, 14, 8, 24),  # created
                 "MAIN_IMPORTER_ACCESS",  # request_type
                 dt.datetime(2022, 11, 14),  # submit_datetime
                 2,  # submitted_by_id
@@ -230,6 +232,7 @@ user_query_result = {
                 "ImporterAccessRequest",  # process_type
                 "IAR/0002",  # reference
                 "CLOSED",  # status
+                dt.datetime(2022, 11, 14, 8, 47),  # created
                 "AGENT_IMPORTER_ACCESS",  # request_type
                 dt.datetime(2022, 11, 14),  # submit_datetime
                 2,  # submitted_by_id
@@ -254,6 +257,7 @@ user_query_result = {
                 "ExporterAccessRequest",  # process_type
                 "EAR/0003",  # reference
                 "CLOSED",  # status
+                dt.datetime(2022, 11, 14, 10, 52),  # created
                 "MAIN_EXPORTER_ACCESS",  # request_type
                 dt.datetime(2022, 11, 14),  # submit_datetime
                 2,  # submitted_by_id
@@ -278,6 +282,7 @@ user_query_result = {
                 "ExporterAccessRequest",  # process_type
                 "EAR/0004",  # reference
                 "CLOSED",  # status
+                dt.datetime(2022, 11, 14, 10, 52),  # created
                 "AGENT_EXPORTER_ACCESS",  # request_type
                 dt.datetime(2022, 11, 14),  # submit_datetime
                 2,  # submitted_by_id

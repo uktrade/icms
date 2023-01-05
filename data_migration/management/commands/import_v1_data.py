@@ -1,16 +1,19 @@
 import argparse
 from itertools import islice
 
+from django.db import connection
+
 from data_migration import models as dm
-from data_migration.queries import (
+from web import models as web
+
+from ._base import MigrationBaseCommand
+from ._run_order import (
     DATA_TYPE,
     DATA_TYPE_M2M,
     DATA_TYPE_SOURCE_TARGET,
     TASK_LIST,
+    TIMESTAMP_UPDATES,
 )
-from web import models as web
-
-from ._base import MigrationBaseCommand
 from .utils.db import bulk_create
 from .utils.format import format_name
 
@@ -46,6 +49,7 @@ class Command(MigrationBaseCommand):
         self._import_data("export_application", options["skip_export"])
         self._create_missing_export_certificates(options["skip_export"])
         self._create_tasks(options["skip_task"])
+        self._update_auto_timestamps()
         self._log_script_end()
 
     def _import_data(self, data_type: DATA_TYPE, skip: bool) -> None:
@@ -226,3 +230,11 @@ class Command(MigrationBaseCommand):
 
         self._log_time()
         self.stdout.write("Missing Export Application Certificate Data Created!")
+
+    def _update_auto_timestamps(self):
+        """Updates the auto_now_add timestamp fields to match the source data"""
+
+        with connection.cursor() as cursor:
+            for model in TIMESTAMP_UPDATES:
+                query = model.UPDATE_TIMESTAMP_QUERY
+                cursor.execute(query)

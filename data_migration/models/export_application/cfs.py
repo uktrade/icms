@@ -3,6 +3,7 @@ from typing import Any
 from django.db import models
 from django.db.models import F
 
+from data_migration import queries
 from data_migration.models.base import MigrationBase
 from data_migration.models.reference import Country
 from data_migration.models.user import User
@@ -16,6 +17,8 @@ class CertificateOfFreeSaleApplication(ExportBase):
 
 
 class CFSSchedule(MigrationBase):
+    UPDATE_TIMESTAMP_QUERY = queries.cfs_schedule_timestamp_update
+
     cad = models.ForeignKey(ExportApplication, on_delete=models.CASCADE, to_field="cad_id")
     schedule_ordinal = models.PositiveIntegerField()
     exporter_status = models.CharField(null=True, max_length=16)
@@ -35,7 +38,7 @@ class CFSSchedule(MigrationBase):
     manufacturer_postcode = models.CharField(max_length=30, null=True)
     manufacturer_address = models.CharField(max_length=4000, null=True)
     created_by = models.ForeignKey(User, on_delete=models.PROTECT)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
     updated_at = models.DateTimeField(auto_now=True)
     product_xml = models.TextField(null=True)
     legislation_xml = models.TextField(null=True)

@@ -6,6 +6,7 @@ from django.db.models import F
 from django.db.models.expressions import Window
 from django.db.models.functions import RowNumber
 
+from data_migration import queries
 from data_migration.models.base import MigrationBase
 from data_migration.models.file import FileFolder
 from data_migration.models.reference import Constabulary
@@ -33,10 +34,12 @@ class FirearmsAuthority(MigrationBase):
 
 
 class FirearmsAct(MigrationBase):
+    UPDATE_TIMESTAMP_QUERY = queries.firearms_act_timestamp_update
+
     act = models.CharField(max_length=100)
     description = models.TextField()
     is_active = models.BooleanField(default=True)
-    created_datetime = models.DateTimeField(auto_now_add=True)
+    created_datetime = models.DateTimeField()
     created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
     updated_datetime = models.DateTimeField(auto_now=True)
     updated_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+", null=True)
@@ -106,6 +109,8 @@ class Section5Authority(MigrationBase):
 
 
 class Section5Clause(MigrationBase):
+    UPDATE_TIMESTAMP_QUERY = queries.section5_clause_timestamp_update
+
     clause = models.CharField(max_length=100)
     legacy_code = models.CharField(max_length=100, unique=True)
     description = models.TextField()

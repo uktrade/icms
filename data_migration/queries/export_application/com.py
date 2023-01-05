@@ -1,7 +1,5 @@
 from .export import common_xml_fields, export_application_base
 
-__all__ = ["com_application"]
-
 com_subquery = """
   SELECT
     cad.id cad_id

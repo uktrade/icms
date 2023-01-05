@@ -2,6 +2,7 @@ from collections import defaultdict
 from collections.abc import Generator
 from typing import TYPE_CHECKING, Any, Optional
 
+from django.utils import timezone
 from lxml import etree
 
 from data_migration import models as dm
@@ -90,6 +91,7 @@ class ImportContactParser(BaseXmlParser):
                 "region": region,
                 "dealer": str_to_yes_no(dealer),
                 "country_id": country_id,
+                "created_datetime": timezone.now(),
             }
         )
 

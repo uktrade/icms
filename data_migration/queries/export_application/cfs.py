@@ -1,7 +1,5 @@
 from .export import common_xml_fields, export_application_base
 
-__all__ = ["cfs_application", "cfs_schedule", "hse_emails"]
-
 cfs_subquery = """
   SELECT cad.id cad_id, x.*
   FROM impmgr.certificate_app_details cad,
@@ -114,4 +112,11 @@ INNER JOIN impmgr.hse_email_recipients r ON r.status = 'CURRENT'
 WHERE e.status_control = 'C'
 AND e.status <> ' DELETED'
 ORDER BY e.cad_id, e.email_id
+"""
+
+
+cfs_schedule_timestamp_update = """
+UPDATE web_cfsschedule SET created_at = data_migration_cfsschedule.created_at
+FROM data_migration_cfsschedule
+WHERE web_cfsschedule.id = data_migration_cfsschedule.id
 """

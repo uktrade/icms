@@ -36,6 +36,10 @@ class ApprovalRequestParser(BaseXmlParser):
 
         status = get_xml_val(xml, "./STATUS")
         request_date = datetime_or_none(get_xml_val(xml, "./REQUEST_DATE"))
+
+        if not request_date:
+            return None
+
         requested_by = get_xml_val(xml, "./REQUEST_CREATED_BY_WUA_ID")
         requested_from = get_xml_val(xml, "./CONTACT_WUA_ID")  # TODO check post-migrate
         response = get_xml_val(xml, "./RESPONSE")
@@ -60,7 +64,7 @@ class ApprovalRequestParser(BaseXmlParser):
     @classmethod
     def add_process_model(cls, process_pk: int, xml: etree.ElementTree) -> dm.Process:
         status = get_xml_val(xml, "./STATUS")
-        created = datetime_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_DATETIME"))
+        created = datetime_or_none(get_xml_val(xml, "./REQUEST_DATE"))
         importer = bool(get_xml_val(xml, "./IMPORTER_ID"))
 
         process_type = "ImporterApprovalRequest" if importer else "ExporterApprovalRequest"

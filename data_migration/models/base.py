@@ -6,6 +6,7 @@ from django.db import models
 
 class MigrationBase(models.Model):
     PROCESS_PK: bool = False
+    UPDATE_TIMESTAMP_QUERY: str | None = None
 
     class Meta:
         abstract = True
