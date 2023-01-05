@@ -1,5 +1,3 @@
-__all__ = ["ia_licence", "ia_licence_docs"]
-
 # TODO: Look at statuses again
 
 ia_licence = """
@@ -67,4 +65,16 @@ FROM impmgr.ima_responses ir
   INNER JOIN wua_login wl ON wl.login_id = REGEXP_SUBSTR(dd.created_by, '\((.+)\)', 1, 1, NULL, 1)
 WHERE ir.response_type LIKE '%_LICENCE' OR ir.response_type LIKE '%_COVER'
 ORDER BY sld.id
+"""
+
+ia_timestamp_update = """
+UPDATE web_importapplication SET create_datetime = data_migration_importapplication.create_datetime
+FROM data_migration_importapplication
+WHERE web_importapplication.process_ptr_id = data_migration_importapplication.id
+"""
+
+ia_licence_timestamp_update = """
+UPDATE web_importapplicationlicence SET created_at = data_migration_importapplicationlicence.created_at
+FROM data_migration_importapplicationlicence
+WHERE web_importapplicationlicence.id = data_migration_importapplicationlicence.id
 """

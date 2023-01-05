@@ -1,18 +1,16 @@
 import argparse
+from collections import OrderedDict
+from inspect import getmembers
 
 from django.core.management.base import BaseCommand
 
-from data_migration.queries import (
-    export_application,
-    files,
-    import_application,
-    reference,
-    user,
-)
+from data_migration import queries
 
 
 class Command(BaseCommand):
-    QUERY_MODULES = [files, import_application, reference, export_application, user]
+    ALL_QUERIES: OrderedDict[str, str] = OrderedDict(
+        getmembers(queries, lambda obj: isinstance(obj, str))
+    )
 
     def add_arguments(self, parser: argparse.ArgumentParser):
         parser.add_argument(
@@ -31,9 +29,7 @@ class Command(BaseCommand):
         query_name = options["query_name"]
 
         if options["l"]:
-            all_queries = sorted(q for mod in self.QUERY_MODULES for q in mod.__all__)
-
-            for q in all_queries:
+            for q in self.ALL_QUERIES:
                 if query_name and query_name not in q:
                     continue
 
@@ -41,12 +37,13 @@ class Command(BaseCommand):
 
             return
 
-        for mod in self.QUERY_MODULES:
-            if query_name in mod.__all__:
-                query = str(getattr(mod, query_name))
-                for line in query.split("\n"):
-                    self.stdout.write(line)
+        query = self.ALL_QUERIES.get(query_name)
 
-                return
+        if not query:
+            self.stdout.write(f"Query name {query_name} not found. Use -l to list all query names")
+            return
 
-        self.stdout.write(f"Query name {query_name} not found. Use -l to list all query names")
+        for line in query.split("\n"):
+            self.stdout.write(line)
+
+        return

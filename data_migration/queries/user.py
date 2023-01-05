@@ -1,14 +1,3 @@
-__all__ = [
-    "users",
-    "exporters",
-    "importers",
-    "mailshots",
-    "importer_offices",
-    "exporter_offices",
-    "access_requests",
-]
-
-
 users = """
 WITH login_id_dupes AS (
   SELECT login_id
@@ -164,6 +153,7 @@ SELECT
     THEN 'ImporterAccessRequest'
     ELSE 'ExporterAccessRequest'
   END process_type
+  , iar.requested_datetime created
   , iar.request_reference reference
   , iar.status
   , iar.request_type
@@ -196,4 +186,18 @@ CROSS JOIN XMLTABLE('/*'
 ) x
 INNER JOIN securemgr.web_user_accounts wua ON wua.id = iar.requested_by_wua_id
 ORDER BY iar.id
+"""
+
+
+approval_request_timestamp_update = """
+UPDATE web_approvalrequest SET request_date = data_migration_approvalrequest.request_date
+FROM data_migration_approvalrequest
+WHERE web_approvalrequest.process_ptr_id = data_migration_approvalrequest.id
+"""
+
+
+mailshot_timestamp_update = """
+UPDATE web_mailshot SET create_datetime = data_migration_mailshot.create_datetime
+FROM data_migration_mailshot
+WHERE web_mailshot.id = data_migration_mailshot.id
 """

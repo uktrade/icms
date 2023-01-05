@@ -1,13 +1,5 @@
-__all__ = [
-    "export_application_type",
-    "export_application_countries",
-    "export_certificate",
-    "export_certificate_docs",
-    "export_variations",
-]
-
-
-common_xml_fields = """case_note_xml XMLTYPE PATH '/CA/CASE/NOTES/NOTE_LIST'
+common_xml_fields = """
+      case_note_xml XMLTYPE PATH '/CA/CASE/NOTES/NOTE_LIST'
       , fir_xml XMLTYPE PATH '/CA/CASE/RFIS/RFI_LIST'
       , update_request_xml XMLTYPE PATH '/CA/CASE/APPLICATION_UPDATES/UPDATE_LIST'
 """.strip()
@@ -94,6 +86,7 @@ SELECT
   , last_updated_by_wua_id last_updated_by_id
   , xcad.variation_number variation_no
   , xcad.submitted_by_wua_id submitted_by_id
+  , ca.created_datetime created
   , xcad.created_by_wua_id created_by_id
   , xcad.exporter_id
   , xcad.exporter_office_id
@@ -183,4 +176,11 @@ FROM impmgr.xview_cert_app_variations v
 WHERE status_control = 'C'
 AND v.variation_reason IS NOT NULL
 ORDER BY cad_id, variation_id
+"""
+
+
+export_certificate_timestamp_update = """
+UPDATE web_exportapplicationcertificate SET created_at = data_migration_exportapplicationcertificate.created_at
+FROM data_migration_exportapplicationcertificate
+WHERE web_exportapplicationcertificate.id = data_migration_exportapplicationcertificate.id
 """

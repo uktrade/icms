@@ -1,11 +1,10 @@
-import datetime as dt
-
 from django.db.models import Model
 from lxml import etree
 
 from data_migration import models as dm
 from data_migration.utils.format import (
     date_or_none,
+    date_to_timezone,
     datetime_or_none,
     get_xml_val,
     int_or_none,
@@ -47,6 +46,7 @@ class VariationImportParser(BaseXmlParser):
         status = get_xml_val(xml, "./STATUS")
         is_active = status == "OPEN"
         requested_date = date_or_none(get_xml_val(xml, "./REQUEST_DATE"))
+        requested_datetime = date_to_timezone(requested_date)
         requested_by_id = int_or_none(get_xml_val(xml, "./REQUEST_BY_WUA_ID"))
         what_varied = get_xml_val(xml, "./WHAT_VARIED")
         why_varied = get_xml_val(xml, "./WHY_VARIED")
@@ -54,12 +54,7 @@ class VariationImportParser(BaseXmlParser):
         extension_flag = str_to_bool(get_xml_val(xml, "./EXTENSION_FLAG"))
         reject_cancellation_reason = get_xml_val(xml, "./REJECT_REASON")
         closed_date = date_or_none(get_xml_val(xml, "./CLOSED_DATE"))
-
-        if closed_date:
-            closed_datetime = dt.datetime.combine(closed_date, dt.time.min, tzinfo=dt.timezone.utc)
-        else:
-            closed_datetime = None
-
+        closed_datetime = date_to_timezone(closed_date)
         closed_by_id = int_or_none(get_xml_val(xml, "./CLOSED_BY_WUA_ID"))
 
         return cls.MODEL(
@@ -67,7 +62,7 @@ class VariationImportParser(BaseXmlParser):
                 "import_application_id": parent_pk,
                 "status": status,
                 "is_active": is_active,
-                "requested_datetime": requested_date,
+                "requested_datetime": requested_datetime,
                 "requested_by_id": requested_by_id,
                 "what_varied": what_varied,
                 "why_varied": why_varied,

@@ -7,6 +7,7 @@ from django.db.models import F, OuterRef, QuerySet, Subquery, Value
 from django.db.models.expressions import Window
 from django.db.models.functions import RowNumber
 
+from data_migration import queries
 from data_migration.models.export_application.export import ExportApplication
 from data_migration.utils.format import str_to_list
 
@@ -145,12 +146,14 @@ class ExportCertificateCaseDocumentReferenceData(MigrationBase):
 
 
 class VariationRequest(MigrationBase):
+    UPDATE_TIMESTAMP_QUERY = queries.variation_request_timestamp_update
+
     import_application = models.ForeignKey(ImportApplication, on_delete=models.SET_NULL, null=True)
     ca = models.ForeignKey(Process, on_delete=models.CASCADE, null=True, to_field="ca_id")
     is_active = models.BooleanField(default=True)
     status = models.CharField(max_length=30)
     extension_flag = models.BooleanField(default=False)
-    requested_datetime = models.DateTimeField(auto_now_add=True)
+    requested_datetime = models.DateTimeField()
     requested_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
     what_varied = models.CharField(max_length=4000)
     why_varied = models.CharField(max_length=4000, null=True)
@@ -246,12 +249,14 @@ class CaseEmail(MigrationBase):
 
 
 class CaseNote(MigrationBase):
+    UPDATE_TIMESTAMP_QUERY = queries.case_note_timestamp_update
+
     ima = models.ForeignKey(Process, on_delete=models.CASCADE, to_field="ima_id", null=True)
     export_application = models.ForeignKey(ExportApplication, on_delete=models.CASCADE, null=True)
     is_active = models.BooleanField(null=False, default=True)
     status = models.CharField(max_length=20, null=False, default="DRAFT")
     note = models.TextField(null=True)
-    create_datetime = models.DateTimeField(null=False, auto_now_add=True)
+    create_datetime = models.DateTimeField(null=False)
     created_by = models.ForeignKey(User, on_delete=models.PROTECT, null=False)
     file_folder = models.OneToOneField(
         FileFolder,
@@ -383,6 +388,7 @@ class UpdateRequest(MigrationBase):
 
 class FurtherInformationRequest(MigrationBase):
     PROCESS_PK = True
+    UPDATE_TIMESTAMP_QUERY = queries.fir_timestamp_update
 
     ia_ima = models.ForeignKey(Process, on_delete=models.CASCADE, to_field="ima_id", null=True)
     export_application = models.ForeignKey(ExportApplication, on_delete=models.CASCADE, null=True)
@@ -391,7 +397,7 @@ class FurtherInformationRequest(MigrationBase):
     request_subject = models.CharField(max_length=100, null=True)
     request_detail = models.TextField(null=True)
     email_cc_address_list_str = models.TextField(null=True)
-    requested_datetime = models.DateTimeField(null=True, auto_now_add=True)
+    requested_datetime = models.DateTimeField(null=True)
     response_detail = models.TextField(null=True)
     response_datetime = models.DateTimeField(null=True)
     requested_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
@@ -493,6 +499,8 @@ class FIRFile(MigrationBase):
 
 
 class Mailshot(MigrationBase):
+    UPDATE_TIMESTAMP_QUERY = queries.mailshot_timestamp_update
+
     is_active = models.BooleanField(default=True)
     status = models.CharField(max_length=20)
     title = models.CharField(max_length=200, null=True)
@@ -506,7 +514,7 @@ class Mailshot(MigrationBase):
     is_to_importers = models.BooleanField(default=False)
     is_to_exporters = models.BooleanField(default=False)
     created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
-    create_datetime = models.DateTimeField(auto_now_add=True)
+    create_datetime = models.DateTimeField()
     published_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
     published_datetime = models.DateTimeField(null=True)
     retracted_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")

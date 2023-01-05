@@ -451,6 +451,7 @@ ea_query_result = {
             ("manufacturer_name",),
             ("manufacturer_address_type",),
             ("created_by_id",),
+            ("created_at",),
             ("product_xml",),
             ("legislation_xml",),
         ],
@@ -471,6 +472,7 @@ ea_query_result = {
                 "Manufacturer",  # manufacturer_name
                 "MANUAL",  # manufacturer_address_type
                 2,  # created_by_id
+                datetime(2022, 11, 1, 12, 30),  # created_at
                 xd.cfs_product,  # product_xml
                 None,  # legislation_xml
             ),
@@ -490,6 +492,7 @@ ea_query_result = {
                 None,  # manufacturer_name
                 "MANUAL",  # manufacturer_address_type
                 2,  # created_by_id
+                datetime(2022, 11, 1, 12, 30),  # created_at
                 None,  # product_xml
                 xd.cfs_legislation,  # legislation_xml
             ),
@@ -509,23 +512,31 @@ ea_query_result = {
                 "Manufacturer",  # manufacturer_name
                 "MANUAL",  # manufacturer_address_type
                 2,  # created_by_id
+                datetime(2022, 11, 1, 12, 30),  # created_at
                 xd.cfs_product_biocide,  # product_xml
                 xd.cfs_legislation_biocide,  # legislation_xml
             ),
         ],
     ),
     export_application.export_certificate: (
-        [("ca_id",), ("cad_id",), ("case_completion_datetime",), ("status",), ("case_reference",)],
         [
-            (8, 18, datetime(2022, 4, 29), "DR", "CA/2022/9902"),
-            (9, 10, datetime(2022, 4, 29), "AR", "CA/2022/9903"),
-            (9, 19, datetime(2022, 4, 29), "AC", "CA/2022/9903/1"),
-            (11, 21, datetime(2022, 4, 29), "DR", "CA/2022/9905"),
-            (12, 22, datetime(2022, 4, 29), "AC", "CA/2022/9906"),
-            (14, 24, datetime(2022, 4, 29), "DR", "CA/2022/9908"),
-            (15, 11, datetime(2022, 4, 29), "AR", "CA/2022/9909"),
-            (15, 12, datetime(2022, 4, 29), "AR", "CA/2022/9909/1"),
-            (15, 25, datetime(2022, 4, 29), "AC", "CA/2022/9909/2"),
+            ("ca_id",),
+            ("cad_id",),
+            ("case_completion_datetime",),
+            ("status",),
+            ("case_reference",),
+            ("created_at",),
+        ],
+        [
+            (8, 18, datetime(2022, 4, 29), "DR", "CA/2022/9902", datetime(2022, 4, 29, 13, 21)),
+            (9, 10, datetime(2022, 4, 29), "AR", "CA/2022/9903", datetime(2022, 4, 29, 13, 21)),
+            (9, 19, datetime(2022, 4, 29), "AC", "CA/2022/9903/1", datetime(2022, 4, 29, 13, 21)),
+            (11, 21, datetime(2022, 4, 29), "DR", "CA/2022/9905", datetime(2022, 4, 29, 13, 21)),
+            (12, 22, datetime(2022, 4, 29), "AC", "CA/2022/9906", datetime(2022, 4, 29, 13, 21)),
+            (14, 24, datetime(2022, 4, 29), "DR", "CA/2022/9908", datetime(2022, 4, 29, 13, 21)),
+            (15, 11, datetime(2022, 4, 29), "AR", "CA/2022/9909", datetime(2022, 4, 29, 13, 21)),
+            (15, 12, datetime(2022, 4, 29), "AR", "CA/2022/9909/1", datetime(2022, 4, 29, 13, 21)),
+            (15, 25, datetime(2022, 4, 29), "AC", "CA/2022/9909/2", datetime(2022, 4, 29, 13, 21)),
         ],
     ),
     export_application.export_certificate_docs: (

@@ -149,6 +149,11 @@ class FIRBaseParser(BaseXmlParser):
             raise NotImplementedError("MODEL must be defined on the parser")
 
         status = get_xml_val(xml, "./STATUS")
+        requested_datetime = datetime_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_DATETIME"))
+
+        if requested_datetime is None:
+            return None
+
         request_subject = get_xml_val(xml, "./REQUEST/SUBJECT")
         request_detail = get_xml_val(xml, "./REQUEST/BODY")
         requested_by_id = int_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_BY_WUA_ID"))
@@ -168,6 +173,7 @@ class FIRBaseParser(BaseXmlParser):
                 "request_subject": request_subject,
                 "request_detail": request_detail,
                 "requested_by_id": requested_by_id,
+                "requested_datetime": requested_datetime,
                 "email_cc_address_list_str": email_cc_address_list_str,
                 "response_detail": response_detail,
                 "response_datetime": response_datetime,

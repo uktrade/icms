@@ -6,9 +6,9 @@ import oracledb
 from django.conf import settings
 
 from data_migration import models
-from data_migration.queries import DATA_TYPE, DATA_TYPE_QUERY_MODEL, FILE_MODELS
 
 from ._base import MigrationBaseCommand
+from ._run_order import DATA_TYPE, DATA_TYPE_QUERY_MODEL, FILE_MODELS
 from .utils.db import new_process_pk
 from .utils.format import format_name, format_row
 

@@ -1,3 +1,4 @@
+import datetime as dt
 from unittest import mock
 
 import oracledb
@@ -5,16 +6,13 @@ import pytest
 from django.core.management import call_command
 
 from data_migration import models as dm
-from data_migration.queries import (
+from data_migration import queries
+from data_migration.management.commands._run_order import (
     DATA_TYPE_M2M,
     DATA_TYPE_QUERY_MODEL,
     DATA_TYPE_SOURCE_TARGET,
     DATA_TYPE_XML,
 )
-from data_migration.queries import export_application as q_ex
-from data_migration.queries import files as q_f
-from data_migration.queries import reference as q_ref
-from data_migration.queries import user as q_u
 from data_migration.utils import xml_parser
 from web import models as web
 
@@ -66,28 +64,31 @@ export_data_source_target = {
 }
 
 export_query_model = {
-    "user": [(q_u, "users", dm.User)],
-    "file": [(q_f, "gmp_files", dm.FileCombined), (q_f, "export_case_note_docs", dm.FileCombined)],
+    "user": [(queries, "users", dm.User)],
+    "file": [
+        (queries, "gmp_files", dm.FileCombined),
+        (queries, "export_case_note_docs", dm.FileCombined),
+    ],
     "import_application": [],
     "export_application": [
-        (q_u, "exporters", dm.Exporter),
-        (q_u, "exporter_offices", dm.Office),
-        (q_ex, "product_legislation", dm.ProductLegislation),
-        (q_ex, "export_application_type", dm.ExportApplicationType),
-        (q_ex, "gmp_application", dm.CertificateOfGoodManufacturingPracticeApplication),
-        (q_ex, "com_application", dm.CertificateOfManufactureApplication),
-        (q_ex, "cfs_application", dm.CertificateOfFreeSaleApplication),
-        (q_ex, "cfs_schedule", dm.CFSSchedule),
-        (q_ex, "export_application_countries", dm.ExportApplicationCountries),
-        (q_ex, "export_certificate", dm.ExportApplicationCertificate),
-        (q_ex, "export_certificate_docs", dm.ExportCertificateCaseDocumentReferenceData),
-        (q_ex, "export_variations", dm.VariationRequest),
-        (q_ex, "beis_emails", dm.CaseEmail),
-        (q_ex, "hse_emails", dm.CaseEmail),
+        (queries, "exporters", dm.Exporter),
+        (queries, "exporter_offices", dm.Office),
+        (queries, "product_legislation", dm.ProductLegislation),
+        (queries, "export_application_type", dm.ExportApplicationType),
+        (queries, "gmp_application", dm.CertificateOfGoodManufacturingPracticeApplication),
+        (queries, "com_application", dm.CertificateOfManufactureApplication),
+        (queries, "cfs_application", dm.CertificateOfFreeSaleApplication),
+        (queries, "cfs_schedule", dm.CFSSchedule),
+        (queries, "export_application_countries", dm.ExportApplicationCountries),
+        (queries, "export_certificate", dm.ExportApplicationCertificate),
+        (queries, "export_certificate_docs", dm.ExportCertificateCaseDocumentReferenceData),
+        (queries, "export_variations", dm.VariationRequest),
+        (queries, "beis_emails", dm.CaseEmail),
+        (queries, "hse_emails", dm.CaseEmail),
     ],
     "reference": [
-        (q_ref, "country_group", dm.CountryGroup),
-        (q_ref, "country", dm.Country),
+        (queries, "country_group", dm.CountryGroup),
+        (queries, "country", dm.Country),
     ],
 }
 
@@ -174,6 +175,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     cert2, cert3 = ea3.certificates.order_by("pk")
 
     assert cert1.status == "DR"
+    assert cert1.created_at == dt.datetime(2022, 4, 29, 12, 21, tzinfo=dt.timezone.utc)
     assert cert2.status == "AR"
     assert cert2.document_references.count() == 0
     assert cert3.status == "AC"
@@ -322,12 +324,11 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ea9.case_emails.count() == 2
 
     assert ea7.further_information_requests.count() == 0
-    assert ea8.further_information_requests.count() == 2
+    assert ea8.further_information_requests.count() == 1
     assert ea9.further_information_requests.count() == 0
 
-    fir2, fir3 = ea8.further_information_requests.order_by("pk")
+    fir2 = ea8.further_information_requests.first()
     assert fir2.status == "OPEN"
-    assert fir3.status == "DELETED"
     assert len(fir2.email_cc_address_list) == 2
 
     case_note2, case_note3 = ea9.case_notes.order_by("pk")
@@ -368,6 +369,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     sch2, sch3 = cfs3.schedules.order_by("pk")
 
     assert sch1.legislations.count() == 0
+    assert sch1.created_at == dt.datetime(2022, 11, 1, 12, 30, tzinfo=dt.timezone.utc)
     assert sch1.is_biocidal() is False
     assert sch2.legislations.count() == 2
     assert sch2.is_biocidal() is False

@@ -1,9 +1,6 @@
 from web.flow.models import ProcessTypes
 
-from .import_application import common_xml_fields, import_application_base
-
-__all__ = ["sps_application"]
-
+from .base import common_xml_fields, import_application_base
 
 sps_application_subquery = """
 SELECT

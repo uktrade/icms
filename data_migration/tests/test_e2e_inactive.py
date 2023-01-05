@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime as dt
 from unittest import mock
 
 import oracledb
@@ -6,16 +6,13 @@ import pytest
 from django.core.management import call_command
 
 from data_migration import models as dm
-from data_migration.queries import (
+from data_migration import queries
+from data_migration.management.commands._run_order import (
     DATA_TYPE_M2M,
     DATA_TYPE_QUERY_MODEL,
     DATA_TYPE_SOURCE_TARGET,
     DATA_TYPE_XML,
 )
-from data_migration.queries import files as q_f
-from data_migration.queries import import_application as q_ia
-from data_migration.queries import reference as q_ref
-from data_migration.queries import user as q_u
 from data_migration.utils import xml_parser
 from web import models as web
 
@@ -49,25 +46,25 @@ opt_data_source_target = {
 
 opt_query_model = {
     "user": [
-        (q_u, "users", dm.User),
-        (q_u, "importers", dm.Importer),
-        (q_u, "importer_offices", dm.Office),
+        (queries, "users", dm.User),
+        (queries, "importers", dm.Importer),
+        (queries, "importer_offices", dm.Office),
     ],
     "file": [
-        (q_f, "opt_application_files", dm.FileCombined),
+        (queries, "opt_application_files", dm.FileCombined),
     ],
     "import_application": [
-        (q_ia, "ia_type", dm.ImportApplicationType),
-        (q_ia, "opt_application", dm.OutwardProcessingTradeApplication),
+        (queries, "ia_type", dm.ImportApplicationType),
+        (queries, "opt_application", dm.OutwardProcessingTradeApplication),
     ],
     "export_application": [],
     "reference": [
-        (q_ref, "country_group", dm.CountryGroup),
-        (q_ref, "country", dm.Country),
-        (q_ref, "unit", dm.Unit),
-        (q_ref, "commodity_type", dm.CommodityType),
-        (q_ref, "commodity_group", dm.CommodityGroup),
-        (q_ref, "commodity", dm.Commodity),
+        (queries, "country_group", dm.CountryGroup),
+        (queries, "country", dm.Country),
+        (queries, "unit", dm.Unit),
+        (queries, "commodity_type", dm.CommodityType),
+        (queries, "commodity_group", dm.CommodityGroup),
+        (queries, "commodity", dm.Commodity),
     ],
 }
 
@@ -117,7 +114,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert opt1.customs_office_address == "Test Address"
     assert opt1.rate_of_yield == 0.5
     assert opt1.rate_of_yield_calc_method == "abc"
-    assert opt1.last_export_day == datetime(2023, 4, 23).date()
+    assert opt1.last_export_day == dt.date(2023, 4, 23)
     assert opt1.reimport_period == 12
 
     assert opt1.nature_process_ops == "test"
@@ -203,26 +200,26 @@ sps_data_source_target = {
     DATA_TYPE_QUERY_MODEL,
     {
         "file": [
-            (q_f, "sps_application_files", dm.FileCombined),
-            (q_f, "sps_docs", dm.FileCombined),
-            (q_f, "sanction_application_files", dm.FileCombined),
+            (queries, "sps_application_files", dm.FileCombined),
+            (queries, "sps_docs", dm.FileCombined),
+            (queries, "sanction_application_files", dm.FileCombined),
         ],
         "import_application": [
-            (q_ia, "ia_type", dm.ImportApplicationType),
-            (q_ia, "sps_application", dm.PriorSurveillanceApplication),
-            (q_ia, "sanctions_application", dm.SanctionsAndAdhocApplication),
-            (q_ia, "sigl_transmission", dm.SIGLTransmission),
+            (queries, "ia_type", dm.ImportApplicationType),
+            (queries, "sps_application", dm.PriorSurveillanceApplication),
+            (queries, "sanctions_application", dm.SanctionsAndAdhocApplication),
+            (queries, "sigl_transmission", dm.SIGLTransmission),
         ],
         "reference": [
-            (q_ref, "country_group", dm.CountryGroup),
-            (q_ref, "country", dm.Country),
-            (q_ref, "commodity_type", dm.CommodityType),
-            (q_ref, "commodity", dm.Commodity),
+            (queries, "country_group", dm.CountryGroup),
+            (queries, "country", dm.Country),
+            (queries, "commodity_type", dm.CommodityType),
+            (queries, "commodity", dm.Commodity),
         ],
         "user": [
-            (q_u, "users", dm.User),
-            (q_u, "importers", dm.Importer),
-            (q_u, "importer_offices", dm.Office),
+            (queries, "users", dm.User),
+            (queries, "importers", dm.Importer),
+            (queries, "importer_offices", dm.Office),
         ],
     },
 )
@@ -304,9 +301,12 @@ tex_data_source_target = {
         (dm.Office, web.Office),
     ],
     "reference": [
+        (dm.Unit, web.Unit),
         (dm.Country, web.Country),
         (dm.CountryGroup, web.CountryGroup),
         (dm.CommodityType, web.CommodityType),
+        (dm.CommodityGroup, web.CommodityGroup),
+        (dm.Commodity, web.Commodity),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -326,24 +326,26 @@ tex_data_source_target = {
     DATA_TYPE_QUERY_MODEL,
     {
         "file": [
-            (q_f, "textiles_application_files", dm.FileCombined),
+            (queries, "textiles_application_files", dm.FileCombined),
         ],
         "import_application": [
-            (q_ia, "ia_type", dm.ImportApplicationType),
-            (q_ia, "textiles_application", dm.TextilesApplication),
-            (q_ia, "textiles_checklist", dm.TextilesChecklist),
+            (queries, "ia_type", dm.ImportApplicationType),
+            (queries, "textiles_application", dm.TextilesApplication),
+            (queries, "textiles_checklist", dm.TextilesChecklist),
         ],
         "export_application": [],
         "reference": [
-            (q_ref, "country_group", dm.CountryGroup),
-            (q_ref, "country", dm.Country),
-            (q_ref, "commodity_type", dm.CommodityType),
-            (q_ref, "commodity", dm.Commodity),
+            (queries, "unit", dm.Unit),
+            (queries, "country_group", dm.CountryGroup),
+            (queries, "country", dm.Country),
+            (queries, "commodity_type", dm.CommodityType),
+            (queries, "commodity_group", dm.CommodityGroup),
+            (queries, "commodity", dm.Commodity),
         ],
         "user": [
-            (q_u, "users", dm.User),
-            (q_u, "importers", dm.Importer),
-            (q_u, "importer_offices", dm.Office),
+            (queries, "users", dm.User),
+            (queries, "importers", dm.Importer),
+            (queries, "importer_offices", dm.Office),
         ],
     },
 )
@@ -369,3 +371,12 @@ def test_import_textiles_data(mock_connect, dummy_dm_settings):
     assert tex2.checklist.authorisation is False
 
     assert hasattr(tex3, "checklist") is False
+
+    assert web.CommodityGroup.objects.count() == 2
+    assert web.CommodityGroup.objects.first().start_datetime == dt.datetime(
+        2022, 12, 31, 12, 30, tzinfo=dt.timezone.utc
+    )
+    assert web.Commodity.objects.count() == 5
+    assert web.Commodity.objects.first().start_datetime == dt.datetime(
+        2022, 12, 31, 12, 30, tzinfo=dt.timezone.utc
+    )

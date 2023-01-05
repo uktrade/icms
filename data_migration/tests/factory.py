@@ -14,7 +14,7 @@ class FileFactory(factory.django.DjangoModelFactory):
     content_type = factory.fuzzy.FuzzyText(length=6)
     file_size = random.randint(1, 100000)
     path = factory.fuzzy.FuzzyText(length=6)
-    created_datetime = timezone.datetime.now()
+    created_datetime = timezone.now()
 
 
 class CountryFactory(factory.django.DjangoModelFactory):
@@ -80,6 +80,7 @@ class ProcessFactory(factory.django.DjangoModelFactory):
 
     process_type = factory.fuzzy.FuzzyText(length=6)
     is_active = random.choice([True, False])
+    created = timezone.now()
 
 
 class ImportApplicationFactory(factory.django.DjangoModelFactory):

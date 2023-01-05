@@ -1,12 +1,6 @@
-from data_migration.queries.import_application.import_application import (
-    common_xml_fields,
-    import_application_base,
-    import_checklist_base,
-)
 from web.flow.models import ProcessTypes
 
-__all__ = ["dfl_application", "dfl_checklist"]
-
+from ..base import common_xml_fields, import_application_base, import_checklist_base
 
 dfl_application_subquery = """
 SELECT

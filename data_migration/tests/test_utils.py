@@ -56,20 +56,24 @@ def test_format_row_datetime():
 @pytest.mark.django_db
 def test_new_process_pk():
     assert new_process_pk() == 1
-    obj = Process.objects.create(process_type="ABC")
+    obj = Process.objects.create(process_type="ABC", created=timezone.now())
     assert new_process_pk() == obj.pk + 1
 
 
 @pytest.mark.django_db
 def test_bulk_create():
-    Process.objects.create(process_type="New")
+    Process.objects.create(process_type="New", created=timezone.now())
     pk = new_process_pk()
     bulk_create(
-        Process, [Process(process_type="ATest", id=pk), Process(process_type="BTest", id=pk + 1)]
+        Process,
+        [
+            Process(process_type="ATest", id=pk, created=timezone.now()),
+            Process(process_type="BTest", id=pk + 1, created=timezone.now()),
+        ],
     )
     assert Process.objects.filter(id=pk, process_type="ATest").count() == 1
     assert Process.objects.filter(id=pk + 1, process_type="BTest").count() == 1
-    obj = Process.objects.create(process_type="CTest")
+    obj = Process.objects.create(process_type="CTest", created=timezone.now())
     assert obj.pk == pk + 2
 
 

@@ -1,5 +1,3 @@
-__all__ = ["ia_type", "usage"]
-
 ia_type = """
 SELECT
   id

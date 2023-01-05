@@ -4,6 +4,7 @@ from typing import Any
 from django.db import models
 from django.db.models import F
 
+from data_migration import queries
 from data_migration.models.base import MigrationBase
 from data_migration.models.flow import Process
 
@@ -106,6 +107,7 @@ class ExporterAccessRequest(MigrationBase):
 
 class ApprovalRequest(MigrationBase):
     PROCESS_PK = True
+    UPDATE_TIMESTAMP_QUERY = queries.approval_request_timestamp_update
 
     access_request = models.ForeignKey(
         AccessRequest, on_delete=models.CASCADE, related_name="approval_requests"

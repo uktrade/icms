@@ -1,6 +1,3 @@
-__all__ = ["commodity_type", "commodity_group", "commodity", "commodity_group_commodity", "unit"]
-
-
 commodity_type = (
     "SELECT commodity_type type_code, com_type_title type FROM impmgr.commodity_types ct"
 )
@@ -51,4 +48,18 @@ AND status <> 'ARCHIVED'
 unit = """
 SELECT unit_type, description, short_desc short_description, hmrc_code
 FROM impmgr.units
+"""
+
+
+commodity_timestamp_update = """
+UPDATE web_commodity SET start_datetime = data_migration_commodity.start_datetime
+FROM data_migration_commodity
+WHERE web_commodity.id = data_migration_commodity.id
+"""
+
+
+commodity_group_timestamp_update = """
+UPDATE web_commoditygroup SET start_datetime = data_migration_commoditygroup.start_datetime
+FROM data_migration_commoditygroup
+WHERE web_commoditygroup.id = data_migration_commoditygroup.id
 """

@@ -115,6 +115,15 @@ def adjust_icms_v1_datetime(dt_val: dt.datetime) -> dt.datetime:
     return utc_dt
 
 
+def date_to_timezone(date: dt.date | None) -> dt.datetime | None:
+    """Convert a date to a timezone aware datetime"""
+
+    if not date:
+        return None
+
+    return dt.datetime.combine(date, dt.time.min, tzinfo=dt.timezone.utc)
+
+
 def float_or_none(float_str: str | None) -> float | None:
     if not float_str:
         return None

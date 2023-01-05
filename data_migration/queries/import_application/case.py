@@ -1,11 +1,3 @@
-__all__ = [
-    "case_note",
-    "endorsement",
-    "fir",
-    "update_request",
-    "sigl_transmission",
-]
-
 case_note = """
 SELECT
   xid.ima_id, cnd.status, cnd.created_by_wua_id created_by_id, x.*
@@ -63,6 +55,7 @@ SELECT
 FROM impmgr.xview_ima_rfis xir
 INNER JOIN impmgr.xview_ima_details xid ON xid.ima_id = xir.ima_id AND xid.status_control = 'C'
 WHERE xir.status_control = 'C'
+AND xir.request_date IS NOT NULL
 """
 
 
@@ -85,4 +78,30 @@ SELECT
   , response_code
   , response_msg response_message
 FROM impmgr.sigl_transmissions
+"""
+
+
+case_note_timestamp_update = """
+UPDATE web_casenote SET create_datetime = data_migration_casenote.create_datetime
+FROM data_migration_casenote
+WHERE web_casenote.id = data_migration_casenote.id
+"""
+
+
+fir_timestamp_update = """
+UPDATE web_furtherinformationrequest SET requested_datetime = data_migration_furtherinformationrequest.requested_datetime
+FROM data_migration_furtherinformationrequest
+WHERE web_furtherinformationrequest.process_ptr_id = data_migration_furtherinformationrequest.id
+"""
+
+process_timestamp_update = """
+UPDATE web_process SET created = data_migration_process.created
+FROM data_migration_process
+WHERE web_process.id = data_migration_process.id
+"""
+
+variation_request_timestamp_update = """
+UPDATE web_variationrequest SET requested_datetime = data_migration_variationrequest.requested_datetime
+FROM data_migration_variationrequest
+WHERE web_variationrequest.id = data_migration_variationrequest.id
 """
