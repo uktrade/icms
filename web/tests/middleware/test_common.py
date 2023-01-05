@@ -17,3 +17,7 @@ def test_request_icms():
 
     assert isinstance(request.icms, ICMSMiddlewareContext)
     assert isinstance(request.icms.lock_manager, LockManager)
+
+
+def test_foo():
+    assert 1 == 1
