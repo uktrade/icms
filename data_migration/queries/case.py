@@ -94,11 +94,13 @@ FROM data_migration_furtherinformationrequest
 WHERE web_furtherinformationrequest.process_ptr_id = data_migration_furtherinformationrequest.id
 """
 
+
 process_timestamp_update = """
 UPDATE web_process SET created = data_migration_process.created
 FROM data_migration_process
 WHERE web_process.id = data_migration_process.id
 """
+
 
 variation_request_timestamp_update = """
 UPDATE web_variationrequest SET requested_datetime = data_migration_variationrequest.requested_datetime

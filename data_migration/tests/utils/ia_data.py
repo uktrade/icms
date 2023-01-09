@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from data_migration.queries import files, import_application
+from data_migration import queries
 
 from . import xml_data as xd
 
@@ -45,7 +45,7 @@ IA_BASE_COLUMNS = [
 ]
 
 ia_query_result = {
-    import_application.section5_clauses: (
+    queries.section5_clauses: (
         [
             ("clause",),
             ("legacy_code",),
@@ -80,7 +80,7 @@ ia_query_result = {
             ("Test Clause", "5_1_ABA", "Test Description", 1, datetime.now(), 2, datetime.now(), 2),
         ],
     ),
-    import_application.textiles_checklist: (
+    queries.textiles_checklist: (
         [
             ("imad_id",),
             ("case_update",),
@@ -97,7 +97,7 @@ ia_query_result = {
             (53, None, None, None, None, None, None, None),
         ],
     ),
-    import_application.oil_checklist: (
+    queries.oil_checklist: (
         [
             ("imad_id",),
             ("case_update",),
@@ -116,7 +116,7 @@ ia_query_result = {
             (32, "Y", "N", "true", "Y", "Y", None, "false", "N", "N", "N"),
         ],
     ),
-    import_application.sil_checklist: (
+    queries.sil_checklist: (
         [
             ("imad_id",),
             ("case_update",),
@@ -137,7 +137,7 @@ ia_query_result = {
             (12, "Y", "N", "true", "Y", "Y", None, "false", "N", "N", "N", "N", "N"),
         ],
     ),
-    files.sps_docs: (
+    queries.sps_docs: (
         IA_FILES_COLUMNS,
         [
             (
@@ -174,7 +174,7 @@ ia_query_result = {
             ),
         ],
     ),
-    files.sps_application_files: (
+    queries.sps_application_files: (
         IA_FILES_COLUMNS,
         [
             (
@@ -227,7 +227,7 @@ ia_query_result = {
             ),
         ],
     ),
-    import_application.fa_authorities: (
+    queries.fa_authorities: (
         [
             ("id",),
             ("reference",),
@@ -242,7 +242,7 @@ ia_query_result = {
             (2, "B", "SHOTGUN", "234 Test", "LN2", 3, 103),
         ],
     ),
-    import_application.section5_authorities: (
+    queries.section5_authorities: (
         [
             ("id",),
             ("reference",),
@@ -256,7 +256,7 @@ ia_query_result = {
             (2, "B", "234 Test", "LN2", 3, 105),
         ],
     ),
-    files.fa_certificate_files: (
+    queries.fa_certificate_files: (
         [
             ("folder_id",),
             ("folder_type",),
@@ -350,15 +350,15 @@ ia_query_result = {
             ),
         ],
     ),
-    import_application.fa_authority_linked_offices: (
+    queries.fa_authority_linked_offices: (
         [("firearmsauthority_id",), ("office_legacy_id",)],
         [(1, "i-2-1"), (1, "i-2-2"), (2, "i-3-1")],
     ),
-    import_application.section5_linked_offices: (
+    queries.section5_linked_offices: (
         [("section5authority_id",), ("office_legacy_id",)],
         [(1, "i-2-1"), (1, "i-2-2"), (2, "i-3-1")],
     ),
-    import_application.ia_licence: (
+    queries.ia_licence: (
         [
             ("ima_id",),
             ("imad_id",),
@@ -417,7 +417,7 @@ ia_query_result = {
             ),
         ],
     ),
-    import_application.ia_licence_docs: (
+    queries.ia_licence_docs: (
         [
             ("reference",),
             ("licence_id",),
@@ -533,7 +533,7 @@ ia_query_result = {
             ),
         ],
     ),
-    files.textiles_application_files: (
+    queries.textiles_application_files: (
         IA_FILES_COLUMNS,
         [
             (
@@ -586,7 +586,7 @@ ia_query_result = {
             ),
         ],
     ),
-    files.dfl_application_files: (
+    queries.dfl_application_files: (
         IA_FILES_COLUMNS,
         [
             (
@@ -607,7 +607,7 @@ ia_query_result = {
             ),
         ],
     ),
-    files.sanction_application_files: (
+    queries.sanction_application_files: (
         IA_FILES_COLUMNS,
         [
             (
@@ -628,7 +628,7 @@ ia_query_result = {
             ),
         ],
     ),
-    files.oil_application_files: (
+    queries.oil_application_files: (
         IA_FILES_COLUMNS,
         [
             (
@@ -681,7 +681,7 @@ ia_query_result = {
             ),
         ],
     ),
-    files.sil_application_files: (
+    queries.sil_application_files: (
         IA_FILES_COLUMNS,
         [
             (
@@ -750,7 +750,7 @@ ia_query_result = {
             ),
         ],
     ),
-    files.opt_application_files: (
+    queries.opt_application_files: (
         IA_FILES_COLUMNS,
         [
             (
@@ -787,7 +787,7 @@ ia_query_result = {
             ),
         ],
     ),
-    import_application.opt_application: (
+    queries.opt_application: (
         IA_BASE_COLUMNS
         + [
             ("customs_office_name",),
@@ -940,7 +940,7 @@ ia_query_result = {
             ),
         ],
     ),
-    import_application.sanctions_application: (
+    queries.sanctions_application: (
         IA_BASE_COLUMNS
         + [
             ("exporter_name",),
@@ -977,7 +977,7 @@ ia_query_result = {
             )
         ],
     ),
-    import_application.sps_application: (
+    queries.sps_application: (
         IA_BASE_COLUMNS
         + [
             ("quantity",),
@@ -1043,7 +1043,7 @@ ia_query_result = {
             ),
         ],
     ),
-    import_application.textiles_application: (
+    queries.textiles_application: (
         IA_BASE_COLUMNS,
         [
             (
@@ -1114,7 +1114,7 @@ ia_query_result = {
             ),
         ],
     ),
-    import_application.dfl_application: (
+    queries.dfl_application: (
         IA_BASE_COLUMNS
         + [
             ("deactivated_firearm",),
@@ -1149,7 +1149,7 @@ ia_query_result = {
             )
         ],
     ),
-    import_application.oil_application: (
+    queries.oil_application: (
         IA_BASE_COLUMNS
         + [
             ("section1",),
@@ -1212,7 +1212,7 @@ ia_query_result = {
             ),
         ],
     ),
-    import_application.sil_application: (
+    queries.sil_application: (
         IA_BASE_COLUMNS
         + [
             ("section1",),
@@ -1318,7 +1318,7 @@ ia_query_result = {
             ),
         ],
     ),
-    import_application.ia_type: (
+    queries.ia_type: (
         [
             ("id",),
             ("is_active",),
@@ -1622,7 +1622,7 @@ ia_query_result = {
             ),
         ],
     ),
-    import_application.constabulary_emails: (
+    queries.constabulary_emails: (
         [
             ("ima_id",),
             ("status",),
@@ -1658,7 +1658,7 @@ ia_query_result = {
             ),
         ],
     ),
-    import_application.case_note: (
+    queries.case_note: (
         [
             ("ima_id",),
             ("status",),
@@ -1673,7 +1673,7 @@ ia_query_result = {
             (2, "DRAFT", "Some draft note", 2, "2022-03-03T13:14:15", 12),
         ],
     ),
-    files.case_note_files: (
+    queries.case_note_files: (
         IA_FILES_COLUMNS,
         [
             (
@@ -1742,7 +1742,7 @@ ia_query_result = {
             ),
         ],
     ),
-    import_application.update_request: (
+    queries.update_request: (
         [
             ("ima_id",),
             ("status",),
@@ -1798,7 +1798,7 @@ ia_query_result = {
             ),
         ],
     ),
-    import_application.fir: (
+    queries.fir: (
         [
             ("ia_ima_id",),
             ("status",),
@@ -1870,7 +1870,7 @@ ia_query_result = {
             ),
         ],
     ),
-    files.fir_files: (
+    queries.fir_files: (
         IA_FILES_COLUMNS,
         [
             (
@@ -1939,7 +1939,7 @@ ia_query_result = {
             ),
         ],
     ),
-    import_application.endorsement: (
+    queries.endorsement: (
         [
             ("imad_id",),
             ("content",),
@@ -1950,7 +1950,7 @@ ia_query_result = {
             (11, "Content B", datetime(2022, 4, 27, 12, 23)),
         ],
     ),
-    import_application.sigl_transmission: (
+    queries.sigl_transmission: (
         [
             ("ima_id",),
             ("status",),

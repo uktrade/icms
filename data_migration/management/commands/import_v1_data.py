@@ -139,6 +139,7 @@ class Command(MigrationBaseCommand):
             submit_datetime__isnull=False, ima__licences__isnull=True
         )
 
+        # TODO ICMSLST-1850: Determine correct application status for draft licence status
         draft_statuses = ["VARIATION_REQUESTED", "PROCESSING", "SUBMITTED"]
         draft_pks = (
             ia_qs.filter(status__in=draft_statuses)
@@ -190,6 +191,7 @@ class Command(MigrationBaseCommand):
             submit_datetime__isnull=False, ca__certificates__isnull=True
         )
 
+        # TODO ICMSLST-1850: Determine correct application status for draft certificate status
         draft_statuses = ["VARIATION_REQUESTED", "PROCESSING", "SUBMITTED"]
         draft_pks = (
             export_qs.filter(status__in=draft_statuses)

@@ -826,7 +826,7 @@ LD_LIBRARY_PATH=$ORACLE_HOME:$LD_LIBRARY_PATH
 Request Importer/
 som_user
 Access Request Type
-Access Request Type                                         | True    
+Access Request Type                                         | True
 | Organisation
 Agents Ltd
 Test Imports
@@ -1416,7 +1416,7 @@ ON xmd
 M_ID =
 ri.m_id
 Importer Edit
-| Field         | Value        
+| Field         | Value
 Non-European
 Hey Ltd
 Elm Street
@@ -1500,7 +1500,7 @@ class="prompt west">Telephone
 the HM Revenue & Customs
 Edit Group
 Firearms and Ammunition (OIL
-Field                
+Field
 Access Request Type  |
 ApplicationAndTaskRelatedObjectMixin Config
 method='get'
@@ -1648,10 +1648,10 @@ Admin > Teams
 Admin > Certificate Application Templates
 Exporter Users
 ICMS Features
-Notes                                                                     
-Incomplete                   
+Notes
+Incomplete
 Complete
-Notes                                                                              
+Notes
 New Import
 Case > Application Updates](#case
 Search > Search Import Applications](#search
@@ -1661,10 +1661,10 @@ Admin > Reference Data > Sanction
 Obsolete Calibres](#admin
 Admin > Reference Data > Section 5 Clauses](#admin
 Product Legislation](#admin
-Complete                    
+Complete
 Admin > Matrix Folders](#admin
 Admin > Certificate Application
-the Teams work                                                  
+the Teams work
 Case > Application Withdrawals
 Case > Application Updates
 Case > Authorisation
@@ -1797,3 +1797,4 @@ CFSSchedule
 FirearmsAct
 CertificateApplicationTemplate
 UPDATE web_approvalrequest
+IMP_OPT_NEW_APP_JUST_DOC'

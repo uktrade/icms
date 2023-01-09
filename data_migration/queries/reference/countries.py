@@ -21,24 +21,40 @@ country = """
 
 
 country_group = """
-  SELECT country_group_detail_id id, country_group_id, group_name name, group_comments comments
-  FROM bpmmgr.xview_country_groups xcg
-  WHERE group_status = 'ACTIVE'
+SELECT
+  country_group_detail_id id
+  , country_group_id
+  , group_name name
+  , group_comments comments
+FROM bpmmgr.xview_country_groups xcg
+WHERE group_status = 'ACTIVE'
 """
 
 
 country_group_country = """
-  SELECT xcgc.country_group_detail_id countrygroup_id, xcgc.country_id
-  FROM bpmmgr.xview_country_group_countries xcgc
-  INNER JOIN bpmmgr.xview_country_groups xcg ON xcg.country_group_detail_id = xcgc.country_group_detail_id
-  WHERE xcg.group_status = 'ACTIVE'
+SELECT
+  xcgc.country_group_detail_id countrygroup_id
+  , xcgc.country_id
+FROM bpmmgr.xview_country_group_countries xcgc
+INNER JOIN bpmmgr.xview_country_groups xcg ON xcg.country_group_detail_id = xcgc.country_group_detail_id
+WHERE xcg.group_status = 'ACTIVE'
 """
 
 
-country_translation_set = "SELECT id, name, CASE status WHEN 'ACTIVE' THEN 1 ELSE 0 END is_active FROM bpmmgr.country_translation_sets cts"
+country_translation_set = """
+SELECT
+  id
+  , name
+  , CASE status WHEN 'ACTIVE' THEN 1 ELSE 0 END is_active
+FROM bpmmgr.country_translation_sets cts
+"""
 
 
 country_translation = """
-  SELECT id, translated_country_name translation, country_id, country_translation_set_id translation_set_id
-  FROM bpmmgr.country_translations
+SELECT
+  id
+  , translated_country_name translation
+  , country_id
+  , country_translation_set_id translation_set_id
+FROM bpmmgr.country_translations
 """

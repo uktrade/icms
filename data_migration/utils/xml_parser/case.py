@@ -43,9 +43,13 @@ class VariationImportParser(BaseXmlParser):
         </VARIATION_REQUEST>
         """
 
+        requested_date = date_or_none(get_xml_val(xml, "./REQUEST_DATE"))
+
+        if not requested_date:
+            return None
+
         status = get_xml_val(xml, "./STATUS")
         is_active = status == "OPEN"
-        requested_date = date_or_none(get_xml_val(xml, "./REQUEST_DATE"))
         requested_datetime = date_to_timezone(requested_date)
         requested_by_id = int_or_none(get_xml_val(xml, "./REQUEST_BY_WUA_ID"))
         what_varied = get_xml_val(xml, "./WHAT_VARIED")
@@ -67,7 +71,7 @@ class VariationImportParser(BaseXmlParser):
                 "what_varied": what_varied,
                 "why_varied": why_varied,
                 "when_varied": when_varied,
-                "extension_flag": extension_flag,
+                "extension_flag": extension_flag or False,
                 "reject_cancellation_reason": reject_cancellation_reason,
                 "closed_datetime": closed_datetime,
                 "closed_by_id": closed_by_id,

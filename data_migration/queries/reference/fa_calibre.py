@@ -11,7 +11,7 @@ ORDER BY con_id
 """
 
 
-obsolete_calibre_base = """
+obsolete_calibre_group = """
 SELECT
   ROWNUM id
   , ocs.*
@@ -21,12 +21,26 @@ FROM (
     , calibre_name name
     , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
     , ordinal "order"
-    {0}
   FROM impmgr.obsolete_calibres oc
-  WHERE parent_oc_id IS {1}
+  WHERE parent_oc_id IS NULL
   ORDER BY legacy_id
 ) ocs
 """
 
-obsolete_calibre_group = obsolete_calibre_base.format("", "NULL")
-obsolete_calibre = obsolete_calibre_base.format(", parent_oc_id calibre_group_id", "NOT NULL")
+
+obsolete_calibre = """
+SELECT
+  ROWNUM id
+  , ocs.*
+FROM (
+  SELECT
+    id legacy_id
+    , calibre_name name
+    , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
+    , ordinal "order"
+    , parent_oc_id calibre_group_id
+  FROM impmgr.obsolete_calibres oc
+  WHERE parent_oc_id IS NOT NULL
+  ORDER BY legacy_id
+) ocs
+"""

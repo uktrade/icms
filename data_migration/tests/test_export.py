@@ -42,7 +42,7 @@ def test_data_migration_not_enabled_non_prod():
 @pytest.mark.django_db
 @mock.patch.dict(
     DATA_TYPE_QUERY_MODEL,
-    {"reference": [(queries, "country_group", models.CountryGroup)], "file": []},
+    {"reference": [(queries.country_group, "country_group", models.CountryGroup)], "file": []},
 )
 @mock.patch.object(oracledb, "connect")
 def test_export_data(mock_connect):
@@ -185,16 +185,16 @@ def test_export_files_data(mock_connect):
 
 test_query_model = {
     "reference": [
-        (queries, "country", models.Country),
-        (queries, "country_group", models.CountryGroup),
-        (queries, "unit", models.Unit),
+        (queries.country, "country", models.Country),
+        (queries.country_group, "country_group", models.CountryGroup),
+        (queries.unit, "unit", models.Unit),
     ],
     "file": [],
-    "user": [queries, "users", models.User],
+    "user": [queries.users, "users", models.User],
     "import_application": [
-        (queries, "constabularies", models.Constabulary),
-        (queries, "obsolete_calibre_group", models.ObsoleteCalibreGroup),
-        (queries, "section5_clauses", models.Section5Clause),
+        (queries.constabularies, "constabularies", models.Constabulary),
+        (queries.obsolete_calibre_group, "obsolete_calibre_group", models.ObsoleteCalibreGroup),
+        (queries.section5_clauses, "section5_clauses", models.Section5Clause),
     ],
 }
 
