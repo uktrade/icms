@@ -46,25 +46,25 @@ opt_data_source_target = {
 
 opt_query_model = {
     "user": [
-        (queries, "users", dm.User),
-        (queries, "importers", dm.Importer),
-        (queries, "importer_offices", dm.Office),
+        (queries.users, "users", dm.User),
+        (queries.importers, "importers", dm.Importer),
+        (queries.importer_offices, "importer_offices", dm.Office),
     ],
     "file": [
-        (queries, "opt_application_files", dm.FileCombined),
+        (queries.opt_application_files, "opt_application_files", dm.FileCombined),
     ],
     "import_application": [
-        (queries, "ia_type", dm.ImportApplicationType),
-        (queries, "opt_application", dm.OutwardProcessingTradeApplication),
+        (queries.ia_type, "ia_type", dm.ImportApplicationType),
+        (queries.opt_application, "opt_application", dm.OutwardProcessingTradeApplication),
     ],
     "export_application": [],
     "reference": [
-        (queries, "country_group", dm.CountryGroup),
-        (queries, "country", dm.Country),
-        (queries, "unit", dm.Unit),
-        (queries, "commodity_type", dm.CommodityType),
-        (queries, "commodity_group", dm.CommodityGroup),
-        (queries, "commodity", dm.Commodity),
+        (queries.country_group, "country_group", dm.CountryGroup),
+        (queries.country, "country", dm.Country),
+        (queries.unit, "unit", dm.Unit),
+        (queries.commodity_type, "commodity_type", dm.CommodityType),
+        (queries.commodity_group, "commodity_group", dm.CommodityGroup),
+        (queries.commodity, "commodity", dm.Commodity),
     ],
 }
 
@@ -200,26 +200,30 @@ sps_data_source_target = {
     DATA_TYPE_QUERY_MODEL,
     {
         "file": [
-            (queries, "sps_application_files", dm.FileCombined),
-            (queries, "sps_docs", dm.FileCombined),
-            (queries, "sanction_application_files", dm.FileCombined),
+            (queries.sps_application_files, "sps_application_files", dm.FileCombined),
+            (queries.sps_docs, "sps_docs", dm.FileCombined),
+            (queries.sanction_application_files, "sanction_application_files", dm.FileCombined),
         ],
         "import_application": [
-            (queries, "ia_type", dm.ImportApplicationType),
-            (queries, "sps_application", dm.PriorSurveillanceApplication),
-            (queries, "sanctions_application", dm.SanctionsAndAdhocApplication),
-            (queries, "sigl_transmission", dm.SIGLTransmission),
+            (queries.ia_type, "ia_type", dm.ImportApplicationType),
+            (queries.sps_application, "sps_application", dm.PriorSurveillanceApplication),
+            (
+                queries.sanctions_application,
+                "sanctions_application",
+                dm.SanctionsAndAdhocApplication,
+            ),
+            (queries.sigl_transmission, "sigl_transmission", dm.SIGLTransmission),
         ],
         "reference": [
-            (queries, "country_group", dm.CountryGroup),
-            (queries, "country", dm.Country),
-            (queries, "commodity_type", dm.CommodityType),
-            (queries, "commodity", dm.Commodity),
+            (queries.country_group, "country_group", dm.CountryGroup),
+            (queries.country, "country", dm.Country),
+            (queries.commodity_type, "commodity_type", dm.CommodityType),
+            (queries.commodity, "commodity", dm.Commodity),
         ],
         "user": [
-            (queries, "users", dm.User),
-            (queries, "importers", dm.Importer),
-            (queries, "importer_offices", dm.Office),
+            (queries.users, "users", dm.User),
+            (queries.importers, "importers", dm.Importer),
+            (queries.importer_offices, "importer_offices", dm.Office),
         ],
     },
 )
@@ -326,26 +330,26 @@ tex_data_source_target = {
     DATA_TYPE_QUERY_MODEL,
     {
         "file": [
-            (queries, "textiles_application_files", dm.FileCombined),
+            (queries.textiles_application_files, "textiles_application_files", dm.FileCombined),
         ],
         "import_application": [
-            (queries, "ia_type", dm.ImportApplicationType),
-            (queries, "textiles_application", dm.TextilesApplication),
-            (queries, "textiles_checklist", dm.TextilesChecklist),
+            (queries.ia_type, "ia_type", dm.ImportApplicationType),
+            (queries.textiles_application, "textiles_application", dm.TextilesApplication),
+            (queries.textiles_checklist, "textiles_checklist", dm.TextilesChecklist),
         ],
         "export_application": [],
         "reference": [
-            (queries, "unit", dm.Unit),
-            (queries, "country_group", dm.CountryGroup),
-            (queries, "country", dm.Country),
-            (queries, "commodity_type", dm.CommodityType),
-            (queries, "commodity_group", dm.CommodityGroup),
-            (queries, "commodity", dm.Commodity),
+            (queries.unit, "unit", dm.Unit),
+            (queries.country_group, "country_group", dm.CountryGroup),
+            (queries.country, "country", dm.Country),
+            (queries.commodity_type, "commodity_type", dm.CommodityType),
+            (queries.commodity_group, "commodity_group", dm.CommodityGroup),
+            (queries.commodity, "commodity", dm.Commodity),
         ],
         "user": [
-            (queries, "users", dm.User),
-            (queries, "importers", dm.Importer),
-            (queries, "importer_offices", dm.Office),
+            (queries.users, "users", dm.User),
+            (queries.importers, "importers", dm.Importer),
+            (queries.importer_offices, "importer_offices", dm.Office),
         ],
     },
 )

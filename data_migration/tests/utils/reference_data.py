@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from data_migration.queries import reference
+from data_migration import queries
 
 ref_query_result = {
-    reference.country: (
+    queries.country: (
         [("id",), ("name",), ("is_active",), ("type",), ("commission_code",), ("hmrc_code",)],
         [
             (1, "CA", 1, "A", 100, "CA"),
@@ -12,7 +12,7 @@ ref_query_result = {
             (4, "CD", 0, "A", 103, "CD"),
         ],
     ),
-    reference.country_group: (
+    queries.country_group: (
         [("country_group_id",), ("name",), ("comments",)],
         [
             ("A", "TEST GROUP A", None),
@@ -20,7 +20,7 @@ ref_query_result = {
             ("C", "TEST GROUP C", "Comment C"),
         ],
     ),
-    reference.unit: (
+    queries.unit: (
         [("unit_type",), ("description",), ("short_description",), ("hmrc_code",)],
         [
             ("GS", "grams", "gs", 100),
@@ -28,7 +28,7 @@ ref_query_result = {
             ("TBS", "terrabytes", "Tbs", 102),
         ],
     ),
-    reference.constabularies: (
+    queries.constabularies: (
         [("id",), ("is_active",), ("name",), ("region",), ("email",)],
         [
             (1, 1, "A", "A", "a@example.com"),  # /PS-IGNORE
@@ -36,11 +36,11 @@ ref_query_result = {
             (3, 1, "C", "C", "c@example.com"),  # /PS-IGNORE
         ],
     ),
-    reference.commodity_type: (
+    queries.commodity_type: (
         [("type_code",), ("com_type_title",)],
         [("TYPE_A", "Type A"), ("TYPE_B", "Type B"), ("TYPE_C", "Type C")],
     ),
-    reference.commodity_group: (
+    queries.commodity_group: (
         [
             ("id",),
             ("is_active",),
@@ -58,7 +58,7 @@ ref_query_result = {
             (2, 1, "BT", "BC", "BN", "BD", datetime.now(), None, "TYPE_B", "KGS"),
         ],
     ),
-    reference.commodity: (
+    queries.commodity: (
         [
             ("id",),
             ("is_active",),
@@ -90,11 +90,11 @@ ref_query_result = {
             (5, 1, 1004, "TYPE_C", datetime.now(), None, None, None, datetime.now(), None),
         ],
     ),
-    reference.obsolete_calibre_group: (
+    queries.obsolete_calibre_group: (
         [("id",), ("legacy_id",), ("name",), ("is_active",), ("order",)],
         [(1, 1, "Test OC Group", 1, 1), (2, 2, "Another OC Group", 1, 2), (3, 123, "C", 1, 3)],
     ),
-    reference.obsolete_calibre: (
+    queries.obsolete_calibre: (
         [("id",), ("legacy_id",), ("name",), ("is_active",), ("order",), ("calibre_group_id",)],
         [(1, 3, "Inactive Test OC", 0, 2, 2), (2, 444, "Test OC", 1, 1, 1)],
     ),

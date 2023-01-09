@@ -1,10 +1,14 @@
-commodity_type = (
-    "SELECT commodity_type type_code, com_type_title type FROM impmgr.commodity_types ct"
-)
+commodity_type = """
+SELECT
+  commodity_type type_code
+  , com_type_title type
+FROM impmgr.commodity_types ct
+"""
 
 
 commodity_group = """
-SELECT cg_id id
+SELECT
+  cg_id id
   , CASE status WHEN 'ACTIVE' THEN 1 ELSE 0 END is_active
   , group_type
   , group_code

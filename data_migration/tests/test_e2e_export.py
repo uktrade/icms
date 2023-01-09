@@ -64,31 +64,43 @@ export_data_source_target = {
 }
 
 export_query_model = {
-    "user": [(queries, "users", dm.User)],
+    "user": [(queries.users, "users", dm.User)],
     "file": [
-        (queries, "gmp_files", dm.FileCombined),
-        (queries, "export_case_note_docs", dm.FileCombined),
+        (queries.gmp_files, "gmp_files", dm.FileCombined),
+        (queries.export_case_note_docs, "export_case_note_docs", dm.FileCombined),
     ],
     "import_application": [],
     "export_application": [
-        (queries, "exporters", dm.Exporter),
-        (queries, "exporter_offices", dm.Office),
-        (queries, "product_legislation", dm.ProductLegislation),
-        (queries, "export_application_type", dm.ExportApplicationType),
-        (queries, "gmp_application", dm.CertificateOfGoodManufacturingPracticeApplication),
-        (queries, "com_application", dm.CertificateOfManufactureApplication),
-        (queries, "cfs_application", dm.CertificateOfFreeSaleApplication),
-        (queries, "cfs_schedule", dm.CFSSchedule),
-        (queries, "export_application_countries", dm.ExportApplicationCountries),
-        (queries, "export_certificate", dm.ExportApplicationCertificate),
-        (queries, "export_certificate_docs", dm.ExportCertificateCaseDocumentReferenceData),
-        (queries, "export_variations", dm.VariationRequest),
-        (queries, "beis_emails", dm.CaseEmail),
-        (queries, "hse_emails", dm.CaseEmail),
+        (queries.exporters, "exporters", dm.Exporter),
+        (queries.exporter_offices, "exporter_offices", dm.Office),
+        (queries.product_legislation, "product_legislation", dm.ProductLegislation),
+        (queries.export_application_type, "export_application_type", dm.ExportApplicationType),
+        (
+            queries.gmp_application,
+            "gmp_application",
+            dm.CertificateOfGoodManufacturingPracticeApplication,
+        ),
+        (queries.com_application, "com_application", dm.CertificateOfManufactureApplication),
+        (queries.cfs_application, "cfs_application", dm.CertificateOfFreeSaleApplication),
+        (queries.cfs_schedule, "cfs_schedule", dm.CFSSchedule),
+        (
+            queries.export_application_countries,
+            "export_application_countries",
+            dm.ExportApplicationCountries,
+        ),
+        (queries.export_certificate, "export_certificate", dm.ExportApplicationCertificate),
+        (
+            queries.export_certificate_docs,
+            "export_certificate_docs",
+            dm.ExportCertificateCaseDocumentReferenceData,
+        ),
+        (queries.export_variations, "export_variations", dm.VariationRequest),
+        (queries.beis_emails, "beis_emails", dm.CaseEmail),
+        (queries.hse_emails, "hse_emails", dm.CaseEmail),
     ],
     "reference": [
-        (queries, "country_group", dm.CountryGroup),
-        (queries, "country", dm.Country),
+        (queries.country_group, "country_group", dm.CountryGroup),
+        (queries.country, "country", dm.Country),
     ],
 }
 

@@ -1,11 +1,11 @@
 import datetime as dt
 
-from data_migration.queries import user
+from data_migration import queries
 
 from . import xml_data as xd
 
 user_query_result = {
-    user.users: (
+    queries.users: (
         [
             ("id",),
             ("username",),
@@ -97,7 +97,7 @@ user_query_result = {
             ),
         ],
     ),
-    user.importers: (
+    queries.importers: (
         [
             ("id",),
             ("is_active",),
@@ -115,7 +115,7 @@ user_query_result = {
             (3, 1, "INDIVIDUAL", "Test Agent", 125, "GB123456789014", 2, 2, None),
         ],
     ),
-    user.importer_offices: (
+    queries.importer_offices: (
         [
             ("importer_id",),
             ("legacy_id",),
@@ -139,7 +139,7 @@ user_query_result = {
             ),
         ],
     ),
-    user.exporters: (
+    queries.exporters: (
         [
             ("id",),
             ("is_active",),
@@ -153,7 +153,7 @@ user_query_result = {
             (3, 0, "Test Inactive", 125, "GB123456789014", 2, None),
         ],
     ),
-    user.exporter_offices: (
+    queries.exporter_offices: (
         [
             ("exporter_id",),
             ("legacy_id",),
@@ -175,7 +175,7 @@ user_query_result = {
             ),
         ],
     ),
-    user.access_requests: (
+    queries.access_requests: (
         [
             ("iar_id",),
             ("process_type",),

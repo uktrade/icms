@@ -31,12 +31,12 @@ user_source_target = [
 ]
 
 user_query_model = [
-    QueryModel(queries, "users", dm.User),
-    QueryModel(queries, "importers", dm.Importer),
-    QueryModel(queries, "importer_offices", dm.Office),
-    QueryModel(queries, "exporters", dm.Exporter),
-    QueryModel(queries, "exporter_offices", dm.Office),
-    QueryModel(queries, "access_requests", dm.AccessRequest),
+    QueryModel(queries.users, "users", dm.User),
+    QueryModel(queries.importers, "importers", dm.Importer),
+    QueryModel(queries.importer_offices, "importer_offices", dm.Office),
+    QueryModel(queries.exporters, "exporters", dm.Exporter),
+    QueryModel(queries.exporter_offices, "exporter_offices", dm.Office),
+    QueryModel(queries.access_requests, "access_requests", dm.AccessRequest),
 ]
 
 user_m2m = [
@@ -53,21 +53,25 @@ user_xml = [
 ]
 
 ref_query_model = [
-    QueryModel(queries, "country", dm.Country),
-    QueryModel(queries, "country_group", dm.CountryGroup),
-    QueryModel(queries, "country_group_country", dm.CountryGroupCountry),
-    QueryModel(queries, "country_translation_set", dm.CountryTranslationSet),
-    QueryModel(queries, "country_translation", dm.CountryTranslation),
-    QueryModel(queries, "unit", dm.Unit),
-    QueryModel(queries, "commodity_type", dm.CommodityType),
-    QueryModel(queries, "commodity_group", dm.CommodityGroup),
-    QueryModel(queries, "commodity", dm.Commodity),
-    QueryModel(queries, "commodity_group_commodity", dm.CommodityGroupCommodity),
-    QueryModel(queries, "ia_type", dm.ImportApplicationType),
-    QueryModel(queries, "usage", dm.Usage),
-    QueryModel(queries, "constabularies", dm.Constabulary),
-    QueryModel(queries, "obsolete_calibre_group", dm.ObsoleteCalibreGroup),
-    QueryModel(queries, "obsolete_calibre", dm.ObsoleteCalibre),
+    QueryModel(queries.country, "country", dm.Country),
+    QueryModel(queries.country_group, "country_group", dm.CountryGroup),
+    QueryModel(queries.country_group_country, "country_group_country", dm.CountryGroupCountry),
+    QueryModel(
+        queries.country_translation_set, "country_translation_set", dm.CountryTranslationSet
+    ),
+    QueryModel(queries.country_translation, "country_translation", dm.CountryTranslation),
+    QueryModel(queries.unit, "unit", dm.Unit),
+    QueryModel(queries.commodity_type, "commodity_type", dm.CommodityType),
+    QueryModel(queries.commodity_group, "commodity_group", dm.CommodityGroup),
+    QueryModel(queries.commodity, "commodity", dm.Commodity),
+    QueryModel(
+        queries.commodity_group_commodity, "commodity_group_commodity", dm.CommodityGroupCommodity
+    ),
+    QueryModel(queries.ia_type, "ia_type", dm.ImportApplicationType),
+    QueryModel(queries.usage, "usage", dm.Usage),
+    QueryModel(queries.constabularies, "constabularies", dm.Constabulary),
+    QueryModel(queries.obsolete_calibre_group, "obsolete_calibre_group", dm.ObsoleteCalibreGroup),
+    QueryModel(queries.obsolete_calibre, "obsolete_calibre", dm.ObsoleteCalibre),
 ]
 
 ref_source_target = source_target_list(
@@ -97,55 +101,67 @@ ref_m2m = [
 ]
 
 file_query_model = [
-    QueryModel(queries, "gmp_files", dm.FileCombined),
-    QueryModel(queries, "mailshot_files", dm.FileCombined),
-    QueryModel(queries, "case_note_files", dm.FileCombined),
-    QueryModel(queries, "fir_files", dm.FileCombined),
-    QueryModel(queries, "sps_application_files", dm.FileCombined),
-    QueryModel(queries, "sps_docs", dm.FileCombined),
-    QueryModel(queries, "derogations_application_files", dm.FileCombined),
-    QueryModel(queries, "opt_application_files", dm.FileCombined),
-    QueryModel(queries, "dfl_application_files", dm.FileCombined),
-    QueryModel(queries, "oil_application_files", dm.FileCombined),
-    QueryModel(queries, "sil_application_files", dm.FileCombined),
-    QueryModel(queries, "sanction_application_files", dm.FileCombined),
-    QueryModel(queries, "wood_application_files", dm.FileCombined),
-    QueryModel(queries, "textiles_application_files", dm.FileCombined),
-    QueryModel(queries, "fa_certificate_files", dm.FileCombined),
-    QueryModel(queries, "export_case_note_docs", dm.FileCombined),
+    QueryModel(queries.gmp_files, "gmp_files", dm.FileCombined),
+    QueryModel(queries.mailshot_files, "mailshot_files", dm.FileCombined),
+    QueryModel(queries.case_note_files, "case_note_files", dm.FileCombined),
+    QueryModel(queries.fir_files, "fir_files", dm.FileCombined),
+    QueryModel(queries.sps_application_files, "sps_application_files", dm.FileCombined),
+    QueryModel(queries.sps_docs, "sps_docs", dm.FileCombined),
+    QueryModel(
+        queries.derogations_application_files, "derogations_application_files", dm.FileCombined
+    ),
+    QueryModel(queries.opt_application_files, "opt_application_files", dm.FileCombined),
+    QueryModel(queries.dfl_application_files, "dfl_application_files", dm.FileCombined),
+    QueryModel(queries.oil_application_files, "oil_application_files", dm.FileCombined),
+    QueryModel(queries.sil_application_files, "sil_application_files", dm.FileCombined),
+    QueryModel(queries.sanction_application_files, "sanction_application_files", dm.FileCombined),
+    QueryModel(queries.wood_application_files, "wood_application_files", dm.FileCombined),
+    QueryModel(queries.textiles_application_files, "textiles_application_files", dm.FileCombined),
+    QueryModel(queries.fa_certificate_files, "fa_certificate_files", dm.FileCombined),
+    QueryModel(queries.export_case_note_docs, "export_case_note_docs", dm.FileCombined),
 ]
 
 ia_query_model = [
-    QueryModel(queries, "sps_application", dm.PriorSurveillanceApplication),
-    QueryModel(queries, "derogations_application", dm.DerogationsApplication),
-    QueryModel(queries, "derogations_checklist", dm.DerogationsChecklist),
-    QueryModel(queries, "opt_application", dm.OutwardProcessingTradeApplication),
-    QueryModel(queries, "opt_checklist", dm.OPTChecklist),
-    QueryModel(queries, "fa_authorities", dm.FirearmsAuthority),
-    QueryModel(queries, "fa_authority_linked_offices", dm.FirearmsAuthorityOffice),
-    QueryModel(queries, "section5_clauses", dm.Section5Clause),
-    QueryModel(queries, "section5_authorities", dm.Section5Authority),
-    QueryModel(queries, "section5_linked_offices", dm.Section5AuthorityOffice),
-    QueryModel(queries, "sanctions_application", dm.SanctionsAndAdhocApplication),
-    QueryModel(queries, "sil_application", dm.SILApplication),
-    QueryModel(queries, "sil_checklist", dm.SILChecklist),
-    QueryModel(queries, "dfl_application", dm.DFLApplication),
-    QueryModel(queries, "dfl_checklist", dm.DFLChecklist),
-    QueryModel(queries, "oil_application", dm.OpenIndividualLicenceApplication),
-    QueryModel(queries, "oil_checklist", dm.ChecklistFirearmsOILApplication),
-    QueryModel(queries, "wood_application", dm.WoodQuotaApplication),
-    QueryModel(queries, "wood_checklist", dm.WoodQuotaChecklist),
-    QueryModel(queries, "textiles_application", dm.TextilesApplication),
-    QueryModel(queries, "textiles_checklist", dm.TextilesChecklist),
-    QueryModel(queries, "ia_licence", dm.ImportApplicationLicence),
-    QueryModel(queries, "ia_licence_docs", dm.CaseDocument),
-    QueryModel(queries, "constabulary_emails", dm.CaseEmail),
-    QueryModel(queries, "case_note", dm.CaseNote),
-    QueryModel(queries, "update_request", dm.UpdateRequest),
-    QueryModel(queries, "fir", dm.FurtherInformationRequest),
-    QueryModel(queries, "endorsement", dm.EndorsementImportApplication),
-    QueryModel(queries, "sigl_transmission", SIGLTransmission),
-    QueryModel(queries, "mailshots", dm.Mailshot),
+    QueryModel(queries.sps_application, "sps_application", dm.PriorSurveillanceApplication),
+    QueryModel(
+        queries.derogations_application, "derogations_application", dm.DerogationsApplication
+    ),
+    QueryModel(queries.derogations_checklist, "derogations_checklist", dm.DerogationsChecklist),
+    QueryModel(queries.opt_application, "opt_application", dm.OutwardProcessingTradeApplication),
+    QueryModel(queries.opt_checklist, "opt_checklist", dm.OPTChecklist),
+    QueryModel(queries.fa_authorities, "fa_authorities", dm.FirearmsAuthority),
+    QueryModel(
+        queries.fa_authority_linked_offices,
+        "fa_authority_linked_offices",
+        dm.FirearmsAuthorityOffice,
+    ),
+    QueryModel(queries.section5_clauses, "section5_clauses", dm.Section5Clause),
+    QueryModel(queries.section5_authorities, "section5_authorities", dm.Section5Authority),
+    QueryModel(
+        queries.section5_linked_offices, "section5_linked_offices", dm.Section5AuthorityOffice
+    ),
+    QueryModel(
+        queries.sanctions_application, "sanctions_application", dm.SanctionsAndAdhocApplication
+    ),
+    QueryModel(queries.sil_application, "sil_application", dm.SILApplication),
+    QueryModel(queries.sil_checklist, "sil_checklist", dm.SILChecklist),
+    QueryModel(queries.dfl_application, "dfl_application", dm.DFLApplication),
+    QueryModel(queries.dfl_checklist, "dfl_checklist", dm.DFLChecklist),
+    QueryModel(queries.oil_application, "oil_application", dm.OpenIndividualLicenceApplication),
+    QueryModel(queries.oil_checklist, "oil_checklist", dm.ChecklistFirearmsOILApplication),
+    QueryModel(queries.wood_application, "wood_application", dm.WoodQuotaApplication),
+    QueryModel(queries.wood_checklist, "wood_checklist", dm.WoodQuotaChecklist),
+    QueryModel(queries.textiles_application, "textiles_application", dm.TextilesApplication),
+    QueryModel(queries.textiles_checklist, "textiles_checklist", dm.TextilesChecklist),
+    QueryModel(queries.ia_licence, "ia_licence", dm.ImportApplicationLicence),
+    QueryModel(queries.ia_licence_docs, "ia_licence_docs", dm.CaseDocument),
+    QueryModel(queries.constabulary_emails, "constabulary_emails", dm.CaseEmail),
+    QueryModel(queries.case_note, "case_note", dm.CaseNote),
+    QueryModel(queries.update_request, "update_request", dm.UpdateRequest),
+    QueryModel(queries.fir, "fir", dm.FurtherInformationRequest),
+    QueryModel(queries.endorsement, "endorsement", dm.EndorsementImportApplication),
+    QueryModel(queries.sigl_transmission, "sigl_transmission", SIGLTransmission),
+    QueryModel(queries.mailshots, "mailshots", dm.Mailshot),
 ]
 
 ia_source_target = [
@@ -334,18 +350,32 @@ ia_xml = [
 ]
 
 export_query_model = [
-    QueryModel(queries, "product_legislation", dm.ProductLegislation),
-    QueryModel(queries, "export_application_type", dm.ExportApplicationType),
-    QueryModel(queries, "com_application", dm.CertificateOfManufactureApplication),
-    QueryModel(queries, "gmp_application", dm.CertificateOfGoodManufacturingPracticeApplication),
-    QueryModel(queries, "cfs_application", dm.CertificateOfFreeSaleApplication),
-    QueryModel(queries, "cfs_schedule", dm.CFSSchedule),
-    QueryModel(queries, "export_application_countries", dm.ExportApplicationCountries),
-    QueryModel(queries, "export_certificate", dm.ExportApplicationCertificate),
-    QueryModel(queries, "export_certificate_docs", dm.ExportCertificateCaseDocumentReferenceData),
-    QueryModel(queries, "export_variations", dm.VariationRequest),
-    QueryModel(queries, "beis_emails", dm.CaseEmail),
-    QueryModel(queries, "hse_emails", dm.CaseEmail),
+    QueryModel(queries.product_legislation, "product_legislation", dm.ProductLegislation),
+    QueryModel(
+        queries.export_application_type, "export_application_type", dm.ExportApplicationType
+    ),
+    QueryModel(queries.com_application, "com_application", dm.CertificateOfManufactureApplication),
+    QueryModel(
+        queries.gmp_application,
+        "gmp_application",
+        dm.CertificateOfGoodManufacturingPracticeApplication,
+    ),
+    QueryModel(queries.cfs_application, "cfs_application", dm.CertificateOfFreeSaleApplication),
+    QueryModel(queries.cfs_schedule, "cfs_schedule", dm.CFSSchedule),
+    QueryModel(
+        queries.export_application_countries,
+        "export_application_countries",
+        dm.ExportApplicationCountries,
+    ),
+    QueryModel(queries.export_certificate, "export_certificate", dm.ExportApplicationCertificate),
+    QueryModel(
+        queries.export_certificate_docs,
+        "export_certificate_docs",
+        dm.ExportCertificateCaseDocumentReferenceData,
+    ),
+    QueryModel(queries.export_variations, "export_variations", dm.VariationRequest),
+    QueryModel(queries.beis_emails, "beis_emails", dm.CaseEmail),
+    QueryModel(queries.hse_emails, "hse_emails", dm.CaseEmail),
 ]
 
 export_source_target = [

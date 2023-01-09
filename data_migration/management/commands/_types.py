@@ -1,4 +1,3 @@
-from types import ModuleType
 from typing import NamedTuple
 
 from django.db.models import Model
@@ -8,8 +7,8 @@ from web import models as web
 
 
 class QueryModel(NamedTuple):
-    module: ModuleType
     query: str
+    query_name: str
     model: Model
 
 

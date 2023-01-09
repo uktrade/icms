@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from data_migration.queries import export_application, files
+from data_migration import queries
 
 from . import xml_data as xd
 from .ia_data import IA_FILES_COLUMNS
@@ -40,7 +40,7 @@ EA_BASE_COLUMNS = [
 
 
 ea_query_result = {
-    export_application.product_legislation: (
+    queries.product_legislation: (
         [
             ("id",),
             ("name",),
@@ -84,7 +84,7 @@ ea_query_result = {
             ),
         ],
     ),
-    export_application.export_application_type: (
+    queries.export_application_type: (
         [
             ("id",),
             ("is_active",),
@@ -102,7 +102,7 @@ ea_query_result = {
             (21, 1, "GMP", "Certificate of Good Manufacturing Practice", 1, 0, 0, "C", None),
         ],
     ),
-    files.gmp_files: (
+    queries.gmp_files: (
         IA_FILES_COLUMNS,
         [
             (
@@ -203,7 +203,7 @@ ea_query_result = {
             ),
         ],
     ),
-    export_application.gmp_application: (
+    queries.gmp_application: (
         EA_BASE_COLUMNS
         + [
             ("brand_name",),
@@ -278,11 +278,11 @@ ea_query_result = {
             ),
         ],
     ),
-    export_application.export_application_countries: (
+    queries.export_application_countries: (
         [("cad_id",), ("country_id",)],
         [(18, 1), (18, 2), (18, 3), (19, 1), (21, 1), (22, 1), (24, 1), (25, 1)],
     ),
-    export_application.com_application: (
+    queries.com_application: (
         EA_BASE_COLUMNS
         + [
             ("is_pesticide_on_free_sale_uk",),
@@ -369,7 +369,7 @@ ea_query_result = {
             ),
         ],
     ),
-    export_application.cfs_application: (
+    queries.cfs_application: (
         EA_BASE_COLUMNS,
         [
             (
@@ -434,7 +434,7 @@ ea_query_result = {
             ),
         ],
     ),
-    export_application.cfs_schedule: (
+    queries.cfs_schedule: (
         [
             ("cad_id",),
             ("schedule_ordinal",),
@@ -518,7 +518,7 @@ ea_query_result = {
             ),
         ],
     ),
-    export_application.export_certificate: (
+    queries.export_certificate: (
         [
             ("ca_id",),
             ("cad_id",),
@@ -539,7 +539,7 @@ ea_query_result = {
             (15, 25, datetime(2022, 4, 29), "AC", "CA/2022/9909/2", datetime(2022, 4, 29, 13, 21)),
         ],
     ),
-    export_application.export_certificate_docs: (
+    queries.export_certificate_docs: (
         [
             ("cad_id",),
             ("certificate_id",),
@@ -678,7 +678,7 @@ ea_query_result = {
             ),
         ],
     ),
-    export_application.export_variations: (
+    queries.export_variations: (
         [
             ("ca_id",),
             ("is_active",),
@@ -726,7 +726,7 @@ ea_query_result = {
             ),
         ],
     ),
-    files.export_case_note_docs: (
+    queries.export_case_note_docs: (
         EA_FILES_COLUMNS,
         [
             (
@@ -786,7 +786,7 @@ ea_query_result = {
             ),
         ],
     ),
-    export_application.beis_emails: (
+    queries.beis_emails: (
         [
             ("ca_id",),
             ("status",),
@@ -820,7 +820,7 @@ ea_query_result = {
             ),
         ],
     ),
-    export_application.hse_emails: (
+    queries.hse_emails: (
         [
             ("ca_id",),
             ("status",),

@@ -81,9 +81,8 @@ class Command(MigrationBaseCommand):
 
         self.stdout.write(f"Exporting {name} Data...")
 
-        for idx, (module, query_name, model) in enumerate(query_models, start=start):
+        for idx, (query, query_name, model) in enumerate(query_models, start=start):
             self.stdout.write(f"\t{idx} - Exporting {query_name} to {model.__name__} model")
-            query = getattr(module, query_name)
 
             # Create a new cursor for each query
             # oracledb sometimes throws `IndexError: list index out of range` when reusing cursor
