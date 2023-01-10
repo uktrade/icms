@@ -373,7 +373,6 @@ export_query_model = [
         "export_certificate_docs",
         dm.ExportCertificateCaseDocumentReferenceData,
     ),
-    QueryModel(queries.export_variations, "export_variations", dm.VariationRequest),
     QueryModel(queries.beis_emails, "beis_emails", dm.CaseEmail),
     QueryModel(queries.hse_emails, "hse_emails", dm.CaseEmail),
 ]
@@ -421,6 +420,7 @@ export_xml = [
     xml_parser.CaseNoteExportParser,
     xml_parser.FIRExportParser,
     xml_parser.UpdateExportParser,
+    xml_parser.VariationExportParser,
 ]
 
 

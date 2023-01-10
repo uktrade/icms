@@ -79,6 +79,70 @@ class VariationImportParser(BaseXmlParser):
         )
 
 
+class VariationExportParser(BaseXmlParser):
+    MODEL = dm.VariationRequest
+    FIELD = "variations_xml"
+    ROOT_NODE = "/VARIATION_LIST/VARIATION"
+    PARENT = dm.ExportApplication
+    REVERSE_LIST = True
+
+    @classmethod
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Model | None:
+        """Example XML
+
+        <VARIATION>
+          <VARIATION_ID />
+          <STATUS />
+          <OPEN>
+            <OPENED_DATETIME />
+            <OPENED_BY_WUA_ID />
+            <BODY />
+          </OPEN>
+          <CLOSE>
+            <CLOSED_DATETIME />
+            <CLOSED_BY_WUA_ID />
+          </CLOSE>
+          <CANCEL>
+            <CANCELLED_DATETIME />
+            <CANCELLED_BY_WUA_ID />
+          </CANCEL>
+          <WITHDRAW>
+            <WITHDRAWN_DATETIME />
+            <WITHDRAWN_BY_WUA_ID />
+          </WITHDRAW>
+          <DELETE>
+            <DELETED_DATETIME />
+            <DELETED_BY_WUA_ID />
+          </DELETE>
+        </VARIATION>
+        """
+
+        what_varied = get_xml_val(xml, "./OPEN/BODY")
+        requested_datetime = datetime_or_none(get_xml_val(xml, "./OPEN/OPENED_DATETIME"))
+
+        if not what_varied or not requested_datetime:
+            return None
+
+        status = get_xml_val(xml, "./STATUS")
+        is_active = status == "OPEN"
+        requested_by_id = int_or_none(get_xml_val(xml, "./OPEN/OPENED_BY_WUA_ID"))
+        closed_datetime = datetime_or_none(get_xml_val(xml, "./CLOSE/CLOSED_DATETIME"))
+        closed_by_id = int_or_none(get_xml_val(xml, "./CLOSED/CLOSED_BY_WUA_ID"))
+
+        return cls.MODEL(
+            **{
+                "export_application_id": parent_pk,
+                "status": status,
+                "is_active": is_active,
+                "requested_datetime": requested_datetime,
+                "requested_by_id": requested_by_id,
+                "what_varied": what_varied,
+                "closed_datetime": closed_datetime,
+                "closed_by_id": closed_by_id,
+            }
+        )
+
+
 class CaseNoteExportParser(BaseXmlParser):
     MODEL = dm.CaseNote
     PARENT = dm.ExportApplication

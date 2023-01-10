@@ -149,7 +149,7 @@ class VariationRequest(MigrationBase):
     UPDATE_TIMESTAMP_QUERY = queries.variation_request_timestamp_update
 
     import_application = models.ForeignKey(ImportApplication, on_delete=models.SET_NULL, null=True)
-    ca = models.ForeignKey(Process, on_delete=models.CASCADE, null=True, to_field="ca_id")
+    export_application = models.ForeignKey(ExportApplication, on_delete=models.CASCADE, null=True)
     is_active = models.BooleanField(default=True)
     status = models.CharField(max_length=30)
     extension_flag = models.BooleanField(default=False)
@@ -169,7 +169,7 @@ class VariationRequest(MigrationBase):
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["import_application_id", "ca_id"]
+        return super().get_excludes() + ["import_application_id", "export_application_id"]
 
     @classmethod
     def get_m2m_data(cls, target: models.Model) -> Generator:
@@ -177,15 +177,19 @@ class VariationRequest(MigrationBase):
 
         if target_name == "exportapplication":
             return (
-                cls.objects.exclude(ca__isnull=True)
-                .values("id", variationrequest_id=F("id"), exportapplication_id=F("ca__id"))
+                cls.objects.exclude(export_application__isnull=True)
+                .values(
+                    "id",
+                    variationrequest_id=F("id"),
+                    exportapplication_id=F("export_application_id"),
+                )
                 .iterator(chunk_size=2000)
             )
 
         return (
             cls.objects.exclude(import_application__isnull=True)
             .values(
-                "id", variationrequest_id=F("id"), importapplication_id=F("import_application__id")
+                "id", variationrequest_id=F("id"), importapplication_id=F("import_application_id")
             )
             .iterator(chunk_size=2000)
         )

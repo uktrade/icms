@@ -94,7 +94,6 @@ export_query_model = {
             "export_certificate_docs",
             dm.ExportCertificateCaseDocumentReferenceData,
         ),
-        (queries.export_variations, "export_variations", dm.VariationRequest),
         (queries.beis_emails, "beis_emails", dm.CaseEmail),
         (queries.hse_emails, "hse_emails", dm.CaseEmail),
     ],
@@ -128,6 +127,7 @@ export_xml = {
         xml_parser.CaseNoteExportParser,
         xml_parser.FIRExportParser,
         xml_parser.UpdateExportParser,
+        xml_parser.VariationExportParser,
     ],
     "import_application": [],
 }
@@ -156,6 +156,11 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ea1.variation_requests.count() == 0
     assert ea2.variation_requests.count() == 0
     assert ea3.variation_requests.count() == 1
+
+    vr1: web.VariationRequest = ea3.variation_requests.first()
+    assert vr1.what_varied == "Changes 1"
+    assert vr1.requested_datetime == dt.datetime(2022, 10, 13, 10, 1, 5, tzinfo=dt.timezone.utc)
+    assert vr1.closed_datetime == dt.datetime(2022, 10, 14, 11, 1, 5, tzinfo=dt.timezone.utc)
 
     assert ea1.update_requests.count() == 0
     assert ea2.update_requests.count() == 1
@@ -322,6 +327,14 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ea7.variation_requests.count() == 0
     assert ea8.variation_requests.count() == 0
     assert ea9.variation_requests.count() == 2
+
+    vr2, vr3 = ea9.variation_requests.order_by("pk")
+    assert vr2.what_varied == "Changes 2"
+    assert vr2.requested_datetime == dt.datetime(2022, 10, 13, 10, 1, 5, tzinfo=dt.timezone.utc)
+    assert vr2.closed_datetime == dt.datetime(2022, 10, 14, 11, 1, 5, tzinfo=dt.timezone.utc)
+    assert vr3.what_varied == "Changes 3"
+    assert vr3.requested_datetime == dt.datetime(2022, 10, 15, 10, 1, 5, tzinfo=dt.timezone.utc)
+    assert vr3.closed_datetime == dt.datetime(2022, 10, 16, 11, 1, 5, tzinfo=dt.timezone.utc)
 
     assert ea7.update_requests.count() == 0
     assert ea8.update_requests.count() == 0

@@ -75,6 +75,7 @@ class ExportApplication(MigrationBase):
     case_note_xml = models.TextField(null=True)
     fir_xml = models.TextField(null=True)
     update_request_xml = models.TextField(null=True)
+    variations_xml = models.TextField(null=True)
 
     @classmethod
     def get_excludes(cls) -> list[str]:
