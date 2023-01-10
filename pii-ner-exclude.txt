@@ -1801,3 +1801,4 @@ IMP_OPT_NEW_APP_JUST_DOC'
 Export Variations
 Import Variations
 FAIL
+ICMS_HMRC_DOMAIN="http://web-api:8000/
