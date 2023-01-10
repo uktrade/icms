@@ -36,6 +36,7 @@ EA_BASE_COLUMNS = [
     ("case_note_xml",),
     ("fir_xml",),
     ("update_request_xml",),
+    ("variations_xml",),
 ]
 
 
@@ -229,6 +230,7 @@ ea_query_result = {
                 None,  # case_note_xml
                 None,  # fir_xml
                 None,  # update_request_xml
+                None,  # variations_xml
                 None,  # brand_name
                 31,  # file_folder_id
             ),
@@ -251,6 +253,7 @@ ea_query_result = {
                 xd.export_case_note_1,
                 None,  # fir_xml
                 xd.export_update_xml_1,  # update_request_xml
+                None,  # variations_xml
                 "A brand",
                 32,
             ),
@@ -266,13 +269,14 @@ ea_query_result = {
                 datetime(2022, 4, 29),
                 2,
                 datetime(2022, 4, 29),
-                0,
+                1,
                 21,
                 2,
                 "e-2-2",
                 None,  # case_note_xml
                 None,  # fir_xml
                 None,  # update_request_xml
+                xd.export_varation_1,  # variations_xml
                 "Another brand",
                 33,
             ),
@@ -311,6 +315,7 @@ ea_query_result = {
                 None,  # case_note_xml
                 None,  # fir_xml
                 None,  # update_request_xml
+                None,  # variations_xml
                 None,  # is_pesticide_on_free_sale_uk
                 None,  # is_manufacturer
                 None,  # product_name
@@ -336,6 +341,7 @@ ea_query_result = {
                 None,  # case_note_xml
                 None,  # fir_xml
                 xd.export_update_xml_2,  # update_request_xml
+                None,  # variations_xml
                 1,  # is_pesticide_on_free_sale_uk
                 0,  # is_manufacturer
                 "A product",  # product_name
@@ -361,6 +367,7 @@ ea_query_result = {
                 None,  # case_note_xml
                 xd.export_fir_xml_1,  # fir_xml
                 None,  # update_request_xml
+                None,  # variations_xml
                 0,  # is_pesticide_on_free_sale_uk
                 1,  # is_manufacturer
                 "Another product",  # product_name
@@ -391,46 +398,49 @@ ea_query_result = {
                 None,  # case_note_xml
                 None,  # fir_xml
                 None,  # update_request_xml
+                None,  # variations_xml
             ),
             (
-                14,
-                24,
+                14,  # ca_id
+                24,  # cad_id
                 "CertificateOfFreeSaleApplication",  # process_type
-                "CA/2022/9908",
-                "PROCESSING",
-                2,
-                datetime(2022, 4, 28),
-                datetime(2022, 4, 28),
-                datetime(2022, 4, 29),
-                2,
-                datetime(2022, 4, 29),
-                0,
-                2,
-                3,
-                "e-3-1",
+                "CA/2022/9908",  # reference
+                "PROCESSING",  # status
+                2,  # created_by_id
+                datetime(2022, 4, 28),  # create_datetime
+                datetime(2022, 4, 28),  # created
+                datetime(2022, 4, 29),  # submit_datetime
+                2,  # last_updated_by_id
+                datetime(2022, 4, 29),  # last_updated_datetime
+                0,  # variation_no
+                2,  # application_type_id
+                3,  # exporter_id
+                "e-3-1",  # export_office_legacy_id
                 None,  # case_note_xml
                 xd.export_fir_xml_2,  # fir_xml
                 None,  # update_request_xml
+                None,  # variations_xml
             ),
             (
-                15,
-                25,
+                15,  # ca_id
+                25,  # cad_id
                 "CertificateOfFreeSaleApplication",  # process_type
-                "CA/2022/9909",
-                "COMPLETED",
-                2,
-                datetime(2022, 4, 28),
-                datetime(2022, 4, 28),
-                datetime(2022, 4, 29),
-                2,
-                datetime(2022, 4, 29),
-                0,
-                2,
-                2,
-                "e-2-2",
+                "CA/2022/9909",  # reference
+                "COMPLETED",  # status
+                2,  # created_by_id
+                datetime(2022, 4, 28),  # create_datetime
+                datetime(2022, 4, 28),  # created
+                datetime(2022, 4, 29),  # submit_datetime
+                2,  # last_updated_by_id
+                datetime(2022, 4, 29),  # last_updated_datetime
+                2,  # variation_no
+                2,  # application_type_id
+                2,  # exporter_id
+                "e-2-2",  # export_office_legacy_id
                 xd.export_case_note_2,  # case_note_xml
                 None,  # fir_xml
                 None,  # update_request_xml
+                xd.export_varation_2,  # variations_xml
             ),
         ],
     ),
@@ -675,54 +685,6 @@ ea_query_result = {
                 "path/to/cfs-cert-2.pdf",  # path
                 datetime.now(),  # created_datetime
                 2,  # created_by_id
-            ),
-        ],
-    ),
-    queries.export_variations: (
-        [
-            ("ca_id",),
-            ("is_active",),
-            ("case_reference",),
-            ("status",),
-            ("requested_datetime",),
-            ("requested_by_id",),
-            ("what_varied",),
-            ("closed_datetime",),
-            ("closed_by_id",),
-        ],
-        [
-            (
-                9,  # ca_id
-                0,  # is_active
-                "CA/2022/9903/1",  # case_reference
-                "CLOSED",  # status
-                datetime.now(),  # requested_datetime
-                2,  # requested_by_id
-                "Make changes",  # what_varied
-                datetime.now(),  # closed_datetime
-                2,  # closed_by_id
-            ),
-            (
-                15,  # ca_id
-                0,  # is_active
-                "CA/2022/9909/1",  # case_reference
-                "CLOSED",  # status
-                datetime.now(),  # requested_datetime
-                2,  # requested_by_id
-                "First changes",  # what_varied
-                datetime.now(),  # closed_datetime
-                2,  # closed_by_id
-            ),
-            (
-                15,  # ca_id
-                1,  # is_active
-                "CA/2022/9909/2",  # case_reference
-                "OPEN",  # status
-                datetime.now(),  # requested_datetime
-                2,  # requested_by_id
-                "Second changes",  # what_varied
-                datetime.now(),  # closed_datetime
-                2,  # closed_by_id
             ),
         ],
     ),

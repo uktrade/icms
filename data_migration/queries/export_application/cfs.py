@@ -77,6 +77,7 @@ FROM impmgr.xview_certificate_app_details xcad
       case_note_xml XMLTYPE PATH '/CA/CASE/NOTES/NOTE_LIST'
       , fir_xml XMLTYPE PATH '/CA/CASE/RFIS/RFI_LIST'
       , update_request_xml XMLTYPE PATH '/CA/CASE/APPLICATION_UPDATES/UPDATE_LIST'
+      , variations_xml XMLTYPE PATH '/CA/CASE/VARIATIONS/VARIATION_LIST'
     ) x
   ) cad on cad.cad_id = xcad.cad_id
   LEFT JOIN rp_wua ON rp_wua.resource_person_id = xcad.contact_rp_id
