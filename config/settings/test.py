@@ -45,5 +45,9 @@ LOGGING = {
     "loggers": {
         "faker": {"level": "INFO"},
         "mohawk": {"level": "INFO"},
+        # We don't want this noise when testing
+        "django_structlog": {
+            "propagate": False,
+        },
     },
 }

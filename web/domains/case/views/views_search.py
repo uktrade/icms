@@ -14,15 +14,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import FormView, View
 
-from web.domains.case._import.models import (
-    ImportApplication,
-    ImportApplicationLicence,
-    ImportApplicationType,
-)
-from web.domains.case.export.models import (
-    ExportApplication,
-    ExportApplicationCertificate,
-)
+from web.domains.case._import.models import ImportApplication, ImportApplicationType
+from web.domains.case.export.models import ExportApplication
 from web.domains.case.forms import VariationRequestExportAppForm, VariationRequestForm
 from web.domains.case.forms_search import (
     ExportSearchAdvancedForm,
@@ -32,7 +25,7 @@ from web.domains.case.forms_search import (
     ReassignmentUserForm,
 )
 from web.domains.case.models import ApplicationBase, VariationRequest
-from web.domains.case.services import reference
+from web.domains.case.services import document_pack, reference
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
@@ -299,18 +292,7 @@ class RequestVariationUpdateView(RequestVariationOpenBase):
         self.update_application_status()
         self.update_application_tasks()
 
-        active_licence = self.application.licences.get(
-            status=ImportApplicationLicence.Status.ACTIVE
-        )
-
-        # Create a new draft licence for this variation
-        self.application.licences.create(
-            status=ImportApplicationLicence.Status.DRAFT,
-            # Copy across the old values
-            issue_paper_licence_only=active_licence.issue_paper_licence_only,
-            licence_start_date=active_licence.licence_start_date,
-            licence_end_date=active_licence.licence_end_date,
-        )
+        document_pack.pack_draft_create(self.application, variation_request=True)
 
         return super().form_valid(form)
 
@@ -351,7 +333,7 @@ class RequestVariationOpenRequestView(RequestVariationOpenBase):
         self.update_application_tasks()
 
         # Create a new draft licence for this variation
-        self.application.certificates.create(status=ExportApplicationCertificate.Status.DRAFT)
+        document_pack.pack_draft_create(self.application, variation_request=True)
 
         return super().form_valid(form)
 

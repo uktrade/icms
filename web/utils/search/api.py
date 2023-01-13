@@ -15,7 +15,7 @@ from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import (
     CaseDocumentReference,
     CaseEmail,
-    CaseLicenceCertificateBase,
+    DocumentPackBase,
     UpdateRequest,
 )
 from web.domains.case.shared import ImpExpStatus
@@ -449,8 +449,8 @@ def _apply_search(model: "QuerySet[Model]", terms: types.SearchTerms) -> "QueryS
                 licence_filter,
                 licences__document_references__document_type=CaseDocumentReference.Type.LICENCE,
                 licences__status__in=[
-                    CaseLicenceCertificateBase.Status.DRAFT,
-                    CaseLicenceCertificateBase.Status.ACTIVE,
+                    DocumentPackBase.Status.DRAFT,
+                    DocumentPackBase.Status.ACTIVE,
                 ],
             )
 
@@ -462,8 +462,8 @@ def _apply_search(model: "QuerySet[Model]", terms: types.SearchTerms) -> "QueryS
                 licence_filter,
                 certificates__document_references__document_type=CaseDocumentReference.Type.CERTIFICATE,
                 certificates__status__in=[
-                    CaseLicenceCertificateBase.Status.DRAFT,
-                    CaseLicenceCertificateBase.Status.ACTIVE,
+                    DocumentPackBase.Status.DRAFT,
+                    DocumentPackBase.Status.ACTIVE,
                 ],
             )
 
@@ -559,8 +559,8 @@ def _apply_import_application_filter(
         paper_only = terms.licence_type == "paper"
         model = model.filter(
             licences__status__in=[
-                CaseLicenceCertificateBase.Status.DRAFT,
-                CaseLicenceCertificateBase.Status.ACTIVE,
+                DocumentPackBase.Status.DRAFT,
+                DocumentPackBase.Status.ACTIVE,
             ],
             licences__issue_paper_licence_only=paper_only,
         )
@@ -598,8 +598,8 @@ def _apply_import_application_filter(
     if terms.licence_date_start:
         model = model.filter(
             licences__status__in=[
-                CaseLicenceCertificateBase.Status.DRAFT,
-                CaseLicenceCertificateBase.Status.ACTIVE,
+                DocumentPackBase.Status.DRAFT,
+                DocumentPackBase.Status.ACTIVE,
             ],
             licences__licence_start_date__gte=terms.licence_date_start,
         )
@@ -607,8 +607,8 @@ def _apply_import_application_filter(
     if terms.licence_date_end:
         model = model.filter(
             licences__status__in=[
-                CaseLicenceCertificateBase.Status.DRAFT,
-                CaseLicenceCertificateBase.Status.ACTIVE,
+                DocumentPackBase.Status.DRAFT,
+                DocumentPackBase.Status.ACTIVE,
             ],
             licences__licence_end_date__lte=terms.licence_date_end,
         )

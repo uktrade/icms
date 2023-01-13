@@ -3,9 +3,9 @@ import datetime
 import pytest
 from django.utils import timezone
 
+from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.models import (
-    CaseDocumentReference,
     Country,
     ImportApplicationLicence,
     ImportApplicationType,
@@ -33,14 +33,12 @@ def _fa_sil(db, test_import_user, importer, office):
     )
 
     # Current draft licence
-    licence = app.licences.create(
-        licence_start_date=datetime.date.today(),
-        licence_end_date=datetime.date(datetime.date.today().year + 1, 12, 1),
-        status=ImportApplicationLicence.Status.DRAFT,
-    )
-    licence.document_references.create(
-        document_type=CaseDocumentReference.Type.LICENCE, reference="dummy-reference"
-    )
+    doc_pack = document_pack.pack_draft_create(app)
+    doc_pack.licence_start_date = datetime.date.today()
+    doc_pack.licence_end_date = datetime.date(datetime.date.today().year + 1, 12, 1)
+    doc_pack.save()
+
+    document_pack.doc_ref_licence_create(doc_pack, doc_reference="dummy-reference")
 
     return app
 

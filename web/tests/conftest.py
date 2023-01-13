@@ -15,8 +15,8 @@ from web.domains.case._import.fa_sil.models import SILApplication, SILChecklist
 from web.domains.case._import.models import ImportApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.access.models import ExporterAccessRequest, ImporterAccessRequest
+from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
-from web.domains.case.utils import set_application_licence_or_certificate_active
 from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
@@ -383,13 +383,13 @@ def completed_app(fa_sil_app_submitted, icms_admin_client):
     # Now fake complete the app
     app.status = ImpExpStatus.COMPLETED
     app.save()
-    set_application_licence_or_certificate_active(app)
+    document_pack.pack_draft_set_active(app)
 
     return app
 
 
 def _set_valid_licence(app):
-    licence = app.get_latest_issued_document()
+    licence = document_pack.pack_draft_get(app)
     licence.case_completion_datetime = datetime.datetime(2020, 1, 1, tzinfo=datetime.timezone.utc)
     licence.licence_start_date = datetime.date(2020, 6, 1)
     licence.licence_end_date = datetime.date(2024, 12, 31)

@@ -177,6 +177,12 @@ end_to_end_test: ## Run end to end tests in a container
 	docker-compose run -it --rm playwright-runner pytest -c playwright/pytest.ini web/end_to_end/ --base-url http://web:8080 ${args} && \
 	make end_to_end_clear_session
 
+
+end_to_end_test_firearm_chief: ## Ran to send applications to icms-hmrc
+	docker-compose run -it --rm playwright-runner pytest -c playwright/pytest.ini web/end_to_end/ --base-url http://web:8080 -k test_can_create_fa_ --numprocesses 3 ${args} && \
+	make end_to_end_clear_session
+
+
 end_to_end_test_local: ## Run end to end tests locally
 	.venv/bin/python -m pytest -c playwright/pytest.ini web/end_to_end/ --base-url http://localhost:8080 ${args} && \
 	make end_to_end_clear_session

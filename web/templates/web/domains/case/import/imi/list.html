@@ -18,7 +18,7 @@
           <tr>
             <td><span class="text-widget">{{ app.reference }}</span></td>
             <td>{{ app.importer.name }}</td>
-            {% set case_completion_datetime = app.get_latest_issued_document().case_completion_datetime %}
+            {% set case_completion_datetime = get_latest_issued_document(app).case_completion_datetime %}
             <td>
                 <span class="text-widget">{{ case_completion_datetime.strftime('%d-%b-%Y') }}</span>
             </td>

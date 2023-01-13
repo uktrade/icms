@@ -8,6 +8,7 @@ from web.domains.case._import.wood.models import (
 )
 from web.domains.case.app_checks import get_app_errors
 from web.domains.case.models import UpdateRequest
+from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.models.shared import YesNoNAChoices
 from web.tests.helpers import CaseURLS, check_page_errors, check_pages_checked
@@ -25,16 +26,16 @@ def wood_application(icms_admin_client, wood_app_submitted):
 def test_get_app_errors_application_approved_no_errors(wood_application: WoodQuotaApplication):
     # Approve it
     wood_application.decision = wood_application.APPROVE
+    wood_application.save()
 
     # Set licence details
-    wood_application.licences.create(
-        licence_start_date=datetime.date.today(),
-        licence_end_date=datetime.date(datetime.date.today().year + 1, 12, 1),
-    )
+    licence = document_pack.pack_draft_get(wood_application)
+    licence.licence_start_date = datetime.date.today()
+    licence.licence_end_date = datetime.date(datetime.date.today().year + 1, 12, 1)
+    licence.save()
 
     # Create the checklist (fully valid)
     _add_valid_checklist(wood_application)
-    wood_application.save()
 
     errors = get_app_errors(wood_application, "import")
 
@@ -146,23 +147,19 @@ def test_get_app_errors_application_approval_null_has_errors(
 def test_get_app_errors_application_approved_variation_requested(
     wood_application: WoodQuotaApplication,
 ):
-    # Approve it
+    # Approve it / Set the application to be a variation request
     wood_application.decision = wood_application.APPROVE
+    wood_application.status = ImpExpStatus.VARIATION_REQUESTED
+    wood_application.save()
 
     # Set licence details
-    wood_application.licences.create(
-        licence_start_date=datetime.date.today(),
-        licence_end_date=datetime.date(datetime.date.today().year + 1, 12, 1),
-    )
-
-    wood_application.save()
+    licence = document_pack.pack_draft_get(wood_application)
+    licence.licence_start_date = datetime.date.today()
+    licence.licence_end_date = datetime.date(datetime.date.today().year + 1, 12, 1)
+    licence.save()
 
     # Create the checklist (fully valid)
     _add_valid_checklist(wood_application)
-
-    # Update the application to be a variation request
-    wood_application.status = ImpExpStatus.VARIATION_REQUESTED
-    wood_application.save()
 
     errors = get_app_errors(wood_application, "import")
 

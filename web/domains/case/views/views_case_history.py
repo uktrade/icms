@@ -5,20 +5,13 @@ from django.core.exceptions import PermissionDenied
 from django.urls import reverse
 from django.views.generic import DetailView
 
+from web.domains.case.services import document_pack
 from web.domains.case.utils import check_application_permission
 from web.flow.models import Process, ProcessTypes
 
 if TYPE_CHECKING:
-    from django.db.models import QuerySet
-
-    from web.domains.case._import.models import (
-        ImportApplication,
-        ImportApplicationLicence,
-    )
-    from web.domains.case.export.models import (
-        ExportApplication,
-        ExportApplicationCertificate,
-    )
+    from web.domains.case._import.models import ImportApplication
+    from web.domains.case.export.models import ExportApplication
     from web.domains.case.models import CaseDocumentReference
 
 
@@ -69,11 +62,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
         return base_context | common_context | app_context
 
     def _get_licence_context(self, application: "ImportApplication"):
-        licences: "QuerySet[ImportApplicationLicence]" = (
-            application.licences.filter(case_reference__isnull=False)
-            .prefetch_related("document_references")
-            .order_by("-created_at")
-        )
+        licences = document_pack.pack_licence_history(application)
 
         return {
             "licences": [
@@ -100,7 +89,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
                                 },
                             ),
                         }
-                        for doc in lic.document_references.all()
+                        for doc in document_pack.doc_ref_documents_all(lic)
                     ],
                 }
                 for lic in licences
@@ -108,11 +97,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
         }
 
     def _get_certificate_context(self, application: "ExportApplication"):
-        certificates: "QuerySet[ExportApplicationCertificate]" = (
-            application.certificates.filter(case_reference__isnull=False)
-            .prefetch_related("document_references")
-            .order_by("-created_at")
-        )
+        certificates = document_pack.pack_certificate_history(application)
 
         return {
             "certificates": [
@@ -137,7 +122,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
                             #     },
                             # ),
                         }
-                        for doc in cert.document_references.all()
+                        for doc in document_pack.doc_ref_documents_all(cert)
                     ],
                 }
                 for cert in certificates

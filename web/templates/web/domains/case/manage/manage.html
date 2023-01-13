@@ -7,8 +7,8 @@
   <h3>{{ process.reference or process.pk }}</h3>
 
   {% if not readonly_view %}
-    <h4>Case Stopping</h4>
     {% if process.status != "VARIATION_REQUESTED" %}
+      <h4>Case Stopping</h4>
       <p>Use the button below to stop (cancel) this case. No response will be recorded for this case if stopped.</p>
       {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
         {{ fields.field(form.send_email, checkbox_label="Inform applicants that the case has been stopped") }}

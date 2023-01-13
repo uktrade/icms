@@ -9,8 +9,8 @@ from web.domains.case.models import (
     ApplicationBase,
     CaseDocumentReference,
     CaseEmail,
-    CaseLicenceCertificateBase,
     CaseNote,
+    DocumentPackBase,
     UpdateRequest,
     VariationRequest,
 )
@@ -181,31 +181,6 @@ class ExportApplication(ApplicationBase):
             return "Case Variation"
 
         return super().get_status_display()
-
-    def get_latest_issued_document(self) -> "ExportApplicationCertificate":
-        """Return the latest export certificate.
-
-        This will be for either an active application or a draft one for an open
-        variation request.
-        """
-
-        return self.certificates.filter(
-            status__in=[
-                ExportApplicationCertificate.Status.DRAFT,
-                ExportApplicationCertificate.Status.ACTIVE,
-            ]
-        ).latest("created_at")
-
-    def get_issued_documents(self) -> "QuerySet[ExportApplicationCertificate]":
-        """Return all completed documents past and present."""
-
-        return self.certificates.filter(
-            case_completion_datetime__isnull=False,
-            status__in=[
-                ExportApplicationCertificate.Status.ACTIVE,
-                ExportApplicationCertificate.Status.ARCHIVED,
-            ],
-        )
 
 
 @final
@@ -539,7 +514,7 @@ class GMPBrand(models.Model):
     brand_name = models.CharField(max_length=100, verbose_name="Name of the brand")
 
 
-class ExportApplicationCertificate(CaseLicenceCertificateBase):
+class ExportApplicationCertificate(DocumentPackBase):
     export_application = models.ForeignKey(
         "ExportApplication", on_delete=models.CASCADE, related_name="certificates"
     )

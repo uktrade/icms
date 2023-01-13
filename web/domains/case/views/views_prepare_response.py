@@ -6,12 +6,12 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
-from web.domains.case._import.models import ImportApplicationLicence
 from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case.export.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
 )
+from web.domains.case.services import document_pack
 from web.flow.models import Task
 from web.models import (
     CertificateOfManufactureApplication,
@@ -105,13 +105,11 @@ def prepare_response(
             application.status == application.Statuses.VARIATION_REQUESTED
             and application.variation_decision == application.REFUSE
         ):
-            context["licence"] = application.licences.get(
-                status=ImportApplicationLicence.Status.ACTIVE
-            )
+            context["licence"] = document_pack.pack_active_get(application)
             context["variation_refused"] = True
 
         else:
-            context["licence"] = application.get_latest_issued_document()
+            context["licence"] = document_pack.pack_draft_get(application)
 
     # Import applications
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:

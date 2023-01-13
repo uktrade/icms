@@ -4,9 +4,9 @@ from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
-from web.domains.case.models import CaseLicenceCertificateBase, VariationRequest
+from web.domains.case.models import DocumentPackBase, VariationRequest
+from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
-from web.domains.case.utils import set_application_licence_or_certificate_active
 from web.flow.models import Task
 from web.tests.helpers import CaseURLS
 
@@ -86,8 +86,8 @@ class TestVariationRequestCancelView:
         self.wood_app.save()
 
         # Set the draft licence active and create a second one
-        set_application_licence_or_certificate_active(self.wood_app)
-        self.active_licence = self.wood_app.get_latest_issued_document()
+        document_pack.pack_draft_set_active(self.wood_app)
+        self.active_licence = document_pack.pack_active_get(self.wood_app)
         self.draft_licence = self.wood_app.licences.create()
 
     def test_cancel_variation_request_get(self):
@@ -123,11 +123,11 @@ class TestVariationRequestCancelView:
         assert self.wood_app.get_active_task_list() == []
 
         self.active_licence.refresh_from_db()
-        assert self.active_licence.status == CaseLicenceCertificateBase.Status.ACTIVE
+        assert self.active_licence.status == DocumentPackBase.Status.ACTIVE
 
         # Archived now the variation has been cancelled.
         self.draft_licence.refresh_from_db()
-        assert self.draft_licence.status == CaseLicenceCertificateBase.Status.ARCHIVED
+        assert self.draft_licence.status == DocumentPackBase.Status.ARCHIVED
 
 
 class TestVariationRequestCancelViewForExportApplication:
@@ -146,8 +146,8 @@ class TestVariationRequestCancelViewForExportApplication:
         self.app.save()
 
         # Set the draft licence active and create a second one
-        set_application_licence_or_certificate_active(self.app)
-        self.active_certificate = self.app.get_latest_issued_document()
+        document_pack.pack_draft_set_active(self.app)
+        self.active_certificate = document_pack.pack_active_get(self.app)
         self.draft_certificate = self.app.certificates.create()
 
     def test_cancel_variation_request_post(self, test_icms_admin_user):
@@ -169,11 +169,11 @@ class TestVariationRequestCancelViewForExportApplication:
         assert self.app.get_active_task_list() == []
 
         self.active_certificate.refresh_from_db()
-        assert self.active_certificate.status == CaseLicenceCertificateBase.Status.ACTIVE
+        assert self.active_certificate.status == DocumentPackBase.Status.ACTIVE
 
         # Archived now the variation has been cancelled.
         self.draft_certificate.refresh_from_db()
-        assert self.draft_certificate.status == CaseLicenceCertificateBase.Status.ARCHIVED
+        assert self.draft_certificate.status == DocumentPackBase.Status.ARCHIVED
 
 
 class TestVariationRequestRequestUpdateView:

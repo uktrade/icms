@@ -5,10 +5,10 @@ from unittest.mock import Mock
 import pytest
 from django.utils import timezone
 
-from web.domains.case.services import reference
+from web.domains.case.services import document_pack, reference
+from web.domains.country.models import Country
 from web.flow.models import ProcessTypes
 from web.models import (
-    CaseDocumentReference,
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
@@ -236,7 +236,6 @@ def test_get_application_case_and_licence_references(
     gmp_app.save()
     assert gmp_app.reference == f"GA/{year}/00001"
 
-    l_type = CaseDocumentReference.Type.LICENCE
     import_apps = [
         derogation_app,
         dfl_app,
@@ -251,9 +250,9 @@ def test_get_application_case_and_licence_references(
     ]
 
     for app in import_apps:
-        licence = app.get_latest_issued_document()
-        ref = reference.get_import_licence_reference(lock_manager, app)
-        licence.document_references.create(document_type=l_type, reference=ref)
+        licence = document_pack.pack_draft_get(app)
+        ref = reference.get_import_licence_reference(lock_manager, app, licence)
+        document_pack.doc_ref_licence_create(licence, ref)
 
     doc = _get_licence_document(derogation_app)
     assert doc.reference == "GBSAN0000001B"
@@ -285,21 +284,21 @@ def test_get_application_case_and_licence_references(
     doc = _get_licence_document(wood_app)
     assert doc.reference == "0000010K"
 
-    c_type = CaseDocumentReference.Type.CERTIFICATE
+    cert_country = Country.objects.first()
     for app in [com_app, cfs_app, gmp_app]:
-        certificate = app.get_latest_issued_document()
+        certificate = document_pack.pack_draft_get(app)
         ref = reference.get_export_certificate_reference(lock_manager, app)
-        certificate.document_references.create(document_type=c_type, reference=ref)
+        document_pack.doc_ref_certificate_create(certificate, ref, country=cert_country)
 
     today = datetime.date.today()
 
-    doc = _get_certificate_document(com_app)
+    doc = _get_certificate_document(com_app, cert_country)
     doc.reference = f"COM/{today.year}/00001"
 
-    doc = _get_certificate_document(cfs_app)
+    doc = _get_certificate_document(cfs_app, cert_country)
     doc.reference = f"CFS/{today.year}/00002"
 
-    doc = _get_certificate_document(gmp_app)
+    doc = _get_certificate_document(gmp_app, cert_country)
     doc.reference = f"GMP/{today.year}/00003"
 
 
@@ -320,29 +319,31 @@ def test_import_application_licence_reference_is_reused(
     assert app.licence_reference is None
 
     # This should set the reference
-    ref = reference.get_import_licence_reference(lock_manager, app)
+    licence = document_pack.pack_draft_get(app)
+    ref = reference.get_import_licence_reference(lock_manager, app, licence)
 
     assert ref == "GBSIL0000001B"
     assert app.licence_reference.prefix == CaseReference.Prefix.IMPORT_LICENCE_DOCUMENT
     assert app.licence_reference.reference == 1
 
     # This should now reuse the same reference
-    ref = reference.get_import_licence_reference(lock_manager, app)
+    licence = document_pack.pack_draft_get(app)
+    ref = reference.get_import_licence_reference(lock_manager, app, licence)
     assert ref == "GBSIL0000001B"
     assert app.licence_reference.prefix == CaseReference.Prefix.IMPORT_LICENCE_DOCUMENT
     assert app.licence_reference.reference == 1
 
 
 def _get_licence_document(app):
-    return app.get_latest_issued_document().document_references.get(
-        document_type=CaseDocumentReference.Type.LICENCE
-    )
+    pack = document_pack.pack_draft_get(app)
+
+    return document_pack.doc_ref_licence_get(pack)
 
 
-def _get_certificate_document(app):
-    return app.get_latest_issued_document().document_references.get(
-        document_type=CaseDocumentReference.Type.CERTIFICATE
-    )
+def _get_certificate_document(app, country):
+    pack = document_pack.pack_draft_get(app)
+
+    return document_pack.doc_ref_certificate_get(pack, country)
 
 
 def test_unallocated_application_raises_error(wood_app_in_progress):

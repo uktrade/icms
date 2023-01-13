@@ -133,6 +133,14 @@ def show_take_ownership_url(
     return action.show_link()
 
 
+def get_latest_issued_document(application):
+    """Used to get the active document pack in one template"""
+
+    from web.domains.case.services import document_pack
+
+    return document_pack.pack_active_get(application)
+
+
 def environment(**options):
     env = Environment(extensions=[CompressorExtension], **options)
     env.globals.update(
@@ -146,6 +154,7 @@ def environment(**options):
             "show_optional_label": show_optional_label,
             # Reuse the workbasket logic to show url.
             "show_take_ownership_url": show_take_ownership_url,
+            "get_latest_issued_document": get_latest_issued_document,
         }
     )
     env.filters["show_all_attrs"] = show_all_attrs

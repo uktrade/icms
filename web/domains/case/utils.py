@@ -11,8 +11,6 @@ from django.utils import timezone
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.export.models import ExportApplication
-from web.domains.case.models import CaseLicenceCertificateBase
-from web.domains.case.types import IssuedDocument
 from web.domains.case.services import reference
 from web.domains.file.models import File
 from web.domains.user.models import User
@@ -166,41 +164,6 @@ def get_case_page_title(case_type: str, application: ImpOrExpOrAccess, page: str
         return f"Access Request - {page}"
     else:
         raise NotImplementedError(f"Unknown case_type {case_type}")
-
-
-def set_application_licence_or_certificate_active(application: ImpOrExp) -> None:
-    """Sets the latest draft licence to active and mark the previous active licence to archive."""
-
-    l_or_c: IssuedDocument = application.get_latest_issued_document()
-
-    if application.is_import_application():
-        active_l_or_c = application.licences.filter(
-            status=CaseLicenceCertificateBase.Status.ACTIVE
-        ).first()
-    else:
-        active_l_or_c = application.certificates.filter(
-            status=CaseLicenceCertificateBase.Status.ACTIVE
-        ).first()
-
-    if active_l_or_c:
-        active_l_or_c.status = CaseLicenceCertificateBase.Status.ARCHIVED
-        active_l_or_c.save()
-
-    l_or_c.case_completion_datetime = timezone.now()
-    l_or_c.status = CaseLicenceCertificateBase.Status.ACTIVE
-
-    # Record the case_reference to see when viewing the application history
-    l_or_c.case_reference = application.reference
-
-    l_or_c.save()
-
-
-def archive_application_licence_or_certificate(application: ImpOrExp) -> None:
-    """Archives the draft licence or certificate."""
-
-    issued_doc = application.get_latest_issued_document()
-    issued_doc.status = issued_doc.Status.ARCHIVED
-    issued_doc.save()
 
 
 def get_application_form(

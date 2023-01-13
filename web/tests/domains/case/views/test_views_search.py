@@ -7,6 +7,7 @@ from pytest_django.asserts import assertRedirects
 
 from web.domains.case._import.models import ImportApplicationLicence
 from web.domains.case._import.wood.models import WoodQuotaApplication
+from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.flow import errors
 from web.flow.models import Task
@@ -110,12 +111,13 @@ class TestRequestVariationUpdateView:
         self.wood_app.save()
 
         # A completed app must have an active licence
-        self.wood_app.licences.create(
-            status=ImportApplicationLicence.Status.ACTIVE,
-            issue_paper_licence_only=True,
-            licence_start_date=datetime.date(2020, 6, 14),
-            licence_end_date=datetime.date(2023, 9, 15),
-        )
+        draft_pack = document_pack.pack_draft_get(self.wood_app)
+        draft_pack.issue_paper_licence_only = True
+        draft_pack.licence_start_date = datetime.date(2020, 6, 14)
+        draft_pack.licence_end_date = datetime.date(2023, 9, 15)
+        draft_pack.save()
+
+        document_pack.pack_draft_set_active(self.wood_app)
 
         # End the PROCESS task as we are testing with a completed application
         task = self.wood_app.get_expected_task(Task.TaskType.PROCESS)
@@ -151,7 +153,7 @@ class TestRequestVariationUpdateView:
     def test_post_updates_status(self, test_icms_admin_user):
         url = SearchURLS.request_variation(self.wood_app.pk)
 
-        live_licence = self.wood_app.get_latest_issued_document()
+        live_licence = document_pack.pack_active_get(self.wood_app)
         assert live_licence.status == ImportApplicationLicence.Status.ACTIVE
 
         form_data = {
@@ -181,7 +183,7 @@ class TestRequestVariationUpdateView:
         self.wood_app.get_expected_task(Task.TaskType.PROCESS)
 
         # Check the application's latest licence status is draft
-        latest_licence = self.wood_app.get_latest_issued_document()
+        latest_licence = document_pack.pack_draft_get(self.wood_app)
         assert latest_licence.status == ImportApplicationLicence.Status.DRAFT
 
         # All the old values should have been copied over
