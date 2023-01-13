@@ -17,18 +17,42 @@ counts = [
         models.VariationRequest.objects.filter(importapplication__isnull=False).count(),
         False,
     ),
+    (
+        "Firearms Acts",
+        7,
+        models.FirearmsAct.objects.count(),
+        True,
+    ),
+    (
+        "Section 5 Clauses",
+        17,
+        models.Section5Clause.objects.count(),
+        True,
+    ),
 ]
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        for count in counts:
-            self._log_result(*count)
+        passes = 0
+        failures = 0
 
-    def _log_result(self, name: str, expected: int, actual: int, exact: bool = False) -> None:
+        for count in counts:
+            result = self._log_result(*count)
+
+            if result:
+                passes += 1
+            else:
+                failures += 1
+
+        self.stdout.write(f"TOTAL PASS: {passes} - TOTAL FAIL: {failures}")
+
+    def _log_result(self, name: str, expected: int, actual: int, exact: bool = False) -> bool:
         if exact:
             result = "PASS" if expected == actual else "FAIL"
         else:
             result = "PASS" if expected <= actual else "FAIL"
 
-        self.stdout.write(f"{result} - EXPECTED: {expected} - ACTUAL: {actual}")
+        self.stdout.write(f"{name} - {result} - EXPECTED: {expected} - ACTUAL: {actual}")
+
+        return result == "PASS"

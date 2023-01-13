@@ -827,7 +827,7 @@ class ClauseQuantityParser(BaseXmlParser):
 
 class ActQuantityParser(BaseXmlParser):
     MODEL = dm.ActQuantity
-    PARENT = dm.Section5Authority
+    PARENT = dm.FirearmsAuthority
     FIELD = "act_quantity_xml"
     ROOT_NODE = "/GOODS_CATEGORY_LIST/GOODS_CATEGORY"
 

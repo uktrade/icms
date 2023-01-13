@@ -34,13 +34,11 @@ class FirearmsAuthority(MigrationBase):
 
 
 class FirearmsAct(MigrationBase):
-    UPDATE_TIMESTAMP_QUERY = queries.firearms_act_timestamp_update
-
     act = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(null=True)
     is_active = models.BooleanField(default=True)
-    created_datetime = models.DateTimeField()
-    created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
+    created_datetime = models.DateTimeField(auto_now_add=True)
+    created_by_id = models.IntegerField()
     updated_datetime = models.DateTimeField(auto_now=True)
     updated_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+", null=True)
 

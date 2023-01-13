@@ -62,7 +62,7 @@ class FirearmsAuthority(models.Model):
 
 class FirearmsAct(Archivable, models.Model):
     act = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(null=True)
     is_active = models.BooleanField(default=True)
     created_datetime = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
