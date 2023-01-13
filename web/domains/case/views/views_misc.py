@@ -1,4 +1,3 @@
-from itertools import product
 from typing import TYPE_CHECKING, Any, Optional
 
 from django.contrib import messages
@@ -6,7 +5,8 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.db.models import ObjectDoesNotExist
+from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -18,24 +18,12 @@ from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case import forms
 from web.domains.case.app_checks import get_app_errors
-from web.domains.case.export.models import (
-    CertificateOfFreeSaleApplication,
-    CertificateOfGoodManufacturingPracticeApplication,
-    CertificateOfManufactureApplication,
-    ExportApplication,
-    ExportCertificateCaseDocumentReferenceData,
-)
-from web.domains.case.models import (
-    CaseDocumentReference,
-    CaseLicenceCertificateBase,
-    VariationRequest,
-)
-from web.domains.case.services import reference
+from web.domains.case.models import DocumentPackBase, VariationRequest
+from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import (
-    archive_application_licence_or_certificate,
     check_application_permission,
     end_process_task,
     get_application_current_task,
@@ -43,7 +31,7 @@ from web.domains.case.utils import (
 )
 from web.domains.template.models import Template
 from web.domains.user.models import User
-from web.flow.models import ProcessTypes, Task
+from web.flow.models import Task
 from web.models import WithdrawApplication
 from web.notify.email import send_email
 from web.types import AuthenticatedHttpRequest
@@ -56,8 +44,7 @@ from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from web.domains.case.types import IssuedDocument
-    from web.utils.lock_manager import LockManager
+    from web.domains.case.types import DocumentPack
 
 
 # "Applicant Case Management" Views
@@ -274,7 +261,7 @@ def take_ownership(
 
             if case_type == "import":
                 # Licence start date is set when ILB Admin takes the case
-                licence = application.get_latest_issued_document()
+                licence = document_pack.pack_draft_get(application)
 
                 if not licence.licence_start_date:
                     licence.licence_start_date = timezone.now().date()
@@ -409,7 +396,7 @@ def start_authorisation(
         application_errors: ApplicationErrors = get_app_errors(application, case_type)
 
         if request.method == "POST" and not application_errors.has_errors():
-            create_references = True
+            create_documents = True
 
             if application.status == application.Statuses.VARIATION_REQUESTED:
                 if (
@@ -425,7 +412,7 @@ def start_authorisation(
 
                     vr.save()
 
-                    create_references = False
+                    create_documents = False
                 else:
                     next_task = Task.TaskType.AUTHORISE
 
@@ -433,7 +420,7 @@ def start_authorisation(
                 if application.decision == application.REFUSE:
                     next_task = Task.TaskType.REJECTED
                     application.status = model_class.Statuses.COMPLETED
-                    create_references = False
+                    create_documents = False
 
                 else:
                     next_task = Task.TaskType.AUTHORISE
@@ -447,10 +434,10 @@ def start_authorisation(
             if next_task:
                 Task.objects.create(process=application, task_type=next_task, previous=task)
 
-            if create_references:
-                create_application_document_references(request.icms.lock_manager, application)
+            if create_documents:
+                document_pack.doc_ref_documents_create(application, request.icms.lock_manager)
             else:
-                archive_application_licence_or_certificate(application)
+                document_pack.pack_draft_archive(application)
 
             return redirect(reverse("workbasket"))
 
@@ -468,81 +455,6 @@ def start_authorisation(
                 template_name="web/domains/case/authorisation.html",
                 context=context,
             )
-
-
-def create_application_document_references(
-    lock_manager: "LockManager", application: ImpOrExp
-) -> None:
-    """Create the document references for the draft licence."""
-
-    if application.is_import_application():
-        licence = application.get_latest_issued_document()
-
-        if licence.status != CaseLicenceCertificateBase.Status.DRAFT:
-            raise ValueError("Can only create references for a draft application")
-
-        licence.document_references.get_or_create(
-            document_type=CaseDocumentReference.Type.COVER_LETTER
-        )
-
-        if not licence.document_references.filter(
-            document_type=CaseDocumentReference.Type.LICENCE
-        ).exists():
-            # Only call `get_import_licence_reference` if needed as it creates a record in CaseReference
-            licence.document_references.create(
-                document_type=CaseDocumentReference.Type.LICENCE,
-                reference=reference.get_import_licence_reference(lock_manager, application),
-            )
-    else:
-        _create_export_application_document_references(lock_manager, application)
-
-
-def _create_export_application_document_references(
-    lock_manager: "LockManager", application: ExportApplication
-):
-    """Creates document reference records for Export applications."""
-
-    certificate = application.get_latest_issued_document()
-
-    if certificate.status != CaseLicenceCertificateBase.Status.DRAFT:
-        raise ValueError("Can only create references for a draft application")
-
-    # Clear all document references as they may have changed
-    certificate.document_references.all().delete()
-
-    if application.process_type in [ProcessTypes.COM, ProcessTypes.CFS]:
-        app: (
-            CertificateOfManufactureApplication | CertificateOfFreeSaleApplication
-        ) = application.get_specific_model()
-
-        for country in app.countries.all().order_by("name"):
-            cdr: "CaseDocumentReference" = certificate.document_references.create(
-                document_type=CaseDocumentReference.Type.CERTIFICATE,
-                reference=reference.get_export_certificate_reference(lock_manager, app),
-            )
-            ExportCertificateCaseDocumentReferenceData.objects.create(
-                case_document_reference=cdr, country=country
-            )
-
-    elif application.process_type == ProcessTypes.GMP:
-        gmp_app: CertificateOfGoodManufacturingPracticeApplication = (
-            application.get_specific_model()
-        )
-        countries = gmp_app.countries.all().order_by("name")
-        brands = gmp_app.brands.all().order_by("brand_name")
-
-        for country, brand in product(countries, brands):
-            cdr = certificate.document_references.create(
-                document_type=CaseDocumentReference.Type.CERTIFICATE,
-                reference=reference.get_export_certificate_reference(lock_manager, gmp_app),
-            )
-
-            ExportCertificateCaseDocumentReferenceData.objects.create(
-                case_document_reference=cdr, country=country, gmp_brand=brand
-            )
-
-    else:
-        raise NotImplementedError(f"Unknown process_type: {application.process_type}")
 
 
 @login_required
@@ -669,10 +581,11 @@ class RecreateCaseDocumentsView(
     def post(self, request: HttpRequest, *args, **kwargs) -> Any:
         """Deletes existing draft PDFs and regenerates case document pack"""
         self.set_application_and_task()
-        l_or_c = self.application.get_latest_issued_document()
+        doc_pack = document_pack.pack_draft_get(self.application)
+        documents = document_pack.doc_ref_documents_all(doc_pack)
 
         s3_client = get_s3_client()
-        for cdr in l_or_c.document_references.all():
+        for cdr in documents:
             if cdr.document and cdr.document.path:
                 delete_file_from_s3(cdr.document.path, s3_client)
 
@@ -704,7 +617,7 @@ def view_document_packs(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, case_type, "authorise")
+        task = get_application_current_task(application, case_type, Task.TaskType.AUTHORISE)
 
         context = {
             "process_template": f"web/domains/case/{case_type}/partials/process.html",
@@ -726,18 +639,16 @@ def view_document_packs(
 
 def get_document_context(
     application: ImpOrExp,
-    issued_document: Optional["IssuedDocument"] = None,
+    issued_document: Optional["DocumentPack"] = None,
 ) -> dict[str, str]:
     at = application.application_type
 
     if application.is_import_application():
-        licence = issued_document or application.get_latest_issued_document()
-        licence_doc = licence.document_references.get(
-            document_type=CaseDocumentReference.Type.LICENCE
-        )
-        cover_letter = licence.document_references.get(
-            document_type=CaseDocumentReference.Type.COVER_LETTER
-        )
+        # A supplied document pack or the current draft pack
+        licence = issued_document or document_pack.pack_draft_get(application)
+
+        licence_doc = document_pack.doc_ref_licence_get(licence)
+        cover_letter = document_pack.doc_ref_cover_letter_get(licence)
 
         # If issued_document is not None then we are viewing completed documents
         if application.status == ImpExpStatus.COMPLETED or issued_document:
@@ -779,10 +690,10 @@ def get_document_context(
             "cover_letter_url": cover_letter_url,
         }
     else:
-        certificate = issued_document or application.get_latest_issued_document()
-        certificate_docs = certificate.document_references.filter(
-            document_type=CaseDocumentReference.Type.CERTIFICATE
-        )
+        # A supplied document pack or the current draft pack
+        certificate = issued_document or document_pack.pack_draft_get(application)
+
+        certificate_docs = document_pack.doc_ref_certificates_all(certificate)
         document_reference = ", ".join(c.reference for c in certificate_docs)
 
         context = {
@@ -863,9 +774,10 @@ class ViewIssuedCaseDocumentsView(
         context["copy_recipients"] = _get_copy_recipients(application)
         context["case_type"] = case_type
         context["org"] = application.importer if is_import_app else application.exporter
-        issued_doc = self.application.get_issued_documents().get(
-            pk=self.kwargs["issued_document_pk"]
-        )
+
+        issued_documents = document_pack.pack_issued_get_all(self.application)
+
+        issued_doc = issued_documents.get(pk=self.kwargs["issued_document_pk"])
         context["issue_date"] = issued_doc.case_completion_datetime
 
         return context | get_document_context(self.application, issued_doc)
@@ -895,14 +807,12 @@ class ClearIssuedCaseDocumentsFromWorkbasket(
 
     def post(self, request: HttpRequest, *args, **kwargs) -> Any:
         """Remove the document pack from the workbasket."""
-        id_pk = self.kwargs["issued_document_pk"]
+        pack_pk = self.kwargs["issued_document_pk"]
 
-        issued_doc = get_object_or_404(
-            self.application.get_issued_documents().select_for_update(), pk=id_pk
-        )
-
-        issued_doc.show_in_workbasket = False
-        issued_doc.save()
+        try:
+            document_pack.pack_workbasket_remove_pack(self.application, pack_pk=pack_pk)
+        except ObjectDoesNotExist:
+            raise Http404("No %s matches the given query." % DocumentPackBase._meta.object_name)
 
         self.update_application_tasks()
 

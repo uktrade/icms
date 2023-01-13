@@ -9,8 +9,8 @@ from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import (
     ApplicationBase,
     CaseEmail,
-    CaseLicenceCertificateBase,
     CaseNote,
+    DocumentPackBase,
     UpdateRequest,
     VariationRequest,
 )
@@ -353,50 +353,6 @@ class ImportApplication(ApplicationBase):
     def get_specific_model(self) -> "ImportApplication":
         return super().get_specific_model()
 
-    def get_latest_issued_document(self) -> "ImportApplicationLicence":
-        """Return the latest import licence.
-
-        This will be for either an active application or a draft one for an open
-        variation request.
-        """
-
-        return self.licences.filter(
-            status__in=[
-                ImportApplicationLicence.Status.DRAFT,
-                ImportApplicationLicence.Status.ACTIVE,
-            ]
-        ).latest("created_at")
-
-    def get_issued_documents(self) -> "QuerySet[ImportApplicationLicence]":
-        """Return all completed documents past and present."""
-
-        return self.licences.filter(
-            case_completion_datetime__isnull=False,
-            status__in=[
-                ImportApplicationLicence.Status.ACTIVE,
-                ImportApplicationLicence.Status.ARCHIVED,
-            ],
-        ).order_by("created_at")
-
-
-def get_paper_licence_only(app_t: ImportApplicationType) -> bool | None:
-    """Get initial value for `issue_paper_licence_only` field.
-
-    Some application types have a fixed value, others can choose it in the response
-    preparation screen.
-    """
-
-    # For when it is hardcoded True
-    if app_t.paper_licence_flag and not app_t.electronic_licence_flag:
-        return True
-
-    # For when it is hardcoded False
-    if app_t.electronic_licence_flag and not app_t.paper_licence_flag:
-        return False
-
-    # Default to None so the user can pick it later
-    return None
-
 
 class EndorsementImportApplication(models.Model):
     import_application = models.ForeignKey(
@@ -450,7 +406,7 @@ class ChecklistBase(models.Model):
     )
 
 
-class ImportApplicationLicence(CaseLicenceCertificateBase):
+class ImportApplicationLicence(DocumentPackBase):
     import_application = models.ForeignKey(
         "ImportApplication", on_delete=models.CASCADE, related_name="licences"
     )

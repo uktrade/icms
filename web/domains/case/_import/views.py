@@ -17,7 +17,7 @@ from guardian.shortcuts import get_objects_for_user
 from ratelimit import UNSAFE
 from ratelimit.decorators import ratelimit
 
-from web.domains.case.models import CaseDocumentReference
+from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import get_application_current_task
 from web.domains.chief import types as chief_types
@@ -49,7 +49,6 @@ from .models import (
     ImportApplicationLicence,
     ImportApplicationType,
     LiteHMRCChiefRequest,
-    get_paper_licence_only,
 )
 from .opt.models import OutwardProcessingTradeApplication
 from .sanctions.models import SanctionsAndAdhocApplication
@@ -261,10 +260,7 @@ def _create_application(
 
                 # Add a draft licence when creating an application
                 # Ensures we never have to check for None
-                application.licences.create(
-                    status=ImportApplicationLicence.Status.DRAFT,
-                    issue_paper_licence_only=get_paper_licence_only(at),
-                )
+                document_pack.pack_draft_create(application)
 
             return redirect(
                 reverse(application.get_edit_view_name(), kwargs={"application_pk": application.pk})
@@ -334,7 +330,7 @@ def edit_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
 
         task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
-        form_kwargs: dict[str, Any] = {"instance": application.get_latest_issued_document()}
+        form_kwargs: dict[str, Any] = {"instance": document_pack.pack_draft_get(application)}
 
         if application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
             form_class = OPTLicenceForm
@@ -601,10 +597,8 @@ class IMICaseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
     )
 
     def get_context_data(self, **kwargs):
-        licence: ImportApplicationLicence = self.object.get_latest_issued_document()
-        licence_doc = licence.document_references.filter(
-            document_type=CaseDocumentReference.Type.LICENCE
-        ).first()
+        licence: ImportApplicationLicence = document_pack.pack_active_get(self.object)
+        licence_doc = document_pack.doc_ref_licence_get_optional(licence)
 
         if licence_doc and licence_doc.document:
             reference = licence_doc.reference

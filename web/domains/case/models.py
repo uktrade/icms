@@ -344,7 +344,7 @@ class CaseEmail(models.Model):
         return self.status == self.Status.DRAFT
 
 
-class CaseLicenceCertificateBase(models.Model):
+class DocumentPackBase(models.Model):
     """Base class for Import Licences and Export Certificates"""
 
     class Meta:

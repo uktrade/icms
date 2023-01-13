@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_GET
 from django.views.generic import View
 
+from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import view_application_file
@@ -43,7 +44,7 @@ class PreviewLicenceView(GenerateLicenceBase):
 
         pdf_gen = PdfGenerator(
             application=self.application,
-            licence=self.application.get_latest_issued_document(),
+            licence=document_pack.pack_latest_get(self.application),
             doc_type=document_type,
         )
 
@@ -62,7 +63,7 @@ class PreviewCoverLetterView(GenerateLicenceBase):
 
         pdf_gen = PdfGenerator(
             application=self.application,
-            licence=self.application.get_latest_issued_document(),
+            licence=document_pack.pack_latest_get(self.application),
             doc_type=DocumentTypes.COVER_LETTER,
         )
 

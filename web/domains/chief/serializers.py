@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Any, Literal, Protocol
 
-from web.domains.case.models import CaseDocumentReference
+from web.domains.case.services import document_pack
 from web.utils.commodity import annotate_commodity_unit
 
 from . import types
@@ -47,10 +47,8 @@ def sanction_serializer(
     application: "SanctionsAndAdhocApplication", action: CHIEF_ACTION, chief_id: str
 ) -> types.CreateLicenceData:
     organisation = _get_organisation(application)
-    licence = application.get_latest_issued_document()
-    licence_ref: CaseDocumentReference = licence.document_references.get(
-        document_type=CaseDocumentReference.Type.LICENCE
-    )
+    licence = document_pack.pack_draft_get(application)
+    licence_ref = document_pack.doc_ref_licence_get(licence)
 
     sanction_goods: "QuerySet[SanctionsAndAdhocApplicationGoods]" = (
         application.sanctionsandadhocapplicationgoods_set.all().select_related("commodity")
@@ -91,10 +89,7 @@ def fa_dfl_serializer(
     """Return FA DFL licence data to send to chief."""
 
     organisation = _get_organisation(application)
-    licence = application.get_latest_issued_document()
-    licence_ref: CaseDocumentReference = licence.document_references.get(
-        document_type=CaseDocumentReference.Type.LICENCE
-    )
+    doc_pack = document_pack.pack_draft_get(application)
     goods = [
         types.FirearmGoodsData(description=g.goods_description)
         for g in application.goods_certificates.all()
@@ -107,9 +102,9 @@ def fa_dfl_serializer(
         action=action,
         id=chief_id,
         reference=application.reference,
-        licence_reference=licence_ref.reference,
-        start_date=licence.licence_start_date,
-        end_date=licence.licence_end_date,
+        licence_reference=document_pack.doc_ref_licence_get(doc_pack).reference,
+        start_date=doc_pack.licence_start_date,
+        end_date=doc_pack.licence_end_date,
         organisation=organisation,
         restrictions=_get_restrictions(application),
         goods=goods,
@@ -125,10 +120,7 @@ def fa_oil_serializer(
     """Return FA OIL licence data to send to chief."""
 
     organisation = _get_organisation(application)
-    licence = application.get_latest_issued_document()
-    licence_ref: CaseDocumentReference = licence.document_references.get(
-        document_type=CaseDocumentReference.Type.LICENCE
-    )
+    doc_pack = document_pack.pack_draft_get(application)
 
     # fa-oil hard codes the value to any country therefore it is a group
     country_group_code = application.origin_country.hmrc_code
@@ -139,9 +131,9 @@ def fa_oil_serializer(
         action=action,
         id=chief_id,
         reference=application.reference,
-        licence_reference=licence_ref.reference,
-        start_date=licence.licence_start_date,
-        end_date=licence.licence_end_date,
+        licence_reference=document_pack.doc_ref_licence_get(doc_pack).reference,
+        start_date=doc_pack.licence_start_date,
+        end_date=doc_pack.licence_end_date,
         organisation=organisation,
         country_group=country_group_code,
         restrictions=restrictions,
@@ -155,10 +147,7 @@ def fa_sil_serializer(
     application: "SILApplication", action: CHIEF_ACTION, chief_id: str
 ) -> types.CreateLicenceData:
     organisation = _get_organisation(application)
-    licence = application.get_latest_issued_document()
-    licence_ref: CaseDocumentReference = licence.document_references.get(
-        document_type=CaseDocumentReference.Type.LICENCE
-    )
+    doc_pack = document_pack.pack_draft_get(application)
 
     goods = []
 
@@ -196,9 +185,9 @@ def fa_sil_serializer(
         action=action,
         id=chief_id,
         reference=application.reference,
-        licence_reference=licence_ref.reference,
-        start_date=licence.licence_start_date,
-        end_date=licence.licence_end_date,
+        licence_reference=document_pack.doc_ref_licence_get(doc_pack).reference,
+        start_date=doc_pack.licence_start_date,
+        end_date=doc_pack.licence_end_date,
         organisation=organisation,
         restrictions=_get_restrictions(application),
         goods=goods,

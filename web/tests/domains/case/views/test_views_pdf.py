@@ -1,6 +1,6 @@
 from pytest_django.asserts import assertRedirects
 
-from web.domains.case.models import CaseDocumentReference
+from web.domains.case.services import document_pack
 from web.tests.helpers import CaseURLS
 
 
@@ -99,7 +99,5 @@ def test_ilb_admin_permission_required(
 
 
 def _add_pre_sign_document_reference(application):
-    licence = application.get_latest_issued_document()
-    licence.document_references.create(
-        document_type=CaseDocumentReference.Type.LICENCE, reference="0000001B"
-    )
+    licence = document_pack.pack_draft_get(application)
+    document_pack.doc_ref_licence_create(licence, "0000001B")

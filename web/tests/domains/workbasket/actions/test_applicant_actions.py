@@ -3,6 +3,7 @@ from django.utils import timezone
 
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.models import VariationRequest
+from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.user.models import User
 from web.domains.workbasket.actions.applicant_actions import (
@@ -127,7 +128,7 @@ class TestApplicantActions:
         assert not action.show_link()
 
         # Test completed app is no longer shown
-        licence = completed_app.get_issued_documents().first()
+        licence = document_pack.pack_active_get(completed_app)
         licence.show_in_workbasket = False
         licence.save()
 
@@ -158,7 +159,7 @@ class TestApplicantActions:
         assert not action.show_link()
 
         # Test completed app is no longer shown
-        licence = completed_app.get_issued_documents().first()
+        licence = document_pack.pack_active_get(completed_app)
         licence.show_in_workbasket = False
         licence.save()
 

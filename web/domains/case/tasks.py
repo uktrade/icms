@@ -6,12 +6,10 @@ from django.utils import timezone
 
 from config.celery import app
 from web.domains.case.models import CaseDocumentReference, VariationRequest
+from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
-from web.domains.case.utils import (
-    end_process_task,
-    set_application_licence_or_certificate_active,
-)
+from web.domains.case.utils import end_process_task
 from web.domains.chief import client
 from web.domains.file.models import File
 from web.domains.user.models import User
@@ -30,17 +28,14 @@ def create_case_document_pack(application: ImpOrExp, user: User) -> None:
 
     # Create the tasks that will generate the documents
     if application.is_import_application():
-        licence = application.get_latest_issued_document()
-        header = [
-            create_import_application_document.si(application.id, licence.pk, cdr.pk, user.id)
-            for cdr in licence.document_references.all()
-        ]
+        create_doc_func = create_import_application_document
     else:
-        certificate = application.get_latest_issued_document()
-        header = [
-            create_export_application_document.si(application.id, certificate.pk, cdr.pk, user.id)
-            for cdr in certificate.document_references.all()
-        ]
+        create_doc_func = create_export_application_document
+
+    doc_pack = document_pack.pack_draft_get(application)
+    documents = document_pack.doc_ref_documents_all(doc_pack)
+
+    header = [create_doc_func.si(application.id, doc_pack.pk, cdr.pk, user.id) for cdr in documents]
 
     # Queue the documents to be generated.
     chord(header=header, body=callback).apply_async()
@@ -128,7 +123,7 @@ def create_document_pack_on_success(application_pk, user_pk):
             application.status = ImpExpStatus.COMPLETED
             application.save()
 
-            set_application_licence_or_certificate_active(application)
+            document_pack.pack_draft_set_active(application)
 
 
 @app.task(name="web.domains.case.tasks.create_document_pack_on_error")

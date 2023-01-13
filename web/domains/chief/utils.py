@@ -3,10 +3,8 @@ from django.utils import timezone
 
 from web.domains.case._import.models import ImportApplication, LiteHMRCChiefRequest
 from web.domains.case.models import VariationRequest
-from web.domains.case.utils import (
-    get_application_current_task,
-    set_application_licence_or_certificate_active,
-)
+from web.domains.case.services import document_pack
+from web.domains.case.utils import get_application_current_task
 from web.flow.models import Task
 
 from .types import ResponseError
@@ -38,7 +36,7 @@ def chief_licence_reply_approve_licence(application: ImportApplication) -> None:
     application.status = ImportApplication.Statuses.COMPLETED
     application.save()
 
-    set_application_licence_or_certificate_active(application)
+    document_pack.pack_draft_set_active(application)
 
 
 def chief_licence_reply_reject_licence(application: ImportApplication) -> None:

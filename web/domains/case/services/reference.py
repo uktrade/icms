@@ -6,7 +6,10 @@ from web.flow.models import ProcessTypes
 from web.models.models import CaseReference
 
 if TYPE_CHECKING:
-    from web.domains.case._import.models import ImportApplication
+    from web.domains.case._import.models import (
+        ImportApplication,
+        ImportApplicationLicence,
+    )
     from web.domains.case.export.models import ExportApplication
     from web.domains.case.types import ImpOrExp
     from web.utils.lock_manager import LockManager
@@ -57,7 +60,11 @@ def get_variation_request_case_reference(application: "ImpOrExp") -> str:
     return "/".join(case_ref_sections)
 
 
-def get_import_licence_reference(lock_manager: "LockManager", application: "ImportApplication"):
+def get_import_licence_reference(
+    lock_manager: "LockManager",
+    application: "ImportApplication",
+    licence: "ImportApplicationLicence",
+):
     """Get the licence reference for the supplied import application"""
 
     if not application.licence_reference:
@@ -65,8 +72,6 @@ def get_import_licence_reference(lock_manager: "LockManager", application: "Impo
             lock_manager, prefix=Prefix.IMPORT_LICENCE_DOCUMENT, use_year=False
         )
         application.save()
-
-    licence = application.get_latest_issued_document()
 
     licence_type = "paper" if licence.issue_paper_licence_only else "electronic"
 

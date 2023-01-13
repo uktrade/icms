@@ -35,6 +35,7 @@ from web.utils.validation import (
 )
 
 from . import models
+from .services import document_pack
 from .types import ApplicationsWithCaseEmail, ApplicationsWithChecklist, ImpOrExp
 
 
@@ -254,7 +255,7 @@ def get_response_preparation_errors(application: ImpOrExp, case_type) -> PageErr
         )
 
     elif case_type == "import" and application.decision == application.APPROVE:
-        licence = application.get_latest_issued_document()
+        licence = document_pack.pack_draft_get(application)
         start_date = licence.licence_start_date
         end_date = licence.licence_end_date
 

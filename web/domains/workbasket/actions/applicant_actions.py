@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Any, Optional
 from django.urls import reverse
 from django.utils.dateparse import parse_datetime
 
+from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.workbasket.base import WorkbasketAction
 from web.flow.models import ProcessTypes, Task
@@ -11,7 +12,7 @@ from .base import Action, ActionT
 
 if TYPE_CHECKING:
     from web.domains.case._import.fa.models import SupplementaryInfoBase
-    from web.domains.case.types import IssuedDocument
+    from web.domains.case.types import DocumentPack
 
 """Actions that only apply to importer/exporter users are added here"""
 
@@ -252,10 +253,8 @@ class IssuedDocumentsBaseAction(Action):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.issued_documents_qs = (
+        self.issued_documents_qs = document_pack.pack_workbasket_get_issued(
             self.application.get_specific_model()
-            .get_issued_documents()
-            .filter(show_in_workbasket=True)
         )
 
     def show_link(self) -> bool:
@@ -274,8 +273,8 @@ class IssuedDocumentsBaseAction(Action):
         raise NotImplementedError
 
     @staticmethod
-    def section_label(issued_document: "IssuedDocument") -> str:
-        cd = issued_document.case_completion_datetime
+    def section_label(pack: "DocumentPack") -> str:
+        cd = pack.case_completion_datetime
         issue_datetime = cd.strftime("%d-%b-%Y %H:%M")
 
         return f"Documents Issued {issue_datetime}"

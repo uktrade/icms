@@ -30,16 +30,15 @@ from web.domains.case.export.models import (
     CertificateOfManufactureApplication,
     CFSSchedule,
     ExportApplicationType,
-    ExportCertificateCaseDocumentReferenceData,
 )
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import (
     ApplicationBase,
-    CaseDocumentReference,
     CaseEmail,
-    CaseLicenceCertificateBase,
+    DocumentPackBase,
     UpdateRequest,
 )
+from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import get_application_current_task, submit_application
 from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
@@ -1169,12 +1168,12 @@ def test_search_by_application_contact(
 
 def test_import_search_by_licence_type(import_fixture_data):
     wood = _create_wood_application("wood-app-ref", import_fixture_data)
-    licence = wood.licences.first()
+
+    licence = document_pack.pack_draft_get(wood)
     licence.issue_paper_licence_only = True
-    cdr = licence.document_references.create(
-        document_type=CaseDocumentReference.Type.LICENCE, reference="licence_reference"
-    )
     licence.save()
+
+    cdr = document_pack.doc_ref_licence_create(licence, "licence_reference")
 
     search_terms = SearchTerms(case_type="import", licence_type="electronic")
     results = search_applications(search_terms, import_fixture_data.request.user)
@@ -1407,18 +1406,17 @@ def test_import_search_by_commodity_code(import_fixture_data):
 
 
 def test_import_search_by_document_reference(import_fixture_data):
-    l_type = CaseDocumentReference.Type.LICENCE
     wood = _create_wood_application("wood-app-1-ref", import_fixture_data)
-    licence = wood.licences.first()
-    licence.status = CaseLicenceCertificateBase.Status.ACTIVE
+    licence = document_pack.pack_draft_get(wood)
+    licence.status = DocumentPackBase.Status.ACTIVE
     licence.save()
-    licence.document_references.create(document_type=l_type, reference="GBSIL0000001B")
+    document_pack.doc_ref_licence_create(licence, "GBSIL0000001B")
 
     wood_2 = _create_wood_application("wood-app-2-ref", import_fixture_data)
-    licence = wood_2.licences.first()
-    licence.status = CaseLicenceCertificateBase.Status.ACTIVE
+    licence = document_pack.pack_draft_get(wood_2)
+    licence.status = DocumentPackBase.Status.ACTIVE
     licence.save()
-    licence.document_references.create(document_type=l_type, reference="GBSIL0000002C")
+    document_pack.doc_ref_licence_create(licence, "GBSIL0000002C")
 
     # Search exact
     search_terms = SearchTerms(case_type="import", licence_ref="GBSIL0000001B")
@@ -1440,7 +1438,7 @@ def test_import_search_by_document_reference(import_fixture_data):
 
     # Search filters excludes archived licences.
     licence = wood.licences.first()
-    licence.status = CaseLicenceCertificateBase.Status.ARCHIVED
+    licence.status = DocumentPackBase.Status.ARCHIVED
     licence.save()
 
     search_terms = SearchTerms(case_type="import", licence_ref="GBSIL0000001B")
@@ -1449,10 +1447,9 @@ def test_import_search_by_document_reference(import_fixture_data):
 
 
 def test_export_search_by_document_reference(export_fixture_data):
-    c_type = CaseDocumentReference.Type.CERTIFICATE
     cfs = _create_cfs_application(export_fixture_data)
-    cert = cfs.certificates.first()
-    cert.status = CaseLicenceCertificateBase.Status.ACTIVE
+    cert = document_pack.pack_draft_get(cfs)
+    cert.status = DocumentPackBase.Status.ACTIVE
     cert.save()
     pairs = (
         ("CFS/2021/00001", "Finland"),
@@ -1460,9 +1457,8 @@ def test_export_search_by_document_reference(export_fixture_data):
         ("CFS/2021/00003", "Poland"),
     )
     for ref, country in pairs:
-        cdr = cert.document_references.create(document_type=c_type, reference=ref)
-        ExportCertificateCaseDocumentReferenceData.objects.create(
-            case_document_reference=cdr, country=Country.objects.get(name=country)
+        document_pack.doc_ref_certificate_create(
+            cert, ref, country=Country.objects.get(name=country)
         )
 
     # Search exact
@@ -1478,7 +1474,7 @@ def test_export_search_by_document_reference(export_fixture_data):
     check_export_application_case_reference(results.records, cfs.reference)
 
     # Search filters excludes archived licences.
-    cert.status = CaseLicenceCertificateBase.Status.ARCHIVED
+    cert.status = DocumentPackBase.Status.ARCHIVED
     cert.save()
 
     search_terms = SearchTerms(case_type="export", licence_ref="CFS/2021/0000%")
@@ -2044,7 +2040,7 @@ def _create_application(
         task_type=Task.TaskType.PREPARE,
         owner=import_fixture_data.importer_user,
     )
-    application.licences.create(status=CaseLicenceCertificateBase.Status.DRAFT)
+    application.licences.create(status=DocumentPackBase.Status.DRAFT)
 
     if submit:
         _submit_application(application, import_fixture_data)
@@ -2090,7 +2086,7 @@ def _create_export_application(
     Task.objects.create(
         process=application, task_type=Task.TaskType.PREPARE, owner=fixture_data.exporter_user
     )
-    application.certificates.create(status=CaseLicenceCertificateBase.Status.DRAFT)
+    application.certificates.create(status=DocumentPackBase.Status.DRAFT)
 
     for c in certificate_countries:
         country = Country.objects.get(name=c)

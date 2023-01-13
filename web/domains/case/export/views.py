@@ -18,6 +18,7 @@ from ratelimit.decorators import ratelimit
 
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
+from web.domains.case.services import document_pack
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
@@ -68,7 +69,6 @@ from .models import (
     CFSProductType,
     CFSSchedule,
     ExportApplication,
-    ExportApplicationCertificate,
     ExportApplicationType,
     GMPFile,
     ProductLegislation,
@@ -166,7 +166,7 @@ def create_export_application(
 
                 # Add a draft certificate when creating an application
                 # Ensures we never have to check for None
-                application.certificates.create(status=ExportApplicationCertificate.Status.DRAFT)
+                document_pack.pack_draft_create(application)
 
             return redirect(
                 reverse(application.get_edit_view_name(), kwargs={"application_pk": application.pk})

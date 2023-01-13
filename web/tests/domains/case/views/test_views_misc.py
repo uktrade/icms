@@ -8,12 +8,8 @@ from django.utils import timezone
 from pytest_django.asserts import assertContains, assertRedirects, assertTemplateUsed
 
 from web.domains.case._import.wood.models import WoodQuotaChecklist
-from web.domains.case.models import (
-    CaseDocumentReference,
-    CaseLicenceCertificateBase,
-    UpdateRequest,
-    VariationRequest,
-)
+from web.domains.case.models import DocumentPackBase, UpdateRequest, VariationRequest
+from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.flow.errors import ProcessStateError
 from web.flow.models import Task
@@ -33,7 +29,7 @@ def wood_application(icms_admin_client, wood_app_submitted):
     """A submitted wood application owned by the ICMS admin user."""
     icms_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
     wood_app_submitted.refresh_from_db()
-    licence = wood_app_submitted.get_latest_issued_document()
+    licence = document_pack.pack_draft_get(wood_app_submitted)
     licence.issue_paper_licence_only = True
     licence.save()
 
@@ -162,9 +158,8 @@ def test_start_authorisation_approved_application_has_no_errors(
     )
     assert current_task is not None
 
-    licence_doc = wood_application.get_latest_issued_document().document_references.get(
-        document_type=CaseDocumentReference.Type.LICENCE
-    )
+    doc_pack = document_pack.pack_draft_get(wood_application)
+    licence_doc = document_pack.doc_ref_licence_get(doc_pack)
     assert licence_doc.reference == "0000001B"
 
 
@@ -183,8 +178,8 @@ def test_start_authorisation_approved_application_has_no_errors_export_app(
 
     # start authorisation should clear any document_references
     # create a dummy one here to test it.
-    cert = com_app.get_latest_issued_document()
-    dr = cert.document_references.create(document_type=CaseDocumentReference.Type.CERTIFICATE)
+    cert = document_pack.pack_draft_get(com_app)
+    dr = document_pack.doc_ref_certificate_create(cert, "some-ref", country=Country.objects.first())
     pk_to_delete = dr.id
 
     response = icms_admin_client.get(CaseURLS.start_authorisation(com_app.pk, case_type="export"))
@@ -204,21 +199,15 @@ def test_start_authorisation_approved_application_has_no_errors_export_app(
     )
     assert current_task is not None
 
-    cert = com_app.get_latest_issued_document()
+    cert = document_pack.pack_draft_get(com_app)
 
-    assert cert.status == CaseLicenceCertificateBase.Status.DRAFT
-    assert cert.document_references.count() == 3
+    assert cert.status == DocumentPackBase.Status.DRAFT
+    assert document_pack.doc_ref_documents_all(cert).count() == 3
 
     # Check the correct document references have been created
-    finland_dr = cert.document_references.get(
-        document_type=CaseDocumentReference.Type.CERTIFICATE, reference_data__country=finland
-    )
-    germany_dr = cert.document_references.get(
-        document_type=CaseDocumentReference.Type.CERTIFICATE, reference_data__country=germany
-    )
-    poland_dr = cert.document_references.get(
-        document_type=CaseDocumentReference.Type.CERTIFICATE, reference_data__country=poland
-    )
+    finland_dr = document_pack.doc_ref_certificate_get(cert, finland)
+    germany_dr = document_pack.doc_ref_certificate_get(cert, germany)
+    poland_dr = document_pack.doc_ref_certificate_get(cert, poland)
 
     this_year = datetime.date.today().year
     assert finland_dr.reference == f"COM/{this_year}/00001"
@@ -226,7 +215,8 @@ def test_start_authorisation_approved_application_has_no_errors_export_app(
     assert poland_dr.reference == f"COM/{this_year}/00003"
 
     # explicitly check the old case_reference is gone
-    assert not cert.document_references.filter(pk=pk_to_delete).exists()
+    cert_docs = document_pack.doc_ref_documents_all(cert)
+    assert not cert_docs.filter(pk=pk_to_delete).exists()
 
 
 def test_start_authorisation_refused_application_has_errors(icms_admin_client, wood_application):
@@ -269,9 +259,7 @@ def test_start_authorisation_refused_application_has_no_errors(icms_admin_client
     assert current_task is not None
 
     assert wood_application.licences.count() == 1
-    assert wood_application.licences.filter(
-        status=CaseLicenceCertificateBase.Status.ARCHIVED
-    ).exists()
+    assert wood_application.licences.filter(status=DocumentPackBase.Status.ARCHIVED).exists()
 
 
 def test_start_authorisation_approved_variation_requested_application(
@@ -301,9 +289,8 @@ def test_start_authorisation_approved_variation_requested_application(
 
     assert expected_task is not None
 
-    licence_doc = wood_application.get_latest_issued_document().document_references.get(
-        document_type=CaseDocumentReference.Type.LICENCE
-    )
+    pack = document_pack.pack_draft_get(wood_application)
+    licence_doc = document_pack.doc_ref_licence_get(pack)
     assert licence_doc.reference == "0000001B"
 
 
@@ -337,9 +324,7 @@ def test_start_authorisation_rejected_variation_requested_application(
     assert vr.closed_datetime.date() == timezone.now().date()
 
     assert wood_application.licences.count() == 1
-    assert wood_application.licences.filter(
-        status=CaseLicenceCertificateBase.Status.ARCHIVED
-    ).exists()
+    assert wood_application.licences.filter(status=DocumentPackBase.Status.ARCHIVED).exists()
 
 
 class TestAuthoriseDocumentsView:
@@ -370,8 +355,8 @@ class TestAuthoriseDocumentsView:
 
         self.wood_app = wood_app_submitted
 
-        licence = self.wood_app.get_latest_issued_document()
-        assert licence.status == CaseLicenceCertificateBase.Status.DRAFT
+        licence = document_pack.pack_draft_get(self.wood_app)
+        assert licence.status == DocumentPackBase.Status.DRAFT
 
     def test_authorise_post_valid(self):
         post_data = {"password": "test"}
@@ -384,8 +369,8 @@ class TestAuthoriseDocumentsView:
         self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
         assert self.wood_app.get_active_tasks(False).count() == 0
 
-        latest_licence = self.wood_app.get_latest_issued_document()
-        assert latest_licence.status == CaseLicenceCertificateBase.Status.ACTIVE
+        latest_licence = document_pack.pack_active_get(self.wood_app)
+        assert latest_licence.status == DocumentPackBase.Status.ACTIVE
 
     def test_authorise_variation_request_post_valid(self, test_icms_admin_user):
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
@@ -405,8 +390,8 @@ class TestAuthoriseDocumentsView:
         vr = self.wood_app.variation_requests.first()
         assert vr.status == VariationRequest.ACCEPTED
 
-        latest_licence = self.wood_app.get_latest_issued_document()
-        assert latest_licence.status == CaseLicenceCertificateBase.Status.ACTIVE
+        latest_licence = document_pack.pack_active_get(self.wood_app)
+        assert latest_licence.status == DocumentPackBase.Status.ACTIVE
 
     def test_authorise_post_valid_for_app_requiring_chief(self):
         # Override the chief flag for the wood quota application type to send to chief.
@@ -425,8 +410,8 @@ class TestAuthoriseDocumentsView:
         self.wood_app.get_expected_task(Task.TaskType.CHIEF_WAIT)
 
         # Latest licence is still draft until after chief submission.
-        latest_licence = self.wood_app.get_latest_issued_document()
-        assert latest_licence.status == CaseLicenceCertificateBase.Status.DRAFT
+        latest_licence = document_pack.pack_draft_get(self.wood_app)
+        assert latest_licence.status == DocumentPackBase.Status.DRAFT
 
 
 class TestCheckCaseDocumentGenerationView:
@@ -551,7 +536,7 @@ class TestViewIssuedCaseDocumentsView:
     @pytest.fixture(autouse=True)
     def set_app(self, completed_app):
         self.app = completed_app
-        self.licence = self.app.get_issued_documents().get(status="AC")
+        self.licence = document_pack.pack_active_get(self.app)
         self.url = CaseURLS.view_issued_case_documents(
             self.app.pk, issued_document_pk=self.licence.pk
         )
@@ -604,7 +589,7 @@ class TestClearIssuedCaseDocumentsFromWorkbasketView:
     @pytest.fixture(autouse=True)
     def set_app(self, completed_app):
         self.app = completed_app
-        self.licence = self.app.get_issued_documents().get(status="AC")
+        self.licence = document_pack.pack_active_get(self.app)
         self.url = CaseURLS.clear_issued_case_documents_from_workbasket(
             self.app.pk, issued_document_pk=self.licence.pk
         )
@@ -635,7 +620,7 @@ class TestClearIssuedCaseDocumentsFromWorkbasketView:
 
 
 def _set_valid_licence(wood_application):
-    licence = wood_application.get_latest_issued_document()
+    licence = document_pack.pack_draft_get(wood_application)
     licence.licence_start_date = datetime.date.today()
     licence.licence_end_date = datetime.date(datetime.date.today().year + 1, 12, 1)
     licence.issue_paper_licence_only = True

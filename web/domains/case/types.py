@@ -72,7 +72,7 @@ ApplicationsWithCaseEmail = Union[
     CertificateOfGoodManufacturingPracticeApplication,
 ]
 
-IssuedDocument = Union[ImportApplicationLicence, ExportApplicationCertificate]
+DocumentPack = Union[ImportApplicationLicence, ExportApplicationCertificate]
 
 
 class CaseEmailConfig(NamedTuple):
