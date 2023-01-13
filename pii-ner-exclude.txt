@@ -1802,3 +1802,6 @@ Export Variations
 Import Variations
 FAIL
 ICMS_HMRC_DOMAIN="http://web-api:8000/
+Firearms Acts"
+Section 1 Component Parts
+Section 1 Ammunition

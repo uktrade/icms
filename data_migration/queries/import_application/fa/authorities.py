@@ -71,7 +71,8 @@ INNER JOIN (
 
 section5_clauses = """
 SELECT
-  name clause
+  id
+  , name clause
   , mnemonic legacy_code
   , description
   , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
@@ -80,6 +81,7 @@ SELECT
   , last_updated_datetime updated_datetime
   , last_updated_by_wua_id updated_by_id
 FROM impmgr.section_5_clauses
+ORDER BY id
 """
 
 
@@ -91,13 +93,6 @@ FROM impmgr.xview_imp_auth_linked_offices xialo
 INNER JOIN impmgr.importer_authorities ia ON xialo.ia_id = ia.id
 WHERE status_control = 'C'
 AND ia.authority_type = 'SECTION5'
-"""
-
-
-firearms_act_timestamp_update = """
-UPDATE web_firearmsact SET created_datetime = data_migration_firearmsact.created_datetime
-FROM data_migration_firearmsact
-WHERE web_firearmsact.id = data_migration_firearmsact.id
 """
 
 

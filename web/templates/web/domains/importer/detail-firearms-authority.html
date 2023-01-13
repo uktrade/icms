@@ -129,7 +129,7 @@
         <tbody>
           {% for act_quantity in firearms_authority.actquantity_set.all() %}
             <tr>
-              <td>{{ act_quantity.firearmsclause.clause }}</td>
+              <td>{{ act_quantity.firearmsact.act }}</td>
               <td>
                 {% if act_quantity.infinity %}
                   Unlimited
