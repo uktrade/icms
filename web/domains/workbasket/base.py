@@ -1,8 +1,6 @@
 import datetime
 from dataclasses import dataclass, field
 
-from web.domains.user.models import User
-
 
 @dataclass
 class WorkbasketAction:
@@ -62,12 +60,3 @@ class WorkbasketRow:
 
     # admin/applicant/etc actions go into their own block
     sections: list[WorkbasketSection] = field(default_factory=list)
-
-
-class WorkbasketBase:
-    """Base class for every Process subclass that wants to be shown in the workbasket."""
-
-    def get_workbasket_row(self, user: User, is_ilb_admin: bool) -> WorkbasketRow:
-        """Get data to show in the workbasket."""
-
-        raise NotImplementedError

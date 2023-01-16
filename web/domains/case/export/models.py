@@ -172,9 +172,6 @@ class ExportApplication(ApplicationBase):
     def get_agent_contacts(self) -> "QuerySet[User]":
         return get_users_with_perms(self.agent, only_with_perms_in=["is_contact_of_exporter"])
 
-    def get_workbasket_subject(self) -> str:
-        return "\n".join(["Certificate Application", ProcessTypes(self.process_type).label])
-
     def get_specific_model(self) -> "ExportApplication":
         return super().get_specific_model()
 

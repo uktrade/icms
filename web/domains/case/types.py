@@ -6,16 +6,19 @@ from web.domains.case.export.models import (
 )
 from web.domains.file.models import File
 from web.models import (
-    AccessRequest,
     CertificateOfFreeSaleApplication,
     DerogationsApplication,
     DFLApplication,
     ExportApplication,
     ExportApplicationCertificate,
     ExportApplicationType,
+    ExporterAccessRequest,
+    ExporterApprovalRequest,
     ImportApplication,
     ImportApplicationLicence,
     ImportApplicationType,
+    ImporterAccessRequest,
+    ImporterApprovalRequest,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     SanctionsAndAdhocApplication,
@@ -32,8 +35,21 @@ ImpTypeOrExpType = Union[ImportApplicationType, ExportApplicationType]
 ImpOrExp = Union[ImportApplication, ExportApplication]
 ImpOrExpT = type[ImpOrExp]
 
-ImpOrExpOrAccess = Union[ImportApplication, ExportApplication, AccessRequest]
+ImpOrExpOrAccess = Union[
+    ImportApplication, ExportApplication, ImporterAccessRequest, ExporterAccessRequest
+]
 ImpOrExpOrAccessT = type[ImpOrExpOrAccess]
+
+
+ImpOrExpOrAccessOrApproval = Union[
+    ImportApplication,
+    ExportApplication,
+    ImporterAccessRequest,
+    ExporterAccessRequest,
+    ImporterApprovalRequest,
+    ExporterApprovalRequest,
+]
+ImpOrExpOrAccessOrApprovalT = type[ImpOrExpOrAccessOrApproval]
 
 
 ApplicationsWithChecklist = Union[

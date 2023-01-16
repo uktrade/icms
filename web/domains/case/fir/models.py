@@ -3,8 +3,7 @@ from django.db import models
 
 from web.domains.file.models import File
 from web.domains.user.models import User
-from web.domains.workbasket.base import WorkbasketBase
-from web.flow.models import Process
+from web.flow.models import Process, ProcessTypes
 
 
 class FIRStatuses(models.Manager):
@@ -30,7 +29,7 @@ class FIRStatuses(models.Manager):
         return self.filter(status__in=[self.model.OPEN, self.model.RESPONDED, self.model.CLOSED])
 
 
-class FurtherInformationRequest(WorkbasketBase, Process):
+class FurtherInformationRequest(Process):
     """Further information requests for cases requested from
     applicant by case officers"""
 
@@ -38,7 +37,7 @@ class FurtherInformationRequest(WorkbasketBase, Process):
         indexes = [models.Index(fields=["status"], name="FIR_status_idx")]
         ordering = ["-requested_datetime"]
 
-    PROCESS_TYPE = "FurtherInformationRequest"
+    PROCESS_TYPE = ProcessTypes.FIR
 
     DRAFT = "DRAFT"
     CLOSED = "CLOSED"

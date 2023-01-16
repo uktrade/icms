@@ -2,25 +2,18 @@ from typing import final
 
 import structlog as logging
 from django.db import models
-from django.urls import reverse
 from django.utils.functional import cached_property
 
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
 from web.domains.user.models import User
-from web.domains.workbasket.base import (
-    WorkbasketAction,
-    WorkbasketBase,
-    WorkbasketRow,
-    WorkbasketSection,
-)
 from web.flow.models import Process, ProcessTypes
 
 logger = logging.getLogger(__name__)
 
 
-class AccessRequest(WorkbasketBase, Process):
+class AccessRequest(Process):
     APPROVED = "APPROVED"
     REFUSED = "REFUSED"
     RESPONSES = ((APPROVED, "Approved"), (REFUSED, "Refused"))
@@ -82,82 +75,6 @@ class AccessRequest(WorkbasketBase, Process):
         if self.submitted_by:
             return self.submitted_by.email
         return None
-
-    def get_workbasket_row(self, user: User, is_ilb_admin: bool) -> WorkbasketRow:
-        r = WorkbasketRow()
-        r.id = self.id
-
-        r.reference = self.reference
-
-        r.subject = self.process_type
-
-        r.company = "\n".join(
-            [
-                f"{self.submitted_by} {self.submitted_by.email}",
-                self.organisation_name,
-                self.organisation_address,
-            ]
-        )
-
-        r.status = self.get_status_display()
-
-        r.timestamp = self.created
-
-        info_rows = ["Access Request"]
-
-        if self.annotation_open_fir_pks:
-            info_rows.append("Further Information Requested")
-
-        if is_ilb_admin and self.annotation_has_open_approval_request:
-            info_rows.append("Approval Requested")
-
-        information = "\n".join(info_rows)
-
-        if is_ilb_admin:
-            admin_actions: list[WorkbasketAction] = []
-
-            if self.process_type == "ExporterAccessRequest":
-                entity = "exporter"
-            elif self.process_type == "ImporterAccessRequest":
-                entity = "importer"
-            else:
-                raise NotImplementedError(f"process_type: {self.process_type} not supported")
-
-            admin_actions.append(
-                WorkbasketAction(
-                    is_post=False,
-                    name="Manage",
-                    url=reverse("access:case-management", kwargs={"pk": self.pk, "entity": entity}),
-                ),
-            )
-
-            r.sections.append(WorkbasketSection(information=information, actions=admin_actions))
-
-        if self.submitted_by == user:
-            owner_actions: list[WorkbasketAction] = [
-                WorkbasketAction(
-                    is_post=False,
-                    name="View",
-                    url=reverse(
-                        "case:view", kwargs={"application_pk": self.pk, "case_type": "access"}
-                    ),
-                )
-            ]
-
-            for fir_pk in self.annotation_open_fir_pks:
-                kwargs = {"application_pk": self.pk, "fir_pk": fir_pk, "case_type": "access"}
-
-                owner_actions.append(
-                    WorkbasketAction(
-                        is_post=False,
-                        name="Respond FIR",
-                        url=reverse("case:respond-fir", kwargs=kwargs),
-                    ),
-                )
-
-            r.sections.append(WorkbasketSection(information=information, actions=owner_actions))
-
-        return r
 
 
 @final

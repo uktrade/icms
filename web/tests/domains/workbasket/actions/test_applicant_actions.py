@@ -44,7 +44,9 @@ class TestApplicantActions:
             self.app.status = status
 
             # test
-            action = ViewApplicationAction(self.user, "import", self.app, active_tasks, False, True)
+            action = ViewApplicationAction(
+                self.user, "import", self.app, active_tasks, False, True, False
+            )
 
             if status in shown_statuses:
                 assert action.show_link()
@@ -68,7 +70,7 @@ class TestApplicantActions:
 
         # test
         action = SubmitVariationUpdateAction(
-            self.user, "import", wood_app_submitted, active_tasks, False, True
+            self.user, "import", wood_app_submitted, active_tasks, False, True, False
         )
         assert action.show_link()
 
@@ -81,7 +83,7 @@ class TestApplicantActions:
         active_tasks = []
 
         action = SubmitVariationUpdateAction(
-            self.user, "import", self.app, active_tasks, False, True
+            self.user, "import", self.app, active_tasks, False, True, False
         )
         assert not action.show_link()
 
@@ -92,7 +94,7 @@ class TestApplicantActions:
 
             # test
             action = ClearApplicationAction(
-                self.user, "import", self.app, active_tasks, False, True
+                self.user, "import", self.app, active_tasks, False, True, False
             )
 
             if status == self.ST.COMPLETED:
@@ -106,7 +108,7 @@ class TestApplicantActions:
     def test_view_issued_documents_is_shown(self, completed_app):
         active_tasks = []
         action = ViewIssuedDocumentsAction(
-            self.user, "import", completed_app, active_tasks, False, True
+            self.user, "import", completed_app, active_tasks, False, True, False
         )
 
         assert action.show_link()
@@ -119,7 +121,9 @@ class TestApplicantActions:
         active_tasks = []
 
         # Use the wood app in `self.app` to show it not showing
-        action = ViewIssuedDocumentsAction(self.user, "import", self.app, active_tasks, False, True)
+        action = ViewIssuedDocumentsAction(
+            self.user, "import", self.app, active_tasks, False, True, False
+        )
         assert not action.show_link()
 
         # Test completed app is no longer shown
@@ -128,14 +132,14 @@ class TestApplicantActions:
         licence.save()
 
         action = ViewIssuedDocumentsAction(
-            self.user, "import", completed_app, active_tasks, False, True
+            self.user, "import", completed_app, active_tasks, False, True, False
         )
         assert not action.show_link()
 
     def test_clear_issued_documents_is_shown(self, completed_app):
         active_tasks = []
         action = ClearIssuedDocumentsAction(
-            self.user, "import", completed_app, active_tasks, False, True
+            self.user, "import", completed_app, active_tasks, False, True, False
         )
 
         assert action.show_link()
@@ -149,7 +153,7 @@ class TestApplicantActions:
 
         # Use the wood app in `self.app` to show it not showing
         action = ClearIssuedDocumentsAction(
-            self.user, "import", self.app, active_tasks, False, True
+            self.user, "import", self.app, active_tasks, False, True, False
         )
         assert not action.show_link()
 
@@ -159,6 +163,6 @@ class TestApplicantActions:
         licence.save()
 
         action = ClearIssuedDocumentsAction(
-            self.user, "import", completed_app, active_tasks, False, True
+            self.user, "import", completed_app, active_tasks, False, True, False
         )
         assert not action.show_link()

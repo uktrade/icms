@@ -37,7 +37,9 @@ class TestAdminActions:
         active_tasks = []
 
         # test
-        action = ViewApplicationCaseAction(self.user, "import", self.app, active_tasks, True, True)
+        action = ViewApplicationCaseAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -51,7 +53,9 @@ class TestAdminActions:
         active_tasks = []
 
         # test
-        action = ViewApplicationCaseAction(self.user, "import", self.app, active_tasks, True, True)
+        action = ViewApplicationCaseAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -64,7 +68,9 @@ class TestAdminActions:
         active_tasks = [Task.TaskType.AUTHORISE]
 
         # test
-        action = ViewApplicationCaseAction(self.user, "import", self.app, active_tasks, True, True)
+        action = ViewApplicationCaseAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -78,14 +84,18 @@ class TestAdminActions:
         active_tasks = [Task.TaskType.CHIEF_WAIT]
 
         # test
-        action = ViewApplicationCaseAction(self.user, "import", self.app, active_tasks, True, True)
+        action = ViewApplicationCaseAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
         assert wb_action.name == "View"
 
         active_tasks = [Task.TaskType.CHIEF_ERROR]
-        action = ViewApplicationCaseAction(self.user, "import", self.app, active_tasks, True, True)
+        action = ViewApplicationCaseAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -99,7 +109,9 @@ class TestAdminActions:
         active_tasks = []
 
         # test
-        action = ViewApplicationCaseAction(self.user, "import", self.app, active_tasks, True, True)
+        action = ViewApplicationCaseAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -113,7 +125,9 @@ class TestAdminActions:
         active_tasks = [Task.TaskType.REJECTED]
 
         # test
-        action = ViewApplicationCaseAction(self.user, "import", self.app, active_tasks, True, True)
+        action = ViewApplicationCaseAction(
+            self.user, "import", self.app, active_tasks, True, True, True
+        )
 
         assert action.show_link()
 
@@ -122,7 +136,9 @@ class TestAdminActions:
 
         # Other case owners don't see rejected apps
         self.app.case_owner = User(first_name="Another", last_name="User")
-        action = ViewApplicationCaseAction(self.user, "import", self.app, active_tasks, True, True)
+        action = ViewApplicationCaseAction(
+            self.user, "import", self.app, active_tasks, True, True, True
+        )
         assert not action.show_link()
 
     def test_view_case_is_shown_when_documents_are_being_signed(self):
@@ -132,7 +148,9 @@ class TestAdminActions:
         active_tasks = [Task.TaskType.DOCUMENT_SIGNING]
 
         # test
-        action = ViewApplicationCaseAction(self.user, "import", self.app, active_tasks, True, True)
+        action = ViewApplicationCaseAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -146,7 +164,9 @@ class TestAdminActions:
         active_tasks = [Task.TaskType.DOCUMENT_ERROR]
 
         # test
-        action = ViewApplicationCaseAction(self.user, "import", self.app, active_tasks, True, True)
+        action = ViewApplicationCaseAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -160,7 +180,9 @@ class TestAdminActions:
         active_tasks = [Task.TaskType.PREPARE]
 
         # test
-        action = ViewApplicationCaseAction(self.user, "import", self.app, active_tasks, True, True)
+        action = ViewApplicationCaseAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
         assert not action.show_link()
 
     def test_take_ownership_action_is_shown(self):
@@ -170,7 +192,7 @@ class TestAdminActions:
         active_tasks = []
 
         # test
-        action = TakeOwnershipAction(self.user, "import", self.app, active_tasks, True, True)
+        action = TakeOwnershipAction(self.user, "import", self.app, active_tasks, True, True, False)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -183,7 +205,7 @@ class TestAdminActions:
         active_tasks = []
 
         # test
-        action = TakeOwnershipAction(self.user, "import", self.app, active_tasks, True, True)
+        action = TakeOwnershipAction(self.user, "import", self.app, active_tasks, True, True, False)
         assert not action.show_link()
 
     def test_manage_application_action_is_shown(self):
@@ -193,7 +215,9 @@ class TestAdminActions:
         active_tasks = [self.TT.PROCESS]
 
         # test
-        action = ManageApplicationAction(self.user, "import", self.app, active_tasks, True, True)
+        action = ManageApplicationAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -206,7 +230,9 @@ class TestAdminActions:
         active_tasks = [self.TT.PROCESS]
 
         # test
-        action = ManageApplicationAction(self.user, "import", self.app, active_tasks, True, True)
+        action = ManageApplicationAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
         assert not action.show_link()
 
     def test_clear_application_action_is_shown(self):
@@ -217,7 +243,9 @@ class TestAdminActions:
         active_tasks = [Task.TaskType.REJECTED]
 
         # test
-        action = ClearApplicationAction(self.user, "import", self.app, active_tasks, True, True)
+        action = ClearApplicationAction(
+            self.user, "import", self.app, active_tasks, True, True, True
+        )
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -231,7 +259,9 @@ class TestAdminActions:
         active_tasks = [Task.TaskType.REJECTED]
 
         # test
-        action = ClearApplicationAction(self.user, "import", self.app, active_tasks, True, True)
+        action = ClearApplicationAction(
+            self.user, "import", self.app, active_tasks, True, True, True
+        )
         assert not action.show_link()
 
     def test_authorise_documents_action_is_shown(self):
@@ -240,7 +270,9 @@ class TestAdminActions:
         active_tasks = [self.TT.AUTHORISE]
 
         # test
-        action = AuthoriseDocumentsAction(self.user, "import", self.app, active_tasks, True, True)
+        action = AuthoriseDocumentsAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -251,7 +283,9 @@ class TestAdminActions:
         self.app.status = self.ST.IN_PROGRESS
         active_tasks = [self.TT.PREPARE]
         # test
-        action = AuthoriseDocumentsAction(self.user, "import", self.app, active_tasks, True, True)
+        action = AuthoriseDocumentsAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
         assert not action.show_link()
 
     def test_cancel_authorisation_action_is_shown(self):
@@ -260,7 +294,9 @@ class TestAdminActions:
         active_tasks = [self.TT.AUTHORISE]
 
         # test
-        action = CancelAuthorisationAction(self.user, "import", self.app, active_tasks, True, True)
+        action = CancelAuthorisationAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -272,7 +308,9 @@ class TestAdminActions:
         active_tasks = [self.TT.PREPARE]
 
         # test
-        action = CancelAuthorisationAction(self.user, "import", self.app, active_tasks, True, True)
+        action = CancelAuthorisationAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
         assert not action.show_link()
 
     def test_check_case_document_generation_is_shown(self):
@@ -284,7 +322,7 @@ class TestAdminActions:
             self.app.status = status
 
             action = CheckCaseDocumentGenerationAction(
-                self.user, "import", self.app, active_tasks, True, True
+                self.user, "import", self.app, active_tasks, True, True, False
             )
             assert action.show_link()
 
@@ -298,7 +336,7 @@ class TestAdminActions:
 
         # test
         action = CheckCaseDocumentGenerationAction(
-            self.user, "import", self.app, active_tasks, True, True
+            self.user, "import", self.app, active_tasks, True, True, False
         )
         assert not action.show_link()
 
@@ -311,7 +349,7 @@ class TestAdminActions:
             self.app.status = status
 
             action = RecreateCaseDocumentsAction(
-                self.user, "import", self.app, active_tasks, True, True
+                self.user, "import", self.app, active_tasks, True, True, False
             )
             assert action.show_link()
 
@@ -325,7 +363,7 @@ class TestAdminActions:
 
         # test
         action = RecreateCaseDocumentsAction(
-            self.user, "import", self.app, active_tasks, True, True
+            self.user, "import", self.app, active_tasks, True, True, False
         )
         assert not action.show_link()
 

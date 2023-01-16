@@ -2,6 +2,7 @@ from django.forms import ChoiceField, ModelChoiceField, ModelForm, Textarea
 from guardian.shortcuts import get_users_with_perms
 
 from web.domains.user.models import User
+from web.flow.models import ProcessTypes
 
 from .models import ApprovalRequest, ExporterApprovalRequest, ImporterApprovalRequest
 
@@ -30,7 +31,7 @@ class ExporterApprovalRequestForm(ModelForm):
 
     def clean(self):
         self.instance.access_request = self.application
-        self.instance.process_type = "ExporterApprovalRequest"
+        self.instance.process_type = ProcessTypes.ExpApprovalReq
         return super().clean()
 
 
@@ -58,7 +59,7 @@ class ImporterApprovalRequestForm(ModelForm):
 
     def clean(self):
         self.instance.access_request = self.application
-        self.instance.process_type = "ImporterApprovalRequest"
+        self.instance.process_type = ProcessTypes.ImpApprovalReq
         return super().clean()
 
 

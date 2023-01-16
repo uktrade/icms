@@ -13,7 +13,7 @@ class ClearApplicationAction(Action):
         show_link = False
 
         if self.is_ilb_admin:
-            if self.application.is_rejected(self.active_tasks) and self.is_case_owner():
+            if self.is_rejected and self.is_case_owner():
                 show_link = True
 
         else:

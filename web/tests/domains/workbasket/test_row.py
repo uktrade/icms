@@ -8,6 +8,7 @@ from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import ApplicationBase, UpdateRequest, WithdrawApplication
 from web.domains.workbasket.base import WorkbasketSection
+from web.domains.workbasket.row import get_workbasket_row_func
 from web.domains.workbasket.views import _add_user_import_annotations
 from web.flow.models import Task
 
@@ -53,19 +54,23 @@ def app_completed_agent(db, importer, test_agent_import_user, agent_importer):
 
 
 def test_actions_in_progress(app_in_progress, test_import_user):
-    user_row = app_in_progress.get_workbasket_row(test_import_user, False)
+    get_row = get_workbasket_row_func(app_in_progress.process_type)
+    user_row = get_row(app_in_progress, test_import_user, False)
 
     _check_actions(user_row.sections, expected_actions={"Resume", "Cancel"})
 
 
 def test_actions_submitted(app_submitted, test_import_user):
-    user_row = app_submitted.get_workbasket_row(test_import_user, False)
+    get_row = get_workbasket_row_func(app_submitted.process_type)
+
+    user_row = get_row(app_submitted, test_import_user, False)
 
     _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View Application"})
 
 
 def test_actions_processing(app_processing, test_import_user):
-    user_row = app_processing.get_workbasket_row(test_import_user, False)
+    get_row = get_workbasket_row_func(app_processing.process_type)
+    user_row = get_row(app_processing, test_import_user, False)
 
     _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View Application"})
 
@@ -75,7 +80,8 @@ def test_actions_fir_withdrawal_update_request(app_processing, test_import_user)
     _create_fir_withdrawal(app_processing, test_import_user)
     app_processing = _get_wood_app_with_annotations(app_processing)
 
-    user_row = app_processing.get_workbasket_row(test_import_user, False)
+    get_row = get_workbasket_row_func(app_processing.process_type)
+    user_row = get_row(app_processing, test_import_user, False)
     _check_actions(
         user_row.sections,
         expected_actions={"Pending Withdrawal", "View Application", "Respond"},
@@ -86,7 +92,7 @@ def test_actions_fir_withdrawal_update_request(app_processing, test_import_user)
     # fetch the app again as we've updated the tasks
     app_processing = _get_wood_app_with_annotations(app_processing)
 
-    user_row = app_processing.get_workbasket_row(test_import_user, False)
+    user_row = get_row(app_processing, test_import_user, False)
 
     _check_actions(
         user_row.sections,
@@ -101,25 +107,29 @@ def test_actions_fir_withdrawal_update_request(app_processing, test_import_user)
 
 def test_actions_authorise(app_processing, test_import_user):
     _update_task(app_processing, Task.TaskType.AUTHORISE)
-    user_row = app_processing.get_workbasket_row(test_import_user, False)
+    get_row = get_workbasket_row_func(app_processing.process_type)
+    user_row = get_row(app_processing, test_import_user, False)
 
     _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View Application"})
 
 
 def test_actions_bypass_chief(app_processing, test_import_user):
     _update_task(app_processing, Task.TaskType.CHIEF_WAIT)
-    user_row = app_processing.get_workbasket_row(test_import_user, False)
+    get_row = get_workbasket_row_func(app_processing.process_type)
+
+    user_row = get_row(app_processing, test_import_user, False)
 
     _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View Application"})
 
     _update_task(app_processing, Task.TaskType.CHIEF_ERROR)
-    user_row = app_processing.get_workbasket_row(test_import_user, False)
+    user_row = get_row(app_processing, test_import_user, False)
 
     _check_actions(user_row.sections, expected_actions={"Request Withdrawal", "View Application"})
 
 
 def test_actions_completed(app_completed, test_import_user):
-    user_row = app_completed.get_workbasket_row(test_import_user, False)
+    get_row = get_workbasket_row_func(app_completed.process_type)
+    user_row = get_row(app_completed, test_import_user, False)
 
     _check_actions(
         user_row.sections,
@@ -128,13 +138,15 @@ def test_actions_completed(app_completed, test_import_user):
 
 
 def test_admin_actions_in_progress_ilb_admin(app_in_progress, test_icms_admin_user):
-    admin_row = app_in_progress.get_workbasket_row(test_icms_admin_user, True)
+    get_row = get_workbasket_row_func(app_in_progress.process_type)
+    admin_row = get_row(app_in_progress, test_icms_admin_user, True)
 
     assert admin_row.sections == []
 
 
 def test_admin_actions_submitted(app_submitted, test_icms_admin_user):
-    admin_row = app_submitted.get_workbasket_row(test_icms_admin_user, True)
+    get_row = get_workbasket_row_func(app_submitted.process_type)
+    admin_row = get_row(app_submitted, test_icms_admin_user, True)
 
     _check_actions(admin_row.sections, expected_actions={"Take Ownership", "View"})
 
@@ -142,7 +154,8 @@ def test_admin_actions_submitted(app_submitted, test_icms_admin_user):
 
 
 def test_admin_actions_processing(app_processing, test_icms_admin_user):
-    admin_row = app_processing.get_workbasket_row(test_icms_admin_user, True)
+    get_row = get_workbasket_row_func(app_processing.process_type)
+    admin_row = get_row(app_processing, test_icms_admin_user, True)
 
     _check_actions(admin_row.sections, expected_actions={"Manage"})
 
@@ -151,7 +164,8 @@ def test_admin_actions_fir_withdrawal_update_request(
     app_processing, test_import_user, test_icms_admin_user
 ):
     _create_fir_withdrawal(app_processing, test_import_user)
-    admin_row = app_processing.get_workbasket_row(test_icms_admin_user, True)
+    get_row = get_workbasket_row_func(app_processing.process_type)
+    admin_row = get_row(app_processing, test_icms_admin_user, True)
 
     _check_actions(admin_row.sections, expected_actions={"Manage"})
 
@@ -160,7 +174,7 @@ def test_admin_actions_fir_withdrawal_update_request(
     # fetch the app again as we've updated the tasks
     app_processing = _get_wood_app_with_annotations(app_processing)
 
-    admin_row = app_processing.get_workbasket_row(test_icms_admin_user, True)
+    admin_row = get_row(app_processing, test_icms_admin_user, True)
 
     assert admin_row.sections == []
 
@@ -168,10 +182,12 @@ def test_admin_actions_fir_withdrawal_update_request(
 def test_admin_actions_authorise(app_processing, test_icms_admin_user):
     _update_task(app_processing, Task.TaskType.AUTHORISE)
 
+    get_row = get_workbasket_row_func(app_processing.process_type)
+
     # fetch the app again as we've updated the tasks
     app_processing = _get_wood_app_with_annotations(app_processing)
 
-    admin_row = app_processing.get_workbasket_row(test_icms_admin_user, True)
+    admin_row = get_row(app_processing, test_icms_admin_user, True)
 
     _check_actions(
         admin_row.sections,
@@ -184,13 +200,13 @@ def test_admin_actions_authorise(app_processing, test_icms_admin_user):
 @override_settings(ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD=True)
 def test_admin_actions_bypass_chief(app_processing, test_icms_admin_user):
     _update_task(app_processing, Task.TaskType.CHIEF_WAIT)
-
+    get_row = get_workbasket_row_func(app_processing.process_type)
     # fetch the app again as we've updated the tasks
     app_processing = _get_wood_app_with_annotations(app_processing)
 
     # bypass-chief urls are not included
     with patch("web.domains.case.models.reverse"):
-        admin_row = app_processing.get_workbasket_row(test_icms_admin_user, True)
+        admin_row = get_row(app_processing, test_icms_admin_user, True)
 
     _check_actions(
         admin_row.sections,
@@ -209,7 +225,7 @@ def test_admin_actions_bypass_chief(app_processing, test_icms_admin_user):
     # fetch the app again as we've updated the tasks
     app_processing = _get_wood_app_with_annotations(app_processing)
 
-    admin_row = app_processing.get_workbasket_row(test_icms_admin_user, True)
+    admin_row = get_row(app_processing, test_icms_admin_user, True)
 
     _check_actions(admin_row.sections, expected_actions={"Show Licence Details", "View"})
     _test_view_endpoint_is_case_management(app_processing, admin_row.sections)
@@ -221,12 +237,14 @@ def test_admin_actions_bypass_chief_disabled_when_sending_to_chief(
 ):
     _update_task(app_processing, Task.TaskType.CHIEF_WAIT)
 
+    get_row = get_workbasket_row_func(app_processing.process_type)
+
     # fetch the app again as we've updated the tasks
     app_processing = _get_wood_app_with_annotations(app_processing)
 
     # bypass-chief urls are not included
     with patch("web.domains.case.models.reverse"):
-        admin_row = app_processing.get_workbasket_row(test_icms_admin_user, True)
+        admin_row = get_row(app_processing, test_icms_admin_user, True)
 
     _check_actions(admin_row.sections, expected_actions={"Monitor Progress", "View"})
 
@@ -237,14 +255,15 @@ def test_admin_actions_bypass_chief_disabled_when_sending_to_chief(
     # fetch the app again as we've updated the tasks
     app_processing = _get_wood_app_with_annotations(app_processing)
 
-    admin_row = app_processing.get_workbasket_row(test_icms_admin_user, True)
+    admin_row = get_row(app_processing, test_icms_admin_user, True)
 
     _check_actions(admin_row.sections, expected_actions={"Show Licence Details", "View"})
     _test_view_endpoint_is_case_management(app_processing, admin_row.sections)
 
 
 def test_admin_actions_completed(app_completed, test_icms_admin_user):
-    admin_row = app_completed.get_workbasket_row(test_icms_admin_user, True)
+    get_row = get_workbasket_row_func(app_completed.process_type)
+    admin_row = get_row(app_completed, test_icms_admin_user, True)
 
     # By default the admin shouldn't see anything
     assert len(admin_row.sections) == 0
@@ -254,7 +273,10 @@ def test_admin_actions_completed(app_completed, test_icms_admin_user):
     app_completed.save()
     Task.objects.create(process=app_completed, task_type=Task.TaskType.REJECTED, previous=None)
 
-    admin_row = app_completed.get_workbasket_row(test_icms_admin_user, True)
+    # Need to override the active_tasks annotation now we have updated it.
+    app_completed.active_tasks = app_completed.get_active_task_list()
+
+    admin_row = get_row(app_completed, test_icms_admin_user, True)
     _check_actions(admin_row.sections, expected_actions={"View Case", "Clear"})
 
 

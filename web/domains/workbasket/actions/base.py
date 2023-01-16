@@ -21,6 +21,7 @@ class Action:
         tasks: list[str],
         is_ilb_admin: bool,
         is_importer_user: bool,
+        is_rejected: bool,
     ) -> None:
         self.user = user
         self.case_type = case_type
@@ -29,6 +30,7 @@ class Action:
         self.status = self.application.status
         self.is_ilb_admin = is_ilb_admin
         self.is_importer_user = is_importer_user
+        self.is_rejected = is_rejected
 
     def show_link(self) -> bool:
         raise NotImplementedError

@@ -13,7 +13,6 @@ from django.conf import settings
 from django.db import migrations, models
 
 import web.domains.cat.models
-import web.domains.workbasket.base
 import web.models.mixins
 import web.models.shared
 
@@ -2555,7 +2554,7 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ["submit_datetime"],
             },
-            bases=(web.domains.workbasket.base.WorkbasketBase, "web.process"),
+            bases=("web.process",),
         ),
         migrations.CreateModel(
             name="ApprovalRequest",
@@ -2602,7 +2601,7 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ("-request_date",),
             },
-            bases=(web.domains.workbasket.base.WorkbasketBase, "web.process"),
+            bases=("web.process",),
         ),
         migrations.CreateModel(
             name="DFLGoodsCertificate",
@@ -2692,7 +2691,7 @@ class Migration(migrations.Migration):
                 ("last_update_datetime", models.DateTimeField(auto_now=True)),
                 ("variation_no", models.IntegerField(default=0)),
             ],
-            bases=(web.domains.workbasket.base.WorkbasketBase, "web.process"),
+            bases=("web.process",),
         ),
         migrations.CreateModel(
             name="FurtherInformationRequest",
@@ -2747,7 +2746,7 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ["-requested_datetime"],
             },
-            bases=(web.domains.workbasket.base.WorkbasketBase, "web.process"),
+            bases=("web.process",),
         ),
         migrations.CreateModel(
             name="GMPFile",
@@ -2889,7 +2888,7 @@ class Migration(migrations.Migration):
                     models.DateTimeField(null=True, verbose_name="Date provided to IMI"),
                 ),
             ],
-            bases=(web.domains.workbasket.base.WorkbasketBase, "web.process"),
+            bases=("web.process",),
         ),
         migrations.CreateModel(
             name="IronSteelCertificateFile",
