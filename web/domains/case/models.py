@@ -14,11 +14,6 @@ from django.utils import timezone
 from web.domains.case.services import reference
 from web.domains.file.models import File
 from web.domains.user.models import User
-from web.domains.workbasket.actions import (
-    get_workbasket_admin_sections,
-    get_workbasket_applicant_sections,
-)
-from web.domains.workbasket.base import WorkbasketBase, WorkbasketRow
 from web.flow.models import Process, Task
 from web.types import AuthenticatedHttpRequest
 
@@ -227,7 +222,7 @@ class WithdrawApplication(models.Model):
         ]
 
 
-class ApplicationBase(WorkbasketBase, Process):
+class ApplicationBase(Process):
     """Common base class for Import/ExportApplication. Needed because some
     common code needs a Django model class to work with (see
     ResponsePreparationForm).
@@ -290,49 +285,8 @@ class ApplicationBase(WorkbasketBase, Process):
         """Agent contacts."""
         raise NotImplementedError
 
-    def get_workbasket_subject(self) -> str:
-        """Get workbasket subject/topic column content."""
-        raise NotImplementedError
-
     def get_reference(self) -> str:
         return self.reference or self.DEFAULT_REF
-
-    def get_workbasket_row(self, user: User, is_ilb_admin: bool) -> WorkbasketRow:
-        """Get data to show in the workbasket."""
-
-        r = WorkbasketRow()
-        r.id = self.id
-
-        r.reference = self.get_reference()
-
-        r.subject = self.get_workbasket_subject()
-
-        r.timestamp = self.created
-
-        r.status = self.get_status_display()
-
-        if self.is_import_application():
-            r.company = self.importer  # type: ignore[attr-defined]
-            case_type = "import"
-        else:
-            r.company = self.exporter  # type: ignore[attr-defined]
-            case_type = "export"
-
-        r.company_agent = self.agent  # type: ignore[attr-defined]
-
-        if is_ilb_admin:
-            sections = get_workbasket_admin_sections(
-                user=user, case_type=case_type, application=self
-            )
-        else:
-            sections = get_workbasket_applicant_sections(
-                user=user, case_type=case_type, application=self
-            )
-
-        for section in sections:
-            r.sections.append(section)
-
-        return r
 
     def submit_application(self, request: AuthenticatedHttpRequest, task: Task) -> None:
         if not self.reference:
@@ -395,14 +349,6 @@ class ApplicationBase(WorkbasketBase, Process):
             print(f"Task: {t.get_task_type_display()}, created={t.created}, finished={t.finished}")
 
         print("*-" * 40)
-
-    def is_rejected(self, active_tasks: list[str] | None = None):
-        """Is the application in a rejected state."""
-
-        if not active_tasks:
-            active_tasks = self.get_active_task_list()
-
-        return self.status == self.Statuses.COMPLETED and Task.TaskType.REJECTED in active_tasks
 
 
 class CaseEmail(models.Model):

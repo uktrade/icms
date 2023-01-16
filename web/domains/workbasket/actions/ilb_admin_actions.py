@@ -83,7 +83,7 @@ class ViewApplicationCaseAction(Action):
             show_link = True
 
         # An application rejected by the current case officer
-        elif self.application.is_rejected(self.active_tasks) and self.is_case_owner():
+        elif self.is_rejected and self.is_case_owner():
             show_link = True
             self.section_label = "View Case"
 
@@ -92,9 +92,8 @@ class ViewApplicationCaseAction(Action):
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
 
-        is_rejected = self.application.is_rejected(self.active_tasks)
         if (
-            is_rejected
+            self.is_rejected
             or Task.TaskType.AUTHORISE in self.active_tasks
             or Task.TaskType.DOCUMENT_SIGNING in self.active_tasks
             or Task.TaskType.DOCUMENT_ERROR in self.active_tasks

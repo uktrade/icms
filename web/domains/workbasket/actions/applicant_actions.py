@@ -263,7 +263,7 @@ class IssuedDocumentsBaseAction(Action):
 
         if (
             self.status == ImpExpStatus.COMPLETED
-            and not self.application.is_rejected(self.active_tasks)
+            and not self.is_rejected
             and self.issued_documents_qs.exists()
         ):
             show_link = True
@@ -329,11 +329,7 @@ class ProvideFirearmsReportAction(Action):
         # Can't import ImportApplicationType.Types.FIREARMS
         correct_app_type = self.application.application_type.type == "FA"
 
-        if (
-            correct_status
-            and correct_app_type
-            and not self.application.is_rejected(self.active_tasks)
-        ):
+        if correct_status and correct_app_type and not self.is_rejected:
             supplementary_info = self._get_supplementary_info()
 
             if supplementary_info and not supplementary_info.is_complete:

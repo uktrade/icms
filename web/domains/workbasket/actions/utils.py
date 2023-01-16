@@ -1,7 +1,9 @@
 from collections import defaultdict
 from typing import TYPE_CHECKING
 
+from web.domains.case.shared import ImpExpStatus
 from web.domains.workbasket.base import WorkbasketSection
+from web.flow.models import Task
 
 from .applicant_actions import REQUEST_VARIATION_APPLICANT_ACTIONS
 from .ilb_admin_actions import ILB_ADMIN_ACTIONS
@@ -54,6 +56,7 @@ def _get_workbasket_sections(
             tasks=tasks,
             is_ilb_admin=is_ilb_admin,
             is_importer_user=is_importer_user,
+            is_rejected=_is_rejected(application, tasks),
         )
 
         if action.show_link():
@@ -64,3 +67,9 @@ def _get_workbasket_sections(
     return [
         WorkbasketSection(information=label, actions=actions) for label, actions in sections.items()
     ]
+
+
+def _is_rejected(application: "ImpOrExp", active_tasks: list[str]) -> bool:
+    """Is the application in a rejected state."""
+
+    return application.status == ImpExpStatus.COMPLETED and Task.TaskType.REJECTED in active_tasks

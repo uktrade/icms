@@ -346,9 +346,6 @@ class ImportApplication(ApplicationBase):
     def get_agent_contacts(self) -> "QuerySet[User]":
         return get_users_with_perms(self.agent, only_with_perms_in=["is_contact_of_importer"])
 
-    def get_workbasket_subject(self) -> str:
-        return "\n".join(["Import Application", ProcessTypes(self.process_type).label])
-
     @property
     def application_approved(self):
         return self.decision == self.APPROVE

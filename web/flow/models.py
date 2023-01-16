@@ -33,12 +33,16 @@ class ProcessTypes(models.TextChoices):
         "Certificate of Good Manufacturing Practice",
     )
 
-    # access requests
+    # Import and Export FIR
+    FIR = ("FurtherInformationRequest", "Further Information Requests")
+
+    # Access requests
     IAR = ("ImporterAccessRequest", "Importer Access Request")
     EAR = ("ExporterAccessRequest", "Exporter Access Request")
 
-    # TODO: FIRs and access request approvals also inherit from process, they
-    # should probably be listed here as well
+    # Approval requests
+    ExpApprovalReq = ("ExporterApprovalRequest", "Exporter Approval Request")
+    ImpApprovalReq = ("ImporterApprovalRequest", "Importer Approval Request")
 
 
 class Process(models.Model):
