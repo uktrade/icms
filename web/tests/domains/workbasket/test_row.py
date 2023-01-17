@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 import pytest
 from django.test import override_settings
 
@@ -204,9 +202,7 @@ def test_admin_actions_bypass_chief(app_processing, test_icms_admin_user):
     # fetch the app again as we've updated the tasks
     app_processing = _get_wood_app_with_annotations(app_processing)
 
-    # bypass-chief urls are not included
-    with patch("web.domains.case.models.reverse"):
-        admin_row = get_row(app_processing, test_icms_admin_user, True)
+    admin_row = get_row(app_processing, test_icms_admin_user, True)
 
     _check_actions(
         admin_row.sections,
@@ -242,9 +238,7 @@ def test_admin_actions_bypass_chief_disabled_when_sending_to_chief(
     # fetch the app again as we've updated the tasks
     app_processing = _get_wood_app_with_annotations(app_processing)
 
-    # bypass-chief urls are not included
-    with patch("web.domains.case.models.reverse"):
-        admin_row = get_row(app_processing, test_icms_admin_user, True)
+    admin_row = get_row(app_processing, test_icms_admin_user, True)
 
     _check_actions(admin_row.sections, expected_actions={"Monitor Progress", "View"})
 

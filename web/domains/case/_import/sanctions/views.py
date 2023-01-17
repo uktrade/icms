@@ -15,6 +15,8 @@ from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
     get_application_form,
+    redirect_after_submit,
+    submit_application,
 )
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
@@ -181,7 +183,6 @@ def edit_goods(
             "page_title": "Edit Goods",
             "commodity_group_data": commodity_group_data,
             "unit_label": unit_label,
-            "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/sanctions/add_or_edit_goods.html", context)
@@ -390,9 +391,9 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                application.submit_application(request, task)
+                submit_application(application, request, task)
 
-                return application.redirect_after_submit(request)
+                return redirect_after_submit(application, request)
 
         else:
             form = SubmitForm()

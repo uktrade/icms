@@ -15,6 +15,8 @@ from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
     get_application_form,
+    redirect_after_submit,
+    submit_application,
     view_application_file,
 )
 from web.domains.case.views.utils import get_current_task_and_readonly_status
@@ -169,7 +171,7 @@ def submit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) 
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                application.submit_application(request, task)
+                submit_application(application, request, task)
 
                 # TODO: replace with Endorsement Usage Template (ICMSLST-638)
                 # endorsements are active on ICMS1 but inactive in our db
@@ -180,7 +182,7 @@ def submit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) 
                 # )
                 # application.endorsements.create(content=endorsement.template_content)
 
-                return application.redirect_after_submit(request)
+                return redirect_after_submit(application, request)
 
         else:
             form = SubmitForm()

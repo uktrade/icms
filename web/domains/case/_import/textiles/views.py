@@ -13,6 +13,8 @@ from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
     get_application_form,
+    redirect_after_submit,
+    submit_application,
     view_application_file,
 )
 from web.domains.case.views.utils import get_current_task_and_readonly_status
@@ -126,9 +128,9 @@ def submit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -
                 application.category_licence_description = (
                     application.category_commodity_group.group_description
                 )
-                application.submit_application(request, task)
+                submit_application(application, request, task)
 
-                return application.redirect_after_submit(request)
+                return redirect_after_submit(application, request)
 
         else:
             form = SubmitForm()

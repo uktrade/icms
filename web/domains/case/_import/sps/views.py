@@ -13,6 +13,8 @@ from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
     get_application_form,
+    redirect_after_submit,
+    submit_application,
     view_application_file,
     view_application_file_direct,
 )
@@ -123,9 +125,9 @@ def submit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                application.submit_application(request, task)
+                submit_application(application, request, task)
 
-                return application.redirect_after_submit(request)
+                return redirect_after_submit(application, request)
 
         else:
             form = SubmitForm()

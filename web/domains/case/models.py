@@ -1,21 +1,14 @@
 from typing import TYPE_CHECKING
 
-from django.contrib import messages
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import Q
-from django.http import HttpResponse
-from django.shortcuts import redirect
-from django.urls import reverse
-from django.utils import timezone
 
-from web.domains.case.services import reference
 from web.domains.file.models import File
 from web.domains.user.models import User
-from web.flow.models import Process, Task
-from web.types import AuthenticatedHttpRequest
+from web.flow.models import Process
 
 from .shared import ImpExpStatus
 
@@ -287,40 +280,6 @@ class ApplicationBase(Process):
 
     def get_reference(self) -> str:
         return self.reference or self.DEFAULT_REF
-
-    def submit_application(self, request: AuthenticatedHttpRequest, task: Task) -> None:
-        if not self.reference:
-            self.reference = reference.get_application_case_reference(
-                request.icms.lock_manager, application=self
-            )
-
-        # if case owner is present, an update request has just been filed
-        if self.case_owner:
-            # Only change to processing if it's not a variation request
-            if self.status != self.Statuses.VARIATION_REQUESTED:
-                self.status = self.Statuses.PROCESSING
-        else:
-            self.status = self.Statuses.SUBMITTED
-
-        self.submit_datetime = timezone.now()
-        self.submitted_by = request.user
-        self.update_order_datetime()
-        self.save()
-
-        task.is_active = False
-        task.finished = timezone.now()
-        task.save()
-
-        Task.objects.create(process=self, task_type=Task.TaskType.PROCESS, previous=task)
-
-    def redirect_after_submit(self, request: AuthenticatedHttpRequest) -> HttpResponse:
-        msg = (
-            f"Your application has been submitted. The reference number"
-            f" assigned to this case is {self.get_reference()}."
-        )
-        messages.success(request, msg)
-
-        return redirect(reverse("workbasket"))
 
     def current_update_requests(self):
         st = UpdateRequest.Status
