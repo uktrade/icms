@@ -16,6 +16,8 @@ from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
     get_application_form,
+    redirect_after_submit,
+    submit_application,
     view_application_file,
 )
 from web.domains.case.views.utils import get_current_task_and_readonly_status
@@ -277,7 +279,7 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                application.submit_application(request, task)
+                submit_application(application, request, task)
 
                 template = Template.objects.get(template_code="COVER_FIREARMS_DEACTIVATED_FIREARMS")
                 application.cover_letter = template.get_content(
@@ -295,7 +297,7 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
                 # This view gets called when an applicant submits changes
                 DFLSupplementaryInfo.objects.get_or_create(import_application=application)
 
-                return application.redirect_after_submit(request)
+                return redirect_after_submit(application, request)
 
         else:
             form = SubmitForm()

@@ -41,7 +41,7 @@ from web.domains.case.models import (
     UpdateRequest,
 )
 from web.domains.case.shared import ImpExpStatus
-from web.domains.case.utils import get_application_current_task
+from web.domains.case.utils import get_application_current_task, submit_application
 from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
 from web.domains.country.models import Country
 from web.flow.models import ProcessTypes, Task
@@ -2108,7 +2108,7 @@ def _submit_application(application, import_fixture_data: FixtureData | ExportFi
     """Helper function to submit an application (Using the application code to do so)"""
     task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
-    application.submit_application(import_fixture_data.request, task)
+    submit_application(application, import_fixture_data.request, task)
     application.save()
 
 

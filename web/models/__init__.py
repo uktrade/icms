@@ -30,5 +30,6 @@ from web.domains.sanction_email.models import *  # NOQA
 from web.domains.section5.models import *  # NOQA
 from web.domains.template.models import *  # NOQA
 from web.domains.user.models import *  # NOQA
+from web.flow.models import Process, Task  # NOQA: F401
 from web.models.models import *  # NOQA
 from web.permissions import *  # NOQA

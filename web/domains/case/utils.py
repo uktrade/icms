@@ -1,15 +1,19 @@
 from typing import Any, Optional
 
 from django import forms
+from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils import timezone
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.export.models import ExportApplication
 from web.domains.case.models import CaseLicenceCertificateBase
 from web.domains.case.types import IssuedDocument
+from web.domains.case.services import reference
 from web.domains.file.models import File
 from web.domains.user.models import User
 from web.flow.models import ProcessTypes, Task
@@ -221,3 +225,43 @@ def get_application_form(
             form = edit_form(**form_kwargs)
 
     return form
+
+
+def submit_application(app: ImpOrExp, request: AuthenticatedHttpRequest, task: Task) -> None:
+    """Helper function to submit all types of application."""
+
+    if not app.reference:
+        app.reference = reference.get_application_case_reference(
+            request.icms.lock_manager, application=app
+        )
+
+    # if case owner is present, an update request has just been filed
+    if app.case_owner:
+        # Only change to processing if it's not a variation request
+        if app.status != app.Statuses.VARIATION_REQUESTED:
+            app.status = app.Statuses.PROCESSING
+    else:
+        app.status = app.Statuses.SUBMITTED
+
+    app.submit_datetime = timezone.now()
+    app.submitted_by = request.user
+    app.update_order_datetime()
+    app.save()
+
+    task.is_active = False
+    task.finished = timezone.now()
+    task.save()
+
+    Task.objects.create(process=app, task_type=Task.TaskType.PROCESS, previous=task)
+
+
+def redirect_after_submit(app: ImpOrExp, request: AuthenticatedHttpRequest) -> HttpResponse:
+    """Called after submitting an application"""
+
+    msg = (
+        "Your application has been submitted."
+        f" The reference number assigned to this case is {app.get_reference()}."
+    )
+    messages.success(request, msg)
+
+    return redirect(reverse("workbasket"))
