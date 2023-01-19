@@ -355,7 +355,9 @@ class SILGoodsParser(BaseXmlParser):
 
 class SupplementaryReportParser(BaseXmlParser):
     FIELD = "supplementary_report_xml"
-    ROOT_NODE = "/FA_SUPPLEMENTARY_REPORT_LIST/FA_SUPPLEMENTARY_REPORT"
+    ROOT_NODE = (
+        "/FA_SUPPLEMENTARY_REPORT_LIST/FA_SUPPLEMENTARY_REPORT/FA_SUPPLEMENTARY_REPORT_DETAILS"
+    )
 
     @classmethod
     def parse_xml_fields(cls, parent_pk: int, xml: "ET") -> dm.SupplementaryReportBase:
@@ -379,10 +381,10 @@ class SupplementaryReportParser(BaseXmlParser):
         if not cls.MODEL:
             raise NotImplementedError("MODEL must be defined on the class")
 
-        transport = get_xml_val(xml, ".//MODE_OF_TRANSPORT[not(fox-error)]")
-        date_received = get_xml_val(xml, ".//RECEIVED_DATE[not(fox-error)]")
-        report_firearms_xml = get_xml_val(xml, ".//GOODS_LINE_LIST", text=False)
-        bought_from_legacy_id = get_xml_val(xml, ".//REPORT_SELLER_HOLDER[not(fox-error)]")
+        transport = get_xml_val(xml, "./MODE_OF_TRANSPORT[not(fox-error)]")
+        date_received = get_xml_val(xml, "./RECEIVED_DATE[not(fox-error)]")
+        report_firearms_xml = get_xml_val(xml, "./GOODS_LINE_LIST", text=False)
+        bought_from_legacy_id = get_xml_val(xml, "./REPORT_SELLER_HOLDER[not(fox-error)]")
 
         return cls.MODEL(
             **{
@@ -424,6 +426,16 @@ class ReportFirearmParser(BaseXmlParser):
             <FIREARMS_DETAILS_LIST>
               <FIREARMS_DETAILS />
             </FIREARMS_DETAILS_LIST>
+            <FILE_UPLOAD_LIST>
+              <FILE_UPLOAD>
+                <FILE_CONTENT>
+                    <filename />
+                    <file-id />
+                    <content-type />
+                    <upload-date-time />
+                </FILE_CONTENT>
+              </FILE_UPLOAD>
+            </FILE_UPLOAD_LIST>
           </GOODS_LINE>
         </GOODS_LINE_LIST>
         """
@@ -435,27 +447,36 @@ class ReportFirearmParser(BaseXmlParser):
         for parent_pk, xml in batch:
             xml_tree = etree.fromstring(xml)
             goods_xml_list = xml_tree.xpath(cls.ROOT_NODE)
+
             for ordinal, goods_xml in enumerate(goods_xml_list, start=1):
                 reporting_mode = get_xml_val(goods_xml, "./FA_REPORTING_MODE")
+                firearm_details_xml_list = goods_xml.xpath(
+                    "./FIREARMS_DETAILS_LIST/FIREARMS_DETAILS"
+                )
 
-                if reporting_mode == "MANUAL":
-                    report_firearm_xml_list = goods_xml.xpath(".//FIREARMS_DETAILS")
-                    for report_firearm_xml in report_firearm_xml_list:
-                        obj = cls.parse_manual_xml(parent_pk, report_firearm_xml)
+                # reporting mode only accurate for upload. MANUAL and NO_REPORT both contain null values
+                if reporting_mode == "UPLOAD":
+                    upload_xml_list = goods_xml.xpath("./FILE_UPLOAD_LIST/FILE_UPLOAD")
+                    for upload_xml in upload_xml_list:
+                        file_id = get_xml_val(upload_xml, "./FILE_CONTENT/file-id")
+                        model_list[cls.MODEL].append(
+                            cls.MODEL(
+                                report_id=parent_pk,
+                                is_upload=True,
+                                goods_certificate_legacy_id=ordinal,
+                                file_id=file_id,
+                            )
+                        )
+
+                # handle manually entered goods data
+                elif firearm_details_xml_list:
+                    for firearm_xml in firearm_details_xml_list:
+                        obj = cls.parse_manual_xml(parent_pk, firearm_xml)
                         obj.goods_certificate_legacy_id = ordinal
                         model_list[obj._meta.model].append(obj)
 
-                elif reporting_mode == "UPLOAD":
-                    model_list[cls.MODEL].append(
-                        cls.MODEL(
-                            report_id=parent_pk, is_upload=True, goods_certificate_legacy_id=ordinal
-                        )
-                    )
-                    # TODO ICMSLST-1756: Report firearms need to connect to documents
-                    # report_firearm_xml_list = goods_xml.xpath("/FIREARMS_DETAILS_LIST")
-
+                # no firearm reported
                 else:
-                    # TODO ICMSLST-1496: Check no firearms reported
                     model_list[cls.MODEL].append(
                         cls.MODEL(
                             report_id=parent_pk,
@@ -543,6 +564,16 @@ class SILReportFirearmParser(BaseXmlParser):
             <FIREARMS_DETAILS_LIST>
               <FIREARMS_DETAILS />
             </FIREARMS_DETAILS_LIST>
+            <FILE_UPLOAD_LIST>
+              <FILE_UPLOAD>
+                <FILE_CONTENT>
+                    <filename />
+                    <file-id />
+                    <content-type />
+                    <upload-date-time />
+                </FILE_CONTENT>
+              </FILE_UPLOAD>
+            </FILE_UPLOAD_LIST>
           </GOODS_LINE>
         </GOODS_LINE_LIST>
         """
@@ -555,25 +586,32 @@ class SILReportFirearmParser(BaseXmlParser):
             goods_xml_list = xml_tree.xpath(cls.ROOT_NODE)
             goods_xml = goods_xml_list[goods_index]
             reporting_mode = get_xml_val(goods_xml, "./FA_REPORTING_MODE")
-
+            firearm_details_xml_list = goods_xml.xpath("./FIREARMS_DETAILS_LIST/FIREARMS_DETAILS")
             model = cls.SECTION_MODEL[section]
 
-            if reporting_mode == "MANUAL":
-                report_firearm_xml_list = goods_xml.xpath(".//FIREARMS_DETAILS")
-                for report_firearm_xml in report_firearm_xml_list:
-                    obj = cls.parse_manual_xml(parent_pk, model, report_firearm_xml)
+            # reporting mode only accurate for upload. MANUAL and NO_REPORT both contain null values
+            if reporting_mode == "UPLOAD":
+                upload_xml_list = goods_xml.xpath("./FILE_UPLOAD_LIST/FILE_UPLOAD")
+                for upload_xml in upload_xml_list:
+                    file_id = get_xml_val(upload_xml, "./FILE_CONTENT/file-id")
+                    model_list[model].append(
+                        model(
+                            report_id=parent_pk,
+                            is_upload=True,
+                            goods_certificate_legacy_id=ordinal,
+                            file_id=file_id,
+                        )
+                    )
+
+            # handle manually entered goods data
+            elif firearm_details_xml_list:
+                for firearm_details_xml in firearm_details_xml_list:
+                    obj = cls.parse_manual_xml(parent_pk, model, firearm_details_xml)
                     obj.goods_certificate_legacy_id = ordinal
                     model_list[model].append(obj)
 
-            elif reporting_mode == "UPLOAD":
-                model_list[model].append(
-                    model(report_id=parent_pk, is_upload=True, goods_certificate_legacy_id=ordinal)
-                )
-                # TODO ICMSLST-1496: Report firearms need to connect to documents
-                # report_firearm_xml_list = goods_xml.xpath("/FIREARMS_DETAILS_LIST")
-
+            # no firearms reported
             else:
-                # TODO ICMSLST-1496: Check no firearms reported
                 model_list[model].append(
                     model(
                         report_id=parent_pk,

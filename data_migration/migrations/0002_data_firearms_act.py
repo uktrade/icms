@@ -42,6 +42,11 @@ def load_firearms_act_data(apps, schema_editor):
     )
 
 
+def backward(apps, schema_editor):
+    FirearmsAct = apps.get_model("data_migration", "FirearmsAct")
+    FirearmsAct.objects.filter(id__gte=1, id__lte=7).delete()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -49,5 +54,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(load_firearms_act_data),
+        migrations.RunPython(load_firearms_act_data, backward),
     ]

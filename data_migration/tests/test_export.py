@@ -84,6 +84,15 @@ def test_extract_xml(mock_connect):
     process_pk = models.Process.objects.count() + 1
     pk_range = list(range(process_pk, process_pk + 3))
     iat = factory.ImportApplicationTypeFactory(master_country_group=cg)
+    models.File.objects.create(
+        created_by_id=user_pk,
+        sr_goods_file_id="abcde",
+        filename="SR Upload.pdf",
+        content_type="pdf",
+        created_datetime="2022-11-05T12:11:03",
+        path="abcde/SR Upload.pdf",
+        file_size=1234,
+    )
 
     supp_xmls = [xml_data.sr_upload_xml, xml_data.sr_manual_xml, xml_data.sr_list]
 

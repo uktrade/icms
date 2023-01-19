@@ -53,32 +53,11 @@ sr_upload_goods = """
     <FILE_UPLOAD_LIST>
       <FILE_UPLOAD>
           <FILE_CONTENT>
-            <filename>a file.pdf</filename>
-            <content-type>application/pdf</content-type>
-            <browser-content-type>application/pdf</browser-content-type>
-            <original-file-location>a file.pdf</original-file-location>
+            <filename>SR Upload.pdf</filename>
+            <content-type>pdf</content-type>
             <size>1234</size>
-            <status>complete</status>
-            <status-message>Upload complete</status-message>
-            <system-message/>
-            <readable-error-message/>
-            <upload-date-time>2021-11-08T08:29:59</upload-date-time>
-            <file-upload-type>file</file-upload-type>
-            <file-id>abcdefg</file-id>
-            <character-encoding>not specified</character-encoding>
-            <diagnostic-info>
-              <filename>a file.pdf</filename>
-              <content-type>application/pdf</content-type>
-              <browser-content-type>application/pdf</browser-content-type>
-              <original-file-location>a file.pdf</original-file-location>
-              <estimated-size>1234</estimated-size>
-              <status>complete</status>
-              <status-message>Upload complete</status-message>
-              <system-message/>
-              <readable-error-message/>
-              <upload-date-time>2021-11-08T08:29:59</upload-date-time>
-              <file-id>abcde</file-id>
-            </diagnostic-info>
+            <upload-date-time>2022-11-05T12:11:03</upload-date-time>
+            <file-id>abcde</file-id>
           </FILE_CONTENT>
       </FILE_UPLOAD>
     </FILE_UPLOAD_LIST>
@@ -90,6 +69,33 @@ sr_upload_goods = """
 sr_upload_xml = """
 <FA_SUPPLEMENTARY_REPORT_LIST>
   <FA_SUPPLEMENTARY_REPORT>
+    <HISTORICAL_REPORT_LIST>
+      <HISTORICAL_REPORT>
+        <HISTORICAL_REPORT_DETAILS>
+          <GOODS_LINE_LIST>
+            <GOODS_LINE>
+              <GOODS_ITEM_DESC>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
+              <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
+              <GOOD_ITEM_ID>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
+              <FA_REPORTING_MODE>UPLOAD</FA_REPORTING_MODE>
+              <FIREARMS_DETAILS_LIST/>
+              <FILE_UPLOAD_LIST>
+                <FILE_UPLOAD>
+                    <FILE_CONTENT>
+                      <filename>SR Upload.pdf</filename>
+                      <content-type>pdf</content-type>
+                      <size>1234</size>
+                      <upload-date-time>2022-11-05T11:11:03</upload-date-time>
+                      <file-id>defghe</file-id>
+                    </FILE_CONTENT>
+                </FILE_UPLOAD>
+              </FILE_UPLOAD_LIST>
+              <GOODS_ITEM_SUBMIT/>
+            </GOODS_LINE>
+          </GOODS_LINE_LIST>
+        </HISTORICAL_REPORT_DETAILS>
+      </HISTORICAL_REPORT>
+    </HISTORICAL_REPORT_LIST>
     <FA_SUPPLEMENTARY_REPORT_DETAILS>
       {}
       <MODE_OF_TRANSPORT>AIR</MODE_OF_TRANSPORT>
@@ -184,7 +190,7 @@ sr_manual_goods_3 = """
     <GOODS_ITEM_DESC>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
     <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
     <GOOD_ITEM_ID>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
-    <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>
+    <FA_REPORTING_MODE />
     <FIREARMS_DETAILS_LIST>
       <FIREARMS_DETAILS>
         <SERIAL_NUMBER>11</SERIAL_NUMBER>

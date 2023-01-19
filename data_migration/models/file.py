@@ -29,6 +29,7 @@ class FileCombined(MigrationBase):
     path = models.CharField(max_length=4000, null=True)
     created_datetime = models.DateTimeField(null=True)
     created_by_id = models.IntegerField(null=True)
+    sr_goods_file_id = models.CharField(max_length=20, null=True)
 
 
 class FileFolder(MigrationBase):
@@ -103,6 +104,9 @@ class File(MigrationBase):
     )
     document_legacy_id = models.IntegerField(unique=True, null=True)
 
+    # firearms supplementary report fle id
+    sr_goods_file_id = models.CharField(max_length=20, null=True, unique=True)
+
     @classmethod
     def get_excludes(cls) -> list[str]:
         return super().get_excludes() + [
@@ -110,13 +114,18 @@ class File(MigrationBase):
             "doc_folder_id",
             "document_legacy_id",
             "created_by_str",
+            "sr_goods_file_id",
         ]
 
     @classmethod
     def get_from_combined(cls) -> QuerySet:
         return (
             FileCombined.objects.exclude(content_type__isnull=True)
-            .filter(Q(file_id__isnull=False) | (Q(version_id__isnull=False) & Q(status="RECEIVED")))
+            .filter(
+                Q(file_id__isnull=False)
+                | (Q(version_id__isnull=False) & Q(status="RECEIVED"))
+                | Q(sr_goods_file_id__isnull=False)
+            )
             .values(
                 "filename",
                 "content_type",
@@ -126,6 +135,7 @@ class File(MigrationBase):
                 "created_by_id",
                 "target_id",
                 "doc_folder_id",
+                "sr_goods_file_id",
             )
             .iterator(chunk_size=2000)
         )

@@ -6,9 +6,9 @@ from django.db.models import F, OuterRef, Subquery
 
 from data_migration.models.base import MigrationBase
 from data_migration.models.file import File, FileM2MBase
+from data_migration.models.import_application import ChecklistBase, ImportApplication
 from data_migration.models.reference import ObsoleteCalibre
 
-from ..import_application import ChecklistBase, ImportApplication
 from .authorities import FirearmsAuthority, Section5Authority, Section5Clause
 from .base import (
     FirearmBase,
@@ -301,6 +301,7 @@ class SILSupplementaryReportFirearmSection1(SILReportFirearmBase):
     report = models.ForeignKey(
         SILSupplementaryReport, related_name="section1_firearms", on_delete=models.CASCADE
     )
+    file = models.ForeignKey(File, on_delete=models.CASCADE, null=True, to_field="sr_goods_file_id")
 
 
 class SILSupplementaryReportFirearmSection2(SILReportFirearmBase):
@@ -309,6 +310,7 @@ class SILSupplementaryReportFirearmSection2(SILReportFirearmBase):
     report = models.ForeignKey(
         SILSupplementaryReport, related_name="section2_firearms", on_delete=models.CASCADE
     )
+    file = models.ForeignKey(File, on_delete=models.CASCADE, null=True, to_field="sr_goods_file_id")
 
 
 class SILSupplementaryReportFirearmSection5(SILReportFirearmBase):
@@ -317,6 +319,7 @@ class SILSupplementaryReportFirearmSection5(SILReportFirearmBase):
     report = models.ForeignKey(
         SILSupplementaryReport, related_name="section5_firearms", on_delete=models.CASCADE
     )
+    file = models.ForeignKey(File, on_delete=models.CASCADE, null=True, to_field="sr_goods_file_id")
 
 
 class SILSupplementaryReportFirearmSection582Obsolete(SILReportFirearmBase):  # /PS-IGNORE
@@ -327,6 +330,7 @@ class SILSupplementaryReportFirearmSection582Obsolete(SILReportFirearmBase):  # 
         related_name="section582_obsolete_firearms",
         on_delete=models.CASCADE,
     )
+    file = models.ForeignKey(File, on_delete=models.CASCADE, null=True, to_field="sr_goods_file_id")
 
 
 class SILSupplementaryReportFirearmSection582Other(SILReportFirearmBase):  # /PS-IGNORE
@@ -335,6 +339,7 @@ class SILSupplementaryReportFirearmSection582Other(SILReportFirearmBase):  # /PS
     report = models.ForeignKey(
         SILSupplementaryReport, related_name="section582_other_firearms", on_delete=models.CASCADE
     )
+    file = models.ForeignKey(File, on_delete=models.CASCADE, null=True, to_field="sr_goods_file_id")
 
 
 class SILSupplementaryReportFirearmSectionLegacy(SILReportFirearmBase):
@@ -343,3 +348,4 @@ class SILSupplementaryReportFirearmSectionLegacy(SILReportFirearmBase):
     report = models.ForeignKey(
         SILSupplementaryReport, related_name="section_legacy_firearms", on_delete=models.CASCADE
     )
+    file = models.ForeignKey(File, on_delete=models.CASCADE, null=True, to_field="sr_goods_file_id")
