@@ -2020,4 +2020,26 @@ ia_query_result = {
             ),
         ],
     ),
+    queries.fa_supplementary_report_upload_files: (
+        [
+            ("created_by_id",),
+            ("sr_goods_file_id",),
+            ("filename",),
+            ("content_type",),
+            ("created_datetime",),
+            ("path",),
+            ("file_size",),
+        ],
+        [
+            (
+                2,  # created_by_id
+                "abcde",  # sr_goods_file_id
+                "SR Upload.pdf",  # filename
+                "pdf",  # content_type
+                "2022-11-05T12:11:03",  # created_datetime
+                "abcde/SR Upload.pdf",  # path
+                1234,  # file_size
+            )
+        ],
+    ),
 }

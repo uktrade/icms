@@ -225,4 +225,8 @@ class SupplementaryReportFirearmBase(MigrationBase):
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["goods_certificate_legacy_id"]
+        return super().get_excludes() + ["goods_certificate_legacy_id", "file_id"]
+
+    @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        return {"document_id": F("file__id")}

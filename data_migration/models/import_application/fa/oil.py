@@ -79,5 +79,4 @@ class OILSupplementaryReportFirearm(SupplementaryReportFirearmBase):
     report = models.ForeignKey(
         OILSupplementaryReport, related_name="firearms", on_delete=models.CASCADE
     )
-
-    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)
+    file = models.ForeignKey(File, on_delete=models.CASCADE, null=True, to_field="sr_goods_file_id")

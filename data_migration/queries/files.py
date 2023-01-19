@@ -704,6 +704,49 @@ ORDER BY vf.file_id
 """
 
 
+fa_supplementary_report_upload_files = """
+SELECT
+  ad.ima_id
+  , ad.id imad_id
+  , CONCAT(id, CONCAT('/', x.filename)) path
+  , x.*
+FROM impmgr.import_application_details ad
+INNER JOIN impmgr.xview_ima_details xid ON ad.id = xid.imad_id AND ima_type = 'FA'
+CROSS JOIN XMLTABLE('
+for $g1 in /IMA/FA_REPORTS/FA_SUPPLEMENTARY_REPORT_LIST/FA_SUPPLEMENTARY_REPORT | <null/>
+where /IMA/FA_REPORTS/FA_SUPPLEMENTARY_REPORT_LIST/FA_SUPPLEMENTARY_REPORT and not($g1/self::null)
+return
+for $g2 in $g1/FA_SUPPLEMENTARY_REPORT_DETAILS/GOODS_LINE_LIST/GOODS_LINE | <null/>
+where $g1/FA_SUPPLEMENTARY_REPORT_DETAILS/GOODS_LINE_LIST/GOODS_LINE and not($g2/self::null)
+return
+for $g3 in $g2/FILE_UPLOAD_LIST/FILE_UPLOAD | <null/>
+where $g2/FILE_UPLOAD_LIST/FILE_UPLOAD and not ($g3/self::null)
+return
+<uploads>
+  <report_mode>{$g2/FA_REPORTING_MODE/text()}</report_mode>
+  <created_by_id>{$g1/FA_SUPPLEMENTARY_REPORT_DETAILS/SUBMITTED_BY_WUA_ID/text()}</created_by_id>
+  <file_id>{$g3/FILE_CONTENT/file-id/text()}</file_id>
+  <file_size>{$g3/FILE_CONTENT/size/text()}</file_size>
+  <filename>{$g3/FILE_CONTENT/filename/text()}</filename>
+  <content_type>{$g3/FILE_CONTENT/content-type/text()}</content_type>
+  <created_datetime>{$g3/FILE_CONTENT/upload-date-time/text()}</created_datetime>
+</uploads>
+'
+PASSING ad.xml_data
+COLUMNS
+  created_by_id INTEGER PATH '/uploads/created_by_id/text()'
+  , sr_goods_file_id VARCHAR(4000) PATH '/uploads/file_id/text()'
+  , file_size INTEGER PATH '/uploads/file_size/text()'
+  , filename VARCHAR(4000) PATH '/uploads/filename/text()'
+  , content_type VARCHAR(4000) PATH '/uploads/content_type/text()'
+  , created_datetime VARCHAR(4000) PATH '/uploads/created_datetime/text()'
+) x
+WHERE ad.status_control = 'C'
+"""
+
+# INNER JOIN impmgr.goods_line_files glf ON glf.id = x.sr_goods_file_id  <- to access blob file
+
+
 file_timestamp_update = """
 UPDATE web_file SET created_datetime = data_migration_file.created_datetime
 FROM data_migration_file

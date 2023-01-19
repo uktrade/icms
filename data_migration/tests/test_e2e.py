@@ -108,6 +108,11 @@ sil_data_source_target = {
             (queries.fir_files, "fir_files", dm.FileCombined),
             (queries.sil_application_files, "sil_application_files", dm.FileCombined),
             (queries.fa_certificate_files, "fa_certificate_files", dm.FileCombined),
+            (
+                queries.fa_supplementary_report_upload_files,
+                "supplementary_report_uploads",
+                dm.FileCombined,
+            ),
         ],
         "import_application": [
             (queries.ia_type, "ia_type", dm.ImportApplicationType),
@@ -478,6 +483,11 @@ oil_data_source_target = {
         "file": [
             (queries.oil_application_files, "oil_application_files", dm.FileCombined),
             (queries.dfl_application_files, "dfl_application_files", dm.FileCombined),
+            (
+                queries.fa_supplementary_report_upload_files,
+                "supplementary_report_uploads",
+                dm.FileCombined,
+            ),
         ],
         "user": [
             (queries.users, "users", dm.User),

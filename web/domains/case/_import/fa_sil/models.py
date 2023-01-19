@@ -466,6 +466,10 @@ class SILSupplementaryReportFirearmBase(SupplementaryReportFirearmBase):
         )
 
 
+# TODO ICMSLST-1883:  SILSupplementaryReport firemarms need to be able to handle documents
+#  Added to the models as part of ICMSLST-1756. Need to add to the frontend also
+
+
 class SILSupplementaryReportFirearmSection1(SILSupplementaryReportFirearmBase):
     report = models.ForeignKey(
         SILSupplementaryReport, related_name="section1_firearms", on_delete=models.CASCADE
@@ -473,6 +477,7 @@ class SILSupplementaryReportFirearmSection1(SILSupplementaryReportFirearmBase):
     goods_certificate = models.ForeignKey(
         SILGoodsSection1, related_name="supplementary_report_firearms", on_delete=models.CASCADE
     )
+    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)
 
 
 class SILSupplementaryReportFirearmSection2(SILSupplementaryReportFirearmBase):
@@ -482,6 +487,7 @@ class SILSupplementaryReportFirearmSection2(SILSupplementaryReportFirearmBase):
     goods_certificate = models.ForeignKey(
         SILGoodsSection2, related_name="supplementary_report_firearms", on_delete=models.CASCADE
     )
+    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)
 
 
 class SILSupplementaryReportFirearmSection5(SILSupplementaryReportFirearmBase):
@@ -491,6 +497,7 @@ class SILSupplementaryReportFirearmSection5(SILSupplementaryReportFirearmBase):
     goods_certificate = models.ForeignKey(
         SILGoodsSection5, related_name="supplementary_report_firearms", on_delete=models.CASCADE
     )
+    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)
 
 
 class SILSupplementaryReportFirearmSection582Obsolete(  # /PS-IGNORE
@@ -506,6 +513,7 @@ class SILSupplementaryReportFirearmSection582Obsolete(  # /PS-IGNORE
         related_name="supplementary_report_firearms",
         on_delete=models.CASCADE,
     )
+    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)
 
 
 class SILSupplementaryReportFirearmSection582Other(SILSupplementaryReportFirearmBase):  # /PS-IGNORE
@@ -517,6 +525,7 @@ class SILSupplementaryReportFirearmSection582Other(SILSupplementaryReportFirearm
         related_name="supplementary_report_firearms",
         on_delete=models.CASCADE,
     )
+    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)
 
 
 class SILSupplementaryReportFirearmSectionLegacy(SILSupplementaryReportFirearmBase):
@@ -528,3 +537,4 @@ class SILSupplementaryReportFirearmSectionLegacy(SILSupplementaryReportFirearmBa
         related_name="supplementary_report_firearms",
         on_delete=models.CASCADE,
     )
+    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)

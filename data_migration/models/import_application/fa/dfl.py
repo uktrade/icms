@@ -2,7 +2,7 @@ from collections.abc import Generator
 from typing import Any
 
 from django.db import models
-from django.db.models import OuterRef, Q, Subquery
+from django.db.models import F, OuterRef, Q, Subquery
 
 from data_migration.models.base import MigrationBase
 from data_migration.models.file import File, FileTarget
@@ -141,7 +141,7 @@ class DFLSupplementaryReportFirearm(SupplementaryReportFirearmBase):
     )
 
     goods_certificate_legacy_id = models.IntegerField()
-    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)
+    file = models.ForeignKey(File, on_delete=models.CASCADE, null=True, to_field="sr_goods_file_id")
 
     @classmethod
     def get_source_data(cls) -> Generator:
@@ -159,6 +159,6 @@ class DFLSupplementaryReportFirearm(SupplementaryReportFirearmBase):
                 goods_certificate_id=Subquery(sub_query.values("target__files__pk")[:1]),
             )
             .exclude(goods_certificate_id__isnull=True)
-            .values(*values)
+            .values(*values, document_id=F("file__id"))
             .iterator(chunk_size=2000)
         )

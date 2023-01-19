@@ -119,6 +119,11 @@ file_query_model = [
     QueryModel(queries.textiles_application_files, "textiles_application_files", dm.FileCombined),
     QueryModel(queries.fa_certificate_files, "fa_certificate_files", dm.FileCombined),
     QueryModel(queries.export_case_note_docs, "export_case_note_docs", dm.FileCombined),
+    QueryModel(
+        queries.fa_supplementary_report_upload_files,
+        "supplementary_report_upload_files",
+        dm.FileCombined,
+    ),
 ]
 
 ia_query_model = [
