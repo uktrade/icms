@@ -30,7 +30,7 @@ test_import_arg_values = [
     (
         WoodQuotaApplication(status=_st.COMPLETED, decision=ImportApplication.REFUSE),
         ImportApplicationLicence(licence_end_date=_future_date),
-        ["Request Variation", "Manage Appeals", "Revoke Licence"],
+        ["Request Variation", "Revoke Licence"],
     ),
     (
         WoodQuotaApplication(status=_st.COMPLETED),

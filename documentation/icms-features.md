@@ -234,7 +234,7 @@ List view of historical import applications that is searchable.
 Various actions can be shown here that affect the application.
 Available actions:
 
-- Manage Appeals
+- ~~Manage Appeals~~ - This has been removed as a feature in v2 (See closed story ICMSLST-1001 for details)
 - Reassign caseworker
 - Reopen Case
 - Request Variation
