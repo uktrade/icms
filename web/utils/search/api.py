@@ -834,14 +834,6 @@ def get_import_record_actions(app: "ImportApplication", user: User) -> list[type
                 )
             )
 
-        if app.decision == app.REFUSE:
-            # TODO: ICMSLST-1001
-            actions.append(
-                types.SearchAction(
-                    url="#", name="manage-appeals", label="Manage Appeals", icon="icon-warning"
-                )
-            )
-
         if licence_end_date and licence_end_date > datetime.date.today():
             # TODO: ICMSLST-999
             actions.append(
