@@ -176,6 +176,7 @@ class ReopenApplicationView(
 
         self.set_application_and_task()
         self.application.case_owner = None
+        self.application.is_active = True
 
         self.application.update_order_datetime()
         self.update_application_status()

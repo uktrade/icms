@@ -56,7 +56,7 @@
     {% endcall %}
   {% endfor %}
 
-  {% for withdrawal in withdrawals.filter(status="rejected") %}
+  {% for withdrawal in previous_withdrawals %}
     {% include "partial/withdrawal/box.html" %}
   {% endfor %}
 
