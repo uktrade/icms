@@ -81,7 +81,6 @@ def edit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) ->
             selected_group = {}
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Iron and Steel (Quota) Import Licence - Edit",
@@ -194,7 +193,6 @@ def submit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) 
         ).first()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Iron and Steel (Quota) Import Licence - Submit",
@@ -231,7 +229,6 @@ def add_document(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
             form = DocumentForm()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Iron and Steel (Quota) Import Licence - Add supporting document",
@@ -313,7 +310,6 @@ def add_certificate(request: AuthenticatedHttpRequest, *, application_pk: int) -
             form = AddCertificateForm()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Iron and Steel (Quota) Import Licence - Add certificate",
@@ -383,7 +379,6 @@ def edit_certificate(
             form = EditCertificateForm(instance=document)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Iron and Steel (Quota) Import Licence - Edit certificate",

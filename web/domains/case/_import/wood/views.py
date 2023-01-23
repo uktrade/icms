@@ -68,7 +68,6 @@ def edit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int) -
         contract_documents = application.contract_documents.filter(is_active=True)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Wood (Quota) Import Licence - Edit",
@@ -107,7 +106,6 @@ def add_supporting_document(
             form = DocumentForm()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Wood (Quota) Import Licence - Add supporting document",
@@ -189,7 +187,6 @@ def add_contract_document(
             form = AddContractDocumentForm()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Wood (Quota) Import Licence - Add contract document",
@@ -259,7 +256,6 @@ def edit_contract_document(
             form = EditContractDocumentForm(instance=document)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Wood (Quota) Import Licence - Edit contract document",
@@ -329,7 +325,6 @@ def submit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int)
         ).first()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Wood (Quota) Import Licence - Submit",
