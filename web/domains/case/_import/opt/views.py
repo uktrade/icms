@@ -59,7 +59,7 @@ def edit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         form = get_application_form(application, request, EditOPTForm, SubmitOptForm)
 
@@ -79,7 +79,6 @@ def edit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Edit",
             "supporting_documents": supporting_documents,
@@ -101,7 +100,7 @@ def edit_compensating_products(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         form = _get_opt_form_instance(
             application, request, EditCompensatingProductsOPTForm, SubmitCompensatingProductsOPTForm
@@ -125,7 +124,6 @@ def edit_compensating_products(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Edit Compensating Products",
             "category_descriptions": category_descriptions,
@@ -149,7 +147,7 @@ def edit_temporary_exported_goods(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         form = _get_opt_form_instance(
             application,
@@ -173,7 +171,6 @@ def edit_temporary_exported_goods(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Edit Temporary Exported Goods",
             "case_type": "import",
@@ -195,7 +192,7 @@ def edit_further_questions(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         form = _get_opt_form_instance(
             application, request, EditFurtherQuestionsOPTForm, SubmitFurtherQuestionsOPTForm
@@ -216,7 +213,6 @@ def edit_further_questions(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Edit Further Questions",
             "case_type": "import",
@@ -258,7 +254,7 @@ def edit_further_questions_shared(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         form_class = get_fq_form(fq_type)
 
@@ -287,7 +283,6 @@ def edit_further_questions_shared(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Edit Further Questions",
             "supporting_documents": supporting_documents,
@@ -400,7 +395,6 @@ def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Submit",
             "declaration": declaration,
@@ -441,7 +435,7 @@ def add_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -463,7 +457,6 @@ def add_document(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Outward Processing Trade Licence - Add supporting document",
             "prev_link": prev_link,
@@ -525,7 +518,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
-        task, readonly_view = get_current_task_and_readonly_status(
+        _, readonly_view = get_current_task_and_readonly_status(
             application, "import", request.user, Task.TaskType.PROCESS
         )
 
@@ -552,7 +545,6 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         context = {
             "process": application,
-            "task": task,
             "page_title": "Outward Processing Trade Licence - Checklist",
             "form": form,
             "readonly_view": readonly_view,
@@ -575,7 +567,7 @@ def response_preparation_edit_compensating_products(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.method == "POST":
             form = ResponsePrepCompensatingProductsOPTForm(data=request.POST, instance=application)
@@ -595,7 +587,6 @@ def response_preparation_edit_compensating_products(
 
         context = {
             "process": application,
-            "task": task,
             "form": form,
             "case_type": "import",
             "page_title": "Outward Processing Trade Import Licence - Edit Compensating Products",
@@ -616,7 +607,7 @@ def response_preparation_edit_temporary_exported_goods(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.method == "POST":
             form = ResponsePrepTemporaryExportedGoodsOPTForm(
@@ -638,7 +629,6 @@ def response_preparation_edit_temporary_exported_goods(
 
         context = {
             "process": application,
-            "task": task,
             "form": form,
             "case_type": "import",
             "page_title": "Outward Processing Trade Import Licence - Edit Temporary Exported Goods",

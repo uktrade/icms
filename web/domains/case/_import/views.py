@@ -287,7 +287,7 @@ def edit_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int)
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.method == "POST":
             form = CoverLetterForm(request.POST, instance=application)
@@ -307,7 +307,6 @@ def edit_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int)
         context = {
             "case_type": "import",
             "process": application,
-            "task": task,
             "page_title": "Cover Letter Response Preparation",
             "form": form,
         }
@@ -328,7 +327,7 @@ def edit_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
         )
         application_type: ImportApplicationType = application.application_type
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         form_kwargs: dict[str, Any] = {"instance": document_pack.pack_draft_get(application)}
 
@@ -362,7 +361,6 @@ def edit_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
         context = {
             "case_type": "import",
             "process": application,
-            "task": task,
             "page_title": "Licence Response Preparation",
             "form": form,
         }
@@ -396,7 +394,7 @@ def _add_endorsement(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.method == "POST":
             form = Form(request.POST)
@@ -418,7 +416,6 @@ def _add_endorsement(
         context = {
             "case_type": "import",
             "process": application,
-            "task": task,
             "page_title": "Endorsement Response Preparation",
             "form": form,
         }
@@ -441,7 +438,7 @@ def edit_endorsement(
         )
         endorsement = get_object_or_404(application.endorsements, pk=endorsement_pk)
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.method == "POST":
             form = EndorsementImportApplicationForm(request.POST, instance=endorsement)
@@ -461,7 +458,6 @@ def edit_endorsement(
         context = {
             "case_type": "import",
             "process": application,
-            "task": task,
             "page_title": "Endorsement Response Preparation",
             "form": form,
         }

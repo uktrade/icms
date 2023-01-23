@@ -54,7 +54,7 @@ def manage_case_emails(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        task, readonly_view = get_current_task_and_readonly_status(
+        _, readonly_view = get_current_task_and_readonly_status(
             application, case_type, request.user, Task.TaskType.PROCESS
         )
 
@@ -76,7 +76,6 @@ def manage_case_emails(
 
     context = {
         "process": application,
-        "task": task,
         "page_title": "Manage Emails",
         "case_emails": application.case_emails.filter(is_active=True),
         "case_type": case_type,
@@ -139,7 +138,7 @@ def edit_case_email(
         )
         application: ApplicationsWithCaseEmail = _get_case_email_application(imp_exp_application)
 
-        task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
 
         case_email = get_object_or_404(
             application.case_emails.filter(is_active=True), pk=case_email_pk
@@ -195,7 +194,6 @@ def edit_case_email(
 
         context = {
             "process": application,
-            "task": task,
             "page_title": "Edit Email",
             "form": form,
             "case_type": case_type,
@@ -258,7 +256,7 @@ def add_response_case_email(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
 
         case_email = get_object_or_404(application.case_emails, pk=case_email_pk)
 
@@ -281,7 +279,6 @@ def add_response_case_email(
 
         context = {
             "process": application,
-            "task": task,
             "page_title": "Add Response for Email",
             "form": form,
             "object": case_email,

@@ -366,7 +366,7 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
         )
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         form = get_application_form(
             application, request, forms.EditFaSILForm, forms.SubmitFaSILForm
@@ -386,7 +386,6 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Edit",
             "case_type": "import",
@@ -400,7 +399,7 @@ def choose_goods_section(request: AuthenticatedHttpRequest, *, application_pk: i
     application: models.SILApplication = get_object_or_404(models.SILApplication, pk=application_pk)
     check_application_permission(application, request.user, "import")
 
-    task = get_application_current_task(application, "import", Task.TaskType.PREPARE, False)
+    get_application_current_task(application, "import", Task.TaskType.PREPARE, False)
 
     has_goods = any(
         getattr(application, s)
@@ -410,7 +409,6 @@ def choose_goods_section(request: AuthenticatedHttpRequest, *, application_pk: i
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
-        "task": task,
         "page_title": "Firearms and Ammunition (Specific Import Licence) - Edit Goods",
         "case_type": "import",
         "has_goods": has_goods,
@@ -429,7 +427,7 @@ def add_section(
         )
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         config = _get_sil_section_app_config(sil_section_type)
 
@@ -450,7 +448,6 @@ def add_section(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Add Goods",
             "case_type": "import",
@@ -475,7 +472,7 @@ def edit_section(
         config = _get_sil_section_app_config(sil_section_type)
         goods: types.GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = config.form_class(request.POST, instance=goods)
@@ -489,7 +486,6 @@ def edit_section(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Edit Goods",
             "case_type": "import",
@@ -539,7 +535,7 @@ def response_preparation_edit_goods(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         config = _get_sil_section_resp_prep_config(sil_section_type)
         goods: types.GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
@@ -560,7 +556,6 @@ def response_preparation_edit_goods(
 
         context = {
             "process": application,
-            "task": task,
             "form": form,
             "case_type": "import",
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Edit Goods",
@@ -631,7 +626,6 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Submit Application",
             "form": form,
             "declaration": declaration,
@@ -652,7 +646,7 @@ def add_section5_document(
         )
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = case_forms.DocumentForm(data=request.POST, files=request.FILES)
@@ -673,8 +667,8 @@ def add_section5_document(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
+            "case_type": "import",
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Create Section 5",
         }
 
@@ -772,14 +766,14 @@ def view_verified_section5(
             application.importer.section5_authorities.filter(is_active=True), pk=section5_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "page_title": "Firearms and Ammunition (Specific Import Licence) - View Verified Section 5",
             "section5": section5,
+            "case_type": "import",
         }
 
         return render(
@@ -807,7 +801,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        task, readonly_view = get_current_task_and_readonly_status(
+        _, readonly_view = get_current_task_and_readonly_status(
             application, "import", request.user, Task.TaskType.PROCESS
         )
         checklist, created = models.SILChecklist.objects.get_or_create(
@@ -837,7 +831,6 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         context = {
             "process": application,
-            "task": task,
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Checklist",
             "form": form,
             "readonly_view": readonly_view,
@@ -857,7 +850,7 @@ def set_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.method == "POST":
             form = forms.SILCoverLetterTemplateForm(request.POST)
@@ -894,7 +887,6 @@ def set_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         context = {
             "process": application,
-            "task": task,
             "page_title": "Set Cover Letter",
             "form": form,
             "case_type": "import",

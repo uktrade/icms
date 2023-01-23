@@ -1,12 +1,9 @@
-{% extends "flow/task-base.html" %}
+{% extends "web/domains/case/applicant-base.html" %}
  {% import "forms/forms.html" as forms %}
  {% import "forms/fields.html" as fields %}
 
 
  {% block main_content %}
-   {% block task_details %}
-     {{ super() }}
-   {% endblock %}
 
    {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
      <h4>Further Questions</h4>

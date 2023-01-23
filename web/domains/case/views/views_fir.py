@@ -43,12 +43,12 @@ def manage_firs(
 
         # Access requests don't have a case_owner so can't call get_current_task_and_readonly_status
         if application.process_type in [ProcessTypes.EAR, ProcessTypes.IAR]:
-            task = get_application_current_task(
+            get_application_current_task(
                 application, case_type, Task.TaskType.PROCESS, select_for_update=False
             )
             readonly_view = False
         else:
-            task, readonly_view = get_current_task_and_readonly_status(
+            _, readonly_view = get_current_task_and_readonly_status(
                 application, case_type, request.user, Task.TaskType.PROCESS
             )
 
@@ -67,7 +67,6 @@ def manage_firs(
 
         context = {
             "process": application,
-            "task": task,
             "firs": application.further_information_requests.exclude(
                 status=FurtherInformationRequest.DELETED
             ).filter(is_active=True),
@@ -158,7 +157,7 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> Ht
 
         fir = get_object_or_404(application.further_information_requests.draft(), pk=fir_pk)
 
-        task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
 
         if request.method == "POST":
             form = fir_forms.FurtherInformationRequestForm(request.POST, instance=fir)
@@ -181,7 +180,6 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> Ht
 
         context = {
             "process": application,
-            "task": task,
             "form": form,
             "fir": fir,
             "case_type": case_type,

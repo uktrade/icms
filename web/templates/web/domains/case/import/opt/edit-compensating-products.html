@@ -1,9 +1,6 @@
 {% extends "web/domains/case/import/opt/edit.html" %}
 
 {% block main_content %}
-  {% block task_details %}
-    {{ super() }}
-  {% endblock %}
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
     <h4>Compensating Products</h4>

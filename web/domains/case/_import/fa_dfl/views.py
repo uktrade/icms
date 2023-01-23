@@ -66,7 +66,7 @@ def edit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         )
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         form = get_application_form(application, request, EditFaDFLForm, SubmitFaDFLForm)
 
@@ -86,7 +86,6 @@ def edit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": _get_page_title("Edit"),
             "goods_list": goods_list,
@@ -105,7 +104,7 @@ def add_goods_certificate(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, "import")
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = AddDLFGoodsCertificateForm(data=request.POST, files=request.FILES)
@@ -134,7 +133,6 @@ def add_goods_certificate(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": _get_page_title("Add Goods Certificate"),
             "case_type": "import",
@@ -153,7 +151,7 @@ def edit_goods_certificate(
         )
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         document = application.goods_certificates.get(pk=document_pk)
 
@@ -173,7 +171,6 @@ def edit_goods_certificate(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": _get_page_title("Edit Goods Certificate"),
             "case_type": "import",
@@ -196,7 +193,7 @@ def edit_goods_certificate_description(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         document = application.goods_certificates.get(pk=document_pk)
 
@@ -218,7 +215,6 @@ def edit_goods_certificate_description(
 
         context = {
             "process": application,
-            "task": task,
             "form": form,
             "case_type": "import",
             "page_title": _get_page_title("Edit Goods Certificate"),
@@ -312,7 +308,6 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "page_title": _get_page_title("Submit Application"),
             "form": form,
             "declaration": declaration,
@@ -376,7 +371,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
-        task, readonly_view = get_current_task_and_readonly_status(
+        _, readonly_view = get_current_task_and_readonly_status(
             application, "import", request.user, Task.TaskType.PROCESS
         )
         checklist, created = DFLChecklist.objects.get_or_create(import_application=application)
@@ -402,7 +397,6 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         context = {
             "process": application,
-            "task": task,
             "page_title": _get_page_title("Checklist"),
             "form": form,
             "readonly_view": readonly_view,

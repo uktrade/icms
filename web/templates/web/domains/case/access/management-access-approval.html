@@ -10,7 +10,7 @@
     <h3>Importer Access Approval</h3>
   {% endif %}
   <div class="eight columns">
-    {% if not task.process.link %}
+    {% if not process.link %}
       {% if process.process_type == "ExporterAccessRequest" %}
         <div class="info-box info-box-info">
           You must first <a href=" {{ icms_url('access:case-management', args=[process.pk, 'exporter']) }}">
