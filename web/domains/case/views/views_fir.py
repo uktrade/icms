@@ -318,7 +318,6 @@ def _add_fir_file(
             "fir": fir,
             "case_type": case_type,
             "prev_link": redirect_url,
-            "process_template": f"web/domains/case/{case_type}/partials/process.html",
         }
 
     return render(
@@ -411,7 +410,6 @@ def list_firs(
 
     context = {
         "process": application,
-        "process_template": f"web/domains/case/{case_type}/partials/process.html",
         "firs": application.further_information_requests.filter(
             Q(status=FurtherInformationRequest.OPEN)
             | Q(status=FurtherInformationRequest.RESPONDED)
@@ -460,7 +458,6 @@ def respond_fir(
 
     context = {
         "process": application,
-        "process_template": f"web/domains/case/{case_type}/partials/process.html",
         "fir": fir,
         "form": form,
         "case_type": case_type,

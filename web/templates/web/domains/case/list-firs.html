@@ -2,7 +2,7 @@
 
 {% block extra_header %}
   <div class="container contextHeaderGrid">
-    {% include process_template %}
+    {% include "web/domains/case/" + case_type + "/partials/process.html" %}
   </div>
   {{ super() }}
 {% endblock %}

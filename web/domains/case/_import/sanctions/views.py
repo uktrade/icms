@@ -88,7 +88,6 @@ def edit_application(request: AuthenticatedHttpRequest, *, application_pk: int) 
         goods_list = annotate_commodity_unit(goods_list, "commodity__").distinct()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Sanctions and Adhoc License Application - Edit",
@@ -127,7 +126,6 @@ def add_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Http
             goods_form = GoodsForm(application=application)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": goods_form,
             "page_title": "Sanctions and Adhoc License Application",
@@ -174,7 +172,6 @@ def edit_goods(
 
         context = {
             "case_type": "import",
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Edit Goods",
@@ -224,7 +221,6 @@ def edit_goods_licence(
 
         context = {
             "case_type": "import",
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Edit Goods",
@@ -281,7 +277,6 @@ def add_supporting_document(
             form = DocumentForm()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Sanctions and Adhoc License Application",
@@ -401,7 +396,6 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
     ).first()
 
     context = {
-        "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
         "form": form,
         "application_title": "Sanctions and Adhoc License Application",

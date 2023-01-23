@@ -112,7 +112,6 @@ def _view_fa_oil(
     request: AuthenticatedHttpRequest, application: OpenIndividualLicenceApplication
 ) -> HttpResponse:
     context = {
-        "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
         "page_title": get_case_page_title("import", application, "View"),
         "verified_certificates": application.verified_certificates.filter(is_active=True),
@@ -125,7 +124,6 @@ def _view_fa_oil(
 
 def _view_fa_sil(request: AuthenticatedHttpRequest, application: SILApplication) -> HttpResponse:
     context = {
-        "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
         "page_title": get_case_page_title("import", application, "View"),
         "verified_certificates": application.verified_certificates.filter(is_active=True),
@@ -149,7 +147,6 @@ def _view_sanctions_and_adhoc(
     ).distinct()
 
     context = {
-        "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
         "page_title": get_case_page_title("import", application, "View"),
         "goods": goods,
@@ -163,7 +160,6 @@ def _view_wood_quota(
     request: AuthenticatedHttpRequest, application: WoodQuotaApplication
 ) -> HttpResponse:
     context = {
-        "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
         "page_title": get_case_page_title("import", application, "View"),
         "contract_documents": application.contract_documents.filter(is_active=True),
@@ -177,7 +173,6 @@ def _view_derogations(
     request: AuthenticatedHttpRequest, application: DerogationsApplication
 ) -> HttpResponse:
     context = {
-        "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
         "page_title": get_case_page_title("import", application, "View"),
         "supporting_documents": application.supporting_documents.filter(is_active=True),
@@ -193,7 +188,6 @@ def _view_dfl(request: AuthenticatedHttpRequest, application: DFLApplication) ->
     contact_list = application.importcontact_set.all()
 
     context = {
-        "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
         "page_title": get_case_page_title("import", application, "View"),
         "goods_list": goods_list,
@@ -237,7 +231,6 @@ def _view_opt(
     )
 
     context = {
-        "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
         "page_title": get_case_page_title("import", application, "View"),
         "category_group_description": category_group_description,
@@ -253,7 +246,6 @@ def _view_textiles_quota(
     request: AuthenticatedHttpRequest, application: TextilesApplication
 ) -> HttpResponse:
     context = {
-        "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
         "page_title": get_case_page_title("import", application, "View"),
         "supporting_documents": application.supporting_documents.filter(is_active=True),
@@ -266,7 +258,6 @@ def _view_sps(
     request: AuthenticatedHttpRequest, application: PriorSurveillanceApplication
 ) -> HttpResponse:
     context = {
-        "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
         "page_title": get_case_page_title("import", application, "View"),
         "supporting_documents": application.supporting_documents.filter(is_active=True),
@@ -279,7 +270,6 @@ def _view_ironsteel(
     request: AuthenticatedHttpRequest, application: IronSteelApplication
 ) -> HttpResponse:
     context = {
-        "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
         "page_title": get_case_page_title("import", application, "View"),
         "supporting_documents": application.supporting_documents.filter(is_active=True),
@@ -304,7 +294,6 @@ def _view_com(
     request: AuthenticatedHttpRequest, application: CertificateOfManufactureApplication
 ) -> HttpResponse:
     context = {
-        "process_template": "web/domains/case/export/partials/process.html",
         "process": application,
         "page_title": get_case_page_title("export", application, "View"),
     }
@@ -320,7 +309,6 @@ def _view_cfs(request: AuthenticatedHttpRequest, application: CertificateOfFreeS
     app_countries = "\n".join(application.countries.all().values_list("name", flat=True))
 
     context = {
-        "process_template": "web/domains/case/export/partials/process.html",
         "process": application,
         "labels": labels,
         "application_countries": app_countries,
@@ -339,7 +327,6 @@ def _view_gmp(
     show_brc_table = application.gmp_certificate_issued == application.CertificateTypes.BRC_GSOCP
 
     context = {
-        "process_template": "web/domains/case/export/partials/process.html",
         "process": application,
         "page_title": get_case_page_title("export", application, "View"),
         "country": application.countries.first(),

@@ -246,7 +246,6 @@ def start_update_request(
 
         context = {
             "process": application,
-            "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "case_type": case_type,
             "update_request": update_request,
             "previous_update_requests": previous_update_requests,
@@ -306,7 +305,6 @@ def respond_update_request(
 
         context = {
             "process": application,
-            "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "case_type": case_type,
             "form": form,
             "update_request": update_request,

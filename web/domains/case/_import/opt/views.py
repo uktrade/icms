@@ -77,7 +77,6 @@ def edit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         )
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Edit",
@@ -122,7 +121,6 @@ def edit_compensating_products(
         category_label = category_descriptions.get(application.cp_category, "")
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Edit Compensating Products",
@@ -169,7 +167,6 @@ def edit_temporary_exported_goods(
                 )
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Edit Temporary Exported Goods",
@@ -211,7 +208,6 @@ def edit_further_questions(
                 )
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Edit Further Questions",
@@ -281,7 +277,6 @@ def edit_further_questions_shared(
         supporting_documents = application.documents.filter(is_active=True, file_type=fq_type)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Edit Further Questions",
@@ -393,7 +388,6 @@ def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         ).first()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Outward Processing Trade Import Licence - Submit",
@@ -455,7 +449,6 @@ def add_document(
             form = DocumentForm()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Outward Processing Trade Licence - Add supporting document",

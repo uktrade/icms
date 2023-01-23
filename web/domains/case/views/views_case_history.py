@@ -46,7 +46,6 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
 
         common_context = {
             "base_template": base_template,
-            "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "page_title": f"Case {application.reference}",
             "application_type": ProcessTypes(application.process_type).label,
             "process": application,

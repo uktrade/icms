@@ -70,7 +70,6 @@ def edit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         supporting_documents = application.supporting_documents.filter(is_active=True)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Prior Surveillance Import Licence - Edit",
@@ -139,7 +138,6 @@ def submit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         ).first()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Prior Surveillance Import Licence - Submit",
@@ -178,7 +176,6 @@ def add_supporting_document(
             form = DocumentForm()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Prior Surveillance Import Licence - Add supporting document",
@@ -268,7 +265,6 @@ def add_contract_document(
             form = AddContractDocumentForm()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Prior Surveillance Import Licence - Add contract document",
@@ -356,7 +352,6 @@ def edit_contract_document(
             form = EditContractDocumentForm(instance=document)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Prior Surveillance Import Licence - Edit contract document",

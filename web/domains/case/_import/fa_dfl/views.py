@@ -84,7 +84,6 @@ def edit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         )
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": _get_page_title("Edit"),
@@ -131,7 +130,6 @@ def add_goods_certificate(
             form = AddDLFGoodsCertificateForm()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": _get_page_title("Add Goods Certificate"),
@@ -169,7 +167,6 @@ def edit_goods_certificate(
             form = EditDLFGoodsCertificateForm(instance=document)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": _get_page_title("Edit Goods Certificate"),
@@ -306,7 +303,6 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         ).first()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "page_title": _get_page_title("Submit Application"),
             "form": form,
@@ -451,7 +447,6 @@ def add_report_firearm_manual(
 
         context = {
             "process": application,
-            "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
             "page_title": "Add Firearm Details",
@@ -502,7 +497,6 @@ def edit_report_firearm_manual(
 
         context = {
             "process": application,
-            "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
             "page_title": "Edit Firearm Details",
@@ -563,7 +557,6 @@ def add_report_firearm_upload(
 
         context = {
             "process": application,
-            "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
             "page_title": "Add Firearm Details",

@@ -129,7 +129,6 @@ def manage_import_contacts(
             )
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "contacts": application.importcontact_set.all(),
             "page_title": "Firearms & Ammunition - Contacts",
@@ -188,7 +187,6 @@ def create_import_contact(
             form = form_class()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Firearms & Ammunition - Create Contact",
@@ -244,7 +242,6 @@ def edit_import_contact(
             form = form_class(instance=person)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Firearms & Ammunition - Edit Contact",
@@ -328,7 +325,6 @@ def manage_certificates(request: AuthenticatedHttpRequest, *, application_pk: in
             extra_context["selected_section5"] = application.verified_section5.all()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "certificates": application.user_imported_certificates.active(),
             "verified_certificates": verified_certificates,
@@ -380,7 +376,6 @@ def create_certificate(request: AuthenticatedHttpRequest, *, application_pk: int
             form = UserImportCertificateForm(application=application)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Firearms and Ammunition - Create Certificate",
@@ -424,7 +419,6 @@ def edit_certificate(
             form = UserImportCertificateForm(application=application, instance=certificate)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": f"Firearms and Ammunition - Edit Certificate '{certificate.reference}'",
@@ -556,7 +550,6 @@ def view_authority(request: AuthenticatedHttpRequest, *, application_pk: int, au
         get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "case_type": "import",
             "page_title": "Firearms Authority - Verified Certificate",
@@ -605,7 +598,6 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
 
         context = {
             "process": application,
-            "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
             "page_title": "Firearms Supplementary Information Overview",
@@ -675,7 +667,6 @@ def create_report(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
 
         context = {
             "process": application,
-            "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
             "page_title": "Add Firearm Supplementary Report",
@@ -731,7 +722,6 @@ def edit_report(
 
         context = {
             "process": application,
-            "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
             "page_title": "Edit Firearm Supplementary Report",

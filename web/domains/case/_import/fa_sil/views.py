@@ -384,7 +384,6 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
                 messages.error(request, "Failed to save application data, please correct errors.")
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Edit",
@@ -407,7 +406,6 @@ def choose_goods_section(request: AuthenticatedHttpRequest, *, application_pk: i
     )
 
     context = {
-        "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
         "page_title": "Firearms and Ammunition (Specific Import Licence) - Edit Goods",
         "case_type": "import",
@@ -446,7 +444,6 @@ def add_section(
             form = config.form_class()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Add Goods",
@@ -484,7 +481,6 @@ def edit_section(
             form = config.form_class(instance=goods)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Edit Goods",
@@ -624,7 +620,6 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
         ).first()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Submit Application",
             "form": form,
@@ -665,7 +660,6 @@ def add_section5_document(
             form = case_forms.DocumentForm()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "form": form,
             "case_type": "import",
@@ -769,7 +763,6 @@ def view_verified_section5(
         get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
             "page_title": "Firearms and Ammunition (Specific Import Licence) - View Verified Section 5",
             "section5": section5,
@@ -945,7 +938,6 @@ def add_report_firearm_manual(
 
         context = {
             "process": application,
-            "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
             "page_title": "Add Firearm Details",
@@ -1004,7 +996,6 @@ def edit_report_firearm_manual(
 
         context = {
             "process": application,
-            "process_template": "web/domains/case/import/partials/process.html",
             "case_type": "import",
             "contacts": application.importcontact_set.all(),
             "page_title": "Edit Firearm Details",

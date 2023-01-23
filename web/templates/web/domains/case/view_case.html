@@ -1,27 +1,27 @@
 {% extends "layout/sidebar.html" %}
 {% from "display/fields.html" import application_section, application_field, commodity_link %}
 
+{% set case_type = "import" if process.is_import_application() else "export" %}
 
 {% block extra_header %}
   <div class="container contextHeaderGrid">
-    {% include process_template %}
+    {% include "web/domains/case/" + case_type + "/partials/process.html" %}
   </div>
 {% endblock %}
 
 {% block sidebar %}
     <ul class="menu-out">
-      {% set ct = "import" if process.is_import_application() else "export" %}
-      {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': ct}), 'View Application') }}
+      {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'View Application') }}
 
       {% if process.status == "COMPLETED" %}
         {% if process.is_import_application() %}
-          {{ icms_link(request, icms_url('case:history', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Sent Responses' ) }}
+          {{ icms_link(request, icms_url('case:history', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'Sent Responses' ) }}
 
           {% if process.application_type.type == "FA" %}
             {{ icms_link(request, icms_url('import:fa:provide-report', kwargs={'application_pk': process.pk}), 'Firearms Supplementary Information') }}
           {% endif %}
         {% else %}
-          {{ icms_link(request, icms_url('case:history', kwargs={'application_pk': process.pk, 'case_type': 'export'}), "Issued Certificates" ) }}
+          {{ icms_link(request, icms_url('case:history', kwargs={'application_pk': process.pk, 'case_type': case_type}), "Issued Certificates" ) }}
         {% endif %}
       {% endif %}
     </ul>

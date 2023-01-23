@@ -116,7 +116,6 @@ def withdraw_case(
             form = forms.WithdrawForm()
 
         context = {
-            "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "process": application,
             "page_title": get_case_page_title(case_type, application, "Withdrawals"),
             "form": form,
@@ -217,7 +216,6 @@ def manage_withdrawals(
             form = forms.WithdrawResponseForm(instance=current_withdrawal)
 
         context = {
-            "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "process": application,
             "page_title": get_case_page_title(case_type, application, "Withdrawals"),
             "form": form,
@@ -495,7 +493,6 @@ def authorise_documents(
             form = forms.AuthoriseForm(request=request)
 
         context = {
-            "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "case_type": case_type,
             "process": application,
             "page_title": get_case_page_title(case_type, application, "Authorisation"),
@@ -616,7 +613,6 @@ def view_document_packs(
         get_application_current_task(application, case_type, Task.TaskType.AUTHORISE)
 
         context = {
-            "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "case_type": case_type,
             "process": application,
             "page_title": get_case_page_title(case_type, application, "Authorisation"),
@@ -763,7 +759,6 @@ class ViewIssuedCaseDocumentsView(
 
         case_type = self.kwargs["case_type"]
         context["page_title"] = get_case_page_title(case_type, application, "Issued Documents")
-        context["process_template"] = f"web/domains/case/{case_type}/partials/process.html"
         context["process"] = self.application
         context["primary_recipients"] = _get_primary_recipients(application)
         context["copy_recipients"] = _get_copy_recipients(application)
