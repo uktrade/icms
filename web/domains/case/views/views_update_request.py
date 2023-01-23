@@ -33,7 +33,7 @@ def list_update_requests(
 
     application: ImpOrExp = get_object_or_404(model_class, pk=application_pk)
 
-    task, readonly_view = get_current_task_and_readonly_status(
+    _, readonly_view = get_current_task_and_readonly_status(
         application, case_type, request.user, Task.TaskType.PROCESS, select_for_update=False
     )
 
@@ -45,7 +45,6 @@ def list_update_requests(
 
     context = {
         "process": application,
-        "task": task,
         "page_title": get_case_page_title(case_type, application, "Update Requests"),
         "previous_update_requests": previous_update_requests,
         "update_request": update_request,
@@ -162,7 +161,6 @@ def manage_update_requests(
 
         context = {
             "process": application,
-            "task": task,
             "page_title": get_case_page_title(case_type, application, "Update Requests"),
             "form": form,
             "previous_update_requests": previous_update_requests,

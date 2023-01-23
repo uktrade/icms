@@ -51,7 +51,7 @@ def edit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int) -
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         form = get_application_form(application, request, EditWoodQuotaForm, SubmitWoodQuotaForm)
 
@@ -70,7 +70,6 @@ def edit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int) -
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Wood (Quota) Import Licence - Edit",
             "supporting_documents": supporting_documents,
@@ -92,7 +91,7 @@ def add_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -110,7 +109,6 @@ def add_supporting_document(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Wood (Quota) Import Licence - Add supporting document",
             "case_type": "import",
@@ -163,7 +161,7 @@ def add_contract_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = AddContractDocumentForm(data=request.POST, files=request.FILES)
@@ -193,7 +191,6 @@ def add_contract_document(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Wood (Quota) Import Licence - Add contract document",
             "case_type": "import",
@@ -244,7 +241,7 @@ def edit_contract_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         document = application.contract_documents.get(pk=document_pk)
 
@@ -264,7 +261,6 @@ def edit_contract_document(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Wood (Quota) Import Licence - Edit contract document",
             "case_type": "import",
@@ -335,7 +331,6 @@ def submit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int)
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Wood (Quota) Import Licence - Submit",
             "declaration": declaration,
@@ -353,7 +348,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: WoodQuotaApplication = get_object_or_404(
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
-        task, readonly_view = get_current_task_and_readonly_status(
+        _, readonly_view = get_current_task_and_readonly_status(
             application, "import", request.user, Task.TaskType.PROCESS
         )
         checklist, created = WoodQuotaChecklist.objects.get_or_create(
@@ -383,7 +378,6 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         context = {
             "process": application,
-            "task": task,
             "page_title": "Wood (Quota) Import Licence - Checklist",
             "form": form,
             "readonly_view": readonly_view,
@@ -404,7 +398,7 @@ def edit_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.method == "POST":
             form = GoodsWoodQuotaLicenceForm(request.POST, instance=application)
@@ -424,7 +418,6 @@ def edit_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         context = {
             "case_type": "import",
             "process": application,
-            "task": task,
             "page_title": "Edit Goods",
             "form": form,
         }

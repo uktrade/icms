@@ -58,7 +58,7 @@ def prepare_response(
         else:
             raise NotImplementedError(f"Unknown case_type {case_type}")
 
-        task, readonly_view = get_current_task_and_readonly_status(
+        _, readonly_view = get_current_task_and_readonly_status(
             application, case_type, request.user, Task.TaskType.PROCESS
         )
 
@@ -88,7 +88,6 @@ def prepare_response(
 
         context = {
             "case_type": case_type,
-            "task": task,
             "page_title": get_case_page_title(case_type, application, "Response Preparation"),
             "form": form,
             "cover_letter_flag": cover_letter_flag,

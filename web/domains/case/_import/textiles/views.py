@@ -49,7 +49,7 @@ def edit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         form = get_application_form(application, request, EditTextilesForm, SubmitTextilesForm)
 
@@ -76,7 +76,6 @@ def edit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Textiles (Quota) Import Licence - Edit",
             "supporting_documents": supporting_documents,
@@ -145,7 +144,6 @@ def submit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Textiles (Quota) Import Licence - Submit",
             "declaration": declaration,
@@ -166,7 +164,7 @@ def add_document(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -184,7 +182,6 @@ def add_document(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Textiles (Quota) Import Licence - Add supporting document",
             "case_type": "import",
@@ -235,7 +232,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: TextilesApplication = get_object_or_404(
             TextilesApplication.objects.select_for_update(), pk=application_pk
         )
-        task, readonly_view = get_current_task_and_readonly_status(
+        _, readonly_view = get_current_task_and_readonly_status(
             application, "import", request.user, Task.TaskType.PROCESS
         )
         checklist, created = TextilesChecklist.objects.get_or_create(import_application=application)
@@ -264,7 +261,6 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         context = {
             "process": application,
-            "task": task,
             "page_title": "Textiles (Quota) Import Licence - Checklist",
             "form": form,
             "readonly_view": readonly_view,
@@ -285,7 +281,7 @@ def edit_goods_licence(request: AuthenticatedHttpRequest, *, application_pk: int
             TextilesApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.method == "POST":
             form = GoodsTextilesLicenceForm(request.POST, instance=application)
@@ -305,7 +301,6 @@ def edit_goods_licence(request: AuthenticatedHttpRequest, *, application_pk: int
         context = {
             "case_type": "import",
             "process": application,
-            "task": task,
             "page_title": "Edit Goods",
             "form": form,
         }

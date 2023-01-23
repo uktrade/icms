@@ -219,7 +219,6 @@ def manage_withdrawals(
         context = {
             "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "process": application,
-            "task": task,
             "page_title": get_case_page_title(case_type, application, "Withdrawals"),
             "form": form,
             "withdrawals": withdrawals,
@@ -363,7 +362,6 @@ def manage_case(
         context = {
             "case_type": case_type,
             "process": application,
-            "task": task,
             "page_title": get_case_page_title(case_type, application, "Manage"),
             "form": form,
             "readonly_view": readonly_view,
@@ -445,7 +443,6 @@ def start_authorisation(
             context = {
                 "case_type": case_type,
                 "process": application,
-                "task": task,
                 "page_title": get_case_page_title(case_type, application, "Authorisation"),
                 "errors": application_errors if application_errors.has_errors() else None,
             }
@@ -501,7 +498,6 @@ def authorise_documents(
             "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "case_type": case_type,
             "process": application,
-            "task": task,
             "page_title": get_case_page_title(case_type, application, "Authorisation"),
             "form": form,
             "primary_recipients": _get_primary_recipients(application),
@@ -617,13 +613,12 @@ def view_document_packs(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, case_type, Task.TaskType.AUTHORISE)
+        get_application_current_task(application, case_type, Task.TaskType.AUTHORISE)
 
         context = {
             "process_template": f"web/domains/case/{case_type}/partials/process.html",
             "case_type": case_type,
             "process": application,
-            "task": task,
             "page_title": get_case_page_title(case_type, application, "Authorisation"),
             "primary_recipients": _get_primary_recipients(application),
             "copy_recipients": _get_copy_recipients(application),

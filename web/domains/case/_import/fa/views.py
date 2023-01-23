@@ -67,11 +67,10 @@ def manage_constabulary_emails(
         )
         application: FaImportApplication = _get_fa_application(import_application)
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         context = {
             "process": application,
-            "task": task,
             "page_title": "Constabulary Emails",
             "case_type": "import",
             "constabulary_emails": import_application.constabulary_emails.filter(is_active=True),
@@ -108,7 +107,7 @@ def manage_import_contacts(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = ImportContactKnowBoughtFromForm(data=request.POST, application=application)
@@ -132,7 +131,6 @@ def manage_import_contacts(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "contacts": application.importcontact_set.all(),
             "page_title": "Firearms & Ammunition - Contacts",
             "case_type": "import",
@@ -309,7 +307,7 @@ def manage_certificates(request: AuthenticatedHttpRequest, *, application_pk: in
         application: FaImportApplication = _get_fa_application(import_application)
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         selected_verified = application.verified_certificates.filter(pk=OuterRef("pk")).values("pk")
         verified_certificates = application.importer.firearms_authorities.filter(
@@ -332,7 +330,6 @@ def manage_certificates(request: AuthenticatedHttpRequest, *, application_pk: in
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "certificates": application.user_imported_certificates.active(),
             "verified_certificates": verified_certificates,
             "page_title": "Firearms and Ammunition - Certificates",
@@ -351,7 +348,7 @@ def create_certificate(request: AuthenticatedHttpRequest, *, application_pk: int
         application: FaImportApplication = _get_fa_application(import_application)
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = UserImportCertificateForm(
@@ -385,7 +382,6 @@ def create_certificate(request: AuthenticatedHttpRequest, *, application_pk: int
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Firearms and Ammunition - Create Certificate",
             "case_type": "import",
@@ -407,7 +403,7 @@ def edit_certificate(
 
         certificate = get_object_or_404(application.user_imported_certificates, pk=certificate_pk)
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = UserImportCertificateForm(
@@ -430,7 +426,6 @@ def edit_certificate(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": f"Firearms and Ammunition - Edit Certificate '{certificate.reference}'",
             "certificate": certificate,
@@ -558,12 +553,12 @@ def view_authority(request: AuthenticatedHttpRequest, *, application_pk: int, au
             application.importer.firearms_authorities.active(), pk=authority_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
+            "case_type": "import",
             "page_title": "Firearms Authority - Verified Certificate",
             "firearms_authority": firearms_authority,
         }

@@ -9,42 +9,11 @@
 
 {% block extra_header %}
   <div class="container contextHeaderGrid">
-    {% include process_template %}
+    {% include "web/domains/case/" + case_type + "/partials/process.html" %}
   </div>
 {% endblock %}
 
 {% block main_content %}
-  {% block task_details %}
-    <h3>{{task.task_type}}</h3>
-    <div class="container" >
-      <div class="row">
-        <div class="nine columns" ></div>
-        <div class="three columns" >
-        </div>
-      </div>
-      <div class="row">
-        <div class="three columns" >
-          <label class="prompt west">Status</label>
-        </div>
-        <div class="six columns">
-          <div class="status">
-            <div class="individual-input"><span class="text-widget ">Active</span></div>
-          </div>
-        </div>
-        <div class="three columns"></div>
-      </div>
-      <div class="row">
-        <div class="three columns" >
-          <label class="prompt west">Assigned To</label>
-        </div>
-        <div class="six columns">
-          <span>{{task.owner or 'Not yet assigned' }}</span>
-        </div>
-        <div class="three columns"></div>
-      </div>
-    </div>
-  {% endblock %}
-
   {% block before_form %}{% endblock %}
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}

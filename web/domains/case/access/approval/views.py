@@ -40,7 +40,7 @@ def management_access_approval(
             )
             Form = ExporterApprovalRequestForm
 
-        task = get_application_current_task(application, "access", Task.TaskType.PROCESS)
+        get_application_current_task(application, "access", Task.TaskType.PROCESS)
 
         try:
             approval_request = application.approval_requests.get(is_active=True)
@@ -73,7 +73,6 @@ def management_access_approval(
         context = {
             "case_type": "access",
             "process": application,
-            "task": task,
             "form": form,
             "approval_request": approval_request,
             "entity": entity,

@@ -49,7 +49,7 @@ def edit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         form = get_application_form(application, request, EditSPSForm, SubmitSPSForm)
 
@@ -72,7 +72,6 @@ def edit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Prior Surveillance Import Licence - Edit",
             "supporting_documents": supporting_documents,
@@ -142,7 +141,6 @@ def submit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Prior Surveillance Import Licence - Submit",
             "declaration": declaration,
@@ -164,7 +162,7 @@ def add_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -182,7 +180,6 @@ def add_supporting_document(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Prior Surveillance Import Licence - Add supporting document",
             "case_type": "import",
@@ -237,7 +234,7 @@ def add_contract_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = AddContractDocumentForm(data=request.POST, files=request.FILES)
@@ -273,7 +270,6 @@ def add_contract_document(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Prior Surveillance Import Licence - Add contract document",
             "case_type": "import",
@@ -339,7 +335,7 @@ def edit_contract_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         document = application.contract_file
 
@@ -362,7 +358,6 @@ def edit_contract_document(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Prior Surveillance Import Licence - Edit contract document",
             "case_type": "import",
@@ -381,7 +376,7 @@ def response_preparation_edit_goods(
             PriorSurveillanceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.method == "POST":
             form = ResponsePrepGoodsForm(data=request.POST, instance=application)
@@ -401,7 +396,6 @@ def response_preparation_edit_goods(
 
         context = {
             "process": application,
-            "task": task,
             "form": form,
             "case_type": "import",
             "page_title": "Prior Surveillance Import Licence - Edit Goods",

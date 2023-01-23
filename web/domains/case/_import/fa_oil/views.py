@@ -61,7 +61,7 @@ def edit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         form = get_application_form(application, request, EditFaOILForm, SubmitFaOILForm)
 
@@ -78,7 +78,6 @@ def edit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Open Individual Import Licence - Edit",
             "case_type": "import",
@@ -214,7 +213,6 @@ def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "page_title": "Open Individual Import Licence - Submit Application",
             "form": form,
             "declaration": declaration,
@@ -232,7 +230,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: OpenIndividualLicenceApplication = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
-        task, readonly_view = get_current_task_and_readonly_status(
+        _, readonly_view = get_current_task_and_readonly_status(
             application, "import", request.user, Task.TaskType.PROCESS
         )
         checklist, created = ChecklistFirearmsOILApplication.objects.get_or_create(
@@ -264,7 +262,6 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         context = {
             "process": application,
-            "task": task,
             "page_title": "Open Individual Import Licence - Checklist",
             "form": form,
             "readonly_view": readonly_view,

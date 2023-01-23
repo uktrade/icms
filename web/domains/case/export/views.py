@@ -262,7 +262,7 @@ def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             CertificateOfManufactureApplication.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, "export")
-        task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
+        get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
         form = get_application_form(application, request, EditCOMForm, SubmitCOMForm)
 
@@ -276,9 +276,7 @@ def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                 )
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "case_type": "export",
         }
@@ -320,9 +318,7 @@ def submit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             form = SubmitForm()
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
-            "task": task,
             "exporter_name": application.exporter.name,
             "form": form,
             "errors": errors if errors.has_errors() else None,
@@ -339,7 +335,7 @@ def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, "export")
-        task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
+        get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = EditCFSForm(data=request.POST, instance=application)
@@ -358,9 +354,7 @@ def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         schedules = application.schedules.all().order_by("created_at")
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "schedules": schedules,
             "case_type": "export",
@@ -398,7 +392,7 @@ def cfs_edit_schedule(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, "export")
-        task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
+        get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
         schedule: CFSSchedule = get_object_or_404(
             CFSSchedule.objects.select_for_update(), pk=schedule_pk
@@ -440,9 +434,7 @@ def cfs_edit_schedule(
         }
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Edit Schedule",
             "schedule": schedule,
@@ -485,7 +477,7 @@ def cfs_set_manufacturer(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, "export")
-        task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
+        get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
         schedule: CFSSchedule = get_object_or_404(
             CFSSchedule.objects.select_for_update(), pk=schedule_pk
@@ -508,10 +500,8 @@ def cfs_set_manufacturer(
             form = CFSManufacturerDetailsForm(instance=schedule)
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
             "schedule": schedule,
-            "task": task,
             "form": form,
             "page_title": "Edit Manufacturer",
             "case_type": "export",
@@ -562,7 +552,7 @@ def cfs_add_product(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, "export")
-        task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
+        get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
         schedule: CFSSchedule = get_object_or_404(
             CFSSchedule.objects.select_for_update(), pk=schedule_pk
@@ -597,9 +587,7 @@ def cfs_add_product(
             form = CFSProductForm(schedule=schedule)
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
-            "task": task,
             "schedule": schedule,
             "form": form,
             "page_title": "Add Product",
@@ -622,7 +610,7 @@ def cfs_edit_product(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, "export")
-        task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
+        get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
         schedule: CFSSchedule = get_object_or_404(
             CFSSchedule.objects.select_for_update(), pk=schedule_pk
@@ -649,9 +637,7 @@ def cfs_edit_product(
             form = CFSProductForm(instance=product, schedule=schedule)
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
-            "task": task,
             "schedule": schedule,
             "form": form,
             "page_title": "Edit Product",
@@ -708,7 +694,7 @@ def cfs_add_ingredient(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, "export")
-        task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
+        get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
         schedule: CFSSchedule = get_object_or_404(
             CFSSchedule.objects.select_for_update(), pk=schedule_pk
@@ -739,9 +725,7 @@ def cfs_add_ingredient(
             form = CFSActiveIngredientForm(product=product)
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
-            "task": task,
             "schedule": schedule,
             "form": form,
             "product": product,
@@ -766,7 +750,7 @@ def cfs_edit_ingredient(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, "export")
-        task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
+        get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
         schedule: CFSSchedule = get_object_or_404(
             CFSSchedule.objects.select_for_update(), pk=schedule_pk
@@ -801,9 +785,7 @@ def cfs_edit_ingredient(
             form = CFSActiveIngredientForm(instance=ingredient, product=product)
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
-            "task": task,
             "schedule": schedule,
             "product": product,
             "instance": ingredient,
@@ -868,7 +850,7 @@ def cfs_add_product_type(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, "export")
-        task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
+        get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
         schedule: CFSSchedule = get_object_or_404(
             CFSSchedule.objects.select_for_update(), pk=schedule_pk
@@ -899,9 +881,7 @@ def cfs_add_product_type(
             form = CFSProductTypeForm(product=product)
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
-            "task": task,
             "schedule": schedule,
             "form": form,
             "product": product,
@@ -926,7 +906,7 @@ def cfs_edit_product_type(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, "export")
-        task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
+        get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
         schedule: CFSSchedule = get_object_or_404(
             CFSSchedule.objects.select_for_update(), pk=schedule_pk
@@ -961,9 +941,7 @@ def cfs_edit_product_type(
             form = CFSProductTypeForm(instance=product_type, product=product)
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
-            "task": task,
             "schedule": schedule,
             "product": product,
             "instance": product_type,
@@ -1195,9 +1173,7 @@ def submit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             form = SubmitForm()
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
-            "task": task,
             "exporter_name": application.exporter.name,
             "form": form,
             "errors": errors if errors.has_errors() else None,
@@ -1318,7 +1294,7 @@ def edit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         check_application_permission(application, request.user, "export")
 
-        task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
+        get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
         form = get_application_form(application, request, EditGMPForm, SubmitGMPForm)
 
@@ -1360,9 +1336,7 @@ def edit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         )
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "case_type": "export",
             "country": application.countries.first(),
@@ -1389,7 +1363,7 @@ def add_gmp_document(
 
         check_application_permission(application, request.user, "export")
 
-        task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
+        get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -1409,9 +1383,7 @@ def add_gmp_document(
             form = DocumentForm()
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Certificate of Good Manufacturing Practice - Add supporting document",
             "page_subtitle": f"Add {GMPFile.Type[file_type].label} document",  # type: ignore[misc]
@@ -1499,9 +1471,7 @@ def submit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             form = SubmitForm()
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
-            "task": task,
             "exporter_name": application.exporter.name,
             "form": form,
             "errors": errors if errors.has_errors() else None,
@@ -1564,7 +1534,7 @@ def gmp_add_brand(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
 
         check_application_permission(application, request.user, "export")
 
-        task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
+        get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = GMPBrandForm(data=request.POST)
@@ -1581,9 +1551,7 @@ def gmp_add_brand(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
             form = GMPBrandForm()
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Add brand",
             "case_type": "export",
@@ -1604,7 +1572,7 @@ def gmp_edit_brand(
 
         check_application_permission(application, request.user, "export")
 
-        task = get_application_current_task(application, "export", Task.TaskType.PREPARE)
+        get_application_current_task(application, "export", Task.TaskType.PREPARE)
 
         instance = application.brands.filter(pk=brand_pk).first()
 
@@ -1624,9 +1592,7 @@ def gmp_edit_brand(
             form = GMPBrandForm(instance=instance)
 
         context = {
-            "process_template": "web/domains/case/export/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "instance": instance,
             "page_title": "Edit brand",

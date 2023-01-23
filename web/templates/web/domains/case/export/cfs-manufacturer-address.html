@@ -1,4 +1,4 @@
-{% extends "flow/task-base.html" %}
+{% extends "web/domains/case/applicant-base.html" %}
 {% import "forms/fields.html" as fields %}
 
 
@@ -20,17 +20,13 @@
   </div>
 {% endblock %}
 
-{% block task_details %}
-  <h4>{{ page_title }}</h4>
-{% endblock %}
-
 {% block form_content %}
   {{ fields.address_fields(
     form,
     'manufacturer_name',
     'manufacturer_address_entry_type',
     'manufacturer_postcode',
-    'manufacturer_address',
+    'manufacturer_address'
   ) }}
 {% endblock %}
 

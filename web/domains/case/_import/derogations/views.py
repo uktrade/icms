@@ -51,7 +51,7 @@ def edit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         syria = Country.objects.get(name="Syria")
 
@@ -82,9 +82,7 @@ def edit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int) 
         show_fd = syria in (application.origin_country, application.consignment_country)
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": get_page_title("Edit"),
             "supporting_documents": supporting_documents,
@@ -106,7 +104,7 @@ def add_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -122,9 +120,7 @@ def add_supporting_document(
             form = DocumentForm()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": get_page_title("Add supporting document"),
             "case_type": "import",
@@ -219,9 +215,7 @@ def submit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int
         ).first()
 
         context = {
-            "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": get_page_title("Submit"),
             "declaration": declaration,
@@ -239,7 +233,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: DerogationsApplication = get_object_or_404(
             DerogationsApplication.objects.select_for_update(), pk=application_pk
         )
-        task, readonly_view = get_current_task_and_readonly_status(
+        _, readonly_view = get_current_task_and_readonly_status(
             application, "import", request.user, Task.TaskType.PROCESS
         )
 
@@ -281,7 +275,6 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         context = {
             "process": application,
-            "task": task,
             "page_title": get_page_title("Checklist"),
             "form": form,
             "readonly_view": readonly_view,
@@ -302,7 +295,7 @@ def edit_goods_licence(request: AuthenticatedHttpRequest, *, application_pk: int
             DerogationsApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.method == "POST":
             form = GoodsDerogationsLicenceForm(request.POST, instance=application)
@@ -322,7 +315,6 @@ def edit_goods_licence(request: AuthenticatedHttpRequest, *, application_pk: int
         context = {
             "case_type": "import",
             "process": application,
-            "task": task,
             "page_title": "Edit Goods",
             "form": form,
         }

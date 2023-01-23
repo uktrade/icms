@@ -193,7 +193,7 @@ def management(request, pk, entity):
             Form = forms.LinkExporterAccessRequestForm
             permission_codename = "exporter_access"
 
-        task = get_application_current_task(application, "access", Task.TaskType.PROCESS)
+        get_application_current_task(application, "access", Task.TaskType.PROCESS)
 
         if request.method == "POST":
             form = Form(instance=application, data=request.POST)
@@ -214,7 +214,6 @@ def management(request, pk, entity):
         context = {
             "case_type": "access",
             "process": application,
-            "task": task,
             "form": form,
         }
 
@@ -257,7 +256,6 @@ def management_response(request, pk, entity):
         context = {
             "case_type": "access",
             "process": application,
-            "task": task,
             "form": form,
         }
 

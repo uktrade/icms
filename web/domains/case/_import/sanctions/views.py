@@ -57,7 +57,7 @@ def edit_application(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         form = get_application_form(
             application,
@@ -90,7 +90,6 @@ def edit_application(request: AuthenticatedHttpRequest, *, application_pk: int) 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Sanctions and Adhoc License Application - Edit",
             "goods_list": goods_list,
@@ -111,7 +110,7 @@ def add_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Http
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             goods_form = GoodsForm(request.POST, application=application)
@@ -130,7 +129,6 @@ def add_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Http
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": goods_form,
             "page_title": "Sanctions and Adhoc License Application",
             "commodity_group_data": _get_sanctions_commodity_group_data(application),
@@ -154,7 +152,7 @@ def edit_goods(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         goods = get_object_or_404(application.sanctionsandadhocapplicationgoods_set, pk=goods_pk)
         if request.method == "POST":
@@ -178,7 +176,6 @@ def edit_goods(
             "case_type": "import",
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Edit Goods",
             "commodity_group_data": commodity_group_data,
@@ -206,7 +203,7 @@ def edit_goods_licence(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         goods = get_object_or_404(application.sanctionsandadhocapplicationgoods_set, pk=goods_pk)
 
@@ -229,7 +226,6 @@ def edit_goods_licence(
             "case_type": "import",
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Edit Goods",
         }
@@ -269,7 +265,7 @@ def add_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = DocumentForm(request.POST, request.FILES)
@@ -287,7 +283,6 @@ def add_supporting_document(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Sanctions and Adhoc License Application",
             "case_type": "import",
@@ -408,7 +403,6 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
     context = {
         "process_template": "web/domains/case/import/partials/process.html",
         "process": application,
-        "task": task,
         "form": form,
         "application_title": "Sanctions and Adhoc License Application",
         "declaration": declaration,

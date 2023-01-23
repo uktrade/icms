@@ -55,7 +55,7 @@ def edit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) ->
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         form = get_application_form(application, request, EditIronSteelForm, SubmitIronSteelForm)
 
@@ -83,7 +83,6 @@ def edit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) ->
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Iron and Steel (Quota) Import Licence - Edit",
             "supporting_documents": supporting_documents,
@@ -197,7 +196,6 @@ def submit_ironsteel(request: AuthenticatedHttpRequest, *, application_pk: int) 
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Iron and Steel (Quota) Import Licence - Submit",
             "declaration": declaration,
@@ -217,7 +215,7 @@ def add_document(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -235,7 +233,6 @@ def add_document(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Iron and Steel (Quota) Import Licence - Add supporting document",
             "case_type": "import",
@@ -288,7 +285,7 @@ def add_certificate(request: AuthenticatedHttpRequest, *, application_pk: int) -
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         if request.method == "POST":
             form = AddCertificateForm(data=request.POST, files=request.FILES)
@@ -318,7 +315,6 @@ def add_certificate(request: AuthenticatedHttpRequest, *, application_pk: int) -
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Iron and Steel (Quota) Import Licence - Add certificate",
             "case_type": "import",
@@ -369,7 +365,7 @@ def edit_certificate(
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        get_application_current_task(application, "import", Task.TaskType.PREPARE)
 
         document = application.certificates.get(pk=document_pk)
 
@@ -389,7 +385,6 @@ def edit_certificate(
         context = {
             "process_template": "web/domains/case/import/partials/process.html",
             "process": application,
-            "task": task,
             "form": form,
             "page_title": "Iron and Steel (Quota) Import Licence - Edit certificate",
             "case_type": "import",
@@ -405,7 +400,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: IronSteelApplication = get_object_or_404(
             IronSteelApplication.objects.select_for_update(), pk=application_pk
         )
-        task, readonly_view = get_current_task_and_readonly_status(
+        _, readonly_view = get_current_task_and_readonly_status(
             application, "import", request.user, Task.TaskType.PROCESS
         )
         checklist, created = IronSteelChecklist.objects.get_or_create(
@@ -434,7 +429,6 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         context = {
             "process": application,
-            "task": task,
             "page_title": "Iron and Steel (Quota) Import Licence - Checklist",
             "form": form,
             "readonly_view": readonly_view,
@@ -457,7 +451,7 @@ def response_preparation_edit_goods(
             IronSteelApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         if request.method == "POST":
             form = ResponsePrepGoodsForm(data=request.POST, instance=application)
@@ -477,7 +471,6 @@ def response_preparation_edit_goods(
 
         context = {
             "process": application,
-            "task": task,
             "form": form,
             "case_type": "import",
             "page_title": "Iron and Steel (Quota) Import Licence - Edit Goods",
@@ -501,7 +494,7 @@ def response_preparation_edit_certificate(
             IronSteelApplication.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        get_application_current_task(application, "import", Task.TaskType.PROCESS)
 
         document = application.certificates.get(pk=document_pk)
 
@@ -523,7 +516,6 @@ def response_preparation_edit_certificate(
 
         context = {
             "process": application,
-            "task": task,
             "form": form,
             "case_type": "import",
             "page_title": "Iron and Steel (Quota) Import Licence - Edit Certificate",
