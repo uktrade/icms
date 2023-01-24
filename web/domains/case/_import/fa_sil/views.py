@@ -16,7 +16,7 @@ from web.domains.case._import.fa.forms import (
 )
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
-from web.domains.case.services import document_pack
+from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     check_application_permission,
@@ -366,7 +366,7 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
         )
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         form = get_application_form(
             application, request, forms.EditFaSILForm, forms.SubmitFaSILForm
@@ -398,7 +398,7 @@ def choose_goods_section(request: AuthenticatedHttpRequest, *, application_pk: i
     application: models.SILApplication = get_object_or_404(models.SILApplication, pk=application_pk)
     check_application_permission(application, request.user, "import")
 
-    get_application_current_task(application, "import", Task.TaskType.PREPARE, False)
+    case_progress.application_in_progress(application)
 
     has_goods = any(
         getattr(application, s)
@@ -425,7 +425,7 @@ def add_section(
         )
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         config = _get_sil_section_app_config(sil_section_type)
 
@@ -469,7 +469,7 @@ def edit_section(
         config = _get_sil_section_app_config(sil_section_type)
         goods: types.GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         if request.method == "POST":
             form = config.form_class(request.POST, instance=goods)
@@ -507,7 +507,7 @@ def delete_section(
         config = _get_sil_section_app_config(sil_section_type)
         goods: types.GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         goods.is_active = False
         goods.save()
@@ -572,7 +572,8 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
         )
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
+        task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
 
         errors = _get_sil_errors(application)
 
@@ -641,7 +642,7 @@ def add_section5_document(
         )
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         if request.method == "POST":
             form = case_forms.DocumentForm(data=request.POST, files=request.FILES)
@@ -679,7 +680,7 @@ def archive_section5_document(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, "import")
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         document = application.user_section5.get(pk=section5_pk)
         document.is_active = False
@@ -717,7 +718,7 @@ def add_verified_section5(
             application.importer.section5_authorities.filter(is_active=True), pk=section5_pk
         )
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         application.verified_section5.add(section5)
 
@@ -738,7 +739,7 @@ def delete_verified_section5(
         check_application_permission(application, request.user, "import")
         section5 = get_object_or_404(application.verified_section5, pk=section5_pk)
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         application.verified_section5.remove(section5)
 
@@ -760,7 +761,7 @@ def view_verified_section5(
             application.importer.section5_authorities.filter(is_active=True), pk=section5_pk
         )
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         context = {
             "process": application,

@@ -11,6 +11,7 @@ from storages.backends.s3boto3 import S3Boto3StorageFile
 from web.domains.case._import.fa.forms import ImportContactKnowBoughtFromForm
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
+from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     check_application_permission,
@@ -66,7 +67,7 @@ def edit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         )
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         form = get_application_form(application, request, EditFaDFLForm, SubmitFaDFLForm)
 
@@ -103,7 +104,7 @@ def add_goods_certificate(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, "import")
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         if request.method == "POST":
             form = AddDLFGoodsCertificateForm(data=request.POST, files=request.FILES)
@@ -149,7 +150,7 @@ def edit_goods_certificate(
         )
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         document = application.goods_certificates.get(pk=document_pk)
 
@@ -247,7 +248,7 @@ def delete_goods_certificate(
         )
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         document = application.goods_certificates.get(pk=document_pk)
         document.is_active = False
@@ -264,7 +265,8 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         )
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
+        task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
 
         errors = _get_dfl_errors(application)
 

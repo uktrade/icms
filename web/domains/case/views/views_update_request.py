@@ -8,6 +8,7 @@ from django.views.decorators.http import require_GET, require_POST
 from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case import forms, models
+from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import (
@@ -271,7 +272,7 @@ def respond_update_request(
 
         check_application_permission(application, request.user, case_type)
 
-        get_application_current_task(application, case_type, Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         update_requests = application.update_requests.filter(is_active=True)
         update_request = update_requests.get(

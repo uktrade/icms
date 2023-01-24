@@ -19,7 +19,7 @@ from guardian.shortcuts import get_users_with_perms
 from web.domains.case import forms
 from web.domains.case.app_checks import get_app_errors
 from web.domains.case.models import DocumentPackBase, VariationRequest
-from web.domains.case.services import document_pack
+from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.types import ImpOrExp
@@ -31,6 +31,7 @@ from web.domains.case.utils import (
 )
 from web.domains.template.models import Template
 from web.domains.user.models import User
+from web.flow import errors
 from web.flow.models import Task
 from web.models import WithdrawApplication
 from web.notify.email import send_email
@@ -60,10 +61,12 @@ def cancel_case(
         )
 
         check_application_permission(application, request.user, case_type)
-        get_application_current_task(application, case_type, Task.TaskType.PREPARE)
 
-        # the above accepts PROCESSING, we don't
-        if application.status != model_class.Statuses.IN_PROGRESS:
+        # TODO: Check this - Can you cancel a case that is in a variation request etc.
+        try:
+            case_progress.check_expected_status(application, [ImpExpStatus.IN_PROGRESS])
+            case_progress.check_expected_task(application, Task.TaskType.PREPARE)
+        except errors.ProcessError:
             raise PermissionDenied
 
         application.delete()

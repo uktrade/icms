@@ -11,6 +11,7 @@ from django.views.decorators.http import require_GET, require_POST
 from web.domains.case._import.models import ImportApplicationType
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
+from web.domains.case.services import case_progress
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
@@ -57,7 +58,7 @@ def edit_application(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         form = get_application_form(
             application,
@@ -109,7 +110,7 @@ def add_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Http
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         if request.method == "POST":
             goods_form = GoodsForm(request.POST, application=application)
@@ -150,7 +151,7 @@ def edit_goods(
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         goods = get_object_or_404(application.sanctionsandadhocapplicationgoods_set, pk=goods_pk)
         if request.method == "POST":
@@ -261,7 +262,7 @@ def add_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         if request.method == "POST":
             form = DocumentForm(request.POST, request.FILES)
@@ -308,7 +309,7 @@ def delete_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         document = application.supporting_documents.get(pk=document_pk)
         document.is_active = False
@@ -326,7 +327,8 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
+        task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
 
         errors = ApplicationErrors()
 

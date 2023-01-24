@@ -9,6 +9,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
+from web.domains.case.services import case_progress
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
@@ -49,7 +50,7 @@ def edit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         form = get_application_form(application, request, EditSPSForm, SubmitSPSForm)
 
@@ -89,7 +90,8 @@ def submit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
+        task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
 
         errors = ApplicationErrors()
 
@@ -160,7 +162,7 @@ def add_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         if request.method == "POST":
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -211,7 +213,7 @@ def delete_supporting_document(
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         document = application.supporting_documents.get(pk=document_pk)
         document.is_active = False
@@ -231,7 +233,7 @@ def add_contract_document(
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         if request.method == "POST":
             form = AddContractDocumentForm(data=request.POST, files=request.FILES)
@@ -305,7 +307,7 @@ def delete_contract_document(
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         if application.contract_file:
             file_model = application.contract_file
@@ -331,7 +333,7 @@ def edit_contract_document(
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         document = application.contract_file
 
