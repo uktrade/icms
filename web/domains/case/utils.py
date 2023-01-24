@@ -73,14 +73,14 @@ def get_application_current_task(
         # it can either be:
         #  - a fresh new application (IN_PROGRESS)
         #  - an update requested (PROCESSING/VARIATION_REQUESTED)
-        if task_type == Task.TaskType.PREPARE:
-            return application.get_task(
-                [st.IN_PROGRESS, st.PROCESSING, st.VARIATION_REQUESTED],
-                task_type,
-                select_for_update,
-            )
-
-        elif task_type == Task.TaskType.PROCESS:
+        # if task_type == Task.TaskType.PREPARE:
+        #     return application.get_task(
+        #         [st.IN_PROGRESS, st.PROCESSING, st.VARIATION_REQUESTED],
+        #         task_type,
+        #         select_for_update,
+        #     )
+        #
+        if task_type == Task.TaskType.PROCESS:
             return application.get_task(
                 [st.SUBMITTED, st.PROCESSING, st.VARIATION_REQUESTED], task_type, select_for_update
             )

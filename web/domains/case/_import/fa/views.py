@@ -20,6 +20,7 @@ from web.domains.case._import.fa_sil.forms import (
     SILSupplementaryInfoForm,
     SILSupplementaryReportForm,
 )
+from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     check_application_permission,
@@ -107,7 +108,7 @@ def manage_import_contacts(
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         if request.method == "POST":
             form = ImportContactKnowBoughtFromForm(data=request.POST, application=application)
@@ -304,7 +305,7 @@ def manage_certificates(request: AuthenticatedHttpRequest, *, application_pk: in
         application: FaImportApplication = _get_fa_application(import_application)
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         selected_verified = application.verified_certificates.filter(pk=OuterRef("pk")).values("pk")
         verified_certificates = application.importer.firearms_authorities.filter(
@@ -344,7 +345,7 @@ def create_certificate(request: AuthenticatedHttpRequest, *, application_pk: int
         application: FaImportApplication = _get_fa_application(import_application)
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         if request.method == "POST":
             form = UserImportCertificateForm(
@@ -398,7 +399,7 @@ def edit_certificate(
 
         certificate = get_object_or_404(application.user_imported_certificates, pk=certificate_pk)
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         if request.method == "POST":
             form = UserImportCertificateForm(
@@ -454,7 +455,7 @@ def archive_certificate(
         application: FaImportApplication = _get_fa_application(import_application)
 
         check_application_permission(application, request.user, "import")
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         document = application.user_imported_certificates.get(pk=certificate_pk)
         document.is_active = False
@@ -482,7 +483,7 @@ def add_authority(
             application.importer.firearms_authorities.active(), pk=authority_pk
         )
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         application.verified_certificates.add(firearms_authority)
 
@@ -508,7 +509,7 @@ def delete_authority(
             application.importer.firearms_authorities.active(), pk=authority_pk
         )
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         application.verified_certificates.remove(firearms_authority)
 
@@ -547,7 +548,7 @@ def view_authority(request: AuthenticatedHttpRequest, *, application_pk: int, au
             application.importer.firearms_authorities.active(), pk=authority_pk
         )
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         context = {
             "process": application,

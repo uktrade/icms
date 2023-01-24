@@ -9,6 +9,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
+from web.domains.case.services import case_progress
 from web.domains.case.utils import (
     check_application_permission,
     get_application_current_task,
@@ -49,7 +50,7 @@ def edit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         form = get_application_form(application, request, EditTextilesForm, SubmitTextilesForm)
 
@@ -98,7 +99,8 @@ def submit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
+        task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
 
         errors = ApplicationErrors()
 
@@ -162,7 +164,7 @@ def add_document(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         if request.method == "POST":
             form = DocumentForm(data=request.POST, files=request.FILES)
@@ -213,7 +215,7 @@ def delete_document(
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         document = application.supporting_documents.get(pk=document_pk)
         document.is_active = False

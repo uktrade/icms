@@ -13,10 +13,10 @@ from web.domains.case._import.fa.forms import (
 )
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
+from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     check_application_permission,
-    get_application_current_task,
     get_application_form,
     redirect_after_submit,
     submit_application,
@@ -61,7 +61,7 @@ def edit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
 
         check_application_permission(application, request.user, "import")
 
-        get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
 
         form = get_application_form(application, request, EditFaOILForm, SubmitFaOILForm)
 
@@ -94,7 +94,8 @@ def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
         check_application_permission(application, request.user, "import")
 
-        task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+        case_progress.application_in_progress(application)
+        task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
 
         errors = ApplicationErrors()
 

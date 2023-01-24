@@ -38,9 +38,9 @@ from web.domains.case.models import (
     DocumentPackBase,
     UpdateRequest,
 )
-from web.domains.case.services import document_pack
+from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
-from web.domains.case.utils import get_application_current_task, submit_application
+from web.domains.case.utils import submit_application
 from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
 from web.domains.country.models import Country
 from web.flow.models import ProcessTypes, Task
@@ -2102,7 +2102,8 @@ def _create_export_application(
 
 def _submit_application(application, import_fixture_data: FixtureData | ExportFixtureData):
     """Helper function to submit an application (Using the application code to do so)"""
-    task = get_application_current_task(application, "import", Task.TaskType.PREPARE)
+    case_progress.application_in_progress(application)
+    task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
 
     submit_application(application, import_fixture_data.request, task)
     application.save()
