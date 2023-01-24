@@ -22,11 +22,7 @@ from web.domains.case._import.fa_sil.forms import (
 )
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
-from web.domains.case.utils import (
-    check_application_permission,
-    get_application_current_task,
-    view_application_file,
-)
+from web.domains.case.utils import check_application_permission, view_application_file
 from web.domains.file.utils import create_file_model
 from web.flow.models import ProcessTypes, Task
 from web.models import (
@@ -68,7 +64,7 @@ def manage_constabulary_emails(
         )
         application: FaImportApplication = _get_fa_application(import_application)
 
-        get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         context = {
             "process": application,

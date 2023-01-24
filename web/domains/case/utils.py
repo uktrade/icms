@@ -80,6 +80,7 @@ def get_application_current_task(
         #         select_for_update,
         #     )
         #
+        # Only called via get_current_task_and_readonly_status now (will be removed later)
         if task_type == Task.TaskType.PROCESS:
             return application.get_task(
                 [st.SUBMITTED, st.PROCESSING, st.VARIATION_REQUESTED], task_type, select_for_update

@@ -4,7 +4,7 @@ from django.db.models import QuerySet
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp  # , ImpOrExpOrAccess
 from web.flow import errors
-from web.flow.models import Process, Task
+from web.models import AccessRequest, Process, Task
 
 TT = Task.TaskType
 ST = ImpExpStatus
@@ -14,6 +14,8 @@ __all__ = [
     # Functions to check an application is at a particular point in the application process
     #
     "application_in_progress",
+    "application_in_processing",
+    "access_request_in_processing",
     #
     # Utility functions
     #
@@ -25,13 +27,37 @@ __all__ = [
 ]
 
 
+# TODO: Consider splitting.
+#       def application_in_progress
+#       def application_in_progress_update_request
+#       def application_in_progress_variation_request
 def application_in_progress(application: ImpOrExp) -> None:
     """Check if the application is in progress with the applicant."""
 
     # A fresh new application (IN_PROGRESS)
     # An update request (PROCESSING / VARIATION_REQUESTED)
     expected_status = [ST.IN_PROGRESS, ST.PROCESSING, ST.VARIATION_REQUESTED]
-    expected_task = Task.TaskType.PREPARE
+    expected_task = TT.PREPARE
+
+    check_expected_status(application, expected_status)
+    check_expected_task(application, expected_task)
+
+
+def application_in_processing(application: ImpOrExp) -> None:
+    """Check if an application is being processed by a caseworker."""
+
+    expected_status = [ST.SUBMITTED, ST.PROCESSING, ST.VARIATION_REQUESTED]
+    expected_task = TT.PROCESS
+
+    check_expected_status(application, expected_status)
+    check_expected_task(application, expected_task)
+
+
+def access_request_in_processing(application: AccessRequest):
+    """Check if an access request is being processed by a caseworker"""
+
+    expected_status = [ST.SUBMITTED]
+    expected_task = TT.PROCESS
 
     check_expected_status(application, expected_status)
     check_expected_task(application, expected_task)
@@ -47,14 +73,14 @@ def check_expected_status(application: Process, expected_statuses: list[str]) ->
         raise errors.ProcessStateError(f"Process is in the wrong state: {status}")
 
 
-def check_expected_task(application: ImpOrExp, expected_task: str) -> None:
+def check_expected_task(application: Process, expected_task: str) -> None:
     """Check the expected task is in the applications active task list"""
 
     active_tasks = get_active_task_list(application)
 
     if expected_task not in active_tasks:
         raise errors.TaskError(
-            f"{expected_task} not in active task list {active_tasks} for process {application.reference}"
+            f"{expected_task} not in active task list {active_tasks} for Process {application.pk}"
         )
 
 

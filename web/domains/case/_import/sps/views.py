@@ -12,7 +12,6 @@ from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.services import case_progress
 from web.domains.case.utils import (
     check_application_permission,
-    get_application_current_task,
     get_application_form,
     redirect_after_submit,
     submit_application,
@@ -373,7 +372,7 @@ def response_preparation_edit_goods(
             PriorSurveillanceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         if request.method == "POST":
             form = ResponsePrepGoodsForm(data=request.POST, instance=application)

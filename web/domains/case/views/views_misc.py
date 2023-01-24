@@ -294,7 +294,7 @@ def release_ownership(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         if application.status != model_class.Statuses.VARIATION_REQUESTED:
             application.status = model_class.Statuses.SUBMITTED
@@ -390,7 +390,8 @@ def start_authorisation(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
+        task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
 
         application_errors: ApplicationErrors = get_app_errors(application, case_type)
 
