@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 
+from web.domains.case.services import case_progress
 from web.domains.file.utils import create_file_model
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
@@ -13,7 +14,7 @@ from web.utils.s3 import get_file_from_s3
 
 from .. import forms, models
 from ..types import ImpOrExp
-from ..utils import get_application_current_task, get_case_page_title
+from ..utils import get_case_page_title
 from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
 
 
@@ -61,7 +62,7 @@ def add_note(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         note = application.case_notes.create(status=models.CASE_NOTE_DRAFT, created_by=request.user)
 
@@ -86,7 +87,7 @@ def archive_note(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         application.case_notes.filter(pk=note_pk).update(is_active=False)
 
@@ -110,7 +111,7 @@ def unarchive_note(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         application.case_notes.filter(pk=note_pk).update(is_active=True)
 
@@ -133,7 +134,7 @@ def edit_note(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         note = application.case_notes.get(pk=note_pk)
 
@@ -193,7 +194,7 @@ def add_note_document(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         note = application.case_notes.get(pk=note_pk)
 
@@ -274,7 +275,7 @@ def delete_note_document(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         document = application.case_notes.get(pk=note_pk).files.get(pk=file_pk)
         document.is_active = False

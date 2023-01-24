@@ -11,11 +11,7 @@ from web.domains.case import forms, models
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
-from web.domains.case.utils import (
-    check_application_permission,
-    get_application_current_task,
-    get_case_page_title,
-)
+from web.domains.case.utils import check_application_permission, get_case_page_title
 from web.domains.template.models import Template
 from web.flow.models import Task
 from web.notify import email
@@ -195,7 +191,7 @@ def close_update_request(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         update_request = get_object_or_404(application.update_requests, pk=update_request_pk)
 

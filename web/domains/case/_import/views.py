@@ -17,9 +17,8 @@ from guardian.shortcuts import get_objects_for_user
 from ratelimit import UNSAFE
 from ratelimit.decorators import ratelimit
 
-from web.domains.case.services import document_pack
+from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
-from web.domains.case.utils import get_application_current_task
 from web.domains.chief import types as chief_types
 from web.domains.chief import utils as chief_utils
 from web.domains.country.models import CountryGroup
@@ -287,7 +286,7 @@ def edit_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int)
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         if request.method == "POST":
             form = CoverLetterForm(request.POST, instance=application)
@@ -327,7 +326,7 @@ def edit_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
         )
         application_type: ImportApplicationType = application.application_type
 
-        get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         form_kwargs: dict[str, Any] = {"instance": document_pack.pack_draft_get(application)}
 
@@ -394,7 +393,7 @@ def _add_endorsement(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         if request.method == "POST":
             form = Form(request.POST)
@@ -438,7 +437,7 @@ def edit_endorsement(
         )
         endorsement = get_object_or_404(application.endorsements, pk=endorsement_pk)
 
-        get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         if request.method == "POST":
             form = EndorsementImportApplicationForm(request.POST, instance=endorsement)
@@ -481,7 +480,7 @@ def delete_endorsement(
         )
         endorsement = get_object_or_404(application.endorsements, pk=endorsement_pk)
 
-        get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         if not request.user.has_perm("web.is_contact_of_importer", application.importer):
             raise PermissionDenied

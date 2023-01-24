@@ -15,7 +15,6 @@ from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     check_application_permission,
-    get_application_current_task,
     get_application_form,
     redirect_after_submit,
     submit_application,
@@ -191,7 +190,7 @@ def edit_goods_certificate_description(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         document = application.goods_certificates.get(pk=document_pk)
 

@@ -20,7 +20,6 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     check_application_permission,
-    get_application_current_task,
     get_application_form,
     redirect_after_submit,
     submit_application,
@@ -531,7 +530,7 @@ def response_preparation_edit_goods(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         config = _get_sil_section_resp_prep_config(sil_section_type)
         goods: types.GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
@@ -844,7 +843,7 @@ def set_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        get_application_current_task(application, "import", Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         if request.method == "POST":
             form = forms.SILCoverLetterTemplateForm(request.POST)

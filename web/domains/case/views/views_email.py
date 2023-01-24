@@ -17,6 +17,7 @@ from web.domains.case.export.models import (
     CFSProduct,
     CFSSchedule,
 )
+from web.domains.case.services import case_progress
 from web.domains.constabulary.models import Constabulary
 from web.domains.file.models import File
 from web.domains.sanction_email.models import SanctionEmail
@@ -35,7 +36,6 @@ from web.utils.s3 import get_file_from_s3, get_s3_client
 
 from .. import forms, models
 from ..types import ApplicationsWithCaseEmail, CaseEmailConfig, ImpOrExp
-from ..utils import get_application_current_task
 from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
 
 if TYPE_CHECKING:
@@ -104,7 +104,7 @@ def create_case_email(
         )
         application: ApplicationsWithCaseEmail = _get_case_email_application(imp_exp_application)
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         email: models.CaseEmail = _create_email(application)
         application.case_emails.add(email)
@@ -138,7 +138,7 @@ def edit_case_email(
         )
         application: ApplicationsWithCaseEmail = _get_case_email_application(imp_exp_application)
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         case_email = get_object_or_404(
             application.case_emails.filter(is_active=True), pk=case_email_pk
@@ -227,7 +227,7 @@ def archive_case_email(
             application.case_emails.filter(is_active=True), pk=case_email_pk
         )
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         case_email.is_active = False
         case_email.save()
@@ -256,7 +256,7 @@ def add_response_case_email(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        case_progress.application_in_processing(application)
 
         case_email = get_object_or_404(application.case_emails, pk=case_email_pk)
 

@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 from guardian.shortcuts import get_users_with_perms
 
+from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
@@ -22,11 +23,25 @@ from ..fir.models import FurtherInformationRequest
 from ..types import ImpOrExpOrAccess
 from ..utils import (
     check_application_permission,
-    get_application_current_task,
     get_case_page_title,
     view_application_file,
 )
 from .utils import get_class_imp_or_exp_or_access, get_current_task_and_readonly_status
+
+
+def _application_is_processing(application: ImpOrExpOrAccess, case_type: str):
+    """Check a Process instance is being processed by a caseworker.
+
+    Access requests and import/export applications check different statuses.
+    """
+
+    match case_type.casefold():
+        case "import" | "export":
+            case_progress.application_in_processing(application)
+        case "access":
+            case_progress.access_request_in_processing(application)
+        case _:
+            raise ValueError(f"Unknown Case type: {case_type}")
 
 
 @login_required
@@ -43,9 +58,7 @@ def manage_firs(
 
         # Access requests don't have a case_owner so can't call get_current_task_and_readonly_status
         if application.process_type in [ProcessTypes.EAR, ProcessTypes.IAR]:
-            get_application_current_task(
-                application, case_type, Task.TaskType.PROCESS, select_for_update=False
-            )
+            _application_is_processing(application, case_type)
             readonly_view = False
         else:
             _, readonly_view = get_current_task_and_readonly_status(
@@ -104,7 +117,7 @@ def add_fir(request, *, application_pk: int, case_type: str) -> HttpResponse:
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        _application_is_processing(application, case_type)
 
         template = Template.objects.get(template_code="IAR_RFI_EMAIL", is_active=True)
         title_mapping = {"REQUEST_REFERENCE": application.reference}
@@ -157,7 +170,7 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> Ht
 
         fir = get_object_or_404(application.further_information_requests.draft(), pk=fir_pk)
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        _application_is_processing(application, case_type)
 
         if request.method == "POST":
             form = fir_forms.FurtherInformationRequestForm(request.POST, instance=fir)
@@ -205,7 +218,7 @@ def delete_fir(
         )
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        _application_is_processing(application, case_type)
 
         fir.is_active = False
         fir.status = FurtherInformationRequest.DELETED
@@ -227,7 +240,7 @@ def withdraw_fir(
         )
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        _application_is_processing(application, case_type)
 
         fir.status = FurtherInformationRequest.DRAFT
         fir.save()
@@ -247,7 +260,7 @@ def close_fir(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, case_type, Task.TaskType.PROCESS)
+        _application_is_processing(application, case_type)
 
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
         fir.status = FurtherInformationRequest.CLOSED

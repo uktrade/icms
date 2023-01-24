@@ -14,8 +14,7 @@ from web.domains.case.access.filters import (
     ExporterAccessRequestFilter,
     ImporterAccessRequestFilter,
 )
-from web.domains.case.services import reference
-from web.domains.case.utils import get_application_current_task
+from web.domains.case.services import case_progress, reference
 from web.flow.models import Task
 from web.notify import notify
 from web.types import AuthenticatedHttpRequest
@@ -193,7 +192,7 @@ def management(request, pk, entity):
             Form = forms.LinkExporterAccessRequestForm
             permission_codename = "exporter_access"
 
-        get_application_current_task(application, "access", Task.TaskType.PROCESS)
+        case_progress.access_request_in_processing(application)
 
         if request.method == "POST":
             form = Form(instance=application, data=request.POST)
@@ -235,7 +234,8 @@ def management_response(request, pk, entity):
                 ExporterAccessRequest.objects.select_for_update(), pk=pk
             )
 
-        task = get_application_current_task(application, "access", Task.TaskType.PROCESS)
+        case_progress.access_request_in_processing(application)
+        task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
 
         if request.method == "POST":
             form = forms.CloseAccessRequestForm(instance=application, data=request.POST)

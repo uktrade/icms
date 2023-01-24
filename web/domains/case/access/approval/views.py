@@ -18,8 +18,7 @@ from web.domains.case.access.approval.models import (
     ImporterApprovalRequest,
 )
 from web.domains.case.access.models import ExporterAccessRequest, ImporterAccessRequest
-from web.domains.case.utils import get_application_current_task
-from web.flow.models import Task
+from web.domains.case.services import case_progress
 from web.types import AuthenticatedHttpRequest
 
 
@@ -40,7 +39,7 @@ def management_access_approval(
             )
             Form = ExporterApprovalRequestForm
 
-        get_application_current_task(application, "access", Task.TaskType.PROCESS)
+        case_progress.access_request_in_processing(application)
 
         try:
             approval_request = application.approval_requests.get(is_active=True)
@@ -105,7 +104,7 @@ def management_access_approval_withdraw(
             pk=approval_request_pk,
         )
 
-        get_application_current_task(application, "access", Task.TaskType.PROCESS)
+        case_progress.access_request_in_processing(application)
 
         approval_request.is_active = False
         approval_request.status = ApprovalRequest.CANCELLED
@@ -140,7 +139,7 @@ def take_ownership_approval(
             permission = "web.is_contact_of_exporter"
             link = application.access_request.exporteraccessrequest.link
 
-        get_application_current_task(application, "access", Task.TaskType.PROCESS)
+        case_progress.access_request_in_processing(application)
 
         if not request.user.has_perm(group_permission):
             raise PermissionDenied
@@ -175,7 +174,7 @@ def release_ownership_approval(
             permission = "web.is_contact_of_exporter"
             link = application.access_request.exporteraccessrequest.link
 
-        get_application_current_task(application, "access", Task.TaskType.PROCESS)
+        case_progress.access_request_in_processing(application)
 
         if not request.user.has_perm(group_permission):
             raise PermissionDenied
@@ -220,7 +219,7 @@ def case_approval_respond(
         if not request.user.has_perm(permission, application.link):
             raise PermissionDenied
 
-        get_application_current_task(application, "access", Task.TaskType.PROCESS)
+        case_progress.access_request_in_processing(application)
 
         if request.method == "POST":
             form = ApprovalRequestResponseForm(request.POST, instance=approval)
