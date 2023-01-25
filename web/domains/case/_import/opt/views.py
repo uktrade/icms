@@ -19,7 +19,7 @@ from web.domains.case.utils import (
     submit_application,
     view_application_file,
 )
-from web.domains.case.views.utils import get_current_task_and_readonly_status
+from web.domains.case.views.utils import get_caseworker_view_readonly_status
 from web.domains.commodity.models import CommodityGroup
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
@@ -512,9 +512,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: OutwardProcessingTradeApplication = get_object_or_404(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
-        _, readonly_view = get_current_task_and_readonly_status(
-            application, "import", request.user, Task.TaskType.PROCESS
-        )
+        readonly_view = get_caseworker_view_readonly_status(application, "import", request.user)
 
         checklist, created = OPTChecklist.objects.get_or_create(import_application=application)
 

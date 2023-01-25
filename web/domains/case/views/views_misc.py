@@ -39,7 +39,7 @@ from web.utils.s3 import delete_file_from_s3, get_s3_client
 from web.utils.validation import ApplicationErrors
 
 from .mixins import ApplicationAndTaskRelatedObjectMixin, ApplicationTaskMixin
-from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
+from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -166,9 +166,7 @@ def manage_withdrawals(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        _, readonly_view = get_current_task_and_readonly_status(
-            application, case_type, request.user, Task.TaskType.PROCESS, select_for_update=False
-        )
+        readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
         task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
 
         withdrawals = application.withdrawals.filter(is_active=True).order_by("-created_datetime")
@@ -318,9 +316,7 @@ def manage_case(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        _, readonly_view = get_current_task_and_readonly_status(
-            application, case_type, request.user, Task.TaskType.PROCESS, select_for_update=False
-        )
+        readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
         task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
 
         if request.method == "POST" and not readonly_view:

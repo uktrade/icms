@@ -17,7 +17,7 @@ from web.flow.models import Task
 from web.notify import email
 from web.types import AuthenticatedHttpRequest
 
-from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
+from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
 
 
 @login_required
@@ -30,9 +30,7 @@ def list_update_requests(
 
     application: ImpOrExp = get_object_or_404(model_class, pk=application_pk)
 
-    _, readonly_view = get_current_task_and_readonly_status(
-        application, case_type, request.user, Task.TaskType.PROCESS, select_for_update=False
-    )
+    readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
 
     update_requests = application.update_requests.filter(is_active=True)
     update_request = update_requests.filter(
@@ -71,9 +69,7 @@ def manage_update_requests(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        _, readonly_view = get_current_task_and_readonly_status(
-            application, case_type, request.user, Task.TaskType.PROCESS
-        )
+        readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
         task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
 
         if case_type == "import":
