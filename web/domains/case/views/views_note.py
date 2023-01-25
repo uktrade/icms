@@ -29,8 +29,10 @@ def list_notes(
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        task, readonly_view = get_current_task_and_readonly_status(
-            application, case_type, request.user, Task.TaskType.PROCESS
+
+        # case_progress.application_in_processing
+        _, readonly_view = get_current_task_and_readonly_status(
+            application, case_type, request.user, Task.TaskType.PROCESS, select_for_update=False
         )
 
         context = {

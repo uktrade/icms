@@ -71,9 +71,10 @@ def manage_update_requests(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        task, readonly_view = get_current_task_and_readonly_status(
+        _, readonly_view = get_current_task_and_readonly_status(
             application, case_type, request.user, Task.TaskType.PROCESS
         )
+        task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
 
         if case_type == "import":
             template_code = "IMA_APP_UPDATE"

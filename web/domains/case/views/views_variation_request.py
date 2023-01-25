@@ -45,7 +45,7 @@ class VariationRequestManageView(PermissionRequiredMixin, LoginRequiredMixin, De
         application = self.object.get_specific_model()
         case_type = self.kwargs["case_type"]
 
-        task, readonly_view = get_current_task_and_readonly_status(
+        _, readonly_view = get_current_task_and_readonly_status(
             application,
             case_type,
             self.request.user,
