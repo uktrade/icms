@@ -7,7 +7,7 @@ from pytest_django.asserts import assertRedirects
 
 from web.domains.case._import.models import ImportApplicationLicence
 from web.domains.case._import.wood.models import WoodQuotaApplication
-from web.domains.case.services import document_pack
+from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.flow import errors
 from web.flow.models import Task
@@ -48,7 +48,7 @@ class TestReopenApplicationView:
         self.wood_app = wood_app_submitted
 
         # End the PROCESS task as we are testing reopening the application
-        task = self.wood_app.get_expected_task(Task.TaskType.PROCESS)
+        task = case_progress.get_expected_task(self.wood_app, Task.TaskType.PROCESS)
         task.is_active = False
         task.finished = timezone.now()
         task.owner = test_icms_admin_user
@@ -93,7 +93,7 @@ class TestReopenApplicationView:
         application.refresh_from_db()
 
         application.check_expected_status([application.Statuses.SUBMITTED])
-        application.get_expected_task(Task.TaskType.PROCESS)
+        case_progress.check_expected_task(application, Task.TaskType.PROCESS)
 
 
 class TestRequestVariationUpdateView:
@@ -120,7 +120,7 @@ class TestRequestVariationUpdateView:
         document_pack.pack_draft_set_active(self.wood_app)
 
         # End the PROCESS task as we are testing with a completed application
-        task = self.wood_app.get_expected_task(Task.TaskType.PROCESS)
+        task = case_progress.get_expected_task(self.wood_app, Task.TaskType.PROCESS)
         task.is_active = False
         task.finished = timezone.now()
         task.owner = test_icms_admin_user
@@ -180,7 +180,7 @@ class TestRequestVariationUpdateView:
         assert not self.wood_app.variation_refuse_reason
 
         self.wood_app.check_expected_status([ImpExpStatus.VARIATION_REQUESTED])
-        self.wood_app.get_expected_task(Task.TaskType.PROCESS)
+        case_progress.check_expected_task(self.wood_app, Task.TaskType.PROCESS)
 
         # Check the application's latest licence status is draft
         latest_licence = document_pack.pack_draft_get(self.wood_app)
@@ -209,7 +209,7 @@ class TestRequestVariationOpenRequestView:
         self.app.save()
 
         # End the PROCESS task as we are testing with a completed application
-        task = self.app.get_expected_task(Task.TaskType.PROCESS)
+        task = case_progress.get_expected_task(self.app, Task.TaskType.PROCESS)
         task.is_active = False
         task.finished = timezone.now()
         task.owner = test_icms_admin_user
@@ -231,4 +231,4 @@ class TestRequestVariationOpenRequestView:
         assert not self.app.case_owner
 
         self.app.check_expected_status([ImpExpStatus.VARIATION_REQUESTED])
-        self.app.get_expected_task(Task.TaskType.PROCESS)
+        case_progress.check_expected_task(self.app, Task.TaskType.PROCESS)

@@ -20,9 +20,8 @@ def test_get_current_task_and_readonly_status(
     readonly_view = get_caseworker_view_readonly_status(
         wood_app_submitted, "import", test_icms_admin_user
     )
-    task = case_progress.get_expected_task(wood_app_submitted, Task.TaskType.PROCESS)
+    case_progress.check_expected_task(wood_app_submitted, Task.TaskType.PROCESS)
     assert readonly_view
-    assert task.task_type == Task.TaskType.PROCESS
 
     # Now assign case to the case worker.
     icms_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
@@ -32,18 +31,16 @@ def test_get_current_task_and_readonly_status(
     readonly_view = get_caseworker_view_readonly_status(
         wood_app_submitted, "import", test_icms_admin_user
     )
-    task = case_progress.get_expected_task(wood_app_submitted, Task.TaskType.PROCESS)
+    case_progress.check_expected_task(wood_app_submitted, Task.TaskType.PROCESS)
     assert not readonly_view
-    assert task.task_type == Task.TaskType.PROCESS
 
     # Test a submitted app with a case worker (importer user request)
     readonly_view = get_caseworker_view_readonly_status(
         wood_app_submitted, "import", test_import_user
     )
-    task = case_progress.get_expected_task(wood_app_submitted, Task.TaskType.PROCESS)
+    case_progress.check_expected_task(wood_app_submitted, Task.TaskType.PROCESS)
 
     assert readonly_view
-    assert task.task_type == Task.TaskType.PROCESS
 
 
 def test_get_current_task_and_readonly_status_in_progress_app(
@@ -54,11 +51,9 @@ def test_get_current_task_and_readonly_status_in_progress_app(
         wood_app_in_progress, "import", test_icms_admin_user
     )
 
-    # The task returned above is PREPARE (Which means it's in progress)
-    task = case_progress.get_expected_task(wood_app_in_progress, Task.TaskType.PREPARE)
+    case_progress.check_expected_task(wood_app_in_progress, Task.TaskType.PREPARE)
 
     assert readonly_view
-    assert task.task_type == Task.TaskType.PREPARE
 
 
 @pytest.mark.parametrize(

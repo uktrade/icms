@@ -4,6 +4,7 @@ import pytest
 from django.urls import reverse
 
 from web.domains.case._import.fa_sil.models import SILApplication
+from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.flow.models import Task
 from web.models import ImportApplicationLicence
@@ -22,7 +23,7 @@ def test_create_fa_sil(importer_client, importer, office):
     )
 
     app = SILApplication.objects.get(pk=app_pk)
-    app.get_expected_task(Task.TaskType.PREPARE)
+    case_progress.check_expected_task(app, Task.TaskType.PREPARE)
     app.check_expected_status(ImpExpStatus.IN_PROGRESS)
 
 

@@ -6,12 +6,16 @@ from django.http import HttpRequest
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
 
+from web.domains.case.services import case_progress
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task
 from web.flow.models import Process, Task
 from web.types import AuthenticatedHttpRequest
 
 
+# TODO: Revisit this...
+#   task = self.application.get_expected_task
+#   can be case_progress.check_expected_task(self.application) in a lot of places
 class ApplicationTaskMixin(SingleObjectMixin, View):
     """Mixin to define the expected application status & task type.
 
@@ -80,8 +84,8 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
         is_post = self.request.method == "POST"
 
         if self.current_task_type:
-            task = self.application.get_expected_task(
-                self.current_task_type, select_for_update=is_post
+            task = case_progress.get_expected_task(
+                self.application, self.current_task_type, select_for_update=is_post
             )
 
         return task
@@ -153,8 +157,10 @@ class ApplicationAndTaskRelatedObjectMixin:
         ).get_specific_model()
 
         if self.current_task_type:
-            self.task = self.application.get_expected_task(
-                self.current_task_type, select_for_update=self.request.method == "POST"  # type: ignore[attr-defined]
+            self.task = case_progress.get_expected_task(
+                self.application,
+                self.current_task_type,
+                select_for_update=self.request.method == "POST",  # type: ignore[attr-defined]
             )
 
         self.application.check_expected_status(self.current_status)
