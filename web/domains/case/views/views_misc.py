@@ -166,9 +166,10 @@ def manage_withdrawals(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        task, readonly_view = get_current_task_and_readonly_status(
-            application, case_type, request.user, Task.TaskType.PROCESS
+        _, readonly_view = get_current_task_and_readonly_status(
+            application, case_type, request.user, Task.TaskType.PROCESS, select_for_update=False
         )
+        task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
 
         withdrawals = application.withdrawals.filter(is_active=True).order_by("-created_datetime")
         current_withdrawal = withdrawals.filter(status=WithdrawApplication.STATUS_OPEN).first()
@@ -317,9 +318,10 @@ def manage_case(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        task, readonly_view = get_current_task_and_readonly_status(
-            application, case_type, request.user, Task.TaskType.PROCESS
+        _, readonly_view = get_current_task_and_readonly_status(
+            application, case_type, request.user, Task.TaskType.PROCESS, select_for_update=False
         )
+        task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
 
         if request.method == "POST" and not readonly_view:
             form = forms.CloseCaseForm(request.POST)
