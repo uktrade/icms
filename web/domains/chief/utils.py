@@ -3,8 +3,7 @@ from django.utils import timezone
 
 from web.domains.case._import.models import ImportApplication, LiteHMRCChiefRequest
 from web.domains.case.models import VariationRequest
-from web.domains.case.services import document_pack
-from web.domains.case.utils import get_application_current_task
+from web.domains.case.services import case_progress, document_pack
 from web.flow.models import Task
 
 from .types import ResponseError
@@ -48,7 +47,9 @@ def chief_licence_reply_reject_licence(application: ImportApplication) -> None:
 
 
 def _finish_chief_wait_task(application: ImportApplication) -> Task:
-    task = get_application_current_task(application, "import", Task.TaskType.CHIEF_WAIT)
+    case_progress.application_is_with_chief(application)
+    task = case_progress.get_expected_task(application, Task.TaskType.CHIEF_WAIT)
+
     task.is_active = False
     task.finished = timezone.now()
     task.save()

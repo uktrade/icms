@@ -16,6 +16,8 @@ __all__ = [
     "application_in_progress",
     "application_in_processing",
     "access_request_in_processing",
+    "application_is_authorised",
+    "application_is_with_chief",
     #
     # Utility functions
     #
@@ -53,11 +55,31 @@ def application_in_processing(application: ImpOrExp) -> None:
     check_expected_task(application, expected_task)
 
 
-def access_request_in_processing(application: AccessRequest):
+def access_request_in_processing(application: AccessRequest) -> None:
     """Check if an access request is being processed by a caseworker"""
 
     expected_status = [ST.SUBMITTED]
     expected_task = TT.PROCESS
+
+    check_expected_status(application, expected_status)
+    check_expected_task(application, expected_task)
+
+
+def application_is_authorised(application: ImpOrExp) -> None:
+    """Check if an application has been authorised."""
+
+    expected_status = [ST.PROCESSING, ST.VARIATION_REQUESTED]
+    expected_task = TT.AUTHORISE
+
+    check_expected_status(application, expected_status)
+    check_expected_task(application, expected_task)
+
+
+def application_is_with_chief(application: ImpOrExp) -> None:
+    """Check if an application is with CHIEF."""
+
+    expected_status = [ST.PROCESSING, ST.VARIATION_REQUESTED]
+    expected_task = TT.CHIEF_WAIT
 
     check_expected_status(application, expected_status)
     check_expected_task(application, expected_task)

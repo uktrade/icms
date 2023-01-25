@@ -26,7 +26,6 @@ from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import (
     check_application_permission,
     end_process_task,
-    get_application_current_task,
     get_case_page_title,
 )
 from web.domains.template.models import Template
@@ -469,7 +468,8 @@ def authorise_documents(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, case_type, Task.TaskType.AUTHORISE)
+        case_progress.application_is_authorised(application)
+        task = case_progress.get_expected_task(application, Task.TaskType.AUTHORISE)
 
         if request.method == "POST":
             form = forms.AuthoriseForm(data=request.POST, request=request)
@@ -614,7 +614,7 @@ def view_document_packs(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        get_application_current_task(application, case_type, Task.TaskType.AUTHORISE)
+        case_progress.application_is_authorised(application)
 
         context = {
             "case_type": case_type,
@@ -720,7 +720,8 @@ def cancel_authorisation(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        task = get_application_current_task(application, case_type, Task.TaskType.AUTHORISE)
+        case_progress.application_is_authorised(application)
+        task = case_progress.get_expected_task(application, Task.TaskType.AUTHORISE)
 
         if application.status != model_class.Statuses.VARIATION_REQUESTED:
             application.status = model_class.Statuses.PROCESSING
