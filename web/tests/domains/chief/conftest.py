@@ -3,7 +3,7 @@ import datetime
 import pytest
 from django.utils import timezone
 
-from web.domains.case.services import document_pack
+from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.models import (
     Country,
@@ -106,7 +106,7 @@ def check_licence_reject_correct(
     assert not chief_wait_task.is_active
 
     # Check the current task is chief error
-    app.get_expected_task(Task.TaskType.CHIEF_ERROR, select_for_update=False)
+    case_progress.check_expected_task(app, Task.TaskType.CHIEF_ERROR)
 
 
 def check_complete_chief_request_correct(chief_request: LiteHMRCChiefRequest) -> None:

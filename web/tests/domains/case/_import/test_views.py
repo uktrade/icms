@@ -7,6 +7,7 @@ from pytest_django.asserts import assertRedirects
 from web.domains.case._import.models import LiteHMRCChiefRequest
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.models import VariationRequest
+from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.importer.models import Importer
 from web.flow.models import Task
@@ -138,8 +139,8 @@ class TestBypassChiefView:
 
         self.wood_app.refresh_from_db()
 
-        self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
-        assert self.wood_app.get_active_tasks(False).count() == 0
+        case_progress.check_expected_status(self.wood_app, [ImpExpStatus.COMPLETED])
+        assert case_progress.get_active_tasks(self.wood_app, False).count() == 0
 
     def test_bypass_chief_failure(self):
         url = reverse(
@@ -152,8 +153,8 @@ class TestBypassChiefView:
 
         self.wood_app.refresh_from_db()
 
-        self.wood_app.check_expected_status([ImpExpStatus.PROCESSING])
-        self.wood_app.get_expected_task(Task.TaskType.CHIEF_ERROR)
+        case_progress.check_expected_status(self.wood_app, [ImpExpStatus.PROCESSING])
+        case_progress.check_expected_task(self.wood_app, Task.TaskType.CHIEF_ERROR)
 
     def test_bypass_chief_variation_request_success(self, test_icms_admin_user):
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
@@ -177,8 +178,8 @@ class TestBypassChiefView:
 
         self.wood_app.refresh_from_db()
 
-        self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
-        assert self.wood_app.get_active_tasks(False).count() == 0
+        case_progress.check_expected_status(self.wood_app, [ImpExpStatus.COMPLETED])
+        assert case_progress.get_active_tasks(self.wood_app, False).count() == 0
 
         vr = self.wood_app.variation_requests.first()
         assert vr.status == VariationRequest.ACCEPTED

@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db import models
 from django.db.models.query import QuerySet
 from django.utils import timezone
@@ -63,20 +62,6 @@ class Process(models.Model):
 
     # Used to order the workbasket - Changes when a variety of actions are performed
     order_datetime = models.DateTimeField(default=timezone.now)
-
-    def get_expected_task(self, task_type: str, *, select_for_update=True) -> "Task":
-        """Get the expected active current task"""
-
-        if not self.is_active:
-            raise errors.ProcessInactiveError("Process is not active")
-
-        try:
-            task = self.get_active_tasks(select_for_update).get(task_type=task_type)
-
-        except (ObjectDoesNotExist, MultipleObjectsReturned) as exc:
-            raise errors.TaskError(f"Failed to get expected task: {task_type}") from exc
-
-        return task
 
     def check_expected_status(self, expected_statuses: list[str]) -> None:
         """Check the process has one of the expected statuses."""

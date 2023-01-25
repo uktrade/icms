@@ -5,7 +5,7 @@ from django.utils import timezone
 from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
 from web.domains.case.models import DocumentPackBase, VariationRequest
-from web.domains.case.services import document_pack
+from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.flow.models import Task
 from web.tests.helpers import CaseURLS
@@ -119,8 +119,8 @@ class TestVariationRequestCancelView:
         assert vr.closed_by == test_icms_admin_user
         assert vr.closed_datetime.date() == timezone.now().date()
 
-        self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
-        assert self.wood_app.get_active_task_list() == []
+        case_progress.check_expected_status(self.wood_app, [ImpExpStatus.COMPLETED])
+        assert case_progress.get_active_task_list(self.wood_app) == []
 
         self.active_licence.refresh_from_db()
         assert self.active_licence.status == DocumentPackBase.Status.ACTIVE
@@ -165,8 +165,8 @@ class TestVariationRequestCancelViewForExportApplication:
         assert vr.closed_by == test_icms_admin_user
         assert vr.closed_datetime.date() == timezone.now().date()
 
-        self.app.check_expected_status([ImpExpStatus.COMPLETED])
-        assert self.app.get_active_task_list() == []
+        case_progress.check_expected_status(self.app, [ImpExpStatus.COMPLETED])
+        assert case_progress.get_active_task_list(self.app) == []
 
         self.active_certificate.refresh_from_db()
         assert self.active_certificate.status == DocumentPackBase.Status.ACTIVE
@@ -204,8 +204,8 @@ class TestVariationRequestRequestUpdateView:
 
         # Check the status is the same but the app has a new task
         self.wood_app.refresh_from_db()
-        self.wood_app.check_expected_status([ImpExpStatus.VARIATION_REQUESTED])
-        self.wood_app.get_expected_task(Task.TaskType.VR_REQUEST_CHANGE, select_for_update=False)
+        case_progress.check_expected_status(self.wood_app, [ImpExpStatus.VARIATION_REQUESTED])
+        case_progress.check_expected_task(self.wood_app, Task.TaskType.VR_REQUEST_CHANGE)
 
         # Check the reason has been saved
         self.vr.refresh_from_db()
@@ -257,7 +257,7 @@ class TestVariationRequestCancelUpdateRequestView:
         self.app.refresh_from_db()
         self.vr.refresh_from_db()
 
-        self.app.check_expected_status([ImpExpStatus.VARIATION_REQUESTED])
+        case_progress.check_expected_status(self.app, [ImpExpStatus.VARIATION_REQUESTED])
         assert Task.TaskType.VR_REQUEST_CHANGE not in self.app.get_active_task_list()
 
         assert self.vr.update_request_reason is None
@@ -311,7 +311,7 @@ class TestVariationRequestRespondToUpdateRequestView:
 
         # Check the status is the same but VR_REQUEST_CHANGE is no longer an active task.
         self.wood_app.refresh_from_db()
-        self.wood_app.check_expected_status([ImpExpStatus.VARIATION_REQUESTED])
+        case_progress.check_expected_status(self.wood_app, [ImpExpStatus.VARIATION_REQUESTED])
 
         assert Task.TaskType.VR_REQUEST_CHANGE not in self.wood_app.get_active_task_list()
 

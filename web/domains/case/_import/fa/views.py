@@ -153,8 +153,11 @@ def create_import_contact(
         if application.status == application.Statuses.COMPLETED:
             template = "web/domains/case/import/fa/provide-report/import-contacts.html"
         else:
-            application.check_expected_status([ImpExpStatus.IN_PROGRESS, ImpExpStatus.PROCESSING])
-            application.get_expected_task(Task.TaskType.PREPARE, select_for_update=False)
+            # TODO: This might be a case_progress function
+            case_progress.check_expected_status(
+                application, [ImpExpStatus.IN_PROGRESS, ImpExpStatus.PROCESSING]
+            )
+            case_progress.check_expected_task(application, Task.TaskType.PREPARE)
             template = "web/domains/case/import/fa/import-contacts/create.html"
 
         if request.method == "POST":
@@ -212,8 +215,11 @@ def edit_import_contact(
         if application.status == application.Statuses.COMPLETED:
             template = "web/domains/case/import/fa/provide-report/import-contacts.html"
         else:
-            application.check_expected_status([ImpExpStatus.IN_PROGRESS, ImpExpStatus.PROCESSING])
-            application.get_expected_task(Task.TaskType.PREPARE, select_for_update=False)
+            # TODO: This might be a case_progress function
+            case_progress.check_expected_status(
+                application, [ImpExpStatus.IN_PROGRESS, ImpExpStatus.PROCESSING]
+            )
+            case_progress.check_expected_task(application, Task.TaskType.PREPARE)
             template = "web/domains/case/import/fa/import-contacts/edit.html"
 
         if request.method == "POST":

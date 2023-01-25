@@ -4,6 +4,7 @@ import pytest
 from django.test import override_settings
 from django.utils import timezone
 
+from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import client
 from web.domains.chief.types import CreateLicenceData
@@ -48,9 +49,7 @@ class TestChiefClient:
         app = fa_sil_app_doc_signing
         licence = app.licences.get(status=ImportApplicationLicence.Status.DRAFT)
 
-        current_task = app.get_expected_task(
-            Task.TaskType.DOCUMENT_SIGNING, select_for_update=False
-        )
+        current_task = case_progress.get_expected_task(app, Task.TaskType.DOCUMENT_SIGNING)
 
         request_license_mock = mock.create_autospec(spec=client.request_license)
         monkeypatch.setattr(client, "request_license", request_license_mock)
@@ -96,14 +95,12 @@ class TestChiefClient:
             }
         }
 
-        app.get_expected_task(Task.TaskType.CHIEF_WAIT, select_for_update=False)
+        case_progress.check_expected_task(app, Task.TaskType.CHIEF_WAIT)
 
     def test_send_application_to_chief_errors(self, fa_sil_app_doc_signing, monkeypatch):
         # Setup
         app = fa_sil_app_doc_signing
-        current_task = app.get_expected_task(
-            Task.TaskType.DOCUMENT_SIGNING, select_for_update=False
-        )
+        current_task = case_progress.get_expected_task(app, Task.TaskType.DOCUMENT_SIGNING)
 
         # make request_licence fail after the LiteHMRCChiefRequest object is created
         request_license_mock = mock.create_autospec(
@@ -117,7 +114,7 @@ class TestChiefClient:
 
         # Asserts
         app.refresh_from_db()
-        app.get_expected_task(Task.TaskType.CHIEF_ERROR, select_for_update=False)
+        case_progress.check_expected_task(app, Task.TaskType.CHIEF_ERROR)
 
         assert app.chief_references.count() == 1
         assert (
@@ -129,9 +126,7 @@ class TestChiefClient:
         app = fa_sil_app_doc_signing
         licence = app.licences.get(status=ImportApplicationLicence.Status.DRAFT)
 
-        current_task = app.get_expected_task(
-            Task.TaskType.DOCUMENT_SIGNING, select_for_update=False
-        )
+        current_task = case_progress.get_expected_task(app, Task.TaskType.DOCUMENT_SIGNING)
 
         request_license_mock = mock.create_autospec(spec=client.request_license)
         monkeypatch.setattr(client, "request_license", request_license_mock)
@@ -189,4 +184,4 @@ class TestChiefClient:
             }
         }
 
-        app.get_expected_task(Task.TaskType.CHIEF_WAIT, select_for_update=False)
+        case_progress.check_expected_task(app, Task.TaskType.CHIEF_WAIT)

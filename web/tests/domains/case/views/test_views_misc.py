@@ -9,7 +9,7 @@ from pytest_django.asserts import assertContains, assertRedirects, assertTemplat
 
 from web.domains.case._import.wood.models import WoodQuotaChecklist
 from web.domains.case.models import DocumentPackBase, UpdateRequest, VariationRequest
-from web.domains.case.services import document_pack
+from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.flow.errors import ProcessStateError
 from web.flow.models import Task
@@ -282,12 +282,11 @@ def test_start_authorisation_approved_variation_requested_application(
     assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
     wood_application.refresh_from_db()
 
-    wood_application.check_expected_status([ImpExpStatus.VARIATION_REQUESTED])
-    expected_task = wood_application.get_expected_task(Task.TaskType.AUTHORISE)
+    case_progress.check_expected_status(wood_application, [ImpExpStatus.VARIATION_REQUESTED])
+    case_progress.check_expected_task(wood_application, Task.TaskType.AUTHORISE)
+
     vr = wood_application.variation_requests.first()
     assert vr.status == VariationRequest.OPEN
-
-    assert expected_task is not None
 
     pack = document_pack.pack_draft_get(wood_application)
     licence_doc = document_pack.doc_ref_licence_get(pack)
@@ -315,7 +314,7 @@ def test_start_authorisation_rejected_variation_requested_application(
     assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
     wood_application.refresh_from_db()
 
-    wood_application.check_expected_status([ImpExpStatus.COMPLETED])
+    case_progress.check_expected_status(wood_application, [ImpExpStatus.COMPLETED])
     assert wood_application.get_active_task_list() == []
 
     vr = wood_application.variation_requests.first()
@@ -366,8 +365,8 @@ class TestAuthoriseDocumentsView:
 
         self.wood_app.refresh_from_db()
 
-        self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
-        assert self.wood_app.get_active_tasks(False).count() == 0
+        case_progress.check_expected_status(self.wood_app, [ImpExpStatus.COMPLETED])
+        assert case_progress.get_active_tasks(self.wood_app, False).count() == 0
 
         latest_licence = document_pack.pack_active_get(self.wood_app)
         assert latest_licence.status == DocumentPackBase.Status.ACTIVE
@@ -384,8 +383,8 @@ class TestAuthoriseDocumentsView:
 
         self.wood_app.refresh_from_db()
 
-        self.wood_app.check_expected_status([ImpExpStatus.COMPLETED])
-        assert self.wood_app.get_active_tasks(False).count() == 0
+        case_progress.check_expected_status(self.wood_app, [ImpExpStatus.COMPLETED])
+        assert case_progress.get_active_tasks(self.wood_app, False).count() == 0
 
         vr = self.wood_app.variation_requests.first()
         assert vr.status == VariationRequest.ACCEPTED
@@ -406,8 +405,8 @@ class TestAuthoriseDocumentsView:
 
         self.wood_app.refresh_from_db()
 
-        self.wood_app.check_expected_status([ImpExpStatus.PROCESSING])
-        self.wood_app.get_expected_task(Task.TaskType.CHIEF_WAIT)
+        case_progress.check_expected_status(self.wood_app, [ImpExpStatus.PROCESSING])
+        case_progress.check_expected_task(self.wood_app, Task.TaskType.CHIEF_WAIT)
 
         # Latest licence is still draft until after chief submission.
         latest_licence = document_pack.pack_draft_get(self.wood_app)

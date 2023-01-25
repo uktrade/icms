@@ -6,7 +6,7 @@ from django.utils import timezone
 
 from config.celery import app
 from web.domains.case.models import CaseDocumentReference, VariationRequest
-from web.domains.case.services import document_pack
+from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task
@@ -101,7 +101,7 @@ def create_document_pack_on_success(application_pk, user_pk):
         )
         user = User.objects.get(pk=user_pk)
 
-        task = application.get_expected_task(Task.TaskType.DOCUMENT_SIGNING)
+        task = case_progress.get_expected_task(application, Task.TaskType.DOCUMENT_SIGNING)
         end_process_task(task, user)
 
         is_import = application.is_import_application()
@@ -138,7 +138,7 @@ def create_document_pack_on_error(
         application = Process.objects.get(pk=application_pk)
         user = User.objects.get(pk=user_pk)
 
-        task = application.get_expected_task(Task.TaskType.DOCUMENT_SIGNING)
+        task = case_progress.get_expected_task(application, Task.TaskType.DOCUMENT_SIGNING)
         end_process_task(task, user)
         Task.objects.create(
             process=application, task_type=Task.TaskType.DOCUMENT_ERROR, previous=task

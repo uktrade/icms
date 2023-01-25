@@ -15,7 +15,7 @@ from web.domains.case._import.fa_sil.models import SILApplication, SILChecklist
 from web.domains.case._import.models import ImportApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.access.models import ExporterAccessRequest, ImporterAccessRequest
-from web.domains.case.services import document_pack
+from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
@@ -234,7 +234,7 @@ def wood_app_in_progress(
     app = create_in_progress_wood_app(importer_client, importer, office, test_import_user)
 
     app.check_expected_status(ImportApplication.Statuses.IN_PROGRESS)
-    app.get_expected_task(Task.TaskType.PREPARE)
+    case_progress.check_expected_task(app, Task.TaskType.PREPARE)
 
     return app
 
@@ -250,7 +250,7 @@ def wood_app_submitted(importer_client, importer, office, test_import_user) -> W
     app.refresh_from_db()
 
     app.check_expected_status(ImportApplication.Statuses.SUBMITTED)
-    app.get_expected_task(Task.TaskType.PROCESS)
+    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
 
     return app
 
@@ -265,7 +265,7 @@ def fa_dfl_app_in_progress(
     app = create_in_progress_fa_dfl_app(importer_client, importer, office, importer_contact)
 
     app.check_expected_status(ImportApplication.Statuses.IN_PROGRESS)
-    app.get_expected_task(Task.TaskType.PREPARE)
+    case_progress.check_expected_task(app, Task.TaskType.PREPARE)
 
     return app
 
@@ -281,7 +281,7 @@ def fa_dfl_app_submitted(importer_client, importer, office, importer_contact) ->
     app.refresh_from_db()
 
     app.check_expected_status(ImportApplication.Statuses.SUBMITTED)
-    app.get_expected_task(Task.TaskType.PROCESS)
+    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
 
     return app
 
@@ -299,7 +299,7 @@ def fa_oil_app_submitted(
     app.refresh_from_db()
 
     app.check_expected_status(ImportApplication.Statuses.SUBMITTED)
-    app.get_expected_task(Task.TaskType.PROCESS)
+    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
 
     return app
 
@@ -314,7 +314,7 @@ def fa_sil_app_submitted(importer_client, importer, office, importer_contact) ->
     app.refresh_from_db()
 
     app.check_expected_status(ImportApplication.Statuses.SUBMITTED)
-    app.get_expected_task(Task.TaskType.PROCESS)
+    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
 
     return app
 
@@ -339,7 +339,7 @@ def com_app_in_progress(
     app = create_in_progress_com_app(exporter_client, exporter, exporter_office, exporter_contact)
 
     app.check_expected_status(ImportApplication.Statuses.IN_PROGRESS)
-    app.get_expected_task(Task.TaskType.PREPARE)
+    case_progress.check_expected_task(app, Task.TaskType.PREPARE)
 
     return app
 
@@ -356,7 +356,7 @@ def com_app_submitted(
     app.refresh_from_db()
 
     app.check_expected_status(ImportApplication.Statuses.SUBMITTED)
-    app.get_expected_task(Task.TaskType.PROCESS)
+    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
 
     return app
 
