@@ -8,14 +8,13 @@ from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case.services import case_progress
 from web.domains.file.utils import create_file_model
-from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 
 from .. import forms, models
 from ..types import ImpOrExp
 from ..utils import get_case_page_title
-from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
+from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
 
 
 @login_required
@@ -31,9 +30,7 @@ def list_notes(
         )
 
         # case_progress.application_in_processing
-        _, readonly_view = get_current_task_and_readonly_status(
-            application, case_type, request.user, Task.TaskType.PROCESS, select_for_update=False
-        )
+        readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
 
         context = {
             "process": application,

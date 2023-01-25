@@ -28,7 +28,7 @@ from web.flow.models import Process, Task
 from web.types import AuthenticatedHttpRequest
 
 from .mixins import ApplicationAndTaskRelatedObjectMixin
-from .utils import get_current_task_and_readonly_status
+from .utils import get_caseworker_view_readonly_status
 
 
 class VariationRequestManageView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
@@ -45,12 +45,8 @@ class VariationRequestManageView(PermissionRequiredMixin, LoginRequiredMixin, De
         application = self.object.get_specific_model()
         case_type = self.kwargs["case_type"]
 
-        _, readonly_view = get_current_task_and_readonly_status(
-            application,
-            case_type,
-            self.request.user,
-            Task.TaskType.PROCESS,
-            select_for_update=False,
+        readonly_view = get_caseworker_view_readonly_status(
+            application, case_type, self.request.user
         )
 
         context = super().get_context_data(**kwargs)

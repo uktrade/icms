@@ -12,7 +12,6 @@ from web.domains.case.export.models import (
     CertificateOfGoodManufacturingPracticeApplication,
 )
 from web.domains.case.services import document_pack
-from web.flow.models import Task
 from web.models import (
     CertificateOfManufactureApplication,
     DerogationsApplication,
@@ -31,7 +30,7 @@ from web.utils.commodity import annotate_commodity_unit
 from .. import forms
 from ..types import ImpOrExp
 from ..utils import get_case_page_title
-from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
+from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
 
 
 @login_required
@@ -58,9 +57,7 @@ def prepare_response(
         else:
             raise NotImplementedError(f"Unknown case_type {case_type}")
 
-        _, readonly_view = get_current_task_and_readonly_status(
-            application, case_type, request.user, Task.TaskType.PROCESS
-        )
+        readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
 
         if request.method == "POST" and not readonly_view:
             form = form_class(request.POST, instance=application)

@@ -13,7 +13,7 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.file.utils import create_file_model
 from web.domains.template.models import Template
 from web.domains.user.models import User
-from web.flow.models import ProcessTypes, Task
+from web.flow.models import ProcessTypes
 from web.notify import notify
 from web.types import AuthenticatedHttpRequest
 
@@ -26,7 +26,7 @@ from ..utils import (
     get_case_page_title,
     view_application_file,
 )
-from .utils import get_class_imp_or_exp_or_access, get_current_task_and_readonly_status
+from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp_or_access
 
 
 def _application_is_processing(application: ImpOrExpOrAccess, case_type: str):
@@ -56,13 +56,13 @@ def manage_firs(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        # Access requests don't have a case_owner so can't call get_current_task_and_readonly_status
+        # Access requests don't have a case_owner so can't call get_caseworker_view_readonly_status
         if application.process_type in [ProcessTypes.EAR, ProcessTypes.IAR]:
             _application_is_processing(application, case_type)
             readonly_view = False
         else:
-            _, readonly_view = get_current_task_and_readonly_status(
-                application, case_type, request.user, Task.TaskType.PROCESS
+            readonly_view = get_caseworker_view_readonly_status(
+                application, case_type, request.user
             )
 
         if case_type in ["import", "export"]:

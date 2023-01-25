@@ -22,7 +22,7 @@ from web.domains.constabulary.models import Constabulary
 from web.domains.file.models import File
 from web.domains.sanction_email.models import SanctionEmail
 from web.domains.template.models import Template
-from web.flow.models import ProcessTypes, Task
+from web.flow.models import ProcessTypes
 from web.models import (
     DFLApplication,
     GMPFile,
@@ -36,7 +36,7 @@ from web.utils.s3 import get_file_from_s3, get_s3_client
 
 from .. import forms, models
 from ..types import ApplicationsWithCaseEmail, CaseEmailConfig, ImpOrExp
-from .utils import get_class_imp_or_exp, get_current_task_and_readonly_status
+from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -54,9 +54,7 @@ def manage_case_emails(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        _, readonly_view = get_current_task_and_readonly_status(
-            application, case_type, request.user, Task.TaskType.PROCESS
-        )
+        readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
 
     if application.process_type in [
         OpenIndividualLicenceApplication.PROCESS_TYPE,
