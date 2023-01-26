@@ -17,7 +17,7 @@
         {% if process.is_import_application() %}
           {{ icms_link(request, icms_url('case:history', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'Sent Responses' ) }}
 
-          {% if process.application_type.type == "FA" %}
+          {% if process.application_type.type == "FA" and process.decision == process.APPROVE %}
             {{ icms_link(request, icms_url('import:fa:provide-report', kwargs={'application_pk': process.pk}), 'Firearms Supplementary Information') }}
           {% endif %}
         {% else %}
