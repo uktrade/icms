@@ -153,7 +153,6 @@ def create_import_contact(
         if application.status == application.Statuses.COMPLETED:
             template = "web/domains/case/import/fa/provide-report/import-contacts.html"
         else:
-            # TODO: This might be a case_progress function
             case_progress.check_expected_status(
                 application, [ImpExpStatus.IN_PROGRESS, ImpExpStatus.PROCESSING]
             )
@@ -215,7 +214,6 @@ def edit_import_contact(
         if application.status == application.Statuses.COMPLETED:
             template = "web/domains/case/import/fa/provide-report/import-contacts.html"
         else:
-            # TODO: This might be a case_progress function
             case_progress.check_expected_status(
                 application, [ImpExpStatus.IN_PROGRESS, ImpExpStatus.PROCESSING]
             )
@@ -266,7 +264,9 @@ def delete_import_contact(
 
         application: FaImportApplication = _get_fa_application(import_application)
         check_application_permission(application, request.user, "import")
-        application.check_expected_status([ImpExpStatus.IN_PROGRESS, ImpExpStatus.COMPLETED])
+        case_progress.check_expected_status(
+            application, [ImpExpStatus.IN_PROGRESS, ImpExpStatus.COMPLETED]
+        )
 
         contact = application.importcontact_set.get(pk=contact_pk)
 
@@ -573,7 +573,7 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
         application: FaImportApplication = _get_fa_application(import_application)
 
         check_application_permission(application, request.user, "import")
-        application.check_expected_status([ImpExpStatus.COMPLETED])
+        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         form_class = _get_supplementary_info_form(application)
 
@@ -646,7 +646,7 @@ def create_report(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
         application: FaImportApplication = _get_fa_application(import_application)
 
         check_application_permission(application, request.user, "import")
-        application.check_expected_status([ImpExpStatus.COMPLETED])
+        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: FaSupplementaryInfo = application.supplementary_info
         form_class = _get_supplementary_report_form(application)
@@ -695,7 +695,7 @@ def edit_report(
         application: FaImportApplication = _get_fa_application(import_application)
 
         check_application_permission(application, request.user, "import")
-        application.check_expected_status([ImpExpStatus.COMPLETED])
+        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: FaSupplementaryInfo = application.supplementary_info
         report: FaSupplementaryReport = supplementary_info.reports.get(pk=report_pk)

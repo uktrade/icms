@@ -418,7 +418,7 @@ def add_report_firearm_manual(
         )
 
         check_application_permission(application, request.user, "import")
-        application.check_expected_status([ImpExpStatus.COMPLETED])
+        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -473,7 +473,7 @@ def edit_report_firearm_manual(
         )
 
         check_application_permission(application, request.user, "import")
-        application.check_expected_status([ImpExpStatus.COMPLETED])
+        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
         report_firearm: DFLSupplementaryReportFirearm = report.firearms.get(pk=report_firearm_pk)
@@ -523,7 +523,7 @@ def add_report_firearm_upload(
         )
 
         check_application_permission(application, request.user, "import")
-        application.check_expected_status([ImpExpStatus.COMPLETED])
+        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -604,7 +604,7 @@ def add_report_firearm_no_firearm(
         )
 
         check_application_permission(application, request.user, "import")
-        application.check_expected_status([ImpExpStatus.COMPLETED])
+        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -637,7 +637,7 @@ def delete_report_firearm(
         )
 
         check_application_permission(application, request.user, "import")
-        application.check_expected_status([ImpExpStatus.COMPLETED])
+        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)

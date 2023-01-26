@@ -62,15 +62,6 @@ class Process(models.Model):
     # Used to order the workbasket - Changes when a variety of actions are performed
     order_datetime = models.DateTimeField(default=timezone.now)
 
-    def check_expected_status(self, expected_statuses: list[str]) -> None:
-        """Check the process has one of the expected statuses."""
-
-        # status is set as a model field on all derived classes
-        status: str = self.status  # type: ignore[attr-defined]
-
-        if status not in expected_statuses:
-            raise errors.ProcessStateError(f"Process is in the wrong state: {status}")
-
     def get_task(
         self, expected_state: str | list[str], task_type: str, select_for_update: bool = True
     ) -> "Task":

@@ -445,8 +445,8 @@ def respond_fir(
             model_class.objects.select_for_update(), pk=application_pk
         )
         check_application_permission(application, request.user, case_type)
-        application.check_expected_status(
-            [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+        case_progress.check_expected_status(
+            application, [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
         )
         fir = get_object_or_404(application.further_information_requests.open(), pk=fir_pk)
 
