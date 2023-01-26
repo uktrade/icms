@@ -316,9 +316,10 @@ def manage_case(
         )
 
         readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
-        task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
 
         if request.method == "POST" and not readonly_view:
+            task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
+
             form = forms.CloseCaseForm(request.POST)
 
             if form.is_valid():
