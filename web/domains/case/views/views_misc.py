@@ -169,12 +169,13 @@ def manage_withdrawals(
         )
 
         readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
-        task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
 
         withdrawals = application.withdrawals.filter(is_active=True).order_by("-created_datetime")
         current_withdrawal = withdrawals.filter(status=WithdrawApplication.STATUS_OPEN).first()
 
         if request.method == "POST" and not readonly_view:
+            task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
+
             form = forms.WithdrawResponseForm(request.POST, instance=current_withdrawal)
 
             if form.is_valid():
@@ -388,11 +389,12 @@ def start_authorisation(
         )
 
         case_progress.application_in_processing(application)
-        task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
 
         application_errors: ApplicationErrors = get_app_errors(application, case_type)
 
         if request.method == "POST" and not application_errors.has_errors():
+            task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
+
             create_documents = True
 
             if application.status == application.Statuses.VARIATION_REQUESTED:
