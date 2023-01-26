@@ -50,7 +50,9 @@ def test_take_ownership(icms_admin_client: "Client", wood_app_submitted):
     assert resp.status_code == 302
 
     wood_app_submitted.refresh_from_db()
-    assert wood_app_submitted.get_task(ImpExpStatus.PROCESSING, Task.TaskType.PROCESS)
+
+    case_progress.check_expected_status(wood_app_submitted, [ImpExpStatus.PROCESSING])
+    case_progress.check_expected_task(wood_app_submitted, Task.TaskType.PROCESS)
 
 
 def test_take_ownership_in_progress(icms_admin_client: "Client", wood_app_in_progress):
@@ -153,10 +155,8 @@ def test_start_authorisation_approved_application_has_no_errors(
 
     wood_application.refresh_from_db()
 
-    current_task = wood_application.get_task(
-        expected_state=ImpExpStatus.PROCESSING, task_type=Task.TaskType.AUTHORISE
-    )
-    assert current_task is not None
+    case_progress.check_expected_status(wood_application, [ImpExpStatus.PROCESSING])
+    case_progress.check_expected_task(wood_application, Task.TaskType.AUTHORISE)
 
     doc_pack = document_pack.pack_draft_get(wood_application)
     licence_doc = document_pack.doc_ref_licence_get(doc_pack)
@@ -194,10 +194,8 @@ def test_start_authorisation_approved_application_has_no_errors_export_app(
 
     com_app.refresh_from_db()
 
-    current_task = com_app.get_task(
-        expected_state=ImpExpStatus.PROCESSING, task_type=Task.TaskType.AUTHORISE
-    )
-    assert current_task is not None
+    case_progress.check_expected_status(com_app, [ImpExpStatus.PROCESSING])
+    case_progress.check_expected_task(com_app, Task.TaskType.AUTHORISE)
 
     cert = document_pack.pack_draft_get(com_app)
 
@@ -253,10 +251,8 @@ def test_start_authorisation_refused_application_has_no_errors(icms_admin_client
 
     wood_application.refresh_from_db()
 
-    current_task = wood_application.get_task(
-        expected_state=ImpExpStatus.COMPLETED, task_type=Task.TaskType.REJECTED
-    )
-    assert current_task is not None
+    case_progress.check_expected_status(wood_application, [ImpExpStatus.COMPLETED])
+    case_progress.check_expected_task(wood_application, Task.TaskType.REJECTED)
 
     assert wood_application.licences.count() == 1
     assert wood_application.licences.filter(status=DocumentPackBase.Status.ARCHIVED).exists()
@@ -366,7 +362,7 @@ class TestAuthoriseDocumentsView:
         self.wood_app.refresh_from_db()
 
         case_progress.check_expected_status(self.wood_app, [ImpExpStatus.COMPLETED])
-        assert case_progress.get_active_tasks(self.wood_app, False).count() == 0
+        assert case_progress.get_active_task_list(self.wood_app) == []
 
         latest_licence = document_pack.pack_active_get(self.wood_app)
         assert latest_licence.status == DocumentPackBase.Status.ACTIVE
@@ -384,7 +380,7 @@ class TestAuthoriseDocumentsView:
         self.wood_app.refresh_from_db()
 
         case_progress.check_expected_status(self.wood_app, [ImpExpStatus.COMPLETED])
-        assert case_progress.get_active_tasks(self.wood_app, False).count() == 0
+        assert case_progress.get_active_task_list(self.wood_app) == []
 
         vr = self.wood_app.variation_requests.first()
         assert vr.status == VariationRequest.ACCEPTED

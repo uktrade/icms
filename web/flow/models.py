@@ -2,8 +2,6 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
-from . import errors
-
 
 class ProcessTypes(models.TextChoices):
     """Values for Process.process_type."""
@@ -61,45 +59,6 @@ class Process(models.Model):
 
     # Used to order the workbasket - Changes when a variety of actions are performed
     order_datetime = models.DateTimeField(default=timezone.now)
-
-    def get_task(
-        self, expected_state: str | list[str], task_type: str, select_for_update: bool = True
-    ) -> "Task":
-        """Get the latest active task of the given type attached to this
-        process, while also checking the process is in the expected state.
-
-        NOTE: This locks the task row for update, so make sure there is an
-        active transaction.
-
-        NOTE: this function only makes sense if there is at most one active task
-        of the type. If the process can have multiple active tasks of the same
-        type, you cannot use this function.
-
-        Raises an exception if anything goes wrong.
-        """
-
-        if not self.is_active:
-            raise errors.ProcessInactiveError("Process is not active")
-
-        # status is set as a model field on all derived classes
-        status: str = self.status  # type: ignore[attr-defined]
-
-        if isinstance(expected_state, list):
-            if status not in expected_state:
-                raise errors.ProcessStateError(f"Process is in the wrong state: {status}")
-        else:
-            if status != expected_state:
-                raise errors.ProcessStateError(f"Process is in the wrong state: {status}")
-
-        tasks = self.tasks.filter(is_active=True, task_type=task_type).order_by("created")
-
-        if select_for_update:
-            tasks = tasks.select_for_update()
-
-        if len(tasks) != 1:
-            raise errors.TaskError(f"Expected one active task, got {len(tasks)}")
-
-        return tasks[0]
 
     def get_specific_model(self) -> "Process":
         """Downcast to specific model class."""

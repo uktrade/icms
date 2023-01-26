@@ -140,7 +140,7 @@ class TestBypassChiefView:
         self.wood_app.refresh_from_db()
 
         case_progress.check_expected_status(self.wood_app, [ImpExpStatus.COMPLETED])
-        assert case_progress.get_active_tasks(self.wood_app, False).count() == 0
+        assert case_progress.get_active_task_list(self.wood_app) == []
 
     def test_bypass_chief_failure(self):
         url = reverse(
@@ -179,7 +179,7 @@ class TestBypassChiefView:
         self.wood_app.refresh_from_db()
 
         case_progress.check_expected_status(self.wood_app, [ImpExpStatus.COMPLETED])
-        assert case_progress.get_active_tasks(self.wood_app, False).count() == 0
+        assert case_progress.get_active_task_list(self.wood_app) == []
 
         vr = self.wood_app.variation_requests.first()
         assert vr.status == VariationRequest.ACCEPTED

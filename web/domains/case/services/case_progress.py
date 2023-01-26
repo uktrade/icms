@@ -2,7 +2,7 @@ from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.db.models import QuerySet
 
 from web.domains.case.shared import ImpExpStatus
-from web.domains.case.types import ImpOrExp  # , ImpOrExpOrAccess
+from web.domains.case.types import ImpOrExp
 from web.flow import errors
 from web.models import AccessRequest, Process, Task
 
@@ -121,13 +121,15 @@ def get_expected_task(application: Process, task_type: str, *, select_for_update
     return task
 
 
+def get_active_task_list(application: Process) -> list[str]:
+    """Get all active tasks for the current process as a list"""
+
+    return list(get_active_tasks(application, False).values_list("task_type", flat=True))
+
+
 def get_active_tasks(application: Process, select_for_update=True) -> QuerySet[Task]:
     """Get all active task for current process."""
 
     tasks = application.tasks.filter(is_active=True)
 
     return tasks.select_for_update() if select_for_update else tasks
-
-
-def get_active_task_list(application: Process) -> list[str]:
-    return list(get_active_tasks(application, False).values_list("task_type", flat=True))

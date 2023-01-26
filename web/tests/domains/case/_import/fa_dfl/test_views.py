@@ -11,11 +11,12 @@ from pytest_django.asserts import (
 )
 
 from web.domains.case._import.fa_dfl.models import DFLApplication
-from web.domains.case._import.models import ImportApplication
+from web.domains.case.services import case_progress
+from web.domains.case.shared import ImpExpStatus
 from web.domains.constabulary.models import Constabulary
 from web.domains.country.models import Country
 from web.domains.user.models import User
-from web.models import ImportApplicationLicence
+from web.models import ImportApplicationLicence, Task
 from web.models.shared import FirearmCommodity
 from web.tests.helpers import check_page_errors
 
@@ -448,7 +449,8 @@ def test_submit_dfl_post_valid(client, dfl_app_pk, importer_contact):
     # check the application is in the correct state
     application = DFLApplication.objects.get(pk=dfl_app_pk)
 
-    assert application.get_task(ImportApplication.Statuses.SUBMITTED, "process")
+    case_progress.check_expected_status(application, [ImpExpStatus.SUBMITTED])
+    case_progress.check_expected_task(application, Task.TaskType.PROCESS)
 
     # And it has a draft licence
     assert application.licences.filter(status=ImportApplicationLicence.Status.DRAFT).exists()

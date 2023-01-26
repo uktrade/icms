@@ -248,13 +248,10 @@ def take_ownership(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        application.get_task(
-            expected_state=[
-                model_class.Statuses.SUBMITTED,
-                model_class.Statuses.VARIATION_REQUESTED,
-            ],
-            task_type=Task.TaskType.PROCESS,
+        case_progress.check_expected_status(
+            application, [ImpExpStatus.SUBMITTED, ImpExpStatus.VARIATION_REQUESTED]
         )
+        case_progress.check_expected_task(application, Task.TaskType.PROCESS)
 
         if application.status == model_class.Statuses.SUBMITTED:
             application.status = model_class.Statuses.PROCESSING

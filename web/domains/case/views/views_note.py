@@ -29,7 +29,6 @@ def list_notes(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        # case_progress.application_in_processing
         readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
 
         context = {
