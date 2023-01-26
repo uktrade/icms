@@ -13,9 +13,6 @@ from web.flow.models import Process, Task
 from web.types import AuthenticatedHttpRequest
 
 
-# TODO: Revisit this...
-#   task = self.application.get_expected_task
-#   can be case_progress.check_expected_task(self.application) in a lot of places
 class ApplicationTaskMixin(SingleObjectMixin, View):
     """Mixin to define the expected application status & task type.
 
