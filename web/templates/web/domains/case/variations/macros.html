@@ -56,7 +56,7 @@
     {% endif %}
 
     {% if vr.status == "OPEN" and not readonly %}
-      {% if "vr_request_change" in application.get_active_task_list() %}
+      {% if "vr_request_change" in get_active_task_list(application) %}
         <h4>Update Request</h4>
         <div class="container setoutForm">
           <div class="row">

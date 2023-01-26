@@ -5,6 +5,7 @@ from web.domains.case._import.models import ImportApplicationType
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import ApplicationBase, UpdateRequest, WithdrawApplication
+from web.domains.case.services import case_progress
 from web.domains.workbasket.base import WorkbasketSection
 from web.domains.workbasket.row import get_workbasket_row_func
 from web.domains.workbasket.views import _add_user_import_annotations
@@ -268,7 +269,7 @@ def test_admin_actions_completed(app_completed, test_icms_admin_user):
     Task.objects.create(process=app_completed, task_type=Task.TaskType.REJECTED, previous=None)
 
     # Need to override the active_tasks annotation now we have updated it.
-    app_completed.active_tasks = app_completed.get_active_task_list()
+    app_completed.active_tasks = case_progress.get_active_task_list(app_completed)
 
     admin_row = get_row(app_completed, test_icms_admin_user, True)
     _check_actions(admin_row.sections, expected_actions={"View Case", "Clear"})
@@ -300,7 +301,7 @@ def _create_update_request(app):
 
 
 def _update_task(app, new_task_type):
-    task = app.get_active_tasks().first()
+    task = case_progress.get_active_tasks(app).first()
     task.is_active = False
     task.save()
     Task.objects.create(process=app, task_type=new_task_type, previous=task)

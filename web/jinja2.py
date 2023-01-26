@@ -14,6 +14,7 @@ from django.utils.formats import get_format
 from jinja2 import Environment, pass_eval_context
 from markupsafe import Markup, escape
 
+from web.domains.case.services import case_progress
 from web.domains.case.types import ImpOrExp
 from web.domains.workbasket.actions.ilb_admin_actions import TakeOwnershipAction
 from web.menu import Menu
@@ -123,7 +124,7 @@ def show_take_ownership_url(
         user=user,
         case_type=case_type,
         application=application,
-        tasks=application.get_active_task_list(),
+        tasks=case_progress.get_active_task_list(application),
         is_ilb_admin=user.has_perm("web.ilb_admin"),
         is_importer_user=user.has_perm("web.importer_access"),
         # Set to False as checking is_rejected isn't required for TakeOwnershipAction
@@ -141,6 +142,12 @@ def get_latest_issued_document(application):
     return document_pack.pack_active_get(application)
 
 
+def get_active_task_list(application):
+    """Used to case the active task list in one template macro."""
+
+    return case_progress.get_active_task_list(application)
+
+
 def environment(**options):
     env = Environment(extensions=[CompressorExtension], **options)
     env.globals.update(
@@ -155,6 +162,7 @@ def environment(**options):
             # Reuse the workbasket logic to show url.
             "show_take_ownership_url": show_take_ownership_url,
             "get_latest_issued_document": get_latest_issued_document,
+            "get_active_task_list": get_active_task_list,
         }
     )
     env.filters["show_all_attrs"] = show_all_attrs

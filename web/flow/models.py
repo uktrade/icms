@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.db import models
-from django.db.models.query import QuerySet
 from django.utils import timezone
 
 from . import errors
@@ -110,22 +109,6 @@ class Process(models.Model):
             raise errors.TaskError(f"Expected one active task, got {len(tasks)}")
 
         return tasks[0]
-
-    def get_active_tasks(self, select_for_update=True) -> "QuerySet[Task]":
-        """Get all active task for current process.
-
-        NOTE: This locks the tasks for update, so make sure there is an
-        active transaction.
-
-        Useful when soft deleting a process.
-        """
-
-        tasks = self.tasks.filter(is_active=True)
-
-        return tasks.select_for_update() if select_for_update else tasks
-
-    def get_active_task_list(self) -> list[str]:
-        return list(self.get_active_tasks(False).values_list("task_type", flat=True))
 
     def get_specific_model(self) -> "Process":
         """Downcast to specific model class."""

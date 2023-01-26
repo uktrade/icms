@@ -315,7 +315,7 @@ def test_start_authorisation_rejected_variation_requested_application(
     wood_application.refresh_from_db()
 
     case_progress.check_expected_status(wood_application, [ImpExpStatus.COMPLETED])
-    assert wood_application.get_active_task_list() == []
+    assert case_progress.get_active_task_list(wood_application) == []
 
     vr = wood_application.variation_requests.first()
     assert vr.status == VariationRequest.REJECTED

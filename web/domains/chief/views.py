@@ -19,6 +19,7 @@ from django.views.generic import DetailView, TemplateView, View
 from mohawk.util import parse_authorization_header, prepare_header_val
 
 from web.domains.case._import.models import ImportApplication, LiteHMRCChiefRequest
+from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.views.mixins import ApplicationTaskMixin
@@ -263,7 +264,7 @@ class CheckChiefProgressView(
     def get(self, request: HttpRequest, *args, **kwargs) -> Any:
         self.set_application_and_task()
 
-        active_tasks = self.application.get_active_task_list()
+        active_tasks = case_progress.get_active_task_list(self.application)
         reload_workbasket = False
 
         if self.application.status == ImpExpStatus.COMPLETED:
