@@ -105,7 +105,9 @@ def prepare_response(
             context["variation_refused"] = True
 
         else:
-            context["licence"] = document_pack.pack_draft_get(application)
+            # When an application is refused we don't show licence details
+            if application.decision != application.REFUSE:
+                context["licence"] = document_pack.pack_draft_get(application)
 
     # Import applications
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
