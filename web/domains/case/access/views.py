@@ -235,10 +235,11 @@ def management_response(request, pk, entity):
             )
 
         case_progress.access_request_in_processing(application)
-        task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
 
         if request.method == "POST":
+            task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
             form = forms.CloseAccessRequestForm(instance=application, data=request.POST)
+
             if form.is_valid():
                 form.save()
                 application.status = AccessRequest.Statuses.CLOSED

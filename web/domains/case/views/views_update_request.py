@@ -70,7 +70,6 @@ def manage_update_requests(
         )
 
         readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
-        task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
 
         if case_type == "import":
             template_code = "IMA_APP_UPDATE"
@@ -98,6 +97,8 @@ def manage_update_requests(
         email_content = template.get_content(placeholder_content)
 
         if request.method == "POST" and not readonly_view:
+            task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
+
             form = forms.UpdateRequestForm(request.POST)
             if form.is_valid():
                 update_request = form.save(commit=False)
