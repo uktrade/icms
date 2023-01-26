@@ -258,7 +258,7 @@ class TestVariationRequestCancelUpdateRequestView:
         self.vr.refresh_from_db()
 
         case_progress.check_expected_status(self.app, [ImpExpStatus.VARIATION_REQUESTED])
-        assert Task.TaskType.VR_REQUEST_CHANGE not in self.app.get_active_task_list()
+        assert Task.TaskType.VR_REQUEST_CHANGE not in case_progress.get_active_task_list(self.app)
 
         assert self.vr.update_request_reason is None
 
@@ -313,7 +313,9 @@ class TestVariationRequestRespondToUpdateRequestView:
         self.wood_app.refresh_from_db()
         case_progress.check_expected_status(self.wood_app, [ImpExpStatus.VARIATION_REQUESTED])
 
-        assert Task.TaskType.VR_REQUEST_CHANGE not in self.wood_app.get_active_task_list()
+        assert Task.TaskType.VR_REQUEST_CHANGE not in case_progress.get_active_task_list(
+            self.wood_app
+        )
 
         # Check the reason has been cleared and the what varied is updated.
         self.vr.refresh_from_db()

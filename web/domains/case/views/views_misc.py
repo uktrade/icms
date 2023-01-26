@@ -529,7 +529,7 @@ class CheckCaseDocumentGenerationView(
     def get(self, request: HttpRequest, *args, **kwargs) -> Any:
         self.set_application_and_task()
 
-        active_tasks = self.application.get_active_task_list()
+        active_tasks = case_progress.get_active_task_list(self.application)
 
         reload_workbasket = False
 
