@@ -905,7 +905,7 @@ def add_report_firearm_manual(
         )
 
         check_application_permission(application, request.user, "import")
-        application.check_expected_status([ImpExpStatus.COMPLETED])
+        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
         report: models.SILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -965,7 +965,7 @@ def edit_report_firearm_manual(
         )
 
         check_application_permission(application, request.user, "import")
-        application.check_expected_status([ImpExpStatus.COMPLETED])
+        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
         report: models.SILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -1023,7 +1023,7 @@ def add_report_firearm_no_firearm(
         )
 
         check_application_permission(application, request.user, "import")
-        application.check_expected_status([ImpExpStatus.COMPLETED])
+        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
         report: models.SILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -1060,7 +1060,7 @@ def delete_report_firearm(
         )
 
         check_application_permission(application, request.user, "import")
-        application.check_expected_status([ImpExpStatus.COMPLETED])
+        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
         report: models.SILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)

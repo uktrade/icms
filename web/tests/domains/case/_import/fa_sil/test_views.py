@@ -24,7 +24,7 @@ def test_create_fa_sil(importer_client, importer, office):
 
     app = SILApplication.objects.get(pk=app_pk)
     case_progress.check_expected_task(app, Task.TaskType.PREPARE)
-    app.check_expected_status(ImpExpStatus.IN_PROGRESS)
+    case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
 
 
 class TestEditFirearmsSILApplication:

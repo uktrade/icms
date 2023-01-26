@@ -92,7 +92,7 @@ class TestReopenApplicationView:
         assert resp.status_code == 204
         application.refresh_from_db()
 
-        application.check_expected_status([application.Statuses.SUBMITTED])
+        case_progress.check_expected_status(application, [application.Statuses.SUBMITTED])
         case_progress.check_expected_task(application, Task.TaskType.PROCESS)
 
 
@@ -179,7 +179,7 @@ class TestRequestVariationUpdateView:
         assert not self.wood_app.variation_decision
         assert not self.wood_app.variation_refuse_reason
 
-        self.wood_app.check_expected_status([ImpExpStatus.VARIATION_REQUESTED])
+        case_progress.check_expected_status(self.wood_app, [ImpExpStatus.VARIATION_REQUESTED])
         case_progress.check_expected_task(self.wood_app, Task.TaskType.PROCESS)
 
         # Check the application's latest licence status is draft
@@ -230,5 +230,5 @@ class TestRequestVariationOpenRequestView:
 
         assert not self.app.case_owner
 
-        self.app.check_expected_status([ImpExpStatus.VARIATION_REQUESTED])
+        case_progress.check_expected_status(self.app, [ImpExpStatus.VARIATION_REQUESTED])
         case_progress.check_expected_task(self.app, Task.TaskType.PROCESS)

@@ -73,7 +73,7 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
         """Downcast to specific model class."""
 
         application = super().get_object(queryset).get_specific_model()
-        application.check_expected_status(self.current_status)
+        case_progress.check_expected_status(application, self.current_status)
         self.object = application
 
         return application
@@ -163,7 +163,7 @@ class ApplicationAndTaskRelatedObjectMixin:
                 select_for_update=self.request.method == "POST",  # type: ignore[attr-defined]
             )
 
-        self.application.check_expected_status(self.current_status)
+        case_progress.check_expected_status(self.application, self.current_status)
 
     def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
         self.set_application_and_task()

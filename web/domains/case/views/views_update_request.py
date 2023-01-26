@@ -217,8 +217,8 @@ def start_update_request(
         )
 
         check_application_permission(application, request.user, case_type)
-        application.check_expected_status(
-            [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+        case_progress.check_expected_status(
+            application, [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
         )
         update_requests = application.update_requests.filter(is_active=True)
         update_request = get_object_or_404(

@@ -86,8 +86,9 @@ def withdraw_case(
         )
 
         check_application_permission(application, request.user, case_type)
-        application.check_expected_status(
-            [ImpExpStatus.SUBMITTED, ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+        case_progress.check_expected_status(
+            application,
+            [ImpExpStatus.SUBMITTED, ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED],
         )
 
         if request.method == "POST":
@@ -139,8 +140,9 @@ def archive_withdrawal(
         )
 
         check_application_permission(application, request.user, case_type)
-        application.check_expected_status(
-            [ImpExpStatus.SUBMITTED, ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+        case_progress.check_expected_status(
+            application,
+            [ImpExpStatus.SUBMITTED, ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED],
         )
 
         withdrawal = get_object_or_404(application.withdrawals, pk=withdrawal_pk)
