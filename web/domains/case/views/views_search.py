@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any, Union
 from urllib import parse
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db import transaction
@@ -180,6 +181,13 @@ class ReopenApplicationView(
         self.update_application_status()
         self.update_application_tasks()
 
+        messages.success(
+            request,
+            "The case has been reopened, and can be taken ownership of by any case manager.",
+        )
+
+        # The page reload is handled in JS to preserve the search form state.
+        # see web/static/web/js/pages/search-common.js
         return HttpResponse(status=204)
 
 

@@ -97,21 +97,29 @@ const setupReopenCaseFormHandlers = function () {
 
       showReopenCaseWarning(false);
 
-      // CSRF token
-      let formData = new FormData(reopenForm)
+      const d = Dialogue();
+      const message = "Are you sure you want to reopen this case?";
+      const callback = function () {
+        d.close();
+        // CSRF token
+        let formData = new FormData(reopenForm)
+        fetch(
+            reopenForm.action, {mode: 'same-origin', method: "POST", body: formData}
+        )
+            .then(function (response) {
+              if (!response.ok) {
+                showReopenCaseWarning(true);
+              } else {
+                // resubmit the search form to update the results
+                submitSearchForm(searchForm);
+              }
+            })
+            .catch(function () {
+              showReopenCaseWarning(true)
+            });
+      }
 
-      fetch(
-        reopenForm.action, {mode: 'same-origin', method: "POST", body: formData}
-      )
-        .then(function (response) {
-          if (!response.ok) {
-            showReopenCaseWarning(true);
-          } else {
-            // resubmit the search form to update the results
-            submitSearchForm(searchForm);
-          }
-      })
-        .catch(function () { showReopenCaseWarning(true) });
+      d.show(message, callback);
     });
   })
 }
