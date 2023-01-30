@@ -112,19 +112,50 @@ class ViewApplicationCaseAction(Action):
         ]
 
 
+class ManageWithdrawApplicationAction(Action):
+    def show_link(self) -> bool:
+        show_link = False
+
+        correct_status = self.status in [
+            ImpExpStatus.SUBMITTED,
+            ImpExpStatus.PROCESSING,
+            ImpExpStatus.VARIATION_REQUESTED,
+        ]
+
+        correct_task = Task.TaskType.PROCESS in self.active_tasks
+
+        if correct_status and correct_task and self.application.annotation_has_withdrawal:
+            show_link = True
+
+        return show_link
+
+    def get_workbasket_actions(self) -> list[WorkbasketAction]:
+        kwargs = self.get_kwargs()
+
+        if self.is_case_owner():
+            name = "Withdrawal Request"
+        else:
+            name = "View Withdrawal Request"
+
+        return [
+            WorkbasketAction(
+                is_post=False,
+                name=name,
+                url=reverse("case:manage-withdrawals", kwargs=kwargs),
+                section_label="Withdraw Pending",
+            )
+        ]
+
+
 class ManageApplicationAction(Action):
     def show_link(self) -> bool:
         show_link = False
 
-        if self.status == ImpExpStatus.PROCESSING:
-            # I think this is a bug, it should check `self.is_case_owner()`
-            # It has been copied "as-is" for now
-            if Task.TaskType.PROCESS in self.active_tasks:
-                show_link = True
+        correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+        correct_task = Task.TaskType.PROCESS in self.active_tasks
 
-        elif self.status == ImpExpStatus.VARIATION_REQUESTED:
-            if self.is_case_owner() and Task.TaskType.PROCESS in self.active_tasks:
-                show_link = True
+        if self.is_case_owner() and correct_status and correct_task:
+            show_link = True
 
         return show_link
 
@@ -147,7 +178,7 @@ class AuthoriseDocumentsAction(Action):
         correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
         correct_task = Task.TaskType.AUTHORISE in self.active_tasks
 
-        if correct_status and correct_task:
+        if self.is_case_owner() and correct_status and correct_task:
             show_link = True
 
         return show_link
@@ -172,7 +203,7 @@ class CancelAuthorisationAction(Action):
         correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
         correct_task = Task.TaskType.AUTHORISE in self.active_tasks
 
-        if correct_status and correct_task:
+        if self.is_case_owner() and correct_status and correct_task:
             show_link = True
 
         return show_link
@@ -197,7 +228,7 @@ class CheckCaseDocumentGenerationAction(Action):
         correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
         correct_task = Task.TaskType.DOCUMENT_SIGNING in self.active_tasks
 
-        if correct_status and correct_task:
+        if self.is_case_owner() and correct_status and correct_task:
             show_link = True
 
         return show_link
@@ -223,7 +254,7 @@ class RecreateCaseDocumentsAction(Action):
         correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
         correct_task = Task.TaskType.DOCUMENT_ERROR in self.active_tasks
 
-        if correct_status and correct_task:
+        if self.is_case_owner() and correct_status and correct_task:
             show_link = True
 
         return show_link
@@ -372,6 +403,7 @@ ILB_ADMIN_ACTIONS: list[ActionT] = [
     # Management actions
     TakeOwnershipAction,
     ManageApplicationAction,
+    ManageWithdrawApplicationAction,
     AuthoriseDocumentsAction,
     CancelAuthorisationAction,
     #

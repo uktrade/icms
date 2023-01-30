@@ -11,6 +11,7 @@ from web.domains.workbasket.actions.applicant_actions import (
     SubmitVariationUpdateAction,
     ViewApplicationAction,
     ViewIssuedDocumentsAction,
+    WithdrawApplicationAction,
 )
 from web.domains.workbasket.actions.shared_actions import ClearApplicationAction
 from web.flow.models import Task
@@ -56,6 +57,37 @@ class TestApplicantActions:
 
             else:
                 assert not action.show_link()
+
+    def test_withdraw_application_action(self):
+        # setup
+        active_tasks = []
+
+        valid_statuses = [
+            ImpExpStatus.SUBMITTED,
+            ImpExpStatus.PROCESSING,
+            ImpExpStatus.VARIATION_REQUESTED,
+        ]
+
+        for status in self.ST:
+            for has_withdrawal in (True, False):
+                self.app.status = status
+                self.app.annotation_has_withdrawal = has_withdrawal
+
+                # test
+                action = WithdrawApplicationAction(
+                    self.user, "import", self.app, active_tasks, False, True, False
+                )
+
+                if status in valid_statuses:
+                    assert action.show_link()
+                    wb_action = action.get_workbasket_actions()[0]
+                    expected_name = "Pending Withdrawal" if has_withdrawal else "Request Withdrawal"
+
+                    assert wb_action.name == expected_name
+                    assert wb_action.section_label == "Application Submitted"
+
+                else:
+                    assert not action.show_link()
 
     def test_submit_variation_request_update_action_is_shown(self, wood_app_submitted):
         # setup
