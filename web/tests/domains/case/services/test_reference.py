@@ -1,6 +1,5 @@
 import datetime
 import re
-from unittest.mock import Mock
 
 import pytest
 from django.utils import timezone
@@ -38,11 +37,6 @@ CASE_REF_PATTERN = re.compile(
     """,
     flags=re.IGNORECASE | re.VERBOSE,
 )
-
-
-@pytest.fixture
-def lock_manager():
-    return Mock()
 
 
 @pytest.mark.django_db
