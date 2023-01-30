@@ -209,7 +209,7 @@ def pack_workbasket_remove_pack(application, *, pack_pk) -> None:
     pack.save()
 
 
-def pack_licence_history(application: ImportApplication) -> ImportApplicationLicence:
+def pack_licence_history(application: ImportApplication) -> QuerySet[ImportApplicationLicence]:
     """Returns all document packs for an import application.
 
     Used in the case history page.
@@ -218,7 +218,9 @@ def pack_licence_history(application: ImportApplication) -> ImportApplicationLic
     return _get_case_history(application)
 
 
-def pack_certificate_history(application: ExportApplication) -> ExportApplicationCertificate:
+def pack_certificate_history(
+    application: ExportApplication,
+) -> QuerySet[ExportApplicationCertificate]:
     """Returns all document packs for an export application.
 
     Used in the case history page.
@@ -227,7 +229,7 @@ def pack_certificate_history(application: ExportApplication) -> ExportApplicatio
     return _get_case_history(application)
 
 
-def _get_case_history(application) -> DocumentPack:
+def _get_case_history(application) -> QuerySet[DocumentPack]:
     packs = _get_qm(application)
 
     return (
@@ -242,9 +244,6 @@ def doc_ref_documents_create(application: ImpOrExp, lock_manager: "LockManager")
 
     if application.is_import_application():
         licence_pack = pack_draft_get(application)
-
-        if licence_pack.status != PackStatus.DRAFT:
-            raise ValueError("Can only create references for a draft application")
 
         licence_pack.document_references.get_or_create(document_type=DocumentType.COVER_LETTER)
 
@@ -262,9 +261,6 @@ def _create_export_documents(application: ExportApplication, lock_manager: "Lock
     """Creates document reference records for Export applications."""
 
     certificate = pack_draft_get(application)
-
-    if certificate.status != PackStatus.DRAFT:
-        raise ValueError("Can only create references for a draft application")
 
     # Clear all document references as they may have changed
     doc_ref_documents_all(certificate).delete()
@@ -306,7 +302,7 @@ def doc_ref_certificate_create(
     """Create the certificate document reference"""
 
     if not doc_reference:
-        assert ValueError("Unable to create a certificate without a document reference")
+        raise ValueError("Unable to create a certificate without a document reference")
 
     cdr = _create_document(
         doc_pack,
@@ -322,13 +318,17 @@ def doc_ref_certificate_create(
 
 
 def doc_ref_certificate_get(
-    doc_pack: ExportApplicationCertificate, country: Country
+    doc_pack: ExportApplicationCertificate, country: Country, brand: GMPBrand | None = None
 ) -> CaseDocumentReference:
     """Get the certificate document reference"""
 
     certificates = doc_ref_certificates_all(doc_pack)
 
-    return certificates.get(reference_data__country=country)
+    kwargs = {"reference_data__country": country}
+    if brand:
+        kwargs["reference_data__gmp_brand"] = brand
+
+    return certificates.get(**kwargs)
 
 
 def doc_ref_certificates_all(
@@ -345,7 +345,7 @@ def doc_ref_licence_create(doc_pack: DocumentPack, doc_reference) -> CaseDocumen
     """Create the licence document reference"""
 
     if not doc_reference:
-        assert ValueError("Unable to create a certificate without a document reference")
+        raise ValueError("Unable to create a licence without a document reference")
 
     return _create_document(
         doc_pack,
