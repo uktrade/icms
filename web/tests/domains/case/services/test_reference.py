@@ -438,6 +438,21 @@ def test_get_com_app_variation_request_case_reference_with_existing_variations(
     assert expected_reference == actual_reference
 
 
+def test_get_com_app_variation_request_count_is_zero(com_app_submitted, test_icms_admin_user):
+    initial_reference = com_app_submitted.get_reference()
+    _add_variation_request(
+        com_app_submitted,
+        test_icms_admin_user,
+        "A variation request that was opened and cancelled",
+        VariationRequest.CANCELLED,
+    )
+
+    expected_reference = initial_reference
+    actual_reference = reference.get_variation_request_case_reference(com_app_submitted)
+
+    assert expected_reference == actual_reference
+
+
 def test_case_reference_correct_with_no_valid_variation_requests(
     com_app_submitted, test_icms_admin_user
 ):
@@ -453,6 +468,27 @@ def test_case_reference_correct_with_no_valid_variation_requests(
 
     # This tests there is no variation part in the case reference
     assert re.match(CASE_REF_PATTERN, com_app_submitted.get_reference())
+
+
+def test_get_mailshot_reference(db, lock_manager):
+    expected = "MAIL/1"
+    actual = reference.get_mailshot_reference(lock_manager)
+
+    assert expected == actual
+
+
+def test_get_importer_access_request_reference(db, lock_manager):
+    expected = "IAR/1"
+    actual = reference.get_importer_access_request_reference(lock_manager)
+
+    assert expected == actual
+
+
+def test_get_exporter_access_request_reference(db, lock_manager):
+    expected = "EAR/1"
+    actual = reference.get_exporter_access_request_reference(lock_manager)
+
+    assert expected == actual
 
 
 def _add_variation_request(
