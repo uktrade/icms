@@ -70,6 +70,24 @@ ACTIVE_TASK_ANNOTATION = ArrayAgg(
 )
 
 
+IMPORT_HAS_WITHDRAWAL_ANNOTATION = Exists(
+    WithdrawApplication.objects.filter(
+        import_application=OuterRef("pk"),
+        status=WithdrawApplication.STATUS_OPEN,
+        is_active=True,
+    )
+)
+
+
+EXPORT_HAS_WITHDRAWAL_ANNOTATION = Exists(
+    WithdrawApplication.objects.filter(
+        export_application=OuterRef("pk"),
+        status=WithdrawApplication.STATUS_OPEN,
+        is_active=True,
+    )
+)
+
+
 def _get_queryset_admin(user: User) -> chain[QuerySet]:
     submitted = AccessRequest.Statuses.SUBMITTED
 
@@ -105,14 +123,20 @@ def _get_queryset_admin(user: User) -> chain[QuerySet]:
         ExportApplication.objects.filter(is_active=True)
         .exclude(status=ImpExpStatus.STOPPED)
         .select_related("exporter", "contact", "application_type", "submitted_by", "case_owner")
-        .annotate(active_tasks=ACTIVE_TASK_ANNOTATION)
+        .annotate(
+            annotation_has_withdrawal=EXPORT_HAS_WITHDRAWAL_ANNOTATION,
+            active_tasks=ACTIVE_TASK_ANNOTATION,
+        )
     )
 
     import_applications = (
         ImportApplication.objects.filter(is_active=True)
         .exclude(status=ImpExpStatus.STOPPED)
         .select_related("importer", "contact", "application_type", "submitted_by", "case_owner")
-        .annotate(active_tasks=ACTIVE_TASK_ANNOTATION)
+        .annotate(
+            active_tasks=ACTIVE_TASK_ANNOTATION,
+            annotation_has_withdrawal=IMPORT_HAS_WITHDRAWAL_ANNOTATION,
+        )
     )
 
     return chain(
@@ -268,14 +292,6 @@ def _add_user_import_annotations(
         .values("open_fir_pairs_annotation")
     )
 
-    import_has_withdrawal = Exists(
-        WithdrawApplication.objects.filter(
-            import_application=OuterRef("pk"),
-            status=WithdrawApplication.STATUS_OPEN,
-            is_active=True,
-        )
-    )
-
     open_ur_pks_annotation = ArrayAgg(
         "update_requests__pk",
         distinct=True,
@@ -293,7 +309,7 @@ def _add_user_import_annotations(
 
     return applications.annotate(
         active_tasks=ACTIVE_TASK_ANNOTATION,
-        annotation_has_withdrawal=import_has_withdrawal,
+        annotation_has_withdrawal=IMPORT_HAS_WITHDRAWAL_ANNOTATION,
         annotation_open_fir_pairs=Subquery(open_fir_subquery.values("open_fir_pairs_annotation")),
         annotation_open_ur_pks=open_ur_pks_annotation,
         annotation_has_in_progress_ur=has_in_progress_ur,
@@ -321,14 +337,6 @@ def _add_user_export_annotations(
         .values("open_fir_pairs_annotation")
     )
 
-    export_has_withdrawal = Exists(
-        WithdrawApplication.objects.filter(
-            export_application=OuterRef("pk"),
-            status=WithdrawApplication.STATUS_OPEN,
-            is_active=True,
-        )
-    )
-
     open_ur_pks_annotation = ArrayAgg(
         "update_requests__pk",
         distinct=True,
@@ -346,7 +354,7 @@ def _add_user_export_annotations(
 
     return applications.annotate(
         active_tasks=ACTIVE_TASK_ANNOTATION,
-        annotation_has_withdrawal=export_has_withdrawal,
+        annotation_has_withdrawal=EXPORT_HAS_WITHDRAWAL_ANNOTATION,
         annotation_open_fir_pairs=Subquery(open_fir_subquery.values("open_fir_pairs_annotation")),
         annotation_open_ur_pks=open_ur_pks_annotation,
         annotation_has_in_progress_ur=has_in_progress_ur,
