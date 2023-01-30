@@ -35,7 +35,9 @@ if TYPE_CHECKING:
 from . import app_data, types, utils
 
 THREE_YEARS_AGO = timezone.now().date() - relativedelta.relativedelta(years=3)
-THREE_YEARS_AGO_DT = datetime.datetime.combine(THREE_YEARS_AGO, datetime.time.min)
+THREE_YEARS_AGO_DT = datetime.datetime.combine(
+    THREE_YEARS_AGO, datetime.time.min, tzinfo=datetime.timezone.utc
+)
 
 
 def search_applications(
