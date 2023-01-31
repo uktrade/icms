@@ -380,7 +380,7 @@ def test_import_dfl_data(dummy_dm_settings):
         ft = dm.FileTarget.objects.create()
         factory.FileFactory(created_by_id=user_pk, target=ft)
         factory.DFLGoodsCertificateFactory(
-            target=ft, dfl_application=dfl, legacy_id=1, issuing_country=c
+            target=ft, dfl_application=dfl, legacy_ordinal=1, issuing_country=c
         )
         si = factory.DFLSupplementaryInfoFactory(imad=ia)
         sr = dm.DFLSupplementaryReport.objects.create(

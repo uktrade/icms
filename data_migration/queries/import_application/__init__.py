@@ -1,3 +1,4 @@
+from .data_counts import *  # NOQA
 from .derogations import *  # NOQA
 from .fa import *  # NOQA
 from .import_application_type import *  # NOQA

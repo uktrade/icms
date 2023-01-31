@@ -177,6 +177,7 @@ class SILGoodsParser(BaseXmlParser):
                 if not obj:
                     continue
 
+                # TODO ICMSLST-1899 Ordinality of goods in application does not necessarily match supplementary report
                 obj.legacy_ordinal = i
                 model_lists[obj._meta.model].append(obj)
 
@@ -463,6 +464,7 @@ class ReportFirearmParser(BaseXmlParser):
                             cls.MODEL(
                                 report_id=parent_pk,
                                 is_upload=True,
+                                # TODO ICMSLST-1899 Ordinality of goods in application does not necessarily match supplementary report
                                 goods_certificate_legacy_id=ordinal,
                                 file_id=file_id,
                             )
@@ -472,6 +474,8 @@ class ReportFirearmParser(BaseXmlParser):
                 elif firearm_details_xml_list:
                     for firearm_xml in firearm_details_xml_list:
                         obj = cls.parse_manual_xml(parent_pk, firearm_xml)
+
+                        # TODO ICMSLST-1899 Ordinality of goods in application does not necessarily match supplementary report
                         obj.goods_certificate_legacy_id = ordinal
                         model_list[obj._meta.model].append(obj)
 
@@ -481,6 +485,7 @@ class ReportFirearmParser(BaseXmlParser):
                         cls.MODEL(
                             report_id=parent_pk,
                             is_no_firearm=True,
+                            # TODO ICMSLST-1899 Ordinality of goods in application does not necessarily match supplementary report
                             goods_certificate_legacy_id=ordinal,
                         )
                     )
@@ -598,6 +603,7 @@ class SILReportFirearmParser(BaseXmlParser):
                         model(
                             report_id=parent_pk,
                             is_upload=True,
+                            # TODO ICMSLST-1899 Ordinality of goods in application does not necessarily match supplementary report
                             goods_certificate_legacy_id=ordinal,
                             file_id=file_id,
                         )
@@ -607,6 +613,7 @@ class SILReportFirearmParser(BaseXmlParser):
             elif firearm_details_xml_list:
                 for firearm_details_xml in firearm_details_xml_list:
                     obj = cls.parse_manual_xml(parent_pk, model, firearm_details_xml)
+                    # TODO ICMSLST-1899 Ordinality of goods in application does not necessarily match supplementary report
                     obj.goods_certificate_legacy_id = ordinal
                     model_list[model].append(obj)
 
@@ -616,6 +623,7 @@ class SILReportFirearmParser(BaseXmlParser):
                     model(
                         report_id=parent_pk,
                         is_no_firearm=True,
+                        # TODO ICMSLST-1899 Ordinality of goods in application does not necessarily match supplementary report
                         goods_certificate_legacy_id=ordinal,
                     )
                 )
@@ -695,6 +703,7 @@ class DFLGoodsCertificateParser(BaseXmlParser):
 
                 # Add the legacy ordinal to the object so it can be referenced later
                 # The supplementary reports will use the same ordinal to link to the correct goods
+                # TODO ICMSLST-1899 Ordinality of goods in application does not necessarily match supplementary report
                 obj.legacy_ordinal = i
                 model_list[obj._meta.model].append(obj)
 

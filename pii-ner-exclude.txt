@@ -1822,3 +1822,18 @@ View Withdrawal Request
 Withdraw Pending
 Prefix
 PackStatus
+Test Commodity A</GOOD_ITEM_ID
+TARGET_ID>5001</TARGET_ID
+DFL Goods Certificates
+OIL Goods Certificates"
+Supplementary Reports
+Supplementary Report Firearm No Report
+x.commodity_desc
+SIL Legacy Goods"
+DFL Bought From Details
+OIL Bought From Details
+Supplementary Report Firearm No Firearm
+sec
+ON iad.ia_id = ia.id CROSS
+/AUTHORITY/GOODS_CATEGORY_LIST/GOODS_CATEGORY
+VARCHAR(100
