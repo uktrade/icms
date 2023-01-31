@@ -432,6 +432,9 @@ oil_xml_parsers = [
     xml_parser.ImportContactParser,
     xml_parser.OILSupplementaryReportParser,
     xml_parser.OILReportFirearmParser,
+    xml_parser.DFLGoodsCertificateParser,
+    xml_parser.DFLSupplementaryReportParser,
+    xml_parser.DFLReportFirearmParser,
 ]
 
 oil_data_source_target = {
@@ -453,6 +456,10 @@ oil_data_source_target = {
         (dm.ImportContact, web.ImportContact),
         (dm.OpenIndividualLicenceApplication, web.OpenIndividualLicenceApplication),
         (dm.DFLApplication, web.DFLApplication),
+        (dm.DFLGoodsCertificate, web.DFLGoodsCertificate),
+        (dm.DFLSupplementaryInfo, web.DFLSupplementaryInfo),
+        (dm.DFLSupplementaryReport, web.DFLSupplementaryReport),
+        (dm.DFLSupplementaryReportFirearm, web.DFLSupplementaryReportFirearm),
         (dm.ChecklistFirearmsOILApplication, web.ChecklistFirearmsOILApplication),
         (dm.OILSupplementaryInfo, web.OILSupplementaryInfo),
         (dm.OILSupplementaryReport, web.OILSupplementaryReport),
@@ -543,12 +550,24 @@ def test_import_oil_data(mock_connect, dummy_dm_settings):
     assert oil1.supplementary_info.reports.count() == 1
     assert oil2.supplementary_info.reports.count() == 2
 
+    sr1 = oil1.supplementary_info.reports.first()
+    sr2, sr3 = oil2.supplementary_info.reports.order_by("pk")
+
+    assert sr1.firearms.count() == 1
+    assert sr2.firearms.count() == 2
+    assert sr3.firearms.count() == 1
+
     assert oil1.importapplication_ptr.process_ptr.tasks.count() == 0
     assert oil2.importapplication_ptr.process_ptr.tasks.count() == 0
 
     dfl = web.DFLApplication.objects.first()
     assert dfl.proof_checked is True
     assert dfl.constabulary_id == 1
+    assert dfl.supplementary_info.reports.count() == 1
+
+    sr4 = dfl.supplementary_info.reports.first()
+    assert sr4.firearms.filter(is_upload=True).count() == 1
+    assert sr4.firearms.filter(is_manual=True).count() == 1
 
 
 user_xml_parsers = {

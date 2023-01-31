@@ -594,16 +594,32 @@ ia_query_result = {
                 "IMP_APP_DOCUMENTS",  # folder_type
                 "dflapplication",  # app_model
                 "IMP_SUPPORTING_DOCS",  # target_type
-                "EMPTY",  # status
+                "RECEIVED",  # status
                 5000,  # target_id
                 5000,  # fft_id
-                None,  # version_id
-                None,  # created_date
-                None,  # created_by_id
-                None,  # path
-                None,  # filename
-                None,  # content_type
-                None,  # file_size
+                50000,  # version_id
+                datetime.now(),  # created_date
+                2,  # created_by_id
+                "goods/test_a.pdf",  # path
+                "test_a.pdf",  # filename
+                "pdf",  # content_type
+                1000,  # file_size
+            ),
+            (
+                51,  # folder_id
+                "IMP_APP_DOCUMENTS",  # folder_type
+                "dflapplication",  # app_model
+                "IMP_SUPPORTING_DOCS",  # target_type
+                "RECEIVED",  # status
+                5001,  # target_id
+                5001,  # fft_id
+                50001,  # version_id
+                datetime.now(),  # created_date
+                2,  # created_by_id
+                "goods/test_b.pdf",  # path
+                "test_b.pdf",  # filename
+                "pdf",  # content_type
+                1000,  # file_size
             ),
         ],
     ),
@@ -1120,6 +1136,8 @@ ia_query_result = {
             ("deactivated_firearm",),
             ("proof_checked",),
             ("constabulary_id",),
+            ("supplementary_report_xml",),
+            ("fa_goods_certs_xml",),
         ],
         [
             (
@@ -1146,6 +1164,8 @@ ia_query_result = {
                 True,  # deactivated_firearm
                 True,  # proof_checked
                 1,  # constabulary_id
+                xd.dfl_sr,  # supplementary_report_xml
+                xd.dfl_goods_cert,  # fa_goods_cert_xml
             )
         ],
     ),

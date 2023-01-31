@@ -3,13 +3,12 @@ from itertools import islice
 from typing import TYPE_CHECKING
 
 import oracledb
-from django.conf import settings
 
 from data_migration import models
 
 from ._base import MigrationBaseCommand
 from ._run_order import DATA_TYPE, DATA_TYPE_QUERY_MODEL, FILE_MODELS
-from .utils.db import new_process_pk
+from .utils.db import CONNECTION_CONFIG, new_process_pk
 from .utils.format import format_name, format_row
 
 if TYPE_CHECKING:
@@ -41,13 +40,7 @@ class Command(MigrationBaseCommand):
     def handle(self, *args, **options):
         super().handle(*args, **options)
 
-        connection_config = {
-            "user": settings.ICMS_V1_REPLICA_USER,
-            "password": settings.ICMS_V1_REPLICA_PASSWORD,
-            "dsn": settings.ICMS_V1_REPLICA_DSN,
-        }
-
-        with oracledb.connect(**connection_config) as connection:
+        with oracledb.connect(**CONNECTION_CONFIG) as connection:
             self._export_data("user", connection, options["skip_user"])
             self._export_data("reference", connection, options["skip_ref"])
             self._export_data("file", connection, options["skip_file"])

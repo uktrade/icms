@@ -357,6 +357,85 @@ sr_list = """
 </FA_SUPPLEMENTARY_REPORT_LIST>
 """.strip()
 
+dfl_sr = """
+<FA_SUPPLEMENTARY_REPORT_LIST>
+  <FA_SUPPLEMENTARY_REPORT>
+    <HISTORICAL_REPORT_LIST>
+      <HISTORICAL_REPORT>
+        <HISTORICAL_REPORT_DETAILS>
+          <GOODS_LINE_LIST>
+            <GOODS_LINE>
+              <GOODS_ITEM_DESC>Test Commodity A</GOODS_ITEM_DESC>
+              <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
+              <GOOD_ITEM_ID>Test Commodity A</GOOD_ITEM_ID>
+              <FA_REPORTING_MODE>UPLOAD</FA_REPORTING_MODE>
+              <FIREARMS_DETAILS_LIST/>
+              <FILE_UPLOAD_LIST>
+                <FILE_UPLOAD>
+                    <FILE_CONTENT>
+                      <filename>SR Upload.pdf</filename>
+                      <content-type>pdf</content-type>
+                      <size>1234</size>
+                      <upload-date-time>2022-11-05T11:11:03</upload-date-time>
+                      <file-id>defghe</file-id>
+                    </FILE_CONTENT>
+                </FILE_UPLOAD>
+              </FILE_UPLOAD_LIST>
+              <GOODS_ITEM_SUBMIT/>
+            </GOODS_LINE>
+          </GOODS_LINE_LIST>
+        </HISTORICAL_REPORT_DETAILS>
+      </HISTORICAL_REPORT>
+    </HISTORICAL_REPORT_LIST>
+    <FA_SUPPLEMENTARY_REPORT_DETAILS>
+      <GOODS_LINE_LIST>
+        <GOODS_LINE>
+          <GOODS_ITEM_DESC>Test Commodity A</GOODS_ITEM_DESC>
+          <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
+          <GOOD_ITEM_ID>1</GOOD_ITEM_ID>
+          <FA_REPORTING_MODE>UPLOAD</FA_REPORTING_MODE>
+          <FIREARMS_DETAILS_LIST/>
+          <FILE_UPLOAD_LIST>
+            <FILE_UPLOAD>
+                <FILE_CONTENT>
+                  <filename>SR Upload.pdf</filename>
+                  <content-type>pdf</content-type>
+                  <size>1234</size>
+                  <upload-date-time>2022-11-05T12:11:03</upload-date-time>
+                  <file-id>abcde</file-id>
+                </FILE_CONTENT>
+            </FILE_UPLOAD>
+          </FILE_UPLOAD_LIST>
+          <GOODS_ITEM_SUBMIT/>
+        </GOODS_LINE>
+        <GOODS_LINE>
+          <GOODS_ITEM_DESC>Test Commodity B</GOODS_ITEM_DESC>
+          <GOODS_ITEM_QUANTITY>25</GOODS_ITEM_QUANTITY>
+          <GOOD_ITEM_ID>Fireamrs</GOOD_ITEM_ID>
+          <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>
+          <FIREARMS_DETAILS_LIST>
+            <FIREARMS_DETAILS>
+              <SERIAL_NUMBER>Ammunition</SERIAL_NUMBER>
+              <CALIBRE>mixed</CALIBRE>
+              <MAKE_MODEL>Various</MAKE_MODEL>
+              <PROOFING>Y</PROOFING>
+            </FIREARMS_DETAILS>
+          </FIREARMS_DETAILS_LIST>
+          <FILE_UPLOAD_LIST/>
+          <GOODS_ITEM_SUBMIT/>
+        </GOODS_LINE>
+      </GOODS_LINE_LIST>
+      <MODE_OF_TRANSPORT>AIR</MODE_OF_TRANSPORT>
+      <RECEIVED_DATE>2021-10-14</RECEIVED_DATE>
+      <REPORT_SELLER_HOLDER>1</REPORT_SELLER_HOLDER>
+      <REPORT_SUBMITTED_FLAG>true</REPORT_SUBMITTED_FLAG>
+      <SUBMITTED_BY_WUA_ID>2</SUBMITTED_BY_WUA_ID>
+      <SUBMITTED_DATETIME>2021-11-08T08:31:34</SUBMITTED_DATETIME>
+      <FA_REPORT_ID>1</FA_REPORT_ID>
+    </FA_SUPPLEMENTARY_REPORT_DETAILS>
+  </FA_SUPPLEMENTARY_REPORT>
+</FA_SUPPLEMENTARY_REPORT_LIST>
+"""
 
 dfl_goods_cert = """
 <FA_GOODS_CERTS>
@@ -380,7 +459,7 @@ dfl_goods_cert = """
   </COMMODITY_LIST>
   <FIREARMS_CERTIFICATE_LIST>
     <FIREARMS_CERTIFICATE>
-      <TARGET_ID>1234</TARGET_ID>
+      <TARGET_ID>5000</TARGET_ID>
       <CERTIFICATE_REF>REF A</CERTIFICATE_REF>
       <CERTIFICATE_TYPE>DEACTIVATED</CERTIFICATE_TYPE>
       <CONSTABULARY />
@@ -389,7 +468,7 @@ dfl_goods_cert = """
       <ISSUING_COUNTRY>1</ISSUING_COUNTRY>
     </FIREARMS_CERTIFICATE>
     <FIREARMS_CERTIFICATE>
-      <TARGET_ID>5678</TARGET_ID>
+      <TARGET_ID>5001</TARGET_ID>
       <CERTIFICATE_REF>REF B</CERTIFICATE_REF>
       <CERTIFICATE_TYPE>DEACTIVATED</CERTIFICATE_TYPE>
       <CONSTABULARY />

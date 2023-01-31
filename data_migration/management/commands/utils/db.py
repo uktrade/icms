@@ -1,7 +1,15 @@
+from django.conf import settings
 from django.db import connections, transaction
 from django.db.models import Model, sql
 
 from data_migration.models import Process
+
+CONNECTION_CONFIG = {
+    "user": settings.ICMS_V1_REPLICA_USER,
+    "password": settings.ICMS_V1_REPLICA_PASSWORD,
+    "dsn": settings.ICMS_V1_REPLICA_DSN,
+}
+
 
 set_seq_sql = """
 SELECT

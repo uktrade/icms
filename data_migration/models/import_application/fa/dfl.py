@@ -43,7 +43,7 @@ class DFLGoodsCertificate(MigrationBase):
     )
     goods_description = models.CharField(max_length=4096, null=True)
     deactivated_certificate_reference = models.CharField(max_length=50, null=True)
-    legacy_id = models.IntegerField(null=True)
+    legacy_ordinal = models.IntegerField(null=True)
 
     issuing_country = models.ForeignKey(
         Country,
@@ -97,7 +97,7 @@ class DFLGoodsCertificate(MigrationBase):
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["legacy_id", "target_id"]
+        return super().get_excludes() + ["legacy_ordinal", "target_id"]
 
 
 class DFLChecklist(ChecklistBase):
@@ -149,7 +149,7 @@ class DFLSupplementaryReportFirearm(SupplementaryReportFirearmBase):
 
         values = cls.get_values() + ["goods_certificate_id"]
         sub_query = DFLGoodsCertificate.objects.filter(
-            legacy_id=OuterRef("goods_certificate_legacy_id"),
+            legacy_ordinal=OuterRef("goods_certificate_legacy_id"),
             dfl_application_id=OuterRef("report__supplementary_info__imad__id"),
         )
 
