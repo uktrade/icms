@@ -63,6 +63,12 @@ def com(db, test_export_user, exporter, exporter_office):
 
 
 @pytest.fixture
+def iar(import_access_request_application):
+    """Fixture just to shorten name"""
+    return import_access_request_application
+
+
+@pytest.fixture
 def fa_sil_with_draft(fa_sil):
     document_pack.pack_draft_create(fa_sil)
 
