@@ -5,8 +5,6 @@ from ._data_counts import CHECK_DATA_COUNTS, CHECK_DATA_QUERIES
 from ._types import ModelT, Params
 from .utils.db import CONNECTION_CONFIG
 
-# TODO ICMSLST-1616 Expand command to cover all relevant models
-
 
 class Command(BaseCommand):
     def handle(self, *args, **options):

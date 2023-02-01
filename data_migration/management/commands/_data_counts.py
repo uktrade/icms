@@ -234,4 +234,24 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         model=web.ClauseQuantity,
         bind_vars={"AUTHORITY_TYPE": "SECTION5"},
     ),
+    CheckQuery(
+        name="CFS Products",
+        query=queries.cfs_product_count,
+        model=web.CFSProduct,
+    ),
+    CheckQuery(
+        name="CFS Product Active Ingredients",
+        query=queries.cfs_product_active_ingredient_count,
+        model=web.CFSProductActiveIngredient,
+    ),
+    CheckQuery(
+        name="CFS Product Type Numbers",
+        query=queries.cfs_product_type_numbers_count,
+        model=web.CFSProductType,
+    ),
+    CheckQuery(
+        name="CFS Schedule Legislation",
+        query=queries.cfs_schedule_legislation_count,
+        model=web.CFSSchedule.legislations.through,
+    ),
 ]
