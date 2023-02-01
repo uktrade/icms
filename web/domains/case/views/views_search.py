@@ -181,6 +181,7 @@ class ReopenApplicationView(
         self.application.update_order_datetime()
         self.update_application_status()
         self.update_application_tasks()
+        document_pack.pack_draft_create(self.application)
 
         messages.success(
             request,

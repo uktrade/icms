@@ -61,7 +61,6 @@ def cancel_case(
 
         check_application_permission(application, request.user, case_type)
 
-        # TODO: Check this - Can you cancel a case that is in a variation request etc.
         try:
             case_progress.check_expected_status(application, [ImpExpStatus.IN_PROGRESS])
             case_progress.check_expected_task(application, Task.TaskType.PREPARE)
@@ -80,6 +79,11 @@ def withdraw_case(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
     with transaction.atomic():
+        """Applicant view for requesting an application is withdrawn.
+
+        This can occur for initial applications or for variation requests.
+        """
+
         model_class = get_class_imp_or_exp(case_type)
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
@@ -136,6 +140,11 @@ def archive_withdrawal(
     request: AuthenticatedHttpRequest, *, application_pk: int, withdrawal_pk: int, case_type: str
 ) -> HttpResponse:
     with transaction.atomic():
+        """Applicant view for retracting a withdrawal request.
+
+        This can occur for initial applications or for variation requests.
+        """
+
         model_class = get_class_imp_or_exp(case_type)
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
@@ -163,6 +172,8 @@ def archive_withdrawal(
 def manage_withdrawals(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
+    """Management view for accepting or rejecting a withdrawal request."""
+
     model_class = get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
@@ -202,16 +213,11 @@ def manage_withdrawals(
                     application.update_order_datetime()
                     application.save()
 
+                    document_pack.pack_draft_archive(application)
                     end_process_task(task, request.user)
 
                     return redirect(reverse("workbasket"))
                 else:
-                    end_process_task(task)
-
-                    Task.objects.create(
-                        process=application, task_type=Task.TaskType.PROCESS, previous=task
-                    )
-
                     return redirect(
                         reverse(
                             "case:manage-withdrawals",
@@ -312,6 +318,11 @@ def release_ownership(
 def manage_case(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
+    """Initial case management view for a case.
+
+    Also used to stop an application.
+    """
+
     model_class = get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
@@ -331,6 +342,7 @@ def manage_case(
                 application.save()
 
                 end_process_task(task)
+                document_pack.pack_draft_archive(application)
 
                 if form.cleaned_data.get("send_email"):
                     template = Template.objects.get(template_code="STOP_CASE")

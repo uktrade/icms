@@ -11,7 +11,7 @@ from django.utils import timezone
 
 from web.domains.case._import.models import ImportApplication
 from web.domains.case.export.models import ExportApplication
-from web.domains.case.services import reference
+from web.domains.case.services import document_pack, reference
 from web.domains.file.models import File
 from web.domains.user.models import User
 from web.flow.models import ProcessTypes, Task
@@ -173,3 +173,37 @@ def redirect_after_submit(app: ImpOrExp, request: AuthenticatedHttpRequest) -> H
     messages.success(request, msg)
 
     return redirect(reverse("workbasket"))
+
+
+def application_history(app_reference: str, is_import=True):
+    """Debug method to print the history of the application
+
+    >>> from web.domains.case.utils import application_history
+    >>> application_history("IMA/2023/00001")
+    """
+
+    if is_import:
+        app = ImportApplication.objects.get(reference__startswith=app_reference)
+    else:
+        app = ExportApplication.objects.get(reference__startswith=app_reference)
+
+    app = app.get_specific_model()
+
+    print("*-" * 40)
+    print(f"Current status: {app.get_status_display()}")
+
+    all_tasks = app.tasks.all().order_by("created")
+    active = all_tasks.filter(is_active=True)
+
+    print("Active Tasks in order:")
+    for t in active:
+        print(f"Task: {t.get_task_type_display()}, {t.created}, {t.finished}")
+
+    print("All tasks in order:")
+    for t in all_tasks:
+        print(f"Task: {t.get_task_type_display()}, created={t.created}, finished={t.finished}")
+
+    print("*-" * 40)
+
+    for p in document_pack._get_qm(app).order_by("created_at"):
+        print(f"DocumentPack: {p}")

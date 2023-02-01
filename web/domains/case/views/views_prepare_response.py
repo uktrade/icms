@@ -6,12 +6,16 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
+from web.domains.case import forms
 from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case.export.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
 )
 from web.domains.case.services import document_pack
+from web.domains.case.shared import ImpExpStatus
+from web.domains.case.types import ImpOrExp
+from web.domains.case.utils import get_case_page_title
 from web.models import (
     CertificateOfManufactureApplication,
     DerogationsApplication,
@@ -27,9 +31,6 @@ from web.models import (
 from web.types import AuthenticatedHttpRequest
 from web.utils.commodity import annotate_commodity_unit
 
-from .. import forms
-from ..types import ImpOrExp
-from ..utils import get_case_page_title
 from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
 
 
@@ -95,16 +96,20 @@ def prepare_response(
             "readonly_view": readonly_view,
         }
 
-    # Get the latest active licence if the variation is refused.
     if application.is_import_application():
         if (
-            application.status == application.Statuses.VARIATION_REQUESTED
+            application.status == ImpExpStatus.COMPLETED
+            and application.decision == application.APPROVE
+        ):
+            context["licence"] = document_pack.pack_active_get(application)
+        elif (
+            application.status == ImpExpStatus.VARIATION_REQUESTED
             and application.variation_decision == application.REFUSE
         ):
             context["licence"] = document_pack.pack_active_get(application)
             context["variation_refused"] = True
 
-        else:
+        elif not readonly_view:
             # When an application is refused we don't show licence details
             if application.decision != application.REFUSE:
                 context["licence"] = document_pack.pack_draft_get(application)

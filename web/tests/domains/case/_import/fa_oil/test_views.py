@@ -5,6 +5,7 @@ from guardian.shortcuts import assign_perm
 
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.models import ImportApplicationType
+from web.domains.case.services import document_pack
 from web.domains.importer.models import Importer
 from web.flow.models import Task
 from web.models import ImportApplicationLicence
@@ -140,6 +141,7 @@ def test_close_case():
         case_owner=ilb_admin,
     )
     task = TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
+    licence = document_pack.pack_draft_create(process)
 
     client = Client()
     client.login(username=ilb_admin.username, password="test")
@@ -147,6 +149,9 @@ def test_close_case():
 
     process.refresh_from_db()
     assert process.status == "STOPPED"
+
+    licence.refresh_from_db()
+    assert licence.status == document_pack.PackStatus.ARCHIVED
 
     task.refresh_from_db()
     assert task.is_active is False
