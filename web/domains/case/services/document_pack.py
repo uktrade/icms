@@ -59,6 +59,11 @@ __all__ = [
     "doc_ref_licence_get_optional",
     "doc_ref_cover_letter_get",
     "doc_ref_documents_all",
+    #
+    # Types
+    #
+    "PackStatus",
+    "DocumentType",
 ]
 
 
@@ -67,12 +72,13 @@ def pack_draft_create(application: ImpOrExp, *, variation_request: bool = False)
 
     This is the main entry point to the service which all licences / certificates use.
 
-    TODO: THis list needs extending
     It is used in the following places:
-        - Creating an import application
-        - Creating an export application
-        - A variation request is submitted for an import application
-        - A variation request is submitted for an export application
+        - Creating an import application.
+        - Creating an export application.
+        - A variation request is submitted for an import application.
+        - A variation request is submitted for an export application.
+        - A case is reopened after being withdrawn.
+        - A case is reopened after being stopped.
     """
 
     if application.is_import_application():
@@ -145,8 +151,10 @@ def pack_draft_archive(application: ImpOrExp) -> None:
     """Archives the draft licence or certificate.
 
     This occurs when the following happens:
-        - A variation request is refused by a caseworker.
         - An application is refused by a caseworker.
+        - A variation request is refused by a caseworker.
+        - When an application is withdrawn.
+        - When an application is stopped.
     """
 
     pack = pack_draft_get(application)
