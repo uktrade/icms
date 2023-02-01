@@ -112,6 +112,31 @@ WHERE ad.status_control = 'C'
 AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
 """
 
+fa_authority_quantity_count = """
+SELECT count(*)
+FROM impmgr.importer_authorities ia
+INNER JOIN impmgr.importer_authority_details iad ON iad.ia_id = ia.id
+CROSS JOIN XMLTABLE('
+for $g1 in /AUTHORITY/GOODS_CATEGORY_LIST/GOODS_CATEGORY | <null/>
+where /AUTHORITY/GOODS_CATEGORY_LIST/GOODS_CATEGORY and $g1/CATEGORY_ID/text()
+return
+<root>
+  <category_id>{$g1/CATEGORY_ID/text()}</category_id>
+  <quantity>{$g1/QUANTITY_WRAPPER/QUANTITY/text()}</quantity>
+  <unlimited>{$g1/QUANTITY_WRAPPER/UNLIMITED_QUANTITY/text()}</unlimited>
+</root>
+'
+PASSING iad.xml_data
+COLUMNS
+  category_id INTEGER PATH '/root/category_id/text()'
+  , quantity VARCHAR(100) PATH '/root/quantity/text()'
+  , unlimited VARCHAR(100) PATH '/root/unlimited/text()'
+) x
+WHERE iad.status_control = 'C'
+AND (quantity > 0 or unlimited = 'true')
+AND ia.authority_type = :AUTHORITY_TYPE
+"""
+
 # Firearms and Ammunition Bought From Details
 
 fa_bought_from_count = """
@@ -236,29 +261,4 @@ COLUMNS
 WHERE ad.status_control = 'C'
 AND x.uploads IS NULL
 AND x.details IS NULL
-"""
-
-fa_authority_quantity_count = """
-SELECT count(*)
-FROM impmgr.importer_authorities ia
-INNER JOIN impmgr.importer_authority_details iad ON iad.ia_id = ia.id
-CROSS JOIN XMLTABLE('
-for $g1 in /AUTHORITY/GOODS_CATEGORY_LIST/GOODS_CATEGORY | <null/>
-where /AUTHORITY/GOODS_CATEGORY_LIST/GOODS_CATEGORY and $g1/CATEGORY_ID/text()
-return
-<root>
-  <category_id>{$g1/CATEGORY_ID/text()}</category_id>
-  <quantity>{$g1/QUANTITY_WRAPPER/QUANTITY/text()}</quantity>
-  <unlimited>{$g1/QUANTITY_WRAPPER/UNLIMITED_QUANTITY/text()}</unlimited>
-</root>
-'
-PASSING iad.xml_data
-COLUMNS
-  category_id INTEGER PATH '/root/category_id/text()'
-  , quantity VARCHAR(100) PATH '/root/quantity/text()'
-  , unlimited VARCHAR(100) PATH '/root/unlimited/text()'
-) x
-WHERE iad.status_control = 'C'
-AND (quantity > 0 or unlimited = 'true')
-AND ia.authority_type = :AUTHORITY_TYPE
 """
