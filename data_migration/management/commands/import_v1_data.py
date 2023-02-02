@@ -140,7 +140,7 @@ class Command(MigrationBaseCommand):
         )
 
         # TODO ICMSLST-1850: Determine correct application status for draft licence status
-        draft_statuses = ["VARIATION_REQUESTED", "PROCESSING", "SUBMITTED", "WITHDRAWN", "STOPPED"]
+        draft_statuses = ["VARIATION_REQUESTED", "PROCESSING", "SUBMITTED"]
         draft_pks = (
             ia_qs.filter(status__in=draft_statuses)
             .values_list("pk", flat=True)
@@ -192,7 +192,7 @@ class Command(MigrationBaseCommand):
         )
 
         # TODO ICMSLST-1850: Determine correct application status for draft certificate status
-        draft_statuses = ["VARIATION_REQUESTED", "PROCESSING", "SUBMITTED", "WITHDRAWN", "STOPPED"]
+        draft_statuses = ["VARIATION_REQUESTED", "PROCESSING", "SUBMITTED"]
         draft_pks = (
             export_qs.filter(status__in=draft_statuses)
             .values_list("pk", flat=True)

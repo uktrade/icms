@@ -17,7 +17,7 @@ return
 '
 PASSING cad.xml_data
 COLUMNS
-  name VARCHAR(4000) PATH '/root/name/text()'
+  name VARCHAR2(4000) PATH '/root/name/text()'
 ) x
 WHERE xcad.status_control = 'C'
   AND xcad.application_type = 'CFS'
@@ -45,7 +45,7 @@ return
 '
 PASSING cad.xml_data
 COLUMNS
-  name VARCHAR(4000) PATH '/root/name/text()'
+  name VARCHAR2(4000) PATH '/root/name/text()'
 ) x
 WHERE xcad.status_control = 'C'
   AND xcad.application_type = 'CFS'
@@ -98,7 +98,7 @@ return
 '
 PASSING cad.xml_data
 COLUMNS
-  legislation VARCHAR(4000) PATH '/root/legislation/text()'
+  legislation VARCHAR2(4000) PATH '/root/legislation/text()'
 ) x
 WHERE xcad.status_control = 'C'
   AND xcad.application_type = 'CFS'

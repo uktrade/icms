@@ -1,6 +1,7 @@
 # Firearms and Ammunition Goods and Certificates
 
-# TODO: Check OIL applications where targe_id is null or certificate_type is null
+# TODO ICMSLST-1905: Investigate sil no firearms supplementary report numbers
+# TODO ICMSLST-1905: Investigate sil user import certificates
 
 fa_goods_certificate_count = """
 SELECT count(*)
@@ -16,7 +17,7 @@ return
 '
 PASSING ad.xml_data
 COLUMNS
-  certificate_ref VARCHAR(4000) PATH '/root/certificate_ref/text()'
+  certificate_ref VARCHAR2(4000) PATH '/root/certificate_ref/text()'
 ) x
 WHERE ad.status_control = 'C'
 AND x.certificate_ref IS NOT NULL
@@ -38,8 +39,8 @@ return
 '
 PASSING ad.xml_data
 COLUMNS
-  commodity_desc VARCHAR(4000) PATH '/root/commodity_desc/text()'
-  , sec VARCHAR(20) PATH '/root/sec/text()'
+  commodity_desc VARCHAR2(4000) PATH '/root/commodity_desc/text()'
+  , sec VARCHAR2(20) PATH '/root/sec/text()'
 ) x
 WHERE ad.status_control = 'C'
 AND x.commodity_desc IS NOT NULL
@@ -61,7 +62,7 @@ return
 '
 PASSING ad.xml_data
 COLUMNS
-  commodity_desc VARCHAR(4000) PATH '/root/commodity_desc/text()'
+  commodity_desc VARCHAR2(4000) PATH '/root/commodity_desc/text()'
 ) x
 WHERE ad.status_control = 'C'
 AND x.commodity_desc IS NOT NULL
@@ -84,7 +85,7 @@ return
 PASSING ad.xml_data
 COLUMNS
   ia_id INTEGER PATH '/root/ia_id/text()'
-  , selected VARCHAR(10) PATH '/root/selected/text()'
+  , selected VARCHAR2(10) PATH '/root/selected/text()'
 ) x
 WHERE ad.status_control = 'C'
 AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
@@ -106,7 +107,7 @@ return
 PASSING ad.xml_data
 COLUMNS
   ia_id INTEGER PATH '/root/ia_id/text()'
-  , selected VARCHAR(10) PATH '/root/selected/text()'
+  , selected VARCHAR2(10) PATH '/root/selected/text()'
 ) x
 WHERE ad.status_control = 'C'
 AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
@@ -129,8 +130,8 @@ return
 PASSING iad.xml_data
 COLUMNS
   category_id INTEGER PATH '/root/category_id/text()'
-  , quantity VARCHAR(100) PATH '/root/quantity/text()'
-  , unlimited VARCHAR(100) PATH '/root/unlimited/text()'
+  , quantity VARCHAR2(100) PATH '/root/quantity/text()'
+  , unlimited VARCHAR2(100) PATH '/root/unlimited/text()'
 ) x
 WHERE iad.status_control = 'C'
 AND (quantity > 0 or unlimited = 'true')
@@ -203,7 +204,7 @@ return
 '
 PASSING ad.xml_data
 COLUMNS
-  file_id VARCHAR(4000) PATH '/uploads/file_id/text()'
+  file_id VARCHAR2(4000) PATH '/uploads/file_id/text()'
 ) x
 WHERE ad.status_control = 'C'
 """
@@ -228,7 +229,7 @@ return
 '
 PASSING ad.xml_data
 COLUMNS
-  serial VARCHAR(4000) PATH '/root/serial/text()'
+  serial VARCHAR2(4000) PATH '/root/serial/text()'
 ) x
 WHERE ad.status_control = 'C'
 """
@@ -253,8 +254,8 @@ return
 '
 PASSING ad.xml_data
 COLUMNS
-  description VARCHAR(4000) PATH '/root/description/text()'
-  , report_mode VARCHAR(4000) PATH '/root/report_mode/text()'
+  description VARCHAR2(4000) PATH '/root/description/text()'
+  , report_mode VARCHAR2(4000) PATH '/root/report_mode/text()'
   , uploads XMLTYPE PATH '/root/uploads/*'
   , details XMLTYPE PATH '/root/details/*'
 ) x
