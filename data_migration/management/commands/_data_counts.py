@@ -1,23 +1,10 @@
 import web.models as web
 from data_migration.models import queries
+from web.flow.models import ProcessTypes
 
 from ._types import CheckCount, CheckQuery
 
 CHECK_DATA_COUNTS: list[CheckCount] = [
-    CheckCount(
-        "Export Variations",
-        70,
-        web.VariationRequest,
-        {"exportapplication__isnull": False},
-        False,
-    ),
-    CheckCount(
-        "Import Variations",
-        2890,
-        web.VariationRequest,
-        {"importapplication__isnull": False},
-        False,
-    ),
     CheckCount(
         "Firearms Acts",
         7,
@@ -105,21 +92,21 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         name="DFL Bought From Details",
         query=queries.fa_bought_from_count,
         model=web.ImportContact,
-        filter_params={"import_application__process_type": "DFLApplication"},
+        filter_params={"import_application__process_type": ProcessTypes.FA_DFL},
         bind_vars={"FA_TYPE": "DEACTIVATED"},
     ),
     CheckQuery(
         name="OIL Bought From Details",
         query=queries.fa_bought_from_count,
         model=web.ImportContact,
-        filter_params={"import_application__process_type": "OpenIndividualLicenceApplication"},
+        filter_params={"import_application__process_type": ProcessTypes.FA_OIL},
         bind_vars={"FA_TYPE": "OIL"},
     ),
     CheckQuery(
         name="SIL Bought From Details",
         query=queries.fa_bought_from_count,
         model=web.ImportContact,
-        filter_params={"import_application__process_type": "SILApplication"},
+        filter_params={"import_application__process_type": ProcessTypes.FA_SIL},
         bind_vars={"FA_TYPE": "SIL"},
     ),
     CheckQuery(
@@ -253,5 +240,89 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         name="CFS Schedule Legislation",
         query=queries.cfs_schedule_legislation_count,
         model=web.CFSSchedule.legislations.through,
+    ),
+    CheckQuery(
+        name="Variation Requests - DFL",
+        query=queries.import_application_variation_count,
+        model=web.VariationRequest,
+        filter_params={"importapplication__process_type": ProcessTypes.FA_DFL},
+        bind_vars={"IMA_TYPE": "FA", "IMA_SUB_TYPE": "DFL"},
+    ),
+    CheckQuery(
+        name="Variation Requests - OIL",
+        query=queries.import_application_variation_count,
+        model=web.VariationRequest,
+        filter_params={"importapplication__process_type": ProcessTypes.FA_OIL},
+        bind_vars={"IMA_TYPE": "FA", "IMA_SUB_TYPE": "OIL"},
+    ),
+    CheckQuery(
+        name="Variation Requests - SIL",
+        query=queries.import_application_variation_count,
+        model=web.VariationRequest,
+        filter_params={"importapplication__process_type": ProcessTypes.FA_SIL},
+        bind_vars={"IMA_TYPE": "FA", "IMA_SUB_TYPE": "SIL"},
+    ),
+    CheckQuery(
+        name="Variation Requests - Derogations",
+        query=queries.import_application_variation_count,
+        model=web.VariationRequest,
+        filter_params={"importapplication__process_type": ProcessTypes.DEROGATIONS},
+        bind_vars={"IMA_TYPE": "SAN", "IMA_SUB_TYPE": "SAN1"},
+    ),
+    CheckQuery(
+        name="Variation Requests - OPT",
+        query=queries.import_application_variation_count,
+        model=web.VariationRequest,
+        filter_params={"importapplication__process_type": ProcessTypes.OPT},
+        bind_vars={"IMA_TYPE": "OPT", "IMA_SUB_TYPE": "QUOTA"},
+    ),
+    CheckQuery(
+        name="Variation Requests - Sanctions and ADHOC",
+        query=queries.import_application_variation_count,
+        model=web.VariationRequest,
+        filter_params={"importapplication__process_type": ProcessTypes.SANCTIONS},
+        bind_vars={"IMA_TYPE": "ADHOC", "IMA_SUB_TYPE": "ADHOC1"},
+    ),
+    CheckQuery(
+        name="Variation Requests - SPS",
+        query=queries.import_application_variation_count,
+        model=web.VariationRequest,
+        filter_params={"importapplication__process_type": ProcessTypes.SPS},
+        bind_vars={"IMA_TYPE": "SPS", "IMA_SUB_TYPE": "SPS1"},
+    ),
+    CheckQuery(
+        name="Variation Requests - Textiles",
+        query=queries.import_application_variation_count,
+        model=web.VariationRequest,
+        filter_params={"importapplication__process_type": ProcessTypes.TEXTILES},
+        bind_vars={"IMA_TYPE": "TEX", "IMA_SUB_TYPE": "QUOTA"},
+    ),
+    CheckQuery(
+        name="Variation Requests - Wood",
+        query=queries.import_application_variation_count,
+        model=web.VariationRequest,
+        filter_params={"importapplication__process_type": ProcessTypes.WOOD},
+        bind_vars={"IMA_TYPE": "WD", "IMA_SUB_TYPE": "QUOTA"},
+    ),
+    CheckQuery(
+        name="Variation Requests - CFS",
+        query=queries.export_application_variation_count,
+        model=web.VariationRequest,
+        filter_params={"exportapplication__process_type": ProcessTypes.CFS},
+        bind_vars={"CA_TYPE": "CFS"},
+    ),
+    CheckQuery(
+        name="Variation Requests - COM",
+        query=queries.export_application_variation_count,
+        model=web.VariationRequest,
+        filter_params={"exportapplication__process_type": ProcessTypes.COM},
+        bind_vars={"CA_TYPE": "COM"},
+    ),
+    CheckQuery(
+        name="Variation Requests - GMP",
+        query=queries.export_application_variation_count,
+        model=web.VariationRequest,
+        filter_params={"exportapplication__process_type": ProcessTypes.GMP},
+        bind_vars={"CA_TYPE": "GMP"},
     ),
 ]

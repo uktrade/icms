@@ -9,7 +9,7 @@ from data_migration import models as dm
 from web import models as web
 
 ModelT = Union[T[Model], list[T[Model]]]
-Params = dict[str, int | str | bool]
+Params = dict[str, int | str | bool | tuple]
 
 
 class QueryModel(NamedTuple):

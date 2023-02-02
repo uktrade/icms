@@ -1836,8 +1836,20 @@ Supplementary Report Firearm No Firearm
 sec
 ON iad.ia_id = ia.id CROSS
 /AUTHORITY/GOODS_CATEGORY_LIST/GOODS_CATEGORY
-VARCHAR(100
 Certifcates of Free Sale
 ON cad.id = xcad.cad_id CROSS
 /CA/APPLICATION/PRODUCTS/SCHEDULE_LIST/SCHEDULE
 g2/ACTIVE_INGREDIENT_LIST
+Variation Requests - DFL
+Variation Requests - OIL
+Variation Requests - SIL
+Variation Requests - OPT
+Variation Requests - Sanctions
+Variation Requests - SPS
+Variation Requests - Textiles
+Variation Requests - Wood
+Variation Requests - COM
+Variation Requests - GMP
+ON ad.id = xid.imad_id CROSS
+/CA/CASE/VARIATIONS/VARIATION_LIST/VARIATION
+sec VARCHAR2(20
