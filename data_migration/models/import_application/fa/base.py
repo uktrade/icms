@@ -54,7 +54,6 @@ class UserImportCertificate(MigrationBase):
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-
         # Remove id and set file_ptr_id because V2 inherits from File model
         data.pop("id")
 

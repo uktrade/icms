@@ -67,7 +67,6 @@ def test_export_data(mock_connect):
 )
 @mock.patch.object(oracledb, "connect")
 def test_extract_xml(mock_connect):
-
     mock_connect.return_value = utils.MockConnect()
     user_pk = models.User.objects.count() + 1
     models.User.objects.create(
@@ -148,7 +147,6 @@ def test_extract_xml(mock_connect):
 )
 @mock.patch.object(oracledb, "connect")
 def test_export_files_data(mock_connect):
-
     mock_connect.return_value = utils.MockConnect()
     user_pk = models.User.objects.count() + 1
     models.User.objects.create(

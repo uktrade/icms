@@ -61,7 +61,6 @@ def manage_case_emails(
         DFLApplication.PROCESS_TYPE,
         SILApplication.PROCESS_TYPE,
     ]:
-
         info_email = (
             "This screen is used to email relevant constabularies. You may attach multiple"
             " firearms certificates to a single email. You can also record responses from the constabulary."
@@ -350,7 +349,6 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
         return CaseEmailConfig(application=application, file_qs=files)
 
     elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
-
         app_files: "QuerySet[GMPFile]" = application.supporting_documents.filter(is_active=True)
         ft = GMPFile.Type
         ct = CertificateOfGoodManufacturingPracticeApplication.CertificateTypes

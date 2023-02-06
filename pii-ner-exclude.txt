@@ -1878,3 +1878,101 @@ Reassign Applications to the chosen ILB
 Generates
 "Check for a search_results_url and rebuild the search
 "Store the variation
+args
+NER
+Licence Type
+Licence End Date
+Shipping Year
+Goods Category
+BEIS
+Processing (HSE
+Search ImportApplication
+Application Processing (
+kwargs={
+rec.latest_certificate_pk
+"Converts the incoming records
+Revoke Licence
+Open Variation
+Revoke Certificates
+Certificate
+Reassign Applications to the chosen ILB
+Generates
+"Check for a search_results_url and rebuild the search
+"Store the variation
+GBOIL0000003D
+f"{initial_reference}/5
+EAR/1
+Dummy
+0000009J
+Open Individual Import Licence - Edit
+edit.html
+Endorsement Usage Template
+Open Individual Licence
+Open Individual Import Licence - Submit Application
+Open Individual Import Licence - Checklist
+"Edit Firearm Details
+Wood (Quota
+DFLApplication
+Manage Emails
+CASE_OFFICER_EMAIL
+CA_HSE_EMAIL
+APPLICATION_TYPE
+section2
+Add Licence for Section 1
+Add Licence for Section 2
+Add Licence for Section 5
+Add Licence for Section
+Belarus
+"Check the given
+"Example XML
+TODO ICMSLST-1899 Ordinality
+SILSection
+MANUFACTURED_AFTER_1899_BEFORE_1939
+"Example XML <COMMODITY
+OC_ID
+UPLOAD
+./FILE_UPLOAD_LIST/FILE_UPLOAD
+"Exmaple XML
+"Example XML <FA_GOODS_CERTS
+XML
+FIREARMS_CERTIFICATE_LIST/FIREARMS_CERTIFICATE
+section5clause_id
+teg_commodities_xml
+max
+Licence Number]]
+the Country of Consignment
+"Queries the model
+Django 4.1.2
+Section 1 Firearms
+Section 1 Shotguns
+Section 2 Shotguns
+"Check a Process
+My Test Country
+F1
+F2
+test.user
+Email Body"
+Constabulary Emails
+Firearms and Ammunition - Certificates
+Ammunition - Edit Certificate '
+Firearms Supplementary Information Overview
+5007206190
+2801000010
+111111
+Angola
+ref %
+SIGL
+"Check the returned applications match
+jinja2
+test_export_user
+iar/1
+Oracle db
+CA
+IMA
+Certificate Applications
+"Returns the template content
+"Returns the template title
+"Returns the entry
+e.g: Template.get_choice_entry(Template
+DOMAINS
+Paragraphs for Certificate of Free Sale Schedule and Certificate of Free Sale Schedule Translation

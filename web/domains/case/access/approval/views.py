@@ -49,7 +49,6 @@ def management_access_approval(
         if request.method == "POST":
             form = Form(application, data=request.POST)
             if form.is_valid():
-
                 approval_request = form.save(commit=False)
 
                 approval_request.status = ApprovalRequest.OPEN

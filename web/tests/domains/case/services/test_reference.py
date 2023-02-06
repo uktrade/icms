@@ -361,7 +361,6 @@ def test_get_wood_app_variation_request_case_reference(wood_app_submitted, test_
 def test_get_variation_request_case_reference_with_existing_variations(
     wood_app_submitted, test_icms_admin_user
 ):
-
     initial_reference = wood_app_submitted.get_reference()
 
     # Update an existing app reference (and set some dummy variation requests)
@@ -400,7 +399,6 @@ def test_get_com_app_variation_request_case_reference(com_app_submitted, test_ic
 def test_get_com_app_variation_request_case_reference_with_existing_variations(
     com_app_submitted, test_icms_admin_user
 ):
-
     initial_reference = com_app_submitted.get_reference()
 
     # Update an existing app reference (and set some dummy variation requests)

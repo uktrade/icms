@@ -333,7 +333,6 @@ def exporter_client(test_export_user) -> Client:
 def com_app_in_progress(
     exporter_client, exporter, exporter_office, exporter_contact
 ) -> "CertificateOfManufactureApplication":
-
     # Create the COM app
     app = create_in_progress_com_app(exporter_client, exporter, exporter_office, exporter_contact)
 

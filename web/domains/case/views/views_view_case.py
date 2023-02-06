@@ -141,7 +141,6 @@ def _view_fa_sil(request: AuthenticatedHttpRequest, application: SILApplication)
 def _view_sanctions_and_adhoc(
     request: AuthenticatedHttpRequest, application: SanctionsAndAdhocApplication
 ) -> HttpResponse:
-
     goods = annotate_commodity_unit(
         application.sanctionsandadhocapplicationgoods_set.all(), "commodity__"
     ).distinct()
@@ -302,7 +301,6 @@ def _view_com(
 
 
 def _view_cfs(request: AuthenticatedHttpRequest, application: CertificateOfFreeSaleApplication):
-
     # Reuse the model verbose_name for the labels
     cfs_fields = CFSSchedule._meta.get_fields()
     labels = {f.name: getattr(f, "verbose_name", "") for f in cfs_fields}

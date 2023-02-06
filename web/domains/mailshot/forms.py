@@ -15,7 +15,6 @@ logger = logging.get_logger(__name__)
 
 
 class MailshotFilter(FilterSet):
-
     reference = CharFilter(field_name="reference", lookup_expr="icontains", label="Reference")
 
     title = CharFilter(field_name="title", lookup_expr="icontains", label="Title")
@@ -94,7 +93,6 @@ class ReceivedMailshotsFilter(FilterSet):
 
 
 class MailshotForm(ModelForm):
-
     RECIPIENT_CHOICES = (
         ("importers", "Importers and Agents"),
         ("exporters", "Exporters and Agents"),
