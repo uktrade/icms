@@ -66,7 +66,6 @@ def edit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         form = get_application_form(application, request, EditFaOILForm, SubmitFaOILForm)
 
         if request.method == "POST":
-
             if form.is_valid():
                 form.save()
                 messages.success(request, "Application data saved")

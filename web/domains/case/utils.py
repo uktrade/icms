@@ -76,7 +76,6 @@ def end_process_task(task: Task, user: Optional["User"] = None) -> None:
 def view_application_file(
     user: User, application: ImpOrExpOrAccess, related_file_model: Any, file_pk: int, case_type: str
 ) -> HttpResponse:
-
     check_application_permission(application, user, case_type)
 
     document = related_file_model.get(pk=file_pk)
@@ -91,7 +90,6 @@ def view_application_file(
 def view_application_file_direct(
     user: User, application: ImpOrExpOrAccess, document: File, case_type: str
 ) -> HttpResponse:
-
     check_application_permission(application, user, case_type)
 
     file_content = get_file_from_s3(document.path)

@@ -240,7 +240,6 @@ def _prepare_sanctions_and_adhoc_response(
     application: SanctionsAndAdhocApplication,
     context: dict[str, Any],
 ) -> HttpResponse:
-
     goods = annotate_commodity_unit(
         application.sanctionsandadhocapplicationgoods_set.all(), "commodity__"
     ).distinct()

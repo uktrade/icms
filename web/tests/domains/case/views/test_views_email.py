@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 def test_manage_constabulary_emails_get(
     icms_admin_client: "Client", fa_dfl_app_submitted: "DFLApplication"
 ) -> None:
-
     resp = icms_admin_client.get(CaseURLS.manage_case_emails(fa_dfl_app_submitted.pk))
     assert resp.status_code == 200
 

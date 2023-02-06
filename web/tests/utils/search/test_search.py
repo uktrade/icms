@@ -920,7 +920,7 @@ def test_search_by_app_type(export_fixture_data: ExportFixtureData):
         (gmp_app.reference, ExportApplicationType.Types.GMP),
     )
 
-    for (ref, app_type) in ref_type_pairs:
+    for ref, app_type in ref_type_pairs:
         search_terms = SearchTerms(case_type="export", app_type=app_type)
         results = search_applications(search_terms, export_fixture_data.request.user)
 
@@ -1142,7 +1142,6 @@ def test_case_reference_wildcard_any(
 def test_search_by_application_contact(
     import_fixture_data: FixtureData, export_fixture_data: ExportFixtureData
 ):
-
     _create_wood_application("wood-applicant-reference", import_fixture_data)
     gmp_app = _create_gmp_application(export_fixture_data)
 
@@ -1621,7 +1620,6 @@ def check_commodity_details(
     expected_shipping_year: int | None = None,
     expected_commodity_codes: list[str] | None = None,
 ):
-
     assert expected_origin_country == actual_details.origin_country
     assert expected_consignment_country == actual_details.consignment_country
     assert expected_goods_category == actual_details.goods_category
@@ -1637,7 +1635,6 @@ def _create_derogation_application(
     consignment_country="Algeria",
     commodity_code="code112233",
 ):
-
     application_type = ImportApplicationType.objects.get(
         type=ImportApplicationType.Types.DEROGATION
     )

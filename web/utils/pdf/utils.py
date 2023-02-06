@@ -28,7 +28,6 @@ def get_fa_oil_licence_context(
     licence: "ImportApplicationLicence",
     doc_type: DocumentTypes,
 ) -> dict[str, Any]:
-
     importer = application.importer
     office = application.importer_office
     endorsements = get_licence_endorsements(application)

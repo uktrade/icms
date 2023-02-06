@@ -9,7 +9,6 @@ TEMPLATE_CONTENT_REGEX = r"\[\[{}\]\]"
 
 
 class Template(Archivable, models.Model):
-
     # Template types
     ENDORSEMENT = "ENDORSEMENT"
     LETTER_TEMPLATE = "LETTER_TEMPLATE"

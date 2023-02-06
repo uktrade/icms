@@ -298,7 +298,6 @@ def _get_office(application: "ImportApplication") -> "Office":
 
 
 def _get_eori_number(importer: "Importer", office: "Office") -> str:
-
     # Use office override if set
     main_eori_number = office.eori_number or importer.eori_number
 

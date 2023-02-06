@@ -199,7 +199,6 @@ def create_import_contact(
 def edit_import_contact(
     request: AuthenticatedHttpRequest, *, application_pk: int, entity: str, contact_pk: int
 ) -> HttpResponse:
-
     form_class = _get_entity_form(entity)
 
     with transaction.atomic():
@@ -770,7 +769,6 @@ def _update_know_bought_from(firearms_application: FaImportApplication) -> None:
 def _get_entity_form(
     entity: str,
 ) -> type[ImportContactLegalEntityForm | ImportContactPersonForm]:
-
     if entity == ImportContact.LEGAL:
         form_class = ImportContactLegalEntityForm
 
@@ -845,7 +843,6 @@ def _validate_firearms_details(
             return True
 
     if application.process_type == ProcessTypes.FA_SIL:
-
         sections = [
             report.section1_firearms,
             report.section2_firearms,

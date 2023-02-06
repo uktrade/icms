@@ -580,7 +580,6 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-
                 # Check if we need to remove any section five documents
                 if not application.section5:
                     # Archive the section5 files

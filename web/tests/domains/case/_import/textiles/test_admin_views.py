@@ -64,7 +64,6 @@ def textiles_app_pk(client, office, importer, test_import_user, test_icms_admin_
 
 @pytest.mark.django_db
 def test_textiles_goods_edit(client, textiles_app_pk, test_icms_admin_user):
-
     client.login(username=test_icms_admin_user.username, password="test")
     url = _get_view_url("edit-goods-licence", kwargs={"application_pk": textiles_app_pk})
     textiles_app = TextilesApplication.objects.get(pk=textiles_app_pk)

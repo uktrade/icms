@@ -691,7 +691,6 @@ class DFLGoodsCertificateParser(BaseXmlParser):
             # Zip the elements together, as they are related by their ordinal
             xml_zip = zip(cert_list, commodity_list)
             for i, (cert_xml, commodity_xml) in enumerate(xml_zip, start=1):
-
                 # Combine the elements under a single node so we can parse the data for the model
                 xml = etree.Element("FA_GOODS_CERT")
                 xml.append(cert_xml)

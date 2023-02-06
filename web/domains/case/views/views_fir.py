@@ -350,7 +350,6 @@ def view_fir_file(
     file_pk: int,
     case_type: str,
 ) -> HttpResponse:
-
     model_class = get_class_imp_or_exp_or_access(case_type)
     application: ImpOrExpOrAccess = get_object_or_404(model_class, pk=application_pk)
     fir = get_object_or_404(application.further_information_requests, pk=fir_pk)
@@ -438,7 +437,6 @@ def list_firs(
 def respond_fir(
     request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
 ) -> HttpResponse:
-
     with transaction.atomic():
         model_class = get_class_imp_or_exp_or_access(case_type)
         application: ImpOrExpOrAccess = get_object_or_404(
