@@ -76,6 +76,10 @@
     {{ icms_link(request, icms_url('import:imi-case-detail', kwargs={'application_pk': process.pk}), 'IMI Summary') }}
   {% endif %}
 
+  {% set show_revocation_link = process.status == "REVOKED" or show_revocation %}
+  {% if show_revocation_link %}
+    {{ icms_link(request, icms_url('case:search-revoke-licence', kwargs={'case_type': 'import', 'application_pk': process.pk}), 'Revocations') }}
+  {% endif %}
 
   {% if not readonly_view %}
     {{ icms_link(request, icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Authorisation') }}

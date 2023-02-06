@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any, Union
 from urllib import parse
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -15,9 +16,14 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import FormView, View
 
+from web import tasks
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case.export.models import ExportApplication
-from web.domains.case.forms import VariationRequestExportAppForm, VariationRequestForm
+from web.domains.case.forms import (
+    RevokeApplicationForm,
+    VariationRequestExportAppForm,
+    VariationRequestForm,
+)
 from web.domains.case.forms_search import (
     ExportSearchAdvancedForm,
     ExportSearchForm,
@@ -25,8 +31,9 @@ from web.domains.case.forms_search import (
     ImportSearchForm,
     ReassignmentUserForm,
 )
-from web.domains.case.models import ApplicationBase, VariationRequest
-from web.domains.case.services import document_pack, reference
+from web.domains.case.models import VariationRequest
+from web.domains.case.services import case_progress, document_pack, reference
+from web.domains.case.shared import ImpExpStatus
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
@@ -55,7 +62,6 @@ SearchFormT = type[SearchForm]
 def search_cases(
     request: AuthenticatedHttpRequest, *, case_type: str, mode: str = "standard", get_results=False
 ) -> HttpResponse:
-
     if mode == "advanced":
         form_class: SearchFormT = (
             ImportSearchAdvancedForm if case_type == "import" else ExportSearchAdvancedForm
@@ -165,10 +171,10 @@ class ReopenApplicationView(
     permission_required = ["web.ilb_admin"]
 
     # ApplicationTaskMixin Config
-    current_status = [ApplicationBase.Statuses.STOPPED, ApplicationBase.Statuses.WITHDRAWN]
+    current_status = [ImpExpStatus.STOPPED, ImpExpStatus.WITHDRAWN]
     current_task_type = None
 
-    next_status = ApplicationBase.Statuses.SUBMITTED
+    next_status = ImpExpStatus.SUBMITTED
     next_task_type = Task.TaskType.PROCESS
 
     def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
@@ -193,10 +199,10 @@ class ReopenApplicationView(
         return HttpResponse(status=204)
 
 
-class RequestVariationOpenBase(
+class SearchActionFormBase(
     ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, FormView
 ):
-    """Base class for opening a variation request for import and export applications."""
+    """Base class for showing a form view that retains the previous search results."""
 
     def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         # Store the search url to create the return link later
@@ -208,20 +214,10 @@ class RequestVariationOpenBase(
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
-        """Returns context data for both import and export application variation requests."""
-
         context = super().get_context_data(**kwargs)
 
-        variation_requests = self.application.variation_requests.order_by(
-            "-requested_datetime"
-        ).annotate(vr_num=Window(expression=RowNumber()))
-
         return context | {
-            "page_title": f"Application {self.application.get_reference()}",
             "search_results_url": self.get_success_url(),
-            "process": self.application,
-            "case_type": self.kwargs["case_type"],
-            "variation_requests": variation_requests,
         }
 
     def get_success_url(self) -> str:
@@ -253,6 +249,29 @@ class RequestVariationOpenBase(
 
         return search_url
 
+    def _default_return_url(self):
+        raise NotImplementedError("View must define _default_return_url")
+
+
+class RequestVariationOpenBase(SearchActionFormBase):
+    """Base class for opening a variation request for import and export applications."""
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        """Returns context data for both import and export application variation requests."""
+
+        context = super().get_context_data(**kwargs)
+
+        variation_requests = self.application.variation_requests.order_by(
+            "-requested_datetime"
+        ).annotate(vr_num=Window(expression=RowNumber()))
+
+        return context | {
+            "page_title": f"Application {self.application.get_reference()}",
+            "process": self.application,
+            "case_type": self.kwargs["case_type"],
+            "variation_requests": variation_requests,
+        }
+
     def _default_return_url(self) -> str:
         """Default to search with variation requested"""
 
@@ -273,9 +292,9 @@ class RequestVariationUpdateView(RequestVariationOpenBase):
     permission_required = ["web.ilb_admin"]
 
     # ApplicationTaskMixin Config
-    current_status = [ApplicationBase.Statuses.COMPLETED]
+    current_status = [ImpExpStatus.COMPLETED]
     current_task_type = None
-    next_status = ApplicationBase.Statuses.VARIATION_REQUESTED
+    next_status = ImpExpStatus.VARIATION_REQUESTED
     next_task_type = Task.TaskType.PROCESS
 
     # FormView config
@@ -315,9 +334,9 @@ class RequestVariationOpenRequestView(RequestVariationOpenBase):
     permission_required = ["web.ilb_admin"]
 
     # ApplicationTaskMixin Config
-    current_status = [ApplicationBase.Statuses.COMPLETED]
+    current_status = [ImpExpStatus.COMPLETED]
     current_task_type = None
-    next_status = ApplicationBase.Statuses.VARIATION_REQUESTED
+    next_status = ImpExpStatus.VARIATION_REQUESTED
     next_task_type = Task.TaskType.PROCESS
 
     # FormView config
@@ -346,6 +365,111 @@ class RequestVariationOpenRequestView(RequestVariationOpenBase):
         document_pack.pack_draft_create(self.application, variation_request=True)
 
         return super().form_valid(form)
+
+
+@method_decorator(transaction.atomic, name="post")
+class RevokeCaseView(SearchActionFormBase):
+    """Admin view to revoke an application."""
+
+    # PermissionRequiredMixin config
+    permission_required = ["web.ilb_admin"]
+
+    # ApplicationTaskMixin Config
+    current_status = [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
+    current_task_type = None
+
+    # Conditional next status and task
+    # Changes status when submitting revoke form
+    next_status = ImpExpStatus.REVOKED
+    # Changes task when CHIEF is required
+    next_task_type = Task.TaskType.CHIEF_WAIT
+
+    # FormView config
+    form_class = RevokeApplicationForm
+    template_name = "web/domains/case/manage/revoke-licence.html"
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        if self.application.status == ImpExpStatus.COMPLETED:
+            context["active_pack"] = document_pack.pack_active_get(self.application)
+        else:
+            context["active_pack"] = None
+
+        return context | {
+            "page_title": f"Application {self.application.get_reference()}",
+            "process": self.application,
+            "case_type": self.kwargs["case_type"],
+            "show_revocation": True,
+            # This is a complete application so set readonly_view to True
+            "readonly_view": True,
+        }
+
+    def get_initial(self) -> dict[str, Any]:
+        """Return the initial data to use for forms on this view.
+
+        When an application has already been revoked we load that data.
+        """
+        initial = super().get_initial()
+
+        if self.application.status == ImpExpStatus.COMPLETED:
+            return initial
+
+        # When showing complete revocation load the data from the revoked licence
+        licence = document_pack.pack_revoked_get(self.application)
+
+        return initial | {
+            # TODO: ICMSLST-1907 Remove hardcoded value.
+            "send_email": True,
+            "reason": licence.revoke_reason,
+        }
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        """Return the keyword arguments for instantiating the form.
+
+        When an application has already been revoked we disable each form field.
+        """
+        kwargs = super().get_form_kwargs()
+
+        if self.application.status == ImpExpStatus.REVOKED:
+            kwargs["readonly_form"] = True
+
+        return kwargs
+
+    def form_valid(self, form: RevokeApplicationForm) -> HttpResponseRedirect:
+        """Revoke the licence before redirecting to the success url."""
+        # This view allows both completed and revoked.
+        # The POST form submission only allows an application in the completed state.
+        case_progress.check_expected_status(self.application, [ImpExpStatus.COMPLETED])
+
+        email_applicants = form.cleaned_data["send_email"]
+        reason = form.cleaned_data["reason"]
+
+        if email_applicants:
+            tasks.send_revoke_email(self.application.pk)
+
+        document_pack.pack_active_revoke(self.application, reason)
+
+        self.update_application_status()
+
+        is_import = self.application.is_import_application()
+        if is_import and self.application.application_type.chief_flag:
+            self.update_application_tasks()
+
+            if settings.SEND_LICENCE_TO_CHIEF:
+                tasks.revoke_licence(self.application.pk)
+
+        return super().form_valid(form)
+
+    def _default_return_url(self) -> str:
+        """Default to search showing this application."""
+        case_type = "import" if self.application.is_import_application() else "export"
+        search_url = reverse(
+            "case:search-results", kwargs={"case_type": case_type, "mode": "standard"}
+        )
+        query_params = {"case_ref": self.application.reference}
+
+        return "".join((search_url, "?", parse.urlencode(query_params)))
 
 
 def _get_search_terms_from_form(case_type: str, form: SearchForm) -> SearchTerms:

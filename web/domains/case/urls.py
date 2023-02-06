@@ -55,6 +55,11 @@ search_urls = [
                     views_search.RequestVariationOpenRequestView.as_view(),
                     name="search-open-variation",
                 ),
+                path(
+                    "search-revoke-licence",
+                    views_search.RevokeCaseView.as_view(),
+                    name="search-revoke-licence",
+                ),
             ]
         ),
     ),
