@@ -388,6 +388,7 @@ def _add_import_licence_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
             licences__status__in=[
                 ImportApplicationLicence.Status.DRAFT,
                 ImportApplicationLicence.Status.ACTIVE,
+                ImportApplicationLicence.Status.REVOKED,
             ]
         ),
     )
@@ -435,6 +436,7 @@ def _add_export_certificate_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
             certificates__status__in=[
                 ExportApplicationCertificate.Status.DRAFT,
                 ExportApplicationCertificate.Status.ACTIVE,
+                ExportApplicationCertificate.Status.REVOKED,
             ]
         ),
     )

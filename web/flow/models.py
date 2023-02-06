@@ -144,6 +144,10 @@ class Task(models.Model):
         DOCUMENT_SIGNING: str = ("document_signing", "Digital signing")  # type:ignore[assignment]
 
         CHIEF_WAIT: str = ("chief_wait", "CHIEF_WAIT")  # type:ignore[assignment]
+        CHIEF_REVOKE_WAIT: str = (
+            "chief_revoke_wait",
+            "CHIEF_REVOKE_WAIT",
+        )  # type:ignore[assignment]
         CHIEF_ERROR: str = ("chief_error", "CHIEF_ERROR")  # type:ignore[assignment]
 
         REJECTED: str = ("rejected", "Rejected")  # type:ignore[assignment]

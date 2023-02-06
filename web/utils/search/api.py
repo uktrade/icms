@@ -546,7 +546,6 @@ def _get_status_to_filter(case_type: str, case_status: str) -> models.Q:
 def _apply_import_application_filter(
     model: "QuerySet[Model]", terms: types.SearchTerms
 ) -> "QuerySet[Model]":
-
     if terms.applicant_ref:
         applicant_ref_filter = get_wildcard_filter("applicant_reference", terms.applicant_ref)
         model = model.filter(applicant_ref_filter)
@@ -837,10 +836,16 @@ def get_import_record_actions(app: "ImportApplication", user: User) -> list[type
             )
 
         if licence_end_date and licence_end_date > datetime.date.today():
-            # TODO: ICMSLST-999
             actions.append(
                 types.SearchAction(
-                    url="#", name="revoke-licence", label="Revoke Licence", icon="icon-undo2"
+                    url=reverse(
+                        "case:search-revoke-licence",
+                        kwargs={"application_pk": app.pk, "case_type": "import"},
+                    ),
+                    name="revoke-licence",
+                    label="Revoke Licence",
+                    icon="icon-undo2",
+                    is_post=False,
                 )
             )
 

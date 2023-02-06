@@ -267,3 +267,20 @@ class VariationRequestExportAppForm(forms.ModelForm):
         labels = {"what_varied": "Variation Reason"}
 
         widgets = {"what_varied": forms.Textarea({"rows": 4, "cols": 50})}
+
+
+class RevokeApplicationForm(forms.Form):
+    send_email = forms.BooleanField(
+        required=False, label="Email Applicants?", widget=forms.CheckboxInput()
+    )
+
+    reason = forms.CharField(
+        required=True, label="Reason", widget=forms.Textarea({"rows": 4, "cols": 50})
+    )
+
+    def __init__(self, *args, readonly_form: bool = False, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if readonly_form:
+            for f in self.fields:
+                self.fields[f].disabled = True

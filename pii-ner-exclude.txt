@@ -1853,3 +1853,28 @@ Variation Requests - GMP
 ON ad.id = xid.imad_id CROSS
 /CA/CASE/VARIATIONS/VARIATION_LIST/VARIATION
 sec VARCHAR2(20
+Email Applicants
+Revoke
+RE
+ICMSLST-1907 Remove
+args
+NER
+Licence Type
+Licence End Date
+Shipping Year
+Goods Category
+BEIS
+Processing (HSE
+Search ImportApplication
+Application Processing (
+kwargs={
+rec.latest_certificate_pk
+"Converts the incoming records
+Revoke Licence
+Open Variation
+Revoke Certificates
+Certificate
+Reassign Applications to the chosen ILB
+Generates
+"Check for a search_results_url and rebuild the search
+"Store the variation

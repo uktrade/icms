@@ -1,0 +1,79 @@
+{% extends "web/domains/case/manage/base.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ search_results_url }}" class="prev-link">Search Results</a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  <h3>Licence Revocation</h3>
+
+  {# Only show this warning if we are submitting a case revocation. #}
+  {% if process.status == "COMPLETED" %}
+    <div class="info-box info-box-info">
+      <div class="screen-reader-only">Information box,</div>
+      <p>Enter the reason for revoking the licence below.</p>
+      <p>If the case needs to be sent to SIGL, either delete from SIGL or, if usage has already occurred, send a modify transmission with the quantity adjusted to account for usage.</p>
+      <p>After clicking Revoke, the revocation will automatically be sent to CHIEF if necessary.</p>
+    </div>
+  {% endif %}
+
+  {# Tooltip for the send email message #}
+  <div id="send_email_tooltip" role="tooltip" class="hint-content" aria-hidden="true">
+    <div class="screen-reader-only">This item has hint text,</div>
+    <p>The applicants will be emailed the Licence Revocation email template.The applicant will not be informed of the
+      reason for revocation.</p>
+  </div>
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {% for field in form %}
+      {% if field.name == "send_email" %}
+        {{ fields.field(field, show_optional_indicator=False, input_cols="one", tooltip_msg_id="send_email_tooltip") }}
+      {% else %}
+        {{ fields.field(field) }}
+      {% endif %}
+    {% endfor %}
+
+    <h4>SIGL</h4>
+    {% if not process.sigl_flag %}
+      <p>This case type does not need to be sent to SIGL</p>
+    {% endif %}
+
+    {# If completed show warnings and submit button as we are submitting a case revocation. #}
+    {% if process.status == "COMPLETED" %}
+      <div class="info-box info-box-warning">
+        <div class="screen-reader-only">Warning information box,</div>
+        Ensure that you have performed all necessary SIGL actions before clicking 'Revoke Licence'. This cannot be undone.
+      </div>
+
+      {# Note: This is only for import applications - refactor if this template get's reused for revoking export certificates #}
+      {% if active_pack.issue_paper_licence_only %}
+        <div class="info-box info-box-warning">
+          <div class="screen-reader-only">Warning information box,</div>
+          Please note: as this is a paper licence, you will also need to notify the relevant border authorities of the
+          revocation.
+          You may also need to notify the applicant if necessary, so that they can return the paper licence.
+        </div>
+      {% endif %}
+
+      <div class="container">
+        <div class="row">
+          <div class="twelve columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <input type="submit" class="primary-button button" value="Revoke Licence"/>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endcall %}
+{% endblock %}

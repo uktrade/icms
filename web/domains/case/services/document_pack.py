@@ -41,6 +41,8 @@ __all__ = [
     "pack_draft_archive",
     "pack_active_get",
     "pack_active_get_optional",
+    "pack_active_revoke",
+    "pack_revoked_get",
     "pack_latest_get",
     "pack_issued_get_all",
     "pack_workbasket_get_issued",
@@ -174,6 +176,22 @@ def pack_active_get_optional(application: ImpOrExp) -> DocumentPack | None:
     packs = _get_qm(application).filter(status=PackStatus.ACTIVE)
 
     return packs.first()
+
+
+def pack_active_revoke(application: ImpOrExp, reason: str) -> None:
+    """Revoke the active document pack."""
+
+    active_pack = pack_active_get(application)
+
+    active_pack.status = PackStatus.REVOKED
+    active_pack.revoke_reason = reason
+    active_pack.save()
+
+
+def pack_revoked_get(application: ImpOrExp) -> DocumentPack:
+    """Get the revoked document pack."""
+
+    return _get_qm(application).get(status=PackStatus.REVOKED)
 
 
 def pack_latest_get(application: ImpOrExp) -> DocumentPack:

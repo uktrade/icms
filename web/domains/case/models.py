@@ -335,15 +335,18 @@ class DocumentPackBase(models.Model):
         DRAFT = "DR"
         ACTIVE = "AC"
         ARCHIVED = "AR"
+        REVOKED = "RE"
 
     status = models.TextField(choices=Status.choices, max_length=2, default=Status.DRAFT)
-
     document_references = GenericRelation("CaseDocumentReference")
 
     # This is set when the licence / certificate is set to active.
     case_reference = models.CharField(
         max_length=100, null=True, unique=True, verbose_name="Case Reference"
     )
+
+    # Set when a licence is revoked
+    revoke_reason = models.TextField(null=True)
 
     # Values added when records are created / updated, used to get the most recent one.
     created_at = models.DateTimeField(auto_now_add=True)
