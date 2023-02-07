@@ -9,7 +9,7 @@ from data_migration.models.import_application.import_application import SIGLTran
 from data_migration.utils import xml_parser
 from web import models as web
 
-from ._types import M2M, QueryModel, SourceTarget, source_target_list
+from .._types import M2M, QueryModel, SourceTarget, source_target_list
 
 user_source_target = [
     SourceTarget(dm.User, web.User),

@@ -2000,3 +2000,27 @@ CHIEF Wait for Revocation
 Cancel Authorisation
 Digital Signing
 Digital Signing Failed
+M2M
+Skipping Creating Missing Export Application Certificates
+Updates the auto_now_add
+export_case_note_docs
+Section 5 - Other Goods
+DFL Supplementary Reports
+DFL Supplementary Report
+DFL Supplementary Report Firearm Uploaded Documents
+OIL Supplementary Report Firearm Manual Details
+OIL Supplementary Report Firearm Uploaded Documents
+OIL Supplementary Report Firearm No Firearm
+Variation Requests - CFS
+f"Execuction Time
+Test Exporter
+ObsoleteCalibre
+f"TOTAL
+CHECK_DATA_QUERIES
+"Compares the expected values with the actual values
+Parses the XML
+ABC Test
+Test Description
+OC
+Test Name
+Test Reason

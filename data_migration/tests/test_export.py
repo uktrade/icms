@@ -8,8 +8,8 @@ from django.test import override_settings
 from django.utils import timezone
 
 from data_migration import models, queries
-from data_migration.management.commands import _run_order
-from data_migration.management.commands._run_order import (
+from data_migration.management.commands.config import run_order
+from data_migration.management.commands.config.run_order import (
     DATA_TYPE_QUERY_MODEL,
     DATA_TYPE_XML,
 )
@@ -137,7 +137,7 @@ def test_extract_xml(mock_connect):
 @pytest.mark.django_db
 @mock.patch.dict(DATA_TYPE_QUERY_MODEL, {"file": []})
 @mock.patch.object(
-    _run_order,
+    run_order,
     "FILE_MODELS",
     [
         models.FileFolder,

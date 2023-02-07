@@ -2,7 +2,7 @@ import web.models as web
 from data_migration.models import queries
 from web.flow.models import ProcessTypes
 
-from ._types import CheckCount, CheckQuery
+from .._types import CheckCount, CheckQuery
 
 CHECK_DATA_COUNTS: list[CheckCount] = [
     CheckCount(
