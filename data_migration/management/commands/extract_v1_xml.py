@@ -1,7 +1,7 @@
 from itertools import islice
 
 from ._base import MigrationBaseCommand
-from ._run_order import DATA_TYPE, DATA_TYPE_XML
+from .config.run_order import DATA_TYPE, DATA_TYPE_XML
 from .utils.format import format_name
 
 

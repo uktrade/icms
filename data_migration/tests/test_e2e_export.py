@@ -7,7 +7,7 @@ from django.core.management import call_command
 
 from data_migration import models as dm
 from data_migration import queries
-from data_migration.management.commands._run_order import (
+from data_migration.management.commands.config.run_order import (
     DATA_TYPE_M2M,
     DATA_TYPE_QUERY_MODEL,
     DATA_TYPE_SOURCE_TARGET,

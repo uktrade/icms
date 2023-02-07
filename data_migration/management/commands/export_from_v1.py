@@ -7,7 +7,7 @@ import oracledb
 from data_migration import models
 
 from ._base import MigrationBaseCommand
-from ._run_order import DATA_TYPE, DATA_TYPE_QUERY_MODEL, FILE_MODELS
+from .config.run_order import DATA_TYPE, DATA_TYPE_QUERY_MODEL, FILE_MODELS
 from .utils.db import CONNECTION_CONFIG, new_process_pk
 from .utils.format import format_name, format_row
 

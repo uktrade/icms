@@ -1,4 +1,4 @@
-from dataclasses import astuple, dataclass, field
+from dataclasses import dataclass, field
 from typing import NamedTuple
 from typing import Type as T
 from typing import Union
@@ -35,10 +35,6 @@ class CheckCount:
     expected_count: int
     model: ModelT
     filter_params: Params = field(default_factory=dict)
-    is_exact: bool = True
-
-    def __iter__(self):
-        return iter(astuple(self))
 
 
 @dataclass(frozen=True)

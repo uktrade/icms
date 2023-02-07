@@ -7,7 +7,7 @@ from data_migration import models as dm
 from web import models as web
 
 from ._base import MigrationBaseCommand
-from ._run_order import (
+from .config.run_order import (
     DATA_TYPE,
     DATA_TYPE_M2M,
     DATA_TYPE_SOURCE_TARGET,
