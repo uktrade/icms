@@ -1878,27 +1878,6 @@ Reassign Applications to the chosen ILB
 Generates
 "Check for a search_results_url and rebuild the search
 "Store the variation
-args
-NER
-Licence Type
-Licence End Date
-Shipping Year
-Goods Category
-BEIS
-Processing (HSE
-Search ImportApplication
-Application Processing (
-kwargs={
-rec.latest_certificate_pk
-"Converts the incoming records
-Revoke Licence
-Open Variation
-Revoke Certificates
-Certificate
-Reassign Applications to the chosen ILB
-Generates
-"Check for a search_results_url and rebuild the search
-"Store the variation
 GBOIL0000003D
 f"{initial_reference}/5
 EAR/1
@@ -1976,3 +1955,26 @@ Certificate Applications
 e.g: Template.get_choice_entry(Template
 DOMAINS
 Paragraphs for Certificate of Free Sale Schedule and Certificate of Free Sale Schedule Translation
+Case</h4
+kwargs={'application_pk
+process.process_type ==
+process.process_type == "WoodQuotaApplication" %}
+kwargs={"application_pk
+process.process_type == "
++ open_vr_count|string +
+process.update_requests.exclude(status="OPEN").count
+imi-case-detail'
+View Firearms
+Response Preparation</h3
+=False
+Cover Letter</h4
+Licence</h4
+{{ licence.licence_start_date.strftime('%d-%b-%Y'
+{{ licence.licence_end_date.strftime('%d-%b-%Y'
+{{ endorsement.content|nl2br }
+{{ csrf_input }
+Add Custom Endorsement
+{{ application_field("Refuse
+Decision
+{{ application_field(process.refuse_reason
+Refuse Reason"

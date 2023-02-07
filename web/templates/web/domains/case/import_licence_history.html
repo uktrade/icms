@@ -10,11 +10,12 @@
 
 {% block main_content %}
   <h3>Responses</h3>
+  {% set revoke_suffix = " - Revoked" if process.status == "REVOKED" else "" %}
   {% for l in licences %}
     {% if l.variation_request %}
-      <p class="bold">Variation Request {{ l.variation_request[0] }} Response (case reference: {{ l.case_reference }})</p>
+      <p class="bold">Variation Request {{ l.variation_request[0] }} Response (case reference: {{ l.case_reference }}){{ revoke_suffix }}</p>
     {% else %}
-      <h5>Initial Response (case reference: {{ l.case_reference }})</h5>
+      <h5>Initial Response (case reference: {{ l.case_reference }}){{ revoke_suffix }}</h5>
     {% endif %}
     <table class="setoutList">
       <thead>
