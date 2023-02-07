@@ -52,6 +52,11 @@
 
 
   {% if process.application_approved %}
+    {% if process.status == "REVOKED" %}
+      <div class="info-box info-box-warning"><div class="screen-reader-only">Warning information box,</div>
+        The licence for the following quantities has been revoked:
+      </div>
+    {% endif %}
 
     {% block goods_content %}{% endblock %}
 

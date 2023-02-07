@@ -102,6 +102,8 @@ def prepare_response(
             and application.decision == application.APPROVE
         ):
             context["licence"] = document_pack.pack_active_get(application)
+        elif application.status == ImpExpStatus.REVOKED:
+            context["licence"] = document_pack.pack_revoked_get(application)
         elif (
             application.status == ImpExpStatus.VARIATION_REQUESTED
             and application.variation_decision == application.REFUSE
