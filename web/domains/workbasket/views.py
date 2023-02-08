@@ -228,6 +228,7 @@ def _get_queryset_user(user: User) -> chain[QuerySet]:
         ImpExpStatus.IN_PROGRESS,
         ImpExpStatus.PROCESSING,
         ImpExpStatus.VARIATION_REQUESTED,
+        ImpExpStatus.REVOKED,
     ]
     import_applications = import_applications.filter(
         is_active=True, status__in=app_status_to_show

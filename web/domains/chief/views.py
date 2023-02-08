@@ -256,6 +256,7 @@ class CheckChiefProgressView(
         ImpExpStatus.PROCESSING,
         ImpExpStatus.VARIATION_REQUESTED,
         ImpExpStatus.COMPLETED,
+        ImpExpStatus.REVOKED,
     ]
 
     # PermissionRequiredMixin Config
@@ -277,6 +278,14 @@ class CheckChiefProgressView(
 
         elif Task.TaskType.CHIEF_WAIT in active_tasks:
             msg = "Awaiting Response - Licence sent to CHIEF, we are awaiting a response"
+
+        # TODO: ICMSLST-1904 Revisit when sending licence payload to CHIEF.
+        elif self.application.status == ImpExpStatus.REVOKED:
+            if Task.TaskType.CHIEF_REVOKE_WAIT in active_tasks:
+                msg = "Awaiting Response - Licence sent to CHIEF, we are awaiting a response"
+            else:
+                msg = "Accepted - An accepted response has been received from CHIEF."
+                reload_workbasket = True
 
         else:
             raise Exception("Unknown state for application")

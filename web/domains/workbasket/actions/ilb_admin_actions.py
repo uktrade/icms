@@ -87,6 +87,14 @@ class ViewApplicationCaseAction(Action):
             show_link = True
             self.section_label = "View Case"
 
+        # App being revoked
+        elif (
+            self.status == ImpExpStatus.REVOKED
+            and Task.TaskType.CHIEF_REVOKE_WAIT in self.active_tasks
+        ):
+            show_link = True
+            self.section_label = "CHIEF Wait for Revocation"
+
         return show_link
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
@@ -97,6 +105,7 @@ class ViewApplicationCaseAction(Action):
             or Task.TaskType.AUTHORISE in self.active_tasks
             or Task.TaskType.DOCUMENT_SIGNING in self.active_tasks
             or Task.TaskType.DOCUMENT_ERROR in self.active_tasks
+            or Task.TaskType.CHIEF_REVOKE_WAIT in self.active_tasks
         ):
             name = "View Case"
         else:
@@ -288,6 +297,13 @@ class BypassChiefSuccessAction(Action):
         if correct_status and correct_task and correct_setting:
             show_link = True
 
+        if (
+            self.status == ImpExpStatus.REVOKED
+            and Task.TaskType.CHIEF_REVOKE_WAIT in self.active_tasks
+            and correct_setting
+        ):
+            show_link = True
+
         return show_link
 
     def get_kwargs(self) -> dict[str, Any]:
@@ -296,12 +312,17 @@ class BypassChiefSuccessAction(Action):
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
 
+        if self.status == ImpExpStatus.REVOKED:
+            section_label = "CHIEF Wait for Revocation"
+        else:
+            section_label = "CHIEF Wait"
+
         return [
             WorkbasketAction(
                 is_post=True,
                 name="(TEST) Bypass CHIEF",
                 url=reverse("import:bypass-chief", kwargs=kwargs),
-                section_label="CHIEF Wait",
+                section_label=section_label,
             )
         ]
 
@@ -353,6 +374,12 @@ class ChiefMonitorProgressAction(Action):
         if correct_status and correct_task:
             show_link = True
 
+        if (
+            self.status == ImpExpStatus.REVOKED
+            and Task.TaskType.CHIEF_REVOKE_WAIT in self.active_tasks
+        ):
+            show_link = True
+
         return show_link
 
     def get_kwargs(self) -> dict[str, Any]:
@@ -361,13 +388,18 @@ class ChiefMonitorProgressAction(Action):
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
 
+        if self.status == ImpExpStatus.REVOKED:
+            section_label = "CHIEF Wait for Revocation"
+        else:
+            section_label = "CHIEF Wait"
+
         return [
             WorkbasketAction(
                 is_post=False,
                 name="Monitor Progress",
                 url=reverse("chief:check-progress", kwargs=kwargs),
                 is_ajax=True,
-                section_label="CHIEF Wait",
+                section_label=section_label,
             )
         ]
 

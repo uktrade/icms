@@ -40,6 +40,7 @@ class TestApplicantActions:
             self.ST.PROCESSING,
             self.ST.VARIATION_REQUESTED,
             self.ST.COMPLETED,
+            self.ST.REVOKED,
         ]
 
         for status in self.ST:
@@ -130,7 +131,7 @@ class TestApplicantActions:
                 self.user, "import", self.app, active_tasks, False, True, False
             )
 
-            if status == self.ST.COMPLETED:
+            if status in [self.ST.COMPLETED, self.ST.REVOKED]:
                 assert action.show_link()
                 wb_action = action.get_workbasket_actions()[0]
                 assert wb_action.name == "Clear"
