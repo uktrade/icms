@@ -382,7 +382,7 @@ class RevokeCaseView(SearchActionFormBase):
     # Changes status when submitting revoke form
     next_status = ImpExpStatus.REVOKED
     # Changes task when CHIEF is required
-    next_task_type = Task.TaskType.CHIEF_WAIT
+    next_task_type = Task.TaskType.CHIEF_REVOKE_WAIT
 
     # FormView config
     form_class = RevokeApplicationForm
@@ -450,6 +450,7 @@ class RevokeCaseView(SearchActionFormBase):
 
         document_pack.pack_active_revoke(self.application, reason)
 
+        self.application.update_order_datetime()
         self.update_application_status()
 
         is_import = self.application.is_import_application()

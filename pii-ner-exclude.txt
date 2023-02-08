@@ -1978,3 +1978,25 @@ Add Custom Endorsement
 Decision
 {{ application_field(process.refuse_reason
 Refuse Reason"
+Licence Response Preparation
+IMI Applications
+"Indicates the relevant details
+imi-case
+ICMSLST-19 Add
+Cancel
+Pending Withdrawal
+Update Variation Request
+Firearms Supplementary Reporting
+"Add user workbasket annotations for import applications
+"Add user workbasket annotations for export applications
+f"{relationship}__requested_datetime
+Server-Authorization
+HAWK_AUTHENTICATION
+Validate
+nonce="{sender_nonce
+create_case_document_pack
+Take Ownership
+CHIEF Wait for Revocation
+Cancel Authorisation
+Digital Signing
+Digital Signing Failed

@@ -78,6 +78,7 @@ class ViewApplicationAction(Action):
             ImpExpStatus.PROCESSING,
             ImpExpStatus.VARIATION_REQUESTED,
             ImpExpStatus.COMPLETED,
+            ImpExpStatus.REVOKED,
         ]
 
         if self.status in valid_statuses:
@@ -93,6 +94,7 @@ class ViewApplicationAction(Action):
             ImpExpStatus.PROCESSING: "Application Submitted",
             ImpExpStatus.VARIATION_REQUESTED: "Application Submitted",
             ImpExpStatus.COMPLETED: "Application View",
+            ImpExpStatus.REVOKED: "Application View",
         }
 
         return [

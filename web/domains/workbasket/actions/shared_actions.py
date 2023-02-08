@@ -17,7 +17,7 @@ class ClearApplicationAction(Action):
                 show_link = True
 
         else:
-            if self.status == ImpExpStatus.COMPLETED:
+            if self.status in [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]:
                 show_link = True
 
         return show_link
