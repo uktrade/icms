@@ -43,3 +43,46 @@ COLUMNS
 WHERE cad.status_control = 'C'
 AND xcad.application_type = :CA_TYPE
 """
+
+template_count = """
+SELECT COUNT(*)
+FROM impmgr.xview_template_details xtd
+WHERE xtd.status_control = 'C'
+  AND xtd.template_name <> 'Test'
+"""
+
+template_country_count = """
+SELECT COUNT(*)
+FROM impmgr.xview_template_countries xtc
+INNER JOIN impmgr.xview_template_details xtd ON xtd.td_id = xtc.td_id
+WHERE xtd.status_control = 'C'
+  AND xtd.template_name <> 'Test'
+"""
+
+cfs_paragraph_count = """
+SELECT COUNT(*)
+FROM impmgr.xview_template_details xtd
+CROSS JOIN XMLTABLE('
+for $g1 in /SCHEDULE_BODY/PARAGRAPH
+return
+<root>
+  <name>{$g1/NAME/text()}</name>
+  <content>{$g1/VALUE/text()}</content>
+</root>
+'
+PASSING xtd.schedule_body
+COLUMNS
+  ordinal FOR ordinality
+  , name VARCHAR2(4000) PATH '/root/name/text()'
+  , content VARCHAR2(4000) PATH '/root/content/text()'
+) x
+WHERE xtd.status_control = 'C'
+  AND xtd.template_type LIKE '%SCHEDULE%'
+  AND xtd.template_name <> 'Test'
+"""
+
+iat_endorsement_count = """
+SELECT COUNT(*)
+FROM impmgr.xview_iat_templates
+WHERE iat.ima_type <> 'GS'
+"""

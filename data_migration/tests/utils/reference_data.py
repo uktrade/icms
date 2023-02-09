@@ -2,6 +2,8 @@ from datetime import datetime
 
 from data_migration import queries
 
+from . import xml_data as xd
+
 ref_query_result = {
     queries.country: (
         [("id",), ("name",), ("is_active",), ("type",), ("commission_code",), ("hmrc_code",)],
@@ -97,5 +99,126 @@ ref_query_result = {
     queries.obsolete_calibre: (
         [("id",), ("legacy_id",), ("name",), ("is_active",), ("order",), ("calibre_group_id",)],
         [(1, 3, "Inactive Test OC", 0, 2, 2), (2, 444, "Test OC", 1, 1, 1)],
+    ),
+    queries.template: (
+        [
+            ("id",),
+            ("start_datetime",),
+            ("end_datetime",),
+            ("is_active",),
+            ("template_name",),
+            ("template_code",),
+            ("template_type",),
+            ("application_domain",),
+            ("template_title",),
+            ("template_content",),
+        ],
+        [
+            (
+                1,  # id
+                datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "Endorsement 1",  # template_name
+                None,  # template_code
+                "ENDORSEMENT",  # template_type
+                "IMA",  # application_domain
+                "Endorsement 1",  # template_title
+                "First Endorsement",  # template_content
+            ),
+            (
+                2,  # id
+                datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "Endorsement 2",  # template_name
+                None,  # template_code
+                "ENDORSEMENT",  # template_type
+                "IMA",  # application_domain
+                "Endorsement 2",  # template_title
+                "Second Endorsement",  # template_content
+            ),
+            (
+                3,  # id
+                datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "Endorsement 3",  # template_name
+                None,  # template_code
+                "ENDORSEMENT",  # template_type
+                "IMA",  # application_domain
+                "Endorsement 3",  # template_title
+                "Third Endorsement",  # template_content
+            ),
+            (
+                4,  # id
+                datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "Letter 1",  # template_name
+                "COVER_LETTER_1",  # template_code
+                "LETTER_TEMPLATE",  # template_type
+                "IMA",  # application_domain
+                None,  # template_title
+                xd.letter_template,  # template_content
+            ),
+            (
+                5,  # id
+                datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "Email 1",  # template_name
+                "EMAIL_1",  # template_code
+                "EMAIL_TEMPLATE",  # template_type
+                "IAR",  # application_domain
+                None,  # template_title
+                xd.email_template,  # template_content
+            ),
+            (
+                6,  # id
+                datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "CFS Schedule 1",  # template_name
+                "CFS_SCHEDULE_ENGLISH",  # template_code
+                "CFS_SCHEDULE",  # template_type
+                "CA",  # application_domain
+                None,  # template_title
+                None,  # template_content
+            ),
+            (
+                7,  # id
+                datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "CFS Declaration Spanish",  # template_name
+                "None",  # template_code
+                "CFS_DECLARATION_TRANSLATION",  # template_type
+                "CA",  # application_domain
+                None,  # template_title
+                "Some translated text",  # template_content
+            ),
+        ],
+    ),
+    queries.cfs_paragraph: (
+        [
+            ("template_id",),
+            ("ordinal",),
+            ("name",),
+            ("content",),
+        ],
+        [
+            (6, 1, "Paragraph 1", "Content 1"),
+            (6, 2, "Paragraph 2", "Content 2"),
+            (6, 3, "Paragraph 3", "Content 3"),
+        ],
+    ),
+    queries.template_country: (
+        [("template_id",), ("country_id",)],
+        [(7, 2), (7, 3)],
+    ),
+    queries.endorsement_template: (
+        [("importapplicationtype_id",), ("template_id",)],
+        [(1, 1), (5, 2), (5, 3), (6, 1), (6, 2), (6, 3)],
     ),
 }
