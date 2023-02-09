@@ -5,8 +5,10 @@ from django.core.exceptions import PermissionDenied
 from django.urls import reverse
 from django.views.generic import DetailView
 
-from web.domains.case.services import document_pack
+from web.domains.case.services import case_progress, document_pack
+from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import check_application_permission
+from web.flow import errors
 from web.flow.models import Process, ProcessTypes
 
 if TYPE_CHECKING:
@@ -32,6 +34,17 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
         except PermissionDenied:
             return False
 
+        # Admin can view case history when revoked, an applicant can't
+        try:
+            if self.request.user.has_perm("web.ilb_admin"):
+                expected = [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
+            else:
+                expected = [ImpExpStatus.COMPLETED]
+
+            case_progress.check_expected_status(application, expected)
+        except errors.ProcessError:
+            return False
+
         return True
 
     def get_context_data(self, **kwargs):
@@ -39,7 +52,8 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
         case_type = self.kwargs["case_type"]
         base_context = super().get_context_data(**kwargs)
 
-        if self.request.user.has_perm("web.ilb_admin"):
+        mode = self.kwargs["mode"]
+        if self.request.user.has_perm("web.ilb_admin") and mode == "ilb":
             base_template = "web/domains/case/manage/base.html"
         else:
             base_template = "web/domains/case/view_case.html"

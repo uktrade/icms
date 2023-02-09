@@ -2072,3 +2072,16 @@ Issued Certificates
 west">Telephone(s)</label
 process.contact.phone_numbers.all
 N/A
+mode>/results/
+misc stuff
+URLS
+base.html
+case_completion_date
+"Check if the supplied errors
+"Check if the supplied pages have been checked
+id="id
+Complete Supplementary Reporting</h3
+{{ process.supplementary_info.no_report_reason
+Report Completed By
+{{ application_field(process.supplementary_info.completed_datetime.strftime('%d-%b-%Y'
+{{ fields.field(form.no_report_reason

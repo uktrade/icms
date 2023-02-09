@@ -94,6 +94,6 @@
   {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'View Application', "_blank") }}
 
   {% if process.status in ["COMPLETED", "REVOKED"] %}
-    {{ icms_link(request, icms_url('case:history', kwargs={'application_pk': process.pk, 'case_type': 'import'}), "Responses" ) }}
+    {{ icms_link(request, icms_url('case:ilb-case-history', kwargs={'application_pk': process.pk, 'case_type': 'import'}), "Responses" ) }}
   {% endif %}
 </ul>

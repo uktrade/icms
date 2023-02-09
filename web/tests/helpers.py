@@ -206,7 +206,7 @@ class CaseURLS:
     def get_application_history(application_pk: int, case_type="import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 
-        return reverse("case:history", kwargs=kwargs)
+        return reverse("case:ilb-case-history", kwargs=kwargs)
 
     @staticmethod
     def check_chief_progress(application_pk: int) -> str:
