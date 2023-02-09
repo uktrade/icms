@@ -572,7 +572,9 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
         application: FaImportApplication = _get_fa_application(import_application)
 
         check_application_permission(application, request.user, "import")
-        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
+        case_progress.check_expected_status(
+            application, [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
+        )
 
         form_class = _get_supplementary_info_form(application)
 

@@ -388,11 +388,18 @@ urlpatterns = [
                             # PDF generation URLs:
                             path("pdf/", include(pdf_urls)),
                             #
-                            # Case history
+                            # Case history - two url confs to handle which base template to use.
                             path(
                                 "case-history/",
                                 views_case_history.CaseHistoryView.as_view(),
-                                name="history",
+                                name="ilb-case-history",
+                                kwargs={"mode": "ilb"},
+                            ),
+                            path(
+                                "applicant-case-history/",
+                                views_case_history.CaseHistoryView.as_view(),
+                                name="applicant-case-history",
+                                kwargs={"mode": "applicant"},
                             ),
                         ]
                     ),
