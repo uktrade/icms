@@ -1,6 +1,7 @@
 from data_migration import models as dm
 from web import models as web
 
+from . import xml_data  # NOQA
 from .ea_data import ea_query_result
 from .ia_data import ia_query_result
 from .reference_data import ref_query_result

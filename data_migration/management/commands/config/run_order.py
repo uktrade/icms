@@ -72,6 +72,10 @@ ref_query_model = [
     QueryModel(queries.constabularies, "constabularies", dm.Constabulary),
     QueryModel(queries.obsolete_calibre_group, "obsolete_calibre_group", dm.ObsoleteCalibreGroup),
     QueryModel(queries.obsolete_calibre, "obsolete_calibre", dm.ObsoleteCalibre),
+    QueryModel(queries.template, "template", dm.Template),
+    QueryModel(queries.cfs_paragraph, "cfs paragraph", dm.CFSScheduleParagraph),
+    QueryModel(queries.template_country, "template country", dm.TemplateCountry),
+    QueryModel(queries.endorsement_template, "endorsement template", dm.EndorsementTemplate),
 ]
 
 ref_source_target = source_target_list(
@@ -85,6 +89,8 @@ ref_source_target = source_target_list(
         "CommodityGroup",
         "Commodity",
         "ImportApplicationType",
+        "Template",
+        "CFSScheduleParagraph",
         "Usage",
         "Constabulary",
         "ObsoleteCalibreGroup",
@@ -98,6 +104,8 @@ ref_source_target = source_target_list(
 ref_m2m = [
     M2M(dm.CountryGroupCountry, web.CountryGroup, "countries"),
     M2M(dm.CommodityGroupCommodity, web.CommodityGroup, "commodities"),
+    M2M(dm.TemplateCountry, web.Template, "countries"),
+    M2M(dm.EndorsementTemplate, web.ImportApplicationType, "endorsements"),
 ]
 
 file_query_model = [
@@ -485,10 +493,10 @@ TIMESTAMP_UPDATES: list[type[Model]] = [
     dm.Mailshot,
     dm.Process,
     dm.Section5Clause,
+    dm.Template,
     dm.VariationRequest,
 ]
 
 # TODO ICMSLST-1832 EndorsementImportApplication - check if needed in V2
 # TODO ICMSLST-1832 WithdrawApplication
 # TODO ICMSLST-1833 CertificateApplicationTemplate
-# TODO ICMLST-1834 Template

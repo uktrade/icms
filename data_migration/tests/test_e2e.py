@@ -766,3 +766,111 @@ def test_import_user(mock_connect, dummy_dm_settings):
     assert ar4_ar.response == "APPROVE"
     assert ar4_ar.response_reason == "Test Reason"
     assert ar4_ar.exporterapprovalrequest.pk == ar4_ar.pk
+
+
+user_data_source_target = {
+    "user": [
+        (dm.User, web.User),
+        (dm.Importer, web.Importer),
+    ],
+    "reference": [
+        (dm.Country, web.Country),
+        (dm.CountryGroup, web.CountryGroup),
+        (dm.CommodityType, web.CommodityType),
+        (dm.ImportApplicationType, web.ImportApplicationType),
+        (dm.Template, web.Template),
+        (dm.CFSScheduleParagraph, web.CFSScheduleParagraph),
+    ],
+    "import_application": [],
+    "export_application": [],
+    "file": [],
+}
+
+
+@pytest.mark.django_db
+@mock.patch.dict(
+    DATA_TYPE_QUERY_MODEL,
+    {
+        "import_application": [],
+        "export_application": [],
+        "reference": [
+            (queries.country, "country", dm.Country),
+            (queries.country_group, "country_group", dm.CountryGroup),
+            (queries.commodity_type, "commodity_type", dm.CommodityType),
+            (queries.ia_type, "ia type", dm.ImportApplicationType),
+            (queries.template, "template", dm.Template),
+            (queries.cfs_paragraph, "cfs paragraph", dm.CFSScheduleParagraph),
+            (queries.template_country, "template country", dm.TemplateCountry),
+            (queries.endorsement_template, "endorsement template", dm.EndorsementTemplate),
+        ],
+        "file": [],
+        "user": [
+            (queries.users, "users", dm.User),
+            (queries.importers, "importers", dm.Importer),
+        ],
+    },
+)
+@mock.patch.dict(DATA_TYPE_XML, user_xml_parsers)
+@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, user_data_source_target)
+@mock.patch.dict(
+    DATA_TYPE_M2M,
+    {
+        "import_application": [],
+        "export_application": [],
+        "user": [],
+        "reference": [
+            (dm.TemplateCountry, web.Template, "countries"),
+            (dm.EndorsementTemplate, web.ImportApplicationType, "endorsements"),
+        ],
+    },
+)
+@mock.patch.object(oracledb, "connect")
+def test_import_template(mock_connect, dummy_dm_settings):
+    mock_connect.return_value = utils.MockConnect()
+    call_command("export_from_v1")
+    call_command("import_v1_data")
+
+    # Endorsement Templates
+
+    endorsement_templates = web.Template.objects.filter(template_type="ENDORSEMENT").order_by("pk")
+    assert endorsement_templates.count() == 3
+
+    assert list(endorsement_templates.values_list("template_content", flat=True)) == [
+        "First Endorsement",
+        "Second Endorsement",
+        "Third Endorsement",
+    ]
+
+    assert list(
+        web.ImportApplicationType.objects.get(id=1).endorsements.values_list("id", flat=True)
+    ) == [1]
+
+    assert list(
+        web.ImportApplicationType.objects.get(id=5).endorsements.values_list("id", flat=True)
+    ) == [2, 3]
+
+    assert list(
+        web.ImportApplicationType.objects.get(id=6).endorsements.values_list("id", flat=True)
+    ) == [1, 2, 3]
+
+    # Letter Templates
+
+    assert web.Template.objects.filter(template_type="LETTER_TEMPLATE").count() == 1
+    letter_template = web.Template.objects.get(template_type="LETTER_TEMPLATE")
+    assert letter_template.template_content == utils.xml_data.letter_template_cleaned
+
+    # Email Templates
+    assert web.Template.objects.filter(template_type="EMAIL_TEMPLATE").count() == 1
+    email_template = web.Template.objects.get(template_type="EMAIL_TEMPLATE")
+    assert email_template.template_content == utils.xml_data.email_template
+
+    # CFS Templates
+    assert web.Template.objects.filter(template_type="CFS_SCHEDULE").count() == 1
+    cfs_template = web.Template.objects.get(template_type="CFS_SCHEDULE")
+    assert cfs_template.template_content is None
+    assert cfs_template.paragraphs.count() == 3
+
+    assert web.Template.objects.filter(template_type="CFS_DECLARATION_TRANSLATION").count() == 1
+    cfs_dec_template = web.Template.objects.get(template_type="CFS_DECLARATION_TRANSLATION")
+    assert cfs_dec_template.template_content == "Some translated text"
+    assert list(cfs_dec_template.countries.values_list("id", flat=True)) == [2, 3]

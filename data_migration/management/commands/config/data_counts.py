@@ -1,8 +1,7 @@
 import web.models as web
+from data_migration.management.commands._types import CheckCount, CheckQuery
 from data_migration.models import queries
 from web.flow.models import ProcessTypes
-
-from .._types import CheckCount, CheckQuery
 
 CHECK_DATA_COUNTS: list[CheckCount] = [
     CheckCount(
@@ -324,5 +323,25 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         model=web.VariationRequest,
         filter_params={"exportapplication__process_type": ProcessTypes.GMP},
         bind_vars={"CA_TYPE": "GMP"},
+    ),
+    CheckQuery(
+        name="Templates",
+        query=queries.template_count,
+        model=web.Template,
+    ),
+    CheckQuery(
+        name="Template Coutries",
+        query=queries.template_country_count,
+        model=web.Template.countries.through,
+    ),
+    CheckQuery(
+        name="Template - CFS Schedule Paragraphs",
+        query=queries.cfs_paragraph_count,
+        model=web.CFSScheduleParagraph,
+    ),
+    CheckQuery(
+        name="Template - Import Application Type Endorsements",
+        query=queries.iat_endorsement_count,
+        model=web.ImportApplicationType.endorsements.through,
     ),
 ]
