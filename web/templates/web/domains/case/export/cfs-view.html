@@ -11,8 +11,8 @@
   </style>
 {% endblock %}
 
-{% block sidebar %}
-  <ul class="menu-out">
+{% block view_subsections %}
+  <ul>
     {% for schedule in schedules %}
       <li><a href="#view-schedule-{{ loop.index }}">Schedule {{ loop.index }}</a></li>
     {% endfor %}
