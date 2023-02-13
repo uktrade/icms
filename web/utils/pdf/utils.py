@@ -101,7 +101,7 @@ def get_fa_sil_licence_context(
 def get_licence_endorsements(application: "ImpOrExp") -> list[str]:
     endorsements = [
         content.split("\r\n")
-        for content in application.endorsements.all().values_list("content", flat=True)
+        for content in application.endorsements.values_list("content", flat=True)
     ]
 
     return endorsements

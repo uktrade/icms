@@ -169,6 +169,7 @@ def add_import_application_type_data():
     )
 
     # Application was never live
+    # TODO ICMSLST-1918 Remove from data if not implemented
     ImportApplicationType.objects.create(
         is_active=False,
         type="GS",
@@ -274,6 +275,7 @@ def add_import_application_type_data():
         importer_printable=False,
     )
 
+    # TODO ICMSLST-1918 Remove from data if not implemented
     ImportApplicationType.objects.create(
         is_active=False,
         type="GS",

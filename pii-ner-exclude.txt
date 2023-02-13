@@ -2045,6 +2045,7 @@ ON td.id = xtd.td_id WHERE xtd.status_control
 SELECT xtc.t_id template_id
 SELECT xtd.t_id template_id , x.* FROM impmgr.xview_template_details xtd CROSS
 SET
+<<<<<<< HEAD
 west">Are
 {{ application_field(process.commodity_code
 Section 5 Authorities</h5
@@ -2085,3 +2086,24 @@ Complete Supplementary Reporting</h3
 Report Completed By
 {{ application_field(process.supplementary_info.completed_datetime.strftime('%d-%b-%Y'
 {{ fields.field(form.no_report_reason
+=======
+Maintain Templates"
+Template Name
+View CFS Schedule
+Iron and Steel
+Open Individual Import Licence
+Expired
+Start Date
+f"import_application={ia_pk
+{{ form.media.css }
+text</th
+kwargs={'application_type_pk
+kwargs={'pk
+"Declaration Text
+the CFS Declaration
+{errors_str
+Endorsements</h4
+Click 'Edit
+application_type.endorsements.all
+
+>>>>>>> bb99340a (ICMSLST-1912 Fix ImportApplicationType Endorsement Usage)

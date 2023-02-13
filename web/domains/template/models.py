@@ -159,13 +159,3 @@ class CFSScheduleParagraph(models.Model):
         ordering = ("order",)
 
         constraints = [models.UniqueConstraint(fields=["template", "name"], name="unique_name")]
-
-
-class EndorsementUsage(models.Model):
-    application_type = models.ForeignKey(
-        "web.ImportApplicationType", on_delete=models.PROTECT, related_name="+"
-    )
-    linked_endorsements = models.ManyToManyField(Template)
-
-    class Meta:
-        ordering = ("application_type__type",)

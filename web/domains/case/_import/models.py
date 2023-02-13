@@ -109,37 +109,22 @@ class ImportApplicationType(models.Model):
         CommodityGroup, on_delete=models.PROTECT, blank=True, null=True
     )
 
-    def __str__(self):
-        mapped_types = {
-            self.Types.DEROGATION: ProcessTypes.DEROGATIONS,
-            self.Types.IRON_STEEL: ProcessTypes.IRON_STEEL,
-            self.Types.OPT: ProcessTypes.OPT,
-            self.Types.SANCTION_ADHOC: ProcessTypes.SANCTIONS,
-            self.Types.SPS: ProcessTypes.SPS,
-            self.Types.TEXTILES: ProcessTypes.TEXTILES,
-            self.Types.WOOD_QUOTA: ProcessTypes.WOOD,
-        }
+    def __str__(self) -> str:
+        # TODO ICMSLST-1918 sub_type should be None if not in SubTypes
+        if self.sub_type in self.SubTypes.values:
+            type_label = self.Types(self.type).label
+            sub_type_label = self.SubTypes(self.sub_type).label
+            return f"{type_label} ({sub_type_label})"
 
-        mapped_types_with_subtypes = {
-            self.Types.FIREARMS: {
-                self.SubTypes.OIL: ProcessTypes.FA_OIL,
-                self.SubTypes.DFL: ProcessTypes.FA_DFL,
-                self.SubTypes.SIL: ProcessTypes.FA_SIL,
-            }
-        }
+        # TODO ICMSLST-1918 type should be None if not in Types
+        if self.type in self.Types.values:
+            return self.Types(self.type).label
 
-        if self.type in mapped_types.keys():
-            process_type = mapped_types[self.type]
-
-        elif self.type in mapped_types_with_subtypes.keys():
-            process_type = mapped_types_with_subtypes[self.type][self.sub_type]
-
-        else:
-            raise NotImplementedError(f"Can't get label for {self.type}, {self.sub_type}")
-
-        return ProcessTypes(process_type).label
+        return f"{self.type} ({self.sub_type})"
 
     class Meta:
+        # TODO ICMSLST-1918 ordering strange as type codes and their labels don't always match alphabetically
+        # Store a label / name field on the model?
         ordering = ("type", "sub_type")
 
 

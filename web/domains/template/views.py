@@ -3,6 +3,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 
+from web.domains.case._import.models import ImportApplicationType
 from web.views import ModelCreateView, ModelFilterView
 from web.views.actions import Archive, EditTemplate, Unarchive
 
@@ -18,7 +19,7 @@ from .forms import (
     LetterTemplateForm,
     TemplatesFilter,
 )
-from .models import CFSScheduleParagraph, EndorsementUsage, Template
+from .models import CFSScheduleParagraph, Template
 
 
 class UnknownTemplateTypeException(Exception):
@@ -165,34 +166,41 @@ class EndorsementCreateView(ModelCreateView):
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def list_endorsement_usages(request):
-    usages = EndorsementUsage.objects.all()
-    return render(request, "web/domains/template/list-endorsement-usages.html", {"objects": usages})
+    import_application_types = ImportApplicationType.objects.prefetch_related(
+        "endorsements"
+    ).order_by("type", "sub_type")
+
+    return render(
+        request,
+        "web/domains/template/list-endorsement-usages.html",
+        {"objects": import_application_types},
+    )
 
 
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def edit_endorsement_usage(request, pk):
-    usage = get_object_or_404(EndorsementUsage, pk=pk)
+    application_type = get_object_or_404(ImportApplicationType, pk=pk)
     if request.method == "POST":
-        form = EndorsementUsageForm(request.POST)
+        form = EndorsementUsageForm(request.POST, application_type_pk=pk)
         if form.is_valid():
-            linked_endorsement = form.cleaned_data["linked_endorsement"]
-            usage.linked_endorsements.add(linked_endorsement)
+            endorsement = form.cleaned_data["endorsement"]
+            application_type.endorsements.add(endorsement)
     else:
-        form = EndorsementUsageForm()
+        form = EndorsementUsageForm(application_type_pk=pk)
 
-    context = {"object": usage, "form": form}
+    context = {"object": application_type, "form": form}
     return render(request, "web/domains/template/edit-endorsement-usage.html", context)
 
 
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
-def archive_endorsement_usage_link(request, usage_pk, link_pk):
-    usage = get_object_or_404(EndorsementUsage, pk=usage_pk)
-    endorsement = get_object_or_404(Template, pk=link_pk)
-    usage.linked_endorsements.remove(endorsement)
+def remove_endorsement_usage_link(request, application_type_pk, link_pk):
+    application_type = get_object_or_404(ImportApplicationType, pk=application_type_pk)
+    endorsement = get_object_or_404(Template, pk=link_pk, template_type=Template.ENDORSEMENT)
+    application_type.endorsements.remove(endorsement)
 
-    return redirect(reverse("template-endorsement-usage-edit", kwargs={"pk": usage.pk}))
+    return redirect(reverse("template-endorsement-usage-edit", kwargs={"pk": application_type_pk}))
 
 
 @login_required
