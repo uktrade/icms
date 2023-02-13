@@ -81,15 +81,20 @@ class TemplatesFilter(FilterSet):
 
 
 class EndorsementUsageForm(forms.Form):
-    linked_endorsement = forms.ModelChoiceField(
-        label="",
-        help_text="""
-            Search an endorsement to add. Endorsements returned are matched against
-            name and content.
-        """,
-        queryset=Template.objects.filter(template_type=Template.ENDORSEMENT),
-        widget=EndorsementTemplateWidget,
-    )
+    def __init__(self, *args, application_type_pk=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["endorsement"] = forms.ModelChoiceField(
+            label="",
+            help_text="""
+                Search an endorsement to add. Endorsements returned are matched against
+                name and content.
+            """,
+            queryset=Template.objects.filter(template_type=Template.ENDORSEMENT).exclude(
+                endorsement_application_types=application_type_pk
+            ),
+            widget=EndorsementTemplateWidget,
+        )
 
 
 class CFSDeclarationTranslationForm(forms.ModelForm):

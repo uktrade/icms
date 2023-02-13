@@ -3,7 +3,6 @@ from django.urls import path
 from .views import (
     EndorsementCreateView,
     TemplateListView,
-    archive_endorsement_usage_link,
     create_cfs_declaration_translation,
     create_cfs_schedule_translation,
     edit_cfs_declaration_translation,
@@ -12,6 +11,7 @@ from .views import (
     edit_endorsement_usage,
     edit_template,
     list_endorsement_usages,
+    remove_endorsement_usage_link,
     view_template_fwd,
 )
 
@@ -55,8 +55,8 @@ urlpatterns = [
         name="template-endorsement-usage-edit",
     ),
     path(
-        "endorsement/usages/<int:usage_pk>link/<int:link_pk>/archive/",
-        archive_endorsement_usage_link,
-        name="template-endorsement-usage-link-archive",
+        "endorsement/usages/<int:application_type_pk>link/<int:link_pk>/remove/",
+        remove_endorsement_usage_link,
+        name="template-endorsement-usage-link-remove",
     ),
 ]

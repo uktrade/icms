@@ -26,15 +26,12 @@
 {% block main_content %}
 <div class="info-box info-box-info">
   <h4>
-    {{ object.application_type.type }}
-    {% if object.application_type.sub_type %}
-      - {{ object.application_type.sub_type }}
-    {% endif %}
+    {{ object }}
   </h4>
   The endorsements below will be automatically added to all cases of this application type.
 </div>
 
-{% with endorsements = object.linked_endorsements.all() %}
+{% with endorsements = object.endorsements.all() %}
 {% if not endorsements %}
 <div class="info-box info-box-info">
   There are no endorsements attached.
@@ -50,7 +47,7 @@
     </tr>
   </thead>
   <tboby>
-  {% for endorsement in object.linked_endorsements.all() %}
+  {% for endorsement in object.endorsements.all() %}
   <tr>
     <td>{{ endorsement.template_name }}</td>
     <td>
@@ -64,10 +61,10 @@
     <td>
       <form
         method="post"
-        action="{{ icms_url('template-endorsement-usage-link-archive', kwargs={'usage_pk': object.pk, 'link_pk': endorsement.pk}) }}"
+        action="{{ icms_url('template-endorsement-usage-link-remove', kwargs={'application_type_pk': object.pk, 'link_pk': endorsement.pk}) }}"
         class="form-inline">
         {{ csrf_input }}
-        <button type="submit" class="button small-button icon-bin">Archive</button>
+        <button type="submit" class="button small-button icon-bin">Remove</button>
       </form>
     </td>
   </tr>

@@ -27,25 +27,23 @@
   <thead>
     <tr>
       <th scope="col">Application Type</th>
-      <th scope="col">Application Sub-type</th>
       <th scope="col">Linked Endorsements</th>
       <th scope="col">Actions</th>
     </tr>
   </thead>
   <tboby>
-    {% for usage in objects %}
+    {% for application_type in objects %}
       <tr>
-        <td>{{ usage.application_type.type }}</td>
-        <td>{{ usage.application_type.sub_type }}</td>
+        <td>{{ application_type }}</td>
         <td>
-          {% for endorsement in usage.linked_endorsements.all() %}
+          {% for endorsement in application_type.endorsements.all() %}
             {{ endorsement.template_name }}
             {% if not loop.last %},{% endif %}
           {% endfor %}
         </td>
         <td>
           <a
-            href="{{ icms_url("template-endorsement-usage-edit", kwargs={"pk": usage.pk}) }}"
+            href="{{ icms_url('template-endorsement-usage-edit', kwargs={'pk': application_type.pk}) }}"
             class="button small-button icon-pencil">
             Edit
           </a>
