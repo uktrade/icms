@@ -16,7 +16,7 @@ from web.domains.case._import.fa.forms import (
 )
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
-from web.domains.case.services import case_progress, document_pack
+from web.domains.case.services import case_progress, document_pack, response_preparation
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     check_application_permission,
@@ -590,21 +590,13 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
 
                 submit_application(application, request, task)
 
+                response_preparation.add_endorsements_from_application_type(application)
+
                 # Only create if needed
                 # This view gets called when an applicant submits changes
                 _, created = models.SILSupplementaryInfo.objects.get_or_create(
                     import_application=application
                 )
-
-                # Only add the endorsement template once too.
-                if created:
-                    # TODO: replace with Endorsement Usage Template (ICMSLST-638)
-                    endorsement = Template.objects.get(
-                        is_active=True,
-                        template_type=Template.ENDORSEMENT,
-                        template_name="Firearms Sanctions COO & COC (AC & AY)",
-                    )
-                    application.endorsements.create(content=endorsement.template_content)
 
                 return redirect_after_submit(application, request)
 

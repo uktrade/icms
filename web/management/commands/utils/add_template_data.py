@@ -238,6 +238,26 @@ I, the undersigned, do hereby solemnly verify contents of my above affidavit are
 def add_endorsement_templates():
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
+            datetime.strptime("22-JAN-2023 13:00:00", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="Test Endorsement 1",
+        template_type="ENDORSEMENT",
+        application_domain="IMA",
+        template_content="Test Endorsement Number 1",
+    )
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            datetime.strptime("22-JAN-2023 13:00:00", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="Test Endorsement 2",
+        template_type="ENDORSEMENT",
+        application_domain="IMA",
+        template_content="Test Endorsement Number 2",
+    )
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("22-FEB-2019 13:04:04", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
