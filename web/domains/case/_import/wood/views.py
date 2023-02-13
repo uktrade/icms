@@ -10,7 +10,7 @@ from storages.backends.s3boto3 import S3Boto3StorageFile
 
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
-from web.domains.case.services import case_progress
+from web.domains.case.services import case_progress, response_preparation
 from web.domains.case.utils import (
     check_application_permission,
     get_application_form,
@@ -312,6 +312,11 @@ def submit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int)
 
             if form.is_valid() and not errors.has_errors():
                 submit_application(application, request, task)
+
+                # TODO ICMSLST-1918 Restrict endorsements by application type
+                # wood application type in V1 has endorsement flag as False
+                # but endorsements can be added to application type and application
+                response_preparation.add_endorsements_from_application_type(application)
 
                 return redirect_after_submit(application, request)
 

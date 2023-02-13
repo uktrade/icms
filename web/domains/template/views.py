@@ -166,9 +166,7 @@ class EndorsementCreateView(ModelCreateView):
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def list_endorsement_usages(request):
-    import_application_types = ImportApplicationType.objects.prefetch_related(
-        "endorsements"
-    ).order_by("type", "sub_type")
+    import_application_types = ImportApplicationType.objects.prefetch_related("endorsements")
 
     return render(
         request,
