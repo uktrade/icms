@@ -130,63 +130,63 @@
       </table>
     {% endblock %}
 
-    {# This should probably be used when the ImportApplicationType data has been checked #}
-    {# {% if endorsements_flag %} #}
-    {% block endorsements_section %}
-      <h4>Endorsement</h4>
-      <table class="setoutList">
-        <thead>
-        <tr>
-          <th>Endorsement</th>
-          {% if not readonly_view and not variation_refused %}<th>Actions</th>{% endif %}
-        </tr>
-        </thead>
-        <tbody>
-        {% for endorsement in process.endorsements.all() %}
+    {% if endorsements_flag %}
+      {% block endorsements_section %}
+        <h4>Endorsement</h4>
+        <table class="setoutList">
+          <thead>
           <tr>
-            <td>
-              {{ endorsement.content|nl2br }}
-            </td>
-            {% if not readonly_view and not variation_refused %}
-              <td>
-                <a
-                  class="link-button button icon-pencil" data-input_action="edit"
-                  href="{{ icms_url('import:edit-endorsement', kwargs={'application_pk': process.pk, 'endorsement_pk': endorsement.pk}) }}"
-                >Edit</a>
-                <form
-                  method="post"
-                  action="{{ icms_url('import:delete-endorsement', kwargs={'application_pk': process.pk, 'endorsement_pk': endorsement.pk}) }}"
-                  class="form-inline">
-                  {{ csrf_input }}
-                  <button
-                    type="submit"
-                    class="link-button icon-bin button tooltipstered"
-                    aria-label="Delete"
-                    data-confirm="Are you sure you want to delete this record?">Delete
-                  </button>
-                </form>
-              </td>
-            {% endif %}
+            <th>Endorsement</th>
+            {% if not readonly_view and not variation_refused %}<th>Actions</th>{% endif %}
           </tr>
-        {% endfor %}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+          {% for endorsement in process.endorsements.all() %}
+            <tr>
+              <td>
+                {{ endorsement.content|nl2br }}
+              </td>
+              {% if not readonly_view and not variation_refused %}
+                <td>
+                  <a
+                    class="link-button button icon-pencil" data-input_action="edit"
+                    href="{{ icms_url('import:edit-endorsement', kwargs={'application_pk': process.pk, 'endorsement_pk': endorsement.pk}) }}"
+                  >Edit</a>
+                  <form
+                    method="post"
+                    action="{{ icms_url('import:delete-endorsement', kwargs={'application_pk': process.pk, 'endorsement_pk': endorsement.pk}) }}"
+                    class="form-inline">
+                    {{ csrf_input }}
+                    <button
+                      type="submit"
+                      class="link-button icon-bin button tooltipstered"
+                      aria-label="Delete"
+                      data-confirm="Are you sure you want to delete this record?">Delete
+                    </button>
+                  </form>
+                </td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
 
-      {% if not readonly_view and not variation_refused %}
-        <div class="list-actions">
-          <a
-            href="{{ icms_url('import:add-endorsement', kwargs={'application_pk': process.pk}) }}"
-            class="button small-button icon-plus">
-            Add Endorsement
-          </a>
-          <a
-            href="{{ icms_url('import:add-custom-endorsement', kwargs={'application_pk': process.pk}) }}"
-            class="button small-button icon-plus">
-            Add Custom Endorsement
-          </a>
-        </div>
-      {% endif %}
-    {% endblock %}
+        {% if not readonly_view and not variation_refused %}
+          <div class="list-actions">
+            <a
+              href="{{ icms_url('import:add-endorsement', kwargs={'application_pk': process.pk}) }}"
+              class="button small-button icon-plus">
+              Add Endorsement
+            </a>
+            <a
+              href="{{ icms_url('import:add-custom-endorsement', kwargs={'application_pk': process.pk}) }}"
+              class="button small-button icon-plus">
+              Add Custom Endorsement
+            </a>
+          </div>
+        {% endif %}
+      {% endblock %}
+    {% endif %}
 
   {% elif readonly_view and process.decision == process.REFUSE %}
     {{ application_field("Refuse Application", "Decision") }}
