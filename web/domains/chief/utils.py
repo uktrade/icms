@@ -4,6 +4,8 @@ from django.utils import timezone
 from web.domains.case._import.models import ImportApplication, LiteHMRCChiefRequest
 from web.domains.case.models import VariationRequest
 from web.domains.case.services import case_progress, document_pack
+from web.domains.case.shared import ImpExpStatus
+from web.domains.case.utils import end_process_task
 from web.flow.models import Task
 
 from .types import ResponseError
@@ -25,6 +27,11 @@ def seen_nonce(access_id: str, nonce: str, timestamp: str) -> bool:
 def chief_licence_reply_approve_licence(application: ImportApplication) -> None:
     """Approve a licence that has been approved in CHIEF."""
 
+    if application.status == ImpExpStatus.REVOKED:
+        task = case_progress.get_expected_task(application, Task.TaskType.CHIEF_REVOKE_WAIT)
+        end_process_task(task)
+        return
+
     _finish_chief_wait_task(application)
 
     if application.status == ImportApplication.Statuses.VARIATION_REQUESTED:
@@ -41,7 +48,11 @@ def chief_licence_reply_approve_licence(application: ImportApplication) -> None:
 def chief_licence_reply_reject_licence(application: ImportApplication) -> None:
     """Reject a licence that has been rejected in CHIEF."""
 
-    task = _finish_chief_wait_task(application)
+    if application.status == ImpExpStatus.REVOKED:
+        task = case_progress.get_expected_task(application, Task.TaskType.CHIEF_REVOKE_WAIT)
+        end_process_task(task)
+    else:
+        task = _finish_chief_wait_task(application)
 
     Task.objects.create(process=application, task_type=Task.TaskType.CHIEF_ERROR, previous=task)
 
@@ -49,10 +60,7 @@ def chief_licence_reply_reject_licence(application: ImportApplication) -> None:
 def _finish_chief_wait_task(application: ImportApplication) -> Task:
     case_progress.application_is_with_chief(application)
     task = case_progress.get_expected_task(application, Task.TaskType.CHIEF_WAIT)
-
-    task.is_active = False
-    task.finished = timezone.now()
-    task.save()
+    end_process_task(task)
 
     return task
 

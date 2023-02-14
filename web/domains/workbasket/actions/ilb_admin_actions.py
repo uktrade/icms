@@ -88,12 +88,14 @@ class ViewApplicationCaseAction(Action):
             self.section_label = "View Case"
 
         # App being revoked
-        elif (
-            self.status == ImpExpStatus.REVOKED
-            and Task.TaskType.CHIEF_REVOKE_WAIT in self.active_tasks
-        ):
-            show_link = True
-            self.section_label = "CHIEF Wait for Revocation"
+        elif self.status == ImpExpStatus.REVOKED:
+            if Task.TaskType.CHIEF_REVOKE_WAIT in self.active_tasks:
+                show_link = True
+                self.section_label = "CHIEF Wait for Revocation"
+
+            elif Task.TaskType.CHIEF_ERROR in self.active_tasks:
+                show_link = True
+                self.section_label = "CHIEF Error"
 
         return show_link
 
@@ -411,6 +413,7 @@ class ChiefShowLicenceDetailsAction(Action):
         correct_status = self.status in [
             ImpExpStatus.PROCESSING,
             ImpExpStatus.VARIATION_REQUESTED,
+            ImpExpStatus.REVOKED,
         ]
         correct_task = Task.TaskType.CHIEF_ERROR in self.active_tasks
 

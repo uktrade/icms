@@ -2135,3 +2135,19 @@ supporting_docs_upload_flag
 declaration_template_mnem , default_commodity_group_code default_commodity_group_id
 impmgr.import_application_types iat
 xcgu.country_id
+"Approve
+"Reject
+Mark
+Success / Error task
+Delete
+f"create_case_document_pack Task
+ICMSLST-1907
+on_chord_error.s(application_pk=application_id
+{application_pk
+print(request
+print(application_pk
+API
+Value
+Unique
+"Payload
+REPLACE & CANCEL

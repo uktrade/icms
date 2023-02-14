@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Any, Union
 from urllib import parse
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -34,6 +33,7 @@ from web.domains.case.forms_search import (
 from web.domains.case.models import VariationRequest
 from web.domains.case.services import case_progress, document_pack, reference
 from web.domains.case.shared import ImpExpStatus
+from web.domains.chief import client
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
@@ -376,13 +376,7 @@ class RevokeCaseView(SearchActionFormBase):
 
     # ApplicationTaskMixin Config
     current_status = [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
-    current_task_type = None
-
-    # Conditional next status and task
-    # Changes status when submitting revoke form
     next_status = ImpExpStatus.REVOKED
-    # Changes task when CHIEF is required
-    next_task_type = Task.TaskType.CHIEF_REVOKE_WAIT
 
     # FormView config
     form_class = RevokeApplicationForm
@@ -444,10 +438,6 @@ class RevokeCaseView(SearchActionFormBase):
 
         email_applicants = form.cleaned_data["send_email"]
         reason = form.cleaned_data["reason"]
-
-        if email_applicants:
-            tasks.send_revoke_email(self.application.pk)
-
         document_pack.pack_active_revoke(self.application, reason)
 
         self.application.update_order_datetime()
@@ -455,10 +445,10 @@ class RevokeCaseView(SearchActionFormBase):
 
         is_import = self.application.is_import_application()
         if is_import and self.application.application_type.chief_flag:
-            self.update_application_tasks()
+            client.send_application_to_chief(self.application, self.task, revoke_licence=True)
 
-            if settings.SEND_LICENCE_TO_CHIEF:
-                tasks.revoke_licence(self.application.pk)
+        if email_applicants:
+            tasks.send_revoke_email(self.application.pk)
 
         return super().form_valid(form)
 

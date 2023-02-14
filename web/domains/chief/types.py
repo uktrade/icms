@@ -64,16 +64,30 @@ class OrganisationData(BaseModel):
         return v
 
 
-class LicenceDataBase(BaseModel):
+class LicenceDataPayloadBase(BaseModel):
+    """Base class for all licence data payload records."""
+
     type: Literal["OIL", "DFL", "SIL", "SAN"]
     action: Literal["insert", "cancel", "replace"]
 
     id: str  # UUID for this licence payload
-    reference: str  # Case reference
-    licence_reference: str
+    reference: str  # Case reference (Unique in licenceData file - Used as transactionRef field)
+    licence_reference: str  # Used as chief licenceRef field
 
     start_date: datetime.date
     end_date: datetime.date
+
+
+class CancelLicencePayload(LicenceDataPayloadBase):
+    """Class used to send a cancel record to HMRC"""
+
+    action: Literal["cancel"]
+
+
+class InsertAndReplaceBase(LicenceDataPayloadBase):
+    """Class used to send an insert or replace record to HMRC"""
+
+    action: Literal["insert", "replace"]
 
     organisation: OrganisationData
 
@@ -89,7 +103,7 @@ class FirearmGoodsData(BaseModel):
     unit: QuantityCodeEnum | None = None
 
 
-class FirearmLicenceData(LicenceDataBase):
+class FirearmLicenceData(InsertAndReplaceBase):
     type: Literal["OIL", "DFL", "SIL"]
     goods: list[FirearmGoodsData]
 
@@ -102,15 +116,20 @@ class SanctionGoodsData(BaseModel):
     unit: QuantityCodeEnum
 
 
-class SanctionsLicenceData(LicenceDataBase):
+class SanctionsLicenceData(InsertAndReplaceBase):
     type: Literal["SAN"]
     goods: list[SanctionGoodsData]
 
 
-class CreateLicenceData(BaseModel):
-    licence: FirearmLicenceData | SanctionsLicenceData
+class LicenceDataPayload(BaseModel):
+    """Payload that gets sent to ICMS-HRMC."""
+
+    licence: FirearmLicenceData | SanctionsLicenceData | CancelLicencePayload
 
 
+#
+# CHIEF Response types
+#
 class AcceptedLicence(BaseModel):
     id: str
 

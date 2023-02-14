@@ -19,7 +19,6 @@ from ratelimit.decorators import ratelimit
 
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
-from web.domains.case.utils import end_process_task
 from web.domains.chief import types as chief_types
 from web.domains.chief import utils as chief_utils
 from web.domains.country.models import CountryGroup
@@ -539,13 +538,6 @@ def bypass_chief(
             application,
             [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED, ImpExpStatus.REVOKED],
         )
-
-        # TODO: ICMSLST-1904 Revisit when sending licence payload to CHIEF.
-        if application.status == ImpExpStatus.REVOKED:
-            task = case_progress.get_expected_task(application, Task.TaskType.CHIEF_REVOKE_WAIT)
-            end_process_task(task, request.user)
-
-            return redirect(reverse("workbasket"))
 
         # Get the latest fake LiteHMRCChiefRequest record
         chief_req = LiteHMRCChiefRequest.objects.latest("pk")

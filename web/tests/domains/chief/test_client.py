@@ -7,7 +7,7 @@ from django.utils import timezone
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import client
-from web.domains.chief.types import CreateLicenceData
+from web.domains.chief.types import LicenceDataPayload
 from web.models import ImportApplicationLicence, LiteHMRCChiefRequest, Task
 
 
@@ -31,7 +31,7 @@ class TestChiefClient:
         requests_mock.post(url, headers=mock_response_headers, text="OK")
         # Finished mocking the API response.
 
-        data = mock.create_autospec(spec=CreateLicenceData, instance=True)
+        data = mock.create_autospec(spec=LicenceDataPayload, instance=True)
         data.json.return_value = '{"foo": "bar"}'
 
         with mock.patch("mohawk.sender.Sender.accept_response"):
@@ -185,3 +185,7 @@ class TestChiefClient:
         }
 
         case_progress.check_expected_task(app, Task.TaskType.CHIEF_WAIT)
+
+    # TODO: ICMSLST-1909 Add test to send a revoke licence payload to CHIEF
+    def test_send_application_to_chief_revoke_licence(self):
+        ...
