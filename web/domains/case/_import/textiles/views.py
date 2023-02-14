@@ -9,8 +9,9 @@ from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
-from web.domains.case.services import case_progress, response_preparation
+from web.domains.case.services import case_progress
 from web.domains.case.utils import (
+    add_endorsements_from_application_type,
     check_application_permission,
     get_application_form,
     redirect_after_submit,
@@ -118,7 +119,7 @@ def submit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -
             form = SubmitForm(data=request.POST)
 
             if form.is_valid() and not errors.has_errors():
-                response_preparation.add_endorsements_from_application_type(application)
+                add_endorsements_from_application_type(application)
                 application.category_licence_description = (
                     application.category_commodity_group.group_description
                 )

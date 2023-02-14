@@ -9,8 +9,9 @@ from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
-from web.domains.case.services import case_progress, response_preparation
+from web.domains.case.services import case_progress
 from web.domains.case.utils import (
+    add_endorsements_from_application_type,
     check_application_permission,
     get_application_form,
     redirect_after_submit,
@@ -187,7 +188,7 @@ def submit_derogations(request: AuthenticatedHttpRequest, *, application_pk: int
 
             if form.is_valid() and not errors.has_errors():
                 submit_application(application, request, task)
-                response_preparation.add_endorsements_from_application_type(application)
+                add_endorsements_from_application_type(application)
 
                 return redirect_after_submit(application, request)
 
