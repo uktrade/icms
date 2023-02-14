@@ -6,7 +6,6 @@ from web.domains.case.tasks import (  # NOQA
     create_document_pack_on_success,
     create_export_application_document,
     create_import_application_document,
-    revoke_licence,
     send_revoke_email,
 )
 from web.notify.email import send_email  # NOQA

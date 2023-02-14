@@ -27,7 +27,7 @@ from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.sentry import capture_exception
 
-from . import types, utils
+from . import client, types, utils
 
 HAWK_ALGO = "sha256"
 HAWK_RESPONSE_HEADER = "Server-Authorization"
@@ -166,13 +166,14 @@ class ResendLicenceToChiefView(
     LoginRequiredMixin,
     View,
 ):
-    """View to resend a Licence to CHIEF.
-
-    This is achieved by regenerating the licence document pack.
-    """
+    """View to resend a Licence to CHIEF."""
 
     # ApplicationTaskMixin
-    current_status = [ImpExpStatus.VARIATION_REQUESTED, ImpExpStatus.PROCESSING]
+    current_status = [
+        ImpExpStatus.VARIATION_REQUESTED,
+        ImpExpStatus.PROCESSING,
+        ImpExpStatus.REVOKED,
+    ]
     current_task_type = Task.TaskType.CHIEF_ERROR
     next_task_type = Task.TaskType.DOCUMENT_SIGNING
 
@@ -188,7 +189,12 @@ class ResendLicenceToChiefView(
         # Update the current task so `create_case_document_pack` will work correctly
         self.update_application_tasks()
 
-        create_case_document_pack(self.application, self.request.user)
+        if self.application.status == ImpExpStatus.REVOKED:
+            client.send_application_to_chief(self.application, self.task, revoke_licence=True)
+        else:
+            # Regenerating the licence document pack will send the application to CHIEF
+            # after the updated documents have been created.
+            create_case_document_pack(self.application, self.request.user)
 
         messages.success(
             request,
@@ -207,7 +213,8 @@ class _BaseTemplateView(PermissionRequiredMixin, TemplateView):
             tasks__task_type=Task.TaskType.CHIEF_ERROR, tasks__is_active=True
         )
         pending_licences = ImportApplication.objects.filter(
-            tasks__task_type=Task.TaskType.CHIEF_WAIT, tasks__is_active=True
+            tasks__task_type__in=[Task.TaskType.CHIEF_WAIT, Task.TaskType.CHIEF_REVOKE_WAIT],
+            tasks__is_active=True,
         )
 
         context = {
@@ -279,10 +286,11 @@ class CheckChiefProgressView(
         elif Task.TaskType.CHIEF_WAIT in active_tasks:
             msg = "Awaiting Response - Licence sent to CHIEF, we are awaiting a response"
 
-        # TODO: ICMSLST-1904 Revisit when sending licence payload to CHIEF.
         elif self.application.status == ImpExpStatus.REVOKED:
             if Task.TaskType.CHIEF_REVOKE_WAIT in active_tasks:
                 msg = "Awaiting Response - Licence sent to CHIEF, we are awaiting a response"
+            elif Task.TaskType.CHIEF_ERROR in active_tasks:
+                msg = "Rejected - A rejected response has been received from CHIEF."
             else:
                 msg = "Accepted - An accepted response has been received from CHIEF."
                 reload_workbasket = True

@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Any, Literal, Protocol
 
 from web.domains.case.services import document_pack
+from web.flow.models import ProcessTypes
 from web.utils.commodity import annotate_commodity_unit
 
 from . import types
@@ -28,7 +29,8 @@ if TYPE_CHECKING:
         | SanctionsAndAdhocApplication
     )
 
-CHIEF_ACTION = Literal["insert", "replace"]
+CHIEF_ACTION = Literal["insert", "replace", "cancel"]
+CHIEF_TYPES = Literal["OIL", "DFL", "SIL", "SAN"]
 
 
 class ChiefSerializer(Protocol):
@@ -37,15 +39,34 @@ class ChiefSerializer(Protocol):
     def __call__(
         self,
         application: "CHIEF_APPLICATIONS",
-        action: Literal["insert", "replace"],
+        action: CHIEF_ACTION,
         chief_id: str,
-    ) -> types.CreateLicenceData:
+    ) -> types.LicenceDataPayload:
         ...
+
+
+def cancel_licence_serializer(
+    application: "CHIEF_APPLICATIONS", action: CHIEF_ACTION, chief_id: str
+) -> types.LicenceDataPayload:
+    licence = document_pack.pack_revoked_get(application)
+    licence_ref = document_pack.doc_ref_licence_get(licence)
+
+    licence_data = types.CancelLicencePayload(
+        type=_get_type(application),
+        action=action,
+        id=chief_id,
+        reference=application.reference,
+        licence_reference=licence_ref.reference,
+        start_date=licence.licence_start_date,
+        end_date=licence.licence_end_date,
+    )
+
+    return types.LicenceDataPayload(licence=licence_data)
 
 
 def sanction_serializer(
     application: "SanctionsAndAdhocApplication", action: CHIEF_ACTION, chief_id: str
-) -> types.CreateLicenceData:
+) -> types.LicenceDataPayload:
     organisation = _get_organisation(application)
     licence = document_pack.pack_draft_get(application)
     licence_ref = document_pack.doc_ref_licence_get(licence)
@@ -67,7 +88,7 @@ def sanction_serializer(
     country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
 
     licence_data = types.SanctionsLicenceData(
-        type="SAN",
+        type=_get_type(application),
         action=action,
         id=chief_id,
         reference=application.reference,
@@ -80,12 +101,12 @@ def sanction_serializer(
         **country_kwargs,
     )
 
-    return types.CreateLicenceData(licence=licence_data)
+    return types.LicenceDataPayload(licence=licence_data)
 
 
 def fa_dfl_serializer(
     application: "DFLApplication", action: CHIEF_ACTION, chief_id: str
-) -> types.CreateLicenceData:
+) -> types.LicenceDataPayload:
     """Return FA DFL licence data to send to chief."""
 
     organisation = _get_organisation(application)
@@ -98,7 +119,7 @@ def fa_dfl_serializer(
     country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
 
     licence_data = types.FirearmLicenceData(
-        type="DFL",
+        type=_get_type(application),
         action=action,
         id=chief_id,
         reference=application.reference,
@@ -111,12 +132,12 @@ def fa_dfl_serializer(
         **country_kwargs,
     )
 
-    return types.CreateLicenceData(licence=licence_data)
+    return types.LicenceDataPayload(licence=licence_data)
 
 
 def fa_oil_serializer(
     application: "OpenIndividualLicenceApplication", action: CHIEF_ACTION, chief_id: str
-) -> types.CreateLicenceData:
+) -> types.LicenceDataPayload:
     """Return FA OIL licence data to send to chief."""
 
     organisation = _get_organisation(application)
@@ -127,7 +148,7 @@ def fa_oil_serializer(
     restrictions = _get_restrictions(application)
 
     licence_data = types.FirearmLicenceData(
-        type="OIL",
+        type=_get_type(application),
         action=action,
         id=chief_id,
         reference=application.reference,
@@ -140,12 +161,12 @@ def fa_oil_serializer(
         goods=[types.FirearmGoodsData(description=application.goods_description())],
     )
 
-    return types.CreateLicenceData(licence=licence_data)
+    return types.LicenceDataPayload(licence=licence_data)
 
 
 def fa_sil_serializer(
     application: "SILApplication", action: CHIEF_ACTION, chief_id: str
-) -> types.CreateLicenceData:
+) -> types.LicenceDataPayload:
     organisation = _get_organisation(application)
     doc_pack = document_pack.pack_draft_get(application)
 
@@ -181,7 +202,7 @@ def fa_sil_serializer(
     country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
 
     licence_data = types.FirearmLicenceData(
-        type="SIL",
+        type=_get_type(application),
         action=action,
         id=chief_id,
         reference=application.reference,
@@ -194,7 +215,7 @@ def fa_sil_serializer(
         **country_kwargs,
     )
 
-    return types.CreateLicenceData(licence=licence_data)
+    return types.LicenceDataPayload(licence=licence_data)
 
 
 def _get_section_goods(goods_qs, section):
@@ -258,8 +279,18 @@ def _get_section_58_obsolete_goods(goods_qs: "QuerySet[SILGoodsSection582Obsolet
     return goods
 
 
-def _get_fa_sil_description(goods_description: str, section: str) -> str:
-    return f"{goods_description} to which {section} of the Firearms Act 1968, as amended, applies."
+def _get_type(application: "CHIEF_APPLICATIONS") -> CHIEF_TYPES:
+    match application.process_type:
+        case ProcessTypes.FA_OIL:
+            return "OIL"
+        case ProcessTypes.FA_DFL:
+            return "DFL"
+        case ProcessTypes.FA_SIL:
+            return "SIL"
+        case ProcessTypes.SANCTIONS:
+            return "SAN"
+        case _:
+            raise ValueError(f"Unknown process type: {application.process_type}")
 
 
 def _get_organisation(application: "ImportApplication") -> types.OrganisationData:
