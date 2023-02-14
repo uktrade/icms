@@ -1344,6 +1344,7 @@ ia_query_result = {
             ("is_active",),
             ("type",),
             ("sub_type",),
+            ("name",),
             ("licence_type_code",),
             ("sigl_flag",),
             ("chief_flag",),
@@ -1375,6 +1376,7 @@ ia_query_result = {
                 0,  # is_active
                 "TEX",  # type
                 "QUOTA",  # sub_type
+                "Textiles (Quota)",  # name
                 "QUOTA",  # licence_type_code
                 "true",  # sigl_flag
                 "true",  # chief_flag
@@ -1405,6 +1407,7 @@ ia_query_result = {
                 0,  # is_active
                 "OPT",  # type
                 "QUOTA",  # sub_type
+                "Outward Processing Trade",  # name
                 "OPT",  # licence_type_code
                 "true",  # sigl_flag
                 "false",  # chief_flag
@@ -1435,6 +1438,7 @@ ia_query_result = {
                 0,  # is_active
                 "SAN",  # type
                 "SAN1",  # sub_type
+                "Sanctions and Adhoc Licence Application",  # name
                 "SANCTIONS",  # licence_type_code
                 "false",  # sigl_flag
                 "true",  # chief_flag
@@ -1465,6 +1469,7 @@ ia_query_result = {
                 1,  # is_active
                 "FA",  # type
                 "OIL",  # sub_type
+                "Firearms and Ammunition (Open Individual Import Licence)",  # name
                 "FIREARMS",  # licence_type_code
                 "false",  # sigl_flag
                 "true",  # chief_flag
@@ -1494,7 +1499,8 @@ ia_query_result = {
                 6,  # id
                 1,  # is_active
                 "FA",  # type
-                "SIL",  # sub_type
+                "SIL",  # supb_type
+                "Firearms and Ammunition (Specific Individual Import Licence)",  # name
                 "FIREARMS",  # licence_type_code
                 "false",  # sigl_flag
                 "true",  # chief_flag
@@ -1525,6 +1531,7 @@ ia_query_result = {
                 1,  # is_active
                 "WD",  # type
                 "QUOTA",  # sub_type
+                "Wood (Quota)",  # name
                 "WOOD",  # licence_type_code
                 "true",  # sigl_flag
                 "false",  # chief_flag
@@ -1555,6 +1562,7 @@ ia_query_result = {
                 1,  # is_active
                 "FA",  # type
                 "DFL",  # sub_type
+                "Firearms and Ammunition (Deactivated Firearms Licence)",  # name
                 "FIREARMS",  # licence_type_code
                 "false",  # sigl_flag
                 "true",  # chief_flag
@@ -1585,6 +1593,7 @@ ia_query_result = {
                 0,  # is_active
                 "SPS",  # type
                 "SPS1",  # sub_type
+                "Prior Surveillance",  # name
                 "SURVEILLANCE",  # licence_type_code
                 "false",  # sigl_flag
                 "true",  # chief_flag
@@ -1615,6 +1624,7 @@ ia_query_result = {
                 0,  # is_active
                 "ADHOC",  # type
                 "ADHOC1",  # sub_type
+                "Sanctions and Adhoc Licence Application",  # name
                 "ADHOC",  # licence_type_code
                 "false",  # sigl_flag
                 "true",  # chief_flag

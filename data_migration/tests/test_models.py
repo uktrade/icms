@@ -82,6 +82,7 @@ def test_import_application_type_values():
         "master_country_group__id",
         "master_country_group_id",
         "multiple_commodities_flag",
+        "name",
         "origin_country_group__id",
         "origin_country_group_id",
         "paper_licence_flag",
@@ -111,7 +112,7 @@ def test_import_application_type_data_export():
         data_dict[field] = 1234
 
     result = iat.data_export(data_dict)
-    assert len(result.keys()) == 33
+    assert len(result.keys()) == 34
     assert result["sigl_flag"] is True
     assert result["endorsements_flag"] is False
     assert result["origin_country_group_id"] == 1234
