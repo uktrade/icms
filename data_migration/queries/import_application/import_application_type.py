@@ -4,6 +4,10 @@ SELECT
   , CASE status WHEN 'ACTIVE' THEN 1 ELSE 0 END is_active
   , ima_type type
   , ima_sub_type sub_type
+  , CASE
+   WHEN ima_sub_type_title IS NOT NULL THEN ima_type_title || ' (' || ima_sub_type_title || ')'
+    ELSE ima_type_title
+  END name
   , licence_type licence_type_code
   , sigl_flag
   , chief_flag

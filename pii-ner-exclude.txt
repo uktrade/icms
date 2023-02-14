@@ -2112,3 +2112,26 @@ Add Certificates
 document_pk
 Goods Certificates
 Certificates/Documents
+Test Clause
+IMA/2022/2345/1
+Firearms Licence
+signed_by
+Test User Sec
+Test User Sec 5 2.pdf
+vartiation_no
+variations_xml
+rate_of_yield
+SanctionsApplication
+file2
+Test Case Note 3.pdf
+Test Responded
+Responded Details
+fir/file2
+sr_goods_file_id
+SELECT
+default_licence_length_months
+exp_cert_upload_flag
+supporting_docs_upload_flag
+declaration_template_mnem , default_commodity_group_code default_commodity_group_id
+impmgr.import_application_types iat
+xcgu.country_id

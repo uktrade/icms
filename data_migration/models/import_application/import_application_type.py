@@ -15,6 +15,7 @@ class ImportApplicationType(MigrationBase):
     is_active = models.BooleanField()
     type = models.CharField(max_length=70)
     sub_type = models.CharField(max_length=70, null=True)
+    name = models.CharField(max_length=100)
     licence_type_code = models.CharField(max_length=20)
     sigl_flag = models.CharField(max_length=5)
     chief_flag = models.CharField(max_length=5)

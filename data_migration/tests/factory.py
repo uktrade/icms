@@ -44,6 +44,7 @@ class ImportApplicationTypeFactory(factory.django.DjangoModelFactory):
     is_active = random.choice([True, False])
     type = "WD"
     sub_type = factory.fuzzy.FuzzyText(length=6)
+    name = factory.fuzzy.FuzzyText(length=10)
     licence_type_code = factory.fuzzy.FuzzyText(length=6)
     sigl_flag = random.choice(["true", "false"])
     chief_flag = random.choice(["true", "false"])

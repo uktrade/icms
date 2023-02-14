@@ -48,6 +48,7 @@ class ImportApplicationType(models.Model):
     is_active = models.BooleanField(blank=False, null=False)
     type = models.CharField(max_length=70, blank=False, null=False, choices=Types.choices)
     sub_type = models.CharField(max_length=70, blank=True, null=True, choices=SubTypes.choices)
+    name = models.CharField(max_length=100)
     licence_type_code = models.CharField(max_length=20, blank=False, null=False)
     sigl_flag = models.BooleanField(blank=False, null=False)
     chief_flag = models.BooleanField()
@@ -110,22 +111,10 @@ class ImportApplicationType(models.Model):
     )
 
     def __str__(self) -> str:
-        # TODO ICMSLST-1918 sub_type should be None if not in SubTypes
-        if self.sub_type in self.SubTypes.values:
-            type_label = self.Types(self.type).label
-            sub_type_label = self.SubTypes(self.sub_type).label
-            return f"{type_label} ({sub_type_label})"
-
-        # TODO ICMSLST-1918 type should be None if not in Types
-        if self.type in self.Types.values:
-            return self.Types(self.type).label
-
-        return f"{self.type} ({self.sub_type})"
+        return self.name
 
     class Meta:
-        # TODO ICMSLST-1918 ordering strange as type codes and their labels don't always match alphabetically
-        # Store a label / name field on the model?
-        ordering = ("type", "sub_type")
+        ordering = ("name",)
 
 
 class ImportApplication(ApplicationBase):
