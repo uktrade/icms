@@ -9,7 +9,10 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
 
-from web.domains.case._import.models import ImportApplication
+from web.domains.case._import.models import (
+    EndorsementImportApplication,
+    ImportApplication,
+)
 from web.domains.case.export.models import ExportApplication
 from web.domains.case.services import document_pack, reference
 from web.domains.file.models import File
@@ -205,3 +208,26 @@ def application_history(app_reference: str, is_import=True):
 
     for p in document_pack._get_qm(app).order_by("created_at"):
         print(f"DocumentPack: {p}")
+
+
+def add_endorsements_from_application_type(application: ImportApplication) -> None:
+    """Adds active endorsements to application based on application type"""
+
+    application_type = application.application_type
+
+    if application_type.endorsements_flag is False or application.endorsements.exists():
+        # If the application type does not support endorsements
+        # Or if there are already endorsements on the application, do not add default endorsements
+        return
+
+    endorsements = application_type.endorsements.filter(is_active=True)
+
+    EndorsementImportApplication.objects.bulk_create(
+        [
+            EndorsementImportApplication(
+                import_application_id=application.pk,
+                content=endorsement.template_content,
+            )
+            for endorsement in endorsements
+        ]
+    )
