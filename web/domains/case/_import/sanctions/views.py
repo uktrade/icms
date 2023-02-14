@@ -383,9 +383,6 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
             if form.is_valid() and not errors.has_errors():
                 submit_application(application, request, task)
-                # TODO ICMSLST-1918 Restrict endorsements by application type
-                # sanctions and adhoc application type in V1 has endorsement flag as False
-                # but endorsements can be added to application type and application
                 response_preparation.add_endorsements_from_application_type(application)
 
                 return redirect_after_submit(application, request)

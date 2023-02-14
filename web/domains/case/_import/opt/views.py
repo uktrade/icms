@@ -375,10 +375,6 @@ def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
                 )
                 application.cp_category_licence_description = group.group_description
                 submit_application(application, request, task)
-
-                # TODO ICMSLST-1918 Restrict endorsements by application type
-                # OPT application type in V1 has endorsement flag as False
-                # but endorsements can be added to application type and application
                 response_preparation.add_endorsements_from_application_type(application)
 
                 return redirect_after_submit(application, request)

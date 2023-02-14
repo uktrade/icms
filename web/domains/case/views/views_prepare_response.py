@@ -90,8 +90,6 @@ def prepare_response(
             "form": form,
             "cover_letter_flag": cover_letter_flag,
             "electronic_licence_flag": electronic_licence_flag,
-            # Not used currently but the template probably should.
-            # Once the data is confirmed to be correct
             "endorsements_flag": endorsements_flag,
             "readonly_view": readonly_view,
         }
