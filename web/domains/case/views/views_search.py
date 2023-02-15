@@ -34,6 +34,7 @@ from web.domains.case.models import VariationRequest
 from web.domains.case.services import case_progress, document_pack, reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import client
+from web.domains.template.models import Template
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
@@ -413,8 +414,7 @@ class RevokeCaseView(SearchActionFormBase):
         licence = document_pack.pack_revoked_get(self.application)
 
         return initial | {
-            # TODO: ICMSLST-1907 Remove hardcoded value.
-            "send_email": True,
+            "send_email": licence.revoke_email_sent,
             "reason": licence.revoke_reason,
         }
 
@@ -438,7 +438,7 @@ class RevokeCaseView(SearchActionFormBase):
 
         email_applicants = form.cleaned_data["send_email"]
         reason = form.cleaned_data["reason"]
-        document_pack.pack_active_revoke(self.application, reason)
+        document_pack.pack_active_revoke(self.application, reason, email_applicants)
 
         self.application.update_order_datetime()
         self.update_application_status()
@@ -448,7 +448,24 @@ class RevokeCaseView(SearchActionFormBase):
             client.send_application_to_chief(self.application, self.task, revoke_licence=True)
 
         if email_applicants:
-            tasks.send_revoke_email(self.application.pk)
+            # TODO: Revisit in ICMSLST-1922
+            revoke_template = Template.objects.get(
+                template_code="LICENCE_REVOKE",
+                template_type="EMAIL_TEMPLATE",
+                application_domain="IMA",
+            )
+            pack = document_pack.pack_revoked_get(self.application)
+            licence = document_pack.doc_ref_licence_get(pack)
+            email_subject = revoke_template.get_title({"LICENCE_NUMBER": licence.reference})
+            email_content = revoke_template.get_content({"LICENCE_NUMBER": licence.reference})
+
+            # TODO: Revisit in ICMSLST-1924
+            recipients = ("example@email.com",)  # /PS-IGNORE
+            tasks.send_email(
+                subject=email_subject,
+                body=email_content,
+                recipients=recipients,
+            )
 
         return super().form_valid(form)
 

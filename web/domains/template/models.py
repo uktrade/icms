@@ -1,4 +1,5 @@
 import re
+from typing import Any
 
 from django.db import models
 
@@ -88,7 +89,7 @@ class Template(Archivable, models.Model):
         else:
             return label
 
-    def get_content(self, replacements=None):
+    def get_content(self, replacements: dict[str, Any] | None = None):
         """Returns the template content with the placeholders replaced with their value
 
         Calling this function with replacements={'foo': 'bar'} will return the template content
@@ -106,7 +107,7 @@ class Template(Archivable, models.Model):
 
         return content
 
-    def get_title(self, replacements=None):
+    def get_title(self, replacements: dict[str, Any] | None = None):
         """Returns the template title with the placeholders replaced with their value
 
         Calling this function with replacements={'foo': 'bar'} will return the template title
