@@ -178,13 +178,14 @@ def pack_active_get_optional(application: ImpOrExp) -> DocumentPack | None:
     return packs.first()
 
 
-def pack_active_revoke(application: ImpOrExp, reason: str) -> None:
+def pack_active_revoke(application: ImpOrExp, reason: str, revoke_email_sent: bool) -> None:
     """Revoke the active document pack."""
 
     active_pack = pack_active_get(application)
 
     active_pack.status = PackStatus.REVOKED
     active_pack.revoke_reason = reason
+    active_pack.revoke_email_sent = revoke_email_sent
     active_pack.save()
 
 

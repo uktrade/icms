@@ -167,12 +167,6 @@ def upload_case_document_file(
     cdr.save()
 
 
-@app.task(name="web.domains.case.tasks.send_revoke_email")
-def send_revoke_email(application_pk: int) -> None:
-    # TODO: Implement in ICMSLST-1907
-    ...
-
-
 # NOTE: Leaving this here for now as it's useful to easily test celery tasks.
 # def chord_testing(application_id):
 #     callback = on_chord_success.si(application_id).on_error(

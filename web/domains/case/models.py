@@ -347,6 +347,7 @@ class DocumentPackBase(models.Model):
 
     # Set when a licence is revoked
     revoke_reason = models.TextField(null=True)
+    revoke_email_sent = models.BooleanField(default=False)
 
     # Values added when records are created / updated, used to get the most recent one.
     created_at = models.DateTimeField(auto_now_add=True)

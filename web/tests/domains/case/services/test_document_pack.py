@@ -132,23 +132,25 @@ class TestPackServiceFunctions:
         assert licence.status == PackStatus.ACTIVE
 
         revoke_reason = "Test revoke reason"
-        document_pack.pack_active_revoke(fa_sil, revoke_reason)
+        document_pack.pack_active_revoke(fa_sil, revoke_reason, True)
 
         licence.refresh_from_db()
         assert licence.status == PackStatus.REVOKED
         assert licence.revoke_reason == revoke_reason
+        assert licence.revoke_email_sent is True
 
     def test_pack_revoked_get(self, fa_sil):
         draft_licence = document_pack.pack_draft_create(fa_sil)
         document_pack.pack_draft_set_active(fa_sil)
 
         revoke_reason = "Test revoke reason"
-        document_pack.pack_active_revoke(fa_sil, "Test revoke reason")
+        document_pack.pack_active_revoke(fa_sil, "Test revoke reason", False)
 
         revoked_licence = document_pack.pack_revoked_get(fa_sil)
 
         assert revoked_licence.pk == draft_licence.pk
         assert revoked_licence.revoke_reason == revoke_reason
+        assert revoked_licence.revoke_email_sent is False
 
     def test_pack_latest_get(self, fa_sil):
         draft_licence = document_pack.pack_draft_create(fa_sil)

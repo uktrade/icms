@@ -1856,7 +1856,6 @@ sec VARCHAR2(20
 Email Applicants
 Revoke
 RE
-ICMSLST-1907 Remove
 args
 NER
 Licence Type
@@ -2141,7 +2140,6 @@ Mark
 Success / Error task
 Delete
 f"create_case_document_pack Task
-ICMSLST-1907
 on_chord_error.s(application_pk=application_id
 {application_pk
 print(request
@@ -2151,3 +2149,9 @@ Value
 Unique
 "Payload
 REPLACE & CANCEL
+Open
+Update in Progress
+Summary of Changes
+ImpExpStatus
+Org (Importer or Exporter
+Document Reference
