@@ -12,7 +12,6 @@ from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.services import case_progress
 from web.domains.case.utils import (
-    add_endorsements_from_application_type,
     check_application_permission,
     get_application_form,
     redirect_after_submit,
@@ -20,7 +19,7 @@ from web.domains.case.utils import (
 )
 from web.domains.case.views.utils import get_caseworker_view_readonly_status
 from web.domains.file.utils import create_file_model
-from web.domains.template.models import Template
+from web.domains.template.utils import add_template_data_on_submit
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
@@ -313,25 +312,18 @@ def submit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int)
 
             if form.is_valid() and not errors.has_errors():
                 submit_application(application, request, task)
-                add_endorsements_from_application_type(application)
+                add_template_data_on_submit(application)
 
                 return redirect_after_submit(application, request)
 
         else:
             form = SubmitForm()
 
-        declaration = Template.objects.filter(
-            is_active=True,
-            template_type=Template.DECLARATION,
-            application_domain=Template.IMPORT_APPLICATION,
-            template_code="IMA_WD_DECLARATION",
-        ).first()
-
         context = {
             "process": application,
             "form": form,
             "page_title": "Wood (Quota) Import Licence - Submit",
-            "declaration": declaration,
+            "declaration": application.application_type.declaration_template,
             "errors": errors if errors.has_errors() else None,
             "case_type": "import",
         }

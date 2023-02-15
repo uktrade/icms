@@ -19,7 +19,6 @@ from web.domains.case.forms import SubmitForm
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
-    add_endorsements_from_application_type,
     check_application_permission,
     get_application_form,
     redirect_after_submit,
@@ -28,7 +27,7 @@ from web.domains.case.utils import (
 )
 from web.domains.case.views.utils import get_caseworker_view_readonly_status
 from web.domains.file.utils import create_file_model
-from web.domains.template.models import Template
+from web.domains.template.utils import add_template_data_on_submit
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
@@ -591,7 +590,7 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
 
                 submit_application(application, request, task)
 
-                add_endorsements_from_application_type(application)
+                add_template_data_on_submit(application)
 
                 # Only create if needed
                 # This view gets called when an applicant submits changes
@@ -604,18 +603,11 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
         else:
             form = SubmitForm()
 
-        declaration = Template.objects.filter(
-            is_active=True,
-            template_type=Template.DECLARATION,
-            application_domain=Template.IMPORT_APPLICATION,
-            template_code="IMA_GEN_DECLARATION",
-        ).first()
-
         context = {
             "process": application,
             "page_title": "Firearms and Ammunition (Specific Import Licence) - Submit Application",
             "form": form,
-            "declaration": declaration,
+            "declaration": application.application_type.declaration_template,
             "errors": errors if errors.has_errors() else None,
             "case_type": "import",
         }
