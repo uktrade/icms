@@ -99,6 +99,7 @@ ia_data_source_target = {
     ],
     "reference": [
         (dm.CountryGroup, web.CountryGroup),
+        (dm.Template, web.Template),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -190,6 +191,7 @@ oil_data_source_target = {
         (dm.Country, web.Country),
         (dm.CountryGroup, web.CountryGroup),
         (dm.Constabulary, web.Constabulary),
+        (dm.Template, web.Template),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -308,6 +310,7 @@ dfl_data_source_target = {
     "reference": [
         (dm.Country, web.Country),
         (dm.CountryGroup, web.CountryGroup),
+        (dm.Template, web.Template),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -435,6 +438,7 @@ uic_data_source_target = {
         (dm.Country, web.Country),
         (dm.CountryGroup, web.CountryGroup),
         (dm.Constabulary, web.Constabulary),
+        (dm.Template, web.Template),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),

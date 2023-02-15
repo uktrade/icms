@@ -2156,3 +2156,8 @@ ImpExpStatus
 Org (Importer or Exporter
 Document Reference
 TODO ICMSLST-1914 Expand
+declaration_template_mnem declaration_template_code_id
+default_commodity_group_code
+Prior Surveillance Declaration
+Declaration of Truth
+General Declaration of Truth

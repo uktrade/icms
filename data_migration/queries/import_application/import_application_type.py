@@ -32,7 +32,7 @@ SELECT
   , importer_printable
   , commodity_type commodity_type_id
   , coc_country_group_id consignment_country_group_id
-  , declaration_template_mnem
+  , declaration_template_mnem declaration_template_code_id
   , default_commodity_group_code default_commodity_group_id
   , master_country_group_id
   , coo_country_group_id origin_country_group_id

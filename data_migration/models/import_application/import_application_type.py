@@ -1,6 +1,7 @@
 from typing import Any
 
 from django.db import models
+from django.db.models import F
 
 from data_migration.models.base import MigrationBase
 from data_migration.models.reference import (
@@ -9,6 +10,7 @@ from data_migration.models.reference import (
     Country,
     CountryGroup,
 )
+from data_migration.models.template import Template
 
 
 class ImportApplicationType(MigrationBase):
@@ -64,17 +66,16 @@ class ImportApplicationType(MigrationBase):
     commodity_type = models.ForeignKey(
         CommodityType, on_delete=models.PROTECT, to_field="type_code", related_name="+", null=True
     )
-    declaration_template_mnem = models.CharField(max_length=50)
-    # TODO ICMSLST-1497: when exporting template data
-    # declaration_template = models.ForeignKey(Template, on_delete=models.PROTECT, null=True)
+    declaration_template_code = models.ForeignKey(
+        Template, on_delete=models.PROTECT, null=True, to_field="template_code"
+    )
     default_commodity_group = models.ForeignKey(
         CommodityGroup, on_delete=models.SET_NULL, to_field="group_code", null=True
     )
 
     @staticmethod
     def get_excludes() -> list[str]:
-        # TODO ICMSLST-1497: include template when template data exported
-        return ["declaration_template_mnem"]
+        return ["declaration_template_code_id"]
 
     @staticmethod
     def get_includes() -> list[str]:
@@ -85,6 +86,10 @@ class ImportApplicationType(MigrationBase):
             "master_country_group__id",
             "origin_country_group__id",
         ]
+
+    @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        return {"declaration_template_id": F("declaration_template_code__id")}
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:

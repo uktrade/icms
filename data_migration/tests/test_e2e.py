@@ -41,6 +41,7 @@ sil_data_source_target = {
         (dm.ObsoleteCalibreGroup, web.ObsoleteCalibreGroup),
         (dm.ObsoleteCalibre, web.ObsoleteCalibre),
         (dm.CommodityType, web.CommodityType),
+        (dm.Template, web.Template),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -102,6 +103,7 @@ sil_data_source_target = {
             (queries.obsolete_calibre_group, "obsolete_calibre_group", dm.ObsoleteCalibreGroup),
             (queries.obsolete_calibre, "obsolete_calibre", dm.ObsoleteCalibre),
             (queries.section5_clauses, "section5_clauses", dm.Section5Clause),
+            (queries.template, "templates", dm.Template),
         ],
         "file": [
             (queries.case_note_files, "case_note_files", dm.FileCombined),
@@ -448,6 +450,7 @@ oil_data_source_target = {
         (dm.CountryGroup, web.CountryGroup),
         (dm.CommodityType, web.CommodityType),
         (dm.Constabulary, web.Constabulary),
+        (dm.Template, web.Template),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -486,6 +489,7 @@ oil_data_source_target = {
             (queries.country_group, "country_group", dm.CountryGroup),
             (queries.commodity_type, "commodity_type", dm.CommodityType),
             (queries.constabularies, "constabularies", dm.Constabulary),
+            (queries.template, "templates", dm.Template),
         ],
         "file": [
             (queries.oil_application_files, "oil_application_files", dm.FileCombined),
