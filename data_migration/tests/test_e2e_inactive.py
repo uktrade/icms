@@ -32,6 +32,7 @@ opt_data_source_target = {
         (dm.CommodityType, web.CommodityType),
         (dm.CommodityGroup, web.CommodityGroup),
         (dm.Commodity, web.Commodity),
+        (dm.Template, web.Template),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -65,6 +66,7 @@ opt_query_model = {
         (queries.commodity_type, "commodity_type", dm.CommodityType),
         (queries.commodity_group, "commodity_group", dm.CommodityGroup),
         (queries.commodity, "commodity", dm.Commodity),
+        (queries.template, "templates", dm.Template),
     ],
 }
 
@@ -157,6 +159,7 @@ sps_data_source_target = {
         (dm.CountryGroup, web.CountryGroup),
         (dm.CommodityType, web.CommodityType),
         (dm.Commodity, web.Commodity),
+        (dm.Template, web.Template),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -219,6 +222,7 @@ sps_data_source_target = {
             (queries.country, "country", dm.Country),
             (queries.commodity_type, "commodity_type", dm.CommodityType),
             (queries.commodity, "commodity", dm.Commodity),
+            (queries.template, "templates", dm.Template),
         ],
         "user": [
             (queries.users, "users", dm.User),
@@ -311,6 +315,7 @@ tex_data_source_target = {
         (dm.CommodityType, web.CommodityType),
         (dm.CommodityGroup, web.CommodityGroup),
         (dm.Commodity, web.Commodity),
+        (dm.Template, web.Template),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -345,6 +350,7 @@ tex_data_source_target = {
             (queries.commodity_type, "commodity_type", dm.CommodityType),
             (queries.commodity_group, "commodity_group", dm.CommodityGroup),
             (queries.commodity, "commodity", dm.Commodity),
+            (queries.template, "templates", dm.Template),
         ],
         "user": [
             (queries.users, "users", dm.User),

@@ -192,11 +192,59 @@ ref_query_result = {
                 None,  # end_datetime
                 1,  # is_active
                 "CFS Declaration Spanish",  # template_name
-                "None",  # template_code
+                None,  # template_code
                 "CFS_DECLARATION_TRANSLATION",  # template_type
                 "CA",  # application_domain
                 None,  # template_title
                 "Some translated text",  # template_content
+            ),
+            (
+                8,  # id
+                datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "Wood Affidavit",  # template_name
+                "IMA_WD_DECLARATION",  # template_code
+                "DECLARATION",  # template_type
+                "IMA",  # application_domain
+                "Affidavit",  # template_title
+                "Declaration content",  # template_content
+            ),
+            (
+                9,  # id
+                datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "Prior Surveillance Declaration",  # template_name
+                "IMA_SPS_DECLARATION",  # template_code
+                "DECLARATION",  # template_type
+                "IMA",  # application_domain
+                "Declaration of Truth",  # template_title
+                "Declaration content",  # template_content
+            ),
+            (
+                10,  # id
+                datetime.now(),  # start_datetime
+                None,  # end_datetime
+                1,  # is_active
+                "General Declaration of Truth",  # template_name
+                "IMA_GEN_DECLARATION",  # template_code
+                "DECLARATION",  # template_type
+                "IMA",  # application_domain
+                "Declaration of Truth",  # template_title
+                "Declaration content",  # template_content
+            ),
+            (
+                11,  # id
+                datetime.now(),  # start_datetime
+                None,  # end_datetime
+                0,  # is_active
+                "OPT Declaration",  # template_name
+                "IMA_OPT_DECLARATION",  # template_code
+                "DECLARATION",  # template_type
+                "IMA",  # application_domain
+                "Declaration of Truth",  # template_title
+                "Declaration content",  # template_content
             ),
         ],
     ),

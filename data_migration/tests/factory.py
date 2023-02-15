@@ -37,6 +37,17 @@ class CountryGroupFactory(factory.django.DjangoModelFactory):
     comments = factory.fuzzy.FuzzyText(length=6)
 
 
+class TemplateFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = models.Template
+
+    start_datetime = timezone.now()
+    template_name = factory.fuzzy.FuzzyText(length=6)
+    template_code = factory.fuzzy.FuzzyText(length=6)
+    template_type = "DECLARATION"
+    application_domain = "IMA"
+
+
 class ImportApplicationTypeFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.ImportApplicationType
@@ -73,6 +84,7 @@ class ImportApplicationTypeFactory(factory.django.DjangoModelFactory):
     origin_country_group = factory.SubFactory(CountryGroupFactory)
     consignment_country_group = factory.SubFactory(CountryGroupFactory)
     master_country_group = factory.SubFactory(CountryGroupFactory)
+    declaration_template_code = factory.SubFactory(TemplateFactory)
 
 
 class ProcessFactory(factory.django.DjangoModelFactory):

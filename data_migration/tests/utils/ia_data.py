@@ -1365,7 +1365,7 @@ ia_query_result = {
             ("importer_printable",),
             ("commodity_type_id",),
             ("consignment_country_group_id",),
-            ("declaration_template_mnem",),
+            ("declaration_template_code_id",),
             ("default_commodity_group_id",),
             ("master_country_group_id",),
             ("origin_country_group_id",),
@@ -1397,7 +1397,7 @@ ia_query_result = {
                 "false",  # importer_printable
                 "TYPE_A",  # commodity_type_id
                 "A",  # consignment_country_group_id
-                "IMA_GEN_DECLARATION",  # declaration_template_mnem
+                "IMA_GEN_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
                 None,  # master_country_group_id
                 "A",  # origin_country_group_id
@@ -1428,7 +1428,7 @@ ia_query_result = {
                 "false",  # importer_printable
                 "TYPE_A",  # commodity_type_id
                 "A",  # consignment_country_group_id
-                "IMA_OPT_DECLARATION",  # declaration_template_mnem
+                "IMA_OPT_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
                 None,  # master_country_group_id
                 "A",  # origin_country_group_id
@@ -1459,7 +1459,7 @@ ia_query_result = {
                 "false",  # importer_printable
                 None,  # commodity_type_id
                 "A",  # consignment_country_group_id
-                "IMA_GEN_DECLARATION",  # declaration_template_mnem
+                "IMA_GEN_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
                 None,  # master_country_group_id
                 "A",  # origin_country_group_id
@@ -1490,7 +1490,7 @@ ia_query_result = {
                 "false",  # importer_printable
                 "TYPE_B",  # commodity_type_id
                 "A",  # consignment_country_group_id
-                "IMA_GEN_DECLARATION",  # declaration_template_mnem
+                "IMA_GEN_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
                 "A",  # master_country_group_id
                 "A",  # origin_country_group_id
@@ -1521,7 +1521,7 @@ ia_query_result = {
                 "false",  # importer_printable
                 "TYPE_B",  # commodity_type_id
                 "A",  # consignment_country_group_id
-                "IMA_GEN_DECLARATION",  # declaration_template_mnem
+                "IMA_GEN_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
                 "A",  # master_country_group_id
                 "A",  # origin_country_group_id
@@ -1552,7 +1552,7 @@ ia_query_result = {
                 "false",  # importer_printable
                 "TYPE_A",  # commodity_type_id
                 "A",  # consignment_country_group_id
-                "IMA_GEN_DECLARATION",  # declaration_template_mnem
+                "IMA_GEN_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
                 None,  # master_country_group_id
                 "A",  # origin_country_group_id
@@ -1583,7 +1583,7 @@ ia_query_result = {
                 "false",  # importer_printable
                 "TYPE_B",  # commodity_type_id
                 "A",  # consignment_country_group_id
-                "IMA_GEN_DECLARATION",  # declaration_template_mnem
+                "IMA_GEN_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
                 "A",  # master_country_group_id
                 "A",  # origin_country_group_id
@@ -1614,7 +1614,7 @@ ia_query_result = {
                 "false",  # importer_printable
                 "TYPE_B",  # commodity_type_id
                 "A",  # consignment_country_group_id
-                "IMA_GEN_DECLARATION",  # declaration_template_mnem
+                "IMA_GEN_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
                 "A",  # master_country_group_id
                 "A",  # origin_country_group_id
@@ -1645,7 +1645,7 @@ ia_query_result = {
                 "false",  # importer_printable
                 "TYPE_B",  # commodity_type_id
                 "A",  # consignment_country_group_id
-                "IMA_GEN_DECLARATION",  # declaration_template_mnem
+                "IMA_GEN_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
                 "A",  # master_country_group_id
                 "A",  # origin_country_group_id

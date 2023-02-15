@@ -5,7 +5,6 @@ from django.db import models
 from django.db.models import F
 
 from data_migration import queries
-from data_migration.models.import_application import ImportApplicationType
 from data_migration.models.reference.country import Country, CountryTranslationSet
 
 from .base import MigrationBase
@@ -18,7 +17,7 @@ class Template(MigrationBase):
     end_datetime = models.DateTimeField(null=True)
     is_active = models.BooleanField(default=True)
     template_name = models.CharField(max_length=100)
-    template_code = models.CharField(max_length=50, null=True)
+    template_code = models.CharField(max_length=50, null=True, unique=True)
     template_type = models.CharField(max_length=50, null=False)
     application_domain = models.CharField(max_length=20, null=False)
     template_title = models.CharField(max_length=4000, null=True)
@@ -62,5 +61,7 @@ class CFSScheduleParagraph(MigrationBase):
 
 
 class EndorsementTemplate(MigrationBase):
-    importapplicationtype = models.ForeignKey(ImportApplicationType, on_delete=models.CASCADE)
+    importapplicationtype = models.ForeignKey(
+        "data_migration.ImportApplicationType", on_delete=models.CASCADE
+    )
     template = models.ForeignKey(Template, on_delete=models.CASCADE)
