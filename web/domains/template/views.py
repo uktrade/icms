@@ -166,9 +166,7 @@ class EndorsementCreateView(ModelCreateView):
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def list_endorsement_usages(request):
-    import_application_types = ImportApplicationType.objects.prefetch_related(
-        "endorsements"
-    ).filter(endorsements_flag=True)
+    import_application_types = ImportApplicationType.objects.prefetch_related("endorsements")
 
     return render(
         request,
@@ -180,7 +178,7 @@ def list_endorsement_usages(request):
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def edit_endorsement_usage(request, pk):
-    application_type = get_object_or_404(ImportApplicationType, pk=pk, endorsements_flag=True)
+    application_type = get_object_or_404(ImportApplicationType, pk=pk)
     if request.method == "POST":
         form = EndorsementUsageForm(request.POST, application_type_pk=pk)
         if form.is_valid():
@@ -196,9 +194,7 @@ def edit_endorsement_usage(request, pk):
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def remove_endorsement_usage_link(request, application_type_pk, link_pk):
-    application_type = get_object_or_404(
-        ImportApplicationType, pk=application_type_pk, endorsements_flag=True
-    )
+    application_type = get_object_or_404(ImportApplicationType, pk=application_type_pk)
     endorsement = get_object_or_404(Template, pk=link_pk, template_type=Template.ENDORSEMENT)
     application_type.endorsements.remove(endorsement)
 

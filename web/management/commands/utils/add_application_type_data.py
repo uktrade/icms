@@ -1,4 +1,9 @@
-from web.models import CountryGroup, ExportApplicationType, ImportApplicationType
+from web.models import (
+    CountryGroup,
+    ExportApplicationType,
+    ImportApplicationType,
+    Template,
+)
 
 
 def add_export_application_type_data():
@@ -42,6 +47,11 @@ def add_export_application_type_data():
 
 
 def add_import_application_type_data():
+    gen_dec = Template.objects.get(template_code="IMA_GEN_DECLARATION")
+    opt_dec = Template.objects.get(template_code="IMA_OPT_DECLARATION")
+    sps_dec = Template.objects.get(template_code="IMA_SPS_DECLARATION")
+    wd_dec = Template.objects.get(template_code="IMA_WD_DECLARATION")
+
     ImportApplicationType.objects.create(
         is_active=True,
         type="FA",
@@ -67,6 +77,7 @@ def add_import_application_type_data():
         usage_auto_category_desc_flag=False,
         case_checklist_flag=True,
         importer_printable=False,
+        declaration_template=gen_dec,
     )
 
     ImportApplicationType.objects.create(
@@ -93,6 +104,7 @@ def add_import_application_type_data():
         usage_auto_category_desc_flag=False,
         case_checklist_flag=True,
         importer_printable=False,
+        declaration_template=gen_dec,
     )
 
     ImportApplicationType.objects.create(
@@ -119,6 +131,7 @@ def add_import_application_type_data():
         usage_auto_category_desc_flag=False,
         case_checklist_flag=True,
         importer_printable=False,
+        declaration_template=gen_dec,
     )
 
     ImportApplicationType.objects.create(
@@ -145,6 +158,7 @@ def add_import_application_type_data():
         usage_auto_category_desc_flag=False,
         case_checklist_flag=True,
         importer_printable=False,
+        declaration_template=gen_dec,
     )
 
     ImportApplicationType.objects.create(
@@ -171,6 +185,7 @@ def add_import_application_type_data():
         usage_auto_category_desc_flag=False,
         case_checklist_flag=True,
         importer_printable=False,
+        declaration_template=wd_dec,
     )
 
     ImportApplicationType.objects.create(
@@ -198,6 +213,7 @@ def add_import_application_type_data():
         usage_auto_category_desc_flag=False,
         case_checklist_flag=True,
         importer_printable=False,
+        declaration_template=opt_dec,
     )
 
     ImportApplicationType.objects.create(
@@ -226,6 +242,7 @@ def add_import_application_type_data():
         usage_auto_category_desc_flag=False,
         case_checklist_flag=True,
         importer_printable=False,
+        declaration_template=gen_dec,
     )
 
     ImportApplicationType.objects.create(
@@ -253,6 +270,7 @@ def add_import_application_type_data():
         usage_auto_category_desc_flag=False,
         case_checklist_flag=True,
         importer_printable=False,
+        declaration_template=gen_dec,
     )
 
     ImportApplicationType.objects.create(
@@ -280,6 +298,7 @@ def add_import_application_type_data():
         usage_auto_category_desc_flag=True,
         case_checklist_flag=False,
         importer_printable=True,
+        declaration_template=sps_dec,
     )
 
     ImportApplicationType.objects.create(
@@ -306,4 +325,5 @@ def add_import_application_type_data():
         usage_auto_category_desc_flag=False,
         case_checklist_flag=True,
         importer_printable=False,
+        declaration_template=gen_dec,
     )
