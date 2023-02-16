@@ -9,8 +9,9 @@ from django.utils import timezone
 from mohawk.util import parse_authorization_header
 from pytest_django.asserts import assertTemplateUsed
 
+from web.domains.case import tasks
 from web.domains.case.shared import ImpExpStatus
-from web.domains.chief import types
+from web.domains.chief import client, types
 from web.domains.chief import views as chief_views
 from web.domains.chief.client import HTTPMethod, make_hawk_sender
 from web.models import ImportApplicationLicence, Task
@@ -264,6 +265,64 @@ class TestChiefRequestDataView:
         assert response.status_code == 200
         assert response.headers["content-type"] == "application/json"
         assert response.content == b'{"foo": "bar"}'
+
+
+class TestResendLicenceToChiefView:
+    @pytest.fixture(autouse=True)
+    def setup(self, icms_admin_client, fa_sil_app_with_chief, monkeypatch):
+        # We just need any application - not specifically with chief
+        self.app = fa_sil_app_with_chief
+        self.client = icms_admin_client
+        self.url = reverse("chief:resend-licence", kwargs={"application_pk": self.app.pk})
+
+        self.send_application_to_chief_mock = create_autospec(spec=client.send_application_to_chief)
+        monkeypatch.setattr(
+            chief_views.client, "send_application_to_chief", self.send_application_to_chief_mock
+        )
+
+        self.create_case_document_pack_mock = create_autospec(spec=tasks.create_case_document_pack)
+        monkeypatch.setattr(
+            chief_views, "create_case_document_pack", self.create_case_document_pack_mock
+        )
+
+    def test_resend_licence(self):
+        # Test resending an application being processed
+        self.app.status = ImpExpStatus.PROCESSING
+        self.app.save()
+
+        self.app.tasks.update(is_active=False)
+        Task.objects.create(process=self.app, task_type=Task.TaskType.CHIEF_ERROR)
+
+        response = self.client.post(self.url, follow=True)
+
+        self.create_case_document_pack_mock.assert_called_once()
+        self.send_application_to_chief_mock.assert_not_called()
+
+        messages = list(response.context["messages"])
+        success_msg = str(messages[0])
+
+        assert success_msg == (
+            "Once the licence has been regenerated it will be send to CHIEF for processing"
+        )
+
+    def test_resend_revoked_licence(self):
+        # Test resending an application being revoked
+        self.app.status = ImpExpStatus.REVOKED
+        self.app.save()
+
+        self.app.tasks.update(is_active=False)
+        Task.objects.create(process=self.app, task_type=Task.TaskType.CHIEF_ERROR)
+
+        response = self.client.post(self.url, follow=True)
+
+        self.send_application_to_chief_mock.assert_called_once()
+
+        self.create_case_document_pack_mock.assert_not_called()
+
+        messages = list(response.context["messages"])
+        success_msg = str(messages[0])
+
+        assert success_msg == "Revoke licence request send to CHIEF for processing"
 
 
 class TestCheckChiefProgressView:

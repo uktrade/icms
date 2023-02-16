@@ -77,6 +77,7 @@ class TestChiefUtils:
     def test_chief_licence_reply_approve_licence_revoked_app(self):
         # Setup - fake revoking a licence
         self.app.status = ImpExpStatus.REVOKED
+        self.app.save()
         self.app.tasks.update(is_active=False)
         Task.objects.create(process=self.app, task_type=Task.TaskType.CHIEF_REVOKE_WAIT)
 
@@ -90,6 +91,7 @@ class TestChiefUtils:
     def test_chief_licence_reply_reject_licence_revoked_app(self):
         # Setup - fake revoking a licence
         self.app.status = ImpExpStatus.REVOKED
+        self.app.save()
         self.app.tasks.update(is_active=False)
         Task.objects.create(process=self.app, task_type=Task.TaskType.CHIEF_REVOKE_WAIT)
 
