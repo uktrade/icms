@@ -69,7 +69,6 @@ class ImportApplicationTypeFactory(factory.django.DjangoModelFactory):
     category_flag = random.choice(["true", "false"])
     sigl_category_prefix = factory.fuzzy.FuzzyText(length=6)
     chief_category_prefix = factory.fuzzy.FuzzyText(length=6)
-    endorsements_flag = random.choice(["true", "false"])
     default_commodity_desc = factory.fuzzy.FuzzyText(length=6)
     quantity_unlimited_flag = random.choice(["true", "false"])
     unit_list_csv = factory.fuzzy.FuzzyText(length=6)

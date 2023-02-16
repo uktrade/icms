@@ -61,7 +61,6 @@ class ImportApplicationType(models.Model):
     sigl_category_prefix = models.CharField(max_length=100, blank=True, null=True)
     chief_category_prefix = models.CharField(max_length=10, blank=True, null=True)
     default_licence_length_months = models.IntegerField(blank=True, null=True)
-    endorsements_flag = models.BooleanField(blank=False, null=False)
     default_commodity_desc = models.CharField(max_length=200, blank=True, null=True)
     quantity_unlimited_flag = models.BooleanField(blank=False, null=False)
     unit_list_csv = models.CharField(max_length=200, blank=True, null=True)

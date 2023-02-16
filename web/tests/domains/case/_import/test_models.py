@@ -35,7 +35,6 @@ class ImportApplicationTypeTest(TestCase):
             cover_letter_flag=False,
             cover_letter_schedule_flag=False,
             category_flag=True,
-            endorsements_flag=True,
             quantity_unlimited_flag=True,
             exp_cert_upload_flag=False,
             supporting_docs_upload_flag=False,
