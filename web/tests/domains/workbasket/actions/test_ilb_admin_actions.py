@@ -175,6 +175,32 @@ class TestAdminActions:
         assert wb_action.name == "View Case"
         assert wb_action.section_label == "Authorise Documents"
 
+    def test_view_case_is_shown_when_an_application_has_been_revoked(self):
+        # setup
+        self.app.status = ST.REVOKED
+        self.app.case_owner = self.user
+        active_tasks = [Task.TaskType.CHIEF_REVOKE_WAIT]
+
+        # test
+        action = ViewApplicationCaseAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
+        assert action.show_link()
+
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.name == "View Case"
+        assert wb_action.section_label == "CHIEF Wait for Revocation"
+
+        active_tasks = [Task.TaskType.CHIEF_ERROR]
+        action = ViewApplicationCaseAction(
+            self.user, "import", self.app, active_tasks, True, True, False
+        )
+        assert action.show_link()
+
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.name == "View"
+        assert wb_action.section_label == "CHIEF Error"
+
     def test_view_case_action_not_shown(self):
         # setup (App still in progress)
         self.app.status = ST.IN_PROGRESS
