@@ -111,7 +111,7 @@ class CaseURLS:
     @staticmethod
     def variation_request_request_update(
         application_pk: int, variation_request_pk: int, case_type: str = "import"
-    ):
+    ) -> str:
         kwargs = {
             "application_pk": application_pk,
             "case_type": case_type,
@@ -121,7 +121,9 @@ class CaseURLS:
         return reverse("case:variation-request-request-update", kwargs=kwargs)
 
     @staticmethod
-    def variation_request_cancel_update_request(application_pk: int, variation_request_pk: int):
+    def variation_request_cancel_update_request(
+        application_pk: int, variation_request_pk: int
+    ) -> str:
         kwargs = {
             "application_pk": application_pk,
             "case_type": "import",
@@ -133,7 +135,7 @@ class CaseURLS:
     @staticmethod
     def variation_request_submit_update(
         application_pk: int, variation_request_pk: int, case_type: str = "import"
-    ):
+    ) -> str:
         kwargs = {
             "application_pk": application_pk,
             "case_type": case_type,
@@ -193,7 +195,7 @@ class CaseURLS:
     @staticmethod
     def clear_issued_case_documents_from_workbasket(
         application_pk: int, issued_document_pk: int, case_type="import"
-    ):
+    ) -> str:
         kwargs = {
             "application_pk": application_pk,
             "case_type": case_type,
@@ -230,10 +232,17 @@ class SearchURLS:
         )
 
     @staticmethod
-    def open_variation(application_pk):
+    def open_variation(application_pk: int) -> str:
         case_type = "export"
 
         return reverse(
             "case:search-open-variation",
+            kwargs={"application_pk": application_pk, "case_type": case_type},
+        )
+
+    @staticmethod
+    def revoke_licence(application_pk: int, case_type: str = "import") -> str:
+        return reverse(
+            "case:search-revoke-licence",
             kwargs={"application_pk": application_pk, "case_type": case_type},
         )
