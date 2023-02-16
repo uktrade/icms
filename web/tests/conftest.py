@@ -16,6 +16,7 @@ from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.access.models import ExporterAccessRequest, ImporterAccessRequest
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
+from web.domains.case.utils import end_process_task
 from web.domains.exporter.models import Exporter
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
@@ -381,6 +382,9 @@ def completed_app(fa_sil_app_submitted, icms_admin_client):
     # Now fake complete the app
     app.status = ImpExpStatus.COMPLETED
     app.save()
+
+    task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
+    end_process_task(task)
     document_pack.pack_draft_set_active(app)
 
     return app

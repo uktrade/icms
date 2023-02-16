@@ -1,20 +1,26 @@
+from http import HTTPStatus
+
 import pytest
 from django.test import Client
 from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertRedirects
 
-from web.domains.case._import.models import LiteHMRCChiefRequest
-from web.domains.case._import.wood.models import WoodQuotaApplication
-from web.domains.case.models import VariationRequest
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
-from web.domains.importer.models import Importer
-from web.flow.models import Task
+from web.models import (
+    Importer,
+    LiteHMRCChiefRequest,
+    SILApplication,
+    Task,
+    VariationRequest,
+    WoodQuotaApplication,
+)
 from web.tests.domains.importer import factory as importer_factories
 from web.tests.domains.office import factory as office_factories
 from web.tests.domains.user import factory as user_factories
 from web.tests.flow import factories as process_factories
+from web.tests.helpers import SearchURLS
 
 from . import factory
 
@@ -183,3 +189,55 @@ class TestBypassChiefView:
 
         vr = self.wood_app.variation_requests.first()
         assert vr.status == VariationRequest.ACCEPTED
+
+
+class TestBypassChiefViewRevokeLicence:
+    client: Client
+    app: SILApplication
+    success_url: str
+    fail_url: str
+
+    @pytest.fixture(autouse=True)
+    def setup(self, icms_admin_client, completed_app):
+        self.client = icms_admin_client
+        self.app = completed_app
+        self.success_url = reverse(
+            "import:bypass-chief", kwargs={"application_pk": self.app.pk, "chief_status": "success"}
+        )
+        self.fail_url = reverse(
+            "import:bypass-chief", kwargs={"application_pk": self.app.pk, "chief_status": "failure"}
+        )
+
+        revoke_url = SearchURLS.revoke_licence(self.app.pk)
+        self.client.post(revoke_url, data={"reason": "test_reason"})
+        self.app.refresh_from_db()
+
+    def test_permission(self, importer_client, exporter_client):
+        # Post only view.
+        response = self.client.post(self.success_url)
+        assert response.status_code == HTTPStatus.FOUND
+
+        response = importer_client.post(self.success_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = exporter_client.post(self.success_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_bypass_chief_revoke_licence_success(self):
+        case_progress.check_expected_status(self.app, [ImpExpStatus.REVOKED])
+        case_progress.check_expected_task(self.app, Task.TaskType.CHIEF_REVOKE_WAIT)
+
+        self.client.post(self.success_url)
+
+        # The CHIEF_REVOKE_WAIT should have been ended
+        case_progress.check_expected_status(self.app, [ImpExpStatus.REVOKED])
+        assert case_progress.get_active_tasks(self.app, select_for_update=False).count() == 0
+
+    def test_bypass_chief_revoke_licence_failure(self):
+        case_progress.check_expected_status(self.app, [ImpExpStatus.REVOKED])
+        case_progress.check_expected_task(self.app, Task.TaskType.CHIEF_REVOKE_WAIT)
+
+        self.client.post(self.fail_url)
+
+        case_progress.check_expected_status(self.app, [ImpExpStatus.REVOKED])
+        case_progress.check_expected_task(self.app, Task.TaskType.CHIEF_ERROR)

@@ -536,12 +536,6 @@ class TestViewIssuedCaseDocumentsView:
             self.app.pk, issued_document_pk=self.licence.pk
         )
 
-        # No active tasks when complete
-        task = self.app.tasks.get(is_active=True)
-        task.is_active = False
-        task.finished = timezone.now()
-        task.save()
-
     def test_permission(self, admin_client, exporter_client):
         # self.client is an importer_client client
         response = self.client.get(self.url)
@@ -588,12 +582,6 @@ class TestClearIssuedCaseDocumentsFromWorkbasketView:
         self.url = CaseURLS.clear_issued_case_documents_from_workbasket(
             self.app.pk, issued_document_pk=self.licence.pk
         )
-
-        # No active tasks when complete
-        task = self.app.tasks.get(is_active=True)
-        task.is_active = False
-        task.finished = timezone.now()
-        task.save()
 
     def test_permission(self, exporter_client):
         # Exporter doesn't have access to application therefore 403
