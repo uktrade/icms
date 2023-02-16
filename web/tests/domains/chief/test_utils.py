@@ -2,6 +2,7 @@ import datetime
 
 import pytest
 
+from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import types, utils
 from web.models import ImportApplicationLicence, Task, VariationRequest
@@ -72,3 +73,30 @@ class TestChiefUtils:
         utils.fail_chief_request(self.chief_req, errors)
 
         check_fail_chief_request_correct(self.chief_req)
+
+    def test_chief_licence_reply_approve_licence_revoked_app(self):
+        # Setup - fake revoking a licence
+        self.app.status = ImpExpStatus.REVOKED
+        self.app.tasks.update(is_active=False)
+        Task.objects.create(process=self.app, task_type=Task.TaskType.CHIEF_REVOKE_WAIT)
+
+        # Test
+        utils.chief_licence_reply_approve_licence(self.app)
+
+        # Asserts
+        case_progress.check_expected_status(self.app, [ImpExpStatus.REVOKED])
+        assert Task.TaskType.CHIEF_REVOKE_WAIT not in case_progress.get_active_task_list(self.app)
+
+    def test_chief_licence_reply_reject_licence_revoked_app(self):
+        # Setup - fake revoking a licence
+        self.app.status = ImpExpStatus.REVOKED
+        self.app.tasks.update(is_active=False)
+        Task.objects.create(process=self.app, task_type=Task.TaskType.CHIEF_REVOKE_WAIT)
+
+        # Test
+        utils.chief_licence_reply_reject_licence(self.app)
+
+        # Asserts
+        case_progress.check_expected_status(self.app, [ImpExpStatus.REVOKED])
+        assert Task.TaskType.CHIEF_REVOKE_WAIT not in case_progress.get_active_task_list(self.app)
+        case_progress.check_expected_task(self.app, Task.TaskType.CHIEF_ERROR)
