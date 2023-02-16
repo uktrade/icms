@@ -1,22 +1,23 @@
 import datetime
-from typing import TYPE_CHECKING
+from http import HTTPStatus
 
 import pytest
+from django.core import mail
+from django.test.client import Client
 from django.utils import timezone
 from pytest_django.asserts import assertRedirects
 
-from web.domains.case._import.models import ImportApplicationLicence
-from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.flow import errors
-from web.flow.models import Task
+from web.models import (
+    CertificateOfManufactureApplication,
+    ImportApplicationLicence,
+    SILApplication,
+    Task,
+    WoodQuotaApplication,
+)
 from web.tests.helpers import SearchURLS
-
-if TYPE_CHECKING:
-    from django.test.client import Client
-
-    from web.domains.case.export.models import CertificateOfManufactureApplication
 
 
 # TODO: ICMSLST-1240 Add permission tests for all views
@@ -36,7 +37,7 @@ class TestDownloadSpreadsheetView:
 
 
 class TestReopenApplicationView:
-    client: "Client"
+    client: Client
     wood_app: WoodQuotaApplication
 
     @pytest.fixture(autouse=True)
@@ -97,7 +98,7 @@ class TestReopenApplicationView:
 
 
 class TestRequestVariationUpdateView:
-    client: "Client"
+    client: Client
     wood_app: WoodQuotaApplication
 
     @pytest.fixture(autouse=True)
@@ -193,7 +194,7 @@ class TestRequestVariationUpdateView:
 
 
 class TestRequestVariationOpenRequestView:
-    client: "Client"
+    client: Client
     app: "CertificateOfManufactureApplication"
 
     @pytest.fixture(autouse=True)
@@ -232,3 +233,85 @@ class TestRequestVariationOpenRequestView:
 
         case_progress.check_expected_status(self.app, [ImpExpStatus.VARIATION_REQUESTED])
         case_progress.check_expected_task(self.app, Task.TaskType.PROCESS)
+
+
+class TestRevokeCaseView:
+    client: Client
+    app: "SILApplication"
+    url: str
+
+    @pytest.fixture(autouse=True)
+    def setup(self, icms_admin_client, completed_app):
+        self.client = icms_admin_client
+        self.app = completed_app
+        self.url = SearchURLS.revoke_licence(self.app.pk)
+
+    def test_permission(self, importer_client, exporter_client):
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_revoke_licence_with_send_email(self):
+        # check what is in the context on the initial page load
+        response = self.client.get(self.url)
+
+        assert response.context["active_pack"] == document_pack.pack_active_get(self.app)
+        assert response.context["process"] == self.app
+        assert response.context["search_results_url"].startswith(
+            "/case/import/search/standard/results/?case_ref=IMA%2F"
+        )
+
+        form_data = {"send_email": "on", "reason": "test reason"}
+        resp = self.client.post(self.url, data=form_data, follow=True)
+        assert resp.status_code == 200
+
+        self.app.refresh_from_db()
+        assert self.app.status == ImpExpStatus.REVOKED
+
+        pack = document_pack.pack_revoked_get(self.app)
+        licence = document_pack.doc_ref_licence_get(pack)
+        assert pack.revoke_reason == "test reason"
+        assert pack.revoke_email_sent is True
+
+        assert len(mail.outbox) == 1
+        revoke_email = mail.outbox[0]
+
+        assert revoke_email.to == ["example@email.com"]  # /PS-IGNORE
+        assert revoke_email.subject == f"ICMS Licence {licence.reference} Revoked"
+        assert revoke_email.body == (
+            f"Licence {licence.reference} has been revoked."
+            f" Please contact ILB if you believe this is in error or require further information."
+        )
+
+        # check what is in the context on the revoked licence page after revoking
+        response = self.client.get(self.url)
+        assert response.context["active_pack"] is None
+
+        # Check the previous data is preserved and the form is readonly
+        form = response.context["form"]
+        assert form.initial == {"reason": "test reason", "send_email": True}
+        for f in form.fields:
+            assert form.fields[f].disabled
+
+        assert response.context["process"] == self.app
+        assert response.context["search_results_url"].startswith(
+            "/case/import/search/standard/results/?case_ref=IMA%2F"
+        )
+
+    def test_revoke_licence_with_no_email(self):
+        form_data = {"reason": "test reason"}
+        resp = self.client.post(self.url, data=form_data, follow=True)
+        assert resp.status_code == 200
+
+        self.app.refresh_from_db()
+        assert self.app.status == ImpExpStatus.REVOKED
+
+        pack = document_pack.pack_revoked_get(self.app)
+        assert pack.revoke_reason == "test reason"
+        assert pack.revoke_email_sent is False
+        assert len(mail.outbox) == 0
