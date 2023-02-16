@@ -387,6 +387,31 @@ class TestCheckChiefProgressView:
         assert resp_data["msg"] == "Accepted - An accepted response has been received from CHIEF."
         assert resp_data["reload_workbasket"] is True
 
+    def test_check_chief_progress_revoke_licence_in_progress(self):
+        self.app.status = ImpExpStatus.REVOKED
+        self.app.save()
+
+        self._create_new_task(Task.TaskType.CHIEF_REVOKE_WAIT)
+
+        resp = self.client.get(CaseURLS.check_chief_progress(self.app.pk))
+        assert resp.status_code == HTTPStatus.OK
+
+        resp_data = resp.json()
+        assert resp_data["msg"] == (
+            "Awaiting Response - Licence sent to CHIEF, we are awaiting a response"
+        )
+        assert resp_data["reload_workbasket"] is False
+
+        # clear all tasks to fake a successful revoke licence
+        self.app.tasks.update(is_active=False)
+
+        resp = self.client.get(CaseURLS.check_chief_progress(self.app.pk))
+        assert resp.status_code == HTTPStatus.OK
+
+        resp_data = resp.json()
+        assert resp_data["msg"] == "Accepted - An accepted response has been received from CHIEF."
+        assert resp_data["reload_workbasket"] is True
+
     def _create_new_task(self, new_task):
         task = self.app.tasks.get(is_active=True)
         task.is_active = False

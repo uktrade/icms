@@ -293,8 +293,6 @@ class CheckChiefProgressView(
         elif self.application.status == ImpExpStatus.REVOKED:
             if Task.TaskType.CHIEF_REVOKE_WAIT in active_tasks:
                 msg = "Awaiting Response - Licence sent to CHIEF, we are awaiting a response"
-            elif Task.TaskType.CHIEF_ERROR in active_tasks:
-                msg = "Rejected - A rejected response has been received from CHIEF."
             else:
                 msg = "Accepted - An accepted response has been received from CHIEF."
                 reload_workbasket = True
