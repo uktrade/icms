@@ -2164,3 +2164,8 @@ General Declaration of Truth
 PROCESS
 IMA%2F
 f"ICMS Licence
+Avenue
+CHIEF_REVOKE_WAIT
+ICMS
+0000001B
+f"COM/{this_year}/00002
