@@ -175,6 +175,8 @@ class ResendLicenceToChiefView(
         ImpExpStatus.REVOKED,
     ]
     current_task_type = Task.TaskType.CHIEF_ERROR
+
+    # Only applies to applications being processed
     next_task_type = Task.TaskType.DOCUMENT_SIGNING
 
     # PermissionRequiredMixin
@@ -186,20 +188,22 @@ class ResendLicenceToChiefView(
     def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
         self.set_application_and_task()
 
-        # Update the current task so `create_case_document_pack` will work correctly
-        self.update_application_tasks()
-
         if self.application.status == ImpExpStatus.REVOKED:
             client.send_application_to_chief(self.application, self.task, revoke_licence=True)
+            messages.success(request, "Revoke licence request send to CHIEF for processing")
+
         else:
+            # Update the current task so `create_case_document_pack` will work correctly
+            self.update_application_tasks()
+
             # Regenerating the licence document pack will send the application to CHIEF
             # after the updated documents have been created.
             create_case_document_pack(self.application, self.request.user)
 
-        messages.success(
-            request,
-            "Once the licence has been regenerated it will be send to CHIEF for processing",
-        )
+            messages.success(
+                request,
+                "Once the licence has been regenerated it will be send to CHIEF for processing",
+            )
 
         return redirect("chief:failed-licences")
 
