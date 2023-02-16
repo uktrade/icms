@@ -4,7 +4,7 @@ import pytest
 from django.test import override_settings
 from django.utils import timezone
 
-from web.domains.case.services import case_progress
+from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import client
 from web.domains.chief.types import LicenceDataPayload
@@ -72,7 +72,8 @@ class TestChiefClient:
                 "licence_reference": "dummy-reference",
                 "country_code": "DE",
                 "country_group": None,
-                "end_date": "2024-12-01",
+                "start_date": licence.licence_start_date.strftime("%Y-%m-%d"),
+                "end_date": licence.licence_end_date.strftime("%Y-%m-%d"),
                 "goods": [],
                 "id": str(chief_req.lite_hmrc_id),
                 "organisation": {
@@ -90,7 +91,6 @@ class TestChiefClient:
                     "start_date": None,
                 },
                 "restrictions": "",
-                "start_date": licence.licence_start_date.strftime("%Y-%m-%d"),
                 "type": "SIL",
             }
         }
@@ -161,7 +161,6 @@ class TestChiefClient:
                 "licence_reference": "dummy-reference",
                 "country_code": "DE",
                 "country_group": None,
-                "end_date": "2024-12-01",
                 "goods": [],
                 "id": str(chief_req.lite_hmrc_id),
                 "organisation": {
@@ -180,12 +179,46 @@ class TestChiefClient:
                 },
                 "restrictions": "",
                 "start_date": licence.licence_start_date.strftime("%Y-%m-%d"),
+                "end_date": licence.licence_end_date.strftime("%Y-%m-%d"),
                 "type": "SIL",
             }
         }
 
         case_progress.check_expected_task(app, Task.TaskType.CHIEF_WAIT)
 
-    # TODO: ICMSLST-1909 Add test to send a revoke licence payload to CHIEF
-    def test_send_application_to_chief_revoke_licence(self):
-        ...
+    def test_send_application_to_chief_revoke_licence(self, completed_app, monkeypatch):
+        # Setup
+        app = completed_app
+        document_pack.pack_active_revoke(app, "test revoke licence reason", False)
+        licence = document_pack.pack_revoked_get(app)
+
+        request_license_mock = mock.create_autospec(spec=client.request_license)
+        monkeypatch.setattr(client, "request_license", request_license_mock)
+
+        # Test
+        client.send_application_to_chief(app, None, revoke_licence=True)
+
+        # Asserts
+        request_license_mock.assert_called_once()
+        app.refresh_from_db()
+        assert app.chief_references.count() == 1
+
+        chief_req: LiteHMRCChiefRequest = app.chief_references.first()
+
+        print(chief_req.request_data)
+
+        assert chief_req.case_reference == app.reference
+
+        assert chief_req.request_data == {
+            "licence": {
+                "action": "cancel",
+                "reference": app.reference,
+                "id": str(chief_req.lite_hmrc_id),
+                "type": "SIL",
+                "start_date": licence.licence_start_date.strftime("%Y-%m-%d"),
+                "end_date": licence.licence_end_date.strftime("%Y-%m-%d"),
+                "licence_reference": "GBSIL0000001B",
+            }
+        }
+
+        case_progress.check_expected_task(app, Task.TaskType.CHIEF_REVOKE_WAIT)
