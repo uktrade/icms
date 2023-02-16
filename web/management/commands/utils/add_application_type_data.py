@@ -67,7 +67,6 @@ def add_import_application_type_data():
         cover_letter_schedule_flag=False,
         category_flag=True,
         default_licence_length_months=36,
-        endorsements_flag=True,
         default_commodity_desc="Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.",
         quantity_unlimited_flag=True,
         exp_cert_upload_flag=False,
@@ -95,7 +94,6 @@ def add_import_application_type_data():
         cover_letter_schedule_flag=True,
         category_flag=True,
         default_licence_length_months=6,
-        endorsements_flag=True,
         quantity_unlimited_flag=True,
         exp_cert_upload_flag=False,
         supporting_docs_upload_flag=False,
@@ -122,7 +120,6 @@ def add_import_application_type_data():
         cover_letter_schedule_flag=True,
         category_flag=True,
         default_licence_length_months=6,
-        endorsements_flag=True,
         quantity_unlimited_flag=False,
         exp_cert_upload_flag=False,
         supporting_docs_upload_flag=False,
@@ -138,7 +135,7 @@ def add_import_application_type_data():
         is_active=False,
         type="SAN",
         sub_type="SAN1",
-        name="Sanctions and Adhoc Licence Application",
+        name="Derogation from Sanctions Import Ban",
         licence_type_code="SANCTIONS",
         sigl_flag=False,
         chief_flag=True,
@@ -148,7 +145,6 @@ def add_import_application_type_data():
         cover_letter_flag=False,
         cover_letter_schedule_flag=False,
         category_flag=True,
-        endorsements_flag=False,
         quantity_unlimited_flag=False,
         unit_list_csv="KGS,BARRELS",
         exp_cert_upload_flag=False,
@@ -175,7 +171,6 @@ def add_import_application_type_data():
         cover_letter_schedule_flag=False,
         category_flag=False,
         default_licence_length_months=12,
-        endorsements_flag=False,
         quantity_unlimited_flag=False,
         unit_list_csv="M3",
         exp_cert_upload_flag=False,
@@ -203,7 +198,6 @@ def add_import_application_type_data():
         category_flag=True,
         sigl_category_prefix="ZA,ZTA",
         default_licence_length_months=9,
-        endorsements_flag=False,
         quantity_unlimited_flag=False,
         unit_list_csv="KGS",
         exp_cert_upload_flag=False,
@@ -232,7 +226,6 @@ def add_import_application_type_data():
         category_flag=True,
         sigl_category_prefix="A",
         default_licence_length_months=6,
-        endorsements_flag=True,
         quantity_unlimited_flag=False,
         exp_cert_upload_flag=False,
         supporting_docs_upload_flag=True,
@@ -260,7 +253,6 @@ def add_import_application_type_data():
         cover_letter_schedule_flag=False,
         category_flag=True,
         default_licence_length_months=4,
-        endorsements_flag=True,
         quantity_unlimited_flag=False,
         exp_cert_upload_flag=True,
         supporting_docs_upload_flag=True,
@@ -288,7 +280,6 @@ def add_import_application_type_data():
         cover_letter_schedule_flag=False,
         category_flag=False,
         default_licence_length_months=4,
-        endorsements_flag=True,
         quantity_unlimited_flag=False,
         unit_list_csv="KGS",
         exp_cert_upload_flag=False,
@@ -315,7 +306,6 @@ def add_import_application_type_data():
         cover_letter_flag=False,
         cover_letter_schedule_flag=False,
         category_flag=True,
-        endorsements_flag=False,
         quantity_unlimited_flag=False,
         unit_list_csv="KGS,BARRELS",
         exp_cert_upload_flag=False,
@@ -327,3 +317,37 @@ def add_import_application_type_data():
         importer_printable=False,
         declaration_template=gen_dec,
     )
+
+
+def add_import_application_type_endorsements():
+    # WD / IS / DERO
+    endorsement_1 = Template.objects.get(
+        template_name="Endorsement 1 (must be updated each year)",
+        template_type=Template.ENDORSEMENT,
+    )
+
+    for iat in ImportApplicationType.objects.filter(type__in=["WD", "IS", "SAN"]):
+        iat.endorsements.add(endorsement_1)
+
+        if iat.type == "SAN":
+            endorsement = Template.objects.get(
+                template_type=Template.ENDORSEMENT,
+                template_name="Endorsement 15",
+            )
+            iat.endorsements.add(endorsement)
+
+    # SIL
+    iat = ImportApplicationType.objects.get(sub_type="SIL")
+    endorsement = Template.objects.get(
+        template_type=Template.ENDORSEMENT,
+        template_name="Firearms Sanctions COO & COC (AC & AY)",
+    )
+    iat.endorsements.add(endorsement)
+
+    # OIL
+    iat = ImportApplicationType.objects.get(sub_type="OIL")
+    endorsement = Template.objects.get(
+        template_type=Template.ENDORSEMENT,
+        template_name="Open Individual Licence endorsement",
+    )
+    iat.endorsements.add(endorsement)

@@ -1,6 +1,7 @@
 from .add_application_type_data import (
     add_export_application_type_data,
     add_import_application_type_data,
+    add_import_application_type_endorsements,
 )
 from .add_commodity_data import (
     add_commodities,
@@ -46,6 +47,7 @@ def load_app_test_data():
     add_letter_fragment_templates()
     add_export_application_type_data()
     add_import_application_type_data()
+    add_import_application_type_endorsements()
     add_units()
     add_commodity_types()
     add_commodity_groups()

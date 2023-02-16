@@ -71,7 +71,6 @@ def test_import_application_type_values():
         "default_commodity_group_id",
         "default_licence_length_months",
         "electronic_licence_flag",
-        "endorsements_flag",
         "exp_cert_upload_flag",
         "guidance_file_url",
         "id",
@@ -101,7 +100,7 @@ def test_import_application_type_values():
 
 @pytest.mark.django_db
 def test_import_application_type_data_export():
-    iat = factory.ImportApplicationTypeFactory(sigl_flag="true", endorsements_flag="false")
+    iat = factory.ImportApplicationTypeFactory(sigl_flag="true")
     data_dict = iat.__dict__
     data_dict.pop("_state")
 
@@ -112,9 +111,8 @@ def test_import_application_type_data_export():
         data_dict[field] = 1234
 
     result = iat.data_export(data_dict)
-    assert len(result.keys()) == 34
+    assert len(result.keys()) == 33
     assert result["sigl_flag"] is True
-    assert result["endorsements_flag"] is False
     assert result["origin_country_group_id"] == 1234
     assert "origin_country_group__id" not in result
 

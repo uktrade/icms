@@ -30,7 +30,6 @@ class ImportApplicationType(MigrationBase):
     sigl_category_prefix = models.CharField(max_length=100, null=True)
     chief_category_prefix = models.CharField(max_length=10, null=True)
     default_licence_length_months = models.IntegerField(null=True)
-    endorsements_flag = models.CharField(max_length=5)
     default_commodity_desc = models.CharField(max_length=200, null=True)
     quantity_unlimited_flag = models.CharField(max_length=5)
     unit_list_csv = models.CharField(max_length=200, null=True)
