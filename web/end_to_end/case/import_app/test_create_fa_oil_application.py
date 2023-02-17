@@ -3,7 +3,7 @@ import re
 
 from playwright.sync_api import Page
 
-from . import conftest, types, utils
+from web.end_to_end import conftest, types, utils
 
 
 def test_can_create_fa_oil(
@@ -15,13 +15,13 @@ def test_can_create_fa_oil(
     """
 
     with pages.imp_page() as imp_page:
-        app_id = _create_fa_oil(imp_page, sample_upload_file)
+        app_id = fa_oil_create(imp_page, sample_upload_file)
 
     with pages.ilb_page() as ilb_page:
-        _manage_case_and_authorise_documents(ilb_page, app_id)
+        fa_oil_manage_and_complete_case(ilb_page, app_id)
 
 
-def _create_fa_oil(page: Page, sample_upload_file: types.FilePayload) -> int:
+def fa_oil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     #
     # Create application
     #
@@ -140,7 +140,7 @@ def _create_fa_oil(page: Page, sample_upload_file: types.FilePayload) -> int:
     return app_id
 
 
-def _manage_case_and_authorise_documents(page: Page, app_id) -> None:
+def fa_oil_manage_and_complete_case(page: Page, app_id) -> None:
     #
     # Complete Take Ownership
     #

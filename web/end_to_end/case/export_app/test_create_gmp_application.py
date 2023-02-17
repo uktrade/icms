@@ -1,6 +1,6 @@
 from playwright.sync_api import Page
 
-from . import conftest, types, utils
+from web.end_to_end import conftest, types, utils
 
 
 def test_can_create_gmp(pages: conftest.UserPages, sample_upload_file: types.FilePayload) -> None:
@@ -10,13 +10,13 @@ def test_can_create_gmp(pages: conftest.UserPages, sample_upload_file: types.Fil
     """
 
     with pages.exp_page() as exp_page:
-        com_id = _create_gmp(exp_page, sample_upload_file)
+        gmp_id = gmp_create(exp_page, sample_upload_file)
 
     with pages.ilb_page() as ilb_page:
-        _manage_case_and_authorise_documents(ilb_page, com_id)
+        gmp_manage_and_complete_case(ilb_page, gmp_id)
 
 
-def _create_gmp(page: Page, sample_upload_file: types.FilePayload) -> int:
+def gmp_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_role("link", name="New Certificate Application").click()
 
     page.get_by_role("link", name="Certificate of Good Manufacturing Practice").click()
@@ -87,7 +87,7 @@ def _create_gmp(page: Page, sample_upload_file: types.FilePayload) -> int:
     return gmp_id
 
 
-def _manage_case_and_authorise_documents(page: Page, gmp_id: int) -> None:
+def gmp_manage_and_complete_case(page: Page, gmp_id: int) -> None:
     #
     # Complete Take Ownership
     #

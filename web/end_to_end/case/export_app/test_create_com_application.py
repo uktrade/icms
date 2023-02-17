@@ -1,6 +1,6 @@
 from playwright.sync_api import Page
 
-from . import conftest, utils
+from web.end_to_end import conftest, utils
 
 
 def test_can_create_com(pages: conftest.UserPages) -> None:
@@ -10,13 +10,13 @@ def test_can_create_com(pages: conftest.UserPages) -> None:
     """
 
     with pages.exp_page() as exp_page:
-        com_id = _create_com(exp_page)
+        com_id = com_create(exp_page)
 
     with pages.ilb_page() as ilb_page:
-        _manage_case_and_authorise_documents(ilb_page, com_id)
+        com_manage_and_complete_case(ilb_page, com_id)
 
 
-def _create_com(page: Page) -> int:
+def com_create(page: Page) -> int:
     page.get_by_role("link", name="New Certificate Application").click()
 
     page.get_by_role("link", name="Certificate of Manufacture").click()
@@ -62,7 +62,7 @@ def _create_com(page: Page) -> int:
     return com_id
 
 
-def _manage_case_and_authorise_documents(page: Page, com_id: int) -> None:
+def com_manage_and_complete_case(page: Page, com_id: int) -> None:
     #
     # Complete Take Ownership
     #

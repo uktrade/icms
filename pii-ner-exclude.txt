@@ -2169,3 +2169,47 @@ CHIEF_REVOKE_WAIT
 ICMS
 0000001B
 f"COM/{this_year}/00002
+Select Importer
+Applicant
+Add Certificate
+Date Issued
+Expiry Date
+Document
+Complete Details
+Details of Who Bought
+Complete Take Ownership
+Certificate of Free Sale
+-- Select Exporter
+Select Country
+Country Of Manufacture
+the Good Manufacturing Practi
+Add PT Number
+Authorise Success: Application
+Workbasket
+Sanctions
+Exporter Name
+Add Supporting Document
+FS
+run mypy
+UID && .venv/bin
+flake8
+UID && \
+{UID
+pycache
+-exec rm
+npm &&
+list_s3
+http://localhost:4566 s3
+\
+2 \
+rm -f exporter_user.json && \
+&& \
+.venv/bin
+{args
+div aria-describedby="applicant-details-tooltip
+Certificate Type
+COM
+Certificate of Manufacture
+Certificate of Good Manufacturing Practice
+id_responsible_person_name
+ISO 22716
