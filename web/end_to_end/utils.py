@@ -38,3 +38,7 @@ def get_future_datetime() -> dt.datetime:
 
 def get_wb_row(page: Page, app_id: int) -> Locator:
     return page.locator(f'[data-test-id="workbasket-row-{app_id}"]')
+
+
+def get_search_row(page: Page, app_id: int) -> Locator:
+    return page.locator(f'[data-test-id="search-results-row-{app_id}"]')

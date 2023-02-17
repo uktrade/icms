@@ -1,6 +1,6 @@
 from playwright.sync_api import Page
 
-from . import conftest, utils
+from web.end_to_end import conftest, utils
 
 
 def test_can_create_cfs(pages: conftest.UserPages) -> None:
@@ -10,13 +10,13 @@ def test_can_create_cfs(pages: conftest.UserPages) -> None:
     """
 
     with pages.exp_page() as exp_page:
-        com_id = _create_cfs(exp_page)
+        cfs_id = cfs_create(exp_page)
 
     with pages.ilb_page() as ilb_page:
-        _manage_case_and_authorise_documents(ilb_page, com_id)
+        cfs_manage_and_complete_case(ilb_page, cfs_id)
 
 
-def _create_cfs(page: Page) -> int:
+def cfs_create(page: Page) -> int:
     page.get_by_role("link", name="New Certificate Application").click()
     page.get_by_role("link", name="Certificate of Free Sale").click()
 
@@ -111,7 +111,7 @@ def _create_cfs(page: Page) -> int:
     return cfs_id
 
 
-def _manage_case_and_authorise_documents(page: Page, cfs_id: int) -> None:
+def cfs_manage_and_complete_case(page: Page, cfs_id: int) -> None:
     #
     # Complete Take Ownership
     #

@@ -15,7 +15,7 @@
   <tbody>
 
   {% for rec in search_records %}
-    <tr>
+    <tr data-test-id="search-results-row-{{ rec.app_pk }}">
       <td>{% include "web/domains/case/search/export/case_details.html" %}</td>
       <td>{% include "web/domains/case/search/export/certificates.html" %}</td>
       <td>{% include "web/domains/case/search/export/submitted_date.html" %}</td>

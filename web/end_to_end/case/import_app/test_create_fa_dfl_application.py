@@ -1,6 +1,6 @@
 from playwright.sync_api import Page
 
-from . import conftest, types, utils
+from web.end_to_end import conftest, types, utils
 
 
 def test_can_create_fa_dfl(
@@ -12,13 +12,17 @@ def test_can_create_fa_dfl(
     """
 
     with pages.imp_page() as imp_page:
-        dfl_id = _create_fa_dfl(imp_page, sample_upload_file)
+        dfl_id = fa_dfl_create(imp_page, sample_upload_file)
 
     with pages.ilb_page() as ilb_page:
-        _manage_case_and_authorise_documents(ilb_page, dfl_id)
+        fa_dfl_manage_and_complete_case(ilb_page, dfl_id)
 
 
-def _create_fa_dfl(page: Page, sample_upload_file: types.FilePayload) -> int:
+def get_applicant_reference(dfl_id: int) -> str:
+    return f"fa_dfl_reference_{dfl_id}"
+
+
+def fa_dfl_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_role("link", name="New Import Application").click()
     utils.assert_page_url(page, "/import/")
 
@@ -44,7 +48,7 @@ def _create_fa_dfl(page: Page, sample_upload_file: types.FilePayload) -> int:
 
     page.get_by_label("Applicant's Reference", exact=False).click()
 
-    page.get_by_label("Applicant's Reference", exact=False).fill("Reference")
+    page.get_by_label("Applicant's Reference", exact=False).fill(get_applicant_reference(dfl_id))
 
     page.get_by_label("Proof Checked").check()
 
@@ -99,7 +103,7 @@ def _create_fa_dfl(page: Page, sample_upload_file: types.FilePayload) -> int:
     return dfl_id
 
 
-def _manage_case_and_authorise_documents(page: Page, dfl_id: int) -> None:
+def fa_dfl_manage_and_complete_case(page: Page, dfl_id: int) -> None:
     #
     # Complete Take Ownership
     #
