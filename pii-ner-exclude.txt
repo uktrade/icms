@@ -2213,3 +2213,7 @@ Certificate of Manufacture
 Certificate of Good Manufacturing Practice
 id_responsible_person_name
 ISO 22716
+Licence Date
+Issue Date
+Pending Further Information
+Certificate Country
