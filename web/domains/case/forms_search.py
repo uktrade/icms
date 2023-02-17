@@ -24,7 +24,7 @@ from web.utils.search import get_export_status_choices, get_import_status_choice
 # \s Any whitespace
 # \w Matches any alphanumeric character; this is equivalent to the class [a-zA-Z0-9_].
 # Any of the following symbols: ' " , / & @ - \ ( )
-wildcard_field_regex = r"^[%\s\w'\",/&@-\\\(\)]+$"
+wildcard_field_regex = r"^[\w\s'\",\&@\\/\-\(\)\%]+$"
 wildcard_invalid_error = "Enter a valid value, see help text for more information"
 
 
