@@ -2217,3 +2217,5 @@ Licence Date
 Issue Date
 Pending Further Information
 Certificate Country
+\.git
+\.mypy_cache
