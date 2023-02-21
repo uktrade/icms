@@ -2219,3 +2219,65 @@ Pending Further Information
 Certificate Country
 \.git
 \.mypy_cache
+Resource Co-ordinator    
+RESOURCE_COORDINATOR                                  
+Description              
+Maintain All             
+IMP_IMPORTER_CONTACTS<
+Dashboard User
+DASHBOARD_USER                                             
+ResourceTypes
+Search Cases             
+Import Application Case Officer
+Description                      
+Description                           
+Constabulary Contacts
+CON
+FIREARMS_AUTHORITY_EDITOR                                                                                              
+Description                         
+Exporter Agent Contacts
+EXP
+View Applications/Certificates
+|---------------------------------|----------------------------------------------------------------------------------------------------------|
+Description                     
+Edit Applications        |                                                                                       |
+EDIT_APPLICATION                                                                      
+Approve/Reject Agents
+Exporters
+AGENT_APPROVER                                                                                     
+Description                          
+Verified Section 5 Authority
+Importer Agent Contacts
+IMP
+View Applications/Licences
+VIEW_APP                                                                                             
+Description                 
+IMP_VIEW_APP
+EDIT_APP                                                                              
+IMP_EDIT_APP
+IMP_VARY_APP
+IMP_AGENT_APPROVER
+Team Coordinator         
+|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+REPORT_ADMINISTRATOR
+RCAT
+REPORTING_TEAM
+RPT
+REPORT_VIEWER                                                       
+Runner           
+Schedule Runner          
+Repeat Runner
+REPORT_RUNNER_REPEAT                                                                                       |
+Workbasket Viewers
+Team Coordinator            
+Workbasket Viewer        
+WORKBASKET_VIEWER                                                                        
+Workbasket Viewee        
+Country Set Super User
+COUNTRY_SET_ADMIN                                                                      
+ILB External
+Country Super Users](#country-super
+Exporter Contacts
+ILB External Users
+Importer Contacts
+Reporting Category Management
