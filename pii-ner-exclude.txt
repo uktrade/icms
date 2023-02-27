@@ -1102,7 +1102,6 @@ formats:<br/>-
 United Kingdom:<br
 update &&
 ENV
-https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 COPY requirements-*.txt
 requirements-dev.txt
 CMD
@@ -2353,3 +2352,7 @@ web.domains.legislation.urls
 section5/
 f"web.{self._value
 IMCS - Called
+npm -y
+RUN pip3
+{UID}
+6379
