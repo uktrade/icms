@@ -2281,3 +2281,65 @@ Exporter Contacts
 ILB External Users
 Importer Contacts
 Reporting Category Management
+REPLACE(xa.assignee_uref
+ON bs.brc_id
+ON bra.brc_id
+xbasa.stage_label
+bas
+xiad.status
+xiad.submitted_datetime
+xiad.refuse_reason
+xiad.chief_usage_status
+xiad.under_appeal_flag
+xiad.licence_extended licence_extended_flag
+xiad.last_updated_datetime last_update_datetime ,
+xiad.created_by_wua_id
+|| xiad.importer_office_id END
+xiad.coo_country_id origin_country_id
+xiad.coc_country_id
+xiad.date_provided_to_imi
+x.commodity_code
+x.know_bought_from
+XMLTYPE.getClobVal(x.cover_letter_text
+x.no_report_reason , x.completed_by_id
+section2 VARCHAR2(4
+XMLTYPE
+supplementary_report_xml XMLTYPE
+PATH '/IMA/FA_REPORTS/REPORT_COMPLETED_FLAG[not(fox-error)]/text
+cover_letter_text XMLTYPE
+LEFT JOIN
+xiad.ima_id
+ON lu.id
+ON case_owner.ima_id
+ON cl.imad_id = xiad.imad_id
+NULL END
+XMLTYPE.getClobVal(x.bought_from_details_xml
+auth_cover_items_listed
+sigl_wood_application_logged
+SIGL_FLAG
+"Add any import application errors
+"Add any export application errors
+Drafted Emails
+Sent Emails
+Drafted Further Information
+Select One
+PATH '
+value_gbp
+value_eur VARCHAR2(100
+SYRIA/REQUEST_PURPOSE
+sanction_emails_xml XMLTYPE
+r"CERTIFICATE
+INVALID
+customs_office_address VARCHAR2(4000
+suggested_id VARCHAR2(4000
+teg_commodities_xml XMLTYPE
+SUBCONTRACT_PRODUCTION
+Case Management System'
+img {
+Logo
+height="20%
+Import Licencing Branch
+West Precinct
+{{ process.cover_letter_text|safe }}
+{{ process.case_owner }
+Opening

@@ -16,7 +16,7 @@ from web.domains.case._import.fa.forms import (
 )
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
-from web.domains.case.services import case_progress, document_pack
+from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
     check_application_permission,
@@ -27,7 +27,10 @@ from web.domains.case.utils import (
 )
 from web.domains.case.views.utils import get_caseworker_view_readonly_status
 from web.domains.file.utils import create_file_model
-from web.domains.template.utils import add_template_data_on_submit
+from web.domains.template.utils import (
+    add_application_cover_letter,
+    add_template_data_on_submit,
+)
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
@@ -829,26 +832,10 @@ def set_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         if request.method == "POST":
             form = forms.SILCoverLetterTemplateForm(request.POST)
+
             if form.is_valid():
                 template = form.cleaned_data["template"]
-
-                # TODO: Revisit the content variables when we come back to this.
-                # Having to know what to pass to an editable template feels wrong.
-                # e.g.
-                # application.cover_letter = template.get_content(application)
-                application.cover_letter = template.get_content(
-                    {
-                        "CONTACT_NAME": application.contact,
-                        "LICENCE_NUMBER": None,  # TODO: What should this be?
-                        "APPLICATION_SUBMITTED_DATE": application.submit_datetime,
-                        "LICENCE_END_DATE": document_pack.pack_draft_get(
-                            application
-                        ).licence_end_date,
-                        "COUNTRY_OF_ORIGIN": application.origin_country.name,
-                        "COUNTRY_OF_CONSIGNMENT": application.consignment_country.name,
-                    }
-                )
-                application.save()
+                add_application_cover_letter(application, template)
 
                 return redirect(
                     reverse(

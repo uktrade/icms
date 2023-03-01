@@ -71,7 +71,7 @@ class ImportApplication(MigrationBase):
 
     commodity_group = models.ForeignKey(CommodityGroup, on_delete=models.PROTECT, null=True)
     case_owner = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
-    cover_letter = models.TextField(null=True)
+    cover_letter_text = models.TextField(null=True)
 
     imi_submitted_by = models.ForeignKey(
         User, on_delete=models.PROTECT, null=True, related_name="+"

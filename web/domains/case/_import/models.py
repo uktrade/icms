@@ -247,7 +247,7 @@ class ImportApplication(ApplicationBase):
         User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
 
-    cover_letter = models.TextField(blank=True, null=True)
+    cover_letter_text = models.TextField(blank=True, null=True)
 
     # Only relevant to FA-SIL firearms applications
     imi_submitted_by = models.ForeignKey(

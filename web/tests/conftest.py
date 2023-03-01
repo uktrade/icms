@@ -368,7 +368,7 @@ def completed_app(fa_sil_app_submitted, icms_admin_client):
     icms_admin_client.post(CaseURLS.take_ownership(app.pk))
 
     app.refresh_from_db()
-    app.cover_letter = "Example Cover letter"
+    app.cover_letter_text = "Example Cover letter"
     app.decision = app.APPROVE
     app.save()
 

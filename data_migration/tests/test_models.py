@@ -139,7 +139,7 @@ def test_import_application_get_data_export():
         "commodity_group_id",
         "consignment_country_id",
         "contact_id",
-        "cover_letter",
+        "cover_letter_text",
         "create_datetime",
         "created_by_id",
         "decision",

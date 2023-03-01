@@ -16,6 +16,7 @@ from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import get_case_page_title
+from web.domains.template.utils import get_cover_letter_content
 from web.models import (
     CertificateOfManufactureApplication,
     DerogationsApplication,
@@ -30,6 +31,7 @@ from web.models import (
 )
 from web.types import AuthenticatedHttpRequest
 from web.utils.commodity import annotate_commodity_unit
+from web.utils.pdf.types import DocumentTypes
 
 from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
 
@@ -110,6 +112,11 @@ def prepare_response(
             # When an application is refused we don't show licence details
             if application.decision != application.REFUSE:
                 context["licence"] = document_pack.pack_draft_get(application)
+
+        if cover_letter_flag:
+            context["cover_letter_text"] = get_cover_letter_content(
+                application, DocumentTypes.COVER_LETTER_PREVIEW
+            )
 
     # Import applications
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:

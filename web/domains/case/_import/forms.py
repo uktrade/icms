@@ -142,8 +142,13 @@ class CreateWoodQuotaApplicationForm(CreateImportApplicationForm):
 class CoverLetterForm(forms.ModelForm):
     class Meta:
         model = models.ImportApplication
-        fields = ("cover_letter",)
-        widgets = {"cover_letter": forms.Textarea(attrs={"lang": "html"})}
+        fields = ("cover_letter_text",)
+        widgets = {"cover_letter_text": forms.Textarea(attrs={"lang": "html"})}
+
+    def __init__(self, *args, readonly: bool = False, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["cover_letter_text"].widget.attrs["readonly"] = readonly
 
 
 class LicenceDateForm(forms.ModelForm):

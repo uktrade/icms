@@ -30,7 +30,7 @@ class Template(MigrationBase):
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
         content = data["template_content"]
 
-        foxid_regex = r"\sfoxid\=\"[a-zA-Z0-9]{6}_[a-zA-Z0-9]{9}\""
+        foxid_regex = r" foxid=\"[a-zA-Z0-9_]+\""
         content = content and re.sub(foxid_regex, "", content)
 
         if data["template_type"] == "LETTER_TEMPLATE":

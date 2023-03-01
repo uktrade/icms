@@ -92,7 +92,7 @@ CROSS JOIN XMLTABLE('/*'
     , export_certs_xml XMLTYPE PATH '/IMA/APP_DETAILS/WOOD_DETAILS/EXPORT_CERTIFICATE_LIST'
     , variations_xml XMLTYPE PATH '/IMA/APP_PROCESSING/VARIATIONS/VARIATION_REQUEST_LIST'
     , file_folder_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
-    , cover_letter XMLTYPE PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER'
+    , cover_letter_text XMLTYPE PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER/*'
   ) x
 WHERE status_control = 'C'
 ) ia_details ON ia_details.ima_id = xiad.ima_id
@@ -235,7 +235,7 @@ CROSS JOIN XMLTABLE('/*'
     , shipping_year VARCHAR2(4) PATH '/IMA/APP_DETAILS/TEX_DETAILS/YEAR/text()'
     , variations_xml XMLTYPE PATH '/IMA/APP_PROCESSING/VARIATIONS/VARIATION_REQUEST_LIST'
     , file_folder_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
-    , cover_letter XMLTYPE PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER'
+    , cover_letter_text XMLTYPE PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER/*'
   ) x
 WHERE status_control = 'C'
 ) ia_details ON ia_details.ima_id = xiad.ima_id

@@ -67,15 +67,15 @@ ref_query_model = [
     QueryModel(
         queries.commodity_group_commodity, "commodity_group_commodity", dm.CommodityGroupCommodity
     ),
+    QueryModel(queries.template, "template", dm.Template),
+    QueryModel(queries.cfs_paragraph, "cfs paragraph", dm.CFSScheduleParagraph),
+    QueryModel(queries.template_country, "template country", dm.TemplateCountry),
     QueryModel(queries.ia_type, "ia_type", dm.ImportApplicationType),
+    QueryModel(queries.endorsement_template, "endorsement template", dm.EndorsementTemplate),
     QueryModel(queries.usage, "usage", dm.Usage),
     QueryModel(queries.constabularies, "constabularies", dm.Constabulary),
     QueryModel(queries.obsolete_calibre_group, "obsolete_calibre_group", dm.ObsoleteCalibreGroup),
     QueryModel(queries.obsolete_calibre, "obsolete_calibre", dm.ObsoleteCalibre),
-    QueryModel(queries.template, "template", dm.Template),
-    QueryModel(queries.cfs_paragraph, "cfs paragraph", dm.CFSScheduleParagraph),
-    QueryModel(queries.template_country, "template country", dm.TemplateCountry),
-    QueryModel(queries.endorsement_template, "endorsement template", dm.EndorsementTemplate),
 ]
 
 ref_source_target = source_target_list(
@@ -88,9 +88,9 @@ ref_source_target = source_target_list(
         "CommodityType",
         "CommodityGroup",
         "Commodity",
-        "ImportApplicationType",
         "Template",
         "CFSScheduleParagraph",
+        "ImportApplicationType",
         "Usage",
         "Constabulary",
         "ObsoleteCalibreGroup",
