@@ -39,38 +39,24 @@
 {% block page_js %}
   {{ super() }}
   {{ form.media.js }}
-    <script>
-        var buttons = [
-            'bold',
-            'strikethrough',
-            'underline',
-            'italic',
-            'eraser',
-            '|',
-            'ul',
-            'ol',
-            '|',
-            'outdent',
-            'indent',
-            '|',
-            'font',
-            'fontsize',
-            'brush',
-            'paragraph',
-            '|',
-            'align',
-            '|',
-            'hr',
-            'symbol',
-        ]
+  <script>
+      var buttons = [
+          'bold',
+          'underline',
+          'italic',
+          'align',
+      ]
 
-        if($('textarea').length) {
-            new Jodit('textarea', {
-                buttons: buttons,
-                buttonsMD: buttons,
-                buttonsSM: buttons,
-                buttonsXS: buttons,
-            });
-        }
-    </script>
+      if($('textarea').length) {
+          new Jodit('textarea', {
+              buttons: buttons,
+              buttonsMD: buttons,
+              buttonsSM: buttons,
+              buttonsXS: buttons,
+              showCharsCounter: false,
+              showWordsCounter: false,
+              showXPathInStatusbar: false,
+          });
+      }
+  </script>
 {% endblock %}

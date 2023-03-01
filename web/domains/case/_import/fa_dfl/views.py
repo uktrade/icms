@@ -23,7 +23,6 @@ from web.domains.case.utils import (
 from web.domains.case.views.utils import get_caseworker_view_readonly_status
 from web.domains.file.models import File
 from web.domains.file.utils import create_file_model
-from web.domains.template.models import Template
 from web.domains.template.utils import add_template_data_on_submit
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
@@ -275,18 +274,6 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
             if form.is_valid() and not errors.has_errors():
                 submit_application(application, request, task)
-
-                template = Template.objects.get(template_code="COVER_FIREARMS_DEACTIVATED_FIREARMS")
-                application.cover_letter = template.get_content(
-                    {
-                        "CONTACT_NAME": application.contact,
-                        "LICENCE_NUMBER": None,  # TODO: What should this be?
-                        "APPLICATION_SUBMITTED_DATE": application.submit_datetime,
-                        "LICENCE_END_DATE": None,  # TODO: What should this be?
-                    }
-                )
-                application.save()
-
                 add_template_data_on_submit(application)
 
                 # Only create if needed

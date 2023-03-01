@@ -25,7 +25,6 @@ from web.domains.case.utils import (
 from web.domains.case.views.utils import get_caseworker_view_readonly_status
 from web.domains.file.models import File
 from web.domains.file.utils import create_file_model
-from web.domains.template.models import Template
 from web.domains.template.utils import add_template_data_on_submit
 from web.flow.models import Task
 from web.types import AuthenticatedHttpRequest
@@ -175,17 +174,6 @@ def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
             if form.is_valid() and not errors.has_errors():
                 submit_application(application, request, task)
-
-                template = Template.objects.get(template_code="COVER_FIREARMS_OIL")
-                application.cover_letter = template.get_content(
-                    {
-                        "CONTACT_NAME": application.contact,
-                        "APPLICATION_SUBMITTED_DATE": application.submit_datetime,
-                    }
-                )
-
-                application.save()
-
                 add_template_data_on_submit(application)
 
                 # Only create if needed

@@ -90,6 +90,7 @@ SELECT
   , TO_DATE(x.completed_datetime, 'YYYY-MM-DD') completed_datetime
   , XMLTYPE.getClobVal(XMLELEMENT("FA_GOODS_CERTS", XMLCONCAT(commodities_xml, fa_certs_xml))) fa_goods_certs_xml
   , x.file_folder_id
+  , XMLTYPE.getClobVal(x.cover_letter_text) cover_letter_text
 FROM impmgr.import_application_details ad
 CROSS JOIN XMLTABLE('/*'
   PASSING ad.xml_data
@@ -112,7 +113,7 @@ CROSS JOIN XMLTABLE('/*'
       '/IMA/FA_REPORTS/HISTORICAL_REPORT_COMPLETION_LIST/HISTORICAL_REPORT_COMPLETION[last()]/REPORT_COMPLETED_DATETIME[last()]/text()'
     , variations_xml XMLTYPE PATH '/IMA/APP_PROCESSING/VARIATIONS/VARIATION_REQUEST_LIST'
     , file_folder_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
-    , cover_letter XMLTYPE PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER'
+    , cover_letter_text XMLTYPE PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER/*'
   ) x
 WHERE status_control = 'C'
 ) ia_details ON ia_details.ima_id = xiad.ima_id

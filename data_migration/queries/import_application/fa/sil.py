@@ -87,7 +87,7 @@ SELECT
   , x.commodity_code commodity_group_id
   , CASE x.know_bought_from WHEN 'Y' THEN 1 WHEN 'N' THEN 0 ELSE NULL END know_bought_from
   , x.additional_comments
-  , XMLTYPE.getClobVal(x.cover_letter) cover_letter
+  , XMLTYPE.getClobVal(x.cover_letter_text) cover_letter_text
   , x.fa_authorities_xml
   , x.section5_authorities_xml
   , XMLTYPE.getClobVal(x.bought_from_details_xml) bought_from_details_xml
@@ -129,7 +129,7 @@ CROSS JOIN XMLTABLE('/*'
       '/IMA/FA_REPORTS/HISTORICAL_REPORT_COMPLETION_LIST/HISTORICAL_REPORT_COMPLETION[last()]/REPORT_COMPLETED_DATETIME[last()]/text()'
     , variations_xml XMLTYPE PATH '/IMA/APP_PROCESSING/VARIATIONS/VARIATION_REQUEST_LIST'
     , file_folder_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
-    , cover_letter XMLTYPE PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER'
+    , cover_letter_text XMLTYPE PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER/*'
   ) x
   WHERE status_control = 'C'
 ) ia_details ON ia_details.ima_id = xiad.ima_id

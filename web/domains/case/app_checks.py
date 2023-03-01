@@ -291,7 +291,7 @@ def get_response_preparation_errors(application: ImpOrExp, case_type) -> PageErr
                 )
 
         if app_t.cover_letter_flag:
-            if not application.cover_letter:
+            if not application.cover_letter_text:
                 prepare_errors.add(
                     FieldError(field_name="Cover Letter", messages=["You must enter this item"])
                 )
