@@ -5,7 +5,8 @@
 version: "3.8"
 services:
     db:
-        image: postgres:11.11
+        # TODO: Benchmark against running tests with postgres11.11
+        image: postgres:15.2
         volumes:
             - pgdata:/var/lib/postgresql/data
         environment:
@@ -15,7 +16,10 @@ services:
             - "6000:5432"
         networks:
             - icms_backend
-
+        # TODO: Need to benchmark and test this - it seemed slower
+        # See https://www.postgresql.org/docs/15/non-durability.html
+        # No need to guard against system-level crashes for local development databases.
+        # command: -c fsync=off  # -c synchronous_commit=off -c full_page_writes=off
     web:
         build:
             context: .

@@ -2343,3 +2343,4 @@ West Precinct
 {{ process.cover_letter_text|safe }}
 {{ process.case_owner }
 Opening
+postgres:15.2
