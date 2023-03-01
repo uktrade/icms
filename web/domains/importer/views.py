@@ -72,6 +72,7 @@ class ImporterListView(ModelFilterView):
         ]
 
 
+# TODO: This is wrong - we need a version that works for importers (not just admins)
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def edit_importer(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
