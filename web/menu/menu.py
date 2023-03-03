@@ -1,6 +1,5 @@
-#!/usr/bin/env python
-
 import structlog as logging
+from django.conf import settings
 from django.urls import resolve, reverse
 
 logger = logging.getLogger(__name__)
@@ -58,11 +57,12 @@ class MenuItem:
 
 
 class MenuLink(MenuItem):
-    def __init__(self, label=None, view=None, kwargs=None):
+    def __init__(self, label=None, view=None, kwargs=None, target: str = "_self"):
         super().__init__(label)
 
         self.view = view
         self.kwargs = kwargs
+        self.target = target
 
     def has_access(self, request):
         return has_view_access(request, self.view)
@@ -73,7 +73,7 @@ class MenuLink(MenuItem):
     def as_html(self, request):
         return f"""
             <li class="top-menu-action">
-              <a href="{self.get_link()}">{self.label}</a>
+              <a href="{self.get_link()}" target={self.target}>{self.label}</a>
             </li>
         """
 
@@ -82,7 +82,7 @@ class MenuButton(MenuLink):
     def as_html(self, request):
         return f"""
             <li class="top-menu-button">
-                <a href="{self.get_link()}" class="primary-button button" style="height:33px;line-height: 33px;">
+                <a href="{self.get_link()}" target={self.target} class="primary-button button" style="height:33px;line-height: 33px;">
                     {self.label}
                 </a>
             </li>
@@ -93,7 +93,7 @@ class SubMenuLink(MenuLink):
     def as_html(self, request):
         return f"""
             <li class="top-menu-subcategory-action">
-                <a href="{self.get_link()}">{self.label}</a>
+                <a href="{self.get_link()}" target={self.target}>{self.label}</a>
             </li>
         """
 
@@ -156,6 +156,13 @@ class MenuDropDown(MenuItem):
                 </ul>
             </li>
         """
+
+
+extra_menu_items = []
+if settings.DEBUG:
+    extra_menu_items = [
+        MenuLink(label="Permission Test Harness", view="perm_test:harness", target="blank"),
+    ]
 
 
 class Menu:
@@ -233,7 +240,7 @@ class Menu:
         ),
         MenuButton(label="New Import Application", view="import:choose"),
         MenuButton(label="New Certificate Application", view="export:choose"),
-    ]
+    ] + extra_menu_items
 
     def as_html(self, request):
         html = ""

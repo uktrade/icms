@@ -2,6 +2,7 @@ from django.db import models
 
 from web.domains.office.models import Office
 from web.models.mixins import Archivable
+from web.permissions import Perms
 
 
 class ExporterManager(models.Manager):
@@ -42,9 +43,4 @@ class Exporter(Archivable, models.Model):
             "name",
         )
 
-        # object-level permissions
-        permissions = [
-            ("is_contact_of_exporter", "Is contact of this exporter"),
-            # NOTE: this is given on the "main exporter" object, not on the "agent" object
-            ("is_agent_of_exporter", "Is agent of this exporter"),
-        ]
+        permissions = Perms.obj.exporter.get_permissions()

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import include, path, register_converter
 
 from web.views.views_healthcheck import health_check
@@ -40,3 +41,6 @@ urlpatterns = [
     path("misc/", include("web.misc.urls")),
     path("select2/", include("django_select2.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns.extend([path("permissions-test-harness/", include("web.perm_harness.urls"))])

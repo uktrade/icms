@@ -3,6 +3,7 @@ from django.db import models
 from web.domains.office.models import Office
 from web.domains.user.models import User
 from web.models.mixins import Archivable
+from web.permissions import Perms
 
 
 class ImporterManager(models.Manager):
@@ -12,8 +13,6 @@ class ImporterManager(models.Manager):
 
 # TODO: explore if we should use the "direct foreign keys" for django-guardian
 # for efficiency; see https://django-guardian.readthedocs.io/en/stable/userguide/performance.html
-
-
 class Importer(Archivable, models.Model):
     # Regions
     INDIVIDUAL = "INDIVIDUAL"
@@ -102,9 +101,4 @@ class Importer(Archivable, models.Model):
             "name",
         )
 
-        # object-level permissions
-        permissions = [
-            ("is_contact_of_importer", "Is contact of this importer"),
-            # NOTE: this is given on the "main importer" object, not on the "agent" object
-            ("is_agent_of_importer", "Is agent of this importer"),
-        ]
+        permissions = Perms.obj.importer.get_permissions()
