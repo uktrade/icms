@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Permission Test harness</title>
+</head>
+<body>
+
+<h1>Permission Test harness</h1>
+<p>This is a test to see if perms is usable in the templates:</p>
+<p>{{ perms }}</p>
+
+{% for p in ["web.importer_access", "web.exporter_access", "web.ilb_admin", "web.mailshot_access"] %}
+  <p>{{ p }} in perms: {{ p in perms }}</p>
+{% endfor %}
+<br>
+</body>
+</html>
