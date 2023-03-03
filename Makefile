@@ -80,7 +80,7 @@ check-staging-with-deploy: ## run Django check for staging environment settings 
 
 manage: ## execute manage.py
 	unset UID && \
-	docker-compose run --rm web python ./manage.py ${COMMAND}
+	docker-compose run --rm web python ./manage.py ${args}
 
 add_dummy_data: ## add dummy data
 	unset UID && \
@@ -135,7 +135,7 @@ build: ## build docker containers
 
 shell: ## Starts the Python interactive interpreter
 	unset UID && \
-	docker-compose run --rm web python ./manage.py shell -i python
+	docker-compose run --rm web python ./manage.py shell -i python ${args}
 
 psql: ## Starts psql
 	@unset UID && \
