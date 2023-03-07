@@ -70,6 +70,7 @@ ROOT_URLCONF = "config.urls"
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 TEMPLATES = [
+    # Jinja defined for IMCS templates.
     {
         "BACKEND": "django.template.backends.jinja2.Jinja2",
         "DIRS": [os.path.join(BASE_DIR, "web/templates")],
@@ -81,9 +82,11 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "web.permissions_context.request_user_object_permissions",
             ],
         },
     },
+    # DjangoTemplates defined for Django admin application.
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [],
@@ -265,8 +268,10 @@ COMPANIES_HOUSE_DOMAIN = os.environ.get(
 COMPANIES_HOUSE_TOKEN = os.environ.get("COMPANIES_HOUSE_TOKEN", "changeme")
 
 # guardian config
+# https://django-guardian.readthedocs.io/en/stable/userguide/custom-user-model.html#custom-user-model
 GUARDIAN_MONKEY_PATCH = False
 GUARDIAN_RENDER_403 = True
+# https://django-guardian.readthedocs.io/en/stable/userguide/custom-user-model.html#anonymous-user-creation
 GUARDIAN_GET_INIT_ANONYMOUS_USER = "web.auth.models.get_anonymous_user_instance"
 
 # Used to add dummy test in non prod environments

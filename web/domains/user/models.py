@@ -9,7 +9,7 @@ from guardian.shortcuts import get_objects_for_user
 from .managers import UserManager
 
 
-class User(AbstractUser, GuardianUserMixin):
+class User(GuardianUserMixin, AbstractUser):
     # Statuses
     NEW = "NEW"
     BLOCKED = "BLOCKED"

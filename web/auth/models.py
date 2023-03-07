@@ -4,6 +4,7 @@ from guardian.conf import settings as guardian_settings
 from web.models import User
 
 
+# https://django-guardian.readthedocs.io/en/stable/userguide/custom-user-model.html#anonymous-user-creation
 def get_anonymous_user_instance(UserModel: type[User]) -> User:
     # Change the guardian anonymous user pk to match V1 guest user
     kwargs = {
