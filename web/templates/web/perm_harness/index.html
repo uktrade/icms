@@ -2,17 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Permission Test harness</title>
+  <title>Permission Test Harness</title>
 </head>
 <body>
 
-<h1>Permission Test harness</h1>
-<p>This is a test to see if perms is usable in the templates:</p>
-<p>{{ perms }}</p>
+{% macro importer_object_permissions(imp) %}
+  <p style="font-weight: bold">Importer object permissions - Importer: {{ imp }}</p>
+  {% for perm in ["web.is_contact_of_importer", "web.is_agent_of_importer"] %}
+    <p>{{ perm }} in UserObjectPermissions for importer "{{ imp }}": {{ user_obj_perms.has_perm(perm, imp) }}</p>
+  {% endfor %}
+{% endmacro %}
 
-{% for p in ["web.importer_access", "web.exporter_access", "web.ilb_admin", "web.mailshot_access"] %}
-  <p>{{ p }} in perms: {{ p in perms }}</p>
+{% macro exporter_object_permissions(exp) %}
+  <p style="font-weight: bold">Exporter object permissions - Exporter: {{ exp }}</p>
+  {% for perm in ["web.is_contact_of_exporter", "web.is_agent_of_exporter"] %}
+    <p>{{ perm }} in UserObjectPermissions for exporter "{{ exp }}": {{ user_obj_perms.has_perm(perm, exp) }}</p>
+  {% endfor %}
+{% endmacro %}
+
+<h1>Permission Test Harness</h1>
+
+<h2>System permissions (Django) for request user {{ request.user }}</h2>
+{% for perm in ["web.importer_access", "web.exporter_access", "web.ilb_admin", "web.mailshot_access"] %}
+  <p>{{ perm }} in user system perms: {{ perm in perms }}</p>
 {% endfor %}
 <br>
+
+<h2>Object permissions (Django Guardian) for request user {{ request.user }}</h2>
+{{ importer_object_permissions(dummy_importer) }}
+{{ exporter_object_permissions(dummy_exporter) }}
+
+{% for importer in importers %}
+  {{ importer_object_permissions(importer) }}
+{% endfor %}
+
+{% for exporter in exporters %}
+  {{ exporter_object_permissions(exporter) }}
+{% endfor %}
+
 </body>
 </html>

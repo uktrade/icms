@@ -2356,3 +2356,35 @@ npm -y
 RUN pip3
 {UID}
 6379
+" Django
+VCAP_SERVICES
+SessionMiddleware
+django.middleware.common
+CommonMiddleware
+AuthenticationMiddleware
+MessageMiddleware
+AutoField
+BACKEND
+Auth
+SESBackend
+CompressorFinder
+ClamAVFileUploadHandler
+django_chunk_upload_handlers.s3.S3FileUploadHandler
+RedisCache
+DefaultClient
+select2
+COMPANIES_HOUSE_TOKEN
+Django Compressor
+n(11).n(3
+ICMS_V1_REPLICA_PASSWORD
+Structured
+BLOCKED
+Default
+Home
+Guardians
+Copied
+Django Guardian
+{{ exporter_object_permissions(dummy_exporter
+{{ importer_object_permissions(importer
+{{ exporter_object_permissions(exporter
+apps

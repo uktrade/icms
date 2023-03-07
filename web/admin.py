@@ -4,6 +4,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import QuerySet
+from guardian.admin import GuardedModelAdmin
 
 from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case._import.sanctions.models import SanctionsAndAdhocApplication
@@ -41,6 +42,14 @@ class CountryGroupAdmin(admin.ModelAdmin):
     form = CountryGroupModelForm
 
 
+class ImporterAdmin(GuardedModelAdmin):
+    ...
+
+
+class ExporterAdmin(GuardedModelAdmin):
+    ...
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(CommodityType)
 admin.site.register(Commodity)
@@ -51,14 +60,14 @@ admin.site.register(ContentType)
 admin.site.register(Process)
 admin.site.register(PhoneNumber)
 admin.site.register(PersonalEmail)
-admin.site.register(Importer)
+admin.site.register(Importer, ImporterAdmin)
 admin.site.register(ImportApplicationType)
 admin.site.register(ExportApplicationType)
 admin.site.register(CountryGroup, CountryGroupAdmin)
 admin.site.register(Country)
 admin.site.register(ImportApplication)
 admin.site.register(ExportApplication)
-admin.site.register(Exporter)
+admin.site.register(Exporter, ExporterAdmin)
 admin.site.register(SanctionsAndAdhocApplication)
 admin.site.register(SanctionsAndAdhocApplicationGoods)
 admin.site.register(DerogationsApplication)
