@@ -27,6 +27,12 @@
 
 <h1>Permission Test Harness</h1>
 
+<h2>Actions</h2>
+<form action="{{ icms_url("perm_test:create-data") }}" method="post">
+  {{ csrf_input }}
+  <input type="submit" value="Create Test Data">
+</form>
+
 <hr>
 <h2>System permissions (Django) for request user {{ request.user }}</h2>
 <ul>
@@ -38,6 +44,8 @@
 
 <hr>
 <h2>Object permissions (Django Guardian) for request user {{ request.user }}</h2>
+{% set _ = user_obj_perms.prefetch_perms(importers) %}
+{% set _ = user_obj_perms.prefetch_perms(exporters) %}
 
 {% for importer in importers %}
   {{ importer_object_permissions(user_obj_perms, importer) }}
@@ -49,6 +57,9 @@
 
 {% for user in users %}
   {% set user_obj_perms_checker = get_user_obj_perms(user) %}
+  {% set _ = user_obj_perms_checker.prefetch_perms(importers) %}
+  {% set _ = user_obj_perms_checker.prefetch_perms(exporters) %}
+
   <hr>
   <h2>Object permissions for user {{ user.full_name }}</h2>
   {% for importer in importers %}
