@@ -3,7 +3,7 @@ from typing import Any
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import TemplateView
 
-from web.models import Exporter, Importer
+from web.models import Exporter, Importer, User
 from web.permissions import Perms
 
 
@@ -17,8 +17,13 @@ class PermissionTestHarness(PermissionRequiredMixin, LoginRequiredMixin, Templat
         context = super().get_context_data(**kwargs)
 
         return context | {
-            "dummy_importer": Importer.objects.get(name="Dummy importer"),
-            "dummy_exporter": Exporter.objects.get(name="Dummy exporter"),
-            "importers": Importer.objects.filter(is_active=True),
-            "exporters": Exporter.objects.filter(is_active=True),
+            "importers": Importer.objects.filter(
+                name__in=["Dummy importer", "Dummy agent for importer"]
+            ),
+            "exporters": Exporter.objects.filter(
+                name__in=["Dummy exporter", "Dummy agent exporter"]
+            ),
+            "users": User.objects.filter(
+                username__in=["ilb_admin", "ilb_admin_2", "importer_user", "exporter_user", "agent"]
+            ),
         }
