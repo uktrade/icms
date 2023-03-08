@@ -6,38 +6,58 @@
 </head>
 <body>
 
-{% macro importer_object_permissions(imp) %}
-  <p style="font-weight: bold">Importer object permissions - Importer: {{ imp }}</p>
-  {% for perm in ["web.is_contact_of_importer", "web.is_agent_of_importer"] %}
-    <p>{{ perm }} in UserObjectPermissions for importer "{{ imp }}": {{ user_obj_perms.has_perm(perm, imp) }}</p>
-  {% endfor %}
+{% macro _object_permissions(checker, obj, perms) %}
+  <p style="font-weight: bold">Object permissions - {{ obj }}</p>
+  <ul>
+    {% for perm in perms %}
+      <li>{{ perm }}: {{ checker.has_perm(perm, obj) }}</li>
+    {% endfor %}
+  </ul>
 {% endmacro %}
 
-{% macro exporter_object_permissions(exp) %}
-  <p style="font-weight: bold">Exporter object permissions - Exporter: {{ exp }}</p>
-  {% for perm in ["web.is_contact_of_exporter", "web.is_agent_of_exporter"] %}
-    <p>{{ perm }} in UserObjectPermissions for exporter "{{ exp }}": {{ user_obj_perms.has_perm(perm, exp) }}</p>
-  {% endfor %}
+{% macro importer_object_permissions(obj_perm_checker, imp) %}
+  {% set perms = ["web.is_contact_of_importer", "web.is_agent_of_importer"] %}
+  {{ _object_permissions(obj_perm_checker, imp, perms) }}
+{% endmacro %}
+
+{% macro exporter_object_permissions(obj_perm_checker, exp) %}
+  {% set perms = ["web.is_contact_of_exporter", "web.is_agent_of_exporter"] %}
+  {{ _object_permissions(obj_perm_checker, exp, perms) }}
 {% endmacro %}
 
 <h1>Permission Test Harness</h1>
 
+<hr>
 <h2>System permissions (Django) for request user {{ request.user }}</h2>
-{% for perm in ["web.importer_access", "web.exporter_access", "web.ilb_admin", "web.mailshot_access"] %}
-  <p>{{ perm }} in user system perms: {{ perm in perms }}</p>
-{% endfor %}
+<ul>
+  {% for perm in ["web.importer_access", "web.exporter_access", "web.ilb_admin", "web.mailshot_access"] %}
+    <li>{{ perm }} in user system perms: {{ perm in perms }}</li>
+  {% endfor %}
+</ul>
 <br>
 
+<hr>
 <h2>Object permissions (Django Guardian) for request user {{ request.user }}</h2>
-{{ importer_object_permissions(dummy_importer) }}
-{{ exporter_object_permissions(dummy_exporter) }}
 
 {% for importer in importers %}
-  {{ importer_object_permissions(importer) }}
+  {{ importer_object_permissions(user_obj_perms, importer) }}
 {% endfor %}
 
 {% for exporter in exporters %}
-  {{ exporter_object_permissions(exporter) }}
+  {{ exporter_object_permissions(user_obj_perms, exporter) }}
+{% endfor %}
+
+{% for user in users %}
+  {% set user_obj_perms_checker = get_user_obj_perms(user) %}
+  <hr>
+  <h2>Object permissions for user {{ user.full_name }}</h2>
+  {% for importer in importers %}
+    {{ importer_object_permissions(user_obj_perms_checker, importer) }}
+  {% endfor %}
+
+  {% for exporter in exporters %}
+    {{ exporter_object_permissions(user_obj_perms_checker, exporter) }}
+  {% endfor %}
 {% endfor %}
 
 </body>

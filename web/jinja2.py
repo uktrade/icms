@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 import pytz
 from compressor.contrib.jinja2ext import CompressorExtension
@@ -11,6 +12,7 @@ from django.db.models import Model
 from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.formats import get_format
+from guardian.core import ObjectPermissionChecker
 from jinja2 import Environment, pass_eval_context
 from markupsafe import Markup, escape
 
@@ -19,6 +21,9 @@ from web.domains.case.types import ImpOrExp
 from web.domains.workbasket.actions.ilb_admin_actions import TakeOwnershipAction
 from web.menu import Menu
 from web.types import AuthenticatedHttpRequest
+
+if TYPE_CHECKING:
+    from web.domains.user.models import User
 
 
 @pass_eval_context
@@ -148,6 +153,14 @@ def get_active_task_list(application):
     return case_progress.get_active_task_list(application)
 
 
+def get_user_obj_perms(user: "User") -> ObjectPermissionChecker:
+    """Return a ObjectPermissionChecker initialised for the supplied user."""
+
+    checker = ObjectPermissionChecker(user)
+
+    return checker
+
+
 def environment(**options):
     env = Environment(extensions=[CompressorExtension], **options)
     env.globals.update(
@@ -163,6 +176,7 @@ def environment(**options):
             "show_take_ownership_url": show_take_ownership_url,
             "get_latest_issued_document": get_latest_issued_document,
             "get_active_task_list": get_active_task_list,
+            "get_user_obj_perms": get_user_obj_perms,
         }
     )
     env.filters["show_all_attrs"] = show_all_attrs
