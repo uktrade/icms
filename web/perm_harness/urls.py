@@ -5,5 +5,6 @@ from . import views
 app_name = "perm_test"
 
 urlpatterns = [
-    path("", views.PermissionTestHarness.as_view(), name="harness"),
+    path("", views.PermissionTestHarnessView.as_view(), name="harness"),
+    path("create-data/", views.CreateHarnessDataView.as_view(), name="create-data"),
 ]

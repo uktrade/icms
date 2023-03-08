@@ -1,4 +1,5 @@
 from django.db import models
+from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from web.domains.office.models import Office
 from web.domains.user.models import User
@@ -11,8 +12,6 @@ class ImporterManager(models.Manager):
         return self.filter(main_importer__isnull=False)
 
 
-# TODO: explore if we should use the "direct foreign keys" for django-guardian
-# for efficiency; see https://django-guardian.readthedocs.io/en/stable/userguide/performance.html
 class Importer(Archivable, models.Model):
     # Regions
     INDIVIDUAL = "INDIVIDUAL"
@@ -102,3 +101,13 @@ class Importer(Archivable, models.Model):
         )
 
         permissions = Perms.obj.importer.get_permissions()
+
+
+# Direct foreign key support for Django-Guardian
+# https://django-guardian.readthedocs.io/en/stable/userguide/performance.html#direct-foreign-keys
+class ImporterUserObjectPermission(UserObjectPermissionBase):
+    content_object = models.ForeignKey(Importer, on_delete=models.CASCADE)
+
+
+class ImporterGroupObjectPermission(GroupObjectPermissionBase):
+    content_object = models.ForeignKey(Importer, on_delete=models.CASCADE)
