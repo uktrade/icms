@@ -12,7 +12,7 @@ export DJANGO_SETTINGS_MODULE=config.settings.test
 # --create-db" to force re-creation of the test database.
 #
 # For speed run with --dist=no when testing a single file
-docker-compose run --rm web pytest --ignore web/end_to_end --tb=short --dist=loadfile --tx=4*popen "$@"
+docker-compose run --rm web pytest --ignore web/end_to_end --tb=short -n=auto --dist=loadfile "$@"
 
 # With coverage (terminal report)
 #docker-compose run --rm web \
