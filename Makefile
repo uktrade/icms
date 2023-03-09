@@ -161,7 +161,7 @@ test: ## run tests (circleci; don't use locally as it produces a coverage report
 		--cov=web \
 		--cov=config \
 		--cov-report xml:test-reports/cov.xml \
-		--numprocesses 2 \
+		--maxprocesses=2 \
 		--cov-fail-under 66
 
 migration_test:
