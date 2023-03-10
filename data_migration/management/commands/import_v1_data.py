@@ -130,56 +130,51 @@ class Command(MigrationBaseCommand):
 
         self.stdout.write("Task Data Created!")
 
+    def _create_missing_packs(
+        self,
+        app_model: type[dm.ImportApplication] | type[dm.ExportApplication],
+        pack_model: type[web.ImportApplicationLicence] | type[web.ExportApplicationCertificate],
+        filter_params: dict[str, bool],
+    ):
+        """Create missing document packs for V1 where licences / certificates have not been generated"""
+
+        statuses = (
+            ("Draft", ["VARIATION_REQUESTED", "PROCESSING", "SUBMITTED"], "DR"),
+            ("Revoked", ["REVOKED"], "RE"),
+            ("Archived", ["COMPLETED", "STOPPED", "WITHDRAWN"], "AR"),
+        )
+
+        for name, app_status, pack_status in statuses:
+            self.stdout.write(f"Creating {name} {pack_model.__name__}")
+
+            pks = (
+                app_model.objects.filter(
+                    submit_datetime__isnull=False, status__in=app_status, **filter_params
+                )
+                .values_list("pk", flat=True)
+                .iterator(chunk_size=2000)
+            )
+
+            while True:
+                batch = [
+                    pack_model(import_application_id=pk, status=pack_status)
+                    for pk in islice(pks, self.batch_size)
+                ]
+
+                if not batch:
+                    break
+
+                pack_model.objects.bulk_create(batch)
+
     def _create_missing_ia_licences(self, skip: bool) -> None:
         if skip:
             self.stdout.write("Skipping Creating Missing Import Application Licences")
             return
 
-        ia_qs = dm.ImportApplication.objects.filter(
-            submit_datetime__isnull=False, ima__licences__isnull=True
-        )
+        app_model = dm.ImportApplication
+        pack_model = web.ImportApplicationLicence
 
-        # TODO ICMSLST-1850: Determine correct application status for draft licence status
-        draft_statuses = ["VARIATION_REQUESTED", "PROCESSING", "SUBMITTED"]
-        draft_pks = (
-            ia_qs.filter(status__in=draft_statuses)
-            .values_list("pk", flat=True)
-            .iterator(chunk_size=2000)
-        )
-        self.stdout.write("Creating Draft Import Application Licences")
-
-        while True:
-            batch = [
-                web.ImportApplicationLicence(import_application_id=pk, status="DR")
-                for pk in islice(draft_pks, self.batch_size)
-            ]
-
-            if not batch:
-                break
-
-            web.ImportApplicationLicence.objects.bulk_create(batch)
-
-        archived_pks = (
-            ia_qs.exclude(status__in=draft_statuses)
-            .values_list("pk", flat=True)
-            .iterator(chunk_size=2000)
-        )
-        self._log_time()
-
-        self.stdout.write("Creating Archived Import Application Licences")
-
-        while True:
-            batch = [
-                web.ImportApplicationLicence(import_application_id=pk, status="AR")
-                for pk in islice(archived_pks, self.batch_size)
-            ]
-
-            if not batch:
-                break
-
-            web.ImportApplicationLicence.objects.bulk_create(batch)
-
-        self._log_time()
+        self._create_missing_packs(app_model, pack_model, {"ima__licences__isnull": True})
         self.stdout.write("Missing Import Application Licence Data Created!")
 
     def _create_missing_export_certificates(self, skip: bool) -> None:
@@ -187,50 +182,10 @@ class Command(MigrationBaseCommand):
             self.stdout.write("Skipping Creating Missing Export Application Certificates")
             return
 
-        export_qs = dm.ExportApplication.objects.filter(
-            submit_datetime__isnull=False, ca__certificates__isnull=True
-        )
+        app_model = dm.ExportApplication
+        pack_model = web.ExportApplicationCertificate
 
-        # TODO ICMSLST-1850: Determine correct application status for draft certificate status
-        draft_statuses = ["VARIATION_REQUESTED", "PROCESSING", "SUBMITTED"]
-        draft_pks = (
-            export_qs.filter(status__in=draft_statuses)
-            .values_list("pk", flat=True)
-            .iterator(chunk_size=2000)
-        )
-        self.stdout.write("Creating Draft Export Application Certificates")
-
-        while True:
-            batch = [
-                web.ExportApplicationCertificate(export_application_id=pk, status="DR")
-                for pk in islice(draft_pks, self.batch_size)
-            ]
-
-            if not batch:
-                break
-
-            web.ExportApplicationCertificate.objects.bulk_create(batch)
-
-        archived_pks = (
-            export_qs.exclude(status__in=draft_statuses)
-            .values_list("pk", flat=True)
-            .iterator(chunk_size=2000)
-        )
-        self._log_time()
-        self.stdout.write("Creating Archived Export Application Certificates")
-
-        while True:
-            batch = [
-                web.ExportApplicationCertificate(export_application_id=pk, status="AR")
-                for pk in islice(archived_pks, self.batch_size)
-            ]
-
-            if not batch:
-                break
-
-            web.ExportApplicationCertificate.objects.bulk_create(batch)
-
-        self._log_time()
+        self._create_missing_packs(app_model, pack_model, {"ca__certificates__isnull": True})
         self.stdout.write("Missing Export Application Certificate Data Created!")
 
     def _update_auto_timestamps(self):

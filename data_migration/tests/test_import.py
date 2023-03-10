@@ -140,7 +140,7 @@ def test_import_wood_application_data(dummy_dm_settings):
         elif i < 5:
             status = "PROCESSING"
         else:
-            status = "COMPLETE"
+            status = "COMPLETED"
 
         ia = factory.ImportApplicationFactory(
             pk=pk,
@@ -154,7 +154,7 @@ def test_import_wood_application_data(dummy_dm_settings):
             submit_datetime=submit_datetime,
         )
 
-        if status == "COMPLETE":
+        if status == "COMPLETED":
             dm.ImportApplicationLicence.objects.create(
                 ima=process, status="AC", imad_id=ia.imad_id, created_at=timezone.now()
             )
@@ -364,7 +364,7 @@ def test_import_dfl_data(dummy_dm_settings):
         ia = factory.ImportApplicationFactory(
             pk=pk,
             ima=process,
-            status="COMPLETE",
+            status="COMPLETED",
             imad_id=pk + 7,
             application_type=iat,
             created_by_id=user_pk,

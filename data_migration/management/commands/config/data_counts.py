@@ -14,6 +14,18 @@ CHECK_DATA_COUNTS: list[CheckCount] = [
         17,
         web.Section5Clause,
     ),
+    CheckCount(
+        "Import Applications Without Document Packs",
+        0,
+        web.ImportApplication,
+        {"licences__isnull": True, "submit_datetime__isnull": False},
+    ),
+    CheckCount(
+        "Export Applications Without Document Packs",
+        0,
+        web.ExportApplication,
+        {"certificates__isnull": True, "submit_datetime__isnull": False},
+    ),
 ]
 
 CHECK_DATA_QUERIES: list[CheckQuery] = [

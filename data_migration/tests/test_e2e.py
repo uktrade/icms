@@ -564,7 +564,7 @@ def test_import_oil_data(mock_connect, dummy_dm_settings):
     assert oil1.importapplication_ptr.process_ptr.tasks.count() == 0
     assert oil2.importapplication_ptr.process_ptr.tasks.count() == 0
 
-    dfl = web.DFLApplication.objects.first()
+    dfl = web.DFLApplication.objects.get(status="COMPLETED")
     assert dfl.proof_checked is True
     assert dfl.constabulary_id == 1
     assert dfl.supplementary_info.reports.count() == 1
@@ -573,6 +573,10 @@ def test_import_oil_data(mock_connect, dummy_dm_settings):
     sr4 = dfl.supplementary_info.reports.first()
     assert sr4.firearms.filter(is_upload=True).count() == 1
     assert sr4.firearms.filter(is_manual=True).count() == 1
+
+    dfl_revoked = web.DFLApplication.objects.get(status="REVOKED")
+    assert dfl_revoked.licences.count() == 1
+    assert dfl_revoked.licences.filter(status="RE").count() == 1
 
 
 user_xml_parsers = {

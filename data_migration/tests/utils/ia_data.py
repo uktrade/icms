@@ -621,6 +621,22 @@ ia_query_result = {
                 "pdf",  # content_type
                 1000,  # file_size
             ),
+            (
+                52,  # folder_id
+                "IMP_APP_DOCUMENTS",  # folder_type
+                "dflapplication",  # app_model
+                "IMP_SUPPORTING_DOCS",  # target_type
+                "EMPTY",  # status
+                5002,  # target_id
+                5002,  # fft_id
+                None,  # version_id
+                None,  # created_date
+                None,  # created_by_id
+                None,  # path
+                None,  # filename
+                None,  # content_type
+                None,  # file_size
+            ),
         ],
     ),
     queries.sanction_application_files: (
@@ -847,7 +863,7 @@ ia_query_result = {
                 21,  # imad_id
                 10,  # file_folder_id
                 "IMA/2022/2234",  # reference
-                "COMPLETE",  # status
+                "COMPLETED",  # status
                 datetime(2022, 4, 23),  # submit_datetime
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
@@ -903,7 +919,7 @@ ia_query_result = {
                 22,  # imad_id
                 11,  # file_folder_id
                 "IMA/2022/2235",  # reference
-                "COMPLETE",  # status
+                "COMPLETED",  # status
                 datetime(2022, 4, 23),  # submit_datetime
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
@@ -970,7 +986,7 @@ ia_query_result = {
                 70,  # imad_id
                 60,  # file_folder_id
                 "IMA/2022/6234",  # reference
-                "COMPLETE",  # status
+                "COMPLETED",  # status
                 datetime(2022, 4, 23),  # submit_datetime
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
@@ -1008,7 +1024,7 @@ ia_query_result = {
                 1110,  # imad_id
                 100,  # file_folder_id
                 "IMA/2022/10234",  # reference
-                "COMPLETE",  # status
+                "COMPLETED",  # status
                 datetime(2022, 4, 23),  # submit_datetime
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
@@ -1035,7 +1051,7 @@ ia_query_result = {
                 1111,  # imad_id
                 101,  # file_folder_id
                 "IMA/2022/10235",  # reference
-                "COMPLETE",  # status
+                "COMPLETED",  # status
                 datetime(2022, 4, 23),  # submit_datetime
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
@@ -1067,7 +1083,7 @@ ia_query_result = {
                 51,  # imad_id
                 41,  # file_folder_id
                 "IMA/2022/4234",  # reference
-                "COMPLETE",  # status
+                "COMPLETED",  # status
                 datetime(2022, 4, 23),  # submit_datetime
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
@@ -1089,7 +1105,7 @@ ia_query_result = {
                 52,  # imad_id
                 42,  # file_folder_id
                 "IMA/2022/4235",  # reference
-                "COMPLETE",  # status
+                "COMPLETED",  # status
                 datetime(2022, 4, 23),  # submit_datetime
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
@@ -1111,7 +1127,7 @@ ia_query_result = {
                 53,  # imad_id
                 43,  # file_folder_id
                 "IMA/2022/4236",  # reference
-                "COMPLETE",  # status
+                "COMPLETED",  # status
                 datetime(2022, 4, 23),  # submit_datetime
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
@@ -1146,7 +1162,7 @@ ia_query_result = {
                 61,  # imad_id
                 51,  # file_folder_id
                 "IMA/2022/5234",  # reference
-                "COMPLETE",  # status
+                "COMPLETED",  # status
                 datetime(2022, 4, 23),  # submit_datetime
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
@@ -1168,7 +1184,35 @@ ia_query_result = {
                 xd.dfl_sr,  # supplementary_report_xml
                 xd.dfl_goods_cert,  # fa_goods_cert_xml
                 xd.cover_letter_text_dfl_v1,  # cover_letter_text
-            )
+            ),
+            (
+                52,  # ima_id
+                62,  # imad_id
+                52,  # file_folder_id
+                "IMA/2022/5235",  # reference
+                "REVOKED",  # status
+                datetime(2022, 4, 23),  # submit_datetime
+                datetime(2022, 4, 22),  # create_datetime
+                datetime(2022, 4, 22),  # created
+                0,  # vartiation_no
+                None,  # licence_reference
+                2,  # submitted_by_id
+                2,  # created_by_id
+                2,  # last_updated_by_id
+                2,  # importer_id
+                "i-2-1",  # importer_office_legacy_id
+                2,  # contact_id
+                10,  # application_type
+                "DFLApplication",  # process_type
+                "APPROVE",  # decision
+                None,  # variations_xml
+                True,  # deactivated_firearm
+                True,  # proof_checked
+                1,  # constabulary_id
+                None,  # supplementary_report_xml
+                None,  # fa_goods_cert_xml
+                None,  # cover_letter_text
+            ),
         ],
     ),
     queries.oil_application: (
@@ -1185,7 +1229,7 @@ ia_query_result = {
                 31,  # imad_id
                 21,  # file_folder_id
                 "IMA/2022/3234",  # reference
-                "COMPLETE",  # status
+                "COMPLETED",  # status
                 datetime(2022, 4, 23),  # submit_datetime
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
@@ -1211,7 +1255,7 @@ ia_query_result = {
                 32,  # imad_id
                 22,  # file_folder_id
                 "IMA/2022/3235",  # reference
-                "COMPLETE",  # status
+                "COMPLETED",  # status
                 datetime(2022, 4, 23),  # submit_datetime
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
@@ -1283,7 +1327,7 @@ ia_query_result = {
                 12,  # imad_id
                 2,  # file_folder_id
                 "IMA/2022/2345",  # reference
-                "COMPLETE",  # status
+                "COMPLETED",  # status
                 datetime(2022, 4, 23),  # submit_datetime
                 datetime(2022, 4, 22, 8, 44, 44),  # create_datetime
                 datetime(2022, 4, 22, 8, 44, 44),  # created
@@ -1313,7 +1357,7 @@ ia_query_result = {
                 13,  # imad_id
                 3,  # file_folder_id
                 "IMA/2022/2346",  # reference
-                "COMPLETE",  # status
+                "COMPLETED",  # status
                 datetime(2022, 4, 23),  # submit_datetime
                 datetime(2022, 4, 22, 7, 52, 4),  # create_datetime
                 datetime(2022, 4, 22, 7, 52, 4),  # created

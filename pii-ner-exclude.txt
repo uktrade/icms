@@ -2426,3 +2426,5 @@ kwargs
 Format V1
 "Fake COM app
 "Fake ADHOC app
+Import Applications Without Document Packs
+Export Applications Without Document Packs
