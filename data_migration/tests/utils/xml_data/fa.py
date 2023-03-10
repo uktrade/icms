@@ -799,3 +799,22 @@ sanction_goods = """
   </COMMODITY>
 </COMMODITY_LIST>
 """.strip()
+
+
+cover_letter_text_dfl_v1 = """
+<p align="justify" foxid="s1kkAov_plqdkYzdz">Dear Mr Test</p>
+<p align="justify" foxid="s1kkAow_plqdkYzdz">
+  <b foxid="s1kkAox_plqdkYzdz">Import into the UK from outside the EU or transfer from the EU to the UK of deactivated firearms - Import licence no. <MM foxid="s1kkAoy_plqdkYzdz">LICENCE_NUMBER</MM>
+  </b>
+</p>
+<p><MM>LICENCE_END_DATE</MM>.</p>
+"""
+
+cover_letter_text_dfl_v2 = """
+<p align="justify">Dear Mr Test</p>
+<p align="justify">
+  <b>Import into the UK from outside the EU or transfer from the EU to the UK of deactivated firearms - Import licence no. [[LICENCE_NUMBER]]
+  </b>
+</p>
+<p>[[LICENCE_END_DATE]].</p>
+"""

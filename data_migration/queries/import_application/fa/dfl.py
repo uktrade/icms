@@ -80,7 +80,6 @@ SELECT
   , x.commodity_code commodity_group_id
   , CASE x.know_bought_from WHEN 'Y' THEN 1 WHEN 'N' THEN 0 ELSE NULL END know_bought_from
   , x.additional_comments
-  , XMLTYPE.getClobVal(x.cover_letter) cover_letter
   , x.fa_authorities_xml
   , XMLTYPE.getClobVal(x.bought_from_details_xml) bought_from_details_xml
   , XMLTYPE.getClobVal(x.supplementary_report_xml) supplementary_report_xml

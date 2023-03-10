@@ -10,7 +10,12 @@ from data_migration.models.file import FileFolder
 from data_migration.models.flow import Process
 from data_migration.models.reference import CommodityGroup, Country
 from data_migration.models.user import Importer, Office, User
-from data_migration.utils.format import str_to_bool, str_to_yes_no
+from data_migration.utils.format import (
+    reformat_placeholders,
+    str_to_bool,
+    str_to_yes_no,
+    strip_foxid_attribute,
+)
 
 from .import_application_type import ImportApplicationType
 
@@ -110,6 +115,14 @@ class ImportApplication(MigrationBase):
 
         # TODO ICMSLST-1694: Nullify for now
         data["licence_reference"] = None
+
+        cover_letter_text = data["cover_letter_text"]
+
+        if cover_letter_text:
+            cover_letter_text = strip_foxid_attribute(cover_letter_text)
+            cover_letter_text = reformat_placeholders(cover_letter_text)
+
+        data["cover_letter_text"] = cover_letter_text
 
         return data
 
