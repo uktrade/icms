@@ -53,7 +53,7 @@ def cancel_licence_serializer(
 
     licence_data = types.CancelLicencePayload(
         type=_get_type(application),
-        action=action,
+        action=action,  # type:ignore[arg-type]
         id=chief_id,
         reference=application.reference,
         licence_reference=licence_ref.reference,
@@ -88,8 +88,8 @@ def sanction_serializer(
     country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
 
     licence_data = types.SanctionsLicenceData(
-        type=_get_type(application),
-        action=action,
+        type=_get_type(application),  # type:ignore[arg-type]
+        action=action,  # type:ignore[arg-type]
         id=chief_id,
         reference=application.reference,
         licence_reference=licence_ref.reference,
@@ -119,8 +119,8 @@ def fa_dfl_serializer(
     country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
 
     licence_data = types.FirearmLicenceData(
-        type=_get_type(application),
-        action=action,
+        type=_get_type(application),  # type:ignore[arg-type]
+        action=action,  # type:ignore[arg-type]
         id=chief_id,
         reference=application.reference,
         licence_reference=document_pack.doc_ref_licence_get(doc_pack).reference,
@@ -148,8 +148,8 @@ def fa_oil_serializer(
     restrictions = _get_restrictions(application)
 
     licence_data = types.FirearmLicenceData(
-        type=_get_type(application),
-        action=action,
+        type=_get_type(application),  # type:ignore[arg-type]
+        action=action,  # type:ignore[arg-type]
         id=chief_id,
         reference=application.reference,
         licence_reference=document_pack.doc_ref_licence_get(doc_pack).reference,
@@ -202,8 +202,8 @@ def fa_sil_serializer(
     country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)
 
     licence_data = types.FirearmLicenceData(
-        type=_get_type(application),
-        action=action,
+        type=_get_type(application),  # type:ignore[arg-type]
+        action=action,  # type:ignore[arg-type]
         id=chief_id,
         reference=application.reference,
         licence_reference=document_pack.doc_ref_licence_get(doc_pack).reference,
