@@ -103,7 +103,7 @@ def test_extract_xml(mock_connect):
         ia = factory.ImportApplicationFactory(
             pk=pk,
             ima=process,
-            status="COMPLETE",
+            status="COMPLETED",
             imad_id=pk,
             application_type=iat,
             created_by_id=user_pk,
