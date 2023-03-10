@@ -2424,3 +2424,5 @@ naive_dt
 Test Test Town
 kwargs
 Format V1
+"Fake COM app
+"Fake ADHOC app
