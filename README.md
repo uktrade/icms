@@ -38,6 +38,8 @@ developing, only within Docker.
   - Build all Docker containers
 - `make setup`
   - Create local virtualenv, set up pre-commit hooks, initialize database
+- `make debug`
+  - Run the application (needed to run make local_s3)
 - `make local_s3`
   - Create fake local S3 bucket. Local development uses
     [localstack](https://github.com/localstack/localstack) to emulate S3
