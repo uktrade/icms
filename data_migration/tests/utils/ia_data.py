@@ -1138,6 +1138,7 @@ ia_query_result = {
             ("constabulary_id",),
             ("supplementary_report_xml",),
             ("fa_goods_certs_xml",),
+            ("cover_letter_text",),
         ],
         [
             (
@@ -1166,6 +1167,7 @@ ia_query_result = {
                 1,  # constabulary_id
                 xd.dfl_sr,  # supplementary_report_xml
                 xd.dfl_goods_cert,  # fa_goods_cert_xml
+                xd.cover_letter_text_dfl_v1,  # cover_letter_text
             )
         ],
     ),

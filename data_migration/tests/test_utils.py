@@ -15,9 +15,11 @@ from data_migration.utils.format import (
     float_or_none,
     get_xml_val,
     int_or_none,
+    reformat_placeholders,
     str_to_bool,
     str_to_list,
     str_to_yes_no,
+    strip_foxid_attribute,
     validate_decimal,
     validate_int,
     xml_str_or_none,
@@ -273,3 +275,27 @@ def test_str_to_list():
 )
 def test_extract_int_substr(int_str, substr, expected):
     assert extract_int_substr(int_str, substr) == expected
+
+
+@pytest.mark.parametrize(
+    "content,expected",
+    [
+        ("<p>test</p>", "<p>test</p>"),
+        ('<p attr="1234">test</p>', '<p attr="1234">test</p>'),
+        ('<p foxid="1234_abc">test</p>', "<p>test</p>"),  # /PS-IGNORE
+        ('<p foxid="abc_123" attr="1234">test</p>', '<p attr="1234">test</p>'),  # /PS-IGNORE
+        (
+            '<p foxid="7fh32_fwef">test</p><p foxid="23123_dasada">test</p>',
+            "<p>test</p><p>test</p>",
+        ),  # /PS-IGNORE
+    ],
+)
+def test_strip_foxid_attribute(content, expected):
+    assert strip_foxid_attribute(content) == expected
+
+
+def test_reformat_placeholders():
+    content = "<MM>ABC</MM> more text <MM>def</MM>"
+    expected = "[[ABC]] more text [[def]]"
+
+    assert reformat_placeholders(content) == expected

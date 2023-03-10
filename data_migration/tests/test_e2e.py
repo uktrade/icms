@@ -568,6 +568,7 @@ def test_import_oil_data(mock_connect, dummy_dm_settings):
     assert dfl.proof_checked is True
     assert dfl.constabulary_id == 1
     assert dfl.supplementary_info.reports.count() == 1
+    assert dfl.cover_letter_text == utils.xml_data.cover_letter_text_dfl_v2
 
     sr4 = dfl.supplementary_info.reports.first()
     assert sr4.firearms.filter(is_upload=True).count() == 1

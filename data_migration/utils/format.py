@@ -10,6 +10,7 @@ from django.utils import timezone
 from lxml import etree
 
 UK_TZ = zoneinfo.ZoneInfo("Europe/London")
+FOXID_REGEX = r" foxid=\"[a-zA-Z0-9_]+\""
 
 
 def get_xml_val(xml: etree.ElementTree, xpath: str, text=True) -> Any:
@@ -267,3 +268,20 @@ def extract_bracket_substr(bracket_str: str) -> str | None:
         return None
 
     return match[1]
+
+
+def strip_foxid_attribute(content: str) -> str:
+    """Strip foxid attribute from xml / html elements
+
+    <p foxid="123abc_234def"> -> <p>
+    """
+
+    return re.sub(FOXID_REGEX, "", content)
+
+
+def reformat_placeholders(content: str) -> str:
+    """Format V1 placeholders to V2 placeholders
+
+    <MM>ABC</MM> -> [[ABC]]
+    """
+    return content.replace("<MM>", "[[").replace("</MM>", "]]")

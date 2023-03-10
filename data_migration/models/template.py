@@ -1,4 +1,3 @@
-import re
 from typing import Any
 
 from django.db import models
@@ -6,6 +5,7 @@ from django.db.models import F
 
 from data_migration import queries
 from data_migration.models.reference.country import Country, CountryTranslationSet
+from data_migration.utils.format import reformat_placeholders, strip_foxid_attribute
 
 from .base import MigrationBase
 
@@ -29,14 +29,13 @@ class Template(MigrationBase):
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
         content = data["template_content"]
-
-        foxid_regex = r" foxid=\"[a-zA-Z0-9_]+\""
-        content = content and re.sub(foxid_regex, "", content)
+        content = content and strip_foxid_attribute(content)
 
         if data["template_type"] == "LETTER_TEMPLATE":
-            content = content.replace("<MM>", "[[").replace("</MM>", "]]")
+            content = reformat_placeholders(content)
 
         data["template_content"] = content
+
         return data
 
 
