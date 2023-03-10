@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from web.utils.pdf.types import DocumentTypes
+from web.types import DocumentTypes
 
 from .views import (
     views_case_history,

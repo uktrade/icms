@@ -9,7 +9,8 @@ from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplicat
 from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.template.models import Template
-from web.utils.pdf import PdfGenerator, types, utils
+from web.types import DocumentTypes
+from web.utils.pdf import PdfGenerator, utils
 
 
 # TODO: Revisit when doing ICMSLST-1428
@@ -25,53 +26,53 @@ def mock_get_licence_endorsements(monkeypatch):
     [
         (
             OpenIndividualLicenceApplication,
-            types.DocumentTypes.LICENCE_PREVIEW,
+            DocumentTypes.LICENCE_PREVIEW,
             "pdf/import/fa-oil-licence-preview.html",
         ),
         (
             OpenIndividualLicenceApplication,
-            types.DocumentTypes.LICENCE_PRE_SIGN,
+            DocumentTypes.LICENCE_PRE_SIGN,
             "pdf/import/fa-oil-licence-pre-sign.html",
         ),
         (
             DFLApplication,
-            types.DocumentTypes.LICENCE_PREVIEW,
+            DocumentTypes.LICENCE_PREVIEW,
             "pdf/import/fa-dfl-licence-preview.html",
         ),
         (
             DFLApplication,
-            types.DocumentTypes.LICENCE_PRE_SIGN,
+            DocumentTypes.LICENCE_PRE_SIGN,
             "pdf/import/fa-dfl-licence-pre-sign.html",
         ),
         (
             SILApplication,
-            types.DocumentTypes.LICENCE_PREVIEW,
+            DocumentTypes.LICENCE_PREVIEW,
             "pdf/import/fa-sil-licence-preview.html",
         ),
         (
             SILApplication,
-            types.DocumentTypes.LICENCE_PRE_SIGN,
+            DocumentTypes.LICENCE_PRE_SIGN,
             "pdf/import/fa-sil-licence-pre-sign.html",
         ),
         # All other licence types use the default for LICENCE_PREVIEW
         (
             WoodQuotaApplication,
-            types.DocumentTypes.LICENCE_PREVIEW,
+            DocumentTypes.LICENCE_PREVIEW,
             "web/domains/case/import/manage/preview-licence.html",
         ),
         (
             WoodQuotaApplication,
-            types.DocumentTypes.LICENCE_PRE_SIGN,
+            DocumentTypes.LICENCE_PRE_SIGN,
             "web/domains/case/import/manage/preview-licence.html",
         ),
         (
             OpenIndividualLicenceApplication,
-            types.DocumentTypes.COVER_LETTER_PREVIEW,
+            DocumentTypes.COVER_LETTER_PREVIEW,
             "pdf/import/cover-letter.html",
         ),
         (
             OpenIndividualLicenceApplication,
-            types.DocumentTypes.COVER_LETTER_PRE_SIGN,
+            DocumentTypes.COVER_LETTER_PRE_SIGN,
             "pdf/import/cover-letter.html",
         ),
     ],
@@ -95,7 +96,7 @@ def test_get_template_raises_error_if_doc_type_unsupported(licence):
 
 
 def test_get_fa_oil_preview_licence_context(oil_app, licence, oil_expected_preview_context):
-    generator = PdfGenerator(oil_app, licence, types.DocumentTypes.LICENCE_PREVIEW)
+    generator = PdfGenerator(oil_app, licence, DocumentTypes.LICENCE_PREVIEW)
 
     oil_expected_preview_context["preview_licence"] = True
     oil_expected_preview_context["paper_licence_only"] = False
@@ -110,7 +111,7 @@ def test_get_fa_oil_preview_licence_context(oil_app, licence, oil_expected_previ
 def test_get_fa_oil_licence_pre_sign_context(
     licence_mock, oil_app, licence, oil_expected_preview_context
 ):
-    generator = PdfGenerator(oil_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN)
+    generator = PdfGenerator(oil_app, licence, DocumentTypes.LICENCE_PRE_SIGN)
 
     oil_expected_preview_context["preview_licence"] = False
     oil_expected_preview_context["paper_licence_only"] = False
@@ -128,7 +129,7 @@ def test_get_fa_dfl_preview_licence_context(
 ):
     mock_get_goods.return_value = ["goods one", "goods two", "goods three"]
 
-    generator = PdfGenerator(dfl_app, licence, types.DocumentTypes.LICENCE_PREVIEW)
+    generator = PdfGenerator(dfl_app, licence, DocumentTypes.LICENCE_PREVIEW)
 
     dfl_expected_preview_context["goods"] = ["goods one", "goods two", "goods three"]
     dfl_expected_preview_context["preview_licence"] = True
@@ -148,7 +149,7 @@ def test_get_fa_dfl_preview_licence_context(
 def test_get_fa_dfl_licence_pre_sign_context(
     dfl_app, licence, dfl_expected_preview_context, **mocks
 ):
-    generator = PdfGenerator(dfl_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN)
+    generator = PdfGenerator(dfl_app, licence, DocumentTypes.LICENCE_PRE_SIGN)
 
     dfl_expected_preview_context["goods"] = ["goods one", "goods two", "goods three"]
     dfl_expected_preview_context["preview_licence"] = False
@@ -167,7 +168,7 @@ def test_get_fa_sil_preview_licence_context(
     mock_get_goods, sil_app, licence, sil_expected_preview_context
 ):
     mock_get_goods.return_value = [("goods one", 10), ("goods two", 20), ("goods three", 30)]
-    generator = PdfGenerator(sil_app, licence, types.DocumentTypes.LICENCE_PREVIEW)
+    generator = PdfGenerator(sil_app, licence, DocumentTypes.LICENCE_PREVIEW)
     sil_app.manufactured = True
     template = Template.objects.get(template_code="FIREARMS_MARKINGS_NON_STANDARD")
 
@@ -195,7 +196,7 @@ def test_get_fa_sil_preview_licence_context(
     _get_licence_number=MagicMock(return_value="0000001B"),
 )
 def test_get_fa_sil_licence_pre_sign_context(sil_app, licence, sil_expected_preview_context):
-    generator = PdfGenerator(sil_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN)
+    generator = PdfGenerator(sil_app, licence, DocumentTypes.LICENCE_PRE_SIGN)
 
     sil_expected_preview_context["goods"] = [
         ("goods one", 10),
@@ -216,7 +217,7 @@ def test_get_fa_sil_licence_pre_sign_context(sil_app, licence, sil_expected_prev
 def test_get_default_preview_licence_context(licence):
     app = WoodQuotaApplication(process_type=WoodQuotaApplication.PROCESS_TYPE)
 
-    generator = PdfGenerator(app, licence, types.DocumentTypes.LICENCE_PREVIEW)
+    generator = PdfGenerator(app, licence, DocumentTypes.LICENCE_PREVIEW)
 
     expected_context = {
         "process": app,
@@ -234,7 +235,7 @@ def test_get_preview_cover_letter_context(licence):
     app = DFLApplication(process_type=DFLApplication.PROCESS_TYPE)
     app.cover_letter_text = "ABC"
 
-    generator = PdfGenerator(app, licence, types.DocumentTypes.COVER_LETTER_PREVIEW)
+    generator = PdfGenerator(app, licence, DocumentTypes.COVER_LETTER_PREVIEW)
 
     expected_context = {
         "process": app,
@@ -254,7 +255,7 @@ def test_get_pre_sign_cover_letter_context(licence):
     app = DFLApplication(process_type=DFLApplication.PROCESS_TYPE)
     app.cover_letter_text = "ABC"
 
-    generator = PdfGenerator(app, licence, types.DocumentTypes.COVER_LETTER_PRE_SIGN)
+    generator = PdfGenerator(app, licence, DocumentTypes.COVER_LETTER_PRE_SIGN)
 
     expected_context = {
         "process": app,
@@ -281,7 +282,7 @@ def test_get_document_context_raises_error_if_doc_type_unsupported(licence):
 
 
 def test_get_pdf(oil_app, licence):
-    generator = PdfGenerator(oil_app, licence, types.DocumentTypes.LICENCE_PREVIEW)
+    generator = PdfGenerator(oil_app, licence, DocumentTypes.LICENCE_PREVIEW)
     pdf_file = generator.get_pdf()
 
     # This tests doesn't actually do a great deal other than check it creates

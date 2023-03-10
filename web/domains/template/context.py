@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Protocol
 
 from web.domains.case.services import document_pack
-from web.utils.pdf.types import DocumentTypes
+from web.types import DocumentTypes
 
 if TYPE_CHECKING:
     from web.domains.case._import.models import ImportApplication

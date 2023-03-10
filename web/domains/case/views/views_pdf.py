@@ -13,8 +13,8 @@ from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import view_application_file
 from web.domains.file.models import File
 from web.flow.models import Process
-from web.types import AuthenticatedHttpRequest
-from web.utils.pdf import DocumentTypes, PdfGenerator
+from web.types import AuthenticatedHttpRequest, DocumentTypes
+from web.utils.pdf import PdfGenerator
 
 from .mixins import ApplicationTaskMixin
 

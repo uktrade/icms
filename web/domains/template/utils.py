@@ -10,7 +10,7 @@ from .models import Template
 if TYPE_CHECKING:
     from web.domains.case._import.fa_sil.models import SILApplication
     from web.domains.case._import.models import ImportApplication
-    from web.utils.pdf.types import DocumentTypes
+    from web.types import DocumentTypes
 
     from .context import TemplateContextProcessor
 
