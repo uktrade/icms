@@ -29,9 +29,8 @@ from web.models import (
     SILApplication,
     WoodQuotaApplication,
 )
-from web.types import AuthenticatedHttpRequest
+from web.types import AuthenticatedHttpRequest, DocumentTypes
 from web.utils.commodity import annotate_commodity_unit
-from web.utils.pdf.types import DocumentTypes
 
 from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
 

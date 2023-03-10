@@ -14,7 +14,8 @@ from web.domains.chief import client
 from web.domains.file.models import File
 from web.domains.user.models import User
 from web.flow.models import Process, Task
-from web.utils.pdf import DocumentTypes, PdfGenerator
+from web.types import DocumentTypes
+from web.utils.pdf import PdfGenerator
 from web.utils.s3 import delete_file_from_s3, upload_file_obj_to_s3
 from web.utils.sentry import capture_exception, capture_message
 

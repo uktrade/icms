@@ -5,8 +5,7 @@ from django.utils import timezone
 
 from web.domains.case.services import document_pack
 from web.domains.template.utils import get_cover_letter_content, get_letter_fragment
-
-from .types import DocumentTypes
+from web.types import DocumentTypes
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet

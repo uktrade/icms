@@ -23,7 +23,7 @@ from web.models import (
     SanctionsAndAdhocApplication,
     SILApplication,
 )
-from web.utils.pdf.types import DocumentTypes
+from web.types import DocumentTypes
 
 
 def _create_sil_app(test_import_user, importer, office, **kwargs):
