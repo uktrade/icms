@@ -29,7 +29,10 @@ from . import factory
 def test_preview_cover_letter():
     ilb_admin = user_factories.ActiveUserFactory.create(permission_codenames=["ilb_admin"])
     user = user_factories.ActiveUserFactory.create(permission_codenames=["importer_access"])
-    importer = importer_factories.ImporterFactory.create(type=Importer.ORGANISATION, user=user)
+    office = office_factories.OfficeFactory.create(is_active=True)
+    importer = importer_factories.ImporterFactory.create(
+        type=Importer.ORGANISATION, user=user, offices=[office]
+    )
 
     process = factory.OILApplicationFactory.create(
         status="SUBMITTED",
@@ -37,6 +40,7 @@ def test_preview_cover_letter():
         created_by=user,
         last_updated_by=user,
         case_owner=ilb_admin,
+        importer_office=office,
     )
     process_factories.TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
     oil_app = process.get_specific_model()
@@ -45,18 +49,18 @@ def test_preview_cover_letter():
     client = Client()
     client.login(username=ilb_admin.username, password="test")
     url = reverse(
-        "case:preview-cover-letter", kwargs={"application_pk": process.pk, "case_type": "import"}
+        "case:cover-letter-preview", kwargs={"application_pk": process.pk, "case_type": "import"}
     )
     response = client.get(url)
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
-    assert response["Content-Disposition"] == "filename=CoverLetter.pdf"
+    assert response["Content-Disposition"] == "filename=CoverLetter-Preview.pdf"
 
     pdf = response.content
     assert pdf.startswith(b"%PDF-")
     # ensure the pdf generated has some content
-    assert 19000 < len(pdf) < 30000
+    assert 10000 < len(pdf) < 30000
 
 
 @pytest.mark.django_db

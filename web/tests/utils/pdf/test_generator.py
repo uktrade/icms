@@ -8,6 +8,7 @@ from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case._import.wood.models import WoodQuotaApplication
+from web.domains.template.models import Template
 from web.utils.pdf import PdfGenerator, types, utils
 
 
@@ -63,17 +64,20 @@ def mock_get_licence_endorsements(monkeypatch):
             types.DocumentTypes.LICENCE_PRE_SIGN,
             "web/domains/case/import/manage/preview-licence.html",
         ),
-        # All licence types use the default for COVER_LETTER currently
         (
             OpenIndividualLicenceApplication,
-            types.DocumentTypes.COVER_LETTER,
-            "web/domains/case/import/manage/preview-cover-letter.html",
+            types.DocumentTypes.COVER_LETTER_PREVIEW,
+            "pdf/import/cover-letter.html",
+        ),
+        (
+            OpenIndividualLicenceApplication,
+            types.DocumentTypes.COVER_LETTER_PRE_SIGN,
+            "pdf/import/cover-letter.html",
         ),
     ],
 )
 def test_get_template(AppCls, doc_type, expected_template, licence):
     app = AppCls(process_type=AppCls.PROCESS_TYPE)
-
     generator = PdfGenerator(app, licence, doc_type)
     actual_template = generator.get_template()
 
@@ -93,7 +97,6 @@ def test_get_template_raises_error_if_doc_type_unsupported(licence):
 def test_get_fa_oil_preview_licence_context(oil_app, licence, oil_expected_preview_context):
     generator = PdfGenerator(oil_app, licence, types.DocumentTypes.LICENCE_PREVIEW)
 
-    oil_expected_preview_context["page_title"] = "Licence Preview"
     oil_expected_preview_context["preview_licence"] = True
     oil_expected_preview_context["paper_licence_only"] = False
     oil_expected_preview_context["process"] = oil_app
@@ -109,7 +112,6 @@ def test_get_fa_oil_licence_pre_sign_context(
 ):
     generator = PdfGenerator(oil_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN)
 
-    oil_expected_preview_context["page_title"] = "Licence Preview"
     oil_expected_preview_context["preview_licence"] = False
     oil_expected_preview_context["paper_licence_only"] = False
     oil_expected_preview_context["process"] = oil_app
@@ -128,7 +130,6 @@ def test_get_fa_dfl_preview_licence_context(
 
     generator = PdfGenerator(dfl_app, licence, types.DocumentTypes.LICENCE_PREVIEW)
 
-    dfl_expected_preview_context["page_title"] = "Licence Preview"
     dfl_expected_preview_context["goods"] = ["goods one", "goods two", "goods three"]
     dfl_expected_preview_context["preview_licence"] = True
     dfl_expected_preview_context["paper_licence_only"] = False
@@ -149,7 +150,6 @@ def test_get_fa_dfl_licence_pre_sign_context(
 ):
     generator = PdfGenerator(dfl_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN)
 
-    dfl_expected_preview_context["page_title"] = "Licence Preview"
     dfl_expected_preview_context["goods"] = ["goods one", "goods two", "goods three"]
     dfl_expected_preview_context["preview_licence"] = False
     dfl_expected_preview_context["paper_licence_only"] = False
@@ -161,15 +161,16 @@ def test_get_fa_dfl_licence_pre_sign_context(
     assert dfl_expected_preview_context == actual_context
 
 
+@pytest.mark.django_db
 @patch("web.utils.pdf.utils._get_fa_sil_goods")
 def test_get_fa_sil_preview_licence_context(
     mock_get_goods, sil_app, licence, sil_expected_preview_context
 ):
     mock_get_goods.return_value = [("goods one", 10), ("goods two", 20), ("goods three", 30)]
-
     generator = PdfGenerator(sil_app, licence, types.DocumentTypes.LICENCE_PREVIEW)
+    sil_app.manufactured = True
+    template = Template.objects.get(template_code="FIREARMS_MARKINGS_NON_STANDARD")
 
-    sil_expected_preview_context["page_title"] = "Licence Preview"
     sil_expected_preview_context["goods"] = [
         ("goods one", 10),
         ("goods two", 20),
@@ -178,12 +179,14 @@ def test_get_fa_sil_preview_licence_context(
     sil_expected_preview_context["preview_licence"] = True
     sil_expected_preview_context["paper_licence_only"] = False
     sil_expected_preview_context["process"] = sil_app
+    sil_expected_preview_context["markings_text"] = template.template_content
 
     actual_context = generator.get_document_context()
 
     assert sil_expected_preview_context == actual_context
 
 
+@pytest.mark.django_db
 @patch.multiple(
     "web.utils.pdf.utils",
     _get_fa_sil_goods=MagicMock(
@@ -194,7 +197,6 @@ def test_get_fa_sil_preview_licence_context(
 def test_get_fa_sil_licence_pre_sign_context(sil_app, licence, sil_expected_preview_context):
     generator = PdfGenerator(sil_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN)
 
-    sil_expected_preview_context["page_title"] = "Licence Preview"
     sil_expected_preview_context["goods"] = [
         ("goods one", 10),
         ("goods two", 20),
@@ -228,21 +230,39 @@ def test_get_default_preview_licence_context(licence):
     assert expected_context == actual_context
 
 
-# TODO: Remove the default tests when every app type has been implemented
-def test_get_default_cover_letter_context(licence):
+def test_get_preview_cover_letter_context(licence):
     app = DFLApplication(process_type=DFLApplication.PROCESS_TYPE)
+    app.cover_letter_text = "ABC"
 
-    generator = PdfGenerator(app, licence, types.DocumentTypes.COVER_LETTER)
+    generator = PdfGenerator(app, licence, types.DocumentTypes.COVER_LETTER_PREVIEW)
 
     expected_context = {
         "process": app,
-        "page_title": "Cover Letter Preview",
-        "preview_licence": False,
-        "paper_licence_only": False,
-        "issue_date": datetime.date.today().strftime("%d %B %Y"),
+        "content": "ABC",
         "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
-        "licence_start_date": "TODO: SET THIS VALUE",
-        "licence_end_date": "TODO: SET THIS VALUE",
+        "issue_date": datetime.date.today().strftime("%d %B %Y"),
+        "page_title": "Cover Letter Preview",
+        "preview": True,
+    }
+
+    actual_context = generator.get_document_context()
+
+    assert expected_context == actual_context
+
+
+def test_get_pre_sign_cover_letter_context(licence):
+    app = DFLApplication(process_type=DFLApplication.PROCESS_TYPE)
+    app.cover_letter_text = "ABC"
+
+    generator = PdfGenerator(app, licence, types.DocumentTypes.COVER_LETTER_PRE_SIGN)
+
+    expected_context = {
+        "process": app,
+        "content": "ABC",
+        "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+        "issue_date": datetime.date.today().strftime("%d %B %Y"),
+        "page_title": "Cover Letter Preview",
+        "preview": False,
     }
 
     actual_context = generator.get_document_context()

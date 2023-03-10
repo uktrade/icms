@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponse
@@ -17,7 +19,7 @@ from web.utils.pdf import DocumentTypes, PdfGenerator
 from .mixins import ApplicationTaskMixin
 
 
-class GenerateLicenceBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View):
+class DocumentPreviewBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View):
     # ApplicationTaskMixin Config
     current_status = [
         ImpExpStatus.SUBMITTED,
@@ -32,14 +34,15 @@ class GenerateLicenceBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRe
     # e.g. document_type == "pre-sign" check the app has been "authorised"
     permission_required = ["web.ilb_admin"]
 
+    document_types: ClassVar[list[DocumentTypes]]
+    output_filename: ClassVar[str]
 
-class PreviewLicenceView(GenerateLicenceBase):
     def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         self.set_application_and_task()
 
         document_type = self.kwargs["document_type"]
 
-        if document_type not in [DocumentTypes.LICENCE_PREVIEW, DocumentTypes.LICENCE_PRE_SIGN]:
+        if document_type not in self.document_types:
             raise ValueError(f"Unable to preview document_type: {document_type}")
 
         pdf_gen = PdfGenerator(
@@ -54,20 +57,17 @@ class PreviewLicenceView(GenerateLicenceBase):
             html = pdf_gen.get_document_html()
             return HttpResponse(html)
 
-        return return_pdf(pdf_gen, "Licence-Preview.pdf")
+        return return_pdf(pdf_gen, self.output_filename)
 
 
-class PreviewCoverLetterView(GenerateLicenceBase):
-    def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
-        self.set_application_and_task()
+class PreviewLicenceView(DocumentPreviewBase):
+    document_types = [DocumentTypes.LICENCE_PREVIEW, DocumentTypes.LICENCE_PRE_SIGN]
+    output_filename = "Licence-Preview.pdf"
 
-        pdf_gen = PdfGenerator(
-            application=self.application,
-            licence=document_pack.pack_latest_get(self.application),
-            doc_type=DocumentTypes.COVER_LETTER,
-        )
 
-        return return_pdf(pdf_gen, "CoverLetter.pdf")
+class PreviewCoverLetterView(DocumentPreviewBase):
+    document_types = [DocumentTypes.COVER_LETTER_PREVIEW, DocumentTypes.COVER_LETTER_PRE_SIGN]
+    output_filename = "CoverLetter-Preview.pdf"
 
 
 def return_pdf(pdf_gen: PdfGenerator, filename: str) -> HttpResponse:

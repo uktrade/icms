@@ -59,7 +59,7 @@ def create_import_application_document(
             filename = "import-licence.pdf"
 
         elif document_reference.document_type == CaseDocumentReference.Type.COVER_LETTER:
-            doc_type = DocumentTypes.COVER_LETTER
+            doc_type = DocumentTypes.COVER_LETTER_SIGNED
             filename = "cover-letter.pdf"
 
         else:

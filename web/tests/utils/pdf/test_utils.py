@@ -12,6 +12,7 @@ from web.domains.case._import.fa_sil.models import (
     SILGoodsSection2,
     SILGoodsSection5,
 )
+from web.domains.template.models import Template
 from web.utils.pdf import types, utils
 
 
@@ -27,6 +28,9 @@ def test_fa_oil_get_preview_context(oil_app, licence, oil_expected_preview_conte
     actual_context = utils.get_fa_oil_licence_context(
         oil_app, licence, types.DocumentTypes.LICENCE_PREVIEW
     )
+    oil_expected_preview_context["preview_licence"] = True
+    oil_expected_preview_context["paper_licence_only"] = False
+    oil_expected_preview_context["process"] = oil_app
 
     assert oil_expected_preview_context == actual_context
 
@@ -37,6 +41,9 @@ def test_fa_oil_setting_licence_dates(oil_app, licence, oil_expected_preview_con
 
     oil_expected_preview_context["licence_start_date"] = "01 January 2022"
     oil_expected_preview_context["licence_end_date"] = "21 February 2025"
+    oil_expected_preview_context["preview_licence"] = True
+    oil_expected_preview_context["paper_licence_only"] = False
+    oil_expected_preview_context["process"] = oil_app
 
     actual_context = utils.get_fa_oil_licence_context(
         oil_app, licence, types.DocumentTypes.LICENCE_PREVIEW
@@ -48,6 +55,9 @@ def test_fa_oil_office_eori_override_number(oil_app, licence, oil_expected_previ
     oil_app.importer_office.eori_number = "GB_OVERRIDE"
 
     oil_expected_preview_context["eori_numbers"] = ["GB_OVERRIDE"]
+    oil_expected_preview_context["preview_licence"] = True
+    oil_expected_preview_context["paper_licence_only"] = False
+    oil_expected_preview_context["process"] = oil_app
 
     actual_context = utils.get_fa_oil_licence_context(
         oil_app, licence, types.DocumentTypes.LICENCE_PREVIEW
@@ -62,6 +72,9 @@ def test_fa_oil_ni_office_postcode_returns_two_eori_numbers(
 
     oil_expected_preview_context["importer_postcode"] = "BT125QB"  # /PS-IGNORE
     oil_expected_preview_context["eori_numbers"] = ["GB123456789", "XI123456789"]
+    oil_expected_preview_context["preview_licence"] = True
+    oil_expected_preview_context["paper_licence_only"] = False
+    oil_expected_preview_context["process"] = oil_app
 
     actual_context = utils.get_fa_oil_licence_context(
         oil_app, licence, types.DocumentTypes.LICENCE_PREVIEW
@@ -77,6 +90,9 @@ def test_fa_oil_ni_office_postcode_returns_two_override_eori_numbers(
 
     oil_expected_preview_context["importer_postcode"] = "BT125QB"  # /PS-IGNORE
     oil_expected_preview_context["eori_numbers"] = ["GB_OVERRIDE", "XI_OVERRIDE"]
+    oil_expected_preview_context["preview_licence"] = True
+    oil_expected_preview_context["paper_licence_only"] = False
+    oil_expected_preview_context["process"] = oil_app
 
     actual_context = utils.get_fa_oil_licence_context(
         oil_app, licence, types.DocumentTypes.LICENCE_PREVIEW
@@ -89,6 +105,9 @@ def test_fa_oil_get_pre_sign_context(
     mock_get_licence, oil_app, licence, oil_expected_preview_context
 ):
     oil_expected_preview_context["licence_number"] = "0000001B"
+    oil_expected_preview_context["preview_licence"] = False
+    oil_expected_preview_context["paper_licence_only"] = False
+    oil_expected_preview_context["process"] = oil_app
 
     actual_context = utils.get_fa_oil_licence_context(
         oil_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN
@@ -101,6 +120,9 @@ def test_fa_dfl_get_preview_context(mock_get_goods, dfl_app, licence, dfl_expect
     mock_get_goods.return_value = ["goods one", "goods two", "goods three"]
 
     dfl_expected_preview_context["goods"] = ["goods one", "goods two", "goods three"]
+    dfl_expected_preview_context["preview_licence"] = True
+    dfl_expected_preview_context["paper_licence_only"] = False
+    dfl_expected_preview_context["process"] = dfl_app
     actual_context = utils.get_fa_dfl_licence_context(
         dfl_app, licence, types.DocumentTypes.LICENCE_PREVIEW
     )
@@ -116,6 +138,9 @@ def test_fa_dfl_get_preview_context(mock_get_goods, dfl_app, licence, dfl_expect
 def test_fa_dfl_get_pre_sign_context(dfl_app, licence, dfl_expected_preview_context, **mocks):
     dfl_expected_preview_context["goods"] = ["goods one", "goods two", "goods three"]
     dfl_expected_preview_context["licence_number"] = "0000001B"
+    dfl_expected_preview_context["preview_licence"] = False
+    dfl_expected_preview_context["paper_licence_only"] = False
+    dfl_expected_preview_context["process"] = dfl_app
 
     actual_context = utils.get_fa_dfl_licence_context(
         dfl_app, licence, types.DocumentTypes.LICENCE_PRE_SIGN
@@ -123,22 +148,31 @@ def test_fa_dfl_get_pre_sign_context(dfl_app, licence, dfl_expected_preview_cont
     assert dfl_expected_preview_context == actual_context
 
 
+@pytest.mark.django_db
 @patch("web.utils.pdf.utils._get_fa_sil_goods")
 def test_fa_sil_get_preview_context(mock_get_goods, sil_app, licence, sil_expected_preview_context):
     mock_get_goods.return_value = [("goods one", 10), ("goods two", 20), ("goods three", 30)]
+
+    sil_app.military_police = True
+    template = Template.objects.get(template_code="FIREARMS_MARKINGS_NON_STANDARD")
 
     sil_expected_preview_context["goods"] = [
         ("goods one", 10),
         ("goods two", 20),
         ("goods three", 30),
     ]
+    sil_expected_preview_context["preview_licence"] = True
+    sil_expected_preview_context["paper_licence_only"] = False
+    sil_expected_preview_context["process"] = sil_app
+    sil_expected_preview_context["markings_text"] = template.template_content
+
     actual_context = utils.get_fa_sil_licence_context(
         sil_app, licence, types.DocumentTypes.LICENCE_PREVIEW
     )
-
     assert sil_expected_preview_context == actual_context
 
 
+@pytest.mark.django_db
 @patch.multiple(
     "web.utils.pdf.utils",
     _get_fa_sil_goods=MagicMock(
@@ -152,6 +186,9 @@ def test_fa_sil_get_pre_sign_context(sil_app, licence, sil_expected_preview_cont
         ("goods two", 20),
         ("goods three", 30),
     ]
+    sil_expected_preview_context["preview_licence"] = False
+    sil_expected_preview_context["paper_licence_only"] = False
+    sil_expected_preview_context["process"] = sil_app
     sil_expected_preview_context["licence_number"] = "0000001B"
 
     actual_context = utils.get_fa_sil_licence_context(

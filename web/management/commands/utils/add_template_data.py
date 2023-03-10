@@ -1201,6 +1201,7 @@ def add_letter_fragment_templates():
         template_name="Firearms Markings Standard",
         template_code="FIREARMS_MARKINGS_STANDARD",
         template_type="LETTER_FRAGMENT",
+        template_content="<p>This licence is only valid if the firearm and its essential component parts (Barrel, frame, receiver (including both upper or lower receiver), slide, cylinder, bolt or breech block) are marked with name of manufacturer or brand, country or place of manufacturer, serial number and the year of manufacture (if not part of the serial number) and model (where feasible). If an essential component is too small to be fully marked it must at least be marked with a serial number or alpha-numeric or digital code. If the item is not marked as set out above you have 28 days from entry into the UK to comply with this requirement. If the item is being imported for deactivation, you have three months to either comply or have the item deactivated. Items must be marked using the Latin alphabet and the Arabic numeral system. The font size must be at least 1,6 mm unless the relevant component parts are too small to be marked to this size, in which case a smaller font size may be used. For frames or receivers made from a non-metallic material, the marking should be applied to a metal plate that is permanently embedded in the material of the frame or receiver in such a way that the plate cannot be easily or readily removed; and removing the plate would destroy a portion of the frame or receiver. Other techniques for marking such frames or receivers are permitted, provided those techniques ensure an equivalent level of clarity and permanence for the marking.</p>",
         application_domain="IMA",
     )
     Template.objects.get_or_create(
@@ -1211,5 +1212,6 @@ def add_letter_fragment_templates():
         template_name="Firearms Markings Non-Standard",
         template_code="FIREARMS_MARKINGS_NON_STANDARD",
         template_type="LETTER_FRAGMENT",
+        template_content="<p>The marking requirements do not apply to imports into the UK of air weapons, firearms that are either for the military or police use and firearms that were manufactured before 1 September 1939. As regards imports into Northern Ireland, the marking requirements do not apply to firearms and relevant component parts manufactured anywhere in the European Union before 14 September 2018 or which were imported into the European Union before that date.</p>",
         application_domain="IMA",
     )

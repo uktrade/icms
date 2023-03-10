@@ -1,12 +1,17 @@
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Union
+
+from django.conf import settings
+from django.utils import timezone
 
 from web.domains.case.services import document_pack
+from web.domains.template.utils import get_cover_letter_content, get_letter_fragment
 
 from .types import DocumentTypes
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
+    from web.domains.case._import.fa.types import FaImportApplication
     from web.domains.case._import.fa_dfl.models import DFLApplication
     from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
     from web.domains.case._import.fa_sil import models as sil_models
@@ -22,22 +27,32 @@ if TYPE_CHECKING:
         sil_models.SILGoodsSection582Other,  # /PS-IGNORE
     ]
 
+    Context = dict[str, str | bool | list[str] | ImpOrExp]
 
-def get_fa_oil_licence_context(
-    application: "OpenIndividualLicenceApplication",
-    licence: "ImportApplicationLicence",
-    doc_type: DocumentTypes,
-) -> dict[str, Any]:
+
+def get_licence_context(
+    application: "ImpOrExp", licence: "ImportApplicationLicence", doc_type: DocumentTypes
+) -> "Context":
+    return {
+        "process": application,
+        "issue_date": timezone.now().date().strftime("%d %B %Y"),
+        "page_title": "Licence Preview",
+        "preview_licence": doc_type == DocumentTypes.LICENCE_PREVIEW,
+        "paper_licence_only": licence.issue_paper_licence_only or False,
+    }
+
+
+def _get_fa_licence_context(
+    application: "FaImportApplication", licence: "ImportApplicationLicence", doc_type: DocumentTypes
+) -> "Context":
     importer = application.importer
     office = application.importer_office
     endorsements = get_licence_endorsements(application)
+    context = get_licence_context(application, licence, doc_type)
 
-    return {
+    return context | {
         "applicant_reference": application.applicant_reference,
         "importer_name": importer.display_name,
-        "consignment_country": "Any Country",
-        "origin_country": "Any Country",
-        "goods_description": application.goods_description(),
         "licence_start_date": _get_licence_start_date(licence),
         "licence_end_date": _get_licence_end_date(licence),
         "licence_number": _get_licence_number(application, doc_type),
@@ -48,26 +63,29 @@ def get_fa_oil_licence_context(
     }
 
 
+def get_fa_oil_licence_context(
+    application: "OpenIndividualLicenceApplication",
+    licence: "ImportApplicationLicence",
+    doc_type: DocumentTypes,
+) -> "Context":
+    context = _get_fa_licence_context(application, licence, doc_type)
+
+    return context | {
+        "consignment_country": "Any Country",
+        "origin_country": "Any Country",
+        "goods_description": application.goods_description(),
+    }
+
+
 def get_fa_dfl_licence_context(
     application: "DFLApplication", licence: "ImportApplicationLicence", doc_type: DocumentTypes
-) -> dict[str, Any]:
-    importer = application.importer
-    office = application.importer_office
-    endorsements = get_licence_endorsements(application)
+) -> "Context":
+    context = _get_fa_licence_context(application, licence, doc_type)
 
-    return {
-        "applicant_reference": application.applicant_reference,
-        "importer_name": importer.display_name,
+    return context | {
         "consignment_country": application.consignment_country.name,
         "origin_country": application.origin_country.name,
         "goods": _get_fa_dfl_goods(application),
-        "licence_start_date": _get_licence_start_date(licence),
-        "licence_end_date": _get_licence_end_date(licence),
-        "licence_number": _get_licence_number(application, doc_type),
-        "eori_numbers": _get_importer_eori_numbers(application),
-        "importer_address": office.address.split("\n"),
-        "importer_postcode": office.postcode,
-        "endorsements": endorsements,
     }
 
 
@@ -75,24 +93,31 @@ def get_fa_sil_licence_context(
     application: "sil_models.SILApplication",
     licence: "ImportApplicationLicence",
     doc_type: DocumentTypes,
-) -> dict[str, Any]:
-    importer = application.importer
-    office = application.importer_office
-    endorsements = get_licence_endorsements(application)
+) -> "Context":
+    context = _get_fa_licence_context(application, licence, doc_type)
+    markings_text = get_letter_fragment(application)
 
-    return {
-        "applicant_reference": application.applicant_reference,
-        "importer_name": importer.display_name,
+    return context | {
         "consignment_country": application.consignment_country.name,
         "origin_country": application.origin_country.name,
         "goods": _get_fa_sil_goods(application),
-        "licence_start_date": _get_licence_start_date(licence),
-        "licence_end_date": _get_licence_end_date(licence),
-        "licence_number": _get_licence_number(application, doc_type),
-        "eori_numbers": _get_importer_eori_numbers(application),
-        "importer_address": office.address.split("\n"),
-        "importer_postcode": office.postcode,
-        "endorsements": endorsements,
+        "markings_text": markings_text,
+    }
+
+
+def get_cover_letter_context(
+    application: "FaImportApplication", doc_type: DocumentTypes
+) -> "Context":
+    content = get_cover_letter_content(application, doc_type)
+    preview = doc_type == DocumentTypes.COVER_LETTER_PREVIEW
+
+    return {
+        "content": content,
+        "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+        "issue_date": timezone.now().date().strftime("%d %B %Y"),
+        "page_title": "Cover Letter Preview",
+        "preview": preview,
+        "process": application,
     }
 
 

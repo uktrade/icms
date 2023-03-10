@@ -10,4 +10,3 @@ class DocumentTypes(Enum):
     COVER_LETTER_PREVIEW = auto()
     COVER_LETTER_PRE_SIGN = auto()
     COVER_LETTER_SIGNED = auto()
-    COVER_LETTER = auto()  # TODO ICMSLST-1917 Use other cover letter types

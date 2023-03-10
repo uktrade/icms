@@ -109,8 +109,8 @@ def prepare_response(
             context["variation_refused"] = True
 
         elif not readonly_view:
-            # When an application is refused we don't show licence details
             if application.decision != application.REFUSE:
+                # When an application is refused we don't show licence details
                 context["licence"] = document_pack.pack_draft_get(application)
 
         if cover_letter_flag:
