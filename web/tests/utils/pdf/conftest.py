@@ -1,4 +1,5 @@
 import pytest
+from django.utils import timezone
 
 from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
@@ -7,6 +8,7 @@ from web.domains.case._import.models import ImportApplicationLicence
 from web.domains.country.models import Country
 from web.domains.importer.models import Importer
 from web.domains.office.models import Office
+from web.domains.template.models import Template
 
 
 @pytest.fixture()
@@ -59,6 +61,9 @@ def sil_app(importer, importer_office):
         importer_office=importer_office,
         consignment_country=Country(name="Poland"),
         origin_country=Country(name="Ireland"),
+        military_police=False,
+        eu_single_market=False,
+        manufactured=False,
     )
 
     return sil_app
@@ -90,6 +95,8 @@ def oil_expected_preview_context():
         "importer_address": ["22 Some Avenue", "Some Way", "Some Town"],
         "importer_postcode": "S93bl",  # /PS-IGNORE
         "endorsements": [],
+        "issue_date": timezone.now().date().strftime("%d %B %Y"),
+        "page_title": "Licence Preview",
     }
 
 
@@ -110,12 +117,15 @@ def dfl_expected_preview_context():
         "importer_address": ["22 Some Avenue", "Some Way", "Some Town"],
         "importer_postcode": "S93bl",  # /PS-IGNORE
         "endorsements": [],
+        "issue_date": timezone.now().date().strftime("%d %B %Y"),
+        "page_title": "Licence Preview",
     }
 
 
 @pytest.fixture()
 def sil_expected_preview_context():
     """Returns the minimum expected context values - tests then override the different keys in the tests."""
+    template = Template.objects.get(template_code="FIREARMS_MARKINGS_STANDARD")
 
     return {
         "applicant_reference": "Applicant Reference",
@@ -130,4 +140,7 @@ def sil_expected_preview_context():
         "importer_address": ["22 Some Avenue", "Some Way", "Some Town"],
         "importer_postcode": "S93bl",  # /PS-IGNORE
         "endorsements": [],
+        "markings_text": template.template_content,
+        "issue_date": timezone.now().date().strftime("%d %B %Y"),
+        "page_title": "Licence Preview",
     }

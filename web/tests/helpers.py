@@ -172,7 +172,7 @@ class CaseURLS:
     def preview_cover_letter(application_pk: int, case_type="import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 
-        return reverse("case:preview-cover-letter", kwargs=kwargs)
+        return reverse("case:cover-letter-preview", kwargs=kwargs)
 
     @staticmethod
     def check_document_generation(application_pk: int, case_type="import") -> str:

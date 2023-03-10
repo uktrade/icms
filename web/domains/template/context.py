@@ -1,14 +1,29 @@
-from web.domains.case._import.models import ImportApplication
+from typing import TYPE_CHECKING, Protocol
+
 from web.domains.case.services import document_pack
 from web.utils.pdf.types import DocumentTypes
+
+if TYPE_CHECKING:
+    from web.domains.case._import.models import ImportApplication
+
+
+class TemplateContextProcessor(Protocol):
+    def __init__(self, application: "ImportApplication", *args, **kwargs):
+        ...
+
+    def __getitem__(self, item: str) -> str:
+        ...
 
 
 class CoverLetterTemplateContext:
     date_fmt = "%d %B %Y"
 
-    def __init__(self, application: ImportApplication, document_type: DocumentTypes):
+    def __init__(self, application: "ImportApplication", document_type: DocumentTypes) -> None:
         self.application = application
         self.document_type = document_type
+
+    def _placeholder(self, item: str) -> str:
+        return f'<span class="placeholder">[[{item}]]</span>'
 
     def _context(self, item: str) -> str:
         match item:
@@ -26,9 +41,9 @@ class CoverLetterTemplateContext:
     def _preview_context(self, item: str) -> str:
         match item:
             case "LICENCE_NUMBER":
-                return "[[LICENCE_NUMBER]]"
+                return self._placeholder(item)
             case "LICENCE_END_DATE":
-                return "[[LICENCE_END_DATE]]"
+                return self._placeholder(item)
         return self._context(item)
 
     def _full_context(self, item: str) -> str:

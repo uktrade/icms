@@ -309,7 +309,14 @@ pdf_urls = [
                 path(
                     "preview/",
                     views_pdf.PreviewCoverLetterView.as_view(),
-                    name="preview-cover-letter",
+                    name="cover-letter-preview",
+                    kwargs={"document_type": DocumentTypes.COVER_LETTER_PREVIEW},
+                ),
+                path(
+                    "pre-sign/",
+                    views_pdf.PreviewCoverLetterView.as_view(),
+                    name="cover-letter-pre-sign",
+                    kwargs={"document_type": DocumentTypes.COVER_LETTER_PRE_SIGN},
                 ),
             ]
         ),

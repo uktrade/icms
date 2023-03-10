@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" href="{{ static('web/img/favicon.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ static('web/css/pdfs/cover-letter.css') }}"/>
+    {% if preview %}
+      <link rel="stylesheet" href="{{ static('web/css/pdfs/preview.css') }}"/>
+    {% endif %}
+    <title>{% block page_title %}{{ page_title }}{% endblock %} - ICMS</title>
+  </head>
+
+  <body>
+    <div class="letter-header">
+      <img
+        id="dbt-logo"
+        alt="DBT Logo"
+        class="header-block"
+        src="{{ static('web/img/dbt_red_transparent_bg.png') }}" />
+
+        <div id="address-text" class="header-block">
+          <p class="address-line">Import Licencing Branch</p>
+          <p class="address-line">Queensway House</p>
+          <p class="address-line">West Precinct</p>
+          <p class="address-line">Billingham</p>
+          <p class="address-line">TS23 2NF</p>  <!-- /PS-IGNORE -->
+        </div>
+        <div class="header-block" id="dbt-url">
+          <span class="url">gov.uk/dit</span>
+        </div>
+    </div>
+
+    <div class="address-block page-margin">
+      <p class="address-line">{{ process.contact.full_name }}</p>
+      {% for address_line in process.importer_office.address.split('\n') %}
+        <p class="address-line">{{ address_line }}</p>
+      {% endfor %}
+    </div>
+
+    <div class="content-block page-margin">
+      <p class="issue-date">{{ issue_date }}</p>
+      <div class="letter-content">{{ content|safe }}</div>
+    </div>
+
+    {% if process.endorsements.exists() %}
+      <div class="endorsements-block page-margin">
+        {% for endorsement in process.endorsements.values_list("content", flat=True) %}
+          <p>{{ endorsement }}</p>
+        {% endfor %}
+      </div>
+    {% elif preview %}
+      <div class="endorsements-block page-margin">
+        <p class="additional-remarks">[[ ADDITIONAL_REMARKS ]]</p>
+      </div>
+    {% endif %}
+
+
+    <div class="signature-block page-margin">
+      <p>Yours sincerely</p>
+      <div class="signature">
+        {# TODO ICMSLST-697 - Revist when implementing digital signatures #}
+        {% if preview %}
+          <p>Signature not verified</p>
+        {% else %}
+          <img
+            id="dbt-logo"
+            alt="DBT Logo"
+            class="header-block"
+            src="{{ static('web/img/dit-dummy-signature.png') }}" />
+        {% endif %}
+      </div>
+      <div>
+        <p>{{ process.case_owner.full_name }}</p>
+        <p>E {{ ilb_contact_email }}</p>
+      </div>
+    </div>
+
+  </body>
+</html>

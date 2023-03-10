@@ -686,7 +686,7 @@ def get_document_context(
                 kwargs={"application_pk": application.pk, "case_type": "import"},
             )
             cover_letter_url = reverse(
-                "case:preview-cover-letter",
+                "case:cover-letter-pre-sign",
                 kwargs={"application_pk": application.pk, "case_type": "import"},
             )
 

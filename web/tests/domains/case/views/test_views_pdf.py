@@ -64,7 +64,7 @@ def test_preview_cover_letter_view(fa_oil_app_submitted, icms_admin_client):
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
-    assert response["Content-Disposition"] == "filename=CoverLetter.pdf"
+    assert response["Content-Disposition"] == "filename=CoverLetter-Preview.pdf"
 
     pdf = response.content
 

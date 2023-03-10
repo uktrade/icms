@@ -9,7 +9,7 @@
   {% if process.application_approved and not readonly_view and not variation_refused %}
     {% if cover_letter_flag %}
       <a
-        href="{{ icms_url('case:preview-cover-letter', kwargs={'application_pk': process.pk, "case_type": case_type}) }}"
+        href="{{ icms_url('case:cover-letter-preview', kwargs={'application_pk': process.pk, "case_type": case_type}) }}"
         target="blank"
         class="button">
         Preview Cover Letter
