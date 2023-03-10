@@ -11,6 +11,7 @@ from web.models import (
     ExportApplicationType,
     GMPBrand,
     ImportApplicationType,
+    SanctionsAndAdhocApplication,
     SILApplication,
 )
 
@@ -63,6 +64,27 @@ def com(db, test_export_user, exporter, exporter_office):
 
 
 @pytest.fixture
+def sanctions(db, test_import_user, importer, office):
+    """Fake ADHOC app to test document pack service.
+
+    This application is in PROCESSING state.
+    """
+
+    app = SanctionsAndAdhocApplication.objects.create(
+        process_type=SanctionsAndAdhocApplication.PROCESS_TYPE,
+        application_type=ImportApplicationType.objects.get(type="ADHOC"),
+        created_by=test_import_user,
+        last_updated_by=test_import_user,
+        importer=importer,
+        importer_office=office,
+        status=ImpExpStatus.PROCESSING,
+        reference="IMI/2022/12346",
+    )
+
+    return app
+
+
+@pytest.fixture
 def iar(import_access_request_application):
     """Fixture just to shorten name"""
     return import_access_request_application
@@ -73,6 +95,13 @@ def fa_sil_with_draft(fa_sil):
     document_pack.pack_draft_create(fa_sil)
 
     return fa_sil
+
+
+@pytest.fixture
+def sanctions_with_draft(sanctions):
+    document_pack.pack_draft_create(sanctions)
+
+    return sanctions
 
 
 @pytest.fixture

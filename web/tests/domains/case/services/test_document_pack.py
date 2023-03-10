@@ -287,6 +287,25 @@ class TestDocRefServiceFunctions:
         licence_doc_2 = document_pack.doc_ref_licence_get(pack)
         assert licence_doc == licence_doc_2
 
+    def test_doc_ref_documents_create_import_application_no_cover_letter(
+        self, sanctions_with_draft
+    ):
+        document_pack.doc_ref_documents_create(sanctions_with_draft, self.lm)
+
+        pack = document_pack.pack_draft_get(sanctions_with_draft)
+
+        # Only licence should have been created
+        licence_doc = document_pack.doc_ref_licence_get(pack)
+        assert licence_doc.document_type == DocumentType.LICENCE
+        assert document_pack.doc_ref_documents_all(pack).count() == 1
+
+        # Calling this again shouldn't create anything new
+        document_pack.doc_ref_documents_create(sanctions_with_draft, self.lm)
+
+        licence_doc_2 = document_pack.doc_ref_licence_get(pack)
+        assert licence_doc == licence_doc_2
+        assert document_pack.doc_ref_documents_all(pack).count() == 1
+
     def test_doc_ref_documents_create_export_com_application(self, com_with_draft):
         document_pack.doc_ref_documents_create(com_with_draft, self.lm)
 
