@@ -2442,3 +2442,4 @@ AppCls
 doc_type
 Django 4.1.7
 ILB Case Officer
+Create ICMS Groups

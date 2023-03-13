@@ -3,7 +3,7 @@ from collections.abc import Collection
 from typing import Any
 
 from django.conf import settings
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Group, Permission
 from django.core.management.base import BaseCommand, CommandError
 from guardian.shortcuts import assign_perm
 
@@ -20,6 +20,8 @@ from web.models import ImportApplicationType, ObsoleteCalibre, ObsoleteCalibreGr
 class Command(BaseCommand):
     help = """Add dummy data. For development use only."""
 
+    users_created = []
+
     def add_arguments(self, parser):
         parser.add_argument(
             "--password",
@@ -35,6 +37,10 @@ class Command(BaseCommand):
             )
 
         load_app_test_data()
+
+        # Load groups we want to assign to test users:
+        ilb_admin = Group.objects.get(name="ILB Case Officer")
+        importer_user = Group.objects.get(name="Importer User")
 
         # enable disabled application types so we can test/develop them
         ImportApplicationType.objects.filter(
@@ -136,13 +142,13 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Ashley",
             last_name="Smith (ilb_admin)",
+            # TODO: Remove these
             permissions=[
                 "importer_access",
                 "exporter_access",
-                "ilb_admin",
                 "mailshot_access",
-                "can_view_permission_harness",
             ],
+            groups=[ilb_admin],
             linked_importers=[importer],
             linked_exporters=[exporter],
         )
@@ -152,13 +158,13 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Samantha",
             last_name="Stevens (ilb_admin)",
+            # TODO: Remove these
             permissions=[
                 "importer_access",
                 "exporter_access",
-                "ilb_admin",
                 "mailshot_access",
-                "can_view_permission_harness",
             ],
+            groups=[ilb_admin],
             linked_importers=[importer],
             linked_exporters=[exporter],
         )
@@ -168,9 +174,7 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Dave",
             last_name="Jones (importer_user)",
-            permissions=[
-                "importer_access",
-            ],
+            groups=[importer_user],
             linked_importers=[importer],
         )
 
@@ -201,7 +205,7 @@ class Command(BaseCommand):
         self.create_superuser("admin", options["password"])
 
         self.stdout.write(
-            "Created following users: 'ilb_admin', 'importer_user', 'exporter_user', 'agent'"
+            f"Created following users: {', '.join([repr(u) for u in self.users_created])}"
         )
         self.stdout.write("Created following superusers: 'admin'")
 
@@ -217,13 +221,16 @@ class Command(BaseCommand):
         password: str,
         first_name: str,
         last_name: str,
-        permissions: list[str],
+        permissions: Collection[str] = (),
+        groups: Collection[Group] = (),
         linked_importers: Collection[Importer] = (),
         linked_exporters: Collection[Exporter] = (),
         linked_importer_agents: Collection[Importer] = (),
         linked_exporter_agents: Collection[Exporter] = (),
     ) -> User:
         """Create normal system users"""
+
+        self.users_created.append(username)
 
         user = User.objects.create_user(
             username=username,
@@ -242,6 +249,9 @@ class Command(BaseCommand):
 
         for permission in permissions:
             self._assign_permission(user, permission)
+
+        if groups:
+            user.groups.set(groups)
 
         for importer in linked_importers:
             assign_perm("web.is_contact_of_importer", user, importer)
