@@ -1,0 +1,100 @@
+{% extends "layout/no-sidebar.html" %}
+
+{% block main_content %}
+  <div class="no-sidebar">
+    <div id="content-ie8-float">
+      <div class="content-actions"></div>
+      <table class="setoutList">
+        <thead>
+        <tr>
+          <th scope="col">Importer Code</th>
+          <th scope="col">Importer Name / <br>Importer Reg No / <br>Importer Entity Type</th>
+          <th scope="col">Addresses</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for importer in object_list %}
+          <tr>
+            <td>
+              <div class="container setoutForm">
+                <div class="row">
+                  <div class="six columns"><a href="#">TODO: ICMSLST-1939 Not set in V2</a></div>
+                  <div class="six columns"></div>
+                </div>
+                <div class="row">
+                  <div class="six columns"><span class="text-widget" style="font-weight:bold;"></span></div>
+                  <div class="six columns"></div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="container setoutForm">
+                <div class="row">
+                  <div class="six columns"><span class="text-widget">{{ importer }}</span></div>
+                  <div class="six columns"></div>
+                </div>
+                <div class="row">
+                  <div class="six columns"><span class="text-widget ">{{ importer.registered_number or "" }}</span></div>
+                  <div class="six columns"></div>
+                </div>
+                <div class="row">
+                  <div class="six columns"><span class="text-widget ">{{ importer.get_type_display() }}</span></div>
+                  <div class="six columns"></div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <table class="setoutList nestedList">
+                <thead>
+                <tr>
+                  <th colspan="1" class="listPrompt">Addresses</th>
+                </tr>
+                <tr>
+                  <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for office in importer.offices.all() %}
+                  <tr>
+                    <td><span class="text-widget">{{ office|nl2br }}</span></td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content_actions %}
+  {% if page_obj.paginator.num_pages > 1 %}
+    <div class="pagination">
+      <div class="info-box info-box-info">
+        <p><strong>Not all linked importers shown.</strong></p>
+        <p>Linked importers count: {{ page_obj.paginator.count }}.
+          Only {{ page_obj.paginator.per_page }} importers have been displayed.</p>
+
+        <span class="step-links">
+          {% if page_obj.has_previous() %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number() }}">previous</a>
+          {% endif %}
+
+          <span class="current">
+              Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+          </span>
+
+          {% if page_obj.has_next() %}
+            <a href="?page={{ page_obj.next_page_number() }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+

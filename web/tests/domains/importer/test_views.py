@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 from django.test import Client
+from django.urls import reverse
 
 from web.domains.importer.models import Importer
 from web.domains.section5.models import Section5Authority
@@ -19,7 +20,7 @@ PERMISSIONS = ["ilb_admin"]
 
 
 class ImporterListViewTest(AuthTestCase):
-    url = "/importer/"
+    url = reverse("importer-list")
     redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
