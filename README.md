@@ -53,6 +53,9 @@ developing, only within Docker.
     localstack UI can be found on http://localhost:8081 and used to verify that
     the S3 bucket is created.
 
+- `make manage args="create_icms_groups"`
+  - Create icms groups before adding dummy data
+
 - `make add_dummy_data`
   - Create test user(s), add needed permissions to user(s), create dummy importer and exporter, etc
 

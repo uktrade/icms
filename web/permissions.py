@@ -37,12 +37,14 @@ class PermissionTextChoice(models.TextChoices):
 
 class _PagePermissions(PermissionTextChoice):
     view_permission_harness = "can_view_permission_harness", "Can view the permission test harness"
+    view_importer_details = "can_view_importer_details", "Can view the importer details list view."
 
 
 class _SysPerms(PermissionTextChoice):
     importer_access = "importer_access", "Can act as an importer"
     exporter_access = "exporter_access", "Can act as an exporter"
     ilb_admin = "ilb_admin", "Is an ILB administrator"
+    # This permission isn't used anywhere.
     mailshot_access = "mailshot_access", "Can maintain mailshots"
 
 
