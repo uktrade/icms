@@ -1,11 +1,14 @@
 import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.db.models import F
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.views.generic import ListView
+from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.forms import DocumentForm
 from web.domains.contacts.forms import ContactForm
@@ -26,6 +29,7 @@ from web.domains.section5.models import (
     Section5Authority,
     Section5Clause,
 )
+from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 from web.views import ModelFilterView
@@ -40,7 +44,9 @@ from web.views.actions import (
 logger = logging.getLogger(__name__)
 
 
-class ImporterListView(ModelFilterView):
+class ImporterListAdminView(ModelFilterView):
+    """ILB admin view listing all Importer records."""
+
     template_name = "web/domains/importer/list.html"
     filterset_class = ImporterFilter
     model = Importer
@@ -49,7 +55,12 @@ class ImporterListView(ModelFilterView):
     permission_required = "web.ilb_admin"
 
     class Display:
-        fields = ["status", ("name", "user", "registered_number", "entity_type"), "offices"]
+        fields = [
+            "status",
+            ("name", "user", "registered_number", "entity_type"),
+            "offices",
+            "agents",
+        ]
         fields_config = {
             "name": {"header": "Importer Name", "link": True},
             "user": {"no_header": True, "link": True},
@@ -58,6 +69,11 @@ class ImporterListView(ModelFilterView):
             "status": {"header": "Status", "bold": True},
             "offices": {
                 "header": "Addresses",
+                "show_all": True,
+                "query_filter": {"is_active": True},
+            },
+            "agents": {
+                "header": "Agents",
                 "show_all": True,
                 "query_filter": {"is_active": True},
             },
@@ -72,6 +88,34 @@ class ImporterListView(ModelFilterView):
         ]
 
 
+class ImporterListUserView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    """Importer list view showing all importers the logged-in user has access to."""
+
+    permission_required = [Perms.page.view_importer_details.value]  # type: ignore[attr-defined]
+    model = Importer
+    paginate_by = 10
+    template_name = "web/domains/importer/importer-detail-list.html"
+
+    extra_context = {
+        "page_title": "Select an Importer",
+    }
+
+    def get_queryset(self):
+        importer_qs = super().get_queryset().filter(is_active=True)
+
+        # TODO: Revisit in ICMSLST-1932 with new permissions.
+        required_perms = [
+            Perms.obj.importer.is_contact.value,  # type: ignore[attr-defined]
+            Perms.obj.importer.is_agent.value,  # type: ignore[attr-defined]
+        ]
+
+        qs = get_objects_for_user(
+            self.request.user, required_perms, klass=importer_qs, any_perm=True
+        )
+
+        return qs.prefetch_related("offices")
+
+
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def edit_importer(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
@@ -82,7 +126,7 @@ def edit_importer(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
     elif importer.type == Importer.INDIVIDUAL:
         ImporterForm = ImporterIndividualForm
     else:
-        NotImplementedError(f"Unknown importer type {importer.type}")
+        raise NotImplementedError(f"Unknown importer type {importer.type}")
 
     if request.method == "POST":
         form = ImporterForm(request.POST, instance=importer)
@@ -112,7 +156,7 @@ def create_importer(request: AuthenticatedHttpRequest, *, entity_type: str) -> H
     elif entity_type == "individual":
         ImporterForm = ImporterIndividualForm
     else:
-        NotImplementedError(f"Unknown entity type {entity_type}")
+        raise NotImplementedError(f"Unknown entity type {entity_type}")
 
     if request.method == "POST":
         form = ImporterForm(request.POST)
@@ -404,7 +448,7 @@ def create_agent(
     elif entity_type == "individual":
         AgentForm = AgentIndividualForm
     else:
-        NotImplementedError(f"Unknown entity type {entity_type}")
+        raise NotImplementedError(f"Unknown entity type {entity_type}")
 
     initial = {"main_importer": importer_pk}
     if request.method == "POST":

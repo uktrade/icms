@@ -177,6 +177,7 @@ class Menu:
     items = [
         MenuLink(label="Workbasket", view="workbasket"),
         MenuLink(label="Dashboard"),
+        MenuLink(label="Importer Details", view="user-importer-list"),
         MenuDropDown(
             label="Search",
             sub_menu_list=[

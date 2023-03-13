@@ -14,6 +14,7 @@ from web.management.commands.utils.load_data import load_app_test_data
 from web.models import ImportApplicationType, ObsoleteCalibre, ObsoleteCalibreGroup
 
 
+# TODO: ICMSLST-1940 Assign correct groups here
 class Command(BaseCommand):
     help = """Add test data, called when running unit tests."""
 
