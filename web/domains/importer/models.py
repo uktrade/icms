@@ -100,6 +100,7 @@ class Importer(Archivable, models.Model):
             "name",
         )
 
+        default_permissions = []
         permissions = Perms.obj.importer.get_permissions()
 
 

@@ -49,6 +49,16 @@ class _SysPerms(PermissionTextChoice):
 
 
 class _ImporterPermissions(PermissionTextChoice):
+    view = ("view_importer", "Can view all applications and licences for a particular importer")
+    edit = (
+        "edit_importer",
+        "Can create and edit new applications and vary existing licences for a particular importer",
+    )
+    manage_contacts_and_agents = (
+        "manage_importer_contacts_and_agents",
+        "Can approve and reject access for agents and new importer contacts",
+    )
+
     is_contact = ("is_contact_of_importer", "Is contact of this importer")
     # NOTE: this is given on the "main importer" object, not on the "agent" object
     is_agent = ("is_agent_of_importer", "Is agent of this importer")
