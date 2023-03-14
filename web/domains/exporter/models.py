@@ -42,6 +42,7 @@ class Exporter(Archivable, models.Model):
             "name",
         )
 
+        default_permissions = []
         permissions = Perms.obj.exporter.get_permissions()
 
 
