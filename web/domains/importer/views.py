@@ -44,6 +44,13 @@ from web.views.actions import (
 logger = logging.getLogger(__name__)
 
 
+class EditImporterAction(Edit):
+    """The default Edit action hardcodes the url"""
+
+    def href(self, obj):
+        return reverse("importer-edit", kwargs={"pk": obj.pk})
+
+
 class ImporterListAdminView(ModelFilterView):
     """ILB admin view listing all Importer records."""
 
@@ -80,7 +87,7 @@ class ImporterListAdminView(ModelFilterView):
         }
         opts = {"inline": True, "icon_only": True}
         actions = [
-            Edit(**opts),
+            EditImporterAction(**opts),
             CreateIndividualAgent(**opts),
             CreateOrganisationAgent(**opts),
             Archive(**opts),
