@@ -15,6 +15,7 @@ from data_migration.management.commands.config.run_order import (
 )
 from data_migration.utils import xml_parser
 from web import models as web
+from web.flow.models import ProcessTypes
 
 from . import utils
 
@@ -147,7 +148,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     assert web.CertificateOfGoodManufacturingPracticeApplication.objects.count() == 3
     ea1, ea2, ea3 = web.ExportApplication.objects.filter(
-        process_ptr__process_type=web.ProcessTypes.GMP
+        process_ptr__process_type=ProcessTypes.GMP
     ).order_by("pk")
     assert ea1.countries.count() == 0
     assert ea2.countries.count() == 3
@@ -237,7 +238,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     com1, com2, com3 = web.CertificateOfManufactureApplication.objects.order_by("pk")
 
     ea4, ea5, ea6 = web.ExportApplication.objects.filter(
-        process_ptr__process_type=web.ProcessTypes.COM
+        process_ptr__process_type=ProcessTypes.COM
     ).order_by("pk")
 
     assert ea4.countries.count() == 0
@@ -317,7 +318,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     cfs1, cfs2, cfs3 = web.CertificateOfFreeSaleApplication.objects.order_by("pk")
 
     ea7, ea8, ea9 = web.ExportApplication.objects.filter(
-        process_ptr__process_type=web.ProcessTypes.CFS
+        process_ptr__process_type=ProcessTypes.CFS
     ).order_by("pk")
 
     assert ea7.countries.count() == 0

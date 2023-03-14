@@ -1,30 +1,19 @@
 from typing import TYPE_CHECKING, final
 
+from django.conf import settings
 from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
 from guardian.shortcuts import get_users_with_perms
 
-from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.case.models import (
-    ApplicationBase,
-    CaseDocumentReference,
-    CaseEmail,
-    CaseNote,
-    DocumentPackBase,
-    UpdateRequest,
-    VariationRequest,
-)
-from web.domains.country.models import Country, CountryGroup
-from web.domains.exporter.models import Exporter
+from web.domains.case.models import ApplicationBase, DocumentPackBase
 from web.domains.file.models import File
-from web.domains.legislation.models import ProductLegislation
-from web.domains.office.models import Office
-from web.domains.user.models import User
 from web.flow.models import ProcessTypes
 from web.models.shared import AddressEntryType, YesNoChoices
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
+
+    from web.models import User
 
 
 class ExportApplicationType(models.Model):
@@ -42,10 +31,10 @@ class ExportApplicationType(models.Model):
     generate_cover_letter = models.BooleanField(blank=False, null=False)
     allow_hse_authorization = models.BooleanField(blank=False, null=False)
     country_group = models.ForeignKey(
-        CountryGroup, on_delete=models.PROTECT, blank=False, null=False
+        "web.CountryGroup", on_delete=models.PROTECT, blank=False, null=False
     )
     country_group_for_manufacture = models.ForeignKey(
-        CountryGroup,
+        "web.CountryGroup",
         on_delete=models.PROTECT,
         blank=True,
         null=True,
@@ -72,24 +61,28 @@ class ExportApplication(ApplicationBase):
         ]
 
     application_type = models.ForeignKey(
-        ExportApplicationType, on_delete=models.PROTECT, blank=False, null=False
+        "web.ExportApplicationType", on_delete=models.PROTECT, blank=False, null=False
     )
 
     last_update_datetime = models.DateTimeField(blank=False, null=False, auto_now=True)
 
     last_updated_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, blank=False, null=False, related_name="updated_export_cases"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        blank=False,
+        null=False,
+        related_name="updated_export_cases",
     )
 
-    variation_requests = models.ManyToManyField(VariationRequest)
+    variation_requests = models.ManyToManyField("web.VariationRequest")
     variation_no = models.IntegerField(blank=False, null=False, default=0)
-    case_notes = models.ManyToManyField(CaseNote)
-    further_information_requests = models.ManyToManyField(FurtherInformationRequest)
-    update_requests = models.ManyToManyField(UpdateRequest)
-    case_emails = models.ManyToManyField(CaseEmail, related_name="+")
+    case_notes = models.ManyToManyField("web.CaseNote")
+    further_information_requests = models.ManyToManyField("web.FurtherInformationRequest")
+    update_requests = models.ManyToManyField("web.UpdateRequest")
+    case_emails = models.ManyToManyField("web.CaseEmail", related_name="+")
 
     submitted_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         blank=True,
         null=True,
@@ -97,21 +90,21 @@ class ExportApplication(ApplicationBase):
     )
 
     created_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         blank=False,
         null=False,
         related_name="created_export_applications",
     )
 
-    exporter = models.ForeignKey(Exporter, on_delete=models.PROTECT, related_name="+")
+    exporter = models.ForeignKey("web.Exporter", on_delete=models.PROTECT, related_name="+")
 
     exporter_office = models.ForeignKey(
-        Office, on_delete=models.PROTECT, null=True, related_name="+"
+        "web.Office", on_delete=models.PROTECT, null=True, related_name="+"
     )
 
     contact = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         null=True,
         related_name="contact_export_applications",
@@ -122,7 +115,7 @@ class ExportApplication(ApplicationBase):
     )
 
     countries = models.ManyToManyField(
-        Country,
+        "web.Country",
         help_text=(
             "A certificate will be created for each country selected. You may"
             " select up to 40 countries. You cannot select the same country"
@@ -130,11 +123,13 @@ class ExportApplication(ApplicationBase):
         ),
     )
 
-    agent = models.ForeignKey(Exporter, on_delete=models.PROTECT, null=True, related_name="+")
-    agent_office = models.ForeignKey(Office, on_delete=models.PROTECT, null=True, related_name="+")
+    agent = models.ForeignKey("web.Exporter", on_delete=models.PROTECT, null=True, related_name="+")
+    agent_office = models.ForeignKey(
+        "web.Office", on_delete=models.PROTECT, null=True, related_name="+"
+    )
 
     case_owner = models.ForeignKey(
-        User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
 
     def is_import_application(self) -> bool:
@@ -160,10 +155,10 @@ class ExportApplication(ApplicationBase):
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
 
-    def user_is_contact_of_org(self, user: User) -> bool:
+    def user_is_contact_of_org(self, user: "User") -> bool:
         return user.has_perm("web.is_contact_of_exporter", self.exporter)
 
-    def user_is_agent_of_org(self, user: User) -> bool:
+    def user_is_agent_of_org(self, user: "User") -> bool:
         return user.has_perm("web.is_agent_of_exporter", self.exporter)
 
     def get_org_contacts(self) -> "QuerySet[User]":
@@ -218,7 +213,7 @@ class CFSSchedule(models.Model):
         )
 
     application = models.ForeignKey(
-        CertificateOfFreeSaleApplication,
+        "web.CertificateOfFreeSaleApplication",
         related_name="schedules",
         on_delete=models.CASCADE,
     )
@@ -240,7 +235,7 @@ class CFSSchedule(models.Model):
     )
 
     legislations = models.ManyToManyField(
-        ProductLegislation,
+        "web.ProductLegislation",
         verbose_name="Legislation",
         help_text=(
             "Enter legislation relevant to the products on this schedule. A"
@@ -292,7 +287,7 @@ class CFSSchedule(models.Model):
     )
 
     country_of_manufacture = models.ForeignKey(
-        Country,
+        "web.Country",
         on_delete=models.PROTECT,
         null=True,
         related_name="+",
@@ -327,7 +322,7 @@ class CFSSchedule(models.Model):
     )
 
     created_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         blank=False,
         null=False,
@@ -343,13 +338,15 @@ class CFSSchedule(models.Model):
 
 class CFSProduct(models.Model):
     product_name = models.CharField(max_length=1000)
-    schedule = models.ForeignKey(CFSSchedule, related_name="products", on_delete=models.CASCADE)
+    schedule = models.ForeignKey(
+        "web.CFSSchedule", related_name="products", on_delete=models.CASCADE
+    )
 
 
 class CFSProductType(models.Model):
     product_type_number = models.IntegerField(choices=[(i, i) for i in range(1, 23)])
     product = models.ForeignKey(
-        CFSProduct, related_name="product_type_numbers", on_delete=models.CASCADE
+        "web.CFSProduct", related_name="product_type_numbers", on_delete=models.CASCADE
     )
 
 
@@ -357,7 +354,7 @@ class CFSProductActiveIngredient(models.Model):
     name = models.CharField(max_length=500)
     cas_number = models.CharField(max_length=50, verbose_name="CAS Number")
     product = models.ForeignKey(
-        CFSProduct, related_name="active_ingredients", on_delete=models.CASCADE
+        "web.CFSProduct", related_name="active_ingredients", on_delete=models.CASCADE
     )
 
 
@@ -506,7 +503,7 @@ class GMPFile(File):
 
 class GMPBrand(models.Model):
     application = models.ForeignKey(
-        CertificateOfGoodManufacturingPracticeApplication,
+        "web.CertificateOfGoodManufacturingPracticeApplication",
         related_name="brands",
         on_delete=models.CASCADE,
     )
@@ -542,9 +539,9 @@ class ExportCertificateCaseDocumentReferenceData(models.Model):
         ]
 
     case_document_reference = models.OneToOneField(
-        CaseDocumentReference, on_delete=models.CASCADE, related_name="reference_data"
+        "web.CaseDocumentReference", on_delete=models.CASCADE, related_name="reference_data"
     )
-    country = models.ForeignKey(Country, on_delete=models.PROTECT)
+    country = models.ForeignKey("web.Country", on_delete=models.PROTECT)
 
     # Extra information for GMP applications
     gmp_brand = models.ForeignKey("GMPBrand", on_delete=models.PROTECT, null=True)

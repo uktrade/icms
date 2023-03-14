@@ -1,13 +1,10 @@
 from typing import final
 
 import structlog as logging
+from django.conf import settings
 from django.db import models
 from django.utils.functional import cached_property
 
-from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.exporter.models import Exporter
-from web.domains.importer.models import Importer
-from web.domains.user.models import User
 from web.flow.models import Process, ProcessTypes
 
 logger = logging.getLogger(__name__)
@@ -47,7 +44,7 @@ class AccessRequest(Process):
 
     submit_datetime = models.DateTimeField(auto_now=True)
     submitted_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         blank=False,
         null=False,
@@ -55,7 +52,7 @@ class AccessRequest(Process):
     )
     last_update_datetime = models.DateTimeField(auto_now=True, blank=False, null=False)
     last_updated_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         blank=True,
         null=True,
@@ -63,12 +60,16 @@ class AccessRequest(Process):
     )
     closed_datetime = models.DateTimeField(blank=True, null=True)
     closed_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, blank=True, null=True, related_name="closed_access_requests"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name="closed_access_requests",
     )
     response = models.CharField(max_length=20, choices=RESPONSES, blank=False, null=True)
     response_reason = models.TextField(blank=True, default="")
 
-    further_information_requests = models.ManyToManyField(FurtherInformationRequest)
+    further_information_requests = models.ManyToManyField("web.FurtherInformationRequest")
 
     @cached_property
     def submitted_by_email(self):
@@ -96,7 +97,11 @@ class ImporterAccessRequest(AccessRequest):
     )
 
     link = models.ForeignKey(
-        Importer, on_delete=models.PROTECT, blank=True, null=True, related_name="access_requests"
+        "web.Importer",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name="access_requests",
     )
     request_type = models.CharField(
         max_length=30, choices=REQUEST_TYPES, verbose_name="Access Request Type"
@@ -115,7 +120,11 @@ class ExporterAccessRequest(AccessRequest):
     )
 
     link = models.ForeignKey(
-        Exporter, on_delete=models.PROTECT, blank=True, null=True, related_name="access_requests"
+        "web.Exporter",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name="access_requests",
     )
     request_type = models.CharField(
         max_length=30, choices=REQUEST_TYPES, verbose_name="Access Request Type"

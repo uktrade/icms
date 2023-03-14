@@ -1,13 +1,12 @@
 from typing import TYPE_CHECKING
 
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import Q
 
-from web.domains.file.models import File
-from web.domains.user.models import User
 from web.flow.models import Process
 
 from .shared import ImpExpStatus
@@ -21,6 +20,8 @@ CASE_NOTE_STATUSES = (
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
+
+    from web.models import User
 
 
 class VariationRequest(models.Model):
@@ -52,7 +53,7 @@ class VariationRequest(models.Model):
     extension_flag = models.BooleanField(default=False)
     requested_datetime = models.DateTimeField(auto_now_add=True)
     requested_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name="requested_variations"
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="requested_variations"
     )
     what_varied = models.CharField(
         max_length=4000, verbose_name="What would you like to vary about the current licence(s)"
@@ -78,7 +79,10 @@ class VariationRequest(models.Model):
 
     closed_datetime = models.DateTimeField(null=True)
     closed_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, null=True, related_name="closed_variations"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="closed_variations",
     )
 
 
@@ -109,19 +113,19 @@ class UpdateRequest(models.Model):
     request_datetime = models.DateTimeField(null=True)
 
     requested_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
 
     response_datetime = models.DateTimeField(blank=True, null=True)
 
     response_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
 
     closed_datetime = models.DateTimeField(blank=True, null=True)
 
     closed_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
 
 
@@ -149,13 +153,13 @@ class CaseNote(models.Model):
     note = models.TextField(blank=True, null=True)
     create_datetime = models.DateTimeField(blank=False, null=False, auto_now_add=True)
     created_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         blank=False,
         null=False,
         related_name="created_import_case_notes",
     )
-    files = models.ManyToManyField(File)
+    files = models.ManyToManyField("web.File")
 
     class Meta:
         ordering = ["-create_datetime"]
@@ -192,11 +196,13 @@ class WithdrawApplication(models.Model):
     is_active = models.BooleanField(default=True)
     status = models.CharField(max_length=10, choices=STATUSES, default=STATUS_OPEN)
     reason = models.TextField()
-    request_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
+    request_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
+    )
 
     response = models.TextField()
     response_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
 
     created_datetime = models.DateTimeField(auto_now_add=True)
@@ -262,11 +268,11 @@ class ApplicationBase(Process):
         """Get the edit view name."""
         raise NotImplementedError
 
-    def user_is_contact_of_org(self, user: User) -> bool:
+    def user_is_contact_of_org(self, user: "User") -> bool:
         """Is the user a contact of the org (Importer or Exporter)"""
         raise NotImplementedError
 
-    def user_is_agent_of_org(self, user: User) -> bool:
+    def user_is_agent_of_org(self, user: "User") -> bool:
         """Is the user agent of the org (Importer or Exporter)"""
         raise NotImplementedError
 
@@ -313,7 +319,7 @@ class CaseEmail(models.Model):
 
     subject = models.CharField(max_length=100, null=True)
     body = models.TextField(max_length=4000, null=True)
-    attachments = models.ManyToManyField(File)
+    attachments = models.ManyToManyField("web.File")
 
     response = models.TextField(max_length=4000, null=True)
 
@@ -365,7 +371,7 @@ class CaseDocumentReference(models.Model):
         CERTIFICATE = ("CERTIFICATE", "Certificate")
         COVER_LETTER = ("COVER_LETTER", "Cover Letter")
 
-    document = models.OneToOneField(File, on_delete=models.CASCADE, null=True)
+    document = models.OneToOneField("web.File", on_delete=models.CASCADE, null=True)
     document_type = models.CharField(max_length=12, choices=Type.choices)
 
     # Nullable because import application cover letters don't have a reference.

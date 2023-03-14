@@ -3,8 +3,6 @@ from typing import final
 from django.db import models
 
 from web.domains.case._import.models import ChecklistBase
-from web.domains.commodity.models import Commodity
-from web.domains.country.models import Country
 from web.domains.file.models import File
 from web.flow.models import ProcessTypes
 from web.models.shared import YesNoChoices, YesNoNAChoices, at_least_0
@@ -86,7 +84,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
 
     # Compensating Products fields (cp_ prefix)
     cp_origin_country = models.ForeignKey(
-        Country,
+        "web.Country",
         on_delete=models.PROTECT,
         null=True,
         related_name="+",
@@ -95,7 +93,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
     )
 
     cp_processing_country = models.ForeignKey(
-        Country,
+        "web.Country",
         on_delete=models.PROTECT,
         null=True,
         related_name="+",
@@ -144,7 +142,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
     )
 
     cp_commodities = models.ManyToManyField(
-        Commodity,
+        "web.Commodity",
         related_name="+",
         verbose_name="Commodity Code",
         help_text=(
@@ -159,7 +157,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
 
     # Temporary Exported Goods fields (teg_ prefix)
     teg_origin_country = models.ForeignKey(
-        Country,
+        "web.Country",
         on_delete=models.PROTECT,
         null=True,
         related_name="+",
@@ -191,7 +189,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
     )
 
     teg_commodities = models.ManyToManyField(
-        Commodity,
+        "web.Commodity",
         related_name="+",
         verbose_name="Commodity Code",
         help_text=(
@@ -369,12 +367,12 @@ class OutwardProcessingTradeApplication(ImportApplication):
         help_text=_ONCE_PER_YEAR,
     )
 
-    documents = models.ManyToManyField(OutwardProcessingTradeFile, related_name="+")
+    documents = models.ManyToManyField("web.OutwardProcessingTradeFile", related_name="+")
 
 
 class OPTChecklist(ChecklistBase):
     import_application = models.OneToOneField(
-        OutwardProcessingTradeApplication, on_delete=models.PROTECT, related_name="checklist"
+        "web.OutwardProcessingTradeApplication", on_delete=models.PROTECT, related_name="checklist"
     )
 
     # This base class field is not needed.

@@ -3,7 +3,6 @@ from typing import final
 from django.db import models
 
 from web.domains.case._import.models import ChecklistBase, ImportApplication
-from web.domains.commodity.models import Commodity, CommodityGroup
 from web.domains.file.models import File
 from web.flow.models import ProcessTypes
 from web.models.shared import YesNoNAChoices, at_least_0
@@ -59,7 +58,7 @@ class IronSteelApplication(ImportApplication):
 
     # Goods
     category_commodity_group = models.ForeignKey(
-        CommodityGroup,
+        "web.CommodityGroup",
         on_delete=models.PROTECT,
         null=True,
         related_name="+",
@@ -72,7 +71,7 @@ class IronSteelApplication(ImportApplication):
     )
 
     commodity = models.ForeignKey(
-        Commodity,
+        "web.Commodity",
         on_delete=models.PROTECT,
         null=True,
         related_name="+",
@@ -101,14 +100,14 @@ class IronSteelApplication(ImportApplication):
         validators=[at_least_0],
     )
 
-    supporting_documents = models.ManyToManyField(File, related_name="+")
+    supporting_documents = models.ManyToManyField("web.File", related_name="+")
 
-    certificates = models.ManyToManyField(IronSteelCertificateFile, related_name="+")
+    certificates = models.ManyToManyField("web.IronSteelCertificateFile", related_name="+")
 
 
 class IronSteelChecklist(ChecklistBase):
     import_application = models.OneToOneField(
-        IronSteelApplication, on_delete=models.PROTECT, related_name="checklist"
+        "web.IronSteelApplication", on_delete=models.PROTECT, related_name="checklist"
     )
 
     licence_category = models.CharField(

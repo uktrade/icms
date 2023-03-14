@@ -9,8 +9,6 @@ from web.domains.case._import.fa.models import (
     SupplementaryReportFirearmBase,
 )
 from web.domains.case._import.models import ChecklistBase, ImportApplication
-from web.domains.constabulary.models import Constabulary
-from web.domains.country.models import Country
 from web.domains.file.models import File
 from web.flow.models import ProcessTypes
 from web.models.shared import FirearmCommodity, YesNoNAChoices
@@ -29,7 +27,7 @@ class DFLGoodsCertificate(File):
     )
 
     issuing_country = models.ForeignKey(
-        Country,
+        "web.Country",
         on_delete=models.PROTECT,
         related_name="+",
         verbose_name="Issuing Country",
@@ -67,8 +65,10 @@ class DFLApplication(ImportApplication):
         ),
     )
 
-    constabulary = models.ForeignKey(Constabulary, on_delete=models.PROTECT, null=True)
-    goods_certificates = models.ManyToManyField(DFLGoodsCertificate, related_name="dfl_application")
+    constabulary = models.ForeignKey("web.Constabulary", on_delete=models.PROTECT, null=True)
+    goods_certificates = models.ManyToManyField(
+        "web.DFLGoodsCertificate", related_name="dfl_application"
+    )
 
     know_bought_from = models.BooleanField(
         null=True, verbose_name="Do you know who you plan to buy/obtain these items from?"
@@ -80,7 +80,7 @@ class DFLApplication(ImportApplication):
 
 class DFLChecklist(ChecklistBase):
     import_application = models.OneToOneField(
-        DFLApplication, on_delete=models.PROTECT, related_name="checklist"
+        "web.DFLApplication", on_delete=models.PROTECT, related_name="checklist"
     )
 
     deactivation_certificate_attached = models.CharField(
@@ -100,13 +100,13 @@ class DFLChecklist(ChecklistBase):
 
 class DFLSupplementaryInfo(SupplementaryInfoBase):
     import_application = models.OneToOneField(
-        DFLApplication, on_delete=models.CASCADE, related_name="supplementary_info"
+        "web.DFLApplication", on_delete=models.CASCADE, related_name="supplementary_info"
     )
 
 
 class DFLSupplementaryReport(SupplementaryReportBase):
     supplementary_info = models.ForeignKey(
-        DFLSupplementaryInfo, related_name="reports", on_delete=models.CASCADE
+        "web.DFLSupplementaryInfo", related_name="reports", on_delete=models.CASCADE
     )
 
     def get_goods_certificates(self) -> "QuerySet[DFLGoodsCertificate]":
@@ -144,14 +144,18 @@ class DFLSupplementaryReport(SupplementaryReportBase):
 
 class DFLSupplementaryReportFirearm(SupplementaryReportFirearmBase):
     report = models.ForeignKey(
-        DFLSupplementaryReport, related_name="firearms", on_delete=models.CASCADE
+        "web.DFLSupplementaryReport", related_name="firearms", on_delete=models.CASCADE
     )
 
     goods_certificate = models.ForeignKey(
-        DFLGoodsCertificate, related_name="supplementary_report_firearms", on_delete=models.CASCADE
+        "web.DFLGoodsCertificate",
+        related_name="supplementary_report_firearms",
+        on_delete=models.CASCADE,
     )
 
-    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)
+    document = models.OneToOneField(
+        "web.File", related_name="+", null=True, on_delete=models.SET_NULL
+    )
 
     def get_description(self) -> str:
         return self.goods_certificate.goods_description

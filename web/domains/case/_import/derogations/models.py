@@ -2,8 +2,6 @@ from typing import final
 
 from django.db import models
 
-from web.domains.commodity.models import Commodity
-from web.domains.file.models import File
 from web.flow.models import ProcessTypes
 from web.models.shared import YesNoChoices, YesNoNAChoices, at_least_0
 
@@ -51,7 +49,7 @@ class DerogationsApplication(ImportApplication):
 
     # Goods
     commodity = models.ForeignKey(
-        Commodity,
+        "web.Commodity",
         on_delete=models.PROTECT,
         null=True,
         related_name="+",
@@ -87,7 +85,7 @@ class DerogationsApplication(ImportApplication):
     )
 
     #  supporting documents
-    supporting_documents = models.ManyToManyField(File, related_name="+")
+    supporting_documents = models.ManyToManyField("web.File", related_name="+")
 
     # Further details section (for Syria)
     entity_consulted_name = models.CharField(
@@ -134,7 +132,7 @@ class DerogationsApplication(ImportApplication):
 
 class DerogationsChecklist(ChecklistBase):
     import_application = models.OneToOneField(
-        DerogationsApplication, on_delete=models.PROTECT, related_name="checklist"
+        "web.DerogationsApplication", on_delete=models.PROTECT, related_name="checklist"
     )
 
     supporting_document_received = models.CharField(

@@ -3,8 +3,6 @@ from typing import final
 from django.db import models
 
 from web.domains.case._import.models import ChecklistBase, ImportApplication
-from web.domains.commodity.models import Commodity, CommodityGroup
-from web.domains.file.models import File
 from web.flow.models import ProcessTypes
 from web.models.shared import at_least_0
 
@@ -33,7 +31,7 @@ class TextilesApplication(ImportApplication):
     )
 
     category_commodity_group = models.ForeignKey(
-        CommodityGroup,
+        "web.CommodityGroup",
         on_delete=models.PROTECT,
         null=True,
         related_name="+",
@@ -42,7 +40,7 @@ class TextilesApplication(ImportApplication):
     )
 
     commodity = models.ForeignKey(
-        Commodity,
+        "web.Commodity",
         on_delete=models.PROTECT,
         null=True,
         related_name="+",
@@ -88,12 +86,12 @@ class TextilesApplication(ImportApplication):
     )
 
     #  supporting documents
-    supporting_documents = models.ManyToManyField(File, related_name="+")
+    supporting_documents = models.ManyToManyField("web.File", related_name="+")
 
 
 class TextilesChecklist(ChecklistBase):
     import_application = models.OneToOneField(
-        TextilesApplication, on_delete=models.PROTECT, related_name="checklist"
+        "web.TextilesApplication", on_delete=models.PROTECT, related_name="checklist"
     )
 
     within_maximum_amount_limit = models.BooleanField(

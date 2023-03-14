@@ -1,8 +1,7 @@
+from django.conf import settings
 from django.db import models
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
-from web.domains.office.models import Office
-from web.domains.user.models import User
 from web.models.mixins import Archivable
 from web.permissions import Perms
 
@@ -47,7 +46,7 @@ class Importer(Archivable, models.Model):
 
     # only set for individuals
     user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         related_name="own_importers",
@@ -60,7 +59,7 @@ class Importer(Archivable, models.Model):
 
     # set for both
     comments = models.TextField(blank=True, null=True)
-    offices = models.ManyToManyField(Office)
+    offices = models.ManyToManyField("web.Office")
 
     # Having a main importer means importer is an agent
     main_importer = models.ForeignKey(
@@ -107,8 +106,8 @@ class Importer(Archivable, models.Model):
 # Direct foreign key support for Django-Guardian
 # https://django-guardian.readthedocs.io/en/stable/userguide/performance.html#direct-foreign-keys
 class ImporterUserObjectPermission(UserObjectPermissionBase):
-    content_object = models.ForeignKey(Importer, on_delete=models.CASCADE)
+    content_object = models.ForeignKey("web.Importer", on_delete=models.CASCADE)
 
 
 class ImporterGroupObjectPermission(GroupObjectPermissionBase):
-    content_object = models.ForeignKey(Importer, on_delete=models.CASCADE)
+    content_object = models.ForeignKey("web.Importer", on_delete=models.CASCADE)

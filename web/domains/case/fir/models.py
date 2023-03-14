@@ -1,8 +1,7 @@
+from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
-from web.domains.file.models import File
-from web.domains.user.models import User
 from web.flow.models import Process, ProcessTypes
 
 
@@ -76,14 +75,14 @@ class FurtherInformationRequest(Process):
     response_datetime = models.DateTimeField(null=True)
 
     requested_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         null=True,
         related_name="requested_further_import_information",
     )
 
     response_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         null=True,
         related_name="responded_import_information_requests",
@@ -92,7 +91,7 @@ class FurtherInformationRequest(Process):
     closed_datetime = models.DateTimeField(null=True)
 
     closed_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         null=True,
         related_name="closed_import_information_requests",
@@ -101,10 +100,10 @@ class FurtherInformationRequest(Process):
     deleted_datetime = models.DateTimeField(blank=True, null=True)
 
     deleted_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         null=True,
         related_name="deleted_import_information_requests",
     )
 
-    files = models.ManyToManyField(File, blank=True)
+    files = models.ManyToManyField("web.File", blank=True)

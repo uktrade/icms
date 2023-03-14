@@ -1,7 +1,6 @@
 from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
 
-from web.domains.country.models import Country
 from web.models.mixins import Archivable
 
 
@@ -37,7 +36,7 @@ class Commodity(Archivable, models.Model):
     quantity_threshold = models.IntegerField(blank=True, null=True)
     sigl_product_type = models.CharField(max_length=3, blank=True, null=True)
 
-    commodity_type = models.ForeignKey(CommodityType, on_delete=models.PROTECT)
+    commodity_type = models.ForeignKey("web.CommodityType", on_delete=models.PROTECT)
 
     # These are to be ignored, the start_datetime is simply a timestamp.
     start_datetime = models.DateTimeField(auto_now_add=True)
@@ -72,10 +71,10 @@ class CommodityGroup(Archivable, models.Model):
     group_name = models.CharField(max_length=100, blank=True, null=True)
     group_description = models.CharField(max_length=4000, blank=True, null=True)
     commodity_type = models.ForeignKey(
-        CommodityType, on_delete=models.PROTECT, blank=True, null=True
+        "web.CommodityType", on_delete=models.PROTECT, blank=True, null=True
     )
-    unit = models.ForeignKey(Unit, on_delete=models.SET_NULL, blank=True, null=True)
-    commodities = models.ManyToManyField(Commodity, blank=True)
+    unit = models.ForeignKey("web.Unit", on_delete=models.SET_NULL, blank=True, null=True)
+    commodities = models.ManyToManyField("web.Commodity", blank=True)
 
     # A timestamp when the record was created
     start_datetime = models.DateTimeField(auto_now_add=True)
@@ -105,9 +104,9 @@ class CommodityGroup(Archivable, models.Model):
 
 class Usage(models.Model):
     application_type = models.ForeignKey("web.ImportApplicationType", on_delete=models.PROTECT)
-    country = models.ForeignKey(Country, on_delete=models.PROTECT)
+    country = models.ForeignKey("web.Country", on_delete=models.PROTECT)
     commodity_group = models.ForeignKey(
-        CommodityGroup, on_delete=models.PROTECT, related_name="usages"
+        "web.CommodityGroup", on_delete=models.PROTECT, related_name="usages"
     )
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)

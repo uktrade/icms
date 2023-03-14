@@ -1,9 +1,7 @@
+from django.conf import settings
 from django.db import models
 
-from web.domains.user.models import User
 from web.flow.models import Process, ProcessTypes
-
-from ..models import AccessRequest
 
 
 class ApprovalRequest(Process):
@@ -35,7 +33,7 @@ class ApprovalRequest(Process):
     )
 
     access_request = models.ForeignKey(
-        AccessRequest,
+        "web.AccessRequest",
         on_delete=models.CASCADE,
         blank=False,
         null=False,
@@ -45,10 +43,14 @@ class ApprovalRequest(Process):
     status = models.CharField(max_length=20, choices=STATUSES, blank=True, null=True, default=OPEN)
     request_date = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     requested_by = models.ForeignKey(
-        User, on_delete=models.CASCADE, blank=True, null=True, related_name="approval_requests"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name="approval_requests",
     )
     requested_from = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         blank=True,
         null=True,
@@ -56,7 +58,7 @@ class ApprovalRequest(Process):
     )
     response = models.CharField(max_length=20, choices=RESPONSE_OPTIONS, blank=True, null=True)
     response_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         blank=True,
         null=True,

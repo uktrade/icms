@@ -9,9 +9,7 @@ from web.domains.case._import.fa.models import (
     SupplementaryReportFirearmBase,
 )
 from web.domains.case._import.models import ChecklistBase, ImportApplication
-from web.domains.file.models import File
 from web.flow.models import ProcessTypes
-from web.models import UserImportCertificate
 from web.models.shared import FirearmCommodity, YesNoNAChoices
 
 if TYPE_CHECKING:
@@ -31,7 +29,7 @@ class OpenIndividualLicenceApplication(ImportApplication):
     )
 
     user_imported_certificates = models.ManyToManyField(
-        UserImportCertificate, related_name="oil_application"
+        "web.UserImportCertificate", related_name="oil_application"
     )
     verified_certificates = models.ManyToManyField(
         "FirearmsAuthority", related_name="oil_application"
@@ -62,7 +60,7 @@ class OpenIndividualLicenceApplication(ImportApplication):
 
 class ChecklistFirearmsOILApplication(ChecklistBase):
     import_application = models.OneToOneField(
-        OpenIndividualLicenceApplication, on_delete=models.PROTECT, related_name="checklist"
+        "web.OpenIndividualLicenceApplication", on_delete=models.PROTECT, related_name="checklist"
     )
 
     authority_required = models.CharField(
@@ -87,7 +85,7 @@ class ChecklistFirearmsOILApplication(ChecklistBase):
 
 class OILSupplementaryInfo(SupplementaryInfoBase):
     import_application = models.OneToOneField(
-        OpenIndividualLicenceApplication,
+        "web.OpenIndividualLicenceApplication",
         on_delete=models.CASCADE,
         related_name="supplementary_info",
     )
@@ -95,7 +93,7 @@ class OILSupplementaryInfo(SupplementaryInfoBase):
 
 class OILSupplementaryReport(SupplementaryReportBase):
     supplementary_info = models.ForeignKey(
-        OILSupplementaryInfo, related_name="reports", on_delete=models.CASCADE
+        "web.OILSupplementaryInfo", related_name="reports", on_delete=models.CASCADE
     )
 
     def get_goods_certificates(self) -> list[str]:
@@ -130,10 +128,12 @@ class OILSupplementaryReport(SupplementaryReportBase):
 
 class OILSupplementaryReportFirearm(SupplementaryReportFirearmBase):
     report = models.ForeignKey(
-        OILSupplementaryReport, related_name="firearms", on_delete=models.CASCADE
+        "web.OILSupplementaryReport", related_name="firearms", on_delete=models.CASCADE
     )
 
-    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)
+    document = models.OneToOneField(
+        "web.File", related_name="+", null=True, on_delete=models.SET_NULL
+    )
 
     def get_description(self) -> str:
         return OpenIndividualLicenceApplication.goods_description()

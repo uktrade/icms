@@ -1,6 +1,5 @@
+from django.conf import settings
 from django.db import models
-
-from web.domains.user.models import User
 
 
 class SIGLTransmission(models.Model):
@@ -8,7 +7,7 @@ class SIGLTransmission(models.Model):
     status = models.CharField(max_length=8)
     request_type = models.CharField(max_length=8)
     sent_datetime = models.DateTimeField()
-    sent_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    sent_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     response_datetime = models.DateTimeField(null=True)
     response_message = models.CharField(max_length=120, null=True)
     response_code = models.IntegerField(null=True)

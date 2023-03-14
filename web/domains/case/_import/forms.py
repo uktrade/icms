@@ -5,12 +5,16 @@ from django.utils import timezone
 from django_select2.forms import ModelSelect2Widget
 from guardian.shortcuts import get_objects_for_user
 
-from web.domains.importer.models import Importer
-from web.domains.office.models import Office
-from web.domains.template.models import Template
 from web.forms.widgets import DateInput
-
-from . import models
+from web.models import (
+    EndorsementImportApplication,
+    ImportApplication,
+    ImportApplicationLicence,
+    Importer,
+    Office,
+    Template,
+    User,
+)
 
 
 class CreateImportApplicationForm(forms.Form):
@@ -73,7 +77,7 @@ class CreateImportApplicationForm(forms.Form):
         ),
     )
 
-    def __init__(self, *args: Any, user: models.User, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, user: User, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.user = user
@@ -141,7 +145,7 @@ class CreateWoodQuotaApplicationForm(CreateImportApplicationForm):
 
 class CoverLetterForm(forms.ModelForm):
     class Meta:
-        model = models.ImportApplication
+        model = ImportApplication
         fields = ("cover_letter_text",)
         widgets = {"cover_letter_text": forms.Textarea(attrs={"lang": "html"})}
 
@@ -158,7 +162,7 @@ class LicenceDateForm(forms.ModelForm):
     licence_end_date = forms.DateField(required=True, label="Licence End Date", widget=DateInput)
 
     class Meta:
-        model = models.ImportApplicationLicence
+        model = ImportApplicationLicence
         fields = ("licence_start_date", "licence_end_date")
 
     def clean(self):
@@ -181,7 +185,7 @@ class LicenceDateForm(forms.ModelForm):
 
 class LicenceDateAndPaperLicenceForm(LicenceDateForm):
     class Meta:
-        model = models.ImportApplicationLicence
+        model = ImportApplicationLicence
         fields = LicenceDateForm.Meta.fields + ("issue_paper_licence_only",)
 
     def __init__(self, *args, **kwargs):
@@ -202,7 +206,7 @@ class OPTLicenceForm(LicenceDateForm):
     )
 
     class Meta:
-        model = models.ImportApplicationLicence
+        model = ImportApplicationLicence
         fields = LicenceDateForm.Meta.fields
 
     def save(self, commit=True):
@@ -219,7 +223,7 @@ class EndorsementChoiceImportApplicationForm(forms.ModelForm):
     )
 
     class Meta:
-        model = models.EndorsementImportApplication
+        model = EndorsementImportApplication
         fields = ("content",)
 
     def clean_content(self):
@@ -229,7 +233,7 @@ class EndorsementChoiceImportApplicationForm(forms.ModelForm):
 
 class EndorsementImportApplicationForm(forms.ModelForm):
     class Meta:
-        model = models.EndorsementImportApplication
+        model = EndorsementImportApplication
         fields = ("content",)
 
 

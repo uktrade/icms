@@ -2,7 +2,6 @@ from typing import final
 
 from django.db import models
 
-from web.domains.commodity.models import Commodity
 from web.domains.file.models import File
 from web.flow.models import ProcessTypes
 
@@ -38,7 +37,7 @@ class WoodQuotaApplication(ImportApplication):
 
     #  goods
     commodity = models.ForeignKey(
-        Commodity,
+        "web.Commodity",
         on_delete=models.PROTECT,
         null=True,
         related_name="+",
@@ -66,15 +65,15 @@ class WoodQuotaApplication(ImportApplication):
     )
 
     #  supporting documents
-    supporting_documents = models.ManyToManyField(File, related_name="+")
+    supporting_documents = models.ManyToManyField("web.File", related_name="+")
 
     #  contracts/pre-contracts
-    contract_documents = models.ManyToManyField(WoodContractFile, related_name="+")
+    contract_documents = models.ManyToManyField("web.WoodContractFile", related_name="+")
 
 
 class WoodQuotaChecklist(ChecklistBase):
     import_application = models.OneToOneField(
-        WoodQuotaApplication, on_delete=models.PROTECT, related_name="checklist"
+        "web.WoodQuotaApplication", on_delete=models.PROTECT, related_name="checklist"
     )
 
     sigl_wood_application_logged = models.BooleanField(

@@ -1,7 +1,5 @@
+from django.conf import settings
 from django.db import models
-
-from web.domains.file.models import File
-from web.domains.user.models import User
 
 
 class Mailshot(models.Model):
@@ -42,16 +40,22 @@ class Mailshot(models.Model):
     is_to_importers = models.BooleanField(default=False)
     is_to_exporters = models.BooleanField(default=False)
 
-    created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
+    )
     create_datetime = models.DateTimeField(auto_now_add=True)
 
-    published_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
+    published_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, related_name="+"
+    )
     published_datetime = models.DateTimeField(null=True)
 
-    retracted_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
+    retracted_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, related_name="+"
+    )
     retracted_datetime = models.DateTimeField(null=True)
 
-    documents = models.ManyToManyField(File, related_name="+")
+    documents = models.ManyToManyField("web.File", related_name="+")
 
     reference = models.CharField(max_length=100, blank=True, null=True)
     version = models.PositiveIntegerField(default=0)

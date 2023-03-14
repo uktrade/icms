@@ -13,6 +13,7 @@ from data_migration.management.commands.config.run_order import (
 )
 from data_migration.utils import xml_parser
 from web import models as web
+from web.flow.models import ProcessTypes
 
 from . import factory, utils
 from .utils import xml_data
@@ -129,7 +130,7 @@ def test_import_wood_application_data(dummy_dm_settings):
     iat = factory.ImportApplicationTypeFactory(master_country_group=cg)
 
     for i, pk in enumerate(pk_range):
-        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.WOOD, ima_id=pk)
+        process = factory.ProcessFactory(pk=pk, process_type=ProcessTypes.WOOD, ima_id=pk)
         submit_datetime = timezone.now()
 
         if i < 3:
@@ -227,7 +228,7 @@ def test_import_oil_data(dummy_dm_settings):
     iat = factory.ImportApplicationTypeFactory(master_country_group=cg)
 
     for i, pk in enumerate(pk_range):
-        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.FA_OIL, ima_id=pk + 7)
+        process = factory.ProcessFactory(pk=pk, process_type=ProcessTypes.FA_OIL, ima_id=pk + 7)
         ia = factory.ImportApplicationFactory(
             pk=pk,
             ima=process,
@@ -359,7 +360,7 @@ def test_import_dfl_data(dummy_dm_settings):
     iat = factory.ImportApplicationTypeFactory(master_country_group=cg)
 
     for i, pk in enumerate(pk_range):
-        process = factory.ProcessFactory(pk=pk, process_type=web.ProcessTypes.FA_DFL, ima_id=pk + 7)
+        process = factory.ProcessFactory(pk=pk, process_type=ProcessTypes.FA_DFL, ima_id=pk + 7)
 
         ia = factory.ImportApplicationFactory(
             pk=pk,
@@ -491,7 +492,7 @@ def test_import_user_import_certificate_data(dummy_dm_settings):
     for i, pk in enumerate(pk_range):
         process = factory.ProcessFactory(
             pk=pk,
-            process_type=web.ProcessTypes.FA_OIL if i == 0 else web.ProcessTypes.FA_SIL,
+            process_type=ProcessTypes.FA_OIL if i == 0 else ProcessTypes.FA_SIL,
             ima_id=pk + 7,
         )
 

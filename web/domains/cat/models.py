@@ -1,10 +1,14 @@
 import copy
+from typing import TYPE_CHECKING
 
+from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 
 from web.domains.case.export.models import ExportApplicationType
-from web.domains.user.models import User
+
+if TYPE_CHECKING:
+    from web.models import User
 
 
 class DjangoQuerysetJSONEncoder(DjangoJSONEncoder):
@@ -52,7 +56,7 @@ class CertificateApplicationTemplate(models.Model):
         ),
     )
 
-    owner = models.ForeignKey(User, on_delete=models.PROTECT)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
@@ -62,11 +66,11 @@ class CertificateApplicationTemplate(models.Model):
         """Data to use as a Django form's data argument."""
         return copy.deepcopy(self.data)
 
-    def user_can_view(self, user: User) -> bool:
+    def user_can_view(self, user: "User") -> bool:
         # A template may have sensitive information so we check if the user
         # should be allowed to view it (use it to create an application).
         return user == self.owner
 
-    def user_can_edit(self, user: User) -> bool:
+    def user_can_edit(self, user: "User") -> bool:
         # Whether the user can edit the template itself.
         return user == self.owner

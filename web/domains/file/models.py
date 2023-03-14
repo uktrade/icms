@@ -1,9 +1,9 @@
 import logging
 
 import humanize
+from django.conf import settings
 from django.db import models
 
-from web.domains.user.models import User
 from web.models.mixins import Archivable
 
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ class File(Archivable, models.Model):
     file_size = models.IntegerField()
     path = models.CharField(max_length=4000)
     created_datetime = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.PROTECT)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
 
     class Meta:
         ordering = ["-created_datetime"]

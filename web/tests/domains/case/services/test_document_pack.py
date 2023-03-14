@@ -4,13 +4,9 @@ from itertools import product
 
 import pytest
 
+from web.domains.case.models import DocumentPackBase
 from web.domains.case.services import document_pack
-from web.models import (
-    CaseDocumentReference,
-    Country,
-    DocumentPackBase,
-    ImportApplicationType,
-)
+from web.models import CaseDocumentReference, Country, ImportApplicationType
 
 PackStatus = DocumentPackBase.Status
 DocumentType = CaseDocumentReference.Type

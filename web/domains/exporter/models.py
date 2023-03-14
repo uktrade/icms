@@ -1,7 +1,6 @@
 from django.db import models
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
-from web.domains.office.models import Office
 from web.models.mixins import Archivable
 from web.permissions import Perms
 
@@ -20,7 +19,7 @@ class Exporter(Archivable, models.Model):
         max_length=15, blank=True, null=True, verbose_name="Registered Number"
     )
     comments = models.TextField(blank=True, null=True)
-    offices = models.ManyToManyField(Office)
+    offices = models.ManyToManyField("web.Office")
 
     # Having a main exporter means exporter is an agent
     main_exporter = models.ForeignKey(
@@ -49,8 +48,8 @@ class Exporter(Archivable, models.Model):
 # Direct foreign key support for Django-Guardian
 # https://django-guardian.readthedocs.io/en/stable/userguide/performance.html#direct-foreign-keys
 class ExporterUserObjectPermission(UserObjectPermissionBase):
-    content_object = models.ForeignKey(Exporter, on_delete=models.CASCADE)
+    content_object = models.ForeignKey("web.Exporter", on_delete=models.CASCADE)
 
 
 class ExporterGroupObjectPermission(GroupObjectPermissionBase):
-    content_object = models.ForeignKey(Exporter, on_delete=models.CASCADE)
+    content_object = models.ForeignKey("web.Exporter", on_delete=models.CASCADE)

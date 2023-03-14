@@ -2,11 +2,8 @@ from typing import final
 
 from django.db import models
 
-from web.domains.commodity.models import Commodity
-from web.domains.file.models import File
+from web.domains.case._import.models import ImportApplication
 from web.flow.models import ProcessTypes
-
-from ..models import ImportApplication
 
 
 @final
@@ -16,13 +13,13 @@ class SanctionsAndAdhocApplication(ImportApplication):
 
     exporter_name = models.CharField(max_length=4096, blank=True, null=True)
     exporter_address = models.CharField(max_length=4096, blank=True, null=True)
-    supporting_documents = models.ManyToManyField(File)
+    supporting_documents = models.ManyToManyField("web.File")
 
 
 class SanctionsAndAdhocApplicationGoods(models.Model):
-    import_application = models.ForeignKey(ImportApplication, on_delete=models.CASCADE)
+    import_application = models.ForeignKey("web.ImportApplication", on_delete=models.CASCADE)
     commodity = models.ForeignKey(
-        Commodity,
+        "web.Commodity",
         on_delete=models.PROTECT,
         null=True,
         related_name="+",

@@ -26,11 +26,25 @@ from web.domains.case.utils import (
     submit_application,
     view_application_file,
 )
-from web.domains.cat.models import CertificateApplicationTemplate
-from web.domains.exporter.models import Exporter
 from web.domains.file.utils import create_file_model
-from web.domains.user.models import User
-from web.flow.models import ProcessTypes, Task
+from web.flow.models import ProcessTypes
+from web.models import (
+    CertificateApplicationTemplate,
+    CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
+    CertificateOfManufactureApplication,
+    CFSProduct,
+    CFSProductActiveIngredient,
+    CFSProductType,
+    CFSSchedule,
+    ExportApplication,
+    ExportApplicationType,
+    Exporter,
+    GMPFile,
+    ProductLegislation,
+    Task,
+    User,
+)
 from web.models.shared import AddressEntryType, YesNoChoices
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import delete_file_from_s3
@@ -58,19 +72,6 @@ from .forms import (
     SubmitCOMForm,
     SubmitGMPForm,
     form_class_for_application_type,
-)
-from .models import (
-    CertificateOfFreeSaleApplication,
-    CertificateOfGoodManufacturingPracticeApplication,
-    CertificateOfManufactureApplication,
-    CFSProduct,
-    CFSProductActiveIngredient,
-    CFSProductType,
-    CFSSchedule,
-    ExportApplication,
-    ExportApplicationType,
-    GMPFile,
-    ProductLegislation,
 )
 from .utils import CustomError, generate_product_template_xlsx, process_products_file
 
