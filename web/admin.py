@@ -6,25 +6,25 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import QuerySet
 from guardian.admin import GuardedModelAdmin
 
-from web.domains.case._import.models import ImportApplication, ImportApplicationType
-from web.domains.case._import.sanctions.models import SanctionsAndAdhocApplication
-from web.domains.case.export.models import (
-    ExportApplication,
-    ExportApplicationType,
-    Exporter,
-)
-from web.domains.country.models import Country, CountryGroup
-from web.flow.models import Process, Task
-
-from .models import (
+from web.models import (
     Commodity,
     CommodityGroup,
     CommodityType,
+    Country,
+    CountryGroup,
     DerogationsApplication,
+    ExportApplication,
+    ExportApplicationType,
+    Exporter,
+    ImportApplication,
+    ImportApplicationType,
     Importer,
     PersonalEmail,
     PhoneNumber,
+    Process,
+    SanctionsAndAdhocApplication,
     SanctionsAndAdhocApplicationGoods,
+    Task,
     Template,
     User,
 )

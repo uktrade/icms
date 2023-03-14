@@ -3,7 +3,6 @@ from typing import Any
 
 from django.db import models
 
-from web.domains.country.models import Country, CountryTranslationSet
 from web.models.mixins import Archivable
 
 TEMPLATE_CONTENT_REGEX = r"\[\[{}\]\]"
@@ -65,9 +64,9 @@ class Template(Archivable, models.Model):
     # everything except CFS schedules uses this; CFS schedules use "paragraphs" (see CFSScheduleParagraph, below)
     template_content = models.TextField(blank=False, null=True)
 
-    countries = models.ManyToManyField(Country)
+    countries = models.ManyToManyField("web.Country")
     country_translation_set = models.ForeignKey(
-        CountryTranslationSet, on_delete=models.SET_NULL, blank=False, null=True
+        "web.CountryTranslationSet", on_delete=models.SET_NULL, blank=False, null=True
     )
 
     @property
@@ -150,7 +149,7 @@ class CFSScheduleParagraph(models.Model):
     # TODO: do we need constants here for the paragraph names?
 
     template = models.ForeignKey(
-        Template, on_delete=models.CASCADE, blank=False, null=False, related_name="paragraphs"
+        "web.Template", on_delete=models.CASCADE, blank=False, null=False, related_name="paragraphs"
     )
     order = models.IntegerField(blank=False, null=False)
     name = models.CharField(max_length=100, blank=False, null=False)

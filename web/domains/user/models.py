@@ -1,6 +1,7 @@
 import random
 import string
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from guardian.mixins import GuardianUserMixin
@@ -143,7 +144,9 @@ class PhoneNumber(models.Model):
     phone = models.CharField(max_length=60, blank=False, null=False)
     type = models.CharField(max_length=30, choices=TYPES, blank=False, null=False, default=WORK)
     comment = models.CharField(max_length=4000, blank=True, null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="phone_numbers")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="phone_numbers"
+    )
 
     @property
     def entity_type(self):
@@ -164,7 +167,9 @@ class Email(models.Model):
 
 
 class AlternativeEmail(Email):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="alternative_emails")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="alternative_emails"
+    )
 
     def __str__(self):
         return self.email
@@ -172,7 +177,9 @@ class AlternativeEmail(Email):
 
 class PersonalEmail(Email):
     is_primary = models.BooleanField(blank=False, null=False, default=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="personal_emails")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="personal_emails"
+    )
 
     def __str__(self):
         return self.email

@@ -1,10 +1,9 @@
 from typing import TYPE_CHECKING, Union
 
+from django.conf import settings
 from django.db import models
 
 from web.domains.file.models import File
-from web.domains.user.models import User
-from web.models import ImportApplication
 from web.models.shared import YesNoChoices
 
 if TYPE_CHECKING:
@@ -45,7 +44,7 @@ class ImportContact(models.Model):
         ("no", "No"),
     )
 
-    import_application = models.ForeignKey(ImportApplication, on_delete=models.CASCADE)
+    import_application = models.ForeignKey("web.ImportApplication", on_delete=models.CASCADE)
     entity = models.CharField(max_length=10, choices=ENTITIES)
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200, null=True, blank=True)
@@ -72,7 +71,7 @@ class SupplementaryInfoBase(models.Model):
     completed_datetime = models.DateTimeField(null=True)
 
     completed_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         related_name="+",
@@ -105,7 +104,7 @@ class SupplementaryReportBase(models.Model):
     date_received = models.DateField(verbose_name="Date Received", null=True)
 
     bought_from = models.ForeignKey(
-        ImportContact,
+        "web.ImportContact",
         on_delete=models.PROTECT,
         null=True,
         related_name="+",

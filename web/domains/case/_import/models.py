@@ -1,32 +1,19 @@
 import uuid
 from typing import TYPE_CHECKING
 
+from django.conf import settings
 from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
 from guardian.shortcuts import get_users_with_perms
 
-from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.case.models import (
-    ApplicationBase,
-    CaseEmail,
-    CaseNote,
-    DocumentPackBase,
-    UpdateRequest,
-    VariationRequest,
-)
-from web.domains.commodity.models import CommodityGroup, CommodityType
-from web.domains.country.models import Country, CountryGroup
-from web.domains.importer.models import Importer
-from web.domains.office.models import Office
-from web.domains.sigl.models import SIGLTransmission
-from web.domains.template.models import Template
-from web.domains.user.models import User
+from web.domains.case.models import ApplicationBase, DocumentPackBase
 from web.flow.models import ProcessTypes
-from web.models.models import CaseReference
 from web.models.shared import EnumJsonEncoder, YesNoNAChoices
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
+
+    from web.models import User
 
 
 class ImportApplicationType(models.Model):
@@ -74,39 +61,41 @@ class ImportApplicationType(models.Model):
     case_checklist_flag = models.BooleanField(blank=False, null=False)
     importer_printable = models.BooleanField(blank=False, null=False)
     origin_country_group = models.ForeignKey(
-        CountryGroup,
+        "web.CountryGroup",
         on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name="import_application_types_from",
     )
     consignment_country_group = models.ForeignKey(
-        CountryGroup,
+        "web.CountryGroup",
         on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name="import_application_types_to",
     )
     master_country_group = models.ForeignKey(
-        CountryGroup,
+        "web.CountryGroup",
         on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name="import_application_types",
     )
     commodity_type = models.ForeignKey(
-        CommodityType, on_delete=models.PROTECT, blank=True, null=True
+        "web.CommodityType", on_delete=models.PROTECT, blank=True, null=True
     )
     declaration_template = models.ForeignKey(
-        Template,
+        "web.Template",
         on_delete=models.PROTECT,
         blank=False,
         null=False,
         related_name="declaration_application_types",
     )
-    endorsements = models.ManyToManyField(Template, related_name="endorsement_application_types")
+    endorsements = models.ManyToManyField(
+        "web.Template", related_name="endorsement_application_types"
+    )
     default_commodity_group = models.ForeignKey(
-        CommodityGroup, on_delete=models.PROTECT, blank=True, null=True
+        "web.CommodityGroup", on_delete=models.PROTECT, blank=True, null=True
     )
 
     def __str__(self) -> str:
@@ -165,17 +154,17 @@ class ImportApplication(ApplicationBase):
     licence_extended_flag = models.BooleanField(blank=False, null=False, default=False)
 
     licence_reference = models.OneToOneField(
-        CaseReference, on_delete=models.PROTECT, related_name="+", null=True
+        "web.CaseReference", on_delete=models.PROTECT, related_name="+", null=True
     )
 
     last_update_datetime = models.DateTimeField(blank=False, null=False, auto_now=True)
 
     application_type = models.ForeignKey(
-        ImportApplicationType, on_delete=models.PROTECT, blank=False, null=False
+        "web.ImportApplicationType", on_delete=models.PROTECT, blank=False, null=False
     )
 
     submitted_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         blank=True,
         null=True,
@@ -183,7 +172,7 @@ class ImportApplication(ApplicationBase):
     )
 
     created_by = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         blank=False,
         null=False,
@@ -191,23 +180,29 @@ class ImportApplication(ApplicationBase):
     )
 
     last_updated_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, blank=False, null=False, related_name="updated_import_cases"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        blank=False,
+        null=False,
+        related_name="updated_import_cases",
     )
 
     importer = models.ForeignKey(
-        Importer, on_delete=models.PROTECT, related_name="import_applications"
+        "web.Importer", on_delete=models.PROTECT, related_name="import_applications"
     )
 
-    agent = models.ForeignKey(Importer, on_delete=models.PROTECT, null=True, related_name="+")
+    agent = models.ForeignKey("web.Importer", on_delete=models.PROTECT, null=True, related_name="+")
 
     importer_office = models.ForeignKey(
-        Office, on_delete=models.PROTECT, null=True, related_name="+"
+        "web.Office", on_delete=models.PROTECT, null=True, related_name="+"
     )
 
-    agent_office = models.ForeignKey(Office, on_delete=models.PROTECT, null=True, related_name="+")
+    agent_office = models.ForeignKey(
+        "web.Office", on_delete=models.PROTECT, null=True, related_name="+"
+    )
 
     contact = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         null=True,
         related_name="contact_import_applications",
@@ -218,7 +213,7 @@ class ImportApplication(ApplicationBase):
     )
 
     origin_country = models.ForeignKey(
-        Country,
+        "web.Country",
         on_delete=models.PROTECT,
         null=True,
         related_name="import_applications_from",
@@ -227,7 +222,7 @@ class ImportApplication(ApplicationBase):
     )
 
     consignment_country = models.ForeignKey(
-        Country,
+        "web.Country",
         on_delete=models.PROTECT,
         null=True,
         related_name="import_applications_to",
@@ -235,23 +230,27 @@ class ImportApplication(ApplicationBase):
         help_text="Select the country where the goods were shipped from.",
     )
 
-    variation_requests = models.ManyToManyField(VariationRequest)
-    further_information_requests = models.ManyToManyField(FurtherInformationRequest)
-    update_requests = models.ManyToManyField(UpdateRequest)
-    case_notes = models.ManyToManyField(CaseNote)
-    commodity_group = models.ForeignKey(CommodityGroup, on_delete=models.PROTECT, null=True)
-    case_emails = models.ManyToManyField(CaseEmail, related_name="+")
-    sigl_transmissions = models.ManyToManyField(SIGLTransmission)
+    variation_requests = models.ManyToManyField("web.VariationRequest")
+    further_information_requests = models.ManyToManyField("web.FurtherInformationRequest")
+    update_requests = models.ManyToManyField("web.UpdateRequest")
+    case_notes = models.ManyToManyField("web.CaseNote")
+    commodity_group = models.ForeignKey("web.CommodityGroup", on_delete=models.PROTECT, null=True)
+    case_emails = models.ManyToManyField("web.CaseEmail", related_name="+")
+    sigl_transmissions = models.ManyToManyField("web.SIGLTransmission")
 
     case_owner = models.ForeignKey(
-        User, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
 
     cover_letter_text = models.TextField(blank=True, null=True)
 
     # Only relevant to FA-SIL firearms applications
     imi_submitted_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, null=True, related_name="+", verbose_name="IMI Submitter"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="+",
+        verbose_name="IMI Submitter",
     )
 
     imi_submit_datetime = models.DateTimeField(null=True, verbose_name="Date provided to IMI")
@@ -307,10 +306,10 @@ class ImportApplication(ApplicationBase):
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
 
-    def user_is_contact_of_org(self, user: User) -> bool:
+    def user_is_contact_of_org(self, user: "User") -> bool:
         return user.has_perm("web.is_contact_of_importer", self.importer)
 
-    def user_is_agent_of_org(self, user: User) -> bool:
+    def user_is_agent_of_org(self, user: "User") -> bool:
         return user.has_perm("web.is_agent_of_importer", self.importer)
 
     def get_org_contacts(self) -> "QuerySet[User]":
@@ -329,7 +328,7 @@ class ImportApplication(ApplicationBase):
 
 class EndorsementImportApplication(models.Model):
     import_application = models.ForeignKey(
-        ImportApplication, on_delete=models.PROTECT, related_name="endorsements"
+        "web.ImportApplication", on_delete=models.PROTECT, related_name="endorsements"
     )
     content = models.TextField()
     created_datetime = models.DateTimeField(auto_now_add=True)
@@ -444,7 +443,7 @@ class LiteHMRCChiefRequest(models.Model):
 
 class ChiefRequestResponseErrors(models.Model):
     request = models.ForeignKey(
-        LiteHMRCChiefRequest, on_delete=models.PROTECT, related_name="response_errors"
+        "web.LiteHMRCChiefRequest", on_delete=models.PROTECT, related_name="response_errors"
     )
     error_code = models.CharField(null=True, max_length=8)
     error_msg = models.CharField(null=True, max_length=255)

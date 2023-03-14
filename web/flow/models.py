@@ -152,7 +152,7 @@ class Task(models.Model):
 
         REJECTED: str = ("rejected", "Rejected")  # type:ignore[assignment]
 
-    process = models.ForeignKey(Process, on_delete=models.CASCADE, related_name="tasks")
+    process = models.ForeignKey("web.Process", on_delete=models.CASCADE, related_name="tasks")
 
     task_type = models.CharField(max_length=30, choices=TaskType.choices)
 

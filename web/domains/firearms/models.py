@@ -1,11 +1,7 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
-from web.domains.constabulary.models import Constabulary
-from web.domains.file.models import File
-from web.domains.importer.models import Importer
-from web.domains.office.models import Office
-from web.domains.user.models import User
 from web.models.mixins import Archivable
 
 
@@ -47,17 +43,17 @@ class FirearmsAuthority(models.Model):
     end_date = models.DateField(blank=False, null=True)
     further_details = models.CharField(max_length=4000, blank=True, null=True)
     issuing_constabulary = models.ForeignKey(
-        Constabulary, on_delete=models.PROTECT, blank=False, null=True
+        "web.Constabulary", on_delete=models.PROTECT, blank=False, null=True
     )
-    linked_offices = models.ManyToManyField(Office)
+    linked_offices = models.ManyToManyField("web.Office")
     importer = models.ForeignKey(
-        Importer,
+        "web.Importer",
         on_delete=models.PROTECT,
         blank=False,
         null=False,
         related_name="firearms_authorities",
     )
-    files = models.ManyToManyField(File)
+    files = models.ManyToManyField("web.File")
 
 
 class FirearmsAct(Archivable, models.Model):
@@ -65,10 +61,12 @@ class FirearmsAct(Archivable, models.Model):
     description = models.TextField(null=True)
     is_active = models.BooleanField(default=True)
     created_datetime = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
+    )
     updated_datetime = models.DateTimeField(auto_now=True)
     updated_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name="+", blank=True, null=True
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+", blank=True, null=True
     )
 
     class Meta:
@@ -79,8 +77,8 @@ class FirearmsAct(Archivable, models.Model):
 
 
 class ActQuantity(models.Model):
-    firearmsauthority = models.ForeignKey(FirearmsAuthority, on_delete=models.PROTECT)
-    firearmsact = models.ForeignKey(FirearmsAct, on_delete=models.PROTECT)
+    firearmsauthority = models.ForeignKey("web.FirearmsAuthority", on_delete=models.PROTECT)
+    firearmsact = models.ForeignKey("web.FirearmsAct", on_delete=models.PROTECT)
 
     quantity = models.IntegerField(blank=True, null=True)
     infinity = models.BooleanField(default=False)
@@ -103,7 +101,7 @@ class ObsoleteCalibreGroup(Archivable, models.Model):
 
 class ObsoleteCalibre(Archivable, models.Model):
     calibre_group = models.ForeignKey(
-        ObsoleteCalibreGroup,
+        "web.ObsoleteCalibreGroup",
         on_delete=models.CASCADE,
         blank=False,
         null=False,

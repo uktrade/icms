@@ -2,8 +2,7 @@ from django.db.models.query import QuerySet
 from django.http import HttpRequest
 from django_select2 import forms as s2forms
 
-from web.domains.case._import.models import ImportApplicationType
-from web.domains.commodity.models import Country
+from web.models import Country, ImportApplicationType
 
 
 class CommodityWidget(s2forms.ModelSelect2MultipleWidget):

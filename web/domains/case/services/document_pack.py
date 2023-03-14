@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from django.db.models import Manager, QuerySet
 from django.utils import timezone
 
+from web.domains.case.models import DocumentPackBase
 from web.domains.case.services import reference
 from web.domains.case.types import DocumentPack, ImpOrExp
 from web.flow.models import ProcessTypes
@@ -13,7 +14,6 @@ from web.models import (
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     Country,
-    DocumentPackBase,
     ExportApplication,
     ExportApplicationCertificate,
     ExportCertificateCaseDocumentReferenceData,

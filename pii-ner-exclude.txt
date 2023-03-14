@@ -2448,3 +2448,68 @@ Select an Importer
 ICMSLST-1939
 ICMSLST-1940 Assign
 ILB Admin/Case
+Case Variation
+CFSProduct
+BRC Global Standard
+ISO 17065
+country_id={self.country_id
+Request CC Email
+Deactivated Firearms Licence Goods
+DFLSupplementaryReport
+Certificates of Manufacture
+Certificates of Free
+CE
+"Edit Schedule
+Add Product Type Number
+Success
+Get all Certificate of free sale
+Active Ingredients
+Certificate of Good Manufacturing Practice - Add
+OCP
+Notice
+Syrian National Coalition for Opposition and Revolutionary Forces
+Article 2
+EU Regulations
+Syria National Coalition for Opposition and Revolutionary Forces
+Declaration from Subcontractor
+Country Of Processing
+Total Value (Euro
+Integrated Tariff Book, Volume 2
+teg
+Article 2 (
+Regulation (EC
+Article 3 (
+Article 5 (4
+Article 3(4
+Article 2(2)(a
+Adhoc License
+Non EU Single Countries
+misc
+Firearms Specific Import Licence Application
+Units
+Exporter Access Request
+Exporter Approval Request
+CHIEF_ERROR
+Supply Contract
+GBP
+EUR
+Sovereign Territory
+Firearms Certificate
+Make and Model
+Template Description
+DerogationsChecklist
+DFLChecklist
+SILChecklist
+OPTChecklist
+OutwardProcessingTradeFile
+TextilesChecklist
+AccessRequest
+ActQuantity
+SanctionEmail
+AlternativeEmail
+PhoneNumber
+Section 5 goods.</p
+{{
+"Returns the minimum expected context values - tests
+"Remove the document
+Revist

@@ -12,7 +12,6 @@ from web.domains.case._import.fa.models import (
 )
 from web.domains.case._import.models import ChecklistBase, ImportApplication
 from web.domains.file.models import File
-from web.domains.section5.models import Section5Authority
 from web.flow.models import ProcessTypes
 from web.models.shared import FirearmCommodity, YesNoNAChoices
 
@@ -103,8 +102,8 @@ class SILApplication(ImportApplication):
     additional_comments = models.CharField(max_length=4000, blank=True, null=True)
 
     # section 5
-    user_section5 = models.ManyToManyField(SILUserSection5, related_name="sil_application")
-    verified_section5 = models.ManyToManyField(Section5Authority, related_name="+")
+    user_section5 = models.ManyToManyField("web.SILUserSection5", related_name="sil_application")
+    verified_section5 = models.ManyToManyField("web.Section5Authority", related_name="+")
 
     # certificates
     user_imported_certificates = models.ManyToManyField(
@@ -117,7 +116,7 @@ class SILApplication(ImportApplication):
 
 class SILGoodsSection1(models.Model):
     import_application = models.ForeignKey(
-        SILApplication, on_delete=models.PROTECT, related_name="goods_section1"
+        "web.SILApplication", on_delete=models.PROTECT, related_name="goods_section1"
     )
     is_active = models.BooleanField(default=True)
 
@@ -138,7 +137,7 @@ class SILGoodsSection1(models.Model):
 
 class SILGoodsSection2(models.Model):
     import_application = models.ForeignKey(
-        SILApplication, on_delete=models.PROTECT, related_name="goods_section2"
+        "web.SILApplication", on_delete=models.PROTECT, related_name="goods_section2"
     )
     is_active = models.BooleanField(default=True)
 
@@ -159,7 +158,7 @@ class SILGoodsSection2(models.Model):
 
 class SILGoodsSection5(models.Model):
     import_application = models.ForeignKey(
-        SILApplication, on_delete=models.PROTECT, related_name="goods_section5"
+        "web.SILApplication", on_delete=models.PROTECT, related_name="goods_section5"
     )
     is_active = models.BooleanField(default=True)
 
@@ -185,7 +184,7 @@ class SILGoodsSection5(models.Model):
 
 class SILGoodsSection582Obsolete(models.Model):  # /PS-IGNORE
     import_application = models.ForeignKey(
-        SILApplication, on_delete=models.PROTECT, related_name="goods_section582_obsoletes"
+        "web.SILApplication", on_delete=models.PROTECT, related_name="goods_section582_obsoletes"
     )
     is_active = models.BooleanField(default=True)
 
@@ -232,7 +231,7 @@ class SILGoodsSection582Other(models.Model):  # /PS-IGNORE
         OTHER = ("Other", "Other")
 
     import_application = models.ForeignKey(
-        SILApplication, on_delete=models.PROTECT, related_name="goods_section582_others"
+        "web.SILApplication", on_delete=models.PROTECT, related_name="goods_section582_others"
     )
     is_active = models.BooleanField(default=True)
 
@@ -306,7 +305,7 @@ class SILLegacyGoods(models.Model):
     """Model to hold historic SIL goods where we can't determine the section they apply to"""
 
     import_application = models.ForeignKey(
-        SILApplication, on_delete=models.PROTECT, related_name="goods_legacy"
+        "web.SILApplication", on_delete=models.PROTECT, related_name="goods_legacy"
     )
     is_active = models.BooleanField(default=True)
     description = models.CharField(max_length=4096)
@@ -317,7 +316,7 @@ class SILLegacyGoods(models.Model):
 
 class SILChecklist(ChecklistBase):
     import_application = models.OneToOneField(
-        SILApplication, on_delete=models.PROTECT, related_name="checklist"
+        "web.SILApplication", on_delete=models.PROTECT, related_name="checklist"
     )
 
     authority_required = models.CharField(
@@ -358,13 +357,13 @@ class SILChecklist(ChecklistBase):
 
 class SILSupplementaryInfo(SupplementaryInfoBase):
     import_application = models.OneToOneField(
-        SILApplication, on_delete=models.CASCADE, related_name="supplementary_info"
+        "web.SILApplication", on_delete=models.CASCADE, related_name="supplementary_info"
     )
 
 
 class SILSupplementaryReport(SupplementaryReportBase):
     supplementary_info = models.ForeignKey(
-        SILSupplementaryInfo, related_name="reports", on_delete=models.CASCADE
+        "web.SILSupplementaryInfo", related_name="reports", on_delete=models.CASCADE
     )
 
     def goods_sections(self) -> list[str]:
@@ -472,69 +471,91 @@ class SILSupplementaryReportFirearmBase(SupplementaryReportFirearmBase):
 
 class SILSupplementaryReportFirearmSection1(SILSupplementaryReportFirearmBase):
     report = models.ForeignKey(
-        SILSupplementaryReport, related_name="section1_firearms", on_delete=models.CASCADE
+        "web.SILSupplementaryReport", related_name="section1_firearms", on_delete=models.CASCADE
     )
     goods_certificate = models.ForeignKey(
-        SILGoodsSection1, related_name="supplementary_report_firearms", on_delete=models.CASCADE
+        "web.SILGoodsSection1",
+        related_name="supplementary_report_firearms",
+        on_delete=models.CASCADE,
     )
-    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)
+    document = models.OneToOneField(
+        "web.File", related_name="+", null=True, on_delete=models.SET_NULL
+    )
 
 
 class SILSupplementaryReportFirearmSection2(SILSupplementaryReportFirearmBase):
     report = models.ForeignKey(
-        SILSupplementaryReport, related_name="section2_firearms", on_delete=models.CASCADE
+        "web.SILSupplementaryReport", related_name="section2_firearms", on_delete=models.CASCADE
     )
     goods_certificate = models.ForeignKey(
-        SILGoodsSection2, related_name="supplementary_report_firearms", on_delete=models.CASCADE
+        "web.SILGoodsSection2",
+        related_name="supplementary_report_firearms",
+        on_delete=models.CASCADE,
     )
-    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)
+    document = models.OneToOneField(
+        "web.File", related_name="+", null=True, on_delete=models.SET_NULL
+    )
 
 
 class SILSupplementaryReportFirearmSection5(SILSupplementaryReportFirearmBase):
     report = models.ForeignKey(
-        SILSupplementaryReport, related_name="section5_firearms", on_delete=models.CASCADE
+        "web.SILSupplementaryReport", related_name="section5_firearms", on_delete=models.CASCADE
     )
     goods_certificate = models.ForeignKey(
-        SILGoodsSection5, related_name="supplementary_report_firearms", on_delete=models.CASCADE
+        "web.SILGoodsSection5",
+        related_name="supplementary_report_firearms",
+        on_delete=models.CASCADE,
     )
-    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)
+    document = models.OneToOneField(
+        "web.File", related_name="+", null=True, on_delete=models.SET_NULL
+    )
 
 
 class SILSupplementaryReportFirearmSection582Obsolete(  # /PS-IGNORE
     SILSupplementaryReportFirearmBase
 ):
     report = models.ForeignKey(
-        SILSupplementaryReport,
+        "web.SILSupplementaryReport",
         related_name="section582_obsolete_firearms",
         on_delete=models.CASCADE,
     )
     goods_certificate = models.ForeignKey(
-        SILGoodsSection582Obsolete,  # /PS-IGNORE
+        "web.SILGoodsSection582Obsolete",  # /PS-IGNORE
         related_name="supplementary_report_firearms",
         on_delete=models.CASCADE,
     )
-    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)
+    document = models.OneToOneField(
+        "web.File", related_name="+", null=True, on_delete=models.SET_NULL
+    )
 
 
 class SILSupplementaryReportFirearmSection582Other(SILSupplementaryReportFirearmBase):  # /PS-IGNORE
     report = models.ForeignKey(
-        SILSupplementaryReport, related_name="section582_other_firearms", on_delete=models.CASCADE
+        "web.SILSupplementaryReport",
+        related_name="section582_other_firearms",
+        on_delete=models.CASCADE,
     )
     goods_certificate = models.ForeignKey(
-        SILGoodsSection582Other,  # /PS-IGNORE
+        "web.SILGoodsSection582Other",  # /PS-IGNORE
         related_name="supplementary_report_firearms",
         on_delete=models.CASCADE,
     )
-    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)
+    document = models.OneToOneField(
+        "web.File", related_name="+", null=True, on_delete=models.SET_NULL
+    )
 
 
 class SILSupplementaryReportFirearmSectionLegacy(SILSupplementaryReportFirearmBase):
     report = models.ForeignKey(
-        SILSupplementaryReport, related_name="section_legacy_firearms", on_delete=models.CASCADE
+        "web.SILSupplementaryReport",
+        related_name="section_legacy_firearms",
+        on_delete=models.CASCADE,
     )
     goods_certificate = models.ForeignKey(
-        SILLegacyGoods,
+        "web.SILLegacyGoods",
         related_name="supplementary_report_firearms",
         on_delete=models.CASCADE,
     )
-    document = models.OneToOneField(File, related_name="+", null=True, on_delete=models.SET_NULL)
+    document = models.OneToOneField(
+        "web.File", related_name="+", null=True, on_delete=models.SET_NULL
+    )

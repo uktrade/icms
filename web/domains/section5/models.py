@@ -1,10 +1,7 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
-from web.domains.file.models import File
-from web.domains.importer.models import Importer
-from web.domains.office.models import Office
-from web.domains.user.models import User
 from web.models.mixins import Archivable
 
 
@@ -36,15 +33,15 @@ class Section5Authority(models.Model):
     start_date = models.DateField(blank=False, null=True)
     end_date = models.DateField(blank=False, null=True)
     further_details = models.CharField(max_length=4000, blank=True, null=True)
-    linked_offices = models.ManyToManyField(Office)
+    linked_offices = models.ManyToManyField("web.Office")
     importer = models.ForeignKey(
-        Importer,
+        "web.Importer",
         on_delete=models.PROTECT,
         blank=False,
         null=False,
         related_name="section5_authorities",
     )
-    files = models.ManyToManyField(File)
+    files = models.ManyToManyField("web.File")
     clauses = models.ManyToManyField("Section5Clause", through="ClauseQuantity")
 
 
@@ -53,10 +50,12 @@ class Section5Clause(Archivable, models.Model):
     description = models.TextField()
     is_active = models.BooleanField(default=True)
     created_datetime = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
+    )
     updated_datetime = models.DateTimeField(auto_now=True)
     updated_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name="+", blank=True, null=True
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+", blank=True, null=True
     )
 
     class Meta:
@@ -67,8 +66,8 @@ class Section5Clause(Archivable, models.Model):
 
 
 class ClauseQuantity(models.Model):
-    section5authority = models.ForeignKey(Section5Authority, on_delete=models.PROTECT)
-    section5clause = models.ForeignKey(Section5Clause, on_delete=models.PROTECT)
+    section5authority = models.ForeignKey("web.Section5Authority", on_delete=models.PROTECT)
+    section5clause = models.ForeignKey("web.Section5Clause", on_delete=models.PROTECT)
 
     quantity = models.IntegerField(blank=True, null=True)
     infinity = models.BooleanField(default=False)

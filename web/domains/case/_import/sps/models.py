@@ -3,7 +3,6 @@ from typing import final
 from django.db import models
 
 from web.domains.case._import.models import ImportApplication
-from web.domains.commodity.models import Commodity
 from web.domains.file.models import File
 from web.flow.models import ProcessTypes
 
@@ -29,7 +28,7 @@ class PriorSurveillanceApplication(ImportApplication):
 
     # goods
     commodity = models.ForeignKey(
-        Commodity,
+        "web.Commodity",
         on_delete=models.PROTECT,
         null=True,
         related_name="+",
@@ -65,8 +64,8 @@ class PriorSurveillanceApplication(ImportApplication):
     value_eur = models.PositiveBigIntegerField(null=True, verbose_name="Value (EUR/€)")
 
     #  supporting documents
-    supporting_documents = models.ManyToManyField(File, related_name="+")
+    supporting_documents = models.ManyToManyField("web.File", related_name="+")
 
     contract_file = models.OneToOneField(
-        PriorSurveillanceContractFile, on_delete=models.PROTECT, null=True, related_name="+"
+        "web.PriorSurveillanceContractFile", on_delete=models.PROTECT, null=True, related_name="+"
     )
