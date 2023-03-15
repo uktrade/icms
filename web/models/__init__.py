@@ -158,8 +158,7 @@ from web.domains.user.models import (
     User,
 )
 from web.flow.models import Process, Task
-from web.models.models import CaseReference
-from web.permissions.models import GlobalPermission
+from web.models.models import CaseReference, GlobalPermission
 
 __all__ = [
     "DerogationsApplication",
