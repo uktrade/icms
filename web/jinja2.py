@@ -13,6 +13,7 @@ from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.formats import get_format
 from guardian.core import ObjectPermissionChecker
+from guardian.shortcuts import get_perms_for_model
 from jinja2 import Environment, pass_eval_context
 from markupsafe import Markup, escape
 
@@ -161,6 +162,13 @@ def get_user_obj_perms(user: "User") -> ObjectPermissionChecker:
     return checker
 
 
+# TODO: Decide if we want to do this or supply as a list from the view
+def get_model_perms(model_cls_or_instance) -> list[tuple[str, str]]:
+    model_perms = get_perms_for_model(model_cls_or_instance)
+
+    return [(perm.codename, perm.name) for perm in model_perms]
+
+
 def environment(**options):
     env = Environment(extensions=[CompressorExtension], **options)
     env.globals.update(
@@ -177,6 +185,7 @@ def environment(**options):
             "get_latest_issued_document": get_latest_issued_document,
             "get_active_task_list": get_active_task_list,
             "get_user_obj_perms": get_user_obj_perms,
+            "get_model_perms": get_model_perms,
         }
     )
     env.filters["show_all_attrs"] = show_all_attrs

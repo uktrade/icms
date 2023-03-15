@@ -17,7 +17,7 @@ class PermissionTextChoice(models.TextChoices):
         return f"web.{self._value_}"
 
     @classmethod
-    def get_permissions(cls):
+    def get_permissions(cls) -> list[tuple[str, str]]:
         """Return all the class permissions with the "web." prefix removed.
 
         This is required when setting permissions in a model class.

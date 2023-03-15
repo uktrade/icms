@@ -1,9 +1,9 @@
 from .perms import Perms
 from .utils import get_user_importer_permissions
 
-importer_object_permissions = Perms.obj.importer.get_permissions()
-exporter_object_permissions = Perms.obj.exporter.get_permissions()
-all_permissions = Perms.get_all_permissions()
+importer_object_permissions: list[tuple[str, str]] = Perms.obj.importer.get_permissions()
+exporter_object_permissions: list[tuple[str, str]] = Perms.obj.exporter.get_permissions()
+all_permissions: list[tuple[str, str]] = Perms.get_all_permissions()
 
 
 __all__ = [
