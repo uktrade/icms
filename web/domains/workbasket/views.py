@@ -10,10 +10,10 @@ from django.http.response import HttpResponse
 from django.shortcuts import render
 from guardian.shortcuts import get_objects_for_user
 
-from web.domains.case.access.approval.models import ApprovalRequest
 from web.domains.case.shared import ImpExpStatus
 from web.models import (
     AccessRequest,
+    ApprovalRequest,
     ExportApplication,
     Exporter,
     ExporterAccessRequest,

@@ -6,8 +6,7 @@ from django.db.models import F, Model, OuterRef, Subquery, Value
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 
-from web.domains.commodity.models import Commodity, CommodityGroup, Unit, Usage
-from web.domains.country.models import Country
+from web.models import Commodity, CommodityGroup, Country, Unit, Usage
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet

@@ -2,7 +2,7 @@ import random
 
 import factory
 
-from web.domains.exporter.models import Exporter
+from web.models import Exporter
 
 
 class ExporterFactory(factory.django.DjangoModelFactory):

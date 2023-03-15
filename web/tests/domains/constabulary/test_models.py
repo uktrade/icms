@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from web.domains.constabulary.models import Constabulary
+from web.models import Constabulary
 
 
 class ConstabularyTest(TestCase):

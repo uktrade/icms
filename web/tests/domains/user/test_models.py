@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from web.domains.user.models import User
+from web.models import User
 
 
 class UserTest(TestCase):

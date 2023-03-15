@@ -1,7 +1,7 @@
 import structlog as logging
 from django.forms import ChoiceField, ModelForm, Textarea
 
-from web.domains.case.fir.models import FurtherInformationRequest
+from web.models import FurtherInformationRequest
 
 logger = logging.getLogger(__name__)
 

@@ -6,10 +6,9 @@ from django import forms
 import web.forms.widgets as icms_widgets
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
-from web.domains.commodity.models import Commodity
 from web.domains.commodity.widgets import CommodityWidget
-from web.domains.country.models import Country
 from web.forms.mixins import OptionalFormMixin
+from web.models import Commodity, Country
 from web.models.shared import YesNoChoices, YesNoNAChoices
 
 from . import models

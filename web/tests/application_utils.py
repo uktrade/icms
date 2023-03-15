@@ -6,27 +6,24 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
-from web.domains.case._import.fa_dfl.models import DFLApplication
-from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
-from web.domains.case._import.fa_sil.models import SILApplication
-from web.domains.case._import.wood.models import WoodQuotaApplication
-from web.domains.case.export.models import (
+from web.models import (
     CertificateOfManufactureApplication,
+    Commodity,
+    Constabulary,
+    Country,
+    DFLApplication,
     ExportApplicationType,
+    OpenIndividualLicenceApplication,
+    SILApplication,
+    WoodQuotaApplication,
 )
-from web.domains.commodity.models import Commodity
-from web.domains.constabulary.models import Constabulary
-from web.domains.country.models import Country
 from web.models.shared import FirearmCommodity
 from web.utils.commodity import get_active_commodities
 
 if TYPE_CHECKING:
     from django.test.client import Client
 
-    from web.domains.exporter.models import Exporter
-    from web.domains.importer.models import Importer
-    from web.domains.office.models import Office
-    from web.domains.user.models import User
+    from web.models import Exporter, Importer, Office, User
 
 
 def create_in_progress_wood_app(

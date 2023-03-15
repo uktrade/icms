@@ -2,10 +2,13 @@ import pytest
 from django.core.exceptions import PermissionDenied
 from guardian.shortcuts import remove_perm
 
-from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
-from web.domains.case.export.models import CertificateOfManufactureApplication
 from web.domains.case.utils import check_application_permission
-from web.models import ExportApplicationType, ImportApplicationType
+from web.models import (
+    CertificateOfManufactureApplication,
+    ExportApplicationType,
+    ImportApplicationType,
+    OpenIndividualLicenceApplication,
+)
 from web.tests.domains.user.factory import ActiveUserFactory
 
 pytestmark = pytest.mark.django_db

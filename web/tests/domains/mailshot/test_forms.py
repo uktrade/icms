@@ -6,7 +6,7 @@ from web.domains.mailshot.forms import (
     MailshotRetractForm,
     ReceivedMailshotsFilter,
 )
-from web.domains.mailshot.models import Mailshot
+from web.models import Mailshot
 from web.tests.domains.user.factory import UserFactory
 
 from .factory import MailshotFactory

@@ -6,7 +6,7 @@ import structlog as logging
 from django.contrib.auth.models import Permission
 from django.db.models import Q
 
-from web.domains.user.models import User
+from web.models import User
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet

@@ -3,15 +3,15 @@ from typing import TYPE_CHECKING, Literal
 from django.utils import timezone
 
 from web.flow.models import ProcessTypes
-from web.models.models import CaseReference
+from web.models import CaseReference
 
 if TYPE_CHECKING:
-    from web.domains.case._import.models import (
+    from web.domains.case.types import ImpOrExp
+    from web.models import (
+        ExportApplication,
         ImportApplication,
         ImportApplicationLicence,
     )
-    from web.domains.case.export.models import ExportApplication
-    from web.domains.case.types import ImpOrExp
     from web.utils.lock_manager import LockManager
 
 Prefix = CaseReference.Prefix

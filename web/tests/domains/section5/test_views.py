@@ -1,8 +1,7 @@
 import pytest
 from django.test import Client
 
-from web.domains.section5.models import Section5Clause
-from web.domains.user.models import User
+from web.models import Section5Clause, User
 from web.tests.domains.section5.factories import Section5ClauseFactory
 from web.tests.domains.user.factory import UserFactory
 

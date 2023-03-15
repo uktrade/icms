@@ -4,9 +4,7 @@ from unittest.mock import Mock
 import pytest
 
 from web.domains.case.services import document_pack
-from web.domains.country.models import Country
 from web.domains.template.context import CoverLetterTemplateContext
-from web.domains.template.models import Template
 from web.domains.template.utils import (
     add_application_default_cover_letter,
     add_endorsements_from_application_type,
@@ -16,12 +14,14 @@ from web.domains.template.utils import (
     get_letter_fragment,
 )
 from web.models import (
+    Country,
     DFLApplication,
     EndorsementImportApplication,
     ImportApplicationType,
     OpenIndividualLicenceApplication,
     SanctionsAndAdhocApplication,
     SILApplication,
+    Template,
 )
 from web.types import DocumentTypes
 

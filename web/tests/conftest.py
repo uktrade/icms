@@ -9,18 +9,22 @@ from django.urls import reverse
 from jinja2 import Template as Jinja2Template
 from pytest_django.asserts import assertRedirects
 
-from web.domains.case._import.fa_dfl.models import DFLApplication
-from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
-from web.domains.case._import.fa_sil.models import SILApplication, SILChecklist
-from web.domains.case._import.wood.models import WoodQuotaApplication
-from web.domains.case.access.models import ExporterAccessRequest, ImporterAccessRequest
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import end_process_task
-from web.domains.exporter.models import Exporter
-from web.domains.importer.models import Importer
-from web.domains.office.models import Office
-from web.flow.models import Task
+from web.models import (
+    DFLApplication,
+    Exporter,
+    ExporterAccessRequest,
+    Importer,
+    ImporterAccessRequest,
+    Office,
+    OpenIndividualLicenceApplication,
+    SILApplication,
+    SILChecklist,
+    Task,
+    WoodQuotaApplication,
+)
 from web.models.shared import YesNoNAChoices
 from web.tests.helpers import CaseURLS
 
@@ -34,7 +38,7 @@ from .application_utils import (
 )
 
 if TYPE_CHECKING:
-    from web.domains.case.export.models import CertificateOfManufactureApplication
+    from web.models import CertificateOfManufactureApplication
 
 ORIGINAL_JINJA2_RENDERER = Jinja2Template.render
 

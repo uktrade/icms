@@ -1,9 +1,9 @@
 import factory.fuzzy
 
-from web.domains.case._import.derogations.models import DerogationsApplication
-from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
-from web.domains.case._import.models import ImportApplicationType
-from web.domains.case._import.sanctions.models import (
+from web.models import (
+    DerogationsApplication,
+    ImportApplicationType,
+    OpenIndividualLicenceApplication,
     SanctionsAndAdhocApplication,
     SanctionsAndAdhocApplicationGoods,
 )

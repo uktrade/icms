@@ -7,11 +7,9 @@ from django_select2 import forms as s2forms
 
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
-from web.domains.country.models import Country
-from web.domains.firearms.models import ObsoleteCalibre
-from web.domains.template.models import Template
 from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import DateInput, YesNoRadioSelectInline
+from web.models import Country, ObsoleteCalibre, Template
 
 from . import models
 

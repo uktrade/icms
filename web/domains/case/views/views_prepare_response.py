@@ -7,17 +7,14 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from web.domains.case import forms
-from web.domains.case._import.textiles.models import TextilesApplication
-from web.domains.case.export.models import (
-    CertificateOfFreeSaleApplication,
-    CertificateOfGoodManufacturingPracticeApplication,
-)
 from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import get_case_page_title
 from web.domains.template.utils import get_cover_letter_content
 from web.models import (
+    CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     DerogationsApplication,
     DFLApplication,
@@ -27,6 +24,7 @@ from web.models import (
     PriorSurveillanceApplication,
     SanctionsAndAdhocApplication,
     SILApplication,
+    TextilesApplication,
     WoodQuotaApplication,
 )
 from web.types import AuthenticatedHttpRequest, DocumentTypes

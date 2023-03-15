@@ -4,29 +4,30 @@ from django.forms import model_to_dict
 from django.urls import reverse
 
 from web.domains.case._import.derogations.forms import DerogationsChecklistForm
-from web.domains.case._import.derogations.models import DerogationsApplication
 from web.domains.case._import.fa_dfl.forms import DFLChecklistForm
-from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case._import.fa_oil.forms import ChecklistFirearmsOILApplicationForm
-from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
 from web.domains.case._import.fa_sil.forms import SILChecklistForm
-from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case._import.ironsteel.forms import IronSteelChecklistForm
-from web.domains.case._import.ironsteel.models import IronSteelApplication
-from web.domains.case._import.models import ImportApplication, ImportApplicationType
 from web.domains.case._import.opt.forms import OPTChecklistForm
-from web.domains.case._import.opt.models import OutwardProcessingTradeApplication
-from web.domains.case._import.sanctions.models import SanctionsAndAdhocApplication
 from web.domains.case._import.textiles.forms import TextilesChecklistForm
-from web.domains.case._import.textiles.models import TextilesApplication
 from web.domains.case._import.wood.forms import WoodQuotaChecklistForm
-from web.domains.case._import.wood.models import WoodQuotaApplication
-from web.domains.case.export.models import (
+from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
+    DerogationsApplication,
+    DFLApplication,
     ExportApplication,
+    FurtherInformationRequest,
+    ImportApplication,
+    ImportApplicationType,
+    IronSteelApplication,
+    OpenIndividualLicenceApplication,
+    OutwardProcessingTradeApplication,
+    SanctionsAndAdhocApplication,
+    SILApplication,
+    TextilesApplication,
+    WoodQuotaApplication,
 )
-from web.domains.case.fir.models import FurtherInformationRequest
 from web.utils.validation import (
     ApplicationErrors,
     FieldError,

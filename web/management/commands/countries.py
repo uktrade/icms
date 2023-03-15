@@ -8,7 +8,7 @@ from typing import Any, TextIO
 from django.core.management.base import BaseCommand
 from django.db.models import QuerySet
 
-from web.domains.country.models import Country, CountryGroup
+from web.models import Country, CountryGroup
 
 # The column / field order is also used to check we have a valid-looking input
 # when reading a CSV and loading data.

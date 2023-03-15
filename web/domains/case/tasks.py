@@ -5,15 +5,19 @@ from django.db import transaction
 from django.utils import timezone
 
 from config.celery import app
-from web.domains.case.models import CaseDocumentReference, VariationRequest
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task
 from web.domains.chief import client
-from web.domains.file.models import File
-from web.domains.user.models import User
-from web.flow.models import Process, Task
+from web.models import (
+    CaseDocumentReference,
+    File,
+    Process,
+    Task,
+    User,
+    VariationRequest,
+)
 from web.types import DocumentTypes
 from web.utils.pdf import PdfGenerator
 from web.utils.s3 import delete_file_from_s3, upload_file_obj_to_s3

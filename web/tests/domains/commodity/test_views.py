@@ -1,4 +1,4 @@
-from web.domains.commodity.models import CommodityType
+from web.models import CommodityType
 from web.tests.auth import AuthTestCase
 
 from .factory import CommodityFactory, CommodityGroupFactory

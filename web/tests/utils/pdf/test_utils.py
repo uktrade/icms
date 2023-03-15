@@ -3,16 +3,9 @@ from unittest.mock import MagicMock, create_autospec, patch
 
 import pytest
 
-from web.domains.case._import.fa_sil.models import (
-    SILGoodsSection582Obsolete,  # /PS-IGNORE
-)
-from web.domains.case._import.fa_sil.models import SILGoodsSection582Other  # /PS-IGNORE
-from web.domains.case._import.fa_sil.models import (
-    SILGoodsSection1,
-    SILGoodsSection2,
-    SILGoodsSection5,
-)
-from web.domains.template.models import Template
+from web.models import SILGoodsSection582Obsolete  # /PS-IGNORE
+from web.models import SILGoodsSection582Other  # /PS-IGNORE
+from web.models import SILGoodsSection1, SILGoodsSection2, SILGoodsSection5, Template
 from web.types import DocumentTypes
 from web.utils.pdf import utils
 

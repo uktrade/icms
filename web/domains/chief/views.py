@@ -18,12 +18,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, TemplateView, View
 from mohawk.util import parse_authorization_header, prepare_header_val
 
-from web.domains.case._import.models import ImportApplication, LiteHMRCChiefRequest
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.views.mixins import ApplicationTaskMixin
-from web.flow.models import Task
+from web.models import ImportApplication, LiteHMRCChiefRequest, Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.sentry import capture_exception
 

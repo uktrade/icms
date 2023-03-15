@@ -6,7 +6,7 @@ from django.db import models
 from django_chunk_upload_handlers.clam_av import validate_virus_check_result
 from storages.backends.s3boto3 import S3Boto3StorageFile
 
-from web.domains.user.models import User
+from web.models import User
 from web.utils.s3 import delete_file_from_s3
 
 EXTENSION_BLACKLIST = [

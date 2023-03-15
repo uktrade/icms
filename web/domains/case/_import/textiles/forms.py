@@ -4,8 +4,8 @@ from django import forms
 
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
-from web.domains.country.models import Country
 from web.forms.mixins import OptionalFormMixin
+from web.models import Country
 
 from . import models
 from .widgets import TextilesCategoryCommodityGroupWidget, TextilesCommodityWidget

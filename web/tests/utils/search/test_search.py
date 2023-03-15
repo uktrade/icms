@@ -7,44 +7,41 @@ from django.urls import reverse
 from django.utils.timezone import make_aware
 from openpyxl import load_workbook
 
-from web.domains.case._import.derogations.models import DerogationsApplication
-from web.domains.case._import.fa_dfl.models import DFLApplication
-from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
-from web.domains.case._import.fa_sil.models import SILApplication
-from web.domains.case._import.ironsteel.models import IronSteelApplication
-from web.domains.case._import.models import ImportApplication, ImportApplicationType
-from web.domains.case._import.opt.models import (
-    CP_CATEGORIES,
-    OutwardProcessingTradeApplication,
-)
-from web.domains.case._import.sanctions.models import (
-    SanctionsAndAdhocApplication,
-    SanctionsAndAdhocApplicationGoods,
-)
-from web.domains.case._import.sps.models import PriorSurveillanceApplication
-from web.domains.case._import.textiles.models import TextilesApplication
-from web.domains.case._import.wood.models import WoodQuotaApplication
-from web.domains.case.export.models import (
+from web.domains.case._import.opt.models import CP_CATEGORIES
+from web.domains.case.models import ApplicationBase, DocumentPackBase
+from web.domains.case.services import case_progress, document_pack
+from web.domains.case.shared import ImpExpStatus
+from web.domains.case.utils import submit_application
+from web.flow.models import ProcessTypes
+from web.models import (
+    CaseEmail,
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     CFSSchedule,
+    Commodity,
+    CommodityGroup,
+    CommodityType,
+    Country,
+    DerogationsApplication,
+    DFLApplication,
+    DFLChecklist,
     ExportApplicationType,
-)
-from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.case.models import (
-    ApplicationBase,
-    CaseEmail,
-    DocumentPackBase,
+    FurtherInformationRequest,
+    ImportApplication,
+    ImportApplicationType,
+    IronSteelApplication,
+    OpenIndividualLicenceApplication,
+    OutwardProcessingTradeApplication,
+    PriorSurveillanceApplication,
+    SanctionsAndAdhocApplication,
+    SanctionsAndAdhocApplicationGoods,
+    SILApplication,
+    Task,
+    TextilesApplication,
     UpdateRequest,
+    WoodQuotaApplication,
 )
-from web.domains.case.services import case_progress, document_pack
-from web.domains.case.shared import ImpExpStatus
-from web.domains.case.utils import submit_application
-from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
-from web.domains.country.models import Country
-from web.flow.models import ProcessTypes, Task
-from web.models import DFLChecklist
 from web.models.shared import FirearmCommodity, YesNoChoices
 from web.tests.helpers import CaseURLS
 from web.types import AuthenticatedHttpRequest, ICMSMiddlewareContext
@@ -57,8 +54,8 @@ from web.utils.search import (
 
 if TYPE_CHECKING:
     from web.models import User
-    from web.domains.importer.models import Importer
-    from web.domains.exporter.models import Exporter
+    from web.models import Importer
+    from web.models import Exporter
 
 from typing import NamedTuple
 

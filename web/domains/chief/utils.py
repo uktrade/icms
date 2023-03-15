@@ -1,12 +1,10 @@
 from django.core.cache import cache
 from django.utils import timezone
 
-from web.domains.case._import.models import ImportApplication, LiteHMRCChiefRequest
-from web.domains.case.models import VariationRequest
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import end_process_task
-from web.flow.models import Task
+from web.models import ImportApplication, LiteHMRCChiefRequest, Task, VariationRequest
 
 from .types import ResponseError
 

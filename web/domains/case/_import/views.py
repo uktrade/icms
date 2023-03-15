@@ -21,10 +21,8 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import types as chief_types
 from web.domains.chief import utils as chief_utils
-from web.domains.country.models import CountryGroup
-from web.domains.importer.models import Importer
-from web.domains.user.models import User
-from web.flow.models import ProcessTypes, Task
+from web.flow.models import ProcessTypes
+from web.models import CountryGroup, Importer, Task, User
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 

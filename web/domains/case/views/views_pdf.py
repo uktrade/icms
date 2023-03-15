@@ -11,8 +11,7 @@ from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import view_application_file
-from web.domains.file.models import File
-from web.flow.models import Process
+from web.models import File, Process
 from web.types import AuthenticatedHttpRequest, DocumentTypes
 from web.utils.pdf import PdfGenerator
 

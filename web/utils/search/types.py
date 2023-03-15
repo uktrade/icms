@@ -5,9 +5,7 @@ from typing import TYPE_CHECKING, NamedTuple, Optional, Union
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from web.domains.commodity.models import CommodityGroup
-    from web.domains.country.models import Country
-    from web.domains.user.models import User
+    from web.models import CommodityGroup, Country, User
 
 
 @dataclass

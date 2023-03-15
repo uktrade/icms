@@ -8,7 +8,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 
-from web.domains.case._import.models import ImportApplicationType
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.services import case_progress
@@ -20,7 +19,7 @@ from web.domains.case.utils import (
 )
 from web.domains.file.utils import create_file_model
 from web.domains.template.utils import add_template_data_on_submit
-from web.flow.models import Task
+from web.models import ImportApplicationType, Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.commodity import (
     annotate_commodity_unit,

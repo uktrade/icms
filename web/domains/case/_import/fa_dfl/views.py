@@ -21,10 +21,9 @@ from web.domains.case.utils import (
     view_application_file,
 )
 from web.domains.case.views.utils import get_caseworker_view_readonly_status
-from web.domains.file.models import File
 from web.domains.file.utils import create_file_model
 from web.domains.template.utils import add_template_data_on_submit
-from web.flow.models import Task
+from web.models import File, Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
     ApplicationErrors,

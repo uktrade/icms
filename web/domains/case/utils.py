@@ -9,12 +9,9 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone
 
-from web.domains.case._import.models import ImportApplication
-from web.domains.case.export.models import ExportApplication
 from web.domains.case.services import document_pack, reference
-from web.domains.file.models import File
-from web.domains.user.models import User
-from web.flow.models import ProcessTypes, Task
+from web.flow.models import ProcessTypes
+from web.models import ExportApplication, File, ImportApplication, Task, User
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 

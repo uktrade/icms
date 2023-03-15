@@ -1,26 +1,30 @@
 import pytest
 from django.test import override_settings
 
-from web.domains.case._import.models import ImportApplicationType
-from web.domains.case._import.wood.models import WoodQuotaApplication
-from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.case.models import ApplicationBase, UpdateRequest, WithdrawApplication
 from web.domains.case.services import case_progress
+from web.domains.case.shared import ImpExpStatus
 from web.domains.workbasket.base import WorkbasketSection
 from web.domains.workbasket.row import get_workbasket_row_func
 from web.domains.workbasket.views import _add_user_import_annotations
-from web.flow.models import Task
+from web.models import (
+    FurtherInformationRequest,
+    ImportApplicationType,
+    Task,
+    UpdateRequest,
+    WithdrawApplication,
+    WoodQuotaApplication,
+)
 
 
 @pytest.fixture
 def app_in_progress(db, importer, test_import_user):
-    app = _create_wood_app(importer, test_import_user, ApplicationBase.Statuses.IN_PROGRESS)
+    app = _create_wood_app(importer, test_import_user, ImpExpStatus.IN_PROGRESS)
     return _get_wood_app_with_annotations(app)
 
 
 @pytest.fixture
 def app_submitted(db, importer, test_import_user):
-    app = _create_wood_app(importer, test_import_user, ApplicationBase.Statuses.SUBMITTED)
+    app = _create_wood_app(importer, test_import_user, ImpExpStatus.SUBMITTED)
     return _get_wood_app_with_annotations(app)
 
 
@@ -29,7 +33,7 @@ def app_processing(db, importer, test_import_user, test_icms_admin_user):
     app = _create_wood_app(
         importer,
         test_import_user,
-        ApplicationBase.Statuses.PROCESSING,
+        ImpExpStatus.PROCESSING,
         case_owner=test_icms_admin_user,
     )
 
@@ -40,14 +44,14 @@ def app_processing(db, importer, test_import_user, test_icms_admin_user):
 
 @pytest.fixture
 def app_completed(db, importer, test_import_user):
-    app = _create_wood_app(importer, test_import_user, ApplicationBase.Statuses.COMPLETED)
+    app = _create_wood_app(importer, test_import_user, ImpExpStatus.COMPLETED)
     return _get_wood_app_with_annotations(app)
 
 
 @pytest.fixture
 def app_completed_agent(db, importer, test_agent_import_user, agent_importer):
     app = _create_wood_app(
-        importer, test_agent_import_user, ApplicationBase.Statuses.COMPLETED, agent=agent_importer
+        importer, test_agent_import_user, ImpExpStatus.COMPLETED, agent=agent_importer
     )
     return _get_wood_app_with_annotations(app)
 

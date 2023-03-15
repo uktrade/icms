@@ -10,13 +10,16 @@ from pytest_django.asserts import (
     assertTemplateUsed,
 )
 
-from web.domains.case._import.fa_dfl.models import DFLApplication
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
-from web.domains.constabulary.models import Constabulary
-from web.domains.country.models import Country
-from web.domains.user.models import User
-from web.models import ImportApplicationLicence, Task
+from web.models import (
+    Constabulary,
+    Country,
+    DFLApplication,
+    ImportApplicationLicence,
+    Task,
+    User,
+)
 from web.models.shared import FirearmCommodity
 from web.tests.helpers import check_page_errors
 

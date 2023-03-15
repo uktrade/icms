@@ -1,6 +1,6 @@
 import factory
 
-from web.domains.mailshot.models import Mailshot
+from web.models import Mailshot
 from web.tests.domains.user.factory import UserFactory
 
 

@@ -1,7 +1,7 @@
 import django_filters
 from django import forms
 
-from web.domains.cat.models import CertificateApplicationTemplate, ExportApplicationType
+from web.models import CertificateApplicationTemplate, ExportApplicationType
 
 
 class CATFilter(django_filters.FilterSet):

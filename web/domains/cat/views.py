@@ -14,8 +14,7 @@ from django_filters import FilterSet
 from django_filters.views import FilterView
 
 from web.domains.case.export.forms import form_class_for_application_type
-from web.domains.cat.models import CertificateApplicationTemplate
-from web.domains.user.models import User
+from web.models import CertificateApplicationTemplate, User
 from web.types import AuthenticatedHttpRequest
 
 from .forms import CATFilter, CreateCATForm, EditCATForm

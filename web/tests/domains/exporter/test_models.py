@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from web.domains.exporter.models import Exporter
+from web.models import Exporter
 
 
 class ExporterTest(TestCase):

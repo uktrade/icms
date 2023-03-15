@@ -4,10 +4,10 @@ from django import forms
 
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
-from web.domains.commodity.models import Commodity
 from web.domains.file.utils import ICMSFileField
 from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import DateInput
+from web.models import Commodity
 from web.utils.commodity import get_active_commodities
 
 from . import models

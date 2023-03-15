@@ -1,11 +1,6 @@
 from django.test import TestCase
 
-from web.domains.country.models import (
-    Country,
-    CountryGroup,
-    CountryTranslation,
-    CountryTranslationSet,
-)
+from web.models import Country, CountryGroup, CountryTranslation, CountryTranslationSet
 
 from .factory import CountryFactory, CountryTranslationSetFactory
 

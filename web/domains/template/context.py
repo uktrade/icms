@@ -4,7 +4,7 @@ from web.domains.case.services import document_pack
 from web.types import DocumentTypes
 
 if TYPE_CHECKING:
-    from web.domains.case._import.models import ImportApplication
+    from web.models import ImportApplication
 
 
 class TemplateContextProcessor(Protocol):

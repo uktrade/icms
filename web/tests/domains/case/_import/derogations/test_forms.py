@@ -2,10 +2,7 @@ from django.utils import timezone
 from guardian.shortcuts import assign_perm
 
 from web.domains.case._import.derogations.forms import SubmitDerogationsForm
-from web.domains.commodity.models import Commodity
-from web.domains.country.models import Country
-from web.domains.importer.models import Importer
-from web.flow.models import Task
+from web.models import Commodity, Country, Importer, Task
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import DerogationsApplicationFactory
 from web.tests.domains.commodity.factory import CommodityTypeFactory

@@ -1,7 +1,6 @@
 import pytest
 
-from web.domains.cat.models import CertificateApplicationTemplate
-from web.domains.user.models import User
+from web.models import CertificateApplicationTemplate, User
 
 
 @pytest.mark.django_db

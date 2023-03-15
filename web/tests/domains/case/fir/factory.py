@@ -1,7 +1,7 @@
 import factory
 from django.utils import timezone
 
-from web.domains.case.fir.models import FurtherInformationRequest
+from web.models import FurtherInformationRequest
 from web.tests.domains.user.factory import UserFactory
 
 

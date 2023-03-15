@@ -4,13 +4,11 @@ from django import forms
 from django.contrib.auth import authenticate
 from django_select2 import forms as s2forms
 
-from web.domains.case._import.models import ImportApplication
-from web.domains.case.export.models import ExportApplication
 from web.domains.case.widgets import CheckboxSelectMultipleTable
 from web.domains.file.utils import ICMSFileField
 from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import DateInput
-from web.models import User
+from web.models import ExportApplication, ImportApplication, User
 from web.types import AuthenticatedHttpRequest
 
 from .models import (

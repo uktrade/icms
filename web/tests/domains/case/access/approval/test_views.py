@@ -1,8 +1,7 @@
 import pytest
 from django.test import Client
 
-from web.domains.case.access.models import AccessRequest
-from web.flow.models import Task
+from web.models import AccessRequest, Task
 from web.tests.domains.case.access.factories import (
     ExporterAccessRequestFactory,
     ImporterAccessRequestFactory,

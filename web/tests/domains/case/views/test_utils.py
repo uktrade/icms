@@ -1,15 +1,12 @@
 import pytest
 
-from web.domains.case._import.models import ImportApplication
-from web.domains.case.access.models import AccessRequest
-from web.domains.case.export.models import ExportApplication
 from web.domains.case.services import case_progress
 from web.domains.case.views.utils import (
     get_caseworker_view_readonly_status,
     get_class_imp_or_exp,
     get_class_imp_or_exp_or_access,
 )
-from web.flow.models import Task
+from web.models import AccessRequest, ExportApplication, ImportApplication, Task
 from web.tests.helpers import CaseURLS
 
 

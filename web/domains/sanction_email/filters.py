@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import django_filters
 from django.forms.widgets import CheckboxInput
 
-from web.domains.mailshot.models import Mailshot
+from web.models import Mailshot
 
 from . import models
 

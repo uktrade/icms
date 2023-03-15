@@ -1,15 +1,16 @@
 import pytest
 from django.test import TestCase
 
-from web.domains.case._import.models import ImportApplication, ImportApplicationType
-from web.flow.models import Process
 from web.models import (
     DerogationsApplication,
     DFLApplication,
+    ImportApplication,
+    ImportApplicationType,
     IronSteelApplication,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     PriorSurveillanceApplication,
+    Process,
     SanctionsAndAdhocApplication,
     SILApplication,
     TextilesApplication,

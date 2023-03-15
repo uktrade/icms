@@ -2,7 +2,7 @@ import random
 
 import factory.fuzzy
 
-from web.domains.constabulary.models import Constabulary
+from web.models import Constabulary
 
 
 class ConstabularyFactory(factory.django.DjangoModelFactory):

@@ -7,7 +7,7 @@ from web.domains.commodity.forms import (
     CommodityGroupFilter,
     CommodityGroupForm,
 )
-from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType, Unit
+from web.models import Commodity, CommodityGroup, CommodityType, Unit
 
 from .factory import CommodityFactory, CommodityGroupFactory
 

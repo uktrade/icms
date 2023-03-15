@@ -12,13 +12,14 @@ from web.domains.case.access.approval.forms import (
     ExporterApprovalRequestForm,
     ImporterApprovalRequestForm,
 )
-from web.domains.case.access.approval.models import (
+from web.domains.case.services import case_progress
+from web.models import (
     ApprovalRequest,
+    ExporterAccessRequest,
     ExporterApprovalRequest,
+    ImporterAccessRequest,
     ImporterApprovalRequest,
 )
-from web.domains.case.access.models import ExporterAccessRequest, ImporterAccessRequest
-from web.domains.case.services import case_progress
 from web.types import AuthenticatedHttpRequest
 
 

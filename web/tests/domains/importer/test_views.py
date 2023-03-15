@@ -4,9 +4,7 @@ import pytest
 from django.test import Client
 from django.urls import reverse
 
-from web.domains.importer.models import Importer
-from web.domains.section5.models import Section5Authority
-from web.domains.user.models import User
+from web.models import Importer, Section5Authority, User
 from web.tests.auth import AuthTestCase
 from web.tests.domains.importer.factory import (
     ImporterFactory,

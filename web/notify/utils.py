@@ -2,7 +2,7 @@ import itertools
 
 from django.contrib.auth.models import Permission
 
-from web.domains.user.models import AlternativeEmail, PersonalEmail
+from web.models import AlternativeEmail, PersonalEmail
 
 
 def get_user_emails_by_ids(user_ids):

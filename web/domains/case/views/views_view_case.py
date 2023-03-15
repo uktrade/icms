@@ -6,15 +6,12 @@ from django.shortcuts import get_object_or_404, render
 
 from web.domains.case._import.opt.forms import FurtherQuestionsBaseOPTForm
 from web.domains.case._import.opt.utils import get_fq_form, get_fq_page_name
-from web.domains.case._import.textiles.models import TextilesApplication
-from web.domains.case.export.models import (
-    CertificateOfFreeSaleApplication,
-    CertificateOfGoodManufacturingPracticeApplication,
-    CFSSchedule,
-)
 from web.models import (
     AccessRequest,
+    CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
+    CFSSchedule,
     CommodityGroup,
     DerogationsApplication,
     DFLApplication,
@@ -28,6 +25,7 @@ from web.models import (
     PriorSurveillanceApplication,
     SanctionsAndAdhocApplication,
     SILApplication,
+    TextilesApplication,
     WoodQuotaApplication,
 )
 from web.types import AuthenticatedHttpRequest

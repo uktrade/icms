@@ -19,12 +19,11 @@ from web.domains.case.forms import (
     VariationRequestExportCancelForm,
     VariationRequestForm,
 )
-from web.domains.case.models import VariationRequest
 from web.domains.case.services import document_pack, reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import check_application_permission
-from web.flow.models import Process, Task
+from web.models import Process, Task, VariationRequest
 from web.types import AuthenticatedHttpRequest
 
 from .mixins import ApplicationAndTaskRelatedObjectMixin

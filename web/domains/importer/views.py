@@ -21,14 +21,9 @@ from web.domains.importer.forms import (
     ImporterIndividualForm,
     ImporterOrganisationForm,
 )
-from web.domains.importer.models import Importer
 from web.domains.office.forms import ImporterOfficeEORIForm, ImporterOfficeForm
 from web.domains.section5.forms import ClauseQuantityForm, Section5AuthorityForm
-from web.domains.section5.models import (
-    ClauseQuantity,
-    Section5Authority,
-    Section5Clause,
-)
+from web.models import ClauseQuantity, Importer, Section5Authority, Section5Clause
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3

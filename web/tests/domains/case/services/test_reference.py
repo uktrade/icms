@@ -5,12 +5,13 @@ import pytest
 from django.utils import timezone
 
 from web.domains.case.services import document_pack, reference
-from web.domains.country.models import Country
 from web.flow.models import ProcessTypes
 from web.models import (
+    CaseReference,
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
+    Country,
     DerogationsApplication,
     DFLApplication,
     ExportApplicationType,
@@ -25,7 +26,6 @@ from web.models import (
     VariationRequest,
     WoodQuotaApplication,
 )
-from web.models.models import CaseReference
 
 CASE_REF_PATTERN = re.compile(
     r"""

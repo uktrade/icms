@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from web.domains.user.models import AlternativeEmail, PersonalEmail
+from web.models import AlternativeEmail, PersonalEmail
 from web.notify.notify import utils
 from web.tests.domains.user.factory import UserFactory
 

@@ -6,30 +6,29 @@ from django.db.models import F, FilteredRelation, Func, OuterRef, Q, Subquery, V
 from django.db.models.expressions import RawSQL
 from django.db.models.functions import Coalesce
 
-from web.domains.case._import.derogations.models import DerogationsApplication
-from web.domains.case._import.fa_dfl.models import DFLApplication
-from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
-from web.domains.case._import.fa_sil.models import SILApplication
-from web.domains.case._import.ironsteel.models import IronSteelApplication
-from web.domains.case._import.models import ImportApplication, ImportApplicationLicence
-from web.domains.case._import.opt.models import OutwardProcessingTradeApplication
-from web.domains.case._import.sanctions.models import (
-    SanctionsAndAdhocApplication,
-    SanctionsAndAdhocApplicationGoods,
-)
-from web.domains.case._import.sps.models import PriorSurveillanceApplication
-from web.domains.case._import.textiles.models import TextilesApplication
-from web.domains.case._import.wood.models import WoodQuotaApplication
-from web.domains.case.export.models import (
+from web.flow.models import ProcessTypes
+from web.models import (
+    CaseDocumentReference,
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     CFSSchedule,
+    DerogationsApplication,
+    DFLApplication,
     ExportApplication,
     ExportApplicationCertificate,
+    ImportApplication,
+    ImportApplicationLicence,
+    IronSteelApplication,
+    OpenIndividualLicenceApplication,
+    OutwardProcessingTradeApplication,
+    PriorSurveillanceApplication,
+    SanctionsAndAdhocApplication,
+    SanctionsAndAdhocApplicationGoods,
+    SILApplication,
+    TextilesApplication,
+    WoodQuotaApplication,
 )
-from web.domains.case.models import CaseDocumentReference
-from web.flow.models import ProcessTypes
 
 if TYPE_CHECKING:
     from django.db.models import Model, QuerySet

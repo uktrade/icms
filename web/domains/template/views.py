@@ -3,7 +3,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 
-from web.domains.case._import.models import ImportApplicationType
+from web.models import ImportApplicationType
 from web.views import ModelCreateView, ModelFilterView
 from web.views.actions import Archive, EditTemplate, Unarchive
 

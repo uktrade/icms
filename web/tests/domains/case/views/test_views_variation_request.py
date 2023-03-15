@@ -4,10 +4,10 @@ from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
-from web.domains.case.models import DocumentPackBase, VariationRequest
+from web.domains.case.models import DocumentPackBase
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
-from web.flow.models import Task
+from web.models import Task, VariationRequest
 from web.tests.helpers import CaseURLS
 
 

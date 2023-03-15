@@ -1,7 +1,6 @@
 import pytest
 
-from web.flow.models import Process
-from web.models import ExporterAccessRequest, ImporterAccessRequest
+from web.models import ExporterAccessRequest, ImporterAccessRequest, Process
 
 
 @pytest.mark.parametrize(

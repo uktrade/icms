@@ -23,7 +23,7 @@ from web.menu import Menu
 from web.types import AuthenticatedHttpRequest
 
 if TYPE_CHECKING:
-    from web.domains.user.models import User
+    from web.models import User
 
 
 @pass_eval_context

@@ -1,8 +1,7 @@
 from django.urls import reverse, reverse_lazy
 
-from web.domains.case.export.models import ExportApplicationType
 from web.domains.cat.forms import CATFilter
-from web.domains.cat.models import CertificateApplicationTemplate
+from web.models import CertificateApplicationTemplate, ExportApplicationType
 from web.tests.auth import AuthTestCase
 
 

@@ -2,9 +2,14 @@ import datetime
 
 import pytest
 
-from web.domains.case._import.models import ImportApplicationType
-from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType, Usage
-from web.domains.country.models import Country
+from web.models import (
+    Commodity,
+    CommodityGroup,
+    CommodityType,
+    Country,
+    ImportApplicationType,
+    Usage,
+)
 from web.utils.commodity import (
     get_usage_commodities,
     get_usage_countries,

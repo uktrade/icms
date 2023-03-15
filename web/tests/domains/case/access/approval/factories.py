@@ -1,7 +1,7 @@
 import factory
 from django.utils import timezone
 
-from web.domains.case.access.approval.models import ApprovalRequest
+from web.models import ApprovalRequest
 from web.tests.domains.case.access.factory import AccessRequestFactory
 from web.tests.domains.user.factory import UserFactory
 

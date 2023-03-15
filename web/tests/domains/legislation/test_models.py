@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from web.domains.legislation.models import ProductLegislation
+from web.models import ProductLegislation
 
 
 class ProductLegislationTest(TestCase):

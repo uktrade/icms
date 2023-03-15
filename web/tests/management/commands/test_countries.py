@@ -5,8 +5,8 @@ from unittest import mock
 import pytest
 from django.core.management import call_command
 
-from web.domains.country.models import Country, CountryGroup
 from web.management.commands.countries import read_country_csv, write_country_csv
+from web.models import Country, CountryGroup
 
 
 class TestReadCountryCSV:

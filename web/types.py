@@ -2,8 +2,8 @@ from enum import Enum, auto
 
 from django.http import HttpRequest
 
-from web.domains.user.models import User
 from web.middleware.common import ICMSMiddlewareContext
+from web.models import User
 
 
 class AuthenticatedHttpRequest(HttpRequest):

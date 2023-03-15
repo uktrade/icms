@@ -4,10 +4,7 @@ from web.domains.case._import.sanctions.forms import (
     GoodsForm,
     SubmitSanctionsAndAdhocLicenseForm,
 )
-from web.domains.commodity.models import Commodity
-from web.domains.country.models import Country
-from web.domains.importer.models import Importer
-from web.flow.models import Task
+from web.models import Commodity, Country, Importer, Task
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import (
     SanctionsAndAdhocLicenseApplicationFactory,

@@ -5,9 +5,7 @@ from django.core.mail import EmailMultiAlternatives
 from guardian.shortcuts import get_users_with_perms
 
 from config.celery import app
-from web.domains.exporter.models import Exporter
-from web.domains.importer.models import Importer
-from web.domains.user.models import User
+from web.models import Exporter, Importer, User
 
 from . import utils
 

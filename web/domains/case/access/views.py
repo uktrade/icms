@@ -15,7 +15,7 @@ from web.domains.case.access.filters import (
     ImporterAccessRequestFilter,
 )
 from web.domains.case.services import case_progress, reference
-from web.flow.models import Task
+from web.models import Task
 from web.notify import notify
 from web.types import AuthenticatedHttpRequest
 from web.views import ModelFilterView

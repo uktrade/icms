@@ -1,6 +1,6 @@
 import factory
 
-from web.domains.section5.models import Section5Clause
+from web.models import Section5Clause
 from web.tests.domains.user.factory import UserFactory
 
 

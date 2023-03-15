@@ -7,10 +7,10 @@ import requests
 from django.conf import settings
 from django.utils import timezone
 
-from web.domains.case._import.models import LiteHMRCChiefRequest
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief.utils import seen_nonce
-from web.flow.models import ProcessTypes, Task
+from web.flow.models import ProcessTypes
+from web.models import LiteHMRCChiefRequest, Task
 from web.utils.sentry import capture_exception
 
 from . import serializers, types

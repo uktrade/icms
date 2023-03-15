@@ -9,12 +9,11 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import check_application_permission
 from web.flow import errors
-from web.flow.models import Process, ProcessTypes
+from web.flow.models import ProcessTypes
+from web.models import Process
 
 if TYPE_CHECKING:
-    from web.domains.case._import.models import ImportApplication
-    from web.domains.case.export.models import ExportApplication
-    from web.domains.case.models import CaseDocumentReference
+    from web.models import CaseDocumentReference, ExportApplication, ImportApplication
 
 
 class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):

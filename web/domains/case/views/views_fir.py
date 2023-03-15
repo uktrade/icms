@@ -11,9 +11,8 @@ from guardian.shortcuts import get_users_with_perms
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.file.utils import create_file_model
-from web.domains.template.models import Template
-from web.domains.user.models import User
 from web.flow.models import ProcessTypes
+from web.models import Template, User
 from web.notify import notify
 from web.types import AuthenticatedHttpRequest
 

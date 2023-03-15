@@ -11,12 +11,9 @@ from guardian.shortcuts import get_objects_for_user
 
 import web.forms.widgets as icms_widgets
 from web.domains.case.forms import application_contacts
-from web.domains.exporter.models import Exporter
 from web.domains.file.utils import ICMSFileField
-from web.domains.legislation.models import ProductLegislation
-from web.domains.office.models import Office
-from web.domains.user.models import User
 from web.forms.mixins import OptionalFormMixin
+from web.models import Exporter, Office, ProductLegislation, User
 from web.models.shared import AddressEntryType, YesNoChoices
 
 from .models import (

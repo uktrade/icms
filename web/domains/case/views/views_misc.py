@@ -18,7 +18,7 @@ from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case import forms
 from web.domains.case.app_checks import get_app_errors
-from web.domains.case.models import DocumentPackBase, VariationRequest
+from web.domains.case.models import DocumentPackBase
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.tasks import create_case_document_pack
@@ -28,11 +28,8 @@ from web.domains.case.utils import (
     end_process_task,
     get_case_page_title,
 )
-from web.domains.template.models import Template
-from web.domains.user.models import User
 from web.flow import errors
-from web.flow.models import Task
-from web.models import WithdrawApplication
+from web.models import Task, Template, User, VariationRequest, WithdrawApplication
 from web.notify.email import send_email
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import delete_file_from_s3, get_s3_client

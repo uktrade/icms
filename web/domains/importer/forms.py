@@ -4,8 +4,8 @@ from django.forms import ModelChoiceField, ModelForm, Textarea
 from django_filters import CharFilter, ChoiceFilter, FilterSet
 
 from web.domains.importer.fields import PersonWidget
-from web.domains.importer.models import Importer
 from web.errors import APIError
+from web.models import Importer
 from web.utils.companieshouse import api_get_company
 
 

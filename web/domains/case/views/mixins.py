@@ -9,7 +9,7 @@ from django.views.generic.detail import SingleObjectMixin
 from web.domains.case.services import case_progress
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task
-from web.flow.models import Process, Task
+from web.models import Process, Task
 from web.types import AuthenticatedHttpRequest
 
 

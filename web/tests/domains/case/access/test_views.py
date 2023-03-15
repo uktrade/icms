@@ -1,8 +1,7 @@
 import pytest
 from django.test import Client
 
-from web.domains.case.fir.models import FurtherInformationRequest
-from web.flow.models import Task
+from web.models import FurtherInformationRequest, Task
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case.access import factories as access_factories
 from web.tests.domains.case.fir import factory as fir_factories

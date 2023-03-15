@@ -5,13 +5,18 @@ from django.contrib.auth.models import Permission
 from django.core.management.base import BaseCommand, CommandError
 from guardian.shortcuts import assign_perm
 
-from web.domains.case.access.models import ExporterAccessRequest, ImporterAccessRequest
-from web.domains.exporter.models import Exporter
-from web.domains.importer.models import Importer
-from web.domains.office.models import Office
-from web.domains.user.models import User
 from web.management.commands.utils.load_data import load_app_test_data
-from web.models import ImportApplicationType, ObsoleteCalibre, ObsoleteCalibreGroup
+from web.models import (
+    Exporter,
+    ExporterAccessRequest,
+    ImportApplicationType,
+    Importer,
+    ImporterAccessRequest,
+    ObsoleteCalibre,
+    ObsoleteCalibreGroup,
+    Office,
+    User,
+)
 
 
 # TODO: ICMSLST-1940 Assign correct groups here

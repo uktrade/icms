@@ -1,13 +1,8 @@
 from django import forms
 from django_select2.forms import Select2MultipleWidget
 
-from web.domains.office.models import Office
-from web.domains.section5.models import (
-    ClauseQuantity,
-    Section5Authority,
-    Section5Clause,
-)
 from web.forms.widgets import DateInput
+from web.models import ClauseQuantity, Office, Section5Authority, Section5Clause
 
 
 class Section5AuthorityForm(forms.ModelForm):

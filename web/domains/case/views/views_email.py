@@ -11,24 +11,22 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from web.domains.case._import.fa.types import FaImportApplication
-from web.domains.case.export.models import (
+from web.domains.case.services import case_progress
+from web.flow.models import ProcessTypes
+from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CFSProduct,
     CFSSchedule,
-)
-from web.domains.case.services import case_progress
-from web.domains.constabulary.models import Constabulary
-from web.domains.file.models import File
-from web.domains.sanction_email.models import SanctionEmail
-from web.domains.template.models import Template
-from web.flow.models import ProcessTypes
-from web.models import (
+    Constabulary,
     DFLApplication,
+    File,
     GMPFile,
     OpenIndividualLicenceApplication,
+    SanctionEmail,
     SanctionsAndAdhocApplication,
     SILApplication,
+    Template,
 )
 from web.notify import email
 from web.types import AuthenticatedHttpRequest

@@ -1,15 +1,14 @@
 import re
 from typing import TYPE_CHECKING
 
-from web.domains.case._import.models import EndorsementImportApplication
 from web.flow.models import ProcessTypes
+from web.models import EndorsementImportApplication
 
 from .context import CoverLetterTemplateContext
 from .models import Template
 
 if TYPE_CHECKING:
-    from web.domains.case._import.fa_sil.models import SILApplication
-    from web.domains.case._import.models import ImportApplication
+    from web.models import ImportApplication, SILApplication
     from web.types import DocumentTypes
 
     from .context import TemplateContextProcessor

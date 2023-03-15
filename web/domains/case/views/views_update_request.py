@@ -12,8 +12,7 @@ from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import check_application_permission, get_case_page_title
-from web.domains.template.models import Template
-from web.flow.models import Task
+from web.models import Task, Template
 from web.notify import email
 from web.types import AuthenticatedHttpRequest
 
