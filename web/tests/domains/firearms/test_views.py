@@ -1,8 +1,7 @@
 import pytest
 from django.test.client import Client
 
-from web.domains.firearms.models import FirearmsAuthority
-from web.domains.user.models import User
+from web.models import FirearmsAuthority, User
 from web.tests.auth import AuthTestCase
 from web.tests.domains.constabulary.factory import ConstabularyFactory
 from web.tests.domains.importer.factory import ImporterFactory

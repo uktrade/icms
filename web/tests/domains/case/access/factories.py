@@ -1,11 +1,7 @@
 import factory.fuzzy
 from django.utils import timezone
 
-from web.domains.case.access.models import (
-    AccessRequest,
-    ExporterAccessRequest,
-    ImporterAccessRequest,
-)
+from web.models import AccessRequest, ExporterAccessRequest, ImporterAccessRequest
 from web.tests.domains.exporter.factory import ExporterFactory
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.user.factory import UserFactory

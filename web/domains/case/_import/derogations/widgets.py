@@ -4,9 +4,7 @@ from django.db.models.query import QuerySet
 from django.http import HttpRequest
 from django_select2.forms import ModelSelect2Widget
 
-from web.domains.case._import.models import ImportApplicationType
-from web.domains.commodity.models import Commodity
-from web.domains.country.models import Country
+from web.models import Commodity, Country, ImportApplicationType
 from web.utils.commodity import (
     get_usage_commodities,
     get_usage_countries,

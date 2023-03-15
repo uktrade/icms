@@ -8,8 +8,7 @@ from web.domains.importer.forms import (
     ImporterIndividualForm,
     ImporterOrganisationForm,
 )
-from web.domains.importer.models import Importer
-from web.domains.user.models import User
+from web.models import Importer, User
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.user.factory import UserFactory
 

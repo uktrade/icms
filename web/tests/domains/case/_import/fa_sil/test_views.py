@@ -3,11 +3,9 @@ from typing import TYPE_CHECKING
 import pytest
 from django.urls import reverse
 
-from web.domains.case._import.fa_sil.models import SILApplication
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
-from web.flow.models import Task
-from web.models import ImportApplicationLicence
+from web.models import ImportApplicationLicence, SILApplication, Task
 from web.tests.application_utils import create_import_app, save_app_data
 
 if TYPE_CHECKING:

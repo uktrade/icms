@@ -7,14 +7,18 @@ from django.contrib.auth.models import Group, Permission
 from django.core.management.base import BaseCommand, CommandError
 from guardian.shortcuts import assign_perm
 
-from web.domains.case.export.models import ExportApplicationType
-from web.domains.cat.models import CertificateApplicationTemplate
-from web.domains.exporter.models import Exporter
-from web.domains.importer.models import Importer
-from web.domains.office.models import Office
-from web.domains.user.models import User
 from web.management.commands.utils.load_data import load_app_test_data
-from web.models import ImportApplicationType, ObsoleteCalibre, ObsoleteCalibreGroup
+from web.models import (
+    CertificateApplicationTemplate,
+    ExportApplicationType,
+    Exporter,
+    ImportApplicationType,
+    Importer,
+    ObsoleteCalibre,
+    ObsoleteCalibreGroup,
+    Office,
+    User,
+)
 
 
 class Command(BaseCommand):

@@ -1,6 +1,6 @@
 from django import forms
 
-from web.domains.office.models import Office
+from web.models import Office
 
 
 class ImporterOfficeEORIForm(forms.ModelForm):

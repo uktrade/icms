@@ -20,7 +20,7 @@ from web.domains.case.utils import (
 )
 from web.domains.file.utils import create_file_model
 from web.domains.template.utils import add_template_data_on_submit
-from web.flow.models import Task
+from web.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.currency import convert_gbp_to_euro
 from web.utils.validation import (

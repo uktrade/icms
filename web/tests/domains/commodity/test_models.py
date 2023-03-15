@@ -4,7 +4,7 @@ from datetime import date
 from django.test import TestCase
 from django.utils.timezone import now
 
-from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType
+from web.models import Commodity, CommodityGroup, CommodityType
 from web.tests.domains.commodity.factory import CommodityFactory, CommodityGroupFactory
 
 

@@ -1,9 +1,8 @@
 from django import forms
 
-from web.domains.case._import.models import ImportApplicationType
 from web.domains.case.forms import application_contacts
-from web.domains.country.models import Country
 from web.forms.mixins import OptionalFormMixin
+from web.models import Country, ImportApplicationType
 from web.utils.commodity import get_usage_commodities, get_usage_records
 
 from .models import SanctionsAndAdhocApplication, SanctionsAndAdhocApplicationGoods

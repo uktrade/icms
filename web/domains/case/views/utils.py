@@ -6,7 +6,7 @@ from web.flow.errors import ProcessError
 from web.models import AccessRequest, ExportApplication, ImportApplication
 
 if TYPE_CHECKING:
-    from web.domains.user.models import User
+    from web.models import User
 
 
 def get_class_imp_or_exp(case_type: str) -> ImpOrExpT:

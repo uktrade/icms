@@ -17,8 +17,7 @@ from web.auth.mixins import RequireRegisteredMixin
 from web.domains.case.forms import DocumentForm
 from web.domains.case.services import reference
 from web.domains.file.utils import create_file_model
-from web.domains.template.models import Template
-from web.domains.user.models import User
+from web.models import Template, User
 from web.notify import notify
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3

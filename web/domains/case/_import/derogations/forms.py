@@ -3,11 +3,10 @@ from typing import TYPE_CHECKING, Any
 from django import forms
 
 from web.domains.case._import.forms import ChecklistBaseForm
-from web.domains.case._import.models import ImportApplicationType
 from web.domains.case.forms import application_contacts
-from web.domains.country.models import Country
 from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import DateInput
+from web.models import Country, ImportApplicationType
 from web.utils.commodity import get_usage_records
 
 from .models import DerogationsApplication, DerogationsChecklist
@@ -16,7 +15,7 @@ from .widgets import DerogationCommoditySelect, DerogationCountryOfOriginSelect
 if TYPE_CHECKING:
     from decimal import Decimal
 
-    from web.domains.commodity.models import Commodity
+    from web.models import Commodity
 
 
 class DerogationsFormBase(forms.ModelForm):

@@ -8,7 +8,7 @@ from web.domains.user.forms import (
     UserDetailsUpdateForm,
     UserListFilter,
 )
-from web.domains.user.models import PersonalEmail, PhoneNumber, User
+from web.models import PersonalEmail, PhoneNumber, User
 
 from .factory import UserFactory
 

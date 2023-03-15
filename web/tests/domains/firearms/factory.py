@@ -2,11 +2,7 @@ import random
 
 import factory.fuzzy
 
-from web.domains.firearms.models import (
-    FirearmsAct,
-    ObsoleteCalibre,
-    ObsoleteCalibreGroup,
-)
+from web.models import FirearmsAct, ObsoleteCalibre, ObsoleteCalibreGroup
 from web.tests.domains.user.factory import UserFactory
 
 

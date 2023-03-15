@@ -1,6 +1,6 @@
 from django_filters import BooleanFilter, CharFilter, FilterSet
 
-from web.domains.section5.models import Section5Clause
+from web.models import Section5Clause
 
 
 class Section5Filter(FilterSet):

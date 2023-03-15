@@ -2,7 +2,7 @@ import random
 
 import factory
 
-from web.domains.legislation.models import ProductLegislation
+from web.models import ProductLegislation
 
 
 class ProductLegislationFactory(factory.django.DjangoModelFactory):

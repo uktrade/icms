@@ -5,7 +5,7 @@ from web.domains.template.forms import (
     EndorsementTemplateForm,
     TemplatesFilter,
 )
-from web.domains.template.models import Template
+from web.models import Template
 
 from .factory import TemplateFactory
 

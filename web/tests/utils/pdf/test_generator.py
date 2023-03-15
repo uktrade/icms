@@ -4,11 +4,13 @@ from unittest.mock import MagicMock, create_autospec, patch
 import pytest
 from django.conf import settings
 
-from web.domains.case._import.fa_dfl.models import DFLApplication
-from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
-from web.domains.case._import.fa_sil.models import SILApplication
-from web.domains.case._import.wood.models import WoodQuotaApplication
-from web.domains.template.models import Template
+from web.models import (
+    DFLApplication,
+    OpenIndividualLicenceApplication,
+    SILApplication,
+    Template,
+    WoodQuotaApplication,
+)
 from web.types import DocumentTypes
 from web.utils.pdf import PdfGenerator, utils
 

@@ -4,7 +4,7 @@ import random
 import factory.fuzzy
 from faker import Faker
 
-from web.domains.commodity.models import Commodity, CommodityGroup, CommodityType, Unit
+from web.models import Commodity, CommodityGroup, CommodityType, Unit
 
 fake = Faker("en_GB")
 

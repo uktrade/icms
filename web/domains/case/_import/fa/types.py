@@ -2,25 +2,21 @@ from web.domains.case._import.fa_dfl.forms import (
     DFLSupplementaryInfoForm,
     DFLSupplementaryReportForm,
 )
-from web.domains.case._import.fa_dfl.models import (
-    DFLApplication,
-    DFLSupplementaryInfo,
-    DFLSupplementaryReport,
-)
 from web.domains.case._import.fa_oil.forms import (
     OILSupplementaryInfoForm,
     OILSupplementaryReportForm,
-)
-from web.domains.case._import.fa_oil.models import (
-    OILSupplementaryInfo,
-    OILSupplementaryReport,
-    OpenIndividualLicenceApplication,
 )
 from web.domains.case._import.fa_sil.forms import (
     SILSupplementaryInfoForm,
     SILSupplementaryReportForm,
 )
-from web.domains.case._import.fa_sil.models import (
+from web.models import (
+    DFLApplication,
+    DFLSupplementaryInfo,
+    DFLSupplementaryReport,
+    OILSupplementaryInfo,
+    OILSupplementaryReport,
+    OpenIndividualLicenceApplication,
     SILApplication,
     SILSupplementaryInfo,
     SILSupplementaryReport,

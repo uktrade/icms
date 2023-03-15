@@ -2,10 +2,9 @@ from typing import final
 
 from django.db import models
 
+from web.domains.case._import.models import ChecklistBase, ImportApplication
 from web.flow.models import ProcessTypes
 from web.models.shared import YesNoChoices, YesNoNAChoices, at_least_0
-
-from ..models import ChecklistBase, ImportApplication
 
 
 @final

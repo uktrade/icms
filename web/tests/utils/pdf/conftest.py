@@ -1,14 +1,16 @@
 import pytest
 from django.utils import timezone
 
-from web.domains.case._import.fa_dfl.models import DFLApplication
-from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
-from web.domains.case._import.fa_sil.models import SILApplication
-from web.domains.case._import.models import ImportApplicationLicence
-from web.domains.country.models import Country
-from web.domains.importer.models import Importer
-from web.domains.office.models import Office
-from web.domains.template.models import Template
+from web.models import (
+    Country,
+    DFLApplication,
+    ImportApplicationLicence,
+    Importer,
+    Office,
+    OpenIndividualLicenceApplication,
+    SILApplication,
+    Template,
+)
 
 
 @pytest.fixture()

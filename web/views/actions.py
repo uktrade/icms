@@ -5,7 +5,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from web.domains.template.models import Template
+from web.models import Template
 from web.models.mixins import Archivable
 
 

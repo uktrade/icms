@@ -1,8 +1,6 @@
 import pytest
 
-from web.domains.case._import.wood.models import WoodQuotaApplication
 from web.domains.case.shared import ImpExpStatus
-from web.domains.user.models import User
 from web.domains.workbasket.actions import get_workbasket_admin_sections
 from web.domains.workbasket.actions.ilb_admin_actions import (
     AuthoriseDocumentsAction,
@@ -15,7 +13,7 @@ from web.domains.workbasket.actions.ilb_admin_actions import (
     ViewApplicationCaseAction,
 )
 from web.domains.workbasket.actions.shared_actions import ClearApplicationAction
-from web.flow.models import Task
+from web.models import Task, User, WoodQuotaApplication
 
 ST = ImpExpStatus
 TT = Task.TaskType

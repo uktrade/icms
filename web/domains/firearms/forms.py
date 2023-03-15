@@ -11,8 +11,8 @@ from django.forms.widgets import CheckboxInput
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter, FilterSet
 from django_select2.forms import Select2MultipleWidget
 
-from web.domains.office.models import Office
 from web.forms.widgets import DateInput
+from web.models import Office
 
 from .models import (
     ActQuantity,

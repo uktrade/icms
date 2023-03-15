@@ -7,7 +7,7 @@ from web.tests.helpers import CaseURLS
 if TYPE_CHECKING:
     from django.test.client import Client
 
-    from web.domains.case._import.wood.models import WoodQuotaApplication
+    from web.models import WoodQuotaApplication
 
 
 def test_manage_update_requests_get(

@@ -6,7 +6,8 @@ from django.utils.dateparse import parse_datetime
 from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.workbasket.base import WorkbasketAction
-from web.flow.models import ProcessTypes, Task
+from web.flow.models import ProcessTypes
+from web.models import Task
 
 from .base import Action, ActionT
 

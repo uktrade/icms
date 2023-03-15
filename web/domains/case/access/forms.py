@@ -1,15 +1,15 @@
 import structlog as logging
 from django.forms import CharField, Field, ModelChoiceField, ModelForm, Textarea
 
-from web.domains.case.access.models import (
+from web.domains.exporter.widgets import ExporterWidget
+from web.domains.importer.widgets import ImporterWidget
+from web.models import (
     AccessRequest,
+    Exporter,
     ExporterAccessRequest,
+    Importer,
     ImporterAccessRequest,
 )
-from web.domains.exporter.models import Exporter
-from web.domains.exporter.widgets import ExporterWidget
-from web.domains.importer.models import Importer
-from web.domains.importer.widgets import ImporterWidget
 
 logger = logging.getLogger(__name__)
 

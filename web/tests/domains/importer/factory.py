@@ -1,6 +1,6 @@
 import factory.fuzzy
 
-from web.domains.importer.models import Importer
+from web.models import Importer
 from web.tests.domains.user.factory import UserFactory
 
 

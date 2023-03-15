@@ -10,7 +10,7 @@ from django.views.decorators.http import require_POST
 
 from web.domains.case.forms import DocumentForm
 from web.domains.file.utils import create_file_model
-from web.domains.importer.models import Importer
+from web.models import Importer
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 from web.views import ModelFilterView

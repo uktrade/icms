@@ -1,8 +1,8 @@
 from django.forms import ChoiceField, ModelChoiceField, ModelForm, Textarea
 from guardian.shortcuts import get_users_with_perms
 
-from web.domains.user.models import User
 from web.flow.models import ProcessTypes
+from web.models import User
 
 from .models import ApprovalRequest, ExporterApprovalRequest, ImporterApprovalRequest
 

@@ -1,12 +1,8 @@
 from typing import TYPE_CHECKING, NamedTuple, Union
 
-from web.domains.case._import.ironsteel.models import IronSteelApplication
-from web.domains.case.export.models import (
-    CertificateOfGoodManufacturingPracticeApplication,
-)
-from web.domains.file.models import File
 from web.models import (
     CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
     DerogationsApplication,
     DFLApplication,
     ExportApplication,
@@ -14,11 +10,13 @@ from web.models import (
     ExportApplicationType,
     ExporterAccessRequest,
     ExporterApprovalRequest,
+    File,
     ImportApplication,
     ImportApplicationLicence,
     ImportApplicationType,
     ImporterAccessRequest,
     ImporterApprovalRequest,
+    IronSteelApplication,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     SanctionsAndAdhocApplication,

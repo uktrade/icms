@@ -4,8 +4,7 @@ import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
-from web.domains.case._import.textiles.models import TextilesApplication
-from web.domains.country.models import Country
+from web.models import Country, TextilesApplication
 
 
 def _get_view_url(view_name, kwargs=None):

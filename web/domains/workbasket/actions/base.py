@@ -4,7 +4,7 @@ from web.domains.workbasket.base import WorkbasketAction
 
 if TYPE_CHECKING:
     from web.domains.case.types import ImpOrExp
-    from web.domains.user.models import User
+    from web.models import User
 
 
 class Action:

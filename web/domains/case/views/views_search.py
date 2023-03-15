@@ -16,8 +16,6 @@ from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import FormView, View
 
 from web import tasks
-from web.domains.case._import.models import ImportApplication, ImportApplicationType
-from web.domains.case.export.models import ExportApplication
 from web.domains.case.forms import (
     RevokeApplicationForm,
     VariationRequestExportAppForm,
@@ -30,12 +28,17 @@ from web.domains.case.forms_search import (
     ImportSearchForm,
     ReassignmentUserForm,
 )
-from web.domains.case.models import VariationRequest
 from web.domains.case.services import case_progress, document_pack, reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import client
-from web.domains.template.models import Template
-from web.flow.models import Task
+from web.models import (
+    ExportApplication,
+    ImportApplication,
+    ImportApplicationType,
+    Task,
+    Template,
+    VariationRequest,
+)
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
     SearchTerms,
@@ -48,8 +51,7 @@ from .mixins import ApplicationTaskMixin
 if TYPE_CHECKING:
     from django.db.models import QuerySet
 
-    from web.domains.user.models import User
-    from web.flow.models import Process
+    from web.models import Process, User
 
 SearchForm = Union[
     ExportSearchAdvancedForm, ExportSearchForm, ImportSearchAdvancedForm, ImportSearchForm

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 
 from web.domains.case.shared import ImpExpStatus
 from web.domains.workbasket.base import WorkbasketSection
-from web.flow.models import Task
+from web.models import Task
 
 from .applicant_actions import REQUEST_VARIATION_APPLICANT_ACTIONS
 from .ilb_admin_actions import ILB_ADMIN_ACTIONS
@@ -11,7 +11,7 @@ from .shared_actions import SHARED_ACTIONS
 
 if TYPE_CHECKING:
     from web.domains.case.types import ImpOrExp
-    from web.domains.user.models import User
+    from web.models import User
 
     from .base import ActionT
 

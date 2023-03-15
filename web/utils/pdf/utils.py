@@ -11,12 +11,14 @@ if TYPE_CHECKING:
     from django.db.models import QuerySet
 
     from web.domains.case._import.fa.types import FaImportApplication
-    from web.domains.case._import.fa_dfl.models import DFLApplication
-    from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
     from web.domains.case._import.fa_sil import models as sil_models
-    from web.domains.case._import.models import ImportApplicationLicence
     from web.domains.case.types import ImpOrExp
-    from web.models import ImportApplication
+    from web.models import (
+        DFLApplication,
+        ImportApplication,
+        ImportApplicationLicence,
+        OpenIndividualLicenceApplication,
+    )
 
     SILGoods = Union[
         sil_models.SILGoodsSection1,

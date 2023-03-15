@@ -1,9 +1,9 @@
 from django import forms
 
 from web.domains.case.forms import application_contacts
-from web.domains.country.models import Country
 from web.domains.file.utils import ICMSFileField
 from web.forms.mixins import OptionalFormMixin
+from web.models import Country
 from web.utils.currency import get_euro_exchange_rate
 
 from . import models

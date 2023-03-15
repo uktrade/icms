@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django_filters import CharFilter, ChoiceFilter, FilterSet
 
-from web.domains.case.access.models import ExporterAccessRequest, ImporterAccessRequest
+from web.models import ExporterAccessRequest, ImporterAccessRequest
 
 
 class ImporterAccessRequestFilter(FilterSet):

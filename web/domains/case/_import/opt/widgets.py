@@ -1,6 +1,6 @@
 from django_select2 import forms as s2forms
 
-from web.domains.commodity.models import Commodity
+from web.models import Commodity
 
 
 class OptCompensatingProductsCommodityWidget(s2forms.ModelSelect2MultipleWidget):

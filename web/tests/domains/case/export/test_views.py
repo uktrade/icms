@@ -5,14 +5,14 @@ from django.urls import reverse, reverse_lazy
 from guardian.shortcuts import assign_perm
 from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
-from web.domains.case.export.models import (
+from web.models import (
+    CertificateApplicationTemplate,
     CertificateOfFreeSaleApplication,
+    Country,
     ExportApplicationType,
+    Task,
+    User,
 )
-from web.domains.cat.models import CertificateApplicationTemplate
-from web.domains.country.models import Country
-from web.domains.user.models import User
-from web.flow.models import Task
 from web.tests.auth.auth import AuthTestCase
 from web.tests.domains.case.export.factories import (
     CertificateOfManufactureApplicationFactory,

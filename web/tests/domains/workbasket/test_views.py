@@ -3,12 +3,13 @@ import re
 import pytest
 from django.test import Client
 
-from web.domains.case._import.fa_oil.models import OpenIndividualLicenceApplication
-from web.domains.case._import.models import ImportApplication, ImportApplicationType
-from web.domains.case.export.models import (
+from web.models import (
     CertificateOfManufactureApplication,
     ExportApplication,
     ExportApplicationType,
+    ImportApplication,
+    ImportApplicationType,
+    OpenIndividualLicenceApplication,
 )
 
 

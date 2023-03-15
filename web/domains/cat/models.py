@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 
-from web.domains.case.export.models import ExportApplicationType
+from web.models import ExportApplicationType
 
 if TYPE_CHECKING:
     from web.models import User

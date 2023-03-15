@@ -4,7 +4,6 @@ from typing import Protocol
 from django.urls import reverse
 
 from web.domains.case.types import ImpOrExp, ImpOrExpOrAccessOrApproval
-from web.domains.user.models import User
 from web.flow.models import ProcessTypes
 from web.models import (
     AccessRequest,
@@ -12,6 +11,7 @@ from web.models import (
     ExporterApprovalRequest,
     ImporterAccessRequest,
     ImporterApprovalRequest,
+    User,
 )
 
 from .actions import get_workbasket_admin_sections, get_workbasket_applicant_sections

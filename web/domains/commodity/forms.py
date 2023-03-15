@@ -17,9 +17,9 @@ from django_filters import (
     ModelChoiceFilter,
 )
 
-from web.domains.case._import.models import ImportApplicationType
 from web.domains.commodity.widgets import CommodityGroupCommodityWidget
 from web.forms.widgets import DateInput
+from web.models import ImportApplicationType
 
 from .models import Commodity, CommodityGroup, CommodityType, Unit, Usage
 from .widgets import UsageCountryWidget

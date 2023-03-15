@@ -3,8 +3,7 @@ from unittest.mock import patch
 import pytest
 from django.test import Client
 
-from web.domains.exporter.models import Exporter
-from web.domains.user.models import User
+from web.models import Exporter, User
 from web.tests.auth import AuthTestCase
 from web.tests.domains.exporter.factory import ExporterFactory
 from web.tests.domains.user.factory import UserFactory

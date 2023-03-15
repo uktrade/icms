@@ -4,7 +4,7 @@ from django.urls import reverse
 
 from web.domains.section5.filters import Section5Filter
 from web.domains.section5.forms import Section5ClauseForm
-from web.domains.section5.models import Section5Clause
+from web.models import Section5Clause
 from web.views import ModelFilterView
 from web.views.actions import Archive, Edit, Unarchive
 

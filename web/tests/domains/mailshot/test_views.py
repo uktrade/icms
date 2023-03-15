@@ -3,10 +3,9 @@ from django.urls import reverse
 from django.utils import timezone
 
 from web.domains.case.services import reference
-from web.domains.mailshot.models import Mailshot
 from web.domains.mailshot.views import MailshotListView
-from web.domains.user.models import User
 from web.middleware.common import ICMSMiddlewareContext
+from web.models import Mailshot, User
 from web.tests.auth import AuthTestCase
 
 from .factory import MailshotFactory

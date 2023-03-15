@@ -2,14 +2,10 @@ import datetime
 
 import pytest
 
-from web.domains.case._import.wood.models import (
-    WoodQuotaApplication,
-    WoodQuotaChecklist,
-)
 from web.domains.case.app_checks import get_app_errors
-from web.domains.case.models import UpdateRequest
 from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
+from web.models import UpdateRequest, WoodQuotaApplication, WoodQuotaChecklist
 from web.models.shared import YesNoNAChoices
 from web.tests.helpers import CaseURLS, check_page_errors, check_pages_checked
 

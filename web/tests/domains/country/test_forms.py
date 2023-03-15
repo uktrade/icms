@@ -8,7 +8,7 @@ from web.domains.country.forms import (
     CountryTranslationEditForm,
     CountryTranslationSetEditForm,
 )
-from web.domains.country.models import Country
+from web.models import Country
 
 from .factory import (
     CountryFactory,

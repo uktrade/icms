@@ -2,8 +2,7 @@ from django.core import mail
 from django.test import TestCase
 from guardian.shortcuts import assign_perm
 
-from web.domains.importer.models import Importer
-from web.domains.user.models import AlternativeEmail, PersonalEmail, User
+from web.models import AlternativeEmail, Importer, PersonalEmail, User
 from web.notify import email
 from web.tests.domains.exporter.factory import ExporterFactory
 from web.tests.domains.importer.factory import ImporterFactory

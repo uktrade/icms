@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from web.domains.template.models import Template
+from web.models import Template
 
 
 class TemplateTest(TestCase):

@@ -1,11 +1,11 @@
 import pytest
 
-from web.domains.case.export.models import ExportApplicationType
-from web.flow.models import Process
 from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
+    ExportApplicationType,
+    Process,
 )
 
 

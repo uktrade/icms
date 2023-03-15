@@ -9,28 +9,29 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
-from web.domains.case._import.models import ImportApplication, ImportApplicationType
-from web.domains.case.export.models import ExportApplication
-from web.domains.case.fir.models import FurtherInformationRequest
-from web.domains.case.models import (
-    CaseDocumentReference,
-    CaseEmail,
-    DocumentPackBase,
-    UpdateRequest,
-)
+from web.domains.case.models import DocumentPackBase
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExpT
-from web.domains.commodity.models import Commodity
-from web.domains.user.models import User
 from web.flow.models import ProcessTypes
+from web.models import (
+    CaseDocumentReference,
+    CaseEmail,
+    Commodity,
+    ExportApplication,
+    FurtherInformationRequest,
+    ImportApplication,
+    ImportApplicationType,
+    UpdateRequest,
+    User,
+)
 from web.models.shared import FirearmCommodity, YesNoChoices
 from web.utils.spreadsheet import XlsxConfig, generate_xlsx_file
 
 if TYPE_CHECKING:
     from django.db.models import Model, QuerySet
 
-    from web.domains.commodity.models import CommodityGroup
-    from web.domains.country.models import Country
+    from web.models import CommodityGroup
+    from web.models import Country
 
 from . import app_data, types, utils
 

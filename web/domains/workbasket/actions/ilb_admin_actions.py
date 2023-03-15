@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from web.domains.case.shared import ImpExpStatus
 from web.domains.workbasket.base import WorkbasketAction
-from web.flow.models import Task
+from web.models import Task
 
 from .base import Action, ActionT
 

@@ -7,7 +7,7 @@ from web.tests.helpers import CaseURLS
 if TYPE_CHECKING:
     from django.test.client import Client
 
-    from web.domains.case._import.fa_dfl.models import DFLApplication
+    from web.models import DFLApplication
 
 
 def test_manage_constabulary_emails_get(

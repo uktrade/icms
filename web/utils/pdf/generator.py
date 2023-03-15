@@ -6,9 +6,9 @@ import weasyprint
 from django.conf import settings
 from django.template.loader import render_to_string
 
-from web.domains.case._import.models import ImportApplicationLicence
 from web.domains.case.types import ImpOrExp
 from web.flow.models import ProcessTypes
+from web.models import ImportApplicationLicence
 from web.types import DocumentTypes
 
 from . import utils

@@ -1,6 +1,6 @@
 import factory
 
-from web.domains.case.export.models import (
+from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,

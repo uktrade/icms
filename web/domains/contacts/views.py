@@ -7,8 +7,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 from guardian.shortcuts import assign_perm, get_users_with_perms, remove_perm
 
-from web.domains.user.models import User
-from web.models import Exporter, Importer
+from web.models import Exporter, Importer, User
 from web.types import AuthenticatedHttpRequest
 
 from .forms import ContactForm

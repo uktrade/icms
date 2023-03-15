@@ -3,13 +3,14 @@ import datetime
 import pytest
 from dateutil.relativedelta import relativedelta
 
-from web.domains.case._import.models import ImportApplication, ImportApplicationLicence
-from web.domains.case._import.wood.models import WoodQuotaApplication
-from web.domains.case.export.models import (
+from web.domains.case.shared import ImpExpStatus
+from web.models import (
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
+    ImportApplication,
+    ImportApplicationLicence,
+    WoodQuotaApplication,
 )
-from web.domains.case.shared import ImpExpStatus
 from web.utils.search import types
 from web.utils.search.api import get_export_record_actions, get_import_record_actions
 

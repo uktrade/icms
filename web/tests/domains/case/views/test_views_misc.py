@@ -7,13 +7,17 @@ from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertContains, assertRedirects, assertTemplateUsed
 
-from web.domains.case._import.wood.models import WoodQuotaChecklist
-from web.domains.case.models import DocumentPackBase, UpdateRequest, VariationRequest
+from web.domains.case.models import DocumentPackBase
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.flow.errors import ProcessStateError
-from web.flow.models import Task
-from web.models import Country
+from web.models import (
+    Country,
+    Task,
+    UpdateRequest,
+    VariationRequest,
+    WoodQuotaChecklist,
+)
 from web.models.shared import YesNoNAChoices
 from web.tests.helpers import CaseURLS, check_page_errors, check_pages_checked
 from web.utils.validation import ApplicationErrors
@@ -21,7 +25,7 @@ from web.utils.validation import ApplicationErrors
 if TYPE_CHECKING:
     from django.test.client import Client
 
-    from web.domains.case._import.wood.models import WoodQuotaApplication
+    from web.models import WoodQuotaApplication
 
 
 @pytest.fixture

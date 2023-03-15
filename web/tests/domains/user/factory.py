@@ -1,7 +1,7 @@
 import factory.fuzzy
 from django.contrib.auth.models import Permission
 
-from web.domains.user.models import User
+from web.models import User
 
 
 class UserFactory(factory.django.DjangoModelFactory):

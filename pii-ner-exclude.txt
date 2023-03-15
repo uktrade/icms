@@ -2513,3 +2513,86 @@ Section 5 goods.</p
 "Returns the minimum expected context values - tests
 "Remove the document
 Revist
+Draft Mailshot
+Published Mailshot"
+Retracted Mailshot
+Cancelled Mailshot
+Published Mailshot
+Test Mailshot
+contract_sign_date
+Obsolete Calibre Name
+Calibre Name
+Linked Offices
+f"{usage_path}start_date__lte
+"Annotate a queryset
+Year of shipment
+SIGL Product Type
+Mandatory for Iron, Steel, Aluminium and Textile
+For Auto Groups
+Group Name
+Group Code
+Active Group 1
+Active Group
+Test Calibre
+Active Email Template
+Test Title
+Test Template
+"Check if the quantity exceeds the maximum_allocation if
+Link Importer
+Wood (Quota) - Update Requests
+Search Importer Access Requests
+Linked to Exporter
+3456789012
+789654123
+"Create a Commodity
+cp_commodity_codes & teg_commodity_codes
+Create File
+COM Template
+manufacturer_address_entry_type
+responsible_person_address_entry_type
+Withdraw Reject Reason
+Reuse the Variation Request Cancel
+Variation Reason
+Search Exporter Access Requests
+Test Country
+Finlande
+Foo
+Create Individual Agent
+Certificate Application
+Approval Requested
+f"{acc_req.submitted_by
+Filter the available Commodities depending on the origin country
+e.g [prefix
+comment\r\n
+f"{foo.pk},Foo
+@example.com
+View Certificate Application Template
+Edit Certifcate Application Template
+30 cm
+60 cm
+5(1A)(b) Explosive
+Section 1, Section 2 or Section 5
+quantities_within_authority_restrictions
+know_bought_from
+complete_dfl_app_pk
+test_delete_goods_certificate_post_valid
+Number of Items
+"Creates a fully
+Some Exporter Address
+123456789
+Very Woody
+"Creates an application and returns the primary key
+"Check the form
+"Add a document
+DRAFT
+Mailshot - Add
+2500
+Archived Importer Organisation
+Active Importer Organisation
+Archived Individual Importer
+Active Individual Importer
+job_title
+Doe Ltd.
+Melkor
+Deniz
+MAIL/2

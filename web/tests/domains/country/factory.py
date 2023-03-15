@@ -2,12 +2,7 @@ import random
 
 import factory.fuzzy
 
-from web.domains.country.models import (
-    Country,
-    CountryGroup,
-    CountryTranslation,
-    CountryTranslationSet,
-)
+from web.models import Country, CountryGroup, CountryTranslation, CountryTranslationSet
 
 
 class CountryFactory(factory.django.DjangoModelFactory):

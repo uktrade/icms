@@ -31,7 +31,7 @@ from web.domains.template.utils import (
     add_application_cover_letter,
     add_template_data_on_submit,
 )
-from web.flow.models import Task
+from web.models import Task
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
     ApplicationErrors,

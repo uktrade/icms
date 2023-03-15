@@ -24,13 +24,14 @@ from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import check_application_permission, view_application_file
 from web.domains.file.utils import create_file_model
-from web.flow.models import ProcessTypes, Task
+from web.flow.models import ProcessTypes
 from web.models import (
     DFLApplication,
     ImportApplication,
     ImportContact,
     OpenIndividualLicenceApplication,
     SILApplication,
+    Task,
 )
 from web.types import AuthenticatedHttpRequest
 
