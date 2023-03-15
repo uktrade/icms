@@ -4,7 +4,7 @@ from web.domains.firearms import views as firearms_views
 from web.domains.importer import views
 
 urlpatterns = [
-    path("list/admin/", views.ImporterListAdminView.as_view(), name="importer-list"),
+    path("", views.ImporterListAdminView.as_view(), name="importer-list"),
     path("list/user/", views.ImporterListUserView.as_view(), name="user-importer-list"),
     path("<int:pk>/edit/", views.edit_importer, name="importer-edit"),
     path("<entitytype:entity_type>/create/", views.create_importer, name="importer-create"),
