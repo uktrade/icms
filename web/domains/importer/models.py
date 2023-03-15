@@ -3,7 +3,33 @@ from django.db import models
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from web.models.mixins import Archivable
-from web.permissions import Perms
+
+
+class ImporterObjectPerms:
+    """Return object permissions linked to the importer model.
+
+    Implemented this way to resolve a circular import dependency.
+    The permissions module needs to be able to import models so this ensures it can.
+    """
+
+    def __init__(self):
+        self._perms = []
+
+    def __iter__(self):
+        if not self._perms:
+            self._load()
+
+        return iter(self._perms)
+
+    def __eq__(self, other):
+        """This is required to prevent django creating a new migration each time for this model."""
+
+        return list(self) == list(other)
+
+    def _load(self):
+        from web.permissions import importer_object_permissions
+
+        self._perms = importer_object_permissions
 
 
 class ImporterManager(models.Manager):
@@ -100,7 +126,7 @@ class Importer(Archivable, models.Model):
         )
 
         default_permissions = []
-        permissions = Perms.obj.importer.get_permissions()
+        permissions = ImporterObjectPerms()
 
 
 # Direct foreign key support for Django-Guardian

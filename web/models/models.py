@@ -1,5 +1,7 @@
 from django.db import models
 
+from web.permissions import all_permissions
+
 
 # TODO: ICMSLST-1175 Rename CaseReference
 class CaseReference(models.Model):
@@ -41,3 +43,20 @@ class CaseReference(models.Model):
 
     # incrementing number for each prefix/year combination, starting from 1
     reference = models.IntegerField()
+
+
+class GlobalPermission(models.Model):
+    """Contains global permissions.
+
+    None of these should ever be assigned to users directly; all permissions
+    should be granted to users by assigning the users to one or more groups.
+
+    See
+    https://stackoverflow.com/questions/13932774/how-can-i-use-django-permissions-without-defining-a-content-type-or-model.
+    """
+
+    class Meta:
+        managed = False
+        default_permissions = []
+
+        permissions = all_permissions

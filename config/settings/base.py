@@ -82,7 +82,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "web.permissions_context.request_user_object_permissions",
+                "web.permissions.context_processors.request_user_object_permissions",
             ],
         },
     },
