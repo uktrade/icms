@@ -2600,3 +2600,11 @@ aria-describedby="hint-
 div id="hint-
 div aria-describedby="hint-
 user.job_title
+Protocol
+enum.property
+list[tuple[Any
+Choices(enum
+ChoicesMeta
+PermissionTextChoiceMeta(ChoicesMeta
+@classmethod
+@staticmethod

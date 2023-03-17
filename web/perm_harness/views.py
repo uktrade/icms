@@ -14,7 +14,7 @@ from web.types import AuthenticatedHttpRequest
 
 class PermissionTestHarnessView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
     # PermissionRequiredMixin config
-    permission_required = [Perms.page.view_permission_harness.value]  # type: ignore[attr-defined]
+    permission_required = [Perms.page.view_permission_harness]
 
     # TemplateView config
     http_method_names = ["get"]
@@ -38,10 +38,7 @@ def _get_test_users() -> QuerySet[User]:
 
 class CreateHarnessDataView(PermissionRequiredMixin, LoginRequiredMixin, View):
     # PermissionRequiredMixin config
-    permission_required = [
-        Perms.sys.ilb_admin.value,  # type: ignore[attr-defined]
-        Perms.page.view_permission_harness.value,  # type: ignore[attr-defined]
-    ]
+    permission_required = [Perms.sys.ilb_admin, Perms.page.view_permission_harness]
 
     # View config
     http_method_names = ["post"]
