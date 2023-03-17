@@ -1,84 +1,56 @@
-from types import DynamicClassAttribute
-
-from django.db import models
+from .types import PermissionTextChoice
 
 
-class PermissionTextChoice(models.TextChoices):
-    @DynamicClassAttribute
-    def value(self) -> str:
-        """Dynamically add the web app label to the permission name.
-
-        All permissions are defined in the "web" app.
-        e.g. "can_access_foo" becomes "web.can_access_foo"
-        """
-
-        # Note: if this causes issues in future then all permissions will need
-        # prefixing with "web." to work throughout the system
-        return f"web.{self._value_}"
-
-    @classmethod
-    def get_permissions(cls) -> list[tuple[str, str]]:
-        """Return all the class permissions with the "web." prefix removed.
-
-        This is required when setting permissions in a model class.
-        e.g.
-        class Meta:
-            permissions = Perms.obj.exporter.get_permissions()
-        """
-
-        return [cls._remove_prefix(v) for v in cls.choices]
-
-    @staticmethod
-    def _remove_prefix(v: tuple[str, str]) -> tuple[str, str]:
-        value, label = v
-
-        return value.removeprefix("web."), label
+class PagePermissions(PermissionTextChoice):
+    view_permission_harness = (
+        "web.can_view_permission_harness",
+        "Can view the permission test harness",
+    )
+    view_importer_details = (
+        "web.can_view_importer_details",
+        "Can view the importer details list view.",
+    )
 
 
-class _PagePermissions(PermissionTextChoice):
-    view_permission_harness = "can_view_permission_harness", "Can view the permission test harness"
-    view_importer_details = "can_view_importer_details", "Can view the importer details list view."
-
-
-class _SysPerms(PermissionTextChoice):
-    importer_access = "importer_access", "Can act as an importer"
-    exporter_access = "exporter_access", "Can act as an exporter"
-    ilb_admin = "ilb_admin", "Is an ILB administrator"
+class SysPerms(PermissionTextChoice):
+    importer_access = "web.importer_access", "Can act as an importer"
+    exporter_access = "web.exporter_access", "Can act as an exporter"
+    ilb_admin = "web.ilb_admin", "Is an ILB administrator"
     # This permission isn't used anywhere.
-    mailshot_access = "mailshot_access", "Can maintain mailshots"
+    mailshot_access = "web.mailshot_access", "Can maintain mailshots"
 
 
-class _ImporterPermissions(PermissionTextChoice):
-    view = ("view_importer", "Can view all applications and licences for a particular importer")
+class ImporterObjectPermissions(PermissionTextChoice):
+    view = ("web.view_importer", "Can view all applications and licences for a particular importer")
     edit = (
-        "edit_importer",
+        "web.edit_importer",
         "Can create and edit new applications and vary existing licences for a particular importer",
     )
     manage_contacts_and_agents = (
-        "manage_importer_contacts_and_agents",
+        "web.manage_importer_contacts_and_agents",
         "Can approve and reject access for agents and new importer contacts",
     )
 
-    is_contact = ("is_contact_of_importer", "Is contact of this importer")
+    is_contact = ("web.is_contact_of_importer", "Is contact of this importer")
     # NOTE: this is given on the "main importer" object, not on the "agent" object
-    is_agent = ("is_agent_of_importer", "Is agent of this importer")
+    is_agent = ("web.is_agent_of_importer", "Is agent of this importer")
 
 
-class _ExporterPermissions(PermissionTextChoice):
-    is_contact = ("is_contact_of_exporter", "Is contact of this exporter")
+class ExporterObjectPermissions(PermissionTextChoice):
+    is_contact = ("web.is_contact_of_exporter", "Is contact of this exporter")
     # NOTE: this is given on the "main exporter" object, not on the "agent" object
-    is_agent = ("is_agent_of_exporter", "Is agent of this exporter")
+    is_agent = ("web.is_agent_of_exporter", "Is agent of this exporter")
 
 
-class _ObjPerms:
-    importer = _ImporterPermissions
-    exporter = _ExporterPermissions
+class ObjectPerms:
+    importer = ImporterObjectPermissions
+    exporter = ExporterObjectPermissions
 
 
 class Perms:
-    page = _PagePermissions
-    sys = _SysPerms
-    obj = _ObjPerms
+    page = PagePermissions
+    sys = SysPerms
+    obj = ObjectPerms
 
     @classmethod
     def get_all_permissions(cls) -> list[tuple[str, str]]:

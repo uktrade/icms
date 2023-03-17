@@ -93,7 +93,7 @@ class ImporterListAdminView(ModelFilterView):
 class ImporterListUserView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
     """Importer list view showing all importers the logged-in user has access to."""
 
-    permission_required = [Perms.page.view_importer_details.value]  # type: ignore[attr-defined]
+    permission_required = [Perms.page.view_importer_details]
     model = Importer
     paginate_by = 10
     template_name = "web/domains/importer/importer-detail-list.html"
@@ -106,10 +106,7 @@ class ImporterListUserView(PermissionRequiredMixin, LoginRequiredMixin, ListView
         importer_qs = super().get_queryset().filter(is_active=True)
 
         # TODO: Revisit in ICMSLST-1932 with new permissions.
-        required_perms = [
-            Perms.obj.importer.is_contact.value,  # type: ignore[attr-defined]
-            Perms.obj.importer.is_agent.value,  # type: ignore[attr-defined]
-        ]
+        required_perms = [Perms.obj.importer.is_contact, Perms.obj.importer.is_agent]
 
         qs = get_objects_for_user(
             self.request.user, required_perms, klass=importer_qs, any_perm=True

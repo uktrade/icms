@@ -25,18 +25,18 @@ def get_groups():
         "ILB Case Officer": [
             #
             # Page permissions
-            Perms.page.view_permission_harness,
-            Perms.page.view_importer_details,
+            Perms.page.view_permission_harness.codename,
+            Perms.page.view_importer_details.codename,
             #
             # Sys permissions
-            Perms.sys.ilb_admin,
+            Perms.sys.ilb_admin.codename,
         ],
         "Importer User": [
             #
             # Page permissions
-            Perms.page.view_importer_details,
+            Perms.page.view_importer_details.codename,
             #
             # Sys permissions
-            Perms.sys.importer_access,
+            Perms.sys.importer_access.codename,
         ],
     }
