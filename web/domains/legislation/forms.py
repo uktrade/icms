@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.forms import ModelForm
 from django_filters import CharFilter, ChoiceFilter, FilterSet
 
@@ -51,7 +53,7 @@ class ProductLegislationFilter(FilterSet):
 
     class Meta:
         model = ProductLegislation
-        fields = []
+        fields: list[Any] = []
 
 
 class ProductLegislationForm(ModelForm):

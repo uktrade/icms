@@ -57,6 +57,6 @@ class GlobalPermission(models.Model):
 
     class Meta:
         managed = False
-        default_permissions = []
+        default_permissions: list[str] = []
 
         permissions = all_permissions

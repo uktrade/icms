@@ -23,7 +23,7 @@ class OptionalFormMixin:
         # Keep a track of the required fields before making them optional
         self.required_fields: list[str] = []
 
-        super().__init__(*args, **kwargs)  # type: ignore[call-arg]
+        super().__init__(*args, **kwargs)
 
         for f in self.fields:  # type: ignore[attr-defined]
             if self.fields[f].required:  # type: ignore[attr-defined]

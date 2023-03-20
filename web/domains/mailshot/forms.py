@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import structlog as logging
 from django.db import models
@@ -33,7 +33,7 @@ class MailshotFilter(FilterSet):
 
     class Meta:
         model = Mailshot
-        fields = []
+        fields: list[Any] = []
 
     def get_latest_version(
         self, queryset: "QuerySet[Mailshot]", name: str, value: bool
@@ -89,7 +89,7 @@ class ReceivedMailshotsFilter(FilterSet):
 
     class Meta:
         model = Mailshot
-        fields = []
+        fields: list[Any] = []
 
 
 class MailshotForm(ModelForm):

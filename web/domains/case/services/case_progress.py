@@ -89,7 +89,7 @@ def check_expected_status(application: Process, expected_statuses: list[str]) ->
     """Check the process has one of the expected statuses."""
 
     # status is set as a model field on all derived classes
-    status: str = application.status  # type: ignore[attr-defined]
+    status: str = application.status
 
     if status not in expected_statuses:
         raise errors.ProcessStateError(f"Process is in the wrong state: {status}")

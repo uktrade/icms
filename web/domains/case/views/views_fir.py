@@ -69,9 +69,9 @@ def manage_firs(
 
         elif case_type == "access":
             if application.process_type == "ImporterAccessRequest":
-                show_firs = application.importeraccessrequest.link_id  # type: ignore[union-attr]
+                show_firs = application.importeraccessrequest.link_id
             else:
-                show_firs = application.exporteraccessrequest.link_id  # type: ignore[union-attr]
+                show_firs = application.exporteraccessrequest.link_id
         else:
             raise NotImplementedError(f"Unknown case_type {case_type}")
 

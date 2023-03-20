@@ -288,9 +288,7 @@ class VariationRequestRespondToUpdateRequestView(
         return result
 
     def has_permission(self):
-        application = Process.objects.get(
-            pk=self.kwargs["application_pk"]  # type: ignore[attr-defined]
-        ).get_specific_model()
+        application = Process.objects.get(pk=self.kwargs["application_pk"]).get_specific_model()
 
         try:
             check_application_permission(application, self.request.user, self.kwargs["case_type"])

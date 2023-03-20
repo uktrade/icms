@@ -56,7 +56,7 @@ def search_applications(
 
     for queryset in _get_search_records(app_pks_and_types[:limit]):
         for rec in queryset:
-            row = get_result_row(rec, user)  # type:ignore[arg-type]
+            row = get_result_row(rec, user)
             records.append(row)  # type:ignore[arg-type]
 
     # Sort the records by order_by_datetime DESC (submitted date or created date)
@@ -232,7 +232,7 @@ def _get_search_records(
         ProcessTypes.GMP: app_data.get_gmp_applications,
     }
 
-    for app_pt, search_ids in app_pks.items():  # type:ignore[assignment]
+    for app_pt, search_ids in app_pks.items():
         search_func = process_type_map[app_pt]  # type:ignore[index]
 
         yield search_func(search_ids)
@@ -691,7 +691,7 @@ def _get_commodity_code_filter(terms: types.SearchTerms) -> models.Q:
 
     commodity_code_filter = models.Q()
     if terms.app_type:
-        apps: list[str] = applications[terms.app_type]  # type: ignore[index]
+        apps: list[str] = applications[terms.app_type]
 
         for field in apps:
             commodity_code_filter |= models.Q(**{f"{field}__in": matching_commodiy_ids})

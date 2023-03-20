@@ -244,7 +244,7 @@ def view_note_document(
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp(case_type)
 
-    application: ImpOrExp = get_object_or_404(model_class, pk=application_pk)  # type: ignore[assignment]
+    application: ImpOrExp = get_object_or_404(model_class, pk=application_pk)
     note = application.case_notes.get(pk=note_pk)
     document = note.files.get(pk=file_pk)
     file_content = get_file_from_s3(document.path)

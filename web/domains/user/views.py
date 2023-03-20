@@ -82,7 +82,7 @@ class PeopleSearchView(ModelFilterView):
     template_name = "web/domains/user/search-people.html"
     filterset_class = PeopleFilter
     model = User
-    permission_required = []
+    permission_required: list[str] = []
     page_title = "Search People"
 
     def get_page(self):

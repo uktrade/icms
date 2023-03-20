@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.forms import (
     CharField,
     ChoiceField,
@@ -52,7 +54,7 @@ class CommodityFilter(FilterSet):
 
     class Meta:
         model = Commodity
-        fields = []
+        fields: list[Any] = []
 
 
 class CommodityForm(ModelForm):
@@ -128,7 +130,7 @@ class CommodityGroupFilter(FilterSet):
 
     class Meta:
         model = CommodityGroup
-        fields = []
+        fields: list[Any] = []
 
 
 class CommodityGroupForm(ModelForm):

@@ -1,4 +1,5 @@
 import re
+from typing import Any
 
 from django import forms
 from django_filters import CharFilter, ChoiceFilter, FilterSet
@@ -77,7 +78,7 @@ class TemplatesFilter(FilterSet):
 
     class Meta:
         model = Template
-        fields = []  # Django complains without fields set in the meta
+        fields: list[Any] = []  # Django complains without fields set in the meta
 
 
 class EndorsementUsageForm(forms.Form):
