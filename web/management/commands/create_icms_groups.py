@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
 def create_groups():
     for group_name, permission_codenames in get_groups().items():
-        group = Group.objects.create(name=group_name)
+        group, _ = Group.objects.get_or_create(name=group_name)
         permissions = Permission.objects.filter(codename__in=permission_codenames)
 
         group.permissions.set(permissions)
@@ -27,9 +27,11 @@ def get_groups():
             # Page permissions
             Perms.page.view_permission_harness.codename,
             Perms.page.view_importer_details.codename,
+            Perms.page.view_exporter_details.codename,
             #
             # Sys permissions
             Perms.sys.ilb_admin.codename,
+            Perms.sys.mailshot_access,
         ],
         "Importer User": [
             #
@@ -38,5 +40,13 @@ def get_groups():
             #
             # Sys permissions
             Perms.sys.importer_access.codename,
+        ],
+        "Exporter User": [
+            #
+            # Page permissions
+            Perms.page.view_exporter_details.codename,
+            #
+            # Sys permissions
+            Perms.sys.exporter_access.codename,
         ],
     }

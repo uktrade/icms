@@ -12,7 +12,6 @@ from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.forms import DocumentForm
 from web.domains.contacts.forms import ContactForm
-from web.domains.contacts.views import assign_contact_perm, current_contacts
 from web.domains.file.utils import create_file_model
 from web.domains.importer.forms import (
     AgentIndividualForm,
@@ -24,7 +23,12 @@ from web.domains.importer.forms import (
 from web.domains.office.forms import ImporterOfficeEORIForm, ImporterOfficeForm
 from web.domains.section5.forms import ClauseQuantityForm, Section5AuthorityForm
 from web.models import ClauseQuantity, Importer, Section5Authority, Section5Clause
-from web.permissions import Perms
+from web.permissions import (
+    ImporterObjectPermissions,
+    Perms,
+    add_organisation_contact,
+    get_organisation_contacts,
+)
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 from web.views import ModelFilterView
@@ -135,9 +139,12 @@ def edit_importer(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
     else:
         form = ImporterForm(instance=importer)
 
-    contacts = current_contacts(importer)
+    contacts = get_organisation_contacts(importer)
+    object_permissions = get_importer_object_permissions()
+
     context = {
         "object": importer,
+        "object_permissions": object_permissions,
         "form": form,
         "contact_form": ContactForm(contacts_to_exclude=contacts),
         "contacts": contacts,
@@ -162,9 +169,8 @@ def create_importer(request: AuthenticatedHttpRequest, *, entity_type: str) -> H
         if form.is_valid():
             importer: Importer = form.save()
 
-            # TODO: ICMLST-861 remove Importer.user and use only contact
             if entity_type == "individual":
-                assign_contact_perm(importer, importer.user)
+                add_organisation_contact(importer, importer.user)
 
             return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
     else:
@@ -455,9 +461,8 @@ def create_agent(
         if form.is_valid():
             agent = form.save()
 
-            # TODO: ICMLST-861 remove Importer.user and use only contact
             if entity_type == "individual":
-                assign_contact_perm(agent, agent.user)
+                add_organisation_contact(agent, agent.user)
 
             return redirect(reverse("importer-agent-edit", kwargs={"pk": agent.pk}))
     else:
@@ -489,9 +494,12 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     else:
         form = AgentForm(instance=agent)
 
-    contacts = current_contacts(agent)
+    contacts = get_organisation_contacts(agent)
+    object_permissions = get_importer_object_permissions()
+
     context = {
         "object": agent.main_importer,
+        "object_permissions": object_permissions,
         "form": form,
         "contact_form": ContactForm(contacts_to_exclude=contacts),
         "contacts": contacts,
@@ -528,7 +536,27 @@ def unarchive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpRespon
 def importer_detail_view(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     importer: Importer = get_object_or_404(Importer, pk=pk)
 
-    contacts = current_contacts(importer)
-    context = {"object": importer, "contacts": contacts, "org_type": "importer"}
+    contacts = get_organisation_contacts(importer)
+    object_permissions = get_importer_object_permissions()
+
+    context = {
+        "object": importer,
+        "object_permissions": object_permissions,
+        "contacts": contacts,
+        "org_type": "importer",
+    }
 
     return render(request, "web/domains/importer/view.html", context)
+
+
+def get_importer_object_permissions() -> list[tuple[ImporterObjectPermissions, str]]:
+    """Return object permissions for the Importer model with a label for each."""
+
+    object_permissions = [
+        (Perms.obj.importer.view, "View Applications / Licences"),
+        (Perms.obj.importer.edit, "Edit Applications / Vary Licences"),
+        (Perms.obj.importer.is_contact, "Is Importer Contact"),
+        (Perms.obj.importer.manage_contacts_and_agents, "Approve / Reject Agents and Importers"),
+    ]
+
+    return object_permissions

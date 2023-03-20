@@ -69,6 +69,7 @@ def django_db_setup(django_db_setup, django_db_blocker):
     """
 
     with django_db_blocker.unblock():
+        call_command("create_icms_groups")
         call_command("add_test_data")
 
 
