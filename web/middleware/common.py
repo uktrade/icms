@@ -35,6 +35,6 @@ class DBQueriesMiddleware:
         # since they don't have pygments etc installed which this module needs
         from web.utils.db import show_queries
 
-        show_queries(0, show_time=True, fancy_print=True)
+        show_queries(ignore=0, show_time=True, fancy_print=True, msg="")
 
         return response
