@@ -92,7 +92,7 @@ class ImportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
 def create_derogations(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
-        application_type=ImportApplicationType.Types.DEROGATION,  # type: ignore[arg-type]
+        application_type=ImportApplicationType.Types.DEROGATION,
         model_class=DerogationsApplication,
     )
 
@@ -103,7 +103,7 @@ def create_derogations(request: AuthenticatedHttpRequest) -> HttpResponse:
 def create_sanctions(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
-        application_type=ImportApplicationType.Types.SANCTION_ADHOC,  # type: ignore[arg-type]
+        application_type=ImportApplicationType.Types.SANCTION_ADHOC,
         model_class=SanctionsAndAdhocApplication,
     )
 
@@ -114,8 +114,8 @@ def create_sanctions(request: AuthenticatedHttpRequest) -> HttpResponse:
 def create_firearms_oil(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
-        application_type=ImportApplicationType.Types.FIREARMS,  # type: ignore[arg-type]
-        application_subtype=ImportApplicationType.SubTypes.OIL,  # type: ignore[arg-type]
+        application_type=ImportApplicationType.Types.FIREARMS,
+        application_subtype=ImportApplicationType.SubTypes.OIL,
         model_class=OpenIndividualLicenceApplication,
     )
 
@@ -126,8 +126,8 @@ def create_firearms_oil(request: AuthenticatedHttpRequest) -> HttpResponse:
 def create_firearms_dfl(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
-        application_type=ImportApplicationType.Types.FIREARMS,  # type: ignore[arg-type]
-        application_subtype=ImportApplicationType.SubTypes.DFL,  # type: ignore[arg-type]
+        application_type=ImportApplicationType.Types.FIREARMS,
+        application_subtype=ImportApplicationType.SubTypes.DFL,
         model_class=DFLApplication,
     )
 
@@ -138,8 +138,8 @@ def create_firearms_dfl(request: AuthenticatedHttpRequest) -> HttpResponse:
 def create_firearms_sil(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
-        application_type=ImportApplicationType.Types.FIREARMS,  # type: ignore[arg-type]
-        application_subtype=ImportApplicationType.SubTypes.SIL,  # type: ignore[arg-type]
+        application_type=ImportApplicationType.Types.FIREARMS,
+        application_subtype=ImportApplicationType.SubTypes.SIL,
         model_class=SILApplication,
     )
 
@@ -150,7 +150,7 @@ def create_firearms_sil(request: AuthenticatedHttpRequest) -> HttpResponse:
 def create_wood_quota(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
-        application_type=ImportApplicationType.Types.WOOD_QUOTA,  # type: ignore[arg-type]
+        application_type=ImportApplicationType.Types.WOOD_QUOTA,
         model_class=WoodQuotaApplication,
         form_class=CreateWoodQuotaApplicationForm,
     )
@@ -162,7 +162,7 @@ def create_wood_quota(request: AuthenticatedHttpRequest) -> HttpResponse:
 def create_opt(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
-        application_type=ImportApplicationType.Types.OPT,  # type: ignore[arg-type]
+        application_type=ImportApplicationType.Types.OPT,
         model_class=OutwardProcessingTradeApplication,
     )
 
@@ -173,7 +173,7 @@ def create_opt(request: AuthenticatedHttpRequest) -> HttpResponse:
 def create_textiles(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
-        application_type=ImportApplicationType.Types.TEXTILES,  # type: ignore[arg-type]
+        application_type=ImportApplicationType.Types.TEXTILES,
         model_class=TextilesApplication,
     )
 
@@ -184,7 +184,7 @@ def create_textiles(request: AuthenticatedHttpRequest) -> HttpResponse:
 def create_sps(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
-        application_type=ImportApplicationType.Types.SPS,  # type: ignore[arg-type]
+        application_type=ImportApplicationType.Types.SPS,
         model_class=PriorSurveillanceApplication,
     )
 
@@ -195,7 +195,7 @@ def create_sps(request: AuthenticatedHttpRequest) -> HttpResponse:
 def create_ironsteel(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
         request,
-        application_type=ImportApplicationType.Types.IRON_STEEL,  # type: ignore[arg-type]
+        application_type=ImportApplicationType.Types.IRON_STEEL,
         model_class=IronSteelApplication,
     )
 

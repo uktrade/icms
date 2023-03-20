@@ -2,26 +2,27 @@ import enum
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import MinValueValidator
-from django.db import models
+
+from web.types import TypedTextChoices
 
 
-class AddressEntryType(models.TextChoices):
+class AddressEntryType(TypedTextChoices):
     MANUAL = ("M", "Manual")
     SEARCH = ("S", "Search")
 
 
-class YesNoChoices(models.TextChoices):
+class YesNoChoices(TypedTextChoices):
     yes = ("yes", "Yes")
     no = ("no", "No")
 
 
-class YesNoNAChoices(models.TextChoices):
+class YesNoNAChoices(TypedTextChoices):
     yes = ("yes", "Yes")
     no = ("no", "No")
     not_applicable = ("n/a", "N/A")
 
 
-class FirearmCommodity(models.TextChoices):
+class FirearmCommodity(TypedTextChoices):
     EX_CHAPTER_93 = ("ex Chapter 93", "ex Chapter 93")
     EX_CHAPTER_97 = ("ex Chapter 97", "ex Chapter 97")
 

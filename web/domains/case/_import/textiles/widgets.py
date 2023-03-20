@@ -36,9 +36,9 @@ class TextilesCategoryCommodityGroupWidget(s2forms.ModelSelect2Widget):
 
         country_of_origin = Country.objects.get(pk=origin)
 
-        usage_records = get_usage_records(
-            ImportApplicationType.Types.TEXTILES  # type: ignore[arg-type]
-        ).filter(country=country_of_origin)
+        usage_records = get_usage_records(ImportApplicationType.Types.TEXTILES).filter(
+            country=country_of_origin
+        )
 
         commodity_groups = get_usage_commodity_groups(usage_records)
 

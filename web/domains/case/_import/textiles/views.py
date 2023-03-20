@@ -64,7 +64,7 @@ def edit_textiles(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
 
         supporting_documents = application.supporting_documents.filter(is_active=True)
         category_commodity_groups = get_category_commodity_group_data(commodity_type="TEXTILES")
-        usages = get_usage_data(app_type=ImportApplicationType.Types.TEXTILES)  # type: ignore[arg-type]
+        usages = get_usage_data(app_type=ImportApplicationType.Types.TEXTILES)
 
         if application.category_commodity_group:
             selected_group = category_commodity_groups.get(
@@ -299,7 +299,7 @@ def edit_goods_licence(request: AuthenticatedHttpRequest, *, application_pk: int
 def _get_max_allocation(application: TextilesApplication) -> float:
     if application.category_commodity_group and application.origin_country:
         usages = (
-            get_usage_records(app_type=ImportApplicationType.Types.TEXTILES)  # type: ignore[arg-type]
+            get_usage_records(app_type=ImportApplicationType.Types.TEXTILES)
             .filter(
                 commodity_group=application.category_commodity_group,
                 country=application.origin_country,

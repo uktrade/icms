@@ -6,6 +6,7 @@ from web.domains.case._import.models import ChecklistBase
 from web.domains.file.models import File
 from web.flow.models import ProcessTypes
 from web.models.shared import YesNoChoices, YesNoNAChoices, at_least_0
+from web.types import TypedTextChoices
 
 from ..models import ImportApplication
 
@@ -20,7 +21,7 @@ _CP_CATEGORY_CHOICES = [(x, x) for x in CP_CATEGORIES]
 
 
 class OutwardProcessingTradeFile(File):
-    class Type(models.TextChoices):
+    class Type(TypedTextChoices):
         SUPPORTING_DOCUMENT = ("supporting_document", "Supporting Documents")
         FQ_EMPLOYMENT_DECREASED = ("fq_employment_decreased", "Statistics")
         FQ_PRIOR_AUTHORISATION = ("fq_prior_authorisation", "Copy of Prior Authorisation")

@@ -14,6 +14,7 @@ from web.domains.case._import.models import ChecklistBase, ImportApplication
 from web.domains.file.models import File
 from web.flow.models import ProcessTypes
 from web.models.shared import FirearmCommodity, YesNoNAChoices
+from web.types import TypedTextChoices
 
 ReportFirearms = list[
     Union[
@@ -221,7 +222,7 @@ class SILGoodsSection582Obsolete(models.Model):  # /PS-IGNORE
 
 
 class SILGoodsSection582Other(models.Model):  # /PS-IGNORE
-    class IgnitionDetail(models.TextChoices):
+    class IgnitionDetail(TypedTextChoices):
         PIN_FIRE = ("Pin-fire", "Pin-fire")
         NEEDDLE_FIRE = ("Needle-fire", "Needle-fire")
         LIP_FIRE = ("Lip-fire", "Lip-fire")

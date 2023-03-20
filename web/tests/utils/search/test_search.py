@@ -13,6 +13,7 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import submit_application
 from web.flow.models import ProcessTypes
+from web.middleware.common import ICMSMiddlewareContext
 from web.models import (
     CaseEmail,
     CertificateOfFreeSaleApplication,
@@ -44,7 +45,7 @@ from web.models import (
 )
 from web.models.shared import FirearmCommodity, YesNoChoices
 from web.tests.helpers import CaseURLS
-from web.types import AuthenticatedHttpRequest, ICMSMiddlewareContext
+from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
     SearchTerms,
     get_search_results_spreadsheet,

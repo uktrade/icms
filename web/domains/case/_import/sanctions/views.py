@@ -182,9 +182,9 @@ def edit_goods(
 
 
 def _get_sanctions_commodity_group_data(application):
-    usage_records = get_usage_records(
-        ImportApplicationType.Types.SANCTION_ADHOC  # type: ignore[arg-type]
-    ).filter(country=application.origin_country)
+    usage_records = get_usage_records(ImportApplicationType.Types.SANCTION_ADHOC).filter(
+        country=application.origin_country
+    )
 
     return get_commodity_group_data(usage_records)
 
@@ -354,9 +354,9 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
                 )
             )
 
-        usage_records = get_usage_records(
-            ImportApplicationType.Types.SANCTION_ADHOC  # type: ignore[arg-type]
-        ).filter(country=application.origin_country)
+        usage_records = get_usage_records(ImportApplicationType.Types.SANCTION_ADHOC).filter(
+            country=application.origin_country
+        )
 
         sanction_and_adhoc_commodities = get_usage_commodities(usage_records).values_list(
             "commodity_code", flat=True

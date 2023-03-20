@@ -8,6 +8,7 @@ from django.db import models
 from django.db.models import Q
 
 from web.flow.models import Process
+from web.types import TypedTextChoices
 
 from .shared import ImpExpStatus
 
@@ -89,7 +90,7 @@ class VariationRequest(models.Model):
 class UpdateRequest(models.Model):
     """Update requests are sent by case officers and allow editing the case again."""
 
-    class Status(models.TextChoices):
+    class Status(TypedTextChoices):
         DRAFT: str = ("DRAFT", "Draft")  # type:ignore[assignment]
         OPEN: str = ("OPEN", "Open")  # type:ignore[assignment]
         CLOSED: str = ("CLOSED", "Closed")  # type:ignore[assignment]
@@ -298,7 +299,7 @@ class ApplicationBase(Process):
 
 
 class CaseEmail(models.Model):
-    class Status(models.TextChoices):
+    class Status(TypedTextChoices):
         OPEN = ("OPEN", "Open")
         CLOSED = ("CLOSED", "Closed")
         DRAFT = ("DRAFT", "Draft")
@@ -337,7 +338,7 @@ class DocumentPackBase(models.Model):
     class Meta:
         abstract = True
 
-    class Status(models.TextChoices):
+    class Status(TypedTextChoices):
         DRAFT = "DR"
         ACTIVE = "AC"
         ARCHIVED = "AR"
@@ -366,7 +367,7 @@ class DocumentPackBase(models.Model):
 class CaseDocumentReference(models.Model):
     """All documents relevant to a case licence or certificate."""
 
-    class Type(models.TextChoices):
+    class Type(TypedTextChoices):
         LICENCE = ("LICENCE", "Licence")
         CERTIFICATE = ("CERTIFICATE", "Certificate")
         COVER_LETTER = ("COVER_LETTER", "Cover Letter")

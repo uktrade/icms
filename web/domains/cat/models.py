@@ -6,6 +6,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 
 from web.models import ExportApplicationType
+from web.types import TypedTextChoices
 
 if TYPE_CHECKING:
     from web.models import User
@@ -26,7 +27,7 @@ class DjangoQuerysetJSONEncoder(DjangoJSONEncoder):
 
 
 class CertificateApplicationTemplate(models.Model):
-    class SharingStatuses(models.TextChoices):
+    class SharingStatuses(TypedTextChoices):
         PRIVATE = ("private", "Private (do not share)")
         VIEW = ("view", "Share (view only)")
         EDIT = ("edit", "Share (allow edit)")

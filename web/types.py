@@ -1,14 +1,17 @@
 from enum import Enum, auto
+from typing import TYPE_CHECKING
 
+from django.db import models
 from django.http import HttpRequest
 
-from web.middleware.common import ICMSMiddlewareContext
-from web.models import User
+if TYPE_CHECKING:
+    from web.middleware.common import ICMSMiddlewareContext
+    from web.models import User
 
 
 class AuthenticatedHttpRequest(HttpRequest):
-    user: User
-    icms: ICMSMiddlewareContext
+    user: "User"
+    icms: "ICMSMiddlewareContext"
 
 
 class DocumentTypes(Enum):
@@ -21,3 +24,12 @@ class DocumentTypes(Enum):
     COVER_LETTER_PREVIEW = auto()
     COVER_LETTER_PRE_SIGN = auto()
     COVER_LETTER_SIGNED = auto()
+
+
+class TypedTextChoices(models.TextChoices):
+    """A typed version of TextChoices that mypy understands (See web/types.pyi).
+
+    Taken from django-stubs: django-stubs/db/models/enums.pyi
+    """
+
+    ...

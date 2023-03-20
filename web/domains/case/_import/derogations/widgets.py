@@ -18,7 +18,7 @@ class DerogationCountryOfOriginSelect(ModelSelect2Widget):
     search_fields = ["name__icontains"]
 
     def get_queryset(self) -> "QuerySet[Country]":
-        return get_usage_countries(ImportApplicationType.Types.DEROGATION)  # type: ignore[arg-type]
+        return get_usage_countries(ImportApplicationType.Types.DEROGATION)
 
     def build_attrs(
         self, base_attrs: dict[str, Any], extra_attrs: dict[str, Any] | None = None
@@ -52,9 +52,7 @@ class DerogationCommoditySelect(ModelSelect2Widget):
         return attrs
 
     def get_queryset(self) -> "QuerySet[Commodity]":
-        return get_usage_commodities(
-            get_usage_records(ImportApplicationType.Types.DEROGATION)  # type: ignore[arg-type]
-        )
+        return get_usage_commodities(get_usage_records(ImportApplicationType.Types.DEROGATION))
 
     def filter_queryset(
         self,
@@ -75,8 +73,8 @@ class DerogationCommoditySelect(ModelSelect2Widget):
 
         country_of_origin = Country.objects.get(pk=origin_country_pk)
 
-        usage_records = get_usage_records(
-            ImportApplicationType.Types.DEROGATION  # type: ignore[arg-type]
-        ).filter(country=country_of_origin)
+        usage_records = get_usage_records(ImportApplicationType.Types.DEROGATION).filter(
+            country=country_of_origin
+        )
 
         return get_usage_commodities(usage_records)

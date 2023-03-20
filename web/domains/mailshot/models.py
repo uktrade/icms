@@ -1,9 +1,11 @@
 from django.conf import settings
 from django.db import models
 
+from web.types import TypedTextChoices
+
 
 class Mailshot(models.Model):
-    class Statuses(models.TextChoices):
+    class Statuses(TypedTextChoices):
         DRAFT = ("DRAFT", "Draft")
         PUBLISHED = ("PUBLISHED", "Published")
         PUBLISHING = ("PUBLISHING", "Publishing")

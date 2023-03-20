@@ -9,6 +9,7 @@ from guardian.shortcuts import get_users_with_perms
 from web.domains.case.models import ApplicationBase, DocumentPackBase
 from web.flow.models import ProcessTypes
 from web.models.shared import EnumJsonEncoder, YesNoNAChoices
+from web.types import TypedTextChoices
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class ImportApplicationType(models.Model):
-    class Types(models.TextChoices):
+    class Types(TypedTextChoices):
         DEROGATION = ("SAN", "Derogation from Sanctions Import Ban")
         FIREARMS = ("FA", "Firearms and Ammunition")  # has subtypes
         IRON_STEEL = ("IS", "Iron and Steel (Quota)")
@@ -27,7 +28,7 @@ class ImportApplicationType(models.Model):
         TEXTILES = ("TEX", "Textiles (Quota)")
         WOOD_QUOTA = ("WD", "Wood (Quota)")
 
-    class SubTypes(models.TextChoices):
+    class SubTypes(TypedTextChoices):
         OIL = ("OIL", "Open Individual Import Licence")
         DFL = ("DEACTIVATED", "Deactivated Firearms Import Licence")
         SIL = ("SIL", "Specific Individual Import Licence")
@@ -106,7 +107,7 @@ class ImportApplicationType(models.Model):
 
 
 class ImportApplication(ApplicationBase):
-    class ChiefUsageTypes(models.TextChoices):
+    class ChiefUsageTypes(TypedTextChoices):
         CANCELLED = ("C", "Cancelled")
         EXHAUSTED = ("E", "Exhausted")
         EXPIRED = ("D", "Expired")
@@ -418,7 +419,7 @@ class LiteHMRCChiefRequest(models.Model):
             )
         ]
 
-    class CHIEFStatus(models.TextChoices):
+    class CHIEFStatus(TypedTextChoices):
         PROCESSING = ("P", "With CHIEF (Pending)")
         SUCCESS = ("S", "CHIEF Success")
         ERROR = ("E", "CHIEF Error")

@@ -74,9 +74,9 @@ class GoodsForm(forms.ModelForm):
 
         country_of_origin = application.origin_country
 
-        usage_records = get_usage_records(
-            ImportApplicationType.Types.SANCTION_ADHOC  # type: ignore[arg-type]
-        ).filter(country=country_of_origin)
+        usage_records = get_usage_records(ImportApplicationType.Types.SANCTION_ADHOC).filter(
+            country=country_of_origin
+        )
 
         self.fields["commodity"].queryset = get_usage_commodities(usage_records)
 

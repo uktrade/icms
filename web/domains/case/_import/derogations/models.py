@@ -5,14 +5,15 @@ from django.db import models
 from web.domains.case._import.models import ChecklistBase, ImportApplication
 from web.flow.models import ProcessTypes
 from web.models.shared import YesNoChoices, YesNoNAChoices, at_least_0
+from web.types import TypedTextChoices
 
 
 @final
 class DerogationsApplication(ImportApplication):
-    class Unit(models.TextChoices):
+    class Unit(TypedTextChoices):
         KG = ("kilos", "kilos")
 
-    class SyrianRequestPurpose(models.TextChoices):
+    class SyrianRequestPurpose(TypedTextChoices):
         HUMANITARIAN_CONCERNS = ("HC", "Humanitarian concerns")
         PROVISION_OF_SERVICES = ("POS", "Assisting in the provision of basic services")
         RESTORE_ECONOMIC_ACTIVITY = ("REA", "Reconstruction or restoring economic activity")

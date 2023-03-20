@@ -9,6 +9,7 @@ from web.domains.case.models import ApplicationBase, DocumentPackBase
 from web.domains.file.models import File
 from web.flow.models import ProcessTypes
 from web.models.shared import AddressEntryType, YesNoChoices
+from web.types import TypedTextChoices
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class ExportApplicationType(models.Model):
-    class Types(models.TextChoices):
+    class Types(TypedTextChoices):
         FREE_SALE = ("CFS", "Certificate of Free Sale")
         MANUFACTURE = ("COM", "Certificate of Manufacture")
         GMP = ("GMP", "Certificate of Good Manufacturing Practice")
@@ -198,11 +199,11 @@ class CertificateOfFreeSaleApplication(ExportApplication):
 
 
 class CFSSchedule(models.Model):
-    class ExporterStatus(models.TextChoices):
+    class ExporterStatus(TypedTextChoices):
         IS_MANUFACTURER = ("MANUFACTURER", "I am the manufacturer")
         IS_NOT_MANUFACTURER = ("NOT_MANUFACTURER", "I am not the manufacturer")
 
-    class ProductEligibility(models.TextChoices):
+    class ProductEligibility(TypedTextChoices):
         SOLD_ON_UK_MARKET = (
             "SOLD_ON_UK_MARKET",
             "The products are currently sold on the UK market",
@@ -252,8 +253,7 @@ class CFSSchedule(models.Model):
         max_length=22,
         choices=ProductEligibility.choices,
         help_text=(
-            "If your products are currently for export only, you MUST select"
-            f" {ProductEligibility.MEET_UK_PRODUCT_SAFETY.label}"  # type: ignore[attr-defined]
+            f"If your products are currently for export only, you MUST select {ProductEligibility.MEET_UK_PRODUCT_SAFETY.label}"
         ),
     )
 
@@ -363,11 +363,11 @@ class CertificateOfGoodManufacturingPracticeApplication(ExportApplication):
     PROCESS_TYPE = ProcessTypes.GMP
     IS_FINAL = True
 
-    class CertificateTypes(models.TextChoices):
+    class CertificateTypes(TypedTextChoices):
         ISO_22716 = ("ISO_22716", "ISO 22716")
         BRC_GSOCP = ("BRC_GSOCP", "BRC Global Standard for Consumer Products")
 
-    class CountryType(models.TextChoices):
+    class CountryType(TypedTextChoices):
         GB = ("GB", "Great Britain")
         NIR = ("NIR", "Northern Ireland")
 
@@ -489,7 +489,7 @@ class CertificateOfGoodManufacturingPracticeApplication(ExportApplication):
 
 
 class GMPFile(File):
-    class Type(models.TextChoices):
+    class Type(TypedTextChoices):
         # ISO_22716 file types
         ISO_22716 = ("ISO_22716", "ISO 22716")
         ISO_17021 = ("ISO_17021", "ISO 17021")

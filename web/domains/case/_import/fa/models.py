@@ -5,6 +5,7 @@ from django.db import models
 
 from web.domains.file.models import File
 from web.models.shared import YesNoChoices
+from web.types import TypedTextChoices
 
 if TYPE_CHECKING:
     from django.db import QuerySet
@@ -13,14 +14,14 @@ if TYPE_CHECKING:
 class UserImportCertificate(File):
     """User imported certificates."""
 
-    class CertificateType(models.TextChoices):
+    class CertificateType(TypedTextChoices):
         firearms = ("firearms", "Firearms Certificate")
         registered = ("registered", "Registered Firearms Dealer Certificate")
         shotgun = ("shotgun", "Shotgun Certificate")
 
         @classmethod
         def registered_as_choice(cls) -> tuple[str, str]:
-            return (cls.registered.value, cls.registered.label)  # type: ignore[attr-defined]
+            return (cls.registered.value, cls.registered.label)
 
     reference = models.CharField(verbose_name="Certificate Reference", max_length=200)
     certificate_type = models.CharField(
@@ -89,7 +90,7 @@ class SupplementaryInfoBase(models.Model):
 
 
 class SupplementaryReportBase(models.Model):
-    class TransportType(models.TextChoices):
+    class TransportType(TypedTextChoices):
         AIR = ("air", "Air")
         RAIL = ("rail", "Rail")
         ROAD = ("road", "Road")

@@ -2,8 +2,10 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
+from web.types import TypedTextChoices
 
-class ProcessTypes(models.TextChoices):
+
+class ProcessTypes(TypedTextChoices):
     """Values for Process.process_type."""
 
     # import
@@ -131,7 +133,7 @@ class Task(models.Model):
     NOTE: a task can have multiple child tasks, but only one parent task.
     """
 
-    class TaskType(models.TextChoices):
+    class TaskType(TypedTextChoices):
         PREPARE: str = ("prepare", "Prepare")  # type:ignore[assignment]
         PROCESS: str = ("process", "Process")  # type:ignore[assignment]
         VR_REQUEST_CHANGE: str = (

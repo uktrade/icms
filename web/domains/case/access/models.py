@@ -6,6 +6,7 @@ from django.db import models
 from django.utils.functional import cached_property
 
 from web.flow.models import Process, ProcessTypes
+from web.types import TypedTextChoices
 
 logger = logging.getLogger(__name__)
 
@@ -19,11 +20,10 @@ class AccessRequest(Process):
         indexes = [models.Index(fields=["status"], name="AccR_status_idx")]
         ordering = ["submit_datetime"]
 
-    # TODO: ICMSLST-634 see if we can remove the type:ignores once we have django-stubs
-    class Statuses(models.TextChoices):
-        SUBMITTED: str = ("SUBMITTED", "Submitted")  # type:ignore[assignment]
-        CLOSED: str = ("CLOSED", "Closed")  # type:ignore[assignment]
-        FIR_REQUESTED: str = ("FIR_REQUESTED", "Processing (FIR)")  # type:ignore[assignment]
+    class Statuses(TypedTextChoices):
+        SUBMITTED = ("SUBMITTED", "Submitted")
+        CLOSED = ("CLOSED", "Closed")
+        FIR_REQUESTED = ("FIR_REQUESTED", "Processing (FIR)")
 
     reference = models.CharField(max_length=100, blank=False, null=False, unique=True)
 
