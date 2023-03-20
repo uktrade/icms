@@ -210,7 +210,7 @@ def _view_opt(
     # key=section name, value=template context
     fq_sections: dict[str, OPTFurtherQuestionsSharedSection] = {}
 
-    for file_type in OutwardProcessingTradeFile.Type:  # type: ignore[attr-defined]
+    for file_type in OutwardProcessingTradeFile.Type:
         if file_type != OutwardProcessingTradeFile.Type.SUPPORTING_DOCUMENT:
             form_class = get_fq_form(file_type)
             section_title = get_fq_page_name(file_type)

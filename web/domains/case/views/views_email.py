@@ -483,7 +483,7 @@ def create_cfs_case_email(application: CertificateOfFreeSaleApplication) -> mode
     content = template.get_content(
         {
             "CASE_REFERENCE": application.reference,
-            "APPLICATION_TYPE": ProcessTypes.CFS.label,  # type: ignore[attr-defined]
+            "APPLICATION_TYPE": ProcessTypes.CFS.label,
             "EXPORTER_NAME": application.exporter,
             "EXPORTER_ADDRESS": application.exporter_office,
             "CONTACT_EMAIL": application.contact.email,
@@ -512,7 +512,7 @@ def create_gmp_case_email(
     content = template.get_content(
         {
             "CASE_REFERENCE": application.reference,
-            "APPLICATION_TYPE": ProcessTypes.GMP.label,  # type: ignore[attr-defined]
+            "APPLICATION_TYPE": ProcessTypes.GMP.label,
             "EXPORTER_NAME": application.exporter,
             "EXPORTER_ADDRESS": application.exporter_office,
             "MANUFACTURER_NAME": application.manufacturer_name,

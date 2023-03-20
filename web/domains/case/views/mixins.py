@@ -7,6 +7,7 @@ from django.views import View
 from django.views.generic.detail import SingleObjectMixin
 
 from web.domains.case.services import case_progress
+from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task
 from web.models import Process, Task
@@ -32,7 +33,7 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
     pk_url_kwarg = "application_pk"
 
     # The expected current status of the process record
-    current_status: ClassVar[list[str]]
+    current_status: ClassVar[list[ImpExpStatus]]
 
     # The expected current active task of the process record
     current_task_type: ClassVar[str | None] = None
@@ -137,7 +138,7 @@ class ApplicationAndTaskRelatedObjectMixin:
     task: Task | None = None
 
     # The expected current status of the process record
-    current_status: ClassVar[list[str]]
+    current_status: ClassVar[list[ImpExpStatus]]
 
     # The expected current active task of the process record
     current_task_type: ClassVar[str | None] = None

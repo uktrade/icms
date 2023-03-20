@@ -1,11 +1,12 @@
 from django.db import models
 
 from web.permissions import all_permissions
+from web.types import TypedTextChoices
 
 
 # TODO: ICMSLST-1175 Rename CaseReference
 class CaseReference(models.Model):
-    class Prefix(models.TextChoices):
+    class Prefix(TypedTextChoices):
         # Import application case reference
         IMPORT_APP = "IMA"
 

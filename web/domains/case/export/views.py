@@ -1388,7 +1388,7 @@ def add_gmp_document(
             "process": application,
             "form": form,
             "page_title": "Certificate of Good Manufacturing Practice - Add supporting document",
-            "page_subtitle": f"Add {GMPFile.Type[file_type].label} document",  # type: ignore[misc]
+            "page_subtitle": f"Add {GMPFile.Type[file_type].label} document",
             "prev_link": prev_link,
             "case_type": "export",
         }
@@ -1488,16 +1488,16 @@ def _check_certificate_errors(
     application: CertificateOfGoodManufacturingPracticeApplication, errors: ApplicationErrors
 ) -> None:
     if application.gmp_certificate_issued == application.CertificateTypes.ISO_22716:
-        _add_cert_error(application, errors, GMPFile.Type.ISO_22716)  # type: ignore[arg-type]
+        _add_cert_error(application, errors, GMPFile.Type.ISO_22716)
 
         if application.auditor_accredited == YesNoChoices.yes:
-            _add_cert_error(application, errors, GMPFile.Type.ISO_17021)  # type: ignore[arg-type]
+            _add_cert_error(application, errors, GMPFile.Type.ISO_17021)
 
         if application.auditor_certified == YesNoChoices.yes:
-            _add_cert_error(application, errors, GMPFile.Type.ISO_17065)  # type: ignore[arg-type]
+            _add_cert_error(application, errors, GMPFile.Type.ISO_17065)
 
     elif application.gmp_certificate_issued == application.CertificateTypes.BRC_GSOCP:
-        _add_cert_error(application, errors, GMPFile.Type.BRC_GSOCP)  # type: ignore[arg-type]
+        _add_cert_error(application, errors, GMPFile.Type.BRC_GSOCP)
 
 
 def _add_cert_error(

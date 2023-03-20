@@ -96,7 +96,7 @@ class SubmitDerogationsForm(DerogationsFormBase):
         commodity: "Commodity" = cleaned_data["commodity"]
         quantity: "Decimal" = cleaned_data["quantity"]
 
-        usage = get_usage_records(ImportApplicationType.Types.DEROGATION)  # type: ignore[arg-type]
+        usage = get_usage_records(ImportApplicationType.Types.DEROGATION)
         usage = usage.filter(
             country=origin_country,
             commodity_group__commodities__in=[commodity],

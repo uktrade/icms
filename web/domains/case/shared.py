@@ -1,19 +1,15 @@
-from django.db import models
+from web.types import TypedTextChoices
 
 
 # Import & Export application statuses
-# TODO: ICMSLST-634 see if we can remove the type:ignores once we have django-stubs
-class ImpExpStatus(models.TextChoices):
-    COMPLETED: str = ("COMPLETED", "Completed")  # type:ignore[assignment]
-    DELETED: str = ("DELETED", "Deleted")  # type:ignore[assignment]
-    IN_PROGRESS: str = ("IN_PROGRESS", "In Progress")  # type:ignore[assignment]
-    PROCESSING: str = ("PROCESSING", "Processing")  # type:ignore[assignment]
+class ImpExpStatus(TypedTextChoices):
+    COMPLETED = ("COMPLETED", "Completed")
+    DELETED = ("DELETED", "Deleted")
+    IN_PROGRESS = ("IN_PROGRESS", "In Progress")
+    PROCESSING = ("PROCESSING", "Processing")
 
-    REVOKED: str = ("REVOKED", "Revoked")  # type:ignore[assignment]
-    STOPPED: str = ("STOPPED", "Stopped")  # type:ignore[assignment]
-    SUBMITTED: str = ("SUBMITTED", "Submitted")  # type:ignore[assignment]
-    VARIATION_REQUESTED: str = (
-        "VARIATION_REQUESTED",
-        "Variation Requested",
-    )  # type:ignore[assignment]
-    WITHDRAWN: str = ("WITHDRAWN", "Withdrawn")  # type:ignore[assignment]
+    REVOKED = ("REVOKED", "Revoked")
+    STOPPED = ("STOPPED", "Stopped")
+    SUBMITTED = ("SUBMITTED", "Submitted")
+    VARIATION_REQUESTED = ("VARIATION_REQUESTED", "Variation Requested")
+    WITHDRAWN = ("WITHDRAWN", "Withdrawn")

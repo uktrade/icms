@@ -124,15 +124,15 @@ def get_import_status_choices() -> list[tuple[Any, str]]:
     st = ImportApplication.Statuses
 
     return [
-        (st.COMPLETED.value, st.COMPLETED.label),  # type: ignore[attr-defined]
-        (st.PROCESSING.value, st.PROCESSING.label),  # type: ignore[attr-defined]
+        (st.COMPLETED.value, st.COMPLETED.label),
+        (st.PROCESSING.value, st.PROCESSING.label),
         ("FIR_REQUESTED", "Processing (FIR)"),
         ("UPDATE_REQUESTED", "Processing (Update)"),
-        (st.REVOKED.value, st.REVOKED.label),  # type: ignore[attr-defined]
-        (st.STOPPED.value, st.STOPPED.label),  # type: ignore[attr-defined]
-        (st.SUBMITTED.value, st.SUBMITTED.label),  # type: ignore[attr-defined]
-        (st.VARIATION_REQUESTED.value, st.VARIATION_REQUESTED.label),  # type: ignore[attr-defined]
-        (st.WITHDRAWN.value, st.WITHDRAWN.label),  # type: ignore[attr-defined]
+        (st.REVOKED.value, st.REVOKED.label),
+        (st.STOPPED.value, st.STOPPED.label),
+        (st.SUBMITTED.value, st.SUBMITTED.label),
+        (st.VARIATION_REQUESTED.value, st.VARIATION_REQUESTED.label),
+        (st.WITHDRAWN.value, st.WITHDRAWN.label),
     ]
 
 
@@ -140,18 +140,18 @@ def get_export_status_choices() -> list[tuple[Any, str]]:
     st = ExportApplication.Statuses
 
     return [
-        (st.COMPLETED.value, st.COMPLETED.label),  # type: ignore[attr-defined]
-        (st.IN_PROGRESS.value, st.IN_PROGRESS.label),  # type: ignore[attr-defined]
-        (st.PROCESSING.value, st.PROCESSING.label),  # type: ignore[attr-defined]
+        (st.COMPLETED.value, st.COMPLETED.label),
+        (st.IN_PROGRESS.value, st.IN_PROGRESS.label),
+        (st.PROCESSING.value, st.PROCESSING.label),
         ("BEIS", "Processing (BEIS)"),
         ("FIR_REQUESTED", "Processing (FIR)"),
         ("HSE", "Processing (HSE)"),
         ("UPDATE_REQUESTED", "Processing (Update)"),
-        (st.REVOKED.value, st.REVOKED.label),  # type: ignore[attr-defined]
-        (st.STOPPED.value, st.STOPPED.label),  # type: ignore[attr-defined]
-        (st.SUBMITTED.value, st.SUBMITTED.label),  # type: ignore[attr-defined]
-        (st.VARIATION_REQUESTED.value, st.VARIATION_REQUESTED.label),  # type: ignore[attr-defined]
-        (st.WITHDRAWN.value, st.WITHDRAWN.label),  # type: ignore[attr-defined]
+        (st.REVOKED.value, st.REVOKED.label),
+        (st.STOPPED.value, st.STOPPED.label),
+        (st.SUBMITTED.value, st.SUBMITTED.label),
+        (st.VARIATION_REQUESTED.value, st.VARIATION_REQUESTED.label),
+        (st.WITHDRAWN.value, st.WITHDRAWN.label),
     ]
 
 
@@ -634,7 +634,7 @@ def _get_goods_category_filter(terms: types.SearchTerms) -> models.Q:
 
     good_category: "CommodityGroup" = terms.goods_category  # type: ignore[assignment]
 
-    if good_category.group_name in FirearmCommodity:  # type: ignore[attr-defined]
+    if good_category.group_name in FirearmCommodity:
         fa_dfl_query = models.Q(dflapplication__commodity_code=good_category.group_name)
         fa_oil_query = models.Q(
             openindividuallicenceapplication__commodity_code=good_category.group_name

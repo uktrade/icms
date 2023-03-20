@@ -332,11 +332,7 @@ def doc_ref_certificate_create(
     if not doc_reference:
         raise ValueError("Unable to create a certificate without a document reference")
 
-    cdr = _create_document(
-        doc_pack,
-        DocumentType.CERTIFICATE,  # type:ignore[arg-type]
-        doc_reference,
-    )
+    cdr = _create_document(doc_pack, DocumentType.CERTIFICATE, doc_reference)
 
     ExportCertificateCaseDocumentReferenceData.objects.create(
         case_document_reference=cdr, country=country, gmp_brand=brand
@@ -375,11 +371,7 @@ def doc_ref_licence_create(doc_pack: DocumentPack, doc_reference) -> CaseDocumen
     if not doc_reference:
         raise ValueError("Unable to create a licence without a document reference")
 
-    return _create_document(
-        doc_pack,
-        DocumentType.LICENCE,  # type:ignore[arg-type]
-        doc_reference,
-    )
+    return _create_document(doc_pack, DocumentType.LICENCE, doc_reference)
 
 
 def doc_ref_licence_get(doc_pack: ImportApplicationLicence) -> CaseDocumentReference:

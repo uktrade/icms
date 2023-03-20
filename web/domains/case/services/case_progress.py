@@ -85,7 +85,7 @@ def application_is_with_chief(application: ImpOrExp) -> None:
     check_expected_task(application, expected_task)
 
 
-def check_expected_status(application: Process, expected_statuses: list[str]) -> None:
+def check_expected_status(application: Process, expected_statuses: list[ImpExpStatus]) -> None:
     """Check the process has one of the expected statuses."""
 
     # status is set as a model field on all derived classes

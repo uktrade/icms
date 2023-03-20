@@ -5,10 +5,11 @@ from django.db import models
 from web.domains.case._import.models import ImportApplication
 from web.domains.file.models import File
 from web.flow.models import ProcessTypes
+from web.types import TypedTextChoices
 
 
 class PriorSurveillanceContractFile(File):
-    class Type(models.TextChoices):
+    class Type(TypedTextChoices):
         PRO_FORMA_INVOICE = ("pro_forma_invoice", "Pro-forma Invoice")
         SUPPLY_CONTRACT = ("supply_contract", "Supply Contract")
 

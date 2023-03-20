@@ -45,9 +45,9 @@ class IronSteelCommodityGroupSelect(s2forms.ModelSelect2Widget):
         if not origin_country:
             return queryset.none()
 
-        usage_records = get_usage_records(
-            ImportApplicationType.Types.IRON_STEEL  # type: ignore[arg-type]
-        ).filter(country=origin_country)
+        usage_records = get_usage_records(ImportApplicationType.Types.IRON_STEEL).filter(
+            country=origin_country
+        )
 
         return queryset.filter(usages__in=usage_records).order_by("pk")
 
@@ -99,8 +99,8 @@ class IronSteelCommoditySelect(s2forms.ModelSelect2Widget):
 
         country_of_origin = Country.objects.get(pk=origin_country)
 
-        usage_records = get_usage_records(
-            ImportApplicationType.Types.IRON_STEEL  # type: ignore[arg-type]
-        ).filter(country=country_of_origin)
+        usage_records = get_usage_records(ImportApplicationType.Types.IRON_STEEL).filter(
+            country=country_of_origin
+        )
 
         return get_usage_commodities(usage_records)
