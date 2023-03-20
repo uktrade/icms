@@ -15,7 +15,9 @@ class Query(TypedDict):
 
 
 @contextmanager
-def debug_queries(show_time: bool = True, fancy_print: bool = True) -> Iterator[None]:
+def debug_queries(
+    show_time: bool = True, fancy_print: bool = True, msg: str = ""
+) -> Iterator[None]:
     """Debug queries that occur inside with statement block.
 
     Usage:
@@ -26,6 +28,7 @@ def debug_queries(show_time: bool = True, fancy_print: bool = True) -> Iterator[
 
     :param show_time: Shows query times if set to True
     :param fancy_print: Prints sql with formatting and syntax highlighting if set
+    :param msg: Message to show before queries are printed.
     :yield None
     """
 
@@ -36,13 +39,16 @@ def debug_queries(show_time: bool = True, fancy_print: bool = True) -> Iterator[
         yield
 
     finally:
-        show_queries(ignore, show_time, fancy_print)
+        show_queries(ignore, show_time, fancy_print, msg)
 
 
-def show_queries(ignore: int, show_time: bool, fancy_print: bool) -> None:
+def show_queries(ignore: int, show_time: bool, fancy_print: bool, msg: str) -> None:
     queries_to_debug: list[Query] = connections["default"].queries[ignore:]
     total_queries = len(queries_to_debug)
     total_time = 0.0
+
+    if msg:
+        print(msg)
 
     for query in queries_to_debug:
         sql = query["sql"]
