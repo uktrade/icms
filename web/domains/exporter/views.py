@@ -5,9 +5,9 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from web.domains.contacts.forms import ContactForm
-from web.domains.contacts.views import current_contacts
 from web.domains.exporter.forms import AgentForm, ExporterFilter, ExporterForm
 from web.domains.office.forms import ExporterOfficeForm
+from web.permissions import ExporterObjectPermissions, Perms, get_organisation_contacts
 from web.types import AuthenticatedHttpRequest
 from web.views import ModelFilterView
 from web.views.actions import Archive, CreateExporterAgent, Edit, Unarchive
@@ -50,12 +50,15 @@ def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
     else:
         form = ExporterForm(instance=exporter)
 
-    contacts = current_contacts(exporter)
+    contacts = get_organisation_contacts(exporter)
+    object_permissions = get_exporter_object_permissions()
+
     context = {
         "object": exporter,
         "form": form,
         "contact_form": ContactForm(contacts_to_exclude=contacts),
         "contacts": contacts,
+        "object_permissions": object_permissions,
         "org_type": "exporter",
     }
 
@@ -67,9 +70,13 @@ def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
 def detail_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     exporter: Exporter = get_object_or_404(Exporter, pk=pk)
 
+    contacts = get_organisation_contacts(exporter)
+    object_permissions = get_exporter_object_permissions()
+
     context = {
         "object": exporter,
-        "contacts": current_contacts(exporter),
+        "contacts": contacts,
+        "object_permissions": object_permissions,
         "org_type": "exporter",
     }
 
@@ -188,23 +195,26 @@ def create_agent(request, exporter_pk):
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
-    agent: Exporter = get_object_or_404(Exporter.objects.agents(), pk=pk)
+    exporter: Exporter = get_object_or_404(Exporter.objects.agents(), pk=pk)
 
     if request.method == "POST":
-        form = AgentForm(request.POST, instance=agent)
+        form = AgentForm(request.POST, instance=exporter)
         if form.is_valid():
-            agent = form.save()
+            exporter = form.save()
 
-            return redirect(reverse("exporter-agent-edit", kwargs={"pk": agent.pk}))
+            return redirect(reverse("exporter-agent-edit", kwargs={"pk": exporter.pk}))
     else:
-        form = AgentForm(instance=agent)
+        form = AgentForm(instance=exporter)
 
-    contacts = current_contacts(agent)
+    contacts = get_organisation_contacts(exporter)
+    object_permissions = get_exporter_object_permissions()
+
     context = {
-        "object": agent.main_exporter,
+        "object": exporter.main_exporter,
         "form": form,
         "contact_form": ContactForm(contacts_to_exclude=contacts),
         "contacts": contacts,
+        "object_permissions": object_permissions,
         "org_type": "exporter",
     }
 
@@ -231,3 +241,17 @@ def unarchive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpRespon
     agent.save()
 
     return redirect(reverse("exporter-edit", kwargs={"pk": agent.main_exporter.pk}))
+
+
+# TODO: ICMSLST-1737
+def get_exporter_object_permissions() -> list[tuple[ExporterObjectPermissions, str]]:
+    """Return object permissions for the Exporter model with a label for each."""
+
+    object_permissions = [
+        # (Perms.obj.exporter.view, "View Applications / Certificates"),
+        # (Perms.obj.exporter.edit, "Edit Applications / Vary Certificates"),
+        (Perms.obj.exporter.is_contact, "Is Exporter Contact"),
+        # (Perms.obj.exporter.manage_contacts_and_agents, "Approve / Reject Agents and Exporters"),
+    ]
+
+    return object_permissions

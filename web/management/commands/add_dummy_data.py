@@ -3,7 +3,7 @@ from collections.abc import Collection
 from typing import Any
 
 from django.conf import settings
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand, CommandError
 from guardian.shortcuts import assign_perm
 
@@ -44,8 +44,9 @@ class Command(BaseCommand):
         load_app_test_data()
 
         # Load groups we want to assign to test users:
-        ilb_admin = Group.objects.get(name="ILB Case Officer")
-        importer_user = Group.objects.get(name="Importer User")
+        ilb_admin_group = Group.objects.get(name="ILB Case Officer")
+        importer_user_group = Group.objects.get(name="Importer User")
+        exporter_user_group = Group.objects.get(name="Exporter User")
 
         # enable disabled application types so we can test/develop them
         ImportApplicationType.objects.filter(
@@ -147,13 +148,7 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Ashley",
             last_name="Smith (ilb_admin)",
-            # TODO: Remove these
-            permissions=[
-                "importer_access",
-                "exporter_access",
-                "mailshot_access",
-            ],
-            groups=[ilb_admin],
+            groups=[ilb_admin_group, importer_user_group, exporter_user_group],
             linked_importers=[importer],
             linked_exporters=[exporter],
         )
@@ -163,13 +158,7 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Samantha",
             last_name="Stevens (ilb_admin)",
-            # TODO: Remove these
-            permissions=[
-                "importer_access",
-                "exporter_access",
-                "mailshot_access",
-            ],
-            groups=[ilb_admin],
+            groups=[ilb_admin_group],
             linked_importers=[importer],
             linked_exporters=[exporter],
         )
@@ -179,7 +168,7 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Dave",
             last_name="Jones (importer_user)",
-            groups=[importer_user],
+            groups=[importer_user_group],
             linked_importers=[importer],
         )
 
@@ -188,9 +177,7 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Sally",
             last_name="Davis (exporter_user)",
-            permissions=[
-                "exporter_access",
-            ],
+            groups=[exporter_user_group],
             linked_exporters=[exporter],
         )
 
@@ -199,10 +186,7 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Cameron",
             last_name="Hasra (agent)",
-            permissions=[
-                "importer_access",
-                "exporter_access",
-            ],
+            groups=[importer_user_group, exporter_user_group],
             linked_importer_agents=[agent_importer],
             linked_exporter_agents=[agent_exporter],
         )
@@ -226,7 +210,6 @@ class Command(BaseCommand):
         password: str,
         first_name: str,
         last_name: str,
-        permissions: Collection[str] = (),
         groups: Collection[Group] = (),
         linked_importers: Collection[Importer] = (),
         linked_exporters: Collection[Exporter] = (),
@@ -251,9 +234,6 @@ class Command(BaseCommand):
             security_question="security_question",
             security_answer="security_answer",
         )
-
-        for permission in permissions:
-            self._assign_permission(user, permission)
 
         if groups:
             user.groups.set(groups)
@@ -289,10 +269,6 @@ class Command(BaseCommand):
             security_question="admin",
             security_answer="admin",
         )
-
-    def _assign_permission(self, user, permission_codename):
-        permission = Permission.objects.get(codename=permission_codename)
-        user.user_permissions.add(permission)
 
 
 def create_certificate_application_templates(

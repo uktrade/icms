@@ -1,5 +1,18 @@
-from .perms import Perms
-from .utils import get_user_importer_permissions
+from .perms import (
+    ExporterObjectPermissions,
+    ImporterObjectPermissions,
+    PagePermissions,
+    Perms,
+    SysPerms,
+)
+from .service import (
+    add_organisation_contact,
+    get_organisation_contacts,
+    get_user_exporter_permissions,
+    get_user_importer_permissions,
+    remove_organisation_contact,
+)
+from .types import PermissionTextChoice
 
 importer_object_permissions: list[tuple[str, str]] = Perms.obj.importer.get_permissions()
 exporter_object_permissions: list[tuple[str, str]] = Perms.obj.exporter.get_permissions()
@@ -7,8 +20,17 @@ all_permissions: list[tuple[str, str]] = Perms.get_all_permissions()
 
 
 __all__ = [
-    "get_user_importer_permissions",
+    "ExporterObjectPermissions",
+    "ImporterObjectPermissions",
+    "PagePermissions",
     "Perms",
+    "SysPerms",
+    "add_organisation_contact",
+    "get_organisation_contacts",
+    "get_user_importer_permissions",
+    "get_user_exporter_permissions",
+    "remove_organisation_contact",
+    "PermissionTextChoice",
     "importer_object_permissions",
     "exporter_object_permissions",
     "all_permissions",

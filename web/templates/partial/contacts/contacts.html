@@ -4,26 +4,17 @@
   {% if not contacts %}
     <div class="info-box info-box-info">There are no contacts attached</div>
   {% else %}
-    {% set object_permissions = get_model_perms(object) %}
     <table class="setoutList">
       <thead>
       <tr>
         <th>Central Contact Details</th>
 
-        {# Iterate over the object permissions #}
-        {% for (codename, name) in object_permissions %}
+        {% for (permission, header_label) in object_permissions %}
           <th>
             <div class="individual-input input-group">
               <div class="eleven-column-input">
-                <span class="text-widget tight-field"
-                      aria-describedby="hint-{{ codename }}-content">{{ codename }}</span>
-                <div class="input-group-addon hint-addon" style="display: inline">
-                  <div id="hint-{{ codename }}-content" role="tooltip" class="hint-content">
-                    <div class="screen-reader-only">Hint text,</div>
-                    {{ name }}
-                  </div>
-                  <div aria-describedby="hint-{{ codename }}-content" class="hint icon-info tooltipstered" tabindex="0" role="link" aria-label="Hint for item"></div>
-                </div>
+                <span class="text-widget tight-field">{{ header_label }}</span>
+                <span class="helptext" style="display:block; margin: 0;">{{ permission.label }}</span>
               </div>
             </div>
           </th>
@@ -58,11 +49,11 @@
             </div>
           </td>
 
-          {% for (codename, name) in object_permissions %}
+          {% for (permission, _) in object_permissions %}
             <td>
               <div class="individual-input">
                 <div class="container" role="group" aria-labelledby="pg259">
-                  {{ ("&#9989;" if user_obj_perms_checker.has_perm(codename, object) else "&#10060;")|safe }}
+                  {{ ("&#9989;" if user_obj_perms_checker.has_perm(permission, object) else "&#10060;")|safe }}
                 </div>
               </div>
             </td>

@@ -11,6 +11,11 @@ class PagePermissions(PermissionTextChoice):
         "Can view the importer details list view.",
     )
 
+    view_exporter_details = (
+        "web.can_view_exporter_details",
+        "Can view the exporter details list view.",
+    )
+
 
 class SysPerms(PermissionTextChoice):
     importer_access = "web.importer_access", "Can act as an importer"
@@ -36,6 +41,7 @@ class ImporterObjectPermissions(PermissionTextChoice):
     is_agent = ("web.is_agent_of_importer", "Is agent of this importer")
 
 
+# TODO: ICMSLST-1737
 class ExporterObjectPermissions(PermissionTextChoice):
     is_contact = ("web.is_contact_of_exporter", "Is contact of this exporter")
     # NOTE: this is given on the "main exporter" object, not on the "agent" object
