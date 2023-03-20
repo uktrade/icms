@@ -1,3 +1,5 @@
+from typing import Any
+
 from django import forms
 from django.forms.widgets import (
     CheckboxInput,
@@ -191,7 +193,7 @@ class PeopleFilter(FilterSet):
 
     class Meta:
         model = User
-        fields = []
+        fields: list[Any] = []
 
 
 class UserListFilter(FilterSet):
@@ -226,7 +228,7 @@ class UserListFilter(FilterSet):
 
     class Meta:
         model = User
-        fields = []
+        fields: list[Any] = []
 
 
 class PostCodeSearchForm(forms.Form):

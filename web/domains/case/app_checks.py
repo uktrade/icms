@@ -97,10 +97,12 @@ def _get_import_errors(
         application_errors.add_many(_get_fa_sil_errors(application))
 
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
-        application_errors.add_many(_get_email_errors(application.sanctionsandadhocapplication, "import"))  # type: ignore[union-attr]
+        application_errors.add_many(
+            _get_email_errors(application.sanctionsandadhocapplication, "import")
+        )
 
     elif application.process_type == IronSteelApplication.PROCESS_TYPE:
-        application_errors.add_many(_get_ironsteel_errors(application.ironsteelapplication))  # type: ignore[union-attr]
+        application_errors.add_many(_get_ironsteel_errors(application.ironsteelapplication))
 
 
 def _get_export_errors(
@@ -109,31 +111,35 @@ def _get_export_errors(
     """Add any export application errors"""
 
     if application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
-        application_errors.add_many(_get_email_errors(application.certificateoffreesaleapplication, "export"))  # type: ignore[union-attr]
+        application_errors.add_many(
+            _get_email_errors(application.certificateoffreesaleapplication, "export")
+        )
 
     elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
         application_errors.add_many(
-            _get_email_errors(application.certificateofgoodmanufacturingpracticeapplication, "export")  # type: ignore[union-attr]
+            _get_email_errors(
+                application.certificateofgoodmanufacturingpracticeapplication, "export"
+            )
         )
 
 
 def _get_fa_oil_errors(application: ImportApplication) -> list[PageErrors]:
     errors = []
-    errors.extend(_get_email_errors(application.openindividuallicenceapplication, "import"))  # type: ignore[union-attr]
+    errors.extend(_get_email_errors(application.openindividuallicenceapplication, "import"))
 
     return errors
 
 
 def _get_fa_dfl_errors(application: ImportApplication) -> list[PageErrors]:
     errors = []
-    errors.extend(_get_email_errors(application.dflapplication, "import"))  # type: ignore[union-attr]
+    errors.extend(_get_email_errors(application.dflapplication, "import"))
 
     return errors
 
 
 def _get_fa_sil_errors(application: ImportApplication) -> list[PageErrors]:
     errors = []
-    errors.extend(_get_email_errors(application.silapplication, "import"))  # type: ignore[union-attr]
+    errors.extend(_get_email_errors(application.silapplication, "import"))
 
     return errors
 

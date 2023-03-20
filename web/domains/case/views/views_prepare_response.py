@@ -118,50 +118,52 @@ def prepare_response(
     # Import applications
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
         return _prepare_fa_oil_response(
-            request, application.openindividuallicenceapplication, context  # type: ignore[union-attr]
+            request, application.openindividuallicenceapplication, context
         )
 
     elif application.process_type == DFLApplication.PROCESS_TYPE:
-        return _prepare_fa_dfl_response(request, application.dflapplication, context)  # type: ignore[union-attr]
+        return _prepare_fa_dfl_response(request, application.dflapplication, context)
 
     elif application.process_type == SILApplication.PROCESS_TYPE:
-        return _prepare_fa_sil_response(request, application.silapplication, context)  # type: ignore[union-attr]
+        return _prepare_fa_sil_response(request, application.silapplication, context)
 
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
         return _prepare_sanctions_and_adhoc_response(
-            request, application.sanctionsandadhocapplication, context  # type: ignore[union-attr]
+            request, application.sanctionsandadhocapplication, context
         )
 
     elif application.process_type == DerogationsApplication.PROCESS_TYPE:
-        return _prepare_derogations_response(request, application.derogationsapplication, context)  # type: ignore[union-attr]
+        return _prepare_derogations_response(request, application.derogationsapplication, context)
 
     elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
-        return _prepare_wood_quota_response(request, application.woodquotaapplication, context)  # type: ignore[union-attr]
+        return _prepare_wood_quota_response(request, application.woodquotaapplication, context)
 
     elif application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
         return _prepare_opt_response(
-            request, application.outwardprocessingtradeapplication, context  # type: ignore[union-attr]
+            request, application.outwardprocessingtradeapplication, context
         )
 
     elif application.process_type == TextilesApplication.PROCESS_TYPE:
-        return _prepare_textiles_quota_response(request, application.textilesapplication, context)  # type: ignore[union-attr]
+        return _prepare_textiles_quota_response(request, application.textilesapplication, context)
 
     elif application.process_type == PriorSurveillanceApplication.PROCESS_TYPE:
-        return _prepare_sps_response(request, application.priorsurveillanceapplication, context)  # type: ignore[union-attr]
+        return _prepare_sps_response(request, application.priorsurveillanceapplication, context)
 
     elif application.process_type == IronSteelApplication.PROCESS_TYPE:
-        return _prepare_ironsteel_response(request, application.ironsteelapplication, context)  # type: ignore[union-attr]
+        return _prepare_ironsteel_response(request, application.ironsteelapplication, context)
 
     # Certificate applications
     elif application.process_type == CertificateOfManufactureApplication.PROCESS_TYPE:
-        return _prepare_com_response(request, application.certificateofmanufactureapplication, context)  # type: ignore[union-attr]
+        return _prepare_com_response(
+            request, application.certificateofmanufactureapplication, context
+        )
 
     elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
-        return _prepare_cfs_response(request, application.certificateoffreesaleapplication, context)  # type: ignore[union-attr]
+        return _prepare_cfs_response(request, application.certificateoffreesaleapplication, context)
 
     elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
         return _prepare_gmp_response(
-            request, application.certificateofgoodmanufacturingpracticeapplication, context  # type: ignore[union-attr]
+            request, application.certificateofgoodmanufacturingpracticeapplication, context
         )
 
     else:

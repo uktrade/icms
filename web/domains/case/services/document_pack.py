@@ -86,7 +86,7 @@ def pack_draft_create(application: ImpOrExp, *, variation_request: bool = False)
     if application.is_import_application():
         if variation_request:
             # Copy across the active licence values
-            active_licence: ImportApplicationLicence = pack_active_get(application)  # type: ignore[assignment]
+            active_licence: ImportApplicationLicence = pack_active_get(application)
             kwargs = {
                 "issue_paper_licence_only": active_licence.issue_paper_licence_only,
                 "licence_start_date": active_licence.licence_start_date,

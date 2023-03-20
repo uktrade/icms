@@ -251,7 +251,7 @@ class MailshotReceivedDetailView(MailshotDetailView):
         if user.has_perm("web.ilb_admin"):
             return True
 
-        mailshot: Mailshot = self.get_object()  # type:ignore[assignment]
+        mailshot: Mailshot = self.get_object()
 
         if mailshot.is_to_importers and user.has_perm("web.importer_access"):
             return True
@@ -299,7 +299,7 @@ class MailshotRetractView(ModelUpdateView):
         return response
 
     def get_success_message(self, cleaned_data):
-        return f"{self.object.get_reference()} retracted successfully"  # type:ignore[attr-defined]
+        return f"{self.object.get_reference()} retracted successfully"
 
     def get_queryset(self):
         """
@@ -309,7 +309,7 @@ class MailshotRetractView(ModelUpdateView):
         return Mailshot.objects.filter(status=Mailshot.Statuses.PUBLISHED)
 
     def get_page_title(self):
-        return f"Retract {self.object.get_reference()}"  # type:ignore[attr-defined]
+        return f"Retract {self.object.get_reference()}"
 
 
 @login_required

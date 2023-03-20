@@ -87,7 +87,7 @@ def update_password(request):
     )
 
     if form.is_valid():
-        user: User = form.save(commit=False)  # type:ignore[assignment]
+        user: User = form.save(commit=False)
         user.password_disposition = User.FULL
         user.save()
         update_session_auth_hash(request, user)  # keep user logged in

@@ -56,45 +56,45 @@ def view_case(
 
     # Access Requests
     if application.process_type == ImporterAccessRequest.PROCESS_TYPE:
-        return _view_accessrequest(request, application.importeraccessrequest)  # type: ignore[union-attr]
+        return _view_accessrequest(request, application.importeraccessrequest)
 
     elif application.process_type == ExporterAccessRequest.PROCESS_TYPE:
-        return _view_accessrequest(request, application.exporteraccessrequest)  # type: ignore[union-attr]
+        return _view_accessrequest(request, application.exporteraccessrequest)
 
     # Import applications
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
-        return _view_fa_oil(request, application.openindividuallicenceapplication)  # type: ignore[union-attr]
+        return _view_fa_oil(request, application.openindividuallicenceapplication)
 
     elif application.process_type == SILApplication.PROCESS_TYPE:
-        return _view_fa_sil(request, application.silapplication)  # type: ignore[union-attr]
+        return _view_fa_sil(request, application.silapplication)
 
     elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
-        return _view_sanctions_and_adhoc(request, application.sanctionsandadhocapplication)  # type: ignore[union-attr]
+        return _view_sanctions_and_adhoc(request, application.sanctionsandadhocapplication)
 
     elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
-        return _view_wood_quota(request, application.woodquotaapplication)  # type: ignore[union-attr]
+        return _view_wood_quota(request, application.woodquotaapplication)
 
     elif application.process_type == DerogationsApplication.PROCESS_TYPE:
-        return _view_derogations(request, application.derogationsapplication)  # type: ignore[union-attr]
+        return _view_derogations(request, application.derogationsapplication)
 
     elif application.process_type == DFLApplication.PROCESS_TYPE:
-        return _view_dfl(request, application.dflapplication)  # type: ignore[union-attr]
+        return _view_dfl(request, application.dflapplication)
 
     elif application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
-        return _view_opt(request, application.outwardprocessingtradeapplication)  # type: ignore[union-attr]
+        return _view_opt(request, application.outwardprocessingtradeapplication)
 
     elif application.process_type == TextilesApplication.PROCESS_TYPE:
-        return _view_textiles_quota(request, application.textilesapplication)  # type: ignore[union-attr]
+        return _view_textiles_quota(request, application.textilesapplication)
 
     elif application.process_type == PriorSurveillanceApplication.PROCESS_TYPE:
-        return _view_sps(request, application.priorsurveillanceapplication)  # type: ignore[union-attr]
+        return _view_sps(request, application.priorsurveillanceapplication)
 
     elif application.process_type == IronSteelApplication.PROCESS_TYPE:
-        return _view_ironsteel(request, application.ironsteelapplication)  # type: ignore[union-attr]
+        return _view_ironsteel(request, application.ironsteelapplication)
 
     # Export applications
     elif application.process_type == CertificateOfManufactureApplication.PROCESS_TYPE:
-        return _view_com(request, application.certificateofmanufactureapplication)  # type: ignore[union-attr]
+        return _view_com(request, application.certificateofmanufactureapplication)
 
     elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
         return _view_cfs(request, application.certificateoffreesaleapplication)

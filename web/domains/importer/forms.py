@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms import ModelChoiceField, ModelForm, Textarea
@@ -154,7 +156,7 @@ class ImporterFilter(FilterSet):
 
     class Meta:
         model = Importer
-        fields = []
+        fields: list[Any] = []
 
 
 class AgentIndividualForm(ModelForm):

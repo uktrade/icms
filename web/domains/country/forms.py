@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.forms import ModelForm
 from django.forms.widgets import Select, Textarea
 from django_filters import CharFilter, FilterSet
@@ -14,7 +16,7 @@ class CountryNameFilter(FilterSet):
 
     class Meta:
         model = Country
-        fields = []
+        fields: list[Any] = []
 
 
 class CountryGroupNameFilter(FilterSet):
@@ -24,7 +26,7 @@ class CountryGroupNameFilter(FilterSet):
 
     class Meta:
         model = CountryGroup
-        fields = []
+        fields: list[Any] = []
 
 
 class CountryCreateForm(ModelForm):

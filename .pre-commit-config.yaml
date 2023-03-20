@@ -46,14 +46,15 @@ repos:
     rev: v1.1.1
     hooks:
     - id: mypy
-      args: [--ignore-missing-imports, --allow-untyped-globals, --check-untyped-defs]
-      exclude: migrations|tests
+      args: [--ignore-missing-imports, --allow-untyped-globals, --check-untyped-defs, --exclude=web/permissions/types.py]
+      exclude: migrations|tests|end_to_end
       additional_dependencies:
         - boto3-stubs[essential]
-        - types-requests==2.25.0
+        - types-openpyxl==3.1.0.0
         - types-pytz==2021.1.0
+        - types-python-dateutil==2.8.19.4
+        - types-Pygments==2.14.0.6
         - types-requests==2.25.0
-        - types-python-dateutil
 - repo: local
   hooks:
     - id: check-django-migrations

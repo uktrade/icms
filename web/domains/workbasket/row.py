@@ -91,15 +91,15 @@ def _get_case_wb_row(app: ImpOrExp, user: User, is_ilb_admin: bool) -> Workbaske
     r.status = app.get_status_display()
 
     if app.is_import_application():
-        r.company = app.importer  # type: ignore[attr-defined]
+        r.company = app.importer
         case_type = "import"
         r.subject = "\n".join(["Import Application", ProcessTypes(app.process_type).label])
     else:
-        r.company = app.exporter  # type: ignore[attr-defined]
+        r.company = app.exporter
         case_type = "export"
         r.subject = "\n".join(["Certificate Application", ProcessTypes(app.process_type).label])
 
-    r.company_agent = app.agent  # type: ignore[attr-defined]
+    r.company_agent = app.agent
 
     if is_ilb_admin:
         sections = get_workbasket_admin_sections(user=user, case_type=case_type, application=app)

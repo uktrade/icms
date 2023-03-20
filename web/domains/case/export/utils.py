@@ -118,7 +118,10 @@ def _extract_product_data(products_file: File, is_biocidal: bool = False) -> dic
                 continue
 
             # Clean values in row by stripping whitespace
-            values = [value and str(value).strip() or "" for value in row_values]
+            values = [
+                value and str(value).strip() or ""
+                for value in row_values  # type:ignore[union-attr]
+            ]
 
             # Create a dict of values using column name
             row_data = dict(zip(header, values))

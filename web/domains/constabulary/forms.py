@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.forms import ModelForm
 from django.forms.widgets import CheckboxInput, Select
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter, FilterSet
@@ -27,7 +29,7 @@ class ConstabulariesFilter(FilterSet):
 
     class Meta:
         model = Constabulary
-        fields = []
+        fields: list[Any] = []
 
 
 class ConstabularyForm(ModelForm):

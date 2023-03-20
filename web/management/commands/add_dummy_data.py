@@ -24,7 +24,8 @@ from web.models import (
 class Command(BaseCommand):
     help = """Add dummy data. For development use only."""
 
-    users_created = []
+    # Keeps a track of usernames created.
+    users_created: list[str] = []
 
     def add_arguments(self, parser):
         parser.add_argument(

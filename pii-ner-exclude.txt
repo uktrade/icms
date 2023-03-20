@@ -2608,3 +2608,36 @@ ChoicesMeta
 PermissionTextChoiceMeta(ChoicesMeta
 @classmethod
 @staticmethod
+Product Name
+Active Ingredient Name
+Keeps
+Country Group Name
+Login Name
+Password Disposition
+Department Name (Employer
+Miss
+Mrs
+\ Example Forename(Preferred
+Robert
+Bob
+FLOOR
+Disposition
+Constabulary Name
+"Legislation Name
+Debug
+TODO Update
+View Applications / Licences
+Edit Applications / Vary Licences
+Is Importer Contact
+Approve / Reject Agents
+{{ permission.label }}
+ExporterObjectPermissions
+PagePermissions
+SysPerms
+"Add a contact to an importer / exporter
+{{ permission.label }}
+"Check if the application
+PROCESSING / VARIATION_REQUESTED
+"Check the process
+"Check the expected
+Add Note

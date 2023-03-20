@@ -48,7 +48,7 @@ class SearchFormBase(forms.Form):
 
     decision = forms.ChoiceField(
         label="Response Decision",
-        choices=[(None, "Any")] + list(ApplicationBase.DECISIONS),  # type:ignore[arg-type]
+        choices=[(None, "Any")] + list(ApplicationBase.DECISIONS),
         required=False,
     )
 
@@ -187,7 +187,7 @@ class ImportSearchAdvancedForm(ImportSearchForm):
         label="Shipping Year",
         required=False,
         choices=[(None, "Any")]
-        + list((x, x) for x in range(2007, datetime.date.today().year + 10)),  # type:ignore[misc]
+        + list((x, x) for x in range(2007, datetime.date.today().year + 10)),
     )
 
     goods_category = forms.ModelChoiceField(

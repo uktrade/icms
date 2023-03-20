@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.core.exceptions import ValidationError
 from django.forms import ModelChoiceField, ModelForm, Textarea
 from django_filters import CharFilter, FilterSet
@@ -15,7 +17,7 @@ class ExporterFilter(FilterSet):
 
     class Meta:
         model = Exporter
-        fields = []
+        fields: list[Any] = []
 
 
 class ExporterForm(ModelForm):
