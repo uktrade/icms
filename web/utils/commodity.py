@@ -27,8 +27,8 @@ def get_usage_records(app_type: str, app_sub_type: str | None = None) -> "QueryS
 
 
 def add_usage_filter(
-    model: "QuerySet[Model]", app_type: str, app_sub_type: str | None = None, usage_path=""
-):
+    model: "QuerySet[Model]", app_type: str, app_sub_type: str | None = None, usage_path: str = ""
+) -> "QuerySet[Model]":
     """Apply all required filters to filter usage records correctly.
 
     :param model: The model to apply usage filters too.
@@ -87,7 +87,9 @@ def get_usage_commodities(application_usage: "QuerySet[Usage]") -> "QuerySet[Com
     return Commodity.objects.filter(commoditygroup__in=groups, is_active=True).distinct()
 
 
-def annotate_commodity_unit(model: "QuerySet[Model]", commodity_path=""):
+def annotate_commodity_unit(
+    model: "QuerySet[Model]", commodity_path: str = ""
+) -> "QuerySet[Model]":
     """Annotate a queryset with a unit_description.
 
     :param model: A model linked to commodities

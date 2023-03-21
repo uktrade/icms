@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 Prefix = CaseReference.Prefix
 
 
-def get_application_case_reference(lock_manager: "LockManager", application: "ImpOrExp"):
+def get_application_case_reference(lock_manager: "LockManager", application: "ImpOrExp") -> str:
     """Retrieve an application case reference for import & export applications"""
 
     if application.is_import_application():
@@ -64,7 +64,7 @@ def get_import_licence_reference(
     lock_manager: "LockManager",
     application: "ImportApplication",
     licence: "ImportApplicationLicence",
-):
+) -> str:
     """Get the licence reference for the supplied import application"""
 
     if not application.licence_reference:

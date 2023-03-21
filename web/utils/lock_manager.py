@@ -4,7 +4,7 @@ from django.db import connection, models, transaction
 class LockManager:
     """Manages locking database tables in a deadlock-free way."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         # have we been activated
         self.activated = False
 
