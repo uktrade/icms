@@ -17,7 +17,7 @@ help: ## Show this screen
 
 ##@ Local
 mypy: ## run mypy
-	unset UID && .venv/bin/python -m mypy --config-file=mypy.ini web data_migration config ${args}
+	unset UID && .venv/bin/python -m mypy --config-file=pyproject.toml web data_migration config ${args}
 
 flake8: ## run flake8
 	unset UID && .venv/bin/python -m flake8
@@ -105,7 +105,7 @@ docker_isort: ## run isort in check mode
 
 docker_mypy: ## run mypy
 	unset UID && \
-	docker-compose run --rm web mypy --config-file=mypy.ini web data_migration config
+	docker-compose run --rm web mypy --config-file=pyproject.toml web data_migration config
 
 docker_drop_all_tables: ## drop all tables
 	unset UID && \

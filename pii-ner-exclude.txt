@@ -2650,3 +2650,6 @@ Variation Requested
 django.http
 web.models
 TypedTextChoicesMeta(ChoicesMeta
+Global mypy config
+Modules
+"Check if the table
