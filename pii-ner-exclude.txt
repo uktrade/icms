@@ -2654,3 +2654,11 @@ Modules
 "Check if the table
 web.can_view_edit_importer
 Edit
+kwargs={'org_pk
+ICMSLST-1939 Update
+Edit Importer
+View Importer{% endblock
+View Importer '
+{{ number.get_type_display
+{{ object.name
+{{ object.comments|default

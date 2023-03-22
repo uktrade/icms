@@ -1,17 +1,19 @@
 from typing import Any
 
+from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.forms import ModelChoiceField, ModelForm, Textarea
 from django_filters import CharFilter, ChoiceFilter, FilterSet
+from guardian.forms import UserObjectPermissionsForm
 
 from web.domains.importer.fields import PersonWidget
 from web.errors import APIError
 from web.models import Importer
+from web.permissions import ImporterObjectPermissions, Perms
 from web.utils.companieshouse import api_get_company
 
 
-class ImporterIndividualForm(ModelForm):
+class ImporterIndividualForm(forms.ModelForm):
     class Meta:
         model = Importer
         fields = ["user", "eori_number", "region_origin", "comments"]
@@ -37,7 +39,7 @@ class ImporterIndividualForm(ModelForm):
         raise ValidationError(f"'{eori_number}' doesn't start with {prefix}")
 
 
-class ImporterOrganisationForm(ModelForm):
+class ImporterOrganisationForm(forms.ModelForm):
     class Meta:
         model = Importer
         fields = [
@@ -47,7 +49,7 @@ class ImporterOrganisationForm(ModelForm):
             "region_origin",
             "comments",
         ]
-        widgets = {"name": Textarea(attrs={"rows": 1})}
+        widgets = {"name": forms.Textarea(attrs={"rows": 1})}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -159,8 +161,8 @@ class ImporterFilter(FilterSet):
         fields: list[Any] = []
 
 
-class AgentIndividualForm(ModelForm):
-    main_importer = ModelChoiceField(
+class AgentIndividualForm(forms.ModelForm):
+    main_importer = forms.ModelChoiceField(
         queryset=Importer.objects.none(), label="Importer", disabled=True
     )
 
@@ -180,8 +182,8 @@ class AgentIndividualForm(ModelForm):
         return super().clean()
 
 
-class AgentOrganisationForm(ModelForm):
-    main_importer = ModelChoiceField(
+class AgentOrganisationForm(forms.ModelForm):
+    main_importer = forms.ModelChoiceField(
         queryset=Importer.objects.none(), label="Importer", disabled=True
     )
 
@@ -201,8 +203,31 @@ class AgentOrganisationForm(ModelForm):
             "comments",
         ]
 
-        widgets = {"name": Textarea(attrs={"rows": 1})}
+        widgets = {"name": forms.Textarea(attrs={"rows": 1})}
 
     def clean(self):
         self.instance.type = Importer.ORGANISATION
         return super().clean()
+
+
+# Needed for now because we don't want to show all permissions (everything but the agent)
+def get_importer_object_permissions() -> list[tuple[ImporterObjectPermissions, str]]:
+    """Return object permissions for the Importer model with a label for each."""
+
+    object_permissions = [
+        (Perms.obj.importer.view, "View Applications / Licences"),
+        (Perms.obj.importer.edit, "Edit Applications / Vary Licences"),
+        (Perms.obj.importer.is_contact, "Is Importer Contact"),
+        (Perms.obj.importer.manage_contacts_and_agents, "Approve / Reject Agents and Importers"),
+    ]
+
+    return object_permissions
+
+
+class ImporterUserObjectPermissionsForm(UserObjectPermissionsForm):
+    def get_obj_perms_field_widget(self):
+        return forms.CheckboxSelectMultiple(attrs={"class": "radio-relative"})
+
+    def get_obj_perms_field_choices(self):
+        # Only iterate over permissions we show in the main edit importer view
+        return [(p.codename, label) for (p, label) in get_importer_object_permissions()]

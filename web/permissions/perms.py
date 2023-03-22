@@ -10,15 +10,17 @@ class PagePermissions(PermissionTextChoice):
         "web.can_view_importer_details",
         "Can view the importer details list page.",
     )
-
     view_exporter_details = (
         "web.can_view_exporter_details",
         "Can view the exporter details list page.",
     )
-
     view_edit_importer = (
         "web.can_view_edit_importer",
-        "Can view the Edit importer page (and nested pages below this).",
+        "Can view the Edit Importer page (and nested pages below this).",
+    )
+    view_edit_exporter = (
+        "web.can_view_edit_exporter",
+        "Can view the Edit Exporter page (and nested pages below this).",
     )
 
 
@@ -40,7 +42,6 @@ class ImporterObjectPermissions(PermissionTextChoice):
         "web.manage_importer_contacts_and_agents",
         "Can approve and reject access for agents and new importer contacts",
     )
-
     is_contact = ("web.is_contact_of_importer", "Is contact of this importer")
     # NOTE: this is given on the "main importer" object, not on the "agent" object
     is_agent = ("web.is_agent_of_importer", "Is agent of this importer")

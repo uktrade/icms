@@ -1,6 +1,7 @@
 import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.db.models import F
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponse
@@ -19,14 +20,16 @@ from web.domains.importer.forms import (
     ImporterFilter,
     ImporterIndividualForm,
     ImporterOrganisationForm,
+    ImporterUserObjectPermissionsForm,
+    get_importer_object_permissions,
 )
 from web.domains.office.forms import ImporterOfficeEORIForm, ImporterOfficeForm
 from web.domains.section5.forms import ClauseQuantityForm, Section5AuthorityForm
-from web.models import ClauseQuantity, Importer, Section5Authority, Section5Clause
+from web.models import ClauseQuantity, Importer, Section5Authority, Section5Clause, User
 from web.permissions import (
-    ImporterObjectPermissions,
     Perms,
     add_organisation_contact,
+    can_manage_org_contacts,
     get_organisation_contacts,
 )
 from web.types import AuthenticatedHttpRequest
@@ -118,6 +121,7 @@ class ImporterListUserView(PermissionRequiredMixin, LoginRequiredMixin, ListView
         return qs.prefetch_related("offices")
 
 
+# TODO: ICMSLST-1939 Update the permissions checked
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 def edit_importer(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
@@ -140,10 +144,12 @@ def edit_importer(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
 
     contacts = get_organisation_contacts(importer)
     object_permissions = get_importer_object_permissions()
+    can_manage_contacts = can_manage_org_contacts(importer, request.user)
 
     context = {
         "object": importer,
         "object_permissions": object_permissions,
+        "can_manage_contacts": can_manage_contacts,
         "form": form,
         "contact_form": ContactForm(contacts_to_exclude=contacts),
         "contacts": contacts,
@@ -495,10 +501,12 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
 
     contacts = get_organisation_contacts(agent)
     object_permissions = get_importer_object_permissions()
+    can_manage_contacts = can_manage_org_contacts(agent, request.user)
 
     context = {
         "object": agent.main_importer,
         "object_permissions": object_permissions,
+        "can_manage_contacts": can_manage_contacts,
         "form": form,
         "contact_form": ContactForm(contacts_to_exclude=contacts),
         "contacts": contacts,
@@ -548,14 +556,34 @@ def importer_detail_view(request: AuthenticatedHttpRequest, *, pk: int) -> HttpR
     return render(request, "web/domains/importer/view.html", context)
 
 
-def get_importer_object_permissions() -> list[tuple[ImporterObjectPermissions, str]]:
-    """Return object permissions for the Importer model with a label for each."""
+@login_required
+@permission_required(Perms.page.view_edit_importer, raise_exception=True)
+def edit_user_importer_permissions(
+    request: AuthenticatedHttpRequest, org_pk: int, user_pk: int
+) -> HttpResponse:
+    """View to edit importer object permissions for a particular user."""
 
-    object_permissions = [
-        (Perms.obj.importer.view, "View Applications / Licences"),
-        (Perms.obj.importer.edit, "Edit Applications / Vary Licences"),
-        (Perms.obj.importer.is_contact, "Is Importer Contact"),
-        (Perms.obj.importer.manage_contacts_and_agents, "Approve / Reject Agents and Importers"),
-    ]
+    user = get_object_or_404(User, id=user_pk)
+    importer = get_object_or_404(Importer, id=org_pk)
+    can_manage_contacts = can_manage_org_contacts(importer, request.user)
 
-    return object_permissions
+    if not can_manage_contacts:
+        raise PermissionDenied
+
+    form = ImporterUserObjectPermissionsForm(user, importer, request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        form.save_obj_perms()
+
+        return redirect("importer-edit", pk=org_pk)
+
+    context = {
+        "page_title": "Edit Importer user permissions",
+        "org_type": "Importer",
+        "form": form,
+        "contact": user,
+        "organisation": importer,
+        "parent_url": reverse("importer-edit", kwargs={"pk": org_pk}),
+    }
+
+    return render(request, "web/domains/organisation/edit-user-permissions.html", context)

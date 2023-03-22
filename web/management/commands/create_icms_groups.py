@@ -28,23 +28,27 @@ def get_groups():
             Perms.page.view_permission_harness.codename,
             Perms.page.view_importer_details.codename,
             Perms.page.view_exporter_details.codename,
+            Perms.page.view_edit_importer.codename,
+            Perms.page.view_edit_exporter.codename,
             #
             # Sys permissions
             Perms.sys.ilb_admin.codename,
             Perms.sys.mailshot_access,
         ],
-        "Importer User": [
+        Perms.obj.importer.get_group_name(): [
             #
             # Page permissions
             Perms.page.view_importer_details.codename,
+            Perms.page.view_edit_importer.codename,
             #
             # Sys permissions
             Perms.sys.importer_access.codename,
         ],
-        "Exporter User": [
+        Perms.obj.exporter.get_group_name(): [
             #
             # Page permissions
             Perms.page.view_exporter_details.codename,
+            Perms.page.view_edit_exporter.codename,
             #
             # Sys permissions
             Perms.sys.exporter_access.codename,
