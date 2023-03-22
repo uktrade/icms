@@ -20,12 +20,15 @@
           </th>
         {% endfor %}
 
-        {% if not read_only %}
+        {% if can_manage_contacts %}
           <th>Actions</th>
         {% endif %}
       </tr>
       </thead>
       <tbody>
+
+      {# Get the correct url to route to when editing user permissions #}
+      {% set edit_user_org_perms = "edit-user-importer-permissions" if org_type == "importer" else "edit-user-exporter-permissions" %}
 
       {% for user in contacts %}
         {% set user_obj_perms_checker = get_user_obj_perms(user) %}
@@ -59,8 +62,17 @@
             </td>
           {% endfor %}
 
-          {% if not read_only %}
+          {% if can_manage_contacts %}
             <td>
+              <div class="row">
+                <div class="twelve columns">
+                  <a
+                    href="{{ icms_url(edit_user_org_perms, kwargs={'org_pk': object.pk, 'user_pk': user.pk}) }}"
+                    class="button small-button icon-pencil">
+                    Edit
+                  </a>
+                </div>
+              </div>
               <div class="row">
                 <div class="twelve columns">
                   <form method="post" action="{{ icms_url('contacts:delete', kwargs={'org_type': org_type, 'org_pk': object.pk, 'contact_pk': user.pk}) }}">

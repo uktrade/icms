@@ -1,18 +1,24 @@
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from web.domains.contacts.forms import ContactForm
-from web.domains.exporter.forms import AgentForm, ExporterFilter, ExporterForm
+from web.domains.exporter.forms import (
+    AgentForm,
+    ExporterFilter,
+    ExporterForm,
+    ExporterUserObjectPermissionsForm,
+    get_exporter_object_permissions,
+)
 from web.domains.office.forms import ExporterOfficeForm
-from web.permissions import ExporterObjectPermissions, Perms, get_organisation_contacts
+from web.models import Exporter, User
+from web.permissions import Perms, can_manage_org_contacts, get_organisation_contacts
 from web.types import AuthenticatedHttpRequest
 from web.views import ModelFilterView
 from web.views.actions import Archive, CreateExporterAgent, Edit, Unarchive
-
-from .models import Exporter
 
 
 class ExporterListView(ModelFilterView):
@@ -52,6 +58,7 @@ def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
 
     contacts = get_organisation_contacts(exporter)
     object_permissions = get_exporter_object_permissions()
+    can_manage_contacts = can_manage_org_contacts(exporter, request.user)
 
     context = {
         "object": exporter,
@@ -59,6 +66,7 @@ def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
         "contact_form": ContactForm(contacts_to_exclude=contacts),
         "contacts": contacts,
         "object_permissions": object_permissions,
+        "can_manage_contacts": can_manage_contacts,
         "org_type": "exporter",
     }
 
@@ -208,6 +216,7 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
 
     contacts = get_organisation_contacts(exporter)
     object_permissions = get_exporter_object_permissions()
+    can_manage_contacts = can_manage_org_contacts(exporter, request.user)
 
     context = {
         "object": exporter.main_exporter,
@@ -215,6 +224,7 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
         "contact_form": ContactForm(contacts_to_exclude=contacts),
         "contacts": contacts,
         "object_permissions": object_permissions,
+        "can_manage_contacts": can_manage_contacts,
         "org_type": "exporter",
     }
 
@@ -243,14 +253,34 @@ def unarchive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpRespon
     return redirect(reverse("exporter-edit", kwargs={"pk": agent.main_exporter.pk}))
 
 
-def get_exporter_object_permissions() -> list[tuple[ExporterObjectPermissions, str]]:
-    """Return object permissions for the Exporter model with a label for each."""
+@login_required
+@permission_required(Perms.page.view_edit_exporter, raise_exception=True)
+def edit_user_exporter_permissions(
+    request: AuthenticatedHttpRequest, org_pk: int, user_pk: int
+) -> HttpResponse:
+    """View to edit exporter object permissions for a particular user."""
 
-    object_permissions = [
-        (Perms.obj.exporter.view, "View Applications / Certificates"),
-        (Perms.obj.exporter.edit, "Edit Applications / Vary Certificates"),
-        (Perms.obj.exporter.is_contact, "Is Exporter Contact"),
-        (Perms.obj.exporter.manage_contacts_and_agents, "Approve / Reject Agents and Exporters"),
-    ]
+    user = get_object_or_404(User, id=user_pk)
+    exporter = get_object_or_404(Exporter, id=org_pk)
+    can_manage_contacts = can_manage_org_contacts(exporter, request.user)
 
-    return object_permissions
+    if not can_manage_contacts:
+        raise PermissionDenied
+
+    form = ExporterUserObjectPermissionsForm(user, exporter, request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        form.save_obj_perms()
+
+        return redirect("exporter-edit", pk=org_pk)
+
+    context = {
+        "page_title": "Edit Exporter user permissions",
+        "org_type": "Exporter",
+        "form": form,
+        "contact": user,
+        "organisation": exporter,
+        "parent_url": reverse("exporter-edit", kwargs={"pk": org_pk}),
+    }
+
+    return render(request, "web/domains/organisation/edit-user-permissions.html", context)

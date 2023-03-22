@@ -59,7 +59,7 @@
     {% endwith %}
   {% endif %}
 
-  {% with read_only = True %}
+  {% with read_only = True, can_manage_contacts = False %}
       {% include "partial/contacts/contacts.html" %}
   {% endwith %}
 
