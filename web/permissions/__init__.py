@@ -7,6 +7,7 @@ from .perms import (
 )
 from .service import (
     add_organisation_contact,
+    can_manage_org_contacts,
     get_organisation_contacts,
     get_user_exporter_permissions,
     get_user_importer_permissions,
@@ -26,6 +27,7 @@ __all__ = [
     "Perms",
     "SysPerms",
     "add_organisation_contact",
+    "can_manage_org_contacts",
     "get_organisation_contacts",
     "get_user_importer_permissions",
     "get_user_exporter_permissions",

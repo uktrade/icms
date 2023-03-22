@@ -81,13 +81,7 @@ def get_organisation_contacts(org: ORGANISATION) -> QuerySet[User]:
     An importer agent is still simply an importer.
     """
 
-    match org:
-        case Importer():
-            obj_perms: IMP_OR_EXP_PERMS_T = ImporterObjectPermissions
-        case Exporter():
-            obj_perms = ExporterObjectPermissions
-        case _:
-            raise NotImplementedError(f"Unknown org {org}")
+    obj_perms = _get_obj_permissions(org)
 
     # Remove the agent permission from both org permission lists.
     perms = [p.codename for p in obj_perms if p != obj_perms.is_agent]
@@ -101,62 +95,50 @@ def get_organisation_contacts(org: ORGANISATION) -> QuerySet[User]:
 
 
 def add_organisation_contact(org: ORGANISATION, user: User) -> None:
-    if isinstance(org, Importer):
-        add_group(user, "Importer User")
+    obj_perms = _get_obj_permissions(org)
 
-        for imp_perm in [
-            Perms.obj.importer.view,
-            Perms.obj.importer.edit,
-            Perms.obj.importer.is_contact,
-        ]:
-            assign_perm(imp_perm, user, org)
+    for perm in [obj_perms.view, obj_perms.edit, obj_perms.is_contact]:
+        assign_perm(perm, user, org)
 
-        if org.is_agent():
-            assign_perm(Perms.obj.importer.is_agent, user, org.main_importer)
+    if org.is_agent():
+        assign_perm(obj_perms.is_agent, user, org.get_main_org())
 
-    elif isinstance(org, Exporter):
-        add_group(user, "Exporter User")
-
-        # TODO: ICMSLST-1737 Update exporter contact perms
-        for exp_perm in [Perms.obj.exporter.is_contact]:
-            assign_perm(exp_perm, user, org)
-
-        if org.is_agent():
-            assign_perm(Perms.obj.exporter.is_agent, user, org.main_exporter)
-
-    else:
-        raise NotImplementedError(f"Unknown org {org}")
+    add_group(user, obj_perms.get_group_name())
 
 
 def remove_organisation_contact(org: ORGANISATION, user: User) -> None:
     for perm in get_user_perms(user, org):
         remove_perm(perm, user, org)
 
-    match org:
-        case Importer():
-            obj_perms = Perms.obj.importer.values
+    obj_perms = _get_obj_permissions(org)
 
-            if org.is_agent():
-                remove_perm(Perms.obj.importer.is_agent, user, org.main_importer)
-
-            group_to_remove = "Importer User"
-
-        case Exporter():
-            obj_perms = Perms.obj.exporter.values
-
-            if org.is_agent():
-                remove_perm(Perms.obj.exporter.is_agent, user, org.main_exporter)
-
-            group_to_remove = "Exporter User"
-
-        case _:
-            raise NotImplementedError(f"Unknown org {org}")
+    if org.is_agent():
+        remove_perm(obj_perms.is_agent, user, org.get_main_org())
 
     # Is the user linked to any other orgs
-    other_orgs = get_objects_for_user(user, obj_perms, any_perm=True)
+    other_orgs = get_objects_for_user(user, obj_perms.values, any_perm=True)
 
     if not other_orgs.exists():
-        remove_group(user, group_to_remove)
+        remove_group(user, obj_perms.get_group_name())
+
+
+def can_manage_org_contacts(org: ORGANISATION, user: User) -> bool:
+    obj_perms = _get_obj_permissions(org)
+
+    is_ilb_admin = user.has_perm(Perms.sys.ilb_admin)
+    can_manage = user.has_perm(obj_perms.manage_contacts_and_agents, org)
+
+    return is_ilb_admin or can_manage
+
+
+def _get_obj_permissions(org) -> IMP_OR_EXP_PERMS_T:
+    match org:
+        case Importer():
+            return ImporterObjectPermissions
+        case Exporter():
+            return ExporterObjectPermissions
+        case _:
+            raise NotImplementedError(f"Unknown org {org}")
 
 
 def add_group(user: User, group_name: str) -> None:

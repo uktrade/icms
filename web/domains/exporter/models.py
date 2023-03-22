@@ -55,6 +55,9 @@ class Exporter(Archivable, models.Model):
     def is_agent(self):
         return self.main_exporter is not None
 
+    def get_main_org(self):
+        return self.main_exporter
+
     def __str__(self):
         if self.is_agent():
             return f"Agent - {self.name}"

@@ -95,6 +95,9 @@ class Importer(Archivable, models.Model):
     def is_agent(self):
         return self.main_importer is not None
 
+    def get_main_org(self):
+        return self.main_importer
+
     def is_organisation(self):
         return self.type == self.ORGANISATION
 
