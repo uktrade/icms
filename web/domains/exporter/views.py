@@ -243,15 +243,14 @@ def unarchive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpRespon
     return redirect(reverse("exporter-edit", kwargs={"pk": agent.main_exporter.pk}))
 
 
-# TODO: ICMSLST-1737
 def get_exporter_object_permissions() -> list[tuple[ExporterObjectPermissions, str]]:
     """Return object permissions for the Exporter model with a label for each."""
 
     object_permissions = [
-        # (Perms.obj.exporter.view, "View Applications / Certificates"),
-        # (Perms.obj.exporter.edit, "Edit Applications / Vary Certificates"),
+        (Perms.obj.exporter.view, "View Applications / Certificates"),
+        (Perms.obj.exporter.edit, "Edit Applications / Vary Certificates"),
         (Perms.obj.exporter.is_contact, "Is Exporter Contact"),
-        # (Perms.obj.exporter.manage_contacts_and_agents, "Approve / Reject Agents and Exporters"),
+        (Perms.obj.exporter.manage_contacts_and_agents, "Approve / Reject Agents and Exporters"),
     ]
 
     return object_permissions

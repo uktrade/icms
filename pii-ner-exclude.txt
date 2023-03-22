@@ -2643,7 +2643,6 @@ PROCESSING / VARIATION_REQUESTED
 Add Note
 Exporter User
 Approve / Reject Agents and Exporters
-ICMSLST-1737 Update
 View Applications / Certificates
 Edit Applications / Vary Certificates
 Variation Requested
@@ -2653,3 +2652,5 @@ TypedTextChoicesMeta(ChoicesMeta
 Global mypy config
 Modules
 "Check if the table
+web.can_view_edit_importer
+Edit
