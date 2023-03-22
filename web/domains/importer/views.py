@@ -109,8 +109,7 @@ class ImporterListUserView(PermissionRequiredMixin, LoginRequiredMixin, ListView
     def get_queryset(self):
         importer_qs = super().get_queryset().filter(is_active=True)
 
-        # TODO: Revisit in ICMSLST-1932 with new permissions.
-        required_perms = [Perms.obj.importer.is_contact, Perms.obj.importer.is_agent]
+        required_perms = [p for p in Perms.obj.importer.values if p != Perms.obj.importer.is_agent]
 
         qs = get_objects_for_user(
             self.request.user, required_perms, klass=importer_qs, any_perm=True
