@@ -13,12 +13,10 @@ class TemplateFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Template
 
-    start_datetime = fake.date_time_between(
-        start_date="-1y", end_date="+1y", tzinfo=datetime.timezone.utc
-    )
+    start_datetime = fake.date_time_between(start_date="-1y", end_date="+1y", tzinfo=datetime.UTC)
     end_datetime = factory.LazyAttribute(
         lambda t: fake.date_time_between(
-            start_date=t.start_datetime, end_date="+2y", tzinfo=datetime.timezone.utc
+            start_date=t.start_datetime, end_date="+2y", tzinfo=datetime.UTC
         )
     )
     is_active = random.choice([True, False])

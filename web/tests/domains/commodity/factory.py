@@ -14,12 +14,10 @@ class CommodityFactory(factory.django.DjangoModelFactory):
         model = Commodity
 
     is_active = True
-    start_datetime = fake.date_time_between(
-        start_date="-2y", end_date="+1y", tzinfo=datetime.timezone.utc
-    )
+    start_datetime = fake.date_time_between(start_date="-2y", end_date="+1y", tzinfo=datetime.UTC)
     end_datetime = factory.LazyAttribute(
         lambda c: fake.date_time_between(
-            start_date=c.start_datetime, end_date="+2y", tzinfo=datetime.timezone.utc
+            start_date=c.start_datetime, end_date="+2y", tzinfo=datetime.UTC
         )
     )
     commodity_code = factory.fuzzy.FuzzyText(length=10)
@@ -36,12 +34,10 @@ class CommodityGroupFactory(factory.django.DjangoModelFactory):
         model = CommodityGroup
 
     is_active = random.choice([True, False])
-    start_datetime = fake.date_time_between(
-        start_date="-3y", end_date="+2y", tzinfo=datetime.timezone.utc
-    )
+    start_datetime = fake.date_time_between(start_date="-3y", end_date="+2y", tzinfo=datetime.UTC)
     end_datetime = factory.LazyAttribute(
         lambda c: fake.date_time_between(
-            start_date=c.start_datetime, end_date="+3y", tzinfo=datetime.timezone.utc
+            start_date=c.start_datetime, end_date="+3y", tzinfo=datetime.UTC
         )
     )
     group_type = random.choice([CommodityGroup.AUTO, CommodityGroup.CATEGORY])

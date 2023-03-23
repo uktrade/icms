@@ -558,7 +558,7 @@ class TestViewIssuedCaseDocumentsView:
 
     def test_get_success(self):
         self.licence.case_completion_datetime = datetime.datetime(
-            2020, 6, 15, 11, 44, 0, tzinfo=datetime.timezone.utc
+            2020, 6, 15, 11, 44, 0, tzinfo=datetime.UTC
         )
         self.licence.save()
 

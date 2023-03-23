@@ -397,7 +397,7 @@ def completed_app(fa_sil_app_submitted, icms_admin_client):
 
 def _set_valid_licence(app):
     licence = document_pack.pack_draft_get(app)
-    licence.case_completion_datetime = datetime.datetime(2020, 1, 1, tzinfo=datetime.timezone.utc)
+    licence.case_completion_datetime = datetime.datetime(2020, 1, 1, tzinfo=datetime.UTC)
     licence.licence_start_date = datetime.date(2020, 6, 1)
     licence.licence_end_date = datetime.date(2024, 12, 31)
     licence.issue_paper_licence_only = False
