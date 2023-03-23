@@ -33,7 +33,8 @@ def send_to_importers(subject, message, html_message=None):
     importers = Importer.objects.filter(is_active=True)
     for importer in importers:
         if importer.type == Importer.INDIVIDUAL:
-            if importer.user.account_status == User.ACTIVE:
+            # TODO: ICMSLST-1948 Revisit this (importer.user is something that should be removed.)
+            if importer.user and importer.user.account_status == User.ACTIVE:
                 send_email.delay(
                     subject,
                     message,
