@@ -15,7 +15,7 @@ See [ICMS Features](documentation/icms-features.md) for an overview of the syste
 
 ## Requirements
 
-- [Python 3.10.*](https://www.python.org/downloads/)
+- [Python 3.11.*](https://www.python.org/downloads/)
 - [PostgreSQL](https://www.postgresql.org/)
 - Development only
   - [Docker Compose 1.21.0+](https://docs.docker.com/compose/)
