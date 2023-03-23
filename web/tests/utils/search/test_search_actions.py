@@ -112,7 +112,7 @@ def test_get_export_application_search_actions(
     # Add a fake annotation to the application record.
     if issue_date:
         application.latest_certificate_issue_datetime = datetime.datetime.combine(
-            issue_date, datetime.time.min, tzinfo=datetime.timezone.utc
+            issue_date, datetime.time.min, tzinfo=datetime.UTC
         )
     else:
         application.latest_certificate_issue_datetime = issue_date

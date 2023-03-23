@@ -26,7 +26,7 @@ profile = "black"
 # Global mypy config
 #
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 exclude = [
     "web/tests/",
     "web/migrations/",
