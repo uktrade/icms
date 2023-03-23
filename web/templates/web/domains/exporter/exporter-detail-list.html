@@ -7,35 +7,23 @@
       <table class="setoutList">
         <thead>
         <tr>
-          <th scope="col">Importer Name</th>
-          <th scope="col">Importer Reg No / <br>Importer Entity Type</th>
+          <th scope="col">Exporter Name</th>
           <th scope="col">Addresses</th>
+          <th scope="col">Agents</th>
           <th scope="col">Actions</th>
         </tr>
         </thead>
         <tbody>
-        {% for importer in object_list %}
+        {% for exporter in object_list %}
           <tr>
             <td>
               <div class="container setoutForm">
                 <div class="row">
-                  <div class="six columns"><a href="{{ icms_url('importer-view', kwargs={"pk": importer.pk}) }}">{{ importer }}</a></div>
+                  <div class="six columns"><a href="{{ icms_url('exporter-view', kwargs={"pk": exporter.pk}) }}">{{ exporter }}</a></div>
                   <div class="six columns"></div>
                 </div>
                 <div class="row">
                   <div class="six columns"><span class="text-widget" style="font-weight:bold;"></span></div>
-                  <div class="six columns"></div>
-                </div>
-              </div>
-            </td>
-            <td>
-              <div class="container setoutForm">
-                <div class="row">
-                  <div class="six columns"><span class="text-widget ">{{ importer.registered_number or "" }}</span></div>
-                  <div class="six columns"></div>
-                </div>
-                <div class="row">
-                  <div class="six columns"><span class="text-widget ">{{ importer.get_type_display() }}</span></div>
                   <div class="six columns"></div>
                 </div>
               </div>
@@ -51,7 +39,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for office in importer.offices.filter(is_active=True) %}
+                {% for office in exporter.offices.filter(is_active=True) %}
                   <tr>
                     <td><span class="text-widget">{{ office|nl2br }}</span></td>
                   </tr>
@@ -61,10 +49,22 @@
             </td>
 
             <td>
-              {% if user_obj_perms.can_edit_org(importer) %}
+              <div class="container setoutForm">
+                {% for agent in exporter.agents.filter(is_active=True) %}
+                  <div class="row">
+                    <div class="six columns"><span class="text-widget ">{{ agent }}</span></div>
+                    <div class="six columns"></div>
+                  </div>
+                {% endfor %}
+
+              </div>
+            </td>
+
+            <td>
+              {% if user_obj_perms.can_edit_org(exporter) %}
                 <div class="row">
                   <div class="twelve columns">
-                    <a href="{{ icms_url("importer-edit", kwargs={'pk': importer.pk}) }}"
+                    <a href="{{ icms_url("exporter-edit", kwargs={'pk': exporter.pk}) }}"
                        class="button small-button icon-pencil">
                       Edit
                     </a>
@@ -84,9 +84,9 @@
   {% if page_obj.paginator.num_pages > 1 %}
     <div class="pagination">
       <div class="info-box info-box-info">
-        <p><strong>Not all linked importers shown.</strong></p>
-        <p>Linked importers count: {{ page_obj.paginator.count }}.
-          Only {{ page_obj.paginator.per_page }} importers have been displayed.</p>
+        <p><strong>Not all linked exporters shown.</strong></p>
+        <p>Linked exporters count: {{ page_obj.paginator.count }}.
+          Only {{ page_obj.paginator.per_page }} exporters have been displayed.</p>
 
         <span class="step-links">
           {% if page_obj.has_previous() %}

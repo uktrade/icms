@@ -1,5 +1,6 @@
 import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import F
 from django.forms.models import inlineformset_factory
@@ -11,6 +12,7 @@ from django.views.decorators.http import require_POST
 from web.domains.case.forms import DocumentForm
 from web.domains.file.utils import create_file_model
 from web.models import Importer
+from web.permissions import can_user_edit_firearm_authorities
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 from web.views import ModelFilterView
@@ -241,8 +243,10 @@ def view_obsolete_calibre_group(request, pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def create_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+    if not can_user_edit_firearm_authorities(request.user):
+        raise PermissionDenied
+
     importer: Importer = get_object_or_404(Importer, pk=pk)
 
     if request.method == "POST":
@@ -285,8 +289,10 @@ def create_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def edit_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+    if not can_user_edit_firearm_authorities(request.user):
+        raise PermissionDenied
+
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=pk)
 
     if request.method == "POST":
@@ -322,8 +328,10 @@ def edit_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def view_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+    if not can_user_edit_firearm_authorities(request.user):
+        raise PermissionDenied
+
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=pk)
 
     context = {
@@ -335,9 +343,11 @@ def view_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def archive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+    if not can_user_edit_firearm_authorities(request.user):
+        raise PermissionDenied
+
     firearms: FirearmsAuthority = get_object_or_404(
         FirearmsAuthority.objects.filter(is_active=True), pk=pk
     )
@@ -348,9 +358,11 @@ def archive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def unarchive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+    if not can_user_edit_firearm_authorities(request.user):
+        raise PermissionDenied
+
     firearms: FirearmsAuthority = get_object_or_404(
         FirearmsAuthority.objects.filter(is_active=False), pk=pk
     )
@@ -361,8 +373,10 @@ def unarchive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpRespon
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def add_document_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+    if not can_user_edit_firearm_authorities(request.user):
+        raise PermissionDenied
+
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=pk)
 
     if request.method == "POST":
@@ -386,10 +400,12 @@ def add_document_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpRes
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def view_document_firearms(
     request: AuthenticatedHttpRequest, firearms_pk: int, document_pk: int
 ) -> HttpResponse:
+    if not can_user_edit_firearm_authorities(request.user):
+        raise PermissionDenied
+
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=firearms_pk)
 
     document = firearms.files.get(pk=document_pk)
@@ -402,11 +418,13 @@ def view_document_firearms(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def delete_document_firearms(
     request: AuthenticatedHttpRequest, firearms_pk: int, document_pk: int
 ) -> HttpResponse:
+    if not can_user_edit_firearm_authorities(request.user):
+        raise PermissionDenied
+
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=firearms_pk)
 
     document = firearms.files.get(pk=document_pk)

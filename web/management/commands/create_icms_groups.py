@@ -13,6 +13,9 @@ class Command(BaseCommand):
 
 def create_groups():
     for group_name, permission_codenames in get_groups().items():
+        if [p for p in permission_codenames if "web." in p]:
+            raise ValueError("Each permission should use .codename property")
+
         group, _ = Group.objects.get_or_create(name=group_name)
         permissions = Permission.objects.filter(codename__in=permission_codenames)
 
@@ -28,18 +31,17 @@ def get_groups():
             Perms.page.view_permission_harness.codename,
             Perms.page.view_importer_details.codename,
             Perms.page.view_exporter_details.codename,
-            Perms.page.view_edit_importer.codename,
-            Perms.page.view_edit_exporter.codename,
             #
             # Sys permissions
             Perms.sys.ilb_admin.codename,
-            Perms.sys.mailshot_access,
+            Perms.sys.edit_firearm_authorities.codename,
+            Perms.sys.edit_section_5_firearm_authorities.codename,
+            Perms.sys.mailshot_access.codename,
         ],
         Perms.obj.importer.get_group_name(): [
             #
             # Page permissions
             Perms.page.view_importer_details.codename,
-            Perms.page.view_edit_importer.codename,
             #
             # Sys permissions
             Perms.sys.importer_access.codename,
@@ -48,7 +50,6 @@ def get_groups():
             #
             # Page permissions
             Perms.page.view_exporter_details.codename,
-            Perms.page.view_edit_exporter.codename,
             #
             # Sys permissions
             Perms.sys.exporter_access.codename,

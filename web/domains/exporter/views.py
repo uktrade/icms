@@ -1,9 +1,14 @@
+from typing import Any
+
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.views.generic import ListView
+from guardian.shortcuts import get_objects_for_user
 
 from web.domains.contacts.forms import ContactForm
 from web.domains.exporter.forms import (
@@ -15,7 +20,13 @@ from web.domains.exporter.forms import (
 )
 from web.domains.office.forms import ExporterOfficeForm
 from web.models import Exporter, User
-from web.permissions import Perms, can_manage_org_contacts, get_organisation_contacts
+from web.permissions import (
+    Perms,
+    can_user_edit_org,
+    can_user_manage_org_contacts,
+    can_user_view_org,
+    organisation_get_contacts,
+)
 from web.types import AuthenticatedHttpRequest
 from web.views import ModelFilterView
 from web.views.actions import Archive, CreateExporterAgent, Edit, Unarchive
@@ -25,7 +36,7 @@ class ExporterListView(ModelFilterView):
     template_name = "web/domains/exporter/list.html"
     filterset_class = ExporterFilter
     model = Exporter
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
     page_title = "Maintain Exporters"
 
     class Display:
@@ -43,23 +54,49 @@ class ExporterListView(ModelFilterView):
         actions = [Edit(**opts), CreateExporterAgent(**opts), Archive(**opts), Unarchive(**opts)]
 
 
+class ExporterListUserView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
+    """Exporter list view showing all exporters the logged-in user has access to."""
+
+    permission_required = [Perms.page.view_exporter_details]
+    model = Exporter
+    paginate_by = 10
+    template_name = "web/domains/exporter/exporter-detail-list.html"
+
+    extra_context = {
+        "page_title": "Select an Exporter",
+    }
+
+    def get_queryset(self):
+        exporter_qs = super().get_queryset().filter(is_active=True)
+
+        required_perms = [p for p in Perms.obj.exporter.values if p != Perms.obj.exporter.is_agent]
+
+        qs = get_objects_for_user(
+            self.request.user, required_perms, klass=exporter_qs, any_perm=True
+        )
+
+        return qs.prefetch_related("offices")
+
+
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     exporter: Exporter = get_object_or_404(Exporter, pk=pk)
 
-    if request.method == "POST":
-        form = ExporterForm(request.POST, instance=exporter)
-        if form.is_valid():
-            form.save()
-            return redirect(reverse("exporter-edit", kwargs={"pk": pk}))
-    else:
-        form = ExporterForm(instance=exporter)
+    if not can_user_edit_org(request.user, exporter):
+        raise PermissionDenied
 
-    contacts = get_organisation_contacts(exporter)
-    object_permissions = get_exporter_object_permissions()
-    can_manage_contacts = can_manage_org_contacts(exporter, request.user)
+    form = ExporterForm(request.POST or None, instance=exporter)
 
+    if request.method == "POST" and form.is_valid():
+        form.save()
+
+        return redirect(reverse("exporter-edit", kwargs={"pk": pk}))
+
+    contacts = organisation_get_contacts(exporter)
+    object_permissions = get_exporter_object_permissions(exporter)
+    can_manage_contacts = can_user_manage_org_contacts(request.user, exporter)
+
+    user_context = _get_user_context(request.user)
     context = {
         "object": exporter,
         "form": form,
@@ -70,16 +107,19 @@ def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
         "org_type": "exporter",
     }
 
-    return render(request, "web/domains/exporter/edit.html", context)
+    return render(request, "web/domains/exporter/edit.html", context | user_context)
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def detail_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     exporter: Exporter = get_object_or_404(Exporter, pk=pk)
 
-    contacts = get_organisation_contacts(exporter)
-    object_permissions = get_exporter_object_permissions()
+    if not can_user_view_org(request.user, exporter):
+        raise PermissionDenied
+
+    user_context = _get_user_context(request.user)
+    contacts = organisation_get_contacts(exporter)
+    object_permissions = get_exporter_object_permissions(exporter)
 
     context = {
         "object": exporter,
@@ -88,11 +128,11 @@ def detail_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpRespon
         "org_type": "exporter",
     }
 
-    return render(request, "web/domains/exporter/detail.html", context)
+    return render(request, "web/domains/exporter/detail.html", context | user_context)
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def create_exporter(request: AuthenticatedHttpRequest) -> HttpResponse:
     if request.method == "POST":
         form = ExporterForm(request.POST)
@@ -107,9 +147,11 @@ def create_exporter(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def create_office(request, pk):
     exporter = get_object_or_404(Exporter, pk=pk)
+
+    if not can_user_edit_org(request.user, exporter):
+        raise PermissionDenied
 
     if request.method == "POST":
         form = ExporterOfficeForm(request.POST)
@@ -126,15 +168,24 @@ def create_office(request, pk):
     else:
         form = ExporterOfficeForm()
 
-    context = {"object": exporter, "form": form}
+    user_context = _get_user_context(request.user)
+
+    context = {
+        "object": exporter,
+        "form": form,
+        "base_template": user_context["base_template"],
+    }
 
     return render(request, "web/domains/exporter/create-office.html", context)
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def edit_office(request, exporter_pk, office_pk):
     exporter = get_object_or_404(Exporter, pk=exporter_pk)
+
+    if not can_user_edit_org(request.user, exporter):
+        raise PermissionDenied
+
     office = get_object_or_404(exporter.offices, pk=office_pk)
 
     if request.method == "POST":
@@ -145,19 +196,25 @@ def edit_office(request, exporter_pk, office_pk):
     else:
         form = ExporterOfficeForm(instance=office)
 
+    user_context = _get_user_context(request.user)
+
     context = {
         "object": exporter,
         "office": office,
         "form": form,
+        "base_template": user_context["base_template"],
     }
     return render(request, "web/domains/exporter/edit-office.html", context)
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def archive_office(request, exporter_pk, office_pk):
     exporter = get_object_or_404(Exporter, pk=exporter_pk)
+
+    if not can_user_edit_org(request.user, exporter):
+        raise PermissionDenied
+
     office = get_object_or_404(exporter.offices.filter(is_active=True), pk=office_pk)
     office.is_active = False
     office.save()
@@ -166,10 +223,13 @@ def archive_office(request, exporter_pk, office_pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def unarchive_office(request, exporter_pk, office_pk):
     exporter = get_object_or_404(Exporter, pk=exporter_pk)
+
+    if not can_user_edit_org(request.user, exporter):
+        raise PermissionDenied
+
     office = get_object_or_404(exporter.offices.filter(is_active=False), pk=office_pk)
     office.is_active = True
     office.save()
@@ -178,7 +238,7 @@ def unarchive_office(request, exporter_pk, office_pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def create_agent(request, exporter_pk):
     exporter: Exporter = get_object_or_404(Exporter, pk=exporter_pk)
 
@@ -201,9 +261,11 @@ def create_agent(request, exporter_pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     exporter: Exporter = get_object_or_404(Exporter.objects.agents(), pk=pk)
+
+    if not can_user_edit_org(request.user, exporter):
+        raise PermissionDenied
 
     if request.method == "POST":
         form = AgentForm(request.POST, instance=exporter)
@@ -214,9 +276,10 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     else:
         form = AgentForm(instance=exporter)
 
-    contacts = get_organisation_contacts(exporter)
-    object_permissions = get_exporter_object_permissions()
-    can_manage_contacts = can_manage_org_contacts(exporter, request.user)
+    contacts = organisation_get_contacts(exporter)
+    object_permissions = get_exporter_object_permissions(exporter)
+    can_manage_contacts = can_user_manage_org_contacts(request.user, exporter)
+    user_context = _get_user_context(request.user)
 
     context = {
         "object": exporter.main_exporter,
@@ -226,13 +289,14 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
         "object_permissions": object_permissions,
         "can_manage_contacts": can_manage_contacts,
         "org_type": "exporter",
+        "base_template": user_context["base_template"],
     }
 
-    return render(request, "web/domains/exporter/edit-agent.html", context=context)
+    return render(request, "web/domains/exporter/edit-agent.html", context=context | user_context)
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def archive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     agent = get_object_or_404(Exporter.objects.agents().filter(is_active=True), pk=pk)
@@ -243,7 +307,7 @@ def archive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def unarchive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     agent = get_object_or_404(Exporter.objects.agents().filter(is_active=False), pk=pk)
@@ -254,7 +318,6 @@ def unarchive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpRespon
 
 
 @login_required
-@permission_required(Perms.page.view_edit_exporter, raise_exception=True)
 def edit_user_exporter_permissions(
     request: AuthenticatedHttpRequest, org_pk: int, user_pk: int
 ) -> HttpResponse:
@@ -262,7 +325,7 @@ def edit_user_exporter_permissions(
 
     user = get_object_or_404(User, id=user_pk)
     exporter = get_object_or_404(Exporter, id=org_pk)
-    can_manage_contacts = can_manage_org_contacts(exporter, request.user)
+    can_manage_contacts = can_user_manage_org_contacts(request.user, exporter)
 
     if not can_manage_contacts:
         raise PermissionDenied
@@ -284,3 +347,16 @@ def edit_user_exporter_permissions(
     }
 
     return render(request, "web/domains/organisation/edit-user-permissions.html", context)
+
+
+def _get_user_context(user) -> dict[str, Any]:
+    """Return common context depending on the user profile."""
+
+    if user.has_perm(Perms.sys.ilb_admin):
+        base_template = "layout/sidebar.html"
+        parent_url = reverse("exporter-list")
+    else:
+        base_template = "layout/no-sidebar.html"
+        parent_url = reverse("user-exporter-list")
+
+    return {"base_template": base_template, "parent_url": parent_url}
