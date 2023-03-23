@@ -178,6 +178,7 @@ class Menu:
         MenuLink(label="Workbasket", view="workbasket"),
         MenuLink(label="Dashboard"),
         MenuLink(label="Importer Details", view="user-importer-list"),
+        MenuLink(label="Exporter Details", view="user-exporter-list"),
         MenuDropDown(
             label="Search",
             sub_menu_list=[

@@ -64,10 +64,19 @@
   <h2>Object permissions for user {{ user.full_name }}</h2>
   {% for importer in importers %}
     {{ importer_object_permissions(user_obj_perms_checker, importer) }}
+      <p>UserObjectPerms function:</p>
+      <p>user_obj_perms_checker.can_edit_org: {{ user_obj_perms_checker.can_edit_org(importer) }}</p>
+      <p>user_obj_perms_checker.can_manage_org_contacts: {{ user_obj_perms_checker.can_manage_org_contacts(importer) }}</p>
+      <p>user_obj_perms_checker.can_user_view_org: {{ user_obj_perms_checker.can_user_view_org(importer) }}</p>
+
   {% endfor %}
 
   {% for exporter in exporters %}
     {{ exporter_object_permissions(user_obj_perms_checker, exporter) }}
+    <p>UserObjectPerms function:</p>
+      <p>user_obj_perms_checker.can_edit_org: {{ user_obj_perms_checker.can_edit_org(exporter) }}</p>
+      <p>user_obj_perms_checker.can_manage_org_contacts: {{ user_obj_perms_checker.can_manage_org_contacts(exporter) }}</p>
+      <p>user_obj_perms_checker.can_user_view_org: {{ user_obj_perms_checker.can_user_view_org(exporter) }}</p>
   {% endfor %}
 {% endfor %}
 

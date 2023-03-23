@@ -14,20 +14,21 @@ class PagePermissions(PermissionTextChoice):
         "web.can_view_exporter_details",
         "Can view the exporter details list page.",
     )
-    view_edit_importer = (
-        "web.can_view_edit_importer",
-        "Can view the Edit Importer page (and nested pages below this).",
-    )
-    view_edit_exporter = (
-        "web.can_view_edit_exporter",
-        "Can view the Edit Exporter page (and nested pages below this).",
-    )
 
 
 class SysPerms(PermissionTextChoice):
     importer_access = "web.importer_access", "Can act as an importer"
     exporter_access = "web.exporter_access", "Can act as an exporter"
     ilb_admin = "web.ilb_admin", "Is an ILB administrator"
+    edit_firearm_authorities = (
+        "web.edit_firearm_authorities",
+        "Can edit Importer Verified Firearms Authorities",
+    )
+    edit_section_5_firearm_authorities = (
+        "web.edit_section_5_firearm_authorities",
+        "Can edit Importer Verified Section 5 Firearm Authorities",
+    )
+
     # This permission isn't used anywhere.
     mailshot_access = "web.mailshot_access", "Can maintain mailshots"
 

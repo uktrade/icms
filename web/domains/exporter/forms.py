@@ -91,23 +91,32 @@ class AgentForm(forms.ModelForm):
 
 
 # Needed for now because we don't want to show all permissions (everything but the agent)
-def get_exporter_object_permissions() -> list[tuple[ExporterObjectPermissions, str]]:
+def get_exporter_object_permissions(
+    exporter: Exporter,
+) -> list[tuple[ExporterObjectPermissions, str]]:
     """Return object permissions for the Exporter model with a label for each."""
 
     object_permissions = [
         (Perms.obj.exporter.view, "View Applications / Certificates"),
         (Perms.obj.exporter.edit, "Edit Applications / Vary Certificates"),
         (Perms.obj.exporter.is_contact, "Is Exporter Contact"),
-        (Perms.obj.exporter.manage_contacts_and_agents, "Approve / Reject Agents and Exporters"),
     ]
+
+    # The agent should never have the manage_contacts_and_agents permission.
+    if not exporter.is_agent():
+        object_permissions.append(
+            (Perms.obj.exporter.manage_contacts_and_agents, "Approve / Reject Agents and Exporters")
+        )
 
     return object_permissions
 
 
 class ExporterUserObjectPermissionsForm(UserObjectPermissionsForm):
+    obj: Exporter
+
     def get_obj_perms_field_widget(self):
         return forms.CheckboxSelectMultiple(attrs={"class": "radio-relative"})
 
     def get_obj_perms_field_choices(self):
         # Only iterate over permissions we show in the main edit exporter view
-        return [(p.codename, label) for (p, label) in get_exporter_object_permissions()]
+        return [(p.codename, label) for (p, label) in get_exporter_object_permissions(self.obj)]

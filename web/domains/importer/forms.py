@@ -211,23 +211,32 @@ class AgentOrganisationForm(forms.ModelForm):
 
 
 # Needed for now because we don't want to show all permissions (everything but the agent)
-def get_importer_object_permissions() -> list[tuple[ImporterObjectPermissions, str]]:
+def get_importer_object_permissions(
+    importer: Importer,
+) -> list[tuple[ImporterObjectPermissions, str]]:
     """Return object permissions for the Importer model with a label for each."""
 
     object_permissions = [
         (Perms.obj.importer.view, "View Applications / Licences"),
         (Perms.obj.importer.edit, "Edit Applications / Vary Licences"),
         (Perms.obj.importer.is_contact, "Is Importer Contact"),
-        (Perms.obj.importer.manage_contacts_and_agents, "Approve / Reject Agents and Importers"),
     ]
+
+    # The agent should never have the manage_contacts_and_agents permission.
+    if not importer.is_agent():
+        object_permissions.append(
+            (Perms.obj.importer.manage_contacts_and_agents, "Approve / Reject Agents and Importers")
+        )
 
     return object_permissions
 
 
 class ImporterUserObjectPermissionsForm(UserObjectPermissionsForm):
+    obj: Importer
+
     def get_obj_perms_field_widget(self):
         return forms.CheckboxSelectMultiple(attrs={"class": "radio-relative"})
 
     def get_obj_perms_field_choices(self):
         # Only iterate over permissions we show in the main edit importer view
-        return [(p.codename, label) for (p, label) in get_importer_object_permissions()]
+        return [(p.codename, label) for (p, label) in get_importer_object_permissions(self.obj)]

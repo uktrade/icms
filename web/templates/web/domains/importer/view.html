@@ -1,4 +1,4 @@
-{% extends "layout/sidebar.html" %}
+{% extends base_template %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
@@ -10,7 +10,7 @@
 {% block content_actions %}
     <div class="content-actions">
         <ul class="menu-out flow-across">
-            <li>  <a href="{{ icms_url('importer-list') }}" class="prev-link">Importers</a></li>
+          <li><a href="{{ parent_url }}" class="prev-link">Importers</a></li>
         </ul>
     </div>
 {% endblock %}
@@ -80,19 +80,23 @@
     {% include "partial/offices.html" %}
   {% endwith %}
 
-  {% with
-    firearms_authorities = object.firearms_authorities.all(),
-    read_only = True %}
+  {% if show_firearm_authorities %}
+    {% with
+      firearms_authorities = object.firearms_authorities.all(),
+      read_only = True %}
 
-    {% include "partial/firearms-authorities.html" %}
-  {% endwith %}
+      {% include "partial/firearms-authorities.html" %}
+    {% endwith %}
+  {% endif %}
 
-  {% with
-    section5_authorities = object.section5_authorities.all(),
-    read_only = True %}
+  {% if show_section5_authorities %}
+    {% with
+      section5_authorities = object.section5_authorities.all(),
+      read_only = True %}
 
-    {% include "partial/section5-authorities.html" %}
-  {% endwith %}
+      {% include "partial/section5-authorities.html" %}
+    {% endwith %}
+  {% endif %}
 
   {% if not object.is_agent() %}
     {% with

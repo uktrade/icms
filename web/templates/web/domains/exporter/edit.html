@@ -1,4 +1,4 @@
-{% extends "layout/sidebar.html" %}
+{% extends base_template %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
@@ -10,7 +10,7 @@
 {% block content_actions %}
   <div class="content-actions">
     <ul class="menu-out flow-across">
-      <li>  <a href="{{ icms_url('exporter-list') }}" class="prev-link">Exporters</a></li>
+      <li><a href="{{ parent_url }}" class="prev-link">Exporters</a></li>
     </ul>
   </div>
 {% endblock %}
@@ -65,7 +65,9 @@
     agents = object.agents,
     agent_edit_url_name = "exporter-agent-edit",
     agent_archive_url_name = "exporter-agent-archive",
-    agent_unarchive_url_name = "exporter-agent-unarchive" %}
+    agent_unarchive_url_name = "exporter-agent-unarchive",
+    is_ilb_admin = "web.ilb_admin" in perms
+  %}
 
     {% include "partial/agents.html" %}
   {% endwith %}

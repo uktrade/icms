@@ -75,7 +75,7 @@ def get_user_exporter_permissions(user: User, exporter: Exporter) -> UserExporte
     return UserExporterPerms(user, exporter, perms)
 
 
-def get_organisation_contacts(org: ORGANISATION) -> QuerySet[User]:
+def organisation_get_contacts(org: ORGANISATION) -> QuerySet[User]:
     """Current active contacts associated with importer, importer agent or exporter.
 
     An importer agent is still simply an importer.
@@ -94,7 +94,9 @@ def get_organisation_contacts(org: ORGANISATION) -> QuerySet[User]:
     return org_contacts
 
 
-def add_organisation_contact(org: ORGANISATION, user: User) -> None:
+def organisation_add_contact(org: ORGANISATION, user: User) -> None:
+    """Add a user to an organisation."""
+
     obj_perms = _get_obj_permissions(org)
 
     for perm in [obj_perms.view, obj_perms.edit, obj_perms.is_contact]:
@@ -106,7 +108,9 @@ def add_organisation_contact(org: ORGANISATION, user: User) -> None:
     add_group(user, obj_perms.get_group_name())
 
 
-def remove_organisation_contact(org: ORGANISATION, user: User) -> None:
+def organisation_remove_contact(org: ORGANISATION, user: User) -> None:
+    """Remove a user from an organisation."""
+
     for perm in get_user_perms(user, org):
         remove_perm(perm, user, org)
 
@@ -122,13 +126,66 @@ def remove_organisation_contact(org: ORGANISATION, user: User) -> None:
         remove_group(user, obj_perms.get_group_name())
 
 
-def can_manage_org_contacts(org: ORGANISATION, user: User) -> bool:
+def can_user_view_org(user: User, org: ORGANISATION) -> bool:
+    """Check if the supplied user can view an organisation."""
+
     obj_perms = _get_obj_permissions(org)
 
-    is_ilb_admin = user.has_perm(Perms.sys.ilb_admin)
-    can_manage = user.has_perm(obj_perms.manage_contacts_and_agents, org)
+    return (
+        user.has_perm(Perms.sys.ilb_admin)
+        or user.has_perm(obj_perms.view, org)
+        or user.has_perm(obj_perms.edit, org)
+        or user.has_perm(obj_perms.manage_contacts_and_agents, org)
+    )
 
-    return is_ilb_admin or can_manage
+
+def can_user_edit_org(user: User, org: ORGANISATION) -> bool:
+    """Check if the supplied user can edit an organisation."""
+
+    obj_perms = _get_obj_permissions(org)
+
+    # Can the user edit / manage contacts of the org directly
+    can_edit_org = user.has_perm(obj_perms.edit, org) or user.has_perm(
+        obj_perms.manage_contacts_and_agents, org
+    )
+
+    # Can the user edit / manage contacts of the parent org
+    if org.is_agent():
+        main_org = org.get_main_org()
+        can_edit_main_org = user.has_perm(obj_perms.edit, main_org) or user.has_perm(
+            obj_perms.manage_contacts_and_agents, main_org
+        )
+    else:
+        can_edit_main_org = False
+
+    return user.has_perm(Perms.sys.ilb_admin) or can_edit_org or can_edit_main_org
+
+
+def can_user_manage_org_contacts(user: User, org: ORGANISATION) -> bool:
+    """Check if the supplied user can manage organisation contacts."""
+
+    obj_perms = _get_obj_permissions(org)
+
+    # Can the user manage contacts of the org directly
+    can_manage_contacts = user.has_perm(obj_perms.manage_contacts_and_agents, org)
+
+    # Can the user manage contacts of the parent org
+    if org.is_agent():
+        can_manage_main_org_contacts = user.has_perm(
+            obj_perms.manage_contacts_and_agents, org.get_main_org()
+        )
+    else:
+        can_manage_main_org_contacts = False
+
+    return user.has_perm(Perms.sys.ilb_admin) or can_manage_contacts or can_manage_main_org_contacts
+
+
+def can_user_edit_firearm_authorities(user: User) -> bool:
+    return user.has_perm(Perms.sys.edit_firearm_authorities)
+
+
+def can_user_edit_section5_authorities(user: User) -> bool:
+    return user.has_perm(Perms.sys.edit_section_5_firearm_authorities)
 
 
 def _get_obj_permissions(org) -> IMP_OR_EXP_PERMS_T:

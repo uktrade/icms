@@ -20,6 +20,7 @@ from web.domains.case.services import case_progress
 from web.domains.case.types import ImpOrExp
 from web.domains.workbasket.actions.ilb_admin_actions import TakeOwnershipAction
 from web.menu import Menu
+from web.permissions.context_processors import UserObjectPerms
 from web.types import AuthenticatedHttpRequest
 
 if TYPE_CHECKING:
@@ -155,8 +156,7 @@ def get_active_task_list(application):
 
 def get_user_obj_perms(user: "User") -> ObjectPermissionChecker:
     """Return a ObjectPermissionChecker initialised for the supplied user."""
-
-    checker = ObjectPermissionChecker(user)
+    checker = UserObjectPerms(user)
 
     return checker
 

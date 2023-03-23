@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.auth.models import Group
 from django.test.client import Client
 
 from web.models import FirearmsAuthority, User
@@ -55,6 +56,9 @@ def test_create_firearms_authority():
         password_disposition=User.FULL,
         permission_codenames=["ilb_admin"],
     )
+    ilb_admin_group = Group.objects.get(name="ILB Case Officer")
+    ilb_admin.groups.add(ilb_admin_group)
+
     office_one, office_two = OfficeFactory.create_batch(2, is_active=True)
     importer = ImporterFactory.create(is_active=True, offices=[office_one, office_two])
 
