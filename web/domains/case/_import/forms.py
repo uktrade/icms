@@ -41,7 +41,17 @@ class CreateImportApplicationForm(forms.Form):
                 "data-minimum-input-length": 0,
                 "data-placeholder": "-- Select Office",
             },
-            search_fields=("postcode__icontains", "address__icontains"),
+            search_fields=(
+                "postcode__icontains",
+                "address_1__icontains",
+                "address_2__icontains",
+                "address_3__icontains",
+                "address_4__icontains",
+                "address_5__icontains",
+                "address_6__icontains",
+                "address_7__icontains",
+                "address_8__icontains",
+            ),
             dependent_fields={"importer": "importer"},
         ),
     )
@@ -70,7 +80,17 @@ class CreateImportApplicationForm(forms.Form):
                 "data-minimum-input-length": 0,
                 "data-placeholder": "-- Select Office",
             },
-            search_fields=("postcode__icontains", "address__icontains"),
+            search_fields=(
+                "postcode__icontains",
+                "address_1__icontains",
+                "address_2__icontains",
+                "address_3__icontains",
+                "address_4__icontains",
+                "address_5__icontains",
+                "address_6__icontains",
+                "address_7__icontains",
+                "address_8__icontains",
+            ),
             # Key is a name of a field in a form.
             # Value is a name of a field in a model (used in `queryset`).
             dependent_fields={"agent": "importer"},
