@@ -165,7 +165,7 @@ test: ## run tests (circleci; don't use locally as it produces a coverage report
 		--cov-fail-under 66
 
 migration_test:
-	./run-tests.sh data_migration --create-db --numprocesses 2
+	./run-tests.sh data_migration --create-db --numprocesses 2 ${args}
 
 
 end_to_end_clear_session: ## Clears the session cookies stored after running end to end tests
