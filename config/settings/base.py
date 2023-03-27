@@ -197,7 +197,7 @@ Field.default_error_messages = {
 S3_ROOT_DIRECTORY = "documents"
 
 # Used to set the S3 endpoint in development environments only
-AWS_S3_ENDPOINT_URL = ""
+AWS_S3_ENDPOINT_URL: str | None = None
 
 # Order is important
 FILE_UPLOAD_HANDLERS = (
