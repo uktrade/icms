@@ -89,6 +89,7 @@ FROM impmgr.xview_certificate_app_details xcad
     , gmp_certificate_issued
     , file_folder_id
     , case_note_xml
+    , XMLTYPE.getClobVal(x.variations_xml) variations_xml
   FROM
     impmgr.certificate_app_details cad,
     XMLTABLE('/*'

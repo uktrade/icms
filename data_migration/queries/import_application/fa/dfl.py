@@ -90,6 +90,7 @@ SELECT
   , XMLTYPE.getClobVal(XMLELEMENT("FA_GOODS_CERTS", XMLCONCAT(commodities_xml, fa_certs_xml))) fa_goods_certs_xml
   , x.file_folder_id
   , XMLTYPE.getClobVal(x.cover_letter_text) cover_letter_text
+  , XMLTYPE.getClobVal(x.variations_xml) variations_xml
 FROM impmgr.import_application_details ad
 CROSS JOIN XMLTABLE('/*'
   PASSING ad.xml_data

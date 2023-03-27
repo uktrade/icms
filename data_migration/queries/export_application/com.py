@@ -77,6 +77,7 @@ FROM impmgr.xview_certificate_app_details xcad
       , x.chemical_name
       , x.manufacturing_process
       , x.case_note_xml
+      , XMLTYPE.getClobVal(x.variations_xml) variations_xml
     FROM
       impmgr.certificate_app_details cad,
       XMLTABLE('/*'
