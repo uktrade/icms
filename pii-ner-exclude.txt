@@ -2218,62 +2218,62 @@ Pending Further Information
 Certificate Country
 \.git
 \.mypy_cache
-Resource Co-ordinator    
-RESOURCE_COORDINATOR                                  
-Description              
-Maintain All             
+Resource Co-ordinator
+RESOURCE_COORDINATOR
+Description
+Maintain All
 IMP_IMPORTER_CONTACTS<
 Dashboard User
-DASHBOARD_USER                                             
+DASHBOARD_USER
 ResourceTypes
-Search Cases             
+Search Cases
 Import Application Case Officer
-Description                      
-Description                           
+Description
+Description
 Constabulary Contacts
 CON
-FIREARMS_AUTHORITY_EDITOR                                                                                              
-Description                         
+FIREARMS_AUTHORITY_EDITOR
+Description
 Exporter Agent Contacts
 EXP
 View Applications/Certificates
 |---------------------------------|----------------------------------------------------------------------------------------------------------|
-Description                     
+Description
 Edit Applications        |                                                                                       |
-EDIT_APPLICATION                                                                      
+EDIT_APPLICATION
 Approve/Reject Agents
 Exporters
-AGENT_APPROVER                                                                                     
-Description                          
+AGENT_APPROVER
+Description
 Verified Section 5 Authority
 Importer Agent Contacts
 IMP
 View Applications/Licences
-VIEW_APP                                                                                             
-Description                 
+VIEW_APP
+Description
 IMP_VIEW_APP
-EDIT_APP                                                                              
+EDIT_APP
 IMP_EDIT_APP
 IMP_VARY_APP
 IMP_AGENT_APPROVER
-Team Coordinator         
+Team Coordinator
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
 REPORT_ADMINISTRATOR
 RCAT
 REPORTING_TEAM
 RPT
-REPORT_VIEWER                                                       
-Runner           
-Schedule Runner          
+REPORT_VIEWER
+Runner
+Schedule Runner
 Repeat Runner
 REPORT_RUNNER_REPEAT                                                                                       |
 Workbasket Viewers
-Team Coordinator            
-Workbasket Viewer        
-WORKBASKET_VIEWER                                                                        
-Workbasket Viewee        
+Team Coordinator
+Workbasket Viewer
+WORKBASKET_VIEWER
+Workbasket Viewee
 Country Set Super User
-COUNTRY_SET_ADMIN                                                                      
+COUNTRY_SET_ADMIN
 ILB External
 Country Super Users](#country-super
 Exporter Contacts
@@ -2684,6 +2684,7 @@ is_ilb_admin
 Create Individual
 Select an Exporter
 Exporter Details
+<<<<<<< HEAD
 address_5__icontains
 "If Sentry
 Test Importer 1
@@ -2693,3 +2694,17 @@ Test Importer 2
 ILB Admin/Caseworker
 main_org
 E1_A1
+=======
+file_folder_id
+VARCHAR(4000
+PATH '/CA/APPLICATION/GMP_DETAILS
+PATH '/CA/APPLICATION/GMP_DETAILS/RESPONSIBLE_ADDRESS_DETAILS/RESPONSIBLE_PERSON_COUNTRY[not(fox-error)]/text
+PATH '/CA/APPLICATION/GMP_DETAILS/MANUFACTURER_ADDRESS_DETAILS/COUNTRY_OF_MANUFACTURE[not(fox-error)]/text
+FILE_FOLDER_ID
+INNER JOIN impmgr.beis_email_recipients
+e.cad_id
+x.product_name
+PATH '/CA/APPLICATION//SCHEDULE/IS_DOMESTIC_MARKET_PESTICIDE[not(fox-error)]/text
+is_manufacturer
+x.file_folder_id
+>>>>>>> f06b82e5 (ICMSLST-1905 Fix missing variation requests in data migration)

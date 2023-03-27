@@ -91,6 +91,7 @@ SELECT
   , x.completed_by_id
   , TO_DATE(x.completed_datetime, 'YYYY-MM-DD') completed_datetime
   , x.file_folder_id
+  , XMLTYPE.getClobVal(x.variations_xml) variations_xml
 FROM impmgr.import_application_details ad
 CROSS JOIN XMLTABLE('/*'
   PASSING ad.xml_data
