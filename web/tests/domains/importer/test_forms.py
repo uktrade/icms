@@ -35,11 +35,12 @@ class ImporterFilterTest(TestCase):
 
     def test_entity_type_filter(self):
         results = self.run_filter({"importer_entity_type": Importer.INDIVIDUAL})
-        self.assertEqual(results.count(), 2 + 1)  # We have added one to use as a pytest fixture
+        self.assertEqual(results.count(), 2)
 
     def test_filter_order(self):
         results = self.run_filter({"name": "import"})
-        self.assertEqual(results.count(), 4 + 1)  # We have added one to use as a pytest fixture
+        # We have added two organisation importers to use as a pytest fixture
+        self.assertEqual(results.count(), 4 + 2)
         first = results.first()
         last = results.last()
         self.assertEqual(first.name, "Active Importer Organisation")
@@ -76,9 +77,8 @@ def test_type_importer_individual_form():
     form = ImporterIndividualForm(data)
 
     assert form.is_valid(), form.errors
-    form.save()
+    importer = form.save()
 
-    importer = Importer.objects.last()
     assert importer.type == "INDIVIDUAL"
 
 
@@ -120,7 +120,6 @@ def test_type_importer_organisation_form(api_get_company):
     form = ImporterOrganisationForm(data)
 
     assert form.is_valid(), form.errors
-    form.save()
+    importer = form.save()
 
-    importer = Importer.objects.last()
-    assert importer.type == "INDIVIDUAL"
+    assert importer.type == "ORGANISATION"

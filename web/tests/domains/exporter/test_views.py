@@ -64,7 +64,7 @@ class ExporterListViewTest(AuthTestCase):
         self.login_with_permissions(["ilb_admin"])
         response = self.client.get(self.url + "?page=2")
         page = response.context_data["page"]
-        self.assertEqual(len(page.object_list), 5)
+        self.assertEqual(len(page.object_list), 6)
 
 
 class ExporterEditViewTest(AuthTestCase):

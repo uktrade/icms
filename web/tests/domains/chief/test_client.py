@@ -78,8 +78,8 @@ class TestChiefClient:
                 "id": str(chief_req.lite_hmrc_id),
                 "organisation": {
                     "address": {
-                        "line_1": "47 some way",
-                        "line_2": "someplace",
+                        "line_1": "I1 address line 1",
+                        "line_2": "I1 address line 2",
                         "line_3": "",
                         "line_4": "",
                         "line_5": "",
@@ -87,7 +87,7 @@ class TestChiefClient:
                     },
                     "end_date": None,
                     "eori_number": "GB0123456789ABCDE",
-                    "name": "UK based importer",
+                    "name": "Test Importer 1",
                     "start_date": None,
                 },
                 "restrictions": "",
@@ -165,8 +165,8 @@ class TestChiefClient:
                 "id": str(chief_req.lite_hmrc_id),
                 "organisation": {
                     "address": {
-                        "line_1": "47 some way",
-                        "line_2": "someplace",
+                        "line_1": "I1 address line 1",
+                        "line_2": "I1 address line 2",
                         "line_3": "",
                         "line_4": "",
                         "line_5": "",
@@ -174,7 +174,7 @@ class TestChiefClient:
                     },
                     "end_date": None,
                     "eori_number": "GB0123456789ABCDE",
-                    "name": "UK based importer",
+                    "name": "Test Importer 1",
                     "start_date": None,
                 },
                 "restrictions": "",
@@ -204,8 +204,6 @@ class TestChiefClient:
         assert app.chief_references.count() == 1
 
         chief_req: LiteHMRCChiefRequest = app.chief_references.first()
-
-        print(chief_req.request_data)
 
         assert chief_req.case_reference == app.reference
 
