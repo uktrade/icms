@@ -21,7 +21,7 @@ class ImporterFilterTest(TestCase):
 
     def test_filter_order(self):
         results = self.run_filter({"exporter_name": "exporter"})
-        self.assertEqual(results.count(), 6)
+        self.assertEqual(results.count(), 7)
         first = results.first()
         last = results.last()
         self.assertEqual(first.name, "Active Exporter")

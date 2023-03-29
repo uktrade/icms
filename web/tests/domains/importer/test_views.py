@@ -85,8 +85,8 @@ class ImporterListViewTest(AuthTestCase):
         response = self.client.get(self.url + "?page=2")
         page = response.context_data["page"]
 
-        # We have added one to use as a pytest fixture
-        self.assertEqual(len(page.object_list), 3 + 1)
+        # We have added two to use as a pytest fixture
+        self.assertEqual(len(page.object_list), 3 + 2)
 
 
 class ImporterEditViewTest(AuthTestCase):

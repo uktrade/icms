@@ -1,5 +1,4 @@
 import datetime
-from typing import TYPE_CHECKING
 
 import pytest
 from django.core.management import call_command
@@ -13,6 +12,7 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import end_process_task
 from web.models import (
+    CertificateOfManufactureApplication,
     DFLApplication,
     Exporter,
     ExporterAccessRequest,
@@ -36,9 +36,6 @@ from .application_utils import (
     create_in_progress_wood_app,
     submit_app,
 )
-
-if TYPE_CHECKING:
-    from web.models import CertificateOfManufactureApplication
 
 ORIGINAL_JINJA2_RENDERER = Jinja2Template.render
 
@@ -86,6 +83,12 @@ def test_import_user(django_user_model):
 
 
 @pytest.fixture
+def importer_contact(django_user_model):
+    """Fixture to get user who is a contact of the test importer."""
+    return django_user_model.objects.get(username="importer_contact")
+
+
+@pytest.fixture
 def test_agent_import_user(django_user_model):
     """Fixture to get agent user with access to the test importer."""
     return django_user_model.objects.get(username="test_agent_import_user")
@@ -95,6 +98,12 @@ def test_agent_import_user(django_user_model):
 def test_export_user(django_user_model):
     """Fixture to get user with access to the test exporter."""
     return django_user_model.objects.get(username="test_export_user")
+
+
+@pytest.fixture
+def exporter_contact(django_user_model):
+    """Fixture to get the user who is a contact of the test exporter."""
+    return django_user_model.objects.get(username="exporter_contact")
 
 
 @pytest.fixture
@@ -132,24 +141,12 @@ def export_access_request_application(test_access_user):
 
 
 @pytest.fixture
-def importer_contact(django_user_model):
-    """Fixture to get user who is a contact of the test importer."""
-    return django_user_model.objects.get(username="importer_contact")
-
-
-@pytest.fixture
-def exporter_contact(django_user_model):
-    """Fixture to get the user who is a contact of the test exporter."""
-    return django_user_model.objects.get(username="exporter_contact")
-
-
-@pytest.fixture
 def office():
-    """Fixture to get an office model instance (linked to importer)."""
+    """Fixture to get an office model instance (linked to Test Importer 1)."""
+
     return Office.objects.get(
-        is_active=True,
-        address_1="47 some way",
-        address_2="someplace",
+        address_1="I1 address line 1",
+        address_2="I1 address line 2",
         postcode="BT180LZ",  # /PS-IGNORE
     )
 
@@ -158,54 +155,34 @@ def office():
 def exporter_office():
     """Fixture to get an office model instance (linked to exporter)."""
     return Office.objects.get(
-        is_active=True,
-        address_1="47 some way",
-        address_2="someplace",
-        postcode="S410SG",  # /PS-IGNORE
+        address_1="E1 address line 1",
+        address_2="E1 address line 2",
+        postcode="HG15DB",  # /PS-IGNORE
     )
 
 
 @pytest.fixture
 def importer():
     """Fixture to get an importer model instance."""
-    return Importer.objects.get(
-        is_active=True,
-        type=Importer.INDIVIDUAL,
-        region_origin=Importer.UK,
-        name="UK based importer",
-        main_importer=None,
-    )
+    return Importer.objects.get(name="Test Importer 1")
 
 
 @pytest.fixture
-def agent_importer(importer):
+def agent_importer():
     """Fixture to get an Agent Importer model instance."""
-    return Importer.objects.get(
-        is_active=True,
-        type=Importer.INDIVIDUAL,
-        region_origin=Importer.UK,
-        name="UK based agent importer",
-        main_importer=importer,
-    )
+    return Importer.objects.get(name="Test Importer 1 Agent 1")
 
 
 @pytest.fixture
 def exporter():
     """Fixture to get an Exporter model instance."""
-    return Exporter.objects.get(
-        is_active=True, name="UK based exporter", registered_number="422", main_exporter=None
-    )
+    return Exporter.objects.get(name="Test Exporter 1")
 
 
 @pytest.fixture
-def agent_exporter(exporter):
+def agent_exporter():
     """Fixture to get an Agent Exporter model instance."""
-    return Exporter.objects.get(
-        is_active=True,
-        name="UK based agent exporter",
-        registered_number="422",
-        main_exporter=exporter,
-    )
+    return Exporter.objects.get(name="Test Exporter 1 Agent 1")
 
 
 @pytest.fixture()

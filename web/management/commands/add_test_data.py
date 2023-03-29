@@ -1,7 +1,7 @@
 import datetime
 
 from django.conf import settings
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Group, Permission
 from django.core.management.base import BaseCommand, CommandError
 from guardian.shortcuts import assign_perm
 
@@ -16,6 +16,16 @@ from web.models import (
     ObsoleteCalibreGroup,
     Office,
     User,
+)
+from web.permissions import ExporterObjectPermissions, ImporterObjectPermissions
+from web.tests.organisations import TEST_EXPORTERS, TEST_IMPORTERS
+from web.tests.types import (
+    AgentExporter,
+    AgentImporter,
+    ExporterContact,
+    ImporterContact,
+    TestExporter,
+    TestImporter,
 )
 
 
@@ -38,31 +48,15 @@ class Command(BaseCommand):
         load_app_test_data()
 
         # Access requests
-        access_user = self.create_access_user("test_access_user")
+        access_user = self.create_user("test_access_user")
         self.create_import_access_request(access_user)
         self.create_export_access_request(access_user)
 
-        # Importer
-        importer = self.create_importer()
-        self.create_importer_user(importer, "test_import_user")
-        self.create_importer_user(importer, "importer_contact")
+        # Create importers/exporters, agents and contacts
+        self.create_test_importers()
+        self.create_test_exporters()
 
-        agent_importer = self.create_importer(
-            main_importer=importer, name="UK based agent importer"
-        )
-        self.create_agent_importer_user(importer, agent_importer, "test_agent_import_user")
-
-        # Exporter
-        exporter = self.create_exporter()
-        self.create_exporter_user(exporter, "test_export_user")
-        self.create_exporter_user(exporter, "exporter_contact")
-
-        agent_exporter = self.create_exporter(
-            main_exporter=exporter, name="UK based agent exporter"
-        )
-        self.create_agent_exporter_user(exporter, agent_exporter, "test_agent_export_user")
-
-        # ILB Admin/Case worker
+        # ILB Admin/Caseworker
         self.create_icms_admin_user("test_icms_admin_user")
 
         # enable disabled application types
@@ -78,29 +72,118 @@ class Command(BaseCommand):
         group = ObsoleteCalibreGroup.objects.create(name="Group 1", order=1)
         ObsoleteCalibre.objects.create(calibre_group=group, name="9mm", order=1)
 
-    def create_user(self, username):
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            return User.objects.create_user(
-                username=username,
-                password="test",
-                password_disposition=User.FULL,
-                is_superuser=False,
-                account_status=User.ACTIVE,
-                is_active=True,
-                email=f"{username}@email.com",  # /PS-IGNORE
-                first_name=f"{username}_first_name",
-                last_name=f"{username}_last_name",
-                date_of_birth=datetime.date(2000, 1, 1),
-                security_question="security_question",
-                security_answer="security_answer",
+    def create_test_importers(self) -> None:
+        for imp in TEST_IMPORTERS:
+            importer_obj = self.create_importer_record(imp)
+
+            for contact in imp.contacts:
+                self.create_organisation_contact(contact, importer_obj, ImporterObjectPermissions)
+
+            for agent in imp.agents:
+                agent_obj = self.create_importer_record(agent, importer_obj)
+
+                for contact in agent.contacts:
+                    self.create_organisation_contact(
+                        contact, agent_obj, ImporterObjectPermissions, importer_obj
+                    )
+
+    def create_test_exporters(self) -> None:
+        for exp in TEST_EXPORTERS:
+            exporter_obj = self.create_exporter_record(exp)
+
+            for contact in exp.contacts:
+                self.create_organisation_contact(contact, exporter_obj, ExporterObjectPermissions)
+
+            for agent in exp.agents:
+                agent_obj = self.create_exporter_record(agent, exporter_obj)
+
+                for contact in agent.contacts:
+                    self.create_organisation_contact(
+                        contact, agent_obj, ExporterObjectPermissions, exporter_obj
+                    )
+
+    @staticmethod
+    def create_importer_record(
+        imp: TestImporter | AgentImporter, main_importer: Importer | None = None
+    ) -> Importer:
+        importer_obj = Importer.objects.create(
+            name=imp.importer_name,
+            eori_number=imp.eori_number if isinstance(imp, TestImporter) else None,
+            type=imp.type,
+            region_origin=imp.region,
+            main_importer=main_importer,
+        )
+
+        importer_offices = [
+            Office.objects.create(
+                address_1=o.address_1,
+                address_2=o.address_2,
+                eori_number=o.eori_number,
+                postcode=o.postcode,
             )
+            for o in imp.offices
+        ]
+        importer_obj.offices.set(importer_offices)
 
-        return user
+        return importer_obj
 
-    def create_access_user(self, username):
-        return self.create_user(username)
+    @staticmethod
+    def create_exporter_record(
+        exp: TestExporter | AgentExporter, main_exporter: Exporter | None = None
+    ) -> Exporter:
+        exporter_obj = Exporter.objects.create(
+            name=exp.exporter_name,
+            registered_number=exp.registered_number,
+            main_exporter=main_exporter,
+        )
+
+        exporter_offices = [
+            Office.objects.create(
+                address_1=o.address_1,
+                address_2=o.address_2,
+                postcode=o.postcode,
+            )
+            for o in exp.offices
+        ]
+        exporter_obj.offices.set(exporter_offices)
+
+        return exporter_obj
+
+    def create_organisation_contact(
+        self,
+        contact: ImporterContact | ExporterContact,
+        org: Importer | Exporter,
+        obj_perms: type[ImporterObjectPermissions | ExporterObjectPermissions],
+        main_org: Importer | Exporter | None = None,
+    ) -> None:
+        user = self.create_user(contact.username)
+
+        group = Group.objects.get(name=obj_perms.get_group_name())
+        user.groups.add(group)
+
+        for perm in contact.permissions:
+            assign_perm(perm, user, org)
+
+        # We are creating an agent contact if main_org is set
+        if main_org:
+            assign_perm(obj_perms.is_agent, user, main_org)
+
+    @staticmethod
+    def create_user(username):
+        return User.objects.create_user(
+            username=username,
+            password="test",
+            password_disposition=User.FULL,
+            is_superuser=False,
+            account_status=User.ACTIVE,
+            is_active=True,
+            email=f"{username}@email.com",  # /PS-IGNORE
+            first_name=f"{username}_first_name",
+            last_name=f"{username}_last_name",
+            date_of_birth=datetime.date(2000, 1, 1),
+            security_question="security_question",
+            security_answer="security_answer",
+        )
 
     def create_import_access_request(self, user):
         iar, _ = ImporterAccessRequest.objects.get_or_create(
@@ -126,40 +209,6 @@ class Command(BaseCommand):
 
         return ear
 
-    def create_importer_user(self, importer, username):
-        user = self.create_user(username)
-
-        self._assign_permission(user, "importer_access")
-        assign_perm("web.is_contact_of_importer", user, importer)
-
-        return user
-
-    def create_exporter_user(self, exporter, username):
-        user = self.create_user(username)
-
-        self._assign_permission(user, "exporter_access")
-        assign_perm("web.is_contact_of_exporter", user, exporter)
-
-        return user
-
-    def create_agent_importer_user(self, importer, agent, username):
-        user = self.create_user(username)
-
-        self._assign_permission(user, "importer_access")
-        assign_perm("web.is_contact_of_importer", user, agent)
-        assign_perm("web.is_agent_of_importer", user, importer)
-
-        return user
-
-    def create_agent_exporter_user(self, exporter, agent, username):
-        user = self.create_user(username)
-
-        self._assign_permission(user, "exporter_access")
-        assign_perm("web.is_contact_of_exporter", user, agent)
-        assign_perm("web.is_agent_of_exporter", user, exporter)
-
-        return user
-
     def create_icms_admin_user(self, username):
         user = self.create_user(username)
 
@@ -172,48 +221,6 @@ class Command(BaseCommand):
             self._assign_permission(user, perm)
 
         return user
-
-    def create_importer(self, main_importer=None, name="UK based importer"):
-        office, _ = Office.objects.get_or_create(
-            is_active=True,
-            address_1="47 some way",
-            address_2="someplace",
-            eori_number="GB0123456789ABCDE",
-            postcode="BT180LZ",  # /PS-IGNORE
-        )
-
-        importer, created = Importer.objects.get_or_create(
-            is_active=True,
-            type=Importer.INDIVIDUAL,
-            region_origin=Importer.UK,
-            name=name,
-            main_importer=main_importer,
-        )
-
-        if created:
-            importer.offices.add(office)
-
-        return importer
-
-    def create_exporter(self, main_exporter=None, name="UK based exporter"):
-        office, _ = Office.objects.get_or_create(
-            is_active=True,
-            address_1="47 some way",
-            address_2="someplace",
-            postcode="S410SG",  # /PS-IGNORE
-        )
-
-        exporter, created = Exporter.objects.get_or_create(
-            is_active=True,
-            name=name,
-            registered_number="422",
-            main_exporter=main_exporter,
-        )
-
-        if created:
-            exporter.offices.add(office)
-
-        return exporter
 
     def _assign_permission(self, user, permission_codename):
         permission = Permission.objects.get(codename=permission_codename)
