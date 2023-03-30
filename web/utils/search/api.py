@@ -2,21 +2,23 @@ import datetime
 from collections import defaultdict
 from collections.abc import Iterable
 from operator import attrgetter
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from dateutil import relativedelta
 from django.db import models
+from django.db.models import Model, QuerySet
 from django.urls import reverse
 from django.utils import timezone
 
 from web.domains.case.models import DocumentPackBase
 from web.domains.case.shared import ImpExpStatus
-from web.domains.case.types import ImpOrExpT
 from web.flow.models import ProcessTypes
 from web.models import (
     CaseDocumentReference,
     CaseEmail,
     Commodity,
+    CommodityGroup,
+    Country,
     ExportApplication,
     FurtherInformationRequest,
     ImportApplication,
@@ -26,12 +28,6 @@ from web.models import (
 )
 from web.models.shared import FirearmCommodity, YesNoChoices
 from web.utils.spreadsheet import XlsxConfig, generate_xlsx_file
-
-if TYPE_CHECKING:
-    from django.db.models import Model, QuerySet
-
-    from web.models import CommodityGroup
-    from web.models import Country
 
 from . import app_data, types, utils
 
@@ -46,9 +42,9 @@ def search_applications(
 ) -> types.SearchResults:
     """Main search function used to find applications.
 
-    Returns records matching the supplied search terms.
+    Return records matching the supplied search terms.
     """
-    app_pks_and_types = _get_search_ids_and_types(terms)
+    app_pks_and_types = _get_search_ids_and_types(terms, user)
 
     get_result_row = _get_result_row if terms.case_type == "import" else _get_export_result_row
 
@@ -185,16 +181,18 @@ def get_wildcard_filter(field: str, search_pattern: str) -> models.Q:
     return models.Q(**search)
 
 
-# TODO: ICMSLST-1240 Add permission checks - Restrict the search to the records the user can access
-def _get_search_ids_and_types(terms: types.SearchTerms) -> list[types.ProcessTypeAndPK]:
+def _get_search_ids_and_types(terms: types.SearchTerms, user: User) -> list[types.ProcessTypeAndPK]:
     """Search ImportApplication records to find records matching the supplied terms.
 
     Returns a list of pk and process_type pairs for all matching records.
     """
 
-    model_cls: ImpOrExpT = ImportApplication if terms.case_type == "import" else ExportApplication
+    if terms.case_type == "import":
+        applications = utils.get_user_import_applications(user)
+    else:
+        applications = utils.get_user_export_applications(user)
 
-    applications = _apply_search(model_cls.objects.all(), terms)
+    applications = _apply_search(applications, terms)
     applications = applications.order_by("-order_by_datetime")
     applications = applications.distinct()
 
@@ -414,7 +412,7 @@ def _get_certificate_references_and_links(rec: ExportApplication) -> list[tuple[
     # ]
 
 
-def _apply_search(model: "QuerySet[Model]", terms: types.SearchTerms) -> "QuerySet[Model]":
+def _apply_search(model: QuerySet[Model], terms: types.SearchTerms) -> QuerySet[Model]:
     """Apply all search terms for Import and Export applications."""
 
     # THe legacy system only includes applications that have been submitted.
@@ -545,8 +543,8 @@ def _get_status_to_filter(case_type: str, case_status: str) -> models.Q:
 
 
 def _apply_import_application_filter(
-    model: "QuerySet[Model]", terms: types.SearchTerms
-) -> "QuerySet[Model]":
+    model: QuerySet[Model], terms: types.SearchTerms
+) -> QuerySet[Model]:
     if terms.applicant_ref:
         applicant_ref_filter = get_wildcard_filter("applicant_reference", terms.applicant_ref)
         model = model.filter(applicant_ref_filter)
@@ -705,8 +703,8 @@ def _get_commodity_code_filter(terms: types.SearchTerms) -> models.Q:
 
 
 def _apply_export_application_filter(
-    model: "QuerySet[Model]", terms: types.SearchTerms
-) -> "QuerySet[Model]":
+    model: QuerySet[Model], terms: types.SearchTerms
+) -> QuerySet[Model]:
     if terms.exporter_agent_name:
         exporter_filter = get_wildcard_filter("exporter__name", terms.exporter_agent_name)
         agent_filter = get_wildcard_filter("agent__name", terms.exporter_agent_name)
@@ -736,7 +734,7 @@ def _apply_export_application_filter(
     return model
 
 
-def _get_country_filter(country_qs: "QuerySet[Country]", field: str) -> dict[str, Any]:
+def _get_country_filter(country_qs: QuerySet[Country], field: str) -> dict[str, Any]:
     if country_qs.count() == 1:
         country_filter = {field: country_qs.first()}
     else:

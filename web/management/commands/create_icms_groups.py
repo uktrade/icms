@@ -37,6 +37,7 @@ def get_groups():
             Perms.sys.edit_firearm_authorities.codename,
             Perms.sys.edit_section_5_firearm_authorities.codename,
             Perms.sys.mailshot_access.codename,
+            Perms.sys.search_all_cases.codename,
         ],
         Perms.obj.importer.get_group_name(): [
             #

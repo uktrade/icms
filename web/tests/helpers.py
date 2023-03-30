@@ -1,6 +1,16 @@
+from django.test.client import Client
 from django.urls import reverse
 
+from web.models import User
 from web.utils.validation import ApplicationErrors
+
+
+def get_test_client(user: User) -> Client:
+    client = Client()
+
+    assert client.login(username=user.username, password="test") is True, "Failed to login"
+
+    return client
 
 
 def check_page_errors(

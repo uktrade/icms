@@ -1,7 +1,7 @@
 import datetime
 
 from django.conf import settings
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand, CommandError
 from guardian.shortcuts import assign_perm
 
@@ -212,16 +212,7 @@ class Command(BaseCommand):
     def create_icms_admin_user(self, username):
         user = self.create_user(username)
 
-        for perm in [
-            "importer_access",
-            "exporter_access",
-            "ilb_admin",
-            "mailshot_access",
-        ]:
-            self._assign_permission(user, perm)
+        group = Group.objects.get(name="ILB Case Officer")
+        user.groups.add(group)
 
         return user
-
-    def _assign_permission(self, user, permission_codename):
-        permission = Permission.objects.get(codename=permission_codename)
-        user.user_permissions.add(permission)

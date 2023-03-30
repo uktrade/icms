@@ -28,6 +28,7 @@ class SysPerms(PermissionTextChoice):
         "web.edit_section_5_firearm_authorities",
         "Can edit Importer Verified Section 5 Firearm Authorities",
     )
+    search_all_cases = ("web.search_all_cases", "Can search across all cases.")
 
     # This permission isn't used anywhere.
     mailshot_access = "web.mailshot_access", "Can maintain mailshots"
