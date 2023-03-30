@@ -2684,7 +2684,6 @@ is_ilb_admin
 Create Individual
 Select an Exporter
 Exporter Details
-<<<<<<< HEAD
 address_5__icontains
 "If Sentry
 Test Importer 1
@@ -2694,7 +2693,6 @@ Test Importer 2
 ILB Admin/Caseworker
 main_org
 E1_A1
-=======
 file_folder_id
 VARCHAR(4000
 PATH '/CA/APPLICATION/GMP_DETAILS
@@ -2707,4 +2705,15 @@ x.product_name
 PATH '/CA/APPLICATION//SCHEDULE/IS_DOMESTIC_MARKET_PESTICIDE[not(fox-error)]/text
 is_manufacturer
 x.file_folder_id
->>>>>>> f06b82e5 (ICMSLST-1905 Fix missing variation requests in data migration)
+SELECT xcas.ca_id
+schedules.brand_name_holder , schedules.product_eligibility
+xcas.start_datetime
+x.final_product_end_use
+XMLTYPE.getClobVal(product_xml
+ORDINALITY
+ON schedules.cad_id
+ON st_rp.cad_id
+st_gmp.schedule_ordinal = xcas.schedule_ordinal
+e.email_status
+INNER
+ON r.status
