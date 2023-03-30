@@ -123,7 +123,10 @@ FROM impmgr.xview_certificate_app_details xcad
 WHERE xcad.status_control = 'C'
   AND xcad.application_type = 'GMP'
   AND xcad.status <> 'DELETED'
-  AND (xcad.submitted_datetime IS NOT NULL OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
+  AND (
+    (xcad.submitted_datetime IS NOT NULL AND ca.case_reference IS NOT NULL)
+    OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY
+  )
 """
 
 beis_emails = """

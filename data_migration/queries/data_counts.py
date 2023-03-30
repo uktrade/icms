@@ -83,6 +83,6 @@ WHERE xtd.status_control = 'C'
 
 iat_endorsement_count = """
 SELECT COUNT(*)
-FROM impmgr.xview_iat_templates
+FROM impmgr.xview_iat_templates iat
 WHERE iat.ima_type <> 'GS'
 """
