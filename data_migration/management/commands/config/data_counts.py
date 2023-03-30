@@ -52,6 +52,8 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         query=queries.fa_goods_certificate_count,
         model=web.SILApplication.user_imported_certificates.through,
         bind_vars={"FA_TYPE": "SIL"},
+        adjustment=2,
+        note="Certficates without constabulary id or file upload are not migrated. See ICMSLST-1905",
     ),
     CheckQuery(
         name="SIL Firearms Authority Certificates",
@@ -219,6 +221,8 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         ],
         filter_params={"is_no_firearm": True},
         bind_vars={"FA_TYPE": "SIL"},
+        adjustment=1,
+        note="Missing report data for one goods line in V1. See ICMSLST-1905",
     ),
     CheckQuery(
         name="Firearms Authority Act Quantity",
@@ -257,7 +261,7 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         query=queries.import_application_variation_count,
         model=web.VariationRequest,
         filter_params={"importapplication__process_type": ProcessTypes.FA_DFL},
-        bind_vars={"IMA_TYPE": "FA", "IMA_SUB_TYPE": "DFL"},
+        bind_vars={"IMA_TYPE": "FA", "IMA_SUB_TYPE": "DEACTIVATED"},
     ),
     CheckQuery(
         name="Variation Requests - OIL",
