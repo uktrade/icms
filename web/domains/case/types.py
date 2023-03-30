@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING, NamedTuple, Union
+from typing import NamedTuple, Union
+
+from django.db.models import QuerySet
 
 from web.models import (
     CertificateOfFreeSaleApplication,
@@ -24,9 +26,6 @@ from web.models import (
     TextilesApplication,
     WoodQuotaApplication,
 )
-
-if TYPE_CHECKING:
-    from django.db.models import QuerySet
 
 ImpTypeOrExpType = Union[ImportApplicationType, ExportApplicationType]
 
@@ -75,5 +74,5 @@ DocumentPack = Union[ImportApplicationLicence, ExportApplicationCertificate]
 
 class CaseEmailConfig(NamedTuple):
     application: ApplicationsWithCaseEmail
-    file_qs: "QuerySet[File]"
+    file_qs: QuerySet[File]
     to_choices: list[tuple[str, str]] | None = None

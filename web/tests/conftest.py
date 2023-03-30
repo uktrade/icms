@@ -26,7 +26,7 @@ from web.models import (
     WoodQuotaApplication,
 )
 from web.models.shared import YesNoNAChoices
-from web.tests.helpers import CaseURLS
+from web.tests.helpers import CaseURLS, get_test_client
 
 from .application_utils import (
     create_in_progress_com_app,
@@ -88,6 +88,16 @@ def importer_contact(django_user_model):
     return django_user_model.objects.get(username="importer_contact")
 
 
+@pytest.fixture()
+def importer_one_main_contact(django_user_model):
+    return django_user_model.objects.get(username="I1_main_contact")
+
+
+@pytest.fixture()
+def importer_two_main_contact(django_user_model):
+    return django_user_model.objects.get(username="I2_main_contact")
+
+
 @pytest.fixture
 def test_agent_import_user(django_user_model):
     """Fixture to get agent user with access to the test importer."""
@@ -104,6 +114,16 @@ def test_export_user(django_user_model):
 def exporter_contact(django_user_model):
     """Fixture to get the user who is a contact of the test exporter."""
     return django_user_model.objects.get(username="exporter_contact")
+
+
+@pytest.fixture()
+def exporter_one_main_contact(django_user_model):
+    return django_user_model.objects.get(username="E1_main_contact")
+
+
+@pytest.fixture()
+def exporter_two_main_contact(django_user_model):
+    return django_user_model.objects.get(username="E2_main_contact")
 
 
 @pytest.fixture
@@ -167,6 +187,11 @@ def importer():
     return Importer.objects.get(name="Test Importer 1")
 
 
+@pytest.fixture()
+def importer_two():
+    return Importer.objects.get(name="Test Importer 2")
+
+
 @pytest.fixture
 def agent_importer():
     """Fixture to get an Agent Importer model instance."""
@@ -180,6 +205,12 @@ def exporter():
 
 
 @pytest.fixture
+def exporter_two():
+    """Fixture to get an Exporter model instance."""
+    return Exporter.objects.get(name="Test Exporter 2")
+
+
+@pytest.fixture
 def agent_exporter():
     """Fixture to get an Agent Exporter model instance."""
     return Exporter.objects.get(name="Test Exporter 1 Agent 1")
@@ -187,24 +218,12 @@ def agent_exporter():
 
 @pytest.fixture()
 def icms_admin_client(test_icms_admin_user) -> Client:
-    client = Client()
-
-    assert (
-        client.login(username=test_icms_admin_user.username, password="test") is True
-    ), "Failed to login"
-
-    return client
+    return get_test_client(test_icms_admin_user)
 
 
 @pytest.fixture()
 def importer_client(test_import_user) -> Client:
-    client = Client()
-
-    assert (
-        client.login(username=test_import_user.username, password="test") is True
-    ), "Failed to login"
-
-    return client
+    return get_test_client(test_import_user)
 
 
 @pytest.fixture()
@@ -303,13 +322,7 @@ def fa_sil_app_submitted(importer_client, importer, office, importer_contact) ->
 
 @pytest.fixture()
 def exporter_client(test_export_user) -> Client:
-    client = Client()
-
-    assert (
-        client.login(username=test_export_user.username, password="test") is True
-    ), "Failed to login"
-
-    return client
+    return get_test_client(test_export_user)
 
 
 @pytest.fixture()

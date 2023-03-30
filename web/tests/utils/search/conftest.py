@@ -43,39 +43,115 @@ from web.types import AuthenticatedHttpRequest
 
 class FixtureData(NamedTuple):
     importer: Importer
-    agent_importer: Importer
+    agent_importer: Importer | None
     importer_user: User
+    agent_user: User | None
+    ilb_admin_user: User
     request: AuthenticatedHttpRequest
 
 
 @pytest.fixture
-def import_fixture_data(db, importer, agent_importer, test_import_user, request):
+def importer_one_fixture_data(
+    db,
+    importer,
+    test_icms_admin_user,
+    agent_importer,
+    test_import_user,
+    test_agent_import_user,
+    request,
+) -> FixtureData:
+    # This is the user who submits the applications in _submit_application
     request.user = test_import_user
     request.icms = ICMSMiddlewareContext()
 
-    return FixtureData(importer, agent_importer, test_import_user, request)
+    return FixtureData(
+        importer=importer,
+        agent_importer=agent_importer,
+        importer_user=test_import_user,
+        agent_user=test_agent_import_user,
+        ilb_admin_user=test_icms_admin_user,
+        request=request,
+    )
+
+
+@pytest.fixture
+def importer_two_fixture_data(
+    db, importer_two, test_icms_admin_user, importer_two_main_contact, request
+) -> FixtureData:
+    # This is the user who submits the applications in _submit_application
+    request.user = importer_two_main_contact
+    request.icms = ICMSMiddlewareContext()
+
+    return FixtureData(
+        importer=importer_two,
+        agent_importer=None,
+        importer_user=importer_two_main_contact,
+        agent_user=None,
+        ilb_admin_user=test_icms_admin_user,
+        request=request,
+    )
 
 
 class ExportFixtureData(NamedTuple):
     exporter: Exporter
-    agent_exporter: Exporter
+    agent_exporter: Exporter | None
     exporter_user: User
+    exporter_agent_user: User | None
+    ilb_admin_user: User
     request: AuthenticatedHttpRequest
 
 
 @pytest.fixture
-def export_fixture_data(db, exporter, agent_exporter, test_export_user, request):
+def exporter_one_fixture_data(
+    db,
+    exporter,
+    test_icms_admin_user,
+    agent_exporter,
+    test_export_user,
+    test_agent_export_user,
+    request,
+):
+    # This is the user who submits the applications in _submit_application
     request.user = test_export_user
     request.icms = ICMSMiddlewareContext()
 
-    return ExportFixtureData(exporter, agent_exporter, test_export_user, request)
+    return ExportFixtureData(
+        exporter=exporter,
+        agent_exporter=agent_exporter,
+        exporter_user=test_export_user,
+        exporter_agent_user=test_agent_export_user,
+        ilb_admin_user=test_icms_admin_user,
+        request=request,
+    )
+
+
+@pytest.fixture
+def exporter_two_fixture_data(
+    db,
+    exporter_two,
+    test_icms_admin_user,
+    exporter_two_main_contact,
+    request,
+):
+    # This is the user who submits the applications in _submit_application
+    request.user = exporter_two_main_contact
+    request.icms = ICMSMiddlewareContext()
+
+    return ExportFixtureData(
+        exporter=exporter_two,
+        agent_exporter=None,
+        exporter_user=exporter_two_main_contact,
+        exporter_agent_user=None,
+        ilb_admin_user=test_icms_admin_user,
+        request=request,
+    )
 
 
 class Build:
     @staticmethod
     def derogation_application(
         reference,
-        import_fixture_data: FixtureData,
+        importer_conf: FixtureData,
         submit=True,
         origin_country="Tanzania",
         consignment_country="Algeria",
@@ -97,7 +173,7 @@ class Build:
             application_type,
             process_type,
             reference,
-            import_fixture_data,
+            importer_conf,
             submit,
             extra_kwargs=derogation_kwargs,
         )
@@ -105,11 +181,12 @@ class Build:
     @staticmethod
     def fa_dfl_application(
         reference,
-        import_fixture_data: FixtureData,
+        importer_conf: FixtureData,
         submit=True,
         origin_country="the Czech Republic",
         consignment_country="the Slovak Republic",
         commodity_code=FirearmCommodity.EX_CHAPTER_97,
+        agent_application: bool = False,
     ):
         application_type = ImportApplicationType.objects.get(
             type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.DFL
@@ -126,15 +203,16 @@ class Build:
             application_type,
             process_type,
             reference,
-            import_fixture_data,
+            importer_conf,
             submit,
+            agent_application=agent_application,
             extra_kwargs=fa_dfl_kwargs,
         )
 
     @staticmethod
     def fa_oil_application(
         reference,
-        import_fixture_data: FixtureData,
+        importer_conf: FixtureData,
         submit=True,
         origin_country="Any Country",
         consignment_country="Any Country",
@@ -154,7 +232,7 @@ class Build:
             application_type,
             process_type,
             reference,
-            import_fixture_data,
+            importer_conf,
             submit,
             extra_kwargs=fa_oil_kwargs,
         )
@@ -162,7 +240,7 @@ class Build:
     @staticmethod
     def fa_sil_application(
         reference,
-        import_fixture_data: FixtureData,
+        importer_conf: FixtureData,
         submit=True,
         origin_country="Argentina",
         consignment_country="Azerbaijan",
@@ -182,7 +260,7 @@ class Build:
             application_type,
             process_type,
             reference,
-            import_fixture_data,
+            importer_conf,
             submit,
             extra_kwargs=fa_sil_kwargs,
         )
@@ -190,7 +268,7 @@ class Build:
     @staticmethod
     def ironsteel_application(
         reference,
-        import_fixture_data: FixtureData,
+        importer_conf: FixtureData,
         submit=True,
         origin_country="Kazakhstan",
         consignment_country="Bahamas",
@@ -217,7 +295,7 @@ class Build:
             application_type,
             process_type,
             reference,
-            import_fixture_data,
+            importer_conf,
             submit,
             extra_kwargs=ironsteel_kwargs,
         )
@@ -225,7 +303,7 @@ class Build:
     @staticmethod
     def opt_application(
         reference,
-        import_fixture_data: FixtureData,
+        importer_conf: FixtureData,
         origin_country="Uruguay",
         consignment_country="USA",
         cp_category=CP_CATEGORIES[0],
@@ -253,7 +331,7 @@ class Build:
             application_type,
             process_type,
             reference,
-            import_fixture_data,
+            importer_conf,
             submit=False,
             extra_kwargs=opt_kwargs,
         )
@@ -264,14 +342,14 @@ class Build:
         for com in teg_commodities:
             application.teg_commodities.add(com)
 
-        _submit_application(application, import_fixture_data)
+        _submit_application(application, importer_conf)
 
         return application
 
     @staticmethod
     def sanctionadhoc_application(
         reference,
-        import_fixture_data: FixtureData,
+        importer_conf: FixtureData,
         origin_country="Iran",
         consignment_country="Algeria",
         commodity_codes=("2801000010", "2850002070"),
@@ -290,7 +368,7 @@ class Build:
             application_type,
             process_type,
             reference,
-            import_fixture_data,
+            importer_conf,
             submit=False,
             extra_kwargs=sanctionadhoc_kwargs,
         )
@@ -304,14 +382,14 @@ class Build:
                 value=123,
             )
 
-        _submit_application(application, import_fixture_data)
+        _submit_application(application, importer_conf)
 
         return application
 
     @staticmethod
     def sps_application(
         reference,
-        import_fixture_data: FixtureData,
+        importer_conf: FixtureData,
         submit=True,
         origin_country="Azerbaijan",
         consignment_country="Jordan",
@@ -330,7 +408,7 @@ class Build:
             application_type,
             process_type,
             reference,
-            import_fixture_data,
+            importer_conf,
             submit,
             extra_kwargs=sps_kwargs,
         )
@@ -338,7 +416,7 @@ class Build:
     @staticmethod
     def textiles_application(
         reference,
-        import_fixture_data: FixtureData,
+        importer_conf: FixtureData,
         submit=True,
         origin_country="Belarus",
         consignment_country="Argentina",
@@ -366,7 +444,7 @@ class Build:
             application_type,
             process_type,
             reference,
-            import_fixture_data,
+            importer_conf,
             submit,
             extra_kwargs=textiles_kwargs,
         )
@@ -374,7 +452,7 @@ class Build:
     @staticmethod
     def wood_application(
         reference,
-        import_fixture_data: FixtureData,
+        importer_conf: FixtureData,
         submit=True,
         shipping_year=2021,
         commodity_code="1234567890",
@@ -395,14 +473,14 @@ class Build:
             application_type,
             process_type,
             reference,
-            import_fixture_data,
+            importer_conf,
             submit,
-            override_status,
+            override_status=override_status,
             extra_kwargs=wood_kwargs,
         )
 
     @staticmethod
-    def cfs_application(export_fixture_data: ExportFixtureData, country_of_manufacture="Peru"):
+    def cfs_application(exporter_conf: ExportFixtureData, country_of_manufacture="Peru"):
         application_type = ExportApplicationType.objects.get(
             type_code=ExportApplicationType.Types.FREE_SALE
         )
@@ -410,37 +488,42 @@ class Build:
 
         com = Country.objects.get(name=country_of_manufacture)
         app: CertificateOfFreeSaleApplication = _create_export_application(
-            application_type, process_type, export_fixture_data, False, extra_kwargs={}
+            application_type, process_type, exporter_conf, False, extra_kwargs={}
         )
 
         CFSSchedule.objects.create(
-            application=app, country_of_manufacture=com, created_by=export_fixture_data.request.user
+            application=app, country_of_manufacture=com, created_by=exporter_conf.request.user
         )
 
-        _submit_application(app, export_fixture_data)
+        _submit_application(app, exporter_conf)
 
         return app
 
     @staticmethod
-    def com_application(export_fixture_data: ExportFixtureData, submit=True):
+    def com_application(exporter_conf: ExportFixtureData, submit=True, agent_application=False):
         application_type = ExportApplicationType.objects.get(
             type_code=ExportApplicationType.Types.MANUFACTURE
         )
         process_type = ProcessTypes.COM
 
         return _create_export_application(
-            application_type, process_type, export_fixture_data, submit, extra_kwargs={}
+            application_type,
+            process_type,
+            exporter_conf,
+            submit,
+            agent_application=agent_application,
+            extra_kwargs={},
         )
 
     @staticmethod
-    def gmp_application(export_fixture_data: ExportFixtureData, submit=True):
+    def gmp_application(exporter_conf: ExportFixtureData, submit=True):
         application_type = ExportApplicationType.objects.get(
             type_code=ExportApplicationType.Types.GMP
         )
         process_type = ProcessTypes.GMP
 
         return _create_export_application(
-            application_type, process_type, export_fixture_data, submit, extra_kwargs={}
+            application_type, process_type, exporter_conf, submit, extra_kwargs={}
         )
 
 
@@ -448,19 +531,22 @@ def _create_application(
     application_type: ImportApplicationType,
     process_type: ProcessTypes,
     reference: str,
-    import_fixture_data: FixtureData,
+    importer_conf: FixtureData,
     submit: bool,
+    *,
     override_status: ImpExpStatus = None,
+    agent_application: bool = False,
     extra_kwargs: dict[str, Any] = None,
 ):
     kwargs = {
         "applicant_reference": reference,
-        "importer": import_fixture_data.importer,
-        "created_by": import_fixture_data.importer_user,
-        "last_updated_by": import_fixture_data.importer_user,
+        "importer": importer_conf.importer,
+        "importer_office": importer_conf.importer.offices.first(),
+        "created_by": importer_conf.importer_user,
+        "last_updated_by": importer_conf.importer_user,
         "application_type": application_type,
         "process_type": process_type,
-        "contact": import_fixture_data.importer_user,
+        "contact": importer_conf.importer_user,
     }
 
     if extra_kwargs:
@@ -485,15 +571,20 @@ def _create_application(
     Task.objects.create(
         process=application,
         task_type=Task.TaskType.PREPARE,
-        owner=import_fixture_data.importer_user,
+        owner=importer_conf.importer_user,
     )
     application.licences.create(status=DocumentPackBase.Status.DRAFT)
 
     if submit:
-        _submit_application(application, import_fixture_data)
+        _submit_application(application, importer_conf)
 
     if override_status:
         application.status = override_status
+        application.save()
+
+    if agent_application:
+        application.agent = importer_conf.agent_importer
+        application.agent_office = importer_conf.agent_importer.offices.first()
         application.save()
 
     return application
@@ -504,6 +595,8 @@ def _create_export_application(
     process_type: ProcessTypes,
     fixture_data: ExportFixtureData,
     submit: bool,
+    *,
+    agent_application: bool = False,
     extra_kwargs: dict | None = None,
     certificate_countries=("Aruba", "Maldives", "Zambia"),
 ):
@@ -544,15 +637,20 @@ def _create_export_application(
     if submit:
         _submit_application(application, fixture_data)
 
+    if agent_application:
+        application.agent = fixture_data.agent_exporter
+        application.agent_office = fixture_data.agent_exporter.offices.first()
+        application.save()
+
     return application
 
 
-def _submit_application(application, import_fixture_data: FixtureData | ExportFixtureData):
+def _submit_application(application, importer_exporter_conf: FixtureData | ExportFixtureData):
     """Helper function to submit an application (Using the application code to do so)"""
     case_progress.application_in_progress(application)
     task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
 
-    submit_application(application, import_fixture_data.request, task)
+    submit_application(application, importer_exporter_conf.request, task)
     application.save()
 
 

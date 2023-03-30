@@ -3,6 +3,9 @@ from typing import Any
 from django.db import models
 from django.db.models.functions import Coalesce
 
+from web.models import ExportApplication, ImportApplication, User
+from web.permissions import Perms
+
 
 def get_order_by_datetime(case_type: str) -> Any:
     if case_type == "import":
@@ -11,14 +14,71 @@ def get_order_by_datetime(case_type: str) -> Any:
         return Coalesce("submit_datetime", "created")
 
 
-# TODO: ICMSLST-1240 Add permission checks
-# This function isn't correct but its a start
-# def has_search_permission(user: User, imp_or_exp: str):
-#     ilb_admin = user.has_perm("web.ilb_admin")
-#     importer_user = user.has_perm("web.importer_access")
-#     exporter_user = user.has_perm("web.exporter_access")
-#
-#     if imp_or_exp == "import":
-#         return ilb_admin or importer_user
-#     else:
-#         return ilb_admin or exporter_user
+def get_user_import_applications(user: User) -> models.QuerySet[ImportApplication]:
+    """Returns Import Applications the user has access to."""
+
+    if user.has_perm(Perms.sys.search_all_cases):
+        return ImportApplication.objects.all()
+
+    perms_to_check = [
+        Perms.obj.importer.view.codename,
+        Perms.obj.importer.edit.codename,
+        Perms.obj.importer.manage_contacts_and_agents.codename,
+        Perms.obj.importer.is_contact.codename,
+    ]
+
+    applications = ImportApplication.objects.annotate(
+        main_contact=models.FilteredRelation(
+            "importer__importeruserobjectpermission",
+            condition=models.Q(importer__importeruserobjectpermission__user=user),
+        ),
+        agent_contact=models.FilteredRelation(
+            "agent__importeruserobjectpermission",
+            condition=models.Q(agent__importeruserobjectpermission__user=user),
+        ),
+    )
+
+    applications = applications.filter(
+        models.Q(main_contact__permission__codename__in=perms_to_check)
+        | models.Q(agent_contact__permission__codename__in=perms_to_check)
+    )
+
+    # One importer to many permissions so filter on distinct applications
+    applications = applications.distinct("pk")
+
+    return applications
+
+
+def get_user_export_applications(user: User) -> models.QuerySet[ExportApplication]:
+    """Returns Export Applications the user has access to."""
+
+    if user.has_perm(Perms.sys.search_all_cases):
+        return ExportApplication.objects.all()
+
+    perms_to_check = [
+        Perms.obj.exporter.view.codename,
+        Perms.obj.exporter.edit.codename,
+        Perms.obj.exporter.manage_contacts_and_agents.codename,
+        Perms.obj.exporter.is_contact.codename,
+    ]
+
+    applications = ExportApplication.objects.annotate(
+        main_contact=models.FilteredRelation(
+            "exporter__exporteruserobjectpermission",
+            condition=models.Q(exporter__exporteruserobjectpermission__user=user),
+        ),
+        agent_contact=models.FilteredRelation(
+            "agent__exporteruserobjectpermission",
+            condition=models.Q(agent__exporteruserobjectpermission__user=user),
+        ),
+    )
+
+    applications = applications.filter(
+        models.Q(main_contact__permission__codename__in=perms_to_check)
+        | models.Q(agent_contact__permission__codename__in=perms_to_check)
+    )
+
+    # One exporter to many permissions so filter on distinct applications
+    applications = applications.distinct("pk")
+
+    return applications
