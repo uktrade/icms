@@ -1,3 +1,5 @@
+import argparse
+
 import oracledb
 from django.core.management.base import BaseCommand
 
@@ -7,7 +9,15 @@ from .utils.db import CONNECTION_CONFIG
 
 
 class Command(BaseCommand):
+    def add_arguments(self, parser: argparse.ArgumentParser):
+        parser.add_argument(
+            "--fail_only",
+            help="Shows only the failures and not the passes",
+            action="store_true",
+        )
+
     def handle(self, *args, **options):
+        self.fail_only = options["fail_only"]
         self.passes = 0
         self.failures = 0
         self.run_counts()
@@ -33,6 +43,7 @@ class Command(BaseCommand):
             for check in CHECK_DATA_QUERIES:
                 expected = self.run_query(connection, check.query, check.bind_vars)
                 actual = self.get_actual(check.model, check.filter_params)
+                actual += check.adjustment  # Adjust to account for excluded data. See check.note
                 self._log_result(check.name, expected, actual)
 
     def run_query(self, connection: oracledb.Connection, query: str, bind_vars: Params) -> int:
@@ -63,8 +74,11 @@ class Command(BaseCommand):
         :param actual: The actual count of the data
         """
 
-        result = "PASS" if expected <= actual else "FAIL"
-        self.stdout.write(f"\t{result} - {name} -  EXPECTED: {expected} - ACTUAL: {actual}")
+        result = "PASS" if expected == actual else "FAIL"
+
+        if not self.fail_only or result == "FAIL":
+            self.stdout.write(f"\t{result} - {name} -  EXPECTED: {expected} - ACTUAL: {actual}")
+
         self._increment_counts(result == "PASS")
 
     def _increment_counts(self, result: bool) -> None:
