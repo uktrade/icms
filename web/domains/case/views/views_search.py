@@ -1,11 +1,12 @@
-from typing import TYPE_CHECKING, Any, Union
+from typing import Any, Literal, Union
 from urllib import parse
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.db.models import Window
+from django.db.models import QuerySet, Window
 from django.db.models.functions import RowNumber
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -35,10 +36,13 @@ from web.models import (
     ExportApplication,
     ImportApplication,
     ImportApplicationType,
+    Process,
     Task,
     Template,
+    User,
     VariationRequest,
 )
+from web.permissions import can_user_view_search_cases
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
     SearchTerms,
@@ -48,11 +52,6 @@ from web.utils.search import (
 
 from .mixins import ApplicationTaskMixin
 
-if TYPE_CHECKING:
-    from django.db.models import QuerySet
-
-    from web.models import Process, User
-
 SearchForm = Union[
     ExportSearchAdvancedForm, ExportSearchForm, ImportSearchAdvancedForm, ImportSearchForm
 ]
@@ -61,10 +60,16 @@ SearchFormT = type[SearchForm]
 
 @require_GET
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def search_cases(
-    request: AuthenticatedHttpRequest, *, case_type: str, mode: str = "standard", get_results=False
+    request: AuthenticatedHttpRequest,
+    *,
+    case_type: Literal["import", "export"],
+    mode: str = "standard",
+    get_results=False,
 ) -> HttpResponse:
+    if not can_user_view_search_cases(request.user, case_type):
+        raise PermissionDenied
+
     if mode == "advanced":
         form_class: SearchFormT = (
             ImportSearchAdvancedForm if case_type == "import" else ExportSearchAdvancedForm
@@ -125,8 +130,8 @@ def reassign_case_owner(request: AuthenticatedHttpRequest, *, case_type: str) ->
         form = ReassignmentUserForm(request.POST)
 
         if form.is_valid():
-            new_case_owner: "User" = form.cleaned_data["assign_to"]
-            applications: "QuerySet[Process]" = form.cleaned_data["applications"]
+            new_case_owner: User = form.cleaned_data["assign_to"]
+            applications: QuerySet[Process] = form.cleaned_data["applications"]
 
             if case_type == "import":
                 apps = ImportApplication.objects.select_for_update().filter(pk__in=applications)
@@ -142,9 +147,12 @@ def reassign_case_owner(request: AuthenticatedHttpRequest, *, case_type: str) ->
 
 @require_POST
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
-def download_spreadsheet(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpResponse:
+def download_spreadsheet(
+    request: AuthenticatedHttpRequest, *, case_type: Literal["import", "export"]
+) -> HttpResponse:
     """Generates and returns a spreadsheet using same form data as the search form."""
+    if not can_user_view_search_cases(request.user, case_type):
+        raise PermissionDenied
 
     form_class: SearchFormT = (
         ImportSearchAdvancedForm if case_type == "import" else ExportSearchAdvancedForm
@@ -287,9 +295,9 @@ class RequestVariationOpenBase(SearchActionFormBase):
         return "".join((search_url, "?", parse.urlencode(query_params)))
 
 
+# ICMSLST-1956 Restrict access to this view when doing action permissions
 @method_decorator(transaction.atomic, name="post")
 class RequestVariationUpdateView(RequestVariationOpenBase):
-    # ICMSLST-1240 Need to revisit permissions when they become more clear
     # TODO: The applicant and admin can request a variation request for import applications.
     # PermissionRequiredMixin config
     permission_required = ["web.ilb_admin"]

@@ -14,6 +14,14 @@ class PagePermissions(PermissionTextChoice):
         "web.can_view_exporter_details",
         "Can view the exporter details list page.",
     )
+    view_import_case_search = (
+        "web.can_view_import_case_search",
+        "Can view search import applications page",
+    )
+    view_export_case_search = (
+        "web.can_view_export_case_search",
+        "Can view search certificate applications page",
+    )
 
 
 class SysPerms(PermissionTextChoice):

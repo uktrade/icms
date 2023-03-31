@@ -31,18 +31,21 @@ def get_groups():
             Perms.page.view_permission_harness.codename,
             Perms.page.view_importer_details.codename,
             Perms.page.view_exporter_details.codename,
+            Perms.page.view_import_case_search.codename,
+            Perms.page.view_export_case_search.codename,
             #
             # Sys permissions
             Perms.sys.ilb_admin.codename,
             Perms.sys.edit_firearm_authorities.codename,
             Perms.sys.edit_section_5_firearm_authorities.codename,
-            Perms.sys.mailshot_access.codename,
             Perms.sys.search_all_cases.codename,
+            Perms.sys.mailshot_access.codename,
         ],
         Perms.obj.importer.get_group_name(): [
             #
             # Page permissions
             Perms.page.view_importer_details.codename,
+            Perms.page.view_import_case_search.codename,
             #
             # Sys permissions
             Perms.sys.importer_access.codename,
@@ -51,6 +54,7 @@ def get_groups():
             #
             # Page permissions
             Perms.page.view_exporter_details.codename,
+            Perms.page.view_export_case_search.codename,
             #
             # Sys permissions
             Perms.sys.exporter_access.codename,

@@ -229,6 +229,18 @@ class CaseURLS:
 
 class SearchURLS:
     @staticmethod
+    def search_cases(case_type: str = "import", mode: str = "standard"):
+        kwargs = {"case_type": case_type, "mode": mode}
+
+        return reverse("case:search", kwargs=kwargs)
+
+    @staticmethod
+    def download_spreadsheet(case_type: str = "import"):
+        kwargs = {"case_type": case_type}
+
+        return reverse("case:search-download-spreadsheet", kwargs=kwargs)
+
+    @staticmethod
     def reopen_case(application_pk: int, case_type: str = "import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 
