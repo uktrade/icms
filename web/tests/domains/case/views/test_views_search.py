@@ -17,23 +17,81 @@ from web.models import (
     Task,
     WoodQuotaApplication,
 )
-from web.tests.helpers import SearchURLS
+from web.tests.helpers import SearchURLS, get_test_client
 
 
-# TODO: ICMSLST-1240 Add permission tests for all views
-# TODO Add tests
-class TestSearchApplicationsView:
-    ...
+class TestSearchCasesView:
+    @pytest.fixture(autouse=True)
+    def _setup(self, importer_one_main_contact, exporter_one_main_contact, icms_admin_client):
+        self.import_url = SearchURLS.search_cases("import")
+        self.export_url = SearchURLS.search_cases("export")
+
+        self.importer_user_client = get_test_client(importer_one_main_contact)
+        self.exporter_user_client = get_test_client(exporter_one_main_contact)
+        self.ilb_admin_user_client = icms_admin_client
+
+    def test_permission(self):
+        response = self.importer_user_client.get(self.import_url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.exporter_user_client.get(self.import_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_user_client.get(self.export_url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.importer_user_client.get(self.export_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        for search_url in [self.import_url, self.export_url]:
+            response = self.ilb_admin_user_client.get(search_url)
+            assert response.status_code == HTTPStatus.OK
+
+    # TODO: ICMSLST-1957 Add missing unittests
+    def test_view_functionality(self):
+        ...
 
 
-# TODO Add tests
-class TestReassignCaseOwnerView:
-    ...
-
-
-# TODO Add tests
 class TestDownloadSpreadsheetView:
-    ...
+    @pytest.fixture(autouse=True)
+    def _setup(self, importer_one_main_contact, exporter_one_main_contact, icms_admin_client):
+        self.import_download_url = SearchURLS.download_spreadsheet("import")
+        self.export_download_url = SearchURLS.download_spreadsheet("export")
+
+        self.importer_user_client = get_test_client(importer_one_main_contact)
+        self.exporter_user_client = get_test_client(exporter_one_main_contact)
+        self.ilb_admin_user_client = icms_admin_client
+
+    def test_permission(self):
+        response = self.importer_user_client.post(self.import_download_url, data={})
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.exporter_user_client.post(self.import_download_url, data={})
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_user_client.post(self.export_download_url, data={})
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.importer_user_client.post(self.export_download_url, data={})
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        for search_url in [self.import_download_url, self.export_download_url]:
+            response = self.ilb_admin_user_client.post(search_url, data={})
+            assert response.status_code == HTTPStatus.OK
+
+    # TODO: ICMSLST-1957 Add missing unittests
+    def test_view_functionality(self):
+        ...
+
+
+class TestReassignCaseOwnerView:
+    # TODO: ICMSLST-1956 Test view permissions when updating actions to use user permissions.
+    def test_permission(self):
+        ...
+
+    # TODO: ICMSLST-1957 Add missing unittests
+    def test_view_functionality(self):
+        ...
 
 
 class TestReopenApplicationView:
@@ -54,6 +112,10 @@ class TestReopenApplicationView:
         task.finished = timezone.now()
         task.owner = test_icms_admin_user
         task.save()
+
+    # TODO: ICMSLST-1956 Test view permissions when updating actions to use user permissions.
+    def test_permission(self):
+        ...
 
     def test_reopen_application_when_stopped(self, wood_app_submitted):
         self.wood_app.status = ImpExpStatus.STOPPED
@@ -90,7 +152,7 @@ class TestReopenApplicationView:
         assert self.wood_app.case_owner is None
 
     def _check_valid_response(self, resp, application):
-        assert resp.status_code == 204
+        assert resp.status_code == HTTPStatus.NO_CONTENT
         application.refresh_from_db()
 
         case_progress.check_expected_status(application, [application.Statuses.SUBMITTED])
@@ -126,6 +188,10 @@ class TestRequestVariationUpdateView:
         task.finished = timezone.now()
         task.owner = test_icms_admin_user
         task.save()
+
+    # TODO: ICMSLST-1956 Test view permissions when updating actions to use user permissions.
+    def test_permission(self):
+        ...
 
     def test_get_search_url(self):
         url = SearchURLS.request_variation(self.wood_app.pk)
@@ -216,6 +282,10 @@ class TestRequestVariationOpenRequestView:
         task.owner = test_icms_admin_user
         task.save()
 
+    # TODO: ICMSLST-1956 Test view permissions when updating actions to use user permissions.
+    def test_permission(self):
+        ...
+
     def test_post_updates_status(self, test_icms_admin_user):
         url = SearchURLS.open_variation(self.app.pk)
 
@@ -246,6 +316,7 @@ class TestRevokeCaseView:
         self.app = completed_app
         self.url = SearchURLS.revoke_licence(self.app.pk)
 
+    # TODO: ICMSLST-1956 Check these permissions are correct when revisiting search actions.
     def test_permission(self, importer_client, exporter_client):
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
@@ -268,7 +339,7 @@ class TestRevokeCaseView:
 
         form_data = {"send_email": "on", "reason": "test reason"}
         resp = self.client.post(self.url, data=form_data, follow=True)
-        assert resp.status_code == 200
+        assert resp.status_code == HTTPStatus.OK
 
         self.app.refresh_from_db()
         assert self.app.status == ImpExpStatus.REVOKED
@@ -306,7 +377,7 @@ class TestRevokeCaseView:
     def test_revoke_licence_with_no_email(self):
         form_data = {"reason": "test reason"}
         resp = self.client.post(self.url, data=form_data, follow=True)
-        assert resp.status_code == 200
+        assert resp.status_code == HTTPStatus.OK
 
         self.app.refresh_from_db()
         assert self.app.status == ImpExpStatus.REVOKED

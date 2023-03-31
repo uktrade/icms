@@ -1,5 +1,5 @@
 import dataclasses
-from typing import TypeAlias
+from typing import Literal, TypeAlias
 
 from django.contrib.auth.models import Group
 from django.contrib.postgres.aggregates import ArrayAgg
@@ -186,6 +186,16 @@ def can_user_edit_firearm_authorities(user: User) -> bool:
 
 def can_user_edit_section5_authorities(user: User) -> bool:
     return user.has_perm(Perms.sys.edit_section_5_firearm_authorities)
+
+
+def can_user_view_search_cases(user: User, case_type: Literal["import", "export"]) -> bool:
+    match case_type:
+        case "import":
+            return user.has_perm(Perms.page.view_import_case_search)
+        case "export":
+            return user.has_perm(Perms.page.view_export_case_search)
+        case _:
+            return False
 
 
 def _get_obj_permissions(org) -> IMP_OR_EXP_PERMS_T:
