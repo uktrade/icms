@@ -1,5 +1,4 @@
-import dataclasses
-from typing import Literal, TypeAlias
+from typing import Literal, NamedTuple, TypeAlias
 
 from django.contrib.auth.models import Group
 from django.contrib.postgres.aggregates import ArrayAgg
@@ -25,54 +24,54 @@ ORGANISATION: TypeAlias = Importer | Exporter
 IMP_OR_EXP_PERMS_T = type[ImporterObjectPermissions | ExporterObjectPermissions]
 
 
-@dataclasses.dataclass(frozen=True)
-class UserImporterPerms:
-    user: User
-    importer: Importer
-    importer_perms: list[str]
+class UserOrgPerms(NamedTuple):
+    user_id: int
+    content_object_id: int
+    org_permissions: list[str]
 
 
-@dataclasses.dataclass(frozen=True)
-class UserExporterPerms:
-    user: User
-    exporter: Exporter
-    exporter_perms: list[str]
+def get_user_importer_permissions(
+    user: User, importer: Importer | None = None
+) -> list[UserOrgPerms]:
+    filter_kwargs = {"user": user}
 
+    if importer:
+        filter_kwargs["content_object"] = importer
 
-def get_user_importer_permissions(user: User, importer: Importer) -> UserImporterPerms:
     iuo_perms = (
         ImporterUserObjectPermission.objects
         # Group by
         .values("user_id", "content_object_id")
-        .filter(user=user, content_object=importer)
+        .filter(**filter_kwargs)
         # Field annotations
-        .annotate(importer_perms=ArrayAgg("permission__codename", default=Value([])))
+        .annotate(org_permissions=ArrayAgg("permission__codename", default=Value([])))
         .order_by("user_id", "content_object_id")
-        .values_list("user_id", "content_object_id", "importer_perms", named=True)
-    ).first()
+        .values_list("user_id", "content_object_id", "org_permissions", named=True)
+    )
 
-    # Needed as the user may not have any perms for the supplied importer
-    perms = iuo_perms.importer_perms if iuo_perms else []
-
-    return UserImporterPerms(user, importer, perms)
+    return iuo_perms
 
 
-def get_user_exporter_permissions(user: User, exporter: Exporter) -> UserExporterPerms:
+def get_user_exporter_permissions(
+    user: User, exporter: Exporter | None = None
+) -> list[UserOrgPerms]:
+    filter_kwargs = {"user": user}
+
+    if exporter:
+        filter_kwargs["content_object"] = exporter
+
     euo_perms = (
         ExporterUserObjectPermission.objects
         # Group by
         .values("user_id", "content_object_id")
-        .filter(user=user, content_object=exporter)
+        .filter(**filter_kwargs)
         # Field annotations
-        .annotate(exporter_perms=ArrayAgg("permission__codename", default=Value([])))
+        .annotate(org_permissions=ArrayAgg("permission__codename", default=Value([])))
         .order_by("user_id", "content_object_id")
-        .values_list("user_id", "content_object_id", "exporter_perms", named=True)
-    ).first()
+        .values_list("user_id", "content_object_id", "org_permissions", named=True)
+    )
 
-    # Needed as the user may not have any perms for the supplied exporter
-    perms = euo_perms.exporter_perms if euo_perms else []
-
-    return UserExporterPerms(user, exporter, perms)
+    return euo_perms
 
 
 def organisation_get_contacts(org: ORGANISATION) -> QuerySet[User]:

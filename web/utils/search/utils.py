@@ -1,10 +1,18 @@
-from typing import Any
+import dataclasses
+from collections import defaultdict
+from typing import Any, Literal
 
 from django.db import models
 from django.db.models.functions import Coalesce
 
 from web.models import ExportApplication, ImportApplication, User
-from web.permissions import Perms
+from web.permissions import (
+    ExporterObjectPermissions,
+    ImporterObjectPermissions,
+    Perms,
+    get_user_exporter_permissions,
+    get_user_importer_permissions,
+)
 
 
 def get_order_by_datetime(case_type: str) -> Any:
@@ -82,3 +90,52 @@ def get_user_export_applications(user: User) -> models.QuerySet[ExportApplicatio
     applications = applications.distinct("pk")
 
     return applications
+
+
+@dataclasses.dataclass
+class UserOrganisationPermissions:
+    user: User
+    case_type: Literal["import", "export"]
+
+    # key: org primary key, value: set of permissions
+    _cache: dict[int, set[str]] = dataclasses.field(init=False)
+    has_ilb_admin_perm: bool = dataclasses.field(init=False)
+
+    def __post_init__(self) -> None:
+        self.has_ilb_admin_perm = self.user.has_perm(Perms.sys.ilb_admin)
+
+        if self.case_type == "import":
+            user_org_permissions = get_user_importer_permissions(self.user)
+        else:
+            user_org_permissions = get_user_exporter_permissions(self.user)
+
+        self._cache = defaultdict(set)
+
+        for uop in user_org_permissions:
+            self._cache[uop.content_object_id] = set(uop.org_permissions)
+
+    def has_permission(
+        self,
+        organisation_pk: int,
+        *permissions: ImporterObjectPermissions | ExporterObjectPermissions,
+        any_perm: bool = False,
+    ) -> bool:
+        """Check if the initialised user has permissions for a given organisation.
+
+        :param organisation_pk: Primary key of organisation to check.
+        :param permissions: Single permission, or sequence of permissions to check.
+        :param any_perm: If True, any of permission in sequence is accepted. Default is False.
+        """
+
+        user_org_perms = self._cache[organisation_pk]
+
+        required_perms = {p.codename for p in permissions}
+
+        if any_perm:
+            # True if any required perms are in the user org perms
+            has_permission = bool(user_org_perms.intersection(required_perms))
+        else:
+            # True if all required perms are in the user org perms
+            has_permission = user_org_perms.issuperset(required_perms)
+
+        return self.has_ilb_admin_perm or has_permission

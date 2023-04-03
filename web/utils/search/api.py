@@ -4,7 +4,6 @@ from collections.abc import Iterable
 from operator import attrgetter
 from typing import Any
 
-from dateutil import relativedelta
 from django.db import models
 from django.db.models import Model, QuerySet
 from django.urls import reverse
@@ -30,11 +29,7 @@ from web.models.shared import FirearmCommodity, YesNoChoices
 from web.utils.spreadsheet import XlsxConfig, generate_xlsx_file
 
 from . import app_data, types, utils
-
-THREE_YEARS_AGO = timezone.now().date() - relativedelta.relativedelta(years=3)
-THREE_YEARS_AGO_DT = datetime.datetime.combine(
-    THREE_YEARS_AGO, datetime.time.min, tzinfo=datetime.UTC
-)
+from .actions import get_export_record_actions, get_import_record_actions
 
 
 def search_applications(
@@ -50,9 +45,10 @@ def search_applications(
 
     records: list[types.ResultRow] = []
 
+    user_org_perms = utils.UserOrganisationPermissions(user, terms.case_type)
     for queryset in _get_search_records(app_pks_and_types[:limit]):
         for rec in queryset:
-            row = get_result_row(rec, user)
+            row = get_result_row(rec, user_org_perms)
             records.append(row)  # type:ignore[arg-type]
 
     # Sort the records by order_by_datetime DESC (submitted date or created date)
@@ -236,7 +232,9 @@ def _get_search_records(
         yield search_func(search_ids)
 
 
-def _get_result_row(rec: ImportApplication, user: User) -> types.ImportResultRow:
+def _get_result_row(
+    rec: ImportApplication, user_org_perms: utils.UserOrganisationPermissions
+) -> types.ImportResultRow:
     """Process the incoming application and return a result row."""
 
     start_date = (
@@ -293,14 +291,16 @@ def _get_result_row(rec: ImportApplication, user: User) -> types.ImportResultRow
             assignee_name=assignee_name,
             reassignment_date=reassignment_date,
         ),
-        actions=get_import_record_actions(rec, user),
+        actions=get_import_record_actions(rec, user_org_perms),
         order_by_datetime=rec.order_by_datetime,  # This is an annotation
     )
 
     return row
 
 
-def _get_export_result_row(rec: ExportApplication, user: User) -> types.ExportResultRow:
+def _get_export_result_row(
+    rec: ExportApplication, user_org_permissions: utils.UserOrganisationPermissions
+) -> types.ExportResultRow:
     app_type_label = ProcessTypes(rec.process_type).label
     application_contact = rec.contact.full_name if rec.contact else ""
     submitted_at = rec.submit_datetime.strftime("%d %b %Y %H:%M:%S") if rec.submit_datetime else ""
@@ -339,7 +339,7 @@ def _get_export_result_row(rec: ExportApplication, user: User) -> types.ExportRe
             reassignment_date=reassignment_date,
         ),
         agent_name=rec.agent.name if rec.agent else None,
-        actions=get_export_record_actions(rec, user),
+        actions=get_export_record_actions(rec, user_org_permissions),
         order_by_datetime=rec.order_by_datetime,  # This is an annotation
     )
 
@@ -799,139 +799,3 @@ def _get_export_spreadsheet_rows(
             agent=row.agent_name or "",
             application_contact=row.application_contact,
         )
-
-
-def get_import_record_actions(app: "ImportApplication", user: User) -> list[types.SearchAction]:
-    """Get the available actions for the supplied import application.
-
-    :param app: Import Application record.
-    :param licence: Import Application Licence record.
-    :param user: User performing search
-    """
-
-    st = ImportApplication.Statuses
-    actions = []
-
-    # TODO: ICMSLST-1240: Add actions for Exporter / Exporter agents
-    # Standard User (importer/agent) actions:
-    #   Status = COMPLETED
-    #       Request Variation
-
-    licence_end_date = app.latest_licence_end_date
-
-    if app.status == ImpExpStatus.COMPLETED:
-        if licence_end_date and licence_end_date >= timezone.now().date():
-            actions.append(
-                types.SearchAction(
-                    url=reverse(
-                        "case:search-request-variation",
-                        kwargs={"application_pk": app.pk, "case_type": "import"},
-                    ),
-                    name="request-variation",
-                    label="Request Variation",
-                    icon="icon-redo2",
-                    is_post=False,
-                )
-            )
-
-        if licence_end_date and licence_end_date > datetime.date.today():
-            actions.append(
-                types.SearchAction(
-                    url=reverse(
-                        "case:search-revoke-licence",
-                        kwargs={"application_pk": app.pk, "case_type": "import"},
-                    ),
-                    name="revoke-licence",
-                    label="Revoke Licence",
-                    icon="icon-undo2",
-                    is_post=False,
-                )
-            )
-
-    elif app.status in [st.STOPPED, st.WITHDRAWN]:
-        actions.append(
-            types.SearchAction(
-                url=reverse(
-                    "case:search-reopen-case",
-                    kwargs={"application_pk": app.pk, "case_type": "import"},
-                ),
-                name="reopen-case",
-                label="Reopen Case",
-                icon="icon-redo2",
-            )
-        )
-
-    return actions
-
-
-def get_export_record_actions(rec: "ExportApplication", user: User) -> list[types.SearchAction]:
-    """Get the available actions for the supplied export application.
-
-    :param rec: Export Application record.
-    :param user: User performing search
-    """
-
-    st = ExportApplication.Statuses
-    actions: list[types.SearchAction] = []
-
-    # Exporter / Exporter’s Agent actions:
-    if not user.has_perm("web.ilb_admin"):
-        actions.append(
-            types.SearchAction(
-                url="#",
-                name="copy-application",
-                label="Copy Application",
-                icon="icon-copy",
-                is_post=True,
-            )
-        )
-        actions.append(
-            types.SearchAction(
-                url="#",
-                name="create-template",
-                label="Create Template",
-                icon="icon-magic-wand",
-                is_post=True,
-            )
-        )
-
-    # Case officer actions
-    else:
-        if rec.status == st.COMPLETED and rec.decision == rec.APPROVE:
-            open_variation_action = types.SearchAction(
-                url=reverse(
-                    "case:search-open-variation",
-                    kwargs={"application_pk": rec.pk, "case_type": "export"},
-                ),
-                name="open-variation",
-                label="Open Variation",
-                icon="icon-redo2",
-                is_post=False,
-            )
-
-            # TODO: ICMSLST-1006
-            revoke_certificate_action = types.SearchAction(
-                url="#",
-                name="revoke-certificates",
-                label="Revoke Certificates",
-                icon="icon-undo2",
-            )
-
-            if rec.process_type in [ProcessTypes.CFS, ProcessTypes.COM]:
-                actions.extend([open_variation_action, revoke_certificate_action])
-
-            elif (
-                rec.process_type == ProcessTypes.GMP
-                and rec.latest_certificate_issue_datetime > THREE_YEARS_AGO_DT
-            ):
-                actions.extend([open_variation_action, revoke_certificate_action])
-
-        if rec.status in [st.STOPPED, st.WITHDRAWN]:
-            # TODO: ICMSLST-1213
-            actions.append(
-                types.SearchAction(
-                    url="#", name="reopen-case", label="Reopen Case", icon="icon-redo2"
-                )
-            )
-
-    return actions
