@@ -1,6 +1,6 @@
 import datetime
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, NamedTuple, Optional, Union
+from typing import TYPE_CHECKING, Literal, NamedTuple, Optional, Union
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 class SearchTerms:
     # import or export - will be used to filter by ImportApplication or ExportApplication
     # Or we will have an ImportSearchTerms / ExportSearchTerms
-    case_type: str
+    case_type: Literal["import", "export"]
 
     # ---- Common search fields (Import and Export applications) ----
     app_type: str | None = None

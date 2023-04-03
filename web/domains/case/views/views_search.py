@@ -490,7 +490,9 @@ class RevokeCaseView(SearchActionFormBase):
         return "".join((search_url, "?", parse.urlencode(query_params)))
 
 
-def _get_search_terms_from_form(case_type: str, form: SearchForm) -> SearchTerms:
+def _get_search_terms_from_form(
+    case_type: Literal["import", "export"], form: SearchForm
+) -> SearchTerms:
     """Load the SearchTerms from the form data."""
 
     cd = form.cleaned_data
