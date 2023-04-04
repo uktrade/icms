@@ -202,16 +202,6 @@
 {% block page_js %}
   {{super()}}
   <script src="{{ static('web/js/pages/approval-response.js') }}" type="text/javascript"></script>
-  <script>
-      if($('textarea').length) {
-          new Jodit('textarea', {
-              readonly: true,
-              toolbar: false,
-              height: 300,
-              showCharsCounter: false,
-              showWordsCounter: false,
-              showXPathInStatusbar: false,
-          });
-      }
-  </script>
+  <link href="{{ static("web/css/components/text-editor.css") }}" rel="stylesheet">
+  <script src="{{ static('web/js/components/text-editor.js') }}" readonly="true" height="300" type="text/javascript"></script>
 {% endblock %}

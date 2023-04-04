@@ -3,6 +3,7 @@ from django.test import TestCase
 from web.domains.template.forms import (
     EmailTemplateForm,
     EndorsementTemplateForm,
+    LetterTemplateForm,
     TemplatesFilter,
 )
 from web.models import Template
@@ -119,3 +120,23 @@ class EndorsementCreateFormTest(TestCase):
         self.assertEqual(len(form.errors), 1)
         message = form.errors["template_name"][0]
         self.assertEqual(message, "You must enter this item")
+
+
+def test_letter_template_form_valid():
+    form = LetterTemplateForm(
+        {
+            "template_name": "New Template",
+            "template_content": "Test cover letter [[LICENCE_NUMBER]]",
+        }
+    )
+    assert form.is_valid() is True
+
+
+def test_cover_letter_form_invalid():
+    form = LetterTemplateForm(
+        {"template_name": "New Template", "template_content": "Test cover letter [[INVALID]]"}
+    )
+    assert form.is_valid() is False
+
+    error_message = form.errors["template_content"][0]
+    assert error_message == "The following placeholders are invalid: [[INVALID]]"

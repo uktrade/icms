@@ -9,6 +9,7 @@ from web.domains.template.utils import (
     add_application_default_cover_letter,
     add_endorsements_from_application_type,
     add_template_data_on_submit,
+    find_invalid_placeholders,
     get_context_dict,
     get_cover_letter_content,
     get_letter_fragment,
@@ -405,3 +406,17 @@ def test_sil_get_letter_fragment(test_import_user, importer, office, mp, eu, man
 
     template = Template.objects.get(template_code=tc)
     assert get_letter_fragment(app) == template.template_content
+
+
+@pytest.mark.parametrize(
+    "content,placeholders,expected",
+    [
+        ("Some content", ["ONE", "TWO", "THREE"], []),
+        ("Some content [[ONE]]", ["ONE", "TWO", "THREE"], []),
+        ("Some content [[FOUR]]", ["ONE", "TWO", "THREE"], ["[[FOUR]]"]),
+        ("Some content", [], []),
+        ("Some content [[ONE]]", [], ["[[ONE]]"]),
+    ],
+)
+def test_find_invalid_placeholders(content, placeholders, expected):
+    assert find_invalid_placeholders(content, placeholders) == expected
