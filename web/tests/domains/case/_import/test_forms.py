@@ -4,6 +4,7 @@ from django.test import TestCase
 from guardian.shortcuts import assign_perm
 
 from web.domains.case._import.forms import (
+    CoverLetterForm,
     CreateImportApplicationForm,
     CreateWoodQuotaApplicationForm,
 )
@@ -100,3 +101,18 @@ class TestCreateOpenIndividualImportLicenceForm(TestCase):
         self.assertEqual(
             error_message, "Wood applications can only be made for Northern Ireland traders."
         )
+
+
+def test_cover_letter_form_valid(fa_dfl_app_submitted):
+    post_data = {"cover_letter_text": "Test cover letter [[LICENCE_NUMBER]]"}
+    form = CoverLetterForm(post_data, instance=fa_dfl_app_submitted)
+    assert form.is_valid() is True
+
+
+def test_cover_letter_form_invalid(fa_dfl_app_submitted):
+    post_data = {"cover_letter_text": "Test cover letter [[INVALID]]"}
+    form = CoverLetterForm(post_data, instance=fa_dfl_app_submitted)
+    assert form.is_valid() is False
+
+    error_message = form.errors["cover_letter_text"][0]
+    assert error_message == "The following placeholders are invalid: [[INVALID]]"

@@ -7,7 +7,9 @@ from django_select2 import forms as s2forms
 
 from web.domains.template.widgets import EndorsementTemplateWidget
 
+from .context import CoverLetterTemplateContext
 from .models import Template
+from .utils import find_invalid_placeholders
 
 
 class DeclarationTemplateForm(forms.ModelForm):
@@ -50,6 +52,19 @@ class LetterTemplateForm(forms.ModelForm):
             "template_content": "Letter",
         }
         widgets = {"template_content": forms.Textarea(attrs={"lang": "html"})}
+
+    def clean_template_content(self):
+        template_content = self.cleaned_data["template_content"]
+        invalid_placeholders = find_invalid_placeholders(
+            template_content, CoverLetterTemplateContext.valid_placeholders
+        )
+        if invalid_placeholders:
+            self.add_error(
+                "template_content",
+                f"The following placeholders are invalid: {', '.join(invalid_placeholders)}",
+            )
+
+        return template_content
 
 
 class LetterFragmentForm(forms.ModelForm):

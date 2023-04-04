@@ -298,6 +298,7 @@ def edit_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int)
                         kwargs={"application_pk": application_pk, "case_type": "import"},
                     )
                 )
+
         else:
             form = CoverLetterForm(instance=application)
 
