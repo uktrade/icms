@@ -546,8 +546,7 @@ def _apply_import_application_filter(
     model: QuerySet[Model], terms: types.SearchTerms
 ) -> QuerySet[Model]:
     if terms.applicant_ref:
-        applicant_ref_filter = get_wildcard_filter("applicant_reference", terms.applicant_ref)
-        model = model.filter(applicant_ref_filter)
+        model = model.filter(applicant_reference__ilike=terms.applicant_ref)
 
     if terms.importer_agent_name:
         importer_filter = get_wildcard_filter("importer__name", terms.importer_agent_name)

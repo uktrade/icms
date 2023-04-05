@@ -2704,3 +2704,5 @@ ICMSLST-1002 Implement
 ICMSLST-1241 Implement
 ICMSLST-1213 Implement
 "Check if the initialised
+Generates the SQL fragment
+SQLCompiler
