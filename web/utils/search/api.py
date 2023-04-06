@@ -591,10 +591,6 @@ def _apply_import_application_filter(
         commodity_filter = _get_commodity_code_filter(terms)
         model = model.filter(commodity_filter)
 
-    # TODO: ICMSLST-1370 Write test & implement
-    if terms.under_appeal:
-        ...
-
     if terms.licence_date_start:
         model = model.filter(
             licences__status__in=[

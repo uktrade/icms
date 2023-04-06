@@ -140,8 +140,6 @@ class ImportApplication(ApplicationBase):
 
     chief_usage_status = models.CharField(max_length=1, choices=ChiefUsageTypes.choices, null=True)
 
-    under_appeal_flag = models.BooleanField(blank=False, null=False, default=False)
-
     variation_decision = models.CharField(
         max_length=10,
         choices=ApplicationBase.DECISIONS,

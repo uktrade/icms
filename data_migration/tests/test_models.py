@@ -127,7 +127,6 @@ def test_import_application_get_data_export():
     result = ia.data_export(data)
 
     assert result["legacy_case_flag"] is True
-    assert result["under_appeal_flag"] is False
     assert result["licence_extended_flag"] is False
 
     expected = [
@@ -158,7 +157,6 @@ def test_import_application_get_data_export():
         "status",
         "submit_datetime",
         "submitted_by_id",
-        "under_appeal_flag",
         "variation_decision",
         "variation_no",
         "variation_refuse_reason",

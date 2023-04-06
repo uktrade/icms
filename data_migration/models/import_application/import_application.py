@@ -44,7 +44,6 @@ class ImportApplication(MigrationBase):
     variation_no = models.IntegerField(null=False, default=0)
     legacy_case_flag = models.CharField(max_length=5, null=True)
     chief_usage_status = models.CharField(max_length=1, null=True)
-    under_appeal_flag = models.CharField(max_length=5, null=True)
     variation_decision = models.CharField(max_length=10, null=True)
     variation_refuse_reason = models.CharField(max_length=4000, null=True)
     licence_extended_flag = models.CharField(max_length=5, null=True)

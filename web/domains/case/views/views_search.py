@@ -524,7 +524,6 @@ def _get_search_terms_from_form(
         shipping_year=cd.get("shipping_year"),
         goods_category=cd.get("goods_category"),
         commodity_code=cd.get("commodity_code"),
-        under_appeal=cd.get("under_appeal"),
         licence_date_start=cd.get("licence_from"),
         licence_date_end=cd.get("licence_to"),
         issue_date_start=cd.get("issue_from"),
