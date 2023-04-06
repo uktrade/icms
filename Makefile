@@ -114,6 +114,9 @@ docker_drop_all_tables: ## drop all tables
 pip-check:
 	docker-compose run --rm web pip-check
 
+pip-tree:
+	docker-compose run --rm web pipdeptree ${args}
+
 sqlsequencereset: ## Use this command to generate SQL which will fix cases where a sequence is out of sync with its automatically incremented field data
 	unset UID && \
 	docker-compose run --rm web python ./manage.py sqlsequencereset web
