@@ -40,7 +40,6 @@ class SearchTerms:
     shipping_year: str | None = None
     goods_category: Optional["CommodityGroup"] = None
     commodity_code: str | None = None
-    under_appeal: str | None = None
     licence_date_start: datetime.date | None = None
     licence_date_end: datetime.date | None = None
     issue_date_start: datetime.date | None = None

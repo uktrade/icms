@@ -1003,7 +1003,6 @@ master_country_group
 consignment_country_group_id
 paper_licence_flag
 quantity_unlimited_flag
-under_appeal_flag
 agent_id"
 variation_no
 exporter_vat_nr
@@ -2289,7 +2288,6 @@ xiad.status
 xiad.submitted_datetime
 xiad.refuse_reason
 xiad.chief_usage_status
-xiad.under_appeal_flag
 xiad.licence_extended licence_extended_flag
 xiad.last_updated_datetime last_update_datetime ,
 xiad.created_by_wua_id
@@ -2704,3 +2702,11 @@ ICMSLST-1002 Implement
 ICMSLST-1241 Implement
 ICMSLST-1213 Implement
 "Check if the initialised
+{{ fields.field(form.licence_ref
+{{ fields.field(form.licence_type
+fields.field(form.status
+{{ fields.field(form.chief_usage_status
+{{ fields.inline_field_with_label(form.licence_from
+{{ fields.field(form.goods_category
+{{ fields.field(form.commodity_code
+x.file_folder_id

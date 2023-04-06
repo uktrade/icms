@@ -44,7 +44,6 @@ SELECT
   , xiad.variation_no
   , xiad.legacy_case_flag
   , xiad.chief_usage_status
-  , xiad.under_appeal_flag
   , xiad.variation_decision
   , xiad.variation_refuse_reason
   , xiad.licence_extended licence_extended_flag

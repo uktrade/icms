@@ -215,12 +215,6 @@ class ImportSearchAdvancedForm(ImportSearchForm):
         choices=[(None, "Any")] + YesNoChoices.choices,
     )
 
-    under_appeal = forms.ChoiceField(
-        label="Under Appeal",
-        required=False,
-        choices=[(None, "Any")] + YesNoChoices.choices,
-    )
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
