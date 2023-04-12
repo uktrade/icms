@@ -30,7 +30,7 @@
       )
     }}
     {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'View Application', "_blank") }}
-    <li><a href="#" target="_blank">Sent Responses</a></li>
+    {{ icms_link(request, icms_url('case:applicant-case-history', kwargs={'application_pk': process.pk, 'case_type': "import"}), 'Sent Responses', "_blank") }}
   </ul>
 {% endblock %}
 

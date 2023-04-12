@@ -268,3 +268,7 @@ class SearchURLS:
             "case:search-revoke-licence",
             kwargs={"application_pk": application_pk, "case_type": case_type},
         )
+
+    @staticmethod
+    def reassign_case_owner(case_type: str = "import") -> str:
+        return reverse("case:search-reassign-case-owner", kwargs={"case_type": case_type})

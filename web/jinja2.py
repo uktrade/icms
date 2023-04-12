@@ -20,6 +20,7 @@ from web.domains.case.services import case_progress
 from web.domains.case.types import ImpOrExp
 from web.domains.workbasket.actions.ilb_admin_actions import TakeOwnershipAction
 from web.menu import Menu
+from web.permissions import Perms
 from web.permissions.context_processors import UserObjectPerms
 from web.types import AuthenticatedHttpRequest
 
@@ -140,6 +141,17 @@ def show_take_ownership_url(
     return action.show_link()
 
 
+def get_view_case_url(request: AuthenticatedHttpRequest, case_type: str, app_pk: int):
+    """Used to retrieve the correct view case url based on the user permissions."""
+
+    kwargs = {"application_pk": app_pk, "case_type": case_type}
+
+    if request.user.has_perm(Perms.sys.ilb_admin):
+        return reverse("case:manage", kwargs={"application_pk": app_pk, "case_type": case_type})
+    else:
+        return reverse("case:view", kwargs=kwargs)
+
+
 def get_latest_issued_document(application):
     """Used to get the active document pack in one template"""
 
@@ -174,6 +186,7 @@ def environment(**options):
             "show_optional_label": show_optional_label,
             # Reuse the workbasket logic to show url.
             "show_take_ownership_url": show_take_ownership_url,
+            "get_view_case_url": get_view_case_url,
             "get_latest_issued_document": get_latest_issued_document,
             "get_active_task_list": get_active_task_list,
             "get_user_obj_perms": get_user_obj_perms,

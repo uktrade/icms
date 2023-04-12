@@ -2710,3 +2710,14 @@ fields.field(form.status
 {{ fields.field(form.goods_category
 {{ fields.field(form.commodity_code
 x.file_folder_id
+ILB
+"Implement in child view
+rec.app_pk
+function(event
+document.querySelector("#id_application_type
+setupDownloadSpreadsheetEventHandler
+Variations
+{{ application_field(get_status_widget("OPEN
+Submit Variation
+columns"><label
+north">Case

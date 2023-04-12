@@ -5,6 +5,7 @@ import pytest
 from django.core import mail
 from django.test.client import Client
 from django.utils import timezone
+from guardian.shortcuts import remove_perm
 from pytest_django.asserts import assertRedirects
 
 from web.domains.case.services import case_progress, document_pack
@@ -17,6 +18,7 @@ from web.models import (
     Task,
     WoodQuotaApplication,
 )
+from web.permissions import Perms
 from web.tests.helpers import SearchURLS, get_test_client
 
 
@@ -85,9 +87,28 @@ class TestDownloadSpreadsheetView:
 
 
 class TestReassignCaseOwnerView:
-    # TODO: ICMSLST-1956 Test view permissions when updating actions to use user permissions.
-    def test_permission(self):
-        ...
+    def test_permission(
+        self,
+        importer_one_main_contact,
+        exporter_one_main_contact,
+        icms_admin_client,
+        wood_app_submitted,
+    ):
+        importer_user_client = get_test_client(importer_one_main_contact)
+        exporter_user_client = get_test_client(exporter_one_main_contact)
+
+        url = SearchURLS.reassign_case_owner()
+
+        response = importer_user_client.post(url, data={})
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = exporter_user_client.post(url, data={})
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        # 400 response is valid when form data is incorrect.
+        # It shows the ILB user has permission.
+        response = icms_admin_client.post(url, data={})
+        assert response.status_code == HTTPStatus.BAD_REQUEST
 
     # TODO: ICMSLST-1957 Add missing unittests
     def test_view_functionality(self):
@@ -113,34 +134,49 @@ class TestReopenApplicationView:
         task.owner = test_icms_admin_user
         task.save()
 
-    # TODO: ICMSLST-1956 Test view permissions when updating actions to use user permissions.
-    def test_permission(self):
-        ...
+    def test_permission(self, importer_one_main_contact, exporter_one_main_contact):
+        importer_user_client = get_test_client(importer_one_main_contact)
+        exporter_user_client = get_test_client(exporter_one_main_contact)
 
-    def test_reopen_application_when_stopped(self, wood_app_submitted):
+        url = SearchURLS.reopen_case(self.wood_app.pk)
+
+        response = importer_user_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = exporter_user_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        # self.client is an ILB admin user
+        self.wood_app.status = ImpExpStatus.STOPPED
+        self.wood_app.save()
+        resp = self.client.post(url)
+
+        self._check_valid_response(resp, self.wood_app)
+
+    def test_reopen_application_when_stopped(self):
         self.wood_app.status = ImpExpStatus.STOPPED
         self.wood_app.save()
 
         url = SearchURLS.reopen_case(application_pk=self.wood_app.pk)
         resp = self.client.post(url)
 
-        self._check_valid_response(resp, wood_app_submitted)
+        self._check_valid_response(resp, self.wood_app)
 
-    def test_reopen_application_when_withdrawn(self, wood_app_submitted):
+    def test_reopen_application_when_withdrawn(self):
         self.wood_app.status = ImpExpStatus.WITHDRAWN
         self.wood_app.save()
 
         url = SearchURLS.reopen_case(application_pk=self.wood_app.pk)
         resp = self.client.post(url)
 
-        self._check_valid_response(resp, wood_app_submitted)
+        self._check_valid_response(resp, self.wood_app)
 
-    def test_reopen_application_when_processing_errors(self, wood_app_submitted):
+    def test_reopen_application_when_processing_errors(self):
         with pytest.raises(expected_exception=errors.ProcessStateError):
             url = SearchURLS.reopen_case(application_pk=self.wood_app.pk)
             self.client.post(url)
 
-    def test_reopen_application_unsets_caseworker(self, test_icms_admin_user, wood_app_submitted):
+    def test_reopen_application_unsets_caseworker(self, test_icms_admin_user):
         self.wood_app.status = ImpExpStatus.STOPPED
         self.wood_app.case_owner = test_icms_admin_user
         self.wood_app.save()
@@ -148,7 +184,7 @@ class TestReopenApplicationView:
         url = SearchURLS.reopen_case(application_pk=self.wood_app.pk)
         resp = self.client.post(url)
 
-        self._check_valid_response(resp, wood_app_submitted)
+        self._check_valid_response(resp, self.wood_app)
         assert self.wood_app.case_owner is None
 
     def _check_valid_response(self, resp, application):
@@ -189,9 +225,31 @@ class TestRequestVariationUpdateView:
         task.owner = test_icms_admin_user
         task.save()
 
-    # TODO: ICMSLST-1956 Test view permissions when updating actions to use user permissions.
-    def test_permission(self):
-        ...
+    def test_permission(
+        self, importer_one_main_contact, exporter_one_main_contact, icms_admin_client
+    ):
+        importer_user_client = get_test_client(importer_one_main_contact)
+        exporter_user_client = get_test_client(exporter_one_main_contact)
+        ilb_admin_user_client = icms_admin_client
+
+        url = SearchURLS.request_variation(self.wood_app.pk)
+
+        response = importer_user_client.get(url)
+        assert response.status_code == HTTPStatus.OK
+
+        # Removing the edit object permission should prevent the importer contact from
+        # attempting to perform a variation request.
+        remove_perm(Perms.obj.importer.edit, importer_one_main_contact, self.wood_app.importer)
+        response = importer_user_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = exporter_user_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = ilb_admin_user_client.get(url)
+        assert response.status_code == HTTPStatus.OK
+
+        remove_perm(Perms.obj.importer.edit, importer_one_main_contact, self.wood_app.importer)
 
     def test_get_search_url(self):
         url = SearchURLS.request_variation(self.wood_app.pk)
@@ -282,9 +340,27 @@ class TestRequestVariationOpenRequestView:
         task.owner = test_icms_admin_user
         task.save()
 
-    # TODO: ICMSLST-1956 Test view permissions when updating actions to use user permissions.
-    def test_permission(self):
-        ...
+    def test_permission(
+        self,
+        importer_one_main_contact,
+        exporter_one_main_contact,
+        icms_admin_client,
+        wood_app_submitted,
+    ):
+        importer_user_client = get_test_client(importer_one_main_contact)
+        exporter_user_client = get_test_client(exporter_one_main_contact)
+
+        url = SearchURLS.open_variation(self.app.pk)
+
+        response = importer_user_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = exporter_user_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        # self.client is an ILB admin user
+        response = self.client.get(url)
+        assert response.status_code == HTTPStatus.OK
 
     def test_post_updates_status(self, test_icms_admin_user):
         url = SearchURLS.open_variation(self.app.pk)
@@ -316,7 +392,6 @@ class TestRevokeCaseView:
         self.app = completed_app
         self.url = SearchURLS.revoke_licence(self.app.pk)
 
-    # TODO: ICMSLST-1956 Check these permissions are correct when revisiting search actions.
     def test_permission(self, importer_client, exporter_client):
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
