@@ -141,7 +141,8 @@ def reassign_case_owner(request: AuthenticatedHttpRequest, *, case_type: str) ->
             else:
                 apps = ExportApplication.objects.select_for_update().filter(pk__in=applications)
 
-            apps.update(case_owner=new_case_owner, order_datetime=timezone.now())
+            now = timezone.now()
+            apps.update(case_owner=new_case_owner, order_datetime=now, reassign_datetime=now)
         else:
             return HttpResponse(status=400)
 
