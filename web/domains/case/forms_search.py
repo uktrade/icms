@@ -252,17 +252,6 @@ class ExportSearchForm(SearchFormBase):
         error_messages={"invalid": wildcard_invalid_error},
     )
 
-    closed_from = forms.DateField(label="Closed Date", required=False, widget=DateInput)
-    closed_to = forms.DateField(label="To", required=False, widget=DateInput)
-
-    def clean(self):
-        cd = super().clean()
-
-        if self.dates_are_reversed(cd.get("closed_from"), cd.get("closed_to")):
-            self.add_error("closed_to", "'From' must be before 'To'")
-
-        return cd
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["licence_ref"].label = "Certificate Reference"

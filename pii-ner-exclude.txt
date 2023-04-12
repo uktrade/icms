@@ -23,7 +23,6 @@ Import and Export
 submitted_to
 licence_to
 issue_to
-closed_to
 Test Constabulary
 That Constabulary
 ExporterAccessRequest

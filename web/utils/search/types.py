@@ -47,8 +47,6 @@ class SearchTerms:
 
     # ---- Export application fields ----
     exporter_agent_name: str | None = None
-    closed_date_start: datetime.date | None = None
-    closed_date_end: datetime.date | None = None
     certificate_country: Optional["QuerySet[Country]"] = None
     manufacture_country: Optional["QuerySet[Country]"] = None
 

@@ -696,14 +696,6 @@ def _apply_export_application_filter(
 
         model = model.filter(exporter_filter | agent_filter)
 
-    if terms.closed_date_start:
-        # TODO: Implement when doing ICMSLST-1107
-        ...
-
-    if terms.closed_date_end:
-        # TODO: Implement when doing ICMSLST-1107
-        ...
-
     if terms.certificate_country:
         country_filter = _get_country_filter(terms.certificate_country, "countries")
         model = model.filter(**country_filter)

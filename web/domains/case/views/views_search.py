@@ -549,8 +549,6 @@ def _get_search_terms_from_form(
         issue_date_end=cd.get("issue_to"),
         # ---- Export application fields ----
         exporter_agent_name=cd.get("exporter_or_agent"),
-        closed_date_start=cd.get("closed_from"),
-        closed_date_end=cd.get("closed_to"),
         certificate_country=cd.get("certificate_country"),
         manufacture_country=cd.get("manufacture_country"),
     )
