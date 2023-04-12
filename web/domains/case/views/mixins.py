@@ -1,6 +1,6 @@
 from typing import Any, ClassVar
 
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.db import models
 from django.http import HttpRequest
 from django.views import View
@@ -64,8 +64,12 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
         self.application = self.get_object()
         self.task = self.get_task()
 
-        # TODO ICMSLST-1240: a method could be called / overridden here.
-        # self.check_application_permission()
+        if not self.has_object_permission():
+            raise PermissionDenied
+
+    def has_object_permission(self) -> bool:
+        """Implement in child view if required."""
+        return True
 
     def get_object(self, queryset: models.QuerySet | None = None) -> ImpOrExp:
         """Downcast to specific model class."""

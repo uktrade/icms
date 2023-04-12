@@ -501,9 +501,6 @@ def _apply_search(model: QuerySet[Model], terms: types.SearchTerms) -> QuerySet[
     if terms.pending_update_reqs == YesNoChoices.yes:
         model = model.filter(update_requests__status=UpdateRequest.Status.OPEN)
 
-    # TODO: Revisit this when doing ICMSLST-964
-    # reassignment_search (searches for people not assigned to me)
-
     if terms.case_type == "import":
         model = _apply_import_application_filter(model, terms)
 

@@ -42,7 +42,7 @@ from web.models import (
     User,
     VariationRequest,
 )
-from web.permissions import can_user_view_search_cases
+from web.permissions import Perms, can_user_view_search_cases
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
     SearchTerms,
@@ -99,6 +99,8 @@ def search_cases(
 
     results_url = reverse("case:search-results", kwargs={"case_type": case_type, "mode": mode})
 
+    reassignment_search_enabled = request.user.has_perm(Perms.sys.ilb_admin)
+
     context = {
         "form": form,
         "results_url": results_url,
@@ -110,7 +112,8 @@ def search_cases(
         "show_application_sub_type": show_application_sub_type,
         "total_rows": total_rows,
         "search_records": search_records,
-        "reassignment_search": form["reassignment"].value(),
+        "reassignment_search": reassignment_search_enabled and form["reassignment"].value(),
+        "reassignment_enabled": reassignment_search_enabled,
     }
 
     return render(
@@ -122,7 +125,7 @@ def search_cases(
 
 @require_POST
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def reassign_case_owner(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpResponse:
     """Reassign Applications to the chosen ILB admin."""
 
@@ -179,7 +182,7 @@ def download_spreadsheet(
 class ReopenApplicationView(
     ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View
 ):
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.sys.ilb_admin]
 
     # ApplicationTaskMixin Config
     current_status = [ImpExpStatus.STOPPED, ImpExpStatus.WITHDRAWN]
@@ -295,12 +298,9 @@ class RequestVariationOpenBase(SearchActionFormBase):
         return "".join((search_url, "?", parse.urlencode(query_params)))
 
 
-# ICMSLST-1956 Restrict access to this view when doing action permissions
 @method_decorator(transaction.atomic, name="post")
 class RequestVariationUpdateView(RequestVariationOpenBase):
-    # TODO: The applicant and admin can request a variation request for import applications.
-    # PermissionRequiredMixin config
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.page.view_import_case_search]
 
     # ApplicationTaskMixin Config
     current_status = [ImpExpStatus.COMPLETED]
@@ -311,6 +311,24 @@ class RequestVariationUpdateView(RequestVariationOpenBase):
     # FormView config
     form_class = VariationRequestForm
     template_name = "web/domains/case/variation-request-add.html"
+
+    def has_object_permission(self) -> bool:
+        """Return True if the user has the correct object permissions."""
+
+        user = self.request.user
+
+        if user.has_perm(Perms.sys.ilb_admin):
+            return True
+
+        can_edit = Perms.obj.importer.edit
+
+        if user.has_perm(can_edit, self.application.importer):
+            return True
+
+        if self.application.agent and user.has_perm(can_edit, self.application.agent):
+            return True
+
+        return False
 
     def form_valid(self, form: VariationRequestForm) -> HttpResponseRedirect:
         """Store the variation request before redirecting to the success url."""
@@ -342,7 +360,7 @@ class RequestVariationOpenRequestView(RequestVariationOpenBase):
     """Admin view to open a variation request for an export application"""
 
     # PermissionRequiredMixin config
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.sys.ilb_admin]
 
     # ApplicationTaskMixin Config
     current_status = [ImpExpStatus.COMPLETED]
@@ -383,7 +401,7 @@ class RevokeCaseView(SearchActionFormBase):
     """Admin view to revoke an application."""
 
     # PermissionRequiredMixin config
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.sys.ilb_admin]
 
     # ApplicationTaskMixin Config
     current_status = [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
