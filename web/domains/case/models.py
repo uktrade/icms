@@ -252,6 +252,9 @@ class ApplicationBase(Process):
 
     submit_datetime = models.DateTimeField(blank=True, null=True)
 
+    # Used exclusively in search to indicate when a case has been reassigned.
+    reassign_datetime = models.DateTimeField(blank=True, null=True)
+
     # This is the "Case Reference" field
     reference = models.CharField(
         max_length=100, blank=True, null=True, unique=True, verbose_name="Case Reference"

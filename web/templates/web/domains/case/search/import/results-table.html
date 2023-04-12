@@ -5,7 +5,7 @@
     <th scope="col">Submitted Date</th>
     <th scope="col">Applicant Details</th>
     <th scope="col">Commodity Details</th>
-    {% if reassignment_search %}
+    {% if reassignment_enabled and reassignment_search %}
       <th scope="col">Assignee Details<div aria-describedby="applicant-details-tooltip" class="hint icon-info tooltipstered"></div></th>
     {% endif %}
     <th scope="col">Actions</th>
@@ -19,7 +19,7 @@
       <td>{% include "web/domains/case/search/import/submitted_date.html" %}</td>
       <td>{% include "web/domains/case/search/import/applicant_details.html" %}</td>
       <td>{% include "web/domains/case/search/import/commodity_details.html" %}</td>
-      {% if reassignment_search %}
+      {% if reassignment_enabled and reassignment_search %}
         <td>{% include "web/domains/case/search/assignee_details.html" %}</td>
       {% endif %}
       <td>{% include "web/domains/case/search/results-row-actions.html" %}</td>

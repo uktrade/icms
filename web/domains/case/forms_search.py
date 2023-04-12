@@ -58,7 +58,7 @@ class SearchFormBase(forms.Form):
     reassignment = forms.BooleanField(label="Reassignment", required=False)
 
     reassignment_user = forms.ModelChoiceField(
-        label="Reassignment User",
+        label="Case Officer",
         help_text=(
             "Search a contact. Contacts returned are matched against first/last name,"  # /PS-IGNORE
             " email, job title, organisation and department."
@@ -136,7 +136,7 @@ class ImportSearchForm(SearchFormBase):
 
         if not cd["reassignment"] and cd["reassignment_user"]:
             self.add_error(
-                "reassignment", "Can't search using Reassignment User without Reassignment enabled"
+                "reassignment", "Can't search using 'Reassignment To' without Reassignment enabled"
             )
 
         return cd
@@ -309,7 +309,7 @@ class ExportSearchAdvancedForm(ExportSearchForm):
 
 class ReassignmentUserForm(forms.Form):
     assign_to = forms.ModelChoiceField(
-        label="Reassignment User",
+        label="Reassign To",
         help_text=(
             "Search a contact. Contacts returned are matched against first/last name,"  # /PS-IGNORE
             " email, job title, organisation and department."
