@@ -2724,3 +2724,14 @@ Spreadsheet</button
 class="icon-checkbox-checked
 class="extra-info
 value=
+index.html
+Perms
+GlobalPermission
+ModelBackend
+debug_toolbar.panels.sql
+LoggingPanel
+RedirectsPanel
+jquery-ui.min.js
+urllib3
+Guardian
+user_obj.guardian_checker
