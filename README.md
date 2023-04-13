@@ -126,6 +126,13 @@ PII tool files:
 
 Refer to its documentation for further details
 
+## Permissions in ICMS
+
+ICMS uses a combination of standard django permissions as well as django guardian object permissions.
+
+See [this document](documentation/icms-permissions.md) for an overview of the system.
+
+
 ## Database schema generation
 
 A schema for the database can be generated using the following django-extensions command:

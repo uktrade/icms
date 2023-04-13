@@ -7,8 +7,6 @@ from . import can_user_edit_org, can_user_manage_org_contacts, can_user_view_org
 
 
 class UserObjectPerms(ObjectPermissionChecker):
-    # TODO: These methods don't use the ObjectPermissionChecker cache (extra db call every time)
-    # each call to user.has_perm() creates a new ObjectPermissionChecker instance
     def can_edit_org(self, org):
         return can_user_edit_org(self.user, org)
 
