@@ -94,6 +94,11 @@ def importer_one_main_contact(django_user_model):
 
 
 @pytest.fixture()
+def importer_one_agent_one_contact(django_user_model):
+    return django_user_model.objects.get(username="I1_A1_main_contact")
+
+
+@pytest.fixture()
 def importer_two_main_contact(django_user_model):
     return django_user_model.objects.get(username="I2_main_contact")
 
@@ -169,6 +174,13 @@ def office():
         address_2="I1 address line 2",
         postcode="BT180LZ",  # /PS-IGNORE
     )
+
+
+@pytest.fixture
+def importer_one_agent_office():
+    """Fixture to get an office model instance (linked to Test Importer 1 Agent 1)."""
+
+    return Office.objects.get(address_1="I1_A1 address line 1")
 
 
 @pytest.fixture

@@ -3,7 +3,7 @@ from django.test import TestCase
 from web.models import Constabulary
 
 
-class ConstabularyTest(TestCase):
+class TestConstabulary(TestCase):
     def create_constabulary(
         self,
         name="Test Constabulary",
@@ -17,26 +17,26 @@ class ConstabularyTest(TestCase):
 
     def test_create_constabulary(self):
         constabulary = self.create_constabulary()
-        self.assertTrue(isinstance(constabulary, Constabulary))
-        self.assertEqual(constabulary.name, "Test Constabulary")
-        self.assertEqual(constabulary.email, "test_constabulary@test.com")  # /PS-IGNORE
-        self.assertEqual(constabulary.region, Constabulary.EAST_MIDLANDS)
-        self.assertTrue(constabulary.is_active)
+        assert isinstance(constabulary, Constabulary)
+        assert constabulary.name == "Test Constabulary"
+        assert constabulary.email == "test_constabulary@test.com"  # /PS-IGNORE
+        assert constabulary.region == Constabulary.EAST_MIDLANDS
+        assert constabulary.is_active is True
 
     def test_archive_constabulary(self):
         constabulary = self.create_constabulary()
         constabulary.archive()
-        self.assertFalse(constabulary.is_active)
+        assert constabulary.is_active is False
 
     def test_unarchive_constabulary(self):
         constabulary = self.create_constabulary()
         constabulary.unarchive()
-        self.assertTrue(constabulary.is_active)
+        assert constabulary.is_active is True
 
     def test_region_verbose(self):
         constabulary = self.create_constabulary()
-        self.assertEqual(constabulary.region_verbose, "East Midlands")
+        assert constabulary.region_verbose == "East Midlands"
 
     def test_string_representation(self):
         constabulary = self.create_constabulary()
-        self.assertEqual(constabulary.__str__(), f"Constabulary ({constabulary.name})")
+        assert constabulary.__str__() == f"Constabulary ({constabulary.name})"

@@ -12,7 +12,7 @@ from web.models import Commodity, CommodityGroup, CommodityType, Unit
 from .factory import CommodityFactory, CommodityGroupFactory
 
 
-class CommodityFilterTest(TestCase):
+class TestCommodityFilter(TestCase):
     def setUp(self):
         commodity_type = CommodityType.objects.first()
 
@@ -37,26 +37,26 @@ class CommodityFilterTest(TestCase):
 
     def test_commodity_code_filter(self):
         results = self.run_filter({"commodity_code": "7654"})
-        self.assertEqual(results.count(), 1)
+        assert results.count() == 1
 
     def test_archived_filter(self):
         results = self.run_filter({"is_archived": True})
-        self.assertGreater(results.count(), 1)
+        assert results.count() > 1
 
     def test_validity_start_filter(self):
         results = self.run_filter({"validy_start": datetime(1985, 12, 12)})
-        self.assertGreater(results.count(), 2)
+        assert results.count() > 2
 
     def test_validity_end_filter(self):
         results = self.run_filter({"valid_end": datetime(2051, 12, 12)})
-        self.assertGreater(results.count(), 1)
+        assert results.count() > 1
 
     def test_filter_order(self):
         results = self.run_filter({"commodity_code": 5})
-        self.assertGreater(results.count(), 2)
+        assert results.count() > 2
 
 
-class CommodityFormTest(TestCase):
+class TestCommodityForm(TestCase):
     def test_form_valid(self):
         code = "42"
         form = CommodityForm(
@@ -66,19 +66,19 @@ class CommodityFormTest(TestCase):
                 "commodity_type": CommodityType.objects.first().pk,
             }
         )
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
 
     def test_form_invalid(self):
         form = CommodityForm(data={"commodity_code": "1234567890"})
-        self.assertFalse(form.is_valid())
+        assert form.is_valid() is False
 
-        self.assertEqual(len(form.errors), 2, form.errors)
+        assert len(form.errors) == 2, form.errors
 
         message = form.errors["validity_start_date"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"
 
 
-class CommodityGroupFilterTest(TestCase):
+class TestCommodityGroupFilter(TestCase):
     def setUp(self):
         commodity_type = CommodityType.objects.first()
         CommodityGroupFactory(
@@ -118,41 +118,41 @@ class CommodityGroupFilterTest(TestCase):
 
     def test_group_type_filter(self):
         results = self.run_filter({"group_type": CommodityGroup.AUTO, "group_name": "Group 2"})
-        self.assertEqual(results.count(), 1)
-        self.assertEqual(results.first().group_code, "12z")
+        assert results.count() == 1
+        assert results.first().group_code == "12z"
 
     def test_group_code_filter(self):
         results = self.run_filter({"group_code": "12z"})
-        self.assertEqual(results.count(), 1)
+        assert results.count() == 1
 
     def test_archived_filter(self):
         results = self.run_filter({"is_archived": True})
-        self.assertEqual(results.count(), 1)
-        self.assertEqual(results.first().group_code, "11")
+        assert results.count() == 1
+        assert results.first().group_code == "11"
 
     def test_group_name_filter(self):
         results = self.run_filter({"group_name": "Active"})
-        self.assertEqual(results.count(), 2)
+        assert results.count() == 2
 
     def test_group_description_filter(self):
         results = self.run_filter({"group_description": "active"})
-        self.assertEqual(results.count(), 2)
+        assert results.count() == 2
 
     def test_commodity_code_filter(self):
         results = self.run_filter({"commodity_code": "7654"})
-        self.assertEqual(results.count(), 1)
-        self.assertEqual(results.first().group_code, "13")
+        assert results.count() == 1
+        assert results.first().group_code == "13"
 
     def test_filter_order(self):
         results = self.run_filter({"group_name": "active"})
-        self.assertEqual(results.count(), 2)
+        assert results.count() == 2
         first = results.first()
         last = results.last()
-        self.assertEqual(first.group_code, "12z")
-        self.assertEqual(last.group_code, "13")
+        assert first.group_code == "12z"
+        assert last.group_code == "13"
 
 
-class CommodityGroupFormTest(TestCase):
+class TestCommodityGroupForm(TestCase):
     def test_form_valid(self):
         form = CommodityGroupForm(
             data={
@@ -161,7 +161,7 @@ class CommodityGroupFormTest(TestCase):
                 "group_code": "1234",
             }
         )
-        self.assertTrue(form.is_valid(), form.errors)
+        assert form.is_valid(), form.errors
 
     def test_form_invalid(self):
         form = CommodityGroupForm(
@@ -171,8 +171,8 @@ class CommodityGroupFormTest(TestCase):
                 "unit": Unit.objects.first().pk,
             }
         )
-        self.assertEqual(len(form.errors), 2, form.errors)
+        assert len(form.errors) == 2, form.errors
         message = form.errors["group_code"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"
         message = form.errors["commodity_type"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"

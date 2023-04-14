@@ -1,6 +1,8 @@
+import pytest
 from django.db.models import F
 from django.urls import reverse
 from django.utils import timezone
+from pytest_django.asserts import assertRedirects
 
 from web.domains.case.services import reference
 from web.domains.mailshot.views import MailshotListView
@@ -13,184 +15,155 @@ from .factory import MailshotFactory
 LOGIN_URL = "/"
 
 
-class MailshotListViewTest(AuthTestCase):
+class TestMailshotListView(AuthTestCase):
     url = "/mailshot/"
     redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.redirect_url)
+        response = self.anonymous_client.get(self.url)
+        assert response.status_code == 302
+        assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
-        self.login()
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
 
     def test_authorized_access(self):
-        self.login_with_permissions(["ilb_admin"])
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == 200
 
     def test_page_title(self):
-        self.login_with_permissions(["ilb_admin"])
-        response = self.client.get(self.url)
-        self.assertEqual(response.context_data["page_title"], "Maintain Mailshots")
+        response = self.ilb_admin_client.get(self.url)
+        assert response.context_data["page_title"] == "Maintain Mailshots"
 
     def test_number_of_pages(self):
         MailshotFactory.create_batch(62)
 
-        self.login_with_permissions(["ilb_admin"])
-        response = self.client.get(self.url)
+        response = self.ilb_admin_client.get(self.url)
         page = response.context_data["page"]
-        self.assertEqual(page.paginator.num_pages, 2)
+        assert page.paginator.num_pages == 2
 
     def test_page_results(self):
         MailshotFactory.create_batch(65)
-        self.login_with_permissions(["ilb_admin"])
-        response = self.client.get(self.url + "?page=2")
+        response = self.ilb_admin_client.get(self.url + "?page=2")
         page = response.context_data["page"]
-        self.assertEqual(len(page.object_list), 15)
+        assert len(page.object_list) == 15
 
 
-class ReceivedMailshotsView(AuthTestCase):
+class TestReceivedMailshotsView(AuthTestCase):
     url = "/mailshot/received/"
     redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.redirect_url)
-
-    def test_forbidden_access(self):
-        self.login()
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.anonymous_client.get(self.url)
+        assert response.status_code == 302
+        assertRedirects(response, self.redirect_url)
 
     def test_case_worker_access(self):
-        self.login_with_permissions(["ilb_admin"])
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == 200
 
     def test_exporter_access(self):
-        self.login_with_permissions(["exporter_access"])
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == 200
 
     def test_importer_access(self):
-        self.login_with_permissions(["importer_access"])
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 200
 
     def test_page_title(self):
-        self.login_with_permissions(["importer_access"])
-        response = self.client.get(self.url)
-        self.assertEqual(response.context_data["page_title"], "Received Mailshots")
+        response = self.importer_client.get(self.url)
+        assert response.context_data["page_title"] == "Received Mailshots"
 
 
-class MailshotCreateViewTest(AuthTestCase):
+class TestMailshotCreateView(AuthTestCase):
     url = "/mailshot/new/"
     redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.redirect_url)
+        response = self.anonymous_client.get(self.url)
+        assert response.status_code == 302
+        assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
-        self.login()
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
 
     def test_authorized_access_redirects(self):
-        self.login_with_permissions(["ilb_admin"])
-        response = self.client.get(self.url)
+        response = self.ilb_admin_client.get(self.url)
         mailshot = Mailshot.objects.first()
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, f"/mailshot/{mailshot.id}/edit/")
+        assert response.status_code == 302
+        assertRedirects(response, f"/mailshot/{mailshot.id}/edit/")
 
     def test_create_as_draft(self):
-        self.login_with_permissions(["ilb_admin"])
-        self.client.get(self.url)
+        self.ilb_admin_client.get(self.url)
         mailshot = Mailshot.objects.first()
-        self.assertEqual(mailshot.status, Mailshot.Statuses.DRAFT)
+        assert mailshot.status == Mailshot.Statuses.DRAFT
 
 
-class MailshotEditViewTest(AuthTestCase):
-    def setUp(self):
-        super().setUp()
+class TestMailshotEditView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
         self.mailshot = MailshotFactory(status=Mailshot.Statuses.DRAFT)  # Create a mailshot
         self.mailshot.save()
         self.url = f"/mailshot/{self.mailshot.id}/edit/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.redirect_url)
+        response = self.anonymous_client.get(self.url)
+        assert response.status_code == 302
+        assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
-        self.login()
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
 
     def test_authorized_access(self):
-        self.login_with_permissions(["ilb_admin"])
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == 200
 
     def test_cancel_draft(self):
-        self.login_with_permissions(["ilb_admin"])
-        self.client.post(self.url, {"action": "cancel"})
+        self.ilb_admin_client.post(self.url, {"action": "cancel"})
         self.mailshot.refresh_from_db()
-        self.assertEqual(self.mailshot.status, Mailshot.Statuses.CANCELLED)
+        assert self.mailshot.status == Mailshot.Statuses.CANCELLED
 
     def test_cancel_redirects_to_list(self):
-        self.login_with_permissions(["ilb_admin"])
-        response = self.client.post(self.url, {"action": "cancel"})
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, "/mailshot/")
+        response = self.ilb_admin_client.post(self.url, {"action": "cancel"})
+        assert response.status_code == 302
+        assertRedirects(response, "/mailshot/")
 
     def test_save_draft(self):
-        self.login_with_permissions(["ilb_admin"])
-        self.client.post(self.url, {"title": "Test", "action": "save_draft"})
+        self.ilb_admin_client.post(self.url, {"title": "Test", "action": "save_draft"})
         self.mailshot.refresh_from_db()
-        self.assertEqual(self.mailshot.title, "Test")
+        assert self.mailshot.title == "Test"
 
     def test_save_draft_redirects_to_edit(self):
-        self.login_with_permissions(["ilb_admin"])
-        response = self.client.post(self.url, {"title": "Test", "action": "save_draft"})
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(
+        response = self.ilb_admin_client.post(self.url, {"title": "Test", "action": "save_draft"})
+        assert response.status_code == 302
+        assertRedirects(
             response, reverse("mailshot-edit", kwargs={"mailshot_pk": self.mailshot.pk})
         )
 
     def test_publish_fails_with_no_document(self):
-        self.login_with_permissions(["ilb_admin"])
-
-        response = self.client.post(self.url, {"title": "Test", "action": "publish"})
-        self.assertEqual(response.status_code, 200)
+        response = self.ilb_admin_client.post(self.url, {"title": "Test", "action": "publish"})
+        assert response.status_code == 200
 
         mailshot_form = response.context_data["form"]
-        self.assertFalse(mailshot_form.is_valid())
-        self.assertIn(
-            "A document must be uploaded before publishing", mailshot_form.non_field_errors()
-        )
+        assert mailshot_form.is_valid() is False
+        assert "A document must be uploaded before publishing" in mailshot_form.non_field_errors()
 
     def test_valid_publish_redirects_to_list(self):
-        self.login_with_permissions(["ilb_admin"])
-
         self.mailshot.documents.create(
             is_active=True,
             filename="dummy",
             content_type="dummy",
             file_size=0,
             path="dummy",
-            created_by=self.user,
+            created_by=self.ilb_admin_user,
         )
         self.mailshot.save()
 
-        response = self.client.post(
+        response = self.ilb_admin_client.post(
             self.url,
             {
                 "action": "publish",
@@ -202,21 +175,20 @@ class MailshotEditViewTest(AuthTestCase):
             },
         )
 
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, "/mailshot/")
+        assert response.status_code == 302
+        assertRedirects(response, "/mailshot/")
 
         self.mailshot.refresh_from_db()
-        self.assertEqual(self.mailshot.status, Mailshot.Statuses.PUBLISHED)
+        assert self.mailshot.status == Mailshot.Statuses.PUBLISHED
 
     def test_page_title(self):
-        self.login_with_permissions(["ilb_admin"])
-        response = self.client.get(self.url)
-        self.assertEqual(response.context_data["page_title"], f"Editing {self.mailshot}")
+        response = self.ilb_admin_client.get(self.url)
+        assert response.context_data["page_title"] == f"Editing {self.mailshot}"
 
 
-class MailshotRetractViewTest(AuthTestCase):
-    def setUp(self):
-        super().setUp()
+class TestMailshotRetractView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
         self.mailshot = MailshotFactory.create(
             status=Mailshot.Statuses.PUBLISHED,
             published_datetime=timezone.now(),
@@ -227,32 +199,27 @@ class MailshotRetractViewTest(AuthTestCase):
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.redirect_url)
+        response = self.anonymous_client.get(self.url)
+        assert response.status_code == 302
+        assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
-        self.login()
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
 
     def test_authorized_access(self):
-        self.login_with_permissions(["ilb_admin"])
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == 200
 
     def test_page_title(self):
-        self.login_with_permissions(["ilb_admin"])
-        response = self.client.get(self.url)
-        self.assertEqual(
-            response.context_data["page_title"], f"Retract {self.mailshot.get_reference()}"
-        )
+        response = self.ilb_admin_client.get(self.url)
+
+        assert response.context_data["page_title"] == f"Retract {self.mailshot.get_reference()}"
 
 
-class MailshotDetailViewTest(AuthTestCase):
-    def setUp(self):
-        super().setUp()
-
+class TestMailshotDetailView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
         self.mailshot = MailshotFactory.create(
             is_to_importers=True,
             is_to_exporters=True,
@@ -266,34 +233,30 @@ class MailshotDetailViewTest(AuthTestCase):
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.redirect_url)
+        response = self.anonymous_client.get(self.url)
+        assert response.status_code == 302
+        assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
-        self.login()
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
 
     def test_mailshot_ilb_admin_access(self):
-        self.login_with_permissions(["ilb_admin"])
-        response = self.client.get(self.url)
+        response = self.ilb_admin_client.get(self.url)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.context_data["page_title"],
-            f"Viewing Mailshot ({self.mailshot.get_reference()})",
+        assert response.status_code == 200
+        assert (
+            response.context_data["page_title"]
+            == f"Viewing Mailshot ({self.mailshot.get_reference()})"
         )
 
     def test_exporter_access_forbidden(self):
-        self.login_with_permissions(["exporter_access"])
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == 403
 
     def test_importer_access_forbidden(self):
-        self.login_with_permissions(["importer_access"])
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
 
 
 def test_mailshot_list_queryset(test_icms_admin_user):

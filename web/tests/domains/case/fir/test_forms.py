@@ -3,7 +3,7 @@ from django.test import TestCase
 from web.domains.case.fir import forms
 
 
-class FurtherInformationRequestFormTest(TestCase):
+class TestFurtherInformationRequestForm(TestCase):
     def test_form_valid(self):
         form = forms.FurtherInformationRequestForm(
             data={
@@ -15,40 +15,41 @@ class FurtherInformationRequestFormTest(TestCase):
             },
             initial={"status": "DRAFT"},
         )
-        self.assertTrue(form.is_valid(), form.errors)
+        assert form.is_valid(), form.errors
 
     def test_form_invalid_without_request_subject(self):
         form = forms.FurtherInformationRequestForm(
             data={"request_detail": "Test", "status": "DRAFT"},
             initial={"status": "DRAFT"},
         )
-        self.assertFalse(form.is_valid())
-        self.assertTrue(len(form.errors) == 1, form.errors)
+        assert form.is_valid() is False
+        assert len(form.errors) == 1
+
         message = form.errors["request_subject"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"
 
     def test_form_invalid_without_request_detail(self):
         form = forms.FurtherInformationRequestForm(
             data={"request_subject": "Test"},
             initial={"status": "DRAFT"},
         )
-        self.assertEqual(len(form.errors), 1, form.errors)
+        assert len(form.errors) == 1, form.errors
         message = form.errors["request_detail"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"
 
 
-class FurtherInformationRequestResponseFormTest(TestCase):
+class TestFurtherInformationRequestResponseForm(TestCase):
     def test_form_valid(self):
         form = forms.FurtherInformationRequestResponseForm(
             data={
                 "response_detail": "here is my response, cheers!",
             }
         )
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
 
     def test_form_invalid_without_response_detail(self):
         form = forms.FurtherInformationRequestResponseForm(data={})
-        self.assertFalse(form.is_valid())
-        self.assertEqual(len(form.errors), 1)
+        assert form.is_valid() is False
+        assert len(form.errors) == 1
         message = form.errors["response_detail"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"

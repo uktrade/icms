@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 import pytest
+from django.contrib.auth.models import Group
 from django.test import TestCase
 
 from web.domains.importer.forms import (
@@ -9,11 +10,12 @@ from web.domains.importer.forms import (
     ImporterOrganisationForm,
 )
 from web.models import Importer, User
+from web.permissions import Perms
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.user.factory import UserFactory
 
 
-class ImporterFilterTest(TestCase):
+class TestImporterFilter(TestCase):
     def setUp(self):
         ImporterFactory(
             name="Archived Importer Organisation", type=Importer.ORGANISATION, is_active=False
@@ -31,20 +33,20 @@ class ImporterFilterTest(TestCase):
 
     def test_name_filter(self):
         results = self.run_filter({"name": "org"})
-        self.assertEqual(results.count(), 2)
+        assert results.count() == 2
 
     def test_entity_type_filter(self):
         results = self.run_filter({"importer_entity_type": Importer.INDIVIDUAL})
-        self.assertEqual(results.count(), 2)
+        assert results.count() == 2
 
     def test_filter_order(self):
         results = self.run_filter({"name": "import"})
         # We have added two organisation importers to use as a pytest fixture
-        self.assertEqual(results.count(), 4 + 2)
+        assert results.count() == 4 + 2
         first = results.first()
         last = results.last()
-        self.assertEqual(first.name, "Active Importer Organisation")
-        self.assertEqual(last.name, "Archived Individual Importer")
+        assert first.name == "Active Importer Organisation"
+        assert last.name == "Archived Individual Importer"
 
 
 def test_required_fields_importer_individual_form():
@@ -72,7 +74,9 @@ def test_invalid_eori_number_importer_individual_form():
 @pytest.mark.django_db()
 def test_type_importer_individual_form():
     """Assert individual importer type is set on save."""
-    user = UserFactory.create(account_status=User.ACTIVE, permission_codenames=["importer_access"])
+    user = UserFactory.create(account_status=User.ACTIVE)
+    user.groups.add(Group.objects.get(name=Perms.obj.importer.get_group_name()))
+
     data = {"user": user.pk, "eori_number": "GBPR"}
     form = ImporterIndividualForm(data)
 

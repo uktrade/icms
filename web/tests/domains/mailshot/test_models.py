@@ -4,7 +4,7 @@ from web.models import Mailshot
 from web.tests.domains.user.factory import UserFactory
 
 
-class MailshotTest(TestCase):
+class TestMailshot(TestCase):
     def create_mailshot(
         self,
         title="Test Mailshot",
@@ -23,7 +23,7 @@ class MailshotTest(TestCase):
 
     def test_create_mailshot(self):
         mailshot = self.create_mailshot()
-        self.assertTrue(isinstance(mailshot, Mailshot))
-        self.assertEqual(mailshot.title, "Test Mailshot")
-        self.assertEqual(mailshot.status, Mailshot.Statuses.DRAFT)
-        self.assertTrue(mailshot.is_active)
+        assert isinstance(mailshot, Mailshot)
+        assert mailshot.title == "Test Mailshot"
+        assert mailshot.status == Mailshot.Statuses.DRAFT
+        assert mailshot.is_active is True

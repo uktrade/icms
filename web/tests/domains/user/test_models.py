@@ -3,7 +3,7 @@ from django.test import TestCase
 from web.models import User
 
 
-class UserTest(TestCase):
+class TestUser(TestCase):
     @staticmethod
     def create_user(
         title="Mr",
@@ -42,20 +42,20 @@ class UserTest(TestCase):
 
     def test_create_user(self):
         user = self.create_user()
-        self.assertTrue(isinstance(user, User))
+        assert isinstance(user, User)
 
     def test_username(self):
         user = self.create_user()
-        self.assertEqual(user.username, "VIP")
+        assert user.username == "VIP"
 
     def test_set_temp_pass_changes_password(self):
         user = self.create_user()
         old_password = user.password
         user.set_temp_password()
-        self.assertNotEqual(user.password, old_password)
+        assert user.password != old_password
 
     def test_set_temp_pass_sets_temp_password_disposition(self):
         user = self.create_user()
         user.password_disposition = User.FULL
         user.set_temp_password()
-        self.assertEqual(user.password_disposition, User.TEMPORARY)
+        assert user.password_disposition == User.TEMPORARY

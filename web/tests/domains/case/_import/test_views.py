@@ -9,16 +9,12 @@ from pytest_django.asserts import assertRedirects
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.models import (
-    Importer,
     LiteHMRCChiefRequest,
     SILApplication,
     Task,
     VariationRequest,
     WoodQuotaApplication,
 )
-from web.tests.domains.importer import factory as importer_factories
-from web.tests.domains.office import factory as office_factories
-from web.tests.domains.user import factory as user_factories
 from web.tests.flow import factories as process_factories
 from web.tests.helpers import SearchURLS
 
@@ -26,13 +22,11 @@ from . import factory
 
 
 @pytest.mark.django_db
-def test_preview_cover_letter():
-    ilb_admin = user_factories.ActiveUserFactory.create(permission_codenames=["ilb_admin"])
-    user = user_factories.ActiveUserFactory.create(permission_codenames=["importer_access"])
-    office = office_factories.OfficeFactory.create(is_active=True)
-    importer = importer_factories.ImporterFactory.create(
-        type=Importer.ORGANISATION, user=user, offices=[office]
-    )
+def test_preview_cover_letter(
+    test_icms_admin_user, icms_admin_client, importer_one_main_contact, importer, office
+):
+    ilb_admin = test_icms_admin_user
+    user = importer_one_main_contact
 
     process = factory.OILApplicationFactory.create(
         status="SUBMITTED",
@@ -46,12 +40,10 @@ def test_preview_cover_letter():
     oil_app = process.get_specific_model()
     oil_app.licences.create()
 
-    client = Client()
-    client.login(username=ilb_admin.username, password="test")
     url = reverse(
         "case:cover-letter-preview", kwargs={"application_pk": process.pk, "case_type": "import"}
     )
-    response = client.get(url)
+    response = icms_admin_client.get(url)
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
@@ -64,18 +56,11 @@ def test_preview_cover_letter():
 
 
 @pytest.mark.django_db
-def test_preview_licence():
-    ilb_admin = user_factories.ActiveUserFactory.create(permission_codenames=["ilb_admin"])
-    user = user_factories.ActiveUserFactory.create(permission_codenames=["importer_access"])
-    office = office_factories.OfficeFactory.create(
-        address_1="22 Some Avenue",
-        address_2="Some Way",
-        address_3="Some Town",
-        postcode="S93bl",  # /PS-IGNORE
-    )
-    importer = importer_factories.ImporterFactory.create(
-        type=Importer.ORGANISATION, user=user, eori_number="GB123456789", name="Importer Name"
-    )
+def test_preview_licence(
+    test_icms_admin_user, icms_admin_client, importer_one_main_contact, importer, office
+):
+    ilb_admin = test_icms_admin_user
+    user = importer_one_main_contact
 
     process = factory.OILApplicationFactory.create(
         status="SUBMITTED",
@@ -89,13 +74,10 @@ def test_preview_licence():
     oil_app = process.get_specific_model()
     oil_app.licences.create()
 
-    client = Client()
-    client.login(username=ilb_admin.username, password="test")
-
     url = reverse(
         "case:licence-preview", kwargs={"application_pk": process.pk, "case_type": "import"}
     )
-    response = client.get(url)
+    response = icms_admin_client.get(url)
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"

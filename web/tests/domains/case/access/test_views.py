@@ -1,28 +1,42 @@
 import pytest
-from django.test import Client
+from pytest_django.asserts import assertRedirects
 
 from web.models import FurtherInformationRequest, Task
 from web.tests.auth import AuthTestCase
-from web.tests.domains.case.access import factories as access_factories
-from web.tests.domains.case.fir import factory as fir_factories
-from web.tests.domains.user.factory import ActiveUserFactory
-from web.tests.flow import factories as process_factories
+from web.tests.domains.case.access.factories import (
+    ExporterAccessRequestFactory,
+    ImporterAccessRequestFactory,
+)
+from web.tests.flow.factories import TaskFactory
 
 LOGIN_URL = "/"
 
 
-class AccessRequestTestBase(AuthTestCase):
-    def setUp(self):
-        super().setUp()
+def _create_further_information_request(
+    requested_by, *, status=FurtherInformationRequest.OPEN, **kwargs
+):
+    return FurtherInformationRequest.objects.create(
+        process_type=FurtherInformationRequest.PROCESS_TYPE,
+        requested_by=requested_by,
+        status=status,
+        request_subject="test subject",
+        request_detail="test request detail",
+        **kwargs,
+    )
 
+
+# TODO: figure out how to parametrize across importer/exporter
+class TestImporterAccessRequestFIRListView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
         # TODO: figure out how to parametrize across importer/exporter
         if True:
-            self.process = access_factories.ImporterAccessRequestFactory()
+            self.process = ImporterAccessRequestFactory()
         else:
-            self.process = access_factories.ExporterAccessRequestFactory()
+            self.process = ExporterAccessRequestFactory()
 
-        process_factories.TaskFactory.create(process=self.process, task_type=Task.TaskType.PROCESS)
-        self.fir_process = fir_factories.FurtherInformationRequestFactory()
+        TaskFactory.create(process=self.process, task_type=Task.TaskType.PROCESS)
+        self.fir_process = _create_further_information_request(self.ilb_admin_user)
         self.process.further_information_requests.add(self.fir_process)
 
         # TODO: different tests might need different url
@@ -30,71 +44,53 @@ class AccessRequestTestBase(AuthTestCase):
 
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
-
-# TODO: figure out how to parametrize across importer/exporter
-class ImporterAccessRequestFIRListViewTest(AccessRequestTestBase):
     def test_anonymous_access_redirects(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.redirect_url)
+        response = self.anonymous_client.get(self.url)
+        assert response.status_code == 302
+        assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
-        self.login()
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
 
     def test_authorized_access(self):
-        self.login_with_permissions(["ilb_admin"])
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == 200
 
     def test_deleted_firs_not_shown(self):
-        self.second_fir = fir_factories.FurtherInformationRequestFactory(
-            is_active=False, status=FurtherInformationRequest.DELETED
+        second_fir = _create_further_information_request(
+            self.ilb_admin_user, status=FurtherInformationRequest.DELETED, is_active=False
         )
-        self.process.further_information_requests.add(self.second_fir)
-        self.login_with_permissions(["ilb_admin"])
-        response = self.client.get(self.url)
 
-        self.assertEqual(response.status_code, 200)
+        self.process.further_information_requests.add(second_fir)
+        response = self.ilb_admin_client.get(self.url)
+
+        assert response.status_code == 200
         fir_list = response.context["firs"]
-        self.assertEqual(len(fir_list), 1)
-        self.assertEqual(fir_list.first(), self.fir_process)
+        assert len(fir_list) == 1
+        assert fir_list.first() == self.fir_process
 
 
 @pytest.mark.django_db
-def test_list_importer_access_request_ok():
-    client = Client()
-
-    user = ActiveUserFactory.create()
-    client.login(username=user.username, password="test")
-    response = client.get("/access/importer/")
-
+def test_list_importer_access_request_ok(importer_client, icms_admin_client):
+    response = importer_client.get("/access/importer/")
     assert response.status_code == 403
 
-    ilb_admin = ActiveUserFactory.create(permission_codenames=["ilb_admin"])
-    access_factories.ImporterAccessRequestFactory.create()
-    client.login(username=ilb_admin.username, password="test")
-    response = client.get("/access/importer/")
+    ImporterAccessRequestFactory.create()
+    response = icms_admin_client.get("/access/importer/")
 
     assert response.status_code == 200
     assert "Search Importer Access Requests" in response.content.decode()
 
 
 @pytest.mark.django_db
-def test_list_exporter_access_request_ok():
-    client = Client()
-
-    user = ActiveUserFactory.create()
-    client.login(username=user.username, password="test")
-    response = client.get("/access/exporter/")
+def test_list_exporter_access_request_ok(exporter_client, icms_admin_client):
+    response = exporter_client.get("/access/exporter/")
 
     assert response.status_code == 403
 
-    ilb_admin = ActiveUserFactory.create(permission_codenames=["ilb_admin"])
-    access_factories.ExporterAccessRequestFactory.create()
-    client.login(username=ilb_admin.username, password="test")
-    response = client.get("/access/exporter/")
+    ExporterAccessRequestFactory.create()
+    response = icms_admin_client.get("/access/exporter/")
 
     assert response.status_code == 200
     assert "Search Exporter Access Requests" in response.content.decode()
