@@ -11,7 +11,6 @@ from web.models import (
     OpenIndividualLicenceApplication,
 )
 from web.permissions import Perms
-from web.tests.domains.user.factory import ActiveUserFactory
 
 pytestmark = pytest.mark.django_db
 
@@ -193,15 +192,20 @@ def test_access_application_valid(
 
 
 def test_access_application_denied_for_different_user(
-    import_access_request_application, export_access_request_application
+    import_access_request_application,
+    export_access_request_application,
+    importer_one_main_contact,
+    exporter_one_main_contact,
 ):
-    another_user = ActiveUserFactory.create()
+    with pytest.raises(PermissionDenied):
+        check_application_permission(
+            import_access_request_application, exporter_one_main_contact, "access"
+        )
 
     with pytest.raises(PermissionDenied):
-        check_application_permission(import_access_request_application, another_user, "access")
-
-    with pytest.raises(PermissionDenied):
-        check_application_permission(import_access_request_application, another_user, "access")
+        check_application_permission(
+            export_access_request_application, importer_one_main_contact, "access"
+        )
 
 
 # Invalid case_type test

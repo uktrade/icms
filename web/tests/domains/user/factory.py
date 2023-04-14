@@ -1,9 +1,9 @@
 import factory.fuzzy
-from django.contrib.auth.models import Permission
 
 from web.models import User
 
 
+# TODO: ICMSLST-1984 Remove User factories and replace with users in web/tests/conftest.py
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
@@ -19,16 +19,6 @@ class UserFactory(factory.django.DjangoModelFactory):
     is_active = True
     account_status = User.ACTIVE
     password_disposition = User.FULL
-
-    @factory.post_generation
-    def permission_codenames(self, create, extracted, **kwargs):
-        if not create:
-            return
-
-        if extracted:
-            for codename in extracted:
-                permission = Permission.objects.get(codename=codename)
-                self.user_permissions.add(permission)
 
 
 class ActiveUserFactory(UserFactory):

@@ -1,19 +1,16 @@
+import pytest
 from django.utils import timezone
-from guardian.shortcuts import assign_perm
 
 from web.domains.case._import.derogations.forms import SubmitDerogationsForm
-from web.models import Commodity, Country, Importer, Task
-from web.tests.auth import AuthTestCase
+from web.models import Commodity, Country
 from web.tests.domains.case._import.factory import DerogationsApplicationFactory
-from web.tests.domains.commodity.factory import CommodityTypeFactory
-from web.tests.domains.importer.factory import ImporterFactory
-from web.tests.flow.factories import TaskFactory
 
 
-class DerogationsFormTest(AuthTestCase):
-    def setUp(self):
-        super().setUp()
-        Country.objects.filter(country_groups__name="Derogation from Sanctions COOs")
+class TestDerogationsForm:
+    @pytest.fixture(autouse=True)
+    def _setup(self, importer_one_main_contact, importer):
+        self.user = importer_one_main_contact
+        self.importer = importer
 
         self.valid_country = Country.objects.filter(
             country_groups__name="Derogation from Sanctions COOs"
@@ -22,24 +19,12 @@ class DerogationsFormTest(AuthTestCase):
             country_groups__name="Derogation from Sanctions COOs"
         ).first()
 
-        self.importer = ImporterFactory.create(
-            type=Importer.ORGANISATION,
-            user=self.user,
-            name="Importer Limited",
-            eori_number="GB3423453234",
-        )
         self.process = DerogationsApplicationFactory.create(
             status="IN_PROGRESS",
             importer=self.importer,
             created_by=self.user,
             last_updated_by=self.user,
         )
-        TaskFactory.create(process=self.process, task_type=Task.TaskType.PREPARE)
-
-        assign_perm("web.is_contact_of_importer", self.user, self.importer)
-        self.login_with_permissions(["importer_access"])
-
-        self.commodity_type = CommodityTypeFactory.create()
 
     def test_da_form_valid(self):
         data = {
@@ -56,7 +41,8 @@ class DerogationsFormTest(AuthTestCase):
             "value": "2.00",
         }
         form = SubmitDerogationsForm(data, instance=self.process, initial={"contact": self.user})
-        self.assertTrue(form.is_valid(), form.errors)
+
+        assert form.is_valid(), form.errors
 
     def test_da_form_invalid_with_wrong_country(self):
         data = {
@@ -68,12 +54,13 @@ class DerogationsFormTest(AuthTestCase):
             "explanation": "Test explanation",
         }
         form = SubmitDerogationsForm(data, instance=self.process, initial={"contact": self.user})
-        self.assertFalse(form.is_valid())
-        self.assertTrue(form.errors)
+        assert not form.is_valid()
+        assert form.errors
 
     def test_da_form_invalid_without_required_fields(self):
         data = {}
         form = SubmitDerogationsForm(data, instance=self.process, initial={"contact": self.user})
-        self.assertFalse(form.is_valid())
-        self.assertTrue(form.errors)
-        self.assertEqual(len(form.errors), 11)
+
+        assert not form.is_valid()
+        assert form.errors
+        assert len(form.errors) == 11

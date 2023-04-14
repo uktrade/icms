@@ -3,22 +3,22 @@ from django.test import TestCase
 from web.models import Exporter
 
 
-class ExporterTest(TestCase):
+class TestExporter(TestCase):
     def create_exporter(self, is_active=True, name="The Exporters Ltd."):
         return Exporter.objects.create(is_active=is_active, name=name)
 
     def test_create_exporter(self):
         exporter = self.create_exporter()
-        self.assertTrue(isinstance(exporter, Exporter))
-        self.assertEqual(exporter.name, "The Exporters Ltd.")
+        assert isinstance(exporter, Exporter)
+        assert exporter.name == "The Exporters Ltd."
 
     def test_archive_exporter(self):
         exporter = self.create_exporter()
         exporter.archive()
-        self.assertFalse(exporter.is_active)
+        assert exporter.is_active is False
 
     def test_unarchive_exporter(self):
         exporter = self.create_exporter(is_active=False)
-        self.assertFalse(exporter.is_active)
+        assert exporter.is_active is False
         exporter.unarchive()
-        self.assertTrue(exporter.is_active)
+        assert exporter.is_active is True

@@ -8,7 +8,7 @@ from web.domains.legislation.forms import (
 from .factory import ProductLegislationFactory
 
 
-class ProductLegislationFilterTest(TestCase):
+class TestProductLegislationFilter(TestCase):
     def setUp(self):
         """Supplementary data to data already added in migrations"""
 
@@ -46,49 +46,49 @@ class ProductLegislationFilterTest(TestCase):
 
     def test_name_filter(self):
         results = self.run_filter({"name": "legislation"})
-        self.assertEqual(results.count(), 3)
+        assert results.count() == 3
 
     def test_biocidal_filter(self):
         results = self.run_filter({"is_biocidal": False})
-        self.assertEqual(results.count(), 25)
+        assert results.count() == 25
 
     def test_biocidal_claim_filter(self):
         results = self.run_filter({"is_biocidal_claim": True})
-        self.assertEqual(results.count(), 3)
+        assert results.count() == 3
 
         # Check the test legislation is in the results
         results = results.filter(name="Test Legislation")
         first = results.first()
-        self.assertEqual(first.name, "Test Legislation")
+        assert first.name == "Test Legislation"
 
     def test_is_cosmetics_regulation_filter(self):
         results = self.run_filter({"is_eu_cosmetics_regulation": True})
-        self.assertEqual(results.count(), 2)
+        assert results.count() == 2
 
     def test_status_filter(self):
         results = self.run_filter({"status": True})
-        self.assertEqual(results.count(), 27)
+        assert results.count() == 27
 
     def test_filter_order(self):
         results = self.run_filter({"name": "legislation"})
-        self.assertEqual(results.count(), 3)
+        assert results.count() == 3
         first = results.first()
         last = results.last()
-        self.assertEqual(first.name, "Comprehensive legislation")
-        self.assertEqual(last.name, "Test Legislation")
+        assert first.name == "Comprehensive legislation"
+        assert last.name == "Test Legislation"
 
 
-class ProductLegislationFormTest(TestCase):
+class TestProductLegislationForm(TestCase):
     def test_form_valid(self):
         form = ProductLegislationForm(data={"name": "Testing"})
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
 
     def test_form_invalid(self):
         form = ProductLegislationForm(data={})
-        self.assertFalse(form.is_valid())
+        assert form.is_valid() is False
 
     def test_invalid_form_message(self):
         form = ProductLegislationForm(data={})
-        self.assertEqual(len(form.errors), 1)
+        assert len(form.errors) == 1
         message = form.errors["name"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"

@@ -1,77 +1,71 @@
+import pytest
+from pytest_django.asserts import assertContains, assertRedirects
+
 from web.models import CommodityType
 from web.tests.auth import AuthTestCase
 
 from .factory import CommodityFactory, CommodityGroupFactory
 
 LOGIN_URL = "/"
-PERMISSIONS = ["ilb_admin"]
 
 
-class CommodityListView(AuthTestCase):
+class TestCommodityListView(AuthTestCase):
     url = "/commodity/"
     redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.redirect_url)
+        response = self.anonymous_client.get(self.url)
+        assert response.status_code == 302
+        assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
-        self.login()
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
 
     def test_authorized_access(self):
-        self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == 200
 
     def test_page_title(self):
-        self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
-        self.assertEqual(response.context_data["page_title"], "Maintain Commodities")
+        response = self.ilb_admin_client.get(self.url)
+        assert response.context_data["page_title"] == "Maintain Commodities"
 
     def test_number_of_pages(self):
-        self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
+        response = self.ilb_admin_client.get(self.url)
         page = response.context_data["page"]
-        self.assertEqual(page.paginator.num_pages, 68)
+        assert page.paginator.num_pages == 68
 
     def test_page_results(self):
-        self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url + "?page=2")
+        response = self.ilb_admin_client.get(self.url + "?page=2")
         page = response.context_data["page"]
-        self.assertEqual(len(page.object_list), 50)
+        assert len(page.object_list) == 50
 
 
-class CommodityCreateViewTest(AuthTestCase):
+class TestCommodityCreateView(AuthTestCase):
     url = "/commodity/new/"
     redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.redirect_url)
+        response = self.anonymous_client.get(self.url)
+        assert response.status_code == 302
+        assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
-        self.login()
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
 
     def test_authorized_access(self):
-        self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == 200
 
     def test_page_title(self):
-        self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
-        self.assertEqual(response.context_data["page_title"], "New Commodity")
+        response = self.ilb_admin_client.get(self.url)
+        assert response.context_data["page_title"] == "New Commodity"
 
 
-class CommodityUpdateViewTest(AuthTestCase):
-    def setUp(self):
-        super().setUp()
+class TestCommodityUpdateView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
         self.commodity = CommodityFactory(
             commodity_type=CommodityType.objects.first()
         )  # Create a commodity
@@ -79,130 +73,115 @@ class CommodityUpdateViewTest(AuthTestCase):
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.redirect_url)
+        response = self.anonymous_client.get(self.url)
+        assert response.status_code == 302
+        assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
-        self.login()
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
 
     def test_authorized_access(self):
-        self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == 200
 
     def test_page_title(self):
-        self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
-        self.assertEqual(response.context_data["page_title"], f"Editing {self.commodity}")
+        response = self.ilb_admin_client.get(self.url)
+        assert response.context_data["page_title"] == f"Editing {self.commodity}"
 
 
-class CommodityDetailViewTest(AuthTestCase):
-    def setUp(self):
-        super().setUp()
+class TestCommodityDetailView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
         self.commodity = CommodityFactory.create(commodity_type=CommodityType.objects.first())
         self.url = f"/commodity/{self.commodity.pk}/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.redirect_url)
+        response = self.anonymous_client.get(self.url)
+        assert response.status_code == 302
+        assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
-        self.login()
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
 
     def test_authorized_access(self):
-        self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == 200
 
     def test_page_title(self):
-        self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
-        self.assertEqual(response.context_data["page_title"], f"Viewing {self.commodity}")
+        response = self.ilb_admin_client.get(self.url)
+        assert response.context_data["page_title"] == f"Viewing {self.commodity}"
 
 
-class CommodityGroupCreateViewTest(AuthTestCase):
+class TestCommodityGroupCreateView(AuthTestCase):
     url = "/commodity/group/new/"
     redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.redirect_url)
+        response = self.anonymous_client.get(self.url)
+        assert response.status_code == 302
+        assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
-        self.login()
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
 
     def test_authorized_access(self):
-        self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == 200
 
     def test_page_title(self):
-        self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
-        self.assertContains(response, "Create Commodity Group")
+        response = self.ilb_admin_client.get(self.url)
+        assertContains(response, "Create Commodity Group")
 
 
-class CommodityGroupUpdateViewTest(AuthTestCase):
-    def setUp(self):
-        super().setUp()
+class TestCommodityGroupUpdateView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
         self.commodity_group = CommodityGroupFactory()
         self.url = f"/commodity/group/{self.commodity_group.id}/edit/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.redirect_url)
+        response = self.anonymous_client.get(self.url)
+        assert response.status_code == 302
+        assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
-        self.login()
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
 
     def test_authorized_access(self):
-        self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == 200
 
     def test_page_title(self):
-        self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
-        self.assertEqual(response.context_data["page_title"], f"Editing {self.commodity_group}")
+        response = self.ilb_admin_client.get(self.url)
+        assert response.context_data["page_title"] == f"Editing {self.commodity_group}"
 
 
-class CommodityGroupDetailView(AuthTestCase):
-    def setUp(self):
-        super().setUp()
+class TestCommodityGroupDetailView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
         self.commodity_group = CommodityGroupFactory()
         self.url = f"/commodity/group/{self.commodity_group.id}/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.redirect_url)
+        response = self.anonymous_client.get(self.url)
+        assert response.status_code == 302
+        assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
-        self.login()
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
 
     def test_authorized_access(self):
-        self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == 200
 
     def test_page_title(self):
-        self.login_with_permissions(PERMISSIONS)
-        response = self.client.get(self.url)
-        self.assertEqual(response.context_data["page_title"], f"Viewing {self.commodity_group}")
+        response = self.ilb_admin_client.get(self.url)
+        assert response.context_data["page_title"] == f"Viewing {self.commodity_group}"

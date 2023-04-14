@@ -18,7 +18,7 @@ from .factory import (
 )
 
 
-class CountryNameFilterTest(TestCase):
+class TestCountryNameFilter(TestCase):
     def setUp(self):
         CountryFactory(name="Gondor", is_active=True)
         CountryFactory(name="Mordor", is_active=True)
@@ -30,16 +30,16 @@ class CountryNameFilterTest(TestCase):
 
     def test_name_filter(self):
         results = self.run_filter({"country_name": "dor"})
-        self.assertEqual(results.count(), 4)
+        assert results.count() == 4
 
     def test_filter_finds_active_only(self):
         results = self.run_filter({"country_name": "o"})
-        self.assertEqual(results.count(), 63)
-        self.assertTrue(results.first().is_active)
-        self.assertTrue(results.last().is_active)
+        assert results.count() == 63
+        assert results.first().is_active is True
+        assert results.last().is_active is True
 
 
-class CountryCreateFormTest(TestCase):
+class TestCountryCreateForm(TestCase):
     def test_form_valid(self):
         form = CountryCreateForm(
             data={
@@ -49,90 +49,90 @@ class CountryCreateFormTest(TestCase):
                 "hmrc_code": "TST",
             }
         )
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
 
     def test_form_invalid(self):
         form = CountryCreateForm(data={})
-        self.assertFalse(form.is_valid())
+        assert form.is_valid() is False
 
     def test_invalid_form_message(self):
         form = CountryCreateForm(
             data={"name": "Japan", "type": Country.SYSTEM, "commission_code": "TEST"}
         )
-        self.assertEqual(len(form.errors), 1)
+        assert len(form.errors) == 1
         message = form.errors["hmrc_code"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"
 
 
-class CountryEditFormTest(TestCase):
+class TestCountryEditForm(TestCase):
     def test_form_valid(self):
         form = CountryEditForm(
             instance=CountryFactory(),
             data={"name": "Taiwan", "commission_code": "TEST", "hmrc_code": "TST"},
         )
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
 
     def test_form_invalid(self):
         form = CountryEditForm(instance=CountryFactory(), data={})
-        self.assertFalse(form.is_valid())
+        assert form.is_valid() is False
 
     def test_invalid_form_message(self):
         form = CountryEditForm(
             instance=CountryFactory(),
             data={"name": "", "commission_code": "TEST", "hmrc_code": "TST"},
         )
-        self.assertEqual(len(form.errors), 1)
+        assert len(form.errors) == 1
         message = form.errors["name"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"
 
 
-class CountryGroupEditFormTest(TestCase):
+class TestCountryGroupEditForm(TestCase):
     def test_form_valid(self):
         form = CountryGroupEditForm(instance=CountryGroupFactory(), data={"name": "Some countries"})
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
 
     def test_form_invalid(self):
         form = CountryGroupEditForm(instance=CountryGroupFactory(), data={})
-        self.assertFalse(form.is_valid())
+        assert form.is_valid() is False
 
     def test_invalid_form_message(self):
         form = CountryGroupEditForm(instance=CountryGroupFactory(), data={})
-        self.assertEqual(len(form.errors), 1)
+        assert len(form.errors) == 1
         message = form.errors["name"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"
 
 
-class CountryTranslationSetEditFormTest(TestCase):
+class TestCountryTranslationSetEditForm(TestCase):
     def test_form_valid(self):
         form = CountryTranslationSetEditForm(
             instance=CountryTranslationSetFactory(), data={"name": "Dothraki"}
         )
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
 
     def test_form_invalid(self):
         form = CountryTranslationSetEditForm(data={})
-        self.assertFalse(form.is_valid())
+        assert form.is_valid() is False
 
     def test_invalid_form_message(self):
         form = CountryTranslationSetEditForm(data={})
-        self.assertEqual(len(form.errors), 1)
+        assert len(form.errors) == 1
         message = form.errors["name"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"
 
 
-class CountryTranslationEditFormTest(TestCase):
+class TestCountryTranslationEditForm(TestCase):
     def test_form_valid(self):
         form = CountryTranslationEditForm(
             instance=CountryTranslationFactory(), data={"translation": "İtalya"}
         )
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
 
     def test_form_invalid(self):
         form = CountryTranslationEditForm(data={})
-        self.assertFalse(form.is_valid())
+        assert form.is_valid() is False
 
     def test_invalid_form_message(self):
         form = CountryTranslationEditForm(data={})
-        self.assertEqual(len(form.errors), 1)
+        assert len(form.errors) == 1
         message = form.errors["translation"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"

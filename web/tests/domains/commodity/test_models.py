@@ -8,7 +8,7 @@ from web.models import Commodity, CommodityGroup, CommodityType
 from web.tests.domains.commodity.factory import CommodityFactory, CommodityGroupFactory
 
 
-class CommodityTest(TestCase):
+class TestCommodity(TestCase):
     def create_commodity(
         self,
         is_active=True,
@@ -30,21 +30,21 @@ class CommodityTest(TestCase):
 
     def test_create_commodity(self):
         commodity = self.create_commodity()
-        self.assertTrue(isinstance(commodity, Commodity))
-        self.assertEqual(commodity.commodity_code, "1234567890")
+        assert isinstance(commodity, Commodity)
+        assert commodity.commodity_code == "1234567890"
 
     def test_archive_commodity(self):
         commodity = self.create_commodity()
         commodity.archive()
-        self.assertFalse(commodity.is_active)
+        assert commodity.is_active is False
 
     def test_unarchive_commodity(self):
         commodity = self.create_commodity()
         commodity.unarchive()
-        self.assertTrue(commodity.is_active)
+        assert commodity.is_active is True
 
 
-class CommodityGroupTest(TestCase):
+class TestCommodityGroup(TestCase):
     def create_commodity_group(
         self,
         is_active=True,
@@ -65,15 +65,15 @@ class CommodityGroupTest(TestCase):
 
     def test_create_commodity_group(self):
         commodity_group = self.create_commodity_group()
-        self.assertTrue(isinstance(commodity_group, CommodityGroup))
-        self.assertEqual(commodity_group.group_code, "12")
+        assert isinstance(commodity_group, CommodityGroup)
+        assert commodity_group.group_code == "12"
 
     def test_archive_commodity_group(self):
         commodity_group = self.create_commodity_group()
         commodity_group.archive()
-        self.assertFalse(commodity_group.is_active)
+        assert commodity_group.is_active is False
 
     def test_unarchive_commodity_group(self):
         commodity_group = self.create_commodity_group()
         commodity_group.unarchive()
-        self.assertTrue(commodity_group.is_active)
+        assert commodity_group.is_active is True

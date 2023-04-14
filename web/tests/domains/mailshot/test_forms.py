@@ -1,3 +1,5 @@
+import pytest
+from django.contrib.auth.models import Group
 from django.test import TestCase
 
 from web.domains.mailshot.forms import (
@@ -7,13 +9,14 @@ from web.domains.mailshot.forms import (
     ReceivedMailshotsFilter,
 )
 from web.models import Mailshot
-from web.tests.domains.user.factory import UserFactory
+from web.permissions import Perms
 
 from .factory import MailshotFactory
 
 
-class MailshotsFilterTest(TestCase):
-    def setUp(self):
+class TestMailshotsFilter:
+    @pytest.fixture(autouse=True)
+    def setup(self, db):
         MailshotFactory(
             title="Draft Mailshot",
             description="This is a draft mailshot",
@@ -44,29 +47,45 @@ class MailshotsFilterTest(TestCase):
 
     def test_title_filter(self):
         results = self.run_filter({"title": "Mailshot"})
-        self.assertEqual(results.count(), 4)
+        assert results.count() == 4
 
     def test_description_filter(self):
         results = self.run_filter({"description": "published"})
-        self.assertEqual(results.count(), 1)
-        self.assertEqual(results.first().title, "Published Mailshot")
+        assert results.count() == 1
+        assert results.first().title == "Published Mailshot"
 
     def test_status_filter(self):
         results = self.run_filter({"status": Mailshot.Statuses.RETRACTED})
-        self.assertEqual(results.count(), 1)
-        self.assertEqual(results.first().title, "Retracted Mailshot")
+        assert results.count() == 1
+        assert results.first().title == "Retracted Mailshot"
 
     def test_filter_order(self):
         results = self.run_filter({"title": "mailshot"})
-        self.assertEqual(results.count(), 4)
+        assert results.count() == 4
         first = results.first()
         last = results.last()
-        self.assertEqual(first.title, "Cancelled Mailshot")
-        self.assertEqual(last.title, "Draft Mailshot")
+        assert first.title == "Cancelled Mailshot"
+        assert last.title == "Draft Mailshot"
 
 
-class ReceivedMailshotsFilterTest(TestCase):
-    def create_mailshots(self):
+class TestReceivedMailshotsFilter:
+    @pytest.fixture(autouse=True)
+    def setup(
+        self,
+        importer_one_main_contact,
+        importer_two_main_contact,
+        exporter_one_main_contact,
+        test_icms_admin_user,
+    ):
+        self.importer = importer_one_main_contact
+        self.exporter = exporter_one_main_contact
+        self.ilb_admin = test_icms_admin_user
+
+        # Use importer two main contact as a user with both Importer & Exporter permissions
+        exporter_group = Group.objects.get(name=Perms.obj.exporter.get_group_name())
+        importer_two_main_contact.groups.add(exporter_group)
+        self.importer_exporter = importer_two_main_contact
+
         MailshotFactory(
             title="Draft Mailshot",
             description="This is a draft mailshot",
@@ -108,62 +127,51 @@ class ReceivedMailshotsFilterTest(TestCase):
             is_to_exporters=True,
         )
 
-    def setUp(self):
-        self.importer_exporter = UserFactory.create(
-            permission_codenames=["importer_access", "exporter_access"]
-        )
-
-        self.importer = UserFactory.create(permission_codenames=["importer_access"])
-        self.exporter = UserFactory.create(permission_codenames=["exporter_access"])
-        self.ilb_admin = UserFactory.create(permission_codenames=["ilb_admin"])
-
-        self.create_mailshots()
-
     def run_filter(self, data=None, user=None):
         return ReceivedMailshotsFilter(data=data, user=user).qs
 
     def test_filter_only_gets_published_mailshots(self):
         results = self.run_filter({"title": "Mailshot"}, user=self.importer_exporter)
-        self.assertEqual(results.count(), 3)
-        self.assertTrue(results[0].status, Mailshot.Statuses.PUBLISHED)
-        self.assertTrue(results[1].status, Mailshot.Statuses.PUBLISHED)
-        self.assertTrue(results[2].status, Mailshot.Statuses.PUBLISHED)
+        assert results.count() == 3
+        assert results[0].status == Mailshot.Statuses.PUBLISHED
+        assert results[1].status == Mailshot.Statuses.PUBLISHED
+        assert results[2].status == Mailshot.Statuses.PUBLISHED
 
     def test_case_worker_gets_all_published_mailshots(self):
         results = self.run_filter({"title": "Mailshot"}, user=self.ilb_admin)
-        self.assertEqual(results.count(), 3)
-        self.assertTrue(results[0].status, Mailshot.Statuses.PUBLISHED)
-        self.assertTrue(results[1].status, Mailshot.Statuses.PUBLISHED)
-        self.assertTrue(results[2].status, Mailshot.Statuses.PUBLISHED)
+        assert results.count() == 3
+        assert results[0].status == Mailshot.Statuses.PUBLISHED
+        assert results[1].status == Mailshot.Statuses.PUBLISHED
+        assert results[2].status == Mailshot.Statuses.PUBLISHED
 
     def test_filter_only_gets_importer_mailshots(self):
         results = self.run_filter({"title": "Mailshot"}, user=self.importer)
-        self.assertEqual(results.count(), 2)
-        self.assertEqual(results[0].title, "Published Mailshot to all")
-        self.assertEqual(results[1].title, "Published Mailshot to importers")
+        assert results.count() == 2
+        assert results[0].title == "Published Mailshot to all"
+        assert results[1].title == "Published Mailshot to importers"
 
     def test_filter_only_gets_exporter_mailshots(self):
         results = self.run_filter({"title": "Mailshot"}, user=self.exporter)
-        self.assertEqual(results.count(), 2)
-        self.assertEqual(results[0].title, "Published Mailshot to all")
-        self.assertEqual(results[1].title, "Published Mailshot to exporters")
+        assert results.count() == 2
+        assert results[0].title == "Published Mailshot to all"
+        assert results[1].title == "Published Mailshot to exporters"
 
     def test_title_filter(self):
         results = self.run_filter({"title": "mailshot"}, user=self.importer_exporter)
-        self.assertEqual(results.count(), 3)
-        self.assertEqual(results[0].title, "Published Mailshot to all")
-        self.assertEqual(results[1].title, "Published Mailshot to exporters")
-        self.assertEqual(results[2].title, "Published Mailshot to importers")
+        assert results.count() == 3
+        assert results[0].title == "Published Mailshot to all"
+        assert results[1].title == "Published Mailshot to exporters"
+        assert results[2].title == "Published Mailshot to importers"
 
     def test_description_filter(self):
         results = self.run_filter({"description": "mailshot"}, user=self.importer_exporter)
-        self.assertEqual(results.count(), 3)
-        self.assertEqual(results[0].description, "This is a published mailshot to all")
-        self.assertEqual(results[1].description, "This is a published mailshot to exporters")
-        self.assertEqual(results[2].description, "This is a published mailshot to importers")
+        assert results.count() == 3
+        assert results[0].description == "This is a published mailshot to all"
+        assert results[1].description == "This is a published mailshot to exporters"
+        assert results[2].description == "This is a published mailshot to importers"
 
 
-class MailshotFormTest(TestCase):
+class TestMailshotForm(TestCase):
     def test_form_valid(self):
         form = MailshotForm(
             data={
@@ -175,11 +183,11 @@ class MailshotFormTest(TestCase):
                 "recipients": ["importers"],
             }
         )
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
 
     def test_form_invalid(self):
         form = MailshotForm(data={"title": "Test", "description": "Description"})
-        self.assertFalse(form.is_valid())
+        assert form.is_valid() is False
 
     def test_invalid_form_message(self):
         form = MailshotForm(
@@ -191,12 +199,12 @@ class MailshotFormTest(TestCase):
                 "email_body": "Email body",
             }
         )
-        self.assertEqual(len(form.errors), 1)
+        assert len(form.errors) == 1
         message = form.errors["recipients"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"
 
 
-class MailshotRetractFormTest(TestCase):
+class TestMailshotRetractForm(TestCase):
     def test_form_valid(self):
         form = MailshotRetractForm(
             data={
@@ -205,18 +213,18 @@ class MailshotRetractFormTest(TestCase):
                 "retract_email_body": "Email body",
             }
         )
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
 
     def test_form_invalid(self):
         form = MailshotRetractForm(
             data={"is_retraction_email": "Test", "retract_email_subject": "Retracted Mailshot"}
         )
-        self.assertFalse(form.is_valid())
+        assert form.is_valid() is False
 
     def test_invalid_form_message(self):
         form = MailshotRetractForm(
             data={"is_retraction_email": "Test", "retract_email_subject": "Retracted Mailshot"}
         )
-        self.assertEqual(len(form.errors), 1)
+        assert len(form.errors) == 1
         message = form.errors["retract_email_body"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"

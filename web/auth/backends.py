@@ -103,8 +103,7 @@ class ModelAndObjectPermissionBackend(ModelBackend):
         check = user_obj.guardian_checker
         return check.get_perms(obj)
 
-    # TODO: Add this back (currently causing 194 tests to fail)
-    #   Need to fix those tests that assign user permissions to instead add the correct group.
+    # TODO: ICMSLST-1985 Disable get_user_permissions when permissions work is complete.
     # def get_user_permissions(self, user_obj, obj=None):
     #     """Only user group permissions are used when checking for global permissions."""
     #

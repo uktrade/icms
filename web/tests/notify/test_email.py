@@ -1,20 +1,23 @@
 from django.core import mail
 from django.test import TestCase
-from guardian.shortcuts import assign_perm
 
 from web.models import AlternativeEmail, Importer, PersonalEmail, User
 from web.notify import email
+from web.permissions import organisation_add_contact
 from web.tests.domains.exporter.factory import ExporterFactory
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.user.factory import UserFactory
 
 
 class TestEmail(TestCase):
-    def create_user(self, account_status, emails=[]):
+    def create_user(self, account_status):
         user = UserFactory(account_status=account_status)
         return user
 
-    def create_importer_org(self, name=None, active=True, members=[]):
+    def create_importer_org(self, name=None, active=True, members=None):
+        if not members:
+            members = []
+
         importer = ImporterFactory(is_active=active, name=name, type=Importer.ORGANISATION)
 
         for member in members:
@@ -31,7 +34,7 @@ class TestEmail(TestCase):
                         user=user, email=m["email"], portal_notifications=m["notify"]
                     ).save()
 
-            assign_perm("web.is_contact_of_importer", user, importer)
+            organisation_add_contact(importer, user)
 
     def create_individual_importer(self, name=None, active=True, user=None):
         is_active = user["active"]
@@ -44,7 +47,10 @@ class TestEmail(TestCase):
         for m in user["personal"]:
             PersonalEmail(user=_user, email=m["email"], portal_notifications=m["notify"]).save()
 
-    def create_exporter(self, name=None, active=True, members=[]):
+    def create_exporter(self, name=None, active=True, members=None):
+        if not members:
+            members = []
+
         exporter = ExporterFactory(is_active=active, name=name)
 
         for member in members:
@@ -61,7 +67,7 @@ class TestEmail(TestCase):
                         user=user, email=m["email"], portal_notifications=m["notify"]
                     ).save()
 
-            assign_perm("web.is_contact_of_exporter", user, exporter)
+            organisation_add_contact(exporter, user)
 
     def setup_importers(self):
         # An active import organisation

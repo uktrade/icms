@@ -1,11 +1,11 @@
+import pytest
 from django.urls import reverse
-from guardian.shortcuts import assign_perm
+from pytest_django.asserts import assertRedirects
 
 from web.models import (
     Commodity,
     Country,
     ImportApplicationType,
-    Importer,
     SanctionsAndAdhocApplication,
     SanctionsAndAdhocApplicationGoods,
     Task,
@@ -15,79 +15,59 @@ from web.tests.domains.case._import.factory import (
     SanctionsAndAdhocApplicationGoodsFactory,
     SanctionsAndAdhocLicenseApplicationFactory,
 )
-from web.tests.domains.importer.factory import ImporterFactory
-from web.tests.domains.office.factory import OfficeFactory
 from web.tests.flow.factories import TaskFactory
 
 LOGIN_URL = "/"
 
 
-class SanctionsAndAdhocImportAppplicationCreateViewTest(AuthTestCase):
+class TestSanctionsAndAdhocImportAppplicationCreateView(AuthTestCase):
     url = "/import/create/sanctions/"
     redirect_url = f"{LOGIN_URL}?next={url}"
 
     def test_anonymous_access_redirects(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.redirect_url)
+        response = self.anonymous_client.get(self.url)
+        assert response.status_code == 302
+        assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
-        self.login()
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == 403
 
     def test_create_ok(self):
-        office = OfficeFactory.create(is_active=True)
-        importer = ImporterFactory.create(is_active=True, offices=[office])
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 200
 
-        assign_perm("web.is_contact_of_importer", self.user, importer)
-        self.login_with_permissions(["importer_access"])
-
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200)
-
-        self.client.post(
+        self.importer_client.post(
             reverse("import:create-sanctions"),
-            data={"importer": importer.pk, "importer_office": office.pk},
+            data={"importer": self.importer.pk, "importer_office": self.importer_office.pk},
         )
         application = SanctionsAndAdhocApplication.objects.get()
-        self.assertEqual(application.process_type, SanctionsAndAdhocApplication.PROCESS_TYPE)
+        assert application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE
 
         application_type = application.application_type
-        self.assertEqual(application_type.type, ImportApplicationType.Types.SANCTION_ADHOC)
+        assert application_type.type == ImportApplicationType.Types.SANCTION_ADHOC
 
         task = application.tasks.get()
-        self.assertEqual(task.task_type, Task.TaskType.PREPARE)
-        self.assertEqual(task.is_active, True)
+        assert task.task_type == Task.TaskType.PREPARE
+        assert task.is_active is True
 
     def test_anonymous_post_access_redirects(self):
-        response = self.client.post(self.url)
-        self.assertEqual(response.status_code, 302)
+        response = self.anonymous_client.post(self.url)
+        assert response.status_code == 302
 
     def test_forbidden_post_access(self):
-        self.login()
-        response = self.client.post(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.exporter_client.post(self.url)
+        assert response.status_code == 403
 
 
-class SanctionsAndAdhocImportAppplicationApplicantDetailsTest(AuthTestCase):
-    def setUp(self):
-        super().setUp()
-        self.importer_name = "Importer Limited"
-        self.importer_eori = "GB3423453234"
-
-        self.importer = ImporterFactory.create(
-            type=Importer.ORGANISATION,
-            user=self.user,
-            name=self.importer_name,
-            eori_number=self.importer_eori,
-        )
-
+class TestSanctionsAndAdhocImportAppplicationApplicantDetails(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
         self.process = SanctionsAndAdhocLicenseApplicationFactory.create(
             status="IN_PROGRESS",
             importer=self.importer,
-            created_by=self.user,
-            last_updated_by=self.user,
+            created_by=self.importer_user,
+            last_updated_by=self.importer_user,
         )
 
         TaskFactory.create(process=self.process, task_type=Task.TaskType.PREPARE)
@@ -98,57 +78,47 @@ class SanctionsAndAdhocImportAppplicationApplicantDetailsTest(AuthTestCase):
             country_groups__name="Sanctions and Adhoc License"
         ).first()
 
-        assign_perm("web.is_contact_of_importer", self.user, self.importer)
-
     def test_anonymous_access_redirects(self):
-        response = self.client.get(self.url)
+        response = self.anonymous_client.get(self.url)
 
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.redirect_url)
+        assert response.status_code == 302
+        assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
-        self.login()
-
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 403)
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == 403
 
     def test_logged_in_permissions(self):
-        self.login_with_permissions(["importer_access"])
-
-        response = self.client.get(self.url)
+        response = self.importer_client.get(self.url)
         assert response.status_code == 200
 
     def test_page_content(self):
-        self.login_with_permissions(["importer_access"])
-
-        response = self.client.get(self.url)
-        assert self.importer_name in response.content.decode()
-        assert self.importer_eori in response.content.decode()
+        response = self.importer_client.get(self.url)
+        assert self.importer.name in response.content.decode()
+        assert self.importer.eori_number in response.content.decode()
 
     def test_save_application_details(self):
-        self.login_with_permissions(["importer_access"])
-
         app_ref = "REF64563343"
         exporter_name = "Exporter Name"
         exporter_address = "Exporter Address"
 
         data = {
-            "contact": self.user.pk,
+            "contact": self.importer_user.pk,
             "applicant_reference": app_ref,
             "origin_country": self.valid_country.pk,
             "consignment_country": self.valid_country.pk,
             "exporter_name": exporter_name,
             "exporter_address": exporter_address,
         }
-        self.client.post(
+        self.importer_client.post(
             reverse("import:sanctions:edit", kwargs={"application_pk": self.process.pk}),
             data=data,
         )
 
-        response = self.client.get(self.url)
+        response = self.importer_client.get(self.url)
         assert response.status_code == 200
         application = SanctionsAndAdhocApplication.objects.get(pk=self.process.pk)
-        assert application.contact == self.user
+        assert application.contact == self.importer_user
         assert application.applicant_reference == app_ref
         assert application.origin_country == self.valid_country
         assert application.consignment_country == self.valid_country
@@ -157,24 +127,14 @@ class SanctionsAndAdhocImportAppplicationApplicantDetailsTest(AuthTestCase):
         assert "There are no goods attached" in response.content.decode()
 
 
-class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
-    def setUp(self):
-        super().setUp()
-        self.importer_name = "Importer Limited"
-        self.importer_eori = "GB3423453234"
-
-        self.importer = ImporterFactory.create(
-            type=Importer.ORGANISATION,
-            user=self.user,
-            name=self.importer_name,
-            eori_number=self.importer_eori,
-        )
-
+class TestSanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
         self.process = SanctionsAndAdhocLicenseApplicationFactory.create(
             status="IN_PROGRESS",
             importer=self.importer,
-            created_by=self.user,
-            last_updated_by=self.user,
+            created_by=self.importer_user,
+            last_updated_by=self.importer_user,
             origin_country=Country.objects.get(name="Iran"),
         )
         TaskFactory.create(process=self.process, task_type=Task.TaskType.PREPARE)
@@ -199,42 +159,33 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
         self.add_redirect_url = f"{LOGIN_URL}?next={self.add_url}"
         self.edit_redirect_url = f"{LOGIN_URL}?next={self.edit_url}"
 
-        assign_perm("web.is_contact_of_importer", self.user, self.importer)
-
     def test_add_anonymous_access_redirects(self):
-        response = self.client.get(self.add_url)
+        response = self.anonymous_client.get(self.add_url)
 
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.add_redirect_url)
+        assert response.status_code == 302
+        assertRedirects(response, self.add_redirect_url)
 
     def test_add_forbidden_access(self):
-        self.login()
-
-        response = self.client.get(self.add_url)
-        self.assertEqual(response.status_code, 403)
+        response = self.exporter_client.get(self.add_url)
+        assert response.status_code == 403
 
     def test_add_logged_in_permissions(self):
-        self.login_with_permissions(["importer_access"])
-
-        response = self.client.get(self.add_url)
+        response = self.importer_client.get(self.add_url)
         assert response.status_code == 200
 
     def test_add_page_content(self):
-        self.login_with_permissions(["importer_access"])
-
-        response = self.client.get(self.add_url)
+        response = self.importer_client.get(self.add_url)
         assert response.status_code == 200
         page_contents = response.content.decode()
 
         # Header
         assert "Sanctions and Adhoc Licence Application" in page_contents
         assert "In Progress" in page_contents
-        assert self.importer_name in page_contents
-        assert self.importer_eori in page_contents
+        assert self.importer.name in page_contents
+        assert self.importer.eori_number in page_contents
 
     def test_add_goods(self):
         assert SanctionsAndAdhocApplicationGoods.objects.count() == 1
-        self.login_with_permissions(["importer_access"])
 
         data = {
             "commodity": self.valid_commodity.pk,
@@ -242,7 +193,7 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             "quantity_amount": 5,
             "value": 5,
         }
-        response = self.client.post(
+        response = self.importer_client.post(
             reverse("import:sanctions:add-goods", kwargs={"application_pk": self.process.pk}),
             data=data,
         )
@@ -253,40 +204,32 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
         assert SanctionsAndAdhocApplicationGoods.objects.count() == 2
 
     def test_edit_anonymous_access_redirects(self):
-        response = self.client.get(self.edit_url)
+        response = self.anonymous_client.get(self.edit_url)
 
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, self.edit_redirect_url)
+        assert response.status_code == 302
+        assertRedirects(response, self.edit_redirect_url)
 
     def test_edit_forbidden_access(self):
-        self.login()
-
-        response = self.client.get(self.edit_url)
-        self.assertEqual(response.status_code, 403)
+        response = self.exporter_client.get(self.edit_url)
+        assert response.status_code == 403
 
     def test_edit_logged_in_permissions(self):
-        self.login_with_permissions(["importer_access"])
-
-        response = self.client.get(self.edit_url)
+        response = self.importer_client.get(self.edit_url)
         assert response.status_code == 200
 
     def test_edit_page_content(self):
-        self.login_with_permissions(["importer_access"])
-
-        response = self.client.get(self.edit_url)
+        response = self.importer_client.get(self.edit_url)
         assert response.status_code == 200
         page_contents = response.content.decode()
 
         # Header
         assert "Sanctions and Adhoc Licence Application" in page_contents
         assert "In Progress" in page_contents
-        assert self.importer_name in page_contents
-        assert self.importer_eori in page_contents
+        assert self.importer.name in page_contents
+        assert self.importer.eori_number in page_contents
 
     def test_edit_goods(self):
         assert SanctionsAndAdhocApplicationGoods.objects.count() == 1
-        self.login_with_permissions(["importer_access"])
-
         goods = SanctionsAndAdhocApplicationGoodsFactory.create(
             commodity=self.valid_commodity,
             goods_description="old desc",
@@ -300,7 +243,7 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             "quantity_amount": 10,
             "value": 10,
         }
-        response = self.client.post(
+        response = self.importer_client.post(
             reverse(
                 "import:sanctions:edit-goods",
                 kwargs={"application_pk": self.process.pk, "goods_pk": goods.pk},
@@ -322,7 +265,6 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
         assert good.value == 10
 
     def test_delete_goods(self):
-        self.login_with_permissions(["importer_access"])
         goods = SanctionsAndAdhocApplicationGoods.objects.create(
             commodity=self.valid_commodity,
             goods_description="desc",
@@ -332,7 +274,7 @@ class SanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
         )
         assert len(SanctionsAndAdhocApplicationGoods.objects.all()) == 2
         data = {"action": "delete", "item": goods.pk}
-        response = self.client.post(
+        response = self.importer_client.post(
             reverse(
                 "import:sanctions:delete-goods",
                 kwargs={"application_pk": self.process.pk, "goods_pk": goods.pk},
