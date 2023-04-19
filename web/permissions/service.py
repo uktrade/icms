@@ -1,3 +1,4 @@
+import dataclasses
 from typing import Literal, NamedTuple, TypeAlias
 
 from django.contrib.auth.models import Group
@@ -11,6 +12,7 @@ from guardian.shortcuts import (
     remove_perm,
 )
 
+from web.domains.case.types import ImpOrExp
 from web.models import (
     Exporter,
     ExporterUserObjectPermission,
@@ -22,6 +24,91 @@ from web.permissions import ExporterObjectPermissions, ImporterObjectPermissions
 
 ORGANISATION: TypeAlias = Importer | Exporter
 IMP_OR_EXP_PERMS_T = type[ImporterObjectPermissions | ExporterObjectPermissions]
+
+
+@dataclasses.dataclass
+class AppChecker:
+    """Class used to check permissions relating to an application."""
+
+    user: User
+    app: ImpOrExp
+
+    # Some system permissions to cache when initializing class
+    is_ilb_admin: bool = dataclasses.field(init=False)
+    has_org_access: bool = dataclasses.field(init=False)
+
+    # Org attributes to use when checking permissions
+    org: ORGANISATION = dataclasses.field(init=False)
+    agent_org: ORGANISATION = dataclasses.field(init=False)
+    obj_perms: IMP_OR_EXP_PERMS_T = dataclasses.field(init=False)
+
+    def __post_init__(self):
+        self.is_ilb_admin = self.user.has_perm(Perms.sys.ilb_admin)
+
+        if self.app.is_import_application():
+            self.has_org_access = self.user.has_perm(Perms.sys.importer_access)
+            self.org = self.app.importer
+        else:
+            self.has_org_access = self.user.has_perm(Perms.sys.exporter_access)
+            self.org = self.app.exporter
+
+        self.agent_org = self.app.agent
+
+        # Org and agent_org will be the same model type so pass in one of them.
+        self.obj_perms = _get_obj_permissions(self.org)
+
+    def can_edit(self):
+        """Check if the user can edit an application for the linked organisation.
+
+        If an agent organisation is defined the user *must* be able to edit the agent.
+        """
+
+        if self.agent_org:
+            org_to_check = self.agent_org
+        else:
+            org_to_check = self.org
+
+        can_edit_org_apps = self.user.has_perm(self.obj_perms.edit, org_to_check)
+
+        return self.has_org_access and can_edit_org_apps
+
+    def can_view(self):
+        """Check if the user can view an application.
+
+        They need to be able to view the main organisation applications or the
+        agent organisation applications if defined.
+
+        ILB_ADMIN's can always view an application.
+        """
+
+        if self.is_ilb_admin:
+            return True
+
+        if not self.has_org_access:
+            return False
+
+        return self.user.has_perm(self.obj_perms.view, self.org) or (
+            self.agent_org and self.user.has_perm(self.obj_perms.view, self.agent_org)
+        )
+
+    def can_vary(self):
+        """Check if the user can vary an application for the linked organisation.
+
+        They need to be able to edit the main organisation applications or the
+        agent organisation applications if defined.
+
+        ILB_ADMIN's can always vary an application.
+        """
+
+        if self.is_ilb_admin:
+            return True
+
+        if not self.has_org_access:
+            return False
+
+        return self.user.has_perm(self.obj_perms.edit, self.org) or (
+            self.agent_org and self.user.has_perm(self.obj_perms.edit, self.agent_org)
+        )
 
 
 class UserOrgPerms(NamedTuple):

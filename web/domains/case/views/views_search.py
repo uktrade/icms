@@ -42,7 +42,7 @@ from web.models import (
     User,
     VariationRequest,
 )
-from web.permissions import Perms, can_user_view_search_cases
+from web.permissions import AppChecker, Perms, can_user_view_search_cases
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
     SearchTerms,
@@ -316,20 +316,9 @@ class RequestVariationUpdateView(RequestVariationOpenBase):
     def has_object_permission(self) -> bool:
         """Return True if the user has the correct object permissions."""
 
-        user = self.request.user
+        checker = AppChecker(self.request.user, self.application)
 
-        if user.has_perm(Perms.sys.ilb_admin):
-            return True
-
-        can_edit = Perms.obj.importer.edit
-
-        if user.has_perm(can_edit, self.application.importer):
-            return True
-
-        if self.application.agent and user.has_perm(can_edit, self.application.agent):
-            return True
-
-        return False
+        return checker.can_vary()
 
     def form_valid(self, form: VariationRequestForm) -> HttpResponseRedirect:
         """Store the variation request before redirecting to the success url."""
