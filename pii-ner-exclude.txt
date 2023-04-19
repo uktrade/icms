@@ -2745,3 +2745,7 @@ Importer & Exporter
 ICMSLST-1985 Disable
 Test Importer
 conftest.py
+AppChecker
+"Check if the user can edit an application for the linked organisation
+"Check if the user can
+"Check if the user can vary an

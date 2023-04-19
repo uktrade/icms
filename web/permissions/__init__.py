@@ -6,6 +6,7 @@ from .perms import (
     SysPerms,
 )
 from .service import (
+    AppChecker,
     can_user_edit_firearm_authorities,
     can_user_edit_org,
     can_user_edit_section5_authorities,
@@ -31,6 +32,7 @@ __all__ = [
     "PagePermissions",
     "Perms",
     "SysPerms",
+    "AppChecker",
     "can_user_manage_org_contacts",
     "can_user_edit_firearm_authorities",
     "can_user_edit_org",
