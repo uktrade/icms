@@ -563,11 +563,9 @@ def view_upload_document(
     supplementary_info: DFLSupplementaryInfo = application.supplementary_info
     report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
     report_firearm: DFLSupplementaryReportFirearm = report.firearms.get(pk=report_firearm_pk)
-    document = report_firearm.document.first()
+    document = report_firearm.document
 
-    return view_application_file(
-        request.user, application, report_firearm.document, document.pk, "import"
-    )
+    return view_application_file(request.user, application, File.objects, document.pk, "import")
 
 
 @login_required
