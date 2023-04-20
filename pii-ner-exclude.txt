@@ -2751,3 +2751,9 @@ AppChecker
 "Check if the user can vary an
 ICMSLST-1945 Revisit
 test_import_user
+SESBackend"
+CERTIFICATE_REVOKE
+Test Body"
+ImportApplication / ExportApplication / AccessRequest
+"Creates a COM
+f"ICMS Certificate(s

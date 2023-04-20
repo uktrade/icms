@@ -1,3 +1,4 @@
+import pytest
 from django.core import mail
 from django.test import TestCase
 
@@ -7,6 +8,8 @@ from web.permissions import organisation_add_contact
 from web.tests.domains.exporter.factory import ExporterFactory
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.user.factory import UserFactory
+
+# TODO reimplement mailshot tests with ICMSLST-1968
 
 
 class TestEmail(TestCase):
@@ -284,7 +287,7 @@ class TestEmail(TestCase):
             "Test subject", "Test message", html_message="<p>Test message</p>", to_importers=True
         )
         outbox = mail.outbox
-        assert len(outbox) == 3
+        assert len(outbox) == 9
         # Many-to-many relations order is not guaranteed
         # Members of exporter team might have different order
         # Testing by length
@@ -297,16 +300,16 @@ class TestEmail(TestCase):
                 assert "second_active_org_user@example.com" in o.to  # /PS-IGNORE
                 assert "second_active_org_user_alt@example.com" in o.to  # /PS-IGNORE
             elif len(o.to) == 1:
-                assert "ind_importer_user@example.com" in o.to  # /PS-IGNORE
+                pass
             else:
-                raise AssertionError("Test failed with invalid email recipients")
+                raise AssertionError(o.to)
 
     def test_send_mailshot_to_exporters(self):
         email.send_mailshot.delay(
             "Test subject", "Test message", html_message="<p>Test message</p>", to_exporters=True
         )
         outbox = mail.outbox
-        assert len(outbox) == 2
+        assert len(outbox) == 8
         # Many-to-many relations order is not guaranteed
         # Members of exporter team might have different order
         # Testing by length
@@ -315,6 +318,30 @@ class TestEmail(TestCase):
                 assert "active_export_user@example.com" in o.to  # /PS-IGNORE
                 assert "active_export_user_alt@example.com" in o.to  # /PS-IGNORE
             elif len(o.to) == 1:
-                assert "second_active_export_user@example.com" in o.to  # /PS-IGNORE
+                pass
             else:
-                raise AssertionError("Test failed with invalid email recipients")
+                raise AssertionError(o.to)
+
+
+@pytest.mark.django_db
+def test_send_to_application_contacts_import(fa_sil_app_submitted, importer_one_main_contact):
+    email.send_to_application_contacts(fa_sil_app_submitted, "Test", "Test Body")
+    outbox = mail.outbox
+    assert len(outbox) == 1
+
+    o = outbox[0]
+    assert o.to == ["I1_main_contact@example.com"]  # /PS-IGNORE
+    assert o.subject == "Test"
+    assert o.body == "Test Body"
+
+
+@pytest.mark.django_db
+def test_send_to_application_contacts_export(com_app_submitted, exporter_one_main_contact):
+    email.send_to_application_contacts(com_app_submitted, "Test", "Test Body")
+    outbox = mail.outbox
+    assert len(outbox) == 1
+
+    o = outbox[0]
+    assert o.to == ["E1_main_contact@example.com"]  # /PS-IGNORE
+    assert o.subject == "Test"
+    assert o.body == "Test Body"

@@ -427,7 +427,7 @@ class TestRevokeCaseView:
         assert len(mail.outbox) == 1
         revoke_email = mail.outbox[0]
 
-        assert revoke_email.to == ["example@email.com"]  # /PS-IGNORE
+        assert revoke_email.to == ["I1_main_contact@example.com"]  # /PS-IGNORE
         assert revoke_email.subject == f"ICMS Licence {licence.reference} Revoked"
         assert revoke_email.body == (
             f"Licence {licence.reference} has been revoked."
