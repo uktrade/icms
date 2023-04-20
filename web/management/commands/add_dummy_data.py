@@ -148,7 +148,7 @@ class Command(BaseCommand):
             username="ilb_admin",
             password=options["password"],
             first_name="Ashley",
-            last_name="Smith (ilb_admin)",
+            last_name="Smith (ilb_admin, importer_user_group, exporter_user_group)",
             groups=[ilb_admin_group, importer_user_group, exporter_user_group],
             linked_importers=[importer],
             linked_exporters=[exporter],

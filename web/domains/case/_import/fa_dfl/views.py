@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
@@ -14,7 +15,6 @@ from web.domains.case.forms import SubmitForm
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
-    check_application_permission,
     get_application_form,
     redirect_after_submit,
     submit_application,
@@ -23,7 +23,8 @@ from web.domains.case.utils import (
 from web.domains.case.views.utils import get_caseworker_view_readonly_status
 from web.domains.file.utils import create_file_model
 from web.domains.template.utils import add_template_data_on_submit
-from web.models import File, Task
+from web.models import File, Task, User
+from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
     ApplicationErrors,
@@ -57,13 +58,20 @@ def _get_page_title(page: str) -> str:
     return f"Firearms and Ammunition (Deactivated Firearms Licence) - {page}"
 
 
+def check_can_edit_application(user: User, application: DFLApplication) -> None:
+    checker = AppChecker(user, application)
+
+    if not checker.can_edit():
+        raise PermissionDenied
+
+
 @login_required
 def edit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -101,7 +109,7 @@ def add_goods_certificate(
         application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         if request.method == "POST":
@@ -146,7 +154,7 @@ def edit_goods_certificate(
         application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -178,7 +186,7 @@ def edit_goods_certificate(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_goods_certificate_description(
     request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
 ) -> HttpResponse:
@@ -230,6 +238,7 @@ def view_goods_certificate(
 ) -> HttpResponse:
     application: DFLApplication = get_object_or_404(DFLApplication, pk=application_pk)
 
+    # Permission checks in view_application_file
     return view_application_file(
         request.user, application, application.goods_certificates, document_pk, "import"
     )
@@ -244,7 +253,7 @@ def delete_goods_certificate(
         application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -261,7 +270,7 @@ def submit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
         task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
@@ -343,7 +352,7 @@ def _get_dfl_errors(application: DFLApplication) -> ApplicationErrors:
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: DFLApplication = get_object_or_404(
@@ -397,8 +406,7 @@ def add_report_firearm_manual(
         application: DFLApplication = get_object_or_404(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
-
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
@@ -453,7 +461,7 @@ def edit_report_firearm_manual(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
@@ -503,7 +511,7 @@ def add_report_firearm_upload(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
@@ -582,7 +590,7 @@ def add_report_firearm_no_firearm(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
@@ -615,7 +623,7 @@ def delete_report_firearm(
             DFLApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
