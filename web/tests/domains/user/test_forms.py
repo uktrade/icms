@@ -108,7 +108,7 @@ class TestUserListFilter(TestCase):
         assert results.count() == 3
 
     def test_password_disposition_filter(self):
-        results = self.run_filter({"password_disposition": "on"})
+        results = self.run_filter({"password_disposition": "off"})
         assert results.count() == 3
 
     def test_filter_order(self):
@@ -169,7 +169,7 @@ class TestPeopleFilter(TestCase):
 
     def test_email_filter(self):
         results = self.run_filter({"email_address": "example.com"})
-        assert results.count() == 3
+        assert results.count() == 15
 
     def test_first_name_filter(self):
         results = self.run_filter({"forename": "melkor"})
@@ -193,11 +193,11 @@ class TestPeopleFilter(TestCase):
 
     def test_filter_order(self):
         results = self.run_filter({"email_address": "example"})
-        assert results.count() == 3
+        assert results.count() == 15
         first = results.first()
         last = results.last()
-        assert first.username == "jane"
-        assert last.username == "melkor"
+        assert first.username == "E1_A1_main_contact"
+        assert last.username == "test_import_user"
 
 
 class TestUserDetailsUpdateForm(TestCase):

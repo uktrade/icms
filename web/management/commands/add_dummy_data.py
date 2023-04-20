@@ -10,6 +10,7 @@ from guardian.shortcuts import assign_perm
 from web.management.commands.utils.load_data import load_app_test_data
 from web.models import (
     CertificateApplicationTemplate,
+    Email,
     ExportApplicationType,
     Exporter,
     ImportApplicationType,
@@ -17,6 +18,7 @@ from web.models import (
     ObsoleteCalibre,
     ObsoleteCalibreGroup,
     Office,
+    PersonalEmail,
     User,
 )
 from web.permissions import Perms
@@ -228,12 +230,20 @@ class Command(BaseCommand):
             is_superuser=False,
             account_status=User.ACTIVE,
             is_active=True,
-            email=f"{username}@email.com",  # /PS-IGNORE
+            email=f"{username}@example.com",  # /PS-IGNORE
             first_name=first_name,
             last_name=last_name,
             date_of_birth=datetime.date(2000, 1, 1),
             security_question="security_question",
             security_answer="security_answer",
+        )
+
+        PersonalEmail.objects.create(
+            email=f"{username}@example.com",  # /PS-IGNORE
+            is_primary=True,
+            portal_notifications=True,
+            type=Email.WORK,
+            user=user,
         )
 
         if groups:

@@ -16,7 +16,6 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import FormView, View
 
-from web import tasks
 from web.domains.case.forms import (
     RevokeApplicationForm,
     VariationRequestExportAppForm,
@@ -32,16 +31,17 @@ from web.domains.case.forms_search import (
 from web.domains.case.services import case_progress, document_pack, reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import client
+from web.domains.template.utils import get_email_template_subject_body
 from web.models import (
     ExportApplication,
     ImportApplication,
     ImportApplicationType,
     Process,
     Task,
-    Template,
     User,
     VariationRequest,
 )
+from web.notify.email import send_to_application_contacts
 from web.permissions import AppChecker, Perms, can_user_view_search_cases
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
@@ -453,37 +453,29 @@ class RevokeCaseView(SearchActionFormBase):
         # This view allows both completed and revoked.
         # The POST form submission only allows an application in the completed state.
         case_progress.check_expected_status(self.application, [ImpExpStatus.COMPLETED])
-
         email_applicants = form.cleaned_data["send_email"]
         reason = form.cleaned_data["reason"]
+        is_import = self.application.is_import_application()
+
+        if email_applicants:
+            if is_import:
+                email_subject, email_body = get_email_template_subject_body(
+                    self.application, "LICENCE_REVOKE"
+                )
+            else:
+                email_subject, email_body = get_email_template_subject_body(
+                    self.application, "CERTIFICATE_REVOKE"
+                )
+
+            send_to_application_contacts(self.application, email_subject, email_body)
+
         document_pack.pack_active_revoke(self.application, reason, email_applicants)
 
         self.application.update_order_datetime()
         self.update_application_status()
 
-        is_import = self.application.is_import_application()
         if is_import and self.application.application_type.chief_flag:
             client.send_application_to_chief(self.application, self.task, revoke_licence=True)
-
-        if email_applicants:
-            # TODO: Revisit in ICMSLST-1922
-            revoke_template = Template.objects.get(
-                template_code="LICENCE_REVOKE",
-                template_type="EMAIL_TEMPLATE",
-                application_domain="IMA",
-            )
-            pack = document_pack.pack_revoked_get(self.application)
-            licence = document_pack.doc_ref_licence_get(pack)
-            email_subject = revoke_template.get_title({"LICENCE_NUMBER": licence.reference})
-            email_content = revoke_template.get_content({"LICENCE_NUMBER": licence.reference})
-
-            # TODO: Revisit in ICMSLST-1924
-            recipients = ("example@email.com",)  # /PS-IGNORE
-            tasks.send_email(
-                subject=email_subject,
-                body=email_content,
-                recipients=recipients,
-            )
 
         return super().form_valid(form)
 

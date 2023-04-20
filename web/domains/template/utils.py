@@ -2,13 +2,19 @@ import re
 from typing import TYPE_CHECKING
 
 from web.flow.models import ProcessTypes
-from web.models import EndorsementImportApplication
+from web.models import (
+    AccessRequest,
+    EndorsementImportApplication,
+    ExportApplication,
+    ImportApplication,
+)
 
-from .context import CoverLetterTemplateContext
+from .context import CoverLetterTemplateContext, EmailTemplateContext
 from .models import Template
 
 if TYPE_CHECKING:
-    from web.models import ImportApplication, SILApplication
+    from web.flow.models import Process
+    from web.models import SILApplication
     from web.types import DocumentTypes
 
     from .context import TemplateContextProcessor
@@ -90,6 +96,30 @@ def get_cover_letter_content(
 ) -> str:
     context = CoverLetterTemplateContext(application, document_type)
     return replace_template_values(application.cover_letter_text, context)
+
+
+def get_email_template_subject_body(process: "Process", template_code: str) -> tuple[str, str]:
+    if isinstance(process, ImportApplication):
+        domain = "IMA"
+    elif isinstance(process, ExportApplication):
+        domain = "CA"
+    elif isinstance(process, AccessRequest):
+        domain = "IAR"
+    else:
+        raise ValueError(
+            "Process must be an instance of ImportApplication / ExportApplication / AccessRequest"
+        )
+
+    template = Template.objects.get(
+        template_code=template_code,
+        template_type="EMAIL_TEMPLATE",
+        application_domain=domain,
+    )
+    context = EmailTemplateContext(process)
+    subject = get_template_title(template, context)
+    body = get_template_content(template, context)
+
+    return subject, body
 
 
 def get_letter_fragment(application: "SILApplication") -> str:

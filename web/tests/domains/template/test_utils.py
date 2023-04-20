@@ -12,12 +12,15 @@ from web.domains.template.utils import (
     find_invalid_placeholders,
     get_context_dict,
     get_cover_letter_content,
+    get_email_template_subject_body,
     get_letter_fragment,
 )
 from web.models import (
+    CertificateOfManufactureApplication,
     Country,
     DFLApplication,
     EndorsementImportApplication,
+    ExportApplicationType,
     ImportApplicationType,
     OpenIndividualLicenceApplication,
     SanctionsAndAdhocApplication,
@@ -27,8 +30,23 @@ from web.models import (
 from web.types import DocumentTypes
 
 
-def _create_sil_app(test_import_user, importer, office, **kwargs):
-    """Creates a SIL app with default data overridable with kwargs"""
+def _create_pack_documents(app):
+    if app.status in ["IN_PROGRESS", "SUBMITTED", "COMPLETED"]:
+        doc_pack = document_pack.pack_draft_create(app)
+        doc_pack.licence_start_date = dt.date.today()
+        doc_pack.licence_end_date = dt.date(dt.date.today().year + 1, 12, 1)
+        doc_pack.save()
+        document_pack.doc_ref_documents_create(app, lock_manager=Mock())
+
+    if app.status == "COMPLETED":
+        document_pack.pack_draft_set_active(app)
+
+
+def _create_sil_app(test_import_user, importer, office, extra=None):
+    """Creates a SIL app with default data overridable with extra"""
+    if not extra:
+        extra = {}
+
     application_type = ImportApplicationType.objects.get(
         type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.SIL
     )
@@ -42,9 +60,67 @@ def _create_sil_app(test_import_user, importer, office, **kwargs):
         "application_type": application_type,
         "contact": test_import_user,
         "submit_datetime": dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.timezone.utc),
-    } | kwargs
+    } | extra
 
     app = SILApplication.objects.create(**sil_data)
+
+    return app
+
+
+def _create_dfl_app(test_import_user, importer, office, extra=None):
+    if not extra:
+        extra = {}
+
+    application_type = ImportApplicationType.objects.get(
+        type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.DFL
+    )
+
+    dfl_data = {
+        "created_by": test_import_user,
+        "last_updated_by": test_import_user,
+        "importer": importer,
+        "importer_office": office,
+        "process_type": DFLApplication.PROCESS_TYPE,
+        "application_type": application_type,
+        "contact": test_import_user,
+        "submit_datetime": dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.timezone.utc),
+        "status": "IN_PROGRESS",
+        "consignment_country": Country.objects.get(name="Germany"),
+        "origin_country": Country.objects.get(name="Albania"),
+    } | extra
+
+    app = DFLApplication.objects.create(**dfl_data)
+    _create_pack_documents(app)
+
+    return app
+
+
+def _create_com_app(test_export_user, exporter, office, extra=None):
+    """Creates a COM app with default data overridable with extra"""
+    if not extra:
+        extra = {}
+
+    application_type = ExportApplicationType.objects.get(
+        type_code=ExportApplicationType.Types.MANUFACTURE
+    )
+
+    com_data = {
+        "created_by": test_export_user,
+        "last_updated_by": test_export_user,
+        "exporter": exporter,
+        "exporter_office": office,
+        "process_type": CertificateOfManufactureApplication.PROCESS_TYPE,
+        "application_type": application_type,
+        "contact": test_export_user,
+        "submit_datetime": dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.timezone.utc),
+        "status": "SUBMITTED",
+    } | extra
+
+    app = CertificateOfManufactureApplication.objects.create(**com_data)
+    app.countries.add(Country.objects.get(name="Germany"))
+    app.countries.add(Country.objects.get(name="Albania"))
+
+    _create_pack_documents(app)
 
     return app
 
@@ -67,16 +143,7 @@ def test_add_endorsements_from_application_type(test_import_user, importer, offi
 
     # Add inactive endorsement to application type
     application_type.endorsements.add(inactive_endorsement)
-
-    app = DFLApplication.objects.create(
-        created_by=test_import_user,
-        last_updated_by=test_import_user,
-        importer=importer,
-        importer_office=office,
-        process_type=DFLApplication.PROCESS_TYPE,
-        application_type=application_type,
-    )
-
+    app = _create_dfl_app(test_import_user, importer, office)
     add_endorsements_from_application_type(app)
 
     # Check application only includes active endorsements from application type
@@ -95,15 +162,7 @@ def test_add_endorsements_from_application_type_added(test_import_user, importer
 
     # Add active endorsements to application type
     application_type.endorsements.add(*endorsements)
-
-    app = DFLApplication.objects.create(
-        created_by=test_import_user,
-        last_updated_by=test_import_user,
-        importer=importer,
-        importer_office=office,
-        process_type=DFLApplication.PROCESS_TYPE,
-        application_type=application_type,
-    )
+    app = _create_dfl_app(test_import_user, importer, office)
 
     # Add endorsement to application
     EndorsementImportApplication.objects.create(
@@ -127,19 +186,7 @@ def test_add_template_data_on_submit(test_import_user, importer, office):
 
     # Add active endorsement to application type
     application_type.endorsements.add(*active_endorsements)
-
-    app = DFLApplication.objects.create(
-        created_by=test_import_user,
-        last_updated_by=test_import_user,
-        importer=importer,
-        importer_office=office,
-        process_type=DFLApplication.PROCESS_TYPE,
-        application_type=application_type,
-        submit_datetime=dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.timezone.utc),
-        consignment_country=Country.objects.get(name="Germany"),
-        origin_country=Country.objects.get(name="Albania"),
-    )
-
+    app = _create_dfl_app(test_import_user, importer, office)
     template = Template.objects.get(template_code="COVER_FIREARMS_DEACTIVATED_FIREARMS")
 
     add_template_data_on_submit(app)
@@ -154,21 +201,11 @@ def test_add_template_data_on_submit(test_import_user, importer, office):
 
 
 def test_get_cover_letter_context(test_import_user, importer, office):
-    application_type = ImportApplicationType.objects.get(
-        type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.DFL
-    )
-
-    app = DFLApplication.objects.create(
-        created_by=test_import_user,
-        last_updated_by=test_import_user,
-        importer=importer,
-        importer_office=office,
-        process_type=DFLApplication.PROCESS_TYPE,
-        application_type=application_type,
-        contact=test_import_user,
-        submit_datetime=dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.timezone.utc),
-        consignment_country=Country.objects.get(name="Germany"),
-        origin_country=Country.objects.get(name="Albania"),
+    app = _create_dfl_app(
+        test_import_user,
+        importer,
+        office,
+        extra={"submit_datetime": dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.timezone.utc)},
     )
 
     template_text = """
@@ -188,12 +225,7 @@ def test_get_cover_letter_context(test_import_user, importer, office):
         context_dict["LICENCE_END_DATE"] == '<span class="placeholder">[[LICENCE_END_DATE]]</span>'
     )
 
-    doc_pack = document_pack.pack_draft_create(app)
-    doc_pack.licence_start_date = dt.date.today()
-    doc_pack.licence_end_date = dt.date(dt.date.today().year + 1, 12, 1)
-    doc_pack.save()
-    document_pack.doc_ref_documents_create(app, lock_manager=Mock())
-
+    doc_pack = document_pack.pack_draft_get(app)
     context = CoverLetterTemplateContext(app, DocumentTypes.COVER_LETTER_PRE_SIGN)
     context_dict = get_context_dict(template_text, context)
 
@@ -221,25 +253,10 @@ def test_get_cover_letter_context(test_import_user, importer, office):
 
 
 def test_get_cover_letter_invalid_context(test_import_user, importer, office):
-    application_type = ImportApplicationType.objects.get(
-        type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.DFL
-    )
-
-    app = DFLApplication.objects.create(
-        created_by=test_import_user,
-        last_updated_by=test_import_user,
-        importer=importer,
-        importer_office=office,
-        process_type=DFLApplication.PROCESS_TYPE,
-        application_type=application_type,
-        contact=test_import_user,
-        submit_datetime=dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.timezone.utc),
-        consignment_country=Country.objects.get(name="Germany"),
-        origin_country=Country.objects.get(name="Albania"),
-    )
-
+    app = _create_dfl_app(test_import_user, importer, office)
     template_text = "Hello [[INVALID]]"
     context = CoverLetterTemplateContext(app, DocumentTypes.COVER_LETTER_PREVIEW)
+
     with pytest.raises(
         ValueError, match=r"INVALID is not a valid cover letter template context value"
     ):
@@ -247,21 +264,7 @@ def test_get_cover_letter_invalid_context(test_import_user, importer, office):
 
 
 def test_dfl_add_application_default_cover_letter(test_import_user, importer, office):
-    application_type = ImportApplicationType.objects.get(
-        type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.DFL
-    )
-
-    app = DFLApplication.objects.create(
-        created_by=test_import_user,
-        last_updated_by=test_import_user,
-        importer=importer,
-        importer_office=office,
-        process_type=DFLApplication.PROCESS_TYPE,
-        application_type=application_type,
-        contact=test_import_user,
-        submit_datetime=dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.timezone.utc),
-    )
-
+    app = _create_dfl_app(test_import_user, importer, office)
     template = Template.objects.get(template_code="COVER_FIREARMS_DEACTIVATED_FIREARMS")
 
     add_application_default_cover_letter(app)
@@ -269,25 +272,9 @@ def test_dfl_add_application_default_cover_letter(test_import_user, importer, of
 
 
 def test_get_cover_letter_content(test_import_user, importer, office):
-    application_type = ImportApplicationType.objects.get(
-        type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.DFL
-    )
-
-    app = DFLApplication.objects.create(
-        created_by=test_import_user,
-        last_updated_by=test_import_user,
-        importer=importer,
-        importer_office=office,
-        process_type=DFLApplication.PROCESS_TYPE,
-        application_type=application_type,
-        contact=test_import_user,
-        submit_datetime=dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.timezone.utc),
-        consignment_country=Country.objects.get(name="Germany"),
-        origin_country=Country.objects.get(name="Albania"),
-        cover_letter_text=None,
-    )
-
+    app = _create_dfl_app(test_import_user, importer, office)
     content = get_cover_letter_content(app, DocumentTypes.COVER_LETTER_PREVIEW)
+
     assert content == ""
 
     app.cover_letter_text = "Hello [[CONTACT_NAME]]"
@@ -310,7 +297,6 @@ def test_oil_add_application_default_cover_letter(test_import_user, importer, of
         contact=test_import_user,
         submit_datetime=dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.timezone.utc),
     )
-
     template = Template.objects.get(template_code="COVER_FIREARMS_OIL")
 
     add_application_default_cover_letter(app)
@@ -347,19 +333,7 @@ def test_sanctions_application_default_cover_letter(test_import_user, importer, 
 
 
 def test_get_letter_fragment_dfl(test_import_user, importer, office):
-    application_type = ImportApplicationType.objects.get(
-        type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.DFL
-    )
-
-    app = DFLApplication.objects.create(
-        created_by=test_import_user,
-        last_updated_by=test_import_user,
-        importer=importer,
-        importer_office=office,
-        process_type=DFLApplication.PROCESS_TYPE,
-        application_type=application_type,
-        contact=test_import_user,
-    )
+    app = _create_dfl_app(test_import_user, importer, office)
 
     with pytest.raises(ValueError, match=r"No letter fragments for process type DFLApplication"):
         get_letter_fragment(app)
@@ -374,9 +348,11 @@ def test_sil_incomplete_get_letter_fragment(test_import_user, importer, office, 
         test_import_user,
         importer,
         office,
-        military_police=mp,
-        eu_single_market=eu,
-        manufactured=man,
+        extra={
+            "military_police": mp,
+            "eu_single_market": eu,
+            "manufactured": man,
+        },
     )
 
     with pytest.raises(
@@ -399,9 +375,11 @@ def test_sil_get_letter_fragment(test_import_user, importer, office, mp, eu, man
         test_import_user,
         importer,
         office,
-        military_police=mp,
-        eu_single_market=eu,
-        manufactured=man,
+        extra={
+            "military_police": mp,
+            "eu_single_market": eu,
+            "manufactured": man,
+        },
     )
 
     template = Template.objects.get(template_code=tc)
@@ -420,3 +398,30 @@ def test_sil_get_letter_fragment(test_import_user, importer, office, mp, eu, man
 )
 def test_find_invalid_placeholders(content, placeholders, expected):
     assert find_invalid_placeholders(content, placeholders) == expected
+
+
+def test_import_email_template_subject_body(test_import_user, importer, office):
+    app = _create_dfl_app(test_import_user, importer, office, extra={"status": "COMPLETED"})
+    doc_pack = document_pack.pack_active_get(app)
+    licence_reference = document_pack.doc_ref_licence_get(doc_pack).reference
+    email_subject, email_body = get_email_template_subject_body(app, "LICENCE_REVOKE")
+
+    assert email_subject == f"ICMS Licence {licence_reference} Revoked"
+    assert email_body == (
+        f"Licence {licence_reference} has been revoked. "
+        "Please contact ILB if you believe this is in error or require further information."
+    )
+
+
+def test_export_email_template_subject_body(test_export_user, exporter, office):
+    app = _create_com_app(test_export_user, exporter, office, extra={"status": "COMPLETED"})
+    doc_pack = document_pack.pack_active_get(app)
+    certificates = document_pack.doc_ref_certificates_all(doc_pack)
+    references = ", ".join(certificates.values_list("reference", flat=True))
+
+    email_subject, email_body = get_email_template_subject_body(app, "CERTIFICATE_REVOKE")
+    assert email_subject == "ICMS Certificate(s) Revoked"
+    assert email_body == (
+        f"Certificate(s) {references} have been revoked. "
+        "Please contact ILB if you believe this is in error or require further information."
+    )

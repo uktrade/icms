@@ -129,7 +129,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Email
-EMAIL_BACKEND = "django_ses.SESBackend"
+# EMAIL_BACKEND = "django_ses.SESBackend" TODO ICMLST-1994
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 AWS_SES_ACCESS_KEY_ID = env.str("AWS_SES_ACCESS_KEY_ID", default="")
 AWS_SES_SECRET_ACCESS_KEY = env.str("AWS_SES_SECRET_ACCESS_KEY", default="")
 AWS_SES_REGION_NAME = "eu-west-1"

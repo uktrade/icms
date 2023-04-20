@@ -15,6 +15,7 @@ from web.models import (
     ObsoleteCalibre,
     ObsoleteCalibreGroup,
     Office,
+    PersonalEmail,
     User,
 )
 from web.permissions import ExporterObjectPermissions, ImporterObjectPermissions
@@ -156,6 +157,12 @@ class Command(BaseCommand):
         main_org: Importer | Exporter | None = None,
     ) -> None:
         user = self.create_user(contact.username)
+
+        PersonalEmail.objects.create(
+            user=user,
+            email=f"{contact.username}@example.com",  # /PS-IGNORE
+            portal_notifications=True,
+        )
 
         group = Group.objects.get(name=obj_perms.get_group_name())
         user.groups.add(group)
