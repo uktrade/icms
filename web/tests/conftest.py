@@ -234,8 +234,11 @@ def icms_admin_client(test_icms_admin_user) -> Client:
 
 
 @pytest.fixture()
-def importer_client(test_import_user) -> Client:
-    return get_test_client(test_import_user)
+def importer_client(importer_one_main_contact) -> Client:
+    # TODO: Make fixtures more consistent:
+    #       rename all test_ fixtures
+    #       change all occurrences of test_import_user to use importer_one_main_contact user.
+    return get_test_client(importer_one_main_contact)
 
 
 @pytest.fixture()

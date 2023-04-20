@@ -21,24 +21,15 @@ from web.models import (
     User,
 )
 from web.models.shared import FirearmCommodity
-from web.tests.helpers import check_page_errors
+from web.tests.helpers import check_page_errors, get_test_client
 
 
 def _get_view_url(view_name, kwargs=None):
     return reverse(f"import:fa-dfl:{view_name}", kwargs=kwargs)
 
 
-@pytest.fixture(autouse=True)
-def log_in_test_user(client, test_import_user):
-    """Logs in the test_import_user for all tests."""
-
-    assert (
-        client.login(username=test_import_user.username, password="test") is True
-    ), "Failed to login"
-
-
 @pytest.fixture
-def dfl_app_pk(client, office, importer):
+def dfl_app_pk(importer_client, office, importer):
     """Creates a fa-dfl application to be used in tests, also tests the create-fa-dfl endpoint"""
 
     url = reverse("import:create-fa-dfl")
@@ -46,7 +37,7 @@ def dfl_app_pk(client, office, importer):
 
     count_before = DFLApplication.objects.all().count()
 
-    resp = client.post(url, post_data)
+    resp = importer_client.post(url, post_data)
 
     assert DFLApplication.objects.all().count() == count_before + 1
 
@@ -58,10 +49,10 @@ def dfl_app_pk(client, office, importer):
     return application_pk
 
 
-def test_edit_dfl_get(client, dfl_app_pk):
+def test_edit_dfl_get(dfl_app_pk, importer_client, exporter_client, importer_two_main_contact):
     url = _get_view_url("edit", {"application_pk": dfl_app_pk})
 
-    response = client.get(url)
+    response = importer_client.get(url)
 
     assertContains(
         response,
@@ -69,16 +60,26 @@ def test_edit_dfl_get(client, dfl_app_pk):
         status_code=200,
     )
 
+    # Check permissions
+    # Exporter can't access it
+    response = exporter_client.get(url)
+    assert response.status_code == 403
 
-def test_validate_query_param_shows_errors(client, dfl_app_pk):
+    # A different importer can't access it
+    importer_two_client = get_test_client(importer_two_main_contact)
+    response = importer_two_client.get(url)
+    assert response.status_code == 403
+
+
+def test_validate_query_param_shows_errors(dfl_app_pk, importer_client):
     url = _get_view_url("edit", {"application_pk": dfl_app_pk})
 
-    response = client.get(url)
+    response = importer_client.get(url)
     assert response.status_code == 200
     form = response.context["form"]
     assert not form.errors
 
-    response = client.get(f"{url}?validate")
+    response = importer_client.get(f"{url}?validate")
     assert response.status_code == 200
 
     assertFormError(response.context["form"], "proof_checked", "You must enter this item")
@@ -88,7 +89,7 @@ def test_validate_query_param_shows_errors(client, dfl_app_pk):
     assertFormError(response.context["form"], "constabulary", "You must enter this item")
 
 
-def test_edit_dfl_post_valid(client, dfl_app_pk, importer_contact):
+def test_edit_dfl_post_valid(dfl_app_pk, importer_client, importer_contact):
     url = _get_view_url("edit", {"application_pk": dfl_app_pk})
 
     dfl_countries = Country.objects.filter(
@@ -108,7 +109,7 @@ def test_edit_dfl_post_valid(client, dfl_app_pk, importer_contact):
         "commodity_code": FirearmCommodity.EX_CHAPTER_93.value,
         "constabulary": constabulary.pk,
     }
-    response = client.post(url, form_data)
+    response = importer_client.post(url, form_data)
 
     assertRedirects(response, url, 302)
 
@@ -124,10 +125,10 @@ def test_edit_dfl_post_valid(client, dfl_app_pk, importer_contact):
     assert dfl_app.constabulary.pk == constabulary.pk
 
 
-def test_add_goods_document_get(client, dfl_app_pk):
+def test_add_goods_document_get(dfl_app_pk, importer_client):
     url = _get_view_url("add-goods", kwargs={"application_pk": dfl_app_pk})
 
-    response = client.get(url)
+    response = importer_client.get(url)
 
     assertContains(
         response,
@@ -136,11 +137,11 @@ def test_add_goods_document_get(client, dfl_app_pk):
     )
 
 
-def test_add_goods_document_post_invalid(client, dfl_app_pk):
+def test_add_goods_document_post_invalid(dfl_app_pk, importer_client):
     url = _get_view_url("add-goods", kwargs={"application_pk": dfl_app_pk})
 
     form_data = {"foo": "bar"}
-    response = client.post(url, form_data)
+    response = importer_client.post(url, form_data)
 
     assertFormError(response.context["form"], "goods_description", "You must enter this item")
     assertFormError(
@@ -150,7 +151,7 @@ def test_add_goods_document_post_invalid(client, dfl_app_pk):
     assertFormError(response.context["form"], "document", "You must enter this item")
 
 
-def test_add_goods_document_post_valid(client, dfl_app_pk):
+def test_add_goods_document_post_valid(dfl_app_pk, importer_client):
     url = _get_view_url("add-goods", kwargs={"application_pk": dfl_app_pk})
 
     issuing_country = Country.objects.filter(
@@ -165,7 +166,7 @@ def test_add_goods_document_post_valid(client, dfl_app_pk):
         "document": goods_file,
     }
 
-    response = client.post(url, form_data)
+    response = importer_client.post(url, form_data)
 
     assertRedirects(response, _get_view_url("edit", {"application_pk": dfl_app_pk}), 302)
 
@@ -185,13 +186,13 @@ def test_add_goods_document_post_valid(client, dfl_app_pk):
     assert goods_cert.file_size == goods_file.size
 
 
-def test_edit_goods_certificate_get(client, dfl_app_pk):
+def test_edit_goods_certificate_get(dfl_app_pk, importer_client):
     document_pk = _create_goods_cert(dfl_app_pk)
     url = _get_view_url(
         "edit-goods", kwargs={"application_pk": dfl_app_pk, "document_pk": document_pk}
     )
 
-    response = client.get(url)
+    response = importer_client.get(url)
 
     assertContains(
         response,
@@ -200,7 +201,7 @@ def test_edit_goods_certificate_get(client, dfl_app_pk):
     )
 
 
-def test_edit_goods_certificate_post_invalid(client, dfl_app_pk):
+def test_edit_goods_certificate_post_invalid(dfl_app_pk, importer_client):
     document_pk = _create_goods_cert(dfl_app_pk)
     url = _get_view_url(
         "edit-goods", kwargs={"application_pk": dfl_app_pk, "document_pk": document_pk}
@@ -211,7 +212,7 @@ def test_edit_goods_certificate_post_invalid(client, dfl_app_pk):
         "deactivated_certificate_reference": "",
         "issuing_country": -1,
     }
-    response = client.post(url, form_data)
+    response = importer_client.post(url, form_data)
 
     assertFormError(
         response.context["form"], "deactivated_certificate_reference", "You must enter this item"
@@ -224,7 +225,7 @@ def test_edit_goods_certificate_post_invalid(client, dfl_app_pk):
     assertFormError(response.context["form"], "goods_description", "You must enter this item")
 
 
-def test_edit_goods_certificate_post_valid(client, dfl_app_pk):
+def test_edit_goods_certificate_post_valid(dfl_app_pk, importer_client):
     document_pk = _create_goods_cert(dfl_app_pk)
     url = _get_view_url(
         "edit-goods", kwargs={"application_pk": dfl_app_pk, "document_pk": document_pk}
@@ -239,7 +240,7 @@ def test_edit_goods_certificate_post_valid(client, dfl_app_pk):
         "deactivated_certificate_reference": "New deactived certificate reference",
         "issuing_country": issuing_country.pk,
     }
-    response = client.post(url, form_data)
+    response = importer_client.post(url, form_data)
 
     assertRedirects(response, _get_view_url("edit", {"application_pk": dfl_app_pk}), 302)
 
@@ -272,10 +273,10 @@ def _create_goods_cert(dfl_app_pk):
     return document_pk
 
 
-def test_submit_dfl_get(client, dfl_app_pk):
+def test_submit_dfl_get(dfl_app_pk, importer_client):
     url = _get_view_url("submit", kwargs={"application_pk": dfl_app_pk})
 
-    response = client.get(url)
+    response = importer_client.get(url)
 
     assertContains(
         response,
@@ -309,12 +310,12 @@ def test_submit_dfl_get(client, dfl_app_pk):
     )
 
 
-def test_submit_dfl_post_invalid(client, dfl_app_pk, importer_contact):
+def test_submit_dfl_post_invalid(dfl_app_pk, importer_client, importer_contact):
     submit_url = _get_view_url("submit", kwargs={"application_pk": dfl_app_pk})
 
     form_data = {"foo": "bar"}
 
-    response = client.post(submit_url, form_data)
+    response = importer_client.post(submit_url, form_data)
 
     assertContains(
         response,
@@ -347,7 +348,7 @@ def test_submit_dfl_post_invalid(client, dfl_app_pk, importer_contact):
     assertFormError(response.context["form"], "confirmation", "You must enter this item")
 
     form_data = {"confirmation": "I will NEVER agree"}
-    response = client.post(submit_url, form_data)
+    response = importer_client.post(submit_url, form_data)
 
     assertFormError(
         response.context["form"], "confirmation", "Please agree to the declaration of truth."
@@ -372,22 +373,22 @@ def test_submit_dfl_post_invalid(client, dfl_app_pk, importer_contact):
         "constabulary": constabulary.pk,
     }
     edit_url = _get_view_url("edit", {"application_pk": dfl_app_pk})
-    client.post(edit_url, form_data)
+    importer_client.post(edit_url, form_data)
 
     # Save the know bought from to make the application valid.
     form_data = {"know_bought_from": True}
-    client.post(
+    importer_client.post(
         reverse("import:fa:manage-import-contacts", kwargs={"application_pk": dfl_app_pk}),
         form_data,
     )
 
     # now we have a valid application submit the application again to see the know_bought_from error
-    response = client.post(submit_url, form_data)
+    response = importer_client.post(submit_url, form_data)
     errors = response.context["errors"]
     check_page_errors(errors, "Details of who bought from", ["Person"])
 
 
-def test_submit_dfl_post_valid(client, dfl_app_pk, importer_contact):
+def test_submit_dfl_post_valid(dfl_app_pk, importer_client, importer_contact):
     """Test the full happy path.
 
     Create the main application
@@ -423,7 +424,7 @@ def test_submit_dfl_post_valid(client, dfl_app_pk, importer_contact):
     }
 
     # Save the main application
-    client.post(edit_url, form_data)
+    importer_client.post(edit_url, form_data)
 
     issuing_country = Country.objects.filter(
         country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries"
@@ -438,14 +439,14 @@ def test_submit_dfl_post_valid(client, dfl_app_pk, importer_contact):
     }
 
     # Save the goods certificate
-    client.post(add_goods_url, form_data)
+    importer_client.post(add_goods_url, form_data)
 
     # Save the know bought from
     form_data = {"know_bought_from": False}
-    client.post(know_bought_from_url, form_data)
+    importer_client.post(know_bought_from_url, form_data)
 
     form_data = {"confirmation": "I AGREE"}
-    response = client.post(submit_url, form_data)
+    response = importer_client.post(submit_url, form_data)
 
     assertRedirects(response, reverse("workbasket"), 302)
 

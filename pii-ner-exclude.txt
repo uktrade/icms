@@ -2749,3 +2749,5 @@ AppChecker
 "Check if the user can edit an application for the linked organisation
 "Check if the user can
 "Check if the user can vary an
+ICMSLST-1945 Revisit
+test_import_user
