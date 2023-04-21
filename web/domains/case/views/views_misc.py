@@ -14,7 +14,6 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView, View
-from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case import forms
 from web.domains.case.app_checks import get_app_errors
@@ -28,9 +27,10 @@ from web.domains.case.utils import (
     end_process_task,
     get_case_page_title,
 )
+from web.domains.template.utils import get_email_template_subject_body
 from web.flow import errors
-from web.models import Task, Template, User, VariationRequest, WithdrawApplication
-from web.notify.email import send_email
+from web.models import Task, User, VariationRequest, WithdrawApplication
+from web.notify.email import send_to_application_contacts
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import delete_file_from_s3, get_s3_client
 from web.utils.validation import ApplicationErrors
@@ -334,28 +334,13 @@ def manage_case(
             if form.is_valid():
                 application.status = model_class.Statuses.STOPPED
                 application.save()
-
                 end_process_task(task)
+
                 document_pack.pack_draft_archive(application)
 
                 if form.cleaned_data.get("send_email"):
-                    template = Template.objects.get(template_code="STOP_CASE")
-
-                    subject = template.get_title({"CASE_REFERENCE": application.pk})
-                    body = template.get_content({"CASE_REFERENCE": application.pk})
-
-                    if case_type == "import":
-                        users = get_users_with_perms(
-                            application.importer, only_with_perms_in=["is_contact_of_importer"]
-                        ).filter(user_permissions__codename="importer_access")
-                    else:
-                        users = get_users_with_perms(
-                            application.exporter, only_with_perms_in=["is_contact_of_exporter"]
-                        ).filter(user_permissions__codename="exporter_access")
-
-                    recipients = set(users.values_list("email", flat=True))
-
-                    send_email(subject, body, recipients)
+                    subject, body = get_email_template_subject_body(application, "STOP_CASE")
+                    send_to_application_contacts(application, subject, body)
 
                 messages.success(
                     request,

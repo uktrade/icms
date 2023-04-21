@@ -1,4 +1,5 @@
 import pytest
+from django.core import mail
 from django.urls import reverse
 from pytest_django.asserts import assertInHTML, assertRedirects
 
@@ -124,6 +125,7 @@ def test_close_case(test_icms_admin_user, icms_admin_client, importer, importer_
         created_by=importer_one_main_contact,
         last_updated_by=importer_one_main_contact,
         case_owner=test_icms_admin_user,
+        reference="IMA/123/4567",
     )
     task = TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
     licence = document_pack.pack_draft_create(process)
@@ -140,6 +142,16 @@ def test_close_case(test_icms_admin_user, icms_admin_client, importer, importer_
 
     task.refresh_from_db()
     assert task.is_active is False
+
+    assert len(mail.outbox) == 1
+    stopped_email = mail.outbox[0]
+
+    assert stopped_email.to == ["I1_main_contact@example.com"]  # /PS-IGNORE
+    assert stopped_email.subject == "ICMS Case Reference IMA/123/4567 Stopped"
+    assert stopped_email.body == (
+        "Processing on ICMS Case Reference IMA/123/4567 has been stopped. "
+        "Please contact ILB if you believe this is in error or require further information."
+    )
 
 
 def test_fa_oil_app_submitted_has_a_licence(fa_oil_app_submitted):

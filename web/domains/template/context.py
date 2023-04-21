@@ -94,12 +94,18 @@ class EmailTemplateContext:
                 "Process must be an instance of ImportApplication / ExportApplication / AccessRequest"
             )
 
+    def _application_context(self, item: str) -> str:
+        match item:
+            case "CASE_REFERENCE":
+                return self.process.reference
+        return self._context(item)
+
     def _import_context(self, item: str) -> str:
         match item:
             case "LICENCE_NUMBER":
                 pack = document_pack.pack_active_get(self.process)
                 return document_pack.doc_ref_licence_get(pack).reference
-        return self._context(item)
+        return self._application_context(item)
 
     def _export_context(self, item: str) -> str:
         match item:
@@ -107,7 +113,7 @@ class EmailTemplateContext:
                 pack = document_pack.pack_active_get(self.process)
                 certificates = document_pack.doc_ref_certificates_all(pack)
                 return ", ".join(certificates.values_list("reference", flat=True))
-        return self._context(item)
+        return self._application_context(item)
 
     def _access_context(self, item: str) -> str:
         return self._context(item)
