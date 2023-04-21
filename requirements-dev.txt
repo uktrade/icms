@@ -24,7 +24,7 @@ pytest-xdist==2.5.0
 PyYAML==5.4.1
 requests-mock==1.10.0
 selenium==3.141.0
-sqlparse==0.4.3
+sqlparse==0.4.4
 pipdeptree
 pip-check
 pre-commit==2.20.0
