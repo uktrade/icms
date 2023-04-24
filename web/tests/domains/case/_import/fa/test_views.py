@@ -56,7 +56,7 @@ class TestManageImportContactsView:
 
     def test_permission(self, icms_admin_client, importer_client, exporter_client):
         response = icms_admin_client.get(self.url)
-        assert response.status_code == HTTPStatus.OK
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
         response = importer_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
@@ -105,7 +105,7 @@ class TestCreateImportContactView:
 
     def test_permission(self, icms_admin_client, importer_client, exporter_client):
         response = icms_admin_client.get(self.url)
-        assert response.status_code == HTTPStatus.OK
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
         response = importer_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
@@ -197,7 +197,7 @@ class TestEditImportContactView:
 
     def test_permission(self, icms_admin_client, importer_client, exporter_client):
         response = icms_admin_client.get(self.url)
-        assert response.status_code == HTTPStatus.OK
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
         response = importer_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
