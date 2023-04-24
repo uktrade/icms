@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import OuterRef, Q
 from django.http import HttpResponse
@@ -22,7 +23,7 @@ from web.domains.case._import.fa_sil.forms import (
 )
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
-from web.domains.case.utils import check_application_permission, view_application_file
+from web.domains.case.utils import view_application_file
 from web.domains.file.utils import create_file_model
 from web.flow.models import ProcessTypes
 from web.models import (
@@ -32,7 +33,9 @@ from web.models import (
     OpenIndividualLicenceApplication,
     SILApplication,
     Task,
+    User,
 )
+from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 
 from .forms import (
@@ -50,12 +53,19 @@ from .types import (
 )
 
 
+def check_can_edit_application(user: User, application: FaImportApplication) -> None:
+    checker = AppChecker(user, application)
+
+    if not checker.can_edit():
+        raise PermissionDenied
+
+
 # Note: this has been replaced by the following:
 # web/domains/case/views/views_email.py -> def manage_case_emails
-# however some of the functionality in web/domains/case/import/fa/manage-constabulary-emails.html
+# However some functionality in web/domains/case/import/fa/manage-constabulary-emails.html
 # doesn't appear to have been ported over.
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def manage_constabulary_emails(
     request: AuthenticatedHttpRequest, *, application_pk: int
 ) -> HttpResponse:
@@ -103,7 +113,7 @@ def manage_import_contacts(
         )
         application: FaImportApplication = _get_fa_application(import_application)
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -149,7 +159,7 @@ def create_import_contact(
         )
         application: FaImportApplication = _get_fa_application(import_application)
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         if application.status == application.Statuses.COMPLETED:
             template = "web/domains/case/import/fa/provide-report/import-contacts.html"
@@ -207,7 +217,7 @@ def edit_import_contact(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         person = get_object_or_404(ImportContact, pk=contact_pk)
 
@@ -261,9 +271,10 @@ def delete_import_contact(
         import_application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
-
         application: FaImportApplication = _get_fa_application(import_application)
-        check_application_permission(application, request.user, "import")
+
+        check_can_edit_application(request.user, application)
+
         case_progress.check_expected_status(
             application, [ImpExpStatus.IN_PROGRESS, ImpExpStatus.COMPLETED]
         )
@@ -305,7 +316,8 @@ def manage_certificates(request: AuthenticatedHttpRequest, *, application_pk: in
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         application: FaImportApplication = _get_fa_application(import_application)
-        check_application_permission(application, request.user, "import")
+
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -345,7 +357,8 @@ def create_certificate(request: AuthenticatedHttpRequest, *, application_pk: int
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         application: FaImportApplication = _get_fa_application(import_application)
-        check_application_permission(application, request.user, "import")
+
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -397,7 +410,7 @@ def edit_certificate(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         application: FaImportApplication = _get_fa_application(import_application)
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         certificate = get_object_or_404(application.user_imported_certificates, pk=certificate_pk)
 
@@ -440,6 +453,7 @@ def view_certificate_document(
     import_application: ImportApplication = get_object_or_404(ImportApplication, pk=application_pk)
     application: FaImportApplication = _get_fa_application(import_application)
 
+    # Permission checks in view_application_file
     return view_application_file(
         request.user, application, application.user_imported_certificates, certificate_pk, "import"
     )
@@ -456,7 +470,7 @@ def archive_certificate(
         )
         application: FaImportApplication = _get_fa_application(import_application)
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         document = application.user_imported_certificates.get(pk=certificate_pk)
@@ -479,7 +493,7 @@ def add_authority(
         )
         application: FaImportApplication = _get_fa_application(import_application)
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         firearms_authority = get_object_or_404(
             application.importer.firearms_authorities.active(), pk=authority_pk
@@ -505,7 +519,7 @@ def delete_authority(
         )
         application: FaImportApplication = _get_fa_application(import_application)
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         firearms_authority = get_object_or_404(
             application.importer.firearms_authorities.active(), pk=authority_pk
@@ -531,6 +545,7 @@ def view_authority_document(
         application.importer.firearms_authorities.active(), pk=authority_pk
     )
 
+    # Permission checks in view_application_file
     return view_application_file(
         request.user, application, firearms_authority.files, document_pk, "import"
     )
@@ -544,7 +559,7 @@ def view_authority(request: AuthenticatedHttpRequest, *, application_pk: int, au
         )
         application: FaImportApplication = _get_fa_application(import_application)
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         firearms_authority = get_object_or_404(
             application.importer.firearms_authorities.active(), pk=authority_pk
@@ -572,7 +587,7 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
         )
         application: FaImportApplication = _get_fa_application(import_application)
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         case_progress.check_expected_status(
             application, [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
         )
@@ -626,7 +641,7 @@ def reopen_report(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
         )
         application: FaImportApplication = _get_fa_application(import_application)
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         application.supplementary_info.is_complete = False
         application.supplementary_info.completed_datetime = None
@@ -647,7 +662,7 @@ def create_report(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
 
         application: FaImportApplication = _get_fa_application(import_application)
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: FaSupplementaryInfo = application.supplementary_info
@@ -696,7 +711,7 @@ def edit_report(
 
         application: FaImportApplication = _get_fa_application(import_application)
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: FaSupplementaryInfo = application.supplementary_info
@@ -754,7 +769,7 @@ def delete_report(
 
         application: FaImportApplication = _get_fa_application(import_application)
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         application.supplementary_info.reports.filter(pk=report_pk).delete()
 
