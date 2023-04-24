@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
@@ -16,7 +17,6 @@ from web.domains.case.forms import SubmitForm
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
-    check_application_permission,
     get_application_form,
     redirect_after_submit,
     submit_application,
@@ -25,7 +25,17 @@ from web.domains.case.utils import (
 from web.domains.case.views.utils import get_caseworker_view_readonly_status
 from web.domains.file.utils import create_file_model
 from web.domains.template.utils import add_template_data_on_submit
-from web.models import File, Task
+from web.models import (
+    ChecklistFirearmsOILApplication,
+    File,
+    OILSupplementaryInfo,
+    OILSupplementaryReport,
+    OILSupplementaryReportFirearm,
+    OpenIndividualLicenceApplication,
+    Task,
+    User,
+)
+from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
     ApplicationErrors,
@@ -42,13 +52,13 @@ from .forms import (
     OILSupplementaryReportUploadFirearmForm,
     SubmitFaOILForm,
 )
-from .models import (
-    ChecklistFirearmsOILApplication,
-    OILSupplementaryInfo,
-    OILSupplementaryReport,
-    OILSupplementaryReportFirearm,
-    OpenIndividualLicenceApplication,
-)
+
+
+def check_can_edit_application(user: User, application: OpenIndividualLicenceApplication) -> None:
+    checker = AppChecker(user, application)
+
+    if not checker.can_edit():
+        raise PermissionDenied
 
 
 @login_required
@@ -57,8 +67,7 @@ def edit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         application = get_object_or_404(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
-
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -90,7 +99,7 @@ def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
         task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
@@ -197,7 +206,7 @@ def submit_oil(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: OpenIndividualLicenceApplication = get_object_or_404(
@@ -254,7 +263,7 @@ def add_report_firearm_manual(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
@@ -308,7 +317,7 @@ def edit_report_firearm_manual(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
         supplementary_info: OILSupplementaryInfo = application.supplementary_info
@@ -356,7 +365,7 @@ def add_report_firearm_upload(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
@@ -419,6 +428,7 @@ def view_upload_document(
     report_firearm: OILSupplementaryReportFirearm = report.firearms.get(pk=report_firearm_pk)
     document = report_firearm.document
 
+    # Permissions checks in view_application_file
     return view_application_file(request.user, application, File.objects, document.pk, "import")
 
 
@@ -432,7 +442,7 @@ def add_report_firearm_no_firearm(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
@@ -463,7 +473,7 @@ def delete_report_firearm(
             OpenIndividualLicenceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
