@@ -8,8 +8,7 @@ from .context import CoverLetterTemplateContext, EmailTemplateContext
 from .models import Template
 
 if TYPE_CHECKING:
-    from web.flow.models import Process
-    from web.models import SILApplication
+    from web.models import Process, SILApplication
     from web.types import DocumentTypes
 
     from .context import TemplateContextProcessor
@@ -93,12 +92,16 @@ def get_cover_letter_content(
     return replace_template_values(application.cover_letter_text, context)
 
 
-def get_email_template_subject_body(process: "Process", template_code: str) -> tuple[str, str]:
+def get_email_template_subject_body(
+    process: "Process",
+    template_code: str,
+    context_cls: type[EmailTemplateContext] = EmailTemplateContext,
+) -> tuple[str, str]:
     template = Template.objects.get(
         template_code=template_code,
         template_type="EMAIL_TEMPLATE",
     )
-    context = EmailTemplateContext(process)
+    context = context_cls(process)
     subject = get_template_title(template, context)
     body = get_template_content(template, context)
 

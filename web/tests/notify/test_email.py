@@ -287,7 +287,7 @@ class TestEmail(TestCase):
             "Test subject", "Test message", html_message="<p>Test message</p>", to_importers=True
         )
         outbox = mail.outbox
-        assert len(outbox) == 9
+        assert len(outbox) == 10
         # Many-to-many relations order is not guaranteed
         # Members of exporter team might have different order
         # Testing by length
@@ -309,7 +309,7 @@ class TestEmail(TestCase):
             "Test subject", "Test message", html_message="<p>Test message</p>", to_exporters=True
         )
         outbox = mail.outbox
-        assert len(outbox) == 8
+        assert len(outbox) == 9
         # Many-to-many relations order is not guaranteed
         # Members of exporter team might have different order
         # Testing by length
@@ -324,7 +324,7 @@ class TestEmail(TestCase):
 
 
 @pytest.mark.django_db
-def test_send_to_application_contacts_import(fa_sil_app_submitted, importer_one_main_contact):
+def test_send_to_application_contacts_import(fa_sil_app_submitted):
     email.send_to_application_contacts(fa_sil_app_submitted, "Test", "Test Body")
     outbox = mail.outbox
     assert len(outbox) == 1
@@ -336,12 +336,39 @@ def test_send_to_application_contacts_import(fa_sil_app_submitted, importer_one_
 
 
 @pytest.mark.django_db
-def test_send_to_application_contacts_export(com_app_submitted, exporter_one_main_contact):
+def test_send_to_application_agent_import(fa_sil_app_submitted, agent_importer):
+    fa_sil_app_submitted.agent = agent_importer
+    email.send_to_application_contacts(fa_sil_app_submitted, "Test", "Test Body")
+    outbox = mail.outbox
+
+    assert len(outbox) == 1
+    o = outbox[0]
+    assert o.to == ["I1_A1_main_contact@example.com"]  # /PS-IGNORE
+    assert o.subject == "Test"
+    assert o.body == "Test Body"
+
+
+@pytest.mark.django_db
+def test_send_to_application_contacts_export(com_app_submitted):
     email.send_to_application_contacts(com_app_submitted, "Test", "Test Body")
     outbox = mail.outbox
     assert len(outbox) == 1
 
     o = outbox[0]
     assert o.to == ["E1_main_contact@example.com"]  # /PS-IGNORE
+    assert o.subject == "Test"
+    assert o.body == "Test Body"
+
+
+@pytest.mark.django_db
+def test_send_to_application_agent_export(com_app_submitted, agent_exporter):
+    com_app_submitted.agent = agent_exporter
+    com_app_submitted.save()
+    email.send_to_application_contacts(com_app_submitted, "Test", "Test Body")
+    outbox = mail.outbox
+
+    assert len(outbox) == 1
+    o = outbox[0]
+    assert o.to == ["E1_A1_main_contact@example.com"]  # /PS-IGNORE
     assert o.subject == "Test"
     assert o.body == "Test Body"

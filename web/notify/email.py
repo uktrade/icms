@@ -1,17 +1,14 @@
 from collections.abc import Collection
-from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 
 from config.celery import app
+from web.domains.case.types import ImpOrExp
 from web.models import Exporter, Importer, User
-from web.permissions.perms import ExporterObjectPermissions, ImporterObjectPermissions
+from web.permissions import get_org_obj_permissions, organisation_get_contacts
 
 from . import utils
-
-if TYPE_CHECKING:
-    from web.domains.case.types import ImpOrExp
 
 
 @app.task(name="web.notify.email.send_email")
@@ -48,12 +45,13 @@ def send_to_importer_contacts(
 
         return
 
+    obj_perms = get_org_obj_permissions(importer)
+    contacts = organisation_get_contacts(importer, perms=[obj_perms.is_contact.codename])
+
     # Importer organisation
-    for user in utils.get_importer_contacts(
-        importer, ImporterObjectPermissions.is_contact.codename
-    ):
+    for contact in contacts:
         send_email.delay(
-            subject, message, utils.get_notification_emails(user), html_message=html_message
+            subject, message, utils.get_notification_emails(contact), html_message=html_message
         )
 
 
@@ -66,11 +64,14 @@ def send_to_all_importers(subject: str, message: str, html_message: str | None =
 def send_to_exporter_contacts(
     exporter: Exporter, subject: str, message: str, html_message: str | None = None
 ) -> None:
-    for user in utils.get_exporter_contacts(
-        exporter, ExporterObjectPermissions.is_contact.codename
-    ):
+    obj_perms = get_org_obj_permissions(exporter)
+
+    # TODO ICMSLST-1968 is_contact perm deprecated
+    contacts = organisation_get_contacts(exporter, perms=[obj_perms.is_contact.codename])
+
+    for contact in contacts:
         send_email.delay(
-            subject, message, utils.get_notification_emails(user), html_message=html_message
+            subject, message, utils.get_notification_emails(contact), html_message=html_message
         )
 
 
@@ -81,16 +82,19 @@ def send_to_all_exporters(subject: str, message: str, html_message: str | None =
 
 
 def send_to_application_contacts(
-    application: "ImpOrExp", subject: str, message: str, html_message: str | None = None
+    application: ImpOrExp, subject: str, message: str, html_message: str | None = None
 ) -> None:
     if application.is_import_application():
-        users = utils.get_importer_contacts(application.importer)
+        org = application.agent or application.importer
     else:
-        users = utils.get_exporter_contacts(application.exporter)
+        org = application.agent or application.exporter
 
-    for user in users:
+    obj_perms = get_org_obj_permissions(org)
+    contacts = organisation_get_contacts(org, perms=[obj_perms.edit.codename])
+
+    for contact in contacts:
         send_email.delay(
-            subject, message, utils.get_notification_emails(user), html_message=html_message
+            subject, message, utils.get_notification_emails(contact), html_message=html_message
         )
 
 

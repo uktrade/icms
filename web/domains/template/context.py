@@ -1,10 +1,7 @@
 from typing import Protocol
 
-from web.domains.case._import.models import ImportApplication
-from web.domains.case.access.models import AccessRequest
-from web.domains.case.export.models import ExportApplication
 from web.domains.case.services import document_pack
-from web.flow.models import Process
+from web.models import AccessRequest, ExportApplication, ImportApplication, Process
 from web.types import DocumentTypes
 
 
@@ -83,16 +80,18 @@ class EmailTemplateContext:
         self.process = process
 
     def __getitem__(self, item: str) -> str:
-        if isinstance(self.process, ImportApplication):
-            return self._import_context(item)
-        elif isinstance(self.process, ExportApplication):
-            return self._export_context(item)
-        elif isinstance(self.process, AccessRequest):
-            return self._access_context(item)
-        else:
-            raise ValueError(
-                "Process must be an instance of ImportApplication / ExportApplication / AccessRequest"
-            )
+        match self.process:
+            case ImportApplication():
+                return self._import_context(item)
+            case ExportApplication():
+                return self._export_context(item)
+            case AccessRequest():
+                return self._access_context(item)
+            case _:
+                raise ValueError(
+                    "Process must be an instance of ImportApplication /"
+                    " ExportApplication / AccessRequest"
+                )
 
     def _application_context(self, item: str) -> str:
         match item:
@@ -122,3 +121,20 @@ class EmailTemplateContext:
         match item:
             case _:
                 raise ValueError(f"{item} is not a valid email template context value")
+
+
+class RevokedEmailTemplateContext(EmailTemplateContext):
+    def _import_context(self, item: str) -> str:
+        match item:
+            case "LICENCE_NUMBER":
+                pack = document_pack.pack_revoked_get(self.process)
+                return document_pack.doc_ref_licence_get(pack).reference
+        return super()._import_context(item)
+
+    def _export_context(self, item: str) -> str:
+        match item:
+            case "CERTIFICATE_REFERENCES":
+                pack = document_pack.pack_revoked_get(self.process)
+                certificates = document_pack.doc_ref_certificates_all(pack)
+                return ", ".join(certificates.values_list("reference", flat=True))
+        return super()._export_context(item)
