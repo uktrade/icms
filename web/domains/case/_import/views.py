@@ -24,7 +24,6 @@ from web.domains.chief import utils as chief_utils
 from web.flow.models import ProcessTypes
 from web.models import CountryGroup, Importer, Task, User
 from web.types import AuthenticatedHttpRequest
-from web.utils.s3 import get_file_from_s3
 
 from .derogations.models import DerogationsApplication
 from .fa_dfl.models import DFLApplication
@@ -492,31 +491,6 @@ def delete_endorsement(
                 kwargs={"application_pk": application_pk, "case_type": "import"},
             )
         )
-
-
-# TODO: This can be replaced by the following:
-# icms/web/domains/case/views.py -> def view_application_file
-def view_file(request, application, related_file_model, file_pk):
-    has_perm_importer = request.user.has_perm("web.importer_access")
-    has_perm_ilb_admin = request.user.has_perm("web.ilb_admin")
-
-    if not has_perm_importer and not has_perm_ilb_admin:
-        raise PermissionDenied
-
-    # first check is for case managers (who are not marked as contacts of
-    # importers), second is for people submitting applications
-    if not has_perm_ilb_admin and not request.user.has_perm(
-        "web.is_contact_of_importer", application.importer
-    ):
-        raise PermissionDenied
-
-    document = related_file_model.get(pk=file_pk)
-    file_content = get_file_from_s3(document.path)
-
-    response = HttpResponse(content=file_content, content_type=document.content_type)
-    response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
-
-    return response
 
 
 @login_required

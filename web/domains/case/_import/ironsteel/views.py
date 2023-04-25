@@ -32,7 +32,6 @@ from web.utils.validation import (
     create_page_errors,
 )
 
-from .. import views as import_views
 from .forms import (
     AddCertificateForm,
     EditCertificateForm,
@@ -312,7 +311,9 @@ def view_certificate(
 ) -> HttpResponse:
     application = get_object_or_404(IronSteelApplication, pk=application_pk)
 
-    return import_views.view_file(request, application, application.certificates, document_pk)
+    return view_application_file(
+        request.user, application, application.certificates, document_pk, "import"
+    )
 
 
 @require_POST
