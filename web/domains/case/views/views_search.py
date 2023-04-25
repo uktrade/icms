@@ -31,6 +31,7 @@ from web.domains.case.forms_search import (
 from web.domains.case.services import case_progress, document_pack, reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import client
+from web.domains.template.context import RevokedEmailTemplateContext
 from web.domains.template.utils import get_email_template_subject_body
 from web.models import (
     ExportApplication,
@@ -457,18 +458,6 @@ class RevokeCaseView(SearchActionFormBase):
         reason = form.cleaned_data["reason"]
         is_import = self.application.is_import_application()
 
-        if email_applicants:
-            if is_import:
-                email_subject, email_body = get_email_template_subject_body(
-                    self.application, "LICENCE_REVOKE"
-                )
-            else:
-                email_subject, email_body = get_email_template_subject_body(
-                    self.application, "CERTIFICATE_REVOKE"
-                )
-
-            send_to_application_contacts(self.application, email_subject, email_body)
-
         document_pack.pack_active_revoke(self.application, reason, email_applicants)
 
         self.application.update_order_datetime()
@@ -476,6 +465,18 @@ class RevokeCaseView(SearchActionFormBase):
 
         if is_import and self.application.application_type.chief_flag:
             client.send_application_to_chief(self.application, self.task, revoke_licence=True)
+
+        if email_applicants:
+            if is_import:
+                email_subject, email_body = get_email_template_subject_body(
+                    self.application, "LICENCE_REVOKE", RevokedEmailTemplateContext
+                )
+            else:
+                email_subject, email_body = get_email_template_subject_body(
+                    self.application, "CERTIFICATE_REVOKE", RevokedEmailTemplateContext
+                )
+
+            send_to_application_contacts(self.application, email_subject, email_body)
 
         return super().form_valid(form)
 
