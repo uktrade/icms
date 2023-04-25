@@ -1,0 +1,19 @@
+{% extends "layout/sidebar.html" %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li><a href="{{ parent_url }}" class="prev-link">Edit {{ organisation }}</a></li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  <h4>{{ org_type }} permissions for user {{ contact }}</h4>
+  <br>
+  <form action="" method="post">
+    {{ csrf_input }}
+    {{ form }}
+    <input type="submit" class="primary-button button" value="Save">
+  </form>
+{% endblock %}

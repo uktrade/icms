@@ -1,40 +1,33 @@
-from django.contrib.auth.models import Permission
+import logging
 
-# from django.contrib.contenttypes.models import ContentType
-from django.test import TestCase
+import pytest
 
-from web.models import User
-from web.tests.domains.user.factory import UserFactory
+from web.tests.helpers import get_test_client
+
+logger = logging.getLogger(__name__)
 
 
-class AuthTestCase(TestCase):
-    # TODO: this might be able to be removed once all old permissions are gone from the code
+class AuthTestCase:
+    @pytest.fixture(autouse=True)
+    def _setup(
+        self,
+        importer_one_main_contact,
+        importer,
+        office,
+        test_icms_admin_user,
+        icms_admin_client,
+        exporter_one_main_contact,
+        exporter,
+        client,
+    ):
+        self.importer = importer
+        self.importer_office = office
+        self.importer_user = importer_one_main_contact
+        self.exporter = exporter
+        self.exporter_user = exporter_one_main_contact
+        self.ilb_admin_user = test_icms_admin_user
 
-    def setUp(self):
-        self.user = UserFactory(
-            username="test_user",
-            password="test",
-            password_disposition=User.FULL,
-            is_superuser=False,
-            account_status=User.ACTIVE,
-            is_active=True,
-        )
-
-    def grant(self, permission_codename):
-        permission = Permission.objects.get(codename=permission_codename)
-        self.user.user_permissions.add(permission)
-
-    def login(self):
-        if not self.client.login(username="test_user", password="test"):
-            raise Exception("Login Failed!")
-
-    def login_with_permissions(self, permissions: list[str] | None = None):
-        """
-        Log user in and grant defined permissions to user for testing
-        """
-        self.login()
-
-        # Grant permissions to use
-        if permissions:
-            for p in permissions:
-                self.grant(p)
+        self.exporter_client = get_test_client(self.exporter_user)
+        self.importer_client = get_test_client(self.importer_user)
+        self.ilb_admin_client = icms_admin_client
+        self.anonymous_client = client

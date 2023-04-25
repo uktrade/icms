@@ -15,10 +15,7 @@
   </div>
   <div class="row">
     <div class="twelve columns">
-      <a
-        target="_blank"
-        href="{{ icms_url('case:manage', kwargs={'application_pk': rec.app_pk, 'case_type': 'import'}) }}"
-      >
+      <a target="_blank" href="{{ get_view_case_url(request, 'import', rec.app_pk) }}">
         {{ cs.case_reference }}
       </a>
     </div>

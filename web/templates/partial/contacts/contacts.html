@@ -1,5 +1,12 @@
 <h3>Contacts</h3>
 
+{% if not object.is_agent() %}
+  <div class="info-box info-box-info"><div class="screen-reader-only">Information box,</div>
+  <p>Individuals who work for agents must not be added to the main contacts and must be added to the associated agent record instead.</p>
+  <p>If no agent record exists then the agent must register and submit an agent access request.</p>
+  </div>
+{% endif %}
+
 <div id="team-members" class="tab-content big-tabs" aria-hidden="false">
   {% if not contacts %}
     <div class="info-box info-box-info">There are no contacts attached</div>
@@ -20,12 +27,15 @@
           </th>
         {% endfor %}
 
-        {% if not read_only %}
+        {% if can_manage_contacts %}
           <th>Actions</th>
         {% endif %}
       </tr>
       </thead>
       <tbody>
+
+      {# Get the correct url to route to when editing user permissions #}
+      {% set edit_user_org_perms = "edit-user-importer-permissions" if org_type == "importer" else "edit-user-exporter-permissions" %}
 
       {% for user in contacts %}
         {% set user_obj_perms_checker = get_user_obj_perms(user) %}
@@ -59,8 +69,17 @@
             </td>
           {% endfor %}
 
-          {% if not read_only %}
+          {% if can_manage_contacts %}
             <td>
+              <div class="row">
+                <div class="twelve columns">
+                  <a
+                    href="{{ icms_url(edit_user_org_perms, kwargs={'org_pk': object.pk, 'user_pk': user.pk}) }}"
+                    class="button small-button icon-pencil">
+                    Edit
+                  </a>
+                </div>
+              </div>
               <div class="row">
                 <div class="twelve columns">
                   <form method="post" action="{{ icms_url('contacts:delete', kwargs={'org_type': org_type, 'org_pk': object.pk, 'contact_pk': user.pk}) }}">
@@ -78,7 +97,7 @@
     </table>
 
   {% endif %}
-  {% if not read_only %}
+  {% if not read_only and can_manage_contacts %}
     <form method="post" action="{{ icms_url('contacts:add', kwargs={'org_type': org_type, 'org_pk': object.pk}) }}">
       {{ csrf_input }}
       <div class="container setoutForm">

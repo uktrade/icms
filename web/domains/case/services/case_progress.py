@@ -106,7 +106,9 @@ def check_expected_task(application: Process, expected_task: str) -> None:
         )
 
 
-def get_expected_task(application: Process, task_type: str, *, select_for_update=True) -> Task:
+def get_expected_task(
+    application: Process, task_type: str, *, select_for_update: bool = True
+) -> Task:
     """Get the expected active current task"""
 
     if not application.is_active:
@@ -127,7 +129,7 @@ def get_active_task_list(application: Process) -> list[str]:
     return list(get_active_tasks(application, False).values_list("task_type", flat=True))
 
 
-def get_active_tasks(application: Process, select_for_update=True) -> QuerySet[Task]:
+def get_active_tasks(application: Process, select_for_update: bool = True) -> QuerySet[Task]:
     """Get all active task for current process."""
 
     tasks = application.tasks.filter(is_active=True)

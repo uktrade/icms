@@ -10,13 +10,16 @@ window.addEventListener('load', function(event) {
   });
 
   const reassignmentCB = document.querySelector("#id_reassignment");
-  const showReassignUser = UTILS.getShowElementFunc("#reassignment-user-wrapper")
+  // The reassignment checkbox doesn't always appear on the page.
+  if (reassignmentCB !== null) {
+    const showReassignUser = UTILS.getShowElementFunc("#reassignment-user-wrapper")
 
-  reassignmentCB.addEventListener("change", (e) => {
-    showReassignUser(e.target.checked, {
-      onHide: () => $("#id_reassignment_user").djangoSelect2().empty()
+    reassignmentCB.addEventListener("change", (e) => {
+      showReassignUser(e.target.checked, {
+        onHide: () => $("#id_reassignment_user").djangoSelect2().empty()
+      });
     });
-  });
+  }
 
   /* strips empty search values */
   setupSearchFormEventHandler();

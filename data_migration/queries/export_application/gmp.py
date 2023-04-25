@@ -89,6 +89,7 @@ FROM impmgr.xview_certificate_app_details xcad
     , gmp_certificate_issued
     , file_folder_id
     , case_note_xml
+    , XMLTYPE.getClobVal(x.variations_xml) variations_xml
   FROM
     impmgr.certificate_app_details cad,
     XMLTABLE('/*'
@@ -122,7 +123,10 @@ FROM impmgr.xview_certificate_app_details xcad
 WHERE xcad.status_control = 'C'
   AND xcad.application_type = 'GMP'
   AND xcad.status <> 'DELETED'
-  AND (xcad.submitted_datetime IS NOT NULL OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
+  AND (
+    (xcad.submitted_datetime IS NOT NULL AND ca.case_reference IS NOT NULL)
+    OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY
+  )
 """
 
 beis_emails = """

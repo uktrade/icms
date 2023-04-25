@@ -7,9 +7,10 @@
       <table class="setoutList">
         <thead>
         <tr>
-          <th scope="col">Importer Code</th>
-          <th scope="col">Importer Name / <br>Importer Reg No / <br>Importer Entity Type</th>
+          <th scope="col">Importer Name</th>
+          <th scope="col">Importer Reg No / <br>Importer Entity Type</th>
           <th scope="col">Addresses</th>
+          <th scope="col">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -18,7 +19,7 @@
             <td>
               <div class="container setoutForm">
                 <div class="row">
-                  <div class="six columns"><a href="#">TODO: ICMSLST-1939 Not set in V2</a></div>
+                  <div class="six columns"><a href="{{ icms_url('importer-view', kwargs={"pk": importer.pk}) }}">{{ importer }}</a></div>
                   <div class="six columns"></div>
                 </div>
                 <div class="row">
@@ -29,10 +30,6 @@
             </td>
             <td>
               <div class="container setoutForm">
-                <div class="row">
-                  <div class="six columns"><span class="text-widget">{{ importer }}</span></div>
-                  <div class="six columns"></div>
-                </div>
                 <div class="row">
                   <div class="six columns"><span class="text-widget ">{{ importer.registered_number or "" }}</span></div>
                   <div class="six columns"></div>
@@ -54,13 +51,26 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for office in importer.offices.all() %}
+                {% for office in importer.offices.filter(is_active=True) %}
                   <tr>
                     <td><span class="text-widget">{{ office|nl2br }}</span></td>
                   </tr>
                 {% endfor %}
                 </tbody>
               </table>
+            </td>
+
+            <td>
+              {% if user_obj_perms.can_edit_org(importer) %}
+                <div class="row">
+                  <div class="twelve columns">
+                    <a href="{{ icms_url("importer-edit", kwargs={'pk': importer.pk}) }}"
+                       class="button small-button icon-pencil">
+                      Edit
+                    </a>
+                  </div>
+                </div>
+              {% endif %}
             </td>
           </tr>
         {% endfor %}
@@ -97,4 +107,3 @@
     </div>
   {% endif %}
 {% endblock %}
-

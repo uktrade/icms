@@ -44,7 +44,6 @@ SELECT
   , xiad.variation_no
   , xiad.legacy_case_flag
   , xiad.chief_usage_status
-  , xiad.under_appeal_flag
   , xiad.variation_decision
   , xiad.variation_refuse_reason
   , xiad.licence_extended licence_extended_flag
@@ -91,6 +90,7 @@ SELECT
   , x.completed_by_id
   , TO_DATE(x.completed_datetime, 'YYYY-MM-DD') completed_datetime
   , x.file_folder_id
+  , XMLTYPE.getClobVal(x.variations_xml) variations_xml
 FROM impmgr.import_application_details ad
 CROSS JOIN XMLTABLE('/*'
   PASSING ad.xml_data

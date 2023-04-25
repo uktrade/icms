@@ -1,7 +1,6 @@
 import factory.fuzzy
 
 from web.models import Importer
-from web.tests.domains.user.factory import UserFactory
 
 
 class ImporterFactory(factory.django.DjangoModelFactory):
@@ -25,15 +24,6 @@ class ImporterFactory(factory.django.DjangoModelFactory):
             # A list of offices passed in
             for office in extracted:
                 self.offices.add(office)
-
-
-class IndividualImporterFactory(ImporterFactory):
-    class Meta:
-        model = Importer
-
-    is_active = True
-    type = Importer.INDIVIDUAL
-    user = factory.SubFactory(UserFactory, permission_codenames=["importer_access"])
 
 
 class AgentImporterFactory(ImporterFactory):

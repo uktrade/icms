@@ -1,4 +1,5 @@
 import pytest
+from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
 from guardian.shortcuts import remove_perm
 
@@ -9,7 +10,7 @@ from web.models import (
     ImportApplicationType,
     OpenIndividualLicenceApplication,
 )
-from web.tests.domains.user.factory import ActiveUserFactory
+from web.permissions import Perms
 
 pytestmark = pytest.mark.django_db
 
@@ -95,7 +96,8 @@ def test_import_application_missing_importer_access_permission(
     import_application, test_import_user
 ):
     with pytest.raises(PermissionDenied):
-        remove_perm("web.importer_access", test_import_user)
+        group = Group.objects.get(name=Perms.obj.importer.get_group_name())
+        test_import_user.groups.remove(group)
         check_application_permission(import_application, test_import_user, "import")
 
 
@@ -116,7 +118,8 @@ def test_import_agent_application_missing_importer_access_permission(
     agent_import_application, test_agent_import_user
 ):
     with pytest.raises(PermissionDenied):
-        remove_perm("web.importer_access", test_agent_import_user)
+        group = Group.objects.get(name=Perms.obj.importer.get_group_name())
+        test_agent_import_user.groups.remove(group)
         check_application_permission(agent_import_application, test_agent_import_user, "import")
 
 
@@ -139,7 +142,9 @@ def test_export_application_valid(export_application, test_export_user):
 
 def test_application_missing_exporter_access_permission(export_application, test_export_user):
     with pytest.raises(PermissionDenied):
-        remove_perm("web.exporter_access", test_export_user)
+        group = Group.objects.get(name=Perms.obj.exporter.get_group_name())
+        test_export_user.groups.remove(group)
+
         check_application_permission(export_application, test_export_user, "export")
 
 
@@ -160,7 +165,9 @@ def test_export_agent_application_missing_exporter_access_permission(
     agent_export_application, test_agent_export_user
 ):
     with pytest.raises(PermissionDenied):
-        remove_perm("web.exporter_access", test_agent_export_user)
+        group = Group.objects.get(name=Perms.obj.exporter.get_group_name())
+        test_agent_export_user.groups.remove(group)
+
         check_application_permission(agent_export_application, test_agent_export_user, "export")
 
 
@@ -185,15 +192,20 @@ def test_access_application_valid(
 
 
 def test_access_application_denied_for_different_user(
-    import_access_request_application, export_access_request_application
+    import_access_request_application,
+    export_access_request_application,
+    importer_one_main_contact,
+    exporter_one_main_contact,
 ):
-    another_user = ActiveUserFactory.create()
+    with pytest.raises(PermissionDenied):
+        check_application_permission(
+            import_access_request_application, exporter_one_main_contact, "access"
+        )
 
     with pytest.raises(PermissionDenied):
-        check_application_permission(import_access_request_application, another_user, "access")
-
-    with pytest.raises(PermissionDenied):
-        check_application_permission(import_access_request_application, another_user, "access")
+        check_application_permission(
+            export_access_request_application, importer_one_main_contact, "access"
+        )
 
 
 # Invalid case_type test

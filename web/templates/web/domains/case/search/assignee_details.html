@@ -37,11 +37,13 @@
                   <span class="text-widget">{{ ad.assignee_name }}</span>
                 </div>
               </div>
-              <div class="row">
-                <div class="twelve columns">
-                  <span class="extra-info disabledLink">Reassigned {{ ad.reassignment_date }}</span>
+              {% if ad.reassignment_date %}
+                <div class="row">
+                  <div class="twelve columns">
+                      <span class="extra-info disabledLink">Reassigned {{ ad.reassignment_date }}</span>
+                  </div>
                 </div>
-              </div>
+              {% endif %}
             </div>
           </div>
         </div>
@@ -55,8 +57,8 @@
                     <label class="radio-label">
                       <input
                         class="application-checkbox_value" value="{{ rec.app_pk }}" type="checkbox"
-                        aria-label="Select for multiple reassignment..."
-                      >Select for multiple reassignment...
+                        aria-label="Select for reassignment"
+                      >Select for reassignment
                     </label>
                   </div>
                 </div>

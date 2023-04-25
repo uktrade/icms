@@ -12,7 +12,7 @@ class XlsxHeaderData:
 
 @dataclass
 class XlsxConfig:
-    header: XlsxHeaderData = field(repr=False, default=XlsxHeaderData())
+    header: XlsxHeaderData = field(repr=False, default_factory=XlsxHeaderData)
     column_width: int | None = field(repr=False, default=None)
     sheet_name: str = field(default_factory=str)
     rows: list[list[str]] | None = field(repr=False, default=None)

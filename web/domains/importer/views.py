@@ -1,6 +1,9 @@
+from typing import Any
+
 import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.db.models import F
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponse
@@ -19,15 +22,21 @@ from web.domains.importer.forms import (
     ImporterFilter,
     ImporterIndividualForm,
     ImporterOrganisationForm,
+    ImporterUserObjectPermissionsForm,
+    get_importer_object_permissions,
 )
 from web.domains.office.forms import ImporterOfficeEORIForm, ImporterOfficeForm
 from web.domains.section5.forms import ClauseQuantityForm, Section5AuthorityForm
-from web.models import ClauseQuantity, Importer, Section5Authority, Section5Clause
+from web.models import ClauseQuantity, Importer, Section5Authority, Section5Clause, User
 from web.permissions import (
-    ImporterObjectPermissions,
     Perms,
-    add_organisation_contact,
-    get_organisation_contacts,
+    can_user_edit_firearm_authorities,
+    can_user_edit_org,
+    can_user_edit_section5_authorities,
+    can_user_manage_org_contacts,
+    can_user_view_org,
+    organisation_add_contact,
+    organisation_get_contacts,
 )
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
@@ -58,7 +67,7 @@ class ImporterListAdminView(ModelFilterView):
     model = Importer
     queryset = Importer.objects.select_related("main_importer")
     page_title = "Maintain Importers"
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
     class Display:
         fields = [
@@ -109,8 +118,7 @@ class ImporterListUserView(PermissionRequiredMixin, LoginRequiredMixin, ListView
     def get_queryset(self):
         importer_qs = super().get_queryset().filter(is_active=True)
 
-        # TODO: Revisit in ICMSLST-1932 with new permissions.
-        required_perms = [Perms.obj.importer.is_contact, Perms.obj.importer.is_agent]
+        required_perms = [p for p in Perms.obj.importer.values if p != Perms.obj.importer.is_agent]
 
         qs = get_objects_for_user(
             self.request.user, required_perms, klass=importer_qs, any_perm=True
@@ -120,42 +128,7 @@ class ImporterListUserView(PermissionRequiredMixin, LoginRequiredMixin, ListView
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
-def edit_importer(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
-    importer: Importer = get_object_or_404(Importer, pk=pk)
-
-    if importer.type == Importer.ORGANISATION:
-        ImporterForm = ImporterOrganisationForm
-    elif importer.type == Importer.INDIVIDUAL:
-        ImporterForm = ImporterIndividualForm
-    else:
-        raise NotImplementedError(f"Unknown importer type {importer.type}")
-
-    if request.method == "POST":
-        form = ImporterForm(request.POST, instance=importer)
-        if form.is_valid():
-            form.save()
-            return redirect(reverse("importer-edit", kwargs={"pk": pk}))
-    else:
-        form = ImporterForm(instance=importer)
-
-    contacts = get_organisation_contacts(importer)
-    object_permissions = get_importer_object_permissions()
-
-    context = {
-        "object": importer,
-        "object_permissions": object_permissions,
-        "form": form,
-        "contact_form": ContactForm(contacts_to_exclude=contacts),
-        "contacts": contacts,
-        "org_type": "importer",
-    }
-
-    return render(request, "web/domains/importer/edit.html", context)
-
-
-@login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def create_importer(request: AuthenticatedHttpRequest, *, entity_type: str) -> HttpResponse:
     if entity_type == "organisation":
         ImporterForm = ImporterOrganisationForm
@@ -170,7 +143,7 @@ def create_importer(request: AuthenticatedHttpRequest, *, entity_type: str) -> H
             importer: Importer = form.save()
 
             if entity_type == "individual":
-                add_organisation_contact(importer, importer.user)
+                organisation_add_contact(importer, importer.user)
 
             return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
     else:
@@ -182,8 +155,52 @@ def create_importer(request: AuthenticatedHttpRequest, *, entity_type: str) -> H
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+def edit_importer(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
+    importer: Importer = get_object_or_404(Importer, pk=pk)
+
+    if not can_user_edit_org(request.user, importer):
+        raise PermissionDenied
+
+    if importer.type == Importer.ORGANISATION:
+        form_cls = ImporterOrganisationForm
+    elif importer.type == Importer.INDIVIDUAL:
+        form_cls = ImporterIndividualForm
+    else:
+        raise NotImplementedError(f"Unknown importer type {importer.type}")
+
+    form = form_cls(request.POST or None, instance=importer)
+
+    if request.method == "POST" and form.is_valid():
+        form.save()
+
+        return redirect(reverse("importer-edit", kwargs={"pk": pk}))
+
+    contacts = organisation_get_contacts(importer)
+    object_permissions = get_importer_object_permissions(importer)
+    can_manage_contacts = can_user_manage_org_contacts(request.user, importer)
+
+    context = {
+        "object": importer,
+        "object_permissions": object_permissions,
+        "can_manage_contacts": can_manage_contacts,
+        "show_firearm_authorities": can_user_edit_firearm_authorities(request.user),
+        "show_section5_authorities": can_user_edit_section5_authorities(request.user),
+        "form": form,
+        "contact_form": ContactForm(contacts_to_exclude=contacts),
+        "contacts": contacts,
+        "org_type": "importer",
+    }
+
+    user_context = _get_user_context(request.user)
+
+    return render(request, "web/domains/importer/edit.html", context | user_context)
+
+
+@login_required
 def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+    if not can_user_edit_section5_authorities(request.user):
+        raise PermissionDenied
+
     importer: Importer = get_object_or_404(Importer, pk=pk)
 
     if request.method == "POST":
@@ -230,8 +247,10 @@ def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def edit_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+    if not can_user_edit_section5_authorities(request.user):
+        raise PermissionDenied
+
     section5: Section5Authority = get_object_or_404(Section5Authority, pk=pk)
 
     if request.method == "POST":
@@ -267,8 +286,10 @@ def edit_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def view_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+    if not can_user_edit_section5_authorities(request.user):
+        raise PermissionDenied
+
     section5 = get_object_or_404(Section5Authority, pk=pk)
 
     context = {
@@ -280,9 +301,11 @@ def view_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def archive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+    if not can_user_edit_section5_authorities(request.user):
+        raise PermissionDenied
+
     section5: Section5Authority = get_object_or_404(
         Section5Authority.objects.filter(is_active=True), pk=pk
     )
@@ -294,9 +317,11 @@ def archive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def unarchive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+    if not can_user_edit_section5_authorities(request.user):
+        raise PermissionDenied
+
     section5: Section5Authority = get_object_or_404(
         Section5Authority.objects.filter(is_active=False), pk=pk
     )
@@ -308,8 +333,10 @@ def unarchive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpRespon
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def add_document_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
+    if not can_user_edit_section5_authorities(request.user):
+        raise PermissionDenied
+
     section5: Section5Authority = get_object_or_404(Section5Authority, pk=pk)
 
     if request.method == "POST":
@@ -333,10 +360,12 @@ def add_document_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpRes
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def view_document_section5(
     request: AuthenticatedHttpRequest, section5_pk: int, document_pk: int
 ) -> HttpResponse:
+    if not can_user_edit_section5_authorities(request.user):
+        raise PermissionDenied
+
     section5: Section5Authority = get_object_or_404(Section5Authority, pk=section5_pk)
 
     document = section5.files.get(pk=document_pk)
@@ -349,11 +378,13 @@ def view_document_section5(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def delete_document_section5(
     request: AuthenticatedHttpRequest, section5_pk: int, document_pk: int
 ) -> HttpResponse:
+    if not can_user_edit_section5_authorities(request.user):
+        raise PermissionDenied
+
     section5: Section5Authority = get_object_or_404(Section5Authority, pk=section5_pk)
 
     document = section5.files.get(pk=document_pk)
@@ -364,9 +395,12 @@ def delete_document_section5(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def create_office(request, pk):
     importer = get_object_or_404(Importer, pk=pk)
+
+    if not can_user_edit_org(request.user, importer):
+        raise PermissionDenied
+
     if importer.is_agent() or importer.type == Importer.INDIVIDUAL:
         form_cls = ImporterOfficeForm
     else:
@@ -387,15 +421,24 @@ def create_office(request, pk):
     else:
         form = form_cls()
 
-    context = {"object": importer, "form": form}
+    user_context = _get_user_context(request.user)
+
+    context = {
+        "object": importer,
+        "form": form,
+        "base_template": user_context["base_template"],
+    }
 
     return render(request, "web/domains/importer/create-office.html", context)
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def edit_office(request, importer_pk, office_pk):
     importer = get_object_or_404(Importer, pk=importer_pk)
+
+    if not can_user_edit_org(request.user, importer):
+        raise PermissionDenied
+
     office = get_object_or_404(importer.offices, pk=office_pk)
     if importer.is_agent() or importer.type == Importer.INDIVIDUAL:
         Form = ImporterOfficeForm
@@ -409,19 +452,25 @@ def edit_office(request, importer_pk, office_pk):
     else:
         form = Form(instance=office)
 
+    user_context = _get_user_context(request.user)
+
     context = {
         "object": importer,
         "office": office,
         "form": form,
+        "base_template": user_context["base_template"],
     }
     return render(request, "web/domains/importer/edit-office.html", context)
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def archive_office(request, importer_pk, office_pk):
     importer = get_object_or_404(Importer, pk=importer_pk)
+
+    if not can_user_edit_org(request.user, importer):
+        raise PermissionDenied
+
     office = get_object_or_404(importer.offices.filter(is_active=True), pk=office_pk)
     office.is_active = False
     office.save()
@@ -430,10 +479,13 @@ def archive_office(request, importer_pk, office_pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
 def unarchive_office(request, importer_pk, office_pk):
     importer = get_object_or_404(Importer, pk=importer_pk)
+
+    if not can_user_edit_org(request.user, importer):
+        raise PermissionDenied
+
     office = get_object_or_404(importer.offices.filter(is_active=False), pk=office_pk)
     office.is_active = True
     office.save()
@@ -442,7 +494,7 @@ def unarchive_office(request, importer_pk, office_pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def create_agent(
     request: AuthenticatedHttpRequest, *, importer_pk: int, entity_type: str
 ) -> HttpResponse:
@@ -462,7 +514,7 @@ def create_agent(
             agent = form.save()
 
             if entity_type == "individual":
-                add_organisation_contact(agent, agent.user)
+                organisation_add_contact(agent, agent.user)
 
             return redirect(reverse("importer-agent-edit", kwargs={"pk": agent.pk}))
     else:
@@ -477,9 +529,11 @@ def create_agent(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     agent: Importer = get_object_or_404(Importer.objects.agents(), pk=pk)
+
+    if not can_user_edit_org(request.user, agent):
+        raise PermissionDenied
 
     if agent.is_organisation():
         AgentForm = AgentOrganisationForm
@@ -494,23 +548,28 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     else:
         form = AgentForm(instance=agent)
 
-    contacts = get_organisation_contacts(agent)
-    object_permissions = get_importer_object_permissions()
+    contacts = organisation_get_contacts(agent)
+    object_permissions = get_importer_object_permissions(agent)
+    can_manage_contacts = can_user_manage_org_contacts(request.user, agent)
+
+    user_context = _get_user_context(request.user)
 
     context = {
         "object": agent.main_importer,
         "object_permissions": object_permissions,
+        "can_manage_contacts": can_manage_contacts,
         "form": form,
         "contact_form": ContactForm(contacts_to_exclude=contacts),
         "contacts": contacts,
         "org_type": "importer",
+        "base_template": user_context["base_template"],
     }
 
     return render(request, "web/domains/importer/edit-agent.html", context=context)
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def archive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     agent = get_object_or_404(Importer.objects.agents().filter(is_active=True), pk=pk)
@@ -521,7 +580,7 @@ def archive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def unarchive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     agent = get_object_or_404(Importer.objects.agents().filter(is_active=False), pk=pk)
@@ -532,31 +591,69 @@ def unarchive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpRespon
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def importer_detail_view(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     importer: Importer = get_object_or_404(Importer, pk=pk)
 
-    contacts = get_organisation_contacts(importer)
-    object_permissions = get_importer_object_permissions()
+    if not can_user_view_org(request.user, importer):
+        raise PermissionDenied
+
+    contacts = organisation_get_contacts(importer)
+    object_permissions = get_importer_object_permissions(importer)
 
     context = {
         "object": importer,
         "object_permissions": object_permissions,
+        "show_firearm_authorities": can_user_edit_firearm_authorities(request.user),
+        "show_section5_authorities": can_user_edit_section5_authorities(request.user),
         "contacts": contacts,
         "org_type": "importer",
     }
 
-    return render(request, "web/domains/importer/view.html", context)
+    user_context = _get_user_context(request.user)
+
+    return render(request, "web/domains/importer/view.html", context | user_context)
 
 
-def get_importer_object_permissions() -> list[tuple[ImporterObjectPermissions, str]]:
-    """Return object permissions for the Importer model with a label for each."""
+@login_required
+def edit_user_importer_permissions(
+    request: AuthenticatedHttpRequest, org_pk: int, user_pk: int
+) -> HttpResponse:
+    """View to edit importer object permissions for a particular user."""
 
-    object_permissions = [
-        (Perms.obj.importer.view, "View Applications / Licences"),
-        (Perms.obj.importer.edit, "Edit Applications / Vary Licences"),
-        (Perms.obj.importer.is_contact, "Is Importer Contact"),
-        (Perms.obj.importer.manage_contacts_and_agents, "Approve / Reject Agents and Importers"),
-    ]
+    user = get_object_or_404(User, id=user_pk)
+    importer = get_object_or_404(Importer, id=org_pk)
+    can_manage_contacts = can_user_manage_org_contacts(request.user, importer)
 
-    return object_permissions
+    if not can_manage_contacts:
+        raise PermissionDenied
+
+    form = ImporterUserObjectPermissionsForm(user, importer, request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        form.save_obj_perms()
+
+        return redirect("importer-edit", pk=org_pk)
+
+    context = {
+        "page_title": "Edit Importer user permissions",
+        "org_type": "Importer",
+        "form": form,
+        "contact": user,
+        "organisation": importer,
+        "parent_url": reverse("importer-edit", kwargs={"pk": org_pk}),
+    }
+
+    return render(request, "web/domains/organisation/edit-user-permissions.html", context)
+
+
+def _get_user_context(user) -> dict[str, Any]:
+    """Return common context depending on the user profile."""
+
+    if user.has_perm(Perms.sys.ilb_admin):
+        base_template = "layout/sidebar.html"
+        parent_url = reverse("importer-list")
+    else:
+        base_template = "layout/no-sidebar.html"
+        parent_url = reverse("user-importer-list")
+
+    return {"base_template": base_template, "parent_url": parent_url}

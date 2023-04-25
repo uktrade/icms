@@ -1,11 +1,12 @@
-from typing import TYPE_CHECKING, Any, Union
+from typing import Any, Literal, Union
 from urllib import parse
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.db.models import Window
+from django.db.models import QuerySet, Window
 from django.db.models.functions import RowNumber
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -35,10 +36,13 @@ from web.models import (
     ExportApplication,
     ImportApplication,
     ImportApplicationType,
+    Process,
     Task,
     Template,
+    User,
     VariationRequest,
 )
+from web.permissions import AppChecker, Perms, can_user_view_search_cases
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
     SearchTerms,
@@ -48,11 +52,6 @@ from web.utils.search import (
 
 from .mixins import ApplicationTaskMixin
 
-if TYPE_CHECKING:
-    from django.db.models import QuerySet
-
-    from web.models import Process, User
-
 SearchForm = Union[
     ExportSearchAdvancedForm, ExportSearchForm, ImportSearchAdvancedForm, ImportSearchForm
 ]
@@ -61,10 +60,16 @@ SearchFormT = type[SearchForm]
 
 @require_GET
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
 def search_cases(
-    request: AuthenticatedHttpRequest, *, case_type: str, mode: str = "standard", get_results=False
+    request: AuthenticatedHttpRequest,
+    *,
+    case_type: Literal["import", "export"],
+    mode: str = "standard",
+    get_results=False,
 ) -> HttpResponse:
+    if not can_user_view_search_cases(request.user, case_type):
+        raise PermissionDenied
+
     if mode == "advanced":
         form_class: SearchFormT = (
             ImportSearchAdvancedForm if case_type == "import" else ExportSearchAdvancedForm
@@ -94,6 +99,8 @@ def search_cases(
 
     results_url = reverse("case:search-results", kwargs={"case_type": case_type, "mode": mode})
 
+    reassignment_search_enabled = request.user.has_perm(Perms.sys.ilb_admin)
+
     context = {
         "form": form,
         "results_url": results_url,
@@ -105,7 +112,8 @@ def search_cases(
         "show_application_sub_type": show_application_sub_type,
         "total_rows": total_rows,
         "search_records": search_records,
-        "reassignment_search": form["reassignment"].value(),
+        "reassignment_search": reassignment_search_enabled and form["reassignment"].value(),
+        "reassignment_enabled": reassignment_search_enabled,
     }
 
     return render(
@@ -117,7 +125,7 @@ def search_cases(
 
 @require_POST
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def reassign_case_owner(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpResponse:
     """Reassign Applications to the chosen ILB admin."""
 
@@ -125,15 +133,16 @@ def reassign_case_owner(request: AuthenticatedHttpRequest, *, case_type: str) ->
         form = ReassignmentUserForm(request.POST)
 
         if form.is_valid():
-            new_case_owner: "User" = form.cleaned_data["assign_to"]
-            applications: "QuerySet[Process]" = form.cleaned_data["applications"]
+            new_case_owner: User = form.cleaned_data["assign_to"]
+            applications: QuerySet[Process] = form.cleaned_data["applications"]
 
             if case_type == "import":
                 apps = ImportApplication.objects.select_for_update().filter(pk__in=applications)
             else:
                 apps = ExportApplication.objects.select_for_update().filter(pk__in=applications)
 
-            apps.update(case_owner=new_case_owner, order_datetime=timezone.now())
+            now = timezone.now()
+            apps.update(case_owner=new_case_owner, order_datetime=now, reassign_datetime=now)
         else:
             return HttpResponse(status=400)
 
@@ -142,9 +151,12 @@ def reassign_case_owner(request: AuthenticatedHttpRequest, *, case_type: str) ->
 
 @require_POST
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
-def download_spreadsheet(request: AuthenticatedHttpRequest, *, case_type: str) -> HttpResponse:
+def download_spreadsheet(
+    request: AuthenticatedHttpRequest, *, case_type: Literal["import", "export"]
+) -> HttpResponse:
     """Generates and returns a spreadsheet using same form data as the search form."""
+    if not can_user_view_search_cases(request.user, case_type):
+        raise PermissionDenied
 
     form_class: SearchFormT = (
         ImportSearchAdvancedForm if case_type == "import" else ExportSearchAdvancedForm
@@ -171,7 +183,7 @@ def download_spreadsheet(request: AuthenticatedHttpRequest, *, case_type: str) -
 class ReopenApplicationView(
     ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View
 ):
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.sys.ilb_admin]
 
     # ApplicationTaskMixin Config
     current_status = [ImpExpStatus.STOPPED, ImpExpStatus.WITHDRAWN]
@@ -289,10 +301,7 @@ class RequestVariationOpenBase(SearchActionFormBase):
 
 @method_decorator(transaction.atomic, name="post")
 class RequestVariationUpdateView(RequestVariationOpenBase):
-    # ICMSLST-1240 Need to revisit permissions when they become more clear
-    # TODO: The applicant and admin can request a variation request for import applications.
-    # PermissionRequiredMixin config
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.page.view_import_case_search]
 
     # ApplicationTaskMixin Config
     current_status = [ImpExpStatus.COMPLETED]
@@ -303,6 +312,13 @@ class RequestVariationUpdateView(RequestVariationOpenBase):
     # FormView config
     form_class = VariationRequestForm
     template_name = "web/domains/case/variation-request-add.html"
+
+    def has_object_permission(self) -> bool:
+        """Return True if the user has the correct object permissions."""
+
+        checker = AppChecker(self.request.user, self.application)
+
+        return checker.can_vary()
 
     def form_valid(self, form: VariationRequestForm) -> HttpResponseRedirect:
         """Store the variation request before redirecting to the success url."""
@@ -334,7 +350,7 @@ class RequestVariationOpenRequestView(RequestVariationOpenBase):
     """Admin view to open a variation request for an export application"""
 
     # PermissionRequiredMixin config
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.sys.ilb_admin]
 
     # ApplicationTaskMixin Config
     current_status = [ImpExpStatus.COMPLETED]
@@ -375,7 +391,7 @@ class RevokeCaseView(SearchActionFormBase):
     """Admin view to revoke an application."""
 
     # PermissionRequiredMixin config
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.sys.ilb_admin]
 
     # ApplicationTaskMixin Config
     current_status = [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
@@ -482,7 +498,9 @@ class RevokeCaseView(SearchActionFormBase):
         return "".join((search_url, "?", parse.urlencode(query_params)))
 
 
-def _get_search_terms_from_form(case_type: str, form: SearchForm) -> SearchTerms:
+def _get_search_terms_from_form(
+    case_type: Literal["import", "export"], form: SearchForm
+) -> SearchTerms:
     """Load the SearchTerms from the form data."""
 
     cd = form.cleaned_data
@@ -514,15 +532,12 @@ def _get_search_terms_from_form(case_type: str, form: SearchForm) -> SearchTerms
         shipping_year=cd.get("shipping_year"),
         goods_category=cd.get("goods_category"),
         commodity_code=cd.get("commodity_code"),
-        under_appeal=cd.get("under_appeal"),
         licence_date_start=cd.get("licence_from"),
         licence_date_end=cd.get("licence_to"),
         issue_date_start=cd.get("issue_from"),
         issue_date_end=cd.get("issue_to"),
         # ---- Export application fields ----
         exporter_agent_name=cd.get("exporter_or_agent"),
-        closed_date_start=cd.get("closed_from"),
-        closed_date_end=cd.get("closed_to"),
         certificate_country=cd.get("certificate_country"),
         manufacture_country=cd.get("manufacture_country"),
     )

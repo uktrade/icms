@@ -12,7 +12,7 @@ ALLOWED_HOSTS = env.list("ICMS_ALLOWED_HOSTS")
 
 # Elastic APM config
 INSTALLED_APPS += [  # NOQA
-    "elasticapm",
+    "elasticapm.contrib.django",
     "django_audit_log_middleware",
 ]
 

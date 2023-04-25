@@ -1,6 +1,11 @@
+from typing import Any
+
 import structlog as logging
 from django.conf import settings
 from django.urls import resolve, reverse
+
+from web.permissions import can_user_view_search_cases
+from web.types import AuthenticatedHttpRequest
 
 logger = logging.getLogger(__name__)
 
@@ -15,21 +20,31 @@ def url(view_name, kwargs):
     return ""
 
 
-def has_view_access(request, view_name):
-    """
-    Check if current user has access to given view
-    """
+def has_view_access(
+    request: AuthenticatedHttpRequest, view_name: str, view_kwargs: dict[str, Any]
+) -> bool:
+    """Check if current user has access to given view."""
+
     if not view_name:
         return True
 
-    # TODO: ICMSLST-705 do this properly somehow (see comment on line 157)
-    if view_name in ("workbasket", "case:search"):
-        return True
+    match view_name:
+        # Specific checks for function based view menu items
+        case "workbasket":
+            has_perm = True
 
-    url = reverse(view_name)
-    view = resolve(url).func.view_class()
-    view.request = request
-    return view.has_permission()
+        case "case:search":
+            has_perm = can_user_view_search_cases(request.user, view_kwargs["case_type"])
+
+        # All class based views checked here.
+        case _:
+            view_url = reverse(view_name)
+            view = resolve(view_url).func.view_class()
+            view.request = request
+
+            has_perm = view.has_permission()
+
+    return has_perm
 
 
 class MenuItem:
@@ -65,7 +80,7 @@ class MenuLink(MenuItem):
         self.target = target
 
     def has_access(self, request):
-        return has_view_access(request, self.view)
+        return has_view_access(request, self.view, self.kwargs)
 
     def get_link(self):
         return url(self.view, self.kwargs)
@@ -166,18 +181,11 @@ if settings.DEBUG:
 
 
 class Menu:
-    # TODO: note that the decision whether to show a view or not depends
-    # entirely on each view referenced here being class-based view and a
-    # subclass of PermissionRequiredMixin (see has_view_access, above).
-    #
-    # if we ever want to use function-based views for anything referenced from
-    # here, implement a "check" argument for the Menu* classes, which is a
-    # function used to call which returns True if the menu item should be shown
-    # for the current user
     items = [
         MenuLink(label="Workbasket", view="workbasket"),
         MenuLink(label="Dashboard"),
         MenuLink(label="Importer Details", view="user-importer-list"),
+        MenuLink(label="Exporter Details", view="user-exporter-list"),
         MenuDropDown(
             label="Search",
             sub_menu_list=[

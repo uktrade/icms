@@ -1,0 +1,109 @@
+{% extends "layout/no-sidebar.html" %}
+
+{% block main_content %}
+  <div class="no-sidebar">
+    <div id="content-ie8-float">
+      <div class="content-actions"></div>
+      <table class="setoutList">
+        <thead>
+        <tr>
+          <th scope="col">Exporter Name</th>
+          <th scope="col">Addresses</th>
+          <th scope="col">Agents</th>
+          <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for exporter in object_list %}
+          <tr>
+            <td>
+              <div class="container setoutForm">
+                <div class="row">
+                  <div class="six columns"><a href="{{ icms_url('exporter-view', kwargs={"pk": exporter.pk}) }}">{{ exporter }}</a></div>
+                  <div class="six columns"></div>
+                </div>
+                <div class="row">
+                  <div class="six columns"><span class="text-widget" style="font-weight:bold;"></span></div>
+                  <div class="six columns"></div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <table class="setoutList nestedList">
+                <thead>
+                <tr>
+                  <th colspan="1" class="listPrompt">Addresses</th>
+                </tr>
+                <tr>
+                  <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for office in exporter.offices.filter(is_active=True) %}
+                  <tr>
+                    <td><span class="text-widget">{{ office|nl2br }}</span></td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </td>
+
+            <td>
+              <div class="container setoutForm">
+                {% for agent in exporter.agents.filter(is_active=True) %}
+                  <div class="row">
+                    <div class="six columns"><span class="text-widget ">{{ agent }}</span></div>
+                    <div class="six columns"></div>
+                  </div>
+                {% endfor %}
+
+              </div>
+            </td>
+
+            <td>
+              {% if user_obj_perms.can_edit_org(exporter) %}
+                <div class="row">
+                  <div class="twelve columns">
+                    <a href="{{ icms_url("exporter-edit", kwargs={'pk': exporter.pk}) }}"
+                       class="button small-button icon-pencil">
+                      Edit
+                    </a>
+                  </div>
+                </div>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+{% block content_actions %}
+  {% if page_obj.paginator.num_pages > 1 %}
+    <div class="pagination">
+      <div class="info-box info-box-info">
+        <p><strong>Not all linked exporters shown.</strong></p>
+        <p>Linked exporters count: {{ page_obj.paginator.count }}.
+          Only {{ page_obj.paginator.per_page }} exporters have been displayed.</p>
+
+        <span class="step-links">
+          {% if page_obj.has_previous() %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number() }}">previous</a>
+          {% endif %}
+
+          <span class="current">
+              Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+          </span>
+
+          {% if page_obj.has_next() %}
+            <a href="?page={{ page_obj.next_page_number() }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+          {% endif %}
+        </span>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

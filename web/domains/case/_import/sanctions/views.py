@@ -1,6 +1,7 @@
 import structlog as logging
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
@@ -12,14 +13,15 @@ from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.services import case_progress
 from web.domains.case.utils import (
-    check_application_permission,
     get_application_form,
     redirect_after_submit,
     submit_application,
+    view_application_file,
 )
 from web.domains.file.utils import create_file_model
 from web.domains.template.utils import add_template_data_on_submit
-from web.models import ImportApplicationType, Task
+from web.models import ImportApplicationType, Task, User
+from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.commodity import (
     annotate_commodity_unit,
@@ -35,7 +37,6 @@ from web.utils.validation import (
     create_page_errors,
 )
 
-from .. import views as import_views
 from .forms import (
     EditSanctionsAndAdhocLicenseForm,
     GoodsForm,
@@ -47,6 +48,13 @@ from .models import SanctionsAndAdhocApplication, SanctionsAndAdhocApplicationGo
 logger = logging.getLogger(__name__)
 
 
+def check_can_edit_application(user: User, application: SanctionsAndAdhocApplication) -> None:
+    checker = AppChecker(user, application)
+
+    if not checker.can_edit():
+        raise PermissionDenied
+
+
 @login_required
 def edit_application(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
@@ -54,7 +62,7 @@ def edit_application(request: AuthenticatedHttpRequest, *, application_pk: int) 
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -106,7 +114,7 @@ def add_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Http
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -147,7 +155,7 @@ def edit_goods(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -190,7 +198,7 @@ def _get_sanctions_commodity_group_data(application):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_goods_licence(
     request: AuthenticatedHttpRequest, *, application_pk: int, goods_pk: int
 ) -> HttpResponse:
@@ -242,7 +250,7 @@ def delete_goods(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         get_object_or_404(application.sanctionsandadhocapplicationgoods_set, pk=goods_pk).delete()
 
@@ -258,7 +266,7 @@ def add_supporting_document(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -290,8 +298,9 @@ def view_supporting_document(
     request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
 ) -> HttpResponse:
     application = get_object_or_404(SanctionsAndAdhocApplication, pk=application_pk)
-    return import_views.view_file(
-        request, application, application.supporting_documents, document_pk
+
+    return view_application_file(
+        request.user, application, application.supporting_documents, document_pk, "import"
     )
 
 
@@ -305,7 +314,7 @@ def delete_supporting_document(
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -323,7 +332,7 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
             SanctionsAndAdhocApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
         task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)

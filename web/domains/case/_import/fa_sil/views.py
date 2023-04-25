@@ -2,6 +2,7 @@ from typing import NamedTuple
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
@@ -19,7 +20,6 @@ from web.domains.case.forms import SubmitForm
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import (
-    check_application_permission,
     get_application_form,
     redirect_after_submit,
     submit_application,
@@ -31,7 +31,8 @@ from web.domains.template.utils import (
     add_application_cover_letter,
     add_template_data_on_submit,
 )
-from web.models import Task
+from web.models import Task, User
+from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
     ApplicationErrors,
@@ -41,6 +42,13 @@ from web.utils.validation import (
 )
 
 from . import forms, models, types
+
+
+def check_can_edit_application(user: User, application: models.SILApplication) -> None:
+    checker = AppChecker(user, application)
+
+    if not checker.can_edit():
+        raise PermissionDenied
 
 
 class CreateSILSectionConfig(NamedTuple):
@@ -366,7 +374,7 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -398,7 +406,7 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
 @login_required
 def choose_goods_section(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     application: models.SILApplication = get_object_or_404(models.SILApplication, pk=application_pk)
-    check_application_permission(application, request.user, "import")
+    check_can_edit_application(request.user, application)
 
     case_progress.application_in_progress(application)
 
@@ -425,7 +433,7 @@ def add_section(
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -467,7 +475,7 @@ def edit_section(
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         config = _get_sil_section_app_config(sil_section_type)
         goods: types.GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
 
@@ -505,7 +513,7 @@ def delete_section(
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         config = _get_sil_section_app_config(sil_section_type)
         goods: types.GoodsModel = get_object_or_404(config.model_class, pk=section_pk)
 
@@ -518,7 +526,7 @@ def delete_section(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def response_preparation_edit_goods(
     request: AuthenticatedHttpRequest,
     *,
@@ -572,7 +580,7 @@ def submit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRes
         application = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
         task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
@@ -626,7 +634,7 @@ def add_section5_document(
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -665,7 +673,7 @@ def archive_section5_document(
         application: models.SILApplication = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         document = application.user_section5.get(pk=section5_pk)
@@ -685,6 +693,7 @@ def view_section5_document(
     application: models.SILApplication = get_object_or_404(models.SILApplication, pk=application_pk)
     get_object_or_404(application.user_section5, pk=section5_pk)
 
+    # Permission checks in view_application_file
     return view_application_file(
         request.user, application, application.user_section5, section5_pk, "import"
     )
@@ -699,7 +708,7 @@ def add_verified_section5(
         application = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         section5 = get_object_or_404(
             application.importer.section5_authorities.filter(is_active=True), pk=section5_pk
         )
@@ -722,7 +731,7 @@ def delete_verified_section5(
         application = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         section5 = get_object_or_404(application.verified_section5, pk=section5_pk)
 
         case_progress.application_in_progress(application)
@@ -742,7 +751,7 @@ def view_verified_section5(
         application = get_object_or_404(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         section5 = get_object_or_404(
             application.importer.section5_authorities.filter(is_active=True), pk=section5_pk
         )
@@ -771,11 +780,12 @@ def view_verified_section5_document(
         application.importer.section5_authorities.filter(is_active=True), files__pk=document_pk
     )
 
+    # Permission checks in view_application_file
     return view_application_file(request.user, application, section5.files, document_pk, "import")
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(
@@ -822,7 +832,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def set_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: models.SILApplication = get_object_or_404(
@@ -875,7 +885,7 @@ def add_report_firearm_manual(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
@@ -935,7 +945,7 @@ def edit_report_firearm_manual(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
@@ -993,7 +1003,7 @@ def add_report_firearm_no_firearm(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
@@ -1030,7 +1040,7 @@ def delete_report_firearm(
             models.SILApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
         case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
 
         supplementary_info: models.SILSupplementaryInfo = application.supplementary_info

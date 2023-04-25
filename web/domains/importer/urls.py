@@ -9,6 +9,11 @@ urlpatterns = [
     path("<int:pk>/edit/", views.edit_importer, name="importer-edit"),
     path("<entitytype:entity_type>/create/", views.create_importer, name="importer-create"),
     path("<int:pk>/", views.importer_detail_view, name="importer-view"),
+    path(
+        "<int:org_pk>/user/<int:user_pk>/object_perms/",
+        views.edit_user_importer_permissions,
+        name="edit-user-importer-permissions",
+    ),
     # firearms authority
     path(
         "<int:pk>/firearms/create/", firearms_views.create_firearms, name="importer-firearms-create"

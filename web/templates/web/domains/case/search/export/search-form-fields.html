@@ -14,11 +14,6 @@
   {{ fields.inline_field_with_label(form.submitted_to, show_optional_indicator=False, label_cols='one', padding='one', input_cols='two') }}
 </div>
 
-<div class="row">
-  {{ fields.inline_field_with_label(form.closed_from, show_optional_indicator=False, label_cols='three', padding='zero', input_cols='two') }}
-  {{ fields.inline_field_with_label(form.closed_to, show_optional_indicator=False, label_cols='one', padding='one', input_cols='two') }}
-</div>
-
 {% if advanced_search %}
   {{ fields.field(form.certificate_country, show_optional_indicator=False) }}
   {{ fields.field(form.manufacture_country, show_optional_indicator=False) }}
@@ -26,7 +21,9 @@
   {{ fields.field(form.pending_update_reqs, show_optional_indicator=False) }}
 {% endif %}
 
-{{ fields.field(form.reassignment, show_optional_indicator=False, checkbox_label="Enable reassignment searching") }}
-<div id="reassignment-user-wrapper" {% if not reassignment_search %} style="display: none"{% endif %}>
-  {{ fields.field(form.reassignment_user, show_optional_indicator=False) }}
-</div>
+{% if reassignment_enabled %}
+  {{ fields.field(form.reassignment, show_optional_indicator=False, checkbox_label="Enable reassignment searching") }}
+  <div id="reassignment-user-wrapper" {% if not reassignment_search %} style="display: none"{% endif %}>
+    {{ fields.field(form.reassignment_user, show_optional_indicator=False) }}
+  </div>
+{% endif %}

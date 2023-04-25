@@ -144,6 +144,14 @@ class Command(MigrationBaseCommand):
             ("Archived", ["COMPLETED", "STOPPED", "WITHDRAWN"], "AR"),
         )
 
+        match app_model:
+            case dm.ImportApplication:
+                application_field = "import_application_id"
+            case dm.ExportApplication:
+                application_field = "export_application_id"
+            case _:
+                raise ValueError("app_model must be ImportApplication or ExportApplication")
+
         for name, app_status, pack_status in statuses:
             self.stdout.write(f"Creating {name} {pack_model.__name__}")
 
@@ -157,7 +165,7 @@ class Command(MigrationBaseCommand):
 
             while True:
                 batch = [
-                    pack_model(import_application_id=pk, status=pack_status)
+                    pack_model(status=pack_status, **{application_field: pk})
                     for pk in islice(pks, self.batch_size)
                 ]
 

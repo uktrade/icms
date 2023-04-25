@@ -4,9 +4,15 @@ from . import views
 
 urlpatterns = [
     path("", views.ExporterListView.as_view(), name="exporter-list"),
+    path("list/user/", views.ExporterListUserView.as_view(), name="user-exporter-list"),
     path("<int:pk>/", views.detail_exporter, name="exporter-view"),
     path("<int:pk>/edit/", views.edit_exporter, name="exporter-edit"),
     path("create/", views.create_exporter, name="exporter-create"),
+    path(
+        "<int:org_pk>/user/<int:user_pk>/object_perms/",
+        views.edit_user_exporter_permissions,
+        name="edit-user-exporter-permissions",
+    ),
     # offices
     path("<int:pk>/offices/create/", views.create_office, name="exporter-office-create"),
     path(

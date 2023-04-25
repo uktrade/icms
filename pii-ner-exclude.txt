@@ -23,7 +23,6 @@ Import and Export
 submitted_to
 licence_to
 issue_to
-closed_to
 Test Constabulary
 That Constabulary
 ExporterAccessRequest
@@ -1003,7 +1002,6 @@ master_country_group
 consignment_country_group_id
 paper_licence_flag
 quantity_unlimited_flag
-under_appeal_flag
 agent_id"
 variation_no
 exporter_vat_nr
@@ -2289,7 +2287,6 @@ xiad.status
 xiad.submitted_datetime
 xiad.refuse_reason
 xiad.chief_usage_status
-xiad.under_appeal_flag
 xiad.licence_extended licence_extended_flag
 xiad.last_updated_datetime last_update_datetime ,
 xiad.created_by_wua_id
@@ -2643,10 +2640,114 @@ PROCESSING / VARIATION_REQUESTED
 Add Note
 Exporter User
 Approve / Reject Agents and Exporters
-ICMSLST-1737 Update
 View Applications / Certificates
 Edit Applications / Vary Certificates
 Variation Requested
 django.http
 web.models
 TypedTextChoicesMeta(ChoicesMeta
+Global mypy config
+Modules
+"Check if the table
+web.can_view_edit_importer
+Edit
+kwargs={'org_pk
+ICMSLST-1939 Update
+Edit Importer
+View Importer{% endblock
+View Importer '
+{{ number.get_type_display
+{{ object.name
+{{ object.comments|default
+ICMSLST-1948 Revisit
+Macintosh
+Intel Mac
+KHTML
+Gecko
+version="20.8.10
+saO4vtzmAZTZqQDmy3+qAjYty5WB0xeinRCWnQ4AyFJvnaQVK3XOJQJwMgGAJPbZRABgxG0JZpMAD9P9sNimAPmY6Awt8yGAcI5td+LavXRnq1NHycs2NQpxf2FrCFtjO1Ttvq3RRizg0nIa5U2dfsdKajSLfGgOStzV0JKAJxRvt0MFpUhiEjZMMxJ8vbdQZDGdiQ0DRkvXFxAYSocce+m5fRx7BxSS6W7OH4ZJ95WSB/HI3bswHdlS8C9huEB+sj3cUSzRxyyxTMr24ElFmpe2JeexE6bniZueijA9hem5q+k5KK+mU+p2rDuS6blljgE8KHWZoagbaGoX2iMQ9YwQVRGIKhB1R0RVy+aF2llEvbJt4MmoqThJlriFkhvnvC2OC9xbSNLKxU7o1o9+BvcCWk8WWtdvciSgVUDrGmgt72nfZJxkyxW4w4enT3cP3+iGtnSD+/CIuDpM02CZHxuHC4/l87y5EY1Ex60QsHnSsClSWQVsHszG72B4mb/87hV5C5wgVPvxZn98RV8FmM2Os49A9zbzre+9zUV9BLqSdK2X+C9+gEoAulKRteP2PDDccZ4WL8ZRaGWDy5voJdsCrWyXsbY8/IhbcNC9gkyRJ75iGh5w5igbzpxOpInfvB/2DRAln+gyseAlB7GM8dh7Svd4zF6pxF7zgOOGsKLiDRCt6K6dTspY74gVeeUN66nHyskwy5shdDavPDHp777c3EJFw9FTFUOfyCR6g2cH8hN
+organisation_get_contacts
+"Add a user
+"Remove a user
+"Check if the supplied
+ObjectPermissionChecker
+Reg
+{{ contact_form.media.css }
+{{ contact_form.media.js }}
+Can edit Importer Verified Firearms Authorities
+Can edit Importer Verified Section 5 Firearm Authorities
+{{ agent.display_name
+is_ilb_admin
+Create Individual
+Select an Exporter
+Exporter Details
+address_5__icontains
+"If Sentry
+Test Importer 1
+GB1111111111ABCDE
+Test Importer 1 Agent 1
+Test Importer 2
+ILB Admin/Caseworker
+main_org
+E1_A1
+"Returns Import Applications
+importer_one_fixture_data
+Test Exporter One
+Test Exporter 2
+"Returns Export Applications
+ICMSLST-1956
+New Template
+ICMSLST-1002 Implement
+ICMSLST-1241 Implement
+ICMSLST-1213 Implement
+"Check if the initialised
+{{ fields.field(form.licence_ref
+{{ fields.field(form.licence_type
+fields.field(form.status
+{{ fields.field(form.chief_usage_status
+{{ fields.inline_field_with_label(form.licence_from
+{{ fields.field(form.goods_category
+{{ fields.field(form.commodity_code
+x.file_folder_id
+ILB
+"Implement in child view
+rec.app_pk
+function(event
+document.querySelector("#id_application_type
+setupDownloadSpreadsheetEventHandler
+Variations
+{{ application_field(get_status_widget("OPEN
+Submit Variation
+columns"><label
+north">Case
+Spreadsheet</button
+class="icon-checkbox-checked
+class="extra-info
+value=
+index.html
+Perms
+GlobalPermission
+ModelBackend
+debug_toolbar.panels.sql
+LoggingPanel
+RedirectsPanel
+jquery-ui.min.js
+urllib3
+Guardian
+user_obj.guardian_checker
+f"/constabulary/{self.constabulary.id}/
+" Hello, I am testing Further Information Requests
+Astoria
+American Countries
+f"/country
+f"/country/translations/{self.translation_set.id}/edit/{self.country.id}/
+Importer & Exporter
+ICMSLST-1985 Disable
+Test Importer
+conftest.py
+AppChecker
+"Check if the user can edit an application for the linked organisation
+"Check if the user can
+"Check if the user can vary an
+ICMSLST-1945 Revisit
+test_import_user

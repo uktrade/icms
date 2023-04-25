@@ -1,10 +1,12 @@
 from typing import Any
 
+from django import forms
 from django.core.exceptions import ValidationError
-from django.forms import ModelChoiceField, ModelForm, Textarea
 from django_filters import CharFilter, FilterSet
+from guardian.forms import UserObjectPermissionsForm
 
 from web.errors import APIError
+from web.permissions import ExporterObjectPermissions, Perms
 from web.utils.companieshouse import api_get_company
 
 from .models import Exporter
@@ -20,11 +22,11 @@ class ExporterFilter(FilterSet):
         fields: list[Any] = []
 
 
-class ExporterForm(ModelForm):
+class ExporterForm(forms.ModelForm):
     class Meta:
         model = Exporter
         fields = ["name", "registered_number", "comments"]
-        widgets = {"name": Textarea(attrs={"rows": 1})}
+        widgets = {"name": forms.Textarea(attrs={"rows": 1})}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -68,15 +70,15 @@ class ExporterForm(ModelForm):
         return instance
 
 
-class AgentForm(ModelForm):
-    main_exporter = ModelChoiceField(
+class AgentForm(forms.ModelForm):
+    main_exporter = forms.ModelChoiceField(
         queryset=Exporter.objects.none(), label="Exporter", disabled=True
     )
 
     class Meta:
         model = Exporter
         fields = ["main_exporter", "name", "registered_number", "comments"]
-        widgets = {"name": Textarea(attrs={"rows": 1})}
+        widgets = {"name": forms.Textarea(attrs={"rows": 1})}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -86,3 +88,35 @@ class AgentForm(ModelForm):
         self.fields["main_exporter"].required = True
         self.fields["name"].required = True
         self.fields["registered_number"].required = True
+
+
+# Needed for now because we don't want to show all permissions (everything but the agent)
+def get_exporter_object_permissions(
+    exporter: Exporter,
+) -> list[tuple[ExporterObjectPermissions, str]]:
+    """Return object permissions for the Exporter model with a label for each."""
+
+    object_permissions = [
+        (Perms.obj.exporter.view, "View Applications / Certificates"),
+        (Perms.obj.exporter.edit, "Edit Applications / Vary Certificates"),
+        (Perms.obj.exporter.is_contact, "Is Exporter Contact"),
+    ]
+
+    # The agent should never have the manage_contacts_and_agents permission.
+    if not exporter.is_agent():
+        object_permissions.append(
+            (Perms.obj.exporter.manage_contacts_and_agents, "Approve / Reject Agents and Exporters")
+        )
+
+    return object_permissions
+
+
+class ExporterUserObjectPermissionsForm(UserObjectPermissionsForm):
+    obj: Exporter
+
+    def get_obj_perms_field_widget(self):
+        return forms.CheckboxSelectMultiple(attrs={"class": "radio-relative"})
+
+    def get_obj_perms_field_choices(self):
+        # Only iterate over permissions we show in the main edit exporter view
+        return [(p.codename, label) for (p, label) in get_exporter_object_permissions(self.obj)]

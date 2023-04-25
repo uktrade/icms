@@ -4,6 +4,7 @@ import string
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from guardian.core import ObjectPermissionChecker
 from guardian.mixins import GuardianUserMixin
 from guardian.shortcuts import get_objects_for_user
 
@@ -11,6 +12,19 @@ from .managers import UserManager
 
 
 class User(GuardianUserMixin, AbstractUser):
+    def __init__(self, *args, **kwargs):
+        self.guardian_checker: ObjectPermissionChecker | None = None
+
+        super().__init__(*args, **kwargs)
+
+    def set_guardian_checker(self):
+        """Used when checking object permissions.
+
+        See: icms/web/auth/backends.py
+        """
+
+        self.guardian_checker = ObjectPermissionChecker(self)
+
     # Statuses
     NEW = "NEW"
     BLOCKED = "BLOCKED"

@@ -197,14 +197,14 @@ def get_fa_sil_goods_item(
     return []
 
 
-def _get_licence_start_date(licence: "ImportApplicationLicence"):
+def _get_licence_start_date(licence: "ImportApplicationLicence") -> str:
     if licence.licence_start_date:
         return licence.licence_start_date.strftime("%d %B %Y")
 
     return "Licence Start Date not set"
 
 
-def _get_licence_end_date(licence: "ImportApplicationLicence"):
+def _get_licence_end_date(licence: "ImportApplicationLicence") -> str:
     if licence.licence_end_date:
         return licence.licence_end_date.strftime("%d %B %Y")
 
@@ -222,7 +222,7 @@ def _get_licence_number(application: "ImportApplication", doc_type: DocumentType
     return "[[Licence Number]]"
 
 
-def _get_importer_eori_numbers(application) -> list[str]:
+def _get_importer_eori_numbers(application: "FaImportApplication") -> list[str]:
     # TODO: ICMSLST-580 Revisit the EORI numbers that appear on a licence.
     # TODO: Check the Country of Consignment logic for other firearm licence types
     # TODO: If the applicant’s address has a BT (Belfast) post code AND the Country of Consignment is an EU country:

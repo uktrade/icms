@@ -466,7 +466,7 @@ class SILSupplementaryReportFirearmBase(SupplementaryReportFirearmBase):
         )
 
 
-# TODO ICMSLST-1883:  SILSupplementaryReport firemarms need to be able to handle documents
+# TODO ICMSLST-1883:  SILSupplementaryReport firearms need to be able to handle documents
 #  Added to the models as part of ICMSLST-1756. Need to add to the frontend also
 
 

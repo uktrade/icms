@@ -3,6 +3,7 @@ from django.test import TestCase
 from web.domains.template.forms import (
     EmailTemplateForm,
     EndorsementTemplateForm,
+    LetterTemplateForm,
     TemplatesFilter,
 )
 from web.models import Template
@@ -10,7 +11,7 @@ from web.models import Template
 from .factory import TemplateFactory
 
 
-class TemplatesFilterTest(TestCase):
+class TestTemplatesFilter(TestCase):
     def setUp(self):
         self.archived_endorsement = TemplateFactory(
             template_name="Archived Endorsement",
@@ -42,29 +43,29 @@ class TemplatesFilterTest(TestCase):
 
     def test_template_name_filter(self):
         results = self.run_filter({"template_name": "Active"})
-        self.assertEqual(results.count(), 2)
+        assert results.count() == 2
 
     def test_template_type_filter(self):
         results = self.run_filter({"template_type": Template.EMAIL_TEMPLATE})
-        self.assertIn(self.email, results)
+        assert self.email in results
 
     def test_application_domain_filter(self):
         results = self.run_filter({"application_domain": Template.IMPORT_APPLICATION})
-        self.assertIn(self.letter, results)
-        self.assertIn(self.archived_endorsement, results)
+        assert self.letter in results
+        assert self.archived_endorsement in results
 
     def test_template_title_filter(self):
         results = self.run_filter({"template_title": "endors"})
-        self.assertEqual(results.count(), 1)
-        self.assertEqual(results.first().template_title, "Endorsement Title")
+        assert results.count() == 1
+        assert results.first().template_title == "Endorsement Title"
 
     def test_template_content_filter(self):
         results = self.run_filter({"template_content": "test let"})
-        self.assertEqual(results.count(), 1)
-        self.assertEqual(results.first().template_name, "Active Letter Template")
+        assert results.count() == 1
+        assert results.first().template_name == "Active Letter Template"
 
 
-class EmailTemplateFormTest(TestCase):
+class TestEmailTemplateForm(TestCase):
     def test_form_valid(self):
         form = EmailTemplateForm(
             data={
@@ -73,7 +74,7 @@ class EmailTemplateFormTest(TestCase):
                 "template_content": "Test Content",
             }
         )
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
 
     def test_form_invalid(self):
         form = EmailTemplateForm(
@@ -81,7 +82,7 @@ class EmailTemplateFormTest(TestCase):
                 "template_name": "Test Email template",
             }
         )
-        self.assertFalse(form.is_valid())
+        assert form.is_valid() is False
 
     def test_invalid_form_message(self):
         form = EmailTemplateForm(
@@ -90,17 +91,17 @@ class EmailTemplateFormTest(TestCase):
                 "template_content": "Test Content",
             }
         )
-        self.assertEqual(len(form.errors), 1)
+        assert len(form.errors) == 1
         message = form.errors["template_title"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"
 
 
-class EndorsementCreateFormTest(TestCase):
+class TestEndorsementCreateForm(TestCase):
     def test_form_valid(self):
         form = EndorsementTemplateForm(
             data={"template_name": "Test Endorsement", "template_content": "Just testing"}
         )
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
 
     def test_form_invalid(self):
         form = EndorsementTemplateForm(
@@ -108,7 +109,7 @@ class EndorsementCreateFormTest(TestCase):
                 "template_name": "Test Endorsement",
             }
         )
-        self.assertFalse(form.is_valid())
+        assert form.is_valid() is False
 
     def test_invalid_form_message(self):
         form = EndorsementTemplateForm(
@@ -116,6 +117,26 @@ class EndorsementCreateFormTest(TestCase):
                 "template_content": "Test Content",
             }
         )
-        self.assertEqual(len(form.errors), 1)
+        assert len(form.errors) == 1
         message = form.errors["template_name"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"
+
+
+def test_letter_template_form_valid():
+    form = LetterTemplateForm(
+        {
+            "template_name": "New Template",
+            "template_content": "Test cover letter [[LICENCE_NUMBER]]",
+        }
+    )
+    assert form.is_valid() is True
+
+
+def test_cover_letter_form_invalid():
+    form = LetterTemplateForm(
+        {"template_name": "New Template", "template_content": "Test cover letter [[INVALID]]"}
+    )
+    assert form.is_valid() is False
+
+    error_message = form.errors["template_content"][0]
+    assert error_message == "The following placeholders are invalid: [[INVALID]]"

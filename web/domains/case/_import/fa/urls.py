@@ -107,7 +107,7 @@ urlpatterns = [
                         ],
                     ),
                 ),
-                # Firemarm workbasket links
+                # Firearm workbasket links
                 path(
                     "provide-report/",
                     include(

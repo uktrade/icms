@@ -271,9 +271,6 @@ def take_ownership(
                     licence.licence_start_date = timezone.now().date()
                     licence.save()
 
-            # TODO: Revisit when implementing ICMSLST-1169
-            # We may need to create some more datetime fields
-
         application.case_owner = request.user
         application.update_order_datetime()
         application.save()

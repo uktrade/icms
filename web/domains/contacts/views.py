@@ -8,9 +8,9 @@ from django.views.decorators.http import require_POST
 
 from web.models import Exporter, Importer
 from web.permissions import (
-    add_organisation_contact,
-    get_organisation_contacts,
-    remove_organisation_contact,
+    organisation_add_contact,
+    organisation_get_contacts,
+    organisation_remove_contact,
 )
 from web.types import AuthenticatedHttpRequest
 
@@ -38,12 +38,12 @@ def add(request: AuthenticatedHttpRequest, *, org_type: str, org_pk: int):
     model_class = _get_class_imp_or_exp(org_type)
     org: Org = get_object_or_404(model_class, pk=org_pk)
 
-    contacts = get_organisation_contacts(org)
+    contacts = organisation_get_contacts(org)
     form = ContactForm(request.POST, contacts_to_exclude=contacts)
 
     if form.is_valid():
         contact = form.cleaned_data["contact"]
-        add_organisation_contact(org, contact)
+        organisation_add_contact(org, contact)
 
     else:
         messages.error(request, "Unable to add contact.")
@@ -62,10 +62,10 @@ def delete(request: AuthenticatedHttpRequest, *, org_type: str, org_pk: int, con
     model_class = _get_class_imp_or_exp(org_type)
     org: Org = get_object_or_404(model_class, pk=org_pk)
 
-    contacts = get_organisation_contacts(org)
+    contacts = organisation_get_contacts(org)
     contact = get_object_or_404(contacts, pk=contact_pk)
 
-    remove_organisation_contact(org, contact)
+    organisation_remove_contact(org, contact)
 
     if org.is_agent():
         return redirect(reverse(f"{org_type}-agent-edit", kwargs={"pk": org.pk}))

@@ -44,15 +44,19 @@
                  href="{{ icms_url(agent_edit_url_name, args=[agent.pk]) }}">
                 Edit
               </a>
-              <form method="post" action="{{ icms_url(agent_archive_url_name, args=[agent.pk]) }}" class="form-inline">
-                {{ csrf_input }}
-                <button type="submit" class="button small-button icon-bin">Archive</button>
-              </form>
+              {% if is_ilb_admin %}
+                <form method="post" action="{{ icms_url(agent_archive_url_name, args=[agent.pk]) }}" class="form-inline">
+                  {{ csrf_input }}
+                  <button type="submit" class="button small-button icon-bin">Archive</button>
+                </form>
+              {% endif %}
             {% else %}
-              <form method="post" action="{{ icms_url(agent_unarchive_url_name, args=[agent.pk]) }}">
-                {{ csrf_input }}
-                <button type="submit" class="button small-button icon-undo">Restore</button>
-              </form>
+              {% if is_ilb_admin %}
+                <form method="post" action="{{ icms_url(agent_unarchive_url_name, args=[agent.pk]) }}">
+                  {{ csrf_input }}
+                  <button type="submit" class="button small-button icon-undo">Restore</button>
+                </form>
+              {% endif %}
             {% endif %}
           </td>
         {% endif %}

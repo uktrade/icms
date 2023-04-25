@@ -226,7 +226,7 @@ def pack_workbasket_get_issued(application: ImpOrExp) -> QuerySet[DocumentPack]:
     return packs.filter(show_in_workbasket=True).order_by("created_at")
 
 
-def pack_workbasket_remove_pack(application, *, pack_pk) -> None:
+def pack_workbasket_remove_pack(application: ImpOrExp, *, pack_pk: int) -> None:
     """Removes a document pack from displaying in the workbasket."""
 
     doc_packs = pack_issued_get_all(application)
@@ -256,7 +256,7 @@ def pack_certificate_history(
     return _get_case_history(application)
 
 
-def _get_case_history(application) -> QuerySet[DocumentPack]:
+def _get_case_history(application: ImpOrExp) -> QuerySet[DocumentPack]:
     packs = _get_qm(application)
 
     return (
@@ -285,7 +285,7 @@ def doc_ref_documents_create(application: ImpOrExp, lock_manager: "LockManager")
         _create_export_documents(application, lock_manager)
 
 
-def _create_export_documents(application: ExportApplication, lock_manager: "LockManager"):
+def _create_export_documents(application: ExportApplication, lock_manager: "LockManager") -> None:
     """Creates document reference records for Export applications."""
 
     certificate = pack_draft_get(application)
@@ -365,7 +365,7 @@ def doc_ref_certificates_all(
     return documents.filter(document_type=DocumentType.CERTIFICATE)
 
 
-def doc_ref_licence_create(doc_pack: DocumentPack, doc_reference) -> CaseDocumentReference:
+def doc_ref_licence_create(doc_pack: DocumentPack, doc_reference: str) -> CaseDocumentReference:
     """Create the licence document reference"""
 
     if not doc_reference:
@@ -409,7 +409,7 @@ def doc_ref_documents_all(doc_pack: DocumentPack) -> QuerySet[CaseDocumentRefere
 
 
 def _create_document(
-    doc_pack: DocumentPack, doc_type: str, doc_reference=None
+    doc_pack: DocumentPack, doc_type: str, doc_reference: str | None = None
 ) -> CaseDocumentReference:
     return doc_pack.document_references.create(document_type=doc_type, reference=doc_reference)
 

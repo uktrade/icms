@@ -1,4 +1,5 @@
 import datetime as dt
+import zoneinfo
 
 import pytest
 from django.forms import ValidationError
@@ -25,6 +26,8 @@ from data_migration.utils.format import (
     xml_str_or_none,
 )
 
+UK_TZ = zoneinfo.ZoneInfo("Europe/London")
+
 
 @pytest.mark.parametrize(
     "name,expected", [("a_name", "A Name"), ("a name", "A name"), ("A Name", "A name")]
@@ -46,13 +49,11 @@ def test_format_row(columns, row, includes, pk, expected):
 
 
 def test_format_row_datetime():
-    dt_val = dt.datetime.now()
+    dt_val = dt.datetime.now(UK_TZ)
     columns = ["a_datetime"]
     row = [dt_val]
 
-    tz = timezone.make_aware(dt_val, dt.timezone.utc)
-
-    assert format_row(columns, row) == {"a_datetime": tz}
+    assert format_row(columns, row) == {"a_datetime": dt_val}
 
 
 @pytest.mark.django_db

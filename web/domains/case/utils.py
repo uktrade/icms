@@ -11,7 +11,8 @@ from django.utils import timezone
 
 from web.domains.case.services import document_pack, reference
 from web.flow.models import ProcessTypes
-from web.models import ExportApplication, File, ImportApplication, Task, User
+from web.models import ExportApplication, ImportApplication, Task, User
+from web.permissions import AppChecker
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 
@@ -73,22 +74,17 @@ def end_process_task(task: Task, user: Optional["User"] = None) -> None:
 def view_application_file(
     user: User, application: ImpOrExpOrAccess, related_file_model: Any, file_pk: int, case_type: str
 ) -> HttpResponse:
-    check_application_permission(application, user, case_type)
+    if case_type == "access":
+        # TODO: ICMSLST-1945 Revisit when doing access request permissions
+        # Further information requests files linked to access requests.
+        check_application_permission(application, user, "access")
+    else:
+        checker = AppChecker(user, application)
+
+        if not checker.can_view():
+            raise PermissionDenied
 
     document = related_file_model.get(pk=file_pk)
-    file_content = get_file_from_s3(document.path)
-
-    response = HttpResponse(content=file_content, content_type=document.content_type)
-    response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
-
-    return response
-
-
-def view_application_file_direct(
-    user: User, application: ImpOrExpOrAccess, document: File, case_type: str
-) -> HttpResponse:
-    check_application_permission(application, user, case_type)
-
     file_content = get_file_from_s3(document.path)
 
     response = HttpResponse(content=file_content, content_type=document.content_type)

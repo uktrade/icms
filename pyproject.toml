@@ -5,7 +5,7 @@
 
 [tool.black]
 line-length = 100
-target-version = ['py310']
+target-version = ['py311']
 exclude = '''
 /(
     \.eggs
@@ -21,3 +21,71 @@ exclude = '''
 # see https://pycqa.github.io/isort/docs/configuration/black_compatibility.html
 [tool.isort]
 profile = "black"
+
+#
+# Global mypy config
+#
+[tool.mypy]
+python_version = "3.11"
+exclude = [
+    "web/tests/",
+    "web/migrations/",
+    "data_migration/tests/",
+    "data_migration/migrations/",
+]
+show_error_codes = true
+check_untyped_defs = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+#
+# Modules to ignore missing imports
+#
+[[tool.mypy.overrides]]
+module = [
+    "django.*",
+    "django_select2.*",
+    "django_filters.*",
+    "structlog.*",
+    "guardian.*",
+    "debug_toolbar.*",
+    "gunicorn.*",
+    "psycogreen.*",
+    "celery.*",
+    "xlsxwriter.*",
+    "sqlparse.*",
+    "django_celery_results.*",
+    "phonenumber_field.*",
+    "humanize.*",
+    "environ.*",
+    "captcha.*",
+    "compressor.*",
+    "ratelimit.*",
+    "django_chunk_upload_handlers.*",
+    "storages.*",
+    "mohawk.*",
+    "weasyprint.*",
+    "lxml.*",
+    "playwright.*",
+]
+ignore_missing_imports = true
+
+
+#
+# Modules to have extra typing checks (equivalent to --strict).
+# Extend as needed - modules added below as an example.
+# https://mypy.readthedocs.io/en/stable/existing_code.html#introduce-stricter-options
+#
+[[tool.mypy.overrides]]
+module = [
+    "web.utils.*",
+    "web.domains.case.services.*",
+]
+disallow_subclassing_any = true
+disallow_untyped_decorators = true
+disallow_any_generics = true
+disallow_untyped_calls = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+no_implicit_reexport = true

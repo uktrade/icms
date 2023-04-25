@@ -15,7 +15,7 @@ See [ICMS Features](documentation/icms-features.md) for an overview of the syste
 
 ## Requirements
 
-- [Python 3.10.*](https://www.python.org/downloads/)
+- [Python 3.11.*](https://www.python.org/downloads/)
 - [PostgreSQL](https://www.postgresql.org/)
 - Development only
   - [Docker Compose 1.21.0+](https://docs.docker.com/compose/)
@@ -125,6 +125,13 @@ PII tool files:
 - `pii-secret-exclude.txt` - Files to exclude from the pii checks
 
 Refer to its documentation for further details
+
+## Permissions in ICMS
+
+ICMS uses a combination of standard django permissions as well as django guardian object permissions.
+
+See [this document](documentation/icms-permissions.md) for an overview of the system.
+
 
 ## Database schema generation
 

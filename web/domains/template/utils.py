@@ -50,6 +50,16 @@ def get_context_dict(content: str, context: "TemplateContextProcessor") -> dict[
     return {hit: context[hit] for hit in set(re.findall(CONTEXT_VARIABLE_REGEX, content))}
 
 
+def find_invalid_placeholders(content: str, valid_placeholders: list[str]) -> list[str]:
+    """Return a list of invalid placeholders that appear in the content"""
+
+    return [
+        f"[[{placeholder}]]"
+        for placeholder in set(re.findall(CONTEXT_VARIABLE_REGEX, content))
+        if placeholder not in valid_placeholders
+    ]
+
+
 def replace_template_values(content: str, context: "TemplateContextProcessor") -> str:
     """Returns the template content with the placeholders replaced with their value
 

@@ -18,6 +18,15 @@ class TemplateContextProcessor(Protocol):
 class CoverLetterTemplateContext:
     date_fmt = "%d %B %Y"
 
+    valid_placeholders: list[str] = [
+        "APPLICATION_SUBMITTED_DATE",
+        "CONTACT_NAME",
+        "COUNTRY_OF_CONSIGNMENT",
+        "COUNTRY_OF_ORIGIN",
+        "LICENCE_END_DATE",
+        "LICENCE_NUMBER",
+    ]
+
     def __init__(self, application: "ImportApplication", document_type: DocumentTypes) -> None:
         self.application = application
         self.document_type = document_type

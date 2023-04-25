@@ -17,7 +17,7 @@ def run_filter(data=None):
     return UserListFilter(data=data).qs
 
 
-class UserListFilterTest(TestCase):
+class TestUserListFilter(TestCase):
     def setUp(self):
         # set default admin user password disposition as FULL
         UserFactory(
@@ -81,46 +81,46 @@ class UserListFilterTest(TestCase):
 
     def test_email_filter(self):
         results = self.run_filter({"email_address": "example.com"})
-        self.assertEqual(results.count(), 5)
+        assert results.count() == 5
 
     def test_username_filter(self):
         results = self.run_filter({"username": "willem"})
-        self.assertEqual(results.count(), 1)
+        assert results.count() == 1
 
     def test_first_name_filter(self):
         results = self.run_filter({"forename": "nathan"})
-        self.assertEqual(results.count(), 1)
+        assert results.count() == 1
 
     def test_last_name_filter(self):
         results = self.run_filter({"surname": "Unknown"})
-        self.assertEqual(results.count(), 3)
+        assert results.count() == 3
 
     def test_organisation_filter(self):
         results = self.run_filter({"organisation": "Unk"})
-        self.assertEqual(results.count(), 1)
+        assert results.count() == 1
 
     def test_job_title_filter(self):
         results = self.run_filter({"job_title": "plumber"})
-        self.assertEqual(results.count(), 1)
+        assert results.count() == 1
 
     def test_account_status_filter(self):
         results = self.run_filter({"status": [User.CANCELLED, User.SUSPENDED, User.BLOCKED]})
-        self.assertEqual(results.count(), 3)
+        assert results.count() == 3
 
     def test_password_disposition_filter(self):
         results = self.run_filter({"password_disposition": "on"})
-        self.assertEqual(results.count(), 3)
+        assert results.count() == 3
 
     def test_filter_order(self):
         results = self.run_filter({"surname": "Unknown"})
-        self.assertEqual(results.count(), 3)
+        assert results.count() == 3
         first = results.first()
         last = results.last()
-        self.assertEqual(first.username, "aloy")
-        self.assertEqual(last.username, "willem")
+        assert first.username == "aloy"
+        assert last.username == "willem"
 
 
-class PeopleFilterTest(TestCase):
+class TestPeopleFilter(TestCase):
     def create_email(self, user):
         email = PersonalEmail(user=user, email=f"{user.username}@example.com")  # /PS-IGNORE
         email.save()
@@ -169,38 +169,38 @@ class PeopleFilterTest(TestCase):
 
     def test_email_filter(self):
         results = self.run_filter({"email_address": "example.com"})
-        self.assertEqual(results.count(), 3)
+        assert results.count() == 3
 
     def test_first_name_filter(self):
         results = self.run_filter({"forename": "melkor"})
-        self.assertEqual(results.count(), 1)
+        assert results.count() == 1
 
     def test_last_name_filter(self):
         results = self.run_filter({"surname": "doe"})
-        self.assertEqual(results.count(), 2)
+        assert results.count() == 2
 
     def test_organisation_filter(self):
         results = self.run_filter({"organisation": "ltd"})
-        self.assertEqual(results.count(), 2)
+        assert results.count() == 2
 
     def test_department_filter(self):
         results = self.run_filter({"department": "on"})
-        self.assertEqual(results.count(), 1)
+        assert results.count() == 1
 
     def test_job_title_filter(self):
         results = self.run_filter({"job": "direct"})
-        self.assertEqual(results.count(), 1)
+        assert results.count() == 1
 
     def test_filter_order(self):
         results = self.run_filter({"email_address": "example"})
-        self.assertEqual(results.count(), 3)
+        assert results.count() == 3
         first = results.first()
         last = results.last()
-        self.assertEqual(first.username, "jane")
-        self.assertEqual(last.username, "melkor")
+        assert first.username == "jane"
+        assert last.username == "melkor"
 
 
-class UserDetailsUpdateFormTest(TestCase):
+class TestUserDetailsUpdateForm(TestCase):
     def test_form_valid(self):
         form = UserDetailsUpdateForm(
             data={
@@ -217,11 +217,11 @@ class UserDetailsUpdateFormTest(TestCase):
                 "security_answer_repeat": "Fine",
             }
         )
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
 
     def test_form_invalid(self):
         form = UserDetailsUpdateForm(data={})
-        self.assertFalse(form.is_valid())
+        assert form.is_valid() is False
 
     def test_invalid_form_message(self):
         form = UserDetailsUpdateForm(
@@ -238,19 +238,19 @@ class UserDetailsUpdateFormTest(TestCase):
                 "security_answer_repeat": "Fine",
             }
         )
-        self.assertEqual(len(form.errors), 1)
+        assert len(form.errors) == 1
         message = form.errors["job_title"][0]
-        self.assertEqual(message, "You must enter this item")
+        assert message == "You must enter this item"
 
     def test_security_answer_validation(self):
         form = UserDetailsUpdateForm(
             data={"security_answer": "Hello", "security_answer_repeat": "Hi"}
         )
         message = form.errors["security_answer_repeat"][0]
-        self.assertEqual(message, "Security answers do not match.")
+        assert message == "Security answers do not match."
 
 
-class PhoneNumberFormTest(TestCase):
+class TestPhoneNumberForm(TestCase):
     def phone_number(self, number):
         return {
             "telephone_number": number,
@@ -267,32 +267,32 @@ class PhoneNumberFormTest(TestCase):
 
     def test_landline_phone_number_valid(self):
         form = PhoneNumberForm(data=self.phone_number("02012345678"))
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
         form = PhoneNumberForm(data=self.phone_number("0201234 5678"))
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
         form = PhoneNumberForm(data=self.phone_number("020 1234 5678"))
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
         form = PhoneNumberForm(data=self.phone_number("020 12 345678"))
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
 
     def test_mobile_phone_number_valid(self):
         form = PhoneNumberForm(data=self.phone_number("07123456789"))
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
         form = PhoneNumberForm(data=self.phone_number("07123 456789"))
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
         form = PhoneNumberForm(data=self.phone_number("07123 456 789"))
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
 
     def test_international_phone_number_valid(self):
         form = PhoneNumberForm(data=self.phone_number("+902161234567"))
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
         form = PhoneNumberForm(data=self.phone_number("00902161234567"))
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
         form = PhoneNumberForm(data=self.phone_number("+90 216 1234567"))
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
         form = PhoneNumberForm(data=self.phone_number("0090 216 1234567"))
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
         form = PhoneNumberForm(data=self.phone_number("+90 216 123 4567"))
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True
         form = PhoneNumberForm(data=self.phone_number("+90 216 123 45 67"))
-        self.assertTrue(form.is_valid())
+        assert form.is_valid() is True

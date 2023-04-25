@@ -3,7 +3,7 @@ from django.test import TestCase
 from web.models import Importer
 
 
-class ImporterTest(TestCase):
+class TestImporter(TestCase):
     def create_importer(
         self,
         is_active=True,
@@ -14,17 +14,17 @@ class ImporterTest(TestCase):
 
     def test_create_importer(self):
         importer = self.create_importer()
-        self.assertTrue(isinstance(importer, Importer))
-        self.assertEqual(importer.name, "Very Best Importers Ltd.")
-        self.assertEqual(importer.type, Importer.ORGANISATION)
+        assert isinstance(importer, Importer)
+        assert importer.name == "Very Best Importers Ltd."
+        assert importer.type == Importer.ORGANISATION
 
     def test_archive_importer(self):
         importer = self.create_importer()
         importer.archive()
-        self.assertFalse(importer.is_active)
+        assert importer.is_active is False
 
     def test_unarchive_importer(self):
         importer = self.create_importer(is_active=False)
-        self.assertFalse(importer.is_active)
+        assert importer.is_active is False
         importer.unarchive()
-        self.assertTrue(importer.is_active)
+        assert importer.is_active is True

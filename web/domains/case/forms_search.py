@@ -58,7 +58,7 @@ class SearchFormBase(forms.Form):
     reassignment = forms.BooleanField(label="Reassignment", required=False)
 
     reassignment_user = forms.ModelChoiceField(
-        label="Reassignment User",
+        label="Case Officer",
         help_text=(
             "Search a contact. Contacts returned are matched against first/last name,"  # /PS-IGNORE
             " email, job title, organisation and department."
@@ -136,7 +136,7 @@ class ImportSearchForm(SearchFormBase):
 
         if not cd["reassignment"] and cd["reassignment_user"]:
             self.add_error(
-                "reassignment", "Can't search using Reassignment User without Reassignment enabled"
+                "reassignment", "Can't search using 'Reassignment To' without Reassignment enabled"
             )
 
         return cd
@@ -215,12 +215,6 @@ class ImportSearchAdvancedForm(ImportSearchForm):
         choices=[(None, "Any")] + YesNoChoices.choices,
     )
 
-    under_appeal = forms.ChoiceField(
-        label="Under Appeal",
-        required=False,
-        choices=[(None, "Any")] + YesNoChoices.choices,
-    )
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -257,17 +251,6 @@ class ExportSearchForm(SearchFormBase):
         regex=wildcard_field_regex,
         error_messages={"invalid": wildcard_invalid_error},
     )
-
-    closed_from = forms.DateField(label="Closed Date", required=False, widget=DateInput)
-    closed_to = forms.DateField(label="To", required=False, widget=DateInput)
-
-    def clean(self):
-        cd = super().clean()
-
-        if self.dates_are_reversed(cd.get("closed_from"), cd.get("closed_to")):
-            self.add_error("closed_to", "'From' must be before 'To'")
-
-        return cd
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -315,7 +298,7 @@ class ExportSearchAdvancedForm(ExportSearchForm):
 
 class ReassignmentUserForm(forms.Form):
     assign_to = forms.ModelChoiceField(
-        label="Reassignment User",
+        label="Reassign To",
         help_text=(
             "Search a contact. Contacts returned are matched against first/last name,"  # /PS-IGNORE
             " email, job title, organisation and department."

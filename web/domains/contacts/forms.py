@@ -5,6 +5,7 @@ from web.models import User
 from .widgets import ContactWidget
 
 
+# TODO: ICMSLST-1943 This should restrict the users it returns.
 class ContactForm(forms.Form):
     contact = forms.ModelChoiceField(
         label="",

@@ -1,6 +1,16 @@
+from django.test.client import Client
 from django.urls import reverse
 
+from web.models import User
 from web.utils.validation import ApplicationErrors
+
+
+def get_test_client(user: User) -> Client:
+    client = Client()
+
+    assert client.login(username=user.username, password="test") is True, "Failed to login"
+
+    return client
 
 
 def check_page_errors(
@@ -219,6 +229,18 @@ class CaseURLS:
 
 class SearchURLS:
     @staticmethod
+    def search_cases(case_type: str = "import", mode: str = "standard"):
+        kwargs = {"case_type": case_type, "mode": mode}
+
+        return reverse("case:search", kwargs=kwargs)
+
+    @staticmethod
+    def download_spreadsheet(case_type: str = "import"):
+        kwargs = {"case_type": case_type}
+
+        return reverse("case:search-download-spreadsheet", kwargs=kwargs)
+
+    @staticmethod
     def reopen_case(application_pk: int, case_type: str = "import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 
@@ -246,3 +268,7 @@ class SearchURLS:
             "case:search-revoke-licence",
             kwargs={"application_pk": application_pk, "case_type": case_type},
         )
+
+    @staticmethod
+    def reassign_case_owner(case_type: str = "import") -> str:
+        return reverse("case:search-reassign-case-owner", kwargs={"case_type": case_type})

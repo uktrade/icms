@@ -125,8 +125,7 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = "web.user"
 
 AUTHENTICATION_BACKENDS = [
-    "web.auth.models.CustomBackend",
-    "guardian.backends.ObjectPermissionBackend",
+    "web.auth.backends.ModelAndObjectPermissionBackend",
 ]
 
 # Email
@@ -197,7 +196,7 @@ Field.default_error_messages = {
 S3_ROOT_DIRECTORY = "documents"
 
 # Used to set the S3 endpoint in development environments only
-AWS_S3_ENDPOINT_URL = ""
+AWS_S3_ENDPOINT_URL: str | None = None
 
 # Order is important
 FILE_UPLOAD_HANDLERS = (
@@ -272,7 +271,7 @@ COMPANIES_HOUSE_TOKEN = os.environ.get("COMPANIES_HOUSE_TOKEN", "changeme")
 GUARDIAN_MONKEY_PATCH = False
 GUARDIAN_RENDER_403 = True
 # https://django-guardian.readthedocs.io/en/stable/userguide/custom-user-model.html#anonymous-user-creation
-GUARDIAN_GET_INIT_ANONYMOUS_USER = "web.auth.models.get_anonymous_user_instance"
+GUARDIAN_GET_INIT_ANONYMOUS_USER = "web.auth.backends.get_anonymous_user_instance"
 
 # Used to add dummy test in non prod environments
 ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD = env.bool(
@@ -292,6 +291,13 @@ ADDRESS_API_KEY = env.str("ICMS_ADDRESS_API_KEY", default="")
 RECAPTCHA_PUBLIC_KEY = env.str("ICMS_RECAPTCHA_PUBLIC_KEY", default="")
 RECAPTCHA_PRIVATE_KEY = env.str("ICMS_RECAPTCHA_PRIVATE_KEY", default="")
 SILENCED_SYSTEM_CHECKS = env.list("ICMS_SILENCED_SYSTEM_CHECKS", default=[])
+
+SILENCED_SYSTEM_CHECKS.extend(
+    [
+        # Guardian authentication backend is not hooked (Replaced with ModelAndObjectPermissionBackend).
+        "guardian.W001",
+    ]
+)
 
 
 # minifi html (django-htmlmin)

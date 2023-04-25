@@ -44,7 +44,6 @@ SELECT
   , xiad.variation_no
   , xiad.legacy_case_flag
   , xiad.chief_usage_status
-  , xiad.under_appeal_flag
   , xiad.variation_decision
   , xiad.variation_refuse_reason
   , xiad.licence_extended licence_extended_flag
@@ -90,6 +89,7 @@ SELECT
   , XMLTYPE.getClobVal(XMLELEMENT("FA_GOODS_CERTS", XMLCONCAT(commodities_xml, fa_certs_xml))) fa_goods_certs_xml
   , x.file_folder_id
   , XMLTYPE.getClobVal(x.cover_letter_text) cover_letter_text
+  , XMLTYPE.getClobVal(x.variations_xml) variations_xml
 FROM impmgr.import_application_details ad
 CROSS JOIN XMLTABLE('/*'
   PASSING ad.xml_data

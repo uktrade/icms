@@ -19,6 +19,7 @@ from web.models import (
     Office,
     User,
 )
+from web.permissions import Perms
 
 
 class Command(BaseCommand):
@@ -147,7 +148,7 @@ class Command(BaseCommand):
             username="ilb_admin",
             password=options["password"],
             first_name="Ashley",
-            last_name="Smith (ilb_admin)",
+            last_name="Smith (ilb_admin, importer_user_group, exporter_user_group)",
             groups=[ilb_admin_group, importer_user_group, exporter_user_group],
             linked_importers=[importer],
             linked_exporters=[exporter],
@@ -239,18 +240,30 @@ class Command(BaseCommand):
             user.groups.set(groups)
 
         for importer in linked_importers:
-            assign_perm("web.is_contact_of_importer", user, importer)
+            assign_perm(Perms.obj.importer.view, user, importer)
+            assign_perm(Perms.obj.importer.edit, user, importer)
+            assign_perm(Perms.obj.importer.manage_contacts_and_agents, user, importer)
+            assign_perm(Perms.obj.importer.is_contact, user, importer)
 
         for exporter in linked_exporters:
-            assign_perm("web.is_contact_of_exporter", user, exporter)
+            assign_perm(Perms.obj.exporter.view, user, exporter)
+            assign_perm(Perms.obj.exporter.edit, user, exporter)
+            assign_perm(Perms.obj.exporter.manage_contacts_and_agents, user, exporter)
+            assign_perm(Perms.obj.exporter.is_contact, user, exporter)
 
         for agent in linked_importer_agents:
-            assign_perm("web.is_contact_of_importer", user, agent)
-            assign_perm("web.is_agent_of_importer", user, agent.main_importer)
+            assign_perm(Perms.obj.importer.view, user, agent)
+            assign_perm(Perms.obj.importer.edit, user, agent)
+            assign_perm(Perms.obj.importer.manage_contacts_and_agents, user, agent)
+            assign_perm(Perms.obj.importer.is_contact, user, agent)
+            assign_perm(Perms.obj.importer.is_agent, user, agent.get_main_org())
 
         for agent in linked_exporter_agents:
-            assign_perm("web.is_contact_of_exporter", user, agent)
-            assign_perm("web.is_agent_of_exporter", user, agent.main_exporter)
+            assign_perm(Perms.obj.exporter.view, user, agent)
+            assign_perm(Perms.obj.exporter.edit, user, agent)
+            assign_perm(Perms.obj.exporter.manage_contacts_and_agents, user, agent)
+            assign_perm(Perms.obj.exporter.is_contact, user, agent)
+            assign_perm(Perms.obj.exporter.is_agent, user, agent.get_main_org())
 
         user.save()
 

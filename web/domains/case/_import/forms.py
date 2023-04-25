@@ -5,6 +5,8 @@ from django.utils import timezone
 from django_select2.forms import ModelSelect2Widget
 from guardian.shortcuts import get_objects_for_user
 
+from web.domains.template.context import CoverLetterTemplateContext
+from web.domains.template.utils import find_invalid_placeholders
 from web.forms.widgets import DateInput
 from web.models import (
     EndorsementImportApplication,
@@ -41,7 +43,17 @@ class CreateImportApplicationForm(forms.Form):
                 "data-minimum-input-length": 0,
                 "data-placeholder": "-- Select Office",
             },
-            search_fields=("postcode__icontains", "address__icontains"),
+            search_fields=(
+                "postcode__icontains",
+                "address_1__icontains",
+                "address_2__icontains",
+                "address_3__icontains",
+                "address_4__icontains",
+                "address_5__icontains",
+                "address_6__icontains",
+                "address_7__icontains",
+                "address_8__icontains",
+            ),
             dependent_fields={"importer": "importer"},
         ),
     )
@@ -70,7 +82,17 @@ class CreateImportApplicationForm(forms.Form):
                 "data-minimum-input-length": 0,
                 "data-placeholder": "-- Select Office",
             },
-            search_fields=("postcode__icontains", "address__icontains"),
+            search_fields=(
+                "postcode__icontains",
+                "address_1__icontains",
+                "address_2__icontains",
+                "address_3__icontains",
+                "address_4__icontains",
+                "address_5__icontains",
+                "address_6__icontains",
+                "address_7__icontains",
+                "address_8__icontains",
+            ),
             # Key is a name of a field in a form.
             # Value is a name of a field in a model (used in `queryset`).
             dependent_fields={"agent": "importer"},
@@ -154,6 +176,19 @@ class CoverLetterForm(forms.ModelForm):
 
         self.fields["cover_letter_text"].widget.attrs["readonly"] = readonly
 
+    def clean_cover_letter_text(self):
+        cover_letter_text = self.cleaned_data["cover_letter_text"]
+        invalid_placeholders = find_invalid_placeholders(
+            cover_letter_text, CoverLetterTemplateContext.valid_placeholders
+        )
+        if invalid_placeholders:
+            self.add_error(
+                "cover_letter_text",
+                f"The following placeholders are invalid: {', '.join(invalid_placeholders)}",
+            )
+
+        return cover_letter_text
+
 
 class LicenceDateForm(forms.ModelForm):
     licence_start_date = forms.DateField(
@@ -169,8 +204,10 @@ class LicenceDateForm(forms.ModelForm):
         data = super().clean()
         start_date = data.get("licence_start_date")
         end_date = data.get("licence_end_date")
+
         if not start_date or not end_date:
             return
+
         today = timezone.now().date()
 
         if start_date < today:

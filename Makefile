@@ -17,7 +17,7 @@ help: ## Show this screen
 
 ##@ Local
 mypy: ## run mypy
-	unset UID && .venv/bin/python -m mypy --config-file=mypy.ini web data_migration config ${args}
+	unset UID && .venv/bin/python -m mypy --config-file=pyproject.toml web data_migration config ${args}
 
 flake8: ## run flake8
 	unset UID && .venv/bin/python -m flake8
@@ -105,7 +105,7 @@ docker_isort: ## run isort in check mode
 
 docker_mypy: ## run mypy
 	unset UID && \
-	docker-compose run --rm web mypy --config-file=mypy.ini web data_migration config
+	docker-compose run --rm web mypy --config-file=pyproject.toml web data_migration config
 
 docker_drop_all_tables: ## drop all tables
 	unset UID && \
@@ -113,6 +113,9 @@ docker_drop_all_tables: ## drop all tables
 
 pip-check:
 	docker-compose run --rm web pip-check
+
+pip-tree:
+	docker-compose run --rm web pipdeptree ${args}
 
 sqlsequencereset: ## Use this command to generate SQL which will fix cases where a sequence is out of sync with its automatically incremented field data
 	unset UID && \
@@ -165,7 +168,7 @@ test: ## run tests (circleci; don't use locally as it produces a coverage report
 		--cov-fail-under 66
 
 migration_test:
-	./run-tests.sh data_migration --create-db --numprocesses 2
+	./run-tests.sh data_migration --create-db --numprocesses 2 ${args}
 
 
 end_to_end_clear_session: ## Clears the session cookies stored after running end to end tests
