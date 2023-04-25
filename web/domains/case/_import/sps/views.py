@@ -16,7 +16,6 @@ from web.domains.case.utils import (
     redirect_after_submit,
     submit_application,
     view_application_file,
-    view_application_file_direct,
 )
 from web.domains.file.utils import create_file_model
 from web.domains.template.utils import add_template_data_on_submit
@@ -283,8 +282,12 @@ def view_contract_document(
 
         return redirect(reverse("import:sps:edit", kwargs={"application_pk": application_pk}))
 
-    return view_application_file_direct(
-        request.user, application, application.contract_file, "import"
+    return view_application_file(
+        request.user,
+        application,
+        PriorSurveillanceContractFile.objects,
+        application.contract_file_id,
+        "import",
     )
 
 

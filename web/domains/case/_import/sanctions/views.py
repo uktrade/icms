@@ -16,6 +16,7 @@ from web.domains.case.utils import (
     get_application_form,
     redirect_after_submit,
     submit_application,
+    view_application_file,
 )
 from web.domains.file.utils import create_file_model
 from web.domains.template.utils import add_template_data_on_submit
@@ -35,7 +36,6 @@ from web.utils.validation import (
     create_page_errors,
 )
 
-from .. import views as import_views
 from .forms import (
     EditSanctionsAndAdhocLicenseForm,
     GoodsForm,
@@ -290,8 +290,9 @@ def view_supporting_document(
     request: AuthenticatedHttpRequest, *, application_pk: int, document_pk: int
 ) -> HttpResponse:
     application = get_object_or_404(SanctionsAndAdhocApplication, pk=application_pk)
-    return import_views.view_file(
-        request, application, application.supporting_documents, document_pk
+
+    return view_application_file(
+        request.user, application, application.supporting_documents, document_pk, "import"
     )
 
 

@@ -15,6 +15,7 @@ from web.domains.case.utils import (
     get_application_form,
     redirect_after_submit,
     submit_application,
+    view_application_file,
 )
 from web.domains.case.views.utils import get_caseworker_view_readonly_status
 from web.domains.file.utils import create_file_model
@@ -28,7 +29,6 @@ from web.utils.validation import (
     create_page_errors,
 )
 
-from .. import views as import_views
 from .forms import (
     DerogationsChecklistForm,
     DerogationsChecklistOptionalForm,
@@ -139,8 +139,8 @@ def view_supporting_document(
         DerogationsApplication, pk=application_pk
     )
 
-    return import_views.view_file(
-        request, application, application.supporting_documents, document_pk
+    return view_application_file(
+        request.user, application, application.supporting_documents, document_pk, "import"
     )
 
 
