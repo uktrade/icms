@@ -7,13 +7,21 @@ from django.views.generic import DetailView
 
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
-from web.domains.case.utils import check_application_permission
+from web.domains.case.types import ImpOrExp
 from web.flow import errors
 from web.flow.models import ProcessTypes
-from web.models import Process
+from web.models import Process, User
+from web.permissions import AppChecker
 
 if TYPE_CHECKING:
     from web.models import CaseDocumentReference, ExportApplication, ImportApplication
+
+
+def check_can_view_application(user: User, application: ImpOrExp) -> None:
+    checker = AppChecker(user, application)
+
+    if not checker.can_view():
+        raise PermissionDenied
 
 
 class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
@@ -28,10 +36,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     def has_permission(self):
         application = self.get_object().get_specific_model()
 
-        try:
-            check_application_permission(application, self.request.user, self.kwargs["case_type"])
-        except PermissionDenied:
-            return False
+        check_can_view_application(self.request.user, application)
 
         # Admin can view case history when revoked, an applicant can't
         try:

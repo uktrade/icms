@@ -30,7 +30,9 @@
       )
     }}
     {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'View Application', "_blank") }}
-    {{ icms_link(request, icms_url('case:applicant-case-history', kwargs={'application_pk': process.pk, 'case_type': "import"}), 'Sent Responses', "_blank") }}
+    {% if user_obj_perms.can_view_application(process) %}
+      {{ icms_link(request, icms_url('case:applicant-case-history', kwargs={'application_pk': process.pk, 'case_type': "import"}), 'Sent Responses', "_blank") }}
+    {% endif %}
   </ul>
 {% endblock %}
 
