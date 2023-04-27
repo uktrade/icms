@@ -110,7 +110,7 @@ class Command(BaseCommand):
         self.stdout.write("Created dummy importer/exporter")
 
         # agent for importer
-        agent_importer = Importer.objects.create(
+        importer_one_agent_one = Importer.objects.create(
             is_active=True,
             name="Dummy agent for importer",
             registered_number="842",
@@ -124,7 +124,23 @@ class Command(BaseCommand):
             address_2="London",
             postcode="WT6 2AL",  # /PS-IGNORE
         )
-        agent_importer.offices.add(office)
+        importer_one_agent_one.offices.add(office)
+
+        # Second agent for importer
+        importer_one_agent_two = Importer.objects.create(
+            is_active=True,
+            name="Dummy agent 2 for importer",
+            registered_number="123",
+            type=Importer.ORGANISATION,
+            main_importer=importer,
+        )
+        office = Office.objects.create(
+            is_active=True,
+            address_1="Some other office road",
+            address_2="London",
+            postcode="WT6 2AL",  # /PS-IGNORE
+        )
+        importer_one_agent_two.offices.add(office)
 
         # agent for exporter
         agent_exporter = Exporter.objects.create(
@@ -188,7 +204,7 @@ class Command(BaseCommand):
             first_name="Cameron",
             last_name="Hasra (agent)",
             groups=[importer_user_group, exporter_user_group],
-            linked_importer_agents=[agent_importer],
+            linked_importer_agents=[importer_one_agent_one, importer_one_agent_two],
             linked_exporter_agents=[agent_exporter],
         )
 

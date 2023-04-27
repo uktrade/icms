@@ -11,7 +11,28 @@ def _get_view_url(view_name, kwargs=None):
     return reverse(f"import:textiles:{view_name}", kwargs=kwargs)
 
 
-def _add_goods_to_app(client, textiles_app_pk, test_import_user):
+@pytest.fixture
+def textiles_app_pk(importer_client, importer_one_main_contact, office, importer):
+    "Creates a textiles application to be used in tests, also tests the create-textiles endpoint"
+
+    url = reverse("import:create-textiles")
+    post_data = {"importer": importer.pk, "importer_office": office.pk}
+
+    count_before = TextilesApplication.objects.all().count()
+
+    resp = importer_client.post(url, post_data)
+    assert TextilesApplication.objects.all().count() == count_before + 1
+
+    application_pk = re.search(r"\d+", resp.url).group(0)
+
+    expected_url = _get_view_url("edit", {"application_pk": application_pk})
+    assertRedirects(resp, expected_url, 302)
+    _add_goods_to_app(importer_client, application_pk, importer_one_main_contact)
+
+    return application_pk
+
+
+def _add_goods_to_app(importer_client, textiles_app_pk, test_import_user):
     url = _get_view_url("edit", kwargs={"application_pk": textiles_app_pk})
     belarus = Country.objects.get(name="Belarus")
     ghana = Country.objects.get(name="Ghana")
@@ -29,43 +50,19 @@ def _add_goods_to_app(client, textiles_app_pk, test_import_user):
         "quantity": 5,
     }
 
-    response = client.post(url, data=form_data)
+    response = importer_client.post(url, data=form_data)
 
     assert response.status_code == 302
 
     url = _get_view_url("submit", kwargs={"application_pk": textiles_app_pk})
-    response = client.post(url, data={"confirmation": "I AGREE"})
+    response = importer_client.post(url, data={"confirmation": "I AGREE"})
 
     assert response.status_code == 302
 
 
-@pytest.fixture
-def textiles_app_pk(client, office, importer, test_import_user, test_icms_admin_user):
-    "Creates a textiles application to be used in tests, also tests the create-textiles endpoint"
-
-    client.login(username=test_import_user.username, password="test")
-    url = reverse("import:create-textiles")
-    post_data = {"importer": importer.pk, "importer_office": office.pk}
-
-    count_before = TextilesApplication.objects.all().count()
-
-    resp = client.post(url, post_data)
-    assert TextilesApplication.objects.all().count() == count_before + 1
-
-    application_pk = re.search(r"\d+", resp.url).group(0)
-
-    expected_url = _get_view_url("edit", {"application_pk": application_pk})
-    assertRedirects(resp, expected_url, 302)
-    _add_goods_to_app(client, application_pk, test_import_user)
-
-    return application_pk
-
-
 @pytest.mark.django_db
-def test_textiles_goods_edit(client, textiles_app_pk, test_icms_admin_user):
-    client.login(username=test_icms_admin_user.username, password="test")
+def test_textiles_goods_edit(icms_admin_client, textiles_app_pk, test_icms_admin_user):
     url = _get_view_url("edit-goods-licence", kwargs={"application_pk": textiles_app_pk})
-    textiles_app = TextilesApplication.objects.get(pk=textiles_app_pk)
 
     form_data = {
         "category_licence_description": "A new description",
@@ -73,7 +70,7 @@ def test_textiles_goods_edit(client, textiles_app_pk, test_icms_admin_user):
         "quantity": 4.71,
     }
 
-    response = client.post(url, data=form_data)
+    response = icms_admin_client.post(url, data=form_data)
 
     assert response.status_code == 302
 

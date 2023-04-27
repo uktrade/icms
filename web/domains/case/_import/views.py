@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import django.forms as django_forms
 from django.conf import settings
@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.db.models import QuerySet
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -22,13 +23,28 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import types as chief_types
 from web.domains.chief import utils as chief_utils
 from web.flow.models import ProcessTypes
-from web.models import CountryGroup, Importer, Task, User
+from web.models import (
+    CountryGroup,
+    DerogationsApplication,
+    DFLApplication,
+    ImportApplication,
+    ImportApplicationLicence,
+    ImportApplicationType,
+    Importer,
+    IronSteelApplication,
+    LiteHMRCChiefRequest,
+    OpenIndividualLicenceApplication,
+    OutwardProcessingTradeApplication,
+    PriorSurveillanceApplication,
+    SanctionsAndAdhocApplication,
+    SILApplication,
+    Task,
+    TextilesApplication,
+    WoodQuotaApplication,
+)
+from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 
-from .derogations.models import DerogationsApplication
-from .fa_dfl.models import DFLApplication
-from .fa_oil.models import OpenIndividualLicenceApplication
-from .fa_sil.models import SILApplication
 from .forms import (
     CoverLetterForm,
     CreateImportApplicationForm,
@@ -39,23 +55,9 @@ from .forms import (
     LicenceDateForm,
     OPTLicenceForm,
 )
-from .ironsteel.models import IronSteelApplication
-from .models import (
-    ImportApplication,
-    ImportApplicationLicence,
-    ImportApplicationType,
-    LiteHMRCChiefRequest,
-)
-from .opt.models import OutwardProcessingTradeApplication
-from .sanctions.models import SanctionsAndAdhocApplication
-from .sps.models import PriorSurveillanceApplication
-from .textiles.models import TextilesApplication
-from .wood.models import WoodQuotaApplication
-
-if TYPE_CHECKING:
-    from django.db.models import QuerySet
 
 
+# TODO: ICMSLST-1998 use is_active to show / hide all application types.
 def _get_disabled_application_types() -> dict[str, bool]:
     return {
         "show_opt": ImportApplicationType.objects.get(
@@ -75,7 +77,7 @@ def _get_disabled_application_types() -> dict[str, bool]:
 
 class ImportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
     template_name = "web/domains/case/import/choose.html"
-    permission_required = "web.importer_access"
+    permission_required = Perms.sys.importer_access
 
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -86,7 +88,7 @@ class ImportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
+@permission_required(Perms.sys.importer_access, raise_exception=True)
 @ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_derogations(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
@@ -97,7 +99,7 @@ def create_derogations(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
+@permission_required(Perms.sys.importer_access, raise_exception=True)
 @ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_sanctions(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
@@ -108,7 +110,7 @@ def create_sanctions(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
+@permission_required(Perms.sys.importer_access, raise_exception=True)
 @ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_firearms_oil(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
@@ -120,7 +122,7 @@ def create_firearms_oil(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
+@permission_required(Perms.sys.importer_access, raise_exception=True)
 @ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_firearms_dfl(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
@@ -132,7 +134,7 @@ def create_firearms_dfl(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
+@permission_required(Perms.sys.importer_access, raise_exception=True)
 @ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_firearms_sil(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
@@ -144,7 +146,7 @@ def create_firearms_sil(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
+@permission_required(Perms.sys.importer_access, raise_exception=True)
 @ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_wood_quota(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
@@ -156,7 +158,7 @@ def create_wood_quota(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
+@permission_required(Perms.sys.importer_access, raise_exception=True)
 @ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_opt(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
@@ -167,7 +169,7 @@ def create_opt(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
+@permission_required(Perms.sys.importer_access, raise_exception=True)
 @ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_textiles(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
@@ -178,7 +180,7 @@ def create_textiles(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
+@permission_required(Perms.sys.importer_access, raise_exception=True)
 @ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_sps(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
@@ -189,7 +191,7 @@ def create_sps(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
+@permission_required(Perms.sys.importer_access, raise_exception=True)
 @ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_ironsteel(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _create_application(
@@ -197,11 +199,6 @@ def create_ironsteel(request: AuthenticatedHttpRequest) -> HttpResponse:
         application_type=ImportApplicationType.Types.IRON_STEEL,
         model_class=IronSteelApplication,
     )
-
-
-def _importers_with_agents(user: User) -> list[int]:
-    importers_with_agents = get_objects_for_user(user, ["web.is_agent_of_importer"], Importer)
-    return [importer.pk for importer in importers_with_agents]
 
 
 def _create_application(
@@ -264,11 +261,15 @@ def _create_application(
     else:
         form = form_class(user=request.user)
 
+    importers_with_agents = get_objects_for_user(
+        request.user, [Perms.obj.importer.is_agent], Importer
+    ).values_list("pk", flat=True)
+
     context = {
         "form": form,
         "import_application_type": at,
         "application_title": ProcessTypes(model_class.PROCESS_TYPE).label,
-        "importers_with_agents": _importers_with_agents(request.user),
+        "importers_with_agents": list(importers_with_agents),
         **_get_disabled_application_types(),
     }
 
@@ -276,7 +277,7 @@ def _create_application(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: ImportApplication = get_object_or_404(
@@ -316,7 +317,7 @@ def edit_cover_letter(request: AuthenticatedHttpRequest, *, application_pk: int)
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: ImportApplication = get_object_or_404(
@@ -370,13 +371,13 @@ def edit_licence(request: AuthenticatedHttpRequest, *, application_pk: int) -> H
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def add_endorsement(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     return _add_endorsement(request, application_pk, EndorsementChoiceImportApplicationForm)
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def add_custom_endorsement(
     request: AuthenticatedHttpRequest, *, application_pk: int
 ) -> HttpResponse:
@@ -425,7 +426,7 @@ def _add_endorsement(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_endorsement(
     request: AuthenticatedHttpRequest, *, application_pk: int, endorsement_pk: int
 ) -> HttpResponse:
@@ -467,7 +468,7 @@ def edit_endorsement(
 
 
 @login_required
-@permission_required("web.importer_access", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def delete_endorsement(
     request: AuthenticatedHttpRequest, *, application_pk: int, endorsement_pk: int
@@ -477,12 +478,7 @@ def delete_endorsement(
             ImportApplication.objects.select_for_update(), pk=application_pk
         )
         endorsement = get_object_or_404(application.endorsements, pk=endorsement_pk)
-
         case_progress.application_in_processing(application)
-
-        if not request.user.has_perm("web.is_contact_of_importer", application.importer):
-            raise PermissionDenied
-
         endorsement.delete()
 
         return redirect(
@@ -494,7 +490,7 @@ def delete_endorsement(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def bypass_chief(
     request: AuthenticatedHttpRequest, *, application_pk: int, chief_status: str
@@ -534,7 +530,7 @@ def bypass_chief(
 
 
 class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
     template_name = "web/domains/case/import/imi/list.html"
     context_object_name = "imi_list"
 
@@ -562,7 +558,7 @@ class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
 
 class IMICaseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     template_name = "web/domains/case/manage/imi-case-detail.html"
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
     pk_url_kwarg = "application_pk"
     context_object_name = "process"
     queryset = ImportApplication.objects.select_related(
@@ -604,7 +600,7 @@ class IMICaseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
 
 
 @require_POST
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @login_required
 def imi_confirm_provided(request: AuthenticatedHttpRequest, *, application_pk) -> HttpResponse:
     """Indicates the relevant details have been sent to IMI."""
