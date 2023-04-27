@@ -3,7 +3,12 @@ from typing import TypedDict
 from django.http import HttpRequest
 from guardian.core import ObjectPermissionChecker
 
-from . import can_user_edit_org, can_user_manage_org_contacts, can_user_view_org
+from . import (
+    AppChecker,
+    can_user_edit_org,
+    can_user_manage_org_contacts,
+    can_user_view_org,
+)
 
 
 class UserObjectPerms(ObjectPermissionChecker):
@@ -15,6 +20,11 @@ class UserObjectPerms(ObjectPermissionChecker):
 
     def can_user_view_org(self, org):
         return can_user_view_org(self.user, org)
+
+    def can_view_application(self, application):
+        checker = AppChecker(self.user, application)
+
+        return checker.can_view()
 
 
 class UserObjectPermissionsContext(TypedDict):

@@ -20,7 +20,9 @@
 
       {% if process.status == "COMPLETED" %}
         {% set response_label = 'Sent Responses' if process.is_import_application() else 'Issued Certificates' %}
-        {{ icms_link(request, icms_url('case:applicant-case-history', kwargs={'application_pk': process.pk, 'case_type': case_type}), response_label ) }}
+        {% if user_obj_perms.can_view_application(process) %}
+          {{ icms_link(request, icms_url('case:applicant-case-history', kwargs={'application_pk': process.pk, 'case_type': case_type}), response_label ) }}
+        {% endif %}
       {% endif %}
 
       {% if process.status in ["COMPLETED", "REVOKED"] %}

@@ -24,7 +24,9 @@
     {% if case_type == "import" %}
       {{ icms_link(request, icms_url('case:search-request-variation', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'Variations') }}
       {{ icms_link(request, icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'View Application', "_blank") }}
-      {{ icms_link(request, icms_url('case:applicant-case-history', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'Sent Responses', "_blank") }}
+      {% if user_obj_perms.can_view_application(process) %}
+        {{ icms_link(request, icms_url('case:applicant-case-history', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'Sent Responses', "_blank") }}
+      {% endif %}
     {% else %}
       {{ icms_link(request, icms_url('case:search-open-variation', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'Variations') }}
       {{ icms_link(request, icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'View Case', "_blank") }}
