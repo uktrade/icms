@@ -17,6 +17,7 @@ from web.models import (
     Template,
     User,
 )
+from web.permissions import Perms
 
 
 class CreateImportApplicationForm(forms.Form):
@@ -67,7 +68,7 @@ class CreateImportApplicationForm(forms.Form):
                 "data-minimum-input-length": 0,
                 "data-placeholder": "-- Select Agent",
             },
-            search_fields=("main_importer__in", "importer"),
+            search_fields=("name__icontains",),
             # Key is a name of a field in a form.
             # Value is a name of a field in a model (used in `queryset`).
             dependent_fields={"importer": "main_importer"},
@@ -104,11 +105,11 @@ class CreateImportApplicationForm(forms.Form):
 
         self.user = user
 
-        active_importers = Importer.objects.filter(is_active=True, main_importer__isnull=True)
+        # Return main importers the user can edit or is an agent of.
         importers = get_objects_for_user(
             user,
-            ["web.is_contact_of_importer", "web.is_agent_of_importer"],
-            active_importers,
+            [Perms.obj.importer.edit, Perms.obj.importer.is_agent],
+            Importer.objects.filter(is_active=True, main_importer__isnull=True),
             any_perm=True,
         )
         self.fields["importer"].queryset = importers
@@ -116,12 +117,10 @@ class CreateImportApplicationForm(forms.Form):
             is_active=True, importer__in=importers
         )
 
+        # Return agents linked to importers the user can edit (if any)
         active_agents = Importer.objects.filter(is_active=True, main_importer__in=importers)
-        agents = get_objects_for_user(
-            user,
-            ["web.is_contact_of_importer"],
-            active_agents,
-        )
+        agents = get_objects_for_user(user, [Perms.obj.importer.edit], active_agents)
+
         self.fields["agent"].queryset = agents
         self.fields["agent_office"].queryset = Office.objects.filter(
             is_active=True, importer__in=agents
@@ -135,7 +134,8 @@ class CreateImportApplicationForm(forms.Form):
         if not importer:
             return cleaned_data
 
-        is_agent = self.user.has_perm("web.is_agent_of_importer", importer)
+        is_agent = self.user.has_perm(Perms.obj.importer.is_agent, importer)
+
         if is_agent:
             if not cleaned_data.get("agent"):
                 self.add_error("agent", "You must enter this item")

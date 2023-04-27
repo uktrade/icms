@@ -1,7 +1,6 @@
 import re
 
 import pytest
-from django.test import Client
 
 from web.models import (
     CertificateOfManufactureApplication,
@@ -11,6 +10,7 @@ from web.models import (
     ImportApplicationType,
     OpenIndividualLicenceApplication,
 )
+from web.tests.helpers import get_test_client
 
 
 @pytest.fixture
@@ -101,7 +101,7 @@ def in_progress_agent_imp_appl(importer, agent_importer, test_agent_import_user)
 
 @pytest.mark.django_db
 def test_importer_workbasket(
-    test_import_user,
+    importer_client,
     in_progress_imp_appl,
     submitted_imp_appl,
     in_progress_exp_appl,
@@ -109,10 +109,7 @@ def test_importer_workbasket(
     in_progress_agent_imp_appl,
     submitted_agent_imp_appl,
 ):
-    client = Client()
-    client.login(username=test_import_user.username, password="test")
-    response = client.get("/workbasket/")
-
+    response = importer_client.get("/workbasket/")
     assert response.status_code == 200
 
     html = response.content.decode()
@@ -125,7 +122,7 @@ def test_importer_workbasket(
 
 @pytest.mark.django_db
 def test_exporter_workbasket(
-    test_export_user,
+    exporter_client,
     in_progress_imp_appl,
     submitted_imp_appl,
     in_progress_exp_appl,
@@ -133,9 +130,7 @@ def test_exporter_workbasket(
     in_progress_agent_imp_appl,
     submitted_agent_imp_appl,
 ):
-    client = Client()
-    client.login(username=test_export_user.username, password="test")
-    response = client.get("/workbasket/")
+    response = exporter_client.get("/workbasket/")
 
     assert response.status_code == 200
 
@@ -156,8 +151,7 @@ def test_agent_import_workbasket(
     in_progress_agent_imp_appl,
     submitted_agent_imp_appl,
 ):
-    client = Client()
-    client.login(username=test_agent_import_user.username, password="test")
+    client = get_test_client(test_agent_import_user)
     response = client.get("/workbasket/")
 
     assert response.status_code == 200
