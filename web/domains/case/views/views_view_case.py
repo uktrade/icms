@@ -1,11 +1,15 @@
-from typing import TYPE_CHECKING, NamedTuple
+from typing import NamedTuple
 
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+from django.db.models import QuerySet
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 
 from web.domains.case._import.opt.forms import FurtherQuestionsBaseOPTForm
 from web.domains.case._import.opt.utils import get_fq_form, get_fq_page_name
+from web.domains.case.types import ImpOrExp
+from web.domains.case.utils import check_application_permission, get_case_page_title
 from web.models import (
     AccessRequest,
     CertificateOfFreeSaleApplication,
@@ -26,17 +30,14 @@ from web.models import (
     SanctionsAndAdhocApplication,
     SILApplication,
     TextilesApplication,
+    User,
     WoodQuotaApplication,
 )
+from web.permissions import AppChecker
 from web.types import AuthenticatedHttpRequest
 from web.utils.commodity import annotate_commodity_unit
 
-from ..types import ImpOrExpOrAccess
-from ..utils import check_application_permission, get_case_page_title
-from .utils import get_class_imp_or_exp_or_access
-
-if TYPE_CHECKING:
-    from django.db.models import QuerySet
+from .utils import get_class_imp_or_exp
 
 
 class OPTFurtherQuestionsSharedSection(NamedTuple):
@@ -45,65 +46,90 @@ class OPTFurtherQuestionsSharedSection(NamedTuple):
     supporting_documents: "QuerySet[OutwardProcessingTradeFile]"
 
 
+def check_can_view_application(user: User, application: ImpOrExp) -> None:
+    checker = AppChecker(user, application)
+
+    if not checker.can_view():
+        raise PermissionDenied
+
+
+# TODO: ICMSLST-2000 Need to update all places this view is referenced in templates
+#   Fix all the following places to check if we should show the link:
+#   - 'case:view'
+#   - "case:view"
+#   - get_view_case_url
 @login_required
 def view_case(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
-    model_class = get_class_imp_or_exp_or_access(case_type)
-    application: ImpOrExpOrAccess = get_object_or_404(model_class, pk=application_pk)
+    # Load the record and check the correct permissions
+    match case_type:
+        case "access":
+            application = get_object_or_404(AccessRequest, pk=application_pk)
+            check_application_permission(application, request.user, "access")
 
-    check_application_permission(application, request.user, case_type)
+        case "import" | "export":
+            model_class = get_class_imp_or_exp(case_type)
+            application = get_object_or_404(model_class, pk=application_pk)
+            check_can_view_application(request.user, application)
+        case _:
+            raise ValueError(f"Unknown case_type {case_type}")
 
-    # Access Requests
-    if application.process_type == ImporterAccessRequest.PROCESS_TYPE:
-        return _view_accessrequest(request, application.importeraccessrequest)
+    app = application.get_specific_model()
+    match app:
+        #
+        # Access Requests
+        #
+        case ImporterAccessRequest():
+            return _view_accessrequest(request, app)
+        case ExporterAccessRequest():
+            return _view_accessrequest(request, app)
+        #
+        # Import applications
+        #
+        case OpenIndividualLicenceApplication():
+            return _view_fa_oil(request, app)
 
-    elif application.process_type == ExporterAccessRequest.PROCESS_TYPE:
-        return _view_accessrequest(request, application.exporteraccessrequest)
+        case SILApplication():
+            return _view_fa_sil(request, app)
 
-    # Import applications
-    if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
-        return _view_fa_oil(request, application.openindividuallicenceapplication)
+        case SanctionsAndAdhocApplication():
+            return _view_sanctions_and_adhoc(request, app)
 
-    elif application.process_type == SILApplication.PROCESS_TYPE:
-        return _view_fa_sil(request, application.silapplication)
+        case WoodQuotaApplication():
+            return _view_wood_quota(request, app)
 
-    elif application.process_type == SanctionsAndAdhocApplication.PROCESS_TYPE:
-        return _view_sanctions_and_adhoc(request, application.sanctionsandadhocapplication)
+        case DerogationsApplication():
+            return _view_derogations(request, app)
 
-    elif application.process_type == WoodQuotaApplication.PROCESS_TYPE:
-        return _view_wood_quota(request, application.woodquotaapplication)
+        case DFLApplication():
+            return _view_dfl(request, app)
 
-    elif application.process_type == DerogationsApplication.PROCESS_TYPE:
-        return _view_derogations(request, application.derogationsapplication)
+        case OutwardProcessingTradeApplication():
+            return _view_opt(request, app)
 
-    elif application.process_type == DFLApplication.PROCESS_TYPE:
-        return _view_dfl(request, application.dflapplication)
+        case TextilesApplication():
+            return _view_textiles_quota(request, app)
 
-    elif application.process_type == OutwardProcessingTradeApplication.PROCESS_TYPE:
-        return _view_opt(request, application.outwardprocessingtradeapplication)
+        case PriorSurveillanceApplication():
+            return _view_sps(request, app)
 
-    elif application.process_type == TextilesApplication.PROCESS_TYPE:
-        return _view_textiles_quota(request, application.textilesapplication)
+        case IronSteelApplication():
+            return _view_ironsteel(request, app)
+        #
+        # Export applications
+        #
+        case CertificateOfManufactureApplication():
+            return _view_com(request, app)
 
-    elif application.process_type == PriorSurveillanceApplication.PROCESS_TYPE:
-        return _view_sps(request, application.priorsurveillanceapplication)
+        case CertificateOfFreeSaleApplication():
+            return _view_cfs(request, app)
 
-    elif application.process_type == IronSteelApplication.PROCESS_TYPE:
-        return _view_ironsteel(request, application.ironsteelapplication)
+        case CertificateOfGoodManufacturingPracticeApplication():
+            return _view_gmp(request, app)
 
-    # Export applications
-    elif application.process_type == CertificateOfManufactureApplication.PROCESS_TYPE:
-        return _view_com(request, application.certificateofmanufactureapplication)
-
-    elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
-        return _view_cfs(request, application.certificateoffreesaleapplication)
-
-    elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
-        return _view_gmp(request, application.certificateofgoodmanufacturingpracticeapplication)
-
-    else:
-        raise NotImplementedError(f"Unknown process_type {application.process_type}")
+        case _:
+            raise NotImplementedError(f"Unknown process_type {application.process_type}")
 
 
 def _view_fa_oil(
