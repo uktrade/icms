@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
@@ -11,7 +12,6 @@ from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.services import case_progress
 from web.domains.case.utils import (
-    check_application_permission,
     get_application_form,
     redirect_after_submit,
     submit_application,
@@ -19,7 +19,13 @@ from web.domains.case.utils import (
 )
 from web.domains.file.utils import create_file_model
 from web.domains.template.utils import add_template_data_on_submit
-from web.models import Task
+from web.models import (
+    PriorSurveillanceApplication,
+    PriorSurveillanceContractFile,
+    Task,
+    User,
+)
+from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.currency import convert_gbp_to_euro
 from web.utils.validation import (
@@ -36,7 +42,13 @@ from .forms import (
     ResponsePrepGoodsForm,
     SubmitSPSForm,
 )
-from .models import PriorSurveillanceApplication, PriorSurveillanceContractFile
+
+
+def check_can_edit_application(user: User, application: PriorSurveillanceApplication) -> None:
+    checker = AppChecker(user, application)
+
+    if not checker.can_edit():
+        raise PermissionDenied
 
 
 @login_required
@@ -46,7 +58,7 @@ def edit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             PriorSurveillanceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -86,7 +98,7 @@ def submit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             PriorSurveillanceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
         task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
@@ -152,7 +164,7 @@ def add_supporting_document(
             PriorSurveillanceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -203,7 +215,7 @@ def delete_supporting_document(
             PriorSurveillanceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -223,7 +235,7 @@ def add_contract_document(
             PriorSurveillanceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -301,7 +313,7 @@ def delete_contract_document(
             PriorSurveillanceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -327,7 +339,7 @@ def edit_contract_document(
             PriorSurveillanceApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -360,7 +372,7 @@ def edit_contract_document(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def response_preparation_edit_goods(
     request: AuthenticatedHttpRequest, *, application_pk: int
 ) -> HttpResponse:
