@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
@@ -12,7 +13,6 @@ from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.services import case_progress
 from web.domains.case.utils import (
-    check_application_permission,
     get_application_form,
     redirect_after_submit,
     submit_application,
@@ -21,7 +21,8 @@ from web.domains.case.utils import (
 from web.domains.case.views.utils import get_caseworker_view_readonly_status
 from web.domains.file.utils import create_file_model
 from web.domains.template.utils import add_template_data_on_submit
-from web.models import Task
+from web.models import Task, User, WoodQuotaApplication, WoodQuotaChecklist
+from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import (
     ApplicationErrors,
@@ -39,7 +40,13 @@ from .forms import (
     WoodQuotaChecklistForm,
     WoodQuotaChecklistOptionalForm,
 )
-from .models import WoodQuotaApplication, WoodQuotaChecklist
+
+
+def check_can_edit_application(user: User, application: WoodQuotaApplication) -> None:
+    checker = AppChecker(user, application)
+
+    if not checker.can_edit():
+        raise PermissionDenied
 
 
 @login_required
@@ -49,7 +56,7 @@ def edit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int) -
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -88,7 +95,7 @@ def add_supporting_document(
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -137,7 +144,7 @@ def delete_supporting_document(
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -157,7 +164,7 @@ def add_contract_document(
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -218,7 +225,7 @@ def delete_contract_document(
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -238,7 +245,7 @@ def edit_contract_document(
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -274,7 +281,7 @@ def submit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int)
             WoodQuotaApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
         task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
@@ -334,7 +341,7 @@ def submit_wood_quota(request: AuthenticatedHttpRequest, *, application_pk: int)
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: WoodQuotaApplication = get_object_or_404(
@@ -381,7 +388,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: WoodQuotaApplication = get_object_or_404(
