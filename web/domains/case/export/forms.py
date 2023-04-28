@@ -1,7 +1,6 @@
 import re
 from typing import Any
 
-import structlog as logging
 from django import forms
 from django.db.models.query import QuerySet
 from django.forms.models import ModelForm
@@ -15,6 +14,7 @@ from web.domains.file.utils import ICMSFileField
 from web.forms.mixins import OptionalFormMixin
 from web.models import Exporter, Office, ProductLegislation, User
 from web.models.shared import AddressEntryType, YesNoChoices
+from web.permissions import Perms
 
 from .models import (
     CertificateOfFreeSaleApplication,
@@ -27,8 +27,6 @@ from .models import (
     ExportApplicationType,
     GMPBrand,
 )
-
-logger = logging.get_logger(__name__)
 
 
 class CreateExportApplicationForm(forms.Form):
@@ -76,7 +74,7 @@ class CreateExportApplicationForm(forms.Form):
                 "data-minimum-input-length": 0,
                 "data-placeholder": "-- Select Agent",
             },
-            search_fields=("main_exporter__in", "exporter"),
+            search_fields=("name__icontains",),
             # Key is a name of a field in a form.
             # Value is a name of a field in a model (used in `queryset`).
             dependent_fields={"exporter": "main_exporter"},
@@ -113,11 +111,11 @@ class CreateExportApplicationForm(forms.Form):
 
         self.user = user
 
-        active_exporters = Exporter.objects.filter(is_active=True, main_exporter__isnull=True)
+        # Return main exporters the user can edit or is an agent of.
         exporters = get_objects_for_user(
             user,
-            ["web.is_contact_of_exporter", "web.is_agent_of_exporter"],
-            active_exporters,
+            [Perms.obj.exporter.edit, Perms.obj.exporter.is_agent],
+            Exporter.objects.filter(is_active=True, main_exporter__isnull=True),
             any_perm=True,
         )
         self.fields["exporter"].queryset = exporters
@@ -125,12 +123,10 @@ class CreateExportApplicationForm(forms.Form):
             is_active=True, exporter__in=exporters
         )
 
+        # Return agents linked to exporters the user can edit (if any)
         active_agents = Exporter.objects.filter(is_active=True, main_exporter__in=exporters)
-        agents = get_objects_for_user(
-            user,
-            ["web.is_contact_of_exporter"],
-            active_agents,
-        )
+        agents = get_objects_for_user(user, [Perms.obj.exporter.edit], active_agents)
+
         self.fields["agent"].queryset = agents
         self.fields["agent_office"].queryset = Office.objects.filter(
             is_active=True, exporter__in=agents
@@ -144,7 +140,8 @@ class CreateExportApplicationForm(forms.Form):
         if not exporter:
             return cleaned_data
 
-        is_agent = self.user.has_perm("web.is_agent_of_exporter", exporter)
+        is_agent = self.user.has_perm(Perms.obj.exporter.is_agent, exporter)
+
         if is_agent:
             if not cleaned_data.get("agent"):
                 self.add_error("agent", "You must enter this item")

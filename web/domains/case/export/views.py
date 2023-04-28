@@ -1,6 +1,5 @@
 from typing import NamedTuple
 
-import structlog as logging
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -20,7 +19,6 @@ from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.utils import (
-    check_application_permission,
     get_application_form,
     redirect_after_submit,
     submit_application,
@@ -46,6 +44,7 @@ from web.models import (
     User,
 )
 from web.models.shared import AddressEntryType, YesNoChoices
+from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import delete_file_from_s3
 from web.utils.sentry import capture_exception
@@ -75,12 +74,22 @@ from .forms import (
 )
 from .utils import CustomError, generate_product_template_xlsx, process_products_file
 
-logger = logging.get_logger(__name__)
+
+def check_can_edit_application(
+    user: User,
+    application: CertificateOfFreeSaleApplication
+    | CertificateOfGoodManufacturingPracticeApplication
+    | CertificateOfManufactureApplication,
+) -> None:
+    checker = AppChecker(user, application)
+
+    if not checker.can_edit():
+        raise PermissionDenied
 
 
 class ExportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
     template_name = "web/domains/case/export/choose.html"
-    permission_required = "web.exporter_access"
+    permission_required = Perms.sys.exporter_access
 
 
 class CreateExportApplicationConfig(NamedTuple):
@@ -89,13 +98,8 @@ class CreateExportApplicationConfig(NamedTuple):
     certificate_message: str
 
 
-def _exporters_with_agents(user: User) -> list[int]:
-    exporters_with_agents = get_objects_for_user(user, ["web.is_agent_of_exporter"], Exporter)
-    return [exporter.pk for exporter in exporters_with_agents]
-
-
 @login_required
-@permission_required("web.exporter_access", raise_exception=True)
+@permission_required(Perms.sys.exporter_access, raise_exception=True)
 @ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def create_export_application(
     request: AuthenticatedHttpRequest, *, type_code: str, template_pk: int | None = None
@@ -175,12 +179,16 @@ def create_export_application(
     else:
         form = config.form_class(user=request.user)
 
+    exporters_with_agents = get_objects_for_user(
+        request.user, [Perms.obj.exporter.is_agent], Exporter
+    ).values_list("pk", flat=True)
+
     context = {
         "form": form,
         "export_application_type": application_type,
         "certificate_message": config.certificate_message,
         "application_title": ProcessTypes(config.model_class.PROCESS_TYPE).label,
-        "exporters_with_agents": _exporters_with_agents(request.user),
+        "exporters_with_agents": list(exporters_with_agents),
         "case_type": "export",
         "application_template": app_template,
     }
@@ -261,7 +269,7 @@ def edit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         application: CertificateOfManufactureApplication = get_object_or_404(
             CertificateOfManufactureApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         form = get_application_form(application, request, EditCOMForm, SubmitCOMForm)
@@ -290,7 +298,7 @@ def submit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         application: CertificateOfManufactureApplication = get_object_or_404(
             CertificateOfManufactureApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
         task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
 
@@ -335,7 +343,7 @@ def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         if request.method == "POST":
@@ -371,7 +379,7 @@ def cfs_add_schedule(request: AuthenticatedHttpRequest, *, application_pk: int) 
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         new_schedule = CFSSchedule.objects.create(application=application, created_by=request.user)
@@ -392,7 +400,7 @@ def cfs_edit_schedule(
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
@@ -460,7 +468,7 @@ def cfs_delete_schedule(
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = application.schedules.get(pk=schedule_pk)
@@ -477,7 +485,7 @@ def cfs_set_manufacturer(
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
@@ -520,7 +528,7 @@ def cfs_delete_manufacturer(
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
@@ -552,7 +560,7 @@ def cfs_add_product(
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
@@ -610,7 +618,7 @@ def cfs_edit_product(
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
@@ -665,7 +673,7 @@ def cfs_delete_product(
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
@@ -694,7 +702,7 @@ def cfs_add_ingredient(
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
@@ -750,7 +758,7 @@ def cfs_edit_ingredient(
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
@@ -813,7 +821,7 @@ def cfs_delete_ingredient(
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
@@ -850,7 +858,7 @@ def cfs_add_product_type(
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
@@ -906,7 +914,7 @@ def cfs_edit_product_type(
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
@@ -966,7 +974,7 @@ def product_spreadsheet_download_template(
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -1003,7 +1011,7 @@ def product_spreadsheet_upload(
             application: CertificateOfFreeSaleApplication = get_object_or_404(
                 CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
             )
-            check_application_permission(application, request.user, "export")
+            check_can_edit_application(request.user, application)
 
             case_progress.application_in_progress(application)
 
@@ -1063,7 +1071,7 @@ def cfs_delete_product_type(
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         schedule: CFSSchedule = get_object_or_404(
@@ -1101,7 +1109,7 @@ def cfs_copy_schedule(
         application: CertificateOfFreeSaleApplication = get_object_or_404(
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         schedule_to_copy: CFSSchedule = get_object_or_404(application.schedules, pk=schedule_pk)
@@ -1156,7 +1164,7 @@ def submit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             CertificateOfFreeSaleApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
         task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
@@ -1294,7 +1302,7 @@ def edit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             pk=application_pk,
         )
 
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -1363,7 +1371,7 @@ def add_gmp_document(
             pk=application_pk,
         )
 
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -1421,7 +1429,7 @@ def delete_gmp_document(
             pk=application_pk,
         )
 
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -1441,7 +1449,7 @@ def submit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             CertificateOfGoodManufacturingPracticeApplication.objects.select_for_update(),
             pk=application_pk,
         )
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
         task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
 
@@ -1535,7 +1543,7 @@ def gmp_add_brand(request: AuthenticatedHttpRequest, *, application_pk: int) -> 
             pk=application_pk,
         )
 
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -1573,7 +1581,7 @@ def gmp_edit_brand(
             pk=application_pk,
         )
 
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -1616,7 +1624,7 @@ def gmp_delete_brand(
             pk=application_pk,
         )
 
-        check_application_permission(application, request.user, "export")
+        check_can_edit_application(request.user, application)
 
         brand = application.brands.get(pk=brand_pk)
         brand.delete()
