@@ -237,7 +237,8 @@ def icms_admin_client(test_icms_admin_user) -> Client:
 def importer_client(importer_one_main_contact) -> Client:
     # TODO: Make fixtures more consistent:
     #       rename all test_ fixtures
-    #       change all occurrences of test_import_user to use importer_one_main_contact user.
+    #       change all occurrences of test_import_user to importer_one_main_contact.
+    #       change all occurrences of test_export_user to exporter_one_main_contact.
     return get_test_client(importer_one_main_contact)
 
 
@@ -336,8 +337,8 @@ def fa_sil_app_submitted(importer_client, importer, office, importer_contact) ->
 
 
 @pytest.fixture()
-def exporter_client(test_export_user) -> Client:
-    return get_test_client(test_export_user)
+def exporter_client(exporter_one_main_contact) -> Client:
+    return get_test_client(exporter_one_main_contact)
 
 
 @pytest.fixture()
