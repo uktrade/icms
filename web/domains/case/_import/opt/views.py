@@ -2,6 +2,7 @@ from typing import Any
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import ModelForm, model_to_dict
 from django.http import HttpResponse
@@ -13,7 +14,6 @@ from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
 from web.domains.case.services import case_progress
 from web.domains.case.utils import (
-    check_application_permission,
     get_application_form,
     redirect_after_submit,
     submit_application,
@@ -22,7 +22,15 @@ from web.domains.case.utils import (
 from web.domains.case.views.utils import get_caseworker_view_readonly_status
 from web.domains.file.utils import create_file_model
 from web.domains.template.utils import add_template_data_on_submit
-from web.models import CommodityGroup, Task
+from web.models import (
+    CommodityGroup,
+    OPTChecklist,
+    OutwardProcessingTradeApplication,
+    OutwardProcessingTradeFile,
+    Task,
+    User,
+)
+from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.validation import ApplicationErrors, PageErrors, create_page_errors
 
@@ -40,13 +48,15 @@ from .forms import (
     SubmitOptForm,
     SubmitTemporaryExportedGoodsOPTForm,
 )
-from .models import (
-    CP_CATEGORIES,
-    OPTChecklist,
-    OutwardProcessingTradeApplication,
-    OutwardProcessingTradeFile,
-)
+from .models import CP_CATEGORIES
 from .utils import get_fq_form, get_fq_page_name
+
+
+def check_can_edit_application(user: User, application: OutwardProcessingTradeApplication) -> None:
+    checker = AppChecker(user, application)
+
+    if not checker.can_edit():
+        raise PermissionDenied
 
 
 @login_required
@@ -56,7 +66,7 @@ def edit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -96,7 +106,7 @@ def edit_compensating_products(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -142,7 +152,7 @@ def edit_temporary_exported_goods(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -186,7 +196,7 @@ def edit_further_questions(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -247,7 +257,7 @@ def edit_further_questions_shared(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -297,7 +307,7 @@ def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
         task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
@@ -421,7 +431,7 @@ def add_document(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -477,7 +487,7 @@ def delete_document(
             OutwardProcessingTradeApplication.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, "import")
+        check_can_edit_application(request.user, application)
 
         case_progress.application_in_progress(application)
 
@@ -499,7 +509,7 @@ def _get_compensating_products_category_descriptions() -> dict[str, str]:
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     with transaction.atomic():
         application: OutwardProcessingTradeApplication = get_object_or_404(
@@ -543,7 +553,7 @@ def manage_checklist(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def response_preparation_edit_compensating_products(
     request: AuthenticatedHttpRequest, *, application_pk: int
 ) -> HttpResponse:
@@ -583,7 +593,7 @@ def response_preparation_edit_compensating_products(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def response_preparation_edit_temporary_exported_goods(
     request: AuthenticatedHttpRequest, *, application_pk: int
 ) -> HttpResponse:
