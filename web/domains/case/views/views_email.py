@@ -28,7 +28,8 @@ from web.models import (
     SILApplication,
     Template,
 )
-from web.notify import email
+from web.notify.email import send_email
+from web.notify.utils import create_case_email
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3, get_s3_client
 
@@ -88,7 +89,7 @@ def manage_case_emails(
 @login_required
 @permission_required("web.ilb_admin", raise_exception=True)
 @require_POST
-def create_case_email(
+def create_draft_case_email(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp(case_type)
@@ -155,7 +156,7 @@ def edit_case_email(
                         file_content = get_file_from_s3(document.path, client=s3_client)
                         attachments.append((document.filename, file_content))
 
-                    email.send_email(
+                    send_email(
                         case_email.subject,
                         case_email.body,
                         [case_email.to],
@@ -361,7 +362,7 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
         return CaseEmailConfig(application=application, file_qs=files)
 
     else:
-        raise Exception(f"CaseEmail for application not supported {application.process_type}")
+        raise ValueError(f"CaseEmail for application not supported {application.process_type}")
 
 
 def _get_selected_product_data(biocidal_schedules: "QuerySet[CFSSchedule]") -> str:
@@ -407,28 +408,32 @@ def _get_case_email_application(application: ImpOrExp) -> ApplicationsWithCaseEm
         return application.certificateofgoodmanufacturingpracticeapplication
 
     else:
-        raise Exception(f"CaseEmail for application not supported {application.process_type}")
+        raise ValueError(f"CaseEmail for application not supported {application.process_type}")
 
 
 def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
     pt = ProcessTypes
 
-    # import applications
-    if application.process_type in [pt.FA_OIL, pt.FA_DFL, pt.FA_SIL]:
-        return _create_fa_case_email(application)
+    match application.process_type:
+        # import applications
+        case pt.FA_OIL | pt.FA_DFL | pt.FA_SIL:
+            return _create_fa_case_email(application)
 
-    elif application.process_type == pt.SANCTIONS:
-        return _create_sanction_case_email(application)
+        case pt.SANCTIONS:
+            return _create_sanction_case_email(application)
 
-    # certificate applications
-    elif application.process_type == pt.CFS:
-        return create_cfs_case_email(application)
+        # certificate applications
+        case pt.CFS:
+            return create_cfs_case_email(application)
 
-    elif application.process_type == pt.GMP:
-        return create_gmp_case_email(application)
+        case pt.GMP:
+            attachments = application.supporting_documents.filter(is_active=True)
+            return create_case_email(
+                application, "CA_BEIS_EMAIL", settings.ICMS_GMP_BEIS_EMAIL, attachments=attachments
+            )
 
-    else:
-        raise Exception(f"CaseEmail for application not supported {application.process_type}")
+        case _:
+            raise ValueError(f"CaseEmail for application not supported {application.process_type}")
 
 
 def _create_fa_case_email(application: FaImportApplication) -> models.CaseEmail:
@@ -503,38 +508,3 @@ def create_cfs_case_email(application: CertificateOfFreeSaleApplication) -> mode
         subject=template.template_title,
         body=content,
     )
-
-
-def create_gmp_case_email(
-    application: CertificateOfGoodManufacturingPracticeApplication,
-) -> models.CaseEmail:
-    template = Template.objects.get(is_active=True, template_code="CA_BEIS_EMAIL")
-    content = template.get_content(
-        {
-            "CASE_REFERENCE": application.reference,
-            "APPLICATION_TYPE": ProcessTypes.GMP.label,
-            "EXPORTER_NAME": application.exporter,
-            "EXPORTER_ADDRESS": application.exporter_office,
-            "MANUFACTURER_NAME": application.manufacturer_name,
-            "MANUFACTURER_ADDRESS": application.manufacturer_address,
-            "MANUFACTURER_POSTCODE": application.manufacturer_postcode,
-            "RESPONSIBLE_PERSON_NAME": application.responsible_person_name,
-            "RESPONSIBLE_PERSON_ADDRESS": application.responsible_person_address,
-            "RESPONSIBLE_PERSON_POSTCODE": application.responsible_person_postcode,
-            "BRAND_NAMES": ", ".join([b.brand_name for b in application.brands.all()]),
-            "CASE_OFFICER_NAME": application.case_owner.full_name,
-            "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
-            "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
-        }
-    )
-
-    case_email = models.CaseEmail.objects.create(
-        to=settings.ICMS_GMP_BEIS_EMAIL,
-        subject=template.template_title,
-        body=content,
-    )
-
-    attachments = application.supporting_documents.filter(is_active=True)
-    case_email.attachments.add(*attachments)
-
-    return case_email

@@ -265,7 +265,7 @@ case_progress_urls = [
 
 email_urls = [
     path("manage/", views_email.manage_case_emails, name="manage-case-emails"),
-    path("create/", views_email.create_case_email, name="create-case-email"),
+    path("create/", views_email.create_draft_case_email, name="create-case-email"),
     path(
         "<int:case_email_pk>/",
         include(
