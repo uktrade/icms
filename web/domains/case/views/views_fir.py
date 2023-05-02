@@ -1,4 +1,7 @@
+from typing import Literal
+
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse
@@ -6,47 +9,75 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
-from guardian.shortcuts import get_users_with_perms
 
+from web.domains.case.fir.forms import (
+    FurtherInformationRequestForm,
+    FurtherInformationRequestResponseForm,
+)
+from web.domains.case.forms import DocumentForm
 from web.domains.case.services import case_progress
-from web.domains.case.shared import ImpExpStatus
+from web.domains.case.types import ImpOrExpOrAccess
+from web.domains.case.utils import get_case_page_title
 from web.domains.file.utils import create_file_model
 from web.flow.models import ProcessTypes
-from web.models import Template, User
+from web.models import FurtherInformationRequest, Template, User
 from web.notify import notify
-from web.types import AuthenticatedHttpRequest
-
-from .. import forms
-from ..fir import forms as fir_forms
-from ..fir.models import FurtherInformationRequest
-from ..types import ImpOrExpOrAccess
-from ..utils import (
-    check_application_permission,
-    get_case_page_title,
-    view_application_file,
+from web.permissions import (
+    AppChecker,
+    Perms,
+    get_org_obj_permissions,
+    organisation_get_contacts,
 )
+from web.types import AuthenticatedHttpRequest
+from web.utils.s3 import get_file_from_s3
+
 from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp_or_access
 
+CASE_TYPES = Literal["import", "export", "access"]
 
-def _application_is_processing(application: ImpOrExpOrAccess, case_type: str):
+
+def _check_process_state(application: ImpOrExpOrAccess, case_type: CASE_TYPES):
     """Check a Process instance is being processed by a caseworker.
 
     Access requests and import/export applications check different statuses.
     """
 
     match case_type.casefold():
-        case "import" | "export":
-            case_progress.application_in_processing(application)
         case "access":
             case_progress.access_request_in_processing(application)
+        case "import" | "export":
+            case_progress.application_in_processing(application)
         case _:
             raise ValueError(f"Unknown Case type: {case_type}")
 
 
+def _check_process_permission(
+    user: User, application: ImpOrExpOrAccess, case_type: CASE_TYPES
+) -> None:
+    """Check a user has the correct access to modify / access a further information request."""
+
+    match case_type.casefold():
+        case "access":
+            if user != application.submitted_by:
+                raise PermissionDenied
+        case "import" | "export":
+            checker = AppChecker(user, application)
+
+            if not checker.can_edit():
+                raise PermissionDenied
+        case _:
+            raise ValueError(f"Unknown Case type: {case_type}")
+
+
+#
+# *****************************************************************************
+# The following views are ILB Admin only views
+# *****************************************************************************
+#
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def manage_firs(
-    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: CASE_TYPES
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp_or_access(case_type)
 
@@ -57,7 +88,7 @@ def manage_firs(
 
         # Access requests don't have a case_owner so can't call get_caseworker_view_readonly_status
         if application.process_type in [ProcessTypes.EAR, ProcessTypes.IAR]:
-            _application_is_processing(application, case_type)
+            _check_process_state(application, case_type)
             readonly_view = False
         else:
             readonly_view = get_caseworker_view_readonly_status(
@@ -106,9 +137,9 @@ def _manage_fir_redirect(application_pk: int, case_type: str) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
-def add_fir(request, *, application_pk: int, case_type: str) -> HttpResponse:
+def add_fir(request, *, application_pk: int, case_type: CASE_TYPES) -> HttpResponse:
     model_class = get_class_imp_or_exp_or_access(case_type)
 
     with transaction.atomic():
@@ -116,7 +147,7 @@ def add_fir(request, *, application_pk: int, case_type: str) -> HttpResponse:
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        _application_is_processing(application, case_type)
+        _check_process_state(application, case_type)
 
         template = Template.objects.get(template_code="IAR_RFI_EMAIL", is_active=True)
         title_mapping = {"REQUEST_REFERENCE": application.reference}
@@ -143,36 +174,35 @@ def add_fir(request, *, application_pk: int, case_type: str) -> HttpResponse:
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
-def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> HttpResponse:
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: CASE_TYPES) -> HttpResponse:
     with transaction.atomic():
         model_class = get_class_imp_or_exp_or_access(case_type)
         application: ImpOrExpOrAccess = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
+        _check_process_state(application, case_type)
 
         if case_type == "access":
             contacts = [application.submitted_by]
 
-        elif case_type == "import":
-            contacts = get_users_with_perms(
-                application.importer, only_with_perms_in=["is_contact_of_importer"]
-            ).filter(user_permissions__codename="importer_access")
+        elif case_type in ["import", "export"]:
+            # TODO: Revisit in ICMSLST-1964 (I haven't investigated if this is correct).
+            if application.is_import_application():
+                org = application.agent or application.importer
+            else:
+                org = application.agent or application.exporter
 
-        elif case_type == "export":
-            contacts = get_users_with_perms(
-                application.exporter, only_with_perms_in=["is_contact_of_exporter"]
-            ).filter(user_permissions__codename="exporter_access")
+            obj_perms = get_org_obj_permissions(org)
+            contacts = organisation_get_contacts(org, perms=[obj_perms.edit.codename])
 
         else:
-            raise NotImplementedError(f"Unknown case_type {case_type}")
+            raise ValueError(f"Unknown case_type {case_type}")
 
         fir = get_object_or_404(application.further_information_requests.draft(), pk=fir_pk)
 
-        _application_is_processing(application, case_type)
-
         if request.method == "POST":
-            form = fir_forms.FurtherInformationRequestForm(request.POST, instance=fir)
+            form = FurtherInformationRequestForm(request.POST, instance=fir)
 
             if form.is_valid():
                 fir = form.save()
@@ -188,7 +218,7 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> Ht
 
                 return _manage_fir_redirect(application_pk, case_type)
         else:
-            form = fir_forms.FurtherInformationRequestForm(instance=fir)
+            form = FurtherInformationRequestForm(instance=fir)
 
         context = {
             "process": application,
@@ -205,10 +235,10 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: str) -> Ht
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def delete_fir(
-    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: CASE_TYPES
 ) -> HttpResponse:
     with transaction.atomic():
         model_class = get_class_imp_or_exp_or_access(case_type)
@@ -217,7 +247,7 @@ def delete_fir(
         )
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
 
-        _application_is_processing(application, case_type)
+        _check_process_state(application, case_type)
 
         fir.is_active = False
         fir.status = FurtherInformationRequest.DELETED
@@ -227,10 +257,10 @@ def delete_fir(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def withdraw_fir(
-    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: CASE_TYPES
 ) -> HttpResponse:
     with transaction.atomic():
         model_class = get_class_imp_or_exp_or_access(case_type)
@@ -239,7 +269,7 @@ def withdraw_fir(
         )
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
 
-        _application_is_processing(application, case_type)
+        _check_process_state(application, case_type)
 
         fir.status = FurtherInformationRequest.DRAFT
         fir.save()
@@ -248,10 +278,10 @@ def withdraw_fir(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def close_fir(
-    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: CASE_TYPES
 ) -> HttpResponse:
     with transaction.atomic():
         model_class = get_class_imp_or_exp_or_access(case_type)
@@ -259,7 +289,7 @@ def close_fir(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        _application_is_processing(application, case_type)
+        _check_process_state(application, case_type)
 
         fir = get_object_or_404(application.further_information_requests.active(), pk=fir_pk)
         fir.status = FurtherInformationRequest.CLOSED
@@ -269,19 +299,33 @@ def close_fir(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def add_fir_file(
-    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: CASE_TYPES
 ) -> HttpResponse:
     redirect_url = "case:edit-fir"
     template_name = "web/domains/case/fir/add-fir-file.html"
 
-    return _add_fir_file(request, application_pk, fir_pk, case_type, redirect_url, template_name)
+    return _add_fir_file(
+        request,
+        application_pk,
+        fir_pk,
+        case_type,
+        redirect_url,
+        template_name,
+        # Perms.sys.ilb_admin already checked so don't check more permissions.
+        check_permission=False,
+    )
 
 
+#
+# *****************************************************************************
+# The following views are shared between an ILB Admin and an applicant
+# *****************************************************************************
+#
 @login_required
 def add_fir_response_file(
-    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: CASE_TYPES
 ) -> HttpResponse:
     redirect_url = "case:respond-fir"
     template_name = "web/domains/case/fir/add-fir-response-file.html"
@@ -293,19 +337,23 @@ def _add_fir_file(
     request: AuthenticatedHttpRequest,
     application_pk: int,
     fir_pk: int,
-    case_type: str,
+    case_type: CASE_TYPES,
     redirect_url: str,
     template_name: str,
+    *,
+    check_permission: bool = True,
 ) -> HttpResponse:
     with transaction.atomic():
         model_class = get_class_imp_or_exp_or_access(case_type)
         application: ImpOrExpOrAccess = get_object_or_404(model_class, pk=application_pk)
-        check_application_permission(application, request.user, case_type)
+
+        if check_permission:
+            _check_process_permission(request.user, application, case_type)
 
         fir = get_object_or_404(application.further_information_requests, pk=fir_pk)
 
         if request.method == "POST":
-            form = forms.DocumentForm(data=request.POST, files=request.FILES)
+            form = DocumentForm(data=request.POST, files=request.FILES)
 
             if form.is_valid():
                 document = form.cleaned_data.get("document")
@@ -322,7 +370,7 @@ def _add_fir_file(
                     )
                 )
         else:
-            form = forms.DocumentForm()
+            form = DocumentForm()
 
         context = {
             "process": application,
@@ -347,28 +395,47 @@ def view_fir_file(
     application_pk: int,
     fir_pk: int,
     file_pk: int,
-    case_type: str,
+    case_type: CASE_TYPES,
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp_or_access(case_type)
     application: ImpOrExpOrAccess = get_object_or_404(model_class, pk=application_pk)
+
+    if not request.user.has_perm(Perms.sys.ilb_admin):
+        _check_process_permission(request.user, application, case_type)
+
     fir = get_object_or_404(application.further_information_requests, pk=fir_pk)
 
-    return view_application_file(request.user, application, fir.files, file_pk, case_type)
+    document = fir.files.get(pk=file_pk)
+    file_content = get_file_from_s3(document.path)
+
+    response = HttpResponse(content=file_content, content_type=document.content_type)
+    response["Content-Disposition"] = f'attachment; filename="{document.filename}"'
+
+    return response
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def delete_fir_file(
     request: AuthenticatedHttpRequest,
     application_pk: int,
     fir_pk: int,
     file_pk: int,
-    case_type: str,
+    case_type: CASE_TYPES,
 ) -> HttpResponse:
     redirect_url = "case:edit-fir"
 
-    return _delete_fir_file(request.user, application_pk, fir_pk, file_pk, case_type, redirect_url)
+    return _delete_fir_file(
+        request.user,
+        application_pk,
+        fir_pk,
+        file_pk,
+        case_type,
+        redirect_url,
+        # Perms.sys.ilb_admin already checked so don't check more permissions.
+        check_permission=False,
+    )
 
 
 @login_required
@@ -378,7 +445,7 @@ def delete_fir_response_file(
     application_pk: int,
     fir_pk: int,
     file_pk: int,
-    case_type: str,
+    case_type: CASE_TYPES,
 ):
     redirect_url = "case:respond-fir"
 
@@ -386,14 +453,23 @@ def delete_fir_response_file(
 
 
 def _delete_fir_file(
-    user: User, application_pk: int, fir_pk: int, file_pk: int, case_type: str, redirect_url: str
+    user: User,
+    application_pk: int,
+    fir_pk: int,
+    file_pk: int,
+    case_type: CASE_TYPES,
+    redirect_url: str,
+    *,
+    check_permission: bool = True,
 ) -> HttpResponse:
     with transaction.atomic():
         model_class = get_class_imp_or_exp_or_access(case_type)
         application: ImpOrExpOrAccess = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, user, case_type)
+
+        if check_permission:
+            _check_process_permission(user, application, case_type)
 
         document = application.further_information_requests.get(pk=fir_pk).files.get(pk=file_pk)
         document.is_active = False
@@ -407,17 +483,21 @@ def _delete_fir_file(
     )
 
 
+#
+# *****************************************************************************
+# The following views are applicant only views
+# *****************************************************************************
+#
 @login_required
 def list_firs(
-    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: CASE_TYPES
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp_or_access(case_type)
 
-    with transaction.atomic():
-        application: ImpOrExpOrAccess = get_object_or_404(
-            model_class.objects.select_for_update(), pk=application_pk
-        )
-        check_application_permission(application, request.user, case_type)
+    application: ImpOrExpOrAccess = get_object_or_404(model_class, pk=application_pk)
+
+    _check_process_permission(request.user, application, case_type)
+    _check_process_state(application, case_type)
 
     context = {
         "process": application,
@@ -434,21 +514,20 @@ def list_firs(
 
 @login_required
 def respond_fir(
-    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: str
+    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: CASE_TYPES
 ) -> HttpResponse:
     with transaction.atomic():
         model_class = get_class_imp_or_exp_or_access(case_type)
         application: ImpOrExpOrAccess = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-        check_application_permission(application, request.user, case_type)
-        case_progress.check_expected_status(
-            application, [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
-        )
+        _check_process_permission(request.user, application, case_type)
+        _check_process_state(application, case_type)
+
         fir = get_object_or_404(application.further_information_requests.open(), pk=fir_pk)
 
         if request.method == "POST":
-            form = fir_forms.FurtherInformationRequestResponseForm(instance=fir, data=request.POST)
+            form = FurtherInformationRequestResponseForm(instance=fir, data=request.POST)
 
             if form.is_valid():
                 fir = form.save(commit=False)
@@ -464,7 +543,7 @@ def respond_fir(
 
                 return redirect(reverse("workbasket"))
         else:
-            form = fir_forms.FurtherInformationRequestResponseForm(instance=fir)
+            form = FurtherInformationRequestResponseForm(instance=fir)
 
     context = {
         "process": application,
