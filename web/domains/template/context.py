@@ -1,6 +1,9 @@
 from typing import Protocol
 
+from django.conf import settings
+
 from web.domains.case.services import document_pack
+from web.flow.models import ProcessTypes
 from web.models import AccessRequest, ExportApplication, ImportApplication, Process
 from web.types import DocumentTypes
 
@@ -95,6 +98,14 @@ class EmailTemplateContext:
 
     def _application_context(self, item: str) -> str:
         match item:
+            case "APPLICATION_TYPE":
+                return self.process.PROCESS_TYPE.label
+            case "CASE_OFFICER_EMAIL":
+                return settings.ILB_CONTACT_EMAIL
+            case "CASE_OFFICER_NAME":
+                return self.process.case_owner.full_name
+            case "CASE_OFFICER_PHONE":
+                return settings.ILB_CONTACT_PHONE
             case "CASE_REFERENCE":
                 return self.process.reference
         return self._context(item)
@@ -112,10 +123,38 @@ class EmailTemplateContext:
                 pack = document_pack.pack_active_get(self.process)
                 certificates = document_pack.doc_ref_certificates_all(pack)
                 return ", ".join(certificates.values_list("reference", flat=True))
+            case "EXPORTER_ADDRESS":
+                return str(self.process.exporter_office)
+            case "EXPORTER_NAME":
+                return str(self.process.exporter)
+
+        match self.process.process_type:
+            case ProcessTypes.GMP:
+                return self._gmp_app_context(item)
+
         return self._application_context(item)
 
     def _access_context(self, item: str) -> str:
         return self._context(item)
+
+    def _gmp_app_context(self, item: str) -> str:
+        match item:
+            case "MANUFACTURER_NAME":
+                return self.process.manufacturer_name
+            case "MANUFACTURER_ADDRESS":
+                return self.process.manufacturer_address
+            case "MANUFACTURER_POSTCODE":
+                return self.process.manufacturer_postcode
+            case "RESPONSIBLE_PERSON_ADDRESS":
+                return self.process.responsible_person_address
+            case "RESPONSIBLE_PERSON_NAME":
+                return self.process.responsible_person_name
+            case "RESPONSIBLE_PERSON_POSTCODE":
+                return self.process.responsible_person_postcode
+            case "BRAND_NAMES":
+                return ", ".join(self.process.brands.values_list("brand_name", flat=True))
+
+        return self._application_context(item)
 
     def _context(self, item: str) -> str:
         match item:

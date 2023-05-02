@@ -7,12 +7,14 @@ from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
 from web.models import (
+    CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     Commodity,
     Constabulary,
     Country,
     DFLApplication,
     ExportApplicationType,
+    GMPBrand,
     OpenIndividualLicenceApplication,
     SILApplication,
     WoodQuotaApplication,
@@ -299,6 +301,65 @@ def create_in_progress_com_app(
     return com_app
 
 
+def create_in_progress_gmp_app(
+    exporter_client: "Client", exporter: "Exporter", office: "Office", exporter_contact: "User"
+) -> CertificateOfGoodManufacturingPracticeApplication:
+    app_pk = create_export_app(
+        client=exporter_client,
+        type_code=ExportApplicationType.Types.GMP.value,
+        exporter_pk=exporter.pk,
+        office_pk=office.pk,
+    )
+
+    form_data = {
+        "contact": exporter_contact.pk,
+        "countries": Country.objects.first().pk,
+        "is_responsible_person": "yes",
+        "responsible_person_name": "RP Name",
+        "responsible_person_postcode": "RP Postcode",
+        "responsible_person_address": "RP Address",
+        "responsible_person_country": "GB",
+        "is_manufacturer": "yes",
+        "manufacturer_name": "MAN Name",
+        "manufacturer_postcode": "MAN Postcode",
+        "manufacturer_address": "MAN Address",
+        "manufacturer_country": "GB",
+        "gmp_certificate_issued": "ISO_22716",
+        "auditor_accredited": "yes",
+        "auditor_certified": "yes",
+    }
+
+    save_app_data(
+        client=exporter_client, view_name="export:gmp-edit", app_pk=app_pk, form_data=form_data
+    )
+
+    gmp_app = CertificateOfGoodManufacturingPracticeApplication.objects.get(pk=app_pk)
+    GMPBrand.objects.create(application=gmp_app, brand_name="A Brand")
+
+    add_app_file(
+        client=exporter_client,
+        view_name="export:gmp-add-document",
+        app_pk=app_pk,
+        url_kwargs={"file_type": "ISO_22716"},
+    )
+
+    add_app_file(
+        client=exporter_client,
+        view_name="export:gmp-add-document",
+        app_pk=app_pk,
+        url_kwargs={"file_type": "ISO_17021"},
+    )
+
+    add_app_file(
+        client=exporter_client,
+        view_name="export:gmp-add-document",
+        app_pk=app_pk,
+        url_kwargs={"file_type": "ISO_17065"},
+    )
+
+    return gmp_app
+
+
 def create_import_app(*, client: "Client", view_name: str, importer_pk: int, office_pk: int) -> int:
     """Creates an application and returns the primary key"""
 
@@ -342,11 +403,17 @@ def save_app_data(
 
 
 def add_app_file(
-    *, client: "Client", view_name: str, app_pk: int, post_data: dict[str, Any] | None = None
+    *,
+    client: "Client",
+    view_name: str,
+    app_pk: int,
+    url_kwargs: dict[str, Any] | None = None,
+    post_data: dict[str, Any] | None = None,
 ) -> None:
     """Add a document to an application."""
 
-    url = reverse(view_name, kwargs={"application_pk": app_pk})
+    url_kwargs = url_kwargs or {}
+    url = reverse(view_name, kwargs={"application_pk": app_pk} | url_kwargs)
 
     extra = post_data or {}
     form_data = {"document": SimpleUploadedFile("myimage.png", b"file_content"), **extra}

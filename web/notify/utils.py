@@ -1,8 +1,11 @@
 import itertools
 
 from django.contrib.auth.models import Permission
+from django.db.models import QuerySet
 
-from web.models import AlternativeEmail, PersonalEmail
+from web.domains.case.types import ImpOrExp
+from web.domains.template.utils import get_email_template_subject_body
+from web.models import AlternativeEmail, CaseEmail, PersonalEmail
 
 
 def get_user_emails_by_ids(user_ids):
@@ -40,3 +43,25 @@ def get_case_officers_emails():
     return list(
         Permission.objects.get(codename="ilb_admin").user_set.values_list("email", flat=True)
     )
+
+
+def create_case_email(
+    application: ImpOrExp,
+    template_code: str,
+    to: str | None = None,
+    cc: list[str] | None = None,
+    attachments: QuerySet | None = None,
+) -> CaseEmail:
+    subject, body = get_email_template_subject_body(application, template_code)
+
+    case_email = CaseEmail.objects.create(
+        subject=subject,
+        body=body,
+        to=to,
+        cc_address_list=cc,
+    )
+
+    if attachments:
+        case_email.attachments.add(*attachments)
+
+    return case_email
