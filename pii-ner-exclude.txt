@@ -2764,3 +2764,6 @@ RP Address
 MAN Name
 MAN Address
 "Check a user
+SuperUser
+is_staff=True
+is_superuser=True

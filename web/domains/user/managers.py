@@ -30,12 +30,3 @@ class UserManager(BaseUserManager):
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
         return self.create_user(username, password, **extra_fields)
-
-    def account_active(self):
-        return self.filter(account_status=self.model.ACTIVE)
-
-    def importer_access(self):
-        return self.account_active().filter(user_permissions__codename="importer_access")
-
-    def exporter_access(self):
-        return self.account_active().filter(user_permissions__codename="exporter_access")
