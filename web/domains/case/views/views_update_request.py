@@ -1,26 +1,39 @@
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
-from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case import forms, models
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
-from web.domains.case.utils import check_application_permission, get_case_page_title
-from web.models import Task, Template
+from web.domains.case.utils import get_case_page_title
+from web.models import Task, Template, User
 from web.notify import email
+from web.permissions import (
+    AppChecker,
+    Perms,
+    get_org_obj_permissions,
+    organisation_get_contacts,
+)
 from web.types import AuthenticatedHttpRequest
 
 from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
 
 
+def check_can_edit_application(user: User, application: ImpOrExp) -> None:
+    checker = AppChecker(user, application)
+
+    if not checker.can_edit():
+        raise PermissionDenied
+
+
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_GET
 def list_update_requests(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
@@ -55,7 +68,7 @@ def list_update_requests(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def manage_update_requests(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
@@ -116,18 +129,18 @@ def manage_update_requests(
                     process=application, task_type=Task.TaskType.PREPARE, previous=task
                 )
 
-                if case_type == "import":
-                    contacts = get_users_with_perms(
-                        application.importer, only_with_perms_in=["is_contact_of_importer"]
-                    ).filter(user_permissions__codename="importer_access")
-                elif case_type == "export":
-                    contacts = get_users_with_perms(
-                        application.exporter, only_with_perms_in=["is_contact_of_exporter"]
-                    ).filter(user_permissions__codename="exporter_access")
+                # TODO: Revisit in ICMSLST-1963 (I haven't investigated if this is correct).
+                if case_type in ["import", "export"]:
+                    if application.is_import_application():
+                        org = application.agent or application.importer
+                    else:
+                        org = application.agent or application.exporter
+
+                    obj_perms = get_org_obj_permissions(org)
+
+                    contacts = organisation_get_contacts(org, perms=[obj_perms.edit.codename])
                 else:
-                    raise NotImplementedError(
-                        f"case type {case_type} is not implemented for update requests"
-                    )
+                    raise ValueError(f"case type {case_type} invalid for update requests")
 
                 recipients = list(contacts.values_list("email", flat=True))
 
@@ -172,7 +185,7 @@ def manage_update_requests(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def close_update_request(
     request: AuthenticatedHttpRequest,
@@ -215,11 +228,11 @@ def start_update_request(
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
         )
-
-        check_application_permission(application, request.user, case_type)
+        check_can_edit_application(request.user, application)
         case_progress.check_expected_status(
             application, [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
         )
+
         update_requests = application.update_requests.filter(is_active=True)
         update_request = get_object_or_404(
             update_requests.filter(is_active=True).filter(status=models.UpdateRequest.Status.OPEN),
@@ -263,8 +276,7 @@ def respond_update_request(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, case_type)
-
+        check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
         update_requests = application.update_requests.filter(is_active=True)
