@@ -1,7 +1,6 @@
 from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Window
 from django.db.models.functions import RowNumber
@@ -22,8 +21,8 @@ from web.domains.case.forms import (
 from web.domains.case.services import document_pack, reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
-from web.domains.case.utils import check_application_permission
 from web.models import Process, Task, VariationRequest
+from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 
 from .mixins import ApplicationAndTaskRelatedObjectMixin
@@ -31,10 +30,10 @@ from .utils import get_caseworker_view_readonly_status
 
 
 class VariationRequestManageView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
-    """Case management view for viewing application variations."""
+    """ILB Case management view for viewing application variations."""
 
     # PermissionRequiredMixin config
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.sys.ilb_admin]
 
     # DetailView config
     model = Process
@@ -78,7 +77,7 @@ class VariationRequestManageView(PermissionRequiredMixin, LoginRequiredMixin, De
 class VariationRequestCancelView(
     ApplicationAndTaskRelatedObjectMixin, PermissionRequiredMixin, LoginRequiredMixin, UpdateView
 ):
-    """Case management view for cancelling a request variation.
+    """ILB Case management view for cancelling a request variation.
 
     Used by both Import & Export applications
     Import applications require a "reject_cancellation_reason"
@@ -94,7 +93,7 @@ class VariationRequestCancelView(
     next_task_type = None
 
     # PermissionRequiredMixin config
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.sys.ilb_admin]
 
     # UpdateView config
     success_url = reverse_lazy("workbasket")
@@ -154,7 +153,7 @@ class VariationRequestCancelView(
 class VariationRequestRequestUpdateView(
     ApplicationAndTaskRelatedObjectMixin, PermissionRequiredMixin, LoginRequiredMixin, UpdateView
 ):
-    """Case management view for requesting an update from the applicant regarding the variation request."""
+    """ILB Case management view for requesting an update from the applicant."""
 
     # ApplicationAndTaskRelatedObjectMixin Config
     current_status = [ImpExpStatus.VARIATION_REQUESTED]
@@ -163,7 +162,7 @@ class VariationRequestRequestUpdateView(
     next_task_type = Task.TaskType.VR_REQUEST_CHANGE
 
     # PermissionRequiredMixin
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.sys.ilb_admin]
 
     # UpdateView config
     pk_url_kwarg = "variation_request_pk"
@@ -207,7 +206,7 @@ class VariationRequestCancelUpdateRequestView(
     LoginRequiredMixin,
     View,
 ):
-    """View to allow admin to cancel the variation request update from the applicant."""
+    """View to allow ILB admin to cancel the variation request update from the applicant."""
 
     # ApplicationAndTaskRelatedObjectMixin
     current_status = [ImpExpStatus.VARIATION_REQUESTED]
@@ -218,7 +217,7 @@ class VariationRequestCancelUpdateRequestView(
     pk_url_kwarg = "variation_request_pk"
 
     # PermissionRequiredMixin
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.sys.ilb_admin]
 
     # View
     http_method_names = ["post"]
@@ -290,9 +289,4 @@ class VariationRequestRespondToUpdateRequestView(
     def has_permission(self):
         application = Process.objects.get(pk=self.kwargs["application_pk"]).get_specific_model()
 
-        try:
-            check_application_permission(application, self.request.user, self.kwargs["case_type"])
-        except PermissionDenied:
-            return False
-
-        return True
+        return AppChecker(self.request.user, application).can_vary()

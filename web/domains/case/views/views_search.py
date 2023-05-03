@@ -317,9 +317,7 @@ class RequestVariationUpdateView(RequestVariationOpenBase):
     def has_object_permission(self) -> bool:
         """Return True if the user has the correct object permissions."""
 
-        checker = AppChecker(self.request.user, self.application)
-
-        return checker.can_vary()
+        return AppChecker(self.request.user, self.application).can_vary()
 
     def form_valid(self, form: VariationRequestForm) -> HttpResponseRedirect:
         """Store the variation request before redirecting to the success url."""
