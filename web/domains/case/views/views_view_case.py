@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, render
 from web.domains.case._import.opt.forms import FurtherQuestionsBaseOPTForm
 from web.domains.case._import.opt.utils import get_fq_form, get_fq_page_name
 from web.domains.case.types import ImpOrExp
-from web.domains.case.utils import check_application_permission, get_case_page_title
+from web.domains.case.utils import get_case_page_title
 from web.models import (
     AccessRequest,
     CertificateOfFreeSaleApplication,
@@ -53,11 +53,6 @@ def check_can_view_application(user: User, application: ImpOrExp) -> None:
         raise PermissionDenied
 
 
-# TODO: ICMSLST-2000 Need to update all places this view is referenced in templates
-#   Fix all the following places to check if we should show the link:
-#   - 'case:view'
-#   - "case:view"
-#   - get_view_case_url
 @login_required
 def view_case(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
@@ -66,7 +61,8 @@ def view_case(
     match case_type:
         case "access":
             application = get_object_or_404(AccessRequest, pk=application_pk)
-            check_application_permission(application, request.user, "access")
+            if request.user != application.submitted_by:
+                raise PermissionDenied
 
         case "import" | "export":
             model_class = get_class_imp_or_exp(case_type)
