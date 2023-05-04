@@ -22,15 +22,12 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.types import ImpOrExp
-from web.domains.case.utils import (
-    check_application_permission,
-    end_process_task,
-    get_case_page_title,
-)
+from web.domains.case.utils import end_process_task, get_case_page_title
 from web.domains.template.utils import get_email_template_subject_body
 from web.flow import errors
 from web.models import Task, User, VariationRequest, WithdrawApplication
 from web.notify.email import send_to_application_contacts
+from web.permissions import AppChecker
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import delete_file_from_s3, get_s3_client
 from web.utils.validation import ApplicationErrors
@@ -42,6 +39,13 @@ if TYPE_CHECKING:
     from django.db.models import QuerySet
 
     from web.domains.case.types import DocumentPack
+
+
+def check_can_edit_application(user: User, application: ImpOrExp) -> None:
+    checker = AppChecker(user, application)
+
+    if not checker.can_edit():
+        raise PermissionDenied
 
 
 # "Applicant Case Management" Views
@@ -56,7 +60,7 @@ def cancel_case(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, case_type)
+        check_can_edit_application(request.user, application)
 
         try:
             case_progress.check_expected_status(application, [ImpExpStatus.IN_PROGRESS])
@@ -86,7 +90,8 @@ def withdraw_case(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, case_type)
+        check_can_edit_application(request.user, application)
+
         case_progress.check_expected_status(
             application,
             [ImpExpStatus.SUBMITTED, ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED],
@@ -147,7 +152,7 @@ def archive_withdrawal(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        check_application_permission(application, request.user, case_type)
+        check_can_edit_application(request.user, application)
         case_progress.check_expected_status(
             application,
             [ImpExpStatus.SUBMITTED, ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED],
@@ -730,9 +735,7 @@ def cancel_authorisation(
         return redirect(reverse("workbasket"))
 
 
-class ViewIssuedCaseDocumentsView(
-    ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, TemplateView
-):
+class ViewIssuedCaseDocumentsView(ApplicationTaskMixin, LoginRequiredMixin, TemplateView):
     # ApplicationTaskMixin Config
     current_status = [ImpExpStatus.COMPLETED]
 
@@ -740,15 +743,8 @@ class ViewIssuedCaseDocumentsView(
     http_method_names = ["get"]
     template_name = "web/domains/case/view-case-documents.html"
 
-    def has_permission(self):
-        application = self.get_object().get_specific_model()
-
-        try:
-            check_application_permission(application, self.request.user, self.kwargs["case_type"])
-        except PermissionDenied:
-            return False
-
-        return True
+    def has_object_permission(self) -> bool:
+        return AppChecker(self.request.user, self.application).can_view()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -774,7 +770,7 @@ class ViewIssuedCaseDocumentsView(
 
 @method_decorator(transaction.atomic, name="post")
 class ClearIssuedCaseDocumentsFromWorkbasket(
-    ApplicationAndTaskRelatedObjectMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+    ApplicationAndTaskRelatedObjectMixin, LoginRequiredMixin, View
 ):
     # ApplicationAndTaskRelatedObjectMixin Config
     current_status = [ImpExpStatus.COMPLETED]
@@ -782,20 +778,13 @@ class ClearIssuedCaseDocumentsFromWorkbasket(
     # View Config
     http_method_names = ["post"]
 
-    def has_permission(self):
-        self.set_application_and_task()
-
-        try:
-            check_application_permission(
-                self.application, self.request.user, self.kwargs["case_type"]
-            )
-        except PermissionDenied:
-            return False
-
-        return True
+    def has_object_permission(self) -> bool:
+        return AppChecker(self.request.user, self.application).can_view()
 
     def post(self, request: HttpRequest, *args, **kwargs) -> Any:
         """Remove the document pack from the workbasket."""
+        self.set_application_and_task()
+
         pack_pk = self.kwargs["issued_document_pk"]
 
         try:

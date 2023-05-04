@@ -167,6 +167,13 @@ class ApplicationAndTaskRelatedObjectMixin:
 
         case_progress.check_expected_status(self.application, self.current_status)
 
+        if not self.has_object_permission():
+            raise PermissionDenied
+
+    def has_object_permission(self) -> bool:
+        """Implement in child view if required."""
+        return True
+
     def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
         self.set_application_and_task()
         return super().get(request, *args, **kwargs)  # type: ignore[misc]
