@@ -1,11 +1,39 @@
 from typing import Protocol
 
 from django.conf import settings
+from django.db.models import QuerySet
 
 from web.domains.case.services import document_pack
 from web.flow.models import ProcessTypes
-from web.models import AccessRequest, ExportApplication, ImportApplication, Process
+from web.models import (
+    CFSProduct,
+    CFSSchedule,
+    ExportApplication,
+    ImportApplication,
+    Process,
+)
 from web.types import DocumentTypes
+
+
+def _get_selected_product_data(biocidal_schedules: QuerySet[CFSSchedule]) -> str:
+    products = CFSProduct.objects.filter(schedule__in=biocidal_schedules)
+    product_data = []
+
+    for p in products:
+        p_types = (str(pk) for pk in p.product_type_numbers.values_list("pk", flat=True))
+        ingredient_list = p.active_ingredients.values_list("name", "cas_number")
+        ingredients = (f"{name} ({cas})" for name, cas in ingredient_list)
+
+        product = "\n".join(
+            [
+                f"Product: {p.product_name}",
+                f"Product type numbers: {', '.join(p_types)}",
+                f"Active ingredients (CAS numbers): f{', '.join(ingredients)}",
+            ]
+        )
+        product_data.append(product)
+
+    return "\n\n".join(product_data)
 
 
 class TemplateContextProcessor(Protocol):
@@ -88,8 +116,6 @@ class EmailTemplateContext:
                 return self._import_context(item)
             case ExportApplication():
                 return self._export_context(item)
-            case AccessRequest():
-                return self._access_context(item)
             case _:
                 raise ValueError(
                     "Process must be an instance of ImportApplication /"
@@ -108,6 +134,8 @@ class EmailTemplateContext:
                 return settings.ILB_CONTACT_PHONE
             case "CASE_REFERENCE":
                 return self.process.reference
+            case "CONTACT_EMAIL":
+                return self.process.contact.email
         return self._context(item)
 
     def _import_context(self, item: str) -> str:
@@ -119,6 +147,10 @@ class EmailTemplateContext:
 
     def _export_context(self, item: str) -> str:
         match item:
+            case "CERT_COUNTRIES":
+                return "\n".join(
+                    self.process.countries.filter(is_active=True).values_list("name", flat=True)
+                )
             case "CERTIFICATE_REFERENCES":
                 pack = document_pack.pack_active_get(self.process)
                 certificates = document_pack.doc_ref_certificates_all(pack)
@@ -131,11 +163,10 @@ class EmailTemplateContext:
         match self.process.process_type:
             case ProcessTypes.GMP:
                 return self._gmp_app_context(item)
+            case ProcessTypes.CFS:
+                return self._cfs_app_context(item)
 
         return self._application_context(item)
-
-    def _access_context(self, item: str) -> str:
-        return self._context(item)
 
     def _gmp_app_context(self, item: str) -> str:
         match item:
@@ -153,6 +184,15 @@ class EmailTemplateContext:
                 return self.process.responsible_person_postcode
             case "BRAND_NAMES":
                 return ", ".join(self.process.brands.values_list("brand_name", flat=True))
+
+        return self._application_context(item)
+
+    def _cfs_app_context(self, item: str) -> str:
+        match item:
+            case "SELECTED_PRODUCTS":
+                return _get_selected_product_data(
+                    self.process.schedules.filter(legislations__is_biocidal=True)
+                )
 
         return self._application_context(item)
 

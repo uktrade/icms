@@ -12,6 +12,7 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import end_process_task
 from web.models import (
+    CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     DFLApplication,
@@ -30,6 +31,7 @@ from web.models.shared import YesNoNAChoices
 from web.tests.helpers import CaseURLS, get_test_client
 
 from .application_utils import (
+    create_in_progress_cfs_app,
     create_in_progress_com_app,
     create_in_progress_fa_dfl_app,
     create_in_progress_fa_oil_app,
@@ -379,6 +381,21 @@ def gmp_app_submitted(
 ) -> CertificateOfGoodManufacturingPracticeApplication:
     app = create_in_progress_gmp_app(exporter_client, exporter, exporter_office, exporter_contact)
     submit_app(client=exporter_client, view_name="export:gmp-submit", app_pk=app.pk)
+
+    app.refresh_from_db()
+
+    case_progress.check_expected_status(app, [ImpExpStatus.SUBMITTED])
+    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
+
+    return app
+
+
+@pytest.fixture()
+def cfs_app_submitted(
+    exporter_client, exporter, exporter_office, exporter_contact
+) -> CertificateOfFreeSaleApplication:
+    app = create_in_progress_cfs_app(exporter_client, exporter, exporter_office, exporter_contact)
+    submit_app(client=exporter_client, view_name="export:cfs-submit", app_pk=app.pk)
 
     app.refresh_from_db()
 

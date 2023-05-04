@@ -7,8 +7,10 @@ from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
 from web.models import (
+    CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
+    CFSSchedule,
     Commodity,
     Constabulary,
     Country,
@@ -16,6 +18,7 @@ from web.models import (
     ExportApplicationType,
     GMPBrand,
     OpenIndividualLicenceApplication,
+    ProductLegislation,
     SILApplication,
     WoodQuotaApplication,
 )
@@ -358,6 +361,80 @@ def create_in_progress_gmp_app(
     )
 
     return gmp_app
+
+
+def create_in_progress_cfs_app(
+    exporter_client: "Client", exporter: "Exporter", office: "Office", exporter_contact: "User"
+) -> CertificateOfFreeSaleApplication:
+    app_pk = create_export_app(
+        client=exporter_client,
+        type_code=ExportApplicationType.Types.FREE_SALE.value,
+        exporter_pk=exporter.pk,
+        office_pk=office.pk,
+    )
+
+    form_data = {
+        "contact": exporter_contact.pk,
+        "countries": Country.objects.first().pk,
+    }
+
+    save_app_data(
+        client=exporter_client, view_name="export:cfs-edit", app_pk=app_pk, form_data=form_data
+    )
+
+    cfs_app = CertificateOfFreeSaleApplication.objects.get(pk=app_pk)
+
+    schedule = cfs_app.schedules.first()
+
+    schedule_data = {
+        "exporter_status": CFSSchedule.ExporterStatus.IS_MANUFACTURER,
+        "brand_name_holder": "yes",
+        "product_eligibility": CFSSchedule.ProductEligibility.MEET_UK_PRODUCT_SAFETY,
+        "goods_placed_on_uk_market": "no",
+        "goods_export_only": "yes",
+        "any_raw_materials": "no",
+        "country_of_manufacture": Country.objects.first().pk,
+        "schedule_statements_accordance_with_standards": True,
+        "schedule_statements_is_responsible_person": True,
+        "manufacturer_name": "Man Name",
+        "manufacturer_postcode": "Man Postcode",
+        "manufacturer_address": "Man Address",
+    }
+
+    schedule_kwargs = {"application_pk": app_pk, "schedule_pk": schedule.pk}
+    edit_schedule_url = reverse("export:cfs-schedule-edit", kwargs=schedule_kwargs)
+    resp = exporter_client.post(edit_schedule_url, schedule_data)
+    assert resp.status_code == 302
+
+    # Add legislations
+    schedule.refresh_from_db()
+    legislation = ProductLegislation.objects.filter(is_active=True, is_biocidal=True).first()
+    schedule.legislations.add(legislation)
+
+    # Add a product to the schedule
+    add_product_url = reverse("export:cfs-schedule-add-product", kwargs=schedule_kwargs)
+
+    resp = exporter_client.post(add_product_url, {"product_name": "A Product"})
+    assert resp.status_code == 302
+
+    product = schedule.products.first()
+    product_kwargs = schedule_kwargs | {"product_pk": product.pk}
+
+    # Add an ingredient to the product
+    add_ingredient_url = reverse("export:cfs-schedule-add-ingredient", kwargs=product_kwargs)
+    resp = exporter_client.post(
+        add_ingredient_url, {"name": "A Ingredient", "cas_number": "11-22-3"}
+    )
+    assert resp.status_code == 302
+
+    # Add product type numbers to the product
+    add_product_type_number_url = reverse(
+        "export:cfs-schedule-add-product-type", kwargs=product_kwargs
+    )
+    resp = exporter_client.post(add_product_type_number_url, {"product_type_number": 1})
+    assert resp.status_code == 302
+
+    return cfs_app
 
 
 def create_import_app(*, client: "Client", view_name: str, importer_pk: int, office_pk: int) -> int:

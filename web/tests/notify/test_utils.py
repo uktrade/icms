@@ -29,9 +29,9 @@ def test_get_notification_emails():
     assert emails[1] == "second_alternative@example.com"  # /PS-IGNORE
 
 
-def test_create_new_gmp_case_email(icms_admin_client, gmp_app_submitted):
+def test_create_gmp_case_beis_email(icms_admin_client, gmp_app_submitted):
     app = gmp_app_submitted
-    icms_admin_client.post(CaseURLS.take_ownership(gmp_app_submitted.pk, "export"))
+    icms_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
     app.refresh_from_db()
 
     attachments = app.supporting_documents.filter(is_active=True)
@@ -51,3 +51,18 @@ def test_create_new_gmp_case_email(icms_admin_client, gmp_app_submitted):
         "We have received a Certificate of Good Manufacturing Practice application"
         in case_email.body
     )
+
+
+def test_create_cfs_case_hse_email(icms_admin_client, cfs_app_submitted):
+    app = cfs_app_submitted
+
+    icms_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
+    app.refresh_from_db()
+
+    case_email = utils.create_case_email(
+        app, "CA_HSE_EMAIL", "to_address@example.com"  # /PS-IGNORE
+    )
+
+    assert case_email.to == "to_address@example.com"  # /PS-IGNORE
+    assert case_email.subject == "Biocidal Product Enquiry"
+    assert "The application is for the following biocidal products" in case_email.body
