@@ -694,9 +694,7 @@ def view_section5_document(
     get_object_or_404(application.user_section5, pk=section5_pk)
 
     # Permission checks in view_application_file
-    return view_application_file(
-        request.user, application, application.user_section5, section5_pk, "import"
-    )
+    return view_application_file(request.user, application, application.user_section5, section5_pk)
 
 
 @login_required
@@ -781,7 +779,7 @@ def view_verified_section5_document(
     )
 
     # Permission checks in view_application_file
-    return view_application_file(request.user, application, section5.files, document_pk, "import")
+    return view_application_file(request.user, application, section5.files, document_pk)
 
 
 @login_required

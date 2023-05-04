@@ -472,9 +472,7 @@ def view_document(
         OutwardProcessingTradeApplication, pk=application_pk
     )
 
-    return view_application_file(
-        request.user, application, application.documents, document_pk, "import"
-    )
+    return view_application_file(request.user, application, application.documents, document_pk)
 
 
 @require_POST

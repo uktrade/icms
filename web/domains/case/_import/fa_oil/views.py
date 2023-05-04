@@ -429,7 +429,7 @@ def view_upload_document(
     document = report_firearm.document
 
     # Permissions checks in view_application_file
-    return view_application_file(request.user, application, File.objects, document.pk, "import")
+    return view_application_file(request.user, application, File.objects, document.pk)
 
 
 @login_required

@@ -113,5 +113,4 @@ def view_case_document(
         application=application,
         related_file_model=File.objects,
         file_pk=cdr.document.pk,
-        case_type=case_type,
     )

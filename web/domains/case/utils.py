@@ -72,17 +72,12 @@ def end_process_task(task: Task, user: Optional["User"] = None) -> None:
 
 
 def view_application_file(
-    user: User, application: ImpOrExpOrAccess, related_file_model: Any, file_pk: int, case_type: str
+    user: User, application: ImpOrExp, related_file_model: Any, file_pk: int
 ) -> HttpResponse:
-    if case_type == "access":
-        # TODO: ICMSLST-1945 Revisit when doing access request permissions
-        # Further information requests files linked to access requests.
-        check_application_permission(application, user, "access")
-    else:
-        checker = AppChecker(user, application)
+    checker = AppChecker(user, application)
 
-        if not checker.can_view():
-            raise PermissionDenied
+    if not checker.can_view():
+        raise PermissionDenied
 
     document = related_file_model.get(pk=file_pk)
     file_content = get_file_from_s3(document.path)

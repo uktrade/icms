@@ -198,7 +198,7 @@ def view_document(
     application: TextilesApplication = get_object_or_404(TextilesApplication, pk=application_pk)
 
     return view_application_file(
-        request.user, application, application.supporting_documents, document_pk, "import"
+        request.user, application, application.supporting_documents, document_pk
     )
 
 

@@ -240,7 +240,7 @@ def view_document(
     application: IronSteelApplication = get_object_or_404(IronSteelApplication, pk=application_pk)
 
     return view_application_file(
-        request.user, application, application.supporting_documents, document_pk, "import"
+        request.user, application, application.supporting_documents, document_pk
     )
 
 
@@ -318,9 +318,7 @@ def view_certificate(
 ) -> HttpResponse:
     application = get_object_or_404(IronSteelApplication, pk=application_pk)
 
-    return view_application_file(
-        request.user, application, application.certificates, document_pk, "import"
-    )
+    return view_application_file(request.user, application, application.certificates, document_pk)
 
 
 @require_POST

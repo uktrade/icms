@@ -455,7 +455,7 @@ def view_certificate_document(
 
     # Permission checks in view_application_file
     return view_application_file(
-        request.user, application, application.user_imported_certificates, certificate_pk, "import"
+        request.user, application, application.user_imported_certificates, certificate_pk
     )
 
 
@@ -546,9 +546,7 @@ def view_authority_document(
     )
 
     # Permission checks in view_application_file
-    return view_application_file(
-        request.user, application, firearms_authority.files, document_pk, "import"
-    )
+    return view_application_file(request.user, application, firearms_authority.files, document_pk)
 
 
 @login_required
