@@ -180,7 +180,7 @@ def organisation_get_contacts(
     # Ensure they have org access
     org_contacts = filter_users_with_org_access(org, org_contacts)
 
-    return org_contacts
+    return org_contacts.filter(is_active=True)
 
 
 def organisation_add_contact(org: ORGANISATION, user: User) -> None:

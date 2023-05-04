@@ -9,6 +9,7 @@ from web.domains.file.utils import ICMSFileField
 from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import DateInput
 from web.models import ExportApplication, ImportApplication, User
+from web.permissions import organisation_get_contacts
 from web.types import AuthenticatedHttpRequest
 
 from .models import (
@@ -227,14 +228,15 @@ class CaseEmailResponseForm(forms.ModelForm):
         fields = ("response",)
 
 
-# TODO: ICMSLST-2005 Update to correct contacts
 def application_contacts(application: ImpOrExp) -> "QuerySet[User]":
-    if application.agent:
-        users = application.get_agent_contacts()
+    if application.is_import_application():
+        org = application.agent or application.importer
     else:
-        users = application.get_org_contacts()
+        org = application.agent or application.exporter
 
-    return users.filter(is_active=True)
+    users = organisation_get_contacts(org)
+
+    return users
 
 
 class VariationRequestForm(forms.ModelForm):

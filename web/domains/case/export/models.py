@@ -1,20 +1,14 @@
-from typing import TYPE_CHECKING, final
+from typing import final
 
 from django.conf import settings
 from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
-from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case.models import ApplicationBase, DocumentPackBase
 from web.domains.file.models import File
 from web.flow.models import ProcessTypes
 from web.models.shared import AddressEntryType, YesNoChoices
 from web.types import TypedTextChoices
-
-if TYPE_CHECKING:
-    from django.db.models import QuerySet
-
-    from web.models import User
 
 
 class ExportApplicationType(models.Model):
@@ -155,12 +149,6 @@ class ExportApplication(ApplicationBase):
             return "export:gmp-submit"
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
-
-    def get_org_contacts(self) -> "QuerySet[User]":
-        return get_users_with_perms(self.exporter, only_with_perms_in=["is_contact_of_exporter"])
-
-    def get_agent_contacts(self) -> "QuerySet[User]":
-        return get_users_with_perms(self.agent, only_with_perms_in=["is_contact_of_exporter"])
 
     def get_specific_model(self) -> "ExportApplication":
         return super().get_specific_model()
