@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -18,11 +16,6 @@ CASE_NOTE_STATUSES = (
     (CASE_NOTE_DRAFT, "Draft"),
     (CASE_NOTE_COMPLETED, "Completed"),
 )
-
-if TYPE_CHECKING:
-    from django.db.models import QuerySet
-
-    from web.models import User
 
 
 class VariationRequest(models.Model):
@@ -270,14 +263,6 @@ class ApplicationBase(Process):
 
     def get_edit_view_name(self) -> str:
         """Get the edit view name."""
-        raise NotImplementedError
-
-    def get_org_contacts(self) -> "QuerySet[User]":
-        """Org (Importer or Exporter) contacts."""
-        raise NotImplementedError
-
-    def get_agent_contacts(self) -> "QuerySet[User]":
-        """Agent contacts."""
         raise NotImplementedError
 
     def get_reference(self) -> str:

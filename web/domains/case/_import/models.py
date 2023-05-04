@@ -1,20 +1,13 @@
 import uuid
-from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
-from guardian.shortcuts import get_users_with_perms
 
 from web.domains.case.models import ApplicationBase, DocumentPackBase
 from web.flow.models import ProcessTypes
 from web.models.shared import EnumJsonEncoder, YesNoNAChoices
 from web.types import TypedTextChoices
-
-if TYPE_CHECKING:
-    from django.db.models import QuerySet
-
-    from web.models import User
 
 
 class ImportApplicationType(models.Model):
@@ -304,14 +297,6 @@ class ImportApplication(ApplicationBase):
             return "import:ironsteel:submit"
         else:
             raise NotImplementedError(f"Unknown process_type {self.process_type}")
-
-    # TODO: ICMSLST-2005 Remove
-    def get_org_contacts(self) -> "QuerySet[User]":
-        return get_users_with_perms(self.importer, only_with_perms_in=["is_contact_of_importer"])
-
-    # TODO: ICMSLST-2005 Remove
-    def get_agent_contacts(self) -> "QuerySet[User]":
-        return get_users_with_perms(self.agent, only_with_perms_in=["is_contact_of_importer"])
 
     @property
     def application_approved(self):
