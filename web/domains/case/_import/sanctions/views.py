@@ -300,7 +300,7 @@ def view_supporting_document(
     application = get_object_or_404(SanctionsAndAdhocApplication, pk=application_pk)
 
     return view_application_file(
-        request.user, application, application.supporting_documents, document_pk, "import"
+        request.user, application, application.supporting_documents, document_pk
     )
 
 

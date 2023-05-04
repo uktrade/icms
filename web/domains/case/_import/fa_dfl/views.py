@@ -240,7 +240,7 @@ def view_goods_certificate(
 
     # Permission checks in view_application_file
     return view_application_file(
-        request.user, application, application.goods_certificates, document_pk, "import"
+        request.user, application, application.goods_certificates, document_pk
     )
 
 
@@ -573,7 +573,7 @@ def view_upload_document(
     report_firearm: DFLSupplementaryReportFirearm = report.firearms.get(pk=report_firearm_pk)
     document = report_firearm.document
 
-    return view_application_file(request.user, application, File.objects, document.pk, "import")
+    return view_application_file(request.user, application, File.objects, document.pk)
 
 
 @login_required

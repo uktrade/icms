@@ -1414,7 +1414,7 @@ def view_gmp_document(
     )
 
     return view_application_file(
-        request.user, application, application.supporting_documents, document_pk, "export"
+        request.user, application, application.supporting_documents, document_pk
     )
 
 

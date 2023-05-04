@@ -201,7 +201,7 @@ def view_supporting_document(
     )
 
     return view_application_file(
-        request.user, application, application.supporting_documents, document_pk, "import"
+        request.user, application, application.supporting_documents, document_pk
     )
 
 
@@ -299,7 +299,6 @@ def view_contract_document(
         application,
         PriorSurveillanceContractFile.objects,
         application.contract_file_id,
-        "import",
     )
 
 

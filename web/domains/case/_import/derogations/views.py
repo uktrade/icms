@@ -148,7 +148,7 @@ def view_supporting_document(
     )
 
     return view_application_file(
-        request.user, application, application.supporting_documents, document_pk, "import"
+        request.user, application, application.supporting_documents, document_pk
     )
 
 
