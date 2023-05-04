@@ -797,6 +797,7 @@ class ClearIssuedCaseDocumentsFromWorkbasket(
         return redirect(reverse("workbasket"))
 
 
+# TODO: ICMSLST-2005 Revisit
 def _get_primary_recipients(application: ImpOrExp) -> "QuerySet[User]":
     if application.agent:
         return application.get_agent_contacts()
@@ -804,6 +805,7 @@ def _get_primary_recipients(application: ImpOrExp) -> "QuerySet[User]":
         return application.get_org_contacts()
 
 
+# TODO: ICMSLST-2005 Revisit
 def _get_copy_recipients(application: ImpOrExp) -> "QuerySet[User]":
     if application.agent:
         return application.get_org_contacts()

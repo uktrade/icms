@@ -19,42 +19,6 @@ from web.utils.s3 import get_file_from_s3
 from .types import ImpOrExp, ImpOrExpOrAccess
 
 
-def check_application_permission(application: ImpOrExpOrAccess, user: User, case_type: str) -> None:
-    """Check the given user has permission to access the given application."""
-
-    if user.has_perm("web.ilb_admin"):
-        return
-
-    if case_type == "access":
-        if user != application.submitted_by:
-            raise PermissionDenied
-
-    elif case_type in ["import", "export"]:
-        assert isinstance(application, (ImportApplication, ExportApplication))
-
-        if not _has_importer_exporter_access(user, case_type):
-            raise PermissionDenied
-
-        is_contact = application.user_is_contact_of_org(user)
-        is_agent = application.user_is_agent_of_org(user)
-
-        if not is_contact and not is_agent:
-            raise PermissionDenied
-
-    else:
-        # Should never get here.
-        raise PermissionDenied
-
-
-def _has_importer_exporter_access(user: User, case_type: str) -> bool:
-    if case_type == "import":
-        return user.has_perm("web.importer_access")
-    elif case_type == "export":
-        return user.has_perm("web.exporter_access")
-
-    raise NotImplementedError(f"Unknown case_type {case_type}")
-
-
 def end_process_task(task: Task, user: Optional["User"] = None) -> None:
     """End the supplied task.
 

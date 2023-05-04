@@ -227,6 +227,7 @@ class CaseEmailResponseForm(forms.ModelForm):
         fields = ("response",)
 
 
+# TODO: ICMSLST-2005 Update to correct contacts
 def application_contacts(application: ImpOrExp) -> "QuerySet[User]":
     if application.agent:
         users = application.get_agent_contacts()

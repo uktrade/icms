@@ -272,14 +272,6 @@ class ApplicationBase(Process):
         """Get the edit view name."""
         raise NotImplementedError
 
-    def user_is_contact_of_org(self, user: "User") -> bool:
-        """Is the user a contact of the org (Importer or Exporter)"""
-        raise NotImplementedError
-
-    def user_is_agent_of_org(self, user: "User") -> bool:
-        """Is the user agent of the org (Importer or Exporter)"""
-        raise NotImplementedError
-
     def get_org_contacts(self) -> "QuerySet[User]":
         """Org (Importer or Exporter) contacts."""
         raise NotImplementedError
