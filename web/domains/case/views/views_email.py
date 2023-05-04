@@ -16,8 +16,6 @@ from web.flow.models import ProcessTypes
 from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
-    CFSProduct,
-    CFSSchedule,
     Constabulary,
     DFLApplication,
     File,
@@ -365,27 +363,6 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
         raise ValueError(f"CaseEmail for application not supported {application.process_type}")
 
 
-def _get_selected_product_data(biocidal_schedules: "QuerySet[CFSSchedule]") -> str:
-    products = CFSProduct.objects.filter(schedule__in=biocidal_schedules)
-    product_data = []
-
-    for p in products:
-        p_types = (str(pk) for pk in p.product_type_numbers.values_list("pk", flat=True))
-        ingredient_list = p.active_ingredients.values_list("name", "cas_number")
-        ingredients = (f"{name} ({cas})" for name, cas in ingredient_list)
-
-        product = "\n".join(
-            [
-                f"Product: {p.product_name}",
-                f"Product type numbers: {', '.join(p_types)}",
-                f"Active ingredients (CAS numbers): f{', '.join(ingredients)}",
-            ]
-        )
-        product_data.append(product)
-
-    return "\n\n".join(product_data)
-
-
 def _get_case_email_application(application: ImpOrExp) -> ApplicationsWithCaseEmail:
     # import applications
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
@@ -424,7 +401,7 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
 
         # certificate applications
         case pt.CFS:
-            return create_cfs_case_email(application)
+            return create_case_email(application, "CA_HSE_EMAIL", settings.ICMS_CFS_HSE_EMAIL)
 
         case pt.GMP:
             attachments = application.supporting_documents.filter(is_active=True)
@@ -478,33 +455,6 @@ def _create_sanction_case_email(application: SanctionsAndAdhocApplication) -> mo
     )
 
     return models.CaseEmail.objects.create(
-        subject=template.template_title,
-        body=content,
-    )
-
-
-def create_cfs_case_email(application: CertificateOfFreeSaleApplication) -> models.CaseEmail:
-    template = Template.objects.get(is_active=True, template_code="CA_HSE_EMAIL")
-    content = template.get_content(
-        {
-            "CASE_REFERENCE": application.reference,
-            "APPLICATION_TYPE": ProcessTypes.CFS.label,
-            "EXPORTER_NAME": application.exporter,
-            "EXPORTER_ADDRESS": application.exporter_office,
-            "CONTACT_EMAIL": application.contact.email,
-            "CERT_COUNTRIES": "\n".join(
-                application.countries.filter(is_active=True).values_list("name", flat=True)
-            ),
-            "SELECTED_PRODUCTS": _get_selected_product_data(
-                application.schedules.filter(legislations__is_biocidal=True)
-            ),
-            "CASE_OFFICER_NAME": application.case_owner.full_name,
-            "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
-            "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
-        }
-    )
-    return models.CaseEmail.objects.create(
-        to=settings.ICMS_CFS_HSE_EMAIL,
         subject=template.template_title,
         body=content,
     )
