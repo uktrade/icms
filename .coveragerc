@@ -10,6 +10,8 @@ omit =
     *apps.py
     data_migration/queries/*
     web/end_to_end/*
+    web/tests/*
+    web/management/commands/*
 
 [report]
 exclude_lines =

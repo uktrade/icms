@@ -294,7 +294,7 @@ def get_org_obj_permissions(org) -> IMP_OR_EXP_PERMS_T:
         case Exporter():
             return ExporterObjectPermissions
         case _:
-            raise NotImplementedError(f"Unknown org {org}")
+            raise ValueError(f"Unknown org {org}")
 
 
 def add_group(user: User, group_name: str) -> None:
@@ -314,7 +314,7 @@ def filter_users_with_org_access(org: ORGANISATION, users: QuerySet[User]) -> Qu
         case Exporter():
             org_access = Perms.sys.exporter_access.codename
         case _:
-            raise NotImplementedError(f"Unknown org {org}")
+            raise ValueError(f"Unknown org {org}")
 
     # Note: We are ignoring user permissions by design
     return users.filter(groups__permissions__codename=org_access).distinct()
