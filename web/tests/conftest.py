@@ -141,6 +141,11 @@ def test_agent_export_user(django_user_model):
     return django_user_model.objects.get(username="test_agent_export_user")
 
 
+@pytest.fixture()
+def exporter_one_agent_one_contact(django_user_model):
+    return django_user_model.objects.get(username="E1_A1_main_contact")
+
+
 @pytest.fixture
 def test_access_user(django_user_model):
     """Fixture to get user to test access request."""
@@ -170,7 +175,7 @@ def export_access_request_application(test_access_user):
 
 
 @pytest.fixture
-def office():
+def office(db):
     """Fixture to get an office model instance (linked to Test Importer 1)."""
 
     return Office.objects.get(
@@ -181,14 +186,14 @@ def office():
 
 
 @pytest.fixture
-def importer_one_agent_office():
+def importer_one_agent_office(db):
     """Fixture to get an office model instance (linked to Test Importer 1 Agent 1)."""
 
     return Office.objects.get(address_1="I1_A1 address line 1")
 
 
 @pytest.fixture
-def exporter_office():
+def exporter_office(db):
     """Fixture to get an office model instance (linked to exporter)."""
     return Office.objects.get(
         address_1="E1 address line 1",
@@ -198,36 +203,43 @@ def exporter_office():
 
 
 @pytest.fixture
-def importer():
+def exporter_one_agent_one_office(db):
+    """Fixture to get an office model instance (linked to Test Exporter 1 Agent 1)."""
+
+    return Office.objects.get(address_1="E1_A1 address line 1")
+
+
+@pytest.fixture
+def importer(db):
     """Fixture to get an importer model instance."""
     return Importer.objects.get(name="Test Importer 1")
 
 
 @pytest.fixture()
-def importer_two():
+def importer_two(db):
     return Importer.objects.get(name="Test Importer 2")
 
 
 @pytest.fixture
-def agent_importer():
+def agent_importer(db):
     """Fixture to get an Agent Importer model instance."""
     return Importer.objects.get(name="Test Importer 1 Agent 1")
 
 
 @pytest.fixture
-def exporter():
+def exporter(db):
     """Fixture to get an Exporter model instance."""
     return Exporter.objects.get(name="Test Exporter 1")
 
 
 @pytest.fixture
-def exporter_two():
+def exporter_two(db):
     """Fixture to get an Exporter model instance."""
     return Exporter.objects.get(name="Test Exporter 2")
 
 
 @pytest.fixture
-def agent_exporter():
+def agent_exporter(db):
     """Fixture to get an Agent Exporter model instance."""
     return Exporter.objects.get(name="Test Exporter 1 Agent 1")
 
