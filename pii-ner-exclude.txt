@@ -2768,3 +2768,8 @@ SuperUser
 is_staff=True
 is_superuser=True
 ILB Case
+SILApplication
+Import Licence RFD Enquiry
+\n111
+Section
+Obsolete

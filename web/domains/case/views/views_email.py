@@ -10,7 +10,6 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from web.domains.case._import.fa.types import FaImportApplication
 from web.domains.case.services import case_progress
 from web.flow.models import ProcessTypes
 from web.models import (
@@ -26,10 +25,9 @@ from web.models import (
     SILApplication,
     Template,
 )
-from web.notify.email import send_email
+from web.notify.email import send_case_email
 from web.notify.utils import create_case_email
 from web.types import AuthenticatedHttpRequest
-from web.utils.s3 import get_file_from_s3, get_s3_client
 
 from .. import forms, models
 from ..types import ApplicationsWithCaseEmail, CaseEmailConfig, ImpOrExp
@@ -147,24 +145,7 @@ def edit_case_email(
                 case_email = form.save()
 
                 if "send" in request.POST:
-                    attachments = []
-                    s3_client = get_s3_client()
-
-                    for document in case_email.attachments.all():
-                        file_content = get_file_from_s3(document.path, client=s3_client)
-                        attachments.append((document.filename, file_content))
-
-                    send_email(
-                        case_email.subject,
-                        case_email.body,
-                        [case_email.to],
-                        case_email.cc_address_list,
-                        attachments,
-                    )
-
-                    case_email.status = models.CaseEmail.Status.OPEN
-                    case_email.sent_datetime = timezone.now()
-                    case_email.save()
+                    send_case_email(case_email)
 
                     return redirect(
                         reverse(
@@ -394,7 +375,9 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
     match application.process_type:
         # import applications
         case pt.FA_OIL | pt.FA_DFL | pt.FA_SIL:
-            return _create_fa_case_email(application)
+            return create_case_email(
+                application, "IMA_CONSTAB_EMAIL", cc=[settings.ICMS_FIREARMS_HOMEOFFICE_EMAIL]
+            )
 
         case pt.SANCTIONS:
             return _create_sanction_case_email(application)
@@ -411,30 +394,6 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
 
         case _:
             raise ValueError(f"CaseEmail for application not supported {application.process_type}")
-
-
-def _create_fa_case_email(application: FaImportApplication) -> models.CaseEmail:
-    template = Template.objects.get(is_active=True, template_code="IMA_CONSTAB_EMAIL")
-    goods_description = (
-        "Firearms, component parts thereof, or ammunition of any applicable"
-        " commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended."
-    )
-    content = template.get_content(
-        {
-            "CASE_REFERENCE": application.reference,
-            "IMPORTER_NAME": application.importer.display_name,
-            "IMPORTER_ADDRESS": application.importer_office,
-            "GOODS_DESCRIPTION": goods_description,
-            "CASE_OFFICER_NAME": application.case_owner.full_name,
-            "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
-            "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
-        }
-    )
-    return models.CaseEmail.objects.create(
-        subject=template.template_title,
-        body=content,
-        cc_address_list=[settings.ICMS_FIREARMS_HOMEOFFICE_EMAIL],
-    )
 
 
 def _create_sanction_case_email(application: SanctionsAndAdhocApplication) -> models.CaseEmail:

@@ -1,7 +1,7 @@
 from typing import Protocol
 
 from django.conf import settings
-from django.db.models import QuerySet
+from django.db.models import F, QuerySet, Value
 
 from web.domains.case.services import document_pack
 from web.flow.models import ProcessTypes
@@ -34,6 +34,72 @@ def _get_selected_product_data(biocidal_schedules: QuerySet[CFSSchedule]) -> str
         product_data.append(product)
 
     return "\n\n".join(product_data)
+
+
+def _get_sil_goods_text(
+    section: str | None, quantity: str | None, description: str, obsolete_calibre: str | None = None
+) -> str:
+    """Generates goods application text for SILApplication goods models"""
+
+    if section:
+        section_text = f" to which Section {section} of the Firearms Act 1968, as amended, applies."
+    else:
+        section_text = ""
+
+    if obsolete_calibre:
+        return f"{quantity} x {description} chambered in the obsolete calibre {obsolete_calibre}{section_text}"
+
+    if quantity:
+        return f"{quantity} x {description}{section_text}"
+
+    return f"{description}{section_text}"
+
+
+def _get_import_goods_description(app: ImportApplication) -> str:
+    """Fetches the goods descriptions from the goods models for import applications"""
+
+    match app.process_type:
+        case ProcessTypes.FA_DFL:
+            return "\n".join(app.goods_certificates.values_list("goods_description", flat=True))
+
+        case ProcessTypes.FA_OIL:
+            return (
+                "Firearms, component parts thereof, or ammunition of any applicable"
+                " commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended."
+            )
+
+        case ProcessTypes.FA_SIL:
+            vals = ("quantity", "description")
+            sec1 = app.goods_section1.values(*vals, section=Value("1"))
+            sec2 = app.goods_section2.values(*vals, section=Value("2"))
+            sec5 = app.goods_section5.values(*vals, section=F("subsection"))
+            sec_obs = app.goods_section582_obsoletes.values(  # /PS-IGNORE
+                "obsolete_calibre", *vals, section=Value("58(2)")  # /PS-IGNORE
+            )
+            sec_other = app.goods_section582_others.values(  # /PS-IGNORE
+                *vals, section=Value("58(2)")  # /PS-IGNORE
+            )
+            sec_legacy_goods = app.goods_legacy.values("obsolete_calibre", *vals, section=Value(""))
+
+            return "\n".join(
+                [
+                    _get_sil_goods_text(**values)
+                    for sec in [
+                        sec1,
+                        sec2,
+                        sec5,
+                        sec_obs,
+                        sec_other,
+                        sec_legacy_goods,
+                    ]
+                    for values in sec
+                ]
+            )
+
+        case _:
+            raise ValueError(
+                f"GOODS_DESCRIPTION placeholder not supported for process type {app.process_type}"
+            )
 
 
 class TemplateContextProcessor(Protocol):
@@ -140,9 +206,15 @@ class EmailTemplateContext:
 
     def _import_context(self, item: str) -> str:
         match item:
+            case "GOODS_DESCRIPTION":
+                return _get_import_goods_description(self.process)
             case "LICENCE_NUMBER":
                 pack = document_pack.pack_active_get(self.process)
                 return document_pack.doc_ref_licence_get(pack).reference
+            case "IMPORTER_NAME":
+                return self.process.importer.display_name
+            case "IMPORTER_ADDRESS":
+                return str(self.process.importer_office)
         return self._application_context(item)
 
     def _export_context(self, item: str) -> str:
