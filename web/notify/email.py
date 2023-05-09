@@ -2,11 +2,13 @@ from collections.abc import Collection
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
+from django.utils import timezone
 
 from config.celery import app
 from web.domains.case.types import ImpOrExp
-from web.models import Exporter, Importer, User
+from web.models import CaseEmail, Exporter, Importer, User
 from web.permissions import get_org_obj_permissions, organisation_get_contacts
+from web.utils.s3 import get_file_from_s3, get_s3_client
 
 from . import utils
 
@@ -113,3 +115,24 @@ def send_mailshot(subject, message, html_message=None, to_importers=False, to_ex
         send_to_all_importers(subject, message, html_message=html_message)
     if to_exporters:
         send_to_all_exporters(subject, message, html_message=html_message)
+
+
+def send_case_email(case_email: CaseEmail) -> None:
+    attachments = []
+    s3_client = get_s3_client()
+
+    for document in case_email.attachments.all():
+        file_content = get_file_from_s3(document.path, client=s3_client)
+        attachments.append((document.filename, file_content))
+
+    send_email(
+        case_email.subject,
+        case_email.body,
+        [case_email.to],
+        case_email.cc_address_list,
+        attachments,
+    )
+
+    case_email.status = CaseEmail.Status.OPEN
+    case_email.sent_datetime = timezone.now()
+    case_email.save()
