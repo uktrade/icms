@@ -19,11 +19,13 @@ from web.models import (
     GMPBrand,
     OpenIndividualLicenceApplication,
     ProductLegislation,
+    SanctionsAndAdhocApplication,
     SILApplication,
+    Usage,
     WoodQuotaApplication,
 )
 from web.models.shared import FirearmCommodity
-from web.utils.commodity import get_active_commodities
+from web.utils.commodity import get_active_commodities, get_usage_commodities
 
 if TYPE_CHECKING:
     from django.test.client import Client
@@ -273,6 +275,82 @@ def create_in_progress_fa_sil_app(
     )
 
     return sil_app
+
+
+def create_in_progress_sanctions_app(
+    importer_client: "Client", importer: "Importer", office: "Office", importer_contact: "User"
+) -> SanctionsAndAdhocApplication:
+    app_pk = create_import_app(
+        client=importer_client,
+        view_name="import:create-sanctions",
+        importer_pk=importer.pk,
+        office_pk=office.pk,
+    )
+    # Save a valid set of data.
+    origin_country = Country.objects.filter(
+        country_groups__name="Sanctions and Adhoc License"
+    ).first()
+    consignment_country = Country.objects.filter(
+        country_groups__name="Sanctions and Adhoc License Countries of shipping (consignment)"
+    ).first()
+
+    form_data = {
+        "contact": importer_contact.pk,
+        "applicant_reference": "applicant_reference value",
+        "origin_country": origin_country.pk,
+        "consignment_country": consignment_country.pk,
+        "exporter_name": "Test Exporter",
+        "exporter_address": "Test Address",
+    }
+
+    save_app_data(
+        client=importer_client,
+        view_name="import:sanctions:edit",
+        app_pk=app_pk,
+        form_data=form_data,
+    )
+
+    sanctions_app = SanctionsAndAdhocApplication.objects.get(pk=app_pk)
+    usage_records = Usage.objects.filter(
+        application_type=sanctions_app.application_type,
+        country=sanctions_app.origin_country,
+        end_date=None,
+    )
+    commodities = get_usage_commodities(usage_records)
+
+    # Add a goods to the application
+    add_goods_url = reverse("import:sanctions:add-goods", kwargs={"application_pk": app_pk})
+
+    resp = importer_client.post(
+        add_goods_url,
+        {
+            "commodity": commodities.first().pk,
+            "goods_description": "Test Goods",
+            "quantity_amount": 1000,
+            "value": 10500,
+        },
+    )
+    assert resp.status_code == 302
+
+    resp = importer_client.post(
+        add_goods_url,
+        {
+            "commodity": commodities.last().pk,
+            "goods_description": "More Commoditites",
+            "quantity_amount": 56.78,
+            "value": 789,
+        },
+    )
+    assert resp.status_code == 302
+
+    add_app_file(
+        client=importer_client,
+        view_name="import:sanctions:add-document",
+        app_pk=app_pk,
+        post_data={},
+    )
+
+    return sanctions_app
 
 
 def create_in_progress_com_app(

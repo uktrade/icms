@@ -47,6 +47,12 @@ def test_get_import_goods_description_sil(fa_sil_app_submitted):
     )
 
 
+def test_get_import_goods_description_sanctions(sanctions_app_submitted):
+    assert _get_import_goods_description(sanctions_app_submitted) == (
+        "1000 x Test Goods\n56.78 x More Commoditites"
+    )
+
+
 def test_get_import_goods_description_wood(wood_app_submitted):
     with pytest.raises(
         ValueError,

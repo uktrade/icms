@@ -128,3 +128,15 @@ def test_create_sil_constabulary_email(icms_admin_client, fa_sil_app_submitted):
         "Section 58(2) of the Firearms Act 1968, as amended, applies.\n"
         "555 x Section 58 other goods to which Section 58(2) of the Firearms Act 1968, as amended, applies.\n"
     ) in case_email.body
+
+
+def test_create_sanctions_email(icms_admin_client, sanctions_app_submitted):
+    app = sanctions_app_submitted
+    icms_admin_client.post(CaseURLS.take_ownership(app.pk, "import"))
+    app.refresh_from_db()
+    case_email = utils.create_case_email(app, "IMA_SANCTION_EMAIL")
+
+    assert case_email.to is None
+    assert case_email.cc_address_list is None
+    assert case_email.subject == "Import Sanctions and Adhoc Licence"
+    assert "\n1000 x Test Goods\n56.78 x More Commoditites\n" in case_email.body

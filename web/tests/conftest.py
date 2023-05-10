@@ -22,6 +22,7 @@ from web.models import (
     ImporterAccessRequest,
     Office,
     OpenIndividualLicenceApplication,
+    SanctionsAndAdhocApplication,
     SILApplication,
     SILChecklist,
     Task,
@@ -37,6 +38,7 @@ from .application_utils import (
     create_in_progress_fa_oil_app,
     create_in_progress_fa_sil_app,
     create_in_progress_gmp_app,
+    create_in_progress_sanctions_app,
     create_in_progress_wood_app,
     submit_app,
 )
@@ -341,6 +343,22 @@ def fa_oil_app_submitted(
 def fa_sil_app_submitted(importer_client, importer, office, importer_contact) -> SILApplication:
     """A valid FA SIL application in the submitted state."""
     app = create_in_progress_fa_sil_app(importer_client, importer, office, importer_contact)
+
+    submit_app(client=importer_client, view_name=app.get_submit_view_name(), app_pk=app.pk)
+
+    app.refresh_from_db()
+
+    case_progress.check_expected_status(app, [ImpExpStatus.SUBMITTED])
+    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
+
+    return app
+
+
+@pytest.fixture()
+def sanctions_app_submitted(
+    importer_client, importer, office, importer_contact
+) -> SanctionsAndAdhocApplication:
+    app = create_in_progress_sanctions_app(importer_client, importer, office, importer_contact)
 
     submit_app(client=importer_client, view_name=app.get_submit_view_name(), app_pk=app.pk)
 
