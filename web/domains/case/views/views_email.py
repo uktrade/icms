@@ -23,7 +23,6 @@ from web.models import (
     SanctionEmail,
     SanctionsAndAdhocApplication,
     SILApplication,
-    Template,
 )
 from web.notify.email import send_case_email
 from web.notify.utils import create_case_email
@@ -380,7 +379,7 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
             )
 
         case pt.SANCTIONS:
-            return _create_sanction_case_email(application)
+            return create_case_email(application, "IMA_SANCTION_EMAIL")
 
         # certificate applications
         case pt.CFS:
@@ -394,26 +393,3 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
 
         case _:
             raise ValueError(f"CaseEmail for application not supported {application.process_type}")
-
-
-def _create_sanction_case_email(application: SanctionsAndAdhocApplication) -> models.CaseEmail:
-    template = Template.objects.get(is_active=True, template_code="IMA_SANCTION_EMAIL")
-    goods_descriptions = application.sanctionsandadhocapplicationgoods_set.values_list(
-        "goods_description", flat=True
-    )
-    content = template.get_content(
-        {
-            "CASE_REFERENCE": application.reference,
-            "IMPORTER_NAME": application.importer.display_name,
-            "IMPORTER_ADDRESS": application.importer_office,
-            "GOODS_DESCRIPTION": "\n".join(goods_descriptions),
-            "CASE_OFFICER_NAME": application.case_owner.full_name,
-            "CASE_OFFICER_EMAIL": settings.ILB_CONTACT_EMAIL,
-            "CASE_OFFICER_PHONE": settings.ILB_CONTACT_PHONE,
-        }
-    )
-
-    return models.CaseEmail.objects.create(
-        subject=template.template_title,
-        body=content,
-    )
