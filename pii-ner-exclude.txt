@@ -2778,3 +2778,4 @@ AssertionError
 Test Goods
 Import Sanctions and Adhoc Licence
 \n1000
+chmod
