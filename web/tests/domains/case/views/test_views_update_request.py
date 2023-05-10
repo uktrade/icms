@@ -11,9 +11,9 @@ if TYPE_CHECKING:
 
 
 def test_list_update_requests_get(
-    icms_admin_client: "Client", wood_app_submitted: "WoodQuotaApplication"
+    ilb_admin_client: "Client", wood_app_submitted: "WoodQuotaApplication"
 ) -> None:
-    resp = icms_admin_client.get(CaseURLS.list_update_requests(wood_app_submitted.pk))
+    resp = ilb_admin_client.get(CaseURLS.list_update_requests(wood_app_submitted.pk))
     assert resp.status_code == 200
 
     assertContains(resp, "Wood (Quota) - Update Requests")

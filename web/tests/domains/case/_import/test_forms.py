@@ -10,13 +10,13 @@ logger = logging.getLogger(__name__)
 
 
 class TestCreateOpenIndividualImportLicenceForm:
-    def test_form_valid(self, db, importer, office, importer_one_main_contact):
+    def test_form_valid(self, db, importer, office, importer_one_contact):
         form = CreateImportApplicationForm(
             data={
                 "importer": importer.pk,
                 "importer_office": office.pk,
             },
-            user=importer_one_main_contact,
+            user=importer_one_contact,
         )
 
         assert form.is_valid() is True
@@ -41,27 +41,27 @@ class TestCreateOpenIndividualImportLicenceForm:
         )
         assert form.is_valid(), form.errors
 
-    def test_invalid_form_message(self, importer_one_main_contact):
-        form = CreateImportApplicationForm(data={}, user=importer_one_main_contact)
+    def test_invalid_form_message(self, importer_one_contact):
+        form = CreateImportApplicationForm(data={}, user=importer_one_contact)
 
         assert len(form.errors) == 2
         assert form.errors["importer"][0] == "You must enter this item"
 
     def test_wood_application_valid_for_ni_importer(
-        self, db, importer, office, importer_one_main_contact
+        self, db, importer, office, importer_one_contact
     ):
         form = CreateWoodQuotaApplicationForm(
             data={
                 "importer": importer.pk,
                 "importer_office": office.pk,
             },
-            user=importer_one_main_contact,
+            user=importer_one_contact,
         )
 
         assert form.is_valid(), "Form has errors"
 
     def test_wood_application_invalid_for_english_importer(
-        self, db, importer, office, importer_one_main_contact
+        self, db, importer, office, importer_one_contact
     ):
         office.postcode = "S410SG"  # /PS-IGNORE
         office.save()
@@ -71,7 +71,7 @@ class TestCreateOpenIndividualImportLicenceForm:
                 "importer": importer.pk,
                 "importer_office": office.pk,
             },
-            user=importer_one_main_contact,
+            user=importer_one_contact,
         )
 
         assert form.has_error("importer_office") is True

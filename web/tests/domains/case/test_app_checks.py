@@ -11,9 +11,9 @@ from web.tests.helpers import CaseURLS, check_page_errors, check_pages_checked
 
 
 @pytest.fixture
-def wood_application(icms_admin_client, wood_app_submitted):
+def wood_application(ilb_admin_client, wood_app_submitted):
     """A submitted application owned by the ICMS admin user."""
-    icms_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
+    ilb_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
     wood_app_submitted.refresh_from_db()
 
     return wood_app_submitted

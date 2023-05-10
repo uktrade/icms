@@ -40,13 +40,13 @@ class TestObsoleteCalibreGroupListView(AuthTestCase):
 
 
 @pytest.mark.django_db
-def test_create_firearms_authority(icms_admin_client, test_icms_admin_user, importer, office):
-    response = icms_admin_client.get(f"/importer/{importer.pk}/firearms/create/")
+def test_create_firearms_authority(ilb_admin_client, ilb_admin_user, importer, office):
+    response = ilb_admin_client.get(f"/importer/{importer.pk}/firearms/create/")
     assert response.status_code == 200
 
     constabulary = ConstabularyFactory.create(is_active=True)
     firearms_act_one, firearms_act_two = FirearmsActFactory.create_batch(
-        2, created_by=test_icms_admin_user
+        2, created_by=ilb_admin_user
     )
     data = {
         "certificate_type": FirearmsAuthority.DEACTIVATED_FIREARMS,
@@ -64,7 +64,7 @@ def test_create_firearms_authority(icms_admin_client, test_icms_admin_user, impo
         "actquantity_set-1-firearmsact": firearms_act_two.pk,
         "actquantity_set-1-quantity": "1",
     }
-    response = icms_admin_client.post(f"/importer/{importer.pk}/firearms/create/", data=data)
+    response = ilb_admin_client.post(f"/importer/{importer.pk}/firearms/create/", data=data)
     assert response.status_code == 302
 
     firearms = FirearmsAuthority.objects.get()

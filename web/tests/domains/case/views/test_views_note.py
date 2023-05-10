@@ -12,11 +12,11 @@ if TYPE_CHECKING:
 
 
 def test_manage_update_requests_get(
-    icms_admin_client: "Client", wood_app_submitted: "WoodQuotaApplication", test_icms_admin_user
+    ilb_admin_client: "Client", wood_app_submitted: "WoodQuotaApplication", ilb_admin_user
 ) -> None:
-    wood_app_submitted.case_notes.create(status=CASE_NOTE_DRAFT, created_by=test_icms_admin_user)
+    wood_app_submitted.case_notes.create(status=CASE_NOTE_DRAFT, created_by=ilb_admin_user)
 
-    resp = icms_admin_client.get(CaseURLS.list_notes(wood_app_submitted.pk))
+    resp = ilb_admin_client.get(CaseURLS.list_notes(wood_app_submitted.pk))
     assert resp.status_code == 200
 
     assertContains(resp, "Wood (Quota) - Notes")

@@ -11,9 +11,9 @@ if TYPE_CHECKING:
 
 
 def test_wood_quota_prepare_response_get(
-    icms_admin_client: "Client", wood_app_submitted: "WoodQuotaApplication"
+    ilb_admin_client: "Client", wood_app_submitted: "WoodQuotaApplication"
 ) -> None:
-    resp = icms_admin_client.get(CaseURLS.prepare_response(wood_app_submitted.pk))
+    resp = ilb_admin_client.get(CaseURLS.prepare_response(wood_app_submitted.pk))
     assert resp.status_code == 200
 
     assertContains(resp, "Wood (Quota) - Response Preparation")
@@ -24,9 +24,9 @@ def test_wood_quota_prepare_response_get(
 
 
 def test_fa_dfl_prepare_response_get(
-    icms_admin_client: "Client", fa_dfl_app_submitted: "DFLApplication"
+    ilb_admin_client: "Client", fa_dfl_app_submitted: "DFLApplication"
 ) -> None:
-    resp = icms_admin_client.get(CaseURLS.prepare_response(fa_dfl_app_submitted.pk))
+    resp = ilb_admin_client.get(CaseURLS.prepare_response(fa_dfl_app_submitted.pk))
     assert resp.status_code == 200
 
     assertContains(

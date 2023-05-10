@@ -56,8 +56,8 @@ def test_get_import_application_search_actions(
     licence,
     expected_admin_actions,
     expected_applicant_actions,
-    test_icms_admin_user,
-    importer_one_main_contact,
+    ilb_admin_user,
+    importer_one_contact,
     importer,
 ):
     # get_import_record_actions calls reverse and expects a PK to be set.
@@ -70,8 +70,8 @@ def test_get_import_application_search_actions(
     application.latest_licence_end_date = licence.licence_end_date
 
     for user, expected_actions in (
-        (test_icms_admin_user, expected_admin_actions),
-        (importer_one_main_contact, expected_applicant_actions),
+        (ilb_admin_user, expected_admin_actions),
+        (importer_one_contact, expected_applicant_actions),
     ):
         uop = utils.UserOrganisationPermissions(user, case_type="import")
         actions: list[types.SearchAction] = get_import_record_actions(application, uop)
@@ -126,8 +126,8 @@ def test_get_export_application_search_actions(
     issue_date,
     user,
     expected_actions,
-    test_icms_admin_user,
-    exporter_one_main_contact,
+    ilb_admin_user,
+    exporter_one_contact,
     exporter,
 ):
     # get_export_record_actions calls reverse and expects a PK to be set.
@@ -137,9 +137,9 @@ def test_get_export_application_search_actions(
     application.exporter = exporter
 
     if user == "admin":
-        user = test_icms_admin_user
+        user = ilb_admin_user
     else:
-        user = exporter_one_main_contact
+        user = exporter_one_contact
 
     uop = utils.UserOrganisationPermissions(user, case_type="export")
 

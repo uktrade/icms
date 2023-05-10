@@ -77,25 +77,14 @@ def django_db_setup(django_db_setup, django_db_blocker):
 
 
 @pytest.fixture
-def test_icms_admin_user(django_user_model):
+def ilb_admin_user(django_user_model):
     """Fixture to get user with admin access (the ilb_admin permission)."""
-    return django_user_model.objects.get(username="test_icms_admin_user")
+    return django_user_model.objects.get(username="ilb_admin_user")
 
 
 @pytest.fixture
-def test_import_user(django_user_model):
-    """Fixture to get user with access to the test importer."""
-    return django_user_model.objects.get(username="test_import_user")
-
-
-@pytest.fixture
-def importer_contact(django_user_model):
+def importer_one_contact(django_user_model):
     """Fixture to get user who is a contact of the test importer."""
-    return django_user_model.objects.get(username="importer_contact")
-
-
-@pytest.fixture()
-def importer_one_main_contact(django_user_model):
     return django_user_model.objects.get(username="I1_main_contact")
 
 
@@ -105,42 +94,13 @@ def importer_one_agent_one_contact(django_user_model):
 
 
 @pytest.fixture()
-def importer_two_main_contact(django_user_model):
+def importer_two_contact(django_user_model):
     return django_user_model.objects.get(username="I2_main_contact")
 
 
-@pytest.fixture
-def test_agent_import_user(django_user_model):
-    """Fixture to get agent user with access to the test importer."""
-    return django_user_model.objects.get(username="test_agent_import_user")
-
-
-@pytest.fixture
-def test_export_user(django_user_model):
-    """Fixture to get user with access to the test exporter."""
-    return django_user_model.objects.get(username="test_export_user")
-
-
-@pytest.fixture
-def exporter_contact(django_user_model):
-    """Fixture to get the user who is a contact of the test exporter."""
-    return django_user_model.objects.get(username="exporter_contact")
-
-
 @pytest.fixture()
-def exporter_one_main_contact(django_user_model):
+def exporter_one_contact(django_user_model):
     return django_user_model.objects.get(username="E1_main_contact")
-
-
-@pytest.fixture()
-def exporter_two_main_contact(django_user_model):
-    return django_user_model.objects.get(username="E2_main_contact")
-
-
-@pytest.fixture
-def test_agent_export_user(django_user_model):
-    """Fixture to get agent user with access to the test exporter."""
-    return django_user_model.objects.get(username="test_agent_export_user")
 
 
 @pytest.fixture()
@@ -148,30 +108,35 @@ def exporter_one_agent_one_contact(django_user_model):
     return django_user_model.objects.get(username="E1_A1_main_contact")
 
 
+@pytest.fixture()
+def exporter_two_contact(django_user_model):
+    return django_user_model.objects.get(username="E2_main_contact")
+
+
 @pytest.fixture
-def test_access_user(django_user_model):
+def access_request_user(django_user_model):
     """Fixture to get user to test access request."""
-    return django_user_model.objects.get(username="test_access_user")
+    return django_user_model.objects.get(username="access_request_user")
 
 
 @pytest.fixture
-def import_access_request_application(test_access_user):
+def import_access_request_application(access_request_user):
     return ImporterAccessRequest.objects.get(
         request_type="MAIN_IMPORTER_ACCESS",
         status="SUBMITTED",
-        submitted_by=test_access_user,
-        last_updated_by=test_access_user,
+        submitted_by=access_request_user,
+        last_updated_by=access_request_user,
         reference="iar/1",
     )
 
 
 @pytest.fixture
-def export_access_request_application(test_access_user):
+def export_access_request_application(access_request_user):
     return ExporterAccessRequest.objects.get(
         request_type="MAIN_EXPORTER_ACCESS",
         status="SUBMITTED",
-        submitted_by=test_access_user,
-        last_updated_by=test_access_user,
+        submitted_by=access_request_user,
+        last_updated_by=access_request_user,
         reference="ear/1",
     )
 
@@ -247,26 +212,22 @@ def agent_exporter(db):
 
 
 @pytest.fixture()
-def icms_admin_client(test_icms_admin_user) -> Client:
-    return get_test_client(test_icms_admin_user)
+def ilb_admin_client(ilb_admin_user) -> Client:
+    return get_test_client(ilb_admin_user)
 
 
 @pytest.fixture()
-def importer_client(importer_one_main_contact) -> Client:
-    # TODO: Make fixtures more consistent:
-    #       rename all test_ fixtures
-    #       change all occurrences of test_import_user to importer_one_main_contact.
-    #       change all occurrences of test_export_user to exporter_one_main_contact.
-    return get_test_client(importer_one_main_contact)
+def importer_client(importer_one_contact) -> Client:
+    return get_test_client(importer_one_contact)
 
 
 @pytest.fixture()
 def wood_app_in_progress(
-    importer_client, importer, office, test_import_user
+    importer_client, importer, office, importer_one_contact
 ) -> WoodQuotaApplication:
     """An in progress wood application with a fully valid set of data."""
 
-    app = create_in_progress_wood_app(importer_client, importer, office, test_import_user)
+    app = create_in_progress_wood_app(importer_client, importer, office, importer_one_contact)
 
     case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
     case_progress.check_expected_task(app, Task.TaskType.PREPARE)
@@ -275,10 +236,12 @@ def wood_app_in_progress(
 
 
 @pytest.fixture()
-def wood_app_submitted(importer_client, importer, office, test_import_user) -> WoodQuotaApplication:
+def wood_app_submitted(
+    importer_client, importer, office, importer_one_contact
+) -> WoodQuotaApplication:
     """A valid wood application in the submitted state."""
 
-    app = create_in_progress_wood_app(importer_client, importer, office, test_import_user)
+    app = create_in_progress_wood_app(importer_client, importer, office, importer_one_contact)
 
     submit_app(client=importer_client, view_name="import:wood:submit-quota", app_pk=app.pk)
 
@@ -292,12 +255,12 @@ def wood_app_submitted(importer_client, importer, office, test_import_user) -> W
 
 @pytest.fixture()
 def fa_dfl_app_in_progress(
-    importer_client, test_import_user, importer, office, importer_contact
+    importer_client, importer_one_contact, importer, office
 ) -> DFLApplication:
     """An in progress wood application with a fully valid set of data."""
 
     # Create the FA-DFL app
-    app = create_in_progress_fa_dfl_app(importer_client, importer, office, importer_contact)
+    app = create_in_progress_fa_dfl_app(importer_client, importer, office, importer_one_contact)
 
     case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
     case_progress.check_expected_task(app, Task.TaskType.PREPARE)
@@ -306,10 +269,10 @@ def fa_dfl_app_in_progress(
 
 
 @pytest.fixture()
-def fa_dfl_app_submitted(importer_client, importer, office, importer_contact) -> DFLApplication:
+def fa_dfl_app_submitted(importer_client, importer, office, importer_one_contact) -> DFLApplication:
     """A valid FA DFL application in the submitted state."""
 
-    app = create_in_progress_fa_dfl_app(importer_client, importer, office, importer_contact)
+    app = create_in_progress_fa_dfl_app(importer_client, importer, office, importer_one_contact)
 
     submit_app(client=importer_client, view_name="import:fa-dfl:submit", app_pk=app.pk)
 
@@ -323,11 +286,11 @@ def fa_dfl_app_submitted(importer_client, importer, office, importer_contact) ->
 
 @pytest.fixture()
 def fa_oil_app_submitted(
-    importer_client, importer, office, importer_contact
+    importer_client, importer, office, importer_one_contact
 ) -> OpenIndividualLicenceApplication:
     """A valid FA OIL application in the submitted state."""
 
-    app = create_in_progress_fa_oil_app(importer_client, importer, office, importer_contact)
+    app = create_in_progress_fa_oil_app(importer_client, importer, office, importer_one_contact)
 
     submit_app(client=importer_client, view_name=app.get_submit_view_name(), app_pk=app.pk)
 
@@ -340,9 +303,9 @@ def fa_oil_app_submitted(
 
 
 @pytest.fixture()
-def fa_sil_app_submitted(importer_client, importer, office, importer_contact) -> SILApplication:
+def fa_sil_app_submitted(importer_client, importer, office, importer_one_contact) -> SILApplication:
     """A valid FA SIL application in the submitted state."""
-    app = create_in_progress_fa_sil_app(importer_client, importer, office, importer_contact)
+    app = create_in_progress_fa_sil_app(importer_client, importer, office, importer_one_contact)
 
     submit_app(client=importer_client, view_name=app.get_submit_view_name(), app_pk=app.pk)
 
@@ -356,9 +319,9 @@ def fa_sil_app_submitted(importer_client, importer, office, importer_contact) ->
 
 @pytest.fixture()
 def sanctions_app_submitted(
-    importer_client, importer, office, importer_contact
+    importer_client, importer, office, importer_one_contact
 ) -> SanctionsAndAdhocApplication:
-    app = create_in_progress_sanctions_app(importer_client, importer, office, importer_contact)
+    app = create_in_progress_sanctions_app(importer_client, importer, office, importer_one_contact)
 
     submit_app(client=importer_client, view_name=app.get_submit_view_name(), app_pk=app.pk)
 
@@ -371,16 +334,18 @@ def sanctions_app_submitted(
 
 
 @pytest.fixture()
-def exporter_client(exporter_one_main_contact) -> Client:
-    return get_test_client(exporter_one_main_contact)
+def exporter_client(exporter_one_contact) -> Client:
+    return get_test_client(exporter_one_contact)
 
 
 @pytest.fixture()
 def com_app_in_progress(
-    exporter_client, exporter, exporter_office, exporter_contact
+    exporter_client, exporter, exporter_office, exporter_one_contact
 ) -> "CertificateOfManufactureApplication":
     # Create the COM app
-    app = create_in_progress_com_app(exporter_client, exporter, exporter_office, exporter_contact)
+    app = create_in_progress_com_app(
+        exporter_client, exporter, exporter_office, exporter_one_contact
+    )
 
     case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
     case_progress.check_expected_task(app, Task.TaskType.PREPARE)
@@ -390,10 +355,12 @@ def com_app_in_progress(
 
 @pytest.fixture()
 def com_app_submitted(
-    exporter_client, exporter, exporter_office, exporter_contact
+    exporter_client, exporter, exporter_office, exporter_one_contact
 ) -> "CertificateOfManufactureApplication":
     # Create the COM app
-    app = create_in_progress_com_app(exporter_client, exporter, exporter_office, exporter_contact)
+    app = create_in_progress_com_app(
+        exporter_client, exporter, exporter_office, exporter_one_contact
+    )
 
     submit_app(client=exporter_client, view_name="export:com-submit", app_pk=app.pk)
 
@@ -407,9 +374,11 @@ def com_app_submitted(
 
 @pytest.fixture()
 def gmp_app_submitted(
-    exporter_client, exporter, exporter_office, exporter_contact
+    exporter_client, exporter, exporter_office, exporter_one_contact
 ) -> CertificateOfGoodManufacturingPracticeApplication:
-    app = create_in_progress_gmp_app(exporter_client, exporter, exporter_office, exporter_contact)
+    app = create_in_progress_gmp_app(
+        exporter_client, exporter, exporter_office, exporter_one_contact
+    )
     submit_app(client=exporter_client, view_name="export:gmp-submit", app_pk=app.pk)
 
     app.refresh_from_db()
@@ -422,9 +391,11 @@ def gmp_app_submitted(
 
 @pytest.fixture()
 def cfs_app_submitted(
-    exporter_client, exporter, exporter_office, exporter_contact
+    exporter_client, exporter, exporter_office, exporter_one_contact
 ) -> CertificateOfFreeSaleApplication:
-    app = create_in_progress_cfs_app(exporter_client, exporter, exporter_office, exporter_contact)
+    app = create_in_progress_cfs_app(
+        exporter_client, exporter, exporter_office, exporter_one_contact
+    )
     submit_app(client=exporter_client, view_name="export:cfs-submit", app_pk=app.pk)
 
     app.refresh_from_db()
@@ -436,11 +407,11 @@ def cfs_app_submitted(
 
 
 @pytest.fixture
-def completed_app(fa_sil_app_submitted, icms_admin_client):
+def completed_app(fa_sil_app_submitted, ilb_admin_client):
     """A completed firearms sil application."""
     app = fa_sil_app_submitted
 
-    icms_admin_client.post(CaseURLS.take_ownership(app.pk))
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
 
     app.refresh_from_db()
     app.cover_letter_text = "Example Cover letter"
@@ -451,7 +422,7 @@ def completed_app(fa_sil_app_submitted, icms_admin_client):
     _add_valid_checklist(app)
 
     # Now start authorisation
-    response = icms_admin_client.post(CaseURLS.start_authorisation(app.pk))
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
     assertRedirects(response, reverse("workbasket"), 302)
 
     # Now fake complete the app

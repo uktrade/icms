@@ -11,41 +11,39 @@ from web.tests.helpers import CaseURLS
 
 
 def test_get_current_task_and_readonly_status(
-    wood_app_submitted, icms_admin_client, test_icms_admin_user, test_import_user
+    wood_app_submitted, ilb_admin_client, ilb_admin_user, importer_one_contact
 ):
     # Test submitted app (no case worker assigned yet) is readonly
     readonly_view = get_caseworker_view_readonly_status(
-        wood_app_submitted, "import", test_icms_admin_user
+        wood_app_submitted, "import", ilb_admin_user
     )
     case_progress.check_expected_task(wood_app_submitted, Task.TaskType.PROCESS)
     assert readonly_view
 
     # Now assign case to the case worker.
-    icms_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
+    ilb_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
     wood_app_submitted.refresh_from_db()
 
     # Test a submitted app with a case worker (admin user request)
     readonly_view = get_caseworker_view_readonly_status(
-        wood_app_submitted, "import", test_icms_admin_user
+        wood_app_submitted, "import", ilb_admin_user
     )
     case_progress.check_expected_task(wood_app_submitted, Task.TaskType.PROCESS)
     assert not readonly_view
 
     # Test a submitted app with a case worker (importer user request)
     readonly_view = get_caseworker_view_readonly_status(
-        wood_app_submitted, "import", test_import_user
+        wood_app_submitted, "import", importer_one_contact
     )
     case_progress.check_expected_task(wood_app_submitted, Task.TaskType.PROCESS)
 
     assert readonly_view
 
 
-def test_get_current_task_and_readonly_status_in_progress_app(
-    wood_app_in_progress, test_icms_admin_user
-):
+def test_get_current_task_and_readonly_status_in_progress_app(wood_app_in_progress, ilb_admin_user):
     # Test an in progress app should be readonly
     readonly_view = get_caseworker_view_readonly_status(
-        wood_app_in_progress, "import", test_icms_admin_user
+        wood_app_in_progress, "import", ilb_admin_user
     )
 
     case_progress.check_expected_task(wood_app_in_progress, Task.TaskType.PREPARE)

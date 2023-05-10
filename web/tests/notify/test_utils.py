@@ -29,9 +29,9 @@ def test_get_notification_emails():
     assert emails[1] == "second_alternative@example.com"  # /PS-IGNORE
 
 
-def test_create_gmp_case_beis_email(icms_admin_client, gmp_app_submitted):
+def test_create_gmp_case_beis_email(ilb_admin_client, gmp_app_submitted):
     app = gmp_app_submitted
-    icms_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
     app.refresh_from_db()
 
     attachments = app.supporting_documents.filter(is_active=True)
@@ -55,10 +55,10 @@ def test_create_gmp_case_beis_email(icms_admin_client, gmp_app_submitted):
     )
 
 
-def test_create_cfs_case_hse_email(icms_admin_client, cfs_app_submitted):
+def test_create_cfs_case_hse_email(ilb_admin_client, cfs_app_submitted):
     app = cfs_app_submitted
 
-    icms_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
     app.refresh_from_db()
 
     case_email = utils.create_case_email(
@@ -70,10 +70,10 @@ def test_create_cfs_case_hse_email(icms_admin_client, cfs_app_submitted):
     assert "The application is for the following biocidal products" in case_email.body
 
 
-def test_create_dfl_constabulary_email(icms_admin_client, fa_dfl_app_submitted):
+def test_create_dfl_constabulary_email(ilb_admin_client, fa_dfl_app_submitted):
     app = fa_dfl_app_submitted
 
-    icms_admin_client.post(CaseURLS.take_ownership(app.pk, "import"))
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "import"))
     app.refresh_from_db()
 
     case_email = utils.create_case_email(
@@ -86,10 +86,10 @@ def test_create_dfl_constabulary_email(icms_admin_client, fa_dfl_app_submitted):
     assert "\ngoods_description value\n" in case_email.body
 
 
-def test_create_oil_constabulary_email(icms_admin_client, fa_oil_app_submitted):
+def test_create_oil_constabulary_email(ilb_admin_client, fa_oil_app_submitted):
     app = fa_oil_app_submitted
 
-    icms_admin_client.post(CaseURLS.take_ownership(app.pk, "import"))
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "import"))
     app.refresh_from_db()
 
     case_email = utils.create_case_email(
@@ -106,10 +106,10 @@ def test_create_oil_constabulary_email(icms_admin_client, fa_oil_app_submitted):
     ) in case_email.body
 
 
-def test_create_sil_constabulary_email(icms_admin_client, fa_sil_app_submitted):
+def test_create_sil_constabulary_email(ilb_admin_client, fa_sil_app_submitted):
     app = fa_sil_app_submitted
 
-    icms_admin_client.post(CaseURLS.take_ownership(app.pk, "import"))
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "import"))
     app.refresh_from_db()
 
     case_email = utils.create_case_email(
@@ -130,9 +130,9 @@ def test_create_sil_constabulary_email(icms_admin_client, fa_sil_app_submitted):
     ) in case_email.body
 
 
-def test_create_sanctions_email(icms_admin_client, sanctions_app_submitted):
+def test_create_sanctions_email(ilb_admin_client, sanctions_app_submitted):
     app = sanctions_app_submitted
-    icms_admin_client.post(CaseURLS.take_ownership(app.pk, "import"))
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "import"))
     app.refresh_from_db()
     case_email = utils.create_case_email(app, "IMA_SANCTION_EMAIL")
 

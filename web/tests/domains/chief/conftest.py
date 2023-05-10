@@ -16,14 +16,14 @@ from web.models import (
 
 
 @pytest.fixture
-def _fa_sil(db, test_import_user, importer, office):
+def _fa_sil(db, importer_one_contact, importer, office):
     """Fake FA-SIL app to test CHIEF code"""
 
     app = SILApplication.objects.create(
         process_type=SILApplication.PROCESS_TYPE,
         application_type=ImportApplicationType.objects.get(type="FA", sub_type="SIL"),
-        created_by=test_import_user,
-        last_updated_by=test_import_user,
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
         importer=importer,
         importer_office=office,
         status=ImpExpStatus.PROCESSING,

@@ -136,8 +136,8 @@ def test_detail_exporter_permission_not_ok():
 
 
 @pytest.mark.django_db
-def test_detail_exporter_ok(icms_admin_client, exporter):
-    response = icms_admin_client.get(f"/exporter/{ exporter.pk }/")
+def test_detail_exporter_ok(ilb_admin_client, exporter):
+    response = ilb_admin_client.get(f"/exporter/{ exporter.pk }/")
 
     assert response.status_code == 200
     assert exporter.name in response.content.decode()

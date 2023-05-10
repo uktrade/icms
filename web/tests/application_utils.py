@@ -78,7 +78,10 @@ def create_in_progress_wood_app(
 
 
 def create_in_progress_fa_dfl_app(
-    importer_client: "Client", importer: "Importer", office: "Office", importer_contact: "User"
+    importer_client: "Client",
+    importer: "Importer",
+    office: "Office",
+    importer_one_contact: "User",
 ) -> DFLApplication:
     """Creates a fully valid in progress fa dfl application"""
 
@@ -97,7 +100,7 @@ def create_in_progress_fa_dfl_app(
     consignment_country = dfl_countries[1]
     constabulary = Constabulary.objects.first()
     form_data = {
-        "contact": importer_contact.pk,
+        "contact": importer_one_contact.pk,
         "applicant_reference": "applicant_reference value",
         "deactivated_firearm": True,
         "proof_checked": True,
@@ -138,7 +141,10 @@ def create_in_progress_fa_dfl_app(
 
 
 def create_in_progress_fa_oil_app(
-    importer_client: "Client", importer: "Importer", office: "Office", importer_contact: "User"
+    importer_client: "Client",
+    importer: "Importer",
+    office: "Office",
+    importer_one_contact: "User",
 ) -> OpenIndividualLicenceApplication:
     app_pk = create_import_app(
         client=importer_client,
@@ -149,7 +155,7 @@ def create_in_progress_fa_oil_app(
     any_country = Country.objects.get(name="Any Country", is_active=True)
 
     form_data = {
-        "contact": importer_contact.pk,
+        "contact": importer_one_contact.pk,
         "applicant_reference": "applicant_reference value",
         "section1": True,
         "section2": True,
@@ -189,7 +195,10 @@ def create_in_progress_fa_oil_app(
 
 
 def create_in_progress_fa_sil_app(
-    importer_client: "Client", importer: "Importer", office: "Office", importer_contact: "User"
+    importer_client: "Client",
+    importer: "Importer",
+    office: "Office",
+    importer_one_contact: "User",
 ) -> SILApplication:
     app_pk = create_import_app(
         client=importer_client,
@@ -206,7 +215,7 @@ def create_in_progress_fa_sil_app(
     ).first()
 
     form_data = {
-        "contact": importer_contact.pk,
+        "contact": importer_one_contact.pk,
         "applicant_reference": "applicant_reference value",
         "section1": True,
         "section2": True,
@@ -354,7 +363,10 @@ def create_in_progress_sanctions_app(
 
 
 def create_in_progress_com_app(
-    exporter_client: "Client", exporter: "Exporter", office: "Office", exporter_contact: "User"
+    exporter_client: "Client",
+    exporter: "Exporter",
+    office: "Office",
+    exporter_one_contact: "User",
 ) -> CertificateOfManufactureApplication:
     app_pk = create_export_app(
         client=exporter_client,
@@ -364,7 +376,7 @@ def create_in_progress_com_app(
     )
 
     form_data = {
-        "contact": exporter_contact.pk,
+        "contact": exporter_one_contact.pk,
         "countries": Country.objects.first().pk,
         "is_pesticide_on_free_sale_uk": False,
         "is_manufacturer": True,
@@ -383,7 +395,10 @@ def create_in_progress_com_app(
 
 
 def create_in_progress_gmp_app(
-    exporter_client: "Client", exporter: "Exporter", office: "Office", exporter_contact: "User"
+    exporter_client: "Client",
+    exporter: "Exporter",
+    office: "Office",
+    exporter_one_contact: "User",
 ) -> CertificateOfGoodManufacturingPracticeApplication:
     app_pk = create_export_app(
         client=exporter_client,
@@ -393,7 +408,7 @@ def create_in_progress_gmp_app(
     )
 
     form_data = {
-        "contact": exporter_contact.pk,
+        "contact": exporter_one_contact.pk,
         "countries": Country.objects.first().pk,
         "is_responsible_person": "yes",
         "responsible_person_name": "RP Name",
@@ -442,7 +457,10 @@ def create_in_progress_gmp_app(
 
 
 def create_in_progress_cfs_app(
-    exporter_client: "Client", exporter: "Exporter", office: "Office", exporter_contact: "User"
+    exporter_client: "Client",
+    exporter: "Exporter",
+    office: "Office",
+    exporter_one_contact: "User",
 ) -> CertificateOfFreeSaleApplication:
     app_pk = create_export_app(
         client=exporter_client,
@@ -452,7 +470,7 @@ def create_in_progress_cfs_app(
     )
 
     form_data = {
-        "contact": exporter_contact.pk,
+        "contact": exporter_one_contact.pk,
         "countries": Country.objects.first().pk,
     }
 

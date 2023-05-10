@@ -10,7 +10,7 @@ from web.models import (
 
 
 @pytest.fixture
-def fa_sil_app(db, importer_one_main_contact, importer, office):
+def fa_sil_app(db, importer_one_contact, importer, office):
     """Fake FA-SIL app to test permission code.
 
     This application is in PROCESSING state.
@@ -19,8 +19,8 @@ def fa_sil_app(db, importer_one_main_contact, importer, office):
     app = SILApplication.objects.create(
         process_type=SILApplication.PROCESS_TYPE,
         application_type=ImportApplicationType.objects.get(type="FA", sub_type="SIL"),
-        created_by=importer_one_main_contact,
-        last_updated_by=importer_one_main_contact,
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
         importer=importer,
         importer_office=office,
         status=ImpExpStatus.PROCESSING,
@@ -51,7 +51,7 @@ def fa_sil_agent_app(
 
 
 @pytest.fixture
-def com_app(db, exporter, exporter_office, exporter_one_main_contact):
+def com_app(db, exporter, exporter_office, exporter_one_contact):
     """Fake COM app to test permission code.
 
     This application is in PROCESSING state.
@@ -60,8 +60,8 @@ def com_app(db, exporter, exporter_office, exporter_one_main_contact):
     app = CertificateOfManufactureApplication.objects.create(
         process_type=CertificateOfManufactureApplication.PROCESS_TYPE,
         application_type=ExportApplicationType.objects.get(type_code="CFS"),
-        created_by=exporter_one_main_contact,
-        last_updated_by=exporter_one_main_contact,
+        created_by=exporter_one_contact,
+        last_updated_by=exporter_one_contact,
         exporter=exporter,
         exporter_office=exporter_office,
         status=ImpExpStatus.PROCESSING,

@@ -287,7 +287,7 @@ class TestEmail(TestCase):
             "Test subject", "Test message", html_message="<p>Test message</p>", to_importers=True
         )
         outbox = mail.outbox
-        assert len(outbox) == 10
+        assert len(outbox) == 7
         # Many-to-many relations order is not guaranteed
         # Members of exporter team might have different order
         # Testing by length
@@ -309,7 +309,7 @@ class TestEmail(TestCase):
             "Test subject", "Test message", html_message="<p>Test message</p>", to_exporters=True
         )
         outbox = mail.outbox
-        assert len(outbox) == 9
+        assert len(outbox) == 6
         # Many-to-many relations order is not guaranteed
         # Members of exporter team might have different order
         # Testing by length

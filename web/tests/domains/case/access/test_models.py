@@ -8,9 +8,9 @@ from web.models import ExporterAccessRequest, ImporterAccessRequest, Process
     [ImporterAccessRequest, ExporterAccessRequest],
 )
 @pytest.mark.django_db
-def test_access_request_downcast(kls, test_access_user):
+def test_access_request_downcast(kls, access_request_user):
     obj = kls.objects.create(
-        submitted_by=test_access_user,
+        submitted_by=access_request_user,
         process_type=kls.PROCESS_TYPE,
     )
 

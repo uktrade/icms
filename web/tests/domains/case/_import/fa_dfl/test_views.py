@@ -49,7 +49,7 @@ def dfl_app_pk(importer_client, office, importer):
     return application_pk
 
 
-def test_edit_dfl_get(dfl_app_pk, importer_client, exporter_client, importer_two_main_contact):
+def test_edit_dfl_get(dfl_app_pk, importer_client, exporter_client, importer_two_contact):
     url = _get_view_url("edit", {"application_pk": dfl_app_pk})
 
     response = importer_client.get(url)
@@ -66,7 +66,7 @@ def test_edit_dfl_get(dfl_app_pk, importer_client, exporter_client, importer_two
     assert response.status_code == 403
 
     # A different importer can't access it
-    importer_two_client = get_test_client(importer_two_main_contact)
+    importer_two_client = get_test_client(importer_two_contact)
     response = importer_two_client.get(url)
     assert response.status_code == 403
 
@@ -89,7 +89,7 @@ def test_validate_query_param_shows_errors(dfl_app_pk, importer_client):
     assertFormError(response.context["form"], "constabulary", "You must enter this item")
 
 
-def test_edit_dfl_post_valid(dfl_app_pk, importer_client, importer_contact):
+def test_edit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact):
     url = _get_view_url("edit", {"application_pk": dfl_app_pk})
 
     dfl_countries = Country.objects.filter(
@@ -105,7 +105,7 @@ def test_edit_dfl_post_valid(dfl_app_pk, importer_client, importer_contact):
         "proof_checked": True,
         "origin_country": origin_country.pk,
         "consignment_country": consignment_country.pk,
-        "contact": importer_contact.pk,
+        "contact": importer_one_contact.pk,
         "commodity_code": FirearmCommodity.EX_CHAPTER_93.value,
         "constabulary": constabulary.pk,
     }
@@ -120,7 +120,7 @@ def test_edit_dfl_post_valid(dfl_app_pk, importer_client, importer_contact):
     assert dfl_app.proof_checked is True
     assert dfl_app.origin_country.pk == origin_country.pk
     assert dfl_app.consignment_country.pk == consignment_country.pk
-    assert dfl_app.contact.pk == importer_contact.pk
+    assert dfl_app.contact.pk == importer_one_contact.pk
     assert dfl_app.commodity_code == FirearmCommodity.EX_CHAPTER_93.value
     assert dfl_app.constabulary.pk == constabulary.pk
 
@@ -266,7 +266,7 @@ def _create_goods_cert(dfl_app_pk):
         deactivated_certificate_reference="deactivated_certificate_reference value",
         issuing_country=issuing_country,
         file_size=1024,
-        created_by=User.objects.get(username="test_import_user"),
+        created_by=User.objects.get(username="I1_main_contact"),
     )
     document_pk = dfl_app.goods_certificates.first().pk
 
@@ -310,7 +310,7 @@ def test_submit_dfl_get(dfl_app_pk, importer_client):
     )
 
 
-def test_submit_dfl_post_invalid(dfl_app_pk, importer_client, importer_contact):
+def test_submit_dfl_post_invalid(dfl_app_pk, importer_client, importer_one_contact):
     submit_url = _get_view_url("submit", kwargs={"application_pk": dfl_app_pk})
 
     form_data = {"foo": "bar"}
@@ -368,7 +368,7 @@ def test_submit_dfl_post_invalid(dfl_app_pk, importer_client, importer_contact):
         "proof_checked": True,
         "origin_country": origin_country.pk,
         "consignment_country": consignment_country.pk,
-        "contact": importer_contact.pk,
+        "contact": importer_one_contact.pk,
         "commodity_code": FirearmCommodity.EX_CHAPTER_93.value,
         "constabulary": constabulary.pk,
     }
@@ -388,7 +388,7 @@ def test_submit_dfl_post_invalid(dfl_app_pk, importer_client, importer_contact):
     check_page_errors(errors, "Details of who bought from", ["Person"])
 
 
-def test_submit_dfl_post_valid(dfl_app_pk, importer_client, importer_contact):
+def test_submit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact):
     """Test the full happy path.
 
     Create the main application
@@ -417,7 +417,7 @@ def test_submit_dfl_post_valid(dfl_app_pk, importer_client, importer_contact):
         "proof_checked": True,
         "origin_country": origin_country.pk,
         "consignment_country": consignment_country.pk,
-        "contact": importer_contact.pk,
+        "contact": importer_one_contact.pk,
         "commodity_code": FirearmCommodity.EX_CHAPTER_93.value,
         "constabulary": constabulary.pk,
         "know_bought_from": False,

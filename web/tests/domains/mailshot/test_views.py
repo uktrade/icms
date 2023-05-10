@@ -259,15 +259,15 @@ class TestMailshotDetailView(AuthTestCase):
         assert response.status_code == 403
 
 
-def test_mailshot_list_queryset(test_icms_admin_user):
+def test_mailshot_list_queryset(ilb_admin_user):
     st = Mailshot.Statuses
-    _create_mailshot(st.DRAFT, test_icms_admin_user)
-    _create_mailshot(st.PUBLISHED, test_icms_admin_user, reference_version=True)
-    _create_mailshot(st.RETRACTED, test_icms_admin_user, retracted=True, reference_version=True)
+    _create_mailshot(st.DRAFT, ilb_admin_user)
+    _create_mailshot(st.PUBLISHED, ilb_admin_user, reference_version=True)
+    _create_mailshot(st.RETRACTED, ilb_admin_user, retracted=True, reference_version=True)
     old_version = _create_mailshot(
-        st.RETRACTED, test_icms_admin_user, retracted=True, reference_version=True
+        st.RETRACTED, ilb_admin_user, retracted=True, reference_version=True
     )
-    new_version = _create_mailshot(st.DRAFT, test_icms_admin_user)
+    new_version = _create_mailshot(st.DRAFT, ilb_admin_user)
     new_version.reference = old_version.reference
     new_version.version = old_version.version + 1
     new_version.save()
