@@ -12,7 +12,7 @@ def _get_view_url(view_name, kwargs=None):
 
 
 @pytest.fixture
-def textiles_app_pk(importer_client, importer_one_main_contact, office, importer):
+def textiles_app_pk(importer_client, importer_one_contact, office, importer):
     "Creates a textiles application to be used in tests, also tests the create-textiles endpoint"
 
     url = reverse("import:create-textiles")
@@ -27,18 +27,18 @@ def textiles_app_pk(importer_client, importer_one_main_contact, office, importer
 
     expected_url = _get_view_url("edit", {"application_pk": application_pk})
     assertRedirects(resp, expected_url, 302)
-    _add_goods_to_app(importer_client, application_pk, importer_one_main_contact)
+    _add_goods_to_app(importer_client, application_pk, importer_one_contact)
 
     return application_pk
 
 
-def _add_goods_to_app(importer_client, textiles_app_pk, test_import_user):
+def _add_goods_to_app(importer_client, textiles_app_pk, importer_one_contact):
     url = _get_view_url("edit", kwargs={"application_pk": textiles_app_pk})
     belarus = Country.objects.get(name="Belarus")
     ghana = Country.objects.get(name="Ghana")
 
     form_data = {
-        "contact": test_import_user.pk,
+        "contact": importer_one_contact.pk,
         "applicant_reference": "New textiles",
         "goods_cleared": True,
         "shipping_year": 2021,
@@ -61,7 +61,7 @@ def _add_goods_to_app(importer_client, textiles_app_pk, test_import_user):
 
 
 @pytest.mark.django_db
-def test_textiles_goods_edit(icms_admin_client, textiles_app_pk, test_icms_admin_user):
+def test_textiles_goods_edit(ilb_admin_client, textiles_app_pk, ilb_admin_user):
     url = _get_view_url("edit-goods-licence", kwargs={"application_pk": textiles_app_pk})
 
     form_data = {
@@ -70,7 +70,7 @@ def test_textiles_goods_edit(icms_admin_client, textiles_app_pk, test_icms_admin
         "quantity": 4.71,
     }
 
-    response = icms_admin_client.post(url, data=form_data)
+    response = ilb_admin_client.post(url, data=form_data)
 
     assert response.status_code == 302
 

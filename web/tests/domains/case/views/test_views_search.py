@@ -24,13 +24,13 @@ from web.tests.helpers import SearchURLS, get_test_client
 
 class TestSearchCasesView:
     @pytest.fixture(autouse=True)
-    def _setup(self, importer_one_main_contact, exporter_one_main_contact, icms_admin_client):
+    def _setup(self, importer_one_contact, exporter_one_contact, ilb_admin_client):
         self.import_url = SearchURLS.search_cases("import")
         self.export_url = SearchURLS.search_cases("export")
 
-        self.importer_user_client = get_test_client(importer_one_main_contact)
-        self.exporter_user_client = get_test_client(exporter_one_main_contact)
-        self.ilb_admin_user_client = icms_admin_client
+        self.importer_user_client = get_test_client(importer_one_contact)
+        self.exporter_user_client = get_test_client(exporter_one_contact)
+        self.ilb_admin_user_client = ilb_admin_client
 
     def test_permission(self):
         response = self.importer_user_client.get(self.import_url)
@@ -56,13 +56,13 @@ class TestSearchCasesView:
 
 class TestDownloadSpreadsheetView:
     @pytest.fixture(autouse=True)
-    def _setup(self, importer_one_main_contact, exporter_one_main_contact, icms_admin_client):
+    def _setup(self, importer_one_contact, exporter_one_contact, ilb_admin_client):
         self.import_download_url = SearchURLS.download_spreadsheet("import")
         self.export_download_url = SearchURLS.download_spreadsheet("export")
 
-        self.importer_user_client = get_test_client(importer_one_main_contact)
-        self.exporter_user_client = get_test_client(exporter_one_main_contact)
-        self.ilb_admin_user_client = icms_admin_client
+        self.importer_user_client = get_test_client(importer_one_contact)
+        self.exporter_user_client = get_test_client(exporter_one_contact)
+        self.ilb_admin_user_client = ilb_admin_client
 
     def test_permission(self):
         response = self.importer_user_client.post(self.import_download_url, data={})
@@ -89,13 +89,13 @@ class TestDownloadSpreadsheetView:
 class TestReassignCaseOwnerView:
     def test_permission(
         self,
-        importer_one_main_contact,
-        exporter_one_main_contact,
-        icms_admin_client,
+        importer_one_contact,
+        exporter_one_contact,
+        ilb_admin_client,
         wood_app_submitted,
     ):
-        importer_user_client = get_test_client(importer_one_main_contact)
-        exporter_user_client = get_test_client(exporter_one_main_contact)
+        importer_user_client = get_test_client(importer_one_contact)
+        exporter_user_client = get_test_client(exporter_one_contact)
 
         url = SearchURLS.reassign_case_owner()
 
@@ -107,7 +107,7 @@ class TestReassignCaseOwnerView:
 
         # 400 response is valid when form data is incorrect.
         # It shows the ILB user has permission.
-        response = icms_admin_client.post(url, data={})
+        response = ilb_admin_client.post(url, data={})
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
     # TODO: ICMSLST-1957 Add missing unittests
@@ -120,23 +120,23 @@ class TestReopenApplicationView:
     wood_app: WoodQuotaApplication
 
     @pytest.fixture(autouse=True)
-    def set_client(self, icms_admin_client):
-        self.client = icms_admin_client
+    def set_client(self, ilb_admin_client):
+        self.client = ilb_admin_client
 
     @pytest.fixture(autouse=True)
-    def set_app(self, wood_app_submitted, test_icms_admin_user):
+    def set_app(self, wood_app_submitted, ilb_admin_user):
         self.wood_app = wood_app_submitted
 
         # End the PROCESS task as we are testing reopening the application
         task = case_progress.get_expected_task(self.wood_app, Task.TaskType.PROCESS)
         task.is_active = False
         task.finished = timezone.now()
-        task.owner = test_icms_admin_user
+        task.owner = ilb_admin_user
         task.save()
 
-    def test_permission(self, importer_one_main_contact, exporter_one_main_contact):
-        importer_user_client = get_test_client(importer_one_main_contact)
-        exporter_user_client = get_test_client(exporter_one_main_contact)
+    def test_permission(self, importer_one_contact, exporter_one_contact):
+        importer_user_client = get_test_client(importer_one_contact)
+        exporter_user_client = get_test_client(exporter_one_contact)
 
         url = SearchURLS.reopen_case(self.wood_app.pk)
 
@@ -176,9 +176,9 @@ class TestReopenApplicationView:
             url = SearchURLS.reopen_case(application_pk=self.wood_app.pk)
             self.client.post(url)
 
-    def test_reopen_application_unsets_caseworker(self, test_icms_admin_user):
+    def test_reopen_application_unsets_caseworker(self, ilb_admin_user):
         self.wood_app.status = ImpExpStatus.STOPPED
-        self.wood_app.case_owner = test_icms_admin_user
+        self.wood_app.case_owner = ilb_admin_user
         self.wood_app.save()
 
         url = SearchURLS.reopen_case(application_pk=self.wood_app.pk)
@@ -200,11 +200,11 @@ class TestRequestVariationUpdateView:
     wood_app: WoodQuotaApplication
 
     @pytest.fixture(autouse=True)
-    def set_client(self, icms_admin_client):
-        self.client = icms_admin_client
+    def set_client(self, ilb_admin_client):
+        self.client = ilb_admin_client
 
     @pytest.fixture(autouse=True)
-    def set_app(self, wood_app_submitted, test_icms_admin_user):
+    def set_app(self, wood_app_submitted, ilb_admin_user):
         self.wood_app = wood_app_submitted
         self.wood_app.status = ImpExpStatus.COMPLETED
         self.wood_app.save()
@@ -222,15 +222,13 @@ class TestRequestVariationUpdateView:
         task = case_progress.get_expected_task(self.wood_app, Task.TaskType.PROCESS)
         task.is_active = False
         task.finished = timezone.now()
-        task.owner = test_icms_admin_user
+        task.owner = ilb_admin_user
         task.save()
 
-    def test_permission(
-        self, importer_one_main_contact, exporter_one_main_contact, icms_admin_client
-    ):
-        importer_user_client = get_test_client(importer_one_main_contact)
-        exporter_user_client = get_test_client(exporter_one_main_contact)
-        ilb_admin_user_client = icms_admin_client
+    def test_permission(self, importer_one_contact, exporter_one_contact, ilb_admin_client):
+        importer_user_client = get_test_client(importer_one_contact)
+        exporter_user_client = get_test_client(exporter_one_contact)
+        ilb_admin_user_client = ilb_admin_client
 
         url = SearchURLS.request_variation(self.wood_app.pk)
 
@@ -239,7 +237,7 @@ class TestRequestVariationUpdateView:
 
         # Removing the edit object permission should prevent the importer contact from
         # attempting to perform a variation request.
-        remove_perm(Perms.obj.importer.edit, importer_one_main_contact, self.wood_app.importer)
+        remove_perm(Perms.obj.importer.edit, importer_one_contact, self.wood_app.importer)
         response = importer_user_client.get(url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
@@ -249,7 +247,7 @@ class TestRequestVariationUpdateView:
         response = ilb_admin_user_client.get(url)
         assert response.status_code == HTTPStatus.OK
 
-        remove_perm(Perms.obj.importer.edit, importer_one_main_contact, self.wood_app.importer)
+        remove_perm(Perms.obj.importer.edit, importer_one_contact, self.wood_app.importer)
 
     def test_get_search_url(self):
         url = SearchURLS.request_variation(self.wood_app.pk)
@@ -275,7 +273,7 @@ class TestRequestVariationUpdateView:
         expected = "/case/import/search/standard/results/?case_status=VARIATION_REQUESTED"
         assert resp.context["search_results_url"] == expected
 
-    def test_post_updates_status(self, test_icms_admin_user):
+    def test_post_updates_status(self, ilb_admin_user):
         url = SearchURLS.request_variation(self.wood_app.pk)
 
         live_licence = document_pack.pack_active_get(self.wood_app)
@@ -288,7 +286,7 @@ class TestRequestVariationUpdateView:
         }
 
         # Set this fields as reopening a case should clear them.
-        self.wood_app.case_owner = test_icms_admin_user
+        self.wood_app.case_owner = ilb_admin_user
         self.wood_app.variation_decision = WoodQuotaApplication.REFUSE
         self.wood_app.variation_refuse_reason = "test value"
 
@@ -322,33 +320,33 @@ class TestRequestVariationOpenRequestView:
     app: "CertificateOfManufactureApplication"
 
     @pytest.fixture(autouse=True)
-    def set_client(self, icms_admin_client):
-        self.client = icms_admin_client
+    def set_client(self, ilb_admin_client):
+        self.client = ilb_admin_client
 
     @pytest.fixture(autouse=True)
-    def set_app(self, com_app_submitted, test_icms_admin_user):
+    def set_app(self, com_app_submitted, ilb_admin_user):
         self.app = com_app_submitted
         self.app.status = ImpExpStatus.COMPLETED
         # A completed app would have a case owner (to test it gets cleared)
-        self.app.case_owner = test_icms_admin_user
+        self.app.case_owner = ilb_admin_user
         self.app.save()
 
         # End the PROCESS task as we are testing with a completed application
         task = case_progress.get_expected_task(self.app, Task.TaskType.PROCESS)
         task.is_active = False
         task.finished = timezone.now()
-        task.owner = test_icms_admin_user
+        task.owner = ilb_admin_user
         task.save()
 
     def test_permission(
         self,
-        importer_one_main_contact,
-        exporter_one_main_contact,
-        icms_admin_client,
+        importer_one_contact,
+        exporter_one_contact,
+        ilb_admin_client,
         wood_app_submitted,
     ):
-        importer_user_client = get_test_client(importer_one_main_contact)
-        exporter_user_client = get_test_client(exporter_one_main_contact)
+        importer_user_client = get_test_client(importer_one_contact)
+        exporter_user_client = get_test_client(exporter_one_contact)
 
         url = SearchURLS.open_variation(self.app.pk)
 
@@ -362,7 +360,7 @@ class TestRequestVariationOpenRequestView:
         response = self.client.get(url)
         assert response.status_code == HTTPStatus.OK
 
-    def test_post_updates_status(self, test_icms_admin_user):
+    def test_post_updates_status(self, ilb_admin_user):
         url = SearchURLS.open_variation(self.app.pk)
 
         form_data = {"what_varied": "What was varied"}
@@ -387,8 +385,8 @@ class TestRevokeCaseView:
     url: str
 
     @pytest.fixture(autouse=True)
-    def setup(self, icms_admin_client, completed_app):
-        self.client = icms_admin_client
+    def setup(self, ilb_admin_client, completed_app):
+        self.client = ilb_admin_client
         self.app = completed_app
         self.url = SearchURLS.revoke_licence(self.app.pk)
 

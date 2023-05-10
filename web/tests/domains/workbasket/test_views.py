@@ -14,7 +14,7 @@ from web.tests.helpers import get_test_client
 
 
 @pytest.fixture
-def submitted_imp_appl(importer, test_import_user):
+def submitted_imp_appl(importer, importer_one_contact):
     return OpenIndividualLicenceApplication.objects.create(
         process_type=OpenIndividualLicenceApplication.PROCESS_TYPE,
         application_type=ImportApplicationType.objects.get(
@@ -22,13 +22,13 @@ def submitted_imp_appl(importer, test_import_user):
         ),
         status=ImportApplication.Statuses.SUBMITTED,
         importer=importer,
-        created_by=test_import_user,
-        last_updated_by=test_import_user,
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
     )
 
 
 @pytest.fixture
-def in_progress_imp_appl(importer, test_import_user):
+def in_progress_imp_appl(importer, importer_one_contact):
     return OpenIndividualLicenceApplication.objects.create(
         process_type=OpenIndividualLicenceApplication.PROCESS_TYPE,
         application_type=ImportApplicationType.objects.get(
@@ -36,13 +36,13 @@ def in_progress_imp_appl(importer, test_import_user):
         ),
         status=ImportApplication.Statuses.IN_PROGRESS,
         importer=importer,
-        created_by=test_import_user,
-        last_updated_by=test_import_user,
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
     )
 
 
 @pytest.fixture
-def submitted_exp_appl(exporter, test_export_user):
+def submitted_exp_appl(exporter, exporter_one_contact):
     return CertificateOfManufactureApplication.objects.create(
         process_type=CertificateOfManufactureApplication.PROCESS_TYPE,
         application_type=ExportApplicationType.objects.get(
@@ -50,13 +50,13 @@ def submitted_exp_appl(exporter, test_export_user):
         ),
         status=ExportApplication.Statuses.SUBMITTED,
         exporter=exporter,
-        created_by=test_export_user,
-        last_updated_by=test_export_user,
+        created_by=exporter_one_contact,
+        last_updated_by=exporter_one_contact,
     )
 
 
 @pytest.fixture
-def in_progress_exp_appl(exporter, test_export_user):
+def in_progress_exp_appl(exporter, exporter_one_contact):
     return CertificateOfManufactureApplication.objects.create(
         process_type=CertificateOfManufactureApplication.PROCESS_TYPE,
         application_type=ExportApplicationType.objects.get(
@@ -64,13 +64,13 @@ def in_progress_exp_appl(exporter, test_export_user):
         ),
         status=ExportApplication.Statuses.IN_PROGRESS,
         exporter=exporter,
-        created_by=test_export_user,
-        last_updated_by=test_export_user,
+        created_by=exporter_one_contact,
+        last_updated_by=exporter_one_contact,
     )
 
 
 @pytest.fixture
-def submitted_agent_imp_appl(importer, agent_importer, test_agent_import_user):
+def submitted_agent_imp_appl(importer, agent_importer, importer_one_agent_one_contact):
     return OpenIndividualLicenceApplication.objects.create(
         process_type=OpenIndividualLicenceApplication.PROCESS_TYPE,
         application_type=ImportApplicationType.objects.get(
@@ -78,14 +78,14 @@ def submitted_agent_imp_appl(importer, agent_importer, test_agent_import_user):
         ),
         status=ImportApplication.Statuses.SUBMITTED,
         importer=importer,
-        created_by=test_agent_import_user,
-        last_updated_by=test_agent_import_user,
+        created_by=importer_one_agent_one_contact,
+        last_updated_by=importer_one_agent_one_contact,
         agent=agent_importer,
     )
 
 
 @pytest.fixture
-def in_progress_agent_imp_appl(importer, agent_importer, test_agent_import_user):
+def in_progress_agent_imp_appl(importer, agent_importer, importer_one_agent_one_contact):
     return OpenIndividualLicenceApplication.objects.create(
         process_type=OpenIndividualLicenceApplication.PROCESS_TYPE,
         application_type=ImportApplicationType.objects.get(
@@ -93,8 +93,8 @@ def in_progress_agent_imp_appl(importer, agent_importer, test_agent_import_user)
         ),
         status=ImportApplication.Statuses.IN_PROGRESS,
         importer=importer,
-        created_by=test_agent_import_user,
-        last_updated_by=test_agent_import_user,
+        created_by=importer_one_agent_one_contact,
+        last_updated_by=importer_one_agent_one_contact,
         agent=agent_importer,
     )
 
@@ -143,7 +143,7 @@ def test_exporter_workbasket(
 
 @pytest.mark.django_db
 def test_agent_import_workbasket(
-    test_agent_import_user,
+    importer_one_agent_one_contact,
     in_progress_imp_appl,
     submitted_imp_appl,
     in_progress_exp_appl,
@@ -151,7 +151,7 @@ def test_agent_import_workbasket(
     in_progress_agent_imp_appl,
     submitted_agent_imp_appl,
 ):
-    client = get_test_client(test_agent_import_user)
+    client = get_test_client(importer_one_agent_one_contact)
     response = client.get("/workbasket/")
 
     assert response.status_code == 200

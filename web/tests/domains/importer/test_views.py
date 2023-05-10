@@ -322,8 +322,8 @@ class TestAgentUnarchiveView(AuthTestCase):
 
 
 @pytest.mark.django_db
-def test_create_section5_authority(icms_admin_client, importer, office):
-    response = icms_admin_client.get(f"/importer/{importer.pk}/section5/create/")
+def test_create_section5_authority(ilb_admin_client, importer, office):
+    response = ilb_admin_client.get(f"/importer/{importer.pk}/section5/create/")
     assert response.status_code == 200
 
     data = {
@@ -336,7 +336,7 @@ def test_create_section5_authority(icms_admin_client, importer, office):
         "clausequantity_set-TOTAL_FORMS": 0,
         "clausequantity_set-INITIAL_FORMS": 0,
     }
-    response = icms_admin_client.post(f"/importer/{importer.pk}/section5/create/", data=data)
+    response = ilb_admin_client.post(f"/importer/{importer.pk}/section5/create/", data=data)
     assert response.status_code == 302
 
     section5 = Section5Authority.objects.get()

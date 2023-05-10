@@ -38,7 +38,7 @@ class Command(BaseCommand):
             raise CommandError("Can only add test data in 'test' environment!")
 
         # Assume data is fine if the first user is already created.
-        if User.objects.filter(username="test_import_user").exists():
+        if User.objects.filter(username="I1_main_contact").exists():
             self.stdout.write("Test data already created.")
 
             return
@@ -48,7 +48,7 @@ class Command(BaseCommand):
         load_app_test_data()
 
         # Access requests
-        access_user = self.create_user("test_access_user")
+        access_user = self.create_user("access_request_user")
         self.create_import_access_request(access_user)
         self.create_export_access_request(access_user)
 
@@ -57,7 +57,7 @@ class Command(BaseCommand):
         self.create_test_exporters()
 
         # ILB Admin/Caseworker
-        self.create_icms_admin_user("test_icms_admin_user")
+        self.create_icms_admin_user("ilb_admin_user")
 
         # enable disabled application types
         ImportApplicationType.objects.filter(

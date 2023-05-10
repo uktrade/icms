@@ -12,7 +12,7 @@ def _get_view_url(view_name, kwargs=None):
 
 
 @pytest.fixture
-def textiles_app_pk(importer_client, importer_one_main_contact, office, importer):
+def textiles_app_pk(importer_client, importer_one_contact, office, importer):
     "Creates a textiles application to be used in tests, also tests the create-textiles endpoint"
 
     url = reverse("import:create-textiles")
@@ -32,21 +32,21 @@ def textiles_app_pk(importer_client, importer_one_main_contact, office, importer
     return application_pk
 
 
-def test_textiles_app_edit(importer_client, textiles_app_pk, test_import_user):
-    _add_goods_to_app(importer_client, textiles_app_pk, test_import_user)
+def test_textiles_app_edit(importer_client, textiles_app_pk, importer_one_contact):
+    _add_goods_to_app(importer_client, textiles_app_pk, importer_one_contact)
     textiles_app = TextilesApplication.objects.get(pk=textiles_app_pk)
 
     assert textiles_app.applicant_reference == "New textiles"
     assert textiles_app.goods_description == "A lot of textiles"
 
 
-def _add_goods_to_app(importer_client, textiles_app_pk, test_import_user):
+def _add_goods_to_app(importer_client, textiles_app_pk, importer_one_contact):
     url = _get_view_url("edit", kwargs={"application_pk": textiles_app_pk})
     belarus = Country.objects.get(name="Belarus")
     ghana = Country.objects.get(name="Ghana")
 
     form_data = {
-        "contact": test_import_user.pk,
+        "contact": importer_one_contact.pk,
         "applicant_reference": "New textiles",
         "goods_cleared": True,
         "shipping_year": 2021,

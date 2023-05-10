@@ -8,8 +8,8 @@ from web.tests.domains.case._import.factory import DerogationsApplicationFactory
 
 class TestDerogationsForm:
     @pytest.fixture(autouse=True)
-    def _setup(self, importer_one_main_contact, importer):
-        self.user = importer_one_main_contact
+    def _setup(self, importer_one_contact, importer):
+        self.user = importer_one_contact
         self.importer = importer
 
         self.valid_country = Country.objects.filter(

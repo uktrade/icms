@@ -73,13 +73,13 @@ def test_year(lock_manager):
 
 
 def test_get_application_case_and_licence_references(
-    db, test_import_user, importer, office, exporter, exporter_office, lock_manager
+    db, importer_one_contact, importer, office, exporter, exporter_office, lock_manager
 ):
     iat = ImportApplicationType.Types
     iast = ImportApplicationType.SubTypes
     eat = ExportApplicationType.Types
 
-    shared = {"created_by": test_import_user, "last_updated_by": test_import_user}
+    shared = {"created_by": importer_one_contact, "last_updated_by": importer_one_contact}
     import_common = shared | {"importer": importer, "importer_office": office}
     export_common = shared | {"exporter": exporter, "exporter_office": exporter_office}
 
@@ -297,11 +297,11 @@ def test_get_application_case_and_licence_references(
 
 
 def test_import_application_licence_reference_is_reused(
-    db, importer, office, test_import_user, lock_manager
+    db, importer, office, importer_one_contact, lock_manager
 ):
     app = DFLApplication.objects.create(
-        created_by=test_import_user,
-        last_updated_by=test_import_user,
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
         importer=importer,
         importer_office=office,
         process_type=DFLApplication.PROCESS_TYPE,
@@ -345,12 +345,12 @@ def test_unallocated_application_raises_error(wood_app_in_progress):
         reference.get_variation_request_case_reference(wood_app_in_progress)
 
 
-def test_get_wood_app_variation_request_case_reference(wood_app_submitted, test_icms_admin_user):
+def test_get_wood_app_variation_request_case_reference(wood_app_submitted, ilb_admin_user):
     initial_reference = wood_app_submitted.get_reference()
     assert re.match(CASE_REF_PATTERN, initial_reference)
 
     # Add a variation request
-    _add_variation_request(wood_app_submitted, test_icms_admin_user)
+    _add_variation_request(wood_app_submitted, ilb_admin_user)
 
     expected_reference = f"{initial_reference}/1"
     actual_reference = reference.get_variation_request_case_reference(wood_app_submitted)
@@ -359,7 +359,7 @@ def test_get_wood_app_variation_request_case_reference(wood_app_submitted, test_
 
 
 def test_get_variation_request_case_reference_with_existing_variations(
-    wood_app_submitted, test_icms_admin_user
+    wood_app_submitted, ilb_admin_user
 ):
     initial_reference = wood_app_submitted.get_reference()
 
@@ -367,7 +367,7 @@ def test_get_variation_request_case_reference_with_existing_variations(
     for i in range(5):
         _add_variation_request(
             wood_app_submitted,
-            test_icms_admin_user,
+            ilb_admin_user,
             f"What varied {i + 1}",
             VariationRequest.CANCELLED,
         )
@@ -375,7 +375,7 @@ def test_get_variation_request_case_reference_with_existing_variations(
     wood_app_submitted.save()
 
     # Add a new vr so that the suffix will change
-    _add_variation_request(wood_app_submitted, test_icms_admin_user)
+    _add_variation_request(wood_app_submitted, ilb_admin_user)
 
     expected_reference = f"{initial_reference}/6"
     actual_reference = reference.get_variation_request_case_reference(wood_app_submitted)
@@ -383,12 +383,12 @@ def test_get_variation_request_case_reference_with_existing_variations(
     assert expected_reference == actual_reference
 
 
-def test_get_com_app_variation_request_case_reference(com_app_submitted, test_icms_admin_user):
+def test_get_com_app_variation_request_case_reference(com_app_submitted, ilb_admin_user):
     initial_reference = com_app_submitted.get_reference()
     assert re.match(CASE_REF_PATTERN, initial_reference)
 
     # Add a variation request
-    _add_variation_request(com_app_submitted, test_icms_admin_user)
+    _add_variation_request(com_app_submitted, ilb_admin_user)
 
     expected_reference = f"{initial_reference}/1"
     actual_reference = reference.get_variation_request_case_reference(com_app_submitted)
@@ -397,7 +397,7 @@ def test_get_com_app_variation_request_case_reference(com_app_submitted, test_ic
 
 
 def test_get_com_app_variation_request_case_reference_with_existing_variations(
-    com_app_submitted, test_icms_admin_user
+    com_app_submitted, ilb_admin_user
 ):
     initial_reference = com_app_submitted.get_reference()
 
@@ -405,7 +405,7 @@ def test_get_com_app_variation_request_case_reference_with_existing_variations(
     for i in range(5):
         _add_variation_request(
             com_app_submitted,
-            test_icms_admin_user,
+            ilb_admin_user,
             f"What varied {i + 1}",
             VariationRequest.CLOSED,
         )
@@ -413,7 +413,7 @@ def test_get_com_app_variation_request_case_reference_with_existing_variations(
     com_app_submitted.save()
 
     # Add a new vr so that the suffix will change
-    open_vr = _add_variation_request(com_app_submitted, test_icms_admin_user)
+    open_vr = _add_variation_request(com_app_submitted, ilb_admin_user)
 
     expected_reference = f"{initial_reference}/6"
     actual_reference = reference.get_variation_request_case_reference(com_app_submitted)
@@ -430,11 +430,11 @@ def test_get_com_app_variation_request_case_reference_with_existing_variations(
     assert expected_reference == actual_reference
 
 
-def test_get_com_app_variation_request_count_is_zero(com_app_submitted, test_icms_admin_user):
+def test_get_com_app_variation_request_count_is_zero(com_app_submitted, ilb_admin_user):
     initial_reference = com_app_submitted.get_reference()
     _add_variation_request(
         com_app_submitted,
-        test_icms_admin_user,
+        ilb_admin_user,
         "A variation request that was opened and cancelled",
         VariationRequest.CANCELLED,
     )
@@ -445,18 +445,10 @@ def test_get_com_app_variation_request_count_is_zero(com_app_submitted, test_icm
     assert expected_reference == actual_reference
 
 
-def test_case_reference_correct_with_no_valid_variation_requests(
-    com_app_submitted, test_icms_admin_user
-):
-    _add_variation_request(
-        com_app_submitted, test_icms_admin_user, status=VariationRequest.CANCELLED
-    )
-    _add_variation_request(
-        com_app_submitted, test_icms_admin_user, status=VariationRequest.CANCELLED
-    )
-    _add_variation_request(
-        com_app_submitted, test_icms_admin_user, status=VariationRequest.CANCELLED
-    )
+def test_case_reference_correct_with_no_valid_variation_requests(com_app_submitted, ilb_admin_user):
+    _add_variation_request(com_app_submitted, ilb_admin_user, status=VariationRequest.CANCELLED)
+    _add_variation_request(com_app_submitted, ilb_admin_user, status=VariationRequest.CANCELLED)
+    _add_variation_request(com_app_submitted, ilb_admin_user, status=VariationRequest.CANCELLED)
 
     # This tests there is no variation part in the case reference
     assert re.match(CASE_REF_PATTERN, com_app_submitted.get_reference())

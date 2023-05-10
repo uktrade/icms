@@ -1461,13 +1461,13 @@ def test_reassignment_search(
     importer_one_fixture_data: FixtureData,
     exporter_one_fixture_data: ExportFixtureData,
     client,
-    test_icms_admin_user,
+    ilb_admin_user,
 ):
     wood_app = Build.wood_application("wood-app-1", importer_one_fixture_data)
     textiles_app = Build.textiles_application("textiles-app-1", importer_one_fixture_data)
 
     # We need to be the icms case officer to post to the take-ownership endpoint
-    client.force_login(test_icms_admin_user)
+    client.force_login(ilb_admin_user)
 
     assert wood_app.status == ImpExpStatus.SUBMITTED
 
@@ -1485,7 +1485,7 @@ def test_reassignment_search(
 
     wood_app.refresh_from_db()
     assert wood_app.status == ImpExpStatus.PROCESSING
-    assert wood_app.case_owner == test_icms_admin_user
+    assert wood_app.case_owner == ilb_admin_user
 
     search_terms = SearchTerms(
         case_type="import",
@@ -1501,7 +1501,7 @@ def test_reassignment_search(
     textiles_app.save()
 
     search_terms = SearchTerms(
-        case_type="import", reassignment_search=True, reassignment_user=test_icms_admin_user
+        case_type="import", reassignment_search=True, reassignment_user=ilb_admin_user
     )
     results = search_applications(search_terms, importer_one_fixture_data.ilb_admin_user)
 
@@ -1511,7 +1511,7 @@ def test_reassignment_search(
     # Test Export applications work with reassignment searching
     gmp_app = Build.gmp_application(exporter_one_fixture_data)
     search_terms = SearchTerms(
-        case_type="export", reassignment_search=True, reassignment_user=test_icms_admin_user
+        case_type="export", reassignment_search=True, reassignment_user=ilb_admin_user
     )
     results = search_applications(search_terms, exporter_one_fixture_data.ilb_admin_user)
 
@@ -1528,12 +1528,10 @@ def test_reassignment_search(
     check_export_application_case_reference(results.records, gmp_app.reference)
 
 
-def test_can_search_refused_application(
-    fa_dfl_app_submitted, icms_admin_client, test_icms_admin_user
-):
+def test_can_search_refused_application(fa_dfl_app_submitted, ilb_admin_client, ilb_admin_user):
     app = fa_dfl_app_submitted
     # Take ownership
-    r = icms_admin_client.post(CaseURLS.take_ownership(app.pk))
+    r = ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
     assert r.status_code == 302
 
     # Create a checklist
@@ -1553,12 +1551,12 @@ def test_can_search_refused_application(
     app.decision = app.REFUSE
     app.save()
 
-    r = icms_admin_client.post(CaseURLS.start_authorisation(app.pk))
+    r = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
     assert r.status_code == 302
 
     # Test we can search by it
     search_terms = SearchTerms(case_type="import", case_status=ImpExpStatus.COMPLETED)
-    results = search_applications(search_terms, test_icms_admin_user)
+    results = search_applications(search_terms, ilb_admin_user)
     assert results.total_rows == 1
     assert len(results.records) == 1
 

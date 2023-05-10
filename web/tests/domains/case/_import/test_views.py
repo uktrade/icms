@@ -23,10 +23,10 @@ from . import factory
 
 @pytest.mark.django_db
 def test_preview_cover_letter(
-    test_icms_admin_user, icms_admin_client, importer_one_main_contact, importer, office
+    ilb_admin_user, ilb_admin_client, importer_one_contact, importer, office
 ):
-    ilb_admin = test_icms_admin_user
-    user = importer_one_main_contact
+    ilb_admin = ilb_admin_user
+    user = importer_one_contact
 
     process = factory.OILApplicationFactory.create(
         status="SUBMITTED",
@@ -43,7 +43,7 @@ def test_preview_cover_letter(
     url = reverse(
         "case:cover-letter-preview", kwargs={"application_pk": process.pk, "case_type": "import"}
     )
-    response = icms_admin_client.get(url)
+    response = ilb_admin_client.get(url)
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
@@ -56,11 +56,9 @@ def test_preview_cover_letter(
 
 
 @pytest.mark.django_db
-def test_preview_licence(
-    test_icms_admin_user, icms_admin_client, importer_one_main_contact, importer, office
-):
-    ilb_admin = test_icms_admin_user
-    user = importer_one_main_contact
+def test_preview_licence(ilb_admin_user, ilb_admin_client, importer_one_contact, importer, office):
+    ilb_admin = ilb_admin_user
+    user = importer_one_contact
 
     process = factory.OILApplicationFactory.create(
         status="SUBMITTED",
@@ -77,7 +75,7 @@ def test_preview_licence(
     url = reverse(
         "case:licence-preview", kwargs={"application_pk": process.pk, "case_type": "import"}
     )
-    response = icms_admin_client.get(url)
+    response = ilb_admin_client.get(url)
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
@@ -94,8 +92,8 @@ class TestBypassChiefView:
     wood_app: WoodQuotaApplication
 
     @pytest.fixture(autouse=True)
-    def set_client(self, icms_admin_client):
-        self.client = icms_admin_client
+    def set_client(self, ilb_admin_client):
+        self.client = ilb_admin_client
 
     @pytest.fixture(autouse=True)
     def set_app(self, wood_app_submitted):
@@ -148,14 +146,14 @@ class TestBypassChiefView:
         case_progress.check_expected_status(self.wood_app, [ImpExpStatus.PROCESSING])
         case_progress.check_expected_task(self.wood_app, Task.TaskType.CHIEF_ERROR)
 
-    def test_bypass_chief_variation_request_success(self, test_icms_admin_user):
+    def test_bypass_chief_variation_request_success(self, ilb_admin_user):
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
         self.wood_app.variation_requests.create(
             status=VariationRequest.OPEN,
             what_varied="Dummy what_varied",
             why_varied="Dummy why_varied",
             when_varied=timezone.now().date(),
-            requested_by=test_icms_admin_user,
+            requested_by=ilb_admin_user,
         )
 
         self.wood_app.save()
@@ -184,8 +182,8 @@ class TestBypassChiefViewRevokeLicence:
     fail_url: str
 
     @pytest.fixture(autouse=True)
-    def setup(self, icms_admin_client, completed_app):
-        self.client = icms_admin_client
+    def setup(self, ilb_admin_client, completed_app):
+        self.client = ilb_admin_client
         self.app = completed_app
         self.success_url = reverse(
             "import:bypass-chief", kwargs={"application_pk": self.app.pk, "chief_status": "success"}

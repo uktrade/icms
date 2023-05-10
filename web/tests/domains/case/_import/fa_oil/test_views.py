@@ -73,22 +73,22 @@ class TestImportAppplicationCreateView(AuthTestCase):
 
 
 @pytest.mark.django_db
-def test_take_ownership(importer_one_main_contact, importer, icms_admin_client):
+def test_take_ownership(importer_one_contact, importer, ilb_admin_client):
     process = OILApplicationFactory.create(
         status="SUBMITTED",
         importer=importer,
-        created_by=importer_one_main_contact,
-        last_updated_by=importer_one_main_contact,
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
     )
     TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
     oil_app = process.get_specific_model()
     oil_app.licences.create()
 
-    response_workbasket = icms_admin_client.get("/workbasket/")
+    response_workbasket = ilb_admin_client.get("/workbasket/")
     assert "Take Ownership" in response_workbasket.content.decode()
 
     # After taking ownership we now navigate to the case management "view application" view.
-    response = icms_admin_client.post(
+    response = ilb_admin_client.post(
         f"/case/import/{process.pk}/admin/take-ownership/", follow=True
     )
 
@@ -98,19 +98,17 @@ def test_take_ownership(importer_one_main_contact, importer, icms_admin_client):
 
 
 @pytest.mark.django_db
-def test_release_ownership(
-    test_icms_admin_user, icms_admin_client, importer, importer_one_main_contact
-):
+def test_release_ownership(ilb_admin_user, ilb_admin_client, importer, importer_one_contact):
     process = OILApplicationFactory.create(
         status="SUBMITTED",
         importer=importer,
-        created_by=importer_one_main_contact,
-        last_updated_by=importer_one_main_contact,
-        case_owner=test_icms_admin_user,
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
+        case_owner=ilb_admin_user,
     )
     TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
 
-    response = icms_admin_client.post(
+    response = ilb_admin_client.post(
         f"/case/import/{process.pk}/admin/release-ownership/", follow=True
     )
 
@@ -118,19 +116,19 @@ def test_release_ownership(
 
 
 @pytest.mark.django_db
-def test_close_case(test_icms_admin_user, icms_admin_client, importer, importer_one_main_contact):
+def test_close_case(ilb_admin_user, ilb_admin_client, importer, importer_one_contact):
     process = OILApplicationFactory.create(
         status="SUBMITTED",
         importer=importer,
-        created_by=importer_one_main_contact,
-        last_updated_by=importer_one_main_contact,
-        case_owner=test_icms_admin_user,
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
+        case_owner=ilb_admin_user,
         reference="IMA/123/4567",
     )
     task = TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
     licence = document_pack.pack_draft_create(process)
 
-    icms_admin_client.post(
+    ilb_admin_client.post(
         f"/case/import/{process.pk}/admin/manage/", data={"send_email": True}, follow=True
     )
 

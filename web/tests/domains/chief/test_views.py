@@ -39,9 +39,9 @@ def make_testing_hawk_sender(method: HTTPMethod, url: str, **kwargs):
 
 class TestLicenseDataCallbackAuthentication:
     @pytest.fixture(autouse=True)
-    def _setup(self, client, test_import_user, fa_sil_app_with_chief):
+    def _setup(self, client, importer_one_contact, fa_sil_app_with_chief):
         self.client = client
-        self.user = test_import_user
+        self.user = importer_one_contact
         self.app = fa_sil_app_with_chief
         self.url = reverse("chief:license-data-callback")
 
@@ -106,9 +106,9 @@ class TestLicenseDataCallbackAuthentication:
 
 class TestLicenseDataCallbackView:
     @pytest.fixture(autouse=True)
-    def _setup(self, client, test_import_user, fa_sil_app_with_chief, monkeypatch):
+    def _setup(self, client, importer_one_contact, fa_sil_app_with_chief, monkeypatch):
         self.client = client
-        self.user = test_import_user
+        self.user = importer_one_contact
         self.app = fa_sil_app_with_chief
         self.monkeypatch = monkeypatch
         self.url = reverse("chief:license-data-callback")
@@ -232,9 +232,9 @@ class TestLicenseDataCallbackView:
 
 @pytest.mark.django_db
 class TestPendingLicences:
-    def test_template_context(self, icms_admin_client):
+    def test_template_context(self, ilb_admin_client):
         url = reverse("chief:pending-licences")
-        response = icms_admin_client.get(url)
+        response = ilb_admin_client.get(url)
 
         assert response.status_code == 200
         assert response.context_data["pending_licences_count"] == 0
@@ -244,9 +244,9 @@ class TestPendingLicences:
 
 @pytest.mark.django_db
 class TestFailedLicences:
-    def test_template_context(self, icms_admin_client):
+    def test_template_context(self, ilb_admin_client):
         url = reverse("chief:failed-licences")
-        response = icms_admin_client.get(url)
+        response = ilb_admin_client.get(url)
 
         assert response.status_code == 200
         assert response.context_data["failed_licences_count"] == 0
@@ -255,12 +255,12 @@ class TestFailedLicences:
 
 
 class TestChiefRequestDataView:
-    def test_can_see_request_data(self, db, fa_sil_app_with_chief, icms_admin_client):
+    def test_can_see_request_data(self, db, fa_sil_app_with_chief, ilb_admin_client):
         chief_req = fa_sil_app_with_chief.chief_references.latest("pk")
 
         url = reverse("chief:request-data", kwargs={"litehmrcchiefrequest_id": chief_req.pk})
 
-        response = icms_admin_client.get(url)
+        response = ilb_admin_client.get(url)
 
         assert response.status_code == 200
         assert response.headers["content-type"] == "application/json"
@@ -269,10 +269,10 @@ class TestChiefRequestDataView:
 
 class TestResendLicenceToChiefView:
     @pytest.fixture(autouse=True)
-    def setup(self, icms_admin_client, fa_sil_app_with_chief, monkeypatch):
+    def setup(self, ilb_admin_client, fa_sil_app_with_chief, monkeypatch):
         # We just need any application - not specifically with chief
         self.app = fa_sil_app_with_chief
-        self.client = icms_admin_client
+        self.client = ilb_admin_client
         self.url = reverse("chief:resend-licence", kwargs={"application_pk": self.app.pk})
 
         self.send_application_to_chief_mock = create_autospec(spec=client.send_application_to_chief)
@@ -327,8 +327,8 @@ class TestResendLicenceToChiefView:
 
 class TestCheckChiefProgressView:
     @pytest.fixture(autouse=True)
-    def set_client(self, icms_admin_client):
-        self.client = icms_admin_client
+    def set_client(self, ilb_admin_client):
+        self.client = ilb_admin_client
 
     @pytest.fixture(autouse=True)
     def set_app(self, fa_dfl_app_submitted):

@@ -18,14 +18,14 @@ from web.models import (
     ],
 )
 @pytest.mark.django_db
-def test_export_downcast(application_model, exporter, test_export_user):
+def test_export_downcast(application_model, exporter, exporter_one_contact):
     obj = application_model.objects.create(
         # this is not important for this test, so just hardcode it
         application_type=ExportApplicationType.objects.get(
             type_code=ExportApplicationType.Types.FREE_SALE
         ),
-        created_by=test_export_user,
-        last_updated_by=test_export_user,
+        created_by=exporter_one_contact,
+        last_updated_by=exporter_one_contact,
         exporter=exporter,
         exporter_office=exporter.offices.first(),
         process_type=application_model.PROCESS_TYPE,

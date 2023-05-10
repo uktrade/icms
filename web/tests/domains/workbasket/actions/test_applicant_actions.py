@@ -21,8 +21,8 @@ class TestApplicantActions:
     ST = ImpExpStatus
 
     @pytest.fixture(autouse=True)
-    def setup(self, test_import_user):
-        self.user = test_import_user
+    def setup(self, importer_one_contact):
+        self.user = importer_one_contact
 
         # set pk as it's the minimum needed to craft the url
         self.app = WoodQuotaApplication(pk=1)
@@ -118,7 +118,7 @@ class TestApplicantActions:
         )
         assert not action.show_link()
 
-    def test_clear_application_action_is_shown(self, test_icms_admin_user):
+    def test_clear_application_action_is_shown(self, ilb_admin_user):
         active_tasks = []
         for status in self.ST:
             self.app.status = status

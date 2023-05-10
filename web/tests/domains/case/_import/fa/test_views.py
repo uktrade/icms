@@ -16,14 +16,14 @@ from web.models import (
 
 
 @pytest.fixture()
-def dfl_app(test_import_user, importer, office):
+def dfl_app(importer_one_contact, importer, office):
     app = DFLApplication.objects.create(
         process_type=DFLApplication.PROCESS_TYPE,
         application_type=ImportApplicationType.objects.get(
             type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.DFL
         ),
-        created_by=test_import_user,
-        last_updated_by=test_import_user,
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
         importer=importer,
         importer_office=office,
         status=ImpExpStatus.IN_PROGRESS,
@@ -54,8 +54,8 @@ class TestManageImportContactsView:
             "import:fa:manage-import-contacts", kwargs={"application_pk": self.app.pk}
         )
 
-    def test_permission(self, icms_admin_client, importer_client, exporter_client):
-        response = icms_admin_client.get(self.url)
+    def test_permission(self, ilb_admin_client, importer_client, exporter_client):
+        response = ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
         response = importer_client.get(self.url)
@@ -103,8 +103,8 @@ class TestCreateImportContactView:
             kwargs={"application_pk": self.app.pk, "entity": ImportContact.LEGAL},
         )
 
-    def test_permission(self, icms_admin_client, importer_client, exporter_client):
-        response = icms_admin_client.get(self.url)
+    def test_permission(self, ilb_admin_client, importer_client, exporter_client):
+        response = ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
         response = importer_client.get(self.url)
@@ -195,8 +195,8 @@ class TestEditImportContactView:
             },
         )
 
-    def test_permission(self, icms_admin_client, importer_client, exporter_client):
-        response = icms_admin_client.get(self.url)
+    def test_permission(self, ilb_admin_client, importer_client, exporter_client):
+        response = ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
         response = importer_client.get(self.url)

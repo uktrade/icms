@@ -29,11 +29,11 @@ class TestPermissionsService:
         exporter,
         agent_importer,
         agent_exporter,
-        importer_one_main_contact,
+        importer_one_contact,
         importer_one_agent_one_contact,
-        exporter_one_main_contact,
+        exporter_one_contact,
         exporter_one_agent_one_contact,
-        test_icms_admin_user,
+        ilb_admin_user,
         fa_sil_app,
         fa_sil_agent_app,
         com_app,
@@ -43,11 +43,11 @@ class TestPermissionsService:
         self.agent_importer = agent_importer
         self.exporter = exporter
         self.agent_exporter = agent_exporter
-        self.importer_contact = importer_one_main_contact
+        self.importer_contact = importer_one_contact
         self.importer_agent_contact = importer_one_agent_one_contact
-        self.exporter_contact = exporter_one_main_contact
+        self.exporter_contact = exporter_one_contact
         self.exporter_agent_contact = exporter_one_agent_one_contact
-        self.ilb_admin = test_icms_admin_user
+        self.ilb_admin = ilb_admin_user
 
         self.fa_sil_app = fa_sil_app
         self.fa_sil_agent_app = fa_sil_agent_app
@@ -330,18 +330,16 @@ class TestPermissionsService:
         importer_contacts = organisation_get_contacts(self.importer)
         for i in importer_contacts:
             print(i.username)
-
-        assert importer_contacts.count() == 3
+        assert importer_contacts.count() == 1
 
         remove_perm(Perms.obj.importer.edit, self.importer_contact, self.importer)
         importer_contacts = organisation_get_contacts(
             self.importer, perms=[Perms.obj.importer.edit.codename]
         )
-        # self.importer_contact is the only user who had edit access so count is zero
         assert importer_contacts.count() == 0
 
         exporter_contacts = organisation_get_contacts(self.exporter)
-        assert exporter_contacts.count() == 3
+        assert exporter_contacts.count() == 1
 
         exporter_contacts = organisation_get_contacts(
             self.exporter, perms=[Perms.obj.exporter.manage_contacts_and_agents.codename]

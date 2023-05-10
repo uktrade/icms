@@ -14,15 +14,15 @@ class TestUserObjectPerms:
         self,
         importer,
         exporter,
-        importer_one_main_contact,
-        exporter_one_main_contact,
+        importer_one_contact,
+        exporter_one_contact,
         fa_sil_app,
         com_app,
     ):
         self.importer = importer
         self.exporter = exporter
-        self.importer_contact = importer_one_main_contact
-        self.exporter_contact = exporter_one_main_contact
+        self.importer_contact = importer_one_contact
+        self.exporter_contact = exporter_one_contact
 
         self.fa_sil_app = fa_sil_app
         self.com_app = com_app
@@ -50,7 +50,7 @@ class TestUserObjectPerms:
         assert not importer_uop.can_view_application(self.com_app)
 
 
-def test_request_user_object_permissions(importer_one_main_contact):
+def test_request_user_object_permissions(importer_one_contact):
     anon_user = get_anonymous_user()
 
     user_request = HttpRequest()
@@ -59,8 +59,8 @@ def test_request_user_object_permissions(importer_one_main_contact):
 
     assert uop.user == anon_user
 
-    user_request.user = importer_one_main_contact
+    user_request.user = importer_one_contact
     context = request_user_object_permissions(user_request)
     uop = context["user_obj_perms"]
 
-    assert uop.user == importer_one_main_contact
+    assert uop.user == importer_one_contact

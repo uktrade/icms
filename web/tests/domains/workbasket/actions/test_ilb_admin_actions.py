@@ -24,8 +24,8 @@ class TestAdminActions:
     app: WoodQuotaApplication
 
     @pytest.fixture(autouse=True)
-    def setup(self, test_icms_admin_user):
-        self.user = test_icms_admin_user
+    def setup(self, ilb_admin_user):
+        self.user = ilb_admin_user
         # set pk as it's the minimum needed to craft the url
         self.app = WoodQuotaApplication(pk=1)
 
@@ -510,8 +510,8 @@ class TestAdminActions:
         )
         assert not action.show_link()
 
-    def test_get_workbasket_sections(self, test_icms_admin_user):
-        user = test_icms_admin_user
+    def test_get_workbasket_sections(self, ilb_admin_user):
+        user = ilb_admin_user
         case_type = "import"
         application = WoodQuotaApplication(
             pk=1,

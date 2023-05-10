@@ -30,9 +30,6 @@ IMPORTER_ONE = TestImporter(
             "I1_main_contact",
             [ImpOP.manage_contacts_and_agents, ImpOP.edit, ImpOP.view, ImpOP.is_contact],
         ),
-        # Existing fixture users
-        ImporterContact("test_import_user", [ImpOP.is_contact]),
-        ImporterContact("importer_contact", [ImpOP.is_contact]),
     ],
     agents=[
         AgentImporter(
@@ -46,8 +43,6 @@ IMPORTER_ONE = TestImporter(
             ],
             contacts=[
                 ImporterContact("I1_A1_main_contact", [ImpOP.edit, ImpOP.view, ImpOP.is_contact]),
-                # Existing fixture users
-                ImporterContact("test_agent_import_user", [ImpOP.is_contact]),
             ],
         )
     ],
@@ -86,10 +81,7 @@ EXPORTER_ONE = TestExporter(
         ExporterContact(
             "E1_main_contact",
             [ExpOP.manage_contacts_and_agents, ExpOP.edit, ExpOP.view, ExpOP.is_contact],
-        ),
-        # Existing fixture users
-        ExporterContact("test_export_user", [ExpOP.is_contact]),
-        ExporterContact("exporter_contact", [ExpOP.is_contact]),
+        )
     ],
     agents=[
         AgentExporter(
@@ -104,8 +96,6 @@ EXPORTER_ONE = TestExporter(
             ],
             contacts=[
                 ExporterContact("E1_A1_main_contact", [ExpOP.edit, ExpOP.view, ExpOP.is_contact]),
-                # Existing fixture users
-                ExporterContact("test_agent_export_user", [ExpOP.is_contact]),
             ],
         )
     ],

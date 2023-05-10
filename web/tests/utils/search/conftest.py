@@ -54,40 +54,40 @@ class FixtureData(NamedTuple):
 def importer_one_fixture_data(
     db,
     importer,
-    test_icms_admin_user,
+    ilb_admin_user,
     agent_importer,
-    test_import_user,
-    test_agent_import_user,
+    importer_one_contact,
+    importer_one_agent_one_contact,
     request,
 ) -> FixtureData:
     # This is the user who submits the applications in _submit_application
-    request.user = test_import_user
+    request.user = importer_one_contact
     request.icms = ICMSMiddlewareContext()
 
     return FixtureData(
         importer=importer,
         agent_importer=agent_importer,
-        importer_user=test_import_user,
-        agent_user=test_agent_import_user,
-        ilb_admin_user=test_icms_admin_user,
+        importer_user=importer_one_contact,
+        agent_user=importer_one_agent_one_contact,
+        ilb_admin_user=ilb_admin_user,
         request=request,
     )
 
 
 @pytest.fixture
 def importer_two_fixture_data(
-    db, importer_two, test_icms_admin_user, importer_two_main_contact, request
+    db, importer_two, ilb_admin_user, importer_two_contact, request
 ) -> FixtureData:
     # This is the user who submits the applications in _submit_application
-    request.user = importer_two_main_contact
+    request.user = importer_two_contact
     request.icms = ICMSMiddlewareContext()
 
     return FixtureData(
         importer=importer_two,
         agent_importer=None,
-        importer_user=importer_two_main_contact,
+        importer_user=importer_two_contact,
         agent_user=None,
-        ilb_admin_user=test_icms_admin_user,
+        ilb_admin_user=ilb_admin_user,
         request=request,
     )
 
@@ -105,22 +105,22 @@ class ExportFixtureData(NamedTuple):
 def exporter_one_fixture_data(
     db,
     exporter,
-    test_icms_admin_user,
+    ilb_admin_user,
     agent_exporter,
-    test_export_user,
-    test_agent_export_user,
+    exporter_one_contact,
+    exporter_one_agent_one_contact,
     request,
 ):
     # This is the user who submits the applications in _submit_application
-    request.user = test_export_user
+    request.user = exporter_one_contact
     request.icms = ICMSMiddlewareContext()
 
     return ExportFixtureData(
         exporter=exporter,
         agent_exporter=agent_exporter,
-        exporter_user=test_export_user,
-        exporter_agent_user=test_agent_export_user,
-        ilb_admin_user=test_icms_admin_user,
+        exporter_user=exporter_one_contact,
+        exporter_agent_user=exporter_one_agent_one_contact,
+        ilb_admin_user=ilb_admin_user,
         request=request,
     )
 
@@ -129,20 +129,20 @@ def exporter_one_fixture_data(
 def exporter_two_fixture_data(
     db,
     exporter_two,
-    test_icms_admin_user,
-    exporter_two_main_contact,
+    ilb_admin_user,
+    exporter_two_contact,
     request,
 ):
     # This is the user who submits the applications in _submit_application
-    request.user = exporter_two_main_contact
+    request.user = exporter_two_contact
     request.icms = ICMSMiddlewareContext()
 
     return ExportFixtureData(
         exporter=exporter_two,
         agent_exporter=None,
-        exporter_user=exporter_two_main_contact,
+        exporter_user=exporter_two_contact,
         exporter_agent_user=None,
-        ilb_admin_user=test_icms_admin_user,
+        ilb_admin_user=ilb_admin_user,
         request=request,
     )
 

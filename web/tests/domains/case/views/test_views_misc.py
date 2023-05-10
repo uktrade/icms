@@ -29,9 +29,9 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-def wood_application(icms_admin_client, wood_app_submitted):
+def wood_application(ilb_admin_client, wood_app_submitted):
     """A submitted wood application owned by the ICMS admin user."""
-    icms_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
+    ilb_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
     wood_app_submitted.refresh_from_db()
     licence = document_pack.pack_draft_get(wood_app_submitted)
     licence.issue_paper_licence_only = True
@@ -41,16 +41,16 @@ def wood_application(icms_admin_client, wood_app_submitted):
 
 
 @pytest.fixture
-def com_app(icms_admin_client, com_app_submitted):
+def com_app(ilb_admin_client, com_app_submitted):
     """A submitted com application owned by the ICMS admin user."""
-    icms_admin_client.post(CaseURLS.take_ownership(com_app_submitted.pk, case_type="export"))
+    ilb_admin_client.post(CaseURLS.take_ownership(com_app_submitted.pk, case_type="export"))
     com_app_submitted.refresh_from_db()
 
     return com_app_submitted
 
 
-def test_take_ownership(icms_admin_client: "Client", wood_app_submitted):
-    resp = icms_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
+def test_take_ownership(ilb_admin_client: "Client", wood_app_submitted):
+    resp = ilb_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
     assert resp.status_code == 302
 
     wood_app_submitted.refresh_from_db()
@@ -59,23 +59,23 @@ def test_take_ownership(icms_admin_client: "Client", wood_app_submitted):
     case_progress.check_expected_task(wood_app_submitted, Task.TaskType.PROCESS)
 
 
-def test_take_ownership_in_progress(icms_admin_client: "Client", wood_app_in_progress):
+def test_take_ownership_in_progress(ilb_admin_client: "Client", wood_app_in_progress):
     # Can't own an in progress application
     with pytest.raises(ProcessStateError):
-        icms_admin_client.post(CaseURLS.take_ownership(wood_app_in_progress.pk))
+        ilb_admin_client.post(CaseURLS.take_ownership(wood_app_in_progress.pk))
 
 
-def test_manage_case_get(icms_admin_client: "Client", wood_application):
-    resp = icms_admin_client.get(CaseURLS.manage(wood_application.pk))
+def test_manage_case_get(ilb_admin_client: "Client", wood_application):
+    resp = ilb_admin_client.get(CaseURLS.manage(wood_application.pk))
 
     assert resp.status_code == HTTPStatus.OK
     assertContains(resp, "Wood (Quota) - Manage")
     assertTemplateUsed(resp, "web/domains/case/manage/manage.html")
 
 
-def test_manage_case_close_case(icms_admin_client: "Client", wood_application):
+def test_manage_case_close_case(ilb_admin_client: "Client", wood_application):
     post_data = {"send_email": False}
-    response = icms_admin_client.post(
+    response = ilb_admin_client.post(
         CaseURLS.close_case(wood_application.pk), post_data, follow=True
     )
     assertRedirects(response, reverse("workbasket"), status_code=302)
@@ -94,9 +94,9 @@ def test_manage_case_close_case(icms_admin_client: "Client", wood_application):
 
 
 def test_manage_withdrawals_get(
-    icms_admin_client: "Client", wood_app_submitted: "WoodQuotaApplication"
+    ilb_admin_client: "Client", wood_app_submitted: "WoodQuotaApplication"
 ):
-    resp = icms_admin_client.get(CaseURLS.manage_withdrawals(wood_app_submitted.pk))
+    resp = ilb_admin_client.get(CaseURLS.manage_withdrawals(wood_app_submitted.pk))
     assert resp.status_code == HTTPStatus.OK
 
     assertContains(resp, "Wood (Quota) - Withdrawals")
@@ -112,7 +112,7 @@ def test_manage_withdrawals_get(
 #     ...
 
 
-def test_start_authorisation_approved_application_has_errors(icms_admin_client, wood_application):
+def test_start_authorisation_approved_application_has_errors(ilb_admin_client, wood_application):
     """Test start authorisation catches the correct errors for an approved application."""
 
     wood_application.decision = wood_application.APPROVE
@@ -120,7 +120,7 @@ def test_start_authorisation_approved_application_has_errors(icms_admin_client, 
     wood_application.update_requests.create(status=UpdateRequest.Status.OPEN)
     wood_application.save()
 
-    response = icms_admin_client.get(CaseURLS.start_authorisation(wood_application.pk))
+    response = ilb_admin_client.get(CaseURLS.start_authorisation(wood_application.pk))
     assert response.status_code == HTTPStatus.OK
 
     errors: ApplicationErrors = response.context["errors"]
@@ -133,9 +133,7 @@ def test_start_authorisation_approved_application_has_errors(icms_admin_client, 
     check_page_errors(errors=errors, page_name="Application Updates", error_field_names=["Status"])
 
 
-def test_start_authorisation_approved_application_has_no_errors(
-    icms_admin_client, wood_application
-):
+def test_start_authorisation_approved_application_has_no_errors(ilb_admin_client, wood_application):
     """Test a valid approved application ends in the correct state."""
 
     wood_application.decision = wood_application.APPROVE
@@ -147,13 +145,13 @@ def test_start_authorisation_approved_application_has_no_errors(
     _add_valid_checklist(wood_application)
     wood_application.save()
 
-    response = icms_admin_client.get(CaseURLS.start_authorisation(wood_application.pk))
+    response = ilb_admin_client.get(CaseURLS.start_authorisation(wood_application.pk))
     assert response.status_code == HTTPStatus.OK
     errors: ApplicationErrors = response.context["errors"]
     assert errors is None
 
     # Now start authorisation
-    response = icms_admin_client.post(CaseURLS.start_authorisation(wood_application.pk))
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(wood_application.pk))
 
     assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
 
@@ -168,7 +166,7 @@ def test_start_authorisation_approved_application_has_no_errors(
 
 
 def test_start_authorisation_approved_application_has_no_errors_export_app(
-    icms_admin_client, com_app
+    ilb_admin_client, com_app
 ):
     com_app.decision = com_app.APPROVE
     com_app.save()
@@ -186,13 +184,13 @@ def test_start_authorisation_approved_application_has_no_errors_export_app(
     dr = document_pack.doc_ref_certificate_create(cert, "some-ref", country=Country.objects.first())
     pk_to_delete = dr.id
 
-    response = icms_admin_client.get(CaseURLS.start_authorisation(com_app.pk, case_type="export"))
+    response = ilb_admin_client.get(CaseURLS.start_authorisation(com_app.pk, case_type="export"))
     assert response.status_code == HTTPStatus.OK
     errors: ApplicationErrors = response.context["errors"]
     assert errors is None
 
     # Now start authorisation
-    response = icms_admin_client.post(CaseURLS.start_authorisation(com_app.pk, case_type="export"))
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(com_app.pk, case_type="export"))
 
     assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
 
@@ -221,13 +219,13 @@ def test_start_authorisation_approved_application_has_no_errors_export_app(
     assert not cert_docs.filter(pk=pk_to_delete).exists()
 
 
-def test_start_authorisation_refused_application_has_errors(icms_admin_client, wood_application):
+def test_start_authorisation_refused_application_has_errors(ilb_admin_client, wood_application):
     """Test start authorisation catches the correct errors for a refused application."""
 
     wood_application.decision = wood_application.REFUSE
     wood_application.save()
 
-    response = icms_admin_client.get(CaseURLS.start_authorisation(wood_application.pk))
+    response = ilb_admin_client.get(CaseURLS.start_authorisation(wood_application.pk))
     assert response.status_code == HTTPStatus.OK
 
     errors: ApplicationErrors = response.context["errors"]
@@ -236,21 +234,21 @@ def test_start_authorisation_refused_application_has_errors(icms_admin_client, w
     check_page_errors(errors, "Checklist", ["Checklist"])
 
 
-def test_start_authorisation_refused_application_has_no_errors(icms_admin_client, wood_application):
+def test_start_authorisation_refused_application_has_no_errors(ilb_admin_client, wood_application):
     """Test a valid refused application ends in the correct state."""
 
     wood_application.decision = wood_application.REFUSE
     _add_valid_checklist(wood_application)
     wood_application.save()
 
-    response = icms_admin_client.get(CaseURLS.start_authorisation(wood_application.pk))
+    response = ilb_admin_client.get(CaseURLS.start_authorisation(wood_application.pk))
     assert response.status_code == HTTPStatus.OK
 
     errors: ApplicationErrors = response.context["errors"]
     assert errors is None
 
     # Now start authorisation
-    response = icms_admin_client.post(CaseURLS.start_authorisation(wood_application.pk))
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(wood_application.pk))
     assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
 
     wood_application.refresh_from_db()
@@ -263,7 +261,7 @@ def test_start_authorisation_refused_application_has_no_errors(icms_admin_client
 
 
 def test_start_authorisation_approved_variation_requested_application(
-    icms_admin_client, wood_application, test_icms_admin_user
+    ilb_admin_client, wood_application, ilb_admin_user
 ):
     """Test an approved variation requested application ends in the correct status & has the correct task"""
     wood_application.decision = wood_application.APPROVE
@@ -273,12 +271,12 @@ def test_start_authorisation_approved_variation_requested_application(
     # Set the variation fields
     wood_application.status = ImpExpStatus.VARIATION_REQUESTED
     wood_application.variation_decision = wood_application.APPROVE
-    _add_variation_request(wood_application, test_icms_admin_user)
+    _add_variation_request(wood_application, ilb_admin_user)
 
     wood_application.save()
 
     # Now start authorisation
-    response = icms_admin_client.post(CaseURLS.start_authorisation(wood_application.pk))
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(wood_application.pk))
     assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
     wood_application.refresh_from_db()
 
@@ -294,7 +292,7 @@ def test_start_authorisation_approved_variation_requested_application(
 
 
 def test_start_authorisation_rejected_variation_requested_application(
-    icms_admin_client, wood_application, test_icms_admin_user
+    ilb_admin_client, wood_application, ilb_admin_user
 ):
     """Test an rejected variation requested application ends in the correct status & has the correct task"""
     wood_application.decision = wood_application.APPROVE
@@ -305,12 +303,12 @@ def test_start_authorisation_rejected_variation_requested_application(
     wood_application.status = ImpExpStatus.VARIATION_REQUESTED
     wood_application.variation_decision = wood_application.REFUSE
     wood_application.variation_refuse_reason = "test refuse reason"
-    _add_variation_request(wood_application, test_icms_admin_user)
+    _add_variation_request(wood_application, ilb_admin_user)
 
     wood_application.save()
 
     # Now start authorisation
-    response = icms_admin_client.post(CaseURLS.start_authorisation(wood_application.pk))
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(wood_application.pk))
     assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
     wood_application.refresh_from_db()
 
@@ -333,8 +331,8 @@ class TestAuthoriseDocumentsView:
     form_data = {"password": "test"}
 
     @pytest.fixture(autouse=True)
-    def set_client(self, icms_admin_client):
-        self.client = icms_admin_client
+    def set_client(self, ilb_admin_client):
+        self.client = ilb_admin_client
 
     @pytest.fixture(autouse=True)
     def set_app(self, wood_app_submitted):
@@ -371,9 +369,9 @@ class TestAuthoriseDocumentsView:
         latest_licence = document_pack.pack_active_get(self.wood_app)
         assert latest_licence.status == DocumentPackBase.Status.ACTIVE
 
-    def test_authorise_variation_request_post_valid(self, test_icms_admin_user):
+    def test_authorise_variation_request_post_valid(self, ilb_admin_user):
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
-        _add_variation_request(self.wood_app, test_icms_admin_user)
+        _add_variation_request(self.wood_app, ilb_admin_user)
         self.wood_app.save()
 
         post_data = {"password": "test"}
@@ -415,8 +413,8 @@ class TestAuthoriseDocumentsView:
 
 class TestCheckCaseDocumentGenerationView:
     @pytest.fixture(autouse=True)
-    def set_client(self, icms_admin_client):
-        self.client = icms_admin_client
+    def set_client(self, ilb_admin_client):
+        self.client = ilb_admin_client
 
     @pytest.fixture(autouse=True)
     def set_app(self, wood_app_submitted):

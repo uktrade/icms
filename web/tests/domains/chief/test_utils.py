@@ -17,9 +17,9 @@ from .conftest import (
 
 class TestChiefUtils:
     @pytest.fixture(autouse=True)
-    def _setup(self, fa_sil_app_with_chief, test_import_user):
+    def _setup(self, fa_sil_app_with_chief, importer_one_contact):
         self.app = fa_sil_app_with_chief
-        self.user = test_import_user
+        self.user = importer_one_contact
 
         # Current draft licence
         self.licence = self.app.licences.get(status=ImportApplicationLicence.Status.DRAFT)

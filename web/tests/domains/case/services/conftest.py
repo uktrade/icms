@@ -22,7 +22,7 @@ def lock_manager():
 
 
 @pytest.fixture
-def fa_sil(db, test_import_user, importer, office):
+def fa_sil(db, importer_one_contact, importer, office):
     """Fake FA-SIL app to test document pack service.
 
     This application is in PROCESSING state.
@@ -31,8 +31,8 @@ def fa_sil(db, test_import_user, importer, office):
     app = SILApplication.objects.create(
         process_type=SILApplication.PROCESS_TYPE,
         application_type=ImportApplicationType.objects.get(type="FA", sub_type="SIL"),
-        created_by=test_import_user,
-        last_updated_by=test_import_user,
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
         importer=importer,
         importer_office=office,
         status=ImpExpStatus.PROCESSING,
@@ -43,7 +43,7 @@ def fa_sil(db, test_import_user, importer, office):
 
 
 @pytest.fixture
-def com(db, test_export_user, exporter, exporter_office):
+def com(db, exporter_one_contact, exporter, exporter_office):
     """Fake COM app to test document pack service.
 
     This application is in PROCESSING state.
@@ -52,8 +52,8 @@ def com(db, test_export_user, exporter, exporter_office):
     app = CertificateOfManufactureApplication.objects.create(
         process_type=CertificateOfManufactureApplication.PROCESS_TYPE,
         application_type=ExportApplicationType.objects.get(type_code="CFS"),
-        created_by=test_export_user,
-        last_updated_by=test_export_user,
+        created_by=exporter_one_contact,
+        last_updated_by=exporter_one_contact,
         exporter=exporter,
         exporter_office=exporter_office,
         status=ImpExpStatus.PROCESSING,
@@ -64,7 +64,7 @@ def com(db, test_export_user, exporter, exporter_office):
 
 
 @pytest.fixture
-def sanctions(db, test_import_user, importer, office):
+def sanctions(db, importer_one_contact, importer, office):
     """Fake ADHOC app to test document pack service.
 
     This application is in PROCESSING state.
@@ -73,8 +73,8 @@ def sanctions(db, test_import_user, importer, office):
     app = SanctionsAndAdhocApplication.objects.create(
         process_type=SanctionsAndAdhocApplication.PROCESS_TYPE,
         application_type=ImportApplicationType.objects.get(type="ADHOC"),
-        created_by=test_import_user,
-        last_updated_by=test_import_user,
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
         importer=importer,
         importer_office=office,
         status=ImpExpStatus.PROCESSING,
@@ -115,7 +115,7 @@ def com_with_draft(com):
 
 
 @pytest.fixture
-def gmp_with_draft(db, test_export_user, exporter, exporter_office):
+def gmp_with_draft(db, exporter_one_contact, exporter, exporter_office):
     """Fake COM app to test document pack service.
 
     This application is in PROCESSING state.
@@ -124,8 +124,8 @@ def gmp_with_draft(db, test_export_user, exporter, exporter_office):
     app = CertificateOfGoodManufacturingPracticeApplication.objects.create(
         process_type=CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE,
         application_type=ExportApplicationType.objects.get(type_code="GMP"),
-        created_by=test_export_user,
-        last_updated_by=test_export_user,
+        created_by=exporter_one_contact,
+        last_updated_by=exporter_one_contact,
         exporter=exporter,
         exporter_office=exporter_office,
         status=ImpExpStatus.PROCESSING,

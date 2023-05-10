@@ -13,18 +13,18 @@ from web.tests.helpers import CaseURLS
 
 class TestVariationRequestManageView:
     @pytest.fixture(autouse=True)
-    def set_client(self, icms_admin_client):
-        self.client = icms_admin_client
+    def set_client(self, ilb_admin_client):
+        self.client = ilb_admin_client
 
-    def test_get_variations_for_import_application(self, test_icms_admin_user, wood_app_submitted):
+    def test_get_variations_for_import_application(self, ilb_admin_user, wood_app_submitted):
         wood_app = wood_app_submitted
         self.client.post(CaseURLS.take_ownership(wood_app.pk))
 
         # Add a few previous variation requests
-        _add_variation_request(wood_app, test_icms_admin_user, VariationRequest.REJECTED)
-        _add_variation_request(wood_app, test_icms_admin_user, VariationRequest.ACCEPTED)
+        _add_variation_request(wood_app, ilb_admin_user, VariationRequest.REJECTED)
+        _add_variation_request(wood_app, ilb_admin_user, VariationRequest.ACCEPTED)
         # Add an open one last (as it's the latest)
-        _add_variation_request(wood_app, test_icms_admin_user, VariationRequest.OPEN)
+        _add_variation_request(wood_app, ilb_admin_user, VariationRequest.OPEN)
 
         response = self.client.get(CaseURLS.manage_variations(wood_app.pk))
 
@@ -42,16 +42,16 @@ class TestVariationRequestManageView:
 
         assert expected_status_order == [vr.status for vr in vrs]
 
-    def test_get_variations_for_export_application(self, test_icms_admin_user, com_app_submitted):
+    def test_get_variations_for_export_application(self, ilb_admin_user, com_app_submitted):
         com_app = com_app_submitted
 
         self.client.post(CaseURLS.take_ownership(com_app.pk))
 
         # Add a few previous variation requests
-        _add_variation_request(com_app, test_icms_admin_user, VariationRequest.CANCELLED)
-        _add_variation_request(com_app, test_icms_admin_user, VariationRequest.CLOSED)
+        _add_variation_request(com_app, ilb_admin_user, VariationRequest.CANCELLED)
+        _add_variation_request(com_app, ilb_admin_user, VariationRequest.CLOSED)
         # Add an open one last (as it's the latest)
-        _add_variation_request(com_app, test_icms_admin_user, VariationRequest.OPEN)
+        _add_variation_request(com_app, ilb_admin_user, VariationRequest.OPEN)
 
         response = self.client.get(CaseURLS.manage_variations(com_app.pk, case_type="export"))
 
@@ -72,17 +72,17 @@ class TestVariationRequestManageView:
 
 class TestVariationRequestCancelView:
     @pytest.fixture(autouse=True)
-    def set_client(self, icms_admin_client):
-        self.client = icms_admin_client
+    def set_client(self, ilb_admin_client):
+        self.client = ilb_admin_client
 
     @pytest.fixture(autouse=True)
-    def set_app(self, set_client, wood_app_submitted, test_icms_admin_user):
+    def set_app(self, set_client, wood_app_submitted, ilb_admin_user):
         self.wood_app = wood_app_submitted
         self.client.post(CaseURLS.take_ownership(self.wood_app.pk))
 
         self.wood_app.refresh_from_db()
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
-        _add_variation_request(self.wood_app, test_icms_admin_user)
+        _add_variation_request(self.wood_app, ilb_admin_user)
         self.wood_app.save()
 
         # Set the draft licence active and create a second one
@@ -102,7 +102,7 @@ class TestVariationRequestCancelView:
         assert cd["page_title"] == f"Variations {self.wood_app.get_reference()}"
         assert cd["case_type"] == "import"
 
-    def test_cancel_variation_request_post(self, test_icms_admin_user):
+    def test_cancel_variation_request_post(self, ilb_admin_user):
         vr = self.wood_app.variation_requests.first()
         resp = self.client.post(
             CaseURLS.cancel_variation_request(self.wood_app.pk, vr.pk),
@@ -116,7 +116,7 @@ class TestVariationRequestCancelView:
 
         assert vr.status == VariationRequest.CANCELLED
         assert vr.reject_cancellation_reason == "Test cancellation reason"
-        assert vr.closed_by == test_icms_admin_user
+        assert vr.closed_by == ilb_admin_user
         assert vr.closed_datetime.date() == timezone.now().date()
 
         case_progress.check_expected_status(self.wood_app, [ImpExpStatus.COMPLETED])
@@ -132,17 +132,17 @@ class TestVariationRequestCancelView:
 
 class TestVariationRequestCancelViewForExportApplication:
     @pytest.fixture(autouse=True)
-    def set_client(self, icms_admin_client):
-        self.client = icms_admin_client
+    def set_client(self, ilb_admin_client):
+        self.client = ilb_admin_client
 
     @pytest.fixture(autouse=True)
-    def set_app(self, set_client, com_app_submitted, test_icms_admin_user):
+    def set_app(self, set_client, com_app_submitted, ilb_admin_user):
         self.app = com_app_submitted
         self.client.post(CaseURLS.take_ownership(self.app.pk))
 
         self.app.refresh_from_db()
         self.app.status = ImpExpStatus.VARIATION_REQUESTED
-        _add_variation_request(self.app, test_icms_admin_user, VariationRequest.OPEN)
+        _add_variation_request(self.app, ilb_admin_user, VariationRequest.OPEN)
         self.app.save()
 
         # Set the draft licence active and create a second one
@@ -150,7 +150,7 @@ class TestVariationRequestCancelViewForExportApplication:
         self.active_certificate = document_pack.pack_active_get(self.app)
         self.draft_certificate = self.app.certificates.create()
 
-    def test_cancel_variation_request_post(self, test_icms_admin_user):
+    def test_cancel_variation_request_post(self, ilb_admin_user):
         vr = self.app.variation_requests.first()
         resp = self.client.post(
             CaseURLS.cancel_variation_request(self.app.pk, vr.pk, case_type="export")
@@ -162,7 +162,7 @@ class TestVariationRequestCancelViewForExportApplication:
         vr.refresh_from_db()
 
         assert vr.status == VariationRequest.CANCELLED
-        assert vr.closed_by == test_icms_admin_user
+        assert vr.closed_by == ilb_admin_user
         assert vr.closed_datetime.date() == timezone.now().date()
 
         case_progress.check_expected_status(self.app, [ImpExpStatus.COMPLETED])
@@ -178,11 +178,11 @@ class TestVariationRequestCancelViewForExportApplication:
 
 class TestVariationRequestRequestUpdateView:
     @pytest.fixture(autouse=True)
-    def set_client(self, icms_admin_client):
-        self.client = icms_admin_client
+    def set_client(self, ilb_admin_client):
+        self.client = ilb_admin_client
 
     @pytest.fixture(autouse=True)
-    def set_app(self, set_client, wood_app_submitted, test_import_user):
+    def set_app(self, set_client, wood_app_submitted, importer_one_contact):
         self.wood_app = wood_app_submitted
         self.client.post(CaseURLS.take_ownership(self.wood_app.pk))
 
@@ -190,7 +190,7 @@ class TestVariationRequestRequestUpdateView:
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
         self.wood_app.save()
 
-        _add_variation_request(self.wood_app, test_import_user, VariationRequest.OPEN)
+        _add_variation_request(self.wood_app, importer_one_contact, VariationRequest.OPEN)
         self.vr = self.wood_app.variation_requests.get(status=VariationRequest.OPEN)
 
     def test_request_update_post(self):
@@ -214,11 +214,11 @@ class TestVariationRequestRequestUpdateView:
 
 class TestVariationRequestCancelUpdateRequestView:
     @pytest.fixture(autouse=True)
-    def set_client(self, icms_admin_client):
-        self.client = icms_admin_client
+    def set_client(self, ilb_admin_client):
+        self.client = ilb_admin_client
 
     @pytest.fixture(autouse=True)
-    def set_app(self, set_client, wood_app_submitted, test_import_user):
+    def set_app(self, set_client, wood_app_submitted, importer_one_contact):
         self.app = wood_app_submitted
         self.client.post(CaseURLS.take_ownership(self.app.pk))
 
@@ -226,7 +226,7 @@ class TestVariationRequestCancelUpdateRequestView:
         self.app.status = ImpExpStatus.VARIATION_REQUESTED
         self.app.save()
 
-        _add_variation_request(self.app, test_import_user, VariationRequest.OPEN)
+        _add_variation_request(self.app, importer_one_contact, VariationRequest.OPEN)
         self.vr = self.app.variation_requests.get(status=VariationRequest.OPEN)
 
         self.client.post(
@@ -265,12 +265,12 @@ class TestVariationRequestCancelUpdateRequestView:
 
 class TestVariationRequestRespondToUpdateRequestView:
     @pytest.fixture(autouse=True)
-    def set_client(self, importer_client, icms_admin_client):
+    def set_client(self, importer_client, ilb_admin_client):
         self.client = importer_client
-        self.admin_client = icms_admin_client
+        self.admin_client = ilb_admin_client
 
     @pytest.fixture(autouse=True)
-    def set_app(self, set_client, wood_app_submitted, test_import_user):
+    def set_app(self, set_client, wood_app_submitted, importer_one_contact):
         self.wood_app = wood_app_submitted
         self.admin_client.post(CaseURLS.take_ownership(self.wood_app.pk))
 
@@ -278,7 +278,7 @@ class TestVariationRequestRespondToUpdateRequestView:
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
         self.wood_app.save()
 
-        _add_variation_request(self.wood_app, test_import_user, VariationRequest.OPEN)
+        _add_variation_request(self.wood_app, importer_one_contact, VariationRequest.OPEN)
         self.vr = self.wood_app.variation_requests.get(status=VariationRequest.OPEN)
 
         self.admin_client.post(

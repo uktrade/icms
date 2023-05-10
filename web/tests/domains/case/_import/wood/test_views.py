@@ -8,21 +8,21 @@ from web.tests.helpers import CaseURLS
 
 
 @pytest.fixture
-def wood_application(icms_admin_client, wood_app_submitted):
+def wood_application(ilb_admin_client, wood_app_submitted):
     """A submitted application owned by the ICMS admin user."""
-    icms_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
+    ilb_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
     wood_app_submitted.refresh_from_db()
 
     return wood_app_submitted
 
 
-def test_manage_checklist_get(icms_admin_client, wood_application):
+def test_manage_checklist_get(ilb_admin_client, wood_application):
     assert not hasattr(wood_application, "checklist")
 
     manage_checklist = reverse(
         "import:wood:manage-checklist", kwargs={"application_pk": wood_application.pk}
     )
-    resp = icms_admin_client.get(manage_checklist)
+    resp = ilb_admin_client.get(manage_checklist)
 
     assert resp.status_code == 200
 
@@ -33,14 +33,14 @@ def test_manage_checklist_get(icms_admin_client, wood_application):
     assert hasattr(wood_application, "checklist")
 
 
-def test_manage_checklist_post(icms_admin_client, wood_application):
+def test_manage_checklist_post(ilb_admin_client, wood_application):
     assert not hasattr(wood_application, "checklist")
 
     manage_checklist = reverse(
         "import:wood:manage-checklist", kwargs={"application_pk": wood_application.pk}
     )
 
-    resp = icms_admin_client.post(
+    resp = ilb_admin_client.post(
         manage_checklist,
         data={
             "import_application": wood_application.pk,

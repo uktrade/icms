@@ -32,14 +32,14 @@ from web.models import (
     ],
 )
 @pytest.mark.django_db
-def test_import_downcast(application_model, importer, test_import_user):
+def test_import_downcast(application_model, importer, importer_one_contact):
     obj = application_model.objects.create(
         # this is not important for this test, so just hardcode it
         application_type=ImportApplicationType.objects.get(
             type=ImportApplicationType.Types.WOOD_QUOTA
         ),
-        created_by=test_import_user,
-        last_updated_by=test_import_user,
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
         importer=importer,
         importer_office=importer.offices.first(),
         process_type=application_model.PROCESS_TYPE,

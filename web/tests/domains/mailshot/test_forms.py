@@ -72,19 +72,19 @@ class TestReceivedMailshotsFilter:
     @pytest.fixture(autouse=True)
     def setup(
         self,
-        importer_one_main_contact,
-        importer_two_main_contact,
-        exporter_one_main_contact,
-        test_icms_admin_user,
+        importer_one_contact,
+        importer_two_contact,
+        exporter_one_contact,
+        ilb_admin_user,
     ):
-        self.importer = importer_one_main_contact
-        self.exporter = exporter_one_main_contact
-        self.ilb_admin = test_icms_admin_user
+        self.importer = importer_one_contact
+        self.exporter = exporter_one_contact
+        self.ilb_admin = ilb_admin_user
 
         # Use importer two main contact as a user with both Importer & Exporter permissions
         exporter_group = Group.objects.get(name=Perms.obj.exporter.get_group_name())
-        importer_two_main_contact.groups.add(exporter_group)
-        self.importer_exporter = importer_two_main_contact
+        importer_two_contact.groups.add(exporter_group)
+        self.importer_exporter = importer_two_contact
 
         MailshotFactory(
             title="Draft Mailshot",
