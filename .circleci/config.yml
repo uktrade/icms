@@ -48,5 +48,6 @@ jobs:
             - run:
                   name: Publish unit test coverage
                   command: |
-                      wget -O codecov.sh https://codecov.io/bash
-                      bash ./codecov.sh -s test-reports -f "*.xml"
+                      curl -Os https://uploader.codecov.io/latest/linux/codecov
+                      chmod +x codecov
+                      ./codecov -t ${CODECOV_TOKEN} -s test-reports -f "*.xml"
