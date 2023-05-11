@@ -2,8 +2,6 @@ import logging
 
 import pytest
 
-from web.tests.helpers import get_test_client
-
 logger = logging.getLogger(__name__)
 
 
@@ -19,6 +17,8 @@ class AuthTestCase:
         exporter_one_contact,
         exporter,
         client,
+        importer_client,
+        exporter_client,
     ):
         self.importer = importer
         self.importer_office = office
@@ -27,7 +27,7 @@ class AuthTestCase:
         self.exporter_user = exporter_one_contact
         self.ilb_admin_user = ilb_admin_user
 
-        self.exporter_client = get_test_client(self.exporter_user)
-        self.importer_client = get_test_client(self.importer_user)
-        self.ilb_admin_client = ilb_admin_client
         self.anonymous_client = client
+        self.exporter_client = exporter_client
+        self.importer_client = importer_client
+        self.ilb_admin_client = ilb_admin_client

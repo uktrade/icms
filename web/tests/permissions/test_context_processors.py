@@ -27,7 +27,7 @@ class TestUserObjectPerms:
         self.fa_sil_app = fa_sil_app
         self.com_app = com_app
 
-    def test_permissions(self):
+    def test_permission(self):
         importer_uop = UserObjectPerms(self.importer_contact)
         exporter_uop = UserObjectPerms(self.exporter_contact)
 

@@ -9,7 +9,7 @@ from django.forms.models import inlineformset_factory
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import ListView
 from guardian.shortcuts import get_objects_for_user
 
@@ -286,6 +286,7 @@ def edit_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
+@require_GET
 def view_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     if not can_user_edit_section5_authorities(request.user):
         raise PermissionDenied
@@ -360,6 +361,7 @@ def add_document_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpRes
 
 
 @login_required
+@require_GET
 def view_document_section5(
     request: AuthenticatedHttpRequest, section5_pk: int, document_pk: int
 ) -> HttpResponse:
@@ -449,6 +451,13 @@ def edit_office(request, importer_pk, office_pk):
         form = Form(request.POST, instance=office)
         if form.is_valid():
             form.save()
+
+            return redirect(
+                reverse(
+                    "importer-office-edit",
+                    kwargs={"importer_pk": importer.pk, "office_pk": office.pk},
+                )
+            )
     else:
         form = Form(instance=office)
 
@@ -591,6 +600,7 @@ def unarchive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpRespon
 
 
 @login_required
+@require_GET
 def importer_detail_view(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     importer: Importer = get_object_or_404(Importer, pk=pk)
 
@@ -622,9 +632,8 @@ def edit_user_importer_permissions(
 
     user = get_object_or_404(User, id=user_pk)
     importer = get_object_or_404(Importer, id=org_pk)
-    can_manage_contacts = can_user_manage_org_contacts(request.user, importer)
 
-    if not can_manage_contacts:
+    if not can_user_manage_org_contacts(request.user, importer):
         raise PermissionDenied
 
     form = ImporterUserObjectPermissionsForm(user, importer, request.POST or None)
