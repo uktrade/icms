@@ -1,6 +1,7 @@
 import datetime
 
 import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import signals
 from django.test.client import Client
@@ -434,6 +435,13 @@ def completed_app(fa_sil_app_submitted, ilb_admin_client):
     document_pack.pack_draft_set_active(app)
 
     return app
+
+
+@pytest.fixture
+def document_form_data():
+    """Used in tests requiring a document to be uploaded in a form."""
+
+    return {"document": SimpleUploadedFile("myimage.png", b"file_content")}
 
 
 def _set_valid_licence(app):
