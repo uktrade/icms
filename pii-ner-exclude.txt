@@ -2781,3 +2781,6 @@ Import Sanctions and Adhoc Licence
 chmod
 S1 2SS
 New Address
+rm web/migrations/*.py
+rm
+rm icms_pgdata

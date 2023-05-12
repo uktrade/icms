@@ -132,6 +132,32 @@ ICMS uses a combination of standard django permissions as well as django guardia
 
 See [this document](documentation/icms-permissions.md) for an overview of the system.
 
+## Rebuilding the database
+
+A complete reset of the application database can be performed using:
+
+```
+make down
+docker volume rm icms_pgdata
+make migrate
+make manage args="create_icms_groups"
+make add_dummy_data
+```
+
+Alternatively you can run the script found here: `./scripts/reset-local-docker-db`
+
+# Recreating the migration files:
+
+The following commands can be run to regenerate `web/migrations/0001_initial.py`.
+
+```
+rm web/migrations/*.py
+make migrations
+make black_format
+make isort_format
+```
+
+Alternatively you can run the script found here: `./scripts/reset-icms-migrations`
 
 ## Database schema generation
 
@@ -163,30 +189,6 @@ NPM_FILE_PATTERNS
 ```
 
 Currently we only have this config defined in the development.py settings file.
-
-
-## Rebuilding the database
-
-A complete reset of the application database can be performed using:
-
-```
-make down
-docker volume rm icms_pgdata
-make migrate
-make add_dummy_data
-```
-
-# Recreating the migration files:
-
-The following commands can be run to regenerate `web/migrations/0001_initial.py` and then checkout the data migrations.
-
-```
-rm web/migrations/*.py
-make migrations
-git checkout -- web/migrations/*_data.py
-make black_format
-make isort_format
-```
 
 ## Deployments
 
