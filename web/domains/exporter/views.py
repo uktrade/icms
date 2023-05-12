@@ -6,7 +6,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import ListView
 from guardian.shortcuts import get_objects_for_user
 
@@ -32,7 +32,7 @@ from web.views import ModelFilterView
 from web.views.actions import Archive, CreateExporterAgent, Edit, Unarchive
 
 
-class ExporterListView(ModelFilterView):
+class ExporterListAdminView(ModelFilterView):
     template_name = "web/domains/exporter/list.html"
     filterset_class = ExporterFilter
     model = Exporter
@@ -79,6 +79,21 @@ class ExporterListUserView(PermissionRequiredMixin, LoginRequiredMixin, ListView
 
 
 @login_required
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+def create_exporter(request: AuthenticatedHttpRequest) -> HttpResponse:
+    if request.method == "POST":
+        form = ExporterForm(request.POST)
+        if form.is_valid():
+            exporter: Exporter = form.save()
+
+            return redirect(reverse("exporter-edit", kwargs={"pk": exporter.pk}))
+    else:
+        form = ExporterForm()
+
+    return render(request, "web/domains/exporter/create.html", {"form": form})
+
+
+@login_required
 def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     exporter: Exporter = get_object_or_404(Exporter, pk=pk)
 
@@ -110,6 +125,7 @@ def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
     return render(request, "web/domains/exporter/edit.html", context | user_context)
 
 
+@require_GET
 @login_required
 def detail_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     exporter: Exporter = get_object_or_404(Exporter, pk=pk)
@@ -129,21 +145,6 @@ def detail_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpRespon
     }
 
     return render(request, "web/domains/exporter/detail.html", context | user_context)
-
-
-@login_required
-@permission_required(Perms.sys.ilb_admin, raise_exception=True)
-def create_exporter(request: AuthenticatedHttpRequest) -> HttpResponse:
-    if request.method == "POST":
-        form = ExporterForm(request.POST)
-        if form.is_valid():
-            exporter: Exporter = form.save()
-
-            return redirect(reverse("exporter-edit", kwargs={"pk": exporter.pk}))
-    else:
-        form = ExporterForm()
-
-    return render(request, "web/domains/exporter/create.html", {"form": form})
 
 
 @login_required
@@ -193,6 +194,13 @@ def edit_office(request, exporter_pk, office_pk):
 
         if form.is_valid():
             form.save()
+
+            return redirect(
+                reverse(
+                    "exporter-office-edit",
+                    kwargs={"exporter_pk": exporter.pk, "office_pk": office.pk},
+                )
+            )
     else:
         form = ExporterOfficeForm(instance=office)
 
