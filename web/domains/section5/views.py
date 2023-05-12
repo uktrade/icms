@@ -5,6 +5,7 @@ from django.urls import reverse
 from web.domains.section5.filters import Section5Filter
 from web.domains.section5.forms import Section5ClauseForm
 from web.models import Section5Clause
+from web.permissions import Perms
 from web.views import ModelFilterView
 from web.views.actions import Archive, Edit, Unarchive
 
@@ -18,7 +19,7 @@ class ListSection5(ModelFilterView):
     template_name = "web/domains/section5/list.html"
     filterset_class = Section5Filter
     model = Section5Clause
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
     page_title = "Maintain Section 5 Clauses"
 
     class Display:
@@ -37,7 +38,7 @@ class ListSection5(ModelFilterView):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def create_section5(request):
     if request.method == "POST":
         form = Section5ClauseForm(request.POST)
@@ -53,7 +54,7 @@ def create_section5(request):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_section5(request, pk):
     clause = get_object_or_404(Section5Clause, pk=pk)
 
@@ -72,7 +73,7 @@ def edit_section5(request, pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def archive_section5(request, pk):
     clause = get_object_or_404(Section5Clause.objects.filter(is_active=True), pk=pk)
     clause.is_active = False
@@ -82,7 +83,7 @@ def archive_section5(request, pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def unarchive_section5(request, pk):
     clause = get_object_or_404(Section5Clause.objects.filter(is_active=False), pk=pk)
     clause.is_active = True

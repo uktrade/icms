@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from web.domains.case.shared import ImpExpStatus
 from web.domains.workbasket.base import WorkbasketSection
 from web.models import Task
+from web.permissions import Perms
 
 from .applicant_actions import REQUEST_VARIATION_APPLICANT_ACTIONS
 from .ilb_admin_actions import ILB_ADMIN_ACTIONS
@@ -42,7 +43,7 @@ def _get_workbasket_sections(
     # This is an annotation of all the active tasks linked to this application
     tasks = application.active_tasks
 
-    is_ilb_admin = user.has_perm("web.ilb_admin")
+    is_ilb_admin = user.has_perm(Perms.sys.ilb_admin)
     is_importer_user = user.has_perm("web.importer_access")
 
     # Group all actions by the label.

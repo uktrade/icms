@@ -12,7 +12,7 @@ from django.views.decorators.http import require_POST
 from web.domains.case.forms import DocumentForm
 from web.domains.file.utils import create_file_model
 from web.models import Importer
-from web.permissions import can_user_edit_firearm_authorities
+from web.permissions import Perms, can_user_edit_firearm_authorities
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 from web.views import ModelFilterView
@@ -42,7 +42,7 @@ class ObsoleteCalibreListView(PostActionMixin, ModelFilterView):
     filterset_class = ObsoleteCalibreGroupFilter
     model = ObsoleteCalibreGroup
     page_title = "Maintain Obsolete Calibres"
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
     paginate = False
 
     class Display:
@@ -58,7 +58,7 @@ class ObsoleteCalibreListView(PostActionMixin, ModelFilterView):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def create_obsolete_calibre_group(request):
     if request.method == "POST":
         form = ObsoleteCalibreGroupForm(request.POST)
@@ -82,7 +82,7 @@ def create_obsolete_calibre_group(request):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_obsolete_calibre_group(request, pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=pk)
 
@@ -105,7 +105,7 @@ def edit_obsolete_calibre_group(request, pk):
 
 @require_POST
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def order_obsolete_calibre_group(request):
     with transaction.atomic():
         for order, pk in enumerate(request.POST.getlist("order[]")):
@@ -118,7 +118,7 @@ def order_obsolete_calibre_group(request):
 
 @require_POST
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def archive_obsolete_calibre_group(request, pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup.objects.filter(is_active=True), pk=pk)
     calibre_group.is_active = False
@@ -129,7 +129,7 @@ def archive_obsolete_calibre_group(request, pk):
 
 @require_POST
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def unarchive_obsolete_calibre_group(request, pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup.objects.filter(is_active=False), pk=pk)
     calibre_group.is_active = True
@@ -139,7 +139,7 @@ def unarchive_obsolete_calibre_group(request, pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def create_obsolete_calibre(request, calibre_group_pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=calibre_group_pk)
     if request.method == "POST":
@@ -170,7 +170,7 @@ def create_obsolete_calibre(request, calibre_group_pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_obsolete_calibre(request, calibre_group_pk, calibre_pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=calibre_group_pk)
     calibre = get_object_or_404(calibre_group.calibres, pk=calibre_pk)
@@ -195,7 +195,7 @@ def edit_obsolete_calibre(request, calibre_group_pk, calibre_pk):
 
 @require_POST
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def order_obsolete_calibre(request, calibre_group_pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=calibre_group_pk)
 
@@ -210,7 +210,7 @@ def order_obsolete_calibre(request, calibre_group_pk):
 
 @require_POST
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def archive_obsolete_calibre(request, calibre_group_pk, calibre_pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=calibre_group_pk)
     calibre = get_object_or_404(calibre_group.calibres.filter(is_active=True), pk=calibre_pk)
@@ -223,7 +223,7 @@ def archive_obsolete_calibre(request, calibre_group_pk, calibre_pk):
 
 @require_POST
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def unarchive_obsolete_calibre(request, calibre_group_pk, calibre_pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=calibre_group_pk)
     calibre = get_object_or_404(calibre_group.calibres.filter(is_active=False), pk=calibre_pk)
@@ -235,7 +235,7 @@ def unarchive_obsolete_calibre(request, calibre_group_pk, calibre_pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def view_obsolete_calibre_group(request, pk):
     calibre_group = get_object_or_404(ObsoleteCalibreGroup, pk=pk)
 

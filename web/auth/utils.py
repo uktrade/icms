@@ -7,6 +7,7 @@ from django.contrib.auth.models import Permission
 from django.db.models import Q
 
 from web.models import User
+from web.permissions import Perms
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -45,4 +46,4 @@ def get_users_with_permission(permission_name: str) -> "QuerySet[User]":
 def get_ilb_admin_users() -> "QuerySet[User]":
     """Return all ilb admin users."""
 
-    return get_users_with_permission("web.ilb_admin")
+    return get_users_with_permission(Perms.sys.ilb_admin)

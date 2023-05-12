@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 
 from web.models import ImportApplicationType
+from web.permissions import Perms
 from web.views import ModelCreateView, ModelFilterView
 from web.views.actions import Archive, EditTemplate, Unarchive
 
@@ -31,7 +32,7 @@ class TemplateListView(ModelFilterView):
     model = Template
     filterset_class = TemplatesFilter
     page_title = "Maintain Templates"
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
     # Default display fields on the listing page of the model
     class Display:
@@ -64,7 +65,7 @@ def view_template_fwd(request, pk):
 
 # used for non-CFS_SCHEDULE templates
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def view_template(request, pk):
     template = get_object_or_404(Template, pk=pk)
 
@@ -74,7 +75,7 @@ def view_template(request, pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def view_cfs_schedule(request, pk):
     template = get_object_or_404(Template, pk=pk)
 
@@ -86,7 +87,7 @@ def view_cfs_schedule(request, pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def view_cfs_schedule_translation(request, pk):
     template = get_object_or_404(Template, pk=pk)
 
@@ -110,7 +111,7 @@ def view_cfs_schedule_translation(request, pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_template(request, pk):
     template = get_object_or_404(Template, pk=pk)
     if template.template_type == Template.DECLARATION:
@@ -148,7 +149,7 @@ class EndorsementCreateView(ModelCreateView):
     model = Template
     success_url = reverse_lazy("template-list")
     cancel_url = success_url
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
     page_title = "New Endorsement"
 
     def form_valid(self, form):
@@ -164,7 +165,7 @@ class EndorsementCreateView(ModelCreateView):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def list_endorsement_usages(request):
     import_application_types = ImportApplicationType.objects.prefetch_related("endorsements")
 
@@ -176,7 +177,7 @@ def list_endorsement_usages(request):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_endorsement_usage(request, pk):
     application_type = get_object_or_404(ImportApplicationType, pk=pk)
     if request.method == "POST":
@@ -192,7 +193,7 @@ def edit_endorsement_usage(request, pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def remove_endorsement_usage_link(request, application_type_pk, link_pk):
     application_type = get_object_or_404(ImportApplicationType, pk=application_type_pk)
     endorsement = get_object_or_404(Template, pk=link_pk, template_type=Template.ENDORSEMENT)
@@ -202,7 +203,7 @@ def remove_endorsement_usage_link(request, application_type_pk, link_pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def create_cfs_declaration_translation(request):
     if request.method == "POST":
         form = CFSDeclarationTranslationForm(request.POST)
@@ -220,7 +221,7 @@ def create_cfs_declaration_translation(request):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_cfs_declaration_translation(request, pk):
     template = get_object_or_404(Template, pk=pk)
     if request.method == "POST":
@@ -238,7 +239,7 @@ def edit_cfs_declaration_translation(request, pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def create_cfs_schedule_translation(request):
     if request.method == "POST":
         form = CFSScheduleTranslationForm(request.POST)
@@ -258,7 +259,7 @@ def create_cfs_schedule_translation(request):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_cfs_schedule_translation(request, pk):
     template = get_object_or_404(Template, pk=pk)
 
@@ -295,7 +296,7 @@ def edit_cfs_schedule_translation(request, pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_cfs_schedule_translation_paragraphs(request, pk):
     template = get_object_or_404(Template, pk=pk)
 

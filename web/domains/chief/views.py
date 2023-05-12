@@ -23,6 +23,7 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.views.mixins import ApplicationTaskMixin
 from web.models import ImportApplication, LiteHMRCChiefRequest, Task
+from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.sentry import capture_exception
 
@@ -179,7 +180,7 @@ class ResendLicenceToChiefView(
     next_task_type = Task.TaskType.DOCUMENT_SIGNING
 
     # PermissionRequiredMixin
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.sys.ilb_admin]
 
     # View
     http_method_names = ["post"]
@@ -208,7 +209,7 @@ class ResendLicenceToChiefView(
 
 
 class _BaseTemplateView(PermissionRequiredMixin, TemplateView):
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         # We need the counts for each type to show in the navigation tabs.
@@ -246,7 +247,7 @@ class FailedLicences(_BaseTemplateView):
 
 
 class ChiefRequestDataView(PermissionRequiredMixin, DetailView):
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
     http_method_names = ["get"]
     pk_url_kwarg = "litehmrcchiefrequest_id"
     model = LiteHMRCChiefRequest
@@ -270,7 +271,7 @@ class CheckChiefProgressView(
     ]
 
     # PermissionRequiredMixin Config
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.sys.ilb_admin]
 
     def get(self, request: HttpRequest, *args, **kwargs) -> Any:
         self.set_application_and_task()

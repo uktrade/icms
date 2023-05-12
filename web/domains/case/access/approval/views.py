@@ -20,11 +20,12 @@ from web.models import (
     ImporterAccessRequest,
     ImporterApprovalRequest,
 )
+from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def management_access_approval(
     request: AuthenticatedHttpRequest, *, pk: int, entity: str
 ) -> HttpResponse:
@@ -85,7 +86,7 @@ def management_access_approval(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def management_access_approval_withdraw(
     request: AuthenticatedHttpRequest, *, application_pk: int, entity: str, approval_request_pk: int
 ) -> HttpResponse:

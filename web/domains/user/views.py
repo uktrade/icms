@@ -8,6 +8,7 @@ from django.shortcuts import render
 from web.auth.decorators import require_registered
 from web.errors import APIError
 from web.forms import utils
+from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.postcode import api_postcode_to_address_lookup
 from web.utils.sentry import capture_exception
@@ -28,8 +29,6 @@ from .formset import (
 )
 from .models import User
 
-permissions = "web.ilb_admin"
-
 
 @require_registered
 def current_user_details(request: AuthenticatedHttpRequest) -> HttpResponse:
@@ -37,7 +36,7 @@ def current_user_details(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @require_registered
-@require_permission(permissions, raise_exception=True)
+@require_permission(Perms.sys.ilb_admin, raise_exception=True)
 def user_details(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     return _get_user_details(request, pk)
 
@@ -47,7 +46,7 @@ class UsersListView(ModelFilterView):
     model = User
     filterset_class = UserListFilter
     page_title = "Maintain Web User Accounts"
-    permission_required = permissions
+    permission_required = Perms.sys.ilb_admin
 
     class Display:
         fields = [
