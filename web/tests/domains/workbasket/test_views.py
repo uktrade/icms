@@ -108,16 +108,18 @@ def test_importer_workbasket(
     submitted_exp_appl,
     in_progress_agent_imp_appl,
     submitted_agent_imp_appl,
+    complete_rejected_app,
 ):
     response = importer_client.get("/workbasket/")
     assert response.status_code == 200
 
     html = response.content.decode()
 
-    assert '<div class="result-count">2 workbasket items</div>' in html
+    assert '<div class="result-count">3 workbasket items</div>' in html
 
     _check_in_progress_workbasket(in_progress_imp_appl, html)
     _check_submitted_workbasket(submitted_imp_appl, html)
+    _check_refused_workbasket(complete_rejected_app, html)
 
 
 @pytest.mark.django_db
@@ -129,16 +131,18 @@ def test_exporter_workbasket(
     submitted_exp_appl,
     in_progress_agent_imp_appl,
     submitted_agent_imp_appl,
+    complete_rejected_export_app,
 ):
     response = exporter_client.get("/workbasket/")
 
     assert response.status_code == 200
 
     html = response.content.decode()
-    assert '<div class="result-count">2 workbasket items</div>' in html
+    assert '<div class="result-count">3 workbasket items</div>' in html
 
     _check_in_progress_workbasket(in_progress_exp_appl, html)
     _check_submitted_workbasket(submitted_exp_appl, html)
+    _check_refused_workbasket(complete_rejected_export_app, html)
 
 
 @pytest.mark.django_db
@@ -163,6 +167,16 @@ def test_agent_import_workbasket(
     _check_submitted_workbasket(submitted_agent_imp_appl, html)
 
 
+@pytest.mark.django_db
+def test_refused_apps_excluded_from_admin_workbasket(
+    ilb_admin_client, complete_rejected_app, complete_rejected_export_app
+):
+    response = ilb_admin_client.get("/workbasket/")
+    assert response.status_code == 200
+    html = response.content.decode()
+    assert '<div class="result-count">2 workbasket items</div>' in html
+
+
 def _check_in_progress_workbasket(appl, html):
     link = rf'<a href=".*/{appl.pk}/edit/">\s*Resume\s*</a>'
     assert re.search(link, html) is not None
@@ -171,3 +185,8 @@ def _check_in_progress_workbasket(appl, html):
 def _check_submitted_workbasket(appl, html):
     link = rf'<a href=".*/{appl.pk}/view/">\s*View Application\s*</a>'
     assert re.search(link, html) is not None
+
+
+def _check_refused_workbasket(appl, html):
+    assert "Completed (Refused)" in html
+    _check_submitted_workbasket(appl, html)
