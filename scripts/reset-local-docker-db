@@ -1,0 +1,13 @@
+#!/bin/zsh
+
+make down
+docker volume rm icms_pgdata
+make migrate
+make manage args="create_icms_groups"
+make add_dummy_data
+
+echo "Restarting containers in the background"
+make debug
+
+echo "collecting static content"
+make collectstatic
