@@ -11,7 +11,7 @@ from web.domains.case.types import ImpOrExp
 from web.flow import errors
 from web.flow.models import ProcessTypes
 from web.models import Process, User
-from web.permissions import AppChecker
+from web.permissions import AppChecker, Perms
 
 if TYPE_CHECKING:
     from web.models import CaseDocumentReference, ExportApplication, ImportApplication
@@ -40,7 +40,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
 
         # Admin can view case history when revoked, an applicant can't
         try:
-            if self.request.user.has_perm("web.ilb_admin"):
+            if self.request.user.has_perm(Perms.sys.ilb_admin):
                 expected = [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
             else:
                 expected = [ImpExpStatus.COMPLETED]
@@ -57,7 +57,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
         base_context = super().get_context_data(**kwargs)
 
         mode = self.kwargs["mode"]
-        if self.request.user.has_perm("web.ilb_admin") and mode == "ilb":
+        if self.request.user.has_perm(Perms.sys.ilb_admin) and mode == "ilb":
             base_template = "web/domains/case/manage/base.html"
         else:
             base_template = "web/domains/case/view_case.html"

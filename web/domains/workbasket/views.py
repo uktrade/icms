@@ -27,6 +27,7 @@ from web.models import (
     User,
     WithdrawApplication,
 )
+from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 
 from .row import get_workbasket_row_func
@@ -34,7 +35,7 @@ from .row import get_workbasket_row_func
 
 @login_required
 def show_workbasket(request: AuthenticatedHttpRequest) -> HttpResponse:
-    is_ilb_admin = request.user.has_perm("web.ilb_admin")
+    is_ilb_admin = request.user.has_perm(Perms.sys.ilb_admin)
 
     if is_ilb_admin:
         qs_list = list(_get_queryset_admin(request.user))

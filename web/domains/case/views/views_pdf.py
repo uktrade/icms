@@ -12,6 +12,7 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import view_application_file
 from web.models import File, Process
+from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest, DocumentTypes
 from web.utils.pdf import PdfGenerator
 
@@ -31,7 +32,7 @@ class DocumentPreviewBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRe
 
     # TODO: ICMSLST-1436 Add document_type permission checks.
     # e.g. document_type == "pre-sign" check the app has been "authorised"
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.sys.ilb_admin]
 
     document_types: ClassVar[list[DocumentTypes]]
     output_filename: ClassVar[str]

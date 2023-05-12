@@ -1,5 +1,6 @@
 from django.urls import reverse_lazy
 
+from web.permissions import Perms
 from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView
 from web.views.actions import Archive, Edit, Unarchive
 
@@ -11,7 +12,7 @@ class ConstabularyListView(ModelFilterView):
     template_name = "web/domains/constabulary/list.html"
     model = Constabulary
     filterset_class = ConstabulariesFilter
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
     page_title = "Maintain Constabularies"
 
     class Display:
@@ -30,7 +31,7 @@ class ConstabularyCreateView(ModelCreateView):
     model = Constabulary
     success_url = reverse_lazy("constabulary-list")
     cancel_url = success_url
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
     page_title = "New Constabulary"
 
 
@@ -40,7 +41,7 @@ class ConstabularyEditView(ModelUpdateView):
     model = Constabulary
     success_url = reverse_lazy("constabulary-list")
     cancel_url = success_url
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
 
 class ConstabularyDetailView(ModelDetailView):
@@ -48,4 +49,4 @@ class ConstabularyDetailView(ModelDetailView):
     model = Constabulary
     success_url = reverse_lazy("constabulary-list")
     cancel_url = success_url
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin

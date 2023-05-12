@@ -26,6 +26,7 @@ from web.models import (
 )
 from web.notify.email import send_case_email
 from web.notify.utils import create_case_email
+from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 
 from .. import forms, models
@@ -37,7 +38,7 @@ if TYPE_CHECKING:
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def manage_case_emails(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
@@ -82,7 +83,7 @@ def manage_case_emails(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def create_draft_case_email(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
@@ -113,7 +114,7 @@ def create_draft_case_email(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_case_email(
     request: AuthenticatedHttpRequest,
     *,
@@ -182,7 +183,7 @@ def edit_case_email(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def archive_case_email(
     request: AuthenticatedHttpRequest,
@@ -215,7 +216,7 @@ def archive_case_email(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def add_response_case_email(
     request: AuthenticatedHttpRequest,
     *,

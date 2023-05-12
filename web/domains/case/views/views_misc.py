@@ -27,7 +27,7 @@ from web.domains.template.utils import get_email_template_subject_body
 from web.flow import errors
 from web.models import Task, User, VariationRequest, WithdrawApplication
 from web.notify.email import send_to_application_contacts
-from web.permissions import AppChecker, organisation_get_contacts
+from web.permissions import AppChecker, Perms, organisation_get_contacts
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import delete_file_from_s3, get_s3_client
 from web.utils.validation import ApplicationErrors
@@ -170,7 +170,7 @@ def archive_withdrawal(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def manage_withdrawals(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
@@ -248,7 +248,7 @@ def manage_withdrawals(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def take_ownership(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
@@ -288,7 +288,7 @@ def take_ownership(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def release_ownership(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
@@ -313,7 +313,7 @@ def release_ownership(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def manage_case(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
@@ -371,7 +371,7 @@ def manage_case(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def start_authorisation(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
@@ -456,7 +456,7 @@ def start_authorisation(
 
 @login_required
 @sensitive_post_parameters("password")
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def authorise_documents(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
@@ -525,7 +525,7 @@ class CheckCaseDocumentGenerationView(
     ]
 
     # PermissionRequiredMixin Config
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.sys.ilb_admin]
 
     def get(self, request: HttpRequest, *args, **kwargs) -> Any:
         self.set_application_and_task()
@@ -572,7 +572,7 @@ class RecreateCaseDocumentsView(
     next_task_type = Task.TaskType.DOCUMENT_SIGNING
 
     # PermissionRequiredMixin Config
-    permission_required = ["web.ilb_admin"]
+    permission_required = [Perms.sys.ilb_admin]
 
     def post(self, request: HttpRequest, *args, **kwargs) -> Any:
         """Deletes existing draft PDFs and regenerates case document pack"""
@@ -601,7 +601,7 @@ class RecreateCaseDocumentsView(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def view_document_packs(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
@@ -707,7 +707,7 @@ def get_document_context(
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def cancel_authorisation(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str

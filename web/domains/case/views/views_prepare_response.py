@@ -27,6 +27,7 @@ from web.models import (
     TextilesApplication,
     WoodQuotaApplication,
 )
+from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest, DocumentTypes
 from web.utils.commodity import annotate_commodity_unit
 
@@ -34,7 +35,7 @@ from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def prepare_response(
     request: AuthenticatedHttpRequest, application_pk: int, case_type: str
 ) -> HttpResponse:

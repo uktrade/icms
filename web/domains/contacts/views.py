@@ -8,6 +8,7 @@ from django.views.decorators.http import require_POST
 
 from web.models import Exporter, Importer
 from web.permissions import (
+    Perms,
     organisation_add_contact,
     organisation_get_contacts,
     organisation_remove_contact,
@@ -30,7 +31,7 @@ def _get_class_imp_or_exp(org_type: str) -> OrgT:
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def add(request: AuthenticatedHttpRequest, *, org_type: str, org_pk: int):
     """Add a contact to an importer / exporter"""
@@ -56,7 +57,7 @@ def add(request: AuthenticatedHttpRequest, *, org_type: str, org_pk: int):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def delete(request: AuthenticatedHttpRequest, *, org_type: str, org_pk: int, contact_pk: int):
     model_class = _get_class_imp_or_exp(org_type)

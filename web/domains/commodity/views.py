@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.http import require_POST
 
+from web.permissions import Perms
 from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView
 from web.views.actions import Archive, Edit, Unarchive
 
@@ -27,7 +28,7 @@ class CommodityListView(ModelFilterView):
     template_name = "web/domains/commodity/list.html"
     filterset_class = CommodityFilter
     model = Commodity
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
     page_title = "Maintain Commodities"
 
     def get_queryset(self):
@@ -53,7 +54,7 @@ class CommodityEditView(ModelUpdateView):
     model = Commodity
     success_url = reverse_lazy("commodity-list")
     cancel_url = success_url
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
 
 class CommodityCreateView(ModelCreateView):
@@ -61,14 +62,14 @@ class CommodityCreateView(ModelCreateView):
     form_class = CommodityForm
     success_url = reverse_lazy("commodity-list")
     cancel_url = success_url
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
     page_title = "New Commodity"
 
 
 class CommodityDetailView(ModelDetailView):
     form_class = CommodityForm
     model = Commodity
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
     cancel_url = reverse_lazy("commodity-list")
 
 
@@ -76,7 +77,7 @@ class CommodityGroupListView(ModelFilterView):
     template_name = "web/domains/commodity/group/list.html"
     filterset_class = CommodityGroupFilter
     model = CommodityGroup
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -108,7 +109,7 @@ class CommodityGroupEditView(ModelUpdateView):
     model = CommodityGroup
     success_url = reverse_lazy("commodity-group-list")
     cancel_url = success_url
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
     def get_queryset(self) -> "QuerySet[CommodityGroup]":
         qs: "QuerySet[CommodityGroup]" = super().get_queryset()
@@ -120,7 +121,7 @@ class CommodityGroupCreateView(ModelCreateView):
     template_name = "web/domains/commodity/group/create.html"
     form_class = CommodityGroupForm
     model = CommodityGroup
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
     def get_success_url(self):
         return reverse("commodity-group-edit", kwargs={"pk": self.object.pk})
@@ -129,12 +130,12 @@ class CommodityGroupCreateView(ModelCreateView):
 class CommodityGroupDetailView(ModelDetailView):
     form_class = CommodityGroupForm
     model = CommodityGroup
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
     cancel_url = reverse_lazy("commodity-group-list")
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def add_usage(request, pk):
     commodity_group = get_object_or_404(CommodityGroup, pk=pk)
 
@@ -159,7 +160,7 @@ def add_usage(request, pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def edit_usage(request, commodity_group_pk, usage_pk):
     commodity_group = get_object_or_404(CommodityGroup, pk=commodity_group_pk)
     usage = get_object_or_404(Usage, pk=usage_pk)
@@ -186,7 +187,7 @@ def edit_usage(request, commodity_group_pk, usage_pk):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
 def delete_usage(request, commodity_group_pk, usage_pk):
     get_object_or_404(CommodityGroup, pk=commodity_group_pk)

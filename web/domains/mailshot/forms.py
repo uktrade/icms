@@ -6,6 +6,8 @@ from django.forms import ModelForm, MultipleChoiceField
 from django.forms.widgets import CheckboxInput, CheckboxSelectMultiple, Textarea
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter, FilterSet
 
+from web.permissions import Perms
+
 from .models import Mailshot
 
 if TYPE_CHECKING:
@@ -69,7 +71,7 @@ class ReceivedMailshotsFilter(FilterSet):
     def qs(self) -> "QuerySet[Mailshot]":
         queryset = super().qs.filter(status=Mailshot.Statuses.PUBLISHED)
 
-        if self.user.has_perm("web.ilb_admin"):
+        if self.user.has_perm(Perms.sys.ilb_admin):
             return queryset
 
         importer_access = self.user.has_perm("web.importer_access")

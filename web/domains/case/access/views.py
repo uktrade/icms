@@ -17,6 +17,7 @@ from web.domains.case.access.filters import (
 from web.domains.case.services import case_progress, reference
 from web.models import Task
 from web.notify import notify
+from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 from web.views import ModelFilterView
 
@@ -30,7 +31,7 @@ class ListImporterAccessRequest(ModelFilterView):
     template_name = "web/domains/case/access/list-importer.html"
     filterset_class = ImporterAccessRequestFilter
     model = ImporterAccessRequest
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
     page_title = "Search Importer Access Requests"
 
     class Display:
@@ -61,7 +62,7 @@ class ListExporterAccessRequest(ModelFilterView):
     template_name = "web/domains/case/access/list-exporter.html"
     filterset_class = ExporterAccessRequestFilter
     model = ExporterAccessRequest
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
     page_title = "Search Exporter Access Requests"
 
     class Display:
@@ -176,7 +177,7 @@ def exporter_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
     return render(request, "web/domains/case/access/request-exporter-access.html", context)
 
 
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def management(request, pk, entity):
     with transaction.atomic():
         if entity == "importer":
@@ -222,7 +223,7 @@ def management(request, pk, entity):
 
 
 @login_required
-@permission_required("web.ilb_admin", raise_exception=True)
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def management_response(request, pk, entity):
     with transaction.atomic():
         if entity == "importer":

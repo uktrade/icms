@@ -12,6 +12,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, ListView
 
 from web.auth.mixins import RequireRegisteredMixin
+from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView
 from web.views.actions import Edit, ViewObject
@@ -44,7 +45,7 @@ class CountryListView(RequireRegisteredMixin, PageTitleMixin, ListView):
     template_name = "web/domains/country/list.html"
     filterset_class = CountryNameFilter
     page_title = "Editing All Countries"
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
     def get_queryset(self):
         return super().get_queryset().prefetch_related("country_groups")
@@ -56,7 +57,7 @@ class CountryEditView(ModelUpdateView):
     form_class = CountryEditForm
     success_url = reverse_lazy("country:list")
     cancel_url = success_url
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
 
 class CountryCreateView(ModelCreateView):
@@ -66,7 +67,7 @@ class CountryCreateView(ModelCreateView):
     success_url = reverse_lazy("country:list")
     cancel_url = success_url
     page_title = "New Country"
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
 
 def search_countries(request, selected_countries):
@@ -97,7 +98,7 @@ class EditCountryGroup(Edit):
 class CountryGroupListView(ModelFilterView):
     page_title = "Maintain Country Groups"
     template_name = "web/domains/country/groups/list.html"
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
     model = CountryGroup
     filterset_class = CountryGroupNameFilter
 
@@ -112,7 +113,7 @@ class CountryGroupListView(ModelFilterView):
 
 class CountryGroupCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
     # PermissionRequiredMixin config
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
     # CreateView config
     model = CountryGroup
@@ -128,7 +129,7 @@ class CountryGroupView(ModelDetailView):
 
     form_class = CountryGroupEditForm
     cancel_url = reverse_lazy("country:group-list")
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -140,7 +141,7 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
     model = CountryGroup
     template_name = "web/domains/country/groups/edit.html"
     form_class = CountryGroupEditForm
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
     def _get_posted_countries(self):
         countries = self.request.POST.getlist("countries")
@@ -212,7 +213,7 @@ class CountryTranslationSetListView(PostActionMixin, ModelCreateView):
     form_class = CountryTranslationSetEditForm
     template_name = "web/domains/country/translations/list.html"
     page_title = "Manage Country Translation Sets"
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
     def get_success_url(self):
         return reverse("country:translation-set-edit", kwargs={"pk": self.object.pk})
@@ -248,7 +249,7 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
     template_name = "web/domains/country/translations/edit.html"
     form_class = CountryTranslationSetEditForm
     success_url = "country:translation-set-edit"
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
     def get(self, request, pk=None):
         set = super().get_object()
@@ -305,7 +306,7 @@ class CountryTranslationCreateUpdateView(ModelUpdateView):
     model = CountryTranslation
     template_name = "web/domains/country/translations/translation/edit.html"
     form_class = CountryTranslationEditForm
-    permission_required = "web.ilb_admin"
+    permission_required = Perms.sys.ilb_admin
 
     def get_object(self, queryset=None):
         try:

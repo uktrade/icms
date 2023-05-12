@@ -15,6 +15,7 @@ from django_filters.views import FilterView
 
 from web.domains.case.export.forms import form_class_for_application_type
 from web.models import CertificateApplicationTemplate, User
+from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 
 from .forms import CATFilter, CreateCATForm, EditCATForm
@@ -79,7 +80,7 @@ def create(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 def _has_permission(user: User) -> bool:
-    ilb_admin = user.has_perm("web.ilb_admin")
+    ilb_admin = user.has_perm(Perms.sys.ilb_admin)
     exporter_user = user.has_perm("web.exporter_access")
 
     return ilb_admin or exporter_user
