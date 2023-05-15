@@ -1,5 +1,6 @@
 import pytest
 
+from web.domains.case.shared import ImpExpStatus
 from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
@@ -40,3 +41,20 @@ def test_export_downcast(application_model, exporter, exporter_one_contact):
     downcast = p.get_specific_model()
     assert type(downcast) is application_model
     assert id(obj) != id(downcast)
+
+
+def test_display_status_for_submitted_app(com_app_submitted):
+    assert com_app_submitted.is_import_application() is False
+    assert com_app_submitted.get_status_display() == "Submitted"
+    com_app_submitted.status = ImpExpStatus.VARIATION_REQUESTED
+    assert com_app_submitted.get_status_display() == "Case Variation"
+
+
+def test_display_status_for_rejected_app(complete_rejected_export_app):
+    assert complete_rejected_export_app.is_import_application() is False
+    assert complete_rejected_export_app.get_status_display() == "Completed (Refused)"
+
+
+def test_display_status_for_in_progress_app(com_app_in_progress):
+    assert com_app_in_progress.is_import_application() is False
+    assert com_app_in_progress.get_status_display() == "In Progress"

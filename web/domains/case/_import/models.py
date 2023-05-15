@@ -305,6 +305,12 @@ class ImportApplication(ApplicationBase):
     def get_specific_model(self) -> "ImportApplication":
         return super().get_specific_model()
 
+    def get_status_display(self) -> str:
+        status = super().get_status_display()
+        if self.decision == self.REFUSE:
+            return f"{status} (Refused)"
+        return status
+
 
 class EndorsementImportApplication(models.Model):
     import_application = models.ForeignKey(

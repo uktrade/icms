@@ -123,6 +123,7 @@ def _get_queryset_admin(user: User) -> chain[QuerySet]:
     export_applications = (
         ExportApplication.objects.filter(is_active=True)
         .exclude(status=ImpExpStatus.STOPPED)
+        .exclude(decision=ExportApplication.REFUSE)
         .select_related("exporter", "contact", "application_type", "submitted_by", "case_owner")
         .annotate(
             annotation_has_withdrawal=EXPORT_HAS_WITHDRAWAL_ANNOTATION,
@@ -133,6 +134,7 @@ def _get_queryset_admin(user: User) -> chain[QuerySet]:
     import_applications = (
         ImportApplication.objects.filter(is_active=True)
         .exclude(status=ImpExpStatus.STOPPED)
+        .exclude(decision=ImportApplication.REFUSE)
         .select_related("importer", "contact", "application_type", "submitted_by", "case_owner")
         .annotate(
             active_tasks=ACTIVE_TASK_ANNOTATION,

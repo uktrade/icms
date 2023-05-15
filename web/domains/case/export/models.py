@@ -155,10 +155,12 @@ class ExportApplication(ApplicationBase):
 
     def get_status_display(self) -> str:
         # Export applications have a different label for Variation Requested
+        status = super().get_status_display()
         if self.status == self.Statuses.VARIATION_REQUESTED:
             return "Case Variation"
-
-        return super().get_status_display()
+        if self.decision == self.REFUSE:
+            return f"{status} (Refused)"
+        return status
 
 
 @final

@@ -438,6 +438,54 @@ def completed_app(fa_sil_app_submitted, ilb_admin_client):
 
 
 @pytest.fixture
+def complete_rejected_export_app(cfs_app_submitted, ilb_admin_client):
+    """A completed firearms sil application."""
+    app = cfs_app_submitted
+
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
+
+    app.refresh_from_db()
+    app.decision = app.REFUSE
+    app.refuse_reason = "Application Incomplete"
+    app.save()
+
+    _set_valid_licence(app)
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk, "export"))
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    app.refresh_from_db()
+    case_progress.check_expected_status(app, [ImpExpStatus.COMPLETED])
+    case_progress.check_expected_task(app, Task.TaskType.REJECTED)
+    return app
+
+
+@pytest.fixture
+def complete_rejected_app(fa_sil_app_submitted, ilb_admin_client):
+    """A completed firearms sil application that has been rejected."""
+    app = fa_sil_app_submitted
+
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    _set_valid_licence(app)
+    _add_valid_checklist(app)
+
+    app.decision = app.REFUSE
+    app.refuse_reason = "Application Incomplete"
+    app.save()
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    app.refresh_from_db()
+    case_progress.check_expected_status(app, [ImpExpStatus.COMPLETED])
+    case_progress.check_expected_task(app, Task.TaskType.REJECTED)
+    return app
+
+
+@pytest.fixture
 def document_form_data():
     """Used in tests requiring a document to be uploaded in a form."""
 

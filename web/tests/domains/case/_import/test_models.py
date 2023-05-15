@@ -54,3 +54,18 @@ def test_import_downcast(application_model, importer, importer_one_contact):
     downcast = p.get_specific_model()
     assert type(downcast) is application_model
     assert id(obj) != id(downcast)
+
+
+def test_display_status_for_completed_app(completed_app):
+    assert completed_app.is_import_application() is True
+    assert completed_app.get_status_display() == "Completed"
+
+
+def test_display_status_for_rejected_app(complete_rejected_app):
+    assert complete_rejected_app.is_import_application() is True
+    assert complete_rejected_app.get_status_display() == "Completed (Refused)"
+
+
+def test_display_status_for_in_progress_app(fa_dfl_app_in_progress):
+    assert fa_dfl_app_in_progress.is_import_application() is True
+    assert fa_dfl_app_in_progress.get_status_display() == "In Progress"
