@@ -16,6 +16,7 @@ from web.models import (
     ObsoleteCalibreGroup,
     Office,
     PersonalEmail,
+    Task,
     User,
 )
 from web.permissions import ExporterObjectPermissions, ImporterObjectPermissions
@@ -201,6 +202,8 @@ class Command(BaseCommand):
             reference="iar/1",
         )
 
+        iar.tasks.create(is_active=True, task_type=Task.TaskType.PROCESS)
+
         return iar
 
     def create_export_access_request(self, user):
@@ -212,6 +215,8 @@ class Command(BaseCommand):
             last_updated_by=user,
             reference="ear/1",
         )
+
+        ear.tasks.create(is_active=True, task_type=Task.TaskType.PROCESS)
 
         return ear
 

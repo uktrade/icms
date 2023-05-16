@@ -121,25 +121,15 @@ def access_request_user(django_user_model):
 
 
 @pytest.fixture
-def import_access_request_application(access_request_user):
-    return ImporterAccessRequest.objects.get(
-        request_type="MAIN_IMPORTER_ACCESS",
-        status="SUBMITTED",
-        submitted_by=access_request_user,
-        last_updated_by=access_request_user,
-        reference="iar/1",
-    )
+def importer_access_request(db):
+    """Fixture to get an in progress importer access request."""
+    return ImporterAccessRequest.objects.get(reference="iar/1")
 
 
 @pytest.fixture
-def export_access_request_application(access_request_user):
-    return ExporterAccessRequest.objects.get(
-        request_type="MAIN_EXPORTER_ACCESS",
-        status="SUBMITTED",
-        submitted_by=access_request_user,
-        last_updated_by=access_request_user,
-        reference="ear/1",
-    )
+def exporter_access_request(db):
+    """Fixture to get an in progress exporter access request."""
+    return ExporterAccessRequest.objects.get(reference="ear/1")
 
 
 @pytest.fixture

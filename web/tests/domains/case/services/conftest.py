@@ -85,9 +85,9 @@ def sanctions(db, importer_one_contact, importer, office):
 
 
 @pytest.fixture
-def iar(import_access_request_application):
+def iar(importer_access_request):
     """Fixture just to shorten name"""
-    return import_access_request_application
+    return importer_access_request
 
 
 @pytest.fixture
