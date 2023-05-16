@@ -140,7 +140,7 @@ def take_ownership_approval(
             permission = "web.is_contact_of_exporter"
             link = application.access_request.exporteraccessrequest.link
 
-        case_progress.access_request_in_processing(application)
+        case_progress.approval_request_in_processing(application)
 
         if not request.user.has_perm(group_permission):
             raise PermissionDenied
@@ -151,7 +151,16 @@ def take_ownership_approval(
         application.requested_from = request.user
         application.save()
 
-    return redirect(reverse("workbasket"))
+    return redirect(
+        reverse(
+            "access:case-approval-respond",
+            kwargs={
+                "application_pk": application.access_request.id,
+                "entity": entity,
+                "approval_request_pk": application.pk,
+            },
+        )
+    )
 
 
 @login_required
@@ -175,7 +184,7 @@ def release_ownership_approval(
             permission = "web.is_contact_of_exporter"
             link = application.access_request.exporteraccessrequest.link
 
-        case_progress.access_request_in_processing(application)
+        case_progress.approval_request_in_processing(application)
 
         if not request.user.has_perm(group_permission):
             raise PermissionDenied

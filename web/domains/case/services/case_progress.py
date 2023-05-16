@@ -4,7 +4,7 @@ from django.db.models import QuerySet
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.flow import errors
-from web.models import AccessRequest, Process, Task
+from web.models import AccessRequest, ApprovalRequest, Process, Task
 
 TT = Task.TaskType
 ST = ImpExpStatus
@@ -58,11 +58,17 @@ def application_in_processing(application: ImpOrExp) -> None:
 def access_request_in_processing(application: AccessRequest) -> None:
     """Check if an access request is being processed by a caseworker"""
 
-    expected_status = [ST.SUBMITTED]
+    expected_status = [AccessRequest.Statuses.SUBMITTED]
     expected_task = TT.PROCESS
 
-    check_expected_status(application, expected_status)
+    check_expected_status(application, expected_status)  # type:ignore[arg-type]
     check_expected_task(application, expected_task)
+
+
+def approval_request_in_processing(application: ApprovalRequest) -> None:
+    expected_status = [ApprovalRequest.OPEN]
+
+    check_expected_status(application, expected_status)  # type:ignore[arg-type]
 
 
 def application_is_authorised(application: ImpOrExp) -> None:
