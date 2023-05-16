@@ -95,19 +95,6 @@ def manage_firs(
                 application, case_type, request.user
             )
 
-        if case_type in ["import", "export"]:
-            show_firs = True
-
-        elif case_type == "access":
-            if application.process_type == "ImporterAccessRequest":
-                show_firs = application.importeraccessrequest.link_id
-            else:
-                show_firs = application.exporteraccessrequest.link_id
-        else:
-            raise NotImplementedError(f"Unknown case_type {case_type}")
-
-        extra_context = {"show_firs": show_firs}
-
         context = {
             "process": application,
             "firs": application.further_information_requests.exclude(
@@ -118,7 +105,6 @@ def manage_firs(
                 case_type, application, "Further Information Requests"
             ),
             "readonly_view": readonly_view,
-            **extra_context,
         }
     return render(
         request=request,
