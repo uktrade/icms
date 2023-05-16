@@ -73,9 +73,9 @@ def get_workbasket_row_func(process_type: str) -> GetWorkbasketRow:
         # Approval requests
         #
         case ProcessTypes.ExpApprovalReq:
-            return _get_access_wb_row
+            return _get_approval_wb_row
         case ProcessTypes.ImpApprovalReq:
-            return _get_access_wb_row
+            return _get_approval_wb_row
         case _:
             raise NotImplementedError(f"Unsupported process_type: {process_type}")
 
