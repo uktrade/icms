@@ -1,0 +1,9 @@
+{% extends "email/base.html" %}
+
+{% block message %}
+
+<p>Your application, case reference {{ application.reference }}, has been refused by ILB for the following reason:</p>
+<p>{{ application.refuse_reason }}</p>
+
+{% endblock %}
+

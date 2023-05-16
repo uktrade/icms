@@ -1,5 +1,6 @@
 from collections.abc import Collection
 
+import html2text
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.utils import timezone
@@ -136,3 +137,14 @@ def send_case_email(case_email: CaseEmail) -> None:
     case_email.status = CaseEmail.Status.OPEN
     case_email.sent_datetime = timezone.now()
     case_email.save()
+
+
+def send_refused_email(application: ImpOrExp) -> None:
+    context = {
+        "application": application,
+        "subject": f"Application reference {application.reference} has been refused by ILB.",
+    }
+    template = "email/application/refused.html"
+    message_html = utils.render_email(template, context)
+    message_text = html2text.html2text(message_html)
+    send_to_application_contacts(application, context["subject"], message_text, message_html)
