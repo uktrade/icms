@@ -26,7 +26,7 @@ from web.domains.case.utils import end_process_task, get_case_page_title
 from web.domains.template.utils import get_email_template_subject_body
 from web.flow import errors
 from web.models import Task, User, VariationRequest, WithdrawApplication
-from web.notify.email import send_to_application_contacts
+from web.notify.email import send_refused_email, send_to_application_contacts
 from web.permissions import AppChecker, Perms, organisation_get_contacts
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import delete_file_from_s3, get_s3_client
@@ -436,6 +436,12 @@ def start_authorisation(
                 document_pack.doc_ref_documents_create(application, request.icms.lock_manager)
             else:
                 document_pack.pack_draft_archive(application)
+
+            if (
+                application.decision == application.REFUSE
+                and application.status == model_class.Statuses.COMPLETED
+            ):
+                send_refused_email(application)
 
             return redirect(reverse("workbasket"))
 

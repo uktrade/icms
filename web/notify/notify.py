@@ -1,17 +1,6 @@
 import html2text
-from django.conf import settings
-from django.template.loader import render_to_string
 
 from . import email, utils
-
-
-def _render_email(template, context):
-    """Adds shared variables into context and renders the email"""
-    context = context or {}
-    context["url"] = settings.DEFAULT_DOMAIN
-    context["contact_email"] = settings.ILB_CONTACT_EMAIL
-    context["contact_phone"] = settings.ILB_CONTACT_PHONE
-    return render_to_string(template, context)
 
 
 def send_notification(subject, template, context=None, recipients=None, cc_list=None):
@@ -22,14 +11,14 @@ def send_notification(subject, template, context=None, recipients=None, cc_list=
 
     Emails are queued to Redis to be sent asynchronously"""
 
-    html_message = _render_email(template, context)
+    html_message = utils.render_email(template, context)
     message_text = html2text.html2text(html_message)
     email.send_email.delay(subject, message_text, recipients, html_message=html_message, cc=cc_list)
 
 
 def send_case_officer_notification(subject, template, context=None):
     """Renders given email template and sends to case officers."""
-    html_message = _render_email(template, context)
+    html_message = utils.render_email(template, context)
     message_text = html2text.html2text(html_message)
     email.send_to_case_officers.delay(subject, message_text, html_message)
 
@@ -82,7 +71,7 @@ def access_request_closed(access_request):
 
 
 def mailshot(mailshot):
-    html_message = _render_email(
+    html_message = utils.render_email(
         "email/mailshot/mailshot.html",
         {"subject": mailshot.email_subject, "body": mailshot.email_body},
     )
@@ -97,7 +86,7 @@ def mailshot(mailshot):
 
 
 def retract_mailshot(mailshot):
-    html_message = _render_email(
+    html_message = utils.render_email(
         "email/mailshot/mailshot.html",
         {
             "subject": mailshot.retract_email_subject,
