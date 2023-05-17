@@ -1,3 +1,5 @@
+from typing import Literal
+
 import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import Permission
@@ -178,7 +180,9 @@ def exporter_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @permission_required(Perms.sys.ilb_admin, raise_exception=True)
-def management(request, pk, entity):
+def link_access_request(
+    request: AuthenticatedHttpRequest, pk: int, entity: Literal["importer", "exporter"]
+) -> HttpResponse:
     with transaction.atomic():
         if entity == "importer":
             application = get_object_or_404(
@@ -204,9 +208,7 @@ def management(request, pk, entity):
                 )
 
                 return redirect(
-                    reverse(
-                        "access:case-management", kwargs={"pk": application.pk, "entity": entity}
-                    )
+                    reverse("access:link-request", kwargs={"pk": application.pk, "entity": entity})
                 )
         else:
             form = Form(instance=application)
@@ -224,7 +226,9 @@ def management(request, pk, entity):
 
 @login_required
 @permission_required(Perms.sys.ilb_admin, raise_exception=True)
-def management_response(request, pk, entity):
+def close_access_request(
+    request: AuthenticatedHttpRequest, pk: int, entity: Literal["importer", "exporter"]
+) -> HttpResponse:
     with transaction.atomic():
         if entity == "importer":
             application = get_object_or_404(
@@ -250,7 +254,9 @@ def management_response(request, pk, entity):
                 task.finished = timezone.now()
                 task.save()
 
+                # TODO: Revisit in ICMSLST-1976
                 notify.access_request_closed(application)
+
                 return redirect(reverse("workbasket"))
         else:
             form = forms.CloseAccessRequestForm(instance=application)
@@ -263,7 +269,7 @@ def management_response(request, pk, entity):
 
     return render(
         request=request,
-        template_name="web/domains/case/access/management-response.html",
+        template_name="web/domains/case/access/close-access-request.html",
         context=context,
     )
 

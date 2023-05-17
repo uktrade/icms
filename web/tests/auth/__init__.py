@@ -1,1 +1,5 @@
-from .auth import *  # NOQA
+from .auth import AuthTestCase
+
+__all__ = [
+    "AuthTestCase",
+]
