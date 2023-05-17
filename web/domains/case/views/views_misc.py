@@ -23,10 +23,10 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task, get_case_page_title
-from web.domains.template.utils import get_email_template_subject_body
 from web.flow import errors
 from web.models import Task, User, VariationRequest, WithdrawApplication
-from web.notify.email import send_refused_email, send_to_application_contacts
+from web.notify.constants import DatabaseEmailTemplate
+from web.notify.email import send_database_email, send_refused_email
 from web.permissions import AppChecker, Perms, organisation_get_contacts
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import delete_file_from_s3, get_s3_client
@@ -344,8 +344,7 @@ def manage_case(
                 document_pack.pack_draft_archive(application)
 
                 if form.cleaned_data.get("send_email"):
-                    subject, body = get_email_template_subject_body(application, "STOP_CASE")
-                    send_to_application_contacts(application, subject, body)
+                    send_database_email(application, DatabaseEmailTemplate.STOP_CASE)
 
                 messages.success(
                     request,

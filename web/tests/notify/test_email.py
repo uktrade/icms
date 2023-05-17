@@ -3,7 +3,7 @@ from django.core import mail
 from django.test import TestCase
 
 from web.models import AlternativeEmail, Importer, PersonalEmail, User
-from web.notify import email
+from web.notify import constants, email
 from web.permissions import organisation_add_contact
 from web.tests.domains.exporter.factory import ExporterFactory
 from web.tests.domains.importer.factory import ImporterFactory
@@ -393,3 +393,16 @@ def _check_send_refused_email(app, expected_to_email):
     assert first_email.subject == f"Application reference {app.reference} has been refused by ILB."
     assert "has been refused by ILB" in first_email.body
     assert app.refuse_reason in first_email.body
+
+
+def test_send_database_email(com_app_submitted):
+    email.send_database_email(com_app_submitted, constants.DatabaseEmailTemplate.STOP_CASE)
+    outbox = mail.outbox
+    assert len(outbox) == 1
+
+    sent_email = outbox[0]
+    assert sent_email.to == ["E1_main_contact@example.com"]  # /PS-IGNORE
+    assert sent_email.subject == f"ICMS Case Reference {com_app_submitted.reference} Stopped"
+    assert (
+        f"Processing on ICMS Case Reference {com_app_submitted.reference} has been stopped"
+    ) in sent_email.body
