@@ -50,6 +50,12 @@ class Command(BaseCommand):
 
         # Access requests
         access_user = self.create_user("access_request_user")
+        PersonalEmail.objects.create(
+            user=access_user,
+            email=access_user.email,
+            portal_notifications=True,
+        )
+
         self.create_import_access_request(access_user)
         self.create_export_access_request(access_user)
 
