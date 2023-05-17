@@ -7,11 +7,13 @@ from django.utils import timezone
 
 from config.celery import app
 from web.domains.case.types import ImpOrExp
+from web.domains.template.utils import get_email_template_subject_body
 from web.models import CaseEmail, Exporter, Importer, User
 from web.permissions import get_org_obj_permissions, organisation_get_contacts
 from web.utils.s3 import get_file_from_s3, get_s3_client
 
 from . import utils
+from .constants import DatabaseEmailTemplate
 
 
 @app.task(name="web.notify.email.send_email")
@@ -148,3 +150,8 @@ def send_refused_email(application: ImpOrExp) -> None:
     message_html = utils.render_email(template, context)
     message_text = html2text.html2text(message_html)
     send_to_application_contacts(application, context["subject"], message_text, message_html)
+
+
+def send_database_email(application: ImpOrExp, template_name: DatabaseEmailTemplate) -> None:
+    subject, body = get_email_template_subject_body(application, template_name)
+    send_to_application_contacts(application, subject, body)

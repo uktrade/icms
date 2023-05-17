@@ -42,7 +42,8 @@ from web.models import (
     User,
     VariationRequest,
 )
-from web.notify.email import send_to_application_contacts
+from web.notify.constants import DatabaseEmailTemplate
+from web.notify.email import send_database_email, send_to_application_contacts
 from web.permissions import AppChecker, Perms, can_user_view_search_cases
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
@@ -195,7 +196,6 @@ class ReopenApplicationView(
 
     def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         """Reopen the application."""
-
         self.set_application_and_task()
         self.application.case_owner = None
         self.application.is_active = True
@@ -209,6 +209,7 @@ class ReopenApplicationView(
             request,
             "The case has been reopened, and can be taken ownership of by any case manager.",
         )
+        send_database_email(self.application, DatabaseEmailTemplate.CASE_REOPEN)
 
         # The page reload is handled in JS to preserve the search form state.
         # see web/static/web/js/pages/search-common.js
@@ -467,11 +468,15 @@ class RevokeCaseView(SearchActionFormBase):
         if email_applicants:
             if is_import:
                 email_subject, email_body = get_email_template_subject_body(
-                    self.application, "LICENCE_REVOKE", RevokedEmailTemplateContext
+                    self.application,
+                    DatabaseEmailTemplate.LICENCE_REVOKE,
+                    RevokedEmailTemplateContext,
                 )
             else:
                 email_subject, email_body = get_email_template_subject_body(
-                    self.application, "CERTIFICATE_REVOKE", RevokedEmailTemplateContext
+                    self.application,
+                    DatabaseEmailTemplate.CERTIFICATE_REVOKE,
+                    RevokedEmailTemplateContext,
                 )
 
             send_to_application_contacts(self.application, email_subject, email_body)

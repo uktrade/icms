@@ -175,6 +175,7 @@ class TestReopenApplicationView:
         with pytest.raises(expected_exception=errors.ProcessStateError):
             url = SearchURLS.reopen_case(application_pk=self.wood_app.pk)
             self.client.post(url)
+            self._check_email_is_not_sent()
 
     def test_reopen_application_unsets_caseworker(self, ilb_admin_user):
         self.wood_app.status = ImpExpStatus.STOPPED
@@ -193,6 +194,24 @@ class TestReopenApplicationView:
 
         case_progress.check_expected_status(application, [application.Statuses.SUBMITTED])
         case_progress.check_expected_task(application, Task.TaskType.PROCESS)
+
+        self._check_email_is_sent(application)
+
+    def _check_email_is_sent(self, application):
+        outbox = mail.outbox
+        assert len(outbox) == 1
+
+        email = outbox[0]
+        assert email.to == ["I1_main_contact@example.com"]  # /PS-IGNORE
+        assert email.subject == f"Case Reopened: {application.reference}"
+        assert (
+            f"ILB has reopened case reference {application.reference} and will resume processing on this case. "
+            "Please contact ILB for further information."
+        ) in email.body
+
+    def _check_email_is_not_sent(self):
+        outbox = mail.outbox
+        assert len(outbox) == 0
 
 
 class TestRequestVariationUpdateView:
