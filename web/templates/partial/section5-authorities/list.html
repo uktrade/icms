@@ -32,12 +32,11 @@
             Edit
           </a>
           {% if section5.is_active %}
-            <form method="post"
-                  action="{{ icms_url('importer-section5-archive', args=[section5.pk]) }}"
-                  class="form-inline">
-              {{ csrf_input }}
-              <button type="submit" class="button small-button icon-bin">Archive</button>
-            </form>
+            <a
+              href="{{ icms_url('importer-section5-archive', args=[section5.pk]) }}"
+              class="button small-button icon-bin">
+              Archive
+            </a>
           {% else %}
             <form method="post"
                   action="{{ icms_url('importer-section5-unarchive', args=[section5.pk]) }}"

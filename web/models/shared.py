@@ -27,6 +27,13 @@ class FirearmCommodity(TypedTextChoices):
     EX_CHAPTER_97 = ("ex Chapter 97", "ex Chapter 97")
 
 
+class ArchiveReasonChoices(TypedTextChoices):
+    REVOKED = ("REVOKED", "Revoked")
+    WITHDRAWN = ("WITHDRAWN", "Withdrawn")
+    REFUSED = ("REFUSED", "Refused")
+    OTHER = ("OTHER", "Other")
+
+
 at_least_0 = MinValueValidator(limit_value=0.0)
 
 

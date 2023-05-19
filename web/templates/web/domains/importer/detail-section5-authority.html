@@ -1,5 +1,5 @@
+{% from "display/fields.html" import application_field %}
 {% extends "layout/sidebar.html" %}
-
 
 {% block page_title %}View Importer{% endblock %}
 
@@ -24,109 +24,92 @@
 {% endblock %}
 
 {% block main_content %}
+  {% block archive %}
+  {% endblock %}
+
   <h3>Reference '{{ section5.reference }}'</h3>
-
-  <dl>
-    <dt class="bold">
-      Reference
-    </dt>
-    <dd>
-      {{ section5.reference }}
-    </dd>
-    <dt class="bold">
-      Postcode
-    </dt>
-    <dd>
-      {{ section5.postcode}}
-    </dd>
-    <dt class="bold">
-      Address
-    </dt>
-    <dd>
-      {{ section5.address|default("", True)|nl2br }}
-    </dd>
-    <dt class="bold">
-      Linked Offices
-    </dt>
-    <dd>
-      {% for office in linked_offices %}
-        {{ office }}
-        {% if not loop.last %}
-          <br />
+  <div class="container setoutForm">
+    {{ application_field(section5.reference, "Reference") }}
+    {{ application_field(section5.postcode, "Postcode") }}
+    {{ application_field(section5.address|default("", True)|nl2br, "Address") }}
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">
+          Linked Offices
+        </label>
+      </div>
+      <div class="six columns">
+        {% if linked_offices %}
+          {% for office in linked_offices %}
+            <span class="text-widget">
+              <p>{{ office }}</p>
+            </span>
+          {% endfor %}
+        {% else %}
+          <span class="text-widget">
+            <p>N/A</p>
+          </span>
         {% endif %}
+      </div>
+      <div class="three columns"></div>
+    </div>
+    {{ application_field(section5.start_date.strftime('%d-%b-%Y'), "Start Date") }}
+    {{ application_field(section5.end_date.strftime('%d-%b-%Y'), "End Date") }}
+    {{ application_field(section5.further_details|nl2br or "N/A", "Further Details") }}
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Documents</label>
+      </div>
+      <div class="six columns">
+      {% if section5.files.active() %}
+        <table class="setoutList">
+          <thead>
+            <tr>
+              <th scope="col">File</th>
+              <th scope="col">Created By</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for document in section5.files.active() %}
+            <tr>
+              <td>
+                <a href="{{ icms_url('importer-firearms-view-document', kwargs={'firearms_pk': section5.pk, 'document_pk': document.pk}) }}">
+                  {{ document.filename }}
+                </a>
+                <br />
+                <span class="extra-info">{{ document.file_size }}</span>
+              </td>
+              <td>
+                {{ document.created_by }}<br />
+                <span class="extra-info">{{ document.created_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</span>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
       {% else %}
-        N/A
-      {% endfor %}
-    </dd>
-    <dt class="bold">
-      Start Date
-    </dt>
-    <dd>
-      {{ section5.start_date.strftime('%d-%b-%Y') }}
-    </dd>
-    <dt class="bold">
-      End Date
-    </dt>
-    <dd>
-      {{ section5.end_date.strftime('%d-%b-%Y') }}
-    </dd>
-    <dt class="bold">
-      Further Details
-    </dt>
-    <dd>
-      {% if section5.further_details %}
-        {{ section5.further_details|nl2br }}
-      {% else %}
-        N/A
+        <span class="text-widget">
+          <p>N/A</p>
+        </span>
       {% endif %}
-    </dd>
-    <dt class="bold">
-      Documents
-    </dt>
-    <dd>
-    {% if section5.files.active() %}
-      <table class="setoutList">
-        <thead>
-          <tr>
-            <th scope="col">File</th>
-            <th scope="col">Created By</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for document in section5.files.active() %}
-          <tr>
-            <td>
-              <a href="{{ icms_url('importer-section5-view-document', kwargs={'section5_pk': section5.pk, 'document_pk': document.pk}) }}">
-                {{ document.filename }}
-              </a>
-              <br />
-              <span class="extra-info">{{ document.file_size }}</span>
-            </td>
-            <td>
-              {{ document.created_by }}<br />
-              <span class="extra-info">{{ document.created_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</span>
-            </td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-
-    {% else %}
-      N/A
-    {% endif %}
-    </dd>
-    <dt class="bold">
-      Section 5 Clauses
-    </dt>
-    <dd>
-      <table class="setoutList">
-        <thead>
-          <tr>
-            <th scope="col">Category</th>
-            <th scope="col">Quantity</th>
-          </tr>
-        </thead>
-        <tbody>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">
+          Section 5 Clauses
+        </label>
+      </div>
+      <div class="six columns">
+        <table class="setoutList">
+          <thead>
+            <tr>
+              <th scope="col">Category</th>
+              <th scope="col">Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
           {% for clause_quantity in section5.clausequantity_set.all() %}
             <tr>
               <td>{{ clause_quantity.section5clause.clause }}</td>
@@ -136,11 +119,45 @@
                 {% else %}
                   {{ clause_quantity.quantity }}
                 {% endif %}
-              </td>
-            </tr>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="three columns"></div>
+    </div>
+  </div>
+  {% if not section5.is_active %}
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">
+          Archive Reason
+        </label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget">
+          {% for reason in section5.archive_reason %}
+             <p>{{ reason }}</p>
           {% endfor %}
-        </tbody>
-      </table>
-    </dd>
-  </dl>
+        </span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    {% if section5.other_archive_reason %}
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">
+            Other
+          </label>
+        </div>
+        <div class="six columns">
+          <span class="text-widget">
+              <p>{{ section5.other_archive_reason }}</p>
+          </span>
+        </div>
+        <div class="three columns"></div>
+      </div>
+    {% endif %}
+  {% endif %}
 {% endblock %}

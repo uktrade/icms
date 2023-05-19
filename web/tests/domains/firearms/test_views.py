@@ -1,4 +1,5 @@
 import pytest
+from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
 from web.models import FirearmsAuthority
@@ -69,4 +70,4 @@ def test_create_firearms_authority(ilb_admin_client, ilb_admin_user, importer, o
 
     firearms = FirearmsAuthority.objects.get()
     assert office == firearms.linked_offices.first()
-    assert response["Location"] == f"/importer/firearms/{firearms.pk}/edit/"
+    assert response["Location"] == reverse("importer-edit", kwargs={"pk": importer.pk})

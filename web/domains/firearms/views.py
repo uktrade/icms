@@ -12,6 +12,7 @@ from django.views.decorators.http import require_POST
 from web.domains.case.forms import DocumentForm
 from web.domains.file.utils import create_file_model
 from web.models import Importer
+from web.notify.notify import authority_archived_notification
 from web.permissions import Perms, can_user_edit_firearm_authorities
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
@@ -20,6 +21,7 @@ from web.views.actions import Archive, Edit, Unarchive
 from web.views.mixins import PostActionMixin
 
 from .forms import (
+    ArchiveFirearmsAuthorityForm,
     FirearmsAuthorityForm,
     FirearmsQuantityForm,
     ObsoleteCalibreForm,
@@ -264,7 +266,7 @@ def create_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
                 clause_quantity.firearmsauthority = firearms
                 clause_quantity.save()
 
-            return redirect(reverse("importer-firearms-edit", kwargs={"pk": firearms.pk}))
+            return redirect(reverse("importer-edit", kwargs={"pk": firearms.importer.pk}))
     else:
         form = FirearmsAuthorityForm(importer)
 
@@ -343,7 +345,6 @@ def view_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
-@require_POST
 def archive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     if not can_user_edit_firearm_authorities(request.user):
         raise PermissionDenied
@@ -351,10 +352,27 @@ def archive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
     firearms: FirearmsAuthority = get_object_or_404(
         FirearmsAuthority.objects.filter(is_active=True), pk=pk
     )
-    firearms.is_active = False
-    firearms.save()
 
-    return redirect(reverse("importer-edit", kwargs={"pk": firearms.importer.pk}))
+    if request.method == "POST":
+        form = ArchiveFirearmsAuthorityForm(request.POST, instance=firearms)
+
+        if form.is_valid():
+            firearms = form.save(commit=False)
+            firearms.is_active = False
+            firearms.save()
+
+            authority_archived_notification(firearms, "Firearms")
+
+            return redirect(reverse("importer-edit", kwargs={"pk": firearms.importer.pk}))
+    else:
+        form = ArchiveFirearmsAuthorityForm(instance=firearms)
+
+    context = {
+        "object": firearms.importer,
+        "firearms_authority": firearms,
+        "form": form,
+    }
+    return render(request, "web/domains/importer/archive-firearms-authority.html", context)
 
 
 @login_required
@@ -367,6 +385,8 @@ def unarchive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpRespon
         FirearmsAuthority.objects.filter(is_active=False), pk=pk
     )
     firearms.is_active = True
+    firearms.archive_reason = None
+    firearms.other_archive_reason = None
     firearms.save()
 
     return redirect(reverse("importer-edit", kwargs={"pk": firearms.importer.pk}))

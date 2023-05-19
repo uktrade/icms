@@ -8,7 +8,9 @@ from guardian.forms import UserObjectPermissionsForm
 
 from web.domains.importer.fields import PersonWidget
 from web.errors import APIError
-from web.models import Importer
+from web.forms.widgets import CheckboxSelectMultiple
+from web.models import Importer, Section5Authority
+from web.models.shared import ArchiveReasonChoices
 from web.permissions import ImporterObjectPermissions, Perms
 from web.utils.companieshouse import api_get_company
 
@@ -240,3 +242,20 @@ class ImporterUserObjectPermissionsForm(UserObjectPermissionsForm):
     def get_obj_perms_field_choices(self):
         # Only iterate over permissions we show in the main edit importer view
         return [(p.codename, label) for (p, label) in get_importer_object_permissions(self.obj)]
+
+
+class ArchiveSection5AuthorityForm(forms.ModelForm):
+    class Meta:
+        model = Section5Authority
+        fields = ["archive_reason", "other_archive_reason"]
+        widgets = {"archive_reason": CheckboxSelectMultiple(choices=ArchiveReasonChoices.choices)}
+
+    def clean(self):
+        data = super().clean()
+
+        if ArchiveReasonChoices.OTHER in data.get("archive_reason", []) and not data.get(
+            "other_archive_reason"
+        ):
+            self.add_error("other_archive_reason", "You must enter this item.")
+
+        return data

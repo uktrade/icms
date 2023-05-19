@@ -1,32 +1,39 @@
 fa_authorities = """
-SELECT iad.*, imp_id importer_id
+WITH ars AS (
+  SELECT iad_id
+  , LISTAGG(archive_reason, ',') WITHIN GROUP (ORDER BY archive_reason) archive_reason
+  FROM impmgr.xview_imp_auth_archive_reasons xar
+  WHERE xar.status_control = 'C'
+  GROUP BY iad_id
+)
+SELECT
+  iad.ia_id id
+  , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
+  , x.*
+  , imp_id importer_id
+  , ars.archive_reason
 FROM impmgr.importer_authorities ia
-INNER JOIN (
-  SELECT
-    iad.ia_id id
-    , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
-    , x.*
-  FROM impmgr.importer_authority_details iad,
-    XMLTABLE('/*'
-    PASSING iad.xml_data
-    COLUMNS
-      address VARCHAR2(4000) PATH '/AUTHORITY/ADDRESS/text()'
-      , postcode VARCHAR2(4000) PATH '/AUTHORITY/POSTCODE/text()'
-      , address_entry_type VARCHAR2(4000) PATH '/AUTHORITY/ADDRESS_ENTRY_TYPE/text()'
-      , reference VARCHAR2(4000) PATH '/AUTHORITY/FIREARMS_REFERENCE/text()'
-      , certificate_type VARCHAR2(4000) PATH '/AUTHORITY/CERTIFICATE_TYPE/text()'
-      , further_details VARCHAR2(4000) PATH '/AUTHORITY/UNCATEGORIZED_DETAILS/text()'
-      , issuing_constabulary_id INTEGER PATH '/AUTHORITY/ISSUING_CONSTABULARY/text()'
-      , act_quantity_xml XMLTYPE PATH '/AUTHORITY/GOODS_CATEGORY_LIST'
-      , file_folder_id INTEGER PATH '/AUTHORITY/DOCUMENTS_FF_ID/text()'
-      , start_date VARCHAR2(4000) PATH '/AUTHORITY/START_DATE/text()'
-      , end_date VARCHAR2(4000) PATH '/AUTHORITY/END_DATE/text()'
-    ) x
-  WHERE iad.status_control = 'C'
- ) iad ON iad.id = ia.id
- WHERE ia.authority_type = 'FIREARMS'
+INNER JOIN impmgr.importer_authority_details iad ON iad.ia_id = ia.id
+LEFT JOIN ars ON ars.iad_id = iad.id
+CROSS JOIN XMLTABLE('/*'
+  PASSING iad.xml_data
+  COLUMNS
+    address VARCHAR2(4000) PATH '/AUTHORITY/ADDRESS/text()'
+    , postcode VARCHAR2(4000) PATH '/AUTHORITY/POSTCODE/text()'
+    , address_entry_type VARCHAR2(4000) PATH '/AUTHORITY/ADDRESS_ENTRY_TYPE/text()'
+    , reference VARCHAR2(4000) PATH '/AUTHORITY/FIREARMS_REFERENCE/text()'
+    , certificate_type VARCHAR2(4000) PATH '/AUTHORITY/CERTIFICATE_TYPE/text()'
+    , further_details VARCHAR2(4000) PATH '/AUTHORITY/UNCATEGORIZED_DETAILS/text()'
+    , issuing_constabulary_id INTEGER PATH '/AUTHORITY/ISSUING_CONSTABULARY/text()'
+    , act_quantity_xml XMLTYPE PATH '/AUTHORITY/GOODS_CATEGORY_LIST'
+    , file_folder_id INTEGER PATH '/AUTHORITY/DOCUMENTS_FF_ID/text()'
+    , start_date VARCHAR2(4000) PATH '/AUTHORITY/START_DATE/text()'
+    , end_date VARCHAR2(4000) PATH '/AUTHORITY/END_DATE/text()'
+    , other_archive_reason VARCHAR(4000) PATH '/AUTHORITY/OTHER_ARCHIVE_REASON/text()'
+) x
+WHERE iad.status_control = 'C'
+AND ia.authority_type = 'FIREARMS'
 """
-
 
 fa_authority_linked_offices = """
 SELECT
@@ -40,32 +47,39 @@ AND ia.authority_type = 'FIREARMS'
 
 
 section5_authorities = """
+WITH ars AS (
+  SELECT iad_id
+  , LISTAGG(archive_reason, ',') WITHIN GROUP (ORDER BY archive_reason) archive_reason
+  FROM impmgr.xview_imp_auth_archive_reasons xar
+  WHERE xar.STATUS_CONTROL = 'C'
+  GROUP BY iad_id
+)
 SELECT
-  iad.*, imp_id importer_id
+  iad.ia_id id
+  , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
+  , x.*
+  , imp_id importer_id
+  , ars.archive_reason
 FROM impmgr.importer_authorities ia
-INNER JOIN (
-  SELECT
-    iad.ia_id id
-    , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
-    , x.*
-  FROM impmgr.importer_authority_details iad,
-    XMLTABLE('/*'
-    PASSING iad.xml_data
-    COLUMNS
-      address VARCHAR2(4000) PATH '/AUTHORITY/ADDRESS/text()'
-      , postcode VARCHAR2(4000) PATH '/AUTHORITY/POSTCODE/text()'
-      , address_entry_type VARCHAR2(4000) PATH '/AUTHORITY/ADDRESS_ENTRY_TYPE/text()'
-      , reference VARCHAR2(4000) PATH '/AUTHORITY/SECTION5_REFERENCE/text()'
-      , certificate_type VARCHAR2(4000) PATH '/AUTHORITY/CERTIFICATE_TYPE/text()'
-      , further_details VARCHAR2(4000) PATH '/AUTHORITY/UNCATEGORIZED_DETAILS/text()'
-      , clause_quantity_xml XMLTYPE PATH '/AUTHORITY/GOODS_CATEGORY_LIST'
-      , file_folder_id INTEGER PATH '/AUTHORITY/DOCUMENTS_FF_ID/text()'
-      , start_date VARCHAR2(4000) PATH '/AUTHORITY/START_DATE/text()'
-      , end_date VARCHAR2(4000) PATH '/AUTHORITY/END_DATE/text()'
-    ) x
-  WHERE iad.status_control = 'C'
- ) iad ON iad.id = ia.id
- WHERE ia.authority_type = 'SECTION5'
+INNER JOIN impmgr.importer_authority_details iad ON iad.ia_id = ia.id
+LEFT JOIN ars ON ars.iad_id = iad.id
+CROSS JOIN XMLTABLE('/*'
+  PASSING iad.xml_data
+  COLUMNS
+    address VARCHAR2(4000) PATH '/AUTHORITY/ADDRESS/text()'
+    , postcode VARCHAR2(4000) PATH '/AUTHORITY/POSTCODE/text()'
+    , address_entry_type VARCHAR2(4000) PATH '/AUTHORITY/ADDRESS_ENTRY_TYPE/text()'
+    , reference VARCHAR2(4000) PATH '/AUTHORITY/SECTION5_REFERENCE/text()'
+    , certificate_type VARCHAR2(4000) PATH '/AUTHORITY/CERTIFICATE_TYPE/text()'
+    , further_details VARCHAR2(4000) PATH '/AUTHORITY/UNCATEGORIZED_DETAILS/text()'
+    , clause_quantity_xml XMLTYPE PATH '/AUTHORITY/GOODS_CATEGORY_LIST'
+    , file_folder_id INTEGER PATH '/AUTHORITY/DOCUMENTS_FF_ID/text()'
+    , start_date VARCHAR2(4000) PATH '/AUTHORITY/START_DATE/text()'
+    , end_date VARCHAR2(4000) PATH '/AUTHORITY/END_DATE/text()'
+    , other_archive_reason VARCHAR(4000) PATH '/AUTHORITY/OTHER_ARCHIVE_REASON/text()'
+  ) x
+WHERE iad.status_control = 'C'
+AND ia.authority_type = 'SECTION5'
 """
 
 

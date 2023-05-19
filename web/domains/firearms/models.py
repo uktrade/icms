@@ -1,8 +1,10 @@
 from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
 
 from web.models.mixins import Archivable
+from web.models.shared import ArchiveReasonChoices
 
 
 class ActiveFirearmsAuthorityManager(models.Manager):
@@ -54,6 +56,13 @@ class FirearmsAuthority(models.Model):
         related_name="firearms_authorities",
     )
     files = models.ManyToManyField("web.File")
+    archive_reason = ArrayField(
+        models.CharField(max_length=20, choices=ArchiveReasonChoices.choices),
+        size=4,
+        blank=True,
+        null=True,
+    )
+    other_archive_reason = models.TextField(null=True, blank=True, verbose_name="Other")
 
 
 class FirearmsAct(Archivable, models.Model):

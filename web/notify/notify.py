@@ -1,6 +1,24 @@
+import datetime as dt
+from typing import Literal
+
 import html2text
+import structlog as logging
+from django.contrib.postgres.aggregates import StringAgg
+from django.utils import timezone
+
+from config.celery import app
+from web.models import (
+    Constabulary,
+    FirearmsAuthority,
+    Importer,
+    Section5Authority,
+    User,
+)
+from web.permissions import SysPerms
 
 from . import email, utils
+
+logger = logging.getLogger(__name__)
 
 
 def send_notification(subject, template, context=None, recipients=None, cc_list=None):
@@ -121,3 +139,133 @@ def further_information_responded(process, fir):
         "email/fir/responded.html",
         context={"process": process, "fir": fir},
     )
+
+
+@app.task(name="web.notify.notify.send_firearms_authority_expiry_notification")
+def send_firearms_authority_expiry_notification() -> None:
+    """Sends a notification to constabulary contacts verified firearms authority editors for verified firearms
+    authorities that expire in 30 days"""
+
+    logger.info("Running firearms authority expiry notification task")
+
+    expiry_date = timezone.now().date() + dt.timedelta(days=30)
+    expiry_date_str = expiry_date.strftime("%-d %B %Y")
+    subject = f"Verified Firearms Authorities Expiring {expiry_date_str}"
+
+    constabularies = Constabulary.objects.filter(
+        firearmsauthority__end_date=expiry_date, is_active=True
+    ).distinct()
+
+    recipient_users = User.objects.filter(
+        groups__permissions__codename=SysPerms.edit_firearm_authorities.codename
+    )
+
+    # TODO ICMSLST-1937 Update recipients to be constabulary contacts instead of all users with authority editing permission
+    # Send emails to users who can edit firearms authorities for a specific constabulary (recipeint_users query into for loop)
+
+    for constabulary in constabularies:
+        importers = (
+            Importer.objects.filter(
+                firearms_authorities__issuing_constabulary=constabulary,
+                firearms_authorities__end_date=expiry_date,
+                is_active=True,
+            )
+            .annotate(
+                authority_refs=StringAgg(
+                    "firearms_authorities__reference",
+                    delimiter=", ",
+                    ordering="firearms_authorities__reference",
+                )
+            )
+            .order_by("name")
+        )
+
+        for user in recipient_users:
+            send_notification(
+                subject,
+                "email/import/authority_expiring.html",
+                context={
+                    "section_5": False,
+                    "expiry_date": expiry_date_str,
+                    "constabulary_name": constabulary.name,
+                    "importers": importers,
+                    "subject": subject,
+                },
+                recipients=utils.get_notification_emails(user),
+            )
+
+    logger.info(
+        f"Firearms authority expiry notifications sent to {constabularies.count()} constabulary's contacts"
+    )
+
+
+@app.task(name="web.notify.notify.send_section_5_expiry_notification")
+def send_section_5_expiry_notification() -> None:
+    """Sends a notification to all verified section 5 authority editors for verified section 5 authorities
+    that expire in 30 days"""
+
+    logger.info("Running section 5 authority expiry notification task")
+
+    expiry_date = timezone.now().date() + dt.timedelta(days=30)
+    expiry_date_str = expiry_date.strftime("%-d %B %Y")
+    subject = f"Verified Section 5 Authorities Expiring {expiry_date_str}"
+
+    importers = (
+        Importer.objects.filter(
+            section5_authorities__end_date=expiry_date,
+            is_active=True,
+        )
+        .annotate(
+            authority_refs=StringAgg(
+                "section5_authorities__reference",
+                delimiter=", ",
+                ordering="section5_authorities__reference",
+            )
+        )
+        .order_by("name")
+    )
+
+    recipient_users = User.objects.filter(
+        groups__permissions__codename=SysPerms.edit_section_5_firearm_authorities.codename
+    )
+
+    for user in recipient_users:
+        send_notification(
+            subject,
+            "email/import/authority_expiring.html",
+            context={
+                "expiry_date": expiry_date_str,
+                "section_5": True,
+                "importers": importers,
+                "subject": subject,
+            },
+            recipients=utils.get_notification_emails(user),
+        )
+
+    logger.info(
+        f"Section 5 authority expiry notifications sent to {importers.count()} importers contacts"
+    )
+
+
+def authority_archived_notification(
+    authority: FirearmsAuthority | Section5Authority,
+    authority_type: Literal["Firearms", "Section 5"],
+) -> None:
+    """Sends a notification to all importer maintainers when a verified authority is archived"""
+
+    archived_date = timezone.now().strftime("%-d %B %Y")
+    subject = f"Importer {authority.importer.id} Verified {authority_type} Authority {authority.reference} Archived {archived_date}"
+
+    recipient_users = User.objects.filter(groups__permissions__codename=SysPerms.ilb_admin.codename)
+
+    for user in recipient_users:
+        send_notification(
+            subject,
+            "email/import/authority_archived.html",
+            context={
+                "authority_type": authority_type,
+                "authority": authority,
+                "subject": subject,
+            },
+            recipients=utils.get_notification_emails(user),
+        )

@@ -19,6 +19,7 @@ from web.domains.file.utils import create_file_model
 from web.domains.importer.forms import (
     AgentIndividualForm,
     AgentOrganisationForm,
+    ArchiveSection5AuthorityForm,
     ImporterFilter,
     ImporterIndividualForm,
     ImporterOrganisationForm,
@@ -28,6 +29,7 @@ from web.domains.importer.forms import (
 from web.domains.office.forms import ImporterOfficeEORIForm, ImporterOfficeForm
 from web.domains.section5.forms import ClauseQuantityForm, Section5AuthorityForm
 from web.models import ClauseQuantity, Importer, Section5Authority, Section5Clause, User
+from web.notify.notify import authority_archived_notification
 from web.permissions import (
     Perms,
     can_user_edit_firearm_authorities,
@@ -218,7 +220,7 @@ def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
                 clause_quantity.section5authority = section5
                 clause_quantity.save()
 
-            return redirect(reverse("importer-section5-edit", kwargs={"pk": section5.pk}))
+            return redirect(reverse("importer-edit", kwargs={"pk": section5.importer.pk}))
     else:
         form = Section5AuthorityForm(importer)
 
@@ -302,7 +304,6 @@ def view_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
 
 @login_required
-@require_POST
 def archive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     if not can_user_edit_section5_authorities(request.user):
         raise PermissionDenied
@@ -311,10 +312,26 @@ def archive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
         Section5Authority.objects.filter(is_active=True), pk=pk
     )
 
-    section5.is_active = False
-    section5.save()
+    if request.method == "POST":
+        form = ArchiveSection5AuthorityForm(request.POST, instance=section5)
 
-    return redirect(reverse("importer-edit", kwargs={"pk": section5.importer.pk}))
+        if form.is_valid():
+            section5 = form.save(commit=False)
+            section5.is_active = False
+            section5.save()
+
+            authority_archived_notification(section5, "Section 5")
+
+            return redirect(reverse("importer-edit", kwargs={"pk": section5.importer.pk}))
+    else:
+        form = ArchiveSection5AuthorityForm(instance=section5)
+
+    context = {
+        "object": section5.importer,
+        "section5": section5,
+        "form": form,
+    }
+    return render(request, "web/domains/importer/archive-section5-authority.html", context)
 
 
 @login_required
@@ -328,6 +345,8 @@ def unarchive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpRespon
     )
 
     section5.is_active = True
+    section5.archive_reason = None
+    section5.other_archive_reason = None
     section5.save()
 
     return redirect(reverse("importer-edit", kwargs={"pk": section5.importer.pk}))

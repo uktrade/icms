@@ -36,12 +36,11 @@
             Edit
           </a>
           {% if firearms_authority.is_active %}
-            <form method="post"
-                  action="{{ icms_url('importer-firearms-archive', args=[firearms_authority.pk]) }}"
-                  class="form-inline">
-              {{ csrf_input }}
-              <button type="submit" class="button small-button icon-bin">Archive</button>
-            </form>
+          <a
+            href="{{ icms_url('importer-firearms-archive', args=[firearms_authority.pk]) }}"
+            class="button small-button icon-bin">
+            Archive
+          </a>
           {% else %}
             <form method="post"
                   action="{{ icms_url('importer-firearms-unarchive', args=[firearms_authority.pk]) }}"

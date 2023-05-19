@@ -2794,3 +2794,59 @@ Access Request</h4
 Access Approval</h4
 Request Approval
 Access Request</button
+{{ firearms_authority.postcode
+{{ firearms_authority.start_date.strftime('%d-%b-%Y'
+{{ firearms_authority.further_details|nl2br
+{{ document.created_by }
+Archive Reaon
+fir/requested.html
+fir/responded.html
+TODO ICMSLST-1937 Update
+Section 5 Authorities Expiring
+the Import Case Management System
+function checkOther(element
+Select(Select
+{{ section5.start_date.strftime('%d-%b-%Y'
+{{ section5.end_date.strftime('%d-%b-%Y'
+{{ section5.further_details|nl2br }
+kwargs={'section5_pk
+Archive Reason
+FA Auth
+django.conf
+Verified Firearms Authorities Expiring
+Sec 5"
+1 importers
+Another Sec 5
+5\n\n
+{{ application_field(firearms_authority.reference
+Issuing Constabulary
+{{ application_field(firearms_authority.address|default
+{{ application_field(firearms_authority.end_date.strftime('%d-%b-%Y'
+{{ application_field(firearms_authority.further_details|nl2br
+firearms_authority.other_archive_reason %
+{ firearms_authority.other_archive_reason }}
+UTILS.getShowElementFunc("div.row_id_other_archive_reason
+otherTextArea = document.querySelector("#id_other_archive_reason
+SELECT iad.ia_id id
+impmgr.importer_authorities ia INNER JOIN
+ON iad.ia_id
+ia.id CROSS
+INTEGER
+act_quantity_xml XMLTYPE
+archive_reason_xml XMLTYPE
+SELECT ia_id firearmsauthority_id
+ia.id
+created_by_wua_id created_by_id
+last_updated_by_wua_id updated_by_id FROM impmgr.section_5_clauses ORDER BY
+SELECT ia_id section5authority_id
+{{ application_field(section5.reference
+{{ application_field(section5.postcode
+{{ application_field(section5.address|default
+{{ application_field(section5.start_date.strftime('%d-%b-%Y'
+{{ application_field(section5.end_date.strftime('%d-%b-%Y'
+Further Details
+LISTAGG(archive_reason
+ORDER BY
+LEFT
+ON ars.iad_id
+impmgr.xview_imp_auth_archive_reasons xar

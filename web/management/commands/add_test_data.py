@@ -228,7 +228,7 @@ class Command(BaseCommand):
 
     def create_icms_admin_user(self, username):
         user = self.create_user(username)
-
+        PersonalEmail.objects.create(user=user, email=user.email, portal_notifications=True)
         group = Group.objects.get(name="ILB Case Officer")
         user.groups.add(group)
 
