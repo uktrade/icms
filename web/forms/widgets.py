@@ -44,3 +44,16 @@ YesNoRadioSelectInline = RadioSelectInline(choices=((True, "Yes"), (False, "No")
 
 #  class CheckboxInput(CheckboxInput):
 #      pass
+
+
+class CheckboxSelectMultiple(widgets.CheckboxSelectMultiple):
+    option_template_name = "forms/widgets/checkbox_option.html"
+
+    def __init__(self, attrs=None, choices=()):
+        if attrs is None:
+            attrs = {}
+
+        # Used to style the `ul` and input
+        attrs["class"] = "radio-input"
+
+        super().__init__(attrs, choices)

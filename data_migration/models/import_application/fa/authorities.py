@@ -27,10 +27,23 @@ class FirearmsAuthority(MigrationBase):
     importer = models.ForeignKey(Importer, on_delete=models.PROTECT, null=False)
     act_quantity_xml = models.TextField(null=True)
     file_folder = models.ForeignKey(FileFolder, null=True, on_delete=models.SET_NULL)
+    archive_reason = models.CharField(max_length=60, null=True)
+    other_archive_reason = models.TextField(null=True)
 
     @classmethod
     def get_excludes(cls) -> list[str]:
         return super().get_excludes() + ["file_folder_id"]
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data = super().data_export(data)
+
+        archive_reason = data["archive_reason"]
+
+        if archive_reason:
+            data["archive_reason"] = archive_reason.split(",")
+
+        return data
 
 
 class FirearmsAct(MigrationBase):
@@ -100,10 +113,23 @@ class Section5Authority(MigrationBase):
     importer = models.ForeignKey(Importer, on_delete=models.PROTECT, null=False)
     clause_quantity_xml = models.TextField(null=True)
     file_folder = models.ForeignKey(FileFolder, null=True, on_delete=models.SET_NULL)
+    archive_reason = models.CharField(max_length=60, null=True)
+    other_archive_reason = models.TextField(null=True)
 
     @classmethod
     def get_excludes(cls) -> list[str]:
         return super().get_excludes() + ["file_folder_id"]
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data = super().data_export(data)
+
+        archive_reason = data["archive_reason"]
+
+        if archive_reason:
+            data["archive_reason"] = archive_reason.split(",")
+
+        return data
 
 
 class Section5Clause(MigrationBase):

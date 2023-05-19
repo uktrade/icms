@@ -1,8 +1,10 @@
 from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
 
 from web.models.mixins import Archivable
+from web.models.shared import ArchiveReasonChoices
 
 
 class Section5AuthorityManager(models.Manager):
@@ -43,6 +45,13 @@ class Section5Authority(models.Model):
     )
     files = models.ManyToManyField("web.File")
     clauses = models.ManyToManyField("Section5Clause", through="ClauseQuantity")
+    archive_reason = ArrayField(
+        models.CharField(max_length=20, choices=ArchiveReasonChoices.choices),
+        size=4,
+        blank=True,
+        null=True,
+    )
+    other_archive_reason = models.TextField(null=True, blank=True, verbose_name="Other")
 
 
 class Section5Clause(Archivable, models.Model):

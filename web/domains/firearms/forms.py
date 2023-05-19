@@ -11,8 +11,9 @@ from django.forms.widgets import CheckboxInput
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter, FilterSet
 from django_select2.forms import Select2MultipleWidget
 
-from web.forms.widgets import DateInput
+from web.forms.widgets import CheckboxSelectMultiple, DateInput
 from web.models import Office
+from web.models.shared import ArchiveReasonChoices
 
 from .models import (
     ActQuantity,
@@ -149,3 +150,20 @@ class FirearmsQuantityForm(ModelForm):
         data = super().clean()
         if data.get("infinity") and data.get("quantity"):
             self.cleaned_data.pop("quantity")
+
+
+class ArchiveFirearmsAuthorityForm(ModelForm):
+    class Meta:
+        model = FirearmsAuthority
+        fields = ["archive_reason", "other_archive_reason"]
+        widgets = {"archive_reason": CheckboxSelectMultiple(choices=ArchiveReasonChoices.choices)}
+
+    def clean(self):
+        data = super().clean()
+
+        if ArchiveReasonChoices.OTHER in data.get("archive_reason", []) and not data.get(
+            "other_archive_reason"
+        ):
+            self.add_error("other_archive_reason", "You must enter this item.")
+
+        return data

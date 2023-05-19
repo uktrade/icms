@@ -83,7 +83,7 @@ services:
         networks:
             - icms_backend
 
-    celery:
+    celery-worker:
         build:
             context: .
         command: celery --app=config.celery:app worker --loglevel=info
@@ -103,6 +103,19 @@ services:
         networks:
             - icms_backend
             - icms_public
+
+    celery-beat:
+        build:
+            context: .
+        environment:
+            - DJANGO_SETTINGS_MODULE
+        command: celery --app=config.celery:app beat --loglevel=info
+        depends_on:
+            - redis
+        volumes:
+            - .:/code
+        networks:
+            - icms_backend
 
     localstack:
         container_name: localstack_main

@@ -1,0 +1,42 @@
+{% extends "web/domains/importer/detail-firearms-authority.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block page_js %}
+  {{ super() }}
+  <script src="{{ static('web/js/components/checkbox-multi-select-other.js') }}" type="text/javascript"></script>
+{% endblock %}
+
+{% block archive %}
+  <div class="info-box info-box-info">Please select one or more archive reasons and click 'Archive'. Authority details are displayed below for review.</div>
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {% for field in form %}
+        {{ fields.field(field) }}
+    {% endfor %}
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            {% block actions %}
+              <li>
+                <button
+                  id="btn-submit"
+                  type="submit"
+                  class="primary-button button"
+                  data-confirm="Are you sure you want to archive this authority?">
+                    Archive
+                </button>
+              </li>
+              <li>
+                <button id="btn-cancel" type="submit" class="secondary-button button">Cancel</button>
+              </li>
+            {% endblock %}
+          </ul>
+        </div>
+        <div class="one columns"></div>
+      </div>
+    </div>
+  {% endcall %}
+{% endblock %}

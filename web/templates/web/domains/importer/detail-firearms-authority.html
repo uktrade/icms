@@ -1,3 +1,4 @@
+{% from "display/fields.html" import application_field %}
 {% extends "layout/sidebar.html" %}
 
 
@@ -24,123 +25,143 @@
 {% endblock %}
 
 {% block main_content %}
+  {% block archive %}
+  {% endblock %}
+
   <h3>Reference '{{ firearms_authority.reference }}'</h3>
 
-  <dl>
-    <dt class="bold">
-      Reference
-    </dt>
-    <dd>
-      {{ firearms_authority.reference }}
-    </dd>
-    <dt class="bold">
-      Postcode
-    </dt>
-    <dd>
-      {{ firearms_authority.postcode}}
-    </dd>
-    <dt class="bold">
-      Address
-    </dt>
-    <dd>
-      {{ firearms_authority.address|default("", True)|nl2br }}
-    </dd>
-    <dt class="bold">
-      Linked Offices
-    </dt>
-    <dd>
-      {% for office in linked_offices %}
-        {{ office }}
-        {% if not loop.last %}
-          <br />
+  <div class="container setoutForm">
+    {{ application_field(firearms_authority.reference, "Reference") }}
+    {{ application_field(firearms_authority.certificate_type, "Certificate Type") }}
+    {{ application_field(firearms_authority.issuing_constabulary.name, "Issuing Constabulary") }}
+    {{ application_field(firearms_authority.postcode, "Postcode") }}
+    {{ application_field(firearms_authority.address|default("", True)|nl2br, "Address") }}
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">
+          Linked Offices
+        </label>
+      </div>
+      <div class="six columns">
+        {% if linked_offices %}
+          {% for office in linked_offices %}
+            <span class="text-widget">
+              <p>{{ office }}</p>
+            </span>
+          {% endfor %}
+        {% else %}
+          <span class="text-widget">
+            <p>N/A</p>
+          </span>
         {% endif %}
-      {% else %}
-        N/A
-      {% endfor %}
-    </dd>
-    <dt class="bold">
-      Start Date
-    </dt>
-    <dd>
-      {{ firearms_authority.start_date.strftime('%d-%b-%Y') }}
-    </dd>
-    <dt class="bold">
-      End Date
-    </dt>
-    <dd>
-      {{ firearms_authority.end_date.strftime('%d-%b-%Y') }}
-    </dd>
-    <dt class="bold">
-      Further Details
-    </dt>
-    <dd>
-      {% if firearms_authority.further_details %}
-        {{ firearms_authority.further_details|nl2br }}
-      {% else %}
-        N/A
-      {% endif %}
-    </dd>
-    <dt class="bold">
-      Documents
-    </dt>
-    <dd>
-    {% if firearms_authority.files.active() %}
-      <table class="setoutList">
-        <thead>
-          <tr>
-            <th scope="col">File</th>
-            <th scope="col">Created By</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for document in firearms_authority.files.active() %}
-          <tr>
-            <td>
-              <a href="{{ icms_url('importer-firearms-view-document', kwargs={'firearms_pk': firearms_authority.pk, 'document_pk': document.pk}) }}">
-                {{ document.filename }}
-              </a>
-              <br />
-              <span class="extra-info">{{ document.file_size }}</span>
-            </td>
-            <td>
-              {{ document.created_by }}<br />
-              <span class="extra-info">{{ document.created_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</span>
-            </td>
-          </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-
-    {% else %}
-      N/A
-    {% endif %}
-    </dd>
-    <dt class="bold">
-      Firearms Acts
-    </dt>
-    <dd>
-      <table class="setoutList">
-        <thead>
-          <tr>
-            <th scope="col">Category</th>
-            <th scope="col">Quantity</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for act_quantity in firearms_authority.actquantity_set.all() %}
+      </div>
+      <div class="three columns"></div>
+    </div>
+    {{ application_field(firearms_authority.start_date.strftime('%d-%b-%Y'), "Start Date") }}
+    {{ application_field(firearms_authority.end_date.strftime('%d-%b-%Y'), "End Date") }}
+    {{ application_field(firearms_authority.further_details|nl2br or "N/A", "Further Details") }}
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Documents</label>
+      </div>
+      <div class="six columns">
+      {% if firearms_authority.files.active() %}
+        <table class="setoutList">
+          <thead>
             <tr>
-              <td>{{ act_quantity.firearmsact.act }}</td>
+              <th scope="col">File</th>
+              <th scope="col">Created By</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for document in firearms_authority.files.active() %}
+            <tr>
               <td>
-                {% if act_quantity.infinity %}
-                  Unlimited
-                {% else %}
-                  {{ act_quantity.quantity }}
-                {% endif %}
+                <a href="{{ icms_url('importer-firearms-view-document', kwargs={'firearms_pk': firearms_authority.pk, 'document_pk': document.pk}) }}">
+                  {{ document.filename }}
+                </a>
+                <br />
+                <span class="extra-info">{{ document.file_size }}</span>
+              </td>
+              <td>
+                {{ document.created_by }}<br />
+                <span class="extra-info">{{ document.created_datetime.strftime('%d-%b-%Y %H:%M:%S') }}</span>
               </td>
             </tr>
           {% endfor %}
-        </tbody>
-      </table>
-    </dd>
-  </dl>
+          </tbody>
+        </table>
+      {% else %}
+        <span class="text-widget">
+          <p>N/A</p>
+        </span>
+      {% endif %}
+      </div>
+      <div class="three columns"></div>
+    </div>
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">
+          Firearms Acts
+        </label>
+      </div>
+      <div class="six columns">
+        <table class="setoutList">
+          <thead>
+            <tr>
+              <th scope="col">Category</th>
+              <th scope="col">Quantity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for act_quantity in firearms_authority.actquantity_set.all() %}
+              <tr>
+                <td>{{ act_quantity.firearmsact.act }}</td>
+                <td>
+                  {% if act_quantity.infinity %}
+                    Unlimited
+                  {% else %}
+                    {{ act_quantity.quantity }}
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="three columns"></div>
+    </div>
+  </div>
+  {% if not firearms_authority.is_active %}
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">
+          Archive Reason
+        </label>
+      </div>
+      <div class="six columns">
+        <span class="text-widget">
+          {% for reason in firearms_authority.archive_reason %}
+             <p>{{ reason }}</p>
+          {% endfor %}
+        </span>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    {% if firearms_authority.other_archive_reason %}
+      <div class="row">
+        <div class="three columns">
+          <label class="prompt west">
+            Other
+          </label>
+        </div>
+        <div class="six columns">
+          <span class="text-widget">
+              <p>{{ firearms_authority.other_archive_reason }}</p>
+          </span>
+        </div>
+        <div class="three columns"></div>
+      </div>
+    {% endif %}
+  {% endif %}
 {% endblock %}

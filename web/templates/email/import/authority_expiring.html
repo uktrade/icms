@@ -1,0 +1,23 @@
+{% extends "email/base.html" %}
+{% block message %}
+  <p>
+    The following {{ importers.count() }} importers have one or more verified
+    {% if section_5 %}
+      Section 5 Authorities
+    {% else %}
+      Firearms Authorities issued by constabulary {{ constabulary_name }}
+    {% endif %}
+    that expire {{ expiry_date }} and may require attention:
+  </p>
+  {% for importer in importers %}
+    <p>
+      Importer name: {{ importer.name }}
+      Importer ID: {{ importer.id }}
+      {{ "Section 5" if section_5 else "Firearms" }} Authority references(s) {{ importer.authority_refs }}
+    </p>
+  {% endfor %}
+  <p>
+    You may log into the Import Case Management System and use the ''Maintain Importers'' link from the workbasket
+    to maintain verified {{ "Section 5" if section_5 else "Firearms" }} Authorities.
+  </p>
+{% endblock %}

@@ -232,7 +232,7 @@ class TestCreateSection5View(AuthTestCase):
 
         section5 = Section5Authority.objects.get()
         assert self.importer_office == section5.linked_offices.first()
-        assert response["Location"] == reverse("importer-section5-edit", kwargs={"pk": section5.id})
+        assert response["Location"] == reverse("importer-edit", kwargs={"pk": self.importer.pk})
 
 
 class TestEditSection5View(AuthTestCase):
@@ -318,9 +318,9 @@ class TestArchiveSection5View(AuthTestCase):
         self.section5.refresh_from_db()
         assert not self.section5.is_active
 
-    def test_get_forbidden(self):
+    def test_get(self):
         response = self.ilb_admin_client.get(self.url)
-        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+        assert response.status_code == HTTPStatus.OK
 
 
 class TestUnarchiveSection5View(AuthTestCase):

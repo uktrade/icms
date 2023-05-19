@@ -268,19 +268,27 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
 
     fa_auth1: web.FirearmsAuthority
     fa_auth2: web.FirearmsAuthority
-    fa_auth1, fa_auth2 = web.FirearmsAuthority.objects.order_by("pk")
+    fa_auth1, fa_auth2 = web.FirearmsAuthority.objects.filter(is_active=True).order_by("pk")
     assert fa_auth1.linked_offices.count() == 2
     assert fa_auth1.files.count() == 1
     assert fa_auth2.linked_offices.count() == 1
     assert fa_auth2.files.count() == 2
 
+    archived_fa_auth = web.FirearmsAuthority.objects.get(is_active=False)
+    assert archived_fa_auth.archive_reason == ["OTHER", "WITHDRAWN"]
+    assert archived_fa_auth.other_archive_reason == "Given Reason"
+
     sec5_auth1: web.Section5Authority
     sec5_auth2: web.Section5Authority
-    sec5_auth1, sec5_auth2 = web.Section5Authority.objects.order_by("pk")
+    sec5_auth1, sec5_auth2 = web.Section5Authority.objects.filter(is_active=True).order_by("pk")
     assert sec5_auth1.linked_offices.count() == 2
     assert sec5_auth1.files.count() == 1
     assert sec5_auth2.linked_offices.count() == 1
     assert sec5_auth2.files.count() == 1
+
+    archived_sec_5 = web.Section5Authority.objects.get(is_active=False)
+    assert archived_sec_5.archive_reason == ["REFUSED"]
+    assert archived_sec_5.other_archive_reason is None
 
     assert web.SILApplication.objects.count() == 3
     sil1, sil2, sil3 = web.SILApplication.objects.order_by("pk")

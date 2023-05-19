@@ -9,3 +9,7 @@ from web.domains.case.tasks import (  # NOQA
 )
 from web.notify.email import send_email  # NOQA
 from web.notify.email import send_mailshot  # NOQA
+from web.notify.notify import (  # NOQA
+    send_firearms_authority_expiry_notification,
+    send_section_5_expiry_notification,
+)
