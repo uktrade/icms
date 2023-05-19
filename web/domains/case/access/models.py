@@ -34,7 +34,11 @@ class AccessRequest(Process):
     organisation_name = models.CharField(max_length=100, blank=False, null=False)
     organisation_address = models.TextField()
     organisation_registered_number = models.CharField(
-        max_length=100, blank=True, default="", verbose_name="Registered Number"
+        max_length=100,
+        blank=True,
+        default="",
+        verbose_name="Registered Number",
+        help_text="Companies House Company Number",
     )
     request_reason = models.TextField(
         verbose_name="What are you importing and where are you importing it from?"
