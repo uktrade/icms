@@ -12,7 +12,7 @@ django-ratelimit==3.0.1
 django-recaptcha==3.0.0
 django-redis==5.2.0
 django-select2==7.10.1
-django-ses==1.0.3
+django-ses==3.5.0
 django-structlog==1.6.2
 Django==4.1.9
 elastic-apm==6.15.1
