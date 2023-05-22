@@ -74,7 +74,7 @@ ACTIVE_TASK_ANNOTATION = ArrayAgg(
 IMPORT_HAS_WITHDRAWAL_ANNOTATION = Exists(
     WithdrawApplication.objects.filter(
         import_application=OuterRef("pk"),
-        status=WithdrawApplication.STATUS_OPEN,
+        status=WithdrawApplication.Statuses.OPEN,
         is_active=True,
     )
 )
@@ -83,7 +83,7 @@ IMPORT_HAS_WITHDRAWAL_ANNOTATION = Exists(
 EXPORT_HAS_WITHDRAWAL_ANNOTATION = Exists(
     WithdrawApplication.objects.filter(
         export_application=OuterRef("pk"),
-        status=WithdrawApplication.STATUS_OPEN,
+        status=WithdrawApplication.Statuses.OPEN,
         is_active=True,
     )
 )

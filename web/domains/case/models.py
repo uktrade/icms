@@ -160,14 +160,11 @@ class CaseNote(models.Model):
 
 
 class WithdrawApplication(models.Model):
-    STATUS_OPEN = "open"
-    STATUS_REJECTED = "rejected"
-    STATUS_ACCEPTED = "accepted"
-
-    OPEN = (STATUS_OPEN, "OPEN")
-    REJECTED = (STATUS_REJECTED, "REJECTED")
-    ACCEPTED = (STATUS_ACCEPTED, "ACCEPTED")
-    STATUSES = (OPEN, REJECTED, ACCEPTED)
+    class Statuses(TypedTextChoices):
+        OPEN = ("open", "OPEN")
+        REJECTED = ("rejected", "REJECTED")
+        ACCEPTED = ("accepted", "ACCEPTED")
+        DELETED = ("deleted", "DELETED")
 
     # alternative to having two foreignkeys here would be to have
     # ManyToMany(WithdrawApplication, ...) on both Import/ExportApplication, but
@@ -188,7 +185,7 @@ class WithdrawApplication(models.Model):
     )
 
     is_active = models.BooleanField(default=True)
-    status = models.CharField(max_length=10, choices=STATUSES, default=STATUS_OPEN)
+    status = models.CharField(max_length=10, choices=Statuses.choices, default=Statuses.OPEN)
     reason = models.TextField()
     request_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"

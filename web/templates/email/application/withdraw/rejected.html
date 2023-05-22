@@ -1,0 +1,8 @@
+{% extends "email/base.html" %}
+
+{% block message %}
+
+<p>The withdrawal request for case {{ application.reference }} has been rejected for the following reason:</p>
+<p>{{ withdrawal_reason }}</p>
+
+{% endblock %}

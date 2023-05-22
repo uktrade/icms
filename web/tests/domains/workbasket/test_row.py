@@ -294,7 +294,9 @@ def _create_fir_withdrawal(app, importer_one_contact):
         process_type=FurtherInformationRequest.PROCESS_TYPE, status=FurtherInformationRequest.OPEN
     )
 
-    app.withdrawals.create(status=WithdrawApplication.STATUS_OPEN, request_by=importer_one_contact)
+    app.withdrawals.create(
+        status=WithdrawApplication.Statuses.OPEN, request_by=importer_one_contact
+    )
 
 
 def _create_update_request(app):

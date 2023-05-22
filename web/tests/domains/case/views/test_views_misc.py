@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertContains, assertRedirects, assertTemplateUsed
 
-from web.domains.case.models import DocumentPackBase
+from web.domains.case.models import DocumentPackBase, WithdrawApplication
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.flow.errors import ProcessStateError
@@ -107,10 +107,95 @@ def test_manage_withdrawals_get(
     assert resp.context["current_withdrawal"] is None
 
 
-# def test_manage_withdrawals_post():
-#     # TODO: Add test for approving a withdrawal
-#     # TODO: Add test to reject a withdrawal
-#     ...
+@pytest.mark.parametrize(
+    "status,withdrawal_response,exp_email_subject",
+    [
+        (WithdrawApplication.Statuses.ACCEPTED, "", "Withdrawal Request Accepted"),
+        (
+            WithdrawApplication.Statuses.REJECTED,
+            "Withdrawn",
+            "Withdrawal Request Rejected",  # /PS-IGNORE
+        ),
+    ],
+)
+def test_manage_withdrawals_post(
+    ilb_admin_client,
+    wood_app_submitted,
+    importer_one_contact,
+    status,
+    withdrawal_response,
+    exp_email_subject,
+):
+    withdrawal = wood_app_submitted.withdrawals.create(
+        status=WithdrawApplication.Statuses.OPEN, request_by=importer_one_contact
+    )
+
+    resp = ilb_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
+    assertRedirects(resp, CaseURLS.manage(wood_app_submitted.pk), HTTPStatus.FOUND)
+
+    # Check withdrawal present
+    _check_withdrawal_visible(ilb_admin_client, CaseURLS.manage_withdrawals(wood_app_submitted.pk))
+
+    # Update withdrawal status
+    data = {"status": status, "response": withdrawal_response}
+    resp = ilb_admin_client.post(CaseURLS.manage_withdrawals(wood_app_submitted.pk), data)
+    assert resp.status_code == HTTPStatus.FOUND
+
+    # Check withdrawal status has been updated
+    withdrawal.refresh_from_db()
+    assert withdrawal.status == status
+
+    sent_to = importer_one_contact.personal_emails.first().email
+    _check_withdrawal_email_sent(exp_email_subject, [sent_to])
+
+
+def test_request_withdrawal(importer_client, wood_app_submitted, importer_one_contact):
+    assert wood_app_submitted.withdrawals.count() == 0
+    post = {"reason": "No longer required"}
+    resp = importer_client.post(CaseURLS.withdrawal_case(wood_app_submitted.pk), post)
+    assertRedirects(resp, reverse("workbasket"), HTTPStatus.FOUND)
+    assert wood_app_submitted.withdrawals.count() == 1
+    _check_withdrawal_email_sent(
+        "Withdrawal Request",
+        ["ilb_admin_user@email.com", "ilb_admin_two@email.com"],  # /PS-IGNORE
+    )
+
+
+def test_archive_withdrawal(importer_client, wood_app_submitted, importer_one_contact):
+    withdrawal = wood_app_submitted.withdrawals.create(
+        status=WithdrawApplication.Statuses.OPEN, request_by=importer_one_contact
+    )
+    # Check withdrawal present
+    _check_withdrawal_visible(importer_client, CaseURLS.withdrawal_case(wood_app_submitted.pk))
+
+    resp = importer_client.post(
+        CaseURLS.archive_withdrawal(wood_app_submitted.pk, withdrawal.pk), {}
+    )
+    assertRedirects(resp, reverse("workbasket"), HTTPStatus.FOUND)
+
+    # Check withdrawal status has been updated
+    withdrawal.refresh_from_db()
+    assert withdrawal.status == WithdrawApplication.Statuses.DELETED
+    assert withdrawal.is_active is False
+
+    _check_withdrawal_email_sent(
+        "Withdrawal Request Cancelled",
+        ["ilb_admin_user@email.com", "ilb_admin_two@email.com"],  # /PS-IGNORE
+    )
+
+
+def _check_withdrawal_visible(client, url):
+    resp = client.get(url)
+    assert resp.status_code == HTTPStatus.OK
+    assert resp.context["withdrawals"].count() == 1
+
+
+def _check_withdrawal_email_sent(subject, sent_to):
+    outbox = mail.outbox
+    assert len(outbox) == len(sent_to)
+    sent_email = outbox[0]
+    assert sent_email.to[0] in sent_to
+    assert sent_email.subject.startswith(subject)
 
 
 def test_start_authorisation_approved_application_has_errors(ilb_admin_client, wood_application):
