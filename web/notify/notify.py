@@ -7,6 +7,7 @@ from django.contrib.postgres.aggregates import StringAgg
 from django.utils import timezone
 
 from config.celery import app
+from web.auth.utils import get_ilb_admin_users
 from web.models import (
     Constabulary,
     FirearmsAuthority,
@@ -38,7 +39,7 @@ def send_case_officer_notification(subject, template, context=None):
     """Renders given email template and sends to case officers."""
     html_message = utils.render_email(template, context)
     message_text = html2text.html2text(html_message)
-    email.send_to_case_officers.delay(subject, message_text, html_message)
+    email.send_to_contacts(subject, message_text, get_ilb_admin_users(), html_message)
 
 
 def update_request(subject, content, contacts, cc_list):

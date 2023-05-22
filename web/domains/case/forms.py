@@ -84,8 +84,8 @@ class WithdrawForm(forms.ModelForm):
 class WithdrawResponseForm(forms.ModelForm):
     WITHDRAW_STATUSES = [
         ("", "--------"),
-        (WithdrawApplication.STATUS_ACCEPTED, "Accepted"),
-        (WithdrawApplication.STATUS_REJECTED, "Rejected"),
+        (WithdrawApplication.Statuses.ACCEPTED, "Accepted"),
+        (WithdrawApplication.Statuses.REJECTED, "Rejected"),
     ]
 
     status = forms.ChoiceField(label="Withdraw Decision", choices=WITHDRAW_STATUSES)
@@ -102,7 +102,7 @@ class WithdrawResponseForm(forms.ModelForm):
         status = cleaned_data.get("status")
         response = cleaned_data.get("response")
 
-        if status == WithdrawApplication.STATUS_REJECTED and not response:
+        if status == WithdrawApplication.Statuses.REJECTED and not response:
             self.add_error("response", "This field is required when Withdrawal is refused")
 
         return cleaned_data

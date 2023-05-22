@@ -2,7 +2,13 @@ import pytest
 from django.core import mail
 from django.test import TestCase
 
-from web.models import AlternativeEmail, Importer, PersonalEmail, User
+from web.models import (
+    AlternativeEmail,
+    Importer,
+    PersonalEmail,
+    User,
+    WithdrawApplication,
+)
 from web.notify import constants, email
 from web.permissions import organisation_add_contact
 from web.tests.domains.exporter.factory import ExporterFactory
@@ -442,3 +448,60 @@ def test_send_reassign_email_with_comment(ilb_admin_client, fa_sil_app_submitted
     assert f"ICMS Case Ref. { app.reference } has been assigned to you." in m.body
     assert "Handover Details" in m.body
     assert "Some comment" in m.body
+
+
+@pytest.mark.parametrize(
+    "withdrawal_status,exp_num_emails,exp_subject,exp_in_body,exp_sent_to",
+    [
+        ("TEST", 0, None, None, None),
+        (
+            WithdrawApplication.Statuses.OPEN,
+            2,
+            "Withdrawal Request: ",
+            "A withdrawal request has been submitted",
+            "ilb_admin_user@email.com",  # /PS-IGNORE
+        ),
+        (
+            WithdrawApplication.Statuses.ACCEPTED,
+            1,
+            "Withdrawal Request Accepted: ",
+            "This case has\nbeen withdrawn.",
+            "E1_main_contact@example.com",  # /PS-IGNORE
+        ),
+        (
+            WithdrawApplication.Statuses.REJECTED,
+            1,
+            "Withdrawal Request Rejected: ",  # /PS-IGNORE
+            "has been rejected for the\nfollowing reason:",
+            "E1_main_contact@example.com",  # /PS-IGNORE
+        ),
+        (
+            WithdrawApplication.Statuses.DELETED,
+            2,
+            "Withdrawal Request Cancelled: ",
+            "has been cancelled.",
+            "ilb_admin_user@email.com",  # /PS-IGNORE
+        ),
+    ],
+)
+def test_send_withdrawal_email(
+    com_app_submitted,
+    importer_one_contact,
+    withdrawal_status,
+    exp_num_emails,
+    exp_subject,
+    exp_in_body,
+    exp_sent_to,
+):
+    withdrawal = com_app_submitted.withdrawals.create(
+        status=withdrawal_status, request_by=importer_one_contact
+    )
+
+    email.send_withdrawal_email(withdrawal)
+    outbox = mail.outbox
+    assert len(outbox) == exp_num_emails
+    if exp_num_emails:
+        sent_email = outbox[exp_num_emails - 1]
+        assert sent_email.to == [exp_sent_to]
+        assert sent_email.subject == f"{exp_subject}{com_app_submitted.reference}"
+        assert exp_in_body in sent_email.body

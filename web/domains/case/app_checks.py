@@ -364,7 +364,7 @@ def _get_withdrawals_errors(application: ImpOrExp, case_type: str) -> list[PageE
     errors = []
 
     open_withdrawls = application.withdrawals.filter(is_active=True).filter(
-        status=models.WithdrawApplication.STATUS_OPEN
+        status=models.WithdrawApplication.Statuses.OPEN
     )
     for _ in open_withdrawls:
         withdrawal_errors = PageErrors(

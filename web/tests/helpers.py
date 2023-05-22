@@ -68,8 +68,23 @@ class CaseURLS:
     @staticmethod
     def manage_withdrawals(application_pk: int, case_type: str = "import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
-
         return reverse("case:manage-withdrawals", kwargs=kwargs)
+
+    @staticmethod
+    def archive_withdrawal(
+        application_pk: int, withdrawal_pk: int, case_type: str = "import"
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "withdrawal_pk": withdrawal_pk,
+            "case_type": case_type,
+        }
+        return reverse("case:archive-withdrawal", kwargs=kwargs)
+
+    @staticmethod
+    def withdrawal_case(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+        return reverse("case:withdraw-case", kwargs=kwargs)
 
     # web/domains/case/views/views_update_request.py urls
     @staticmethod

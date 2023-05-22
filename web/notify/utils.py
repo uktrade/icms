@@ -1,7 +1,6 @@
 import itertools
 
 from django.conf import settings
-from django.contrib.auth.models import Permission
 from django.db.models import QuerySet
 from django.template.loader import render_to_string
 
@@ -38,13 +37,6 @@ def get_notification_emails(user):
             emails.append(email.email)
 
     return emails
-
-
-def get_case_officers_emails():
-    """Return a list of emails for import case officers"""
-    return list(
-        Permission.objects.get(codename="ilb_admin").user_set.values_list("email", flat=True)
-    )
 
 
 def create_case_email(

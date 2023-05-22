@@ -30,6 +30,7 @@ from web.notify.email import (
     send_database_email,
     send_reassign_email,
     send_refused_email,
+    send_withdrawal_email,
 )
 from web.permissions import AppChecker, Perms, organisation_get_contacts
 from web.types import AuthenticatedHttpRequest
@@ -112,7 +113,7 @@ def withdraw_case(
                 elif case_type == "export":
                     withdrawal.export_application = application
 
-                withdrawal.status = WithdrawApplication.STATUS_OPEN
+                withdrawal.status = WithdrawApplication.Statuses.OPEN
                 withdrawal.request_by = request.user
                 withdrawal.save()
 
@@ -123,6 +124,7 @@ def withdraw_case(
                     request,
                     "You have requested that this application be withdrawn. Your request has been sent to ILB.",
                 )
+                send_withdrawal_email(withdrawal)
 
                 return redirect(reverse("workbasket"))
         else:
@@ -163,9 +165,11 @@ def archive_withdrawal(
         )
 
         withdrawal = get_object_or_404(application.withdrawals, pk=withdrawal_pk)
+        withdrawal.status = WithdrawApplication.Statuses.DELETED
         withdrawal.is_active = False
         withdrawal.save()
 
+        send_withdrawal_email(withdrawal)
         messages.success(
             request, "You have retracted your request for this application to be withdrawn."
         )
@@ -190,7 +194,7 @@ def manage_withdrawals(
         readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
 
         withdrawals = application.withdrawals.filter(is_active=True).order_by("-created_datetime")
-        current_withdrawal = withdrawals.filter(status=WithdrawApplication.STATUS_OPEN).first()
+        current_withdrawal = withdrawals.filter(status=WithdrawApplication.Statuses.OPEN).first()
 
         if request.method == "POST" and not readonly_view:
             task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
@@ -203,7 +207,7 @@ def manage_withdrawals(
                 withdrawal.save()
 
                 # withdrawal accepted - case is closed, else case still open
-                if withdrawal.status == WithdrawApplication.STATUS_ACCEPTED:
+                if withdrawal.status == WithdrawApplication.Statuses.ACCEPTED:
                     if application.status == ImpExpStatus.VARIATION_REQUESTED:
                         application.status = ImpExpStatus.COMPLETED
                         # Close the open variation request if we are withdrawing the application / variation
@@ -221,9 +225,10 @@ def manage_withdrawals(
 
                     document_pack.pack_draft_archive(application)
                     end_process_task(task, request.user)
-
+                    send_withdrawal_email(withdrawal)
                     return redirect(reverse("workbasket"))
                 else:
+                    send_withdrawal_email(withdrawal)
                     return redirect(
                         reverse(
                             "case:manage-withdrawals",

@@ -8,9 +8,10 @@ from django.db.models import QuerySet
 from django.utils import timezone
 
 from config.celery import app
+from web.auth.utils import get_ilb_admin_users
 from web.domains.case.types import ImpOrExp
 from web.domains.template.utils import get_email_template_subject_body
-from web.models import CaseEmail, Exporter, Importer, User
+from web.models import CaseEmail, Exporter, Importer, User, WithdrawApplication
 from web.permissions import get_org_obj_permissions, organisation_get_contacts
 from web.utils.s3 import get_file_from_s3, get_s3_client
 
@@ -102,10 +103,16 @@ def send_to_application_contacts(
     send_to_contacts(subject, message, contacts, html_message)
 
 
-@app.task(name="web.notify.email.send_to_case_officers")
-def send_to_case_officers(subject, message, html_message=None):
-    recipients = utils.get_case_officers_emails()
-    send_email.delay(subject, message, recipients, html_message=html_message)
+def send_to_case_officers(application, subject, message, html_message=None):
+    if application.case_owner:
+        send_email.delay(
+            subject,
+            message,
+            utils.get_notification_emails(application.case_owner),
+            html_message=html_message,
+        )
+    else:
+        send_to_contacts(subject, message, get_ilb_admin_users(), html_message)
 
 
 @app.task(name="web.notify.email.send_mailshot")
@@ -176,6 +183,39 @@ def send_html_email(
         send_to_contacts(context["subject"], message_text, contacts, message_html)
     else:
         send_to_application_contacts(application, context["subject"], message_text, message_html)
+
+
+def get_withdrawal_email_subject(withdrawal: WithdrawApplication, application: ImpOrExp) -> str:
+    status = ""
+    if withdrawal.status == WithdrawApplication.Statuses.DELETED:
+        status = " Cancelled"
+    elif withdrawal.status != WithdrawApplication.Statuses.OPEN:
+        status = " " + withdrawal.get_status_display().title()
+    return f"Withdrawal Request{status}: {application.reference}"
+
+
+def send_withdrawal_email(withdrawal: WithdrawApplication) -> None:
+    contacts = None
+
+    if withdrawal.status not in WithdrawApplication.Statuses:
+        return
+
+    if withdrawal.status in [
+        WithdrawApplication.Statuses.OPEN,
+        WithdrawApplication.Statuses.DELETED,
+    ]:
+        contacts = get_ilb_admin_users()
+
+    application = withdrawal.export_application or withdrawal.import_application
+    subject = get_withdrawal_email_subject(withdrawal, application)
+
+    context = {
+        "withdrawal_reason": withdrawal.response,
+        "subject": subject,
+        "application": application,
+    }
+    template_name = f"email/application/withdraw/{withdrawal.status}.html"
+    send_html_email(application, template_name, context, contacts=contacts)
 
 
 def send_database_email(application: ImpOrExp, template_name: DatabaseEmailTemplate) -> None:
