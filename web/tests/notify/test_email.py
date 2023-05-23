@@ -8,6 +8,7 @@ from web.permissions import organisation_add_contact
 from web.tests.domains.exporter.factory import ExporterFactory
 from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.user.factory import UserFactory
+from web.tests.helpers import CaseURLS
 
 # TODO reimplement mailshot tests with ICMSLST-1968
 
@@ -406,3 +407,38 @@ def test_send_database_email(com_app_submitted):
     assert (
         f"Processing on ICMS Case Reference {com_app_submitted.reference} has been stopped"
     ) in sent_email.body
+
+
+def test_send_reassign_email(ilb_admin_client, fa_sil_app_submitted):
+    app = fa_sil_app_submitted
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+    app.refresh_from_db()
+    email.send_reassign_email(app, "")
+    outbox = mail.outbox
+
+    assert len(outbox) == 1
+
+    m = outbox[0]
+
+    assert m.to == ["ilb_admin_user@email.com"]  # /PS-IGNORE
+    assert m.subject == f"ICMS Case Ref. {app.reference} has been assigned to you"
+    assert f"ICMS Case Ref. { app.reference } has been assigned to you." in m.body
+    assert "Handover Details" not in m.body
+
+
+def test_send_reassign_email_with_comment(ilb_admin_client, fa_sil_app_submitted):
+    app = fa_sil_app_submitted
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+    app.refresh_from_db()
+    email.send_reassign_email(app, "Some comment")
+    outbox = mail.outbox
+
+    assert len(outbox) == 1
+
+    m = outbox[0]
+
+    assert m.to == ["ilb_admin_user@email.com"]  # /PS-IGNORE
+    assert m.subject == f"ICMS Case Ref. {app.reference} has been assigned to you"
+    assert f"ICMS Case Ref. { app.reference } has been assigned to you." in m.body
+    assert "Handover Details" in m.body
+    assert "Some comment" in m.body

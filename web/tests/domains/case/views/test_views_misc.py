@@ -3,6 +3,7 @@ from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import pytest
+from django.core import mail
 from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertContains, assertRedirects, assertTemplateUsed
@@ -570,6 +571,78 @@ class TestViewIssuedCaseDocumentsView:
         assertContains(response, "<h3>Issued documents (15-Jun-2020 11:44)</h3>")
         assertContains(response, "Firearms and Ammunition Cover Letter")
         assertContains(response, "Firearms and Ammunition Licence")
+
+
+def _test_reassign_ownership_view(ilb_admin_client, ilb_admin_user, ilb_admin_two, app, case_type):
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk, case_type=case_type))
+    app.refresh_from_db()
+
+    assert app.case_owner == ilb_admin_user
+
+    post_data = {"case_owner": ilb_admin_two.id, "comment": ""}
+    ilb_admin_client.post(CaseURLS.reassign_ownership(app.pk, case_type=case_type), post_data)
+    app.refresh_from_db()
+    outbox = mail.outbox
+
+    assert app.case_owner == ilb_admin_two
+    assert app.case_notes.count() == 0
+    assert len(outbox) == 0
+
+    post_data = {"case_owner": ilb_admin_user.id, "comment": "A comment", "email_assignee": "on"}
+    ilb_admin_client.post(CaseURLS.reassign_ownership(app.pk, case_type=case_type), post_data)
+    app.refresh_from_db()
+
+    assert app.case_owner == ilb_admin_user
+    assert app.case_notes.count() == 1
+    assert app.case_notes.get(note="A comment")
+    assert len(outbox) == 1
+    assert outbox[0].to == ["ilb_admin_user@email.com"]  # /PS-IGNORE
+
+
+def test_import_reassign_ownership_view(
+    ilb_admin_client, ilb_admin_user, ilb_admin_two, fa_sil_app_submitted
+):
+    _test_reassign_ownership_view(
+        ilb_admin_client, ilb_admin_user, ilb_admin_two, fa_sil_app_submitted, "import"
+    )
+
+
+def test_export_reassign_ownership_view(
+    ilb_admin_client, ilb_admin_user, ilb_admin_two, com_app_submitted
+):
+    _test_reassign_ownership_view(
+        ilb_admin_client, ilb_admin_user, ilb_admin_two, com_app_submitted, "export"
+    )
+
+
+def _test_reassign_ownership_view_invalid(ilb_admin_client, ilb_admin_user, fa_sil_submitted_app):
+    app = fa_sil_submitted_app
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+    app.refresh_from_db()
+
+    assert app.case_owner == ilb_admin_user
+
+    # Check unable to reassign to current case owner
+    post_data = {"case_owner": ilb_admin_user.id, "comment": "A comment", "email_assignee": "on"}
+    resp = ilb_admin_client.post(CaseURLS.reassign_ownership(app.pk), post_data)
+    app.refresh_from_db()
+
+    assert resp.status_code == 200
+    assert app.case_notes.count() == 0
+
+    outbox = mail.outbox
+    assert len(outbox) == 0
+
+    # Check unable to reassign to None
+    post_data = {"case_owner": "", "comment": "", "email_assignee": "on"}
+    resp = ilb_admin_client.post(CaseURLS.reassign_ownership(app.pk), post_data)
+    app.refresh_from_db()
+
+    assert resp.status_code == 200
+    assert app.case_notes.count() == 0
+
+    outbox = mail.outbox
+    assert len(outbox) == 0
 
 
 class TestClearIssuedCaseDocumentsFromWorkbasketView:

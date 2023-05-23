@@ -47,6 +47,11 @@ class CaseURLS:
 
         return reverse("case:take-ownership", kwargs=kwargs)
 
+    def reassign_ownership(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:reassign-ownership", kwargs=kwargs)
+
     @staticmethod
     def manage(application_pk: int, case_type: str = "import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}

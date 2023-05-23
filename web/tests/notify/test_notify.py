@@ -89,9 +89,9 @@ def test_send_firearms_authority_expiry_notification(ilb_admin_client, importer)
     notify.send_firearms_authority_expiry_notification()
 
     outbox = mail.outbox
-    assert len(outbox) == 1
+    assert len(outbox) == 2
 
-    m = outbox[0]
+    m = outbox[1]
     assert m.to == ["ilb_admin_user@email.com"]  # /PS-IGNORE
     assert m.subject.startswith("Verified Firearms Authorities Expiring")
     assert f"issued by constabulary {constabulary.name} that expire" in m.body
@@ -130,9 +130,9 @@ def test_send_section_5_authority_expiry_notification(ilb_admin_client, importer
     notify.send_section_5_expiry_notification()
 
     outbox = mail.outbox
-    assert len(outbox) == 1
+    assert len(outbox) == 2
 
-    m = outbox[0]
+    m = outbox[1]
     assert m.to == ["ilb_admin_user@email.com"]  # /PS-IGNORE
     assert m.subject.startswith("Verified Section 5 Authorities Expiring")
     assert "The following 1 importers have one or more verified Section 5 Authorities" in m.body
@@ -166,9 +166,9 @@ def test_firearms_authority_archived_notification(ilb_admin_client, importer):
     assert resp.status_code == 302
 
     outbox = mail.outbox
-    assert len(outbox) == 1
+    assert len(outbox) == 2
 
-    m = outbox[0]
+    m = outbox[1]
     assert m.to == ["ilb_admin_user@email.com"]  # /PS-IGNORE
     assert m.subject.startswith(
         f"Importer {importer.id} Verified Firearms Authority FA Auth Archived"
@@ -202,9 +202,9 @@ def test_section_5_authority_archived_notification(ilb_admin_client, importer):
     assert resp.status_code == 302
 
     outbox = mail.outbox
-    assert len(outbox) == 1
+    assert len(outbox) == 2
 
-    m = outbox[0]
+    m = outbox[1]
     assert m.to == ["ilb_admin_user@email.com"]  # /PS-IGNORE
     assert m.subject.startswith(
         f"Importer {importer.id} Verified Section 5 Authority Sec 5 Archived"

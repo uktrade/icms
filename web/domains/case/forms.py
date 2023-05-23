@@ -308,7 +308,17 @@ class ReassignOwnershipBaseForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields["case_owner"].queryset = get_ilb_admin_users()
+        self.fields["case_owner"].queryset = get_ilb_admin_users().exclude(
+            id=self.instance.case_owner_id
+        )
+
+    def clean_case_owner(self):
+        case_owner = self.cleaned_data["case_owner"]
+
+        if not case_owner:
+            raise forms.ValidationError("Please select a user to reassign the case to.")
+
+        return case_owner
 
 
 class ReassignOwnershipImport(ReassignOwnershipBaseForm):
