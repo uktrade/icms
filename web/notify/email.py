@@ -1,8 +1,10 @@
 from collections.abc import Collection
+from typing import Any
 
 import html2text
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
+from django.db.models import QuerySet
 from django.utils import timezone
 
 from config.celery import app
@@ -35,6 +37,15 @@ def send_email(
     message.send()
 
 
+def send_to_contacts(
+    subject: str, message: str, contacts: QuerySet[User], html_message: str | None = None
+) -> None:
+    for contact in contacts:
+        send_email.delay(
+            subject, message, utils.get_notification_emails(contact), html_message=html_message
+        )
+
+
 def send_to_importer_contacts(
     importer: Importer, subject: str, message: str, html_message: str | None = None
 ) -> None:
@@ -52,12 +63,7 @@ def send_to_importer_contacts(
 
     obj_perms = get_org_obj_permissions(importer)
     contacts = organisation_get_contacts(importer, perms=[obj_perms.is_contact.codename])
-
-    # Importer organisation
-    for contact in contacts:
-        send_email.delay(
-            subject, message, utils.get_notification_emails(contact), html_message=html_message
-        )
+    send_to_contacts(subject, message, contacts, html_message)
 
 
 def send_to_all_importers(subject: str, message: str, html_message: str | None = None) -> None:
@@ -73,11 +79,7 @@ def send_to_exporter_contacts(
 
     # TODO ICMSLST-1968 is_contact perm deprecated
     contacts = organisation_get_contacts(exporter, perms=[obj_perms.is_contact.codename])
-
-    for contact in contacts:
-        send_email.delay(
-            subject, message, utils.get_notification_emails(contact), html_message=html_message
-        )
+    send_to_contacts(subject, message, contacts, html_message)
 
 
 def send_to_all_exporters(subject: str, message: str, html_message: str | None = None) -> None:
@@ -97,10 +99,7 @@ def send_to_application_contacts(
     obj_perms = get_org_obj_permissions(org)
     contacts = organisation_get_contacts(org, perms=[obj_perms.edit.codename])
 
-    for contact in contacts:
-        send_email.delay(
-            subject, message, utils.get_notification_emails(contact), html_message=html_message
-        )
+    send_to_contacts(subject, message, contacts, html_message)
 
 
 @app.task(name="web.notify.email.send_to_case_officers")
@@ -147,9 +146,36 @@ def send_refused_email(application: ImpOrExp) -> None:
         "subject": f"Application reference {application.reference} has been refused by ILB.",
     }
     template = "email/application/refused.html"
+    send_html_email(application, template, context)
+
+
+def send_reassign_email(application: ImpOrExp, comment: str) -> None:
+    context = {
+        "subject": f"ICMS Case Ref. {application.reference} has been assigned to you",
+        "comment": comment,
+        "reference": application.reference,
+    }
+    send_html_email(
+        application,
+        "email/application/reassigned.html",
+        context,
+        [application.case_owner],
+    )
+
+
+def send_html_email(
+    application: ImpOrExp,
+    template: str,
+    context: dict[str, Any],
+    contacts: list[User] | None = None,
+):
     message_html = utils.render_email(template, context)
     message_text = html2text.html2text(message_html)
-    send_to_application_contacts(application, context["subject"], message_text, message_html)
+
+    if contacts:
+        send_to_contacts(context["subject"], message_text, contacts, message_html)
+    else:
+        send_to_application_contacts(application, context["subject"], message_text, message_html)
 
 
 def send_database_email(application: ImpOrExp, template_name: DatabaseEmailTemplate) -> None:

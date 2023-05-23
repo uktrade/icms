@@ -109,6 +109,7 @@ admin_urls = [
     path("manage/", views_misc.manage_case, name="manage"),
     path("take-ownership/", views_misc.take_ownership, name="take-ownership"),
     path("release-ownership/", views_misc.release_ownership, name="release-ownership"),
+    path("reassign-ownership/", views_misc.reassign_ownership, name="reassign-ownership"),
     path("manage-withdrawals/", views_misc.manage_withdrawals, name="manage-withdrawals"),
 ]
 

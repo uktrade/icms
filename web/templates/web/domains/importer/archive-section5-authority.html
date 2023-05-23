@@ -30,7 +30,12 @@
                 </button>
               </li>
               <li>
-                <button id="btn-cancel" type="submit" class="secondary-button button">Cancel</button>
+                <a
+                  href="{{ icms_url('importer-edit', kwargs={'pk': section5.importer.pk}) }}"
+                  id="btn-cancel"
+                  class="secondary-button button">
+                    Cancel
+                </a>
               </li>
             {% endblock %}
           </ul>
