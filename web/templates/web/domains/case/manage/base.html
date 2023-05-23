@@ -43,7 +43,7 @@
 
       {# TODO: Consider writing a function to return case actions when Reassign and Quick Issue are implemented. #}
       {# This template would then only be responsible for iterating over the actions. #}
-      <a href="#" class="button">Reassign</a>
+      <a href="{{ icms_url('case:reassign-ownership', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}" class="button">Reassign</a>
       <a href="#" class="button primary-button" disabled>Quick Issue</a>
     {% endif %}
   {% endif %}

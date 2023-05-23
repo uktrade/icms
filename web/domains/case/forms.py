@@ -4,6 +4,7 @@ from django import forms
 from django.contrib.auth import authenticate
 from django_select2 import forms as s2forms
 
+from web.auth.utils import get_ilb_admin_users
 from web.domains.case.widgets import CheckboxSelectMultipleTable
 from web.domains.file.utils import ICMSFileField
 from web.forms.mixins import OptionalFormMixin
@@ -285,3 +286,38 @@ class RevokeApplicationForm(forms.Form):
         if readonly_form:
             for f in self.fields:
                 self.fields[f].disabled = True
+
+
+class ReassignOwnershipBaseForm(forms.ModelForm):
+    email_assignee = forms.fields.BooleanField(
+        required=False,
+        widget=forms.CheckboxInput,
+        help_text="Select to send an email to the person you are assigning the case to",
+    )
+    comment = forms.fields.CharField(
+        max_length=250,
+        widget=forms.Textarea,
+        required=False,
+        label="Add Comment",
+        help_text="Text entered here will be added as a case note on the case and marked for attention",
+    )
+
+    class Meta:
+        fields = ("case_owner", "email_assignee", "comment")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["case_owner"].queryset = get_ilb_admin_users()
+
+
+class ReassignOwnershipImport(ReassignOwnershipBaseForm):
+    class Meta:
+        model = ImportApplication
+        fields = ReassignOwnershipBaseForm.Meta.fields
+
+
+class ReassignOwnershipExport(ReassignOwnershipBaseForm):
+    class Meta:
+        model = ExportApplication
+        fields = ReassignOwnershipBaseForm.Meta.fields

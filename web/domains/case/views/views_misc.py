@@ -24,9 +24,13 @@ from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task, get_case_page_title
 from web.flow import errors
-from web.models import Task, User, VariationRequest, WithdrawApplication
+from web.models import CaseNote, Task, User, VariationRequest, WithdrawApplication
 from web.notify.constants import DatabaseEmailTemplate
-from web.notify.email import send_database_email, send_refused_email
+from web.notify.email import (
+    send_database_email,
+    send_reassign_email,
+    send_refused_email,
+)
 from web.permissions import AppChecker, Perms, organisation_get_contacts
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import delete_file_from_s3, get_s3_client
@@ -310,6 +314,54 @@ def release_ownership(
         application.save()
 
         return redirect(reverse("workbasket"))
+
+
+@login_required
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+def reassign_ownership(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
+) -> HttpResponse:
+    model_class = get_class_imp_or_exp(case_type)
+
+    with transaction.atomic():
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+
+        case_progress.application_in_processing(application)
+
+        if application.is_import_application():
+            form_class = forms.ReassignOwnershipImport
+        else:
+            form_class = forms.ReassignOwnershipExport
+
+        if request.method == "POST":
+            form = form_class(request.POST, instance=application)
+
+            if form.is_valid():
+                form.save(commit=False)
+                application.reassign_datetime = timezone.now()
+                application.save()
+
+                comment = form.cleaned_data["comment"]
+
+                if comment:
+                    case_note = CaseNote.objects.create(created_by=request.user, note=comment)
+                    application.case_notes.add(case_note)
+
+                if form.cleaned_data["email_assignee"]:
+                    send_reassign_email(application, comment)
+
+                return redirect(reverse("workbasket"))
+
+        else:
+            form = form_class()
+
+        return render(
+            request=request,
+            template_name="web/domains/case/manage/reassign-ownership.html",
+            context={"form": form, "case_type": case_type, "process": application},
+        )
 
 
 @login_required
