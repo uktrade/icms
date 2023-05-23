@@ -84,6 +84,11 @@ def ilb_admin_user(django_user_model):
 
 
 @pytest.fixture
+def ilb_admin_two(django_user_model):
+    return django_user_model.objects.get(username="ilb_admin_two")
+
+
+@pytest.fixture
 def importer_one_contact(django_user_model):
     """Fixture to get user who is a contact of the test importer."""
     return django_user_model.objects.get(username="I1_main_contact")

@@ -65,6 +65,7 @@ class Command(BaseCommand):
 
         # ILB Admin/Caseworker
         self.create_icms_admin_user("ilb_admin_user")
+        self.create_icms_admin_user("ilb_admin_two")
 
         # enable disabled application types
         ImportApplicationType.objects.filter(

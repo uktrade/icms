@@ -355,7 +355,7 @@ def reassign_ownership(
                 return redirect(reverse("workbasket"))
 
         else:
-            form = form_class()
+            form = form_class(instance=application)
 
         return render(
             request=request,
