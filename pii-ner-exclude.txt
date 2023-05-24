@@ -2853,3 +2853,5 @@ impmgr.xview_imp_auth_archive_reasons xar
 Reassign
 Quick Issue
 Handover Details
+{{fields.field(form.question
+fields.field(form.date_of_birth
