@@ -254,7 +254,6 @@ def close_access_request(
                 task.finished = timezone.now()
                 task.save()
 
-                # TODO: Revisit in ICMSLST-1976
                 notify.access_request_closed(application)
 
                 return redirect(reverse("workbasket"))
