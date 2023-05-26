@@ -45,7 +45,7 @@ def get_variation_request_case_reference(application: "ImpOrExp") -> str:
 
     if not application.is_import_application():
         # Can't import VariationRequest due to circular dependency
-        # Should use VariationRequest.OPEN & VariationRequest.CLOSED
+        # Should use VariationRequest.Statuses.OPEN & VariationRequest.Statuses.CLOSED
         variations = variations.filter(status__in=["OPEN", "CLOSED"])
 
     # e.g [prefix, year, reference]

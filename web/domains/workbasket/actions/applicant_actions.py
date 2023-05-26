@@ -232,7 +232,7 @@ class SubmitVariationUpdateAction(Action):
     def get_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_kwargs()
 
-        # Didn't use VariationRequest.OPEN to lazily avoid circular dependency
+        # Didn't use VariationRequest.Statuses.OPEN to lazily avoid circular dependency
         return kwargs | {
             "variation_request_pk": self.application.variation_requests.get(status="OPEN").pk
         }

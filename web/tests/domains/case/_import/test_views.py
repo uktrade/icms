@@ -149,7 +149,7 @@ class TestBypassChiefView:
     def test_bypass_chief_variation_request_success(self, ilb_admin_user):
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
         self.wood_app.variation_requests.create(
-            status=VariationRequest.OPEN,
+            status=VariationRequest.Statuses.OPEN,
             what_varied="Dummy what_varied",
             why_varied="Dummy why_varied",
             when_varied=timezone.now().date(),
@@ -172,7 +172,7 @@ class TestBypassChiefView:
         assert case_progress.get_active_task_list(self.wood_app) == []
 
         vr = self.wood_app.variation_requests.first()
-        assert vr.status == VariationRequest.ACCEPTED
+        assert vr.status == VariationRequest.Statuses.ACCEPTED
 
 
 class TestBypassChiefViewRevokeLicence:

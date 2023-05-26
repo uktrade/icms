@@ -324,7 +324,7 @@ class RequestVariationUpdateView(RequestVariationOpenBase):
         """Store the variation request before redirecting to the success url."""
 
         variation_request: VariationRequest = form.save(commit=False)
-        variation_request.status = VariationRequest.OPEN
+        variation_request.status = VariationRequest.Statuses.OPEN
         variation_request.requested_by = self.request.user
         variation_request.save()
 
@@ -366,7 +366,7 @@ class RequestVariationOpenRequestView(RequestVariationOpenBase):
         """Store the variation request before redirecting to the success url."""
 
         variation_request: VariationRequest = form.save(commit=False)
-        variation_request.status = VariationRequest.OPEN
+        variation_request.status = VariationRequest.Statuses.OPEN
         variation_request.requested_by = self.request.user
         variation_request.save()
 

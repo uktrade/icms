@@ -4,7 +4,11 @@ from django.test import TestCase
 
 from web.models import AlternativeEmail, PersonalEmail, User, WithdrawApplication
 from web.notify import constants, email
-from web.tests.helpers import CaseURLS
+from web.tests.helpers import (
+    CaseURLS,
+    add_variation_request_to_app,
+    check_email_was_sent,
+)
 
 
 class TestEmail(TestCase):
@@ -328,7 +332,6 @@ def test_send_reassign_email_with_comment(ilb_admin_client, fa_sil_app_submitted
 @pytest.mark.parametrize(
     "withdrawal_status,exp_num_emails,exp_subject,exp_in_body,exp_sent_to",
     [
-        ("TEST", 0, None, None, None),
         (
             WithdrawApplication.Statuses.OPEN,
             2,
@@ -373,10 +376,80 @@ def test_send_withdrawal_email(
     )
 
     email.send_withdrawal_email(withdrawal)
-    outbox = mail.outbox
-    assert len(outbox) == exp_num_emails
-    if exp_num_emails:
-        sent_email = outbox[exp_num_emails - 1]
-        assert sent_email.to == [exp_sent_to]
-        assert sent_email.subject == f"{exp_subject}{com_app_submitted.reference}"
-        assert exp_in_body in sent_email.body
+    exp_subject = f"{exp_subject}{com_app_submitted.reference}"
+    check_email_was_sent(exp_num_emails, exp_sent_to, exp_subject, exp_in_body)
+
+
+def test_send_withdrawal_email_with_unsupported_status(com_app_submitted, importer_one_contact):
+    withdrawal = com_app_submitted.withdrawals.create(
+        status="TEST", request_by=importer_one_contact
+    )
+    with pytest.raises(ValueError) as e_info:
+        email.send_withdrawal_email(withdrawal)
+        assert e_info == "Unsupported Variation Request Description"
+
+
+@pytest.mark.parametrize(
+    "desc,exp_num_emails,exp_subject,exp_in_body,exp_sent_to",
+    [
+        (
+            constants.VariationRequestDescription.CANCELLED,
+            1,
+            "Variation Request Cancelled",
+            "has been cancelled",
+            "ilb_admin_user@example.com",  # /PS-IGNORE
+        ),
+        (
+            constants.VariationRequestDescription.UPDATE_REQUIRED,
+            1,
+            "Variation Update Required",
+            "needs updating",
+            "E1_main_contact@example.com",  # /PS-IGNORE
+        ),
+        (
+            constants.VariationRequestDescription.UPDATE_CANCELLED,
+            1,
+            "Variation Update No Longer Required",
+            "no longer requires\nan update",
+            "E1_main_contact@example.com",  # /PS-IGNORE
+        ),
+        (
+            constants.VariationRequestDescription.REFUSED,
+            1,
+            "Variation on application reference CA/2023/00001 has been refused by ILB",
+            "has been refused by\nILB",
+            "E1_main_contact@example.com",  # /PS-IGNORE
+        ),
+        (
+            constants.VariationRequestDescription.UPDATE_RECEIVED,
+            1,
+            "Variation Update Received",
+            "A variation update has been received for ICMS application",
+            "ilb_admin_two@example.com",  # /PS-IGNORE
+        ),
+    ],
+)
+def test_send_variation_request_email(
+    com_app_submitted,
+    ilb_admin_user,
+    ilb_admin_two,
+    desc,
+    exp_num_emails,
+    exp_subject,
+    exp_in_body,
+    exp_sent_to,
+):
+    com_app_submitted.case_owner = ilb_admin_two
+    com_app_submitted.save()
+    vr = add_variation_request_to_app(com_app_submitted, ilb_admin_user)
+    email.send_variation_request_email(vr, desc, com_app_submitted)
+    check_email_was_sent(exp_num_emails, exp_sent_to, exp_subject, exp_in_body)
+
+
+def test_send_variation_request_email_with_unsupported_description(
+    com_app_submitted, ilb_admin_user
+):
+    vr = add_variation_request_to_app(com_app_submitted, ilb_admin_user)
+    with pytest.raises(ValueError) as e_info:
+        email.send_variation_request_email(vr, "TEST", com_app_submitted)
+        assert e_info == "Unsupported Variation Request Description"

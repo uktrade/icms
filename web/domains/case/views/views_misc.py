@@ -25,11 +25,12 @@ from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task, get_case_page_title
 from web.flow import errors
 from web.models import CaseNote, Task, User, VariationRequest, WithdrawApplication
-from web.notify.constants import DatabaseEmailTemplate
+from web.notify.constants import DatabaseEmailTemplate, VariationRequestDescription
 from web.notify.email import (
     send_database_email,
     send_reassign_email,
     send_refused_email,
+    send_variation_request_email,
     send_withdrawal_email,
 )
 from web.permissions import AppChecker, Perms, organisation_get_contacts
@@ -211,8 +212,10 @@ def manage_withdrawals(
                     if application.status == ImpExpStatus.VARIATION_REQUESTED:
                         application.status = ImpExpStatus.COMPLETED
                         # Close the open variation request if we are withdrawing the application / variation
-                        vr = application.variation_requests.get(status=VariationRequest.OPEN)
-                        vr.status = VariationRequest.WITHDRAWN
+                        vr = application.variation_requests.get(
+                            status=VariationRequest.Statuses.OPEN
+                        )
+                        vr.status = VariationRequest.Statuses.WITHDRAWN
                         vr.reject_cancellation_reason = application.variation_refuse_reason
                         vr.closed_datetime = timezone.now()
                         vr.save()
@@ -451,21 +454,21 @@ def start_authorisation(
             task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
 
             create_documents = True
+            send_vr_email = False
 
             if application.status == application.Statuses.VARIATION_REQUESTED:
                 if (
                     application.is_import_application()
                     and application.variation_decision == application.REFUSE
                 ):
-                    vr = application.variation_requests.get(status=VariationRequest.OPEN)
+                    vr = application.variation_requests.get(status=VariationRequest.Statuses.OPEN)
                     next_task = None
                     application.status = model_class.Statuses.COMPLETED
-                    vr.status = VariationRequest.REJECTED
+                    vr.status = VariationRequest.Statuses.REJECTED
                     vr.reject_cancellation_reason = application.variation_refuse_reason
                     vr.closed_datetime = timezone.now()
-
                     vr.save()
-
+                    send_vr_email = True
                     create_documents = False
                 else:
                     next_task = Task.TaskType.AUTHORISE
@@ -499,6 +502,8 @@ def start_authorisation(
             ):
                 send_refused_email(application)
 
+            if send_vr_email:
+                send_variation_request_email(vr, VariationRequestDescription.REFUSED, application)
             return redirect(reverse("workbasket"))
 
         else:

@@ -33,8 +33,8 @@ def chief_licence_reply_approve_licence(application: ImportApplication) -> None:
     _finish_chief_wait_task(application)
 
     if application.status == ImportApplication.Statuses.VARIATION_REQUESTED:
-        vr = application.variation_requests.get(status=VariationRequest.OPEN)
-        vr.status = VariationRequest.ACCEPTED
+        vr = application.variation_requests.get(status=VariationRequest.Statuses.OPEN)
+        vr.status = VariationRequest.Statuses.ACCEPTED
         vr.save()
 
     application.status = ImportApplication.Statuses.COMPLETED

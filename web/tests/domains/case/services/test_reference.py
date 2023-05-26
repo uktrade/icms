@@ -26,6 +26,7 @@ from web.models import (
     VariationRequest,
     WoodQuotaApplication,
 )
+from web.tests.helpers import add_variation_request_to_app
 
 CASE_REF_PATTERN = re.compile(
     r"""
@@ -350,7 +351,7 @@ def test_get_wood_app_variation_request_case_reference(wood_app_submitted, ilb_a
     assert re.match(CASE_REF_PATTERN, initial_reference)
 
     # Add a variation request
-    _add_variation_request(wood_app_submitted, ilb_admin_user)
+    add_variation_request_to_app(wood_app_submitted, ilb_admin_user)
 
     expected_reference = f"{initial_reference}/1"
     actual_reference = reference.get_variation_request_case_reference(wood_app_submitted)
@@ -365,17 +366,17 @@ def test_get_variation_request_case_reference_with_existing_variations(
 
     # Update an existing app reference (and set some dummy variation requests)
     for i in range(5):
-        _add_variation_request(
+        add_variation_request_to_app(
             wood_app_submitted,
             ilb_admin_user,
             f"What varied {i + 1}",
-            VariationRequest.CANCELLED,
+            VariationRequest.Statuses.CANCELLED,
         )
     wood_app_submitted.reference = f"{initial_reference}/5"
     wood_app_submitted.save()
 
     # Add a new vr so that the suffix will change
-    _add_variation_request(wood_app_submitted, ilb_admin_user)
+    add_variation_request_to_app(wood_app_submitted, ilb_admin_user)
 
     expected_reference = f"{initial_reference}/6"
     actual_reference = reference.get_variation_request_case_reference(wood_app_submitted)
@@ -388,7 +389,7 @@ def test_get_com_app_variation_request_case_reference(com_app_submitted, ilb_adm
     assert re.match(CASE_REF_PATTERN, initial_reference)
 
     # Add a variation request
-    _add_variation_request(com_app_submitted, ilb_admin_user)
+    add_variation_request_to_app(com_app_submitted, ilb_admin_user)
 
     expected_reference = f"{initial_reference}/1"
     actual_reference = reference.get_variation_request_case_reference(com_app_submitted)
@@ -403,17 +404,17 @@ def test_get_com_app_variation_request_case_reference_with_existing_variations(
 
     # Update an existing app reference (and set some dummy variation requests)
     for i in range(5):
-        _add_variation_request(
+        add_variation_request_to_app(
             com_app_submitted,
             ilb_admin_user,
-            f"What varied {i + 1}",
-            VariationRequest.CLOSED,
+            what_varied=f"What varied {i + 1}",
+            status=VariationRequest.Statuses.CLOSED,
         )
     com_app_submitted.reference = f"{initial_reference}/5"
     com_app_submitted.save()
 
     # Add a new vr so that the suffix will change
-    open_vr = _add_variation_request(com_app_submitted, ilb_admin_user)
+    open_vr = add_variation_request_to_app(com_app_submitted, ilb_admin_user)
 
     expected_reference = f"{initial_reference}/6"
     actual_reference = reference.get_variation_request_case_reference(com_app_submitted)
@@ -421,7 +422,7 @@ def test_get_com_app_variation_request_case_reference_with_existing_variations(
     assert expected_reference == actual_reference
 
     # Update the OPEN variation request to CANCELLED.
-    open_vr.status = VariationRequest.CANCELLED
+    open_vr.status = VariationRequest.Statuses.CANCELLED
     open_vr.save()
 
     expected_reference = f"{initial_reference}/5"
@@ -432,11 +433,11 @@ def test_get_com_app_variation_request_case_reference_with_existing_variations(
 
 def test_get_com_app_variation_request_count_is_zero(com_app_submitted, ilb_admin_user):
     initial_reference = com_app_submitted.get_reference()
-    _add_variation_request(
+    add_variation_request_to_app(
         com_app_submitted,
         ilb_admin_user,
         "A variation request that was opened and cancelled",
-        VariationRequest.CANCELLED,
+        VariationRequest.Statuses.CANCELLED,
     )
 
     expected_reference = initial_reference
@@ -446,9 +447,15 @@ def test_get_com_app_variation_request_count_is_zero(com_app_submitted, ilb_admi
 
 
 def test_case_reference_correct_with_no_valid_variation_requests(com_app_submitted, ilb_admin_user):
-    _add_variation_request(com_app_submitted, ilb_admin_user, status=VariationRequest.CANCELLED)
-    _add_variation_request(com_app_submitted, ilb_admin_user, status=VariationRequest.CANCELLED)
-    _add_variation_request(com_app_submitted, ilb_admin_user, status=VariationRequest.CANCELLED)
+    add_variation_request_to_app(
+        com_app_submitted, ilb_admin_user, status=VariationRequest.Statuses.CANCELLED
+    )
+    add_variation_request_to_app(
+        com_app_submitted, ilb_admin_user, status=VariationRequest.Statuses.CANCELLED
+    )
+    add_variation_request_to_app(
+        com_app_submitted, ilb_admin_user, status=VariationRequest.Statuses.CANCELLED
+    )
 
     # This tests there is no variation part in the case reference
     assert re.match(CASE_REF_PATTERN, com_app_submitted.get_reference())
@@ -473,18 +480,6 @@ def test_get_exporter_access_request_reference(db, lock_manager):
     actual = reference.get_exporter_access_request_reference(lock_manager)
 
     assert expected == actual
-
-
-def _add_variation_request(
-    app, user, what_varied="Dummy what_varied", status=VariationRequest.OPEN
-):
-    return app.variation_requests.create(
-        status=status,
-        what_varied=what_varied,
-        why_varied="Dummy why_varied",
-        when_varied=datetime.date.today(),
-        requested_by=user,
-    )
 
 
 @pytest.mark.parametrize(

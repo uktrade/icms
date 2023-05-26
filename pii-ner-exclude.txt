@@ -2864,3 +2864,12 @@ pending_importer_access_requests.exists
 A Test Org
 importer.user
 ICMSLST-2018 Add
+Variation Update Required
+Variation Update No Longer Required
+Variation Update Received
+Variation Update Required
+Variation Update No Longer Required
+by\nILB
+Update
+variation_request.reject_cancellation_reason %
+Unsupported Variation Request Description

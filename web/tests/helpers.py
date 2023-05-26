@@ -1,7 +1,10 @@
+from django.core import mail
 from django.test.client import Client
 from django.urls import reverse
+from django.utils import timezone
 
-from web.models import User
+from web.domains.case.types import ImpOrExp
+from web.models import User, VariationRequest
 from web.utils.validation import ApplicationErrors
 
 
@@ -35,6 +38,34 @@ def check_pages_checked(error: ApplicationErrors, expected_pages_checked: list[s
     checked = sorted(e.page_name for e in error.page_errors)
 
     assert sorted(expected_pages_checked) == checked, f"Actual checked pages: {checked}"
+
+
+def check_email_was_sent(
+    exp_num_emails: int, exp_sent_to: str, exp_subject: str, exp_in_body: str | None = None
+) -> None:
+    outbox = mail.outbox
+    assert len(outbox) == exp_num_emails
+    if exp_num_emails:
+        sent_email = outbox[exp_num_emails - 1]
+        assert sent_email.to == [exp_sent_to]
+        assert sent_email.subject == exp_subject
+        if exp_in_body:
+            assert exp_in_body in sent_email.body
+
+
+def add_variation_request_to_app(
+    application: ImpOrExp,
+    user: User,
+    what_varied: str = "Dummy what_varied",
+    status: VariationRequest.Statuses = VariationRequest.Statuses.OPEN,
+) -> VariationRequest:
+    return application.variation_requests.create(
+        status=status,
+        what_varied=what_varied,
+        why_varied="Dummy why_varied",
+        when_varied=timezone.now().date(),
+        requested_by=user,
+    )
 
 
 class CaseURLS:

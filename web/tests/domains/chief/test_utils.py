@@ -42,7 +42,7 @@ class TestChiefUtils:
         self.app.save()
 
         variation = self.app.variation_requests.create(
-            status=VariationRequest.OPEN,
+            status=VariationRequest.Statuses.OPEN,
             what_varied="Dummy what_varied",
             why_varied="Dummy why_varied",
             when_varied=datetime.date.today(),
@@ -56,7 +56,7 @@ class TestChiefUtils:
         # Check variation has been updated
         variation.refresh_from_db()
 
-        assert variation.status == VariationRequest.ACCEPTED
+        assert variation.status == VariationRequest.Statuses.ACCEPTED
 
     def test_chief_licence_reply_reject_licence(self):
         utils.chief_licence_reply_reject_licence(self.app)

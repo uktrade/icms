@@ -22,28 +22,18 @@ class VariationRequest(models.Model):
     """Variation requests for licenses or certificates issued requested by
     import/export contacts."""
 
-    OPEN = "OPEN"
-    DRAFT = "DRAFT"
-    CANCELLED = "CANCELLED"
-    REJECTED = "REJECTED"
-    ACCEPTED = "ACCEPTED"
-    WITHDRAWN = "WITHDRAWN"
-    DELETED = "DELETED"
-    CLOSED = "CLOSED"
-
-    STATUSES = (
-        (DRAFT, "Draft"),
-        (OPEN, "Open"),
-        (CANCELLED, "Cancelled"),
-        (REJECTED, "Rejected"),
-        (ACCEPTED, "Accepted"),
-        (WITHDRAWN, "Withdrawn"),
-        (DELETED, "Deleted"),
-        (CLOSED, "Closed"),
-    )
+    class Statuses(TypedTextChoices):
+        DRAFT = ("DRAFT", "Draft")
+        OPEN = ("OPEN", "Open")
+        CANCELLED = ("CANCELLED", "Cancelled")
+        REJECTED = ("REJECTED", "Rejected")
+        ACCEPTED = ("ACCEPTED", "Accepted")
+        WITHDRAWN = ("WITHDRAWN", "Withdrawn")
+        DELETED = ("DELETED", "Deleted")
+        CLOSED = ("CLOSED", "Closed")
 
     is_active = models.BooleanField(default=True)
-    status = models.CharField(max_length=30, choices=STATUSES)
+    status = models.CharField(max_length=30, choices=Statuses.choices)
     extension_flag = models.BooleanField(default=False)
     requested_datetime = models.DateTimeField(auto_now_add=True)
     requested_by = models.ForeignKey(
