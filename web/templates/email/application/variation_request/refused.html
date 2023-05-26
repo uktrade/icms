@@ -1,0 +1,8 @@
+{% extends "email/base.html" %}
+
+{% block message %}
+
+<p>The requested variation on case reference {{ application.reference }} has been refused by ILB for the following reason:</p>
+<p>{{ application.variation_refuse_reason }}</p>
+
+{% endblock %}

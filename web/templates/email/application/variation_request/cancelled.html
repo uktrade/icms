@@ -1,0 +1,9 @@
+{% extends "email/base.html" %}
+
+{% block message %}
+
+<p>Your variation request for ICMS application {{ application.reference }} has been cancelled{% if variation_request.reject_cancellation_reason %} for the following reason:</p>
+<p>{{ variation_request.reject_cancellation_reason }}</p>
+{% else %}.</p>
+{% endif %}
+{% endblock %}

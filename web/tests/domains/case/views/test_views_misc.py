@@ -20,7 +20,13 @@ from web.models import (
     WoodQuotaChecklist,
 )
 from web.models.shared import YesNoNAChoices
-from web.tests.helpers import CaseURLS, check_page_errors, check_pages_checked
+from web.tests.helpers import (
+    CaseURLS,
+    add_variation_request_to_app,
+    check_email_was_sent,
+    check_page_errors,
+    check_pages_checked,
+)
 from web.utils.validation import ApplicationErrors
 
 if TYPE_CHECKING:
@@ -357,7 +363,7 @@ def test_start_authorisation_approved_variation_requested_application(
     # Set the variation fields
     wood_application.status = ImpExpStatus.VARIATION_REQUESTED
     wood_application.variation_decision = wood_application.APPROVE
-    _add_variation_request(wood_application, ilb_admin_user)
+    add_variation_request_to_app(wood_application, ilb_admin_user)
 
     wood_application.save()
 
@@ -370,7 +376,7 @@ def test_start_authorisation_approved_variation_requested_application(
     case_progress.check_expected_task(wood_application, Task.TaskType.AUTHORISE)
 
     vr = wood_application.variation_requests.first()
-    assert vr.status == VariationRequest.OPEN
+    assert vr.status == VariationRequest.Statuses.OPEN
 
     pack = document_pack.pack_draft_get(wood_application)
     licence_doc = document_pack.doc_ref_licence_get(pack)
@@ -389,7 +395,7 @@ def test_start_authorisation_rejected_variation_requested_application(
     wood_application.status = ImpExpStatus.VARIATION_REQUESTED
     wood_application.variation_decision = wood_application.REFUSE
     wood_application.variation_refuse_reason = "test refuse reason"
-    _add_variation_request(wood_application, ilb_admin_user)
+    add_variation_request_to_app(wood_application, ilb_admin_user)
 
     wood_application.save()
 
@@ -402,12 +408,18 @@ def test_start_authorisation_rejected_variation_requested_application(
     assert case_progress.get_active_task_list(wood_application) == []
 
     vr = wood_application.variation_requests.first()
-    assert vr.status == VariationRequest.REJECTED
+    assert vr.status == VariationRequest.Statuses.REJECTED
     assert vr.reject_cancellation_reason == "test refuse reason"
     assert vr.closed_datetime.date() == timezone.now().date()
 
     assert wood_application.licences.count() == 1
     assert wood_application.licences.filter(status=DocumentPackBase.Status.ARCHIVED).exists()
+    check_email_was_sent(
+        1,
+        "I1_main_contact@example.com",  # /PS-IGNORE
+        f"Variation on application reference {wood_application.reference} has been refused by ILB",
+        "refused by\nILB for the following reason",
+    )
 
 
 class TestAuthoriseDocumentsView:
@@ -457,7 +469,7 @@ class TestAuthoriseDocumentsView:
 
     def test_authorise_variation_request_post_valid(self, ilb_admin_user):
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
-        _add_variation_request(self.wood_app, ilb_admin_user)
+        add_variation_request_to_app(self.wood_app, ilb_admin_user)
         self.wood_app.save()
 
         post_data = {"password": "test"}
@@ -471,7 +483,7 @@ class TestAuthoriseDocumentsView:
         assert case_progress.get_active_task_list(self.wood_app) == []
 
         vr = self.wood_app.variation_requests.first()
-        assert vr.status == VariationRequest.ACCEPTED
+        assert vr.status == VariationRequest.Statuses.ACCEPTED
 
         latest_licence = document_pack.pack_active_get(self.wood_app)
         assert latest_licence.status == DocumentPackBase.Status.ACTIVE
@@ -780,14 +792,4 @@ def _add_valid_checklist(wood_application):
         response_preparation=True,
         authorisation=True,
         sigl_wood_application_logged=True,
-    )
-
-
-def _add_variation_request(wood_application, user, status=VariationRequest.OPEN):
-    wood_application.variation_requests.create(
-        status=status,
-        what_varied="Dummy what_varied",
-        why_varied="Dummy why_varied",
-        when_varied=timezone.now().date(),
-        requested_by=user,
     )

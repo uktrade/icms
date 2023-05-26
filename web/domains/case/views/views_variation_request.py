@@ -22,6 +22,8 @@ from web.domains.case.services import document_pack, reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.models import Process, Task, VariationRequest
+from web.notify import email
+from web.notify.constants import VariationRequestDescription
 from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 
@@ -129,7 +131,7 @@ class VariationRequestCancelView(
 
         # Having saved the cancellation reason we need to do a few things
         self.object.refresh_from_db()
-        self.object.status = VariationRequest.CANCELLED
+        self.object.status = VariationRequest.Statuses.CANCELLED
         self.object.closed_datetime = timezone.now()
         self.object.closed_by = self.request.user
         self.object.save()
@@ -145,7 +147,9 @@ class VariationRequestCancelView(
         self.application.update_order_datetime()
         self.update_application_status()
         self.update_application_tasks()
-
+        email.send_variation_request_email(
+            self.object, VariationRequestDescription.CANCELLED, self.application
+        )
         return result
 
 
@@ -188,7 +192,9 @@ class VariationRequestRequestUpdateView(
         self.application.update_order_datetime()
         self.application.save()
         self.update_application_tasks()
-
+        email.send_variation_request_email(
+            self.object, VariationRequestDescription.UPDATE_REQUIRED, self.application
+        )
         return result
 
     def get_success_url(self):
@@ -235,6 +241,9 @@ class VariationRequestCancelUpdateRequestView(
 
         # Close the task
         self.update_application_tasks()
+        email.send_variation_request_email(
+            variation_request, VariationRequestDescription.UPDATE_CANCELLED, self.application
+        )
 
         return redirect(
             "case:variation-request-manage",
@@ -283,7 +292,9 @@ class VariationRequestRespondToUpdateRequestView(
         self.update_application_tasks()
         self.application.update_order_datetime()
         self.application.save()
-
+        email.send_variation_request_email(
+            self.object, VariationRequestDescription.UPDATE_RECEIVED, self.application
+        )
         return result
 
     def has_permission(self):

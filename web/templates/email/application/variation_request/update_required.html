@@ -1,0 +1,9 @@
+{% extends "email/base.html" %}
+
+{% block message %}
+
+<p>Your variation request for ICMS application {{ application.reference }} needs updating before it can be processed. 
+    Please review the following comments, and log in using the link provided to make the necessary changes.</p>
+<p>{{ variation_request.update_request_reason }}</p>    
+
+{% endblock %}

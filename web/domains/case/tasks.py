@@ -115,8 +115,12 @@ def create_document_pack_on_success(application_pk, user_pk):
             client.send_application_to_chief(application, task)
         else:
             if application.status == ImpExpStatus.VARIATION_REQUESTED:
-                vr = application.variation_requests.get(status=VariationRequest.OPEN)
-                vr.status = VariationRequest.ACCEPTED if is_import else VariationRequest.CLOSED
+                vr = application.variation_requests.get(status=VariationRequest.Statuses.OPEN)
+                vr.status = (
+                    VariationRequest.Statuses.ACCEPTED
+                    if is_import
+                    else VariationRequest.Statuses.CLOSED
+                )
 
                 # On export applications we record the date closed and who closed it.
                 if not is_import:

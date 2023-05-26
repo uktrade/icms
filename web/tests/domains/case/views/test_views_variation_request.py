@@ -8,7 +8,11 @@ from web.domains.case.models import DocumentPackBase
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.models import Task, VariationRequest
-from web.tests.helpers import CaseURLS
+from web.tests.helpers import (
+    CaseURLS,
+    add_variation_request_to_app,
+    check_email_was_sent,
+)
 
 
 class TestVariationRequestManageView:
@@ -21,10 +25,16 @@ class TestVariationRequestManageView:
         self.client.post(CaseURLS.take_ownership(wood_app.pk))
 
         # Add a few previous variation requests
-        _add_variation_request(wood_app, ilb_admin_user, VariationRequest.REJECTED)
-        _add_variation_request(wood_app, ilb_admin_user, VariationRequest.ACCEPTED)
+        add_variation_request_to_app(
+            wood_app, ilb_admin_user, status=VariationRequest.Statuses.REJECTED
+        )
+        add_variation_request_to_app(
+            wood_app, ilb_admin_user, status=VariationRequest.Statuses.ACCEPTED
+        )
         # Add an open one last (as it's the latest)
-        _add_variation_request(wood_app, ilb_admin_user, VariationRequest.OPEN)
+        add_variation_request_to_app(
+            wood_app, ilb_admin_user, status=VariationRequest.Statuses.OPEN
+        )
 
         response = self.client.get(CaseURLS.manage_variations(wood_app.pk))
 
@@ -35,9 +45,9 @@ class TestVariationRequestManageView:
         vrs = cd["variation_requests"]
 
         expected_status_order = [
-            VariationRequest.OPEN,
-            VariationRequest.ACCEPTED,
-            VariationRequest.REJECTED,
+            VariationRequest.Statuses.OPEN,
+            VariationRequest.Statuses.ACCEPTED,
+            VariationRequest.Statuses.REJECTED,
         ]
 
         assert expected_status_order == [vr.status for vr in vrs]
@@ -48,10 +58,14 @@ class TestVariationRequestManageView:
         self.client.post(CaseURLS.take_ownership(com_app.pk))
 
         # Add a few previous variation requests
-        _add_variation_request(com_app, ilb_admin_user, VariationRequest.CANCELLED)
-        _add_variation_request(com_app, ilb_admin_user, VariationRequest.CLOSED)
+        add_variation_request_to_app(
+            com_app, ilb_admin_user, status=VariationRequest.Statuses.CANCELLED
+        )
+        add_variation_request_to_app(
+            com_app, ilb_admin_user, status=VariationRequest.Statuses.CLOSED
+        )
         # Add an open one last (as it's the latest)
-        _add_variation_request(com_app, ilb_admin_user, VariationRequest.OPEN)
+        add_variation_request_to_app(com_app, ilb_admin_user, status=VariationRequest.Statuses.OPEN)
 
         response = self.client.get(CaseURLS.manage_variations(com_app.pk, case_type="export"))
 
@@ -62,9 +76,9 @@ class TestVariationRequestManageView:
         vrs = cd["variation_requests"]
 
         expected_status_order = [
-            VariationRequest.OPEN,
-            VariationRequest.CLOSED,
-            VariationRequest.CANCELLED,
+            VariationRequest.Statuses.OPEN,
+            VariationRequest.Statuses.CLOSED,
+            VariationRequest.Statuses.CANCELLED,
         ]
 
         assert expected_status_order == [vr.status for vr in vrs]
@@ -82,7 +96,7 @@ class TestVariationRequestCancelView:
 
         self.wood_app.refresh_from_db()
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
-        _add_variation_request(self.wood_app, ilb_admin_user)
+        add_variation_request_to_app(self.wood_app, ilb_admin_user)
         self.wood_app.save()
 
         # Set the draft licence active and create a second one
@@ -114,7 +128,7 @@ class TestVariationRequestCancelView:
         self.wood_app.refresh_from_db()
         vr.refresh_from_db()
 
-        assert vr.status == VariationRequest.CANCELLED
+        assert vr.status == VariationRequest.Statuses.CANCELLED
         assert vr.reject_cancellation_reason == "Test cancellation reason"
         assert vr.closed_by == ilb_admin_user
         assert vr.closed_datetime.date() == timezone.now().date()
@@ -128,6 +142,9 @@ class TestVariationRequestCancelView:
         # Archived now the variation has been cancelled.
         self.draft_licence.refresh_from_db()
         assert self.draft_licence.status == DocumentPackBase.Status.ARCHIVED
+        check_email_was_sent(
+            1, "ilb_admin_user@example.com", "Variation Request Cancelled"  # /PS-IGNORE
+        )
 
 
 class TestVariationRequestCancelViewForExportApplication:
@@ -142,7 +159,9 @@ class TestVariationRequestCancelViewForExportApplication:
 
         self.app.refresh_from_db()
         self.app.status = ImpExpStatus.VARIATION_REQUESTED
-        _add_variation_request(self.app, ilb_admin_user, VariationRequest.OPEN)
+        add_variation_request_to_app(
+            self.app, ilb_admin_user, status=VariationRequest.Statuses.OPEN
+        )
         self.app.save()
 
         # Set the draft licence active and create a second one
@@ -161,7 +180,7 @@ class TestVariationRequestCancelViewForExportApplication:
         self.app.refresh_from_db()
         vr.refresh_from_db()
 
-        assert vr.status == VariationRequest.CANCELLED
+        assert vr.status == VariationRequest.Statuses.CANCELLED
         assert vr.closed_by == ilb_admin_user
         assert vr.closed_datetime.date() == timezone.now().date()
 
@@ -174,6 +193,9 @@ class TestVariationRequestCancelViewForExportApplication:
         # Archived now the variation has been cancelled.
         self.draft_certificate.refresh_from_db()
         assert self.draft_certificate.status == DocumentPackBase.Status.ARCHIVED
+        check_email_was_sent(
+            1, "ilb_admin_user@example.com", "Variation Request Cancelled"  # /PS-IGNORE
+        )
 
 
 class TestVariationRequestRequestUpdateView:
@@ -190,8 +212,10 @@ class TestVariationRequestRequestUpdateView:
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
         self.wood_app.save()
 
-        _add_variation_request(self.wood_app, importer_one_contact, VariationRequest.OPEN)
-        self.vr = self.wood_app.variation_requests.get(status=VariationRequest.OPEN)
+        add_variation_request_to_app(
+            self.wood_app, importer_one_contact, status=VariationRequest.Statuses.OPEN
+        )
+        self.vr = self.wood_app.variation_requests.get(status=VariationRequest.Statuses.OPEN)
 
     def test_request_update_post(self):
         response = self.client.post(
@@ -210,6 +234,11 @@ class TestVariationRequestRequestUpdateView:
         # Check the reason has been saved
         self.vr.refresh_from_db()
         assert self.vr.update_request_reason == "Dummy update request reason"
+        check_email_was_sent(
+            1,
+            "I1_main_contact@example.com",  # /PS-IGNORE
+            "Variation Update Required",
+        )
 
 
 class TestVariationRequestCancelUpdateRequestView:
@@ -226,8 +255,10 @@ class TestVariationRequestCancelUpdateRequestView:
         self.app.status = ImpExpStatus.VARIATION_REQUESTED
         self.app.save()
 
-        _add_variation_request(self.app, importer_one_contact, VariationRequest.OPEN)
-        self.vr = self.app.variation_requests.get(status=VariationRequest.OPEN)
+        add_variation_request_to_app(
+            self.app, importer_one_contact, status=VariationRequest.Statuses.OPEN
+        )
+        self.vr = self.app.variation_requests.get(status=VariationRequest.Statuses.OPEN)
 
         self.client.post(
             CaseURLS.variation_request_request_update(self.app.pk, self.vr.pk),
@@ -261,6 +292,11 @@ class TestVariationRequestCancelUpdateRequestView:
         assert Task.TaskType.VR_REQUEST_CHANGE not in case_progress.get_active_task_list(self.app)
 
         assert self.vr.update_request_reason is None
+        check_email_was_sent(
+            2,
+            "I1_main_contact@example.com",  # /PS-IGNORE
+            "Variation Update No Longer Required",
+        )
 
 
 class TestVariationRequestRespondToUpdateRequestView:
@@ -278,8 +314,10 @@ class TestVariationRequestRespondToUpdateRequestView:
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
         self.wood_app.save()
 
-        _add_variation_request(self.wood_app, importer_one_contact, VariationRequest.OPEN)
-        self.vr = self.wood_app.variation_requests.get(status=VariationRequest.OPEN)
+        add_variation_request_to_app(
+            self.wood_app, importer_one_contact, VariationRequest.Statuses.OPEN
+        )
+        self.vr = self.wood_app.variation_requests.get(status=VariationRequest.Statuses.OPEN)
 
         self.admin_client.post(
             CaseURLS.variation_request_request_update(self.wood_app.pk, self.vr.pk),
@@ -321,13 +359,6 @@ class TestVariationRequestRespondToUpdateRequestView:
         self.vr.refresh_from_db()
         assert self.vr.update_request_reason is None
         assert self.vr.what_varied == "What was varied now its changed"
-
-
-def _add_variation_request(wood_application, user, status=VariationRequest.OPEN):
-    wood_application.variation_requests.create(
-        status=status,
-        what_varied="Dummy what_varied",
-        why_varied="Dummy why_varied",
-        when_varied=timezone.now().date(),
-        requested_by=user,
-    )
+        check_email_was_sent(
+            2, "ilb_admin_user@example.com", "Variation Update Received"  # /PS-IGNORE
+        )

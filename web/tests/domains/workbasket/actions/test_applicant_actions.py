@@ -90,7 +90,7 @@ class TestApplicantActions:
     def test_submit_variation_request_update_action_is_shown(self, wood_app_submitted):
         # setup
         wood_app_submitted.variation_requests.create(
-            status=VariationRequest.OPEN,
+            status=VariationRequest.Statuses.OPEN,
             what_varied="Dummy what_varied",
             why_varied="Dummy why_varied",
             when_varied=timezone.now().date(),
