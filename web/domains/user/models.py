@@ -6,7 +6,6 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from guardian.core import ObjectPermissionChecker
 from guardian.mixins import GuardianUserMixin
-from guardian.shortcuts import get_objects_for_user
 
 from .managers import UserManager
 
@@ -93,44 +92,6 @@ class User(GuardianUserMixin, AbstractUser):
     @property
     def account_last_login_date(self):
         return None if self.last_login is None else self.last_login.date()
-
-    def is_importer(self):
-        """Checks if user is a member of any import organisation or is an individual importer"""
-
-        # Check if user has any invidual importer company
-        own_importers = self.own_importers.filter(is_active=True).count()
-        if own_importers > 0:
-            return True
-
-        # Check if user is a member of any import/agent organisation
-        from web.domains.importer.models import Importer
-
-        return (
-            get_objects_for_user(
-                self,
-                "web.is_contact_of_importer",
-                Importer.objects.filter(is_active=True),
-                with_superuser=False,
-            ).count()
-            > 0
-        )
-
-    def is_exporter(self):
-        """Checks if user is a member of any export organisation."""
-        from web.domains.exporter.models import Exporter
-
-        return (
-            get_objects_for_user(
-                self,
-                "web.is_contact_of_exporter",
-                Exporter.objects.filter(is_active=True),
-                with_superuser=False,
-            ).count()
-            > 0
-        )
-
-    def is_export_case_officer(self):
-        return self.has_perm("web.export_case_officer")
 
     def set_temp_password(self, length=8):
         """

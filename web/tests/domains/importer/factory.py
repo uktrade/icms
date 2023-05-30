@@ -24,19 +24,3 @@ class ImporterFactory(factory.django.DjangoModelFactory):
             # A list of offices passed in
             for office in extracted:
                 self.offices.add(office)
-
-
-class AgentImporterFactory(ImporterFactory):
-    is_active = True
-    main_importer = factory.SubFactory(ImporterFactory, is_active=True)
-
-    @factory.post_generation
-    def main_importer_offices(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build
-            return
-
-        if extracted:
-            # A list of offices passed in
-            for office in extracted:
-                self.main_importer.offices.add(office)

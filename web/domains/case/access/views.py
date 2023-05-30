@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Any, Literal
 
 import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
@@ -108,12 +108,15 @@ def importer_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
                 application.process_type = ImporterAccessRequest.PROCESS_TYPE
                 application.save()
 
-                notify.access_requested_importer(application.pk)
                 Task.objects.create(
                     process=application, task_type=Task.TaskType.PROCESS, owner=request.user
                 )
 
-                if request.user.is_importer() or request.user.is_exporter():
+                notify.access_requested_importer(application.pk)
+
+                if request.user.has_perm(Perms.sys.importer_access) or request.user.has_perm(
+                    Perms.sys.exporter_access
+                ):
                     return redirect(reverse("workbasket"))
 
                 # A new user who is not a member of any importer/exporter
@@ -122,15 +125,8 @@ def importer_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
         else:
             form = forms.ImporterAccessRequestForm()
 
-        context = {
-            "form": form,
-            "exporter_access_requests": ExporterAccessRequest.objects.filter(
-                tasks__owner=request.user
-            ),
-            "importer_access_requests": ImporterAccessRequest.objects.filter(
-                tasks__owner=request.user
-            ),
-        }
+        context = _get_access_request_context(request)
+        context["form"] = form
 
     return render(request, "web/domains/case/access/request-importer-access.html", context)
 
@@ -154,31 +150,41 @@ def exporter_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
                 application.process_type = ExporterAccessRequest.PROCESS_TYPE
                 application.save()
 
-                notify.access_requested_exporter(application.pk)
                 Task.objects.create(
                     process=application, task_type=Task.TaskType.PROCESS, owner=request.user
                 )
 
-                if request.user.is_importer() or request.user.is_exporter():
+                notify.access_requested_exporter(application.pk)
+
+                if request.user.has_perm(Perms.sys.importer_access) or request.user.has_perm(
+                    Perms.sys.exporter_access
+                ):
                     return redirect(reverse("workbasket"))
 
                 # A new user who is not a member of any importer/exporter
                 # is redirected to a different success page
                 return redirect(reverse("access:requested"))
 
-        context = {
-            "form": form,
-            "exporter_access_requests": ExporterAccessRequest.objects.filter(
-                tasks__owner=request.user
-            ),
-            "importer_access_requests": ImporterAccessRequest.objects.filter(
-                tasks__owner=request.user
-            ),
-        }
+        context = _get_access_request_context(request)
+        context["form"] = form
 
     return render(request, "web/domains/case/access/request-exporter-access.html", context)
 
 
+def _get_access_request_context(request: AuthenticatedHttpRequest) -> dict[str, Any]:
+    pending_status = [AccessRequest.Statuses.SUBMITTED, AccessRequest.Statuses.FIR_REQUESTED]
+
+    return {
+        "pending_importer_access_requests": ImporterAccessRequest.objects.filter(
+            submitted_by=request.user, status__in=pending_status
+        ),
+        "pending_exporter_access_requests": ExporterAccessRequest.objects.filter(
+            submitted_by=request.user, status__in=pending_status
+        ),
+    }
+
+
+# TODO: Revisit in ICMSLST-2018
 @permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def link_access_request(
     request: AuthenticatedHttpRequest, pk: int, entity: Literal["importer", "exporter"]
@@ -224,6 +230,7 @@ def link_access_request(
     )
 
 
+# TODO: Revisit in ICMSLST-2018
 @login_required
 @permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def close_access_request(

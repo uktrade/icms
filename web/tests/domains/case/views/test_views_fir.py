@@ -5,10 +5,8 @@ import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertContains, assertTemplateUsed
 
-from web.models import FurtherInformationRequest, Task
+from web.models import FurtherInformationRequest
 from web.tests.auth import AuthTestCase
-from web.tests.domains.case.access.factories import ImporterAccessRequestFactory
-from web.tests.flow.factories import TaskFactory
 from web.tests.helpers import CaseURLS
 
 if TYPE_CHECKING:
@@ -156,12 +154,12 @@ def test_manage_update_requests_get(
 
 class TestImporterAccessRequestFIRListView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup):
-        self.process = ImporterAccessRequestFactory(
-            link=self.importer, submitted_by=self.importer_user
-        )
+    def setup(self, _setup, importer_access_request):
+        self.process = importer_access_request
+        self.process.link = self.importer
+        self.process.submitted_by = self.importer_user
+        self.process.save()
 
-        TaskFactory.create(process=self.process, task_type=Task.TaskType.PROCESS)
         self.fir_process = _create_fir(self.ilb_admin_user)
         self.process.further_information_requests.add(self.fir_process)
 

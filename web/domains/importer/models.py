@@ -70,7 +70,7 @@ class Importer(Archivable, models.Model):
     )
     region_origin = models.CharField(max_length=1, choices=REGIONS, blank=True, null=True)
 
-    # only set for individuals
+    # Set for importers with type "INDIVIDUAL".
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
