@@ -8,196 +8,85 @@ from web.domains.user.forms import (
     UserDetailsUpdateForm,
     UserListFilter,
 )
-from web.models import PersonalEmail, PhoneNumber, User
-
-from .factory import UserFactory
-
-
-def run_filter(data=None):
-    return UserListFilter(data=data).qs
+from web.models import PhoneNumber, User
 
 
 class TestUserListFilter(TestCase):
-    def setUp(self):
-        # set default admin user password disposition as FULL
-        UserFactory(
-            username="aloy",
-            is_active=True,
-            email="aloy@example.com",  # /PS-IGNORE
-            first_name="Aloy",
-            last_name="Unknown",
-            organisation="Unknown",
-            password_disposition=User.FULL,
-            job_title="seeker",
-            account_status=User.ACTIVE,
-        )
-        UserFactory(
-            username="willem",
-            is_active=True,
-            email="willem@example.com",  # /PS-IGNORE
-            first_name="Willem",
-            last_name="Unknown",
-            organisation="Byrgenwerth College",
-            password_disposition=User.TEMPORARY,
-            job_title="Master",
-            account_status=User.BLOCKED,
-        )
-        UserFactory(
-            username="nathan.drake",
-            is_active=True,
-            email="nathan.drake@example.com",  # /PS-IGNORE
-            first_name="Nathan",
-            last_name="Drake",
-            organisation="N/A",
-            password_disposition=User.TEMPORARY,
-            job_title="explorer",
-            account_status=User.SUSPENDED,
-        )
-        UserFactory(
-            username="ori",
-            is_active=True,
-            email="ori@example.com",  # /PS-IGNORE
-            first_name="Ori",
-            last_name="Unknown",
-            organisation="Blind Forest",
-            password_disposition=User.TEMPORARY,
-            job_title="",
-            account_status=User.CANCELLED,
-        )
-        UserFactory(
-            username="mario",
-            is_active=True,
-            email="mario@example.com",  # /PS-IGNORE
-            first_name="Mario",
-            last_name="Bro",
-            organisation="Bros. Plumbers Ltd.",
-            password_disposition=User.FULL,
-            job_title="Chief Plumber",
-            account_status=User.ACTIVE,
-        )
-
     def run_filter(self, data=None):
         return UserListFilter(data=data).qs
 
     def test_email_filter(self):
         results = self.run_filter({"email_address": "example.com"})
-        assert results.count() == 5
+        assert results.count() == 13
 
     def test_username_filter(self):
-        results = self.run_filter({"username": "willem"})
+        results = self.run_filter({"username": "I1_main_contact"})
         assert results.count() == 1
 
     def test_first_name_filter(self):
-        results = self.run_filter({"forename": "nathan"})
+        results = self.run_filter({"forename": "I1_main_contact_first_name"})
         assert results.count() == 1
 
     def test_last_name_filter(self):
-        results = self.run_filter({"surname": "Unknown"})
-        assert results.count() == 3
+        results = self.run_filter({"surname": "main_contact"})
+        assert results.count() == 6
 
     def test_organisation_filter(self):
-        results = self.run_filter({"organisation": "Unk"})
+        results = self.run_filter({"organisation": "I1_main_contact"})
         assert results.count() == 1
 
     def test_job_title_filter(self):
-        results = self.run_filter({"job_title": "plumber"})
+        results = self.run_filter({"job_title": "I1_main_contact_job_title"})
         assert results.count() == 1
 
     def test_account_status_filter(self):
         results = self.run_filter({"status": [User.CANCELLED, User.SUSPENDED, User.BLOCKED]})
-        assert results.count() == 3
-
-    def test_password_disposition_filter(self):
-        results = self.run_filter({"password_disposition": "off"})
-        assert results.count() == 3
+        assert results.count() == 4
 
     def test_filter_order(self):
-        results = self.run_filter({"surname": "Unknown"})
-        assert results.count() == 3
+        results = self.run_filter({"surname": "inactive"})
+        assert results.count() == 4
         first = results.first()
         last = results.last()
-        assert first.username == "aloy"
-        assert last.username == "willem"
+        assert first.username == "E1_inactive_contact"
+        assert last.username == "I3_inactive_contact"
 
 
 class TestPeopleFilter(TestCase):
-    def create_email(self, user):
-        email = PersonalEmail(user=user, email=f"{user.username}@example.com")  # /PS-IGNORE
-        email.save()
-        return email
-
-    def create_user(self, username, first_name, last_name, organisation, department, job_title):
-        user = UserFactory(
-            is_active=True,
-            username=username,
-            first_name=first_name,
-            last_name=last_name,
-            organisation=organisation,
-            department=department,
-            job_title=job_title,
-        )
-        user.personal_emails.add(self.create_email(user))
-
-    def setUp(self):
-        self.create_user(
-            username="jane",
-            first_name="Jane",
-            last_name="Doe",
-            organisation="Doe Ltd.",
-            department="IT",
-            job_title="Director",
-        )
-        self.create_user(
-            username="john",
-            first_name="John",
-            last_name="Doe",
-            organisation="Doe Ltd.",
-            department="Finance",
-            job_title="Accountant",
-        )
-        self.create_user(
-            username="melkor",
-            first_name="Melkor",
-            last_name="Unknown",
-            organisation="Evil Co.",
-            department="One and only department",
-            job_title="Ainur",
-        )
-
     def run_filter(self, data=None):
         return PeopleFilter(data=data).qs
 
     def test_email_filter(self):
         results = self.run_filter({"email_address": "example.com"})
-        assert results.count() == 9
+        assert results.count() == 13
 
     def test_first_name_filter(self):
-        results = self.run_filter({"forename": "melkor"})
-        assert results.count() == 1
+        results = self.run_filter({"forename": "E1"})
+        assert results.count() == 3
 
     def test_last_name_filter(self):
-        results = self.run_filter({"surname": "doe"})
-        assert results.count() == 2
+        results = self.run_filter({"surname": "I1"})
+        assert results.count() == 3
 
     def test_organisation_filter(self):
-        results = self.run_filter({"organisation": "ltd"})
-        assert results.count() == 2
+        results = self.run_filter({"organisation": "inactive_contact"})
+        assert results.count() == 4
 
     def test_department_filter(self):
-        results = self.run_filter({"department": "on"})
-        assert results.count() == 1
+        results = self.run_filter({"department": "A1"})
+        assert results.count() == 2
 
     def test_job_title_filter(self):
-        results = self.run_filter({"job": "direct"})
-        assert results.count() == 1
+        results = self.run_filter({"job": "job"})
+        assert results.count() == 13
 
     def test_filter_order(self):
         results = self.run_filter({"email_address": "example"})
-        assert results.count() == 9
+        assert results.count() == 13
         first = results.first()
         last = results.last()
-        assert first.username == "E1_A1_main_contact"
-        assert last.username == "melkor"
+        assert first.username == "access_request_user"
+        assert last.username == "I3_inactive_contact"
 
 
 class TestUserDetailsUpdateForm(TestCase):

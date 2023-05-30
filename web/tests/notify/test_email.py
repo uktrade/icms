@@ -2,235 +2,107 @@ import pytest
 from django.core import mail
 from django.test import TestCase
 
-from web.models import (
-    AlternativeEmail,
-    Importer,
-    PersonalEmail,
-    User,
-    WithdrawApplication,
-)
+from web.models import AlternativeEmail, PersonalEmail, User, WithdrawApplication
 from web.notify import constants, email
-from web.permissions import organisation_add_contact
-from web.tests.domains.exporter.factory import ExporterFactory
-from web.tests.domains.importer.factory import ImporterFactory
-from web.tests.domains.user.factory import UserFactory
 from web.tests.helpers import CaseURLS
-
-# TODO reimplement mailshot tests with ICMSLST-1968
 
 
 class TestEmail(TestCase):
-    def create_user(self, account_status):
-        user = UserFactory(account_status=account_status)
-        return user
-
-    def create_importer_org(self, name=None, active=True, members=None):
+    def create_user_emails(self, members=None):
         if not members:
             members = []
 
-        importer = ImporterFactory(is_active=active, name=name, type=Importer.ORGANISATION)
-
         for member in members:
-            if member["active"]:
-                user = self.create_user(account_status=User.ACTIVE)
-            else:
-                user = self.create_user(account_status=User.CANCELLED)
+            user = User.objects.get(username=member["username"])
 
-            for m in member["personal"]:
+            for m in member.get("personal", []):
                 PersonalEmail(user=user, email=m["email"], portal_notifications=m["notify"]).save()
             if "alternative" in member:
-                for m in member["alternative"]:
+                for m in member.get("alternative", []):
                     AlternativeEmail(
                         user=user, email=m["email"], portal_notifications=m["notify"]
                     ).save()
 
-            organisation_add_contact(importer, user)
-
-    def create_individual_importer(self, name=None, active=True, user=None):
-        is_active = user["active"]
-        if is_active:
-            _user = self.create_user(account_status=User.ACTIVE)
-        else:
-            _user = self.create_user(account_status=User.BLOCKED)
-
-        ImporterFactory(is_active=active, user=_user, name=name, type=Importer.INDIVIDUAL)
-        for m in user["personal"]:
-            PersonalEmail(user=_user, email=m["email"], portal_notifications=m["notify"]).save()
-
-    def create_exporter(self, name=None, active=True, members=None):
-        if not members:
-            members = []
-
-        exporter = ExporterFactory(is_active=active, name=name)
-
-        for member in members:
-            if member["active"]:
-                user = self.create_user(account_status=User.ACTIVE)
-            else:
-                user = self.create_user(account_status=User.CANCELLED)
-
-            for m in member["personal"]:
-                PersonalEmail(user=user, email=m["email"], portal_notifications=m["notify"]).save()
-            if "alternative" in member:
-                for m in member["alternative"]:
-                    AlternativeEmail(
-                        user=user, email=m["email"], portal_notifications=m["notify"]
-                    ).save()
-
-            organisation_add_contact(exporter, user)
-
-    def setup_importers(self):
+    def setup_user_emails(self):
         # An active import organisation
-        self.create_importer_org(
-            name="An import organisation",
+        self.create_user_emails(
             members=[
                 {
-                    "active": True,
+                    "username": "I1_main_contact",
                     "personal": [
-                        {"email": "active_org_user@example.com", "notify": True},  # /PS-IGNORE
                         {
-                            "email": "active_org_user_second_email@example.com",  # /PS-IGNORE
+                            "email": "I1_main_contact_second_email@example.com",  # /PS-IGNORE
                             "notify": True,
                         },
                         {
-                            "email": "active_org_user_no_notify@example.com",  # /PS-IGNORE
+                            "email": "I1_main_contact_no_notify@example.com",  # /PS-IGNORE
                             "notify": False,
                         },
                     ],
                     "alternative": [
-                        {"email": "active_org_user_alt@example.com", "notify": True},  # /PS-IGNORE
+                        {"email": "I1_main_contact_alt@example.com", "notify": True},  # /PS-IGNORE
                         {
-                            "email": "active_org_user_alt_no_notify@example.com",  # /PS-IGNORE
+                            "email": "I1_main_contact_alt_no_notify@example.com",  # /PS-IGNORE
                             "notify": False,
                         },
                     ],
                 },
                 {
-                    "active": True,
-                    "personal": [
-                        {
-                            "email": "second_active_org_user@example.com",  # /PS-IGNORE
-                            "notify": True,
-                        }
-                    ],
+                    "username": "I1_A1_main_contact",
                     "alternative": [
                         {
-                            "email": "second_active_org_user_alt@example.com",  # /PS-IGNORE
+                            "email": "I1_A1_main_contact_alt@example.com",  # /PS-IGNORE
                             "notify": True,
                         }
                     ],
                 },
                 {
-                    "active": False,
-                    "personal": [
-                        {"email": "deactive_org_user@example.com", "notify": True}  # /PS-IGNORE
-                    ],
-                },
-            ],
-        )
-
-        # An archived import organisation
-        self.create_importer_org(
-            name="Another import organisation",
-            active=False,
-            members=[
-                {
-                    "active": True,
-                    "personal": [
-                        {"email": "archived_org_user@example.com", "notify": True}  # /PS-IGNORE
-                    ],
-                    "alternative": [
-                        {"email": "archived_org_user_alt@example.com", "notify": True}  # /PS-IGNORE
-                    ],
-                },
-            ],
-        )
-
-        # An active individual importer
-        self.create_individual_importer(
-            active=True,
-            name="An individual importer",
-            user={
-                "active": True,
-                "personal": [
-                    {"email": "ind_importer_user@example.com", "notify": True},  # /PS-IGNORE
-                    {"email": "ind_importer_no_notify@example.com", "notify": False},  # /PS-IGNORE
-                ],
-            },
-        )
-
-        # An archived individual importer
-        self.create_individual_importer(
-            active=False,
-            name="Another individual importer",
-            user={
-                "active": True,
-                "personal": [
-                    {
-                        "email": "deactive_ind_importer_user@example.com",  # /PS-IGNORE
-                        "notify": True,
-                    },
-                    {
-                        "email": "deactive_ind_importer_no_notify@example.com",  # /PS-IGNORE
-                        "notify": False,
-                    },
-                ],
-            },
-        )
-
-    def setup_exporters(self):
-        # An active exporter
-        self.create_exporter(
-            name="An exporter",
-            members=[
-                {
-                    "active": True,
-                    "personal": [
-                        {"email": "active_export_user@example.com", "notify": True},  # /PS-IGNORE
-                        {
-                            "email": "active_export_user_no_notify@example.com",  # /PS-IGNORE
-                            "notify": False,
-                        },
-                    ],
+                    "username": "I3_inactive_contact",
                     "alternative": [
                         {
-                            "email": "active_export_user_alt@example.com",  # /PS-IGNORE
-                            "notify": True,
-                        },
-                        {
-                            "email": "active_export_user_alt_no_notify@example.com",  # /PS-IGNORE
-                            "notify": False,
-                        },
-                    ],
-                },
-                {
-                    "active": True,
-                    "personal": [
-                        {
-                            "email": "second_active_export_user@example.com",  # /PS-IGNORE
+                            "email": "I3_inactive_contact_alt@example.com",  # /PS-IGNORE
                             "notify": True,
                         }
                     ],
                 },
                 {
-                    "active": False,
+                    "username": "E1_main_contact",
                     "personal": [
-                        {"email": "deactive_export_user@example.com", "notify": True}  # /PS-IGNORE
+                        {
+                            "email": "E1_main_contact_second_email@example.com",  # /PS-IGNORE
+                            "notify": True,
+                        },
+                        {
+                            "email": "E1_main_contact_no_notify@example.com",  # /PS-IGNORE
+                            "notify": False,
+                        },
+                    ],
+                    "alternative": [
+                        {
+                            "email": "E1_main_contact_alt@example.com",  # /PS-IGNORE
+                            "notify": True,
+                        },
+                        {
+                            "email": "E1_main_contact_alt_no_notify@example.com",  # /PS-IGNORE
+                            "notify": False,
+                        },
                     ],
                 },
-            ],
-        )
-
-        # An archived import organisation
-        self.create_exporter(
-            name="Another exporter",
-            active=False,
-            members=[
                 {
-                    "active": True,
-                    "personal": [
-                        {"email": "archived_export_user@example.com", "notify": True}  # /PS-IGNORE
+                    "username": "E1_A1_main_contact",
+                    "alternative": [
+                        {
+                            "email": "E1_A1_main_contact_alt@example.com",  # /PS-IGNORE
+                            "notify": True,
+                        },
+                        {
+                            "email": "E1_A1_main_contact_alt_no_notify@example.com",  # /PS-IGNORE
+                            "notify": False,
+                        },
                     ],
+                },
+                {
+                    "username": "E3_inactive_contact",
                     "alternative": [
                         {
                             "email": "archived_export_user_alt@example.com",  # /PS-IGNORE
@@ -242,8 +114,7 @@ class TestEmail(TestCase):
         )
 
     def setUp(self):
-        self.setup_importers()
-        self.setup_exporters()
+        self.setup_user_emails()
 
     def test_send_email(self):
         email.send_email.delay(
@@ -294,40 +165,44 @@ class TestEmail(TestCase):
             "Test subject", "Test message", html_message="<p>Test message</p>", to_importers=True
         )
         outbox = mail.outbox
-        assert len(outbox) == 7
+        assert len(outbox) == 3
         # Many-to-many relations order is not guaranteed
         # Members of exporter team might have different order
         # Testing by length
         for o in outbox:
             if len(o.to) == 3:
-                assert "active_org_user@example.com" in o.to  # /PS-IGNORE
-                assert "active_org_user_second_email@example.com" in o.to  # /PS-IGNORE
-                assert "active_org_user_alt@example.com" in o.to  # /PS-IGNORE
+                assert "I1_main_contact@example.com" in o.to  # /PS-IGNORE
+                assert "I1_main_contact_second_email@example.com" in o.to  # /PS-IGNORE
+                assert "I1_main_contact_alt@example.com" in o.to  # /PS-IGNORE
             elif len(o.to) == 2:
-                assert "second_active_org_user@example.com" in o.to  # /PS-IGNORE
-                assert "second_active_org_user_alt@example.com" in o.to  # /PS-IGNORE
+                assert "I1_A1_main_contact@example.com" in o.to  # /PS-IGNORE
+                assert "I1_A1_main_contact_alt@example.com" in o.to  # /PS-IGNORE
             elif len(o.to) == 1:
-                pass
+                assert "I2_main_contact@example.com" in o.to  # /PS-IGNORE
             else:
-                raise AssertionError(o.to)
+                raise AssertionError(f"Test failed with invalid email recipients {str(o.to)}")
 
     def test_send_mailshot_to_exporters(self):
         email.send_mailshot.delay(
             "Test subject", "Test message", html_message="<p>Test message</p>", to_exporters=True
         )
         outbox = mail.outbox
-        assert len(outbox) == 6
+        assert len(outbox) == 3
         # Many-to-many relations order is not guaranteed
         # Members of exporter team might have different order
         # Testing by length
         for o in outbox:
-            if len(o.to) == 2:
-                assert "active_export_user@example.com" in o.to  # /PS-IGNORE
-                assert "active_export_user_alt@example.com" in o.to  # /PS-IGNORE
+            if len(o.to) == 3:
+                assert "E1_main_contact@example.com" in o.to  # /PS-IGNORE
+                assert "E1_main_contact_second_email@example.com" in o.to  # /PS-IGNORE
+                assert "E1_main_contact_alt@example.com" in o.to  # /PS-IGNORE
+            elif len(o.to) == 2:
+                assert "E1_A1_main_contact@example.com" in o.to  # /PS-IGNORE
+                assert "E1_A1_main_contact_alt@example.com" in o.to  # /PS-IGNORE
             elif len(o.to) == 1:
-                pass
+                assert "E2_main_contact@example.com" in o.to  # /PS-IGNORE
             else:
-                raise AssertionError(o.to)
+                raise AssertionError(f"Test failed with invalid email recipients {str(o.to)}")
 
 
 @pytest.mark.django_db
@@ -426,7 +301,7 @@ def test_send_reassign_email(ilb_admin_client, fa_sil_app_submitted):
 
     m = outbox[0]
 
-    assert m.to == ["ilb_admin_user@email.com"]  # /PS-IGNORE
+    assert m.to == ["ilb_admin_user@example.com"]  # /PS-IGNORE
     assert m.subject == f"ICMS Case Ref. {app.reference} has been assigned to you"
     assert f"ICMS Case Ref. { app.reference } has been assigned to you." in m.body
     assert "Handover Details" not in m.body
@@ -443,7 +318,7 @@ def test_send_reassign_email_with_comment(ilb_admin_client, fa_sil_app_submitted
 
     m = outbox[0]
 
-    assert m.to == ["ilb_admin_user@email.com"]  # /PS-IGNORE
+    assert m.to == ["ilb_admin_user@example.com"]  # /PS-IGNORE
     assert m.subject == f"ICMS Case Ref. {app.reference} has been assigned to you"
     assert f"ICMS Case Ref. { app.reference } has been assigned to you." in m.body
     assert "Handover Details" in m.body
@@ -459,7 +334,7 @@ def test_send_reassign_email_with_comment(ilb_admin_client, fa_sil_app_submitted
             2,
             "Withdrawal Request: ",
             "A withdrawal request has been submitted",
-            "ilb_admin_user@email.com",  # /PS-IGNORE
+            "ilb_admin_user@example.com",  # /PS-IGNORE
         ),
         (
             WithdrawApplication.Statuses.ACCEPTED,
@@ -480,7 +355,7 @@ def test_send_reassign_email_with_comment(ilb_admin_client, fa_sil_app_submitted
             2,
             "Withdrawal Request Cancelled: ",
             "has been cancelled.",
-            "ilb_admin_user@email.com",  # /PS-IGNORE
+            "ilb_admin_user@example.com",  # /PS-IGNORE
         ),
     ],
 )

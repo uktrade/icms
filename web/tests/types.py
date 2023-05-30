@@ -8,12 +8,14 @@ from web.permissions import ExporterObjectPermissions, ImporterObjectPermissions
 class ImporterContact:
     username: str
     permissions: list[ImporterObjectPermissions]
+    is_active: bool = True
 
 
 @dataclasses.dataclass
 class ExporterContact:
     username: str
     permissions: list[ExporterObjectPermissions]
+    is_active: bool = True
 
 
 @dataclasses.dataclass
@@ -32,6 +34,7 @@ class AgentImporter:
     contacts: list[ImporterContact]
     type: Literal["INDIVIDUAL", "ORGANISATION"] = "ORGANISATION"
     region: Literal[None, "E", "O"] = None
+    is_active: bool = True
 
 
 @dataclasses.dataclass
@@ -43,6 +46,7 @@ class TestImporter:
     agents: list[AgentImporter]
     type: Literal["INDIVIDUAL", "ORGANISATION"] = "ORGANISATION"
     region: Literal[None, "E", "O"] = None
+    is_active: bool = True
 
 
 @dataclasses.dataclass
@@ -51,6 +55,7 @@ class AgentExporter:
     registered_number: str
     offices: list[Office]
     contacts: list[ExporterContact]
+    is_active: bool = True
 
 
 @dataclasses.dataclass
@@ -60,3 +65,5 @@ class TestExporter:
     offices: list[Office]
     contacts: list[ExporterContact]
     agents: list[AgentExporter]
+    type: Literal["INDIVIDUAL", "ORGANISATION"] = "ORGANISATION"
+    is_active: bool = True

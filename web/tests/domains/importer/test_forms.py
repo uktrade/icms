@@ -2,7 +2,6 @@ from unittest.mock import patch
 
 import pytest
 from django.contrib.auth.models import Group
-from django.test import TestCase
 
 from web.domains.importer.forms import (
     ImporterFilter,
@@ -11,42 +10,27 @@ from web.domains.importer.forms import (
 )
 from web.models import Importer, User
 from web.permissions import Perms
-from web.tests.domains.importer.factory import ImporterFactory
 from web.tests.domains.user.factory import UserFactory
 
 
-class TestImporterFilter(TestCase):
-    def setUp(self):
-        ImporterFactory(
-            name="Archived Importer Organisation", type=Importer.ORGANISATION, is_active=False
-        )
-        ImporterFactory(
-            name="Active Importer Organisation", type=Importer.ORGANISATION, is_active=True
-        )
-        ImporterFactory(
-            name="Archived Individual Importer", type=Importer.INDIVIDUAL, is_active=False
-        )
-        ImporterFactory(name="Active Individual Importer", type=Importer.INDIVIDUAL, is_active=True)
+@pytest.mark.django_db()
+def test_name_filter():
+    results = ImporterFilter(data={"name": "importer 1"}).qs
+    assert results.count() == 1
 
-    def run_filter(self, data=None):
-        return ImporterFilter(data=data).qs
 
-    def test_name_filter(self):
-        results = self.run_filter({"name": "org"})
-        assert results.count() == 2
+@pytest.mark.django_db()
+def test_entity_type_filter():
+    results = ImporterFilter(data={"importer_entity_type": Importer.INDIVIDUAL}).qs
+    assert results.count() == 1
 
-    def test_entity_type_filter(self):
-        results = self.run_filter({"importer_entity_type": Importer.INDIVIDUAL})
-        assert results.count() == 2
 
-    def test_filter_order(self):
-        results = self.run_filter({"name": "import"})
-        # We have added two organisation importers to use as a pytest fixture
-        assert results.count() == 4 + 2
-        first = results.first()
-        last = results.last()
-        assert first.name == "Active Importer Organisation"
-        assert last.name == "Archived Individual Importer"
+@pytest.mark.django_db()
+def test_filter_order():
+    results = ImporterFilter(data={"name": "import"}).qs
+    assert results.count() == 3
+    assert results.first().name == "Test Importer 1"
+    assert results.last().name == "Test Importer 3 Inactive"
 
 
 def test_required_fields_importer_individual_form():
