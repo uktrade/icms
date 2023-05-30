@@ -120,6 +120,7 @@ class Command(BaseCommand):
             type=imp.type,
             region_origin=imp.region,
             main_importer=main_importer,
+            is_active=imp.is_active,
         )
 
         importer_offices = [
@@ -143,6 +144,7 @@ class Command(BaseCommand):
             name=exp.exporter_name,
             registered_number=exp.registered_number,
             main_exporter=main_exporter,
+            is_active=exp.is_active,
         )
 
         exporter_offices = [
@@ -164,7 +166,7 @@ class Command(BaseCommand):
         obj_perms: type[ImporterObjectPermissions | ExporterObjectPermissions],
         main_org: Importer | Exporter | None = None,
     ) -> None:
-        user = self.create_user(contact.username)
+        user = self.create_user(contact.username, contact.is_active)
 
         PersonalEmail.objects.create(
             user=user,
@@ -183,20 +185,23 @@ class Command(BaseCommand):
             assign_perm(obj_perms.is_agent, user, main_org)
 
     @staticmethod
-    def create_user(username):
+    def create_user(username, is_active=True):
         return User.objects.create_user(
             username=username,
             password="test",
             password_disposition=User.FULL,
             is_superuser=False,
-            account_status=User.ACTIVE,
-            is_active=True,
-            email=f"{username}@email.com",  # /PS-IGNORE
+            account_status=User.ACTIVE if is_active else User.CANCELLED,
+            is_active=is_active,
+            email=f"{username}@example.com",  # /PS-IGNORE
             first_name=f"{username}_first_name",
             last_name=f"{username}_last_name",
             date_of_birth=datetime.date(2000, 1, 1),
             security_question="security_question",
             security_answer="security_answer",
+            job_title=f"{username}_job_title",
+            organisation=f"{username}_org",
+            department=f"{username}_dep",
         )
 
     def create_import_access_request(self, user):

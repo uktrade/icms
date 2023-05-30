@@ -63,7 +63,7 @@ def send_to_importer_contacts(
         return
 
     obj_perms = get_org_obj_permissions(importer)
-    contacts = organisation_get_contacts(importer, perms=[obj_perms.is_contact.codename])
+    contacts = organisation_get_contacts(importer, perms=[obj_perms.edit.codename])
     send_to_contacts(subject, message, contacts, html_message)
 
 
@@ -78,8 +78,7 @@ def send_to_exporter_contacts(
 ) -> None:
     obj_perms = get_org_obj_permissions(exporter)
 
-    # TODO ICMSLST-1968 is_contact perm deprecated
-    contacts = organisation_get_contacts(exporter, perms=[obj_perms.is_contact.codename])
+    contacts = organisation_get_contacts(exporter, perms=[obj_perms.edit.codename])
     send_to_contacts(subject, message, contacts, html_message)
 
 

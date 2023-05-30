@@ -30,6 +30,11 @@ IMPORTER_ONE = TestImporter(
             "I1_main_contact",
             [ImpOP.manage_contacts_and_agents, ImpOP.edit, ImpOP.view, ImpOP.is_contact],
         ),
+        ImporterContact(
+            "I1_inactive_contact",
+            [ImpOP.manage_contacts_and_agents, ImpOP.edit, ImpOP.view, ImpOP.is_contact],
+            is_active=False,
+        ),
     ],
     agents=[
         AgentImporter(
@@ -67,6 +72,28 @@ IMPORTER_TWO = TestImporter(
     agents=[],
 )
 
+IMPORTER_THREE = TestImporter(
+    importer_name="Test Importer 3 Inactive",
+    eori_number="GB3333333333ABCDE",
+    is_active=False,
+    offices=[
+        Office(
+            address_1="I3 address line 1",
+            address_2="I3 address line 2",
+            postcode="S120SG",  # /PS-IGNORE
+        ),
+    ],
+    contacts=[
+        ImporterContact(
+            "I3_inactive_contact",
+            [ImpOP.manage_contacts_and_agents, ImpOP.edit, ImpOP.view, ImpOP.is_contact],
+            is_active=False,
+        )
+    ],
+    type="INDIVIDUAL",
+    agents=[],
+)
+
 EXPORTER_ONE = TestExporter(
     exporter_name="Test Exporter 1",
     registered_number="111",
@@ -81,7 +108,12 @@ EXPORTER_ONE = TestExporter(
         ExporterContact(
             "E1_main_contact",
             [ExpOP.manage_contacts_and_agents, ExpOP.edit, ExpOP.view, ExpOP.is_contact],
-        )
+        ),
+        ExporterContact(
+            "E1_inactive_contact",
+            [ExpOP.manage_contacts_and_agents, ExpOP.edit, ExpOP.view, ExpOP.is_contact],
+            is_active=False,
+        ),
     ],
     agents=[
         AgentExporter(
@@ -120,6 +152,28 @@ EXPORTER_TWO = TestExporter(
     agents=[],
 )
 
+EXPORTER_THREE = TestExporter(
+    exporter_name="Test Exporter 3 Inactive",
+    registered_number="333",
+    is_active=False,
+    offices=[
+        Office(
+            address_1="E3 address line 1",
+            address_2="E3 address line 2",
+            postcode="ZE29NQ",  # /PS-IGNORE
+        ),
+    ],
+    contacts=[
+        ExporterContact(
+            "E3_inactive_contact",
+            [ExpOP.manage_contacts_and_agents, ExpOP.edit, ExpOP.view, ExpOP.is_contact],
+            is_active=False,
+        )
+    ],
+    type="INDIVIDUAL",
+    agents=[],
+)
 
-TEST_IMPORTERS: list[TestImporter] = [IMPORTER_ONE, IMPORTER_TWO]
-TEST_EXPORTERS: list[TestExporter] = [EXPORTER_ONE, EXPORTER_TWO]
+
+TEST_IMPORTERS: list[TestImporter] = [IMPORTER_ONE, IMPORTER_TWO, IMPORTER_THREE]
+TEST_EXPORTERS: list[TestExporter] = [EXPORTER_ONE, EXPORTER_TWO, EXPORTER_THREE]

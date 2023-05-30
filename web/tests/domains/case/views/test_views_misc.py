@@ -157,7 +157,7 @@ def test_request_withdrawal(importer_client, wood_app_submitted, importer_one_co
     assert wood_app_submitted.withdrawals.count() == 1
     _check_withdrawal_email_sent(
         "Withdrawal Request",
-        ["ilb_admin_user@email.com", "ilb_admin_two@email.com"],  # /PS-IGNORE
+        ["ilb_admin_user@example.com", "ilb_admin_two@example.com"],  # /PS-IGNORE
     )
 
 
@@ -180,7 +180,7 @@ def test_archive_withdrawal(importer_client, wood_app_submitted, importer_one_co
 
     _check_withdrawal_email_sent(
         "Withdrawal Request Cancelled",
-        ["ilb_admin_user@email.com", "ilb_admin_two@email.com"],  # /PS-IGNORE
+        ["ilb_admin_user@example.com", "ilb_admin_two@example.com"],  # /PS-IGNORE
     )
 
 
@@ -681,7 +681,7 @@ def _test_reassign_ownership_view(ilb_admin_client, ilb_admin_user, ilb_admin_tw
     assert app.case_notes.count() == 1
     assert app.case_notes.get(note="A comment")
     assert len(outbox) == 1
-    assert outbox[0].to == ["ilb_admin_user@email.com"]  # /PS-IGNORE
+    assert outbox[0].to == ["ilb_admin_user@example.com"]  # /PS-IGNORE
 
 
 def test_import_reassign_ownership_view(
