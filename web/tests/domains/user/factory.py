@@ -19,10 +19,3 @@ class UserFactory(factory.django.DjangoModelFactory):
     is_active = True
     account_status = User.ACTIVE
     password_disposition = User.FULL
-
-
-class ActiveUserFactory(UserFactory):
-    account_status = User.ACTIVE
-    is_active = True
-    is_staff = False
-    password_disposition = User.FULL

@@ -2859,3 +2859,8 @@ page.object_list
 PS-IGNORE
 Test Importer 3 Inactive
 A1
+Exporter Access Requests</h4
+pending_importer_access_requests.exists
+A Test Org
+importer.user
+ICMSLST-2018 Add

@@ -1,41 +1,35 @@
-{% if not (request.user.is_importer() or request.user.is_exporter() ) %}
+<h3>Pending Access Requests</h3>
+
+{% if "web.importer_access" not in perms and "web.exporter_access" not in perms %}
     <div class="info-box info-box-info">
-      <p>
-      You are not currently associated with any importers/exporters. 
-      Please complete an access request below to begin using the system. 
-      You may complete further access requests after submission if you require access to 
-      multiple importers/exporters.
-      </p>
+      You are not currently associated with any importers / exporters.
+      <br>
+      Please complete an access request below to begin using the system.
+      <br>
+      You may complete further access requests after submission if you require access to multiple importers / exporters.
     </div>
 {% endif %}
 
-{% if exporter_access_requests or importer_access_requests %}
-  <h3>
-    Pending Access Requests
-  </h3>
+<p>
+  Below are any pending access requests you have made. You will receive an email
+  notification when your request has been processed (usually within 1 working day).
+</p>
 
-  <p>
-    Below are any pending access requests you have made. You will receive an email 
-    notification when your request has been processed (usually within 1 working day).
-  </p>
+{% if pending_importer_access_requests.exists() %}
+  <h4>Importer Access Requests</h4>
+  <div class="pending-import-requests">
+    {% with requests = pending_importer_access_requests %}
+      {% include "web/domains/case/access/partials/access-request-list.html" %}
+    {% endwith %}
+  </div>
+{% endif %}
 
-  {% if importer_access_requests %}
-    <h4>Importer Access Requests</h4>
 
-    <div class="pending-import-requests">
-      {% with requests = importer_access_requests %}
-        {% include "web/domains/case/access/partials/access-request-list.html" %}
-      {% endwith %}
-    </div>
-  {% endif %}
-
-  {% if exporter_access_requests %}
-    <h4>Exporter Access Requests</h4>
-
-    <div class="pending-export-requests">
-      {% with requests = exporter_access_requests %}
-        {% include "web/domains/case/access/partials/access-request-list.html" %}
-      {% endwith %}
-    </div>
-  {% endif %}
+{% if pending_exporter_access_requests.exists() %}
+  <h4>Exporter Access Requests</h4>
+  <div class="pending-export-requests">
+    {% with requests = pending_exporter_access_requests %}
+      {% include "web/domains/case/access/partials/access-request-list.html" %}
+    {% endwith %}
+  </div>
 {% endif %}
