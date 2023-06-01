@@ -7,7 +7,7 @@ from guardian.shortcuts import get_objects_for_user
 
 from web.domains.template.context import CoverLetterTemplateContext
 from web.domains.template.utils import find_invalid_placeholders
-from web.forms.widgets import DateInput
+from web.forms.widgets import DateInput, JoditTextArea
 from web.models import (
     EndorsementImportApplication,
     ImportApplication,
@@ -169,7 +169,7 @@ class CoverLetterForm(forms.ModelForm):
     class Meta:
         model = ImportApplication
         fields = ("cover_letter_text",)
-        widgets = {"cover_letter_text": forms.Textarea(attrs={"lang": "html"})}
+        widgets = {"cover_letter_text": JoditTextArea(attrs={"lang": "html"})}
 
     def __init__(self, *args, readonly: bool = False, **kwargs):
         super().__init__(*args, **kwargs)
