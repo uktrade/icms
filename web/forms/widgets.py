@@ -57,3 +57,15 @@ class CheckboxSelectMultiple(widgets.CheckboxSelectMultiple):
         attrs["class"] = "radio-input"
 
         super().__init__(attrs, choices)
+
+
+class JoditTextArea(widgets.Textarea):
+    def __init__(self, attrs=None):
+        if attrs is None:
+            attrs = {}
+
+        # Setting this class means web/js/components/text-editor.js can initialise
+        # this textarea as a jodit editor.
+        attrs["class"] = "icms-jodit-editor"
+
+        super().__init__(attrs)

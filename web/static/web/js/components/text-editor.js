@@ -12,7 +12,7 @@ if ($('textarea').length) {
         ]
     }
 
-    Jodit.make('textarea', {
+    Jodit.make("textarea.icms-jodit-editor", {
         readonly: readonly,
         buttons: buttons,
         buttonsMD: buttons,
