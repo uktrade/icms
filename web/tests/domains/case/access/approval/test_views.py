@@ -1,27 +1,460 @@
-def test_exporter_management_access_approval_ok(
-    exporter_client, ilb_admin_client, exporter_access_request
+from http import HTTPStatus
+
+import pytest
+from django.urls import reverse
+from pytest_django.asserts import assertRedirects
+
+from web.flow.models import ProcessTypes
+from web.models import (
+    ApprovalRequest,
+    Exporter,
+    ExporterAccessRequest,
+    ExporterApprovalRequest,
+    Importer,
+    ImporterAccessRequest,
+    ImporterApprovalRequest,
+    User,
+)
+from web.tests.auth import AuthTestCase
+
+
+def get_linked_access_request(
+    access_request: ImporterAccessRequest | ExporterAccessRequest,
+    org: Importer | Exporter,
+) -> ImporterAccessRequest | ExporterAccessRequest:
+    access_request.link = org
+    access_request.save()
+
+    return access_request
+
+
+def add_approval_request(
+    access_request: ImporterAccessRequest | ExporterAccessRequest,
+    requested_by: User,
+    requested_from: User | None = None,
+    status: str = ApprovalRequest.OPEN,
 ):
-    response = exporter_client.get("/access/case/3/exporter/approval-request/")
+    match access_request:
+        case ImporterAccessRequest():
+            process_type = ProcessTypes.ImpApprovalReq
+            model_cls = ImporterApprovalRequest
 
-    assert response.status_code == 403
+        case ExporterAccessRequest():
+            process_type = ProcessTypes.ExpApprovalReq
+            model_cls = ExporterApprovalRequest
+        case _:
+            raise ValueError(f"invalid access request: {access_request}")
 
-    access_request = exporter_access_request
+    return model_cls.objects.create(
+        access_request=access_request,
+        process_type=process_type,
+        status=status,
+        requested_by=requested_by,
+        requested_from=requested_from,
+    )
 
-    response = ilb_admin_client.get(f"/access/case/{access_request.pk}/exporter/approval-request/")
 
-    assert response.status_code == 200
-    assert "Exporter Access Approval" in response.content.decode()
+class TestManageAccessApprovalView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, importer_access_request, exporter_access_request):
+        # Link the access requests to the orgs.
+        self.iar = get_linked_access_request(importer_access_request, self.importer)
+        self.ear = get_linked_access_request(exporter_access_request, self.exporter)
+
+        self.importer_url = reverse(
+            "access:case-management-access-approval",
+            kwargs={"access_request_pk": self.iar.pk, "entity": "importer"},
+        )
+        self.exporter_url = reverse(
+            "access:case-management-access-approval",
+            kwargs={"access_request_pk": self.ear.pk, "entity": "exporter"},
+        )
+
+    def test_permission(self):
+        for url in [self.importer_url, self.exporter_url]:
+            response = self.ilb_admin_client.get(url)
+            assert response.status_code == HTTPStatus.OK
+
+            response = self.importer_client.get(url)
+            assert response.status_code == HTTPStatus.FORBIDDEN
+
+            response = self.exporter_client.get(url)
+            assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_get(self):
+        # Check only active importer one contacts with manage are available
+        response = self.ilb_admin_client.get(self.importer_url)
+        assert response.status_code == HTTPStatus.OK
+
+        context = response.context
+        requested_from = context["form"].fields["requested_from"].queryset
+
+        assert requested_from.count() == 1
+        assert requested_from.first() == self.importer_user
+
+        # Check only active exporter one contacts with manage are available
+        response = self.ilb_admin_client.get(self.exporter_url)
+        assert response.status_code == HTTPStatus.OK
+
+        context = response.context
+        requested_from = context["form"].fields["requested_from"].queryset
+
+        assert requested_from.count() == 1
+        assert requested_from.first() == self.exporter_user
+
+    def test_post(self):
+        #
+        # Test importer access approval request
+        #
+        form_data = {
+            "status": ApprovalRequest.DRAFT,
+            "requested_from": self.importer_user.pk,
+        }
+        response = self.ilb_admin_client.post(self.importer_url, data=form_data)
+
+        assertRedirects(response, self.importer_url, HTTPStatus.FOUND)
+
+        approval_request = self.iar.approval_requests.get(is_active=True)
+        assert approval_request.status == ApprovalRequest.OPEN
+        assert approval_request.requested_from == self.importer_user
+        assert approval_request.access_request == self.iar
+        assert approval_request.requested_by == self.ilb_admin_user
+
+        #
+        # Test exporter access approval request
+        #
+        form_data = {
+            "status": ApprovalRequest.DRAFT,
+            "requested_from": self.exporter_user.pk,
+        }
+        response = self.ilb_admin_client.post(self.exporter_url, data=form_data)
+
+        assertRedirects(response, self.exporter_url, HTTPStatus.FOUND)
+
+        approval_request = self.ear.approval_requests.get(is_active=True)
+        assert approval_request.status == ApprovalRequest.OPEN
+        assert approval_request.requested_from == self.exporter_user
+        assert approval_request.access_request == self.ear
+        assert approval_request.requested_by == self.ilb_admin_user
 
 
-def test_importer_management_access_approval_ok(
-    importer_client, ilb_admin_client, importer_access_request
-):
-    response = importer_client.get("/access/case/3/importer/approval-request/")
-    assert response.status_code == 403
+class TestManageAccessApprovalWithdrawView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, importer_access_request, exporter_access_request):
+        # Link the access requests to the orgs.
+        self.iar = get_linked_access_request(importer_access_request, self.importer)
+        self.iar_approval = add_approval_request(self.iar, self.ilb_admin_user, self.importer_user)
 
-    access_request = importer_access_request
+        self.ear = get_linked_access_request(exporter_access_request, self.exporter)
+        self.ear_approval = add_approval_request(self.ear, self.ilb_admin_user, self.exporter_user)
 
-    response = ilb_admin_client.get(f"/access/case/{access_request.pk}/importer/approval-request/")
+        self.importer_url = reverse(
+            "access:case-management-approval-request-withdraw",
+            kwargs={
+                "access_request_pk": self.iar.pk,
+                "entity": "importer",
+                "approval_request_pk": self.iar_approval.pk,
+            },
+        )
+        self.exporter_url = reverse(
+            "access:case-management-approval-request-withdraw",
+            kwargs={
+                "access_request_pk": self.ear.pk,
+                "entity": "exporter",
+                "approval_request_pk": self.ear_approval.pk,
+            },
+        )
 
-    assert response.status_code == 200
-    assert "Importer Access Approval" in response.content.decode()
+    def test_permission(self):
+        for url in [self.importer_url, self.exporter_url]:
+            response = self.ilb_admin_client.get(url)
+            assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+            response = self.ilb_admin_client.post(url)
+            assert response.status_code == HTTPStatus.FOUND
+
+            response = self.importer_client.get(url)
+            assert response.status_code == HTTPStatus.FORBIDDEN
+
+            response = self.exporter_client.get(url)
+            assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_post(self):
+        #
+        # Test importer access approval request
+        #
+        assert self.iar_approval.status == ApprovalRequest.OPEN
+
+        response = self.ilb_admin_client.post(self.importer_url)
+
+        assertRedirects(
+            response,
+            reverse(
+                "access:case-management-access-approval",
+                kwargs={"access_request_pk": self.iar.pk, "entity": "importer"},
+            ),
+        )
+
+        self.iar_approval.refresh_from_db()
+        assert self.iar_approval.status == ApprovalRequest.CANCELLED
+
+        #
+        # Test exporter access approval request
+        #
+        assert self.ear_approval.status == ApprovalRequest.OPEN
+
+        response = self.ilb_admin_client.post(self.exporter_url)
+
+        assertRedirects(
+            response,
+            reverse(
+                "access:case-management-access-approval",
+                kwargs={"access_request_pk": self.ear.pk, "entity": "exporter"},
+            ),
+        )
+
+        self.ear_approval.refresh_from_db()
+        assert self.ear_approval.status == ApprovalRequest.CANCELLED
+
+
+class TestTakeOwnershipAccessApprovalView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, importer_access_request, exporter_access_request):
+        # Link the access requests to the orgs.
+        self.iar = get_linked_access_request(importer_access_request, self.importer)
+        self.iar_approval = add_approval_request(self.iar, self.ilb_admin_user)
+
+        self.ear = get_linked_access_request(exporter_access_request, self.exporter)
+        self.ear_approval = add_approval_request(self.ear, self.ilb_admin_user)
+
+        self.importer_url = reverse(
+            "access:case-approval-take-ownership",
+            kwargs={"approval_request_pk": self.iar_approval.pk, "entity": "importer"},
+        )
+        self.exporter_url = reverse(
+            "access:case-approval-take-ownership",
+            kwargs={"approval_request_pk": self.ear_approval.pk, "entity": "exporter"},
+        )
+
+    def test_permission(self):
+        #
+        # Test importer url
+        #
+        response = self.ilb_admin_client.get(self.importer_url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+        response = self.ilb_admin_client.post(self.importer_url)
+        assert response.status_code == HTTPStatus.FOUND
+
+        # Need to reset requested_from
+        self.iar_approval.requested_from = None
+        self.iar_approval.save()
+        response = self.importer_client.post(self.importer_url)
+        assert response.status_code == HTTPStatus.FOUND
+
+        response = self.exporter_client.post(self.importer_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        #
+        # Test exporter url
+        #
+        response = self.ilb_admin_client.get(self.exporter_url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+        response = self.ilb_admin_client.post(self.exporter_url)
+        assert response.status_code == HTTPStatus.FOUND
+
+        # Need to reset requested_from
+        self.ear_approval.requested_from = None
+        self.ear_approval.save()
+        response = self.exporter_client.post(self.exporter_url)
+        assert response.status_code == HTTPStatus.FOUND
+
+        response = self.importer_client.post(self.exporter_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_post(self):
+        response = self.importer_client.post(self.importer_url)
+
+        assert response.status_code == HTTPStatus.FOUND
+        self.iar_approval.refresh_from_db()
+        assert self.iar_approval.requested_from == self.importer_user
+
+        response = self.exporter_client.post(self.exporter_url)
+
+        assert response.status_code == HTTPStatus.FOUND
+        self.ear_approval.refresh_from_db()
+        assert self.ear_approval.requested_from == self.exporter_user
+
+
+class TestReleaseOwnershipAccessApprovalView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, importer_access_request, exporter_access_request):
+        # Link the access requests to the orgs.
+        self.iar = get_linked_access_request(importer_access_request, self.importer)
+        self.iar_approval = add_approval_request(self.iar, self.ilb_admin_user, self.importer_user)
+
+        self.ear = get_linked_access_request(exporter_access_request, self.exporter)
+        self.ear_approval = add_approval_request(self.ear, self.ilb_admin_user, self.exporter_user)
+
+        self.importer_url = reverse(
+            "access:case-approval-release-ownership",
+            kwargs={"approval_request_pk": self.iar_approval.pk, "entity": "importer"},
+        )
+        self.exporter_url = reverse(
+            "access:case-approval-release-ownership",
+            kwargs={"approval_request_pk": self.ear_approval.pk, "entity": "exporter"},
+        )
+
+    def test_permission(self):
+        #
+        # Test importer url
+        #
+        response = self.ilb_admin_client.get(self.importer_url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+        response = self.ilb_admin_client.post(self.importer_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.post(self.importer_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.importer_client.post(self.importer_url)
+        assert response.status_code == HTTPStatus.FOUND
+
+        #
+        # Test exporter url
+        #
+        response = self.ilb_admin_client.get(self.exporter_url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+        response = self.ilb_admin_client.post(self.exporter_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.importer_client.post(self.exporter_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.post(self.exporter_url)
+        assert response.status_code == HTTPStatus.FOUND
+
+    def test_post(self):
+        assert self.iar_approval.requested_from == self.importer_user
+        response = self.importer_client.post(self.importer_url)
+
+        assert response.status_code == HTTPStatus.FOUND
+        self.iar_approval.refresh_from_db()
+        assert self.iar_approval.requested_from is None
+
+        assert self.ear_approval.requested_from == self.exporter_user
+        response = self.exporter_client.post(self.exporter_url)
+
+        assert response.status_code == HTTPStatus.FOUND
+        self.ear_approval.refresh_from_db()
+        assert self.ear_approval.requested_from is None
+
+
+class TestCloseAccessApprovalView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, importer_access_request, exporter_access_request):
+        # Link the access requests to the orgs.
+        self.iar = get_linked_access_request(importer_access_request, self.importer)
+        self.iar_approval = add_approval_request(self.iar, self.ilb_admin_user, self.importer_user)
+
+        self.ear = get_linked_access_request(exporter_access_request, self.exporter)
+        self.ear_approval = add_approval_request(self.ear, self.ilb_admin_user, self.exporter_user)
+
+        self.importer_url = reverse(
+            "access:case-approval-respond",
+            kwargs={
+                "access_request_pk": self.iar.pk,
+                "entity": "importer",
+                "approval_request_pk": self.iar_approval.pk,
+            },
+        )
+        self.exporter_url = reverse(
+            "access:case-approval-respond",
+            kwargs={
+                "access_request_pk": self.ear.pk,
+                "entity": "exporter",
+                "approval_request_pk": self.ear_approval.pk,
+            },
+        )
+
+    def test_permission(self):
+        #
+        # Test importer url
+        #
+        response = self.ilb_admin_client.get(self.importer_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.get(self.importer_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.importer_client.get(self.importer_url)
+        assert response.status_code == HTTPStatus.OK
+
+        #
+        # Test exporter url
+        #
+        response = self.ilb_admin_client.get(self.exporter_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.importer_client.get(self.exporter_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.get(self.exporter_url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_post_approve(self):
+        form_data = {"response": ApprovalRequest.APPROVE, "response_reason": ""}
+
+        #
+        # Test importer approval request
+        #
+        response = self.importer_client.post(self.importer_url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        self.iar_approval.refresh_from_db()
+        assert self.iar_approval.response == ApprovalRequest.APPROVE
+        assert self.iar_approval.response_reason == ""
+        assert self.iar_approval.status == ApprovalRequest.COMPLETED
+        assert self.iar_approval.response_by == self.importer_user
+
+        #
+        # Test exporter approval request
+        #
+        response = self.exporter_client.post(self.exporter_url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        self.ear_approval.refresh_from_db()
+        assert self.ear_approval.response == ApprovalRequest.APPROVE
+        assert self.ear_approval.response_reason == ""
+        assert self.ear_approval.status == ApprovalRequest.COMPLETED
+        assert self.ear_approval.response_by == self.exporter_user
+
+    def test_post_refuse(self):
+        form_data = {"response": ApprovalRequest.REFUSE, "response_reason": "test response reason"}
+
+        #
+        # Test importer approval request
+        #
+        response = self.importer_client.post(self.importer_url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        self.iar_approval.refresh_from_db()
+        assert self.iar_approval.response == ApprovalRequest.REFUSE
+        assert self.iar_approval.response_reason == "test response reason"
+        assert self.iar_approval.status == ApprovalRequest.COMPLETED
+        assert self.iar_approval.response_by == self.importer_user
+
+        #
+        # Test exporter approval request
+        #
+        response = self.exporter_client.post(self.exporter_url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        self.ear_approval.refresh_from_db()
+        assert self.ear_approval.response == ApprovalRequest.REFUSE
+        assert self.ear_approval.response_reason == "test response reason"
+        assert self.ear_approval.status == ApprovalRequest.COMPLETED
+        assert self.ear_approval.response_by == self.exporter_user

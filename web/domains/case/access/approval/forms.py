@@ -1,8 +1,8 @@
 from django.forms import ChoiceField, ModelChoiceField, ModelForm, Textarea
-from guardian.shortcuts import get_users_with_perms
 
 from web.flow.models import ProcessTypes
-from web.models import User
+from web.models import ExporterAccessRequest, ImporterAccessRequest, User
+from web.permissions import get_org_obj_permissions, organisation_get_contacts
 
 from .models import ApprovalRequest, ExporterApprovalRequest, ImporterApprovalRequest
 
@@ -19,18 +19,19 @@ class ExporterApprovalRequestForm(ModelForm):
         model = ExporterApprovalRequest
         fields = ["status", "requested_from"]
 
-    def __init__(self, application, *args, **kwargs):
+    def __init__(self, *args, access_request: ExporterAccessRequest, **kwargs):
         super().__init__(*args, **kwargs)
-        self.application = application
+        self.access_request = access_request
 
-        if self.application.link:
-            users = get_users_with_perms(
-                self.application.link, only_with_perms_in=["is_contact_of_exporter"]
+        if self.access_request.link:
+            obj_perms = get_org_obj_permissions(self.access_request.link)
+            users = organisation_get_contacts(
+                self.access_request.link, perms=[obj_perms.manage_contacts_and_agents.codename]
             )
             self.fields["requested_from"].queryset = users
 
     def clean(self):
-        self.instance.access_request = self.application
+        self.instance.access_request = self.access_request
         self.instance.process_type = ProcessTypes.ExpApprovalReq
         return super().clean()
 
@@ -47,18 +48,19 @@ class ImporterApprovalRequestForm(ModelForm):
         model = ImporterApprovalRequest
         fields = ["status", "requested_from"]
 
-    def __init__(self, application, *args, **kwargs):
+    def __init__(self, *args, access_request: ImporterAccessRequest, **kwargs):
         super().__init__(*args, **kwargs)
-        self.application = application
+        self.access_request = access_request
 
-        if self.application.link:
-            users = get_users_with_perms(
-                self.application.link, only_with_perms_in=["is_contact_of_importer"]
+        if self.access_request.link:
+            obj_perms = get_org_obj_permissions(self.access_request.link)
+            users = organisation_get_contacts(
+                self.access_request.link, perms=[obj_perms.manage_contacts_and_agents.codename]
             )
             self.fields["requested_from"].queryset = users
 
     def clean(self):
-        self.instance.access_request = self.application
+        self.instance.access_request = self.access_request
         self.instance.process_type = ProcessTypes.ImpApprovalReq
         return super().clean()
 
@@ -79,9 +81,11 @@ class ApprovalRequestResponseForm(ModelForm):
 
         response = cleaned_data.get("response")
         reason = cleaned_data.get("response_reason")
-        if response == ApprovalRequest.REFUSE and not reason:
-            self.add_error("response_reason", "You must enter this item")
-        else:
+
+        if response == ApprovalRequest.APPROVE:
             cleaned_data["response_reason"] = ""
+
+        elif response == ApprovalRequest.REFUSE and not reason:
+            self.add_error("response_reason", "You must enter this item")
 
         return cleaned_data

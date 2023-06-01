@@ -236,15 +236,18 @@ def _get_approval_wb_row(
                 is_post=True,
                 url=reverse(
                     "access:case-approval-take-ownership",
-                    kwargs={"pk": app.pk, "entity": entity},
+                    kwargs={"approval_request_pk": app.pk, "entity": entity},
                 ),
                 name="Take Ownership",
             )
         )
 
-    else:
+    #
+    # Only show manage link if the supplied user is the request_from user.
+    #
+    elif app.requested_from == user:
         kwargs = {
-            "application_pk": access_request_pk,
+            "access_request_pk": access_request_pk,
             "entity": entity,
             "approval_request_pk": app.pk,
         }
