@@ -9,8 +9,7 @@
                  'Further Information Requests (' + completed|string + '/' + total|string + ')') }}
   {% endwith %}
 
-  {{ icms_link(request, icms_url('access:case-management-access-approval', args=[process.pk, entity]), 'Access Approval') }}
-
+  {{ icms_link(request, icms_url('access:case-management-access-approval', kwargs={'access_request_pk': process.pk, 'entity': entity}), 'Access Approval') }}
   {{ icms_link(request, icms_url('access:close-request', args=[process.pk, entity]), 'Close Access Request') }}
 </ul>
 {% endwith %}

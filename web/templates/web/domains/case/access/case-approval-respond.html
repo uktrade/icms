@@ -6,7 +6,7 @@
 {% block content_actions %}
   <form
     method="post"
-    action="{{ icms_url('access:case-approval-release-ownership', args=[approval.pk, entity]) }}"
+    action="{{ icms_url('access:case-approval-release-ownership', kwargs={'approval_request_pk': approval.pk, 'entity': entity}) }}"
     class="form-inline">
 
       {{ csrf_input }}
