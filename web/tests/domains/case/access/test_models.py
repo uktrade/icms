@@ -23,3 +23,18 @@ def test_access_request_downcast(kls, access_request_user):
     downcast = p.get_specific_model()
     assert type(downcast) is kls
     assert id(obj) != id(downcast)
+
+
+@pytest.mark.parametrize(
+    ["access_request", "is_agent_request"],
+    [
+        (ImporterAccessRequest(request_type="MAIN_IMPORTER_ACCESS"), False),
+        (ImporterAccessRequest(request_type="AGENT_IMPORTER_ACCESS"), True),
+        (ExporterAccessRequest(request_type="MAIN_EXPORTER_ACCESS"), False),
+        (ExporterAccessRequest(request_type="AGENT_EXPORTER_ACCESS"), True),
+    ],
+)
+def test_is_agent_request(
+    access_request: ImporterAccessRequest | ExporterAccessRequest, is_agent_request: bool
+) -> None:
+    assert access_request.is_agent_request is is_agent_request

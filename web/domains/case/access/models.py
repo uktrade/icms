@@ -107,9 +107,18 @@ class ImporterAccessRequest(AccessRequest):
         null=True,
         related_name="access_requests",
     )
+
+    agent_link = models.ForeignKey(
+        "web.Importer", on_delete=models.PROTECT, blank=True, null=True, related_name="+"
+    )
+
     request_type = models.CharField(
         max_length=30, choices=REQUEST_TYPES, verbose_name="Access Request Type"
     )
+
+    @property
+    def is_agent_request(self):
+        return self.request_type == self.AGENT_ACCESS
 
 
 @final
@@ -130,6 +139,15 @@ class ExporterAccessRequest(AccessRequest):
         null=True,
         related_name="access_requests",
     )
+
+    agent_link = models.ForeignKey(
+        "web.Exporter", on_delete=models.PROTECT, blank=True, null=True, related_name="+"
+    )
+
     request_type = models.CharField(
         max_length=30, choices=REQUEST_TYPES, verbose_name="Access Request Type"
     )
+
+    @property
+    def is_agent_request(self):
+        return self.request_type == self.AGENT_ACCESS

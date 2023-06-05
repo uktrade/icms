@@ -13,12 +13,12 @@ urlpatterns = [
     path("requested/", views.AccessRequestCreatedView.as_view(), name="requested"),
     # access request management
     re_path(
-        "^case/(?P<pk>[0-9]+)/(?P<entity>importer|exporter)/link-access-request/$",
+        "^case/(?P<access_request_pk>[0-9]+)/(?P<entity>importer|exporter)/link-access-request/$",
         views.link_access_request,
         name="link-request",
     ),
     re_path(
-        "^case/(?P<pk>[0-9]+)/(?P<entity>importer|exporter)/close-access-request/$",
+        "^case/(?P<access_request_pk>[0-9]+)/(?P<entity>importer|exporter)/close-access-request/$",
         views.close_access_request,
         name="close-request",
     ),

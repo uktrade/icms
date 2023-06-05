@@ -1,4 +1,6 @@
 {% extends "web/domains/case/manage/base.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
 {% block css %}
   {{ form.media.css }}
@@ -56,11 +58,13 @@
   {% endif %}
 
   <div class="eight columns">
-    <form method="post" action="" class="form-inline">
-      {{ csrf_input }}
-      {{ form.as_p() }}
+    {% call forms.form(method='post', csrf_input=csrf_input) -%}
+      {{ fields.field(form.link) }}
+      {% if show_agent_link %}
+        {{ fields.field(form.agent_link, show_optional_indicator=False) }}
+      {% endif %}
       <button type="submit" class="button primary-button">Link</button>
-    </form>
+    {% endcall %}
   </div>
 </div>
 {% endblock %}

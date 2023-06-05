@@ -4,6 +4,13 @@
 
 {% block main_content %}
   <h3>Close Access Request</h3>
+  {% if not process.link %}
+    <div class="info-box info-box-warning">
+    NOTE: If approving an access request without linking to an Importer/Exporter, you will have to manually
+    add the user to the relevant Importer/Exporter.
+    </div>
+  {% endif %}
+
   <div class="container setOutForm">
     {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
       {% for field in form %}

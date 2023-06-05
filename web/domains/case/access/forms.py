@@ -1,8 +1,9 @@
-import structlog as logging
+from typing import Any
+
 from django.forms import CharField, Field, ModelChoiceField, ModelForm, Textarea
 
-from web.domains.exporter.widgets import ExporterWidget
-from web.domains.importer.widgets import ImporterWidget
+from web.domains.exporter.widgets import ExporterAgentWidget, ExporterWidget
+from web.domains.importer.widgets import ImporterAgentWidget, ImporterWidget
 from web.models import (
     AccessRequest,
     Exporter,
@@ -11,10 +12,28 @@ from web.models import (
     ImporterAccessRequest,
 )
 
-logger = logging.getLogger(__name__)
+
+class AccessRequestFormBase(ModelForm):
+    instance: ImporterAccessRequest | ExporterAccessRequest
+
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean()
+        request_type = cleaned_data.get("request_type")
+
+        if request_type == self.instance.AGENT_ACCESS:
+            if not cleaned_data.get("agent_name"):
+                self.add_error("agent_name", Field.default_error_messages["required"])
+
+            if not cleaned_data.get("agent_address"):
+                self.add_error("agent_address", Field.default_error_messages["required"])
+        else:
+            cleaned_data["agent_name"] = ""
+            cleaned_data["agent_address"] = ""
+
+        return cleaned_data
 
 
-class ExporterAccessRequestForm(ModelForm):
+class ExporterAccessRequestForm(AccessRequestFormBase):
     class Meta:
         model = ExporterAccessRequest
 
@@ -27,22 +46,8 @@ class ExporterAccessRequestForm(ModelForm):
             "agent_address",
         ]
 
-    def clean(self):
-        cleaned_data = super().clean()
-        request_type = cleaned_data.get("request_type")
-        if request_type == ExporterAccessRequest.AGENT_ACCESS:
-            logger.debug("Validating agent")
-            if not cleaned_data["agent_name"]:
-                self.add_error("agent_name", Field.default_error_messages["required"])
-            if not cleaned_data["agent_address"]:
-                self.add_error("agent_address", Field.default_error_messages["required"])
-        else:
-            cleaned_data["agent_name"] = ""
-            cleaned_data["agent_address"] = ""
-        return cleaned_data
 
-
-class ImporterAccessRequestForm(ModelForm):
+class ImporterAccessRequestForm(AccessRequestFormBase):
     class Meta:
         model = ImporterAccessRequest
 
@@ -57,50 +62,80 @@ class ImporterAccessRequestForm(ModelForm):
             "agent_address",
         ]
 
-    def clean(self):
+
+class LinkOrgAccessRequestFormBase(ModelForm):
+    instance: ImporterAccessRequest | ExporterAccessRequest
+
+    def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
-        request_type = cleaned_data.get("request_type")
-        if request_type == ImporterAccessRequest.AGENT_ACCESS:
-            logger.debug("Validating agent")
-            if not cleaned_data["agent_name"]:
-                self.add_error("agent_name", Field.default_error_messages["required"])
-            if not cleaned_data["agent_address"]:
-                self.add_error("agent_address", Field.default_error_messages["required"])
-        else:
-            cleaned_data["agent_name"] = ""
-            cleaned_data["agent_address"] = ""
+
+        if self.instance.is_agent_request:
+            link = cleaned_data.get("link")
+            agent_link = cleaned_data.get("agent_link")
+
+            if not agent_link:
+                self.add_error("agent_link", "You must enter this item")
+
+            elif agent_link.get_main_org() != link:
+                self.add_error("agent_link", "Agent organisation is not linked to main org.")
+
         return cleaned_data
 
 
-class LinkImporterAccessRequestForm(ModelForm):
+class LinkImporterAccessRequestForm(LinkOrgAccessRequestFormBase):
     link = ModelChoiceField(
         label="Link Importer",
-        help_text="""
-            Search an importer to link. Importers returned are matched against name, registerer number,
-            eori number and user name/email.
-        """,
-        queryset=Importer.objects.filter(is_active=True),
+        help_text=(
+            "Search an importer to link."
+            " Importers returned are matched against name, registerer number"
+            ", eori number and user name/email."
+        ),
+        queryset=Importer.objects.filter(is_active=True, main_importer__isnull=True),
         widget=ImporterWidget,
+    )
+
+    agent_link = ModelChoiceField(
+        label="Link Agent Importer",
+        help_text=(
+            "Search an agent importer to link."
+            " Importers returned are matched against name, registerer number"
+            ", eori number and user name/email."
+        ),
+        queryset=Importer.objects.filter(is_active=True, main_importer__isnull=False),
+        widget=ImporterAgentWidget,
+        required=False,
     )
 
     class Meta:
         model = ImporterAccessRequest
-        fields = ["link"]
+        fields = ["link", "agent_link"]
 
 
-class LinkExporterAccessRequestForm(ModelForm):
+class LinkExporterAccessRequestForm(LinkOrgAccessRequestFormBase):
     link = ModelChoiceField(
         label="Link Exporter",
-        help_text="""
-            Search an exporter to link. Exporters returned are matched against name and registerer number.
-        """,
-        queryset=Exporter.objects.filter(is_active=True),
+        help_text=(
+            "Search an exporter to link."
+            " Exporters returned are matched against name and registerer number."
+        ),
+        queryset=Exporter.objects.filter(is_active=True, main_exporter__isnull=True),
         widget=ExporterWidget,
+    )
+
+    agent_link = ModelChoiceField(
+        label="Link Agent Exporter",
+        help_text=(
+            "Search an agent exporter to link."
+            " Exporters returned are matched against name and registerer number."
+        ),
+        queryset=Exporter.objects.filter(is_active=True, main_exporter__isnull=False),
+        widget=ExporterAgentWidget,
+        required=False,
     )
 
     class Meta:
         model = ExporterAccessRequest
-        fields = ["link"]
+        fields = ["link", "agent_link"]
 
 
 class CloseAccessRequestForm(ModelForm):
@@ -114,8 +149,9 @@ class CloseAccessRequestForm(ModelForm):
         model = AccessRequest
         fields = ["response", "response_reason"]
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
+
         if (
             cleaned_data.get("response") == AccessRequest.REFUSED
             and cleaned_data.get("response_reason") == ""

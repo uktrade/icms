@@ -2,7 +2,6 @@ from typing import Any, Literal
 
 import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.models import Permission
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -19,7 +18,7 @@ from web.domains.case.access.filters import (
 from web.domains.case.services import case_progress, reference
 from web.models import Task
 from web.notify import notify
-from web.permissions import Perms
+from web.permissions import Perms, organisation_add_contact
 from web.types import AuthenticatedHttpRequest
 from web.views import ModelFilterView
 
@@ -99,20 +98,20 @@ def importer_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
             form = forms.ImporterAccessRequestForm(data=request.POST)
 
             if form.is_valid():
-                application: ImporterAccessRequest = form.save(commit=False)
-                application.reference = reference.get_importer_access_request_reference(
+                access_request: ImporterAccessRequest = form.save(commit=False)
+                access_request.reference = reference.get_importer_access_request_reference(
                     request.icms.lock_manager
                 )
-                application.submitted_by = request.user
-                application.last_updated_by = request.user
-                application.process_type = ImporterAccessRequest.PROCESS_TYPE
-                application.save()
+                access_request.submitted_by = request.user
+                access_request.last_updated_by = request.user
+                access_request.process_type = ImporterAccessRequest.PROCESS_TYPE
+                access_request.save()
 
                 Task.objects.create(
-                    process=application, task_type=Task.TaskType.PROCESS, owner=request.user
+                    process=access_request, task_type=Task.TaskType.PROCESS, owner=request.user
                 )
 
-                notify.access_requested_importer(application.pk)
+                notify.access_requested_importer(access_request.pk)
 
                 if request.user.has_perm(Perms.sys.importer_access) or request.user.has_perm(
                     Perms.sys.exporter_access
@@ -141,20 +140,20 @@ def exporter_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
             form = forms.ExporterAccessRequestForm(data=request.POST)
 
             if form.is_valid():
-                application: ExporterAccessRequest = form.save(commit=False)
-                application.reference = reference.get_exporter_access_request_reference(
+                access_request: ExporterAccessRequest = form.save(commit=False)
+                access_request.reference = reference.get_exporter_access_request_reference(
                     request.icms.lock_manager
                 )
-                application.submitted_by = request.user
-                application.last_updated_by = request.user
-                application.process_type = ExporterAccessRequest.PROCESS_TYPE
-                application.save()
+                access_request.submitted_by = request.user
+                access_request.last_updated_by = request.user
+                access_request.process_type = ExporterAccessRequest.PROCESS_TYPE
+                access_request.save()
 
                 Task.objects.create(
-                    process=application, task_type=Task.TaskType.PROCESS, owner=request.user
+                    process=access_request, task_type=Task.TaskType.PROCESS, owner=request.user
                 )
 
-                notify.access_requested_exporter(application.pk)
+                notify.access_requested_exporter(access_request.pk)
 
                 if request.user.has_perm(Perms.sys.importer_access) or request.user.has_perm(
                     Perms.sys.exporter_access
@@ -184,45 +183,48 @@ def _get_access_request_context(request: AuthenticatedHttpRequest) -> dict[str, 
     }
 
 
-# TODO: Revisit in ICMSLST-2018
+@login_required
 @permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def link_access_request(
-    request: AuthenticatedHttpRequest, pk: int, entity: Literal["importer", "exporter"]
+    request: AuthenticatedHttpRequest,
+    *,
+    access_request_pk: int,
+    entity: Literal["importer", "exporter"],
 ) -> HttpResponse:
     with transaction.atomic():
         if entity == "importer":
-            application = get_object_or_404(
-                ImporterAccessRequest.objects.select_for_update(), pk=pk
+            access_request = get_object_or_404(
+                ImporterAccessRequest.objects.select_for_update(), pk=access_request_pk
             )
-            Form = forms.LinkImporterAccessRequestForm
-            permission_codename = "importer_access"
+            form_cls = forms.LinkImporterAccessRequestForm
         else:
-            application = get_object_or_404(
-                ExporterAccessRequest.objects.select_for_update(), pk=pk
+            access_request = get_object_or_404(
+                ExporterAccessRequest.objects.select_for_update(), pk=access_request_pk
             )
-            Form = forms.LinkExporterAccessRequestForm
-            permission_codename = "exporter_access"
+            form_cls = forms.LinkExporterAccessRequestForm
 
-        case_progress.access_request_in_processing(application)
+        case_progress.access_request_in_processing(access_request)
 
         if request.method == "POST":
-            form = Form(instance=application, data=request.POST)
+            form = form_cls(request.POST, instance=access_request)
+
             if form.is_valid():
                 form.save()
-                application.submitted_by.user_permissions.add(
-                    Permission.objects.get(codename=permission_codename)
-                )
 
                 return redirect(
-                    reverse("access:link-request", kwargs={"pk": application.pk, "entity": entity})
+                    reverse(
+                        "access:link-request",
+                        kwargs={"access_request_pk": access_request.pk, "entity": entity},
+                    )
                 )
         else:
-            form = Form(instance=application)
+            form = form_cls(instance=access_request)
 
         context = {
             "case_type": "access",
-            "process": application,
+            "process": access_request,
             "form": form,
+            "show_agent_link": access_request.is_agent_request,
         }
 
     return render(
@@ -230,46 +232,59 @@ def link_access_request(
     )
 
 
-# TODO: Revisit in ICMSLST-2018
 @login_required
 @permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def close_access_request(
-    request: AuthenticatedHttpRequest, pk: int, entity: Literal["importer", "exporter"]
+    request: AuthenticatedHttpRequest,
+    *,
+    access_request_pk: int,
+    entity: Literal["importer", "exporter"],
 ) -> HttpResponse:
     with transaction.atomic():
         if entity == "importer":
-            application = get_object_or_404(
-                ImporterAccessRequest.objects.select_for_update(), pk=pk
+            access_request = get_object_or_404(
+                ImporterAccessRequest.objects.select_for_update(), pk=access_request_pk
             )
         else:
-            application = get_object_or_404(
-                ExporterAccessRequest.objects.select_for_update(), pk=pk
+            access_request = get_object_or_404(
+                ExporterAccessRequest.objects.select_for_update(), pk=access_request_pk
             )
 
-        case_progress.access_request_in_processing(application)
+        case_progress.access_request_in_processing(access_request)
 
         if request.method == "POST":
-            task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
-            form = forms.CloseAccessRequestForm(instance=application, data=request.POST)
+            task = case_progress.get_expected_task(access_request, Task.TaskType.PROCESS)
+            form = forms.CloseAccessRequestForm(request.POST, instance=access_request)
 
             if form.is_valid():
-                form.save()
-                application.status = AccessRequest.Statuses.CLOSED
-                application.save()
+                access_request = form.save(commit=False)
+
+                access_request.status = AccessRequest.Statuses.CLOSED
+                access_request.save()
 
                 task.is_active = False
                 task.finished = timezone.now()
                 task.save()
 
-                notify.access_request_closed(application)
+                # If approving with a link add the user to the org.
+                # An access request can still be approved without linking (Preserving old behaviour)
+                if access_request.response == AccessRequest.APPROVED and access_request.link:
+                    if access_request.is_agent_request:
+                        org = access_request.agent_link
+                    else:
+                        org = access_request.link
+
+                    organisation_add_contact(org, access_request.submitted_by)
+
+                notify.access_request_closed(access_request)
 
                 return redirect(reverse("workbasket"))
         else:
-            form = forms.CloseAccessRequestForm(instance=application)
+            form = forms.CloseAccessRequestForm(instance=access_request)
 
         context = {
             "case_type": "access",
-            "process": application,
+            "process": access_request,
             "form": form,
         }
 
