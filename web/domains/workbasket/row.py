@@ -160,7 +160,9 @@ def _get_access_wb_row(
             WorkbasketAction(
                 is_post=False,
                 name="Manage",
-                url=reverse("access:link-request", kwargs={"pk": app.pk, "entity": entity}),
+                url=reverse(
+                    "access:link-request", kwargs={"access_request_pk": app.pk, "entity": entity}
+                ),
             ),
         )
 

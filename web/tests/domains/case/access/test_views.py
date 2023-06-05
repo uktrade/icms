@@ -5,6 +5,8 @@ from django.core import mail
 from django.urls import reverse
 from pytest_django.asserts import assertInHTML, assertRedirects
 
+from web.models import AccessRequest, ExporterAccessRequest, ImporterAccessRequest
+from web.permissions import organisation_get_contacts
 from web.tests.auth import AuthTestCase
 from web.tests.helpers import get_test_client
 
@@ -161,30 +163,118 @@ class TestExporterAccessRequestView(AuthTestCase):
 
 
 class TestLinkAccessRequest(AuthTestCase):
-    # TODO: ICMSLST-2018 Add tests for "access:link-request"
-    ...
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, access_request_user, importer_access_request, exporter_access_request):
+        self.acc_req_user = access_request_user
+
+        self.iar = importer_access_request
+        self.iar_url = reverse(
+            "access:link-request",
+            kwargs={"access_request_pk": importer_access_request.pk, "entity": "importer"},
+        )
+
+        self.ear = exporter_access_request
+        self.ear_url = reverse(
+            "access:link-request",
+            kwargs={"access_request_pk": exporter_access_request.pk, "entity": "exporter"},
+        )
+
+    def test_permission(self):
+        response = self.ilb_admin_client.get(self.iar_url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.importer_client.get(self.iar_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.get(self.iar_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_link_importer_access_request(self):
+        assert self.iar.link is None
+
+        data = {"link": self.importer.pk}
+
+        response = self.ilb_admin_client.post(self.iar_url, data=data)
+
+        assertRedirects(response, self.iar_url)
+
+        self.iar.refresh_from_db()
+
+        assert self.iar.link == self.importer
+
+    def test_link_importer_agent_access_request(self):
+        assert self.iar.link is None
+        assert self.iar.agent_link is None
+
+        data = {"link": self.importer.pk, "agent_link": self.importer_agent.pk}
+
+        response = self.ilb_admin_client.post(self.iar_url, data=data)
+
+        assertRedirects(response, self.iar_url)
+
+        self.iar.refresh_from_db()
+
+        assert self.iar.link == self.importer
+        assert self.iar.agent_link == self.importer_agent
+
+    def test_link_exporter_access_request(self):
+        assert self.ear.link is None
+
+        data = {"link": self.exporter.pk}
+
+        response = self.ilb_admin_client.post(self.ear_url, data=data)
+
+        assertRedirects(response, self.ear_url)
+
+        self.ear.refresh_from_db()
+
+        assert self.ear.link == self.exporter
+
+    def test_link_exporter_agent_access_request(self):
+        assert self.ear.link is None
+        assert self.ear.agent_link is None
+
+        data = {"link": self.exporter.pk, "agent_link": self.exporter_agent.pk}
+
+        response = self.ilb_admin_client.post(self.ear_url, data=data)
+
+        assertRedirects(response, self.ear_url)
+
+        self.ear.refresh_from_db()
+
+        assert self.ear.link == self.exporter
+        assert self.ear.agent_link == self.exporter_agent
 
 
 class TestCloseAccessRequest(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, access_request_user, importer_access_request, exporter_access_request):
+        self.acc_req_user = access_request_user
+
+        self.iar = importer_access_request
+        self.iar_url = reverse(
+            "access:close-request",
+            kwargs={"access_request_pk": importer_access_request.pk, "entity": "importer"},
+        )
+
+        self.ear = exporter_access_request
+        self.ear_url = reverse(
+            "access:close-request",
+            kwargs={"access_request_pk": exporter_access_request.pk, "entity": "exporter"},
+        )
+
     def test_permission(self, importer_access_request):
-        url = reverse(
-            "access:close-request", kwargs={"pk": importer_access_request.pk, "entity": "importer"}
-        )
-
-        response = self.ilb_admin_client.get(url)
+        response = self.ilb_admin_client.get(self.iar_url)
         assert response.status_code == HTTPStatus.OK
 
-        response = self.importer_client.get(url)
+        response = self.importer_client.get(self.iar_url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
-        response = self.exporter_client.get(url)
+        response = self.exporter_client.get(self.iar_url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
-    def test_close_importer_access_request_approve(self, importer_access_request):
-        url = reverse(
-            "access:close-request", kwargs={"pk": importer_access_request.pk, "entity": "importer"}
-        )
-        response = self.ilb_admin_client.get(url)
+    def test_close_importer_access_request_approve(self):
+        response = self.ilb_admin_client.get(self.iar_url)
         assert response.status_code == HTTPStatus.OK
 
         # Test we can always close (even without linking)
@@ -193,37 +283,33 @@ class TestCloseAccessRequest(AuthTestCase):
             response.content.decode(),
         )
 
-        response = self.ilb_admin_client.post(url, data={"response": "APPROVED"})
+        response = self.ilb_admin_client.post(
+            self.iar_url, data={"response": AccessRequest.APPROVED}
+        )
         assert response.status_code == 302
 
-        importer_access_request.refresh_from_db()
-        assert importer_access_request.response == "APPROVED"
+        self.iar.refresh_from_db()
+        assert self.iar.response == AccessRequest.APPROVED
 
-        self._assert_email_sent(importer_access_request)
+        self._assert_email_sent(self.iar)
 
-    def test_close_importer_access_request_refuse(self, importer_access_request):
-        url = reverse(
-            "access:close-request", kwargs={"pk": importer_access_request.pk, "entity": "importer"}
-        )
-        response = self.ilb_admin_client.get(url)
+    def test_close_importer_access_request_refuse(self):
+        response = self.ilb_admin_client.get(self.iar_url)
         assert response.status_code == HTTPStatus.OK
 
         response = self.ilb_admin_client.post(
-            url, data={"response": "REFUSED", "response_reason": "test refuse"}
+            self.iar_url, data={"response": AccessRequest.REFUSED, "response_reason": "test refuse"}
         )
         assert response.status_code == 302
 
-        importer_access_request.refresh_from_db()
-        assert importer_access_request.response == "REFUSED"
-        assert importer_access_request.response_reason == "test refuse"
+        self.iar.refresh_from_db()
+        assert self.iar.response == AccessRequest.REFUSED
+        assert self.iar.response_reason == "test refuse"
 
-        self._assert_email_sent(importer_access_request)
+        self._assert_email_sent(self.iar)
 
-    def test_close_exporter_access_request_approve(self, exporter_access_request):
-        url = reverse(
-            "access:close-request", kwargs={"pk": exporter_access_request.pk, "entity": "exporter"}
-        )
-        response = self.ilb_admin_client.get(url)
+    def test_close_exporter_access_request_approve(self):
+        response = self.ilb_admin_client.get(self.ear_url)
         assert response.status_code == HTTPStatus.OK
 
         # Test we can always close (even without linking)
@@ -232,31 +318,172 @@ class TestCloseAccessRequest(AuthTestCase):
             response.content.decode(),
         )
 
-        response = self.ilb_admin_client.post(url, data={"response": "APPROVED"})
+        response = self.ilb_admin_client.post(
+            self.ear_url, data={"response": AccessRequest.APPROVED}
+        )
         assert response.status_code == 302
 
-        exporter_access_request.refresh_from_db()
-        assert exporter_access_request.response == "APPROVED"
+        self.ear.refresh_from_db()
+        assert self.ear.response == AccessRequest.APPROVED
 
-        self._assert_email_sent(exporter_access_request)
+        self._assert_email_sent(self.ear)
 
-    def test_close_exporter_access_request_refuse(self, exporter_access_request):
-        url = reverse(
-            "access:close-request", kwargs={"pk": exporter_access_request.pk, "entity": "exporter"}
-        )
-        response = self.ilb_admin_client.get(url)
+    def test_close_exporter_access_request_refuse(self):
+        response = self.ilb_admin_client.get(self.ear_url)
         assert response.status_code == HTTPStatus.OK
 
         response = self.ilb_admin_client.post(
-            url, data={"response": "REFUSED", "response_reason": "test refuse"}
+            self.ear_url, data={"response": AccessRequest.REFUSED, "response_reason": "test refuse"}
         )
         assert response.status_code == 302
 
-        exporter_access_request.refresh_from_db()
-        assert exporter_access_request.response == "REFUSED"
-        assert exporter_access_request.response_reason == "test refuse"
+        self.ear.refresh_from_db()
+        assert self.ear.response == AccessRequest.REFUSED
+        assert self.ear.response_reason == "test refuse"
 
-        self._assert_email_sent(exporter_access_request)
+        self._assert_email_sent(self.ear)
+
+    def test_close_iar_approve_user_permissions(self):
+        """Test approving a linked IAR adds the access request user as an org contact."""
+
+        org_contacts = organisation_get_contacts(self.importer)
+        assert not org_contacts.contains(self.acc_req_user)
+
+        self.iar.link = self.importer
+        self.iar.save()
+        response = self.ilb_admin_client.post(
+            self.iar_url, data={"response": AccessRequest.APPROVED}
+        )
+        assert response.status_code == 302
+
+        org_contacts = organisation_get_contacts(self.importer)
+        assert org_contacts.contains(self.acc_req_user)
+
+    def test_close_iar_refuse_user_permissions(self):
+        """Test refusing a linked IAR does not add the access request user as an org contact."""
+
+        org_contacts = organisation_get_contacts(self.importer)
+        assert not org_contacts.contains(self.acc_req_user)
+
+        self.iar.link = self.importer
+        self.iar.save()
+        response = self.ilb_admin_client.post(
+            self.iar_url, data={"response": AccessRequest.REFUSED, "response_reason": "test refuse"}
+        )
+        assert response.status_code == 302
+
+        org_contacts = organisation_get_contacts(self.importer)
+        assert not org_contacts.contains(self.acc_req_user)
+
+    def test_close_iar_agent_approve_user_permissions(self):
+        """Test approving a linked IAR adds the access request user as an org agent contact."""
+
+        org_contacts = organisation_get_contacts(self.importer)
+        assert not org_contacts.contains(self.acc_req_user)
+
+        self.iar.link = self.importer
+        self.iar.agent_link = self.importer_agent
+        self.iar.request_type = ImporterAccessRequest.AGENT_ACCESS
+        self.iar.save()
+
+        response = self.ilb_admin_client.post(
+            self.iar_url, data={"response": AccessRequest.APPROVED}
+        )
+        assert response.status_code == 302
+
+        org_contacts = organisation_get_contacts(self.importer_agent)
+
+        assert org_contacts.contains(self.acc_req_user)
+
+    def test_close_iar_agent_refuse_user_permissions(self):
+        """Test refusing a linked IAR does not add the access request user as an org agent contact."""
+
+        org_contacts = organisation_get_contacts(self.importer)
+        assert not org_contacts.contains(self.acc_req_user)
+
+        self.iar.link = self.importer
+        self.iar.agent_link = self.importer_agent
+        self.iar.request_type = ImporterAccessRequest.AGENT_ACCESS
+        self.iar.save()
+
+        response = self.ilb_admin_client.post(
+            self.iar_url, data={"response": AccessRequest.REFUSED, "response_reason": "test refuse"}
+        )
+        assert response.status_code == 302
+
+        org_contacts = organisation_get_contacts(self.importer_agent)
+        assert not org_contacts.contains(self.acc_req_user)
+
+    def test_close_ear_approve_user_permissions(self):
+        """Test approving a linked EAR adds the access request user as an org contact."""
+
+        org_contacts = organisation_get_contacts(self.exporter)
+        assert not org_contacts.contains(self.acc_req_user)
+
+        self.ear.link = self.exporter
+        self.ear.save()
+        response = self.ilb_admin_client.post(
+            self.ear_url, data={"response": AccessRequest.APPROVED}
+        )
+        assert response.status_code == 302
+
+        org_contacts = organisation_get_contacts(self.exporter)
+        assert org_contacts.contains(self.acc_req_user)
+
+    def test_close_ear_refuse_user_permissions(self):
+        """Test refusing a linked EAR does not add the access request user as an org contact."""
+
+        org_contacts = organisation_get_contacts(self.exporter)
+        assert not org_contacts.contains(self.acc_req_user)
+
+        self.ear.link = self.exporter
+        self.ear.save()
+        response = self.ilb_admin_client.post(
+            self.ear_url, data={"response": AccessRequest.REFUSED, "response_reason": "test refuse"}
+        )
+        assert response.status_code == 302
+
+        org_contacts = organisation_get_contacts(self.exporter)
+        assert not org_contacts.contains(self.acc_req_user)
+
+    def test_close_ear_agent_approve_user_permissions(self):
+        """Test approving a linked EAR adds the access request user as an org agent contact."""
+
+        org_contacts = organisation_get_contacts(self.exporter)
+        assert not org_contacts.contains(self.acc_req_user)
+
+        self.ear.link = self.exporter
+        self.ear.agent_link = self.exporter_agent
+        self.ear.request_type = ExporterAccessRequest.AGENT_ACCESS
+        self.ear.save()
+
+        response = self.ilb_admin_client.post(
+            self.ear_url, data={"response": AccessRequest.APPROVED}
+        )
+        assert response.status_code == 302
+
+        org_contacts = organisation_get_contacts(self.exporter_agent)
+
+        assert org_contacts.contains(self.acc_req_user)
+
+    def test_close_ear_agent_refuse_user_permissions(self):
+        """Test refusing a linked EAR does not add the access request user as an org agent contact."""
+
+        org_contacts = organisation_get_contacts(self.exporter)
+        assert not org_contacts.contains(self.acc_req_user)
+
+        self.ear.link = self.exporter
+        self.ear.agent_link = self.exporter_agent
+        self.ear.request_type = ExporterAccessRequest.AGENT_ACCESS
+        self.ear.save()
+
+        response = self.ilb_admin_client.post(
+            self.ear_url, data={"response": AccessRequest.REFUSED, "response_reason": "test refuse"}
+        )
+        assert response.status_code == 302
+
+        org_contacts = organisation_get_contacts(self.exporter_agent)
+        assert not org_contacts.contains(self.acc_req_user)
 
     def _assert_email_sent(self, access_request):
         requester = access_request.submitted_by
