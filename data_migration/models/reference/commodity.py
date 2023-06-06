@@ -42,7 +42,7 @@ class CommodityGroup(MigrationBase):
     is_active = models.BooleanField(default=True)
     group_type = models.CharField(max_length=20)
     group_code = models.CharField(max_length=25, unique=True)
-    group_name = models.CharField(max_length=100, null=True)
+    group_name = models.CharField(max_length=255, null=True)
     group_description = models.CharField(max_length=4000, null=True)
     commodity_type = models.ForeignKey(
         CommodityType, on_delete=models.CASCADE, to_field="type_code"

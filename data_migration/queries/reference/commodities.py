@@ -20,7 +20,7 @@ SELECT
   , unit unit_id
 FROM impmgr.xview_com_group_details xcgd
 WHERE status_control = 'C'
-AND status <> 'ARCHIVED'
+AND (status <> 'ARCHIVED' OR start_datetime > TO_DATE('2023-01-01', 'yyyy-mm-dd'))
 """
 
 

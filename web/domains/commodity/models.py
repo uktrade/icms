@@ -68,7 +68,7 @@ class CommodityGroup(Archivable, models.Model):
     is_active = models.BooleanField(default=True)
     group_type = models.CharField(max_length=20, choices=TYPES, default=AUTO)
     group_code = models.CharField(max_length=25)
-    group_name = models.CharField(max_length=100, blank=True, null=True)
+    group_name = models.CharField(max_length=255, blank=True, null=True)
     group_description = models.CharField(max_length=4000, blank=True, null=True)
     commodity_type = models.ForeignKey(
         "web.CommodityType", on_delete=models.PROTECT, blank=True, null=True
