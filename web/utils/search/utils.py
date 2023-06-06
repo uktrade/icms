@@ -32,7 +32,6 @@ def get_user_import_applications(user: User) -> models.QuerySet[ImportApplicatio
         Perms.obj.importer.view.codename,
         Perms.obj.importer.edit.codename,
         Perms.obj.importer.manage_contacts_and_agents.codename,
-        Perms.obj.importer.is_contact.codename,
     ]
 
     applications = ImportApplication.objects.annotate(
@@ -67,7 +66,6 @@ def get_user_export_applications(user: User) -> models.QuerySet[ExportApplicatio
         Perms.obj.exporter.view.codename,
         Perms.obj.exporter.edit.codename,
         Perms.obj.exporter.manage_contacts_and_agents.codename,
-        Perms.obj.exporter.is_contact.codename,
     ]
 
     applications = ExportApplication.objects.annotate(

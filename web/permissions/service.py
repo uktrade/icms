@@ -188,7 +188,7 @@ def organisation_add_contact(org: ORGANISATION, user: User) -> None:
 
     obj_perms = get_org_obj_permissions(org)
 
-    for perm in [obj_perms.view, obj_perms.edit, obj_perms.is_contact]:
+    for perm in [obj_perms.view, obj_perms.edit]:
         assign_perm(perm, user, org)
 
     if org.is_agent():

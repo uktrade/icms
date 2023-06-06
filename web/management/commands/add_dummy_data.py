@@ -269,26 +269,22 @@ class Command(BaseCommand):
             assign_perm(Perms.obj.importer.view, user, importer)
             assign_perm(Perms.obj.importer.edit, user, importer)
             assign_perm(Perms.obj.importer.manage_contacts_and_agents, user, importer)
-            assign_perm(Perms.obj.importer.is_contact, user, importer)
 
         for exporter in linked_exporters:
             assign_perm(Perms.obj.exporter.view, user, exporter)
             assign_perm(Perms.obj.exporter.edit, user, exporter)
             assign_perm(Perms.obj.exporter.manage_contacts_and_agents, user, exporter)
-            assign_perm(Perms.obj.exporter.is_contact, user, exporter)
 
         for agent in linked_importer_agents:
             assign_perm(Perms.obj.importer.view, user, agent)
             assign_perm(Perms.obj.importer.edit, user, agent)
             assign_perm(Perms.obj.importer.manage_contacts_and_agents, user, agent)
-            assign_perm(Perms.obj.importer.is_contact, user, agent)
             assign_perm(Perms.obj.importer.is_agent, user, agent.get_main_org())
 
         for agent in linked_exporter_agents:
             assign_perm(Perms.obj.exporter.view, user, agent)
             assign_perm(Perms.obj.exporter.edit, user, agent)
             assign_perm(Perms.obj.exporter.manage_contacts_and_agents, user, agent)
-            assign_perm(Perms.obj.exporter.is_contact, user, agent)
             assign_perm(Perms.obj.exporter.is_agent, user, agent.get_main_org())
 
         user.save()
