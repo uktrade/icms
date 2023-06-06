@@ -12,14 +12,9 @@ from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import get_case_page_title
-from web.models import Task, Template, User
+from web.models import Task, User
 from web.notify import email
-from web.permissions import (
-    AppChecker,
-    Perms,
-    get_org_obj_permissions,
-    organisation_get_contacts,
-)
+from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 
 from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
@@ -82,31 +77,7 @@ def manage_update_requests(
         )
 
         readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
-
-        if case_type == "import":
-            template_code = "IMA_APP_UPDATE"
-
-            placeholder_content = {
-                "CASE_REFERENCE": application.reference,
-                "IMPORTER_NAME": application.importer.display_name,
-                "CASE_OFFICER_NAME": request.user,
-            }
-        elif case_type == "export":
-            template_code = "CA_APPLICATION_UPDATE_EMAIL"
-
-            placeholder_content = {
-                "CASE_REFERENCE": application.reference,
-                "EXPORTER_NAME": application.exporter.name,
-                "CASE_OFFICER_NAME": request.user,
-            }
-        else:
-            raise NotImplementedError(
-                f"case type {case_type} is not implemented for update requests"
-            )
-
-        template = Template.objects.get(template_code=template_code, is_active=True)
-        email_subject = template.get_title({"CASE_REFERENCE": application.reference})
-        email_content = template.get_content(placeholder_content)
+        email_subject, email_content = email.get_application_update_request_contents(application)
 
         if request.method == "POST" and not readonly_view:
             task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
@@ -129,23 +100,8 @@ def manage_update_requests(
                     process=application, task_type=Task.TaskType.PREPARE, previous=task
                 )
 
-                # TODO: Revisit in ICMSLST-1963 (I haven't investigated if this is correct).
-                if case_type in ["import", "export"]:
-                    if application.is_import_application():
-                        org = application.agent or application.importer
-                    else:
-                        org = application.agent or application.exporter
-
-                    obj_perms = get_org_obj_permissions(org)
-
-                    contacts = organisation_get_contacts(org, perms=[obj_perms.edit.codename])
-                else:
-                    raise ValueError(f"case type {case_type} invalid for update requests")
-
-                recipients = list(contacts.values_list("email", flat=True))
-
-                email.send_email.delay(
-                    update_request.request_subject, update_request.request_detail, recipients
+                email.send_to_application_contacts(
+                    application, update_request.request_subject, update_request.request_detail
                 )
 
                 application.update_order_datetime()
@@ -300,7 +256,7 @@ def respond_update_request(
 
                 application.update_order_datetime()
                 application.save()
-
+                email.send_application_update_reponse_email(application)
                 return redirect(
                     reverse(
                         application.get_edit_view_name(), kwargs={"application_pk": application_pk}

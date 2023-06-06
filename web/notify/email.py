@@ -13,7 +13,9 @@ from web.domains.case.types import ImpOrExp
 from web.domains.template.utils import get_email_template_subject_body
 from web.models import (
     CaseEmail,
+    ExportApplication,
     Exporter,
+    ImportApplication,
     Importer,
     User,
     VariationRequest,
@@ -34,7 +36,7 @@ def send_email(
     cc: Collection[str] = (),
     attachments: Collection[tuple[str, bytes]] = (),
     html_message: str | None = None,
-):
+) -> None:
     message = EmailMultiAlternatives(
         subject, body, settings.EMAIL_FROM, recipients, cc=cc, attachments=attachments
     )
@@ -270,6 +272,29 @@ def send_variation_request_email(
         "subject": subject,
     }
     template_name = f"email/application/variation_request/{description.lower()}.html"
+    send_html_email(template_name, context, contacts)
+
+
+def get_application_update_request_contents(application: ImpOrExp) -> tuple[str, str]:
+    match application:
+        case ImportApplication():
+            template_name = "IMA_APP_UPDATE"
+        case ExportApplication():
+            template_name = "CA_APPLICATION_UPDATE_EMAIL"
+        case _:
+            raise NotImplementedError("Unknown Application Type")
+    subject, body = get_email_template_subject_body(application, template_name)
+    return subject, body
+
+
+def send_application_update_reponse_email(application: ImpOrExp) -> None:
+    subject = f"Application Update Response - {application.reference}"
+    template_name = "email/application/update/response.html"
+    contacts = [application.case_owner]
+    context = {
+        "application": application,
+        "subject": subject,
+    }
     send_html_email(template_name, context, contacts)
 
 

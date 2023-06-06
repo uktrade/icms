@@ -134,6 +134,38 @@ class CaseURLS:
 
         return reverse("case:list-update-requests", kwargs=kwargs)
 
+    @staticmethod
+    def manage_update_requests(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+        return reverse("case:manage-update-requests", kwargs=kwargs)
+
+    @staticmethod
+    def start_update_request(
+        application_pk: int, update_request_pk: int, case_type: str = "import"
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "case_type": case_type,
+            "update_request_pk": update_request_pk,
+        }
+        return reverse("case:start-update-request", kwargs=kwargs)
+
+    @staticmethod
+    def close_update_request(
+        application_pk: int, update_request_pk: int, case_type: str = "import"
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "case_type": case_type,
+            "update_request_pk": update_request_pk,
+        }
+        return reverse("case:close-update-request", kwargs=kwargs)
+
+    @staticmethod
+    def respond_update_request(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+        return reverse("case:respond-update-request", kwargs=kwargs)
+
     # web/domains/case/views/views_fir.py urls
     @staticmethod
     def manage_firs(application_pk: int, case_type: str = "import") -> str:
