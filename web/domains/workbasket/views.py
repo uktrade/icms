@@ -155,18 +155,38 @@ def _get_queryset_user(user: User) -> chain[QuerySet]:
         "access_request__further_information_requests"
     )
     active_exporters = Exporter.objects.filter(is_active=True, main_exporter=None)
-    exporters = get_objects_for_user(user, ["is_contact_of_exporter"], active_exporters)
+
+    # TODO: ICMSLST-1947 Revisit when updating workbasket / adding tests
+    exporters = get_objects_for_user(
+        user,
+        [
+            Perms.obj.exporter.view,
+            Perms.obj.exporter.edit,
+            Perms.obj.exporter.manage_contacts_and_agents,
+        ],
+        active_exporters,
+    )
     exporters_managed_by_agents = get_objects_for_user(
         user,
-        ["web.is_agent_of_exporter"],
+        [Perms.obj.exporter.is_agent],
         active_exporters,
     )
 
     active_importers = Importer.objects.filter(is_active=True, main_importer=None)
-    importers = get_objects_for_user(user, ["is_contact_of_importer"], active_importers)
+
+    # TODO: ICMSLST-1947 Revisit when updating workbasket / adding tests
+    importers = get_objects_for_user(
+        user,
+        [
+            Perms.obj.importer.view,
+            Perms.obj.importer.edit,
+            Perms.obj.importer.manage_contacts_and_agents,
+        ],
+        active_importers,
+    )
     importers_managed_by_agents = get_objects_for_user(
         user,
-        ["web.is_agent_of_importer"],
+        [Perms.obj.importer.is_agent],
         active_importers,
     )
 
