@@ -221,7 +221,6 @@ def get_importer_object_permissions(
     object_permissions = [
         (Perms.obj.importer.view, "View Applications / Licences"),
         (Perms.obj.importer.edit, "Edit Applications / Vary Licences"),
-        (Perms.obj.importer.is_contact, "Is Importer Contact"),
     ]
 
     # The agent should never have the manage_contacts_and_agents permission.

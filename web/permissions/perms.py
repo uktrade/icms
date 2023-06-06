@@ -52,7 +52,6 @@ class ImporterObjectPermissions(PermissionTextChoice):
         "web.manage_importer_contacts_and_agents",
         "Can approve and reject access for agents and new importer contacts",
     )
-    is_contact = ("web.is_contact_of_importer", "Is contact of this importer")
     # NOTE: this is given on the "main importer" object, not on the "agent" object
     is_agent = ("web.is_agent_of_importer", "Is agent of this importer")
 
@@ -74,7 +73,6 @@ class ExporterObjectPermissions(PermissionTextChoice):
         "web.manage_exporter_contacts_and_agents",
         "Can approve and reject access for agents and new exporter contacts",
     )
-    is_contact = ("web.is_contact_of_exporter", "Is contact of this exporter")
     # NOTE: this is given on the "main exporter" object, not on the "agent" object
     is_agent = ("web.is_agent_of_exporter", "Is agent of this exporter")
 

@@ -99,7 +99,6 @@ def get_exporter_object_permissions(
     object_permissions = [
         (Perms.obj.exporter.view, "View Applications / Certificates"),
         (Perms.obj.exporter.edit, "Edit Applications / Vary Certificates"),
-        (Perms.obj.exporter.is_contact, "Is Exporter Contact"),
     ]
 
     # The agent should never have the manage_contacts_and_agents permission.

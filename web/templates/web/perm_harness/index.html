@@ -16,12 +16,12 @@
 {% endmacro %}
 
 {% macro importer_object_permissions(obj_perm_checker, imp) %}
-  {% set perms = ["web.is_contact_of_importer", "web.is_agent_of_importer"] %}
+  {% set perms = ["web.is_agent_of_importer"] %}
   {{ _object_permissions(obj_perm_checker, imp, perms) }}
 {% endmacro %}
 
 {% macro exporter_object_permissions(obj_perm_checker, exp) %}
-  {% set perms = ["web.is_contact_of_exporter", "web.is_agent_of_exporter"] %}
+  {% set perms = ["web.is_agent_of_exporter"] %}
   {{ _object_permissions(obj_perm_checker, exp, perms) }}
 {% endmacro %}
 

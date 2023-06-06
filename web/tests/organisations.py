@@ -28,11 +28,11 @@ IMPORTER_ONE = TestImporter(
     contacts=[
         ImporterContact(
             "I1_main_contact",
-            [ImpOP.manage_contacts_and_agents, ImpOP.edit, ImpOP.view, ImpOP.is_contact],
+            [ImpOP.manage_contacts_and_agents, ImpOP.edit, ImpOP.view],
         ),
         ImporterContact(
             "I1_inactive_contact",
-            [ImpOP.manage_contacts_and_agents, ImpOP.edit, ImpOP.view, ImpOP.is_contact],
+            [ImpOP.manage_contacts_and_agents, ImpOP.edit, ImpOP.view],
             is_active=False,
         ),
     ],
@@ -47,7 +47,7 @@ IMPORTER_ONE = TestImporter(
                 )  # /PS-IGNORE
             ],
             contacts=[
-                ImporterContact("I1_A1_main_contact", [ImpOP.edit, ImpOP.view, ImpOP.is_contact]),
+                ImporterContact("I1_A1_main_contact", [ImpOP.edit, ImpOP.view]),
             ],
         )
     ],
@@ -66,7 +66,7 @@ IMPORTER_TWO = TestImporter(
     contacts=[
         ImporterContact(
             "I2_main_contact",
-            [ImpOP.manage_contacts_and_agents, ImpOP.edit, ImpOP.view, ImpOP.is_contact],
+            [ImpOP.manage_contacts_and_agents, ImpOP.edit, ImpOP.view],
         )
     ],
     agents=[],
@@ -86,7 +86,7 @@ IMPORTER_THREE = TestImporter(
     contacts=[
         ImporterContact(
             "I3_inactive_contact",
-            [ImpOP.manage_contacts_and_agents, ImpOP.edit, ImpOP.view, ImpOP.is_contact],
+            [ImpOP.manage_contacts_and_agents, ImpOP.edit, ImpOP.view],
             is_active=False,
         )
     ],
@@ -107,11 +107,11 @@ EXPORTER_ONE = TestExporter(
     contacts=[
         ExporterContact(
             "E1_main_contact",
-            [ExpOP.manage_contacts_and_agents, ExpOP.edit, ExpOP.view, ExpOP.is_contact],
+            [ExpOP.manage_contacts_and_agents, ExpOP.edit, ExpOP.view],
         ),
         ExporterContact(
             "E1_inactive_contact",
-            [ExpOP.manage_contacts_and_agents, ExpOP.edit, ExpOP.view, ExpOP.is_contact],
+            [ExpOP.manage_contacts_and_agents, ExpOP.edit, ExpOP.view],
             is_active=False,
         ),
     ],
@@ -127,7 +127,7 @@ EXPORTER_ONE = TestExporter(
                 ),
             ],
             contacts=[
-                ExporterContact("E1_A1_main_contact", [ExpOP.edit, ExpOP.view, ExpOP.is_contact]),
+                ExporterContact("E1_A1_main_contact", [ExpOP.edit, ExpOP.view]),
             ],
         )
     ],
@@ -146,7 +146,7 @@ EXPORTER_TWO = TestExporter(
     contacts=[
         ExporterContact(
             "E2_main_contact",
-            [ExpOP.manage_contacts_and_agents, ExpOP.edit, ExpOP.view, ExpOP.is_contact],
+            [ExpOP.manage_contacts_and_agents, ExpOP.edit, ExpOP.view],
         )
     ],
     agents=[],
@@ -166,7 +166,7 @@ EXPORTER_THREE = TestExporter(
     contacts=[
         ExporterContact(
             "E3_inactive_contact",
-            [ExpOP.manage_contacts_and_agents, ExpOP.edit, ExpOP.view, ExpOP.is_contact],
+            [ExpOP.manage_contacts_and_agents, ExpOP.edit, ExpOP.view],
             is_active=False,
         )
     ],

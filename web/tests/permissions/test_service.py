@@ -246,7 +246,6 @@ class TestPermissionsService:
                 "manage_exporter_contacts_and_agents",
                 "edit_exporter",
                 "view_exporter",
-                "is_contact_of_exporter",
             ]
         )
 
@@ -261,7 +260,6 @@ class TestPermissionsService:
                 "manage_exporter_contacts_and_agents",
                 "edit_exporter",
                 "view_exporter",
-                "is_contact_of_exporter",
             ]
         )
 
@@ -278,7 +276,6 @@ class TestPermissionsService:
                 "manage_importer_contacts_and_agents",
                 "edit_importer",
                 "view_importer",
-                "is_contact_of_importer",
             ]
         )
 
@@ -293,7 +290,6 @@ class TestPermissionsService:
                 "manage_importer_contacts_and_agents",
                 "edit_importer",
                 "view_importer",
-                "is_contact_of_importer",
             ]
         )
 
