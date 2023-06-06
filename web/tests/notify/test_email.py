@@ -453,3 +453,29 @@ def test_send_variation_request_email_with_unsupported_description(
     with pytest.raises(ValueError) as e_info:
         email.send_variation_request_email(vr, "TEST", com_app_submitted)
         assert e_info == "Unsupported Variation Request Description"
+
+
+def test_send_application_update_reponse_email(com_app_submitted, ilb_admin_two):
+    com_app_submitted.case_owner = ilb_admin_two
+    email.send_application_update_reponse_email(com_app_submitted)
+    check_email_was_sent(
+        1,
+        ilb_admin_two.email,
+        f"Application Update Response - {com_app_submitted.reference}",
+        "An application update response has been submitted for case",
+    )
+
+
+def test_get_import_application_update_request_contents(wood_app_submitted, ilb_admin_two):
+    _check_get_export_application_update_request_contents(wood_app_submitted, ilb_admin_two)
+
+
+def test_get_export_application_update_request_contents(com_app_submitted, ilb_admin_two):
+    _check_get_export_application_update_request_contents(com_app_submitted, ilb_admin_two)
+
+
+def _check_get_export_application_update_request_contents(app, case_owner):
+    app.case_owner = case_owner
+    actual_subject, actual_body = email.get_application_update_request_contents(app)
+    assert actual_subject == f"{app.reference} Request for Application Update"
+    assert "I am writing to ask you for application updates regarding" in actual_body
