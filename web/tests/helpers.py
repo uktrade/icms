@@ -41,7 +41,11 @@ def check_pages_checked(error: ApplicationErrors, expected_pages_checked: list[s
 
 
 def check_email_was_sent(
-    exp_num_emails: int, exp_sent_to: str, exp_subject: str, exp_in_body: str | None = None
+    exp_num_emails: int,
+    exp_sent_to: str,
+    exp_subject: str,
+    exp_in_body: str | None = None,
+    exp_attachments: list[tuple[str, bytes]] | None = None,
 ) -> None:
     outbox = mail.outbox
     assert len(outbox) == exp_num_emails
@@ -49,8 +53,12 @@ def check_email_was_sent(
         sent_email = outbox[exp_num_emails - 1]
         assert sent_email.to == [exp_sent_to]
         assert sent_email.subject == exp_subject
+
         if exp_in_body:
             assert exp_in_body in sent_email.body
+
+        if exp_attachments:
+            assert exp_attachments == sent_email.attachments
 
 
 def add_variation_request_to_app(
@@ -58,6 +66,7 @@ def add_variation_request_to_app(
     user: User,
     what_varied: str = "Dummy what_varied",
     status: VariationRequest.Statuses = VariationRequest.Statuses.OPEN,
+    extension_flag: bool = False,
 ) -> VariationRequest:
     return application.variation_requests.create(
         status=status,
@@ -65,6 +74,7 @@ def add_variation_request_to_app(
         why_varied="Dummy why_varied",
         when_varied=timezone.now().date(),
         requested_by=user,
+        extension_flag=extension_flag,
     )
 
 

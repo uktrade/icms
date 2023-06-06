@@ -18,6 +18,7 @@ from web.models import (
     User,
     VariationRequest,
 )
+from web.notify.notify import send_case_complete_notifications
 from web.types import DocumentTypes
 from web.utils.pdf import PdfGenerator
 from web.utils.s3 import delete_file_from_s3, upload_file_obj_to_s3
@@ -133,6 +134,7 @@ def create_document_pack_on_success(application_pk, user_pk):
             application.save()
 
             document_pack.pack_draft_set_active(application)
+            send_case_complete_notifications(application)
 
 
 @app.task(name="web.domains.case.tasks.create_document_pack_on_error")

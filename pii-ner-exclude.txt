@@ -2878,3 +2878,18 @@ case/(?P
 the Access Request
 Close
 {{ fields.field(form.link
+SELECT cg_id id
+impmgr.xview_com_group_details xcgd
+sigl_product_type
+SELECT cg_id commoditygroup_id, com_id commodity_id FROM impmgr.xview_com_group_commodities cgc
+Automatic Notification: Deactivated Firearm Licence Authorised
+f"Commission Delegated Regulation
+Commission Delegated Regulation
+Council Directive 91/477/EEC
+the National Crime Agency
+Chapter 16
+Home Office - Guide on Firearms Licensing Law
+NCA
+Customs &
+Excise Management Act
+Digital Signatures Guidance</a

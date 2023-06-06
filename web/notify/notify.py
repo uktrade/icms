@@ -3,19 +3,27 @@ from typing import Literal
 
 import html2text
 import structlog as logging
+from django.conf import settings
 from django.contrib.postgres.aggregates import StringAgg
 from django.utils import timezone
 
 from config.celery import app
 from web.auth.utils import get_ilb_admin_users
+from web.domains.case._import.fa.types import FaImportApplication
+from web.domains.case.services import document_pack
+from web.domains.case.types import ImpOrExp
+from web.flow.models import ProcessTypes
 from web.models import (
     Constabulary,
+    DFLApplication,
     FirearmsAuthority,
     Importer,
     Section5Authority,
     User,
+    VariationRequest,
 )
 from web.permissions import SysPerms
+from web.utils.s3 import get_file_from_s3, get_s3_client
 
 from . import email, utils
 
@@ -270,3 +278,69 @@ def authority_archived_notification(
             },
             recipients=utils.get_notification_emails(user),
         )
+
+
+def send_application_approved_notification(application: ImpOrExp) -> None:
+    variations = application.variation_requests.filter(
+        status__in=[VariationRequest.Statuses.ACCEPTED, VariationRequest.Statuses.CLOSED]
+    )
+
+    is_variation = variations.exists()
+
+    # TODO ICMSLST-2040 Licence extension flag to be investigated
+    is_extension = variations.filter(extension_flag=True).exists()
+
+    if is_extension:
+        subject = f"Extension to application reference {application.reference} has been approved."
+    elif is_variation:
+        subject = (
+            f"Variation on application reference {application.reference} has been approved by ILB."
+        )
+    else:
+        subject = f"Application reference {application.reference} has been approved by ILB."
+
+    context = {
+        "subject": subject,
+        "case_reference": application.reference,
+        "is_extension": is_extension,
+        "is_variation": is_variation,
+    }
+    contacts = email.get_application_contacts(application)
+
+    email.send_html_email("email/application/approved.html", context, contacts)
+
+
+def send_supplementary_report_notification(application: FaImportApplication) -> None:
+    subject = f"Firearms supplementary reporting information on application reference {application.reference}"
+    contacts = email.get_application_contacts(application)
+    email.send_html_email("email/import/fa_supplementary.html", {"subject": subject}, contacts)
+
+
+def send_constabulary_deactivated_firearms_notification(application: DFLApplication) -> None:
+    subject = "Automatic Notification: Deactivated Firearm Licence Authorised"
+    template = "email/import/constabulary_notification.html"
+    context = {"subject": subject, "ilb_email": settings.ILB_CONTACT_EMAIL}
+
+    html_message = utils.render_email(template, context)
+    body = html2text.html2text(html_message)
+    recipients = [application.constabulary.email]
+
+    s3_client = get_s3_client()
+    attachments = []
+    doc_pack = document_pack.pack_active_get(application)
+
+    for document in doc_pack.document_references.values("document__path", "document__filename"):
+        file_content = get_file_from_s3(document["document__path"], client=s3_client)
+        attachments.append((document["document__filename"], file_content))
+
+    email.send_email(subject, body, recipients, attachments=attachments, html_message=html_message)
+
+
+def send_case_complete_notifications(application: ImpOrExp):
+    if application.process_type == ProcessTypes.FA_DFL:
+        send_constabulary_deactivated_firearms_notification(application.dflapplication)
+
+    if application.process_type in [ProcessTypes.FA_DFL, ProcessTypes.FA_OIL, ProcessTypes.FA_SIL]:
+        send_supplementary_report_notification(application)
+
+    send_application_approved_notification(application)

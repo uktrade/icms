@@ -136,10 +136,10 @@ class TestApplicantActions:
             else:
                 assert not action.show_link()
 
-    def test_view_issued_documents_is_shown(self, completed_app):
+    def test_view_issued_documents_is_shown(self, completed_sil_app):
         active_tasks = []
         action = ViewIssuedDocumentsAction(
-            self.user, "import", completed_app, active_tasks, False, True, False
+            self.user, "import", completed_sil_app, active_tasks, False, True, False
         )
 
         assert action.show_link()
@@ -148,7 +148,7 @@ class TestApplicantActions:
         assert wb_action.name == "View Issued Documents"
         assert wb_action.section_label.startswith("Documents Issued ")
 
-    def test_view_issued_documents_not_shown(self, completed_app):
+    def test_view_issued_documents_not_shown(self, completed_sil_app):
         active_tasks = []
 
         # Use the wood app in `self.app` to show it not showing
@@ -158,19 +158,19 @@ class TestApplicantActions:
         assert not action.show_link()
 
         # Test completed app is no longer shown
-        licence = document_pack.pack_active_get(completed_app)
+        licence = document_pack.pack_active_get(completed_sil_app)
         licence.show_in_workbasket = False
         licence.save()
 
         action = ViewIssuedDocumentsAction(
-            self.user, "import", completed_app, active_tasks, False, True, False
+            self.user, "import", completed_sil_app, active_tasks, False, True, False
         )
         assert not action.show_link()
 
-    def test_clear_issued_documents_is_shown(self, completed_app):
+    def test_clear_issued_documents_is_shown(self, completed_sil_app):
         active_tasks = []
         action = ClearIssuedDocumentsAction(
-            self.user, "import", completed_app, active_tasks, False, True, False
+            self.user, "import", completed_sil_app, active_tasks, False, True, False
         )
 
         assert action.show_link()
@@ -179,7 +179,7 @@ class TestApplicantActions:
         assert wb_action.name == "Clear"
         assert wb_action.section_label.startswith("Documents Issued ")
 
-    def test_clear_issued_documents_not_shown(self, completed_app):
+    def test_clear_issued_documents_not_shown(self, completed_sil_app):
         active_tasks = []
 
         # Use the wood app in `self.app` to show it not showing
@@ -189,11 +189,11 @@ class TestApplicantActions:
         assert not action.show_link()
 
         # Test completed app is no longer shown
-        licence = document_pack.pack_active_get(completed_app)
+        licence = document_pack.pack_active_get(completed_sil_app)
         licence.show_in_workbasket = False
         licence.save()
 
         action = ClearIssuedDocumentsAction(
-            self.user, "import", completed_app, active_tasks, False, True, False
+            self.user, "import", completed_sil_app, active_tasks, False, True, False
         )
         assert not action.show_link()

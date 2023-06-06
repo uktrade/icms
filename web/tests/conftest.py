@@ -12,11 +12,13 @@ from pytest_django.asserts import assertRedirects
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import end_process_task
+from web.flow.models import ProcessTypes
 from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     DFLApplication,
+    DFLChecklist,
     Exporter,
     ExporterAccessRequest,
     Importer,
@@ -403,9 +405,39 @@ def cfs_app_submitted(
 
 
 @pytest.fixture
-def completed_app(fa_sil_app_submitted, ilb_admin_client):
+def completed_sil_app(fa_sil_app_submitted, ilb_admin_client):
     """A completed firearms sil application."""
     app = fa_sil_app_submitted
+
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    app.refresh_from_db()
+    app.cover_letter_text = "Example Cover letter"
+    app.decision = app.APPROVE
+    app.save()
+
+    _set_valid_licence(app)
+    _add_valid_checklist(app)
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    # Now fake complete the app
+    app.status = ImpExpStatus.COMPLETED
+    app.save()
+
+    task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
+    end_process_task(task)
+    document_pack.pack_draft_set_active(app)
+
+    return app
+
+
+@pytest.fixture
+def completed_dfl_app(fa_dfl_app_submitted, ilb_admin_client):
+    """A completed firearms dfl application."""
+    app = fa_dfl_app_submitted
 
     ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
 
@@ -497,17 +529,34 @@ def _set_valid_licence(app):
 
 
 def _add_valid_checklist(app):
-    app.checklist = SILChecklist.objects.create(
-        import_application=app,
-        case_update=YesNoNAChoices.yes,
-        fir_required=YesNoNAChoices.yes,
-        response_preparation=True,
-        validity_period_correct=YesNoNAChoices.yes,
-        endorsements_listed=YesNoNAChoices.yes,
-        authorisation=True,
-        authority_required=YesNoNAChoices.yes,
-        authority_received=YesNoNAChoices.yes,
-        authority_cover_items_listed=YesNoNAChoices.yes,
-        quantities_within_authority_restrictions=YesNoNAChoices.yes,
-        authority_police=YesNoNAChoices.yes,
-    )
+    checklist = {
+        "import_application": app,
+        "case_update": YesNoNAChoices.yes,
+        "fir_required": YesNoNAChoices.yes,
+        "response_preparation": True,
+        "validity_period_correct": YesNoNAChoices.yes,
+        "endorsements_listed": YesNoNAChoices.yes,
+        "authorisation": True,
+    }
+    match app.process_type:
+        case ProcessTypes.FA_SIL:
+            app.checklist = SILChecklist.objects.create(
+                **checklist
+                | {
+                    "authority_required": YesNoNAChoices.yes,
+                    "authority_received": YesNoNAChoices.yes,
+                    "authority_cover_items_listed": YesNoNAChoices.yes,
+                    "quantities_within_authority_restrictions": YesNoNAChoices.yes,
+                    "authority_police": YesNoNAChoices.yes,
+                }
+            )
+        case ProcessTypes.FA_DFL:
+            app.checklist = DFLChecklist.objects.create(
+                **checklist
+                | {
+                    "deactivation_certificate_attached": YesNoNAChoices.yes,
+                    "deactivation_certificate_issued": YesNoNAChoices.yes,
+                }
+            )
+        case _:
+            raise ValueError(f"Invalid process_type: {app.process_type}")

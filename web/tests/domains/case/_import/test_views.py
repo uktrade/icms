@@ -182,9 +182,9 @@ class TestBypassChiefViewRevokeLicence:
     fail_url: str
 
     @pytest.fixture(autouse=True)
-    def setup(self, ilb_admin_client, completed_app):
+    def setup(self, ilb_admin_client, completed_sil_app):
         self.client = ilb_admin_client
-        self.app = completed_app
+        self.app = completed_sil_app
         self.success_url = reverse(
             "import:bypass-chief", kwargs={"application_pk": self.app.pk, "chief_status": "success"}
         )
