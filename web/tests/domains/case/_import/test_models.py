@@ -56,9 +56,9 @@ def test_import_downcast(application_model, importer, importer_one_contact):
     assert id(obj) != id(downcast)
 
 
-def test_display_status_for_completed_app(completed_app):
-    assert completed_app.is_import_application() is True
-    assert completed_app.get_status_display() == "Completed"
+def test_display_status_for_completed_sil_app(completed_sil_app):
+    assert completed_sil_app.is_import_application() is True
+    assert completed_sil_app.get_status_display() == "Completed"
 
 
 def test_display_status_for_rejected_app(complete_rejected_app):

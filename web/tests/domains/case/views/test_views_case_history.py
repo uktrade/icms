@@ -3,19 +3,19 @@ from pytest_django.asserts import assertTemplateUsed
 from web.tests.helpers import CaseURLS
 
 
-def test_can_get_history(completed_app, ilb_admin_client, importer_client, exporter_client):
+def test_can_get_history(completed_sil_app, ilb_admin_client, importer_client, exporter_client):
     # Test can access the history of an application
-    url = CaseURLS.get_application_history(completed_app.pk, "import")
+    url = CaseURLS.get_application_history(completed_sil_app.pk, "import")
 
     response = ilb_admin_client.get(url)
     assert response.status_code == 200
-    _check_response_context(completed_app, response.context)
+    _check_response_context(completed_sil_app, response.context)
 
     assertTemplateUsed(response, "web/domains/case/import_licence_history.html")
 
     response = importer_client.get(url)
     assert response.status_code == 200
-    _check_response_context(completed_app, response.context)
+    _check_response_context(completed_sil_app, response.context)
 
     assertTemplateUsed(response, "web/domains/case/import_licence_history.html")
 

@@ -33,7 +33,12 @@ from web.notify.email import (
     send_variation_request_email,
     send_withdrawal_email,
 )
-from web.permissions import AppChecker, Perms, organisation_get_contacts
+from web.permissions import (
+    AppChecker,
+    Perms,
+    get_org_obj_permissions,
+    organisation_get_contacts,
+)
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import delete_file_from_s3, get_s3_client
 from web.utils.validation import ApplicationErrors
@@ -864,25 +869,25 @@ class ClearIssuedCaseDocumentsFromWorkbasket(
         return redirect(reverse("workbasket"))
 
 
-# TODO: ICMSLST-2006 Revisit when emailing about a successful application (to check this logic)
 def _get_primary_recipients(application: ImpOrExp) -> "QuerySet[User]":
     if application.is_import_application():
         org = application.agent or application.importer
     else:
         org = application.agent or application.exporter
 
-    users = organisation_get_contacts(org)
+    obj_perms = get_org_obj_permissions(org)
+    users = organisation_get_contacts(org, perms=[obj_perms.edit.codename])
 
     return users
 
 
-# TODO: ICMSLST-2006 Revisit when emailing about a successful application (to check this logic)
 def _get_copy_recipients(application: ImpOrExp) -> "QuerySet[User]":
     if application.agent:
         # if agent return main org contacts
         org = application.agent.get_main_org()
 
-        return organisation_get_contacts(org)
+        obj_perms = get_org_obj_permissions(org)
+        return organisation_get_contacts(org, perms=[obj_perms.edit.codename])
 
     else:
         return User.objects.none()

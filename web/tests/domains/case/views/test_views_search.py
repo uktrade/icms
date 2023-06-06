@@ -404,9 +404,9 @@ class TestRevokeCaseView:
     url: str
 
     @pytest.fixture(autouse=True)
-    def setup(self, ilb_admin_client, completed_app):
+    def setup(self, ilb_admin_client, completed_sil_app):
         self.client = ilb_admin_client
-        self.app = completed_app
+        self.app = completed_sil_app
         self.url = SearchURLS.revoke_licence(self.app.pk)
 
     def test_permission(self, importer_client, exporter_client):

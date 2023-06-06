@@ -5,6 +5,7 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import end_process_task
 from web.models import ImportApplication, LiteHMRCChiefRequest, Task, VariationRequest
+from web.notify.notify import send_case_complete_notifications
 
 from .types import ResponseError
 
@@ -41,6 +42,7 @@ def chief_licence_reply_approve_licence(application: ImportApplication) -> None:
     application.save()
 
     document_pack.pack_draft_set_active(application)
+    send_case_complete_notifications(application)
 
 
 def chief_licence_reply_reject_licence(application: ImportApplication) -> None:

@@ -1,4 +1,5 @@
 from datetime import timedelta
+from unittest.mock import create_autospec, patch
 
 from django.core import mail
 from django.test import TestCase
@@ -7,7 +8,10 @@ from django.urls import reverse
 from django.utils import timezone
 
 from web import models
+from web.domains.case.services import document_pack
 from web.notify import notify
+from web.tests.helpers import add_variation_request_to_app, check_email_was_sent
+from web.utils.s3 import get_file_from_s3
 
 
 class TestNotify(TestCase):
@@ -267,3 +271,134 @@ def test_section_5_authority_archived_notification_fail(ilb_admin_client, import
 
     outbox = mail.outbox
     assert len(outbox) == 0
+
+
+def test_send_application_approved_notification(completed_sil_app, importer_one_contact):
+    app = completed_sil_app
+    notify.send_application_approved_notification(completed_sil_app)
+
+    check_email_was_sent(
+        1,
+        importer_one_contact.email,
+        f"Application reference {app.reference} has been approved by ILB.",
+        f"Your application, case reference {app.reference}, has been approved by ILB.",
+    )
+
+
+def test_send_sil_application_approved_email_vr(
+    ilb_admin_user, completed_sil_app, importer_one_contact
+):
+    app = completed_sil_app
+    add_variation_request_to_app(
+        app, ilb_admin_user, status=models.VariationRequest.Statuses.ACCEPTED
+    )
+    notify.send_application_approved_notification(completed_sil_app)
+
+    check_email_was_sent(
+        1,
+        importer_one_contact.email,
+        f"Variation on application reference {app.reference} has been approved by ILB.",
+        f"The requested variation on case reference {app.reference} has been approved",
+    )
+
+
+def test_send_sil_application_approved_email_licence_extension(
+    ilb_admin_user, completed_sil_app, importer_one_contact
+):
+    app = completed_sil_app
+    add_variation_request_to_app(
+        app, ilb_admin_user, status=models.VariationRequest.Statuses.ACCEPTED, extension_flag=True
+    )
+    notify.send_application_approved_notification(completed_sil_app)
+
+    check_email_was_sent(
+        1,
+        importer_one_contact.email,
+        f"Extension to application reference {app.reference} has been approved.",
+        f"The requested extension to case reference {app.reference} has been approved.",
+    )
+
+
+def test_send_supplentary_report_notification(completed_sil_app, importer_one_contact):
+    app = completed_sil_app
+    notify.send_supplementary_report_notification(app)
+
+    check_email_was_sent(
+        1,
+        importer_one_contact.email,
+        f"Firearms supplementary reporting information on application reference {app.reference}",
+        "Commission Delegated Regulation (EU) 2019/686 introduced arrangements",
+    )
+
+
+def test_send_constabulary_notification(ilb_admin_user, completed_dfl_app, monkeypatch):
+    get_file_from_s3_mock = create_autospec(get_file_from_s3)
+    get_file_from_s3_mock.return_value = b"file_content"
+    monkeypatch.setattr(notify, "get_file_from_s3", get_file_from_s3_mock)
+
+    app = completed_dfl_app
+    doc_pack = document_pack.pack_active_get(app)
+    for i, doc_ref in enumerate(doc_pack.document_references.all()):
+        doc_ref.document = models.File.objects.create(
+            filename=f"file-{i}",
+            content_type="pdf",
+            file_size=1,
+            path=f"file-path-{i}",
+            created_by=ilb_admin_user,
+        )
+        doc_ref.save()
+
+    notify.send_constabulary_deactivated_firearms_notification(app)
+
+    check_email_was_sent(
+        1,
+        "constabulary-0-SW@example.com",  # /PS-IGNORE
+        "Automatic Notification: Deactivated Firearm Licence Authorised",
+        "Attached for information, is a copy of a deactivated firearms import licence",
+        [
+            ("file-0", b"file_content", "application/octet-stream"),
+            ("file-1", b"file_content", "application/octet-stream"),
+        ],
+    )
+
+
+@patch("web.notify.notify.send_constabulary_deactivated_firearms_notification")
+@patch("web.notify.notify.send_supplementary_report_notification")
+@patch("web.notify.notify.send_application_approved_notification")
+def test_send_case_complete_notifications_dfl(
+    app_approved_mock, supplementay_report_mock, constabulary_mock, completed_dfl_app
+):
+    app = completed_dfl_app
+    notify.send_case_complete_notifications(app)
+
+    app_approved_mock.assert_called_with(app)
+    supplementay_report_mock.assert_called_with(app)
+    constabulary_mock.assert_called_with(app.dflapplication)
+
+
+@patch("web.notify.notify.send_constabulary_deactivated_firearms_notification")
+@patch("web.notify.notify.send_supplementary_report_notification")
+@patch("web.notify.notify.send_application_approved_notification")
+def test_send_case_complete_notifications_sil(
+    app_approved_mock, supplementay_report_mock, constabulary_mock, completed_sil_app
+):
+    app = completed_sil_app
+    notify.send_case_complete_notifications(app)
+
+    app_approved_mock.assert_called_with(app)
+    supplementay_report_mock.assert_called_with(app)
+    constabulary_mock.assert_not_called()
+
+
+@patch("web.notify.notify.send_constabulary_deactivated_firearms_notification")
+@patch("web.notify.notify.send_supplementary_report_notification")
+@patch("web.notify.notify.send_application_approved_notification")
+def test_send_case_complete_notifications_gmp(
+    app_approved_mock, supplementay_report_mock, constabulary_mock, gmp_app_submitted
+):
+    app = gmp_app_submitted
+    notify.send_case_complete_notifications(app)
+
+    app_approved_mock.assert_called_with(app)
+    supplementay_report_mock.assert_not_called()
+    constabulary_mock.assert_not_called()

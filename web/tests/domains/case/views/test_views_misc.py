@@ -629,8 +629,8 @@ class TestViewIssuedCaseDocumentsView:
         self.client = importer_client
 
     @pytest.fixture(autouse=True)
-    def set_app(self, completed_app):
-        self.app = completed_app
+    def set_app(self, completed_sil_app):
+        self.app = completed_sil_app
         self.licence = document_pack.pack_active_get(self.app)
         self.url = CaseURLS.view_issued_case_documents(
             self.app.pk, issued_document_pk=self.licence.pk
@@ -748,8 +748,8 @@ class TestClearIssuedCaseDocumentsFromWorkbasketView:
         self.client = importer_client
 
     @pytest.fixture(autouse=True)
-    def set_app(self, completed_app):
-        self.app = completed_app
+    def set_app(self, completed_sil_app):
+        self.app = completed_sil_app
         self.licence = document_pack.pack_active_get(self.app)
         self.url = CaseURLS.clear_issued_case_documents_from_workbasket(
             self.app.pk, issued_document_pk=self.licence.pk

@@ -186,9 +186,9 @@ class TestChiefClient:
 
         case_progress.check_expected_task(app, Task.TaskType.CHIEF_WAIT)
 
-    def test_send_application_to_chief_revoke_licence(self, completed_app, monkeypatch):
+    def test_send_application_to_chief_revoke_licence(self, completed_sil_app, monkeypatch):
         # Setup
-        app = completed_app
+        app = completed_sil_app
         document_pack.pack_active_revoke(app, "test revoke licence reason", False)
         licence = document_pack.pack_revoked_get(app)
 
