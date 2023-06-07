@@ -2,13 +2,20 @@ import re
 from typing import TYPE_CHECKING
 
 from web.flow.models import ProcessTypes
-from web.models import EndorsementImportApplication, ImportApplication
+from web.models import (
+    AccessRequest,
+    EndorsementImportApplication,
+    ExportApplication,
+    ImportApplication,
+    Process,
+    SILApplication,
+    User,
+)
 
 from .context import CoverLetterTemplateContext, EmailTemplateContext
 from .models import Template
 
 if TYPE_CHECKING:
-    from web.models import Process, SILApplication
     from web.types import DocumentTypes
 
     from .context import TemplateContextProcessor
@@ -96,12 +103,13 @@ def get_email_template_subject_body(
     process: "Process",
     template_code: str,
     context_cls: type[EmailTemplateContext] = EmailTemplateContext,
+    current_user_name: str = "",
 ) -> tuple[str, str]:
     template = Template.objects.get(
         template_code=template_code,
         template_type="EMAIL_TEMPLATE",
     )
-    context = context_cls(process)
+    context = context_cls(process, current_user_name=current_user_name)
     subject = get_template_title(template, context)
     body = get_template_content(template, context)
 
@@ -156,3 +164,20 @@ def add_template_data_on_submit(application: "ImportApplication") -> None:
 
     if application.application_type.cover_letter_flag:
         add_application_default_cover_letter(application)
+
+
+def get_fir_template_data(process: Process, current_user: User) -> tuple[str, str]:
+    match process:
+        case ImportApplication():
+            return get_email_template_subject_body(process, "IMA_RFI")
+        case ExportApplication():
+            return get_email_template_subject_body(process, "CA_RFI_EMAIL")
+        case AccessRequest():
+            current_user_name = current_user.full_name
+            return get_email_template_subject_body(
+                process, "IAR_RFI_EMAIL", current_user_name=current_user_name
+            )
+        case _:
+            raise ValueError(
+                "Process must be an instance of ImportApplication / ExportApplication / AccessRequest"
+            )

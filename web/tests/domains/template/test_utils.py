@@ -13,6 +13,7 @@ from web.domains.template.utils import (
     get_context_dict,
     get_cover_letter_content,
     get_email_template_subject_body,
+    get_fir_template_data,
     get_letter_fragment,
 )
 from web.models import (
@@ -27,6 +28,7 @@ from web.models import (
     SILApplication,
     Template,
 )
+from web.tests.helpers import CaseURLS
 from web.types import DocumentTypes
 
 
@@ -425,3 +427,41 @@ def test_export_email_template_subject_body(exporter_one_contact, exporter, offi
         f"Certificate(s) {references} have been revoked. "
         "Please contact ILB if you believe this is in error or require further information."
     )
+
+
+def test_get_fir_template_data_import(fa_sil_app_submitted, ilb_admin_client, ilb_admin_user):
+    app = fa_sil_app_submitted
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+    app.refresh_from_db()
+
+    subject, body = get_fir_template_data(app, ilb_admin_user)
+
+    assert subject == f"{app.reference} Further Information Request"
+    assert "ask you for [FURTHER INFORMATION / CLARIFICATION] regarding" in body
+
+
+def test_get_fir_template_data_export(gmp_app_submitted, ilb_admin_client, ilb_admin_user):
+    app = gmp_app_submitted
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
+    app.refresh_from_db()
+
+    subject, body = get_fir_template_data(app, ilb_admin_user)
+
+    assert subject == f"{app.reference} Further Information Request"
+    assert "ask you for [FURTHER INFORMATION / CLARIFICATION] regarding" in body
+
+
+def test_get_fir_template_data_importer_access(importer_access_request, ilb_admin_user):
+    app = importer_access_request
+    subject, body = get_fir_template_data(app, ilb_admin_user)
+
+    assert subject == f"{app.reference} Further Information Request"
+    assert "ask you for [FURTHER INFORMATION / CLARIFICATION] regarding" in body
+
+
+def test_get_fir_template_data_exporter_access(exporter_access_request, ilb_admin_user):
+    app = exporter_access_request
+    subject, body = get_fir_template_data(app, ilb_admin_user)
+
+    assert subject == f"{app.reference} Further Information Request"
+    assert "ask you for [FURTHER INFORMATION / CLARIFICATION] regarding" in body
