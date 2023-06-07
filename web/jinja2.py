@@ -133,7 +133,7 @@ def show_take_ownership_url(
         application=application,
         tasks=case_progress.get_active_task_list(application),
         is_ilb_admin=user.has_perm(Perms.sys.ilb_admin),
-        is_importer_user=user.has_perm("web.importer_access"),
+        is_importer_user=user.has_perm(Perms.sys.importer_access),
         # Set to False as checking is_rejected isn't required for TakeOwnershipAction
         is_rejected=False,
     )

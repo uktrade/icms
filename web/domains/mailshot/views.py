@@ -254,7 +254,7 @@ class MailshotReceivedDetailView(MailshotDetailView):
 
         mailshot: Mailshot = self.get_object()
 
-        if mailshot.is_to_importers and user.has_perm("web.importer_access"):
+        if mailshot.is_to_importers and user.has_perm(Perms.sys.importer_access):
             return True
 
         if mailshot.is_to_exporters and user.has_perm("web.export_access"):
@@ -396,7 +396,7 @@ def _check_permission(user: User) -> bool:
     if user.has_perm(Perms.sys.ilb_admin):
         return True
 
-    importer_access = user.has_perm("web.importer_access")
-    exporter_acesss = user.has_perm("web.exporter_access")
+    importer_access = user.has_perm(Perms.sys.importer_access)
+    exporter_acesss = user.has_perm(Perms.sys.exporter_access)
 
     return importer_access or exporter_acesss

@@ -74,8 +74,8 @@ class ReceivedMailshotsFilter(FilterSet):
         if self.user.has_perm(Perms.sys.ilb_admin):
             return queryset
 
-        importer_access = self.user.has_perm("web.importer_access")
-        exporter_access = self.user.has_perm("web.exporter_access")
+        importer_access = self.user.has_perm(Perms.sys.importer_access)
+        exporter_access = self.user.has_perm(Perms.sys.exporter_access)
 
         if importer_access and exporter_access:
             return queryset
