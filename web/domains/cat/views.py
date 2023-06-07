@@ -81,7 +81,7 @@ def create(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 def _has_permission(user: User) -> bool:
     ilb_admin = user.has_perm(Perms.sys.ilb_admin)
-    exporter_user = user.has_perm("web.exporter_access")
+    exporter_user = user.has_perm(Perms.sys.exporter_access)
 
     return ilb_admin or exporter_user
 

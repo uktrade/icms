@@ -44,7 +44,7 @@ def _get_workbasket_sections(
     tasks = application.active_tasks
 
     is_ilb_admin = user.has_perm(Perms.sys.ilb_admin)
-    is_importer_user = user.has_perm("web.importer_access")
+    is_importer_user = user.has_perm(Perms.sys.importer_access)
 
     # Group all actions by the label.
     sections = defaultdict(list)

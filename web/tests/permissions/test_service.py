@@ -243,9 +243,9 @@ class TestPermissionsService:
         assert exp_uop.content_object_id == self.exporter.id
         assert sorted(exp_uop.org_permissions) == sorted(
             [
-                "manage_exporter_contacts_and_agents",
-                "edit_exporter",
-                "view_exporter",
+                Perms.obj.exporter.manage_contacts_and_agents.codename,
+                Perms.obj.exporter.edit.codename,
+                Perms.obj.exporter.view.codename,
             ]
         )
 
@@ -257,9 +257,9 @@ class TestPermissionsService:
         assert exp_uop.content_object_id == self.exporter.id
         assert sorted(exp_uop.org_permissions) == sorted(
             [
-                "manage_exporter_contacts_and_agents",
-                "edit_exporter",
-                "view_exporter",
+                Perms.obj.exporter.manage_contacts_and_agents.codename,
+                Perms.obj.exporter.edit.codename,
+                Perms.obj.exporter.view.codename,
             ]
         )
 
@@ -273,9 +273,9 @@ class TestPermissionsService:
         assert imp_uop.content_object_id == self.importer.id
         assert sorted(imp_uop.org_permissions) == sorted(
             [
-                "manage_importer_contacts_and_agents",
-                "edit_importer",
-                "view_importer",
+                Perms.obj.importer.manage_contacts_and_agents.codename,
+                Perms.obj.importer.edit.codename,
+                Perms.obj.importer.view.codename,
             ]
         )
 
@@ -287,9 +287,9 @@ class TestPermissionsService:
         assert imp_uop.content_object_id == self.importer.id
         assert sorted(imp_uop.org_permissions) == sorted(
             [
-                "manage_importer_contacts_and_agents",
-                "edit_importer",
-                "view_importer",
+                Perms.obj.importer.manage_contacts_and_agents.codename,
+                Perms.obj.importer.edit.codename,
+                Perms.obj.importer.view.codename,
             ]
         )
 
