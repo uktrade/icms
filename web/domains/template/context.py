@@ -6,6 +6,7 @@ from django.db.models import F, QuerySet, Value
 from web.domains.case.services import document_pack
 from web.flow.models import ProcessTypes
 from web.models import (
+    AccessRequest,
     CFSProduct,
     CFSSchedule,
     ExportApplication,
@@ -183,8 +184,9 @@ class CoverLetterTemplateContext:
 
 
 class EmailTemplateContext:
-    def __init__(self, process: Process) -> None:
+    def __init__(self, process: Process, current_user_name: str = "") -> None:
         self.process = process
+        self.current_user_name = current_user_name
 
     def __getitem__(self, item: str) -> str:
         match self.process:
@@ -192,6 +194,8 @@ class EmailTemplateContext:
                 return self._import_context(item)
             case ExportApplication():
                 return self._export_context(item)
+            case AccessRequest():
+                return self._access_request_context(item)
             case _:
                 raise ValueError(
                     "Process must be an instance of ImportApplication /"
@@ -277,6 +281,17 @@ class EmailTemplateContext:
                 )
 
         return self._application_context(item)
+
+    def _access_request_context(self, item: str) -> str:
+        match item:
+            case "CURRENT_USER_NAME":
+                return self.current_user_name
+            case "REQUESTER_NAME":
+                return self.process.submitted_by.full_name
+            case "REQUEST_REFERENCE":
+                return self.process.reference
+
+        return self._context(item)
 
     def _context(self, item: str) -> str:
         match item:

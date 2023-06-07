@@ -12,26 +12,32 @@ from web.tests.helpers import CaseURLS
 if TYPE_CHECKING:
     from django.test.client import Client
 
-    from web.models import WoodQuotaApplication
+    from web.models import Process, WoodQuotaApplication
 
 
 def _create_fir(
-    requested_by, *, status=FurtherInformationRequest.OPEN, **kwargs
-) -> FurtherInformationRequest:
-    return FurtherInformationRequest.objects.create(
-        process_type=FurtherInformationRequest.PROCESS_TYPE,
-        requested_by=requested_by,
-        status=status,
-        request_subject="test subject",
-        request_detail="test request detail",
-        **kwargs,
+    process: "Process", ilb_admin_client: "Client", case_type: str, subject: str = "test_subject"
+):
+    resp = ilb_admin_client.post(CaseURLS.add_fir(process.pk, case_type))
+
+    ilb_admin_client.post(
+        resp.url,
+        {
+            "status": "DRAFT",
+            "request_subject": subject,
+            "request_detail": "test request detail",
+            "send": "",
+        },
     )
+
+    return FurtherInformationRequest.objects.get(request_subject=subject)
 
 
 class TestManageFirsView(AuthTestCase):
-    def _add_fir_to_app(self, application) -> FurtherInformationRequest:
-        fir = _create_fir(self.ilb_admin_user)
-        application.further_information_requests.add(fir)
+    def _add_fir_to_app(
+        self, application: "Process", case_type: str = "import"
+    ) -> FurtherInformationRequest:
+        fir = _create_fir(application, self.ilb_admin_client, case_type)
 
         return fir
 
@@ -74,7 +80,7 @@ class TestManageFirsView(AuthTestCase):
     def test_manage_export_application_fir(self, com_app_submitted):
         app = com_app_submitted
 
-        self.ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+        self.ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
         url = CaseURLS.manage_firs(app.pk, "export")
 
         response = self.ilb_admin_client.get(url)
@@ -85,7 +91,7 @@ class TestManageFirsView(AuthTestCase):
         assert context["case_type"] == "export"
         assert context["firs"].count() == 0
 
-        fir = self._add_fir_to_app(app)
+        fir = self._add_fir_to_app(app, "export")
 
         response = self.ilb_admin_client.get(url)
         assert response.status_code == HTTPStatus.OK
@@ -105,7 +111,7 @@ class TestManageFirsView(AuthTestCase):
         assert context["case_type"] == "access"
         assert context["firs"].count() == 0
 
-        fir = self._add_fir_to_app(app)
+        fir = self._add_fir_to_app(app, "access")
 
         response = self.ilb_admin_client.get(url)
         assert response.status_code == HTTPStatus.OK
@@ -125,7 +131,7 @@ class TestManageFirsView(AuthTestCase):
         assert context["case_type"] == "access"
         assert context["firs"].count() == 0
 
-        fir = self._add_fir_to_app(app)
+        fir = self._add_fir_to_app(app, "access")
 
         response = self.ilb_admin_client.get(url)
         assert response.status_code == HTTPStatus.OK
@@ -160,7 +166,7 @@ class TestImporterAccessRequestFIRListView(AuthTestCase):
         self.process.submitted_by = self.importer_user
         self.process.save()
 
-        self.fir_process = _create_fir(self.ilb_admin_user)
+        self.fir_process = _create_fir(self.process, self.ilb_admin_client, "access")
         self.process.further_information_requests.add(self.fir_process)
 
         self.url = reverse(
@@ -176,11 +182,9 @@ class TestImporterAccessRequestFIRListView(AuthTestCase):
         assert response.status_code == 200
 
     def test_deleted_firs_not_shown(self):
-        second_fir = _create_fir(
-            self.ilb_admin_user, status=FurtherInformationRequest.DELETED, is_active=False
-        )
+        fir = _create_fir(self.process, self.ilb_admin_client, "access", "test delete")
+        self.ilb_admin_client.post(CaseURLS.delete_fir(self.process.pk, fir.pk, "access"))
 
-        self.process.further_information_requests.add(second_fir)
         response = self.importer_client.get(self.url)
 
         assert response.status_code == 200

@@ -19,8 +19,9 @@ from web.domains.case.services import case_progress
 from web.domains.case.types import ImpOrExpOrAccess
 from web.domains.case.utils import get_case_page_title
 from web.domains.file.utils import create_file_model
+from web.domains.template.utils import get_fir_template_data
 from web.flow.models import ProcessTypes
-from web.models import FurtherInformationRequest, Template, User
+from web.models import FurtherInformationRequest, User
 from web.notify import notify
 from web.permissions import (
     AppChecker,
@@ -134,20 +135,13 @@ def add_fir(request, *, application_pk: int, case_type: CASE_TYPES) -> HttpRespo
         )
 
         _check_process_state(application, case_type)
-
-        template = Template.objects.get(template_code="IAR_RFI_EMAIL", is_active=True)
-        title_mapping = {"REQUEST_REFERENCE": application.reference}
-        content_mapping = {
-            "REQUESTER_NAME": application.submitted_by,
-            "CURRENT_USER_NAME": request.user,
-            "REQUEST_REFERENCE": application.pk,
-        }
+        subject, body = get_fir_template_data(application, request.user)
 
         fir = application.further_information_requests.create(
             status=FurtherInformationRequest.DRAFT,
             requested_by=request.user,
-            request_subject=template.get_title(title_mapping),
-            request_detail=template.get_content(content_mapping),
+            request_subject=subject,
+            request_detail=body,
             process_type=FurtherInformationRequest.PROCESS_TYPE,
         )
 
