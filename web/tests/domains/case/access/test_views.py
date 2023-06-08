@@ -3,7 +3,7 @@ from http import HTTPStatus
 import pytest
 from django.core import mail
 from django.urls import reverse
-from pytest_django.asserts import assertInHTML, assertRedirects
+from pytest_django.asserts import assertInHTML, assertRedirects, assertTemplateUsed
 
 from web.models import AccessRequest, ExporterAccessRequest, ImporterAccessRequest
 from web.permissions import organisation_get_contacts
@@ -500,3 +500,95 @@ class TestCloseAccessRequest(AuthTestCase):
         assert f"Request Outcome: {access_request.response}" in first_email.body
         if access_request.response:
             assert access_request.response in first_email.body
+
+
+class TestAccessRequestHistoryView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, access_request_user, importer_access_request, exporter_access_request):
+        self.acc_req_user = access_request_user
+
+        self.iar = importer_access_request
+        self.iar.link = self.importer
+        self.iar.agent_link = self.importer_agent
+        self.iar.request_type = ImporterAccessRequest.AGENT_ACCESS
+        self.iar.status = ImporterAccessRequest.Statuses.CLOSED
+        self.iar.response = ImporterAccessRequest.APPROVED
+        self.iar.save()
+        self.iar_url = reverse(
+            "access:request-history", kwargs={"access_request_pk": importer_access_request.pk}
+        )
+
+        self.ear = exporter_access_request
+        self.ear.link = self.exporter
+        self.ear.agent_link = self.exporter_agent
+        self.ear.request_type = ExporterAccessRequest.AGENT_ACCESS
+        self.ear.status = ExporterAccessRequest.Statuses.CLOSED
+        self.ear.response = ExporterAccessRequest.APPROVED
+        self.ear.save()
+        self.ear_url = reverse(
+            "access:request-history", kwargs={"access_request_pk": exporter_access_request.pk}
+        )
+
+    def test_permission(self):
+        response = self.ilb_admin_client.get(self.iar_url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.importer_client.get(self.iar_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.get(self.iar_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.ilb_admin_client.get(self.ear_url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.importer_client.get(self.ear_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.get(self.ear_url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_post_forbidden(self):
+        response = self.ilb_admin_client.post(self.iar_url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+        response = self.ilb_admin_client.post(self.ear_url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_get_importer_access_request_history(self):
+        response = self.ilb_admin_client.get(self.iar_url)
+        assert response.status_code == HTTPStatus.OK
+
+        context = response.context
+        resp_html = response.content.decode("utf-8")
+
+        assert context["object"] == self.iar
+        assert context["access_request"] == self.iar
+        assert context["firs"].count() == 0
+        assert context["approval_request"] is None
+        assert context["entity"] == "importer"
+
+        assertTemplateUsed(response, "web/domains/case/access/access-request-history.html")
+        assertInHTML("Access Request", resp_html)
+        assertInHTML("Request access to act as an Agent for an Importer", resp_html)
+        assertInHTML("Further Information Requests", resp_html)
+        assertInHTML("There aren't any further information requests.", resp_html)
+
+    def test_get_exporter_access_request_history(self):
+        response = self.ilb_admin_client.get(self.ear_url)
+        assert response.status_code == HTTPStatus.OK
+
+        context = response.context
+        resp_html = response.content.decode("utf-8")
+
+        assert context["object"] == self.ear
+        assert context["access_request"] == self.ear
+        assert context["firs"].count() == 0
+        assert context["approval_request"] is None
+        assert context["entity"] == "exporter"
+
+        assertTemplateUsed(response, "web/domains/case/access/access-request-history.html")
+        assertInHTML("Access Request", resp_html)
+        assertInHTML("Request access to act as an Agent for an Exporter", resp_html)
+        assertInHTML("Further Information Requests", resp_html)
+        assertInHTML("There aren't any further information requests.", resp_html)

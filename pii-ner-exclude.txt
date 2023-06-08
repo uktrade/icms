@@ -2895,3 +2895,23 @@ Excise Management Act
 Digital Signatures Guidance</a
 ICMSLST-1947 Revisit
 Unknown Application Type
+{{ application_field(acc_req.submitted_by|string +
+Access Requested By
+{{ application_field(acc_req.get_request_type_display
+{{ application_field(acc_req.submit_datetime.strftime('%d-%b-%Y %
+{{ application_field(acc_req.link|default('Not Linked'
+Linked Exporter
+Linked Importer
+{{ application_field(acc_req.request_reason
+Linked Further Information Requests
+{{ application_field(get_status(approval_request
+{{ application_field(approval_request.requested_from|default('All'
+{{ application_field(approval_request.request_date.strftime('%d-%b-%Y %
+Approval Request Date
+{{ application_field(approval_request.requested_by
+Approval Request Response</h4
+{{ application_field(approval_request.response_date.strftime('%d-%b-%Y %
+Response Date
+{{ application_field(approval_request.response_reason|default('N
+Response Reason
+Access Request History

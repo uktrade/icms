@@ -26,38 +26,9 @@
 {% endblock %}
 
 {% block main_content %}
-  <h3>Access Request</h3>
-  <div class="container">
-    <dl>
-    <dt class="bold">Access Requested By</dt>
-    <dd>{{ process.submitted_by }} ({{ process.submitted_by.email }})</dd>
-    <dt class="bold">Access Request Type</dt>
-    <dd>{{ process.get_request_type_display() }}</dd>
-    <dt class="bold">Request date</dt>
-    <dd>
-      {% if process.submit_datetime %}
-        {{ process.submit_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
-      {% endif %}
-    </dd>
-    {% if process.process_type == "ExporterAccessRequest" %}
-      <dt class="bold">Exporter Name</dt>
-      <dd>{{ process.organisation_name }}</dd>
-      <dt class="bold">Exporter Address</dt>
-      <dd>{{ process.organisation_address }}</dd>
-      <dt class="bold">Linked Exporter</dt>
-      <dd>{{ process.exporteraccessrequest.link|default('Not Linked', True)}}</dd>
-    {% else %}
-      <dt class="bold">Importer Name</dt>
-      <dd>{{ process.organisation_name }}</dd>
-      <dt class="bold">Importer Address</dt>
-      <dd>{{ process.organisation_address }}</dd>
-      <dt class="bold">Linked Importer</dt>
-      <dd>{{ process.importeraccessrequest.link|default('Not Linked', True)}}</dd>
-      <dt class="bold">What are you importing and where are you importing it from?</dt>
-      <dd>{{ process.request_reason }}</dd>
-    {% endif %}
-    </dl>
-  </div>
+    {% with acc_req = process %}
+      {% include "web/domains/case/access/partials/access-request-section.html" %}
+    {% endwith %}
 {% endblock %}
 
 {% block sidebar %}
@@ -65,7 +36,7 @@
 <ul class="menu-out">
   <li>
     <a href="{{ icms_url('case:view', kwargs={'application_pk': process.pk, 'case_type': 'access'}) }}">
-      Case {{ process.pk }}
+      Case {{ process.reference or process.pk|string }}
     </a>
   </li>
   <li>

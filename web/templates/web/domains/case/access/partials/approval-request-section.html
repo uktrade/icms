@@ -1,0 +1,74 @@
+{% from "display/fields.html" import application_field, application_section %}
+
+{% macro get_status(approval_req) %}
+  <div class="status {{ approval_req.status.lower() }}">
+    <span class="text-widget">{{ approval_req.get_status_display() }}</span>
+  </div>
+{% endmacro %}
+
+{% if approval_request %}
+  {% call application_section("Approval Request") %}
+    {{ application_field(get_status(approval_request), "Status", is_safe_html=True) }}
+    {{ application_field(approval_request.requested_from|default('All', True), "Contact") }}
+    {{ application_field(approval_request.request_date.strftime('%d-%b-%Y %H:%M:%S'), "Approval Request Date") }}
+    {{ application_field(approval_request.requested_by, "Sent By") }}
+    {% if approval_request.response %}
+      <h4>Approval Request Response</h4>
+      {{ application_field(approval_request.response_date.strftime('%d-%b-%Y %H:%M:%S'), "Response Date") }}
+      {{ application_field(approval_request.response_by, "Response By") }}
+      {{ application_field(approval_request.get_response_display(), "Response") }}
+      {{ application_field(approval_request.response_reason|default('N/A', True), "Response Reason") }}
+    {% endif %}
+  {% endcall %}
+
+  {% if not readonly_view %}
+    <form
+      method="post"
+      action="{{ icms_url('access:case-management-approval-request-withdraw', kwargs={'access_request_pk': process.pk, 'entity': entity, 'approval_request_pk': approval_request.pk}) }}"
+    >
+      {{ csrf_input }}
+      <div class="container">
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              <li>
+                {% if approval_request.status == "OPEN" %}
+                  <input type="submit" class="button" value="Withdraw Approval Request"/>
+                {% else %}
+                  <input type="submit" class="button" value="Restart Approval Request"/>
+                {% endif %}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </form>
+  {% endif %}
+
+{% else %}
+  {% if not readonly_view %}
+    {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+      {% block fields %}
+        {% for field in form %}
+          {{ fields.field(field, show_optional_indicator=False) }}
+        {% endfor %}
+      {% endblock %}
+
+      <div class="container">
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <button type="submit" name="action" value="save" class="primary-button button">
+                  Request Approval
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endcall %}
+  {% endif %}
+{% endif %}

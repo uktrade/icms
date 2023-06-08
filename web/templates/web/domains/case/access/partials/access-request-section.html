@@ -1,0 +1,23 @@
+{% from "display/fields.html" import application_field, application_section %}
+
+{% call application_section("Access Request") %}
+  {{ application_field(acc_req.submitted_by|string + " (" + acc_req.submitted_by.email + ")", "Access Requested By") }}
+  {{ application_field(acc_req.get_request_type_display(), "Access Request Type") }}
+  {{ application_field(acc_req.submit_datetime.strftime('%d-%b-%Y %H:%M:%S') if acc_req.submit_datetime else "", "Request date") }}
+  {% if acc_req.process_type == "ExporterAccessRequest" %}
+    {{ application_field(acc_req.organisation_name, "Exporter Name") }}
+    {{ application_field(acc_req.organisation_address, "Exporter Address") }}
+    {{ application_field(acc_req.link|default('Not Linked', True), "Linked Exporter") }}
+  {% else %}
+    {{ application_field(acc_req.organisation_name, "Importer Name") }}
+    {{ application_field(acc_req.organisation_address, "Importer Address") }}
+    {{ application_field(acc_req.link|default('Not Linked', True), "Linked Importer") }}
+    {{ application_field(acc_req.request_reason, "What are you importing and where are you importing it from?") }}
+  {% endif %}
+
+  {% if acc_req.is_agent_request %}
+    {{ application_field(acc_req.agent_name, "Agent Name") }}
+    {{ application_field(acc_req.agent_address, "Agent Address") }}
+    {{ application_field(acc_req.agent_link|default('Not Linked', True), "Linked Agent") }}
+  {% endif %}
+{% endcall %}
