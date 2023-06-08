@@ -1,13 +1,13 @@
 from typing import Any, Literal
 
-import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
-from django.views.generic import TemplateView
+from django.views.generic import DetailView, TemplateView
 from ratelimit import UNSAFE
 from ratelimit.decorators import ratelimit
 
@@ -16,16 +16,20 @@ from web.domains.case.access.filters import (
     ImporterAccessRequestFilter,
 )
 from web.domains.case.services import case_progress, reference
-from web.models import Task
+from web.flow.models import ProcessTypes
+from web.models import (
+    AccessRequest,
+    ExporterAccessRequest,
+    FurtherInformationRequest,
+    ImporterAccessRequest,
+    Task,
+)
 from web.notify import notify
 from web.permissions import Perms, organisation_add_contact
 from web.types import AuthenticatedHttpRequest
 from web.views import ModelFilterView
 
 from . import forms
-from .models import AccessRequest, ExporterAccessRequest, ImporterAccessRequest
-
-logger = logging.get_logger(__name__)
 
 
 class ListImporterAccessRequest(ModelFilterView):
@@ -293,6 +297,38 @@ def close_access_request(
         template_name="web/domains/case/access/close-access-request.html",
         context=context,
     )
+
+
+class AccessRequestHistoryView(PermissionRequiredMixin, DetailView):
+    # DetailView Config
+    model = AccessRequest
+    pk_url_kwarg = "access_request_pk"
+    context_object_name = "access_request"
+    http_method_names = ["get"]
+    template_name = "web/domains/case/access/access-request-history.html"
+
+    # PermissionRequiredMixin Config
+    permission_required = [Perms.sys.ilb_admin]
+
+    def get_object(self, queryset=None) -> ImporterAccessRequest | ExporterAccessRequest:
+        obj: AccessRequest = super().get_object(queryset)
+
+        return obj.get_specific_model()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        access_request = context["access_request"]
+        entity = "importer" if access_request.process_type == ProcessTypes.IAR else "exporter"
+
+        return context | {
+            "page_title": "Access Request History",
+            "firs": access_request.further_information_requests.exclude(
+                status=FurtherInformationRequest.DELETED
+            ).filter(is_active=True),
+            "approval_request": access_request.approval_requests.filter(is_active=True).first(),
+            "entity": entity,
+        }
 
 
 class AccessRequestCreatedView(TemplateView):

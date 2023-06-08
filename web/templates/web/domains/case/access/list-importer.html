@@ -23,8 +23,10 @@
         {{tables.fields(item, display)}}
 
         <td>
-          <a href="{{ icms_url('case:view', kwargs={'application_pk': item.pk, 'case_type': 'access'}) }}"
-            class="button small-button icon-eye">
+          <a href="{{ icms_url('access:request-history', kwargs={'access_request_pk': item.pk}) }}"
+            class="button small-button icon-eye"
+            target="_blank"
+          >
               View
           </a>
         </td>

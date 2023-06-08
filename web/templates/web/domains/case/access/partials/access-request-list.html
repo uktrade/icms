@@ -18,7 +18,7 @@
   {% for request in requests %}
   <tr class="main-entry">
     <td>
-      <span class="text-widget ">{{request.pk}}</span>
+      <span class="text-widget ">{{request.reference or request.pk}}</span>
     </td>
     <td>
       <span class="text-widget ">{{request.submit_datetime}}</span>

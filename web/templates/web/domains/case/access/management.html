@@ -11,7 +11,7 @@
   {% if process.process_type == "ExporterAccessRequest" %}
     <div class="info-box info-box-info">
       <p>
-      The user '{{ process.submitted_by }}' has made a '{{ process.get_request_type_display() }}'.<p>
+      The user '{{ process.submitted_by }}' has made a '{{ process.get_request_type_display() }}'.
       </p>
       <p>
         If you already know that this user should have these access rights you can
@@ -31,7 +31,7 @@
   {% else %}
     <div class="info-box info-box-info">
       <p>
-      The user '{{ process.submitted_by }}' has made a '{{ process.get_request_type_display() }}'.<p>
+      The user '{{ process.submitted_by }}' has made a '{{ process.get_request_type_display() }}'.
       </p>
       <p>
         If you already know that this user should have these access rights you can
@@ -49,6 +49,10 @@
       </p>
     </div>
   {% endif %}
+
+    {% with acc_req = process %}
+      {% include "web/domains/case/access/partials/access-request-section.html" %}
+    {% endwith %}
 
 <div class="row">
   {% if process.process_type == "ExporterAccessRequest" %}

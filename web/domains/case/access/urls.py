@@ -22,6 +22,11 @@ urlpatterns = [
         views.close_access_request,
         name="close-request",
     ),
+    path(
+        "access_request/<int:access_request_pk>/history/",
+        views.AccessRequestHistoryView.as_view(),
+        name="request-history",
+    ),
     # approval request
     path("", include("web.domains.case.access.approval.urls")),
 ]
