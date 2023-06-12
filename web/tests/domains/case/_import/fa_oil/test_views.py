@@ -12,7 +12,6 @@ from web.models import (
 )
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import OILApplicationFactory
-from web.tests.flow.factories import TaskFactory
 
 LOGIN_URL = "/"
 
@@ -80,7 +79,7 @@ def test_take_ownership(importer_one_contact, importer, ilb_admin_client):
         created_by=importer_one_contact,
         last_updated_by=importer_one_contact,
     )
-    TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
+    Task.objects.create(process=process, task_type=Task.TaskType.PROCESS)
     oil_app = process.get_specific_model()
     oil_app.licences.create()
 
@@ -106,7 +105,7 @@ def test_release_ownership(ilb_admin_user, ilb_admin_client, importer, importer_
         last_updated_by=importer_one_contact,
         case_owner=ilb_admin_user,
     )
-    TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
+    Task.objects.create(process=process, task_type=Task.TaskType.PROCESS)
 
     response = ilb_admin_client.post(
         f"/case/import/{process.pk}/admin/release-ownership/", follow=True
@@ -125,7 +124,7 @@ def test_close_case(ilb_admin_user, ilb_admin_client, importer, importer_one_con
         case_owner=ilb_admin_user,
         reference="IMA/123/4567",
     )
-    task = TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
+    task = Task.objects.create(process=process, task_type=Task.TaskType.PROCESS)
     licence = document_pack.pack_draft_create(process)
 
     ilb_admin_client.post(

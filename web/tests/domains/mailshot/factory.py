@@ -1,7 +1,6 @@
 import factory
 
 from web.models import Mailshot
-from web.tests.domains.user.factory import UserFactory
 
 
 class MailshotFactory(factory.django.DjangoModelFactory):
@@ -15,5 +14,4 @@ class MailshotFactory(factory.django.DjangoModelFactory):
     is_retraction_email = True
     is_to_importers = True
     is_to_exporters = True
-    created_by = factory.SubFactory(UserFactory)
     is_active = True

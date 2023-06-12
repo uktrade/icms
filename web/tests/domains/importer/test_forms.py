@@ -1,16 +1,13 @@
 from unittest.mock import patch
 
 import pytest
-from django.contrib.auth.models import Group
 
 from web.domains.importer.forms import (
     ImporterFilter,
     ImporterIndividualForm,
     ImporterOrganisationForm,
 )
-from web.models import Importer, User
-from web.permissions import Perms
-from web.tests.domains.user.factory import UserFactory
+from web.models import Importer
 
 
 @pytest.mark.django_db()
@@ -56,12 +53,10 @@ def test_invalid_eori_number_importer_individual_form():
 
 
 @pytest.mark.django_db()
-def test_type_importer_individual_form():
+def test_type_importer_individual_form(importer_one_contact):
     """Assert individual importer type is set on save."""
-    user = UserFactory.create(account_status=User.ACTIVE)
-    user.groups.add(Group.objects.get(name=Perms.obj.importer.get_group_name()))
 
-    data = {"user": user.pk, "eori_number": "GBPR"}
+    data = {"user": importer_one_contact.pk, "eori_number": "GBPR"}
     form = ImporterIndividualForm(data)
 
     assert form.is_valid(), form.errors

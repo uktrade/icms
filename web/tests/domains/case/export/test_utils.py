@@ -4,10 +4,7 @@ import pytest
 from django.core.files.base import File
 
 from web.domains.case.export.utils import CustomError, process_products_file
-from web.tests.domains.case.export.factories import (
-    CertificateOfFreeSaleApplicationFactory,
-    CFSScheduleFactory,
-)
+from web.models import CFSSchedule
 from web.tests.domains.legislation.factory import ProductLegislationFactory
 from web.utils.spreadsheet import XlsxConfig, generate_xlsx_file
 
@@ -48,14 +45,12 @@ def create_dummy_xlsx_file(config: XlsxConfig) -> File:
     return xlsx_file
 
 
-def create_schedule(is_biocidal: bool = False):
-    app = CertificateOfFreeSaleApplicationFactory()
-
+def create_schedule(app, is_biocidal: bool = False):
     legislation = ProductLegislationFactory()
     legislation.is_biocidal = is_biocidal
     legislation.save()
 
-    schedule = CFSScheduleFactory(application=app)
+    schedule = CFSSchedule.objects.create(application=app, created_by=app.last_updated_by)
     schedule.legislations.add(legislation)
 
     return schedule
@@ -63,8 +58,8 @@ def create_schedule(is_biocidal: bool = False):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("is_biocidal", [False, True])
-def test_process_products_file(is_biocidal):
-    schedule = create_schedule(is_biocidal)
+def test_process_products_file(cfs_app_submitted, is_biocidal):
+    schedule = create_schedule(cfs_app_submitted, is_biocidal)
     config = create_dummy_config(is_biocidal=is_biocidal)
     xlsx_file = create_dummy_xlsx_file(config)
     count = process_products_file(xlsx_file, schedule)
@@ -80,8 +75,8 @@ def test_process_products_file(is_biocidal):
 
 
 @pytest.mark.django_db
-def test_multiple_chunks_invalid():
-    schedule = create_schedule()
+def test_multiple_chunks_invalid(cfs_app_submitted):
+    schedule = create_schedule(cfs_app_submitted)
     config = create_dummy_config()
     xlsx_file = create_dummy_xlsx_file(config)
     xlsx_file.DEFAULT_CHUNK_SIZE = 5000
@@ -93,8 +88,8 @@ def test_multiple_chunks_invalid():
 
 
 @pytest.mark.django_db
-def test_sheet_name_invalid():
-    schedule = create_schedule()
+def test_sheet_name_invalid(cfs_app_submitted):
+    schedule = create_schedule(cfs_app_submitted)
     config = create_dummy_config()
     config.sheet_name = "Sheet 1"
     xlsx_file = create_dummy_xlsx_file(config)
@@ -107,8 +102,8 @@ def test_sheet_name_invalid():
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("is_biocidal", [False, True])
-def test_invalid_header(is_biocidal):
-    schedule = create_schedule(is_biocidal)
+def test_invalid_header(cfs_app_submitted, is_biocidal):
+    schedule = create_schedule(cfs_app_submitted, is_biocidal)
     config = create_dummy_config(is_biocidal is False)
     xlsx_file = create_dummy_xlsx_file(config)
 
@@ -120,8 +115,8 @@ def test_invalid_header(is_biocidal):
 
 @pytest.mark.django_db
 @pytest.mark.parametrize("is_biocidal", [False, True])
-def test_invalid_row_width(is_biocidal):
-    schedule = create_schedule(is_biocidal)
+def test_invalid_row_width(cfs_app_submitted, is_biocidal):
+    schedule = create_schedule(cfs_app_submitted, is_biocidal)
     config = create_dummy_config(is_biocidal)
     config.rows.append(["Product 4", "8", "Ingredient 5", "111-11-5", "Extra"])
 
@@ -136,8 +131,8 @@ def test_invalid_row_width(is_biocidal):
 
 
 @pytest.mark.django_db
-def test_missing_product_name():
-    schedule = create_schedule()
+def test_missing_product_name(cfs_app_submitted):
+    schedule = create_schedule(cfs_app_submitted)
     config = create_dummy_config()
     config.rows[1][0] = None
     xlsx_file = create_dummy_xlsx_file(config)
@@ -149,8 +144,8 @@ def test_missing_product_name():
 
 
 @pytest.mark.django_db
-def test_invalid_product_type_number():
-    schedule = create_schedule(is_biocidal=True)
+def test_invalid_product_type_number(cfs_app_submitted):
+    schedule = create_schedule(cfs_app_submitted, is_biocidal=True)
     config = create_dummy_config(is_biocidal=True)
     config.rows[1][1] = "a"
     xlsx_file = create_dummy_xlsx_file(config)
@@ -164,8 +159,8 @@ def test_invalid_product_type_number():
 
 
 @pytest.mark.django_db
-def test_missing_ingredient_name():
-    schedule = create_schedule(is_biocidal=True)
+def test_missing_ingredient_name(cfs_app_submitted):
+    schedule = create_schedule(cfs_app_submitted, is_biocidal=True)
     config = create_dummy_config(is_biocidal=True)
     config.rows[1][2] = None
     xlsx_file = create_dummy_xlsx_file(config)
@@ -177,8 +172,8 @@ def test_missing_ingredient_name():
 
 
 @pytest.mark.django_db
-def test_missing_cas_number():
-    schedule = create_schedule(is_biocidal=True)
+def test_missing_cas_number(cfs_app_submitted):
+    schedule = create_schedule(cfs_app_submitted, is_biocidal=True)
     config = create_dummy_config(is_biocidal=True)
     config.rows[1][3] = None
     xlsx_file = create_dummy_xlsx_file(config)
@@ -190,8 +185,8 @@ def test_missing_cas_number():
 
 
 @pytest.mark.django_db
-def test_duplicate_ingredient_name():
-    schedule = create_schedule(is_biocidal=True)
+def test_duplicate_ingredient_name(cfs_app_submitted):
+    schedule = create_schedule(cfs_app_submitted, is_biocidal=True)
     config = create_dummy_config(is_biocidal=True)
     config.rows[1][2] = "Ingredient 1"
     xlsx_file = create_dummy_xlsx_file(config)
@@ -205,8 +200,8 @@ def test_duplicate_ingredient_name():
 
 
 @pytest.mark.django_db
-def test_duplicate_cas_number():
-    schedule = create_schedule(is_biocidal=True)
+def test_duplicate_cas_number(cfs_app_submitted):
+    schedule = create_schedule(cfs_app_submitted, is_biocidal=True)
     config = create_dummy_config(is_biocidal=True)
     config.rows[1][3] = "111-11-1"
     xlsx_file = create_dummy_xlsx_file(config)

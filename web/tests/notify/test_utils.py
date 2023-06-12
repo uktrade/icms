@@ -2,16 +2,12 @@ import pytest
 
 from web.models import AlternativeEmail, PersonalEmail
 from web.notify.notify import utils
-from web.tests.domains.user.factory import UserFactory
 from web.tests.helpers import CaseURLS
 
 
 @pytest.mark.django_db
-def test_get_notification_emails():
-    user = UserFactory()
-    PersonalEmail(
-        user=user, email="email@example.com", portal_notifications=True  # /PS-IGNORE
-    ).save()
+def test_get_notification_emails(importer_one_contact):
+    user = importer_one_contact
     PersonalEmail(
         user=user, email="second_email@example.com", portal_notifications=False  # /PS-IGNORE
     ).save()
@@ -25,7 +21,7 @@ def test_get_notification_emails():
     ).save()
     emails = utils.get_notification_emails(user)
     assert len(emails) == 2
-    assert emails[0] == "email@example.com"  # /PS-IGNORE
+    assert emails[0] == "I1_main_contact@example.com"  # /PS-IGNORE
     assert emails[1] == "second_alternative@example.com"  # /PS-IGNORE
 
 

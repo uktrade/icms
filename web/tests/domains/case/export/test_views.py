@@ -13,9 +13,6 @@ from web.models import (
     User,
 )
 from web.tests.auth.auth import AuthTestCase
-from web.tests.domains.case.export.factories import (
-    CertificateOfManufactureApplicationFactory,
-)
 
 
 class TestApplicationChoice(AuthTestCase):
@@ -86,13 +83,9 @@ class TestCreateApplicationFromTemplate(AuthTestCase):
 
 
 class TestFlow(AuthTestCase):
-    def test_flow(self):
+    def test_flow(self, com_app_in_progress):
         """Assert flow uses process and update tasks."""
-        appl = CertificateOfManufactureApplicationFactory.create(
-            status="IN_PROGRESS", exporter=self.exporter
-        )
-        appl.tasks.create(is_active=True, task_type=Task.TaskType.PREPARE)
-
+        appl = com_app_in_progress
         url_edit = reverse("export:com-edit", kwargs={"application_pk": appl.pk})
         url_submit = reverse("export:com-submit", kwargs={"application_pk": appl.pk})
 
@@ -139,8 +132,8 @@ class TestFlow(AuthTestCase):
 
 class TestEditCom(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup):
-        self.appl = CertificateOfManufactureApplicationFactory.create(exporter=self.exporter)
+    def setup(self, _setup, com_app_in_progress):
+        self.appl = com_app_in_progress
         self.url = reverse("export:com-edit", kwargs={"application_pk": self.appl.pk})
 
     def test_edit_ok(self):
@@ -173,16 +166,16 @@ class TestEditCom(AuthTestCase):
 
     def test_no_task(self):
         """Assert an application/flow requires an active task."""
-
+        self.appl.tasks.all().delete()
         with pytest.raises(Exception, match="prepare not in active task list"):
             self.exporter_client.get(self.url)
 
 
 class TestSubmitCom(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup):
+    def setup(self, _setup, com_app_in_progress):
         # Make the application valid (now we have a validation summary)
-        self.appl = CertificateOfManufactureApplicationFactory.create(exporter=self.exporter)
+        self.appl = com_app_in_progress
         self.appl.contact = self.exporter_user
         self.appl.countries.add(Country.objects.all().first())
         self.appl.is_pesticide_on_free_sale_uk = False
@@ -194,19 +187,14 @@ class TestSubmitCom(AuthTestCase):
         self.url = reverse("export:com-submit", kwargs={"application_pk": self.appl.pk})
 
     def test_submit_ok(self):
-        self.appl.tasks.create(is_active=True, task_type=Task.TaskType.PREPARE)
         response = self.exporter_client.post(self.url, data={"confirmation": "I AGREE"})
         assertRedirects(response, "/workbasket/", fetch_redirect_response=False)
 
     def test_submit_no_auth(self):
-        self.appl.tasks.create(is_active=True, task_type=Task.TaskType.PREPARE)
-
         response = self.importer_client.post(self.url, data={"confirmation": "I AGREE"})
         assert response.status_code == 403
 
     def test_submit_not_agreed(self):
-        self.appl.tasks.create(is_active=True, task_type=Task.TaskType.PREPARE)
-
         response = self.exporter_client.post(self.url, data={"confirmation": "NOPE"})
         assert response.status_code == 200
 
@@ -214,6 +202,7 @@ class TestSubmitCom(AuthTestCase):
 
     def test_no_task(self):
         """Assert an application/flow requires an active task."""
+        self.appl.tasks.all().delete()
         with pytest.raises(Exception, match="prepare not in active task list"):
             self.exporter_client.get(self.url)
 

@@ -14,7 +14,6 @@ from web.models import (
 from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import DerogationsApplicationFactory
 from web.tests.domains.commodity.factory import CommodityTypeFactory
-from web.tests.flow.factories import TaskFactory
 
 LOGIN_URL = "/"
 
@@ -55,7 +54,7 @@ class TestDegrogationDetailsView(AuthTestCase):
             last_updated_by=self.importer_user,
         )
 
-        TaskFactory.create(process=self.process, task_type=Task.TaskType.PREPARE)
+        Task.objects.create(process=self.process, task_type=Task.TaskType.PREPARE)
         self.url = f"/import/derogations/{self.process.pk}/edit/"
 
         self.valid_country = Country.objects.filter(
@@ -119,7 +118,7 @@ class TestDerogationApplicationSubmitView(AuthTestCase):
             importer=self.importer,
             status="IN_PROGRESS",
         )
-        TaskFactory.create(process=process, task_type=Task.TaskType.PREPARE)
+        Task.objects.create(process=process, task_type=Task.TaskType.PREPARE)
         url = reverse(
             "import:derogations:submit-derogations", kwargs={"application_pk": process.pk}
         )
