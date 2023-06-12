@@ -9,7 +9,6 @@ from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import (
     SanctionsAndAdhocLicenseApplicationFactory,
 )
-from web.tests.flow.factories import TaskFactory
 
 
 class TestSanctionsAndAdhocImportAppplicationForm(AuthTestCase):
@@ -31,7 +30,7 @@ class TestSanctionsAndAdhocImportAppplicationForm(AuthTestCase):
             last_updated_by=self.importer_user,
             origin_country=Country.objects.get(name="Iran"),
         )
-        TaskFactory.create(process=self.process, task_type=Task.TaskType.PREPARE)
+        Task.objects.create(process=self.process, task_type=Task.TaskType.PREPARE)
 
     def test_sa_form_valid(self):
         data = {

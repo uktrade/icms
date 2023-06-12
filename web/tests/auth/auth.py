@@ -6,6 +6,7 @@ class AuthTestCase:
     def _setup(
         self,
         importer_one_contact,
+        importer_two_contact,
         importer,
         office,
         agent_importer,
@@ -22,6 +23,7 @@ class AuthTestCase:
         self.importer = importer
         self.importer_office = office
         self.importer_user = importer_one_contact
+        self.importer_two_user = importer_two_contact
         self.importer_agent = agent_importer
         self.exporter = exporter
         self.exporter_office = exporter_office

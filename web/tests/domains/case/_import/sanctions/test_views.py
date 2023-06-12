@@ -15,7 +15,6 @@ from web.tests.domains.case._import.factory import (
     SanctionsAndAdhocApplicationGoodsFactory,
     SanctionsAndAdhocLicenseApplicationFactory,
 )
-from web.tests.flow.factories import TaskFactory
 
 LOGIN_URL = "/"
 
@@ -70,7 +69,7 @@ class TestSanctionsAndAdhocImportAppplicationApplicantDetails(AuthTestCase):
             last_updated_by=self.importer_user,
         )
 
-        TaskFactory.create(process=self.process, task_type=Task.TaskType.PREPARE)
+        Task.objects.create(process=self.process, task_type=Task.TaskType.PREPARE)
         self.url = f"/import/sanctions/{self.process.pk}/edit/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
@@ -137,7 +136,7 @@ class TestSanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             last_updated_by=self.importer_user,
             origin_country=Country.objects.get(name="Iran"),
         )
-        TaskFactory.create(process=self.process, task_type=Task.TaskType.PREPARE)
+        Task.objects.create(process=self.process, task_type=Task.TaskType.PREPARE)
 
         self.valid_commodity = Commodity.objects.get(commodity_code="2709009000")
         self.goods = SanctionsAndAdhocApplicationGoodsFactory.create(

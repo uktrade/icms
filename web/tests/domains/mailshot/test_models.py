@@ -1,10 +1,8 @@
-from django.test import TestCase
-
 from web.models import Mailshot
-from web.tests.domains.user.factory import UserFactory
+from web.tests.auth import AuthTestCase
 
 
-class TestMailshot(TestCase):
+class TestMailshot(AuthTestCase):
     def create_mailshot(
         self,
         title="Test Mailshot",
@@ -12,12 +10,11 @@ class TestMailshot(TestCase):
         is_retraction_email=False,
         is_active=True,
     ):
-        user = UserFactory()
         return Mailshot.objects.create(
             title=title,
             status=status,
             is_retraction_email=is_retraction_email,
-            created_by=user,
+            created_by=self.importer_user,
             is_active=is_active,
         )
 

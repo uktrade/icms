@@ -2,17 +2,13 @@ import pytest
 
 from web.domains.case.export.forms import SubmitGMPForm
 
-from .factories import CertificateOfGMPApplicationFactory
-
 
 @pytest.mark.django_db
-def test_gmp_form_clean_ni_postcode_gb_country(mocker):
+def test_gmp_form_clean_ni_postcode_gb_country(mocker, gmp_app_submitted):
     form_mock = mocker.patch("web.domains.case.export.forms.SubmitGMPForm.is_valid")
     form_mock.return_value = True
-    instance = CertificateOfGMPApplicationFactory()
-
     form = SubmitGMPForm(
-        instance=instance,
+        instance=gmp_app_submitted,
         data={
             "manufacturer_postcode": "BT43XX",  # /PS-IGNORE
             "manufacturer_country": "GB",
@@ -29,13 +25,12 @@ def test_gmp_form_clean_ni_postcode_gb_country(mocker):
 
 
 @pytest.mark.django_db
-def test_gmp_form_clean_gb_postcode_ni_country(mocker):
+def test_gmp_form_clean_gb_postcode_ni_country(mocker, gmp_app_submitted):
     form_mock = mocker.patch("web.domains.case.export.forms.SubmitGMPForm.is_valid")
     form_mock.return_value = True
-    instance = CertificateOfGMPApplicationFactory()
 
     form = SubmitGMPForm(
-        instance=instance,
+        instance=gmp_app_submitted,
         data={
             "manufacturer_postcode": "SW1A1AA",  # /PS-IGNORE
             "manufacturer_country": "NIR",

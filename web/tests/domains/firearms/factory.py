@@ -3,7 +3,6 @@ import random
 import factory.fuzzy
 
 from web.models import FirearmsAct, ObsoleteCalibre, ObsoleteCalibreGroup
-from web.tests.domains.user.factory import UserFactory
 
 
 class ObsoleteCalibreGroupFactory(factory.django.DjangoModelFactory):
@@ -32,4 +31,4 @@ class FirearmsActFactory(factory.django.DjangoModelFactory):
     act = factory.Faker("pystr", max_chars=20)
     description = factory.Faker("paragraph", nb_sentences=2)
     is_active = True
-    created_by = factory.SubFactory(UserFactory)
+    created_by = None

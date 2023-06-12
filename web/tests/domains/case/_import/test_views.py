@@ -15,7 +15,6 @@ from web.models import (
     VariationRequest,
     WoodQuotaApplication,
 )
-from web.tests.flow import factories as process_factories
 from web.tests.helpers import SearchURLS
 
 from . import factory
@@ -36,7 +35,7 @@ def test_preview_cover_letter(
         case_owner=ilb_admin,
         importer_office=office,
     )
-    process_factories.TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
+    Task.objects.create(process=process, task_type=Task.TaskType.PROCESS)
     oil_app = process.get_specific_model()
     oil_app.licences.create()
 
@@ -68,7 +67,7 @@ def test_preview_licence(ilb_admin_user, ilb_admin_client, importer_one_contact,
         last_updated_by=user,
         case_owner=ilb_admin,
     )
-    process_factories.TaskFactory.create(process=process, task_type=Task.TaskType.PROCESS)
+    Task.objects.create(process=process, task_type=Task.TaskType.PROCESS)
     oil_app = process.get_specific_model()
     oil_app.licences.create()
 

@@ -36,15 +36,15 @@ class TestMailshotListView(AuthTestCase):
         response = self.ilb_admin_client.get(self.url)
         assert response.context_data["page_title"] == "Maintain Mailshots"
 
-    def test_number_of_pages(self):
-        MailshotFactory.create_batch(62)
+    def test_number_of_pages(self, importer_one_contact):
+        MailshotFactory.create_batch(62, created_by=importer_one_contact)
 
         response = self.ilb_admin_client.get(self.url)
         page = response.context_data["page"]
         assert page.paginator.num_pages == 2
 
-    def test_page_results(self):
-        MailshotFactory.create_batch(65)
+    def test_page_results(self, importer_one_contact):
+        MailshotFactory.create_batch(65, created_by=importer_one_contact)
         response = self.ilb_admin_client.get(self.url + "?page=2")
         page = response.context_data["page"]
         assert len(page.object_list) == 15
@@ -103,8 +103,10 @@ class TestMailshotCreateView(AuthTestCase):
 
 class TestMailshotEditView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup):
-        self.mailshot = MailshotFactory(status=Mailshot.Statuses.DRAFT)  # Create a mailshot
+    def setup(self, _setup, importer_two_contact):
+        self.mailshot = MailshotFactory(
+            status=Mailshot.Statuses.DRAFT, created_by=importer_two_contact
+        )  # Create a mailshot
         self.mailshot.save()
         self.url = f"/mailshot/{self.mailshot.id}/edit/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
@@ -194,6 +196,7 @@ class TestMailshotRetractView(AuthTestCase):
             published_datetime=timezone.now(),
             reference="MAIL/42",
             version=43,
+            created_by=self.importer_two_user,
         )
         self.url = f"/mailshot/{self.mailshot.pk}/retract/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
@@ -227,6 +230,7 @@ class TestMailshotDetailView(AuthTestCase):
             published_datetime=timezone.now(),
             reference="MAIL/44",
             version=45,
+            created_by=self.importer_two_user,
         )
 
         self.url = f"/mailshot/{self.mailshot.pk}/"
