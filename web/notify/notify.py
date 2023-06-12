@@ -8,7 +8,6 @@ from django.contrib.postgres.aggregates import StringAgg
 from django.utils import timezone
 
 from config.celery import app
-from web.auth.utils import get_ilb_admin_users
 from web.domains.case._import.fa.types import FaImportApplication
 from web.domains.case.services import document_pack
 from web.domains.case.types import ImpOrExp
@@ -22,7 +21,7 @@ from web.models import (
     User,
     VariationRequest,
 )
-from web.permissions import SysPerms
+from web.permissions import SysPerms, get_ilb_admin_users
 from web.utils.s3 import get_file_from_s3, get_s3_client
 
 from . import email, utils
