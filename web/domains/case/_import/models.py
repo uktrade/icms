@@ -3,6 +3,7 @@ import uuid
 from django.conf import settings
 from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
+from django.urls import reverse
 
 from web.domains.case.models import ApplicationBase, DocumentPackBase
 from web.flow.models import ProcessTypes
@@ -97,6 +98,47 @@ class ImportApplicationType(models.Model):
 
     class Meta:
         ordering = ("name",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["type", "sub_type"],
+                name="unique_import_app_type",
+            )
+        ]
+
+    def _get_firearm_application_url(self) -> str:
+        match self.sub_type:
+            case self.SubTypes.OIL:
+                return reverse("import:create-fa-oil")
+            case self.SubTypes.DFL:
+                return reverse("import:create-fa-dfl")
+            case self.SubTypes.SIL:
+                return reverse("import:create-fa-sil")
+            case _:
+                raise ValueError(
+                    f"Unknown Firearms Application Sub Type: {self.sub_type}"  # /PS-IGNORE
+                )
+
+    @property
+    def create_application_url(self) -> str:
+        match self.type:
+            case self.Types.FIREARMS:
+                return self._get_firearm_application_url()
+            case self.Types.WOOD_QUOTA:
+                return reverse("import:create-wood-quota")
+            case self.Types.DEROGATION:
+                return reverse("import:create-derogations")
+            case self.Types.IRON_STEEL:
+                return reverse("import:create-ironsteel")
+            case self.Types.OPT:
+                return reverse("import:create-opt")
+            case self.Types.SANCTION_ADHOC:
+                return reverse("import:create-sanctions")
+            case self.Types.TEXTILES:
+                return reverse("import:create-textiles")
+            case self.Types.SPS:
+                return reverse("import:create-sps")
+            case _:
+                raise ValueError(f"Unknown Application Type: {self.type}")  # /PS-IGNORE
 
 
 class ImportApplication(ApplicationBase):

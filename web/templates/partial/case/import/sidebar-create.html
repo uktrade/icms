@@ -1,34 +1,15 @@
 <ul class="menu-out">
+  {% if fa_application_types %}
     <h5>Firearms and Ammunition</h5>
+    {% for application_type in fa_application_types %}
+      {{ icms_link(request, application_type.create_application_url, application_type.get_sub_type_display() ) }}
+    {% endfor %}
+  {% endif %}
 
-    {{ icms_link(request, icms_url('import:create-fa-dfl'), 'Deactivated Firearms Licence') }}
-
-    {{ icms_link(request, icms_url('import:create-fa-oil'), 'Open Individual Import Licence') }}
-
-    {{ icms_link(request, icms_url('import:create-fa-sil'), 'Specific Individual Import Licence') }}
-
+  {% if other_application_types %}
     <h5>Other</h5>
-
-    {{ icms_link(request, icms_url('import:create-derogations'), 'Derogation from Sanctions Import Ban') }}
-
-    {% if show_ironsteel %}
-      {{ icms_link(request, icms_url('import:create-ironsteel'), 'Iron and Steel (Quota)') }}
-    {% endif %}
-
-    {% if show_opt %}
-      {{ icms_link(request, icms_url('import:create-opt'), 'Outward Processing Trade') }}
-    {% endif %}
-
-    {% if show_sps %}
-      {{ icms_link(request, icms_url('import:create-sps'), 'Prior Surveillance') }}
-    {% endif %}
-
-    {{ icms_link(request, icms_url('import:create-sanctions'), 'Sanctions and Adhoc Licence Application') }}
-
-    {% if show_textiles %}
-      {{ icms_link(request, icms_url('import:create-textiles'), 'Textiles (Quota)') }}
-    {% endif %}
-
-    {{ icms_link(request, icms_url('import:create-wood-quota'), 'Wood (Quota)') }}
-
+    {% for application_type in other_application_types %}
+        {{ icms_link(request, application_type.create_application_url, application_type.name ) }}
+    {% endfor %}
+  {% endif %}
 </ul>

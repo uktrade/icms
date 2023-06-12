@@ -2915,3 +2915,5 @@ Response Date
 Response Reason
 Access Request History
 Docs
+Unknown Application Type: HELLO
+Unknown Firearms Application Sub Type: HELLO

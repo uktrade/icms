@@ -57,21 +57,13 @@ from .forms import (
 )
 
 
-# TODO: ICMSLST-1998 use is_active to show / hide all application types.
-def _get_disabled_application_types() -> dict[str, bool]:
+def _get_active_application_types() -> dict[str, QuerySet]:
+    application_types = ImportApplicationType.objects.filter(is_active=True)
     return {
-        "show_opt": ImportApplicationType.objects.get(
-            type=ImportApplicationType.Types.OPT
-        ).is_active,
-        "show_textiles": ImportApplicationType.objects.get(
-            type=ImportApplicationType.Types.TEXTILES
-        ).is_active,
-        "show_sps": ImportApplicationType.objects.get(
-            type=ImportApplicationType.Types.SPS
-        ).is_active,
-        "show_ironsteel": ImportApplicationType.objects.get(
-            type=ImportApplicationType.Types.IRON_STEEL
-        ).is_active,
+        "fa_application_types": application_types.filter(type=ImportApplicationType.Types.FIREARMS),
+        "other_application_types": application_types.exclude(
+            type=ImportApplicationType.Types.FIREARMS
+        ),
     }
 
 
@@ -81,9 +73,7 @@ class ImportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-
-        context.update(**_get_disabled_application_types())
-
+        context.update(**_get_active_application_types())
         return context
 
 
@@ -270,7 +260,7 @@ def _create_application(
         "import_application_type": at,
         "application_title": ProcessTypes(model_class.PROCESS_TYPE).label,
         "importers_with_agents": list(importers_with_agents),
-        **_get_disabled_application_types(),
+        **_get_active_application_types(),
     }
 
     return render(request, "web/domains/case/import/create.html", context)
