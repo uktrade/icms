@@ -1,4 +1,6 @@
 import pytest
+from django.db.utils import IntegrityError
+from django.urls import reverse
 
 from web.models import (
     DerogationsApplication,
@@ -69,3 +71,80 @@ def test_display_status_for_rejected_app(complete_rejected_app):
 def test_display_status_for_in_progress_app(fa_dfl_app_in_progress):
     assert fa_dfl_app_in_progress.is_import_application() is True
     assert fa_dfl_app_in_progress.get_status_display() == "In Progress"
+
+
+@pytest.mark.django_db
+def test_create_application_url_error():
+    application = ImportApplicationType.objects.first()
+    application.type = "HELLO"
+    with pytest.raises(ValueError, match="Unknown Application Type: HELLO"):
+        application.create_application_url
+
+
+@pytest.mark.django_db
+def test_create_fa_application_url_error():
+    application = ImportApplicationType.objects.filter(type="FA").first()
+    application.sub_type = "HELLO"
+    with pytest.raises(ValueError, match="Unknown Firearms Application Sub Type: HELLO"):
+        application.create_application_url
+
+
+@pytest.mark.parametrize(
+    "sub_type,exp_url",
+    (
+        (ImportApplicationType.SubTypes.DFL, reverse("import:create-fa-dfl")),
+        (ImportApplicationType.SubTypes.OIL, reverse("import:create-fa-oil")),
+        (ImportApplicationType.SubTypes.SIL, reverse("import:create-fa-sil")),
+    ),
+)
+@pytest.mark.django_db
+def test_create_fa_application_url(sub_type, exp_url):
+    application = ImportApplicationType.objects.get(type="FA", sub_type=sub_type)
+    assert application.create_application_url == exp_url
+
+
+@pytest.mark.parametrize(
+    "_type,exp_url",
+    (
+        (ImportApplicationType.Types.IRON_STEEL, reverse("import:create-ironsteel")),
+        (ImportApplicationType.Types.DEROGATION, reverse("import:create-derogations")),
+        (ImportApplicationType.Types.SANCTION_ADHOC, reverse("import:create-sanctions")),
+        (ImportApplicationType.Types.WOOD_QUOTA, reverse("import:create-wood-quota")),
+        (ImportApplicationType.Types.OPT, reverse("import:create-opt")),
+        (ImportApplicationType.Types.TEXTILES, reverse("import:create-textiles")),
+        (ImportApplicationType.Types.SPS, reverse("import:create-sps")),
+    ),
+)
+@pytest.mark.django_db
+def test_create_application_url(_type, exp_url):
+    application = ImportApplicationType.objects.get(type=_type)
+    assert application.create_application_url == exp_url
+
+
+@pytest.mark.django_db
+def test_type_contstraint():
+    with pytest.raises(
+        IntegrityError,
+        match='duplicate key value violates unique constraint "unique_import_app_type"',
+    ):
+        ImportApplicationType.objects.create(
+            type=ImportApplicationType.Types.OPT,
+            sub_type="QUOTA",
+            name="DUPLICATE APPLICATION",
+            is_active=True,
+            sigl_flag=False,
+            chief_flag=False,
+            paper_licence_flag=False,
+            electronic_licence_flag=False,
+            cover_letter_flag=False,
+            cover_letter_schedule_flag=False,
+            category_flag=False,
+            quantity_unlimited_flag=False,
+            exp_cert_upload_flag=False,
+            supporting_docs_upload_flag=False,
+            multiple_commodities_flag=False,
+            usage_auto_category_desc_flag=False,
+            case_checklist_flag=False,
+            importer_printable=False,
+            declaration_template_id=1,
+        )

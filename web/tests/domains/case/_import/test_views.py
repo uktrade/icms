@@ -9,12 +9,14 @@ from pytest_django.asserts import assertRedirects
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.models import (
+    ImportApplicationType,
     LiteHMRCChiefRequest,
     SILApplication,
     Task,
     VariationRequest,
     WoodQuotaApplication,
 )
+from web.tests.auth import AuthTestCase
 from web.tests.helpers import SearchURLS
 
 from . import factory
@@ -224,3 +226,49 @@ class TestBypassChiefViewRevokeLicence:
 
         case_progress.check_expected_status(self.app, [ImpExpStatus.REVOKED])
         case_progress.check_expected_task(self.app, Task.TaskType.CHIEF_ERROR)
+
+
+class TestApplicationChoice(AuthTestCase):
+    url = reverse("import:choose")
+
+    def test_create_no_access(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 200
+
+    def test_create_has_access(self):
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == 403
+
+    def test_show_only_active_application_choices(self):
+        new_application_type_name = "NEW APPLICATION TYPE"
+
+        application_type = ImportApplicationType.objects.create(
+            type=ImportApplicationType.Types.OPT,
+            sub_type=ImportApplicationType.SubTypes.DFL,
+            name=new_application_type_name,
+            is_active=True,
+            sigl_flag=False,
+            chief_flag=False,
+            paper_licence_flag=False,
+            electronic_licence_flag=False,
+            cover_letter_flag=False,
+            cover_letter_schedule_flag=False,
+            category_flag=False,
+            quantity_unlimited_flag=False,
+            exp_cert_upload_flag=False,
+            supporting_docs_upload_flag=False,
+            multiple_commodities_flag=False,
+            usage_auto_category_desc_flag=False,
+            case_checklist_flag=False,
+            importer_printable=False,
+            declaration_template_id=1,
+        )
+
+        response = self.importer_client.get(self.url)
+        assert new_application_type_name in response.content.decode()
+
+        application_type.is_active = False
+        application_type.save()
+
+        response = self.importer_client.get(self.url)
+        assert new_application_type_name not in response.content.decode()
