@@ -103,11 +103,10 @@ class ModelAndObjectPermissionBackend(ModelBackend):
         check = user_obj.guardian_checker
         return check.get_perms(obj)
 
-    # TODO: ICMSLST-1985 Disable get_user_permissions when permissions work is complete.
-    # def get_user_permissions(self, user_obj, obj=None):
-    #     """Only user group permissions are used when checking for global permissions."""
-    #
-    #     return set()
+    def get_user_permissions(self, user_obj, obj=None):
+        """Only user group permissions are used when checking for global permissions."""
+
+        return set()
 
 
 def get_anonymous_user_instance(user_model: type[User]) -> User:

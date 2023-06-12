@@ -8,7 +8,6 @@ from django.db.models import QuerySet
 from django.utils import timezone
 
 from config.celery import app
-from web.auth.utils import get_ilb_admin_users
 from web.domains.case.types import ImpOrExp
 from web.domains.template.utils import get_email_template_subject_body
 from web.models import (
@@ -21,7 +20,11 @@ from web.models import (
     VariationRequest,
     WithdrawApplication,
 )
-from web.permissions import get_org_obj_permissions, organisation_get_contacts
+from web.permissions import (
+    get_ilb_admin_users,
+    get_org_obj_permissions,
+    organisation_get_contacts,
+)
 from web.utils.s3 import get_file_from_s3, get_s3_client
 
 from . import utils

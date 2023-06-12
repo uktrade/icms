@@ -3,7 +3,6 @@ import datetime
 from django import forms
 from django_select2.forms import Select2MultipleWidget
 
-from web.auth.utils import get_ilb_admin_users
 from web.domains.case.models import ApplicationBase
 from web.domains.contacts.widgets import ContactWidget
 from web.forms.fields import WildcardField
@@ -18,6 +17,7 @@ from web.models import (
     User,
 )
 from web.models.shared import YesNoChoices
+from web.permissions import get_ilb_admin_users
 from web.utils.search import get_export_status_choices, get_import_status_choices
 
 # We are restricting what the user can enter in the regex search fields rather than having to

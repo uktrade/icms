@@ -19,7 +19,7 @@ User object permissions are defined on models that require them:
 - [ImporterObjectPerms](../web/domains/importer/models.py) (see `permissions = ImporterObjectPerms()`)
 - [ExporterObjectPerms](../web/domains/exporter/models.py) (see `permissions = ExporterObjectPerms()`)
 
-Users are **never** assigned system / page permissions directly they are assigned groups which have associated permissions.
+**Users are never assigned system / page permissions directly they are always assigned to groups which have associated permissions.**
 
 The available groups that can be assigned to users are located [here](../web/management/commands/create_icms_groups.py). 
 

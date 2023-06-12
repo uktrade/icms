@@ -1,16 +1,12 @@
 import dataclasses
 from typing import Literal, NamedTuple, TypeAlias
 
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, Permission
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import QuerySet, Value
-from guardian.shortcuts import (
-    assign_perm,
-    get_objects_for_user,
-    get_user_perms,
-    get_users_with_perms,
-    remove_perm,
-)
+from guardian.shortcuts import assign_perm, get_objects_for_user, get_user_perms
+from guardian.shortcuts import get_users_with_perms as get_users_with_obj_perm
+from guardian.shortcuts import remove_perm
 
 from web.domains.case.types import ImpOrExp
 from web.models import (
@@ -175,7 +171,7 @@ def organisation_get_contacts(
         # Remove the agent permission from both org permission lists.
         perms = [p.codename for p in obj_perms if p != obj_perms.is_agent]
 
-    org_contacts: QuerySet[User] = get_users_with_perms(org, only_with_perms_in=perms)
+    org_contacts: QuerySet[User] = get_users_with_obj_perm(org, only_with_perms_in=perms)
 
     # Ensure they have org access
     org_contacts = filter_users_with_org_access(org, org_contacts)
@@ -285,6 +281,30 @@ def can_user_view_search_cases(user: User, case_type: Literal["import", "export"
             return user.has_perm(Perms.page.view_export_case_search)
         case _:
             return False
+
+
+def get_users_with_permission(
+    permission: str | Permission, include_superusers: bool = False
+) -> QuerySet[User]:
+    """Returns users that have the given permission.
+
+    Returns an empty queryset if no users who have the perm found.
+
+    Supported permission formats:
+    - "<app label>.<permission codename>" format
+    - Permission instance.
+
+    See django Docs:
+    https://docs.djangoproject.com/en/4.2/ref/contrib/auth/#django.contrib.auth.models.UserManager.with_perm
+    """
+
+    return User.objects.with_perm(permission, include_superusers=include_superusers)
+
+
+def get_ilb_admin_users() -> QuerySet[User]:
+    """Return all ilb admin users."""
+
+    return get_users_with_permission(Perms.sys.ilb_admin)
 
 
 def get_org_obj_permissions(org) -> IMP_OR_EXP_PERMS_T:

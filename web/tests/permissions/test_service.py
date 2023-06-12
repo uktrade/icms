@@ -12,9 +12,11 @@ from web.permissions.service import (
     can_user_view_org,
     can_user_view_search_cases,
     filter_users_with_org_access,
+    get_ilb_admin_users,
     get_org_obj_permissions,
     get_user_exporter_permissions,
     get_user_importer_permissions,
+    get_users_with_permission,
     organisation_add_contact,
     organisation_get_contacts,
     organisation_remove_contact,
@@ -217,6 +219,27 @@ class TestPermissionsService:
         assert not can_user_view_search_cases(self.exporter_contact, "import")
 
         assert not can_user_view_search_cases(self.importer_contact, "invalid")
+
+    def test_get_users_with_permission(self):
+        importer_users = get_users_with_permission(Perms.sys.importer_access).values_list(
+            "username", flat=True
+        )
+        assert list(importer_users) == ["I1_A1_main_contact", "I1_main_contact", "I2_main_contact"]
+
+        exporter_users = get_users_with_permission(Perms.sys.exporter_access).values_list(
+            "username", flat=True
+        )
+        assert list(exporter_users) == ["E1_A1_main_contact", "E1_main_contact", "E2_main_contact"]
+
+        ilb_admin_users = get_users_with_permission(Perms.sys.ilb_admin).values_list(
+            "username", flat=True
+        )
+        assert list(ilb_admin_users) == ["ilb_admin_two", "ilb_admin_user"]
+
+    def test_get_ilb_admin_users(self):
+        ilb_admin_users = get_ilb_admin_users().values_list("username", flat=True)
+
+        assert list(ilb_admin_users) == ["ilb_admin_two", "ilb_admin_user"]
 
     def test_get_org_obj_permissions(self):
         perms = get_org_obj_permissions(self.importer)
