@@ -465,8 +465,31 @@ def completed_dfl_app(fa_dfl_app_submitted, ilb_admin_client):
 
 
 @pytest.fixture
+def completed_cfs_app(cfs_app_submitted, ilb_admin_client):
+    """A Certificate of Free Sale (export) application that has been approved."""
+    app = cfs_app_submitted
+
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
+
+    app.refresh_from_db()
+    app.decision = app.APPROVE
+    app.save()
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk, "export"))
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    app.refresh_from_db()
+    app.status = ImpExpStatus.COMPLETED
+    app.save()
+    task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
+    end_process_task(task)
+    return app
+
+
+@pytest.fixture
 def complete_rejected_export_app(cfs_app_submitted, ilb_admin_client):
-    """A completed firearms sil application."""
+    """A Certificate of Free Sale (export) application that has been rejected."""
     app = cfs_app_submitted
 
     ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
@@ -490,7 +513,7 @@ def complete_rejected_export_app(cfs_app_submitted, ilb_admin_client):
 
 @pytest.fixture
 def complete_rejected_app(fa_sil_app_submitted, ilb_admin_client):
-    """A completed firearms sil application that has been rejected."""
+    """A Firearms Specific Import application that has been rejected."""
     app = fa_sil_app_submitted
 
     ilb_admin_client.post(CaseURLS.take_ownership(app.pk))

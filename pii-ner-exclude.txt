@@ -2969,3 +2969,6 @@ ON re.m_id
 iar.id
 VARCHAR(4000
 Individual Importers Without User
+{{ application_field(process.get_decision_display
+"A Certificate of Free Sale (export) application
+"A Firearms Specific Import

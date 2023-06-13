@@ -46,6 +46,7 @@ def prepare_response(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
+        readonly_decision = False
         if case_type == "import":
             if application.status == application.Statuses.VARIATION_REQUESTED:
                 form_class = forms.ResponsePreparationVariationRequestImportForm
@@ -53,6 +54,8 @@ def prepare_response(
                 form_class = forms.ResponsePreparationImportForm
 
         elif case_type == "export":
+            if application.status == application.Statuses.VARIATION_REQUESTED:
+                readonly_decision = True
             form_class = forms.ResponsePreparationExportForm
 
         else:
@@ -60,7 +63,7 @@ def prepare_response(
 
         readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
 
-        if request.method == "POST" and not readonly_view:
+        if request.method == "POST" and not readonly_view and not readonly_decision:
             form = form_class(request.POST, instance=application)
 
             if form.is_valid():
@@ -89,6 +92,7 @@ def prepare_response(
             "cover_letter_flag": cover_letter_flag,
             "electronic_licence_flag": electronic_licence_flag,
             "readonly_view": readonly_view,
+            "readonly_decision": readonly_decision,
         }
 
     if application.is_import_application():
@@ -110,7 +114,6 @@ def prepare_response(
             if application.decision != application.REFUSE:
                 # When an application is refused we don't show licence details
                 context["licence"] = document_pack.pack_draft_get(application)
-
         if cover_letter_flag:
             context["cover_letter_text"] = get_cover_letter_content(
                 application, DocumentTypes.COVER_LETTER_PREVIEW
