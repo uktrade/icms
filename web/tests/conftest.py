@@ -64,6 +64,9 @@ def instrumented_render(template_object, *args, **kwargs):
 Jinja2Template.render = instrumented_render
 
 
+LOGIN_URL = reverse("accounts:login")
+
+
 # https://pytest-django.readthedocs.io/en/latest/database.html#populate-the-test-database-if-you-don-t-use-transactional-or-live-server
 @pytest.fixture(scope="session")
 def django_db_setup(django_db_setup, django_db_blocker):

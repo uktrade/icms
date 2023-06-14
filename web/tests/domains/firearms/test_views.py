@@ -4,11 +4,10 @@ from pytest_django.asserts import assertRedirects
 
 from web.models import FirearmsAuthority
 from web.tests.auth import AuthTestCase
+from web.tests.conftest import LOGIN_URL
 from web.tests.domains.constabulary.factory import ConstabularyFactory
 
 from .factory import FirearmsActFactory, ObsoleteCalibreGroupFactory
-
-LOGIN_URL = "/"
 
 
 class TestObsoleteCalibreGroupListView(AuthTestCase):

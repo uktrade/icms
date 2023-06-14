@@ -1,0 +1,80 @@
+{% extends "layout/public.html" %}
+
+{% block main_content %}
+  <div id="header">
+    <h1>Welcome to ICMS</h1>
+    <p class="subheading">
+      The DIT Import Licensing Branch's Import Case Management System for the issue of import
+      licences and Certificates of Free Sale (CFS) for exporters
+    </p>
+  </div>
+  <div class="clearBoth"></div>
+  <div class="half-width-box">
+    <h2>Log in to ICMS</h2>
+
+    {% if form.errors %}
+      <div id="login-error"><p>Your username and password didn't match. Please try again.</p></div>
+    {% endif %}
+
+    {% if next %}
+      {% if user.is_authenticated %}
+        <p>Your account doesn't have access to this page. To proceed, please login with an account
+          that has access.</p>
+      {% else %}
+        <div id="login-error"><p>Please login to see this page.</p></div>
+      {% endif %}
+    {% endif %}
+    {% call forms.form(method='post', csrf_input=csrf_input, container_class='login-form') %}
+      {% for field in form %}
+        {{ fields.field(field, input_cols="nine") }}
+      {% endfor %}
+      <div class="container">
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <button type="submit" value="save" class="primary-button button">Sign in</button>
+              </li>
+              <li>
+                <a href="{{ icms_url('accounts:password_reset') }}" class="button link-button">Forgot your password?</a>
+              </li>
+            </ul>
+          </div>
+          <div class="one columns"></div>
+        </div>
+      </div>
+    {% endcall %}
+
+  </div>
+
+  <div class="half-width-box right-box">
+    <h2 class="grey">Contact Us</h2>
+    <p>
+      Please read the guidance below on using ICMS.
+      Email <a href="mailto:{{ ilb_contact_email }}">{{ ilb_contact_email }}</a> with your name and
+      telephone number if you have a problem and we will contact you as quickly as possible.
+    </p>
+  </div>
+  <div class="clearBoth"></div>
+  <h2>Registration and Guidance</h2>
+  <p>
+    Detailed guidance on the import controls and certificates of free sale dealt with on this system can be found here:
+    <a href="https://www.gov.uk/guidance/import-controls#notices-to-importers" target="_blank">https://www.gov.uk/guidance/import-controls#notices-to-importers</a>
+  </p>
+  <p>Other guidance:</p>
+  <div class="half-width-box">
+    <ul class="file-list">
+      <li>
+        <a href="{{ static('web/docs/ValidateDigSigs.pdf') }}" class="pdf" target="_blank">Validating Digital Signatures</a>
+      </li>
+    </ul>
+  </div>
+  <div class="half-width-box right-box">
+    <ul class="file-list">
+      <!-- Add files here if needed -->
+    </ul>
+  </div>
+  <div class="clearBoth"></div>
+  <a href="{{ icms_url('accounts:register') }}" class="primary-button button">Register</a>
+{% endblock %}

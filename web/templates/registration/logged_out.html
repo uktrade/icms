@@ -1,0 +1,13 @@
+{% extends "layout/public.html" %}
+
+{% block main_content %}
+
+  <div id="header">
+    <h1>Logout</h1>
+    <p class="subheading">Import Case Management System</p>
+  </div>
+  <div class="clearBoth"></div>
+
+  <p>You have logged out successfully.</p>
+  <p>You may go ahead and <a href="{{ icms_url("accounts:login") }}">log in</a> now</p>
+{% endblock %}

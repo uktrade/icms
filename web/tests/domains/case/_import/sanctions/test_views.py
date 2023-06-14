@@ -11,12 +11,11 @@ from web.models import (
     Task,
 )
 from web.tests.auth import AuthTestCase
+from web.tests.conftest import LOGIN_URL
 from web.tests.domains.case._import.factory import (
     SanctionsAndAdhocApplicationGoodsFactory,
     SanctionsAndAdhocLicenseApplicationFactory,
 )
-
-LOGIN_URL = "/"
 
 
 class TestSanctionsAndAdhocImportAppplicationCreateView(AuthTestCase):

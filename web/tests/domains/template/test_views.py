@@ -2,10 +2,9 @@ import pytest
 from pytest_django.asserts import assertInHTML, assertRedirects
 
 from web.tests.auth import AuthTestCase
+from web.tests.conftest import LOGIN_URL
 
 from .factory import TemplateFactory
-
-LOGIN_URL = "/"
 
 
 class TestTemplateListView(AuthTestCase):

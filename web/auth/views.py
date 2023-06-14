@@ -10,7 +10,6 @@ from django.shortcuts import redirect, render
 from django.utils.decorators import method_decorator
 from ratelimit.decorators import ratelimit
 
-from web.auth.decorators import require_registered
 from web.domains.user import PersonalEmail, User
 from web.notify import notify
 
@@ -153,7 +152,7 @@ def set_password(request):
     return render(request, "auth/set-password.html", {"form": form})
 
 
-@require_registered
+@login_required
 def change_password(request):
     form = update_password(request)
 

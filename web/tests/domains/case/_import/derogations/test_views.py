@@ -15,8 +15,6 @@ from web.tests.auth import AuthTestCase
 from web.tests.domains.case._import.factory import DerogationsApplicationFactory
 from web.tests.domains.commodity.factory import CommodityTypeFactory
 
-LOGIN_URL = "/"
-
 
 class TestDerogationApplicationCreateView(AuthTestCase):
     url = "/import/create/derogations/"

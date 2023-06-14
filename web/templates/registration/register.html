@@ -1,0 +1,60 @@
+{% extends "layout/public.html" %}
+
+{% block main_content %}
+
+  <div id="number_format_tooltip" role="tooltip" class="hint-content" aria-hidden="true">
+    <div class="screen-reader-only">This item has hint text,</div>
+    Customary input formats:
+      <br>- FOR United Kingdom:
+      <br>FORMAT: STD NUMBER
+      <br>U.Kingdom: 020 12345678
+      <br>- FOR International:
+      <br>FORMAT: +CC (NDD)STD NUMBER
+      <br>Netherlands: +31 (0)20 12345678
+      <br>Hungary: +36 (06)1 12345678
+      <br>U.Kingdom: +44 (0)20 12345678
+      <br>- FOR International without NDD:
+      <br>FORMAT: +CC STD NUMBER
+      <br>Norway: +47 123 4568900
+      <br>Spain: +34 911 12345678
+      <br>America: +1 123 4568900
+  </div>
+
+  <div id="header">
+    <h1>Registration</h1>
+    <p class="subheading">Import Case Management System</p>
+  </div>
+  <div class="clearBoth"></div>
+
+  <h2>User Details</h2>
+  <p>You are about to register for an Import Case Management System account. Note that after
+    registering, you will not be able to apply for import licences until you have been granted
+    permission to act as an importer by ILB.</p>
+  <p>For further information, please refer to the guidance documents on the main login screen.</p>
+  <p>All fields are mandatory.</p>
+
+
+  {% call forms.form(method='post', csrf_input=csrf_input) %}
+    {% for field in form %}
+      {% if field.name == "telephone_number" %}
+        {{ fields.field(field, tooltip_msg_id="number_format_tooltip") }}
+      {% elif field.name == "password1" %}
+        {{ fields.field(field, mark_safe=True) }}
+      {% else %}
+        {{ fields.field(field) }}
+      {% endif %}
+    {% endfor %}
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li><button type="submit" value="save" class="primary-button button">Submit</button></li>
+          </ul>
+        </div>
+        <div class="one columns"></div>
+      </div>
+    </div>
+  {% endcall %}
+
+{% endblock %}
