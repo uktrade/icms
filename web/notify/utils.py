@@ -1,4 +1,5 @@
 import itertools
+from collections.abc import Collection
 
 from django.conf import settings
 from django.db.models import QuerySet
@@ -7,6 +8,7 @@ from django.template.loader import render_to_string
 from web.domains.case.types import ImpOrExp
 from web.domains.template.utils import get_email_template_subject_body
 from web.models import AlternativeEmail, CaseEmail, PersonalEmail
+from web.utils.s3 import get_file_from_s3, get_s3_client
 
 
 def get_user_emails_by_ids(user_ids):
@@ -68,3 +70,17 @@ def render_email(template, context):
     context["contact_email"] = settings.ILB_CONTACT_EMAIL
     context["contact_phone"] = settings.ILB_CONTACT_PHONE
     return render_to_string(template, context)
+
+
+# TODO ICMSLST-2061
+def get_attachments(files: QuerySet) -> Collection[tuple[str, bytes]]:
+    attachments = []
+
+    if files:
+        s3_client = get_s3_client()
+
+        for f in files:
+            file_content = get_file_from_s3(f["path"], client=s3_client)
+            attachments.append((f["filename"], file_content))
+
+    return attachments

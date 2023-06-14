@@ -23,12 +23,7 @@ from web.domains.template.utils import get_fir_template_data
 from web.flow.models import ProcessTypes
 from web.models import FurtherInformationRequest, User
 from web.notify import notify
-from web.permissions import (
-    AppChecker,
-    Perms,
-    get_org_obj_permissions,
-    organisation_get_contacts,
-)
+from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 
@@ -163,22 +158,6 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: CASE_TYPES
         )
         _check_process_state(application, case_type)
 
-        if case_type == "access":
-            contacts = [application.submitted_by]
-
-        elif case_type in ["import", "export"]:
-            # TODO: Revisit in ICMSLST-1964 (I haven't investigated if this is correct).
-            if application.is_import_application():
-                org = application.agent or application.importer
-            else:
-                org = application.agent or application.exporter
-
-            obj_perms = get_org_obj_permissions(org)
-            contacts = organisation_get_contacts(org, perms=[obj_perms.edit.codename])
-
-        else:
-            raise ValueError(f"Unknown case_type {case_type}")
-
         fir = get_object_or_404(application.further_information_requests.draft(), pk=fir_pk)
 
         if request.method == "POST":
@@ -191,7 +170,7 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: CASE_TYPES
                     fir.status = FurtherInformationRequest.OPEN
                     fir.save()
 
-                    notify.further_information_requested(fir, contacts)
+                    notify.send_further_information_request(application, fir)
 
                     application.update_order_datetime()
                     application.save()
@@ -253,6 +232,8 @@ def withdraw_fir(
 
         fir.status = FurtherInformationRequest.DRAFT
         fir.save()
+
+        notify.send_further_information_request_withdrawal(application, fir)
 
     return _manage_fir_redirect(application_pk, case_type)
 

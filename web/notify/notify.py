@@ -1,10 +1,12 @@
 import datetime as dt
-from typing import Literal
+from collections.abc import Collection
+from typing import Any, Literal
 
 import html2text
 import structlog as logging
 from django.conf import settings
 from django.contrib.postgres.aggregates import StringAgg
+from django.db.models import F
 from django.utils import timezone
 
 from config.celery import app
@@ -13,23 +15,34 @@ from web.domains.case.services import document_pack
 from web.domains.case.types import ImpOrExp
 from web.flow.models import ProcessTypes
 from web.models import (
+    AccessRequest,
     Constabulary,
     DFLApplication,
+    ExportApplication,
     FirearmsAuthority,
+    FurtherInformationRequest,
+    ImportApplication,
     Importer,
+    Process,
     Section5Authority,
     User,
     VariationRequest,
 )
 from web.permissions import SysPerms, get_ilb_admin_users
-from web.utils.s3 import get_file_from_s3, get_s3_client
 
 from . import email, utils
 
 logger = logging.getLogger(__name__)
 
 
-def send_notification(subject, template, context=None, recipients=None, cc_list=None):
+def send_notification(
+    subject: str,
+    template: str,
+    context: dict[str, Any] | None = None,
+    recipients: list[str] | None = None,
+    cc_list: list[str] | None = None,
+    attachments: Collection[tuple[str, str]] = (),
+):
     """Renders given email template and sends to recipients.
 
     User's personal and alternative emails with portal notifications
@@ -39,10 +52,19 @@ def send_notification(subject, template, context=None, recipients=None, cc_list=
 
     html_message = utils.render_email(template, context)
     message_text = html2text.html2text(html_message)
-    email.send_email.delay(subject, message_text, recipients, html_message=html_message, cc=cc_list)
+    email.send_email.delay(
+        subject,
+        message_text,
+        recipients,
+        html_message=html_message,
+        cc=cc_list,
+        attachments=attachments,
+    )
 
 
-def send_case_officer_notification(subject, template, context=None):
+def send_case_officer_notification(
+    subject: str, template: str, context: dict[str, Any] | None = None
+) -> None:
     """Renders given email template and sends to case officers."""
     html_message = utils.render_email(template, context)
     message_text = html2text.html2text(html_message)
@@ -129,23 +151,64 @@ def retract_mailshot(mailshot):
     )
 
 
-def further_information_requested(fir, contacts):
+def send_fir_to_contacts(
+    process: Process,
+    fir: FurtherInformationRequest,
+    context: dict[str, str],
+    attachments: Collection[tuple[str, bytes]] = (),
+) -> None:
+    match process:
+        case AccessRequest():
+            contacts = [process.submitted_by]
+        case ImportApplication() | ExportApplication():
+            contacts = email.get_application_contacts(process)
+        case _:
+            raise ValueError(
+                "Process must be an instance of ImportApplication / ExportApplication / AccessRequest"
+            )
+
+    for contact in contacts:
+        send_notification(
+            context["subject"],
+            "email/base.html",
+            context=context,
+            recipients=utils.get_notification_emails(contact),
+            cc_list=fir.email_cc_address_list,
+            # attachments=attachments, TODO ICMSLST-2061
+        )
+
+
+def send_further_information_request(process: Process, fir: FurtherInformationRequest) -> None:
+    context = {"subject": fir.request_subject, "body": fir.request_detail}
+    fir_files = fir.files.filter(is_active=True).values("filename", "path").order_by("pk")
+    # TODO ICMSLST-2061 attachments need to be specific to email being sent not all attachments
+    # Different attachments sent at different point in email chain
+    attachments = utils.get_attachments(fir_files)
+
+    send_fir_to_contacts(process, fir, context, attachments)
+
+
+def send_further_information_request_withdrawal(
+    process: Process, fir: FurtherInformationRequest
+) -> None:
+    subject = f"Withdrawn - {process.reference} Further Information Request"
+    body = "The FIR request has been withdrawn by ILB."
+
+    send_fir_to_contacts(process, fir, {"subject": subject, "body": body})
+
+
+def further_information_responded(process: Process, fir: FurtherInformationRequest) -> None:
+    subject = f"FIR Response - {process.reference} - {fir.request_subject}"
+    fir_type = "access request" if isinstance(process, AccessRequest) else "case"
+
     send_notification(
-        f"{fir.request_subject}",
-        "email/fir/requested.html",
-        context={"subject": fir.request_subject, "request_detail": fir.request_detail},
-        # TODO: investigate web.notify.utils.get_notification_emails
-        recipients=[contact.email for contact in contacts],
-        cc_list=fir.email_cc_address_list,
-    )
-
-
-def further_information_responded(process, fir):
-    send_case_officer_notification(
-        # TODO: use case reference instead of pk
-        f"FIR Response - {process.pk} - {fir.request_subject}",
-        "email/fir/responded.html",
-        context={"process": process, "fir": fir},
+        subject,
+        "email/base.html",
+        context={
+            "subject": subject,
+            "body": f"A FIR response has been submitted for {fir_type} {process.reference}.",
+        },
+        recipients=utils.get_notification_emails(fir.requested_by),
     )
 
 
@@ -324,13 +387,12 @@ def send_constabulary_deactivated_firearms_notification(application: DFLApplicat
     body = html2text.html2text(html_message)
     recipients = [application.constabulary.email]
 
-    s3_client = get_s3_client()
-    attachments = []
     doc_pack = document_pack.pack_active_get(application)
-
-    for document in doc_pack.document_references.values("document__path", "document__filename"):
-        file_content = get_file_from_s3(document["document__path"], client=s3_client)
-        attachments.append((document["document__filename"], file_content))
+    documents = doc_pack.document_references.values(
+        path=F("document__path"), filename=F("document__filename")
+    )
+    # TODO ICMSLST-2061 Queue email with attachments rather than calling directly
+    attachments = utils.get_attachments(documents)
 
     email.send_email(subject, body, recipients, attachments=attachments, html_message=html_message)
 
