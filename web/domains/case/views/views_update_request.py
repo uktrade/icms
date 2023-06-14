@@ -12,6 +12,7 @@ from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import get_case_page_title
+from web.domains.template.utils import get_application_update_template_data
 from web.models import Task, User
 from web.notify import email
 from web.permissions import AppChecker, Perms
@@ -77,7 +78,7 @@ def manage_update_requests(
         )
 
         readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
-        email_subject, email_content = email.get_application_update_request_contents(application)
+        email_subject, email_content = get_application_update_template_data(application)
 
         if request.method == "POST" and not readonly_view:
             task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)

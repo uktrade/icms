@@ -10,6 +10,7 @@ from web.domains.template.utils import (
     add_endorsements_from_application_type,
     add_template_data_on_submit,
     find_invalid_placeholders,
+    get_application_update_template_data,
     get_context_dict,
     get_cover_letter_content,
     get_email_template_subject_body,
@@ -22,6 +23,7 @@ from web.models import (
     DFLApplication,
     EndorsementImportApplication,
     ExportApplicationType,
+    FurtherInformationRequest,
     ImportApplicationType,
     OpenIndividualLicenceApplication,
     SanctionsAndAdhocApplication,
@@ -429,6 +431,37 @@ def test_export_email_template_subject_body(exporter_one_contact, exporter, offi
     )
 
 
+def test_get_import_application_update_request_contents(wood_app_submitted, ilb_admin_two):
+    _check_get_export_application_update_request_contents(wood_app_submitted, ilb_admin_two)
+
+
+def test_get_export_application_update_request_contents(com_app_submitted, ilb_admin_two):
+    _check_get_export_application_update_request_contents(com_app_submitted, ilb_admin_two)
+
+
+def _check_get_export_application_update_request_contents(app, case_owner):
+    app.case_owner = case_owner
+    actual_subject, actual_body = get_application_update_template_data(app)
+    assert actual_subject == f"{app.reference} Request for Application Update"
+    assert "I am writing to ask you for application updates regarding" in actual_body
+
+
+def test_get_error_application_update_request_contents(ilb_admin_user):
+    fir = FurtherInformationRequest.objects.create(
+        process_type=FurtherInformationRequest.PROCESS_TYPE,
+        requested_by=ilb_admin_user,
+        status=FurtherInformationRequest.DRAFT,
+        request_subject="test subject",
+        request_detail="test request detail",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=r"Application must be an instance of ImportApplication / ExportApplication",
+    ):
+        get_application_update_template_data(fir)
+
+
 def test_get_fir_template_data_import(fa_sil_app_submitted, ilb_admin_client, ilb_admin_user):
     app = fa_sil_app_submitted
     ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
@@ -465,3 +498,19 @@ def test_get_fir_template_data_exporter_access(exporter_access_request, ilb_admi
 
     assert subject == f"{app.reference} Further Information Request"
     assert "ask you for [FURTHER INFORMATION / CLARIFICATION] regarding" in body
+
+
+def test_get_fir_template_data_error(ilb_admin_user):
+    fir = FurtherInformationRequest.objects.create(
+        process_type=FurtherInformationRequest.PROCESS_TYPE,
+        requested_by=ilb_admin_user,
+        status=FurtherInformationRequest.DRAFT,
+        request_subject="test subject",
+        request_detail="test request detail",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=r"Process must be an instance of ImportApplication / ExportApplication / AccessRequest",
+    ):
+        get_fir_template_data(fir, ilb_admin_user)

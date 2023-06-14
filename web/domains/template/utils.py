@@ -1,6 +1,7 @@
 import re
 from typing import TYPE_CHECKING
 
+from web.domains.case.types import ImpOrExp
 from web.flow.models import ProcessTypes
 from web.models import (
     AccessRequest,
@@ -164,6 +165,18 @@ def add_template_data_on_submit(application: "ImportApplication") -> None:
 
     if application.application_type.cover_letter_flag:
         add_application_default_cover_letter(application)
+
+
+def get_application_update_template_data(application: ImpOrExp) -> tuple[str, str]:
+    match application:
+        case ImportApplication():
+            return get_email_template_subject_body(application, "IMA_APP_UPDATE")
+        case ExportApplication():
+            return get_email_template_subject_body(application, "CA_APPLICATION_UPDATE_EMAIL")
+        case _:
+            raise ValueError(
+                "Application must be an instance of ImportApplication / ExportApplication"
+            )
 
 
 def get_fir_template_data(process: Process, current_user: User) -> tuple[str, str]:

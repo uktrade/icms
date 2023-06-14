@@ -12,9 +12,7 @@ from web.domains.case.types import ImpOrExp
 from web.domains.template.utils import get_email_template_subject_body
 from web.models import (
     CaseEmail,
-    ExportApplication,
     Exporter,
-    ImportApplication,
     Importer,
     User,
     VariationRequest,
@@ -25,12 +23,12 @@ from web.permissions import (
     get_org_obj_permissions,
     organisation_get_contacts,
 )
-from web.utils.s3 import get_file_from_s3, get_s3_client
 
 from . import utils
 from .constants import DatabaseEmailTemplate, VariationRequestDescription
 
 
+# TODO ICMSLST-2061 Change attachments to be fetched from S3 within this task
 @app.task(name="web.notify.email.send_email")
 def send_email(
     subject: str,
@@ -150,14 +148,9 @@ def send_mailshot(
 
 
 def send_case_email(case_email: CaseEmail) -> None:
-    attachments = []
-    s3_client = get_s3_client()
+    attachments = utils.get_attachments(case_email.attachments.all())
 
-    for document in case_email.attachments.all():
-        file_content = get_file_from_s3(document.path, client=s3_client)
-        attachments.append((document.filename, file_content))
-
-    send_email(
+    send_email.delay(
         case_email.subject,
         case_email.body,
         [case_email.to],
@@ -276,18 +269,6 @@ def send_variation_request_email(
     }
     template_name = f"email/application/variation_request/{description.lower()}.html"
     send_html_email(template_name, context, contacts)
-
-
-def get_application_update_request_contents(application: ImpOrExp) -> tuple[str, str]:
-    match application:
-        case ImportApplication():
-            template_name = "IMA_APP_UPDATE"
-        case ExportApplication():
-            template_name = "CA_APPLICATION_UPDATE_EMAIL"
-        case _:
-            raise NotImplementedError("Unknown Application Type")
-    subject, body = get_email_template_subject_body(application, template_name)
-    return subject, body
 
 
 def send_application_update_reponse_email(application: ImpOrExp) -> None:
