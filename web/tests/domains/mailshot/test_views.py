@@ -9,10 +9,9 @@ from web.domains.mailshot.views import MailshotListView
 from web.middleware.common import ICMSMiddlewareContext
 from web.models import Mailshot, User
 from web.tests.auth import AuthTestCase
+from web.tests.conftest import LOGIN_URL
 
 from .factory import MailshotFactory
-
-LOGIN_URL = "/"
 
 
 class TestMailshotListView(AuthTestCase):

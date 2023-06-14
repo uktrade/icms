@@ -11,10 +11,9 @@ from web.domains.importer import views
 from web.models import Importer, Section5Authority
 from web.permissions import Perms
 from web.tests.auth import AuthTestCase
+from web.tests.conftest import LOGIN_URL
 from web.tests.domains.importer.factory import ImporterFactory
 from web.utils.s3 import get_file_from_s3
-
-LOGIN_URL = "/"
 
 
 class TestImporterListAdminView(AuthTestCase):

@@ -1,6 +1,7 @@
 from pytest_django.asserts import assertRedirects
 
 from web.domains.case.services import document_pack
+from web.tests.conftest import LOGIN_URL
 from web.tests.helpers import CaseURLS
 
 
@@ -77,7 +78,7 @@ def test_login_required(fa_oil_app_submitted, client):
 
     for url in [licence_url, cover_letter_url]:
         response = client.get(url)
-        redirect_url = f"/?next={url}"
+        redirect_url = f"{LOGIN_URL}?next={url}"
         assertRedirects(response, redirect_url, 302), f"URl failed to redirect: {url}"
 
 

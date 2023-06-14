@@ -13,7 +13,6 @@ from django.views import View
 from django.views.decorators.http import require_GET, require_POST
 from django.views.generic.detail import DetailView
 
-from web.auth.mixins import RequireRegisteredMixin
 from web.domains.case.forms import DocumentForm
 from web.domains.case.services import reference
 from web.domains.file.utils import create_file_model
@@ -104,7 +103,7 @@ class MailshotListView(ModelFilterView):
         return mailshots.order_by("-pk")
 
 
-class MailshotCreateView(RequireRegisteredMixin, View):
+class MailshotCreateView(PermissionRequiredMixin, LoginRequiredMixin, View):
     MAILSHOT_TEMPLATE_CODE = "PUBLISH_MAILSHOT"
     permission_required = Perms.sys.ilb_admin
 

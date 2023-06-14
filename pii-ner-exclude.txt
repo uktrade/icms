@@ -2972,3 +2972,27 @@ Individual Importers Without User
 {{ application_field(process.get_decision_display
 "A Certificate of Free Sale (export) application
 "A Firearms Specific Import
+Popups & Downloads</a
+correctly.</p
+in</a
+kwargs={"uidb64":uid
+Logo" width="21%
+International Trade" src=
+li class="icon
+Request Importer
+Log in</a
+ILB_CONTACT_EMAIL
+Details</h2
+unauthenticated_user.account_status
+SUSPENDED
+aria-describedby="edit-address-hint
+{{fields.field(details_form.preferred_first_name
+{{fields.field(details_form.department
+Share Contact Details</h3
+{{fields.field(details_form.security_answer_repeat
+Request Importer/ Exporter
+Importer/Exporter Access
+Django 4.1.9
+Activate
+Postcodes
+NDD

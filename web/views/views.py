@@ -1,5 +1,7 @@
 from typing import Any
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render
@@ -7,19 +9,18 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
-from web.auth.decorators import require_registered
-from web.auth.mixins import RequireRegisteredMixin
-
 from .actions import PostAction
 from .mixins import DataDisplayConfigMixin, PageTitleMixin
 
 
-@require_registered
+@login_required
 def home(request):
     return render(request, "web/home.html")
 
 
-class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin, ListView):
+class ModelFilterView(
+    PermissionRequiredMixin, LoginRequiredMixin, DataDisplayConfigMixin, ListView
+):
     paginate_by = 50
     paginate = True
 
@@ -65,14 +66,18 @@ class ModelFilterView(RequireRegisteredMixin, DataDisplayConfigMixin, ListView):
         return context
 
 
-class ModelCreateView(RequireRegisteredMixin, PageTitleMixin, SuccessMessageMixin, CreateView):
+class ModelCreateView(
+    PermissionRequiredMixin, LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, CreateView
+):
     template_name = "model/edit.html"
 
     def get_success_message(self, cleaned_data):
         return f"{self.object} created successfully."
 
 
-class ModelUpdateView(RequireRegisteredMixin, PageTitleMixin, SuccessMessageMixin, UpdateView):
+class ModelUpdateView(
+    PermissionRequiredMixin, LoginRequiredMixin, PageTitleMixin, SuccessMessageMixin, UpdateView
+):
     template_name = "model/edit.html"
 
     def get_success_message(self, cleaned_data):
@@ -82,7 +87,7 @@ class ModelUpdateView(RequireRegisteredMixin, PageTitleMixin, SuccessMessageMixi
         return f"Editing {self.object}"
 
 
-class ModelDetailView(RequireRegisteredMixin, PageTitleMixin, DetailView):
+class ModelDetailView(PermissionRequiredMixin, LoginRequiredMixin, PageTitleMixin, DetailView):
     template_name = "model/view.html"
 
     def _readonly(self, form):

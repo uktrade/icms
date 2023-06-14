@@ -11,7 +11,6 @@ from django.template.response import TemplateResponse
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, ListView
 
-from web.auth.mixins import RequireRegisteredMixin
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 from web.views import ModelCreateView, ModelDetailView, ModelFilterView, ModelUpdateView
@@ -40,7 +39,7 @@ class MissingTranslationsDict(TypedDict):
     remaining: int
 
 
-class CountryListView(RequireRegisteredMixin, PageTitleMixin, ListView):
+class CountryListView(PermissionRequiredMixin, LoginRequiredMixin, PageTitleMixin, ListView):
     model = Country
     template_name = "web/domains/country/list.html"
     filterset_class = CountryNameFilter

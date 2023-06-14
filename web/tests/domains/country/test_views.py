@@ -2,10 +2,9 @@ import pytest
 from pytest_django.asserts import assertRedirects
 
 from web.tests.auth import AuthTestCase
+from web.tests.conftest import LOGIN_URL
 
 from .factory import CountryFactory, CountryGroupFactory, CountryTranslationSetFactory
-
-LOGIN_URL = "/"
 
 
 class TestCountryListView(AuthTestCase):

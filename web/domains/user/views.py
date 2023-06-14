@@ -1,11 +1,10 @@
 from typing import Any
 
 from django.contrib import messages
-from django.contrib.auth.decorators import permission_required as require_permission
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse
 from django.shortcuts import render
 
-from web.auth.decorators import require_registered
 from web.errors import APIError
 from web.forms import utils
 from web.permissions import Perms
@@ -30,13 +29,13 @@ from .formset import (
 from .models import User
 
 
-@require_registered
+@login_required
 def current_user_details(request: AuthenticatedHttpRequest) -> HttpResponse:
     return _get_user_details(request, request.user.pk)
 
 
-@require_registered
-@require_permission(Perms.sys.ilb_admin, raise_exception=True)
+@login_required
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def user_details(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     return _get_user_details(request, pk)
 

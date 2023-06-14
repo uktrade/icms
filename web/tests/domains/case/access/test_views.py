@@ -8,6 +8,7 @@ from pytest_django.asserts import assertInHTML, assertRedirects, assertTemplateU
 from web.models import AccessRequest, ExporterAccessRequest, ImporterAccessRequest
 from web.permissions import organisation_get_contacts
 from web.tests.auth import AuthTestCase
+from web.tests.conftest import LOGIN_URL
 from web.tests.helpers import get_test_client
 
 
@@ -47,7 +48,6 @@ class TestImporterAccessRequestView(AuthTestCase):
     def setup(self, _setup, access_request_user):
         self.access_request_user = access_request_user
         self.access_request_client = get_test_client(access_request_user)
-        self.login_url = reverse("login")
         self.url = reverse("access:importer-request")
 
     def test_permission(self):
@@ -67,7 +67,7 @@ class TestImporterAccessRequestView(AuthTestCase):
         for client in redirect_clients:
             response = client.get(self.url)
 
-            assertRedirects(response, f"{self.login_url}?next={self.url}")
+            assertRedirects(response, f"{LOGIN_URL}?next={self.url}")
 
     def test_get(self):
         response = self.access_request_client.get(self.url)
@@ -107,7 +107,6 @@ class TestExporterAccessRequestView(AuthTestCase):
     def setup(self, _setup, access_request_user):
         self.access_request_user = access_request_user
         self.access_request_client = get_test_client(access_request_user)
-        self.login_url = reverse("login")
         self.url = reverse("access:exporter-request")
 
     def test_permission(self):
@@ -127,7 +126,7 @@ class TestExporterAccessRequestView(AuthTestCase):
         for client in redirect_clients:
             response = client.get(self.url)
 
-            assertRedirects(response, f"{self.login_url}?next={self.url}")
+            assertRedirects(response, f"{LOGIN_URL}?next={self.url}")
 
     def test_get(self):
         response = self.access_request_client.get(self.url)

@@ -3,10 +3,9 @@ from pytest_django.asserts import assertContains, assertRedirects
 
 from web.models import CommodityType
 from web.tests.auth import AuthTestCase
+from web.tests.conftest import LOGIN_URL
 
 from .factory import CommodityFactory, CommodityGroupFactory
-
-LOGIN_URL = "/"
 
 
 class TestCommodityListView(AuthTestCase):

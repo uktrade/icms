@@ -9,8 +9,7 @@ from pytest_django.asserts import assertRedirects
 from web.models import Exporter
 from web.permissions import Perms
 from web.tests.auth import AuthTestCase
-
-LOGIN_URL = "/"
+from web.tests.conftest import LOGIN_URL
 
 
 class TestExporterListView(AuthTestCase):
