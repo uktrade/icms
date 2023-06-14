@@ -1,0 +1,31 @@
+{% extends "layout/public.html" %}
+
+{% block main_content %}
+
+  <div id="header">
+    <h1>Login</h1>
+    <p class="subheading">Import Case Management System</p>
+  </div>
+  <div class="clearBoth"></div>
+  {% if form.errors %}
+    <p>Your username and password didn't match. Please try again.</p>
+  {% endif %}
+
+{% if next %}
+  {% if user.is_authenticated %}
+  <p>Your account doesn't have access to this page. To proceed, please login with an account that has access.</p>
+  {% else %}
+    <p>Please login to see this page.</p>
+  {% endif %}
+{% endif %}
+
+{% call forms.form(method='post', csrf_input=csrf_input) %}
+    {% for field in form %}
+      {{ fields.field(field) }}
+    {% endfor %}
+    <input type="submit" value="Submit" class="button"/>
+  {% endcall %}
+
+<a href="{{ icms_url('accounts:password_reset')}}" class="button link-button">Forgot your password?</a>
+<p><a href="{{ icms_url('accounts:register')}}" class="button link-button">Register for a new account</a></p>
+{% endblock %}

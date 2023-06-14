@@ -161,6 +161,7 @@ class PersonalEmailForm(forms.ModelForm):
     def save(self, commit=True):
         instance = super().save(commit=False)
         if instance.is_primary:
+            # TODO: This is a bug
             instance.user.username = instance.email
             instance.user.email = instance.email
             instance.user.save()

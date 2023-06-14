@@ -4,6 +4,8 @@
      DIT large logo and footer with no navigation or sidebars.
      Serves as a base for publicly accessible pages like login and registration.
 -->
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
 
 {% block css %}
 <link rel="stylesheet" type="text/css" href="{{ static('web/css/icms-login-style.css') }}">

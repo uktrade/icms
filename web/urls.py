@@ -16,6 +16,7 @@ register_converter(converters.ChiefStatusConverter, "chiefstatus")
 
 urlpatterns = [
     path("", include("web.auth.urls")),
+    path("accounts/", include("web.registration.urls")),
     path("health-check/", health_check, name="health-check"),
     path("home/", home, name="home"),
     path("workbasket/", include("web.domains.workbasket.urls")),

@@ -52,6 +52,9 @@ class User(GuardianUserMixin, AbstractUser):
         "security_answer",
     ]
 
+    # TODO: This makes bad things happen
+    # username = None
+
     objects = UserManager()
 
     title = models.CharField(max_length=20, blank=False, null=True)

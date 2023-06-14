@@ -21,9 +21,9 @@ env = environ.Env()
 
 VCAP_SERVICES = env.json("VCAP_SERVICES", default={})
 
-LOGIN_URL = "/"
+LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "workbasket"
-LOGOUT_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "accounts:login"
 
 # Application definition
 DEBUG = env.bool("ICMS_DEBUG", False)
@@ -101,6 +101,8 @@ TEMPLATES = [
         },
     },
 ]
+
+# https://docs.djangoproject.com/en/4.2/ref/settings/#std-setting-FORM_RENDERER
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 PASSWORD_HASHERS = [
@@ -114,11 +116,13 @@ PASSWORD_HASHERS = [
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
+
+# TODO: Do not commit this
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},  # NOQA
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+    # {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},  # NOQA
+    # {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    # {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    # {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 # Auth user model

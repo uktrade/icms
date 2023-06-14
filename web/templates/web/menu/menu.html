@@ -21,7 +21,8 @@
             <li><a href="{{ icms_url('access:importer-request') }}">Request Importer Access</a></li>
             <li><a href="{{ icms_url('access:exporter-request') }}">Request Exporter Access</a></li>
             <li><a href="{{ icms_url('current-user-details') }}">My details</a></li>
-            <li><a href="{{ icms_url('logout') }}">Log out</a></li>
+            {# TODO: Post only logout #}
+            <li><a href="{{ icms_url('accounts:logout') }}">Log out</a></li>
           </ul>
         </li>
       </ul>

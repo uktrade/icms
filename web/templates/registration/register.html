@@ -1,0 +1,26 @@
+{% extends "layout/public.html" %}
+
+{% block main_content %}
+
+  <div id="header">
+    <h1>Registration</h1>
+    <p class="subheading">Import Case Management System</p>
+  </div>
+  <div class="clearBoth"></div>
+
+  <h2>User Details</h2>
+  <p>You are about to register for an Import Case Management System account. Note that after
+    registering, you will not be able to apply for import licences until you have been granted
+    permission to act as an importer by ILB.</p>
+  <p>For further information, please refer to the guidance documents on the main login screen.</p>
+  <p>All fields are mandatory.</p>
+
+
+  {% call forms.form(method='post', csrf_input=csrf_input) %}
+    {% for field in form %}
+      {{ fields.field(field) }}
+    {% endfor %}
+    <input type="submit" value="Submit" class="button"/>
+  {% endcall %}
+
+{% endblock %}
