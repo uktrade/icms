@@ -2928,3 +2928,44 @@ TODO ICMSLST-2061 Change
 FIR Subject
 TODO ICMSLST-2061
 TODO ICMSLST-2061 Queue
+Test Commodity A
+Test Commodity B
+Test Other"
+SELECT xcac.cad_id, xcac.country_id
+ON card.car_id
+SELECT card.cad_id , dd.id document_legacy_id
+xdd.content_type
+ON xdd.di_id = cardc.document_instance_id AND xdd.system_document = '
+securemgr.secure_lob_data
+ON sld.id
+SELECT xcas.ca_id
+schedules.brand_name_holder , schedules.product_eligibility
+xcas.start_datetime
+x.final_product_end_use
+XMLTYPE.getClobVal(product_xml
+ORDINALITY
+ON schedules.cad_id
+ON st_rp.cad_id
+st_gmp.schedule_ordinal = xcas.schedule_ordinal
+e.email_status
+INNER
+ON r.status
+e.cad_id
+WITH login_id_dupes AS
+wuah.wua_id
+x.share_info
+INNER JOIN
+ON wuah.wua_id = wuam.wua_id
+ON ld.login_id
+wuah.login_id
+Primary"]/EMAIL_ADDRESS
+work_address_id
+email_address_xml XMLTYPE PATH '
+LEFT JOIN decmgr.resource_address_current
+SELECT xmd.documents_ff_id folder_id
+xmd.retracted_datetime , xmd.version
+xmd.m_id
+ON re.m_id
+iar.id
+VARCHAR(4000
+Individual Importers Without User

@@ -125,15 +125,15 @@ def date_to_timezone(date: dt.date | None) -> dt.datetime | None:
     return dt.datetime.combine(date, dt.time.min, tzinfo=dt.timezone.utc)
 
 
-def float_or_none(float_str: str | None) -> float | None:
-    if not float_str:
+def decimal_or_none(dec_str: str | None) -> Decimal | None:
+    if not dec_str:
         return None
 
-    parsed = float(float_str)
-
-    # Validate parsed is a number by trying to parse to int
     try:
-        int(parsed)
+        parsed = Decimal(dec_str)
+        int(parsed)  # validates only parsed to numerical values
+    except InvalidOperation:
+        return None
     except ValueError:
         return None
 

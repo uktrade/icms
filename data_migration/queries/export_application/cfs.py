@@ -1,3 +1,5 @@
+# TODO ICMSLST-2060 Investigate why submitted CFS apps in V1 have no case reference and if they need to be included
+
 cfs_application = """
 WITH rp_wua AS (
   SELECT uah.resource_person_id
@@ -9,11 +11,11 @@ WITH rp_wua AS (
       WHERE sub.person_id_current IS NOT NULL
         AND sub.resource_person_primary_flag = 'Y'
         AND sub.resource_person_id = uah.resource_person_id
-        AND sub.account_statuS = 'ACTIVE'
+        AND sub.account_status = 'ACTIVE'
     )
     ELSE MAX(wua_id)
   END wua_id
-  FROM SECUREMGR.WEB_USER_ACCOUNT_HISTORIES uah
+  FROM securemgr.web_user_account_histories uah
   WHERE uah.person_id_current IS NOT NULL
     AND uah.resource_person_primary_flag = 'Y'
   GROUP BY uah.resource_person_id
@@ -119,6 +121,7 @@ SELECT
   , schedules.legislation_xml
   , schedules.product_xml
 FROM impmgr.xview_certificate_app_details xcad
+INNER JOIN impmgr.certificate_applications ca ON ca.id = xcad.ca_id
 INNER JOIN impmgr.xview_cert_app_schedules xcas ON xcas.cad_id = xcad.cad_id
 INNER JOIN (
   SELECT
