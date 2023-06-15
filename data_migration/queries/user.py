@@ -52,9 +52,26 @@ ORDER BY wuam.wua_id
 """
 
 
-# After users migrated
-# , wua_id user_id
 importers = """
+WITH rp_wua AS (
+  SELECT uah.resource_person_id
+  , CASE
+    WHEN COUNT(wua_id) > 1
+    THEN (
+      SELECT sub.wua_id
+      FROM securemgr.web_user_account_histories sub
+      WHERE sub.person_id_current IS NOT NULL
+        AND sub.resource_person_primary_flag = 'Y'
+        AND sub.resource_person_id = uah.resource_person_id
+        AND sub.account_status = 'ACTIVE'
+    )
+    ELSE MAX(wua_id)
+  END wua_id
+  FROM securemgr.web_user_account_histories uah
+  WHERE uah.person_id_current IS NOT NULL
+    AND uah.resource_person_primary_flag = 'Y'
+  GROUP BY uah.resource_person_id
+)
 SELECT
   imp_id id
   , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
@@ -62,10 +79,11 @@ SELECT
   , organisation_name name
   , reg_number registered_number
   , eori_number
-  , wua_id user_id
+  , rp_wua.wua_id user_id
   , main_imp_id main_importer_id
   , other_coo_code region_origin
 FROM impmgr.xview_importer_details xid
+LEFT JOIN rp_wua ON rp_wua.resource_person_id = xid.rp_id
 WHERE status_control = 'C'
 ORDER BY imp_id
 """
