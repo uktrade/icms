@@ -1,5 +1,6 @@
 import datetime as dt
 import zoneinfo
+from decimal import Decimal
 
 import pytest
 from django.forms import ValidationError
@@ -12,8 +13,8 @@ from data_migration.models import Process
 from data_migration.utils.format import (
     date_or_none,
     datetime_or_none,
+    decimal_or_none,
     extract_int_substr,
-    float_or_none,
     get_xml_val,
     int_or_none,
     reformat_placeholders,
@@ -133,14 +134,14 @@ def test_datetime_or_none(test_input, expected):
         (None, None),
         ("", None),
         ("nan", None),
-        ("1", 1),
-        ("1.0", 1.0),
-        ("1.1", 1.1),
-        ("1.11", 1.11),
+        ("1", Decimal("1")),
+        ("1.0", Decimal("1.0")),
+        ("1.1", Decimal("1.1")),
+        ("1.11", Decimal("1.11")),
     ],
 )
-def test_float_or_none(test, expected):
-    assert float_or_none(test) == expected
+def test_decimal_or_none(test, expected):
+    assert decimal_or_none(test) == expected
 
 
 @pytest.mark.parametrize(

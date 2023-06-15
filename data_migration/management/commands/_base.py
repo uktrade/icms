@@ -61,12 +61,17 @@ class MigrationBaseCommand(BaseCommand):
 
     def _log_time(self) -> None:
         time_taken = time.perf_counter() - self.split_time
-        self.stdout.write(f"\t\t--> {time_taken} seconds", ending="\n\n")
+        self.stdout.write(f"\t\t--> {time_taken:.2f} seconds", ending="\n\n")
         self.split_time = time.perf_counter()
 
     def _log_script_end(self) -> None:
         time_taken = time.perf_counter() - self.start_time
-        self.stdout.write(f"Execuction Time --> {time_taken} seconds", ending="\n\n")
+        mins = time_taken // 60
+        secs = time_taken % 60
+
+        self.stdout.write(
+            f"Execuction Time --> {mins:.0f} minutes {secs:.0f} seconds", ending="\n\n"
+        )
 
     def _get_data_list(self, data_list: list[Any]) -> tuple[int, list[Any]]:
         start = (self.start_index and int(self.start_index)) or 1

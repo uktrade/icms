@@ -8,7 +8,7 @@ from lxml import etree
 from data_migration import models as dm
 from data_migration.utils.format import (
     date_or_none,
-    float_or_none,
+    decimal_or_none,
     get_xml_val,
     int_or_none,
     str_to_bool,
@@ -933,8 +933,8 @@ class SanctionGoodsParser(BaseXmlParser):
 
         commodity_id = int_or_none(get_xml_val(xml, "./COMMODITY_ID"))
         commodity_desc = get_xml_val(xml, "./COMMODITY_DESC")
-        quantity = float_or_none(get_xml_val(xml, "./QUANTITY"))
-        value = float_or_none(get_xml_val(xml, "./VALUE"))
+        quantity = decimal_or_none(get_xml_val(xml, "./QUANTITY"))
+        value = decimal_or_none(get_xml_val(xml, "./VALUE"))
 
         if None in (commodity_id, commodity_desc, quantity, value):
             return None

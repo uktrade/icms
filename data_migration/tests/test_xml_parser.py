@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 
 import pytest
 
@@ -269,11 +270,11 @@ def test_sanction_goods_parser():
     assert g1.import_application_id == 1
     assert g1.commodity_id == 1
     assert g1.goods_description == "GOODS"
-    assert g1.quantity_amount == 5.00
-    assert g1.value == 100.00
+    assert g1.quantity_amount == Decimal("5.000")
+    assert g1.value == Decimal("100.00")
 
     assert g2.import_application_id == 1
     assert g2.commodity_id == 2
     assert g2.goods_description == "MORE"
-    assert g2.quantity_amount == 10
-    assert g2.value == 40.23
+    assert g2.quantity_amount == Decimal("10.000")
+    assert g2.value == Decimal("40.23")

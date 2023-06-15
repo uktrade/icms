@@ -13,13 +13,18 @@ FROM impmgr.certificate_application_types
 """
 
 
+# TODO ICMSLST-2060 Investigate why submitted CFS apps in V1 have no case reference and if they need to be included
 export_application_countries = """
 SELECT xcac.cad_id, xcac.country_id
 FROM impmgr.xview_cert_app_countries xcac
   INNER JOIN impmgr.xview_certificate_app_details xcad ON xcad.cad_id = xcac.cad_id
+  INNER JOIN impmgr.certificate_applications ca ON ca.id = xcad.ca_id
 WHERE xcac.status_control = 'C'
   AND xcac.status <> 'DELETED'
-  AND (xcad.submitted_datetime IS NOT NULL OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
+  AND (
+    xcad.submitted_datetime IS NOT NULL AND ca.case_reference IS NOT NULL
+    OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY
+  )
 """
 
 
