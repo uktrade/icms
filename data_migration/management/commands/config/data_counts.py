@@ -26,6 +26,12 @@ CHECK_DATA_COUNTS: list[CheckCount] = [
         web.ExportApplication,
         {"certificates__isnull": True, "submit_datetime__isnull": False},
     ),
+    CheckCount(
+        "Individual Importers Without User",
+        0,
+        web.Importer,
+        {"type": web.Importer.INDIVIDUAL, "user__isnull": True},
+    ),
 ]
 
 CHECK_DATA_QUERIES: list[CheckQuery] = [
