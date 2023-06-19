@@ -33,8 +33,6 @@ services:
             # DATABASE_URL not namespaced due to GOV PaaS setting DATABASE_URL env var
             - DATABASE_URL
             - ICMS_ALLOWED_HOSTS
-            - ICMS_RECAPTCHA_PUBLIC_KEY
-            - ICMS_RECAPTCHA_PRIVATE_KEY
             - ICMS_SILENCED_SYSTEM_CHECKS
             - ICMS_SECRET_KEY
             - ICMS_EMAIL_FROM

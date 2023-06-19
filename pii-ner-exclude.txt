@@ -1287,8 +1287,6 @@ COMPANIES_HOUSE_DOMAIN
 https://api.companieshouse.gov.uk/
 https://developer.company-information.service.gov.uk
 ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD
-https://github.com/torchbox/django-recaptcha
-ICMS_RECAPTCHA_PUBLIC_KEY
 SEND_LICENCE_TO_CHIEF"
 Convert GBP
 f"Quantity

@@ -8,11 +8,6 @@ DATABASES = {
 ALLOWED_HOSTS = ["localhost", "web"]
 DEBUG = True
 
-# Google recaptcha. Using fake test keys on localhost
-RECAPTCHA_PUBLIC_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"  # /PS-IGNORE
-RECAPTCHA_PRIVATE_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
-SILENCED_SYSTEM_CHECKS.extend(["captcha.recaptcha_test_key_error"])
-
 # for https://github.com/uktrade/django-chunk-s3-av-upload-handlers
 AWS_REGION = "eu-west-2"
 AWS_ACCESS_KEY_ID = "test"
