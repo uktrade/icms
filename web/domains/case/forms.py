@@ -118,8 +118,8 @@ class AuthoriseForm(forms.Form):
         password = self.cleaned_data["password"]
         user = self.request.user
 
-        if user.account_status == User.SUSPENDED:
-            self.add_error("password", "User account has been suspended.")
+        if not user.is_active:
+            self.add_error("password", "User account has been deactivated.")
             return password
 
         user_cache = authenticate(self.request, username=user.username, password=password)
