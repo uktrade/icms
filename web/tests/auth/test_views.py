@@ -3,13 +3,13 @@ from pytest_django.asserts import assertInHTML, assertRedirects
 
 
 def test_login_redirects_to_workbasket(client, ilb_admin_user):
-    url = reverse("login")
+    url = reverse("accounts:login")
 
     resp = client.post(url, data={"username": "Unknown", "password": "password"})
 
     assert resp.status_code == 200
     assertInHTML(
-        '<div id="login-error">Invalid username or password.<br/>N.B passwords are case sensitive</div>',
+        '<div id="login-error"><p>Your username and password didn\'t match. Please try again.</p></div>',
         resp.content.decode("utf-8"),
     )
 

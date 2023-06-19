@@ -1,5 +1,6 @@
 from django.conf import settings
-from django.urls import include, path, register_converter
+from django.urls import include, path, register_converter, reverse
+from django.views.generic import RedirectView
 
 from web.views.views_healthcheck import health_check
 
@@ -14,9 +15,21 @@ register_converter(converters.EntityTypeConverter, "entitytype")
 register_converter(converters.OrgTypeConverter, "orgtype")
 register_converter(converters.ChiefStatusConverter, "chiefstatus")
 
+
+class RedirectBaseDomainView(RedirectView):
+    """Redirects base url visits to either workbasket or login."""
+
+    def get_redirect_url(self, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            self.url = reverse("workbasket")
+        else:
+            self.url = reverse("accounts:login")
+
+        return super().get_redirect_url(*args, **kwargs)
+
+
 urlpatterns = [
-    # TODO: Remove old auth urls.
-    path("", include("web.auth.urls")),
+    path("", RedirectBaseDomainView.as_view()),
     path("accounts/", include("web.registration.urls")),
     path("health-check/", health_check, name="health-check"),
     path("home/", home, name="home"),
