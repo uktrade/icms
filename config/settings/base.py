@@ -33,7 +33,6 @@ APP_ENV = env.str("APP_ENV", default="notset")
 INSTALLED_APPS = [
     "web",
     "data_migration",
-    "captcha",
     "compressor",
     "phonenumber_field",
     "guardian",
@@ -288,19 +287,13 @@ ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD = env.bool(
 # getAddress.io api key
 ADDRESS_API_KEY = env.str("ICMS_ADDRESS_API_KEY", default="")
 
-#  Google recaptcha. Using test keys on localhost
-# https://github.com/torchbox/django-recaptcha (The tool we are using)
-RECAPTCHA_PUBLIC_KEY = env.str("ICMS_RECAPTCHA_PUBLIC_KEY", default="")
-RECAPTCHA_PRIVATE_KEY = env.str("ICMS_RECAPTCHA_PRIVATE_KEY", default="")
 SILENCED_SYSTEM_CHECKS = env.list("ICMS_SILENCED_SYSTEM_CHECKS", default=[])
-
 SILENCED_SYSTEM_CHECKS.extend(
     [
         # Guardian authentication backend is not hooked (Replaced with ModelAndObjectPermissionBackend).
         "guardian.W001",
     ]
 )
-
 
 # minifi html (django-htmlmin)
 HTML_MINIFY = True
