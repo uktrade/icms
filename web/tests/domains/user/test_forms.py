@@ -8,7 +8,7 @@ from web.domains.user.forms import (
     UserDetailsUpdateForm,
     UserListFilter,
 )
-from web.models import PhoneNumber, User
+from web.models import PhoneNumber
 
 
 class TestUserListFilter(TestCase):
@@ -38,10 +38,6 @@ class TestUserListFilter(TestCase):
     def test_job_title_filter(self):
         results = self.run_filter({"job_title": "I1_main_contact_job_title"})
         assert results.count() == 1
-
-    def test_account_status_filter(self):
-        results = self.run_filter({"status": [User.CANCELLED, User.SUSPENDED, User.BLOCKED]})
-        assert results.count() == 4
 
     def test_filter_order(self):
         results = self.run_filter({"surname": "inactive"})
@@ -101,9 +97,6 @@ class TestUserDetailsUpdateForm(TestCase):
                 "job_title": "Developer",
                 "work_address": "Windsor House",
                 "date_of_birth": "13-Jan-1956",
-                "security_question": "How are you?",
-                "security_answer": "Fine",
-                "security_answer_repeat": "Fine",
             }
         )
         assert form.is_valid() is True
@@ -116,27 +109,17 @@ class TestUserDetailsUpdateForm(TestCase):
         form = UserDetailsUpdateForm(
             data={
                 "title": "Mx",
-                "first_name": "Deniz",
+                "first_name": "",
                 "last_name": "Last",
                 "organisation": "DIT",
                 "department": "DDaT",
                 "work_address": "Windsor House",
                 "date_of_birth": "13-Jan-1956",
-                "security_question": "How are you?",
-                "security_answer": "Fine",
-                "security_answer_repeat": "Fine",
             }
         )
         assert len(form.errors) == 1
-        message = form.errors["job_title"][0]
+        message = form.errors["first_name"][0]
         assert message == "You must enter this item"
-
-    def test_security_answer_validation(self):
-        form = UserDetailsUpdateForm(
-            data={"security_answer": "Hello", "security_answer_repeat": "Hi"}
-        )
-        message = form.errors["security_answer_repeat"][0]
-        assert message == "Security answers do not match."
 
 
 class TestPhoneNumberForm(TestCase):

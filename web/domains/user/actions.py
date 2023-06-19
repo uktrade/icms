@@ -1,48 +1,8 @@
-#!/usr/bin/env python
 from django.contrib import messages
 
-from web.notify import notify
 from web.views.actions import PostAction
 
 from .models import User
-
-
-class ReIssuePassword(PostAction):
-    action = "re_issue_password"
-    label = "Re-Issue Password"
-    confirm = False
-    confirm_message = ""
-    icon = "icon-key"
-
-    def display(self, user):
-        return user.account_status in [User.ACTIVE, User.SUSPENDED]
-
-    def handle(self, request, view):
-        user = self._get_item(request, view.model)
-        temp_pass = user.set_temp_password()
-        user.account_status = User.ACTIVE
-        user.account_status_by = request.user
-        user.save()
-        notify.register(user, temp_pass)
-        messages.success(request, "Temporary password successfully issued for account")
-
-
-class CancelUser(PostAction):
-    action = "cancel"
-    label = "Cancel"
-    confirm = True
-    confirm_message = "Are you sure you want to cancel this account?"
-    icon = "icon-bin"
-
-    def display(self, user):
-        return user.account_status != User.CANCELLED
-
-    def handle(self, request, view):
-        user = self._get_item(request, view.model)
-        user.account_status = User.CANCELLED
-        user.account_status_by = request.user
-        user.save()
-        messages.success(request, "Account cancelled successfully")
 
 
 class ActivateUser(PostAction):
@@ -53,29 +13,28 @@ class ActivateUser(PostAction):
     icon = "icon-eye"
 
     def display(self, user):
-        return user.account_status == User.BLOCKED
+        return not user.is_active
 
-    def handle(self, request, view):
-        user = self._get_item(request, view.model)
-        user.account_status = User.ACTIVE
-        user.account_status_by = request.user
+    def handle(self, request, view, *args, **kwargs):
+        user: User = self._get_item(request, view.model)
+        user.is_active = True
         user.save()
-        messages.success(request, "Account cancelled successfully")
+        messages.success(request, "Account activated successfully")
 
 
-class BlockUser(PostAction):
+class DeactivateUser(PostAction):
     action = "block"
-    label = "Block"
+    label = "Deactivate"
     confirm = True
-    confirm_message = "Are you sure you want to block this account?"
+    confirm_message = "Are you sure you want to deactivate this account?"
     icon = "icon-eye-blocked"
 
     def display(self, user):
-        return user.account_status == User.ACTIVE
+        return user.is_active
 
-    def handle(self, request, view):
-        user = self._get_item(request, view.model)
-        user.account_status = User.BLOCKED
-        user.account_status_by = request.user
+    def handle(self, request, view, *args, **kwargs):
+        user: User = self._get_item(request, view.model)
+        user.is_active = False
         user.save()
-        messages.success(request, "Account blocked successfully")
+
+        messages.success(request, "Account deactivated successfully")

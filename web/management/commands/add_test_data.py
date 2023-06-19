@@ -189,16 +189,12 @@ class Command(BaseCommand):
         return User.objects.create_user(
             username=username,
             password="test",
-            password_disposition=User.FULL,
             is_superuser=False,
-            account_status=User.ACTIVE if is_active else User.CANCELLED,
             is_active=is_active,
             email=f"{username}@example.com",  # /PS-IGNORE
             first_name=f"{username}_first_name",
             last_name=f"{username}_last_name",
             date_of_birth=datetime.date(2000, 1, 1),
-            security_question="security_question",
-            security_answer="security_answer",
             job_title=f"{username}_job_title",
             organisation=f"{username}_org",
             department=f"{username}_dep",

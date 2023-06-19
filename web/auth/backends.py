@@ -13,28 +13,6 @@ class ModelAndObjectPermissionBackend(ModelBackend):
     Combination of django.contrib.auth.backends and guardian.backends.ObjectPermissionBackend.
     """
 
-    def authenticate(self, request, username=None, password=None, **kwargs):
-        authenticated_user = super().authenticate(request, username, password)
-
-        if authenticated_user is None:
-            try:
-                unauthenticated_user = User.objects.get_by_natural_key(username)
-            except Exception:
-                return None
-
-            if (
-                unauthenticated_user is not None
-                and unauthenticated_user.account_status != User.SUSPENDED
-            ):
-                unauthenticated_user.unsuccessful_login_attempts += 1
-                if unauthenticated_user.unsuccessful_login_attempts > 4:
-                    unauthenticated_user.account_status = User.SUSPENDED
-                unauthenticated_user.save()
-        else:
-            authenticated_user.unsuccessful_login_attempts = 0
-            authenticated_user.save()
-            return authenticated_user
-
     def has_perm(self, user_obj, perm, obj=None):
         """Return True if given user_obj has permission for obj.
 

@@ -242,16 +242,12 @@ class Command(BaseCommand):
         user = User.objects.create_user(
             username=username,
             password=password,
-            password_disposition=User.FULL,
             is_superuser=False,
-            account_status=User.ACTIVE,
             is_active=True,
             email=f"{username}@example.com",  # /PS-IGNORE
             first_name=first_name,
             last_name=last_name,
             date_of_birth=datetime.date(2000, 1, 1),
-            security_question="security_question",
-            security_answer="security_answer",
         )
 
         PersonalEmail.objects.create(
@@ -301,8 +297,6 @@ class Command(BaseCommand):
             first_name=username,
             last_name=username,
             date_of_birth=datetime.date(2000, 1, 1),
-            security_question="admin",
-            security_answer="admin",
         )
 
 

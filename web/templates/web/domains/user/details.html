@@ -33,36 +33,13 @@
 
     {{fields.field(details_form.title, label_cols='four', input_cols='four')}}
     {{fields.field(details_form.first_name, label_cols='four', input_cols='four')}}
-    {{fields.field(details_form.preferred_first_name, label_cols='four', input_cols='four')}}
-    {{fields.field(details_form.middle_initials, label_cols='four', input_cols='four')}}
     {{fields.field(details_form.last_name, label_cols='four', input_cols='four')}}
+    {{fields.field(details_form.date_of_birth, label_cols='four', input_cols='four')}}
     {{fields.field(details_form.organisation, label_cols='four', input_cols='four')}}
     {{fields.field(details_form.department, label_cols='four', input_cols='four')}}
     {{fields.field(details_form.job_title, label_cols='four', input_cols='four')}}
     {{fields.field(details_form.location_at_address, label_cols='four', input_cols='four')}}
     {{fields.field(details_form.work_address, tooltip=edit_address, label_cols='four', input_cols='four')}}
-
-    <h3>Share Contact Details</h3>
-
-    <div class="info-box info-box-info">
-        Non-DIT ILB users may want to add you to one of their work groups so you can have access to their organisation's work processes and data.
-    </div>
-
-    {{fields.field(details_form.share_contact_details, label_cols='four', input_cols='four')}}
-
-    <p>Sharing your contact details will enable non-DIT ILB users to search for you and to easily and confirm your address and contact details. If you do not share your contact details, they will have to know your email address in advance and will not have access to the address or contact telephone numbers recorded here.</p>
-
-    <h3>Security Information</h3>
-
-    <div class="info-box info-box-info">
-        These details help us to verify your identity. We'll use them if you have problems logging in to your account. You'll need to enter these details to reset your password if you forget it.
-    </div>
-
-    {{fields.field(details_form.date_of_birth, label_cols='four', input_cols='four')}}
-    {{fields.field(details_form.security_question, label_cols='four', input_cols='four')}}
-    {{fields.field(details_form.security_answer, label_cols='four', input_cols='four')}}
-    {{fields.field(details_form.security_answer_repeat, label_cols='four', input_cols='four')}}
-
 
    <!-- Phone numbers -->
     {% with formset = phones_formset %}

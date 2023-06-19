@@ -1715,7 +1715,6 @@ Awaiting Response - Licence
 is_staff
 wua.title
 Testtwo
-MIDDLE_INITIALS
 requirements-playwright.txt
 Cookies
 ipc
@@ -1751,7 +1750,6 @@ iar.requested_by_wua_id submitted_by_id
 iar.closed_by_wua_id closed_by_id
 resource_person_id HAVING COUNT(id
 wuah.encrypted_password
-account_status_by_id
 ORDER BY iar.id
 lu.id
 ON lu.id =
@@ -2980,13 +2978,10 @@ Request Importer
 Log in</a
 ILB_CONTACT_EMAIL
 Details</h2
-unauthenticated_user.account_status
 SUSPENDED
 aria-describedby="edit-address-hint
-{{fields.field(details_form.preferred_first_name
 {{fields.field(details_form.department
 Share Contact Details</h3
-{{fields.field(details_form.security_answer_repeat
 Request Importer/ Exporter
 Importer/Exporter Access
 Django 4.1.9

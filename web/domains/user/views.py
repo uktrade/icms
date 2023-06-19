@@ -3,7 +3,7 @@ from typing import Any
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from web.errors import APIError
 from web.forms import utils
@@ -52,27 +52,16 @@ class UsersListView(ModelFilterView):
             "full_name",
             ("organisation", "job_title"),
             "username",
-            ("account_status", "password_disposition"),
             "account_last_login_date",
-            ("account_status_by_full_name", "account_status_date"),
         ]
         fields_config = {
             "full_name": {"header": "Person Details", "link": True},
             "organisation": {"header": "Organisation"},
             "job_title": {"header": "Job Title"},
             "username": {"header": "Login Name"},
-            "account_status": {"header": "Account Status"},
-            "password_disposition": {"header": "Password Disposition"},
             "account_last_login_date": {"header": "Last Login Date"},
-            "account_status_by_full_name": {"header": "Account Status Changed By"},
-            "account_status_date": {"header": "Date"},
         }
-        actions = [
-            actions.BlockUser(),
-            actions.CancelUser(),
-            actions.ActivateUser(),
-            actions.ReIssuePassword(),
-        ]
+        actions = [actions.DeactivateUser(), actions.ActivateUser()]
         select = True
 
 
@@ -170,6 +159,9 @@ def _details_update(request: AuthenticatedHttpRequest, action: str, pk: int) -> 
             forms["alternative_emails_formset"] = new_alternative_emails_formset(request)
             forms["personal_emails_formset"] = new_personal_emails_formset(request)
             messages.success(request, "Central contact details have been saved.")
+
+            return redirect(request.build_absolute_uri())
+
         else:
             if request.method == "POST":
                 messages.error(request, "Please correct the highlighted errors.")

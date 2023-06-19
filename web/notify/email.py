@@ -64,7 +64,7 @@ def send_to_importer_contacts(
         # TODO: ICMSLST-1948 Revisit this
         # The importer.user is set when creating an individual importer.
         # However they also get set as a contact so this special case might not be needed.
-        if importer.user and importer.user.account_status == User.ACTIVE:
+        if importer.user and importer.user.is_active:
             send_email.delay(
                 subject,
                 message,
