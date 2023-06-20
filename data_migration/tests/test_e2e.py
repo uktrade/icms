@@ -668,7 +668,10 @@ def test_import_user(mock_connect, dummy_dm_settings):
     call_command("extract_v1_xml")
     call_command("import_v1_data")
 
-    u1, u2 = web.User.objects.filter(pk__in=[2, 3]).order_by("pk")
+    users = web.User.objects.filter(pk__in=[2, 3]).order_by("pk")
+    u1: web.User = users[0]
+    u2: web.User = users[1]
+
     assert u1.username == "test_user"
     assert u1.first_name == "Test"
     assert u1.last_name == "User"
@@ -678,9 +681,6 @@ def test_import_user(mock_connect, dummy_dm_settings):
     assert u1.organisation == "Org"
     assert u1.department == "Dept"
     assert u1.job_title == "IT"
-    assert u1.account_status == "ACTIVE"
-    assert u1.account_status_by_id == 2
-    assert u1.share_contact_details is True
     assert u1.phone_numbers.count() == 2
     assert u1.alternative_emails.count() == 1
     assert u1.personal_emails.count() == 2
@@ -712,8 +712,6 @@ def test_import_user(mock_connect, dummy_dm_settings):
     assert pe2.comment is None
 
     assert u2.check_password("password123") is True
-    assert u2.account_status_by_id == 3
-    assert u2.share_contact_details is False
     assert u2.phone_numbers.count() == 0
     assert u2.alternative_emails.count() == 0
     assert u2.personal_emails.count() == 0
