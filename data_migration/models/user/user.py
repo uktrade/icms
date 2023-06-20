@@ -8,7 +8,7 @@ from django.db.models.functions import Concat, RowNumber
 from django.utils import timezone
 
 from data_migration.models.base import MigrationBase
-from data_migration.utils.format import extract_int_substr, split_address
+from data_migration.utils.format import split_address
 
 
 class User(MigrationBase):
@@ -43,27 +43,25 @@ class User(MigrationBase):
     telephone_xml = models.TextField(null=True)
 
     @classmethod
-    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        status_by = data.pop("account_status_by")
-
-        if not status_by:
-            return data
-
-        # account_status_by is in two different formats
-        # e.g. 1
-        # e.g. username(WUA_ID=1, WUAH_ID=2)
-
-        data["account_status_by_id"] = extract_int_substr(status_by, "WUA_ID=") or int(status_by)
-
-        return data
-
-    @classmethod
     def get_excludes(cls) -> list[str]:
         return super().get_excludes() + [
             "salt",
             "encrypted_password",
             "last_login_datetime",
             "date_joined_datetime",
+            #
+            # User fields removed in V2 model
+            #
+            "preferred_first_name",
+            "middle_initials",
+            "security_question",
+            "security_answer",
+            "share_contact_details",
+            "account_status",
+            "account_status_by",
+            "account_status_date",
+            "password_disposition",
+            "unsuccessful_login_attempts",
         ]
 
     @classmethod
