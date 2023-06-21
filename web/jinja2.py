@@ -174,7 +174,10 @@ def get_user_obj_perms(user: "User") -> ObjectPermissionChecker:
 
 
 def environment(**options):
+    # string_if_invalid is removed as it is not available as an option within the jinja environment
+    # https://github.com/pytest-dev/pytest-django/issues/327
     options.pop("string_if_invalid", None)
+
     env = Environment(extensions=[CompressorExtension], **options)
     env.globals.update(
         {

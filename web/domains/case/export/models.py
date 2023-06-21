@@ -180,6 +180,10 @@ class ExportApplication(ApplicationBase):
             return f"{status} (Refused)"
         return status
 
+    @property
+    def application_approved(self):
+        return self.decision == self.APPROVE
+
 
 @final
 class CertificateOfManufactureApplication(ExportApplication):
