@@ -9,7 +9,7 @@ from django.urls import reverse
 from web.domains.case import forms
 from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
-from web.domains.case.types import ImpOrExp
+from web.domains.case.types import DocumentPack, ImpOrExp
 from web.domains.case.utils import get_case_page_title
 from web.domains.template.utils import get_cover_letter_content
 from web.models import (
@@ -18,6 +18,7 @@ from web.models import (
     CertificateOfManufactureApplication,
     DerogationsApplication,
     DFLApplication,
+    ImportApplication,
     IronSteelApplication,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
@@ -32,6 +33,19 @@ from web.types import AuthenticatedHttpRequest, DocumentTypes
 from web.utils.commodity import annotate_commodity_unit
 
 from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
+
+
+def get_licence_for_application(application: ImportApplication) -> DocumentPack | None:
+    if (
+        application.decision == application.APPROVE
+        and application.status == application.Statuses.COMPLETED
+    ):
+        return document_pack.pack_active_get(application)
+    if application.status == application.Statuses.REVOKED:
+        return document_pack.pack_revoked_get(application)
+    if application.decision != application.REFUSE:
+        return document_pack.pack_draft_get(application)
+    return None
 
 
 @login_required
@@ -93,31 +107,21 @@ def prepare_response(
             "electronic_licence_flag": electronic_licence_flag,
             "readonly_view": readonly_view,
             "readonly_decision": readonly_decision,
+            "variation_refused": False,
         }
 
     if application.is_import_application():
-        if (
-            application.status == ImpExpStatus.COMPLETED
-            and application.decision == application.APPROVE
-        ):
-            context["licence"] = document_pack.pack_active_get(application)
-        elif application.status == ImpExpStatus.REVOKED:
-            context["licence"] = document_pack.pack_revoked_get(application)
-        elif (
-            application.status == ImpExpStatus.VARIATION_REQUESTED
-            and application.variation_decision == application.REFUSE
-        ):
-            context["licence"] = document_pack.pack_active_get(application)
-            context["variation_refused"] = True
-
-        elif not readonly_view:
-            if application.decision != application.REFUSE:
-                # When an application is refused we don't show licence details
-                context["licence"] = document_pack.pack_draft_get(application)
+        context["licence"] = get_licence_for_application(application)
         if cover_letter_flag:
             context["cover_letter_text"] = get_cover_letter_content(
                 application, DocumentTypes.COVER_LETTER_PREVIEW
             )
+
+        if (
+            application.status == ImpExpStatus.VARIATION_REQUESTED
+            and application.variation_decision == application.REFUSE
+        ):
+            context["variation_refused"] = True
 
     # Import applications
     if application.process_type == OpenIndividualLicenceApplication.PROCESS_TYPE:
