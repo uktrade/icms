@@ -84,7 +84,7 @@ class TestImporterListUserView(AuthTestCase):
         assert response.status_code == HTTPStatus.FORBIDDEN
 
         response = self.ilb_admin_client.get(self.url)
-        assert response.status_code == HTTPStatus.OK
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
     def test_get(self):
         response = self.importer_client.get(self.url)

@@ -216,8 +216,6 @@ class Menu:
                     links=[
                         SubMenuLink(label="Importers", view="importer-list"),
                         SubMenuLink(label="Exporters", view="exporter-list"),
-                        SubMenuLink(label="Importer Access Requests", view="access:importer-list"),
-                        SubMenuLink(label="Exporter Access Requests", view="access:exporter-list"),
                     ],
                 ),
                 SubMenu(
@@ -233,8 +231,8 @@ class Menu:
                         SubMenuLink(label="Obsolete Calibres", view="obsolete-calibre-group-list"),
                         SubMenuLink(label="Section 5 Clauses", view="section5:list"),
                         SubMenuLink(label="Product legislation", view="product-legislation-list"),
-                        SubMenuLink(label="Templates", view="template-list"),
                         SubMenuLink(label="Countries", view="country:list"),
+                        SubMenuLink(label="Templates", view="template-list"),
                     ],
                 ),
                 SubMenu(

@@ -5,7 +5,6 @@ from typing import Any
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand, CommandError
-from guardian.shortcuts import assign_perm
 
 from web.management.commands.utils.load_data import load_app_test_data
 from web.models import (
@@ -21,7 +20,7 @@ from web.models import (
     PersonalEmail,
     User,
 )
-from web.permissions import Perms
+from web.permissions import organisation_add_contact
 
 
 class Command(BaseCommand):
@@ -167,9 +166,7 @@ class Command(BaseCommand):
             password=options["password"],
             first_name="Ashley",
             last_name="Smith (ilb_admin)",
-            groups=[ilb_admin_group, importer_user_group, exporter_user_group],
-            linked_importers=[importer],
-            linked_exporters=[exporter],
+            groups=[ilb_admin_group],
         )
 
         self.create_user(
@@ -178,8 +175,6 @@ class Command(BaseCommand):
             first_name="Samantha",
             last_name="Stevens (ilb_admin)",
             groups=[ilb_admin_group],
-            linked_importers=[importer],
-            linked_exporters=[exporter],
         )
 
         self.create_user(
@@ -262,26 +257,16 @@ class Command(BaseCommand):
             user.groups.set(groups)
 
         for importer in linked_importers:
-            assign_perm(Perms.obj.importer.view, user, importer)
-            assign_perm(Perms.obj.importer.edit, user, importer)
-            assign_perm(Perms.obj.importer.manage_contacts_and_agents, user, importer)
+            organisation_add_contact(importer, user, assign_manage=True)
 
         for exporter in linked_exporters:
-            assign_perm(Perms.obj.exporter.view, user, exporter)
-            assign_perm(Perms.obj.exporter.edit, user, exporter)
-            assign_perm(Perms.obj.exporter.manage_contacts_and_agents, user, exporter)
+            organisation_add_contact(exporter, user, assign_manage=True)
 
         for agent in linked_importer_agents:
-            assign_perm(Perms.obj.importer.view, user, agent)
-            assign_perm(Perms.obj.importer.edit, user, agent)
-            assign_perm(Perms.obj.importer.manage_contacts_and_agents, user, agent)
-            assign_perm(Perms.obj.importer.is_agent, user, agent.get_main_org())
+            organisation_add_contact(agent, user)
 
         for agent in linked_exporter_agents:
-            assign_perm(Perms.obj.exporter.view, user, agent)
-            assign_perm(Perms.obj.exporter.edit, user, agent)
-            assign_perm(Perms.obj.exporter.manage_contacts_and_agents, user, agent)
-            assign_perm(Perms.obj.exporter.is_agent, user, agent.get_main_org())
+            organisation_add_contact(agent, user)
 
         user.save()
 

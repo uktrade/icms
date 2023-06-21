@@ -179,10 +179,22 @@ def organisation_get_contacts(
     return org_contacts.filter(is_active=True)
 
 
-def organisation_add_contact(org: ORGANISATION, user: User) -> None:
-    """Add a user to an organisation."""
+def organisation_add_contact(org: ORGANISATION, user: User, assign_manage: bool = False) -> None:
+    """Add a user to an organisation.
+
+    :param org: Organisation instance
+    :param user: User instance
+    :param assign_manage: Assigns the manage_contacts_and_agents object permission if True.
+    """
 
     obj_perms = get_org_obj_permissions(org)
+
+    if assign_manage:
+        if org.is_agent():
+            # Agent organisation contacts never have the manage permission set.
+            raise ValueError(f"Unable to assign manage perm to agent org: {org.name}")
+
+        assign_perm(obj_perms.manage_contacts_and_agents, user, org)
 
     for perm in [obj_perms.view, obj_perms.edit]:
         assign_perm(perm, user, org)
