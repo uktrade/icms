@@ -174,6 +174,7 @@ def get_user_obj_perms(user: "User") -> ObjectPermissionChecker:
 
 
 def environment(**options):
+    options.pop("string_if_invalid", None)
     env = Environment(extensions=[CompressorExtension], **options)
     env.globals.update(
         {
@@ -190,11 +191,11 @@ def environment(**options):
             "get_latest_issued_document": get_latest_issued_document,
             "get_active_task_list": get_active_task_list,
             "get_user_obj_perms": get_user_obj_perms,
+            "page_title": "Import Case Management System",
         }
     )
     env.filters["show_all_attrs"] = show_all_attrs
     env.filters["input_datetime"] = input_datetime
     env.filters["nl2br"] = nl2br
     env.filters["verbose_name"] = verbose_name
-
     return env
