@@ -1,4 +1,8 @@
 # flake8: noqa: F405
+import copy
+
+import jinja2
+
 from .base import *
 
 # Email settings for all non prod environments.
@@ -26,3 +30,6 @@ ICMS_GMP_BEIS_EMAIL = env.str("ICMS_GMP_BEIS_EMAIL", "BEIS@example.com")  # /PS-
 # Override secure cookies to use playwright in non-prod environments
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
+
+STRICT_TEMPLATES = copy.deepcopy(TEMPLATES)
+STRICT_TEMPLATES[0]["OPTIONS"].update({"undefined": jinja2.StrictUndefined})  # type: ignore[attr-defined]
