@@ -345,6 +345,31 @@ class TestPermissionsService:
         organisation_add_contact(self.agent_exporter, self.importer_contact)
         assert self.importer_contact.has_perm(Perms.obj.exporter.is_agent, self.exporter)
 
+    def test_organisation_add_contact_assign_manage_permission(self):
+        #
+        # Check exporter contact has manage_contacts_and_agents for importer
+        #
+        organisation_add_contact(self.importer, self.exporter_contact, assign_manage=True)
+        assert self.exporter_contact.has_perm(
+            Perms.obj.importer.manage_contacts_and_agents, self.importer
+        )
+
+        #
+        # Check importer contact has manage_contacts_and_agents for exporter
+        #
+        organisation_add_contact(self.exporter, self.importer_contact, assign_manage=True)
+        assert self.importer_contact.has_perm(
+            Perms.obj.exporter.manage_contacts_and_agents, self.exporter
+        )
+
+        #
+        # Check assigning manage_contacts_and_agents permission for agent raises ValueError
+        #
+        with pytest.raises(
+            ValueError, match="Unable to assign manage perm to agent org: Test Exporter 1 Agent 1"
+        ):
+            organisation_add_contact(self.agent_exporter, self.importer_contact, assign_manage=True)
+
     def test_organisation_get_contacts(self):
         importer_contacts = organisation_get_contacts(self.importer)
         for i in importer_contacts:

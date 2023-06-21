@@ -42,7 +42,7 @@ class TestExporterListView(AuthTestCase):
         assert response.status_code == HTTPStatus.FORBIDDEN
 
 
-class TestImporterListUserView(AuthTestCase):
+class TestExporterListUserView(AuthTestCase):
     url = reverse("user-exporter-list")
 
     def test_permission(self):
@@ -53,7 +53,7 @@ class TestImporterListUserView(AuthTestCase):
         assert response.status_code == HTTPStatus.FORBIDDEN
 
         response = self.ilb_admin_client.get(self.url)
-        assert response.status_code == HTTPStatus.OK
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
     def test_get(self):
         response = self.exporter_client.get(self.url)
