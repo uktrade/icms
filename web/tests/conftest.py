@@ -89,6 +89,12 @@ def ilb_admin_user(django_user_model):
 
 
 @pytest.fixture
+def nca_admin_user(django_user_model):
+    """Fixture to get an NCA Case Officer user."""
+    return django_user_model.objects.get(username="nca_admin_user")
+
+
+@pytest.fixture
 def ilb_admin_two(django_user_model):
     return django_user_model.objects.get(username="ilb_admin_two")
 

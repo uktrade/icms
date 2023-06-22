@@ -35,19 +35,23 @@ class TestUserObjectPerms:
         assert importer_uop.can_manage_org_contacts(self.importer)
         assert importer_uop.can_user_view_org(self.importer)
         assert importer_uop.can_view_application(self.fa_sil_app)
+        assert importer_uop.can_edit_application(self.fa_sil_app)
         assert not exporter_uop.can_edit_org(self.importer)
         assert not exporter_uop.can_manage_org_contacts(self.importer)
         assert not exporter_uop.can_user_view_org(self.importer)
         assert not exporter_uop.can_view_application(self.fa_sil_app)
+        assert not exporter_uop.can_edit_application(self.fa_sil_app)
 
         assert exporter_uop.can_edit_org(self.exporter)
         assert exporter_uop.can_manage_org_contacts(self.exporter)
         assert exporter_uop.can_user_view_org(self.exporter)
         assert exporter_uop.can_view_application(self.com_app)
+        assert exporter_uop.can_edit_application(self.com_app)
         assert not importer_uop.can_edit_org(self.exporter)
         assert not importer_uop.can_manage_org_contacts(self.exporter)
         assert not importer_uop.can_user_view_org(self.exporter)
         assert not importer_uop.can_view_application(self.com_app)
+        assert not importer_uop.can_edit_application(self.com_app)
 
 
 def test_request_user_object_permissions(importer_one_contact):

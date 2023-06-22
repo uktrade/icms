@@ -7,6 +7,7 @@ from guardian.shortcuts import assign_perm
 
 from web.management.commands.utils.load_data import load_app_test_data
 from web.models import (
+    ExportApplicationType,
     Exporter,
     ExporterAccessRequest,
     ImportApplicationType,
@@ -63,19 +64,14 @@ class Command(BaseCommand):
         self.create_test_importers()
         self.create_test_exporters()
 
-        # ILB Admin/Caseworker
+        # ICMS Caseworkers (ILB & NCA)
         self.create_icms_admin_user("ilb_admin_user")
         self.create_icms_admin_user("ilb_admin_two")
+        self.create_nca_admin_user("nca_admin_user")
 
         # enable disabled application types
-        ImportApplicationType.objects.filter(
-            type__in=[
-                ImportApplicationType.Types.DEROGATION,
-                ImportApplicationType.Types.OPT,
-                ImportApplicationType.Types.SPS,
-                ImportApplicationType.Types.TEXTILES,
-            ]
-        ).update(is_active=True)
+        ImportApplicationType.objects.update(is_active=True)
+        ExportApplicationType.objects.update(is_active=True)
 
         group = ObsoleteCalibreGroup.objects.create(name="Group 1", order=1)
         ObsoleteCalibre.objects.create(calibre_group=group, name="9mm", order=1)
@@ -232,6 +228,14 @@ class Command(BaseCommand):
         user = self.create_user(username)
         PersonalEmail.objects.create(user=user, email=user.email, portal_notifications=True)
         group = Group.objects.get(name="ILB Case Officer")
+        user.groups.add(group)
+
+        return user
+
+    def create_nca_admin_user(self, username):
+        user = self.create_user(username)
+        PersonalEmail.objects.create(user=user, email=user.email, portal_notifications=True)
+        group = Group.objects.get(name="NCA Case Officer")
         user.groups.add(group)
 
         return user

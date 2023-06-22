@@ -75,9 +75,14 @@ class AppChecker:
         agent organisation applications if defined.
 
         ILB_ADMIN's can always view an application.
+        Users who can view all cases can always view an application (e.g. NCA Case Officers)
         """
 
         if self.is_ilb_admin:
+            return True
+
+        # NCA Case Officers can search all import applications
+        if self.app.is_import_application() and self.user.has_perm(Perms.sys.search_all_cases):
             return True
 
         if not self.has_org_access:

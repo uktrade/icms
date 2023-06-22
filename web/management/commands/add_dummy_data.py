@@ -49,6 +49,7 @@ class Command(BaseCommand):
         ilb_admin_group = Group.objects.get(name="ILB Case Officer")
         importer_user_group = Group.objects.get(name="Importer User")
         exporter_user_group = Group.objects.get(name="Exporter User")
+        nca_case_officer = Group.objects.get(name="NCA Case Officer")
 
         # Enable disabled application types to test / develop them
         if settings.SET_INACTIVE_APP_TYPES_ACTIVE:
@@ -205,6 +206,14 @@ class Command(BaseCommand):
             last_name="Jacobs (agent)",
             groups=[exporter_user_group],
             linked_exporter_agents=[agent_exporter],
+        )
+
+        self.create_user(
+            username="nca_admin",
+            password=options["password"],
+            first_name="Clara",
+            last_name="Boone (NCA Case Officer)",
+            groups=[nca_case_officer],
         )
 
         self.create_superuser("admin", options["password"])
