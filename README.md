@@ -67,7 +67,15 @@ developing, only within Docker.
 
 Start everything using docker-compose: `make debug`
 
-Go to http://localhost:8080, login with the superuser account you created earlier.
+Go to http://localhost:8080, login with the one of the test accounts:
+  - ilb_admin
+  - ilb_admin_2
+  - importer_user
+  - exporter_user
+  - importer_agent
+  - exporter_agent
+
+The password is the same for each user: `admin`
 
 Above script will start a PostgreSQL database and ICMS app in debug mode.
 

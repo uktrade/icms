@@ -1,7 +1,5 @@
 <ul class="menu-out">
-  {{ icms_link(request, icms_url('export:create-application', kwargs={'type_code': "cfs" }), 'Certificate of Free Sale') }}
-
-  {{ icms_link(request, icms_url('export:create-application', kwargs={'type_code': "com" }), 'Certificate of Manufacture') }}
-
-  {{ icms_link(request, icms_url('export:create-application', kwargs={'type_code': "gmp" }), 'Certificate of Good Manufacturing Practice') }}
+  {% for application_type in application_types %}
+    {{ icms_link(request, application_type.create_application_url, application_type.get_type_code_display() ) }}
+  {% endfor %}
 </ul>

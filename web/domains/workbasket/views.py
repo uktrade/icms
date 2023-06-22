@@ -59,7 +59,7 @@ def show_workbasket(request: AuthenticatedHttpRequest) -> HttpResponse:
 
         rows.append(row)
 
-    context = {"rows": rows, "page_obj": page_obj}
+    context = {"page_title": "Workbasket", "rows": rows, "page_obj": page_obj}
 
     return render(request, "web/domains/workbasket/workbasket.html", context)
 

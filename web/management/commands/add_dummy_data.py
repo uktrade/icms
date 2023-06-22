@@ -50,16 +50,10 @@ class Command(BaseCommand):
         importer_user_group = Group.objects.get(name="Importer User")
         exporter_user_group = Group.objects.get(name="Exporter User")
 
-        # enable disabled application types so we can test/develop them
-        ImportApplicationType.objects.filter(
-            type__in=[
-                ImportApplicationType.Types.DEROGATION,
-                ImportApplicationType.Types.IRON_STEEL,
-                ImportApplicationType.Types.OPT,
-                ImportApplicationType.Types.SPS,
-                ImportApplicationType.Types.TEXTILES,
-            ]
-        ).update(is_active=True)
+        # Enable disabled application types to test / develop them
+        if settings.SET_INACTIVE_APP_TYPES_ACTIVE:
+            ImportApplicationType.objects.update(is_active=True)
+            ExportApplicationType.objects.update(is_active=True)
 
         # exporter
         exporter = Exporter.objects.create(
@@ -196,12 +190,20 @@ class Command(BaseCommand):
         )
 
         self.create_user(
-            username="agent",
+            username="importer_agent",
             password=options["password"],
             first_name="Cameron",
             last_name="Hasra (agent)",
-            groups=[importer_user_group, exporter_user_group],
+            groups=[importer_user_group],
             linked_importer_agents=[importer_one_agent_one, importer_one_agent_two],
+        )
+
+        self.create_user(
+            username="exporter_agent",
+            password=options["password"],
+            first_name="Marie",
+            last_name="Jacobs (agent)",
+            groups=[exporter_user_group],
             linked_exporter_agents=[agent_exporter],
         )
 
