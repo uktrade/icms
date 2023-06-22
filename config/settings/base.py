@@ -330,6 +330,9 @@ ICMS_PROD_PASSWORD = env.str("ICMS_PROD_PASSWORD", default="")
 # Workbasket pagination setting
 WORKBASKET_PER_PAGE = env.int("WORKBASKET_PER_PAGE", 100)
 
+# Set to true to mark inactive application types active when running add_dummy_data.py
+SET_INACTIVE_APP_TYPES_ACTIVE = env.bool("SET_INACTIVE_APP_TYPES_ACTIVE", default=False)
+
 # Structured logging shared configuration
 structlog.configure(
     processors=[

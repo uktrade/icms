@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.db.models import QuerySet
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -87,9 +88,22 @@ def check_can_edit_application(
         raise PermissionDenied
 
 
+def _get_active_application_types() -> dict[str, QuerySet]:
+    return {
+        "application_types": ExportApplicationType.objects.filter(is_active=True).order_by(
+            "type_code"
+        )
+    }
+
+
 class ExportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
     template_name = "web/domains/case/export/choose.html"
     permission_required = Perms.sys.exporter_access
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        return context | _get_active_application_types()
 
 
 class CreateExportApplicationConfig(NamedTuple):
@@ -114,6 +128,9 @@ def create_export_application(
     """
     app_template: CertificateApplicationTemplate | None
     application_type: ExportApplicationType = ExportApplicationType.objects.get(type_code=type_code)
+
+    if not application_type.is_active:
+        raise ValueError(f"Export application of type {application_type.type_code} is not active")
 
     config = _get_export_app_config(type_code)
 
@@ -191,7 +208,7 @@ def create_export_application(
         "exporters_with_agents": list(exporters_with_agents),
         "case_type": "export",
         "application_template": app_template,
-    }
+    } | _get_active_application_types()
 
     return render(request, "web/domains/case/export/create.html", context)
 

@@ -3,6 +3,7 @@ from typing import final
 from django.conf import settings
 from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
+from django.urls import reverse
 
 from web.domains.case.models import ApplicationBase, DocumentPackBase
 from web.domains.file.models import File
@@ -18,10 +19,15 @@ class ExportApplicationType(models.Model):
         GMP = ("GMP", "Certificate of Good Manufacturing Practice")
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
+
+    # TODO ICMSLST-2085: Change this to type to match ImportApplication
     type_code = models.CharField(
         max_length=30, blank=False, null=False, unique=True, choices=Types.choices
     )
+
+    # TODO ICMSLST-2085: Change this to name to match ImportApplication
     type = models.CharField(max_length=70, blank=False, null=False)
+
     allow_multiple_products = models.BooleanField(blank=False, null=False)
     generate_cover_letter = models.BooleanField(blank=False, null=False)
     allow_hse_authorization = models.BooleanField(blank=False, null=False)
@@ -41,6 +47,18 @@ class ExportApplicationType(models.Model):
 
     class Meta:
         ordering = ("type",)
+
+    @property
+    def create_application_url(self) -> str:
+        match self.type_code:
+            case self.Types.FREE_SALE:
+                return reverse("export:create-application", kwargs={"type_code": "cfs"})
+            case self.Types.MANUFACTURE:
+                return reverse("export:create-application", kwargs={"type_code": "com"})
+            case self.Types.GMP:
+                return reverse("export:create-application", kwargs={"type_code": "gmp"})
+            case _:
+                raise ValueError(f"Unknown Application Type: {self.type_code}")  # /PS-IGNORE
 
 
 class ExportApplication(ApplicationBase):

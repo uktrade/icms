@@ -57,6 +57,7 @@ services:
             - HAWK_AUTH_ID
             - HAWK_AUTH_KEY
             - SEND_LICENCE_TO_CHIEF
+            - SET_INACTIVE_APP_TYPES_ACTIVE
         # stdin_open: true
         # tty: true
         ports:
