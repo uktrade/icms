@@ -36,6 +36,7 @@ class TestPermissionsService:
         exporter_one_contact,
         exporter_one_agent_one_contact,
         ilb_admin_user,
+        nca_admin_user,
         fa_sil_app,
         fa_sil_agent_app,
         com_app,
@@ -50,6 +51,7 @@ class TestPermissionsService:
         self.exporter_contact = exporter_one_contact
         self.exporter_agent_contact = exporter_one_agent_one_contact
         self.ilb_admin = ilb_admin_user
+        self.nca_admin = nca_admin_user
 
         self.fa_sil_app = fa_sil_app
         self.fa_sil_agent_app = fa_sil_agent_app
@@ -63,6 +65,8 @@ class TestPermissionsService:
         export_agent_checker = AppChecker(self.exporter_agent_contact, self.com_agent_app)
         ilb_admin_import_checker = AppChecker(self.ilb_admin, self.fa_sil_app)
         ilb_admin_export_checker = AppChecker(self.ilb_admin, self.com_app)
+        nca_admin_import_checker = AppChecker(self.nca_admin, self.fa_sil_app)
+        nca_admin_export_checker = AppChecker(self.nca_admin, self.com_app)
 
         #
         # Check importer, exporter and agent apps have correct access
@@ -107,6 +111,17 @@ class TestPermissionsService:
         assert not export_checker.can_edit()
         assert not export_checker.can_view()
         assert not export_checker.can_vary()
+
+        #
+        # Test NCA admin access (They can only view import applications)
+        #
+        assert not nca_admin_import_checker.can_edit()
+        assert nca_admin_import_checker.can_view()
+        assert not nca_admin_import_checker.can_vary()
+
+        assert not nca_admin_export_checker.can_edit()
+        assert not nca_admin_export_checker.can_view()
+        assert not nca_admin_export_checker.can_vary()
 
     def test_can_user_edit_firearm_authorities(self):
         #

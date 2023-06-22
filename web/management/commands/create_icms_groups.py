@@ -61,4 +61,10 @@ def get_groups():
             # Sys permissions
             Perms.sys.exporter_access.codename,
         ],
+        "NCA Case Officer": [
+            # Page permissions
+            Perms.page.view_import_case_search.codename,
+            # Sys permissions
+            Perms.sys.search_all_cases.codename,
+        ],
     }

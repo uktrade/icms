@@ -26,6 +26,11 @@ class UserObjectPerms(ObjectPermissionChecker):
 
         return checker.can_view()
 
+    def can_edit_application(self, application):
+        checker = AppChecker(self.user, application)
+
+        return checker.can_edit()
+
 
 class UserObjectPermissionsContext(TypedDict):
     user_obj_perms: UserObjectPerms

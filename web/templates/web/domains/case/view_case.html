@@ -26,7 +26,7 @@
       {% endif %}
 
       {% if process.status in ["COMPLETED", "REVOKED"] %}
-        {% if process.application_type.type == "FA" and process.decision == process.APPROVE %}
+        {% if process.application_type.type == "FA" and process.decision == process.APPROVE and user_obj_perms.can_edit_application(process) %}
           {{ icms_link(request, icms_url('import:fa:provide-report', kwargs={'application_pk': process.pk}), 'Firearms Supplementary Information') }}
         {% endif %}
       {% endif %}
