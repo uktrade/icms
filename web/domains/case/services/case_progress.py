@@ -66,7 +66,7 @@ def access_request_in_processing(application: AccessRequest) -> None:
 
 
 def approval_request_in_processing(application: ApprovalRequest) -> None:
-    expected_status = [ApprovalRequest.OPEN]
+    expected_status = [ApprovalRequest.Statuses.OPEN]
 
     check_expected_status(application, expected_status)  # type:ignore[arg-type]
 

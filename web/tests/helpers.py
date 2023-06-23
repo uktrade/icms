@@ -4,15 +4,24 @@ from django.urls import reverse
 from django.utils import timezone
 
 from web.domains.case.types import ImpOrExp
-from web.models import User, VariationRequest
+from web.flow.models import ProcessTypes
+from web.models import (
+    ApprovalRequest,
+    Exporter,
+    ExporterAccessRequest,
+    ExporterApprovalRequest,
+    Importer,
+    ImporterAccessRequest,
+    ImporterApprovalRequest,
+    User,
+    VariationRequest,
+)
 from web.utils.validation import ApplicationErrors
 
 
 def get_test_client(user: User) -> Client:
     client = Client()
-
     assert client.login(username=user.username, password="test") is True, "Failed to login"
-
     return client
 
 
@@ -75,6 +84,41 @@ def add_variation_request_to_app(
         when_varied=timezone.now().date(),
         requested_by=user,
         extension_flag=extension_flag,
+    )
+
+
+def get_linked_access_request(
+    access_request: ImporterAccessRequest | ExporterAccessRequest,
+    org: Importer | Exporter,
+) -> ImporterAccessRequest | ExporterAccessRequest:
+    access_request.link = org
+    access_request.save()
+    return access_request
+
+
+def add_approval_request(
+    access_request: ImporterAccessRequest | ExporterAccessRequest,
+    requested_by: User,
+    requested_from: User | None = None,
+    status: str = ApprovalRequest.Statuses.OPEN,
+):
+    match access_request:
+        case ImporterAccessRequest():
+            process_type = ProcessTypes.ImpApprovalReq
+            model_cls = ImporterApprovalRequest
+
+        case ExporterAccessRequest():
+            process_type = ProcessTypes.ExpApprovalReq
+            model_cls = ExporterApprovalRequest
+        case _:
+            raise ValueError(f"invalid access request: {access_request}")
+
+    return model_cls.objects.create(
+        access_request=access_request,
+        process_type=process_type,
+        status=status,
+        requested_by=requested_by,
+        requested_from=requested_from,
     )
 
 

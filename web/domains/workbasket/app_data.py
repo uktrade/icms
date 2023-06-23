@@ -247,7 +247,7 @@ def _get_importer_queryset(user: User) -> list[QuerySet]:
         .annotate(annotation_open_fir_pks=open_fir_pks_annotation)
         .filter(
             is_active=True,
-            status=ApprovalRequest.OPEN,
+            status=ApprovalRequest.Statuses.OPEN,
             access_request__importeraccessrequest__link__in=main_importers,
         )
     )
@@ -313,7 +313,7 @@ def _get_exporter_queryset(user: User) -> list[QuerySet]:
         .annotate(annotation_open_fir_pks=open_fir_pks_annotation)
         .filter(
             is_active=True,
-            status=ApprovalRequest.OPEN,
+            status=ApprovalRequest.Statuses.OPEN,
             access_request__exporteraccessrequest__link__in=main_exporters,
         )
     )

@@ -88,8 +88,9 @@ class ImporterAccessRequest(AccessRequest):
     IS_FINAL = True
 
     AGENT_ACCESS = "AGENT_IMPORTER_ACCESS"
+    MAIN_IMPORTER_ACCESS = "MAIN_IMPORTER_ACCESS"
     REQUEST_TYPES = (
-        ("MAIN_IMPORTER_ACCESS", "Request access to act as an Importer"),
+        (MAIN_IMPORTER_ACCESS, "Request access to act as an Importer"),
         (AGENT_ACCESS, "Request access to act as an Agent for an Importer"),
     )
     eori_number = models.CharField(
@@ -127,8 +128,9 @@ class ExporterAccessRequest(AccessRequest):
     IS_FINAL = True
 
     AGENT_ACCESS = "AGENT_EXPORTER_ACCESS"
+    MAIN_EXPORTER_ACCESS = "MAIN_EXPORTER_ACCESS"
     REQUEST_TYPES = (
-        ("MAIN_EXPORTER_ACCESS", "Request access to act as an Exporter"),
+        (MAIN_EXPORTER_ACCESS, "Request access to act as an Exporter"),
         (AGENT_ACCESS, "Request access to act as an Agent for an Exporter"),
     )
 

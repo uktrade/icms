@@ -4,54 +4,13 @@ import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
-from web.flow.models import ProcessTypes
-from web.models import (
-    ApprovalRequest,
-    Exporter,
-    ExporterAccessRequest,
-    ExporterApprovalRequest,
-    Importer,
-    ImporterAccessRequest,
-    ImporterApprovalRequest,
-    User,
-)
+from web.models import ApprovalRequest
 from web.tests.auth import AuthTestCase
-
-
-def get_linked_access_request(
-    access_request: ImporterAccessRequest | ExporterAccessRequest,
-    org: Importer | Exporter,
-) -> ImporterAccessRequest | ExporterAccessRequest:
-    access_request.link = org
-    access_request.save()
-
-    return access_request
-
-
-def add_approval_request(
-    access_request: ImporterAccessRequest | ExporterAccessRequest,
-    requested_by: User,
-    requested_from: User | None = None,
-    status: str = ApprovalRequest.OPEN,
-):
-    match access_request:
-        case ImporterAccessRequest():
-            process_type = ProcessTypes.ImpApprovalReq
-            model_cls = ImporterApprovalRequest
-
-        case ExporterAccessRequest():
-            process_type = ProcessTypes.ExpApprovalReq
-            model_cls = ExporterApprovalRequest
-        case _:
-            raise ValueError(f"invalid access request: {access_request}")
-
-    return model_cls.objects.create(
-        access_request=access_request,
-        process_type=process_type,
-        status=status,
-        requested_by=requested_by,
-        requested_from=requested_from,
-    )
+from web.tests.helpers import (
+    add_approval_request,
+    check_email_was_sent,
+    get_linked_access_request,
+)
 
 
 class TestManageAccessApprovalView(AuthTestCase):
@@ -102,12 +61,9 @@ class TestManageAccessApprovalView(AuthTestCase):
         assert requested_from.count() == 1
         assert requested_from.first() == self.exporter_user
 
-    def test_post(self):
-        #
-        # Test importer access approval request
-        #
+    def test_post_importer(self):
         form_data = {
-            "status": ApprovalRequest.DRAFT,
+            "status": ApprovalRequest.Statuses.DRAFT,
             "requested_from": self.importer_user.pk,
         }
         response = self.ilb_admin_client.post(self.importer_url, data=form_data)
@@ -115,16 +71,21 @@ class TestManageAccessApprovalView(AuthTestCase):
         assertRedirects(response, self.importer_url, HTTPStatus.FOUND)
 
         approval_request = self.iar.approval_requests.get(is_active=True)
-        assert approval_request.status == ApprovalRequest.OPEN
+        assert approval_request.status == ApprovalRequest.Statuses.OPEN
         assert approval_request.requested_from == self.importer_user
         assert approval_request.access_request == self.iar
         assert approval_request.requested_by == self.ilb_admin_user
 
-        #
-        # Test exporter access approval request
-        #
+        check_email_was_sent(
+            1,
+            self.importer_user.email,
+            "Access Request Approval",
+            "This request\nis asking you to approve/refuse access for a",
+        )
+
+    def test_post_exporter(self):
         form_data = {
-            "status": ApprovalRequest.DRAFT,
+            "status": ApprovalRequest.Statuses.DRAFT,
             "requested_from": self.exporter_user.pk,
         }
         response = self.ilb_admin_client.post(self.exporter_url, data=form_data)
@@ -132,10 +93,16 @@ class TestManageAccessApprovalView(AuthTestCase):
         assertRedirects(response, self.exporter_url, HTTPStatus.FOUND)
 
         approval_request = self.ear.approval_requests.get(is_active=True)
-        assert approval_request.status == ApprovalRequest.OPEN
+        assert approval_request.status == ApprovalRequest.Statuses.OPEN
         assert approval_request.requested_from == self.exporter_user
         assert approval_request.access_request == self.ear
         assert approval_request.requested_by == self.ilb_admin_user
+        check_email_was_sent(
+            1,
+            self.exporter_user.email,
+            "Access Request Approval",
+            "This request\nis asking you to approve/refuse access for a",
+        )
 
 
 class TestManageAccessApprovalWithdrawView(AuthTestCase):
@@ -183,7 +150,7 @@ class TestManageAccessApprovalWithdrawView(AuthTestCase):
         #
         # Test importer access approval request
         #
-        assert self.iar_approval.status == ApprovalRequest.OPEN
+        assert self.iar_approval.status == ApprovalRequest.Statuses.OPEN
 
         response = self.ilb_admin_client.post(self.importer_url)
 
@@ -196,12 +163,12 @@ class TestManageAccessApprovalWithdrawView(AuthTestCase):
         )
 
         self.iar_approval.refresh_from_db()
-        assert self.iar_approval.status == ApprovalRequest.CANCELLED
+        assert self.iar_approval.status == ApprovalRequest.Statuses.CANCELLED
 
         #
         # Test exporter access approval request
         #
-        assert self.ear_approval.status == ApprovalRequest.OPEN
+        assert self.ear_approval.status == ApprovalRequest.Statuses.OPEN
 
         response = self.ilb_admin_client.post(self.exporter_url)
 
@@ -214,7 +181,7 @@ class TestManageAccessApprovalWithdrawView(AuthTestCase):
         )
 
         self.ear_approval.refresh_from_db()
-        assert self.ear_approval.status == ApprovalRequest.CANCELLED
+        assert self.ear_approval.status == ApprovalRequest.Statuses.CANCELLED
 
 
 class TestTakeOwnershipAccessApprovalView(AuthTestCase):
@@ -405,56 +372,78 @@ class TestCloseAccessApprovalView(AuthTestCase):
         response = self.exporter_client.get(self.exporter_url)
         assert response.status_code == HTTPStatus.OK
 
-    def test_post_approve(self):
-        form_data = {"response": ApprovalRequest.APPROVE, "response_reason": ""}
+    def test_post_approve_importer(self):
+        form_data = {"response": ApprovalRequest.Responses.APPROVE, "response_reason": ""}
 
-        #
-        # Test importer approval request
-        #
         response = self.importer_client.post(self.importer_url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
 
         self.iar_approval.refresh_from_db()
-        assert self.iar_approval.response == ApprovalRequest.APPROVE
+        assert self.iar_approval.response == ApprovalRequest.Responses.APPROVE
         assert self.iar_approval.response_reason == ""
-        assert self.iar_approval.status == ApprovalRequest.COMPLETED
+        assert self.iar_approval.status == ApprovalRequest.Statuses.COMPLETED
         assert self.iar_approval.response_by == self.importer_user
+        check_email_was_sent(
+            2,
+            "ilb_admin_user@example.com",  # /PS-IGNORE
+            "Access Request Approval Response",
+            "An Access Request Approval response has been sent to your workbasket.",
+        )
 
-        #
-        # Test exporter approval request
-        #
+    def test_post_approve_exporter(self):
+        form_data = {"response": ApprovalRequest.Responses.APPROVE, "response_reason": ""}
+
         response = self.exporter_client.post(self.exporter_url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
 
         self.ear_approval.refresh_from_db()
-        assert self.ear_approval.response == ApprovalRequest.APPROVE
+        assert self.ear_approval.response == ApprovalRequest.Responses.APPROVE
         assert self.ear_approval.response_reason == ""
-        assert self.ear_approval.status == ApprovalRequest.COMPLETED
+        assert self.ear_approval.status == ApprovalRequest.Statuses.COMPLETED
         assert self.ear_approval.response_by == self.exporter_user
+        check_email_was_sent(
+            2,
+            "ilb_admin_user@example.com",  # /PS-IGNORE
+            "Access Request Approval Response",
+            "An Access Request Approval response has been sent to your workbasket.",
+        )
 
-    def test_post_refuse(self):
-        form_data = {"response": ApprovalRequest.REFUSE, "response_reason": "test response reason"}
-
-        #
-        # Test importer approval request
-        #
+    def test_post_refuse_importer(self):
+        form_data = {
+            "response": ApprovalRequest.Responses.REFUSE,
+            "response_reason": "test response reason",
+        }
         response = self.importer_client.post(self.importer_url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
 
         self.iar_approval.refresh_from_db()
-        assert self.iar_approval.response == ApprovalRequest.REFUSE
+        assert self.iar_approval.response == ApprovalRequest.Responses.REFUSE
         assert self.iar_approval.response_reason == "test response reason"
-        assert self.iar_approval.status == ApprovalRequest.COMPLETED
+        assert self.iar_approval.status == ApprovalRequest.Statuses.COMPLETED
         assert self.iar_approval.response_by == self.importer_user
+        check_email_was_sent(
+            2,
+            "ilb_admin_user@example.com",  # /PS-IGNORE
+            "Access Request Approval Response",
+            "An Access Request Approval response has been sent to your workbasket.",
+        )
 
-        #
-        # Test exporter approval request
-        #
+    def test_post_refuse_exporter(self):
+        form_data = {
+            "response": ApprovalRequest.Responses.REFUSE,
+            "response_reason": "test response reason",
+        }
         response = self.exporter_client.post(self.exporter_url, data=form_data)
         assert response.status_code == HTTPStatus.FOUND
 
         self.ear_approval.refresh_from_db()
-        assert self.ear_approval.response == ApprovalRequest.REFUSE
+        assert self.ear_approval.response == ApprovalRequest.Responses.REFUSE
         assert self.ear_approval.response_reason == "test response reason"
-        assert self.ear_approval.status == ApprovalRequest.COMPLETED
+        assert self.ear_approval.status == ApprovalRequest.Statuses.COMPLETED
         assert self.ear_approval.response_by == self.exporter_user
+        check_email_was_sent(
+            2,
+            "ilb_admin_user@example.com",  # /PS-IGNORE
+            "Access Request Approval Response",
+            "An Access Request Approval response has been sent to your workbasket.",
+        )

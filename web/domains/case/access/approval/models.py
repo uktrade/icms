@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 
 from web.flow.models import Process, ProcessTypes
+from web.types import TypedTextChoices
 
 
 class ApprovalRequest(Process):
@@ -15,22 +16,15 @@ class ApprovalRequest(Process):
         indexes = [models.Index(fields=["status"], name="AppR_status_idx")]
         ordering = ("-request_date",)
 
-    # Approval Request response options
-    APPROVE = "APPROVE"
-    REFUSE = "REFUSE"
-    RESPONSE_OPTIONS = ((APPROVE, "Approve"), (REFUSE, "Refuse"))
+    class Responses(TypedTextChoices):
+        APPROVE = ("APPROVE", "Approve")
+        REFUSE = ("REFUSE", "Refuse")
 
-    # Approval Request status
-    DRAFT = "DRAFT"
-    OPEN = "OPEN"
-    CANCELLED = "CANCELLED"
-    COMPLETED = "COMPLETED"
-    STATUSES = (
-        (DRAFT, "DRAFT"),
-        (OPEN, "OPEN"),
-        (CANCELLED, "CANCELLED"),
-        (COMPLETED, "COMPLETED"),
-    )
+    class Statuses(TypedTextChoices):
+        DRAFT = ("DRAFT", "DRAFT")
+        OPEN = ("OPEN", "OPEN")
+        CANCELLED = ("CANCELLED", "CANCELLED")
+        COMPLETED = ("COMPLETED", "COMPLETED")
 
     access_request = models.ForeignKey(
         "web.AccessRequest",
@@ -40,7 +34,9 @@ class ApprovalRequest(Process):
         related_name="approval_requests",
     )
 
-    status = models.CharField(max_length=20, choices=STATUSES, blank=True, null=True, default=OPEN)
+    status = models.CharField(
+        max_length=20, choices=Statuses.choices, blank=True, null=True, default=Statuses.OPEN
+    )
     request_date = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     requested_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -56,7 +52,7 @@ class ApprovalRequest(Process):
         null=True,
         related_name="assigned_approval_requests",
     )
-    response = models.CharField(max_length=20, choices=RESPONSE_OPTIONS, blank=True, null=True)
+    response = models.CharField(max_length=20, choices=Responses.choices, blank=True, null=True)
     response_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -69,7 +65,7 @@ class ApprovalRequest(Process):
 
     @property
     def is_complete(self):
-        return self.status == self.COMPLETED
+        return self.status == self.Statuses.COMPLETED
 
 
 class ExporterApprovalRequest(ApprovalRequest):

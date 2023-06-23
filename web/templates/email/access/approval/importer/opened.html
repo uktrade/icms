@@ -1,0 +1,17 @@
+{% extends "email/base.html" %}
+
+{% block message %}
+  <p>
+      An ICMS system access request has been added to your workbasket.
+
+      This request is asking you to approve/refuse access for a {{ user_type }} to act under an
+      importer which you have system rights over. If you approve of the user to apply/manage import licence
+      applications on your organisations behalf please can you Approve the request. Until the request is approved
+      the user will not be able to apply for import licences under the name of your organisation.
+
+      If you don't approve please refuse the access request stating a reason in your response.
+  </p>
+
+
+
+{% endblock %}

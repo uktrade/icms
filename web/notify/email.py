@@ -10,6 +10,7 @@ from django.utils import timezone
 from config.celery import app
 from web.domains.case.types import ImpOrExp
 from web.domains.template.utils import get_email_template_subject_body
+from web.flow.models import ProcessTypes
 from web.models import (
     CaseEmail,
     Exporter,
@@ -20,6 +21,7 @@ from web.models import (
 )
 from web.permissions import (
     get_case_officers_for_process_type,
+    get_ilb_case_officers,
     get_org_obj_permissions,
     organisation_get_contacts,
 )
@@ -112,6 +114,10 @@ def get_application_contacts(application: ImpOrExp) -> QuerySet[User]:
         org = application.agent or application.importer
     else:
         org = application.agent or application.exporter
+    return get_organisation_contacts(org)
+
+
+def get_organisation_contacts(org):
     obj_perms = get_org_obj_permissions(org)
     return organisation_get_contacts(org, perms=[obj_perms.edit.codename])
 
@@ -147,6 +153,29 @@ def send_case_email(case_email: CaseEmail) -> None:
     case_email.status = CaseEmail.Status.OPEN
     case_email.sent_datetime = timezone.now()
     case_email.save()
+
+
+def send_approval_request_completed_email() -> None:
+    context = {"subject": "Access Request Approval Response"}
+    template = "email/access/approval/completed.html"
+    send_html_email(template, context, get_ilb_case_officers())
+
+
+def send_approval_request_opened_email(approval_request) -> None:
+    entity = (
+        "exporter"
+        if approval_request.access_request.process_type == ProcessTypes.EAR
+        else "importer"
+    )
+    user_type = "agent" if approval_request.access_request.is_agent_request else "user"
+    org = approval_request.access_request.get_specific_model().link
+    context = {
+        "subject": "Access Request Approval",
+        "user_type": user_type,
+    }
+    contacts = get_organisation_contacts(org)
+    template = f"email/access/approval/{entity}/opened.html"
+    send_html_email(template, context, contacts)
 
 
 def send_refused_email(application: ImpOrExp) -> None:
