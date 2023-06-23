@@ -41,7 +41,7 @@
 
   {{ icms_link(request, icms_url('case:prepare-response', kwargs={'case_type': 'export', 'application_pk': process.pk}), 'Response Preparation') }}
 
-  {% if not readonly_view %}
+  {% if readonly_view is defined and not readonly_view %}
     {{ icms_link(request, icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': 'export'}), 'Authorisation') }}
   {% endif %}
 </ul>

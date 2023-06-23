@@ -9,7 +9,7 @@
         <th scope="col">Details of who bought from</th>
         <th scope="col">Address</th>
         <th scope="col">Is Dealer?</th>
-        {% if not read_only %}
+        {% if read_only is defined and not read_only %}
           <th scope="col">Actions</th>
         {% endif %}
       </tr>
@@ -30,7 +30,7 @@
           <br />{{ contact.country}}
         </td>
         <td>{{ contact.get_dealer_display() }}</td>
-        {% if not read_only %}
+        {% if read_only is defined and not read_only %}
           <td>
             <ul class="menu-out">
               <li>
@@ -69,7 +69,7 @@
   </table>
 {% endif %}
 
-{% if not read_only %}
+{% if ready_only is defined and not read_only %}
   <div class="list-actions">
     <ul class="menu-out flow-across">
       <li>

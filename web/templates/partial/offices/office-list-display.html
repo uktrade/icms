@@ -15,7 +15,7 @@
           <div aria-describedby="eori-hint-content" class="hint icon-info tooltipstered" tabindex="0" role="link" aria-label="Hint for Override EORI Number"></div>
         </th>
       {% endif %}
-      {% if not read_only %}
+      {% if read_only is defined and not read_only%}
         <th scope="col">Actions</th>
       {% endif %}
     </tr>

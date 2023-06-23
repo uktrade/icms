@@ -11,7 +11,7 @@
                   </a>
                 {% endif %}
               {% else %}
-                {% if read_only %}
+                {% if read_only is defined and read_only %}
                     {{ agent.name }}
                 {% else %}
                   <a href="{{ icms_url(agent_edit_url_name, args=[agent.id]) }}">
@@ -37,7 +37,7 @@
                 {% endwith %}
             </span>
         </td>
-        {% if not read_only %}
+        {% if read_only is defined and not read_only  %}
           <td>
             {% if agent.is_active %}
               <a class="button small-button icon-pencil"

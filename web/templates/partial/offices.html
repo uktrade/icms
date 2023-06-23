@@ -27,7 +27,7 @@
   </div>
 {% endif %}
 
-{% if not read_only %}
+{% if read_only is defined and not read_only %}
   <div class="list-actions">
     <ul class="menu-out flow-across">
       <li>

@@ -21,7 +21,7 @@
     {% endif %}
   {% endcall %}
 
-  {% if not readonly_view %}
+  {% if readonly_view is defined and not readonly_view %}
     <form
       method="post"
       action="{{ icms_url('access:case-management-approval-request-withdraw', kwargs={'access_request_pk': process.pk, 'entity': entity, 'approval_request_pk': approval_request.pk}) }}"
@@ -47,7 +47,7 @@
   {% endif %}
 
 {% else %}
-  {% if not readonly_view %}
+  {% if readonly_view is defined and not readonly_view %}
     {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
       {% block fields %}
         {% for field in form %}
