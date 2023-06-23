@@ -59,7 +59,7 @@
     <label class="prompt west">Importer Address</label>
   </div>
   <div class="two columns">
-    <span>{{ process.importer_office.address }}</span>
+    <span>{% if process.importer_office %}{{ process.importer_office.address }}{% endif %}</span>
   </div>
   <div class="two columns">
     <label class="prompt west">Importer EORI</label>

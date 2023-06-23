@@ -3049,3 +3049,4 @@ west">Case Owner</label
 {{ process.application_type.get_type_display
 west">Case Status</label
 Address</label
+{{ process.submit_datetime.strftime('%d-%b-%Y %

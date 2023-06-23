@@ -30,7 +30,7 @@
     </div>
 
     <div class="address-block page-margin">
-      <p class="address-line">{{ process.contact.full_name }}</p>
+      <p class="address-line">{% if process.contact %}{{ process.contact.full_name }}{%  endif %}</p>
       {% for address_line in process.importer_office.address.split('\n') %}
         <p class="address-line">{{ address_line }}</p>
       {% endfor %}
@@ -69,7 +69,7 @@
         {% endif %}
       </div>
       <div>
-        <p>{{ process.case_owner.full_name }}</p>
+        <p>{% if process.case_owner %}{{ process.case_owner.full_name }}{% endif %}</p>
         <p>E {{ ilb_contact_email }}</p>
       </div>
     </div>
