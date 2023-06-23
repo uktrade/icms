@@ -42,7 +42,7 @@
     {% endfor %}
 
     <h4>SIGL</h4>
-    {% if not process.sigl_flag %}
+    {% if not process.application_type.sigl_flag %}
       <p>This case type does not need to be sent to SIGL</p>
     {% endif %}
 
