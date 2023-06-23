@@ -70,11 +70,11 @@
     {% for url, link_text in sidebar_links %}
       {% if url == request.path %}
 
-        {% if loop.previtem %}
+        {% if loop.previtem is defined %}
           <li><a href="{{ loop.previtem.0 }}" class="prev-double-link">Previous</a></li>
         {% endif %}
 
-        {% if loop.nextitem %}
+        {% if loop.nextitem is defined %}
           <li><a href="{{ loop.nextitem.0 }}" class="next-double-link">Next</a></li>
         {% endif %}
 

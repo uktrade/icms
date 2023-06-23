@@ -1,4 +1,4 @@
-{% if country %}
+{% if country is defined and country %}
   {% set groups = country.country_groups.all() %}
   <div id="hint{{country.id}}-content" role="tooltip" class="hint-content">
     <h4>{{country.name}}</h4>

@@ -1,17 +1,17 @@
 {% macro _header(field, config) -%}
   {{config.header}}
-  {% if config.tooltip %}
+  {% if config.get('tooltip') %}
     <div id="{{field}}-hint"  class="hint-content" role="tooltup" aria-hidden="true">
-      {{config.tooltip}}
+      {{config['tooltip']}}
     </div>
     <div id="{{field}}" aria_describedby="{{field}}-hint" class="hint icon-info tooltipstered"></div>
   {% endif %}
 {%- endmacro %}
 
 {% macro _field_value(text, config) -%}
-  {% if config and config.bold %}
+  {% if config and config.get('bold') %}
     <strong>{{ text }}</strong>
-  {% elif config and config.date_format %}
+  {% elif config and config.get('date_format') %}
     {% if text %}
       {{ text.strftime('%d-%b-%Y %H:%M:%S') }}
     {% endif %}
@@ -21,26 +21,26 @@
 {% endmacro %}
 
 {% macro _field(object, field, config) -%}
-  {% if config and config.label %}
-    {{config.label | safe}}
+  {% if config and config.get('label') %}
+    {{config['label'] | safe}}
   {% endif %}
-  {% if config and config.link %}
+  {% if config and config.get('link') %}
     <a href="{{object.id}}" role="model-link">{{object[field]}}</a>
-  {% elif config and config.method %}
-    {% with caller = object|attr(config.method) %}
+  {% elif config and config.get('method') %}
+    {% with caller = object|attr(config['method']) %}
       {{ caller() }}
     {% endwith %}
-  {% elif config and config.show_all %}
+  {% elif config and config.get('show_all') %}
 
-    {% if config.query_filter %}
-      {% set _objects = object[field].filter(**config.query_filter) %}
+    {% if config.get('query_filter') %}
+      {% set _objects = object[field].filter(**config['query_filter']) %}
     {% else %}
       {% set _objects = object[field].all() %}
     {% endif %}
 
-    {% if config.separator %}
+    {% if config.get('separator') %}
       {% for entry in _objects %}
-        {{ _field_value(entry, config)|trim }}{{ config.separator if not loop.last }}
+        {{ _field_value(entry, config)|trim }}{{ config['separator'] if not loop.last }}
       {% endfor %}
     {% else %}
       {% for entry in _objects %}
@@ -58,7 +58,7 @@
       {% if f is string %}
         {{_header(f, display.fields_config[f])}}
       {% else %}
-        {% for field in f if not display.fields_config[field].no_header %}
+        {% for field in f if not display.fields_config[field].get('no_header') %}
           {{_header(field, display.fields_config[field])}}
           {% if not loop.last %}
             / </br>

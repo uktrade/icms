@@ -39,9 +39,9 @@
 
   {% endblock %}
 
-  {% if (page and page.object_list) or results %}
+  {% if (page is defined and page and page.object_list) or (results is defined and results) %}
 
-    {% if page %}
+    {% if page is defined and page %}
       {% include "partial/paginator.html" %}
     {% endif %}
 
@@ -58,7 +58,7 @@
           </tr>
         </thead>
 
-        {% for item in (page.object_list if page else results) %}
+        {% for item in (page.object_list if page is defined and page else results) %}
           <tr class="result-row">
             {{tables.fields(item, display)}}
 
@@ -81,7 +81,7 @@
 
     {% endblock %}
 
-    {% if page %}
+    {% if page is defined and page %}
       {% include "partial/paginator.html" %}
     {% endif %}
 
