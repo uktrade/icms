@@ -49,7 +49,15 @@
               </div>
             {% endif %}
           </td>
-          <td><a href="{{ doc.url }}">View Firearms {{ doc.name }}</a></td>
+          <td>
+            <a href="{{ doc.url }}">
+              {% if process.application_type.type == "FA" %}
+                View Firearms {{ doc.name }}
+              {% else %}
+                View {{ doc.name }}
+              {% endif %}
+            </a>
+          </td>
         </tr>
       {% endfor %}
       </tbody>
