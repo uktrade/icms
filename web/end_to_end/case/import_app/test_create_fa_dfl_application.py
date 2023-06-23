@@ -26,7 +26,7 @@ def fa_dfl_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_role("link", name="New Import Application").click()
     utils.assert_page_url(page, "/import/")
 
-    page.get_by_role("link", name="Deactivated Firearms Licence").click()
+    page.get_by_role("link", name="Deactivated Firearms Import Licence").click()
     utils.assert_page_url(page, "/import/create/firearms/dfl/")
 
     page.get_by_text("-- Select Importer").click()
