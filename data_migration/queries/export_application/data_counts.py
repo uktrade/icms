@@ -22,7 +22,7 @@ COLUMNS
 WHERE xcad.status_control = 'C'
   AND xcad.application_type = 'CFS'
   AND xcad.status <> 'DELETED'
-  AND (xcad.submitted_datetime IS NOT NULL OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
+  AND (xcad.status <> 'IN_PROGRESS' OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
 """
 
 cfs_product_active_ingredient_count = """
@@ -50,7 +50,7 @@ COLUMNS
 WHERE xcad.status_control = 'C'
   AND xcad.application_type = 'CFS'
   AND xcad.status <> 'DELETED'
-  AND (xcad.submitted_datetime IS NOT NULL OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
+  AND (xcad.status <> 'IN_PROGRESS' OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
 """
 
 cfs_product_type_numbers_count = """
@@ -78,7 +78,7 @@ COLUMNS
 WHERE xcad.status_control = 'C'
   AND xcad.application_type = 'CFS'
   AND xcad.status <> 'DELETED'
-  AND (xcad.submitted_datetime IS NOT NULL OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
+  AND (xcad.status <> 'IN_PROGRESS' OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
 """
 
 cfs_schedule_legislation_count = """
@@ -103,5 +103,5 @@ COLUMNS
 WHERE xcad.status_control = 'C'
   AND xcad.application_type = 'CFS'
   AND xcad.status <> 'DELETED'
-  AND (xcad.submitted_datetime IS NOT NULL OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
+  AND (xcad.status <> 'IN_PROGRESS' OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
 """
