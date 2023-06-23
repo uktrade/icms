@@ -51,3 +51,5 @@ LOGGING = {
         },
     },
 }
+
+TEMPLATES = STRICT_TEMPLATES
