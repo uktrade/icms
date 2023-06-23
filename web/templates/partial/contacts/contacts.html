@@ -52,7 +52,7 @@
                   <br/> {{ user.organisation or 'organisation' }}
                   <br/> {{ user.department or 'department' }}
                   <br/> {{ user.job_title or 'job_title' }}
-                  <br> {{ user.phone_number or 'phone_number' }}
+                  <br> {{ user.phone_numbers.first() or 'phone_number' }}
                 </span>
                 </div>
               </div>
