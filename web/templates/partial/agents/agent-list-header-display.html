@@ -1,13 +1,13 @@
  <thead>
     <tr>
-      {% if is_importer %}
+      {% if is_importer is defined and is_importer %}
         <th scope="col">Importer Name /<br> Importer Entity Type</th>
         <th scope="col">Agent Type </th>
       {% else %}
         <th scope="col">Organisation Name</th>
       {% endif %}
         <th scope="col">Address </th>
-        {% if not read_only %}
+        {% if read_only is defined and not read_only %}
           <th scope="col">Actions</th>
         {% endif %}
     </tr>

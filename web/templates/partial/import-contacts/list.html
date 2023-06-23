@@ -42,7 +42,7 @@
                   Edit
                 </a>
               </li>
-              {% if can_delete %}
+              {% if can_delete is defined and can_delete %}
               <li>
                 <form
                   method="post"

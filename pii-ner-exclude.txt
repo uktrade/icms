@@ -3034,7 +3034,18 @@ config.get('date_format
 {{_field_value(object
 {{_
 field(object
-field(object
 {{fields.field(filter.form
 loop.previtem.0
 {{ file.created_datetime.strftime('%d-%b-%Y %'
+is_importer %
+Revoke Licence'
+Adhoc License</h4
+{{ commodity_group_data|tojson }
+page_no
+aria-disabled="{%if not active
+is_importer and agent.entity_type
+west">Case Reference</label
+west">Case Owner</label
+{{ process.application_type.get_type_display
+west">Case Status</label
+Address</label

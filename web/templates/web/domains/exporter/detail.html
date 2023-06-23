@@ -53,7 +53,8 @@
   {% if not object.is_agent() %}
     {% with
       agents = object.agents,
-      read_only = True %}
+      read_only = True,
+      is_ilb_admin = "web.ilb_admin" in perms %}
 
       {% include "partial/agents.html" %}
     {% endwith %}

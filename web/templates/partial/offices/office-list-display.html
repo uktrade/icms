@@ -3,7 +3,7 @@
     <tr>
       <th scope="col">Address</th>
       <th scope="col">Postcode</th>
-      {% if has_eori %}
+      {% if has_eori is defined and has_eori %}
         <th scope="col">
           Override EORI Number
           <div id="eori-hint-content" role="tooltip" class="hint-content">
@@ -25,10 +25,10 @@
     <tr>
       <td>{{ office.address|nl2br() or '' }}</td>
       <td>{{ office.postcode or '' }}</td>
-      {% if has_eori %}
+      {% if has_eori is defined and has_eori %}
         <td>{{ office.eori_number or '' }}</td>
       {% endif %}
-      {% if not read_only %}
+      {% if read_only is defined and not read_only %}
         <td>
           <a
             href="{{ icms_url(office_edit_url_name, args=[object.pk, office.pk]) }}"

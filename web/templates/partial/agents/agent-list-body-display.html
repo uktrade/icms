@@ -2,8 +2,8 @@
     <tr>
         <td>
             <span class="text-widget ">
-              {% if is_importer %}
-                {% if read_only %}
+              {% if is_importer is defined and is_importer %}
+                {% if read_only is defined and read_only %}
                     {{ agent.display_name }}
                 {% else %}
                   <a href="{{ icms_url(agent_edit_url_name, args=[agent.id]) }}">
@@ -19,12 +19,12 @@
                   </a>
                 {% endif %}
               {% endif %}
-              {% if agent.entity_type %}
-                <br>{{ agent.entity_type or '' }}
+              {% if is_importer is defined and is_importer and agent.entity_type %}
+                  <br>{{ agent.entity_type }}
               {% endif %}
             </span>
         </td>
-        {% if is_importer %}
+        {% if is_importer is defined and is_importer %}
           <td>
               <span class="text-widget ">Care Of Importer</span>
           </td>

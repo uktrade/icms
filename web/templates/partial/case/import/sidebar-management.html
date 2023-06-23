@@ -72,16 +72,16 @@
   {{ icms_link(request, icms_url('case:prepare-response', kwargs={'case_type': 'import', 'application_pk': process.pk}), 'Response Preparation') }}
 
   {% set show_imi_historical = process.status == "COMPLETED" and process.process_type == "SILApplication" and process.imi_submit_datetime %}
-  {% if show_imi_detail or show_imi_historical %}
+  {% if show_imi_detail is defined and show_imi_detail or show_imi_historical %}
     {{ icms_link(request, icms_url('import:imi-case-detail', kwargs={'application_pk': process.pk}), 'IMI Summary') }}
   {% endif %}
 
-  {% set show_revocation_link = process.status == "REVOKED" or show_revocation %}
+  {% set show_revocation_link = process.status == "REVOKED" or show_revocation is defined and show_revocation %}
   {% if show_revocation_link %}
     {{ icms_link(request, icms_url('case:search-revoke-licence', kwargs={'case_type': 'import', 'application_pk': process.pk}), 'Revocations') }}
   {% endif %}
 
-  {% if not readonly_view %}
+  {% if readonly_view is defined and not readonly_view %}
     {{ icms_link(request, icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': 'import'}), 'Authorisation') }}
   {% endif %}
 

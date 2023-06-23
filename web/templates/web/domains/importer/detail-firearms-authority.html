@@ -43,7 +43,7 @@
         </label>
       </div>
       <div class="six columns">
-        {% if linked_offices %}
+        {% if linked_offices is defined and linked_offices %}
           {% for office in linked_offices %}
             <span class="text-widget">
               <p>{{ office }}</p>

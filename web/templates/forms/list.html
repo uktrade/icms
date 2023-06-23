@@ -2,7 +2,7 @@
 <li class="{{class}} {% if not active %}disabled{% endif %}" 
   aria-disabled="{%if not active %}true{%endif%}">
     {% if active %}
-      {% if is_post %}
+      {% if is_post is defined and is_post %}
         <button class="button link-button" type="submit" name="page" value="{{page_no}}" >{{label}}</>
       {% else %}
         <a class="button link-button" href="{{modify_query(request, page=page_no)}}">

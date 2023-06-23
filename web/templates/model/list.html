@@ -66,7 +66,7 @@
               <td>
                 {% for action in display.actions %}
                   {% if action.display(item) %}
-                    {% if activation %}
+                    {% if activation is defined and activation %}
                       {{action.as_html(item, csrf_token, activation=activation)}}
                     {% else %}
                       {{action.as_html(item, csrf_token)}}

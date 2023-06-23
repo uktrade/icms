@@ -24,7 +24,7 @@
 
   <div class="row">
     <div class="three columns bold"><div class="float-right"><label>Unit</label></div></div>
-    <div class="six columns"><span id="commodity_unit_description">{{ unit_label or "" }}</span></div>
+    <div class="six columns"><span id="commodity_unit_description">{%  if unit_label is defined and unit_label %}{{ unit_label }}{% endif %}</span></div>
     <div class="three columns"></div>
   </div>
 

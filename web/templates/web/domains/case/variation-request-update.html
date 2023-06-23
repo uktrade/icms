@@ -80,11 +80,14 @@
         </fieldset>
       </td>
     </tr>
+    {% if variation_requests is defined %}
     {% for vr in variation_requests %}
       <tr>
         <td>{{ variation_request_fieldset(process, vr, True, vr.vr_num, csrf_input) }}</td>
       </tr>
+
     {% endfor %}
+    {% endif %}
 
     </tbody>
   </table>
