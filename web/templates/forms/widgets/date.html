@@ -3,7 +3,7 @@
     type="text"
     name="{{ widget.name }}"
     class="date-input"
-    {% if widget.required%}
+    {% if widget.required %}
     aria-required="true"
     {% else %}
     aria-required="false"
@@ -12,7 +12,7 @@
     value="{{widget.value}}"
     {% endif %}
     {% include "django/forms/widgets/attrs.html" %}>
-    {% if not widget.attrs.disabled %}
-    <div class="date-icon icon-calendar" id="icon{{widget.attrs.id}}" aria-label="Click here to pop up the date picker"></div>
+    {% if not widget.attrs.get('disabled') %}
+    <div class="date-icon icon-calendar" id="icon{{widget.attrs.get('id')}}" aria-label="Click here to pop up the date picker"></div>
     {% endif %}
 </div>
