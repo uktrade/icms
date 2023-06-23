@@ -1,6 +1,6 @@
 {% extends "model/list.html" %}
 {% block empty_message %}There aren't any obsolete calibres that match your search{% endblock %}
-{% set filtered = request.GET.group_name or request.GET.calibre_name  %}
+{% set filtered = request.GET.get('group_name') or request.GET.get('calibre_name')  %}
 
 
 {% block sidebar %}
