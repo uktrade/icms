@@ -3024,3 +3024,5 @@ div aria-labelledby="authorities-current
 {{ contact.last_name or
 {{ contact.street }
 {{ contact.city }
+{{fields.inline_field(form.email
+{{fields.inline_field(form.comment
