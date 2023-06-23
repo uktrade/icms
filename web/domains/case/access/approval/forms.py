@@ -9,7 +9,9 @@ from .models import ApprovalRequest, ExporterApprovalRequest, ImporterApprovalRe
 
 class ExporterApprovalRequestForm(ModelForm):
     status = ChoiceField(
-        choices=ApprovalRequest.STATUSES, initial=ApprovalRequest.DRAFT, disabled=True
+        choices=ApprovalRequest.Statuses.choices,
+        initial=ApprovalRequest.Statuses.DRAFT,
+        disabled=True,
     )
     requested_from = ModelChoiceField(
         queryset=User.objects.none(), empty_label="All", label="Contact", required=False
@@ -38,7 +40,9 @@ class ExporterApprovalRequestForm(ModelForm):
 
 class ImporterApprovalRequestForm(ModelForm):
     status = ChoiceField(
-        choices=ApprovalRequest.STATUSES, initial=ApprovalRequest.DRAFT, disabled=True
+        choices=ApprovalRequest.Statuses.choices,
+        initial=ApprovalRequest.Statuses.DRAFT,
+        disabled=True,
     )
     requested_from = ModelChoiceField(
         queryset=User.objects.none(), empty_label="All", label="Contact", required=False
@@ -82,10 +86,10 @@ class ApprovalRequestResponseForm(ModelForm):
         response = cleaned_data.get("response")
         reason = cleaned_data.get("response_reason")
 
-        if response == ApprovalRequest.APPROVE:
+        if response == ApprovalRequest.Responses.APPROVE:
             cleaned_data["response_reason"] = ""
 
-        elif response == ApprovalRequest.REFUSE and not reason:
+        elif response == ApprovalRequest.Responses.REFUSE and not reason:
             self.add_error("response_reason", "You must enter this item")
 
         return cleaned_data

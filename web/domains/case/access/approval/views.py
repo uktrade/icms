@@ -22,6 +22,10 @@ from web.models import (
     ImporterAccessRequest,
     ImporterApprovalRequest,
 )
+from web.notify.email import (
+    send_approval_request_completed_email,
+    send_approval_request_opened_email,
+)
 from web.permissions import Perms, can_user_manage_org_contacts
 from web.types import AuthenticatedHttpRequest
 
@@ -62,15 +66,11 @@ def manage_access_approval(
 
             if form.is_valid():
                 approval_request = form.save(commit=False)
-
-                approval_request.status = ApprovalRequest.OPEN
+                approval_request.status = ApprovalRequest.Statuses.OPEN
                 approval_request.access_request = access_request
                 approval_request.requested_by = request.user
                 approval_request.save()
-
-                # TODO: ICMSLST-1923 Approval Request is missing email template
-                # to notify importer's or exporter's contacts of the request
-
+                send_approval_request_opened_email(approval_request)
                 return redirect(
                     reverse(
                         "access:case-management-access-approval",
@@ -126,7 +126,7 @@ def manage_access_approval_withdraw(
         )
 
         approval_request.is_active = False
-        approval_request.status = ApprovalRequest.CANCELLED
+        approval_request.status = ApprovalRequest.Statuses.CANCELLED
         approval_request.save()
 
         return redirect(
@@ -271,14 +271,11 @@ def close_access_approval(
 
             if form.is_valid():
                 approval_request = form.save(commit=False)
-                approval_request.status = ApprovalRequest.COMPLETED
+                approval_request.status = ApprovalRequest.Statuses.COMPLETED
                 approval_request.response_date = timezone.now()
                 approval_request.response_by = request.user
                 approval_request.save()
-
-                # TODO: ICMSLST-1923 Approval Request is missing email template
-                # to notify importer's or exporter's contacts of the request
-
+                send_approval_request_completed_email()
                 return redirect(reverse("workbasket"))
 
         else:

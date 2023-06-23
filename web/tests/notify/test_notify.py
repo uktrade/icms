@@ -400,7 +400,7 @@ def test_send_sil_application_approved_email_licence_extension(
     )
 
 
-def test_send_supplentary_report_notification(completed_sil_app, importer_one_contact):
+def test_send_supplementary_report_notification(completed_sil_app, importer_one_contact):
     app = completed_sil_app
     notify.send_supplementary_report_notification(app)
 
@@ -447,13 +447,13 @@ def test_send_constabulary_notification(ilb_admin_user, completed_dfl_app, monke
 @patch("web.notify.notify.send_supplementary_report_notification")
 @patch("web.notify.notify.send_application_approved_notification")
 def test_send_case_complete_notifications_dfl(
-    app_approved_mock, supplementay_report_mock, constabulary_mock, completed_dfl_app
+    app_approved_mock, supplementary_report_mock, constabulary_mock, completed_dfl_app
 ):
     app = completed_dfl_app
     notify.send_case_complete_notifications(app)
 
     app_approved_mock.assert_called_with(app)
-    supplementay_report_mock.assert_called_with(app)
+    supplementary_report_mock.assert_called_with(app)
     constabulary_mock.assert_called_with(app.dflapplication)
 
 
@@ -461,13 +461,13 @@ def test_send_case_complete_notifications_dfl(
 @patch("web.notify.notify.send_supplementary_report_notification")
 @patch("web.notify.notify.send_application_approved_notification")
 def test_send_case_complete_notifications_sil(
-    app_approved_mock, supplementay_report_mock, constabulary_mock, completed_sil_app
+    app_approved_mock, supplementary_report_mock, constabulary_mock, completed_sil_app
 ):
     app = completed_sil_app
     notify.send_case_complete_notifications(app)
 
     app_approved_mock.assert_called_with(app)
-    supplementay_report_mock.assert_called_with(app)
+    supplementary_report_mock.assert_called_with(app)
     constabulary_mock.assert_not_called()
 
 
@@ -475,13 +475,13 @@ def test_send_case_complete_notifications_sil(
 @patch("web.notify.notify.send_supplementary_report_notification")
 @patch("web.notify.notify.send_application_approved_notification")
 def test_send_case_complete_notifications_gmp(
-    app_approved_mock, supplementay_report_mock, constabulary_mock, gmp_app_submitted
+    app_approved_mock, supplementary_report_mock, constabulary_mock, gmp_app_submitted
 ):
     app = gmp_app_submitted
     notify.send_case_complete_notifications(app)
 
     app_approved_mock.assert_called_with(app)
-    supplementay_report_mock.assert_not_called()
+    supplementary_report_mock.assert_not_called()
     constabulary_mock.assert_not_called()
 
 
