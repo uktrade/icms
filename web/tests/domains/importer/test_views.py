@@ -97,6 +97,70 @@ class TestImporterListUserView(AuthTestCase):
         assert importer == self.importer
 
 
+class TestImporterListHomeOfficeView(AuthTestCase):
+    url = reverse("home-office-importer-list")
+
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, ho_admin_client):
+        self.ho_admin_client = ho_admin_client
+
+    def test_permission(self):
+        response = self.ho_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_get(self):
+        response = self.ho_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        print(response.context)
+
+        assert response.context["page_title"] == "Maintain Importers"
+
+        importers = response.context["object_list"]
+        assert importers.count() == 4
+
+
+class TestImporterDetailHomeOfficeView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, strict_templates, ho_admin_client):
+        self.ho_admin_client = ho_admin_client
+        self.url = reverse("home-office-importer-detail", kwargs={"importer_pk": self.importer.id})
+
+    def test_permission(self):
+        response = self.ho_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def get_get(self):
+        response = self.ho_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assert response.context["object"] == self.importer
+        assert response.context["parent_url"] == reverse("home-office-importer-list")
+        assert response.context["show_section5_authorities"]
+
+    def test_post_forbidden(self):
+        response = self.ho_admin_client.post(self.url)
+
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+
 class TestIndividualImporterCreateView(AuthTestCase):
     url = reverse("importer-create", kwargs={"entity_type": "individual"})
     redirect_url = f"{LOGIN_URL}?next={url}"

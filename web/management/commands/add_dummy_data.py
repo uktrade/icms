@@ -50,6 +50,7 @@ class Command(BaseCommand):
         importer_user_group = Group.objects.get(name="Importer User")
         exporter_user_group = Group.objects.get(name="Exporter User")
         nca_case_officer = Group.objects.get(name="NCA Case Officer")
+        ho_case_officer = Group.objects.get(name="Home Office Case Officer")
 
         # Enable disabled application types to test / develop them
         if settings.SET_INACTIVE_APP_TYPES_ACTIVE:
@@ -216,6 +217,13 @@ class Command(BaseCommand):
             groups=[nca_case_officer],
         )
 
+        self.create_user(
+            username="ho_admin",
+            password=options["password"],
+            first_name="Steven",
+            last_name="Hall (HO Case Officer)",
+            groups=[ho_case_officer],
+        )
         self.create_superuser("admin", options["password"])
 
         self.stdout.write(

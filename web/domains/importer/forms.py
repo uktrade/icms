@@ -136,6 +136,7 @@ class ImporterFilter(FilterSet):
         if not value:
             return queryset
 
+        # TODO: ICMSLST-2093 Fix duplicate rows being returned.
         #  Filter organisation name for organisations and title, first_name, last_name
         #  for individual importers
         return queryset.filter(

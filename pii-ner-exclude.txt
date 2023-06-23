@@ -3016,3 +3016,14 @@ PATH '/CA/APPLICATION/GMP_DETAILS/MANUFACTURER_ADDRESS_DETAILS/COUNTRY_OF_MANUFA
 FILE_FOLDER_ID
 INNER JOIN impmgr.beis_email_recipients
 Document Preview</h4
+Home Office Case Officer
+Hall (HO Case Officer
+The Home Office (HO
+the Firearms and Ammunition Act
+importer.get_region_origin_display()|default("N
+importer.comments|default("N
+ho-list.html
+Create Section5 Authority for Importer '
+an Importer Regulator
+{{ fields.field(form.document
+NCA & HO

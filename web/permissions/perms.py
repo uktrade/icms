@@ -28,6 +28,8 @@ class SysPerms(PermissionTextChoice):
     importer_access = "web.importer_access", "Can act as an importer"
     exporter_access = "web.exporter_access", "Can act as an exporter"
     ilb_admin = "web.ilb_admin", "Is an ILB administrator"
+    importer_regulator = "web.importer_regulator", "Is an Importer Regulator"
+
     edit_firearm_authorities = (
         "web.edit_firearm_authorities",
         "Can edit Importer Verified Firearms Authorities",

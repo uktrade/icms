@@ -53,7 +53,9 @@
   {% if not object.is_agent() %}
     {% with
       agents = object.agents,
-      read_only = True %}
+      read_only = True,
+      agent_view_url_name = "exporter-view"
+    %}
 
       {% include "partial/agents.html" %}
     {% endwith %}

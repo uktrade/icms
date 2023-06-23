@@ -6,6 +6,12 @@ from web.domains.importer import views
 urlpatterns = [
     path("", views.ImporterListAdminView.as_view(), name="importer-list"),
     path("list/user/", views.ImporterListUserView.as_view(), name="user-importer-list"),
+    path("list/ho/", views.ImporterListHomeOfficeView.as_view(), name="home-office-importer-list"),
+    path(
+        "list/ho/<int:importer_pk>/",
+        views.ImporterDetailHomeOfficeView.as_view(),
+        name="home-office-importer-detail",
+    ),
     path("<entitytype:entity_type>/create/", views.create_importer, name="importer-create"),
     path("<int:pk>/edit/", views.edit_importer, name="importer-edit"),
     path("<int:pk>/", views.importer_detail_view, name="importer-view"),

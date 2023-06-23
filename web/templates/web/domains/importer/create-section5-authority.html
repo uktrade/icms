@@ -1,4 +1,4 @@
-{% extends "layout/sidebar.html" %}
+{% extends base_template %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 {% import "tables/tables.html" as tables %}
@@ -22,7 +22,7 @@
   <div class="content-actions">
     <ul class="menu-out flow-across">
       <li>
-        <a href="{{ icms_url('importer-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
+        <a href="{{ parent_url }}" class="prev-link">
           Importer {{ object.display_name }}
         </a>
       </li>
