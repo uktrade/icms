@@ -404,21 +404,21 @@ def test_send_withdrawal_email_with_unsupported_status(com_app_submitted, import
             1,
             "Variation Update Required",
             "needs updating",
-            "E1_main_contact@example.com",  # /PS-IGNORE
+            "I1_main_contact@example.com",  # /PS-IGNORE
         ),
         (
             constants.VariationRequestDescription.UPDATE_CANCELLED,
             1,
             "Variation Update No Longer Required",
             "no longer requires\nan update",
-            "E1_main_contact@example.com",  # /PS-IGNORE
+            "I1_main_contact@example.com",  # /PS-IGNORE
         ),
         (
             constants.VariationRequestDescription.REFUSED,
             1,
-            "Variation on application reference CA/2023/00001 has been refused by ILB",
+            "Variation on application reference IMA/2023/00001 has been refused by ILB",
             "has been refused by\nILB",
-            "E1_main_contact@example.com",  # /PS-IGNORE
+            "I1_main_contact@example.com",  # /PS-IGNORE
         ),
         (
             constants.VariationRequestDescription.UPDATE_RECEIVED,
@@ -430,7 +430,7 @@ def test_send_withdrawal_email_with_unsupported_status(com_app_submitted, import
     ],
 )
 def test_send_variation_request_email(
-    com_app_submitted,
+    fa_oil_app_submitted,
     ilb_admin_user,
     ilb_admin_two,
     desc,
@@ -439,10 +439,10 @@ def test_send_variation_request_email(
     exp_in_body,
     exp_sent_to,
 ):
-    com_app_submitted.case_owner = ilb_admin_two
-    com_app_submitted.save()
-    vr = add_variation_request_to_app(com_app_submitted, ilb_admin_user)
-    email.send_variation_request_email(vr, desc, com_app_submitted)
+    fa_oil_app_submitted.case_owner = ilb_admin_two
+    fa_oil_app_submitted.save()
+    vr = add_variation_request_to_app(fa_oil_app_submitted, ilb_admin_user)
+    email.send_variation_request_email(vr, desc, fa_oil_app_submitted)
     check_email_was_sent(exp_num_emails, exp_sent_to, exp_subject, exp_in_body)
 
 
@@ -455,7 +455,7 @@ def test_send_variation_request_email_with_unsupported_description(
         assert e_info == "Unsupported Variation Request Description"
 
 
-def test_send_application_update_reponse_email(com_app_submitted, ilb_admin_two):
+def test_send_application_update_response_email(com_app_submitted, ilb_admin_two):
     com_app_submitted.case_owner = ilb_admin_two
     email.send_application_update_reponse_email(com_app_submitted)
     check_email_was_sent(
