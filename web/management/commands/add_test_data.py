@@ -64,10 +64,11 @@ class Command(BaseCommand):
         self.create_test_importers()
         self.create_test_exporters()
 
-        # ICMS Caseworkers (ILB & NCA)
+        # ICMS Caseworkers (ILB, NCA & HO)
         self.create_icms_admin_user("ilb_admin_user")
         self.create_icms_admin_user("ilb_admin_two")
         self.create_nca_admin_user("nca_admin_user")
+        self.create_ho_admin_user("ho_admin_user")
 
         # enable disabled application types
         ImportApplicationType.objects.update(is_active=True)
@@ -236,6 +237,14 @@ class Command(BaseCommand):
         user = self.create_user(username)
         PersonalEmail.objects.create(user=user, email=user.email, portal_notifications=True)
         group = Group.objects.get(name="NCA Case Officer")
+        user.groups.add(group)
+
+        return user
+
+    def create_ho_admin_user(self, username):
+        user = self.create_user(username)
+        PersonalEmail.objects.create(user=user, email=user.email, portal_notifications=True)
+        group = Group.objects.get(name="Home Office Case Officer")
         user.groups.add(group)
 
         return user

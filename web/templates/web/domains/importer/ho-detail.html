@@ -1,4 +1,4 @@
-{% extends base_template %}
+{% extends "layout/no-sidebar.html" %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
@@ -15,38 +15,26 @@
     </div>
 {% endblock %}
 
-{% block sidebar %}
-  {% include "partial/importer/sidebar.html" %}
-{% endblock %}
-
 {% block main_content %}
-
   {% with
     importer = object,
-    importer_url_name = 'importer-view' %}
+    importer_url_name = 'home-office-importer-detail' %}
     {% include "partial/importer/detail.html" %}
   {% endwith %}
 
   {% with
+    has_eori = object.is_organisation(),
     offices = object.offices.all(),
     read_only = True %}
-
     {% include "partial/offices.html" %}
   {% endwith %}
 
-  {% if show_firearm_authorities %}
-    {% with
-      firearms_authorities = object.firearms_authorities.all(),
-      read_only = True %}
-
-      {% include "partial/firearms-authorities.html" %}
-    {% endwith %}
-  {% endif %}
 
   {% if show_section5_authorities %}
     {% with
       section5_authorities = object.section5_authorities.all(),
-      read_only = True %}
+      read_only = False
+    %}
 
       {% include "partial/section5-authorities.html" %}
     {% endwith %}
@@ -57,13 +45,10 @@
       agents = object.agents,
       read_only = True,
       is_importer = True,
-      agent_view_url_name = "importer-view"
+      is_ilb_admin = False,
+      agent_view_url_name = "home-office-importer-detail"
     %}
       {% include "partial/agents.html" %}
     {% endwith %}
   {% endif %}
-
-  {% with read_only = True, can_manage_contacts = False %}
-    {% include "partial/contacts/contacts.html" %}
-  {% endwith %}
 {% endblock %}

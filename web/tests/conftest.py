@@ -1,9 +1,10 @@
 import datetime
 
 import pytest
+from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
-from django.test import signals
+from django.test import override_settings, signals
 from django.test.client import Client
 from django.urls import reverse
 from jinja2 import Template as Jinja2Template
@@ -92,6 +93,12 @@ def ilb_admin_user(django_user_model):
 def nca_admin_user(django_user_model):
     """Fixture to get an NCA Case Officer user."""
     return django_user_model.objects.get(username="nca_admin_user")
+
+
+@pytest.fixture
+def ho_admin_user(django_user_model):
+    """Fixture to get a Home Office Case Officer user."""
+    return django_user_model.objects.get(username="ho_admin_user")
 
 
 @pytest.fixture
@@ -221,6 +228,16 @@ def agent_exporter(db):
 @pytest.fixture()
 def ilb_admin_client(ilb_admin_user) -> Client:
     return get_test_client(ilb_admin_user)
+
+
+@pytest.fixture()
+def nca_admin_client(nca_admin_user) -> Client:
+    return get_test_client(nca_admin_user)
+
+
+@pytest.fixture()
+def ho_admin_client(ho_admin_user) -> Client:
+    return get_test_client(ho_admin_user)
 
 
 @pytest.fixture()
@@ -549,6 +566,13 @@ def document_form_data():
     """Used in tests requiring a document to be uploaded in a form."""
 
     return {"document": SimpleUploadedFile("myimage.png", b"file_content")}
+
+
+@pytest.fixture
+def strict_templates():
+    """Ensure strict templates."""
+    with override_settings(TEMPLATES=settings.STRICT_TEMPLATES):
+        yield None
 
 
 def _set_valid_licence(app):

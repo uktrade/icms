@@ -66,5 +66,16 @@ def get_groups():
             Perms.page.view_import_case_search.codename,
             # Sys permissions
             Perms.sys.search_all_cases.codename,
+            # NOTE: This user in V1 will also have some kind of report access that V2 hasn't implemented.
+            # e.g.
+            # Perms.sys.report_access.codename
         ],
+        "Home Office Case Officer": {
+            # Page permissions
+            Perms.page.view_import_case_search.codename,
+            # Sys permissions
+            Perms.sys.search_all_cases.codename,
+            Perms.sys.importer_regulator.codename,
+            Perms.sys.edit_section_5_firearm_authorities.codename,
+        },
     }

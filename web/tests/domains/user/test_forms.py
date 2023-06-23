@@ -17,7 +17,7 @@ class TestUserListFilter(TestCase):
 
     def test_email_filter(self):
         results = self.run_filter({"email_address": "example.com"})
-        assert results.count() == 14
+        assert results.count() == 15
 
     def test_username_filter(self):
         results = self.run_filter({"username": "I1_main_contact"})
@@ -54,7 +54,7 @@ class TestPeopleFilter(TestCase):
 
     def test_email_filter(self):
         results = self.run_filter({"email_address": "example.com"})
-        assert results.count() == 14
+        assert results.count() == 15
 
     def test_first_name_filter(self):
         results = self.run_filter({"forename": "E1"})
@@ -74,11 +74,11 @@ class TestPeopleFilter(TestCase):
 
     def test_job_title_filter(self):
         results = self.run_filter({"job": "job"})
-        assert results.count() == 14
+        assert results.count() == 15
 
     def test_filter_order(self):
         results = self.run_filter({"email_address": "example"})
-        assert results.count() == 14
+        assert results.count() == 15
         first = results.first()
         last = results.last()
         assert first.username == "access_request_user"

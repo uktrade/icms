@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
-from django.views.generic import ListView
+from django.views.generic import DetailView, ListView
 from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.forms import DocumentForm
@@ -61,40 +61,50 @@ class EditImporterAction(Edit):
         return reverse("importer-edit", kwargs={"pk": obj.pk})
 
 
+def get_importer_list_fields() -> list[Any]:
+    return [
+        "status",
+        ("name", "user", "registered_number", "entity_type"),
+        "offices",
+        "agents",
+    ]
+
+
+def get_importer_list_fields_config() -> dict[str, Any]:
+    return {
+        "name": {"header": "Importer Name", "link": True},
+        "user": {"no_header": True, "link": True},
+        "registered_number": {"header": "Importer Reg No"},
+        "entity_type": {"header": "Importer Entity Type"},
+        "status": {"header": "Status", "bold": True},
+        "offices": {
+            "header": "Addresses",
+            "show_all": True,
+            "query_filter": {"is_active": True},
+        },
+        "agents": {
+            "header": "Agents",
+            "show_all": True,
+            "query_filter": {"is_active": True},
+        },
+    }
+
+
 class ImporterListAdminView(ModelFilterView):
     """ILB admin view listing all Importer records."""
 
     template_name = "web/domains/importer/list.html"
     filterset_class = ImporterFilter
     model = Importer
+    # TODO: ICMSLST-2093 Fix duplicate rows being returned.
     queryset = Importer.objects.select_related("main_importer")
     page_title = "Maintain Importers"
     permission_required = Perms.sys.ilb_admin
 
     class Display:
-        fields = [
-            "status",
-            ("name", "user", "registered_number", "entity_type"),
-            "offices",
-            "agents",
-        ]
-        fields_config = {
-            "name": {"header": "Importer Name", "link": True},
-            "user": {"no_header": True, "link": True},
-            "registered_number": {"header": "Importer Reg No"},
-            "entity_type": {"header": "Importer Entity Type"},
-            "status": {"header": "Status", "bold": True},
-            "offices": {
-                "header": "Addresses",
-                "show_all": True,
-                "query_filter": {"is_active": True},
-            },
-            "agents": {
-                "header": "Agents",
-                "show_all": True,
-                "query_filter": {"is_active": True},
-            },
-        }
+        fields = get_importer_list_fields()
+        fields_config = get_importer_list_fields_config()
+
         opts = {"inline": True, "icon_only": True}
         actions = [
             EditImporterAction(**opts),
@@ -127,6 +137,47 @@ class ImporterListUserView(PermissionRequiredMixin, LoginRequiredMixin, ListView
         )
 
         return qs.prefetch_related("offices")
+
+
+class ImporterListHomeOfficeView(ModelFilterView):
+    # PermissionRequiredMixin config
+    permission_required = Perms.sys.importer_regulator
+
+    # ListView config
+    model = Importer
+    # TODO: ICMSLST-2093 Fix duplicate rows being returned.
+    queryset = Importer.objects.select_related("main_importer")
+    template_name = "web/domains/importer/ho-list.html"
+
+    # ModelFilterView config
+    page_title = "Maintain Importers"
+    filterset_class = ImporterFilter
+
+    class Display:
+        fields = get_importer_list_fields()
+        fields_config = get_importer_list_fields_config()
+        actions: list[Any] = []
+
+
+class ImporterDetailHomeOfficeView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+    permission_required = Perms.sys.importer_regulator
+
+    model = Importer
+    pk_url_kwarg = "importer_pk"
+    http_method_names = ["get"]
+    template_name = "web/domains/importer/ho-detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        show_section5_authorities = (
+            not self.object.is_agent() and can_user_edit_section5_authorities(self.request.user)
+        )
+
+        return context | {
+            "parent_url": reverse("home-office-importer-list"),
+            "show_section5_authorities": show_section5_authorities,
+        }
 
 
 @login_required
@@ -220,7 +271,8 @@ def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
                 clause_quantity.section5authority = section5
                 clause_quantity.save()
 
-            return redirect(reverse("importer-edit", kwargs={"pk": section5.importer.pk}))
+            redirect_to = _get_section_5_redirect_url(request.user, importer)
+            return redirect(redirect_to)
     else:
         form = Section5AuthorityForm(importer)
 
@@ -245,7 +297,11 @@ def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
         "formset": clause_quantity_formset,
     }
 
-    return render(request, "web/domains/importer/create-section5-authority.html", context)
+    user_context = _get_section_5_user_context(request.user, importer)
+
+    return render(
+        request, "web/domains/importer/create-section5-authority.html", context | user_context
+    )
 
 
 @login_required
@@ -284,7 +340,11 @@ def edit_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
         "formset": clause_quantity_formset,
     }
 
-    return render(request, "web/domains/importer/edit-section5-authority.html", context)
+    user_context = _get_section_5_user_context(request.user, section5.importer)
+
+    return render(
+        request, "web/domains/importer/edit-section5-authority.html", context | user_context
+    )
 
 
 @login_required
@@ -299,8 +359,11 @@ def view_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
         "object": section5.importer,
         "section5": section5,
     }
+    user_context = _get_section_5_user_context(request.user, section5.importer)
 
-    return render(request, "web/domains/importer/detail-section5-authority.html", context)
+    return render(
+        request, "web/domains/importer/detail-section5-authority.html", context | user_context
+    )
 
 
 @login_required
@@ -321,8 +384,8 @@ def archive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
             section5.save()
 
             authority_archived_notification(section5, "Section 5")
-
-            return redirect(reverse("importer-edit", kwargs={"pk": section5.importer.pk}))
+            redirect_to = _get_section_5_redirect_url(request.user, section5.importer)
+            return redirect(redirect_to)
     else:
         form = ArchiveSection5AuthorityForm(instance=section5)
 
@@ -331,7 +394,11 @@ def archive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
         "section5": section5,
         "form": form,
     }
-    return render(request, "web/domains/importer/archive-section5-authority.html", context)
+    user_context = _get_section_5_user_context(request.user, section5.importer)
+
+    return render(
+        request, "web/domains/importer/archive-section5-authority.html", context | user_context
+    )
 
 
 @login_required
@@ -349,7 +416,8 @@ def unarchive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpRespon
     section5.other_archive_reason = None
     section5.save()
 
-    return redirect(reverse("importer-edit", kwargs={"pk": section5.importer.pk}))
+    redirect_to = _get_section_5_redirect_url(request.user, section5.importer)
+    return redirect(redirect_to)
 
 
 @login_required
@@ -375,8 +443,11 @@ def add_document_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpRes
         "form": form,
         "section5": section5,
     }
+    user_context = _get_section_5_user_context(request.user, section5.importer)
 
-    return render(request, "web/domains/importer/add-document-section5-authority.html", context)
+    return render(
+        request, "web/domains/importer/add-document-section5-authority.html", context | user_context
+    )
 
 
 @login_required
@@ -413,6 +484,30 @@ def delete_document_section5(
     document.save()
 
     return redirect(reverse("importer-section5-edit", kwargs={"pk": section5_pk}))
+
+
+def _get_section_5_redirect_url(user, importer):
+    if user.has_perm(Perms.sys.ilb_admin):
+        return reverse("importer-edit", kwargs={"pk": importer.pk})
+    elif user.has_perm(Perms.sys.importer_regulator):
+        return reverse("home-office-importer-detail", kwargs={"importer_pk": importer.pk})
+
+    raise ValueError(f"Unknown section5 redirect for user: {user}")
+
+
+def _get_section_5_user_context(user: User, importer: Importer) -> dict[str, Any]:
+    """Return common context depending on the user profile for the section 5 views."""
+
+    if user.has_perm(Perms.sys.ilb_admin):
+        base_template = "layout/sidebar.html"
+        parent_url = reverse("importer-edit", kwargs={"pk": importer.pk})
+    elif user.has_perm(Perms.sys.importer_regulator):
+        base_template = "layout/no-sidebar.html"
+        parent_url = reverse("home-office-importer-detail", kwargs={"importer_pk": importer.pk})
+    else:
+        raise ValueError(f"Unknown section5 context for user: {user}")
+
+    return {"base_template": base_template, "parent_url": parent_url}
 
 
 @login_required

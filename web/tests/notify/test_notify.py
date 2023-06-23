@@ -139,9 +139,9 @@ def test_send_section_5_authority_expiry_notification(ilb_admin_client, importer
     notify.send_section_5_expiry_notification()
 
     outbox = mail.outbox
-    assert len(outbox) == 2
+    assert len(outbox) == 3
 
-    m = outbox[1]
+    m = outbox[2]
     assert m.to == ["ilb_admin_user@example.com"]  # /PS-IGNORE
     assert m.subject.startswith("Verified Section 5 Authorities Expiring")
     assert "The following 1 importers have one or more verified Section 5 Authorities" in m.body

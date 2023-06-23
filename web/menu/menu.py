@@ -185,6 +185,7 @@ class Menu:
         MenuLink(label="Workbasket", view="workbasket"),
         MenuLink(label="Importer Details", view="user-importer-list"),
         MenuLink(label="Exporter Details", view="user-exporter-list"),
+        MenuLink(label="Importers", view="home-office-importer-list"),
         MenuDropDown(
             label="Search",
             sub_menu_list=[
