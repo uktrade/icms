@@ -1,5 +1,3 @@
-# TODO ICMSLST-2060 Investigate why submitted CFS apps in V1 have no case reference and if they need to be included
-
 cfs_application = """
 WITH rp_wua AS (
   SELECT uah.resource_person_id
@@ -87,10 +85,7 @@ FROM impmgr.xview_certificate_app_details xcad
 WHERE xcad.status_control = 'C'
   AND xcad.application_type = 'CFS'
   AND xcad.status <> 'DELETED'
-  AND (
-    (xcad.submitted_datetime IS NOT NULL AND ca.case_reference IS NOT NULL)
-    OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY
-  )
+  AND (xcad.status <> 'IN_PROGRESS' OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
 """
 
 cfs_schedule = """
@@ -121,7 +116,6 @@ SELECT
   , schedules.legislation_xml
   , schedules.product_xml
 FROM impmgr.xview_certificate_app_details xcad
-INNER JOIN impmgr.certificate_applications ca ON ca.id = xcad.ca_id
 INNER JOIN impmgr.xview_cert_app_schedules xcas ON xcas.cad_id = xcad.cad_id
 INNER JOIN (
   SELECT
@@ -166,10 +160,7 @@ LEFT JOIN
 WHERE xcad.status_control = 'C'
   AND xcad.application_type = 'CFS'
   AND xcad.status <> 'DELETED'
-  AND (
-    (xcad.submitted_datetime IS NOT NULL AND ca.case_reference IS NOT NULL)
-    OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY
-  )
+  AND (xcad.status <> 'IN_PROGRESS' OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
 ORDER BY xcas.cad_id, xcas.schedule_ordinal
 """
 
