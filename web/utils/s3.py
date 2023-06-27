@@ -34,7 +34,6 @@ def get_file_from_s3(path: str, client: Optional["S3Client"] = None) -> bytes:
 
     s3_file = client.get_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=path)
     contents = s3_file["Body"].read()
-
     return contents
 
 
@@ -55,6 +54,19 @@ def upload_file_obj_to_s3(file_obj: IO[Any], key: str, client: Optional["S3Clien
         client = get_s3_client()
 
     client.upload_fileobj(file_obj, Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=key)
+
+    object_meta = client.head_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=key)
+
+    return object_meta["ContentLength"]
+
+
+def put_object_in_s3(file_data: str, key: str, client: Optional["S3Client"] = None) -> int:
+    """Uploads data as file to s3 and return the size of the file (bytes)."""
+
+    if not client:
+        client = get_s3_client()
+
+    client.put_object(Body=file_data, Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=key)
 
     object_meta = client.head_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=key)
 

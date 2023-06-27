@@ -51,3 +51,7 @@ LOGGING = {
         },
     },
 }
+
+ICMS_V1_REPLICA_USER = ""
+ICMS_V1_REPLICA_PASSWORD = ""
+ICMS_V1_REPLICA_DSN = ""
