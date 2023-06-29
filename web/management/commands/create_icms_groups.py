@@ -34,6 +34,8 @@ def get_groups():
             #
             # Sys permissions
             Perms.sys.ilb_admin.codename,
+            Perms.sys.commodity_admin.codename,
+            Perms.sys.manage_sanction_contacts.codename,
             Perms.sys.edit_firearm_authorities.codename,
             Perms.sys.edit_section_5_firearm_authorities.codename,
             Perms.sys.search_all_cases.codename,
@@ -77,5 +79,18 @@ def get_groups():
             Perms.sys.search_all_cases.codename,
             Perms.sys.importer_regulator.codename,
             Perms.sys.edit_section_5_firearm_authorities.codename,
+        },
+        "Sanctions Case Officer": {
+            #
+            # Page permissions
+            Perms.page.view_import_case_search.codename,
+            #
+            # Sys permissions
+            Perms.sys.commodity_admin.codename,
+            Perms.sys.manage_sanction_contacts.codename,
+            Perms.sys.search_all_cases.codename,
+            # NOTE: This user in V1 will also have some kind of report access that V2 hasn't implemented.
+            # e.g.
+            # Perms.sys.report_access.codename
         },
     }

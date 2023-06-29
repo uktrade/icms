@@ -102,6 +102,12 @@ def ho_admin_user(django_user_model):
 
 
 @pytest.fixture
+def san_admin_user(django_user_model):
+    """Fixture to get a Sanctions Case Officer user."""
+    return django_user_model.objects.get(username="san_admin_user")
+
+
+@pytest.fixture
 def ilb_admin_two(django_user_model):
     return django_user_model.objects.get(username="ilb_admin_two")
 

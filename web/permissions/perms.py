@@ -29,6 +29,8 @@ class SysPerms(PermissionTextChoice):
     exporter_access = "web.exporter_access", "Can act as an exporter"
     ilb_admin = "web.ilb_admin", "Is an ILB administrator"
     importer_regulator = "web.importer_regulator", "Is an Importer Regulator"
+    commodity_admin = "web.commodity_admin", "Is a commodity administrator"
+    manage_sanction_contacts = "web.manage_sanction_contacts", "Manage sanction email contacts"
 
     edit_firearm_authorities = (
         "web.edit_firearm_authorities",
