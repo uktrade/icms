@@ -76,6 +76,7 @@ Go to http://localhost:8080, login with the one of the test accounts:
   - exporter_agent
   - nca_admin
   - ho_admin
+  - san_admin
 
 The password is the same for each user: `admin`
 

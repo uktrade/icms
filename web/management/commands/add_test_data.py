@@ -51,11 +51,7 @@ class Command(BaseCommand):
 
         # Access requests
         access_user = self.create_user("access_request_user")
-        PersonalEmail.objects.create(
-            user=access_user,
-            email=access_user.email,
-            portal_notifications=True,
-        )
+        add_personal_email(access_user)
 
         self.create_import_access_request(access_user)
         self.create_export_access_request(access_user)
@@ -69,6 +65,7 @@ class Command(BaseCommand):
         self.create_icms_admin_user("ilb_admin_two")
         self.create_nca_admin_user("nca_admin_user")
         self.create_ho_admin_user("ho_admin_user")
+        self.create_san_admin_user("san_admin_user")
 
         # enable disabled application types
         ImportApplicationType.objects.update(is_active=True)
@@ -164,15 +161,8 @@ class Command(BaseCommand):
         main_org: Importer | Exporter | None = None,
     ) -> None:
         user = self.create_user(contact.username, contact.is_active)
-
-        PersonalEmail.objects.create(
-            user=user,
-            email=f"{contact.username}@example.com",  # /PS-IGNORE
-            portal_notifications=True,
-        )
-
-        group = Group.objects.get(name=obj_perms.get_group_name())
-        user.groups.add(group)
+        add_personal_email(user)
+        add_group(user, obj_perms.get_group_name())
 
         for perm in contact.permissions:
             assign_perm(perm, user, org)
@@ -227,24 +217,37 @@ class Command(BaseCommand):
 
     def create_icms_admin_user(self, username):
         user = self.create_user(username)
-        PersonalEmail.objects.create(user=user, email=user.email, portal_notifications=True)
-        group = Group.objects.get(name="ILB Case Officer")
-        user.groups.add(group)
+        add_personal_email(user)
+        add_group(user, "ILB Case Officer")
 
         return user
 
     def create_nca_admin_user(self, username):
         user = self.create_user(username)
-        PersonalEmail.objects.create(user=user, email=user.email, portal_notifications=True)
-        group = Group.objects.get(name="NCA Case Officer")
-        user.groups.add(group)
+        add_personal_email(user)
+        add_group(user, "NCA Case Officer")
 
         return user
 
     def create_ho_admin_user(self, username):
         user = self.create_user(username)
-        PersonalEmail.objects.create(user=user, email=user.email, portal_notifications=True)
-        group = Group.objects.get(name="Home Office Case Officer")
-        user.groups.add(group)
+        add_personal_email(user)
+        add_group(user, "Home Office Case Officer")
 
         return user
+
+    def create_san_admin_user(self, username):
+        user = self.create_user(username)
+        add_personal_email(user)
+        add_group(user, "Sanctions Case Officer")
+
+        return user
+
+
+def add_personal_email(user):
+    PersonalEmail.objects.create(user=user, email=user.email, portal_notifications=True)
+
+
+def add_group(user, group_name):
+    group = Group.objects.get(name=group_name)
+    user.groups.add(group)
