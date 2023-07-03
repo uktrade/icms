@@ -185,7 +185,7 @@ class Menu:
         MenuLink(label="Workbasket", view="workbasket"),
         MenuLink(label="Importer Details", view="user-importer-list"),
         MenuLink(label="Exporter Details", view="user-exporter-list"),
-        MenuLink(label="Importers", view="home-office-importer-list"),
+        MenuLink(label="Importers", view="regulator-importer-list"),
         MenuDropDown(
             label="Search",
             sub_menu_list=[
@@ -226,7 +226,7 @@ class Menu:
                     label="Reference Data",
                     links=[
                         SubMenuLink(label="Commodities", view="commodity-list"),
-                        SubMenuLink(label="Constabularies", view="constabulary-list"),
+                        SubMenuLink(label="Constabularies", view="constabulary:list"),
                         SubMenuLink(label="Sanction Emails", view="sanction-emails:list"),
                         SubMenuLink(label="Obsolete Calibres", view="obsolete-calibre-group-list"),
                         SubMenuLink(label="Section 5 Clauses", view="section5:list"),

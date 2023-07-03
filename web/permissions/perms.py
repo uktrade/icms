@@ -89,9 +89,21 @@ class ExporterObjectPermissions(PermissionTextChoice):
         return "Exporter User"
 
 
+class ConstabularyObjectPermissions(PermissionTextChoice):
+    verified_fa_authority_editor = (
+        "web.verified_fa_authority_editor",
+        "Can view and edit importer verified firearms authorities issued by the constabulary.",
+    )
+
+    @staticmethod
+    def get_group_name():
+        return "Constabulary Contact"
+
+
 class ObjectPerms:
     importer = ImporterObjectPermissions
     exporter = ExporterObjectPermissions
+    constabulary = ConstabularyObjectPermissions
 
 
 class Perms:

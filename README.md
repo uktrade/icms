@@ -78,6 +78,7 @@ Go to http://localhost:8080, login with the one of the test accounts:
   - ho_admin
   - san_admin
   - san_admin_2
+  - con_user
 
 The password is the same for each user: `admin`
 

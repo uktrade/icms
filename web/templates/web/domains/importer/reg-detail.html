@@ -18,7 +18,7 @@
 {% block main_content %}
   {% with
     importer = object,
-    importer_url_name = 'home-office-importer-detail' %}
+    importer_url_name = 'regulator-importer-detail' %}
     {% include "partial/importer/detail.html" %}
   {% endwith %}
 
@@ -29,13 +29,16 @@
     {% include "partial/offices.html" %}
   {% endwith %}
 
+  {% if is_main_importer %}
+    {% with
+      firearms_authorities = object.firearms_authorities.all(),
+      read_only = (not can_edit_firearm_authorities) %}
+      {% include "partial/firearms-authorities.html" %}
+    {% endwith %}
 
-  {% if show_section5_authorities %}
     {% with
       section5_authorities = object.section5_authorities.all(),
-      read_only = False
-    %}
-
+      read_only = (not can_edit_section5_authorities) %}
       {% include "partial/section5-authorities.html" %}
     {% endwith %}
   {% endif %}
@@ -46,7 +49,7 @@
       read_only = True,
       is_importer = True,
       is_ilb_admin = False,
-      agent_view_url_name = "home-office-importer-detail"
+      agent_view_url_name = "regulator-importer-detail"
     %}
       {% include "partial/agents.html" %}
     {% endwith %}

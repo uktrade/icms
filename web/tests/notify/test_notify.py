@@ -98,9 +98,9 @@ def test_send_firearms_authority_expiry_notification(ilb_admin_client, importer)
     notify.send_firearms_authority_expiry_notification()
 
     outbox = mail.outbox
-    assert len(outbox) == 2
+    assert len(outbox) == 3
 
-    m = outbox[1]
+    m = outbox[2]
     assert m.to == ["ilb_admin_user@example.com"]  # /PS-IGNORE
     assert m.subject.startswith("Verified Firearms Authorities Expiring")
     assert f"issued by constabulary {constabulary.name} that expire" in m.body

@@ -73,7 +73,7 @@
           {% for document in section5.files.active() %}
             <tr>
               <td>
-                <a href="{{ icms_url('importer-firearms-view-document', kwargs={'firearms_pk': section5.pk, 'document_pk': document.pk}) }}">
+                <a href="{{ icms_url('importer-section5-view-document', kwargs={'section5_pk': section5.pk, 'document_pk': document.pk}) }}">
                   {{ document.filename }}
                 </a>
                 <br />

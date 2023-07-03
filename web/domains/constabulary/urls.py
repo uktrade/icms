@@ -1,18 +1,29 @@
-#!/usr/bin/env python
+from django.urls import include, path
 
-from django.urls import path
+from . import views
 
-from . import views as constabulary_views
+app_name = "constabulary"
 
 urlpatterns = [
-    path("", constabulary_views.ConstabularyListView.as_view(), name="constabulary-list"),
+    path("", views.ConstabularyListView.as_view(), name="list"),
+    path("new/", views.ConstabularyCreateView.as_view(), name="new"),
     path(
-        "<int:pk>/", constabulary_views.ConstabularyDetailView.as_view(), name="constabulary-detail"
-    ),
-    path("new/", constabulary_views.ConstabularyCreateView.as_view(), name="constabulary-new"),
-    path(
-        "<int:pk>/edit/",
-        constabulary_views.ConstabularyEditView.as_view(),
-        name="constabulary-edit",
+        "<int:pk>/",
+        include(
+            [
+                path("", views.ConstabularyDetailView.as_view(), name="detail"),
+                path("edit/", views.ConstabularyEditView.as_view(), name="edit"),
+                path(
+                    "contact/add/",
+                    views.AddConstabularyContactView.as_view(),
+                    name="add-contact",
+                ),
+                path(
+                    "contact/delete/<int:contact_pk>",
+                    views.DeleteConstabularyContactView.as_view(),
+                    name="delete-contact",
+                ),
+            ]
+        ),
     ),
 ]

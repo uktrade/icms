@@ -1,5 +1,5 @@
+{% extends base_template %}
 {% from "display/fields.html" import application_field %}
-{% extends "layout/sidebar.html" %}
 
 
 {% block page_title %}View Importer{% endblock %}
@@ -16,7 +16,7 @@
 <div class="content-actions">
   <ul class="menu-out flow-across">
     <li>
-      <a href="{{ icms_url('importer-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
+      <a href="{{ parent_url }}" class="prev-link">
         Importer {{ object.display_name }}
       </a>
     </li>

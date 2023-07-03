@@ -1,0 +1,14 @@
+{% extends "model/view.html" %}
+
+{% block main_content %}
+  {{ super() }}
+  {% with
+    constabulary=object,
+    contacts=contacts,
+    contact_form=None,
+    object_permissions=object_permissions,
+    read_only=True
+  %}
+    {% include "web/domains/constabulary/partial/contacts.html" %}
+  {% endwith %}
+{% endblock %}

@@ -98,4 +98,14 @@ def get_groups():
             # e.g.
             # Perms.sys.report_access
         },
+        #
+        # "Constabulary Contact" (System group + object permissions to related constabularies)
+        Perms.obj.constabulary.get_group_name(): {
+            #
+            # Page permissions
+            Perms.sys.importer_regulator,
+            #
+            # Sys permissions
+            Perms.sys.edit_firearm_authorities,
+        },
     }

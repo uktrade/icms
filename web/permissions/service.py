@@ -10,6 +10,7 @@ from guardian.shortcuts import remove_perm
 
 from web.domains.case.types import ImpOrExp
 from web.models import (
+    Constabulary,
     Exporter,
     ExporterUserObjectPermission,
     Importer,
@@ -300,6 +301,33 @@ def _is_org_admin(user: User, org: ORGANISATION) -> bool:
             return user.has_perm(Perms.sys.exporter_admin)
         case _:
             raise ValueError(f"Unknown org {org}")
+
+
+def constabulary_get_contacts(constabulary: Constabulary, *, perms: list[str] | None = None):
+    if not perms:
+        perms = [p.codename for p in Perms.obj.constabulary]
+
+    org_contacts: QuerySet[User] = get_users_with_obj_perm(constabulary, only_with_perms_in=perms)
+
+    return org_contacts.filter(is_active=True)
+
+
+def constabulary_add_contact(constabulary: Constabulary, user: User) -> None:
+    for perm in Perms.obj.constabulary.values:
+        assign_perm(perm, user, constabulary)
+
+    add_group(user, Perms.obj.constabulary.get_group_name())
+
+
+def constabulary_remove_contact(constabulary: Constabulary, user: User) -> None:
+    for perm in get_user_perms(user, constabulary):
+        remove_perm(perm, user, constabulary)
+
+    # Is the user linked to any other constabularies
+    other_orgs = get_objects_for_user(user, Perms.obj.constabulary.values, any_perm=True)
+
+    if not other_orgs.exists():
+        remove_group(user, Perms.obj.constabulary.get_group_name())
 
 
 def can_user_edit_firearm_authorities(user: User) -> bool:
