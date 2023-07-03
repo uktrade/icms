@@ -1,3 +1,5 @@
+from typing import Any
+
 import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
@@ -11,7 +13,7 @@ from django.views.decorators.http import require_POST
 
 from web.domains.case.forms import DocumentForm
 from web.domains.file.utils import create_file_model
-from web.models import Importer
+from web.models import Importer, User
 from web.notify.notify import authority_archived_notification
 from web.permissions import Perms, can_user_edit_firearm_authorities
 from web.types import AuthenticatedHttpRequest
@@ -252,7 +254,9 @@ def create_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
     importer: Importer = get_object_or_404(Importer, pk=pk)
 
     if request.method == "POST":
-        form = FirearmsAuthorityForm(importer, request.POST, request.FILES)
+        form = FirearmsAuthorityForm(
+            request.POST, request.FILES, user=request.user, importer=importer
+        )
         ClauseQuantityFormSet = inlineformset_factory(
             FirearmsAuthority, ActQuantity, extra=0, form=FirearmsQuantityForm, can_delete=False
         )
@@ -266,9 +270,10 @@ def create_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
                 clause_quantity.firearmsauthority = firearms
                 clause_quantity.save()
 
-            return redirect(reverse("importer-edit", kwargs={"pk": firearms.importer.pk}))
+            redirect_to = _get_firearms_redirect_url(request.user, importer)
+            return redirect(redirect_to)
     else:
-        form = FirearmsAuthorityForm(importer)
+        form = FirearmsAuthorityForm(user=request.user, importer=importer)
 
         # Create a formset to specify quantity for each firearmsacts
         initial = FirearmsAct.objects.annotate(firearmsact=F("pk")).values("firearmsact")
@@ -287,7 +292,10 @@ def create_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
         "formset": clause_quantity_formset,
     }
 
-    return render(request, "web/domains/importer/create-firearms-authority.html", context)
+    user_context = _get_firearms_user_context(request.user, importer)
+    return render(
+        request, "web/domains/importer/create-firearms-authority.html", context | user_context
+    )
 
 
 @login_required
@@ -304,7 +312,11 @@ def edit_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
         clause_quantity_formset = ClauseQuantityFormSet(request.POST, instance=firearms)
 
         form = FirearmsAuthorityForm(
-            firearms.importer, request.POST, request.FILES, instance=firearms
+            request.POST,
+            request.FILES,
+            user=request.user,
+            importer=firearms.importer,
+            instance=firearms,
         )
 
         if form.is_valid() and clause_quantity_formset.is_valid():
@@ -313,7 +325,9 @@ def edit_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 
             return redirect(reverse("importer-firearms-edit", kwargs={"pk": firearms.pk}))
     else:
-        form = FirearmsAuthorityForm(firearms.importer, instance=firearms)
+        form = FirearmsAuthorityForm(
+            user=request.user, importer=firearms.importer, instance=firearms
+        )
         ClauseQuantityFormSet = inlineformset_factory(
             FirearmsAuthority, ActQuantity, extra=0, form=FirearmsQuantityForm, can_delete=False
         )
@@ -326,12 +340,17 @@ def edit_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
         "formset": clause_quantity_formset,
     }
 
-    return render(request, "web/domains/importer/edit-firearms-authority.html", context)
+    user_context = _get_firearms_user_context(request.user, firearms.importer)
+    return render(
+        request, "web/domains/importer/edit-firearms-authority.html", context | user_context
+    )
 
 
 @login_required
 def view_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
-    if not can_user_edit_firearm_authorities(request.user):
+    if not can_user_edit_firearm_authorities(request.user) and not request.user.has_perm(
+        Perms.sys.importer_regulator
+    ):
         raise PermissionDenied
 
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=pk)
@@ -341,7 +360,10 @@ def view_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
         "firearms_authority": firearms,
     }
 
-    return render(request, "web/domains/importer/detail-firearms-authority.html", context)
+    user_context = _get_firearms_user_context(request.user, firearms.importer)
+    return render(
+        request, "web/domains/importer/detail-firearms-authority.html", context | user_context
+    )
 
 
 @login_required
@@ -362,8 +384,8 @@ def archive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
             firearms.save()
 
             authority_archived_notification(firearms, "Firearms")
-
-            return redirect(reverse("importer-edit", kwargs={"pk": firearms.importer.pk}))
+            redirect_to = _get_firearms_redirect_url(request.user, firearms.importer)
+            return redirect(redirect_to)
     else:
         form = ArchiveFirearmsAuthorityForm(instance=firearms)
 
@@ -372,7 +394,11 @@ def archive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
         "firearms_authority": firearms,
         "form": form,
     }
-    return render(request, "web/domains/importer/archive-firearms-authority.html", context)
+    user_context = _get_firearms_user_context(request.user, firearms.importer)
+
+    return render(
+        request, "web/domains/importer/archive-firearms-authority.html", context | user_context
+    )
 
 
 @login_required
@@ -389,7 +415,8 @@ def unarchive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpRespon
     firearms.other_archive_reason = None
     firearms.save()
 
-    return redirect(reverse("importer-edit", kwargs={"pk": firearms.importer.pk}))
+    redirect_to = _get_firearms_redirect_url(request.user, firearms.importer)
+    return redirect(redirect_to)
 
 
 @login_required
@@ -415,15 +442,20 @@ def add_document_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpRes
         "form": form,
         "firearms": firearms,
     }
+    user_context = _get_firearms_user_context(request.user, firearms.importer)
 
-    return render(request, "web/domains/importer/add-document-firearms.html", context)
+    return render(
+        request, "web/domains/importer/add-document-firearms.html", context | user_context
+    )
 
 
 @login_required
 def view_document_firearms(
     request: AuthenticatedHttpRequest, firearms_pk: int, document_pk: int
 ) -> HttpResponse:
-    if not can_user_edit_firearm_authorities(request.user):
+    if not can_user_edit_firearm_authorities(request.user) and not request.user.has_perm(
+        Perms.sys.importer_regulator
+    ):
         raise PermissionDenied
 
     firearms: FirearmsAuthority = get_object_or_404(FirearmsAuthority, pk=firearms_pk)
@@ -452,3 +484,27 @@ def delete_document_firearms(
     document.save()
 
     return redirect(reverse("importer-firearms-edit", kwargs={"pk": firearms_pk}))
+
+
+def _get_firearms_redirect_url(user: User, importer: Importer) -> str:
+    if user.has_perm(Perms.sys.importer_admin):
+        return reverse("importer-edit", kwargs={"pk": importer.pk})
+    elif user.has_perm(Perms.sys.importer_regulator):
+        return reverse("regulator-importer-detail", kwargs={"importer_pk": importer.pk})
+
+    raise ValueError(f"Unknown firearms redirect for user: {user}")
+
+
+def _get_firearms_user_context(user: User, importer: Importer) -> dict[str, Any]:
+    """Return common context depending on the user profile for the verified firearm views."""
+
+    if user.has_perm(Perms.sys.importer_admin):
+        base_template = "layout/sidebar.html"
+        parent_url = reverse("importer-edit", kwargs={"pk": importer.pk})
+    elif user.has_perm(Perms.sys.importer_regulator):
+        base_template = "layout/no-sidebar.html"
+        parent_url = reverse("regulator-importer-detail", kwargs={"importer_pk": importer.pk})
+    else:
+        raise ValueError(f"Unknown firearms context for user: {user}")
+
+    return {"base_template": base_template, "parent_url": parent_url}

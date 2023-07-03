@@ -1,15 +1,20 @@
+from http import HTTPStatus
+
 import pytest
+from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
 from web.models import Constabulary
+from web.permissions import constabulary_get_contacts
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
+from web.tests.helpers import get_test_client
 
 from .factory import ConstabularyFactory
 
 
 class TestConstabularyListView(AuthTestCase):
-    url = "/constabulary/"
+    url = reverse("constabulary:list")
     redirect_url = f"{LOGIN_URL}?next={url}"
 
     @pytest.fixture(autouse=True)
@@ -70,8 +75,12 @@ class TestConstabularyListView(AuthTestCase):
 
 
 class TestConstabularyCreateView(AuthTestCase):
-    url = "/constabulary/new/"
+    url = reverse("constabulary:new")
     redirect_url = f"{LOGIN_URL}?next={url}"
+
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, strict_templates):
+        ...
 
     def test_anonymous_access_redirects(self):
         response = self.anonymous_client.get(self.url)
@@ -93,9 +102,9 @@ class TestConstabularyCreateView(AuthTestCase):
 
 class TestConstabularyUpdateView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup):
+    def setup(self, _setup, strict_templates):
         self.constabulary = ConstabularyFactory()  # Create a constabulary
-        self.url = f"/constabulary/{self.constabulary.id}/edit/"
+        self.url = reverse("constabulary:edit", kwargs={"pk": self.constabulary.id})
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
@@ -118,9 +127,9 @@ class TestConstabularyUpdateView(AuthTestCase):
 
 class TestConstabularyDetailView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup):
+    def setup(self, _setup, strict_templates):
         self.constabulary = ConstabularyFactory()
-        self.url = f"/constabulary/{self.constabulary.id}/"
+        self.url = reverse("constabulary:detail", kwargs={"pk": self.constabulary.id})
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
@@ -139,3 +148,82 @@ class TestConstabularyDetailView(AuthTestCase):
     def test_page_title(self):
         response = self.ilb_admin_client.get(self.url)
         assert response.context_data["page_title"] == f"Viewing {self.constabulary}"
+
+
+class TestAddConstabularyContactView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, constabulary_contact, strict_templates):
+        self.con_user = constabulary_contact
+        self.con_client = get_test_client(self.con_user)
+        self.constabulary = Constabulary.objects.get(name="Cumbria")
+        self.url = reverse("constabulary:add-contact", kwargs={"pk": self.constabulary.pk})
+
+    def test_get_forbidden(self):
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_permission(self):
+        response = self.ilb_admin_client.post(self.url)
+        assert response.status_code == HTTPStatus.FOUND
+
+        response = self.importer_client.post(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.post(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.con_client.post(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_add_constabulary_contact(self):
+        assert constabulary_get_contacts(self.constabulary).count() == 0
+
+        form_data = {"contact": self.con_user.pk}
+        response = self.ilb_admin_client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        contacts = constabulary_get_contacts(self.constabulary)
+        assert contacts.count() == 1
+
+        assert contacts[0] == self.con_user
+
+
+class TestDeleteConstabularyContactView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, constabulary_contact, strict_templates):
+        self.con_user = constabulary_contact
+        self.con_client = get_test_client(self.con_user)
+        # A constabulary the user is already linked to
+        self.constabulary = Constabulary.objects.get(name="Derbyshire")
+        self.url = reverse(
+            "constabulary:delete-contact",
+            kwargs={"pk": self.constabulary.pk, "contact_pk": self.con_user.pk},
+        )
+
+    def test_get_forbidden(self):
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_permission(self):
+        response = self.ilb_admin_client.post(self.url)
+        assert response.status_code == HTTPStatus.FOUND
+
+        response = self.importer_client.post(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.post(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.con_client.post(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_add_constabulary_contact(self):
+        contacts = constabulary_get_contacts(self.constabulary)
+        assert contacts.count() == 1
+        assert contacts[0] == self.con_user
+
+        response = self.ilb_admin_client.post(self.url)
+        assert response.status_code == HTTPStatus.FOUND
+
+        contacts = constabulary_get_contacts(self.constabulary)
+        assert contacts.count() == 0

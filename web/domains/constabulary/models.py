@@ -3,6 +3,33 @@ from django.db import models
 from web.models.mixins import Archivable
 
 
+class ConstabularyObjectPerms:
+    """Return object permissions linked to the constabulary model.
+
+    Implemented this way to resolve a circular import dependency.
+    The permissions module needs to be able to import models so this ensures it can.
+    """
+
+    def __init__(self):
+        self._perms = []
+
+    def __iter__(self):
+        if not self._perms:
+            self._load()
+
+        return iter(self._perms)
+
+    def __eq__(self, other):
+        """This is required to prevent django creating a new migration each time for this model."""
+
+        return list(self) == list(other)
+
+    def _load(self):
+        from web.permissions import constabulary_object_permissions
+
+        self._perms = constabulary_object_permissions
+
+
 class Constabulary(Archivable, models.Model):
     EAST_MIDLANDS = "EM"
     EASTERN = "ER"
@@ -50,3 +77,6 @@ class Constabulary(Archivable, models.Model):
             "-is_active",
             "name",
         )
+
+        default_permissions: list[str] = []
+        permissions = ConstabularyObjectPerms()

@@ -97,8 +97,8 @@ class TestImporterListUserView(AuthTestCase):
         assert importer == self.importer
 
 
-class TestImporterListHomeOfficeView(AuthTestCase):
-    url = reverse("home-office-importer-list")
+class TestImporterListRegulatorView(AuthTestCase):
+    url = reverse("regulator-importer-list")
 
     @pytest.fixture(autouse=True)
     def setup(self, _setup, ho_admin_client):
@@ -128,11 +128,11 @@ class TestImporterListHomeOfficeView(AuthTestCase):
         assert importers.count() == 4
 
 
-class TestImporterDetailHomeOfficeView(AuthTestCase):
+class TestImporterDetailRegulatorView(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, _setup, strict_templates, ho_admin_client):
         self.ho_admin_client = ho_admin_client
-        self.url = reverse("home-office-importer-detail", kwargs={"importer_pk": self.importer.id})
+        self.url = reverse("regulator-importer-detail", kwargs={"importer_pk": self.importer.id})
 
     def test_permission(self):
         response = self.ho_admin_client.get(self.url)
@@ -152,7 +152,7 @@ class TestImporterDetailHomeOfficeView(AuthTestCase):
         assert response.status_code == HTTPStatus.OK
 
         assert response.context["object"] == self.importer
-        assert response.context["parent_url"] == reverse("home-office-importer-list")
+        assert response.context["parent_url"] == reverse("regulator-importer-list")
         assert response.context["show_section5_authorities"]
 
     def test_post_forbidden(self):

@@ -2795,7 +2795,6 @@ Access Request</button
 Archive Reaon
 fir/requested.html
 fir/responded.html
-TODO ICMSLST-1937 Update
 Section 5 Authorities Expiring
 the Import Case Management System
 function checkOther(element
@@ -3075,3 +3074,15 @@ LEFT JOIN decmgr.resource_members_current
 ON rmc.person_id
 ON xr.res_id
 CASE_OFFICER%
+Constabulary Contact
+EM
+ER
+IM
+SW
+Royal Ulster
+Constabulary (New
+Can View
+Colin
+Baker
+Nottingham
+can_edit_firearm_authorities

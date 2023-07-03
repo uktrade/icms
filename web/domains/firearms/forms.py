@@ -10,18 +10,22 @@ from django.forms import (
 from django.forms.widgets import CheckboxInput
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter, FilterSet
 from django_select2.forms import Select2MultipleWidget
+from guardian.shortcuts import get_objects_for_user
 
 from web.forms.widgets import CheckboxSelectMultiple, DateInput
-from web.models import Office
-from web.models.shared import ArchiveReasonChoices
-
-from .models import (
+from web.models import (
     ActQuantity,
+    Constabulary,
     FirearmsAct,
     FirearmsAuthority,
+    Importer,
     ObsoleteCalibre,
     ObsoleteCalibreGroup,
+    Office,
+    User,
 )
+from web.models.shared import ArchiveReasonChoices
+from web.permissions import Perms
 
 
 class ObsoleteCalibreGroupFilter(FilterSet):
@@ -107,10 +111,18 @@ class FirearmsAuthorityForm(ModelForm):
             "further_details": Textarea({"rows": 3}),
         }
 
-    def __init__(self, importer, *args, **kwargs):
+    def __init__(self, *args, user: User, importer: Importer, **kwargs):
         super().__init__(*args, **kwargs)
         self.importer = importer
         self.fields["linked_offices"].queryset = self.importer.offices.all()
+
+        if not user.has_perm(Perms.sys.ilb_admin):
+            constabularies = get_objects_for_user(
+                user,
+                [Perms.obj.constabulary.verified_fa_authority_editor],
+                Constabulary.objects.filter(is_active=True),
+            )
+            self.fields["issuing_constabulary"].queryset = constabularies
 
     def clean(self):
         data = super().clean()

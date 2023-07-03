@@ -150,6 +150,18 @@ def access_request_user(django_user_model):
 
 
 @pytest.fixture
+def constabulary_contact(django_user_model):
+    """Fixture to get constabulary contact user.
+
+    This user is linked to the following constabularies:
+      - Nottingham
+      - Lincolnshire
+      - Derbyshire
+    """
+    return django_user_model.objects.get(username="con_user")
+
+
+@pytest.fixture
 def importer_access_request(db):
     """Fixture to get an in progress importer access request."""
     return ImporterAccessRequest.objects.get(reference="iar/1")

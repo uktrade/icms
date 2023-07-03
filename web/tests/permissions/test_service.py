@@ -1,16 +1,20 @@
 import pytest
 from guardian.shortcuts import remove_perm
 
-from web.models import User
+from web.models import Constabulary, User
 from web.permissions.perms import Perms
 from web.permissions.service import (
     AppChecker,
+    _is_org_admin,
     can_user_edit_firearm_authorities,
     can_user_edit_org,
     can_user_edit_section5_authorities,
     can_user_manage_org_contacts,
     can_user_view_org,
     can_user_view_search_cases,
+    constabulary_add_contact,
+    constabulary_get_contacts,
+    constabulary_remove_contact,
     filter_users_with_org_access,
     get_ilb_admin_users,
     get_org_obj_permissions,
@@ -212,6 +216,58 @@ class TestPermissionsService:
         assert can_user_manage_org_contacts(self.exporter_contact, self.agent_exporter)
         assert not can_user_manage_org_contacts(self.exporter_agent_contact, self.exporter)
         assert not can_user_manage_org_contacts(self.exporter_agent_contact, self.agent_exporter)
+
+    def test_constabulary_add_contact(self):
+        constabulary = Constabulary.objects.get(name="Cumbria")
+
+        # Check can add a user as a constabulary contact
+        assert not self.importer_contact.groups.filter(
+            name=Perms.obj.constabulary.get_group_name()
+        ).exists()
+        constabulary_add_contact(constabulary, self.importer_contact)
+        assert self.importer_contact.groups.filter(
+            name=Perms.obj.constabulary.get_group_name()
+        ).exists()
+
+    def test_constabulary_get_contacts(self, constabulary_contact):
+        constabulary = Constabulary.objects.get(name="Derbyshire")
+
+        contacts = constabulary_get_contacts(constabulary)
+        assert contacts.count() == 1
+        assert contacts[0] == constabulary_contact
+
+        contacts = constabulary_get_contacts(
+            constabulary, perms=[Perms.obj.constabulary.verified_fa_authority_editor.codename]
+        )
+        assert contacts.count() == 1
+        assert contacts[0] == constabulary_contact
+
+    def test_constabulary_remove_contact(self, constabulary_contact):
+        constabulary = Constabulary.objects.get(name="Derbyshire")
+
+        contacts = constabulary_get_contacts(constabulary)
+        assert contacts.count() == 1
+        assert contacts[0] == constabulary_contact
+
+        constabulary_remove_contact(constabulary, constabulary_contact)
+
+        contacts = constabulary_get_contacts(constabulary)
+        assert contacts.count() == 0
+
+        #
+        # Test removing all other linked constabularies removes group.
+        #
+        assert constabulary_contact.groups.filter(
+            name=Perms.obj.constabulary.get_group_name()
+        ).exists()
+
+        for con_name in ["Nottingham", "Lincolnshire"]:
+            constabulary = Constabulary.objects.get(name=con_name)
+            constabulary_remove_contact(constabulary, constabulary_contact)
+
+        assert not constabulary_contact.groups.filter(
+            name=Perms.obj.constabulary.get_group_name()
+        ).exists()
 
     def test_can_user_view_org(self):
         assert can_user_view_org(self.ilb_admin, self.importer)
@@ -468,3 +524,9 @@ def test_filter_users_with_org_access():
 
     with pytest.raises(ValueError, match=r"Unknown org "):
         filter_users_with_org_access(object(), users)
+
+
+def test__is_org_admin_raises(db):
+    # Added for 100% test coverage
+    with pytest.raises(ValueError, match=r"Unknown org "):
+        _is_org_admin(User.objects.first(), object())

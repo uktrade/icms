@@ -1,5 +1,9 @@
 {% extends "model/edit.html" %}
 
+{% block css %}
+  {{ contact_form.media.css }}
+{% endblock %}
+
 {% block actions %}
   <li>
     <button type="submit" name="action" value="save" class="primary-button button">Save</button>
@@ -7,4 +11,24 @@
   <li>
     <a href="{{view.cancel_url}}" class="button link-button">Cancel</a>
   </li>
+{% endblock %}
+
+
+{% block main_content %}
+  {{ super() }}
+  {% with
+    constabulary=object,
+    contacts=contacts,
+    contact_form=contact_form,
+    object_permissions=object_permissions,
+    read_only=False
+  %}
+    {% include "web/domains/constabulary/partial/contacts.html" %}
+  {% endwith %}
+{% endblock %}
+
+
+{% block page_js %}
+  {{ super() }}
+  {{ contact_form.media.js }}
 {% endblock %}

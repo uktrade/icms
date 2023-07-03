@@ -139,7 +139,14 @@ class ImporterListUserView(PermissionRequiredMixin, LoginRequiredMixin, ListView
         return qs.prefetch_related("offices")
 
 
-class ImporterListHomeOfficeView(ModelFilterView):
+class ImporterListRegulatorView(ModelFilterView):
+    """Importer list view used by several groups.
+
+    Groups:
+      - Home Office Case Officer
+      - Constabulary Contact
+    """
+
     # PermissionRequiredMixin config
     permission_required = Perms.sys.importer_regulator
 
@@ -147,7 +154,7 @@ class ImporterListHomeOfficeView(ModelFilterView):
     model = Importer
     # TODO: ICMSLST-2093 Fix duplicate rows being returned.
     queryset = Importer.objects.select_related("main_importer")
-    template_name = "web/domains/importer/ho-list.html"
+    template_name = "web/domains/importer/reg-list.html"
 
     # ModelFilterView config
     page_title = "Maintain Importers"
@@ -159,24 +166,29 @@ class ImporterListHomeOfficeView(ModelFilterView):
         actions: list[Any] = []
 
 
-class ImporterDetailHomeOfficeView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+class ImporterDetailRegulatorView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+    """Importer detail view used by several groups.
+
+    Groups:
+      - Home Office Case Officer
+      - Constabulary Contact
+    """
+
     permission_required = Perms.sys.importer_regulator
 
     model = Importer
     pk_url_kwarg = "importer_pk"
     http_method_names = ["get"]
-    template_name = "web/domains/importer/ho-detail.html"
+    template_name = "web/domains/importer/reg-detail.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        show_section5_authorities = (
-            not self.object.is_agent() and can_user_edit_section5_authorities(self.request.user)
-        )
-
         return context | {
-            "parent_url": reverse("home-office-importer-list"),
-            "show_section5_authorities": show_section5_authorities,
+            "parent_url": reverse("regulator-importer-list"),
+            "is_main_importer": not self.object.is_agent(),
+            "can_edit_firearm_authorities": can_user_edit_firearm_authorities(self.request.user),
+            "can_edit_section5_authorities": can_user_edit_section5_authorities(self.request.user),
         }
 
 
@@ -350,7 +362,9 @@ def edit_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
 @login_required
 @require_GET
 def view_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
-    if not can_user_edit_section5_authorities(request.user):
+    if not can_user_edit_section5_authorities(request.user) and not request.user.has_perm(
+        Perms.sys.importer_regulator
+    ):
         raise PermissionDenied
 
     section5 = get_object_or_404(Section5Authority, pk=pk)
@@ -455,7 +469,9 @@ def add_document_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpRes
 def view_document_section5(
     request: AuthenticatedHttpRequest, section5_pk: int, document_pk: int
 ) -> HttpResponse:
-    if not can_user_edit_section5_authorities(request.user):
+    if not can_user_edit_section5_authorities(request.user) and not request.user.has_perm(
+        Perms.sys.importer_regulator
+    ):
         raise PermissionDenied
 
     section5: Section5Authority = get_object_or_404(Section5Authority, pk=section5_pk)
@@ -486,11 +502,11 @@ def delete_document_section5(
     return redirect(reverse("importer-section5-edit", kwargs={"pk": section5_pk}))
 
 
-def _get_section_5_redirect_url(user, importer):
+def _get_section_5_redirect_url(user: User, importer: Importer) -> str:
     if user.has_perm(Perms.sys.importer_admin):
         return reverse("importer-edit", kwargs={"pk": importer.pk})
     elif user.has_perm(Perms.sys.importer_regulator):
-        return reverse("home-office-importer-detail", kwargs={"importer_pk": importer.pk})
+        return reverse("regulator-importer-detail", kwargs={"importer_pk": importer.pk})
 
     raise ValueError(f"Unknown section5 redirect for user: {user}")
 
@@ -503,7 +519,7 @@ def _get_section_5_user_context(user: User, importer: Importer) -> dict[str, Any
         parent_url = reverse("importer-edit", kwargs={"pk": importer.pk})
     elif user.has_perm(Perms.sys.importer_regulator):
         base_template = "layout/no-sidebar.html"
-        parent_url = reverse("home-office-importer-detail", kwargs={"importer_pk": importer.pk})
+        parent_url = reverse("regulator-importer-detail", kwargs={"importer_pk": importer.pk})
     else:
         raise ValueError(f"Unknown section5 context for user: {user}")
 

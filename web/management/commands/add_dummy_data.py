@@ -9,6 +9,7 @@ from django.core.management.base import BaseCommand, CommandError
 from web.management.commands.utils.load_data import load_app_test_data
 from web.models import (
     CertificateApplicationTemplate,
+    Constabulary,
     Email,
     ExportApplicationType,
     Exporter,
@@ -20,7 +21,7 @@ from web.models import (
     PersonalEmail,
     User,
 )
-from web.permissions import organisation_add_contact
+from web.permissions import constabulary_add_contact, organisation_add_contact
 
 
 class Command(BaseCommand):
@@ -242,6 +243,16 @@ class Command(BaseCommand):
             groups=[san_case_officer],
         )
 
+        self.create_user(
+            username="con_user",
+            password=options["password"],
+            first_name="Colin",
+            last_name="Baker",
+            linked_constabularies=Constabulary.objects.filter(
+                name__in=["Nottingham", "Lincolnshire", "Derbyshire"]
+            ),
+        )
+
         self.create_superuser("admin", options["password"])
 
         self.stdout.write(
@@ -266,6 +277,7 @@ class Command(BaseCommand):
         linked_exporters: Collection[Exporter] = (),
         linked_importer_agents: Collection[Importer] = (),
         linked_exporter_agents: Collection[Exporter] = (),
+        linked_constabularies: Collection[Constabulary] = (),
     ) -> User:
         """Create normal system users"""
 
@@ -304,6 +316,9 @@ class Command(BaseCommand):
 
         for agent in linked_exporter_agents:
             organisation_add_contact(agent, user)
+
+        for constabulary in linked_constabularies:
+            constabulary_add_contact(constabulary, user)
 
         user.save()
 

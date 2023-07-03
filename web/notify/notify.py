@@ -231,7 +231,7 @@ def send_firearms_authority_expiry_notification() -> None:
         groups__permissions__codename=SysPerms.edit_firearm_authorities.codename
     )
 
-    # TODO ICMSLST-1937 Update recipients to be constabulary contacts instead of all users with authority editing permission
+    # TODO: ICMSLST-2118 Update recipients to be constabulary contacts instead of all users with authority editing permission
     # Send emails to users who can edit firearms authorities for a specific constabulary (recipeint_users query into for loop)
 
     for constabulary in constabularies:

@@ -7,6 +7,7 @@ from guardian.shortcuts import assign_perm
 
 from web.management.commands.utils.load_data import load_app_test_data
 from web.models import (
+    Constabulary,
     ExportApplicationType,
     Exporter,
     ExporterAccessRequest,
@@ -20,7 +21,11 @@ from web.models import (
     Task,
     User,
 )
-from web.permissions import ExporterObjectPermissions, ImporterObjectPermissions
+from web.permissions import (
+    ExporterObjectPermissions,
+    ImporterObjectPermissions,
+    constabulary_add_contact,
+)
 from web.tests.organisations import TEST_EXPORTERS, TEST_IMPORTERS
 from web.tests.types import (
     AgentExporter,
@@ -66,6 +71,9 @@ class Command(BaseCommand):
         self.create_nca_admin_user("nca_admin_user")
         self.create_ho_admin_user("ho_admin_user")
         self.create_san_admin_user("san_admin_user")
+        self.create_con_user(
+            "con_user", linked_constabularies=["Nottingham", "Lincolnshire", "Derbyshire"]
+        )
 
         # enable disabled application types
         ImportApplicationType.objects.update(is_active=True)
@@ -242,6 +250,14 @@ class Command(BaseCommand):
         add_group(user, "Sanctions Case Officer")
 
         return user
+
+    def create_con_user(self, username, linked_constabularies: list[str]):
+        user = self.create_user(username)
+        add_personal_email(user)
+
+        for con in linked_constabularies:
+            constabulary = Constabulary.objects.get(name=con)
+            constabulary_add_contact(constabulary, user)
 
 
 def add_personal_email(user):
