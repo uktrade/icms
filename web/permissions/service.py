@@ -231,10 +231,11 @@ def organisation_remove_contact(org: ORGANISATION, user: User) -> None:
 def can_user_view_org(user: User, org: ORGANISATION) -> bool:
     """Check if the supplied user can view an organisation."""
 
+    is_admin = _is_org_admin(user, org)
     obj_perms = get_org_obj_permissions(org)
 
     return (
-        user.has_perm(Perms.sys.ilb_admin)
+        is_admin
         or user.has_perm(obj_perms.view, org)
         or user.has_perm(obj_perms.edit, org)
         or user.has_perm(obj_perms.manage_contacts_and_agents, org)
@@ -260,7 +261,9 @@ def can_user_edit_org(user: User, org: ORGANISATION) -> bool:
     else:
         can_edit_main_org = False
 
-    return user.has_perm(Perms.sys.ilb_admin) or can_edit_org or can_edit_main_org
+    is_admin = _is_org_admin(user, org)
+
+    return is_admin or can_edit_org or can_edit_main_org
 
 
 def can_user_manage_org_contacts(user: User, org: ORGANISATION) -> bool:
@@ -279,7 +282,24 @@ def can_user_manage_org_contacts(user: User, org: ORGANISATION) -> bool:
     else:
         can_manage_main_org_contacts = False
 
-    return user.has_perm(Perms.sys.ilb_admin) or can_manage_contacts or can_manage_main_org_contacts
+    is_admin = _is_org_admin(user, org)
+
+    return is_admin or can_manage_contacts or can_manage_main_org_contacts
+
+
+def _is_org_admin(user: User, org: ORGANISATION) -> bool:
+    """Return True if the supplied user is an org admin.
+
+    An org admin is a user who can edit that type of organisation.
+    """
+
+    match org:
+        case Importer():
+            return user.has_perm(Perms.sys.importer_admin)
+        case Exporter():
+            return user.has_perm(Perms.sys.exporter_admin)
+        case _:
+            raise ValueError(f"Unknown org {org}")
 
 
 def can_user_edit_firearm_authorities(user: User) -> bool:

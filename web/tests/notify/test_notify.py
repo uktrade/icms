@@ -175,7 +175,7 @@ def test_firearms_authority_archived_notification(ilb_admin_client, importer):
     assert resp.status_code == 302
 
     outbox = mail.outbox
-    assert len(outbox) == 2
+    assert len(outbox) == 3
 
     m = outbox[1]
     assert m.to == ["ilb_admin_user@example.com"]  # /PS-IGNORE
@@ -211,7 +211,7 @@ def test_section_5_authority_archived_notification(ilb_admin_client, importer):
     assert resp.status_code == 302
 
     outbox = mail.outbox
-    assert len(outbox) == 2
+    assert len(outbox) == 3
 
     m = outbox[1]
     assert m.to == ["ilb_admin_user@example.com"]  # /PS-IGNORE

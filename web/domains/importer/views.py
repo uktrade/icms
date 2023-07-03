@@ -99,7 +99,7 @@ class ImporterListAdminView(ModelFilterView):
     # TODO: ICMSLST-2093 Fix duplicate rows being returned.
     queryset = Importer.objects.select_related("main_importer")
     page_title = "Maintain Importers"
-    permission_required = Perms.sys.ilb_admin
+    permission_required = Perms.sys.importer_admin
 
     class Display:
         fields = get_importer_list_fields()
@@ -181,7 +181,7 @@ class ImporterDetailHomeOfficeView(PermissionRequiredMixin, LoginRequiredMixin, 
 
 
 @login_required
-@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+@permission_required(Perms.sys.importer_admin, raise_exception=True)
 def create_importer(request: AuthenticatedHttpRequest, *, entity_type: str) -> HttpResponse:
     if entity_type == "organisation":
         ImporterForm = ImporterOrganisationForm
@@ -487,7 +487,7 @@ def delete_document_section5(
 
 
 def _get_section_5_redirect_url(user, importer):
-    if user.has_perm(Perms.sys.ilb_admin):
+    if user.has_perm(Perms.sys.importer_admin):
         return reverse("importer-edit", kwargs={"pk": importer.pk})
     elif user.has_perm(Perms.sys.importer_regulator):
         return reverse("home-office-importer-detail", kwargs={"importer_pk": importer.pk})
@@ -498,7 +498,7 @@ def _get_section_5_redirect_url(user, importer):
 def _get_section_5_user_context(user: User, importer: Importer) -> dict[str, Any]:
     """Return common context depending on the user profile for the section 5 views."""
 
-    if user.has_perm(Perms.sys.ilb_admin):
+    if user.has_perm(Perms.sys.importer_admin):
         base_template = "layout/sidebar.html"
         parent_url = reverse("importer-edit", kwargs={"pk": importer.pk})
     elif user.has_perm(Perms.sys.importer_regulator):
@@ -617,7 +617,7 @@ def unarchive_office(request, importer_pk, office_pk):
 
 
 @login_required
-@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+@permission_required(Perms.sys.importer_admin, raise_exception=True)
 def create_agent(
     request: AuthenticatedHttpRequest, *, importer_pk: int, entity_type: str
 ) -> HttpResponse:
@@ -692,7 +692,7 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+@permission_required(Perms.sys.importer_admin, raise_exception=True)
 @require_POST
 def archive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     agent = get_object_or_404(Importer.objects.agents().filter(is_active=True), pk=pk)
@@ -703,7 +703,7 @@ def archive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
 
 
 @login_required
-@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+@permission_required(Perms.sys.importer_admin, raise_exception=True)
 @require_POST
 def unarchive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     agent = get_object_or_404(Importer.objects.agents().filter(is_active=False), pk=pk)
@@ -772,7 +772,7 @@ def edit_user_importer_permissions(
 def _get_user_context(user) -> dict[str, Any]:
     """Return common context depending on the user profile."""
 
-    if user.has_perm(Perms.sys.ilb_admin):
+    if user.has_perm(Perms.sys.importer_admin):
         base_template = "layout/sidebar.html"
         parent_url = reverse("importer-list")
     else:

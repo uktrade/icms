@@ -249,12 +249,12 @@ class TestPermissionsService:
         ilb_admin_users = get_users_with_permission(Perms.sys.ilb_admin).values_list(
             "username", flat=True
         )
-        assert list(ilb_admin_users) == ["ilb_admin_two", "ilb_admin_user"]
+        assert list(ilb_admin_users) == ["ilb_admin_two", "ilb_admin_user", "san_admin_user"]
 
     def test_get_ilb_admin_users(self):
         ilb_admin_users = get_ilb_admin_users().values_list("username", flat=True)
 
-        assert list(ilb_admin_users) == ["ilb_admin_two", "ilb_admin_user"]
+        assert list(ilb_admin_users) == ["ilb_admin_two", "ilb_admin_user", "san_admin_user"]
 
     def test_get_org_obj_permissions(self):
         perms = get_org_obj_permissions(self.importer)

@@ -334,10 +334,10 @@ def test_send_reassign_email_with_comment(ilb_admin_client, fa_sil_app_submitted
     [
         (
             WithdrawApplication.Statuses.OPEN,
-            2,
+            3,
             "Withdrawal Request: ",
             "A withdrawal request has been submitted",
-            "ilb_admin_user@example.com",  # /PS-IGNORE
+            "san_admin_user@example.com",  # /PS-IGNORE
         ),
         (
             WithdrawApplication.Statuses.ACCEPTED,
@@ -355,10 +355,10 @@ def test_send_reassign_email_with_comment(ilb_admin_client, fa_sil_app_submitted
         ),
         (
             WithdrawApplication.Statuses.DELETED,
-            2,
+            3,
             "Withdrawal Request Cancelled: ",
             "has been cancelled.",
-            "ilb_admin_user@example.com",  # /PS-IGNORE
+            "san_admin_user@example.com",  # /PS-IGNORE
         ),
     ],
 )
