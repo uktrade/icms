@@ -22,13 +22,17 @@ class PagePermissions(PermissionTextChoice):
         "web.can_view_export_case_search",
         "Can view search certificate applications page",
     )
+    view_imi = ("web.view_imi", "Can view IMI pages.")
 
 
 class SysPerms(PermissionTextChoice):
     importer_access = "web.importer_access", "Can act as an importer"
     exporter_access = "web.exporter_access", "Can act as an exporter"
     ilb_admin = "web.ilb_admin", "Is an ILB administrator"
+    sanctions_case_officer = "web.sanctions_case_officer", "Is a sanctions caseworker"
     importer_regulator = "web.importer_regulator", "Is an Importer Regulator"
+    importer_admin = "web.importer_admin", "Can manage Importer records."
+    exporter_admin = "web.exporter_admin", "Can manage Exporter records."
     commodity_admin = "web.commodity_admin", "Is a commodity administrator"
     manage_sanction_contacts = "web.manage_sanction_contacts", "Manage sanction email contacts"
 

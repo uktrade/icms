@@ -234,6 +234,14 @@ class Command(BaseCommand):
             groups=[san_case_officer],
         )
 
+        self.create_user(
+            username="san_admin_2",
+            password=options["password"],
+            first_name="Emilio",
+            last_name="Mcgee (SAN Case Officer)",
+            groups=[san_case_officer],
+        )
+
         self.create_superuser("admin", options["password"])
 
         self.stdout.write(

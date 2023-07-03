@@ -36,7 +36,7 @@ class ExporterListAdminView(ModelFilterView):
     template_name = "web/domains/exporter/list.html"
     filterset_class = ExporterFilter
     model = Exporter
-    permission_required = Perms.sys.ilb_admin
+    permission_required = Perms.sys.exporter_admin
     page_title = "Maintain Exporters"
 
     class Display:
@@ -79,7 +79,7 @@ class ExporterListUserView(PermissionRequiredMixin, LoginRequiredMixin, ListView
 
 
 @login_required
-@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+@permission_required(Perms.sys.exporter_admin, raise_exception=True)
 def create_exporter(request: AuthenticatedHttpRequest) -> HttpResponse:
     if request.method == "POST":
         form = ExporterForm(request.POST)
@@ -246,7 +246,7 @@ def unarchive_office(request, exporter_pk, office_pk):
 
 
 @login_required
-@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+@permission_required(Perms.sys.exporter_admin, raise_exception=True)
 def create_agent(request, exporter_pk):
     exporter: Exporter = get_object_or_404(Exporter, pk=exporter_pk)
 
@@ -304,7 +304,7 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
 
 
 @login_required
-@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+@permission_required(Perms.sys.exporter_admin, raise_exception=True)
 @require_POST
 def archive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     agent = get_object_or_404(Exporter.objects.agents().filter(is_active=True), pk=pk)
@@ -315,7 +315,7 @@ def archive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
 
 
 @login_required
-@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+@permission_required(Perms.sys.exporter_admin, raise_exception=True)
 @require_POST
 def unarchive_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     agent = get_object_or_404(Exporter.objects.agents().filter(is_active=False), pk=pk)
@@ -360,7 +360,7 @@ def edit_user_exporter_permissions(
 def _get_user_context(user) -> dict[str, Any]:
     """Return common context depending on the user profile."""
 
-    if user.has_perm(Perms.sys.ilb_admin):
+    if user.has_perm(Perms.sys.exporter_admin):
         base_template = "layout/sidebar.html"
         parent_url = reverse("exporter-list")
     else:

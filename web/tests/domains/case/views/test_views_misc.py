@@ -163,7 +163,11 @@ def test_request_withdrawal(importer_client, wood_app_submitted, importer_one_co
     assert wood_app_submitted.withdrawals.count() == 1
     _check_withdrawal_email_sent(
         "Withdrawal Request",
-        ["ilb_admin_user@example.com", "ilb_admin_two@example.com"],  # /PS-IGNORE
+        [
+            "ilb_admin_user@example.com",  # /PS-IGNORE
+            "ilb_admin_two@example.com",  # /PS-IGNORE
+            "san_admin_user@example.com",  # /PS-IGNORE
+        ],
     )
 
 
@@ -186,7 +190,11 @@ def test_archive_withdrawal(importer_client, wood_app_submitted, importer_one_co
 
     _check_withdrawal_email_sent(
         "Withdrawal Request Cancelled",
-        ["ilb_admin_user@example.com", "ilb_admin_two@example.com"],  # /PS-IGNORE
+        [
+            "ilb_admin_user@example.com",  # /PS-IGNORE
+            "ilb_admin_two@example.com",  # /PS-IGNORE
+            "san_admin_user@example.com",  # /PS-IGNORE
+        ],
     )
 
 
@@ -198,7 +206,7 @@ def _check_withdrawal_visible(client, url):
 
 def _check_withdrawal_email_sent(subject, sent_to):
     outbox = mail.outbox
-    assert len(outbox) == len(sent_to)
+    assert len(outbox) == len(sent_to), [e.to for e in outbox]
     sent_email = outbox[0]
     assert sent_email.to[0] in sent_to
     assert sent_email.subject.startswith(subject)

@@ -520,7 +520,7 @@ def bypass_chief(
 
 
 class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
-    permission_required = Perms.sys.ilb_admin
+    permission_required = Perms.page.view_imi
     template_name = "web/domains/case/import/imi/list.html"
     context_object_name = "imi_list"
 
@@ -548,7 +548,7 @@ class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
 
 class IMICaseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     template_name = "web/domains/case/manage/imi-case-detail.html"
-    permission_required = Perms.sys.ilb_admin
+    permission_required = Perms.page.view_imi
     pk_url_kwarg = "application_pk"
     context_object_name = "process"
     queryset = ImportApplication.objects.select_related(
@@ -590,7 +590,7 @@ class IMICaseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
 
 
 @require_POST
-@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+@permission_required(Perms.page.view_imi, raise_exception=True)
 @login_required
 def imi_confirm_provided(request: AuthenticatedHttpRequest, *, application_pk) -> HttpResponse:
     """Indicates the relevant details have been sent to IMI."""

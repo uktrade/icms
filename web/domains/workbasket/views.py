@@ -11,6 +11,7 @@ from django.shortcuts import render
 from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.shared import ImpExpStatus
+from web.flow.models import ProcessTypes
 from web.models import (
     AccessRequest,
     ApprovalRequest,
@@ -37,10 +38,16 @@ from .row import get_workbasket_row_func
 def show_workbasket(request: AuthenticatedHttpRequest) -> HttpResponse:
     is_ilb_admin = request.user.has_perm(Perms.sys.ilb_admin)
 
-    if is_ilb_admin:
-        qs_list = list(_get_queryset_admin(request.user))
+    # Users with sanctions_case_officer are also ilb_admin's so check this first.
+    # The goal is to restrict the records shown to sanctions case officers.
+    if request.user.has_perm(Perms.sys.sanctions_case_officer):
+        qs = _get_queryset_sanctions_case_officer(request.user)
+    elif is_ilb_admin:
+        qs = _get_queryset_admin(request.user)
     else:
-        qs_list = list(_get_queryset_user(request.user))
+        qs = _get_queryset_user(request.user)
+
+    qs_list = list(qs)
 
     # Order all records before pagination
     qs_list.sort(key=attrgetter("order_datetime"), reverse=True)
@@ -148,6 +155,21 @@ def _get_queryset_admin(user: User) -> chain[QuerySet]:
         export_applications,
         import_applications,
     )
+
+
+def _get_queryset_sanctions_case_officer(user: User) -> chain[QuerySet]:
+    import_applications = (
+        ImportApplication.objects.filter(is_active=True, process_type=ProcessTypes.SANCTIONS)
+        .exclude(status=ImpExpStatus.STOPPED)
+        .exclude(decision=ImportApplication.REFUSE)
+        .select_related("importer", "contact", "application_type", "submitted_by", "case_owner")
+        .annotate(
+            active_tasks=ACTIVE_TASK_ANNOTATION,
+            annotation_has_withdrawal=IMPORT_HAS_WITHDRAWAL_ANNOTATION,
+        )
+    )
+
+    return chain(import_applications)
 
 
 def _get_queryset_user(user: User) -> chain[QuerySet]:
