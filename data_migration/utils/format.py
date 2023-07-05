@@ -285,3 +285,12 @@ def reformat_placeholders(content: str) -> str:
     <MM>ABC</MM> -> [[ABC]]
     """
     return content.replace("<MM>", "[[").replace("</MM>", "]]")
+
+
+def pretty_print_file_size(size: float) -> str:
+    """Returns a string of the given file size in the most appropriate format."""
+    for x in ["bytes", "KB", "MB", "GB", "TB"]:
+        if size < 1024.0:
+            return f"{size:3.1f} {x}"
+        size /= 1024.0
+    return str(size)

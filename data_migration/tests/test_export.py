@@ -8,6 +8,7 @@ from django.test import override_settings
 from django.utils import timezone
 
 from data_migration import models, queries
+from data_migration.management.commands._types import QueryModel
 from data_migration.management.commands.config import run_order
 from data_migration.management.commands.config.run_order import (
     DATA_TYPE_QUERY_MODEL,
@@ -42,7 +43,10 @@ def test_data_migration_not_enabled_non_prod():
 @pytest.mark.django_db
 @mock.patch.dict(
     DATA_TYPE_QUERY_MODEL,
-    {"reference": [(queries.country_group, "country_group", models.CountryGroup)], "file": []},
+    {
+        "reference": [QueryModel(queries.country_group, "country_group", models.CountryGroup)],
+        "file": [],
+    },
 )
 @mock.patch.object(oracledb, "connect")
 def test_export_data(mock_connect):
@@ -192,16 +196,18 @@ def test_export_files_data(mock_connect):
 
 test_query_model = {
     "reference": [
-        (queries.country, "country", models.Country),
-        (queries.country_group, "country_group", models.CountryGroup),
-        (queries.unit, "unit", models.Unit),
+        QueryModel(queries.country, "country", models.Country),
+        QueryModel(queries.country_group, "country_group", models.CountryGroup),
+        QueryModel(queries.unit, "unit", models.Unit),
     ],
     "file": [],
     "user": [queries.users, "users", models.User],
     "import_application": [
-        (queries.constabularies, "constabularies", models.Constabulary),
-        (queries.obsolete_calibre_group, "obsolete_calibre_group", models.ObsoleteCalibreGroup),
-        (queries.section5_clauses, "section5_clauses", models.Section5Clause),
+        QueryModel(queries.constabularies, "constabularies", models.Constabulary),
+        QueryModel(
+            queries.obsolete_calibre_group, "obsolete_calibre_group", models.ObsoleteCalibreGroup
+        ),
+        QueryModel(queries.section5_clauses, "section5_clauses", models.Section5Clause),
     ],
 }
 

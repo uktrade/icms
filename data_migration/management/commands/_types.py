@@ -12,10 +12,12 @@ ModelT = Union[T[Model], list[T[Model]]]
 Params = dict[str, int | str | bool | tuple]
 
 
-class QueryModel(NamedTuple):
+@dataclass(frozen=True)
+class QueryModel:
     query: str
     query_name: str
     model: Model
+    parameters: Params = field(default_factory=dict)
 
 
 class SourceTarget(NamedTuple):

@@ -8,6 +8,7 @@ from django.test import override_settings
 
 from data_migration import models as dm
 from data_migration import queries
+from data_migration.management.commands._types import QueryModel
 from data_migration.management.commands.config.run_order import (
     DATA_TYPE_M2M,
     DATA_TYPE_QUERY_MODEL,
@@ -47,12 +48,12 @@ sil_data_source_target = {
     {
         "reference": [],
         "user": [
-            (queries.users, "users", dm.User),
-            (queries.importers, "importers", dm.Importer),
-            (queries.importer_offices, "importer_offices", dm.Office),
-            (queries.exporters, "exporters", dm.Exporter),
-            (queries.exporter_offices, "exporter_offices", dm.Office),
-            (queries.access_requests, "access_requests", dm.AccessRequest),
+            QueryModel(queries.users, "users", dm.User),
+            QueryModel(queries.importers, "importers", dm.Importer),
+            QueryModel(queries.importer_offices, "importer_offices", dm.Office),
+            QueryModel(queries.exporters, "exporters", dm.Exporter),
+            QueryModel(queries.exporter_offices, "exporter_offices", dm.Office),
+            QueryModel(queries.access_requests, "access_requests", dm.AccessRequest),
         ],
     },
 )

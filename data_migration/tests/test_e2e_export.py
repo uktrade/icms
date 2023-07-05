@@ -7,6 +7,7 @@ from django.core.management import call_command
 
 from data_migration import models as dm
 from data_migration import queries
+from data_migration.management.commands._types import QueryModel
 from data_migration.management.commands.config.run_order import (
     DATA_TYPE_M2M,
     DATA_TYPE_QUERY_MODEL,
@@ -65,42 +66,48 @@ export_data_source_target = {
 }
 
 export_query_model = {
-    "user": [(queries.users, "users", dm.User)],
+    "user": [QueryModel(queries.users, "users", dm.User)],
     "file": [
-        (queries.gmp_files, "gmp_files", dm.FileCombined),
-        (queries.export_case_note_docs, "export_case_note_docs", dm.FileCombined),
+        QueryModel(queries.gmp_files, "gmp_files", dm.FileCombined),
+        QueryModel(queries.export_case_note_docs, "export_case_note_docs", dm.FileCombined),
     ],
     "import_application": [],
     "export_application": [
-        (queries.exporters, "exporters", dm.Exporter),
-        (queries.exporter_offices, "exporter_offices", dm.Office),
-        (queries.product_legislation, "product_legislation", dm.ProductLegislation),
-        (queries.export_application_type, "export_application_type", dm.ExportApplicationType),
-        (
+        QueryModel(queries.exporters, "exporters", dm.Exporter),
+        QueryModel(queries.exporter_offices, "exporter_offices", dm.Office),
+        QueryModel(queries.product_legislation, "product_legislation", dm.ProductLegislation),
+        QueryModel(
+            queries.export_application_type, "export_application_type", dm.ExportApplicationType
+        ),
+        QueryModel(
             queries.gmp_application,
             "gmp_application",
             dm.CertificateOfGoodManufacturingPracticeApplication,
         ),
-        (queries.com_application, "com_application", dm.CertificateOfManufactureApplication),
-        (queries.cfs_application, "cfs_application", dm.CertificateOfFreeSaleApplication),
-        (queries.cfs_schedule, "cfs_schedule", dm.CFSSchedule),
-        (
+        QueryModel(
+            queries.com_application, "com_application", dm.CertificateOfManufactureApplication
+        ),
+        QueryModel(queries.cfs_application, "cfs_application", dm.CertificateOfFreeSaleApplication),
+        QueryModel(queries.cfs_schedule, "cfs_schedule", dm.CFSSchedule),
+        QueryModel(
             queries.export_application_countries,
             "export_application_countries",
             dm.ExportApplicationCountries,
         ),
-        (queries.export_certificate, "export_certificate", dm.ExportApplicationCertificate),
-        (
+        QueryModel(
+            queries.export_certificate, "export_certificate", dm.ExportApplicationCertificate
+        ),
+        QueryModel(
             queries.export_certificate_docs,
             "export_certificate_docs",
             dm.ExportCertificateCaseDocumentReferenceData,
         ),
-        (queries.beis_emails, "beis_emails", dm.CaseEmail),
-        (queries.hse_emails, "hse_emails", dm.CaseEmail),
+        QueryModel(queries.beis_emails, "beis_emails", dm.CaseEmail),
+        QueryModel(queries.hse_emails, "hse_emails", dm.CaseEmail),
     ],
     "reference": [
-        (queries.country_group, "country_group", dm.CountryGroup),
-        (queries.country, "country", dm.Country),
+        QueryModel(queries.country_group, "country_group", dm.CountryGroup),
+        QueryModel(queries.country, "country", dm.Country),
     ],
 }
 

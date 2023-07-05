@@ -6,16 +6,17 @@ from botocore.exceptions import ClientError
 from django.core.management.base import BaseCommand
 from tqdm import tqdm
 
-from data_migration.management.commands.utils.db_processor import OracleDBProcessor
-from data_migration.queries.files_v1 import AVAILABLE_QUERIES
+from data_migration.management.commands.config.run_order import QueryModel
+from data_migration.management.commands.utils.db_processor import (
+    AVAILABLE_QUERIES,
+    OracleDBProcessor,
+)
+from data_migration.utils.format import pretty_print_file_size
 from web.utils import s3 as s3_web
 
-DEFAULT_CREATED_DATE_TIME = "1900-12-13 09:39:21"
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
-
-def get_default_last_run_data(query_name: str) -> dict:
-    return dict(query_name=query_name, created_datetime=DEFAULT_CREATED_DATE_TIME)
+REQUIRED_QUERY_PARAMETERS = ["created_datetime"]
 
 
 def get_query_last_run_key(query_name: str) -> str:
@@ -79,20 +80,19 @@ class Command(BaseCommand):
         s3_web.upload_file_obj_to_s3(_file_obj, _key)
 
     def get_initial_run_data_dict(
-        self, query_name: str, number_of_files_to_be_processed: int, start_from_datetime: str
+        self, query_model: QueryModel, query_parameters: dict, number_of_files_to_be_processed: int
     ) -> dict:
         """Returns a dictionary containing summary details of the current run for the given query."""
         return {
             "number_of_files_to_be_processed": number_of_files_to_be_processed,
             "number_of_files_processed": 0,
-            "query_name": query_name,
+            "query_name": query_model.query_name,
             "file_prefix": self.file_prefix,
-            "created_datetime": start_from_datetime,
             "started_at": datetime.datetime.now().strftime(DATETIME_FORMAT),
-        }
+        } | query_parameters
 
     def process_query_and_upload(
-        self, query_dict: dict[str, str], start_from_datetime: str, row_count: int
+        self, query_model: QueryModel, query_parameters: dict, row_count: int
     ) -> dict[str, Any]:
         """Returns summary details of the last time the query was run including date time of
         last file processed (created_datetime) and parameters provided at runtime.
@@ -101,16 +101,17 @@ class Command(BaseCommand):
          - Selects all files to be added to s3
          - Uploads blob file data to s3
         """
-        query_name = query_dict["query_name"]
         number_of_files_to_be_processed = min(row_count, self.db.limit or row_count)
         data_dict = self.get_initial_run_data_dict(
-            query_name, number_of_files_to_be_processed, start_from_datetime
+            query_model,
+            query_parameters,
+            number_of_files_to_be_processed,
         )
 
-        pbar = tqdm(total=number_of_files_to_be_processed, desc=query_name)
+        pbar = tqdm(total=number_of_files_to_be_processed, desc=query_model.query_name)
 
-        sql = self.db.get_sql(query_dict, start_from_datetime)
-        with self.db.execute_query(sql) as rows:
+        sql = self.db.get_sql(query_model)
+        with self.db.execute_query(sql, query_parameters) as rows:
             try:
                 while True:
                     obj = next(rows)
@@ -128,29 +129,46 @@ class Command(BaseCommand):
 
     def process_queries(self, ignore_last_run: bool, count_only: bool) -> None:
         """For each of the specified queries in turn
-        - Retrieves the summary details of last time the query was run
+        - Retrieves the summary details of last time (query parameters) the query was run
         - Retrieves and prints the count of the remaining files to be processed
         - Selects all files to be added to s3
         - Uploads blob file data to s3
         - Writes summary details of files processed (last run data) to s3
         """
-        for query_dict in self.db.get_query_list():
-            query_name = query_dict["query_name"]
-            start_from_datetime = self.get_start_from_datetime(ignore_last_run, query_name)
-            row_count = self.db.execute_count_query(query_dict, start_from_datetime)
-            self.stdout.write(f"Files to be processed for {query_name} query: {row_count}")
-            if not count_only and row_count > 0:
+        total_file_count = 0
+        total_file_size = 0
+        for query_model in self.db.get_query_list():
+            query_parameters = self.get_query_parameters(query_model, ignore_last_run)
+
+            file_count, file_size = self.db.execute_count_query(query_model, query_parameters)
+            total_file_count += file_count
+            total_file_size += file_size
+
+            self.stdout.write(
+                f"{query_model.query_name}: {file_count} files ({pretty_print_file_size(file_size)})"
+            )
+
+            if not count_only and file_count > 0:
                 last_file_processed = self.process_query_and_upload(
-                    query_dict, start_from_datetime, row_count
+                    query_model, query_parameters, file_count
                 )
                 self.write_run_data_to_s3(last_file_processed)
+        self.stdout.write(
+            f"\nTotal number of files to be uploaded: {total_file_count} ({pretty_print_file_size(total_file_size)})"
+        )
 
-    def get_start_from_datetime(self, ignore_last_run: bool, query_name: str) -> str:
-        """Returns the date time the given query should be filtered from."""
+    def get_query_parameters(self, query_model: QueryModel, ignore_last_run: bool) -> dict:
+        """Returns all required query parameters."""
         if ignore_last_run:
-            return DEFAULT_CREATED_DATE_TIME
-        last_run_dict = self.get_last_run_data(query_name)
-        return last_run_dict["created_datetime"]
+            return query_model.parameters
+        last_run_data = self.get_last_run_data(query_model)
+        if not last_run_data:
+            return query_model.parameters
+
+        parameters = {}
+        for _param in REQUIRED_QUERY_PARAMETERS:
+            parameters[_param] = last_run_data[_param]
+        return parameters
 
     def write_run_data_to_s3(self, result: dict[str, Any]) -> None:
         """Writes a (json) file to s3, which contains the details of the completed or partial run."""
@@ -158,16 +176,16 @@ class Command(BaseCommand):
         s3_web.put_object_in_s3(data, get_query_last_run_key(result["query_name"]))
         self.stdout.write(data)
 
-    def get_last_run_data(self, query_name: str) -> dict:
+    def get_last_run_data(self, query_model: QueryModel) -> dict:
         """Returns a dictionary of details of the last time the query was run.
 
         Attempts to retrieve a (json) file from s3 for a given query that contains summary details from
-        the last time the query was run. If the file is not present default data is returned.
+        the last time the query was run. If the file is not present an empty dict is returned.
         """
-        file_name = get_query_last_run_key(query_name)
+        file_name = get_query_last_run_key(query_model.query_name)
         try:
             file_blob = s3_web.get_file_from_s3(file_name)
             _data = json.loads(file_blob.decode())
         except ClientError:
-            _data = get_default_last_run_data(query_name)
+            _data = {}
         return _data
