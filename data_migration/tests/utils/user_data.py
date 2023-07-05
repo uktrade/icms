@@ -304,4 +304,25 @@ user_query_result = {
             ),
         ],
     ),
+    queries.ilb_user_roles: (
+        [
+            ("username",),
+            ("roles"),
+        ],
+        [("test_user", "TEAM_1:ROLE_1,TEAM_1:ROLE_2")],
+    ),
+    queries.nca_user_roles: (
+        [
+            ("username",),
+            ("roles"),
+        ],
+        [("test_user_two", "TEAM_1:ROLE_1,TEAM_1:ROLE_2")],
+    ),
+    queries.home_office_user_roles: (
+        [
+            ("username",),
+            ("roles"),
+        ],
+        [("test_user_two", "TEAM_1:ROLE_1,TEAM_1:ROLE_2")],
+    ),
 }

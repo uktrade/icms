@@ -3053,3 +3053,25 @@ V1_QUERY_3
 "Returns a dictionary
 "Returns the date time the given query should be filtered from
 "Returns a dictionary of details of the last time the query
+Users With No Group
+Users With Multiple Groups
+Home Office Case Officer Group Users
+NCA Case Officer Group Users
+LISTAGG(DISTINCT
+rmc
+ON rmc.res_id
+ON xrtr
+ON rp_wua.wua_id = wuac
+Importer Group Permissions
+Home Office Case Officer Group Permissions
+SECTION5_AUTHORITY_EDITOR%
+ON w1.wua_id = wuac
+account_status
+Test Inactive
+COUNT(login_id
+SELECT sub.login_id FROM securemgr.web_user_account_histories
+login_id
+LEFT JOIN decmgr.resource_members_current
+ON rmc.person_id
+ON xr.res_id
+CASE_OFFICER%

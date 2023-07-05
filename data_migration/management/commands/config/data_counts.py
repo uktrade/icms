@@ -1,3 +1,5 @@
+from django.db.models import Count
+
 import web.models as web
 from data_migration.management.commands._types import CheckCount, CheckQuery
 from data_migration.models import queries
@@ -5,32 +7,39 @@ from web.flow.models import ProcessTypes
 
 CHECK_DATA_COUNTS: list[CheckCount] = [
     CheckCount(
-        "Firearms Acts",
-        7,
-        web.FirearmsAct,
+        name="Firearms Acts",
+        expected_count=7,
+        model=web.FirearmsAct,
     ),
     CheckCount(
-        "Section 5 Clauses",
-        17,
-        web.Section5Clause,
+        name="Section 5 Clauses",
+        expected_count=17,
+        model=web.Section5Clause,
     ),
     CheckCount(
-        "Import Applications Without Document Packs",
-        0,
-        web.ImportApplication,
-        {"licences__isnull": True, "submit_datetime__isnull": False},
+        name="Import Applications Without Document Packs",
+        expected_count=0,
+        model=web.ImportApplication,
+        filter_params={"licences__isnull": True, "submit_datetime__isnull": False},
     ),
     CheckCount(
-        "Export Applications Without Document Packs",
-        0,
-        web.ExportApplication,
-        {"certificates__isnull": True, "submit_datetime__isnull": False},
+        name="Export Applications Without Document Packs",
+        expected_count=0,
+        model=web.ExportApplication,
+        filter_params={"certificates__isnull": True, "submit_datetime__isnull": False},
     ),
     CheckCount(
-        "Individual Importers Without User",
-        0,
-        web.Importer,
-        {"type": web.Importer.INDIVIDUAL, "user__isnull": True},
+        name="Individual Importers Without User",
+        expected_count=0,
+        model=web.Importer,
+        filter_params={"type": web.Importer.INDIVIDUAL, "user__isnull": True},
+    ),
+    CheckCount(
+        name="Users With Multiple Groups",
+        expected_count=0,
+        model=web.User,
+        filter_params={"group_count__gt": 1},
+        annotation={"group_count": Count("groups")},
     ),
 ]
 
@@ -365,5 +374,41 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         name="Template - Import Application Type Endorsements",
         query=queries.iat_endorsement_count,
         model=web.ImportApplicationType.endorsements.through,
+    ),
+    CheckQuery(
+        name="ILB Case Officer Group Users",
+        query=queries.ilb_user_roles_count,
+        model=web.User,
+        filter_params={"groups__name": "ILB Case Officer"},
+    ),
+    CheckQuery(
+        name="Home Office Case Officer Group Users",
+        query=queries.home_office_user_roles_count,
+        model=web.User,
+        filter_params={"groups__name": "Home Office Case Officer"},
+    ),
+    CheckQuery(
+        name="NCA Case Officer Group Users",
+        query=queries.nca_user_roles_count,
+        model=web.User,
+        filter_params={"groups__name": "NCA Case Officer"},
+    ),
+    CheckQuery(
+        name="Importer User Group Users",
+        query=queries.importer_user_roles_count,
+        model=web.User,
+        filter_params={"groups__name": "Importer User"},
+    ),
+    CheckQuery(
+        name="Exporter User Group Users",
+        query=queries.exporter_user_roles_count,
+        model=web.User,
+        filter_params={"groups__name": "Exporter User"},
+    ),
+    CheckQuery(
+        name="Users With No Group",
+        query=queries.users_without_roles_count,
+        model=web.User,
+        filter_params={"groups__isnull": True},
     ),
 ]

@@ -95,8 +95,6 @@ class User(MigrationBase):
             .iterator(chunk_size=2000)
         )
 
-    # M2M groups / user permissions
-
 
 class PhoneNumber(MigrationBase):
     phone = models.CharField(max_length=60)
