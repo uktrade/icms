@@ -586,6 +586,16 @@ def test_import_oil_data(mock_connect, dummy_dm_settings):
     assert dfl_revoked.licences.count() == 1
     assert dfl_revoked.licences.filter(status="RE").count() == 1
 
+    assert web.User.objects.filter(groups__isnull=False).count() == 0
+
+    call_command("create_icms_groups")
+    call_command("post_migration")
+
+    assert web.User.objects.filter(groups__isnull=False).count() == 3
+    assert web.User.objects.get(groups__name="ILB Case Officer").username == "test_user"
+    assert web.User.objects.get(groups__name="Home Office Case Officer").username == "test_user_two"
+    assert web.User.objects.get(groups__name="NCA Case Officer").username == "test_user_two"
+
 
 user_xml_parsers = {
     "import_application": [],

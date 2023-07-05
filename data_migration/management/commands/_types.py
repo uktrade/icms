@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import NamedTuple
+from typing import Any, NamedTuple
 from typing import Type as T
 from typing import Union
 
@@ -35,6 +35,7 @@ class CheckCount:
     expected_count: int
     model: ModelT
     filter_params: Params = field(default_factory=dict)
+    annotation: dict[str, Any] | None = None
 
 
 @dataclass(frozen=True)
