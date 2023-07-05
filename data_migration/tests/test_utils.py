@@ -17,6 +17,7 @@ from data_migration.utils.format import (
     extract_int_substr,
     get_xml_val,
     int_or_none,
+    pretty_print_file_size,
     reformat_placeholders,
     str_to_bool,
     str_to_list,
@@ -301,3 +302,16 @@ def test_reformat_placeholders():
     expected = "[[ABC]] more text [[def]]"
 
     assert reformat_placeholders(content) == expected
+
+
+@pytest.mark.parametrize(
+    "file_size,expected",
+    [
+        (0, "0.0 bytes"),
+        (101011, "98.6 KB"),
+        (33763636, "32.2 MB"),
+        (49373737737, "46.0 GB"),
+    ],
+)
+def test_pretty_print_file_size(file_size, expected):
+    assert pretty_print_file_size(file_size) == expected

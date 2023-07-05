@@ -8,6 +8,7 @@ from django.db.models import QuerySet
 
 from data_migration import models as dm
 from data_migration import queries
+from data_migration.management.commands._types import QueryModel
 from data_migration.management.commands.config.run_order import (
     DATA_TYPE_M2M,
     DATA_TYPE_QUERY_MODEL,
@@ -96,55 +97,57 @@ sil_data_source_target = {
     DATA_TYPE_QUERY_MODEL,
     {
         "reference": [
-            (queries.country, "country", dm.Country),
-            (queries.country_group, "country_group", dm.CountryGroup),
-            (queries.commodity_type, "commodity_type", dm.CommodityType),
-            (queries.obsolete_calibre_group, "obsolete_calibre_group", dm.ObsoleteCalibreGroup),
-            (queries.obsolete_calibre, "obsolete_calibre", dm.ObsoleteCalibre),
-            (queries.section5_clauses, "section5_clauses", dm.Section5Clause),
-            (queries.template, "templates", dm.Template),
+            QueryModel(queries.country, "country", dm.Country),
+            QueryModel(queries.country_group, "country_group", dm.CountryGroup),
+            QueryModel(queries.commodity_type, "commodity_type", dm.CommodityType),
+            QueryModel(
+                queries.obsolete_calibre_group, "obsolete_calibre_group", dm.ObsoleteCalibreGroup
+            ),
+            QueryModel(queries.obsolete_calibre, "obsolete_calibre", dm.ObsoleteCalibre),
+            QueryModel(queries.section5_clauses, "section5_clauses", dm.Section5Clause),
+            QueryModel(queries.template, "templates", dm.Template),
         ],
         "file": [
-            (queries.case_note_files, "case_note_files", dm.FileCombined),
-            (queries.fir_files, "fir_files", dm.FileCombined),
-            (queries.sil_application_files, "sil_application_files", dm.FileCombined),
-            (queries.fa_certificate_files, "fa_certificate_files", dm.FileCombined),
-            (
+            QueryModel(queries.case_note_files, "case_note_files", dm.FileCombined),
+            QueryModel(queries.fir_files, "fir_files", dm.FileCombined),
+            QueryModel(queries.sil_application_files, "sil_application_files", dm.FileCombined),
+            QueryModel(queries.fa_certificate_files, "fa_certificate_files", dm.FileCombined),
+            QueryModel(
                 queries.fa_supplementary_report_upload_files,
                 "supplementary_report_uploads",
                 dm.FileCombined,
             ),
         ],
         "import_application": [
-            (queries.ia_type, "ia_type", dm.ImportApplicationType),
-            (queries.sil_application, "sil_application", dm.SILApplication),
-            (queries.ia_licence, "ia_licence", dm.ImportApplicationLicence),
-            (queries.ia_licence_docs, "ia_licence_docs", dm.CaseDocument),
-            (queries.fa_authorities, "fa_authorities", dm.FirearmsAuthority),
-            (
+            QueryModel(queries.ia_type, "ia_type", dm.ImportApplicationType),
+            QueryModel(queries.sil_application, "sil_application", dm.SILApplication),
+            QueryModel(queries.ia_licence, "ia_licence", dm.ImportApplicationLicence),
+            QueryModel(queries.ia_licence_docs, "ia_licence_docs", dm.CaseDocument),
+            QueryModel(queries.fa_authorities, "fa_authorities", dm.FirearmsAuthority),
+            QueryModel(
                 queries.fa_authority_linked_offices,
                 "fa_authority_linked_offices",
                 dm.FirearmsAuthorityOffice,
             ),
-            (queries.section5_authorities, "section5_authorities", dm.Section5Authority),
-            (
+            QueryModel(queries.section5_authorities, "section5_authorities", dm.Section5Authority),
+            QueryModel(
                 queries.section5_linked_offices,
                 "section5_linked_offices",
                 dm.Section5AuthorityOffice,
             ),
-            (queries.sil_checklist, "sil_checklist", dm.SILChecklist),
-            (queries.constabulary_emails, "constabulary_emails", dm.CaseEmail),
-            (queries.case_note, "case_note", dm.CaseNote),
-            (queries.update_request, "update_request", dm.UpdateRequest),
-            (queries.fir, "fir", dm.FurtherInformationRequest),
-            (queries.endorsement, "endorsement", dm.EndorsementImportApplication),
+            QueryModel(queries.sil_checklist, "sil_checklist", dm.SILChecklist),
+            QueryModel(queries.constabulary_emails, "constabulary_emails", dm.CaseEmail),
+            QueryModel(queries.case_note, "case_note", dm.CaseNote),
+            QueryModel(queries.update_request, "update_request", dm.UpdateRequest),
+            QueryModel(queries.fir, "fir", dm.FurtherInformationRequest),
+            QueryModel(queries.endorsement, "endorsement", dm.EndorsementImportApplication),
         ],
         "user": [
-            (queries.users, "users", dm.User),
-            (queries.importers, "importers", dm.Importer),
-            (queries.importer_offices, "importer_offices", dm.Office),
-            (queries.exporters, "exporters", dm.Exporter),
-            (queries.exporter_offices, "exporter_offices", dm.Office),
+            QueryModel(queries.users, "users", dm.User),
+            QueryModel(queries.importers, "importers", dm.Importer),
+            QueryModel(queries.importer_offices, "importer_offices", dm.Office),
+            QueryModel(queries.exporters, "exporters", dm.Exporter),
+            QueryModel(queries.exporter_offices, "exporter_offices", dm.Office),
         ],
     },
 )
@@ -486,31 +489,33 @@ oil_data_source_target = {
     DATA_TYPE_QUERY_MODEL,
     {
         "import_application": [
-            (queries.ia_type, "ia_type", dm.ImportApplicationType),
-            (queries.oil_application, "oil_application", dm.OpenIndividualLicenceApplication),
-            (queries.oil_checklist, "oil_checklist", dm.ChecklistFirearmsOILApplication),
-            (queries.dfl_application, "dfl_application", dm.DFLApplication),
+            QueryModel(queries.ia_type, "ia_type", dm.ImportApplicationType),
+            QueryModel(
+                queries.oil_application, "oil_application", dm.OpenIndividualLicenceApplication
+            ),
+            QueryModel(queries.oil_checklist, "oil_checklist", dm.ChecklistFirearmsOILApplication),
+            QueryModel(queries.dfl_application, "dfl_application", dm.DFLApplication),
         ],
         "reference": [
-            (queries.country, "country", dm.Country),
-            (queries.country_group, "country_group", dm.CountryGroup),
-            (queries.commodity_type, "commodity_type", dm.CommodityType),
-            (queries.constabularies, "constabularies", dm.Constabulary),
-            (queries.template, "templates", dm.Template),
+            QueryModel(queries.country, "country", dm.Country),
+            QueryModel(queries.country_group, "country_group", dm.CountryGroup),
+            QueryModel(queries.commodity_type, "commodity_type", dm.CommodityType),
+            QueryModel(queries.constabularies, "constabularies", dm.Constabulary),
+            QueryModel(queries.template, "templates", dm.Template),
         ],
         "file": [
-            (queries.oil_application_files, "oil_application_files", dm.FileCombined),
-            (queries.dfl_application_files, "dfl_application_files", dm.FileCombined),
-            (
+            QueryModel(queries.oil_application_files, "oil_application_files", dm.FileCombined),
+            QueryModel(queries.dfl_application_files, "dfl_application_files", dm.FileCombined),
+            QueryModel(
                 queries.fa_supplementary_report_upload_files,
                 "supplementary_report_uploads",
                 dm.FileCombined,
             ),
         ],
         "user": [
-            (queries.users, "users", dm.User),
-            (queries.importers, "importers", dm.Importer),
-            (queries.importer_offices, "importer_offices", dm.Office),
+            QueryModel(queries.users, "users", dm.User),
+            QueryModel(queries.importers, "importers", dm.Importer),
+            QueryModel(queries.importer_offices, "importer_offices", dm.Office),
         ],
     },
 )
@@ -607,18 +612,20 @@ template_data_source_target = {
     DATA_TYPE_QUERY_MODEL,
     {
         "reference": [
-            (queries.country, "country", dm.Country),
-            (queries.country_group, "country_group", dm.CountryGroup),
-            (queries.commodity_type, "commodity_type", dm.CommodityType),
-            (queries.ia_type, "ia type", dm.ImportApplicationType),
-            (queries.template, "template", dm.Template),
-            (queries.cfs_paragraph, "cfs paragraph", dm.CFSScheduleParagraph),
-            (queries.template_country, "template country", dm.TemplateCountry),
-            (queries.endorsement_template, "endorsement template", dm.EndorsementTemplate),
+            QueryModel(queries.country, "country", dm.Country),
+            QueryModel(queries.country_group, "country_group", dm.CountryGroup),
+            QueryModel(queries.commodity_type, "commodity_type", dm.CommodityType),
+            QueryModel(queries.ia_type, "ia type", dm.ImportApplicationType),
+            QueryModel(queries.template, "template", dm.Template),
+            QueryModel(queries.cfs_paragraph, "cfs paragraph", dm.CFSScheduleParagraph),
+            QueryModel(queries.template_country, "template country", dm.TemplateCountry),
+            QueryModel(
+                queries.endorsement_template, "endorsement template", dm.EndorsementTemplate
+            ),
         ],
         "user": [
-            (queries.users, "users", dm.User),
-            (queries.importers, "importers", dm.Importer),
+            QueryModel(queries.users, "users", dm.User),
+            QueryModel(queries.importers, "importers", dm.Importer),
         ],
     },
 )

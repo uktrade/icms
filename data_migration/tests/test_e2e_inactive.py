@@ -7,6 +7,7 @@ from django.core.management import call_command
 
 from data_migration import models as dm
 from data_migration import queries
+from data_migration.management.commands._types import QueryModel
 from data_migration.management.commands.config.run_order import (
     DATA_TYPE_M2M,
     DATA_TYPE_QUERY_MODEL,
@@ -47,26 +48,28 @@ opt_data_source_target = {
 
 opt_query_model = {
     "user": [
-        (queries.users, "users", dm.User),
-        (queries.importers, "importers", dm.Importer),
-        (queries.importer_offices, "importer_offices", dm.Office),
+        QueryModel(queries.users, "users", dm.User),
+        QueryModel(queries.importers, "importers", dm.Importer),
+        QueryModel(queries.importer_offices, "importer_offices", dm.Office),
     ],
     "file": [
-        (queries.opt_application_files, "opt_application_files", dm.FileCombined),
+        QueryModel(queries.opt_application_files, "opt_application_files", dm.FileCombined),
     ],
     "import_application": [
-        (queries.ia_type, "ia_type", dm.ImportApplicationType),
-        (queries.opt_application, "opt_application", dm.OutwardProcessingTradeApplication),
+        QueryModel(queries.ia_type, "ia_type", dm.ImportApplicationType),
+        QueryModel(
+            queries.opt_application, "opt_application", dm.OutwardProcessingTradeApplication
+        ),
     ],
     "export_application": [],
     "reference": [
-        (queries.country_group, "country_group", dm.CountryGroup),
-        (queries.country, "country", dm.Country),
-        (queries.unit, "unit", dm.Unit),
-        (queries.commodity_type, "commodity_type", dm.CommodityType),
-        (queries.commodity_group, "commodity_group", dm.CommodityGroup),
-        (queries.commodity, "commodity", dm.Commodity),
-        (queries.template, "templates", dm.Template),
+        QueryModel(queries.country_group, "country_group", dm.CountryGroup),
+        QueryModel(queries.country, "country", dm.Country),
+        QueryModel(queries.unit, "unit", dm.Unit),
+        QueryModel(queries.commodity_type, "commodity_type", dm.CommodityType),
+        QueryModel(queries.commodity_group, "commodity_group", dm.CommodityGroup),
+        QueryModel(queries.commodity, "commodity", dm.Commodity),
+        QueryModel(queries.template, "templates", dm.Template),
     ],
 }
 
@@ -203,31 +206,33 @@ sps_data_source_target = {
     DATA_TYPE_QUERY_MODEL,
     {
         "file": [
-            (queries.sps_application_files, "sps_application_files", dm.FileCombined),
-            (queries.sps_docs, "sps_docs", dm.FileCombined),
-            (queries.sanction_application_files, "sanction_application_files", dm.FileCombined),
+            QueryModel(queries.sps_application_files, "sps_application_files", dm.FileCombined),
+            QueryModel(queries.sps_docs, "sps_docs", dm.FileCombined),
+            QueryModel(
+                queries.sanction_application_files, "sanction_application_files", dm.FileCombined
+            ),
         ],
         "import_application": [
-            (queries.ia_type, "ia_type", dm.ImportApplicationType),
-            (queries.sps_application, "sps_application", dm.PriorSurveillanceApplication),
-            (
+            QueryModel(queries.ia_type, "ia_type", dm.ImportApplicationType),
+            QueryModel(queries.sps_application, "sps_application", dm.PriorSurveillanceApplication),
+            QueryModel(
                 queries.sanctions_application,
                 "sanctions_application",
                 dm.SanctionsAndAdhocApplication,
             ),
-            (queries.sigl_transmission, "sigl_transmission", dm.SIGLTransmission),
+            QueryModel(queries.sigl_transmission, "sigl_transmission", dm.SIGLTransmission),
         ],
         "reference": [
-            (queries.country_group, "country_group", dm.CountryGroup),
-            (queries.country, "country", dm.Country),
-            (queries.commodity_type, "commodity_type", dm.CommodityType),
-            (queries.commodity, "commodity", dm.Commodity),
-            (queries.template, "templates", dm.Template),
+            QueryModel(queries.country_group, "country_group", dm.CountryGroup),
+            QueryModel(queries.country, "country", dm.Country),
+            QueryModel(queries.commodity_type, "commodity_type", dm.CommodityType),
+            QueryModel(queries.commodity, "commodity", dm.Commodity),
+            QueryModel(queries.template, "templates", dm.Template),
         ],
         "user": [
-            (queries.users, "users", dm.User),
-            (queries.importers, "importers", dm.Importer),
-            (queries.importer_offices, "importer_offices", dm.Office),
+            QueryModel(queries.users, "users", dm.User),
+            QueryModel(queries.importers, "importers", dm.Importer),
+            QueryModel(queries.importer_offices, "importer_offices", dm.Office),
         ],
     },
 )
@@ -335,27 +340,31 @@ tex_data_source_target = {
     DATA_TYPE_QUERY_MODEL,
     {
         "file": [
-            (queries.textiles_application_files, "textiles_application_files", dm.FileCombined),
+            QueryModel(
+                queries.textiles_application_files, "textiles_application_files", dm.FileCombined
+            ),
         ],
         "import_application": [
-            (queries.ia_type, "ia_type", dm.ImportApplicationType),
-            (queries.textiles_application, "textiles_application", dm.TextilesApplication),
-            (queries.textiles_checklist, "textiles_checklist", dm.TextilesChecklist),
+            QueryModel(queries.ia_type, "ia_type", dm.ImportApplicationType),
+            QueryModel(
+                queries.textiles_application, "textiles_application", dm.TextilesApplication
+            ),
+            QueryModel(queries.textiles_checklist, "textiles_checklist", dm.TextilesChecklist),
         ],
         "export_application": [],
         "reference": [
-            (queries.unit, "unit", dm.Unit),
-            (queries.country_group, "country_group", dm.CountryGroup),
-            (queries.country, "country", dm.Country),
-            (queries.commodity_type, "commodity_type", dm.CommodityType),
-            (queries.commodity_group, "commodity_group", dm.CommodityGroup),
-            (queries.commodity, "commodity", dm.Commodity),
-            (queries.template, "templates", dm.Template),
+            QueryModel(queries.unit, "unit", dm.Unit),
+            QueryModel(queries.country_group, "country_group", dm.CountryGroup),
+            QueryModel(queries.country, "country", dm.Country),
+            QueryModel(queries.commodity_type, "commodity_type", dm.CommodityType),
+            QueryModel(queries.commodity_group, "commodity_group", dm.CommodityGroup),
+            QueryModel(queries.commodity, "commodity", dm.Commodity),
+            QueryModel(queries.template, "templates", dm.Template),
         ],
         "user": [
-            (queries.users, "users", dm.User),
-            (queries.importers, "importers", dm.Importer),
-            (queries.importer_offices, "importer_offices", dm.Office),
+            QueryModel(queries.users, "users", dm.User),
+            QueryModel(queries.importers, "importers", dm.Importer),
+            QueryModel(queries.importer_offices, "importer_offices", dm.Office),
         ],
     },
 )

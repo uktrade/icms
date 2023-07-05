@@ -74,13 +74,15 @@ class Command(MigrationBaseCommand):
 
         self.stdout.write(f"Exporting {name} Data...")
 
-        for idx, (query, query_name, model) in enumerate(query_models, start=start):
-            self.stdout.write(f"\t{idx} - Exporting {query_name} to {model.__name__} model")
+        for idx, query_model in enumerate(query_models, start=start):
+            self.stdout.write(
+                f"\t{idx} - Exporting {query_model.query_name} to {query_model.model.__name__} model"
+            )
 
             # Create a new cursor for each query
             # oracledb sometimes throws `IndexError: list index out of range` when reusing cursor
             with connection.cursor() as cursor:
-                cursor.execute(query)
+                cursor.execute(query_model.query, query_model.parameters)
                 columns = [col[0].lower() for col in cursor.description]
 
                 while True:
@@ -88,7 +90,7 @@ class Command(MigrationBaseCommand):
                     if not rows:
                         break
 
-                    self._export_model_data(columns, rows, model)
+                    self._export_model_data(columns, rows, query_model.model)
 
             self._log_time()
 

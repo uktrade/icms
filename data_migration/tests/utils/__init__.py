@@ -26,7 +26,7 @@ class MockCursor:
     def cursor(self):
         return self
 
-    def execute(self, query):
+    def execute(self, query, parameters=None):
         self.description, self.data = query_result.get(query, (None, None))
 
     @staticmethod

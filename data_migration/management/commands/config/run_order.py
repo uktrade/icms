@@ -11,6 +11,8 @@ from web import models as web
 
 from .._types import M2M, QueryModel, SourceTarget, source_target_list
 
+DEFAULT_FILE_CREATED_DATETIME = "2013-01-01 01:00:00"
+
 user_source_target = [
     SourceTarget(dm.User, web.User),
     SourceTarget(dm.PersonalEmail, web.PersonalEmail),
@@ -109,28 +111,107 @@ ref_m2m = [
 ]
 
 file_query_model = [
-    QueryModel(queries.gmp_files, "gmp_files", dm.FileCombined),
-    QueryModel(queries.mailshot_files, "mailshot_files", dm.FileCombined),
-    QueryModel(queries.case_note_files, "case_note_files", dm.FileCombined),
-    QueryModel(queries.fir_files, "fir_files", dm.FileCombined),
-    QueryModel(queries.sps_application_files, "sps_application_files", dm.FileCombined),
-    QueryModel(queries.sps_docs, "sps_docs", dm.FileCombined),
     QueryModel(
-        queries.derogations_application_files, "derogations_application_files", dm.FileCombined
+        queries.gmp_files,
+        "gmp_files",
+        dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
     ),
-    QueryModel(queries.opt_application_files, "opt_application_files", dm.FileCombined),
-    QueryModel(queries.dfl_application_files, "dfl_application_files", dm.FileCombined),
-    QueryModel(queries.oil_application_files, "oil_application_files", dm.FileCombined),
-    QueryModel(queries.sil_application_files, "sil_application_files", dm.FileCombined),
-    QueryModel(queries.sanction_application_files, "sanction_application_files", dm.FileCombined),
-    QueryModel(queries.wood_application_files, "wood_application_files", dm.FileCombined),
-    QueryModel(queries.textiles_application_files, "textiles_application_files", dm.FileCombined),
-    QueryModel(queries.fa_certificate_files, "fa_certificate_files", dm.FileCombined),
-    QueryModel(queries.export_case_note_docs, "export_case_note_docs", dm.FileCombined),
+    QueryModel(
+        queries.mailshot_files,
+        "mailshot_files",
+        dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+    ),
+    QueryModel(
+        queries.case_note_files,
+        "case_note_files",
+        dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+    ),
+    QueryModel(
+        queries.fir_files,
+        "fir_files",
+        dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+    ),
+    QueryModel(
+        queries.sps_application_files,
+        "sps_application_files",
+        dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+    ),
+    QueryModel(
+        queries.sps_docs,
+        "sps_docs",
+        dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+    ),
+    QueryModel(
+        queries.derogations_application_files,
+        "derogations_application_files",
+        dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+    ),
+    QueryModel(
+        queries.opt_application_files,
+        "opt_application_files",
+        dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+    ),
+    QueryModel(
+        queries.dfl_application_files,
+        "dfl_application_files",
+        dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+    ),
+    QueryModel(
+        queries.oil_application_files,
+        "oil_application_files",
+        dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+    ),
+    QueryModel(
+        queries.sil_application_files,
+        "sil_application_files",
+        dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+    ),
+    QueryModel(
+        queries.sanction_application_files,
+        "sanction_application_files",
+        dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+    ),
+    QueryModel(
+        queries.wood_application_files,
+        "wood_application_files",
+        dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+    ),
+    QueryModel(
+        queries.textiles_application_files,
+        "textiles_application_files",
+        dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+    ),
+    QueryModel(
+        queries.fa_certificate_files,
+        "fa_certificate_files",
+        dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+    ),
+    QueryModel(
+        queries.export_case_note_docs,
+        "export_case_note_docs",
+        dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+    ),
     QueryModel(
         queries.fa_supplementary_report_upload_files,
         "supplementary_report_upload_files",
         dm.FileCombined,
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
     ),
 ]
 

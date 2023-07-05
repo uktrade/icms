@@ -1,10 +1,11 @@
 from django.test import TestCase
 
+from data_migration.management.commands._types import QueryModel
 from data_migration.management.commands.utils.db_processor import OracleDBProcessor
 
-TEST_QUERY = f"""
-select file_contents as blob_data, path, created_by_id, created_datetime  from data_migration_document
-where  created_datetime > '{{created_datetime_from}}'
+TEST_QUERY = """
+SELECT file_contents AS blob_data, path, created_by_id, created_datetime  from data_migration_document
+WHERE created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER BY created_datetime
 """  # noqa: F541
 
@@ -22,34 +23,38 @@ class TestOracleDBProcessor(TestCase):
         )
 
     def test_get_sql(self):
-        query_dict = {"query_name": "test_query", "query": TEST_QUERY}
+        query_model = QueryModel(
+            TEST_QUERY, "test_query", None, {"created_datetime": CREATED_DATETIME_ALT}
+        )
+
         expected_sql = """WITH DOC_QUERY AS (
-select file_contents as blob_data, path, created_by_id, created_datetime  from data_migration_document
-where  created_datetime > '2023-01-01 01:00:00'
+SELECT file_contents AS blob_data, path, created_by_id, created_datetime  from data_migration_document
+WHERE created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER BY created_datetime
  FETCH FIRST 100 ROWS ONLY) SELECT * FROM DOC_QUERY"""
 
-        result = self.db.get_sql(query_dict, CREATED_DATETIME_ALT)
+        result = self.db.get_sql(query_model)
         assert result == expected_sql
 
     def test_get_count_sql(self):
-        query_dict = {"query_name": "test_query", "query": TEST_QUERY}
+        query_model = QueryModel(
+            TEST_QUERY, "test_query", None, {"created_datetime": CREATED_DATETIME_ALT}
+        )
         expected_sql = """WITH DOC_QUERY AS (
-select file_contents as blob_data, path, created_by_id, created_datetime  from data_migration_document
-where  created_datetime > '2023-01-01 01:00:00'
+SELECT file_contents AS blob_data, path, created_by_id, created_datetime  from data_migration_document
+WHERE created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER BY created_datetime
-) SELECT count(1) FROM DOC_QUERY"""
+) SELECT count(1) as count, SUM(file_size) as file_size FROM DOC_QUERY"""
 
-        result = self.db.get_count_sql(query_dict, CREATED_DATETIME_ALT)
+        result = self.db.get_count_sql(query_model)
         assert result == expected_sql
 
     def test_get_query_list(self):
         db = OracleDBProcessor(100, None, 1)
-        result = [query_dict for query_dict in db.get_query_list()]
-        assert len(result) == 6
-        assert set(result[0].keys()) == {"query_name", "query"}
+        result = [query_model for query_model in db.get_query_list()]
+        assert len(result) == 17
 
     def test_get_filtered_query_list(self):
-        db = OracleDBProcessor(100, ["V1_QUERY_2", "V1_QUERY_5"], 1)
-        result = [query_dict["query_name"] for query_dict in db.get_query_list()]
-        assert set(result) == {"V1_QUERY_2", "V1_QUERY_5"}
+        db = OracleDBProcessor(100, ["gmp_files", "fir_files"], 1)
+        result = [query_model.query_name for query_model in db.get_query_list()]
+        assert set(result) == {"gmp_files", "fir_files"}

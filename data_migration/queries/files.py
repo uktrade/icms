@@ -10,6 +10,7 @@ SELECT
   , fft.status
   , fft.id target_id
   , fv.*
+  , sld.blob_data
 FROM impmgr.xview_ima_details xid
 INNER JOIN impmgr.import_application_types iat
   ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
@@ -22,6 +23,7 @@ LEFT JOIN (
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
+    , secure_lob_ref
     , x.*
   FROM decmgr.file_versions fv
   CROSS JOIN XMLTABLE('/*'
@@ -33,6 +35,7 @@ LEFT JOIN (
   ) x
   WHERE status_control = 'C'
 ) fv ON fv.fft_id = fft.id
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(fv.secure_lob_ref).id
 WHERE fft.target_mnem IN ('IMP_SUPPORTING_DOC')
 AND xid.ima_type = 'SAN'
 AND xid.ima_sub_type = 'SAN1'
@@ -45,6 +48,7 @@ AND (
     AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
   )
 )
+AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
 """
 
@@ -57,6 +61,7 @@ SELECT
   , fft.status
   , fft.id target_id
   , fv.*
+  , sld.blob_data
 FROM impmgr.xview_ima_details xid
 INNER JOIN impmgr.import_application_types iat
   ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
@@ -69,6 +74,7 @@ LEFT JOIN (
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
+    , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
   CROSS JOIN XMLTABLE('/*'
@@ -80,6 +86,7 @@ LEFT JOIN (
   ) x
   WHERE status_control = 'C'
 ) fv ON fv.fft_id = fft.id
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
 WHERE fft.target_mnem IN ('IMP_SUPPORTING_DOC')
 AND xid.ima_type = 'SPS'
 AND xid.ima_sub_type = 'SPS1'
@@ -92,9 +99,9 @@ AND (
     AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
   )
 )
+AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
 """
-
 
 dfl_application_files = """
 SELECT
@@ -105,6 +112,7 @@ SELECT
   , fft.status
   , fft.id target_id
   , fv.*
+  , sld.blob_data
 FROM impmgr.xview_ima_details xid
 INNER JOIN impmgr.import_application_types iat
   ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
@@ -117,6 +125,7 @@ LEFT JOIN (
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
+    , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
   CROSS JOIN XMLTABLE('/*'
@@ -128,6 +137,7 @@ LEFT JOIN (
   ) x
   WHERE status_control = 'C'
 ) fv ON fv.fft_id = fft.id
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
 WHERE fft.target_mnem IN ('IMP_FIREARMS_CERTIFICATE')
 AND xid.ima_type = 'FA'
 AND xid.ima_sub_type = 'DEACTIVATED'
@@ -140,6 +150,7 @@ AND (
     AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
   )
 )
+AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
 """
 
@@ -153,6 +164,7 @@ SELECT
   , fft.status
   , fft.id target_id
   , fv.*
+  , sld.blob_data
 FROM impmgr.xview_ima_details xid
 INNER JOIN impmgr.import_application_types iat
   ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
@@ -165,6 +177,7 @@ LEFT JOIN (
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
+    , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
   CROSS JOIN XMLTABLE('/*'
@@ -176,6 +189,7 @@ LEFT JOIN (
   ) x
   WHERE status_control = 'C'
 ) fv ON fv.fft_id = fft.id
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
 WHERE fft.target_mnem IN ('IMP_FIREARMS_CERTIFICATE', 'IMP_SECTION5_AUTHORITY')
 AND xid.ima_type = 'FA'
 AND xid.ima_sub_type = 'OIL'
@@ -188,6 +202,7 @@ AND (
     AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
   )
 )
+AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
 """
 
@@ -201,6 +216,7 @@ SELECT
   , fft.status
   , fft.id target_id
   , fv.*
+  , sld.blob_data
 FROM impmgr.xview_ima_details xid
 INNER JOIN impmgr.import_application_types iat
   ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
@@ -213,6 +229,7 @@ LEFT JOIN (
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
+    , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
   CROSS JOIN XMLTABLE('/*'
@@ -224,6 +241,7 @@ LEFT JOIN (
   ) x
   WHERE status_control = 'C'
 ) fv ON fv.fft_id = fft.id
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
 WHERE fft.target_mnem IN ('IMP_FIREARMS_CERTIFICATE', 'IMP_SECTION5_AUTHORITY')
 AND xid.ima_type = 'FA'
 AND xid.ima_sub_type = 'SIL'
@@ -236,6 +254,7 @@ AND (
     AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
   )
 )
+AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
 """
 
@@ -249,6 +268,7 @@ SELECT
   , fft.status
   , fft.id target_id
   , fv.*
+  , sld.blob_data
 FROM impmgr.xview_ima_details xid
 INNER JOIN impmgr.import_application_types iat
   ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
@@ -261,6 +281,7 @@ LEFT JOIN (
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
+    , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
   CROSS JOIN XMLTABLE('/*'
@@ -272,6 +293,7 @@ LEFT JOIN (
   ) x
   WHERE status_control = 'C'
 ) fv ON fv.fft_id = fft.id
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
 WHERE fft.target_mnem IN ('IMP_SUPPORTING_DOC', 'IMP_CONTRACT_DOC')
 AND xid.ima_type = 'ADHOC'
 AND xid.ima_sub_type = 'ADHOC1'
@@ -284,6 +306,7 @@ AND (
     AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
   )
 )
+AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
 """
 
@@ -297,6 +320,7 @@ SELECT
   , fft.status
   , fft.id target_id
   , fv.*
+  , sld.blob_data
 FROM impmgr.xview_ima_details xid
 INNER JOIN impmgr.import_application_types iat
   ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
@@ -309,6 +333,7 @@ LEFT JOIN (
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
+    , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
   CROSS JOIN XMLTABLE('/*'
@@ -320,6 +345,7 @@ LEFT JOIN (
   ) x
   WHERE status_control = 'C'
 ) fv ON fv.fft_id = fft.id
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
 WHERE fft.target_mnem IN (
   'IMP_SUPPORTING_DOC', 'IMP_OPT_BENEFICIARY_DOC', 'IMP_OPT_EMPLOY_DOC', 'IMP_OPT_FURTHER_AUTH_DOC',
   'IMP_OPT_NEW_APP_JUST_DOC', 'IMP_OPT_PRIOR_AUTH_DOC', 'IMP_OPT_SUBCONTRACT_DOC'
@@ -335,6 +361,7 @@ AND (
     AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
   )
 )
+AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
 """
 
@@ -348,6 +375,7 @@ SELECT
   , fft.status
   , fft.id target_id
   , fv.*
+  , sld.blob_data
 FROM impmgr.xview_ima_details xid
 INNER JOIN impmgr.import_application_types iat
   ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
@@ -360,6 +388,7 @@ LEFT JOIN (
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
+    , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
   CROSS JOIN XMLTABLE('/*'
@@ -371,6 +400,7 @@ LEFT JOIN (
   ) x
   WHERE status_control = 'C'
 ) fv ON fv.fft_id = fft.id
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
 WHERE fft.target_mnem IN ('IMP_CONTRACT_DOC', 'IMP_SUPPORTING_DOC')
 AND xid.ima_type = 'WD'
 AND xid.ima_sub_type = 'QUOTA'
@@ -383,6 +413,7 @@ AND (
     AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
   )
 )
+AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
 """
 
@@ -396,6 +427,7 @@ SELECT
   , fft.status
   , fft.id target_id
   , fv.*
+  , sld.blob_data
 FROM impmgr.xview_ima_details xid
 INNER JOIN impmgr.import_application_types iat
   ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
@@ -408,6 +440,7 @@ LEFT JOIN (
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
+    , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
   CROSS JOIN XMLTABLE('/*'
@@ -419,6 +452,7 @@ LEFT JOIN (
   ) x
   WHERE status_control = 'C'
 ) fv ON fv.fft_id = fft.id
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
 WHERE fft.target_mnem IN ('IMP_CONTRACT_DOC', 'IMP_SUPPORTING_DOC')
 AND xid.ima_type = 'TEX'
 AND xid.ima_sub_type = 'QUOTA'
@@ -431,6 +465,7 @@ AND (
     AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
   )
 )
+AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
 """
 
@@ -448,6 +483,7 @@ SELECT
   , fv.path
   , created_datetime
   , fv.created_by_id
+  , sld.blob_data
 FROM impmgr.importer_authorities ia
 INNER JOIN (
   SELECT ia_id, x.*
@@ -468,6 +504,7 @@ LEFT JOIN (
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
+    , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
   CROSS JOIN XMLTABLE('/*'
@@ -479,9 +516,10 @@ LEFT JOIN (
     ) x
   WHERE status_control = 'C'
 ) fv ON fv.target_id = fft.id
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
+WHERE created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
 """
-
 
 sps_docs = """
 SELECT
@@ -498,6 +536,7 @@ SELECT
   , fv.path
   , created_datetime
   , fv.created_by_id
+  , sld.blob_data
 FROM decmgr.file_folder_targets fft
 INNER JOIN decmgr.file_folders ff ON fft.ff_id = ff.id
 LEFT JOIN (
@@ -507,6 +546,7 @@ LEFT JOIN (
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
+    , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv,
     XMLTABLE('/*'
@@ -518,11 +558,11 @@ LEFT JOIN (
     ) x
   WHERE status_control = 'C'
  ) fv ON fv.target_id = fft.ID
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
 WHERE fft.target_mnem = 'IMP_SPS_DOC'
-AND fft.status = 'RECEIVED'
+AND fft.status = 'RECEIVED' AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
 """
-
 
 case_note_files = """
 SELECT
@@ -538,6 +578,7 @@ SELECT
   , fv.path
   , created_datetime
   , fv.created_by_id
+  , sld.blob_data
 FROM decmgr.file_folder_targets fft
 INNER JOIN decmgr.file_folders ff ON fft.ff_id = ff.id
 LEFT JOIN (
@@ -547,6 +588,7 @@ LEFT JOIN (
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
+    , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
   CROSS JOIN XMLTABLE('/*'
@@ -558,7 +600,8 @@ LEFT JOIN (
     ) x
   WHERE status_control = 'C'
  ) fv ON fv.target_id = fft.ID
-WHERE ff.file_folder_type = 'IMP_CASE_NOTE_DOCUMENTS'
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
+WHERE ff.file_folder_type = 'IMP_CASE_NOTE_DOCUMENTS' AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
 """
 
@@ -577,6 +620,7 @@ SELECT
   , fv.path
   , created_datetime
   , fv.created_by_id
+  , sld.blob_data
 FROM impmgr.xview_ima_rfis xir
 INNER JOIN decmgr.file_folders ff ON ff.id = xir.file_folder_id
 LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
@@ -587,6 +631,7 @@ LEFT JOIN (
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
+    , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
   CROSS JOIN XMLTABLE('/*'
@@ -598,8 +643,10 @@ LEFT JOIN (
     ) x
   WHERE status_control = 'C'
  ) fv ON fv.target_id = fft.ID
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
+WHERE created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
- """
+"""
 
 
 mailshot_files = """
@@ -616,6 +663,7 @@ SELECT
   , fv.path
   , created_datetime
   , fv.created_by_id
+  , sld.blob_data
 FROM mailshotmgr.xview_mailshot_details xmd
 INNER JOIN decmgr.file_folders ff ON ff.id = xmd.documents_ff_id
 LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
@@ -626,6 +674,7 @@ LEFT JOIN (
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
+    , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
   CROSS JOIN XMLTABLE('/*'
@@ -637,7 +686,8 @@ LEFT JOIN (
     ) x
   WHERE status_control = 'C'
  ) fv ON fv.target_id = fft.ID
-WHERE xmd.status_control = 'C'
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
+WHERE xmd.status_control = 'C' AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
 """
 
@@ -656,6 +706,7 @@ SELECT
   , fv.path
   , created_datetime
   , fv.created_by_id
+  , sld.blob_data
 FROM decmgr.file_folder_targets fft
 INNER JOIN decmgr.file_folders ff ON fft.ff_id = ff.id
 LEFT JOIN (
@@ -665,6 +716,7 @@ LEFT JOIN (
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
     , CONCAT(id, CONCAT('-', x.filename)) path
+    , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
   CROSS JOIN XMLTABLE('/*'
@@ -676,14 +728,10 @@ LEFT JOIN (
     ) x
   WHERE status_control = 'C'
  ) fv ON fv.target_id = fft.ID
-WHERE ff.file_folder_type = 'GMP_SUPPORTING_DOCUMENTS'
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
+WHERE ff.file_folder_type = 'GMP_SUPPORTING_DOCUMENTS' AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
 """
-
-
-# To access blob file in secure_lob_data
-# INNER JOIN DOCLIBMGR.FILE_versions fv ON fv.id = vf.file_id
-# INNER JOIN securemgr.secure_lob_data sld ON sld.id = vf.secure_lob_id
 
 export_case_note_docs = """
 SELECT
@@ -692,23 +740,28 @@ SELECT
   , vf.file_id
   , vf.filename
   , vf.content_type
-  , vf.created_datetime
+  , vf.created_datetime as created_datetime
   , vf.created_by_wua_id created_by_id
   , EXTRACTVALUE(vf.metadata_xml, '/file-metadata/size') file_size
   , vf.file_id || '-' || vf.filename path
+  , sld.blob_data
 FROM doclibmgr.folder_details fd
 LEFT JOIN doclibmgr.vw_file_folders vff ON vff.f_id = fd.f_id
 LEFT JOIN doclibmgr.vw_files vf ON vf.file_id = vff.file_id
-WHERE fd.folder_title LIKE 'Case Note %'
+INNER JOIN DOCLIBMGR.FILE_versions fv ON fv.id = vf.file_id
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(vf.secure_lob_ref).id
+WHERE fd.folder_title LIKE 'Case Note %' AND vf.created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER BY vf.file_id
 """
 
 
 fa_supplementary_report_upload_files = """
 SELECT
-  ad.ima_id
+    ad.ima_id
   , ad.id imad_id
-  , CONCAT(id, CONCAT('/', x.filename)) path
+  , CONCAT(x.sr_goods_file_id, CONCAT('/', x.filename)) PATH
+  , glf.file_content as blob_data
+  , to_date(replace(created_datetime_str, 'T', chr(10)), 'YYYY-MM-DD HH24:MI:SS') created_datetime
   , x.*
 FROM impmgr.import_application_details ad
 INNER JOIN impmgr.xview_ima_details xid ON ad.id = xid.imad_id AND ima_type = 'FA'
@@ -739,12 +792,13 @@ COLUMNS
   , file_size INTEGER PATH '/uploads/file_size/text()'
   , filename VARCHAR(4000) PATH '/uploads/filename/text()'
   , content_type VARCHAR(4000) PATH '/uploads/content_type/text()'
-  , created_datetime VARCHAR(4000) PATH '/uploads/created_datetime/text()'
+  , created_datetime_str VARCHAR(4000) PATH '/uploads/created_datetime/text()'
 ) x
+INNER JOIN impmgr.goods_line_files glf ON glf.id = x.sr_goods_file_id
 WHERE ad.status_control = 'C'
+AND TO_DATE(created_datetime_str, 'YYYY-MM-DD"T"HH24:MI:SS') > TO_DATE (:created_datetime, 'YYYY-MM-DD HH24:MI:SS')
+ORDER BY glf.id
 """
-
-# INNER JOIN impmgr.goods_line_files glf ON glf.id = x.sr_goods_file_id  <- to access blob file
 
 
 file_timestamp_update = """
