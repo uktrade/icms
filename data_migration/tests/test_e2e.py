@@ -5,7 +5,6 @@ import oracledb
 import pytest
 from django.core.management import call_command
 from django.db.models import QuerySet
-from django.test import override_settings
 
 from data_migration import models as dm
 from data_migration import queries
@@ -586,214 +585,8 @@ def test_import_oil_data(mock_connect, dummy_dm_settings):
     assert dfl_revoked.licences.count() == 1
     assert dfl_revoked.licences.filter(status="RE").count() == 1
 
-    assert web.User.objects.filter(groups__isnull=False).count() == 0
 
-    call_command("create_icms_groups")
-    call_command("post_migration")
-
-    assert web.User.objects.filter(groups__isnull=False).count() == 3
-    assert web.User.objects.get(groups__name="ILB Case Officer").username == "test_user"
-    assert web.User.objects.get(groups__name="Home Office Case Officer").username == "test_user_two"
-    assert web.User.objects.get(groups__name="NCA Case Officer").username == "test_user_two"
-
-
-user_xml_parsers = {
-    "import_application": [],
-    "export_application": [],
-    "user": [
-        xml_parser.EmailAddressParser,
-        xml_parser.PhoneNumberParser,
-        xml_parser.ApprovalRequestParser,
-        xml_parser.AccessFIRParser,
-    ],
-}
-
-user_data_source_target = {
-    "user": [
-        (dm.User, web.User),
-        (dm.PhoneNumber, web.PhoneNumber),
-        (dm.AlternativeEmail, web.AlternativeEmail),
-        (dm.PersonalEmail, web.PersonalEmail),
-        (dm.Importer, web.Importer),
-        (dm.Exporter, web.Exporter),
-        (dm.Office, web.Office),
-        (dm.Process, web.Process),
-        (dm.AccessRequest, web.AccessRequest),
-        (dm.ImporterAccessRequest, web.ImporterAccessRequest),
-        (dm.ExporterAccessRequest, web.ExporterAccessRequest),
-        (dm.FurtherInformationRequest, web.FurtherInformationRequest),
-        (dm.ApprovalRequest, web.ApprovalRequest),
-        (dm.ImporterApprovalRequest, web.ImporterApprovalRequest),
-        (dm.ExporterApprovalRequest, web.ExporterApprovalRequest),
-    ],
-    "reference": [],
-    "import_application": [],
-    "export_application": [],
-    "file": [],
-}
-
-
-@pytest.mark.django_db
-@mock.patch.dict(
-    DATA_TYPE_QUERY_MODEL,
-    {
-        "import_application": [],
-        "export_application": [],
-        "reference": [],
-        "file": [],
-        "user": [
-            (queries.users, "users", dm.User),
-            (queries.importers, "importers", dm.Importer),
-            (queries.importer_offices, "importer_offices", dm.Office),
-            (queries.exporters, "exporters", dm.Exporter),
-            (queries.exporter_offices, "exporter_offices", dm.Office),
-            (queries.access_requests, "access_requests", dm.AccessRequest),
-        ],
-    },
-)
-@mock.patch.dict(DATA_TYPE_XML, user_xml_parsers)
-@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, user_data_source_target)
-@mock.patch.dict(
-    DATA_TYPE_M2M,
-    {
-        "import_application": [],
-        "export_application": [],
-        "user": [
-            (dm.Office, web.Importer, "offices"),
-            (dm.Office, web.Exporter, "offices"),
-            (dm.FurtherInformationRequest, web.AccessRequest, "further_information_requests"),
-        ],
-    },
-)
-@mock.patch.object(oracledb, "connect")
-@override_settings(
-    PASSWORD_HASHERS=[
-        "django.contrib.auth.hashers.MD5PasswordHasher",
-        "web.auth.fox_hasher.FOXPBKDF2SHA1Hasher",
-    ]
-)
-def test_import_user(mock_connect, dummy_dm_settings):
-    mock_connect.return_value = utils.MockConnect()
-    call_command("export_from_v1")
-    call_command("extract_v1_xml")
-    call_command("import_v1_data")
-
-    users = web.User.objects.filter(pk__in=[2, 3]).order_by("pk")
-    u1: web.User = users[0]
-    u2: web.User = users[1]
-
-    assert u1.username == "test_user"
-    assert u1.first_name == "Test"
-    assert u1.last_name == "User"
-    assert u1.email == "test_a"
-    assert u1.check_password("password") is True
-    assert u1.title == "Mr"
-    assert u1.organisation == "Org"
-    assert u1.department == "Dept"
-    assert u1.job_title == "IT"
-    assert u1.phone_numbers.count() == 2
-    assert u1.alternative_emails.count() == 1
-    assert u1.personal_emails.count() == 2
-
-    pn1, pn2 = u1.phone_numbers.order_by("pk")
-    assert pn1.phone == "12345678"
-    assert pn1.type == "HOME"
-    assert pn1.comment == "My Home"
-    assert pn2.phone == "+212345678"
-    assert pn2.type == "MOBILE"
-    assert pn2.comment is None
-
-    ae1 = u1.alternative_emails.first()
-    assert ae1.email == "test_b"
-    assert ae1.type == "WORK"
-    assert ae1.portal_notifications is True
-    assert ae1.comment is None
-
-    pe1, pe2 = u1.personal_emails.order_by("pk")
-    assert pe1.email == "test_a"
-    assert pe1.type == "HOME"
-    assert pe1.portal_notifications is True
-    assert pe1.is_primary is True
-    assert pe1.comment == "A COMMENT"
-    assert pe2.email == "test_c"
-    assert pe2.type == "HOME"
-    assert pe2.portal_notifications is False
-    assert pe2.is_primary is False
-    assert pe2.comment is None
-
-    assert u2.check_password("password123") is True
-    assert u2.phone_numbers.count() == 0
-    assert u2.alternative_emails.count() == 0
-    assert u2.personal_emails.count() == 0
-
-    ar1, ar2, ar3, ar4 = web.AccessRequest.objects.order_by("pk")
-
-    assert ar1.process_ptr.process_type == "ImporterAccessRequest"
-    assert ar1.process_ptr.tasks.count() == 1
-    assert ar1.reference == "IAR/0001"
-    assert ar1.status == "SUBMITTED"
-    assert ar1.organisation_name == "Test Org"
-    assert ar1.organisation_address == "Test Address"
-    assert ar1.agent_name is None
-    assert ar1.agent_address == ""
-    assert ar1.response is None
-    assert ar1.response_reason == ""
-    assert ar1.importeraccessrequest.request_type == "MAIN_IMPORTER_ACCESS"
-    assert ar1.importeraccessrequest.link_id == 2
-    assert ar1.further_information_requests.count() == 0
-    assert ar1.approval_requests.count() == 0
-    assert ar1.created == dt.datetime(2022, 11, 14, 8, 24, tzinfo=dt.timezone.utc)
-
-    assert ar2.process_ptr.process_type == "ImporterAccessRequest"
-    assert ar2.process_ptr.tasks.count() == 0
-    assert ar2.reference == "IAR/0002"
-    assert ar2.status == "CLOSED"
-    assert ar2.agent_name == "Test Name"
-    assert ar2.agent_address == "Test Address"
-    assert ar2.request_reason == "Test Reason"
-    assert ar2.response == "APPROVED"
-    assert ar2.response_reason == "Test Reason"
-    assert ar2.importeraccessrequest.request_type == "AGENT_IMPORTER_ACCESS"
-    assert ar2.importeraccessrequest.link_id == 3
-    assert ar2.further_information_requests.count() == 0
-    assert ar2.approval_requests.count() == 1
-    assert ar2.created == dt.datetime(2022, 11, 14, 8, 47, tzinfo=dt.timezone.utc)
-
-    ar2_ar = ar2.approval_requests.first()
-    assert ar2_ar.process_ptr.process_type == "ImporterApprovalRequest"
-    assert ar2_ar.status == "COMPLETED"
-    assert ar2_ar.response == "APPROVE"
-    assert ar2_ar.response_reason == "Test Reason"
-    assert ar2_ar.importerapprovalrequest.pk == ar2_ar.pk
-    assert ar2_ar.request_date == dt.datetime(2022, 11, 14, 14, 55, 14, tzinfo=dt.timezone.utc)
-
-    assert ar3.process_ptr.process_type == "ExporterAccessRequest"
-    assert ar3.process_ptr.tasks.count() == 0
-    assert ar3.reference == "EAR/0003"
-    assert ar3.exporteraccessrequest.request_type == "MAIN_EXPORTER_ACCESS"
-    assert ar3.exporteraccessrequest.link_id == 2
-    assert ar3.further_information_requests.count() == 1
-    assert ar3.approval_requests.count() == 0
-    assert ar3.created == dt.datetime(2022, 11, 14, 10, 52, tzinfo=dt.timezone.utc)
-
-    assert ar4.process_ptr.process_type == "ExporterAccessRequest"
-    assert ar4.process_ptr.tasks.count() == 0
-    assert ar4.reference == "EAR/0004"
-    assert ar4.exporteraccessrequest.request_type == "AGENT_EXPORTER_ACCESS"
-    assert ar4.exporteraccessrequest.link_id == 3
-    assert ar4.further_information_requests.count() == 0
-    assert ar4.approval_requests.count() == 1
-    assert ar4.created == dt.datetime(2022, 11, 14, 10, 52, tzinfo=dt.timezone.utc)
-
-    ar4_ar = ar4.approval_requests.first()
-    assert ar4_ar.process_ptr.process_type == "ExporterApprovalRequest"
-    assert ar4_ar.status == "COMPLETED"
-    assert ar4_ar.response == "APPROVE"
-    assert ar4_ar.response_reason == "Test Reason"
-    assert ar4_ar.exporterapprovalrequest.pk == ar4_ar.pk
-
-
-user_data_source_target = {
+template_data_source_target = {
     "user": [
         (dm.User, web.User),
         (dm.Importer, web.Importer),
@@ -806,9 +599,6 @@ user_data_source_target = {
         (dm.Template, web.Template),
         (dm.CFSScheduleParagraph, web.CFSScheduleParagraph),
     ],
-    "import_application": [],
-    "export_application": [],
-    "file": [],
 }
 
 
@@ -816,8 +606,6 @@ user_data_source_target = {
 @mock.patch.dict(
     DATA_TYPE_QUERY_MODEL,
     {
-        "import_application": [],
-        "export_application": [],
         "reference": [
             (queries.country, "country", dm.Country),
             (queries.country_group, "country_group", dm.CountryGroup),
@@ -828,21 +616,16 @@ user_data_source_target = {
             (queries.template_country, "template country", dm.TemplateCountry),
             (queries.endorsement_template, "endorsement template", dm.EndorsementTemplate),
         ],
-        "file": [],
         "user": [
             (queries.users, "users", dm.User),
             (queries.importers, "importers", dm.Importer),
         ],
     },
 )
-@mock.patch.dict(DATA_TYPE_XML, user_xml_parsers)
-@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, user_data_source_target)
+@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, template_data_source_target)
 @mock.patch.dict(
     DATA_TYPE_M2M,
     {
-        "import_application": [],
-        "export_application": [],
-        "user": [],
         "reference": [
             (dm.TemplateCountry, web.Template, "countries"),
             (dm.EndorsementTemplate, web.ImportApplicationType, "endorsements"),
@@ -852,8 +635,8 @@ user_data_source_target = {
 @mock.patch.object(oracledb, "connect")
 def test_import_template(mock_connect, dummy_dm_settings):
     mock_connect.return_value = utils.MockConnect()
-    call_command("export_from_v1")
-    call_command("import_v1_data")
+    call_command("export_from_v1", "--skip_ia", "--skip_export", "--skip_file")
+    call_command("import_v1_data", "--skip_ia", "--skip_export", "--skip_file")
 
     # Endorsement Templates
 

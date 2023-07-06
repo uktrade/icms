@@ -3087,3 +3087,6 @@ Baker
 Nottingham
 can_edit_firearm_authorities
 v3.8.0
+LEFT JOIN decmgr.resource_usages_current
+ON ru.res_id =
+ru.uref

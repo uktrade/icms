@@ -53,10 +53,10 @@ user_query_result = {
             ),
             (
                 2,  # id
-                "test_user",  # username
-                "Test",  # first_name
-                "User",  # last_name
-                "test_a",  # email
+                "ilb_case_officer@example.com",  # username /PS-IGNORE
+                "ILB",  # first_name
+                "Case-Officer",  # last_name
+                "ilb_case_officer@example.com",  # email /PS-IGNORE
                 1,  # is_active
                 "31323334",  # salt 1234
                 "FB8C301A3EBDA623029E0AACC9D3B21B",  # encrypted_password /PS-IGNORE
@@ -75,10 +75,10 @@ user_query_result = {
             ),
             (
                 3,  # id
-                "test_user_two",  # username
-                "Testtwo",  # first_name
-                "Usertwo",  # last_name
-                "test.usertwo",  # email
+                "home_office@example.com",  # username /PS-IGNORE
+                "Home",  # first_name
+                "Office",  # last_name
+                "home_office@example.com",  # email  /PS-IGNORE
                 1,  # is_active
                 "35363738",  # salt 5678
                 "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
@@ -87,7 +87,205 @@ user_query_result = {
                 "Dept",  # Department
                 "IT",  # job_title
                 "ACTIVE",  # account_status
-                "test_user(WUA_ID=3, WUAH_ID=4)",  # account_status_by
+                3,  # account_status_by
+                dt.date.today(),  # account_status_date
+                dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
+                "FULL",  # password_disposition
+                None,  # email_address_xml
+                None,  # telephone_xml
+                0,  # share_contact_details
+            ),
+            (
+                4,  # id
+                "nca@example.com",  # username /PS-IGNORE
+                "NCA",  # first_name
+                "User",  # last_name
+                "nca@example.com",  # email  /PS-IGNORE
+                1,  # is_active
+                "35363738",  # salt 5678
+                "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
+                "Ms",  # title
+                "Org",  # Oranisation
+                "Dept",  # Department
+                "IT",  # job_title
+                "ACTIVE",  # account_status
+                4,  # account_status_by
+                dt.date.today(),  # account_status_date
+                dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
+                "FULL",  # password_disposition
+                None,  # email_address_xml
+                None,  # telephone_xml
+                0,  # share_contact_details
+            ),
+            (
+                5,  # id
+                "importer_editor@example.com",  # username /PS-IGNORE
+                "Importer",  # first_name
+                "Editor",  # last_name
+                "importer_editor@example.com",  # email  /PS-IGNORE
+                1,  # is_active
+                "35363738",  # salt 5678
+                "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
+                "Ms",  # title
+                "Org",  # Oranisation
+                "Dept",  # Department
+                "IT",  # job_title
+                "ACTIVE",  # account_status
+                5,  # account_status_by
+                dt.date.today(),  # account_status_date
+                dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
+                "FULL",  # password_disposition
+                None,  # email_address_xml
+                None,  # telephone_xml
+                0,  # share_contact_details
+            ),
+            (
+                6,  # id
+                "importer_viewer@example.com",  # username /PS-IGNORE
+                "Importer",  # first_name
+                "Viewer",  # last_name
+                "importer_viwer@example.com",  # email  /PS-IGNORE
+                1,  # is_active
+                "35363738",  # salt 5678
+                "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
+                "Ms",  # title
+                "Org",  # Oranisation
+                "Dept",  # Department
+                "IT",  # job_title
+                "ACTIVE",  # account_status
+                6,  # account_status_by
+                dt.date.today(),  # account_status_date
+                dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
+                "FULL",  # password_disposition
+                None,  # email_address_xml
+                None,  # telephone_xml
+                0,  # share_contact_details
+            ),
+            (
+                7,  # id
+                "importer_agent_editor@example.com",  # username /PS-IGNORE
+                "Importer Agent",  # first_name
+                "Editor",  # last_name
+                "importer_agent_editor@example.com",  # email  /PS-IGNORE
+                1,  # is_active
+                "35363738",  # salt 5678
+                "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
+                "Ms",  # title
+                "Org",  # Oranisation
+                "Dept",  # Department
+                "IT",  # job_title
+                "ACTIVE",  # account_status
+                7,  # account_status_by
+                dt.date.today(),  # account_status_date
+                dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
+                "FULL",  # password_disposition
+                None,  # email_address_xml
+                None,  # telephone_xml
+                0,  # share_contact_details
+            ),
+            (
+                8,  # id
+                "importer_agent_viewer@example.com",  # username /PS-IGNORE
+                "Importer Agent",  # first_name
+                "Viewer",  # last_name
+                "importer_agent_viwer@example.com",  # email  /PS-IGNORE
+                1,  # is_active
+                "35363738",  # salt 5678
+                "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
+                "Ms",  # title
+                "Org",  # Oranisation
+                "Dept",  # Department
+                "IT",  # job_title
+                "ACTIVE",  # account_status
+                8,  # account_status_by
+                dt.date.today(),  # account_status_date
+                dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
+                "FULL",  # password_disposition
+                None,  # email_address_xml
+                None,  # telephone_xml
+                0,  # share_contact_details
+            ),
+            (
+                9,  # id
+                "exporter_editor@example.com",  # username /PS-IGNORE
+                "Exporter",  # first_name
+                "Editor",  # last_name
+                "Exporter_editor@example.com",  # email  /PS-IGNORE
+                1,  # is_active
+                "35363738",  # salt 5678
+                "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
+                "Ms",  # title
+                "Org",  # Oranisation
+                "Dept",  # Department
+                "IT",  # job_title
+                "ACTIVE",  # account_status
+                9,  # account_status_by
+                dt.date.today(),  # account_status_date
+                dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
+                "FULL",  # password_disposition
+                None,  # email_address_xml
+                None,  # telephone_xml
+                0,  # share_contact_details
+            ),
+            (
+                10,  # id
+                "exporter_viewer@example.com",  # username /PS-IGNORE
+                "Exporter",  # first_name
+                "Viewer",  # last_name
+                "exporter_viwer@example.com",  # email  /PS-IGNORE
+                1,  # is_active
+                "35363738",  # salt 5678
+                "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
+                "Ms",  # title
+                "Org",  # Oranisation
+                "Dept",  # Department
+                "IT",  # job_title
+                "ACTIVE",  # account_status
+                10,  # account_status_by
+                dt.date.today(),  # account_status_date
+                dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
+                "FULL",  # password_disposition
+                None,  # email_address_xml
+                None,  # telephone_xml
+                0,  # share_contact_details
+            ),
+            (
+                11,  # id
+                "exporter_agent_editor@example.com",  # username /PS-IGNORE
+                "Exporter Agent",  # first_name
+                "Editor",  # last_name
+                "exporter_agent_editor@example.com",  # email  /PS-IGNORE
+                1,  # is_active
+                "35363738",  # salt 5678
+                "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
+                "Ms",  # title
+                "Org",  # Oranisation
+                "Dept",  # Department
+                "IT",  # job_title
+                "ACTIVE",  # account_status
+                11,  # account_status_by
+                dt.date.today(),  # account_status_date
+                dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
+                "FULL",  # password_disposition
+                None,  # email_address_xml
+                None,  # telephone_xml
+                0,  # share_contact_details
+            ),
+            (
+                12,  # id
+                "exporter_agent_viewer@example.com",  # username /PS-IGNORE
+                "Exporter Agent",  # first_name
+                "Viewer",  # last_name
+                "exporter_agent_viwer@example.com",  # email  /PS-IGNORE
+                1,  # is_active
+                "35363738",  # salt 5678
+                "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
+                "Ms",  # title
+                "Org",  # Oranisation
+                "Dept",  # Department
+                "IT",  # job_title
+                "ACTIVE",  # account_status
+                12,  # account_status_by
                 dt.date.today(),  # account_status_date
                 dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
                 "FULL",  # password_disposition
@@ -145,12 +343,12 @@ user_query_result = {
             ("is_active",),
             ("name",),
             ("registered_number",),
-            ("main_importer_id",),
+            ("main_exporter_id",),
         ],
         [
-            (1, 1, "Test Org", 123, 2, None),
-            (2, 1, "Test Agent", 124, "GB123456789013", 2, 1),
-            (3, 0, "Test Inactive", 125, "GB123456789014", 2, None),
+            (1, 1, "Test Org", 123, None),
+            (2, 1, "Test Agent", 124, 1),
+            (3, 0, "Test Inactive", 125, None),
         ],
     ),
     queries.exporter_offices: (
@@ -305,24 +503,88 @@ user_query_result = {
         ],
     ),
     queries.ilb_user_roles: (
+        [("username",), ("roles")],
         [
-            ("username",),
-            ("roles"),
+            (
+                "ilb_case_officer@example.com",  # /PS-IGNORE
+                "IMP_CASE_OFFICERS:CASE_OFFICER, IMP_CASE_OFFICERS:CA_CASE_OFFICER",
+            )
         ],
-        [("test_user", "TEAM_1:ROLE_1,TEAM_1:ROLE_2")],
     ),
     queries.nca_user_roles: (
+        [("username",), ("roles")],
         [
-            ("username",),
-            ("roles"),
+            (
+                "nca@example.com",  # /PS-IGNORE
+                "IMP_ADMIN:DASHBOARD_USER, REPORTING_TEAM:REPORT_RUNNER_NOW, REPORTING_TEAM:REPORT_VIEWER",
+            )
         ],
-        [("test_user_two", "TEAM_1:ROLE_1,TEAM_1:ROLE_2")],
     ),
     queries.home_office_user_roles: (
+        [("username",), ("roles")],
+        [
+            (
+                "home_office@example.com",  # /PS-IGNORE
+                "IMP_EXTERNAL:SECTION5_AUTHORITY_EDITOR, IMP_ADMIN_SEARCH:SEARCH_CASES",
+            )
+        ],
+    ),
+    queries.importer_user_roles: (
         [
             ("username",),
             ("roles"),
+            ("importer_id",),
         ],
-        [("test_user_two", "TEAM_1:ROLE_1,TEAM_1:ROLE_2")],
+        [
+            (
+                "importer_viewer@example.com",  # /PS-IGNORE
+                "IMP_IMPORTER_CONTACTS:VIEW_APP",
+                2,
+            ),
+            (
+                "importer_editor@example.com",  # /PS-IGNORE
+                "IMP_IMPORTER_CONTACTS:AGENT_APPROVER, IMP_IMPORTER_CONTACTS:EDIT_APP",
+                2,
+            ),
+            (
+                "importer_agent_viewer@example.com",  # /PS-IGNORE
+                "IMP_IMPORTER_AGENT_CONTACTS:VIEW_APP",
+                3,
+            ),
+            (
+                "importer_agent_editor@example.com",  # /PS-IGNORE
+                "IMP_IMPORTER_AGENT_CONTACTS:VIEW_APP, IMP_IMPORTER_AGENT_CONTACTS:VARY_APP",
+                3,
+            ),
+        ],
+    ),
+    queries.exporter_user_roles: (
+        [
+            ("username",),
+            ("roles",),
+            ("exporter_id",),
+        ],
+        [
+            (
+                "exporter_viewer@example.com",  # /PS-IGNORE
+                "IMP_EXPORTER_CONTACTS:VIEW_APP",
+                1,
+            ),
+            (
+                "exporter_editor@example.com",  # /PS-IGNORE
+                "IMP_EXPORTER_CONTACTS:AGENT_APPROVER, IMP_EXPORTER_CONTACTS:EDIT_APP",
+                1,
+            ),
+            (
+                "exporter_agent_viewer@example.com",  # /PS-IGNORE
+                "IMP_EXPORTER_AGENT_CONTACTS:VIEW_APP",
+                2,
+            ),
+            (
+                "exporter_agent_editor@example.com",  # /PS-IGNORE
+                "IMP_EXPORTER_AGENT_CONTACTS:VIEW_APP, IMP_EXPORTER_AGENT_CONTACTS:VARY_APP",
+                2,
+            ),
+        ],
     ),
 }

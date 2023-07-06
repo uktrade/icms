@@ -40,6 +40,41 @@ all_user_roles_count = "SELECT COUNT(*)" + user_roles_statement
 
 # Importer Group Permissions
 
+importer_user_roles = """
+WITH rp_wua AS (
+  SELECT uah.resource_person_id
+  , CASE
+    WHEN COUNT(login_id) > 1
+    THEN (
+      SELECT sub.login_id
+      FROM securemgr.web_user_account_histories sub
+      WHERE sub.person_id_current IS NOT NULL
+        AND sub.resource_person_primary_flag = 'Y'
+        AND sub.resource_person_id = uah.resource_person_id
+        AND sub.account_status = 'ACTIVE'
+    )
+    ELSE MAX(login_id)
+  END login_id
+  FROM securemgr.web_user_account_histories uah
+  WHERE uah.person_id_current IS NOT NULL
+    AND uah.resource_person_primary_flag = 'Y'
+  GROUP BY uah.resource_person_id
+)
+SELECT
+  rp_wua.login_id username
+  , LISTAGG(DISTINCT xr.res_type || ':' || rmc.role_name, '    ') WITHIN GROUP (ORDER BY xr.res_type, rmc.role_name) roles
+  , ur.imp_id importer_id
+FROM appenv.xview_resources xr
+INNER JOIN decmgr.resource_members_current rmc ON rmc.res_id = xr.res_id
+INNER JOIN decmgr.xview_resource_type_roles xrtr ON xrtr.role_name = rmc.role_name AND xrtr.res_type = xr.res_type
+INNER JOIN rp_wua ON rp_wua.resource_person_id = rmc.person_id
+LEFT JOIN decmgr.resource_usages_current ru ON ru.res_id = rmc.res_id
+LEFT JOIN bpmmgr.urefs ur ON ur.uref = ru.uref
+WHERE xr.res_type IN ('IMP_IMPORTER_AGENT_CONTACTS', 'IMP_IMPORTER_CONTACTS')
+GROUP BY rp_wua.login_id, ur.imp_id
+ORDER BY rp_wua.login_id
+"""
+
 importer_where = """WHERE (
     roles LIKE '%IMP_IMPORTER_AGENT_CONTACTS:EDIT_APP%'
     OR roles LIKE '%IMP_IMPORTER_AGENT_CONTACTS:VARY_APP%'
@@ -50,11 +85,45 @@ importer_where = """WHERE (
     OR roles LIKE '%IMP_IMPORTER_CONTACTS:VIEW_APP%'
 )"""
 
-importer_user_roles = all_user_roles + importer_where
 importer_user_roles_count = all_user_roles_count + importer_where
 
 
 # Exporter Group Permissions
+
+exporter_user_roles = """
+WITH rp_wua AS (
+  SELECT uah.resource_person_id
+  , CASE
+    WHEN COUNT(login_id) > 1
+    THEN (
+      SELECT sub.login_id
+      FROM securemgr.web_user_account_histories sub
+      WHERE sub.person_id_current IS NOT NULL
+        AND sub.resource_person_primary_flag = 'Y'
+        AND sub.resource_person_id = uah.resource_person_id
+        AND sub.account_status = 'ACTIVE'
+    )
+    ELSE MAX(login_id)
+  END login_id
+  FROM securemgr.web_user_account_histories uah
+  WHERE uah.person_id_current IS NOT NULL
+    AND uah.resource_person_primary_flag = 'Y'
+  GROUP BY uah.resource_person_id
+)
+SELECT
+  rp_wua.login_id username
+  , LISTAGG(DISTINCT xr.res_type || ':' || rmc.role_name, '    ') WITHIN GROUP (ORDER BY xr.res_type, rmc.role_name) roles
+  , ur.e_id exporter_id
+FROM appenv.xview_resources xr
+INNER JOIN decmgr.resource_members_current rmc ON rmc.res_id = xr.res_id
+INNER JOIN decmgr.xview_resource_type_roles xrtr ON xrtr.role_name = rmc.role_name AND xrtr.res_type = xr.res_type
+INNER JOIN rp_wua ON rp_wua.resource_person_id = rmc.person_id
+LEFT JOIN decmgr.resource_usages_current ru ON ru.res_id = rmc.res_id
+LEFT JOIN bpmmgr.urefs ur ON ur.uref = ru.uref
+WHERE xr.res_type IN ('IMP_EXPORTER_AGENT_CONTACTS', 'IMP_EXPORTER_CONTACTS')
+GROUP BY rp_wua.login_id, ur.e_id
+ORDER BY rp_wua.login_id
+"""
 
 exporter_where = """WHERE (
     roles LIKE '%IMP_EXPORTER_AGENT_CONTACTS:EDIT_APP%'
@@ -66,7 +135,6 @@ exporter_where = """WHERE (
     OR roles LIKE '%IMP_EXPORTER_CONTACTS:VIEW_APP%'
 )"""
 
-exporter_user_roles = all_user_roles + exporter_where
 exporter_user_roles_count = all_user_roles_count + exporter_where
 
 
