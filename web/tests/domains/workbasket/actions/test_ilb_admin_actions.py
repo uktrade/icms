@@ -1,7 +1,7 @@
 import pytest
 
 from web.domains.case.shared import ImpExpStatus
-from web.domains.workbasket.actions import get_workbasket_admin_sections
+from web.domains.workbasket.actions import ActionConfig, get_workbasket_admin_sections
 from web.domains.workbasket.actions.ilb_admin_actions import (
     AuthoriseDocumentsAction,
     CancelAuthorisationAction,
@@ -12,7 +12,6 @@ from web.domains.workbasket.actions.ilb_admin_actions import (
     TakeOwnershipAction,
     ViewApplicationCaseAction,
 )
-from web.domains.workbasket.actions.shared_actions import ClearApplicationAction
 from web.models import Task, User, WoodQuotaApplication
 
 ST = ImpExpStatus
@@ -24,22 +23,22 @@ class TestAdminActions:
     app: WoodQuotaApplication
 
     @pytest.fixture(autouse=True)
-    def setup(self, ilb_admin_user):
+    def setup(self, ilb_admin_user, importer):
         self.user = ilb_admin_user
-        # set pk as it's the minimum needed to craft the url
-        self.app = WoodQuotaApplication(pk=1)
+
+        # Set the minimum required fields.
+        self.app = WoodQuotaApplication(pk=1, importer=importer)
 
     def test_view_case_action_is_shown(self):
         """A freshly submitted application (no case_owner yet)"""
         # setup
         self.app.status = ST.SUBMITTED
         self.app.case_owner = None
-        active_tasks = []
+        self.app.active_tasks = []
 
         # test
-        action = ViewApplicationCaseAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = ViewApplicationCaseAction.from_config(config)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -50,12 +49,11 @@ class TestAdminActions:
         # setup
         self.app.status = ST.PROCESSING
         self.app.case_owner = User(first_name="Another", last_name="User")
-        active_tasks = []
+        self.app.active_tasks = []
 
         # test
-        action = ViewApplicationCaseAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = ViewApplicationCaseAction.from_config(config)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -65,12 +63,11 @@ class TestAdminActions:
         # setup
         self.app.status = ST.PROCESSING
         self.app.case_owner = self.user
-        active_tasks = [Task.TaskType.AUTHORISE]
+        self.app.active_tasks = [Task.TaskType.AUTHORISE]
 
         # test
-        action = ViewApplicationCaseAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = ViewApplicationCaseAction.from_config(config)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -81,21 +78,19 @@ class TestAdminActions:
         # setup
         self.app.status = ST.PROCESSING
         self.app.case_owner = self.user
-        active_tasks = [Task.TaskType.CHIEF_WAIT]
+        self.app.active_tasks = [Task.TaskType.CHIEF_WAIT]
 
         # test
-        action = ViewApplicationCaseAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = ViewApplicationCaseAction.from_config(config)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
-        assert wb_action.name == "View"
+        assert wb_action.name == "View Case"
 
-        active_tasks = [Task.TaskType.CHIEF_ERROR]
-        action = ViewApplicationCaseAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        self.app.active_tasks = [Task.TaskType.CHIEF_ERROR]
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = ViewApplicationCaseAction.from_config(config)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -106,12 +101,11 @@ class TestAdminActions:
         # setup
         self.app.status = ST.VARIATION_REQUESTED
         self.app.case_owner = User(first_name="Another", last_name="User")
-        active_tasks = []
+        self.app.active_tasks = []
 
         # test
-        action = ViewApplicationCaseAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = ViewApplicationCaseAction.from_config(config)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -122,12 +116,11 @@ class TestAdminActions:
         # setup
         self.app.status = ST.COMPLETED
         self.app.case_owner = self.user
-        active_tasks = [Task.TaskType.REJECTED]
+        self.app.active_tasks = [Task.TaskType.REJECTED]
 
         # test
-        action = ViewApplicationCaseAction(
-            self.user, "import", self.app, active_tasks, True, True, True
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = ViewApplicationCaseAction.from_config(config)
 
         assert action.show_link()
 
@@ -136,21 +129,19 @@ class TestAdminActions:
 
         # Other case owners don't see rejected apps
         self.app.case_owner = User(first_name="Another", last_name="User")
-        action = ViewApplicationCaseAction(
-            self.user, "import", self.app, active_tasks, True, True, True
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = ViewApplicationCaseAction.from_config(config)
         assert not action.show_link()
 
     def test_view_case_is_shown_when_documents_are_being_signed(self):
         # setup
         self.app.status = ST.PROCESSING
         self.app.case_owner = self.user
-        active_tasks = [Task.TaskType.DOCUMENT_SIGNING]
+        self.app.active_tasks = [Task.TaskType.DOCUMENT_SIGNING]
 
         # test
-        action = ViewApplicationCaseAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = ViewApplicationCaseAction.from_config(config)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -161,12 +152,11 @@ class TestAdminActions:
         # setup
         self.app.status = ST.PROCESSING
         self.app.case_owner = self.user
-        active_tasks = [Task.TaskType.DOCUMENT_ERROR]
+        self.app.active_tasks = [Task.TaskType.DOCUMENT_ERROR]
 
         # test
-        action = ViewApplicationCaseAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = ViewApplicationCaseAction.from_config(config)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -177,22 +167,20 @@ class TestAdminActions:
         # setup
         self.app.status = ST.REVOKED
         self.app.case_owner = self.user
-        active_tasks = [Task.TaskType.CHIEF_REVOKE_WAIT]
+        self.app.active_tasks = [Task.TaskType.CHIEF_REVOKE_WAIT]
 
         # test
-        action = ViewApplicationCaseAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = ViewApplicationCaseAction.from_config(config)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
         assert wb_action.name == "View Case"
         assert wb_action.section_label == "CHIEF Wait for Revocation"
 
-        active_tasks = [Task.TaskType.CHIEF_ERROR]
-        action = ViewApplicationCaseAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        self.app.active_tasks = [Task.TaskType.CHIEF_ERROR]
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = ViewApplicationCaseAction.from_config(config)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -203,22 +191,22 @@ class TestAdminActions:
         # setup (App still in progress)
         self.app.status = ST.IN_PROGRESS
         self.app.case_owner = self.user
-        active_tasks = [Task.TaskType.PREPARE]
+        self.app.active_tasks = [Task.TaskType.PREPARE]
 
         # test
-        action = ViewApplicationCaseAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = ViewApplicationCaseAction.from_config(config)
         assert not action.show_link()
 
     def test_take_ownership_action_is_shown(self):
         # setup
         self.app.status = ST.VARIATION_REQUESTED
         self.app.case_owner = None
-        active_tasks = []
+        self.app.active_tasks = []
 
         # test
-        action = TakeOwnershipAction(self.user, "import", self.app, active_tasks, True, True, False)
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = TakeOwnershipAction.from_config(config)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -228,66 +216,60 @@ class TestAdminActions:
         # setup (case owner is not set)
         self.app.status = ST.VARIATION_REQUESTED
         self.app.case_owner = self.user
-        active_tasks = []
+        self.app.active_tasks = []
 
         # test
-        action = TakeOwnershipAction(self.user, "import", self.app, active_tasks, True, True, False)
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = TakeOwnershipAction.from_config(config)
         assert not action.show_link()
 
     def test_manage_application_action_is_shown(self):
         # setup
         self.app.status = ST.VARIATION_REQUESTED
         self.app.case_owner = self.user
-        active_tasks = [TT.PROCESS]
+        self.app.active_tasks = [TT.PROCESS]
+        self.app.annotation_open_fir_pks = []
 
         # test
-        action = ManageApplicationAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = ManageApplicationAction.from_config(config)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
         assert wb_action.name == "Manage"
+        assert wb_action.section_label == "Application Processing"
+
+        # Test Out for update.
+        self.app.active_tasks.append(TT.PREPARE)
+        action = ManageApplicationAction.from_config(config)
+        assert action.show_link()
+
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.name == "Manage"
+        assert wb_action.section_label == "Application Processing, Out for Update"
+
+        # Test Further Information Requested
+        self.app.annotation_open_fir_pks = [1]
+        self.app.active_tasks.append(TT.PREPARE)
+        action = ManageApplicationAction.from_config(config)
+        assert action.show_link()
+
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.name == "Manage"
+        assert (
+            wb_action.section_label
+            == "Application Processing, Out for Update, Further Information Requested"
+        )
 
     def test_manage_application_action_not_shown(self):
         # setup (case owner is not set)
         self.app.status = ST.VARIATION_REQUESTED
         self.app.case_owner = None
-        active_tasks = [TT.PROCESS]
+        self.app.active_tasks = [TT.PROCESS]
 
         # test
-        action = ManageApplicationAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
-        assert not action.show_link()
-
-    def test_clear_application_action_is_shown(self):
-        """Admins only see the clear link if its rejected and they are the case owner."""
-        # setup
-        self.app.status = ST.COMPLETED
-        self.app.case_owner = self.user
-        active_tasks = [Task.TaskType.REJECTED]
-
-        # test
-        action = ClearApplicationAction(
-            self.user, "import", self.app, active_tasks, True, True, True
-        )
-        assert action.show_link()
-
-        wb_action = action.get_workbasket_actions()[0]
-        assert wb_action.name == "Clear"
-
-    def test_clear_application_action_not_shown(self):
-        """An app rejected by another case owner should not be shown"""
-        # setup
-        self.app.status = ST.COMPLETED
-        self.app.case_owner = User(first_name="Another", last_name="User")
-        active_tasks = [Task.TaskType.REJECTED]
-
-        # test
-        action = ClearApplicationAction(
-            self.user, "import", self.app, active_tasks, True, True, True
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = ManageApplicationAction.from_config(config)
         assert not action.show_link()
 
     @pytest.mark.parametrize(
@@ -328,16 +310,15 @@ class TestAdminActions:
     ):
         # Setup
         self.app.status = app_status
-        active_tasks = [active_task]
+        self.app.active_tasks = [active_task]
         self.app.annotation_has_withdrawal = has_withdrawal
 
         if is_case_owner:
             self.app.case_owner = self.user
 
         # test
-        action = ManageWithdrawApplicationAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = ManageWithdrawApplicationAction.from_config(config)
 
         assert action.show_link() == should_show
 
@@ -351,13 +332,12 @@ class TestAdminActions:
     def test_authorise_documents_action_is_shown(self):
         # setup
         self.app.status = ST.VARIATION_REQUESTED
-        active_tasks = [TT.AUTHORISE]
+        self.app.active_tasks = [TT.AUTHORISE]
         self.app.case_owner = self.user
 
         # test
-        action = AuthoriseDocumentsAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = AuthoriseDocumentsAction.from_config(config)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -366,37 +346,34 @@ class TestAdminActions:
     def test_authorise_documents_action_not_shown(self):
         # setup
         self.app.status = ST.IN_PROGRESS
-        active_tasks = [TT.PREPARE]
+        self.app.active_tasks = [TT.PREPARE]
         self.app.case_owner = self.user
 
         # test
-        action = AuthoriseDocumentsAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = AuthoriseDocumentsAction.from_config(config)
         assert not action.show_link()
 
     def test_authorise_documents_action_not_shown_different_caseworker(self):
         # setup
         self.app.status = ST.PROCESSING
-        active_tasks = [TT.AUTHORISE]
+        self.app.active_tasks = [TT.AUTHORISE]
         self.app.case_owner = User(first_name="Another", last_name="User")
 
         # test
-        action = AuthoriseDocumentsAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = AuthoriseDocumentsAction.from_config(config)
         assert not action.show_link()
 
     def test_cancel_authorisation_action_is_shown(self):
         # setup
         self.app.status = ST.VARIATION_REQUESTED
-        active_tasks = [TT.AUTHORISE]
+        self.app.active_tasks = [TT.AUTHORISE]
         self.app.case_owner = self.user
 
         # test
-        action = CancelAuthorisationAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = CancelAuthorisationAction.from_config(config)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -405,38 +382,35 @@ class TestAdminActions:
     def test_cancel_authorisation_action_not_shown(self):
         # setup
         self.app.status = ST.IN_PROGRESS
-        active_tasks = [TT.PREPARE]
+        self.app.active_tasks = [TT.PREPARE]
         self.app.case_owner = self.user
 
         # test
-        action = CancelAuthorisationAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = CancelAuthorisationAction.from_config(config)
         assert not action.show_link()
 
     def test_cancel_authorisation_action_not_shown_different_caseworker(self):
         # setup
         self.app.status = ST.VARIATION_REQUESTED
-        active_tasks = [TT.AUTHORISE]
+        self.app.active_tasks = [TT.AUTHORISE]
         self.app.case_owner = User(first_name="Another", last_name="User")
 
         # test
-        action = CancelAuthorisationAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = CancelAuthorisationAction.from_config(config)
         assert not action.show_link()
 
     @pytest.mark.parametrize("valid_status", (ST.PROCESSING, ST.VARIATION_REQUESTED))
     def test_check_case_document_generation_is_shown(self, valid_status):
         # setup
         self.app.status = valid_status
-        active_tasks = [TT.DOCUMENT_SIGNING]
+        self.app.active_tasks = [TT.DOCUMENT_SIGNING]
         self.app.case_owner = self.user
 
         # tests
-        action = CheckCaseDocumentGenerationAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = CheckCaseDocumentGenerationAction.from_config(config)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -445,13 +419,12 @@ class TestAdminActions:
     def test_check_case_document_generation_is_not_shown(self):
         # setup
         self.app.status = ST.IN_PROGRESS
-        active_tasks = [TT.PREPARE]
+        self.app.active_tasks = [TT.PREPARE]
         self.app.case_owner = self.user
 
         # test
-        action = CheckCaseDocumentGenerationAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = CheckCaseDocumentGenerationAction.from_config(config)
         assert not action.show_link()
 
     @pytest.mark.parametrize("valid_status", (ST.PROCESSING, ST.VARIATION_REQUESTED))
@@ -460,26 +433,24 @@ class TestAdminActions:
     ):
         # setup
         self.app.status = valid_status
-        active_tasks = [TT.DOCUMENT_SIGNING]
+        self.app.active_tasks = [TT.DOCUMENT_SIGNING]
         self.app.case_owner = User(first_name="Another", last_name="User")
 
         # test
-        action = CheckCaseDocumentGenerationAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = CheckCaseDocumentGenerationAction.from_config(config)
         assert not action.show_link()
 
     @pytest.mark.parametrize("valid_status", (ST.PROCESSING, ST.VARIATION_REQUESTED))
     def test_recreate_case_documents_is_shown(self, valid_status):
         # setup
         self.app.status = valid_status
-        active_tasks = [TT.DOCUMENT_ERROR]
+        self.app.active_tasks = [TT.DOCUMENT_ERROR]
         self.app.case_owner = self.user
 
         # test
-        action = RecreateCaseDocumentsAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = RecreateCaseDocumentsAction.from_config(config)
         assert action.show_link()
 
         wb_action = action.get_workbasket_actions()[0]
@@ -488,35 +459,30 @@ class TestAdminActions:
     def test_recreate_case_documents_is_not_shown(self):
         # setup
         self.app.status = ST.IN_PROGRESS
-        active_tasks = [TT.PREPARE]
+        self.app.active_tasks = [TT.PREPARE]
         self.app.case_owner = self.user
 
         # test
-        action = RecreateCaseDocumentsAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = RecreateCaseDocumentsAction.from_config(config)
         assert not action.show_link()
 
     @pytest.mark.parametrize("valid_status", (ST.PROCESSING, ST.VARIATION_REQUESTED))
     def test_recreate_case_documents_action_not_shown_different_caseworker(self, valid_status):
         # setup
         self.app.status = valid_status
-        active_tasks = [TT.DOCUMENT_ERROR]
+        self.app.active_tasks = [TT.DOCUMENT_ERROR]
         self.app.case_owner = User(first_name="Another", last_name="User")
 
         # test
-        action = RecreateCaseDocumentsAction(
-            self.user, "import", self.app, active_tasks, True, True, False
-        )
+        config = ActionConfig(user=self.user, case_type="import", application=self.app)
+        action = RecreateCaseDocumentsAction.from_config(config)
         assert not action.show_link()
 
-    def test_get_workbasket_sections(self, ilb_admin_user):
+    def test_get_workbasket_sections(self, ilb_admin_user, importer):
         user = ilb_admin_user
         case_type = "import"
-        application = WoodQuotaApplication(
-            pk=1,
-            status=ST.VARIATION_REQUESTED,
-        )
+        application = WoodQuotaApplication(pk=1, status=ST.VARIATION_REQUESTED, importer=importer)
         application.active_tasks = []  # This is to fake the active_tasks annotation
 
         sections = get_workbasket_admin_sections(user, case_type, application)

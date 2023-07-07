@@ -88,7 +88,7 @@
     </div>
     <div class="six columns">
       <span class="text-widget">
-        {{ update_request.response_datetime.strftime('%d-%b-%Y') }}
+        {{ update_request.response_datetime.strftime('%d-%b-%Y') if update_request.response_datetime else ""  }}
       </span>
     </div>
     <div class="three columns"></div>
@@ -101,7 +101,7 @@
     </div>
     <div class="six columns">
       <span class="text-widget">
-        {{ update_request.response_by }}
+        {{ update_request.response_by or "" }}
       </span>
     </div>
     <div class="three columns"></div>
@@ -114,7 +114,7 @@
     </div>
     <div class="six columns">
       <span class="text-widget">
-        {{ update_request.response_detail|nl2br }}
+        {{ update_request.response_detail|nl2br if update_request.response_detail else "" }}
       </span>
     </div>
     <div class="three columns"></div>

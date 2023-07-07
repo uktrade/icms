@@ -3,9 +3,12 @@ from django.test import override_settings
 
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
+from web.domains.workbasket.app_data import (
+    _add_user_import_annotations,
+    _get_open_firs_pk_annotation,
+)
 from web.domains.workbasket.base import WorkbasketSection
 from web.domains.workbasket.row import get_workbasket_row_func
-from web.domains.workbasket.views import _add_user_import_annotations
 from web.models import (
     FurtherInformationRequest,
     ImportApplicationType,
@@ -179,7 +182,12 @@ def test_admin_actions_fir_withdrawal_update_request(
 
     admin_row = get_row(app_processing, ilb_admin_user, True)
 
-    assert admin_row.sections == []
+    _check_actions(admin_row.sections, expected_actions={"Manage"})
+    section = admin_row.sections[0]
+    assert (
+        section.information
+        == "Application Processing, Out for Update, Further Information Requested"
+    )
 
 
 def test_admin_actions_authorise(app_processing, ilb_admin_user):
@@ -215,11 +223,11 @@ def test_admin_actions_bypass_chief(app_processing, ilb_admin_user):
             "(TEST) Bypass CHIEF induce failure",
             "(TEST) Bypass CHIEF",
             "Monitor Progress",
-            "View",
+            "View Case",
         },
     )
 
-    _test_view_endpoint_is_case_management(app_processing, admin_row.sections)
+    _test_view_endpoint_is_case_management(app_processing, admin_row.sections, "View Case")
 
     _update_task(app_processing, Task.TaskType.CHIEF_ERROR)
 
@@ -243,9 +251,9 @@ def test_admin_actions_bypass_chief_disabled_when_sending_to_chief(app_processin
 
     admin_row = get_row(app_processing, ilb_admin_user, True)
 
-    _check_actions(admin_row.sections, expected_actions={"Monitor Progress", "View"})
+    _check_actions(admin_row.sections, expected_actions={"Monitor Progress", "View Case"})
 
-    _test_view_endpoint_is_case_management(app_processing, admin_row.sections)
+    _test_view_endpoint_is_case_management(app_processing, admin_row.sections, "View Case")
 
     _update_task(app_processing, Task.TaskType.CHIEF_ERROR)
 
@@ -274,7 +282,7 @@ def test_admin_actions_completed(app_completed, ilb_admin_user):
     app_completed.active_tasks = case_progress.get_active_task_list(app_completed)
 
     admin_row = get_row(app_completed, ilb_admin_user, True)
-    _check_actions(admin_row.sections, expected_actions={"View Case", "Clear"})
+    _check_actions(admin_row.sections, expected_actions={"View Case"})
 
 
 def _check_actions(sections: list[WorkbasketSection], expected_actions: set[str]):
@@ -339,4 +347,11 @@ def _test_view_endpoint_is_case_management(application, sections, view_label="Vi
 
 def _get_wood_app_with_annotations(app):
     """Return a WoodQuotaApplication instance with the correct workbasket annotations"""
-    return _add_user_import_annotations(WoodQuotaApplication.objects.filter(pk=app.pk)).get()
+    app = _add_user_import_annotations(WoodQuotaApplication.objects.filter(pk=app.pk))
+
+    open_fir_pks_annotation = _get_open_firs_pk_annotation("further_information_requests")
+    app = app.annotate(
+        annotation_open_fir_pks=open_fir_pks_annotation,
+    )
+
+    return app.get()

@@ -110,7 +110,12 @@ def submit_application(app: ImpOrExp, request: AuthenticatedHttpRequest, task: T
     task.finished = timezone.now()
     task.save()
 
-    Task.objects.create(process=app, task_type=Task.TaskType.PROCESS, previous=task)
+    # Only create a PROCESS Task if one doesn't exist.
+    # One will already exist if the applicant is submitting an application after an
+    # update request from ILB.
+    Task.objects.get_or_create(
+        process=app, task_type=Task.TaskType.PROCESS, is_active=True, defaults={"previous": task}
+    )
 
 
 def redirect_after_submit(app: ImpOrExp, request: AuthenticatedHttpRequest) -> HttpResponse:
@@ -128,8 +133,8 @@ def redirect_after_submit(app: ImpOrExp, request: AuthenticatedHttpRequest) -> H
 def application_history(app_reference: str, is_import=True):
     """Debug method to print the history of the application
 
-    >>> from web.domains.case.utils import application_history
-    >>> application_history("IMA/2023/00001")
+    >>> import importlib as im; from web.domains.case import utils
+    >>> im.reload(utils); utils.application_history("IMA/2023/00001")
     """
 
     if is_import:
@@ -145,11 +150,11 @@ def application_history(app_reference: str, is_import=True):
     all_tasks = app.tasks.all().order_by("created")
     active = all_tasks.filter(is_active=True)
 
-    print("Active Tasks in order:")
+    print("\nActive Tasks in order:")
     for t in active:
-        print(f"Task: {t.get_task_type_display()}, {t.created}, {t.finished}")
+        print(f"Task: {t.get_task_type_display()}, created={t.created}, finished={t.finished}")
 
-    print("All tasks in order:")
+    print("\nAll tasks in order:")
     for t in all_tasks:
         print(f"Task: {t.get_task_type_display()}, created={t.created}, finished={t.finished}")
 

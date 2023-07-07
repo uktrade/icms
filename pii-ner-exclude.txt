@@ -3130,3 +3130,13 @@ Request Detail
 {{ update_request.closed_datetime.strftime('%d-%b-%Y
 {{ update_request.closed_by }
 MIDDLE_INITIALS
+Cache
+{{ update_request.request_datetime.strftime('%d-%b-%Y'
+{{ update_request.requested_by
+Request Detail
+{{ update_request.request_detail|nl2br }
+{{ update_request.closed_datetime.strftime('%d-%b-%Y
+{{ update_request.closed_by }
+Application Processing, Out for Update
+Test Further Information
+Application Processing, Out for Update, Further Information

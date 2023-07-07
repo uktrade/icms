@@ -18,6 +18,7 @@ from markupsafe import Markup, escape
 
 from web.domains.case.services import case_progress
 from web.domains.case.types import ImpOrExp
+from web.domains.workbasket.actions import ActionConfig
 from web.domains.workbasket.actions.ilb_admin_actions import TakeOwnershipAction
 from web.menu import Menu
 from web.permissions import Perms
@@ -127,16 +128,10 @@ def show_take_ownership_url(
 
     user = request.user
 
-    action = TakeOwnershipAction(
-        user=user,
-        case_type=case_type,
-        application=application,
-        tasks=case_progress.get_active_task_list(application),
-        is_ilb_admin=user.has_perm(Perms.sys.ilb_admin),
-        is_importer_user=user.has_perm(Perms.sys.importer_access),
-        # Set to False as checking is_rejected isn't required for TakeOwnershipAction
-        is_rejected=False,
-    )
+    application.active_tasks = case_progress.get_active_task_list(application)
+
+    config = ActionConfig(user=user, case_type=case_type, application=application)
+    action = TakeOwnershipAction.from_config(config)
 
     return action.show_link()
 

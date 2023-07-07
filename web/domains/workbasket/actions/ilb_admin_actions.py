@@ -40,11 +40,8 @@ class TakeOwnershipAction(Action):
 class ViewApplicationCaseAction(Action):
     """Case officer "View Case" link"""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # Used for sorting the view link in to a section (this is the default)
-        self.section_label = "Application Processing"
+    # Used for sorting the view link in to a section (this is the default)
+    section_label = "Application Processing"
 
     def show_link(self) -> bool:
         show_link = False
@@ -83,7 +80,11 @@ class ViewApplicationCaseAction(Action):
             show_link = True
 
         # An application rejected by the current case officer
-        elif self.is_rejected and self.is_case_owner():
+        elif (
+            self.status == ImpExpStatus.COMPLETED
+            and Task.TaskType.REJECTED in self.active_tasks
+            and self.is_case_owner()
+        ):
             show_link = True
             self.section_label = "View Case"
 
@@ -103,10 +104,11 @@ class ViewApplicationCaseAction(Action):
         kwargs = self.get_kwargs()
 
         if (
-            self.is_rejected
+            (self.status == ImpExpStatus.COMPLETED and Task.TaskType.REJECTED in self.active_tasks)
             or Task.TaskType.AUTHORISE in self.active_tasks
             or Task.TaskType.DOCUMENT_SIGNING in self.active_tasks
             or Task.TaskType.DOCUMENT_ERROR in self.active_tasks
+            or Task.TaskType.CHIEF_WAIT in self.active_tasks
             or Task.TaskType.CHIEF_REVOKE_WAIT in self.active_tasks
         ):
             name = "View Case"
@@ -163,7 +165,7 @@ class ManageApplicationAction(Action):
         show_link = False
 
         correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
-        correct_task = Task.TaskType.PROCESS in self.active_tasks
+        correct_task = self.has_task(Task.TaskType.PROCESS, Task.TaskType.PREPARE)
 
         if self.is_case_owner() and correct_status and correct_task:
             show_link = True
@@ -172,12 +174,21 @@ class ManageApplicationAction(Action):
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
+
+        section_label = "Application Processing"
+
+        if Task.TaskType.PREPARE in self.active_tasks:
+            section_label += ", Out for Update"
+
+        if self.application.annotation_open_fir_pks:
+            section_label += ", Further Information Requested"
+
         return [
             WorkbasketAction(
                 is_post=False,
                 name="Manage",
                 url=reverse("case:manage", kwargs=kwargs),
-                section_label="Application Processing",
+                section_label=section_label,
             )
         ]
 
@@ -433,7 +444,7 @@ class ChiefShowLicenceDetailsAction(Action):
         ]
 
 
-ILB_ADMIN_ACTIONS: list[ActionT] = [
+CASEWORKER_ACTIONS: list[ActionT] = [
     #
     # Management actions
     TakeOwnershipAction,

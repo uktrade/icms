@@ -40,7 +40,7 @@ class AppChecker:
     agent_org: ORGANISATION = dataclasses.field(init=False)
     obj_perms: IMP_OR_EXP_PERMS_T = dataclasses.field(init=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.is_ilb_admin = self.user.has_perm(Perms.sys.ilb_admin)
 
         if self.app.is_import_application():
