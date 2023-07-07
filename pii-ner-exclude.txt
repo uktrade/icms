@@ -3086,3 +3086,4 @@ Colin
 Baker
 Nottingham
 can_edit_firearm_authorities
+v3.8.0
