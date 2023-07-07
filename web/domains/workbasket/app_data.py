@@ -1,0 +1,437 @@
+from itertools import chain
+
+from django.contrib.postgres.aggregates import ArrayAgg, JSONBAgg
+from django.db.models import Exists, F, Func, OuterRef, Q, QuerySet, Subquery, Value
+from guardian.shortcuts import get_objects_for_user
+
+from web.domains.case.shared import ImpExpStatus
+from web.flow.models import ProcessTypes
+from web.models import (
+    AccessRequest,
+    ApprovalRequest,
+    ExportApplication,
+    Exporter,
+    ExporterAccessRequest,
+    ExporterApprovalRequest,
+    FurtherInformationRequest,
+    ImportApplication,
+    Importer,
+    ImporterAccessRequest,
+    ImporterApprovalRequest,
+    Task,
+    UpdateRequest,
+    User,
+    WithdrawApplication,
+)
+from web.permissions import Perms
+
+# Used to get a list of active tasks for the application
+# Prevents a call to get_active_task_list for every application record.
+ACTIVE_TASK_ANNOTATION = ArrayAgg(
+    "tasks__task_type", distinct=True, filter=Q(tasks__is_active=True), default=Value([])
+)
+
+
+IMPORT_HAS_WITHDRAWAL_ANNOTATION = Exists(
+    WithdrawApplication.objects.filter(
+        import_application=OuterRef("pk"),
+        status=WithdrawApplication.Statuses.OPEN,
+        is_active=True,
+    )
+)
+
+
+EXPORT_HAS_WITHDRAWAL_ANNOTATION = Exists(
+    WithdrawApplication.objects.filter(
+        export_application=OuterRef("pk"),
+        status=WithdrawApplication.Statuses.OPEN,
+        is_active=True,
+    )
+)
+
+
+def get_caseworker_app_filters(user: User) -> tuple[Q, ...]:
+    """Common caseworker application filter for workbasket rows"""
+
+    return (
+        #
+        # Active applications
+        Q(is_active=True),
+        #
+        # Active application types
+        # TODO: Filter all workbasket queries by active app types.
+        #       Do this later as excluding inactive app types can hide bugs
+        #       with migration code / the legacy data.
+        # Q(application_type__is_active=True),
+        #
+        # Status filter
+        (
+            # Cases managed by user
+            (
+                Q(case_owner=user)
+                & Q(status__in=[ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED])
+            )
+            # Or managed by user and is currently being revoked.
+            | (
+                Q(case_owner=user)
+                & Q(status=ImpExpStatus.REVOKED)
+                & (
+                    Q(tasks__is_active=True)
+                    & Q(
+                        tasks__task_type__in=[
+                            Task.TaskType.CHIEF_WAIT,
+                            Task.TaskType.CHIEF_REVOKE_WAIT,
+                        ]
+                    )
+                )
+            )
+            # Or cases up for grabs by any caseworker
+            | (
+                Q(case_owner__isnull=True)
+                & Q(status__in=[ImpExpStatus.SUBMITTED, ImpExpStatus.VARIATION_REQUESTED])
+            )
+        ),
+    )
+
+
+# Applicant statuses to show
+APP_STATUS_TO_SHOW = [
+    ImpExpStatus.IN_PROGRESS,
+    ImpExpStatus.SUBMITTED,
+    ImpExpStatus.PROCESSING,
+    ImpExpStatus.VARIATION_REQUESTED,
+    ImpExpStatus.COMPLETED,
+    ImpExpStatus.REVOKED,
+    #
+    # Statuses excluded:
+    # ImpExpStatus.STOPPED,
+    # ImpExpStatus.WITHDRAWN,
+    # ImpExpStatus.DELETED,
+]
+
+
+def get_ilb_admin_qs(user: User) -> chain[QuerySet]:
+    submitted = AccessRequest.Statuses.SUBMITTED
+
+    # Annotations used on every row to improve performance
+    open_fir_pks_annotation = _get_open_firs_pk_annotation("further_information_requests")
+
+    open_exporter_approval_requests = Exists(
+        ExporterApprovalRequest.objects.filter(access_request=OuterRef("pk"))
+    )
+    open_importer_approval_requests = Exists(
+        ImporterApprovalRequest.objects.filter(access_request=OuterRef("pk"))
+    )
+
+    exporter_access_requests = (
+        ExporterAccessRequest.objects.filter(is_active=True, status=submitted)
+        .annotate(
+            annotation_open_fir_pks=open_fir_pks_annotation,
+            annotation_has_open_approval_request=open_exporter_approval_requests,
+        )
+        .select_related("submitted_by")
+    )
+
+    importer_access_requests = (
+        ImporterAccessRequest.objects.filter(is_active=True, status=submitted)
+        .annotate(
+            annotation_open_fir_pks=open_fir_pks_annotation,
+            annotation_has_open_approval_request=open_importer_approval_requests,
+        )
+        .select_related("submitted_by")
+    )
+
+    app_filters = get_caseworker_app_filters(user=user)
+
+    export_applications = (
+        ExportApplication.objects.filter(*app_filters)
+        .exclude(decision=ExportApplication.REFUSE)
+        .select_related("exporter", "contact", "application_type", "submitted_by", "case_owner")
+        .annotate(
+            annotation_has_withdrawal=EXPORT_HAS_WITHDRAWAL_ANNOTATION,
+            active_tasks=ACTIVE_TASK_ANNOTATION,
+            annotation_open_fir_pks=open_fir_pks_annotation,
+        )
+    )
+
+    import_applications = (
+        ImportApplication.objects.filter(*app_filters)
+        .exclude(decision=ImportApplication.REFUSE)
+        .select_related("importer", "contact", "application_type", "submitted_by", "case_owner")
+        .annotate(
+            active_tasks=ACTIVE_TASK_ANNOTATION,
+            annotation_has_withdrawal=IMPORT_HAS_WITHDRAWAL_ANNOTATION,
+            annotation_open_fir_pks=open_fir_pks_annotation,
+        )
+    )
+
+    return chain(
+        exporter_access_requests,
+        importer_access_requests,
+        export_applications,
+        import_applications,
+    )
+
+
+def get_sanctions_case_officer_qs(user: User) -> chain[QuerySet]:
+    app_filters = get_caseworker_app_filters(user)
+
+    import_applications = (
+        ImportApplication.objects.filter(*app_filters, process_type=ProcessTypes.SANCTIONS)
+        .exclude(decision=ImportApplication.REFUSE)
+        .select_related("importer", "contact", "application_type", "submitted_by", "case_owner")
+        .annotate(
+            active_tasks=ACTIVE_TASK_ANNOTATION,
+            annotation_has_withdrawal=IMPORT_HAS_WITHDRAWAL_ANNOTATION,
+        )
+    )
+
+    return chain(import_applications)
+
+
+def get_applicant_qs(user: User) -> chain[QuerySet]:
+    # user/admin access requests and firs
+    open_fir_pks_annotation = _get_open_firs_pk_annotation("further_information_requests")
+
+    access_requests = (
+        AccessRequest.objects.filter(
+            submitted_by_id=user.pk,
+            status__in=[AccessRequest.Statuses.SUBMITTED, AccessRequest.Statuses.FIR_REQUESTED],
+        )
+        .select_related("submitted_by")
+        .annotate(annotation_open_fir_pks=open_fir_pks_annotation)
+    )
+
+    # User access requests
+    chain_items = [access_requests]
+
+    # Importer applications and approval requests
+    if user.has_perm(Perms.sys.importer_access):
+        chain_items.extend(_get_importer_queryset(user))
+
+    # Exporter applications and approval requests.
+    if user.has_perm(Perms.sys.exporter_access):
+        chain_items.extend(_get_exporter_queryset(user))
+
+    return chain(*chain_items)
+
+
+def _get_importer_queryset(user: User) -> list[QuerySet]:
+    open_fir_pks_annotation = _get_open_firs_pk_annotation(
+        "access_request__further_information_requests"
+    )
+
+    main_importers = get_objects_for_user(
+        user,
+        [
+            Perms.obj.importer.view,
+            Perms.obj.importer.edit,
+            Perms.obj.importer.manage_contacts_and_agents,
+        ],
+        Importer.objects.filter(is_active=True, main_importer__isnull=True),
+    )
+
+    agent_importers = get_objects_for_user(
+        user,
+        [Perms.obj.importer.view, Perms.obj.importer.edit],
+        Importer.objects.filter(is_active=True, main_importer__isnull=False),
+    )
+
+    importer_approval_requests = (
+        ImporterApprovalRequest.objects.select_related(
+            # get the importer associated with the approval request
+            # join access_request and join importer from access_request
+            "access_request__importeraccessrequest__link",
+            "access_request__submitted_by",
+        )
+        .annotate(annotation_open_fir_pks=open_fir_pks_annotation)
+        .filter(
+            is_active=True,
+            status=ApprovalRequest.OPEN,
+            access_request__importeraccessrequest__link__in=main_importers,
+        )
+    )
+
+    # Import Applications
+    import_applications = ImportApplication.objects.select_related(
+        "importer", "contact", "application_type", "submitted_by"
+    )
+    # Add annotations
+    import_applications = _add_user_import_annotations(import_applications)
+
+    import_applications = import_applications.filter(
+        is_active=True, status__in=APP_STATUS_TO_SHOW
+    ).filter(
+        # Has permission at main org and there is no agent specified
+        (Q(importer__in=main_importers) & Q(agent__isnull=True))
+        # or
+        |
+        # Has permission at main org and there is an agent specified and the app is complete
+        (Q(importer__in=main_importers) & Q(agent__isnull=False) & Q(status=ImpExpStatus.COMPLETED))
+        # or
+        |
+        # Has permission at the agent directly (agent contacts)
+        (Q(agent__in=agent_importers))
+    )
+
+    return [importer_approval_requests, import_applications]
+
+
+def _get_exporter_queryset(user: User) -> list[QuerySet]:
+    open_fir_pks_annotation = _get_open_firs_pk_annotation(
+        "access_request__further_information_requests"
+    )
+    main_exporters = get_objects_for_user(
+        user,
+        [
+            Perms.obj.exporter.view,
+            Perms.obj.exporter.edit,
+            Perms.obj.exporter.manage_contacts_and_agents,
+        ],
+        Exporter.objects.filter(is_active=True, main_exporter__isnull=True),
+    )
+
+    agent_exporters = get_objects_for_user(
+        user,
+        [Perms.obj.exporter.view, Perms.obj.exporter.edit],
+        Exporter.objects.filter(is_active=True, main_exporter__isnull=False),
+    )
+
+    exporter_approval_requests = (
+        ExporterApprovalRequest.objects.select_related(
+            # get the exporter associated with the approval request
+            # join access_request and join exporter from access_request
+            "access_request__exporteraccessrequest__link",
+            "access_request__submitted_by",
+        )
+        .annotate(annotation_open_fir_pks=open_fir_pks_annotation)
+        .filter(
+            is_active=True,
+            status=ApprovalRequest.OPEN,
+            access_request__exporteraccessrequest__link__in=main_exporters,
+        )
+    )
+
+    # Export Applications
+    export_applications = ExportApplication.objects.select_related(
+        "exporter", "contact", "application_type", "submitted_by"
+    )
+    # Add annotations
+    export_applications = _add_user_export_annotations(export_applications)
+
+    # Apply filters
+    export_applications = export_applications.filter(
+        is_active=True, status__in=APP_STATUS_TO_SHOW
+    ).filter(
+        # Has permission at main org and there is no agent specified
+        (Q(exporter__in=main_exporters) & Q(agent__isnull=True))
+        # or
+        |
+        # Has permission at main org and there is an agent specified and the app is complete
+        (Q(exporter__in=main_exporters) & Q(agent__isnull=False) & Q(status=ImpExpStatus.COMPLETED))
+        # or
+        |
+        # Has permission at the agent directly (agent contacts)
+        (Q(agent__in=agent_exporters))
+    )
+
+    return [exporter_approval_requests, export_applications]
+
+
+def _add_user_import_annotations(
+    applications: QuerySet[ImportApplication],
+) -> "QuerySet[ImportApplication]":
+    """Add user workbasket annotations for import applications."""
+
+    open_fir_subquery = (
+        FurtherInformationRequest.objects.filter(
+            importapplication=OuterRef("pk"),
+            status=FurtherInformationRequest.OPEN,
+        )
+        .order_by()
+        .values("importapplication")
+        .annotate(
+            open_fir_pairs_annotation=JSONBAgg(
+                Func(F("pk"), F("requested_datetime"), function="json_build_array"),
+                ordering="requested_datetime",
+            )
+        )
+        .values("open_fir_pairs_annotation")
+    )
+
+    open_ur_pks_annotation = ArrayAgg(
+        "update_requests__pk",
+        distinct=True,
+        filter=Q(**{"update_requests__status": UpdateRequest.Status.OPEN, "is_active": True}),
+        default=Value([]),
+    )
+
+    has_in_progress_ur = Exists(
+        UpdateRequest.objects.filter(
+            importapplication=OuterRef("pk"),
+            status__in=[UpdateRequest.Status.UPDATE_IN_PROGRESS, UpdateRequest.Status.RESPONDED],
+            is_active=True,
+        )
+    )
+
+    return applications.annotate(
+        active_tasks=ACTIVE_TASK_ANNOTATION,
+        annotation_has_withdrawal=IMPORT_HAS_WITHDRAWAL_ANNOTATION,
+        annotation_open_fir_pairs=Subquery(open_fir_subquery.values("open_fir_pairs_annotation")),
+        annotation_open_ur_pks=open_ur_pks_annotation,
+        annotation_has_in_progress_ur=has_in_progress_ur,
+    )
+
+
+def _add_user_export_annotations(
+    applications: QuerySet[ExportApplication],
+) -> "QuerySet[ExportApplication]":
+    """Add user workbasket annotations for export applications."""
+
+    open_fir_subquery = (
+        FurtherInformationRequest.objects.filter(
+            exportapplication=OuterRef("pk"),
+            status=FurtherInformationRequest.OPEN,
+        )
+        .order_by()
+        .values("exportapplication")
+        .annotate(
+            open_fir_pairs_annotation=JSONBAgg(
+                Func(F("pk"), F("requested_datetime"), function="json_build_array"),
+                ordering="requested_datetime",
+            )
+        )
+        .values("open_fir_pairs_annotation")
+    )
+
+    open_ur_pks_annotation = ArrayAgg(
+        "update_requests__pk",
+        distinct=True,
+        filter=Q(**{"update_requests__status": UpdateRequest.Status.OPEN, "is_active": True}),
+        default=Value([]),
+    )
+
+    has_in_progress_ur = Exists(
+        UpdateRequest.objects.filter(
+            exportapplication=OuterRef("pk"),
+            status__in=[UpdateRequest.Status.UPDATE_IN_PROGRESS, UpdateRequest.Status.RESPONDED],
+            is_active=True,
+        )
+    )
+
+    return applications.annotate(
+        active_tasks=ACTIVE_TASK_ANNOTATION,
+        annotation_has_withdrawal=EXPORT_HAS_WITHDRAWAL_ANNOTATION,
+        annotation_open_fir_pairs=Subquery(open_fir_subquery.values("open_fir_pairs_annotation")),
+        annotation_open_ur_pks=open_ur_pks_annotation,
+        annotation_has_in_progress_ur=has_in_progress_ur,
+    )
+
+
+def _get_open_firs_pk_annotation(relationship: str) -> ArrayAgg:
+    return ArrayAgg(
+        f"{relationship}__pk",
+        filter=Q(**{f"{relationship}__status": FurtherInformationRequest.OPEN}),
+        ordering=f"{relationship}__requested_datetime",
+        default=Value([]),
+    )

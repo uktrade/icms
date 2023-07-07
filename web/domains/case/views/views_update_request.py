@@ -11,7 +11,7 @@ from web.domains.case import forms, models
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
-from web.domains.case.utils import get_case_page_title
+from web.domains.case.utils import end_process_task, get_case_page_title
 from web.domains.template.utils import get_application_update_template_data
 from web.models import Task, User
 from web.notify import email
@@ -93,10 +93,6 @@ def manage_update_requests(
 
                 application.update_requests.add(update_request)
 
-                task.is_active = False
-                task.finished = timezone.now()
-                task.save()
-
                 Task.objects.create(
                     process=application, task_type=Task.TaskType.PREPARE, previous=task
                 )
@@ -166,6 +162,22 @@ def close_update_request(
         update_request.closed_by = request.user
         update_request.closed_datetime = timezone.now()
         update_request.save()
+
+        # If there are no more active update requests check for an optional process task.
+        # There will be one if the ILB Admin closes the update request before the applicant
+        # has responded (e.g. one was opened in error).
+        if not (
+            application.update_requests.filter(is_active=True)
+            .exclude(status=models.UpdateRequest.Status.CLOSED)
+            .exists()
+        ):
+            process_task = (
+                case_progress.get_active_tasks(application)
+                .filter(task_type=Task.TaskType.PREPARE)
+                .first()
+            )
+            if process_task:
+                end_process_task(process_task, request.user)
 
     return redirect(
         reverse(

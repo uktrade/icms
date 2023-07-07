@@ -458,7 +458,6 @@ def list_firs(
     application: ImpOrExpOrAccess = get_object_or_404(model_class, pk=application_pk)
 
     _check_process_permission(request.user, application, case_type)
-    _check_process_state(application, case_type)
 
     context = {
         "process": application,
@@ -483,7 +482,6 @@ def respond_fir(
             model_class.objects.select_for_update(), pk=application_pk
         )
         _check_process_permission(request.user, application, case_type)
-        _check_process_state(application, case_type)
 
         fir = get_object_or_404(application.further_information_requests.open(), pk=fir_pk)
 

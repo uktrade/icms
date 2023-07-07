@@ -1,19 +1,16 @@
-from typing import TYPE_CHECKING, Any, Optional
+from typing import Any
 
 from django.urls import reverse
 from django.utils.dateparse import parse_datetime
 
 from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
+from web.domains.case.types import DocumentPack
 from web.domains.workbasket.base import WorkbasketAction
-from web.flow.models import ProcessTypes
 from web.models import Task
+from web.permissions import Perms
 
 from .base import Action, ActionT
-
-if TYPE_CHECKING:
-    from web.domains.case._import.fa.models import SupplementaryInfoBase
-    from web.domains.case.types import DocumentPack
 
 """Actions that only apply to importer/exporter users are added here"""
 
@@ -106,6 +103,22 @@ class ViewApplicationAction(Action):
                 section_label=sections[self.status],
             )
         ]
+
+
+class ClearApplicationAction(Action):
+    def show_link(self) -> bool:
+        show_link = False
+
+        if self.status in [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]:
+            show_link = True
+
+        return show_link
+
+    def get_workbasket_actions(self) -> list[WorkbasketAction]:
+        section_label = "Application View"
+
+        # ICMSLST-19 Add clear action
+        return [WorkbasketAction(is_post=False, name="Clear", url="#", section_label=section_label)]
 
 
 class RespondToFurtherInformationRequestAction(Action):
@@ -253,20 +266,14 @@ class SubmitVariationUpdateAction(Action):
 class IssuedDocumentsBaseAction(Action):
     """Base class for viewing issued documents and clearing those documents from the workbasket"""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.issued_documents_qs = document_pack.pack_workbasket_get_issued(
-            self.application.get_specific_model()
-        )
-
     def show_link(self) -> bool:
         show_link = False
 
         if (
             self.status == ImpExpStatus.COMPLETED
-            and not self.is_rejected
-            and self.issued_documents_qs.exists()
+            and Task.TaskType.REJECTED not in self.active_tasks
+            and self.app_checker.can_edit()
+            and self.issued_documents()
         ):
             show_link = True
 
@@ -276,11 +283,24 @@ class IssuedDocumentsBaseAction(Action):
         raise NotImplementedError
 
     @staticmethod
-    def section_label(pack: "DocumentPack") -> str:
+    def section_label(pack: DocumentPack) -> str:
         cd = pack.case_completion_datetime
         issue_datetime = cd.strftime("%d-%b-%Y %H:%M")
 
         return f"Documents Issued {issue_datetime}"
+
+    def issued_documents(self) -> list:
+        """Cache the issued documents on the application to prevent duplicate queries."""
+        if not hasattr(self.application, "_wb_cache_issued_documents_list"):
+            issued_document_qs = document_pack.pack_workbasket_get_issued(
+                self.application.get_specific_model()
+            )
+
+            self.application._wb_cache_issued_documents_list = list(
+                issued_document_qs.values_list("pk", "case_completion_datetime", named=True)
+            )
+
+        return self.application._wb_cache_issued_documents_list
 
 
 class ViewIssuedDocumentsAction(IssuedDocumentsBaseAction):
@@ -296,9 +316,7 @@ class ViewIssuedDocumentsAction(IssuedDocumentsBaseAction):
                 ),
                 section_label=self.section_label(i),
             )
-            for i in self.issued_documents_qs.values_list(
-                "pk", "case_completion_datetime", named=True
-            )
+            for i in self.issued_documents()
         ]
 
 
@@ -315,24 +333,26 @@ class ClearIssuedDocumentsAction(IssuedDocumentsBaseAction):
                 ),
                 section_label=self.section_label(i),
             )
-            for i in self.issued_documents_qs.values_list(
-                "pk", "case_completion_datetime", named=True
-            )
+            for i in self.issued_documents()
         ]
 
 
 class ProvideFirearmsReportAction(Action):
     def show_link(self) -> bool:
-        if not self.application.is_import_application() or not self.is_importer_user:
+        if not self.application.is_import_application() or not self.user.has_perm(
+            Perms.sys.importer_access
+        ):
             return False
 
         show_link = False
         correct_status = self.status in [ImpExpStatus.COMPLETED]
+        not_rejected = Task.TaskType.REJECTED not in self.active_tasks
         # Can't import ImportApplicationType.Types.FIREARMS
         correct_app_type = self.application.application_type.type == "FA"
+        can_edit = self.app_checker.can_edit()
 
-        if correct_status and correct_app_type and not self.is_rejected:
-            supplementary_info = self._get_supplementary_info()
+        if correct_status and correct_app_type and not_rejected and can_edit:
+            supplementary_info = self.application.get_specific_model().supplementary_info
 
             if supplementary_info and not supplementary_info.is_complete:
                 show_link = True
@@ -351,28 +371,12 @@ class ProvideFirearmsReportAction(Action):
             )
         ]
 
-    def _get_supplementary_info(self) -> Optional["SupplementaryInfoBase"]:
-        supplementary_info = None
 
-        app = self.application
-        pt = self.application.process_type
-
-        if pt == ProcessTypes.FA_OIL:
-            supplementary_info = app.openindividuallicenceapplication.supplementary_info
-
-        elif pt == ProcessTypes.FA_DFL:
-            supplementary_info = app.dflapplication.supplementary_info
-
-        elif pt == ProcessTypes.FA_SIL:
-            supplementary_info = app.silapplication.supplementary_info
-
-        return supplementary_info
-
-
-REQUEST_VARIATION_APPLICANT_ACTIONS: list[ActionT] = [
+APPLICANT_ACTIONS: list[ActionT] = [
     EditApplicationAction,
     CancelApplicationAction,
     ViewApplicationAction,
+    ClearApplicationAction,
     WithdrawApplicationAction,
     RespondToFurtherInformationRequestAction,
     RespondToUpdateRequestAction,
