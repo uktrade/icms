@@ -4,8 +4,8 @@ from datetime import datetime
 from unittest import mock
 
 import freezegun
+import pytest
 from botocore.exceptions import ClientError
-from django.test import TestCase
 
 from data_migration.management.commands import import_v1_files_to_s3
 from data_migration.management.commands._types import QueryModel
@@ -16,8 +16,22 @@ from data_migration.management.commands.utils.db_processor import OracleDBProces
 
 CREATED_DATETIME_ALT = "2023-01-01 01:00:00"
 
+FAKE_DB_RESPONSE = [
+    {
+        "BLOB_DATA": "blob",
+        "PATH": "testfile.txt",
+        "CREATED_DATETIME": datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
+    },
+    {
+        "BLOB_DATA": "blob2",
+        "PATH": "testfile2.txt",
+        "CREATED_DATETIME": datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
+    },
+]
 
-class TestImportV1FilesToS3(TestCase):
+
+class TestImportV1FilesToS3:
+    @pytest.fixture(autouse=True)
     def setUp(self) -> None:
         self.test_query = QueryModel(
             "select * from test_query_table",
@@ -62,67 +76,62 @@ class TestImportV1FilesToS3(TestCase):
         assert result == {}
 
     @freezegun.freeze_time(CREATED_DATETIME_ALT)
+    @mock.patch("data_migration.management.commands.import_v1_files_to_s3.s3_web.put_object_in_s3")
     @mock.patch(
         "data_migration.management.commands.import_v1_files_to_s3.s3_web.upload_file_obj_to_s3"
     )
     @mock.patch.object(OracleDBProcessor, "execute_query")
-    def test_process_query_and_upload(self, mock_execute_query, mock_upload_file):
-        fake_db_rows = [
-            {
-                "BLOB_DATA": "blob",
-                "PATH": "testfile.txt",
-                "CREATED_DATETIME": datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
-            },
-            {
-                "BLOB_DATA": "blob2",
-                "PATH": "testfile2.txt",
-                "CREATED_DATETIME": datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
-            },
-        ]
-        mock_upload_file.return_value = None
-        mock_execute_query.return_value.__enter__.return_value = iter(fake_db_rows)
+    def test_process_query_and_upload(
+        self, mock_execute_query, mock_upload_file, mock_upload_last_run
+    ):
+        mock_upload_last_run.return_value = None
 
-        result = self.cmd.process_query_and_upload(
+        mock_upload_file.return_value = None
+        mock_execute_query.return_value.__enter__.return_value = iter(FAKE_DB_RESPONSE)
+
+        self.cmd.process_query_and_upload(
             self.cmd.db.QUERIES[0],
             {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
-            len(fake_db_rows),
+            len(FAKE_DB_RESPONSE),
         )
-        assert result == {
-            "created_datetime": "2023-01-01 01:00:00",
-            "file_prefix": "test_query_prefix",
-            "finished_at": "2023-01-01 01:00:00",
-            "number_of_files_processed": len(fake_db_rows),
-            "number_of_files_to_be_processed": len(fake_db_rows),
-            "query_name": "test_query",
-            "started_at": "2023-01-01 01:00:00",
-        }
-
-    @freezegun.freeze_time(CREATED_DATETIME_ALT)
-    @mock.patch(
-        "data_migration.management.commands.import_v1_files_to_s3.s3_web.upload_file_obj_to_s3"
-    )
-    @mock.patch.object(OracleDBProcessor, "execute_query")
-    def test_process_query_and_upload_no_data(self, mock_execute_query, mock_upload_file):
-        fake_db_rows = []
-        mock_upload_file.return_value = None
-        mock_execute_query.return_value.__enter__.return_value = iter(fake_db_rows)
-        result = self.cmd.process_query_and_upload(
-            self.cmd.db.QUERIES[0],
-            {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
-            len(fake_db_rows),
+        mock_upload_last_run(
+            {
+                "created_datetime": "2023-01-01 01:00:00",
+                "file_prefix": "test_query_prefix",
+                "finished_at": "2023-01-01 01:00:00",
+                "number_of_files_processed": len(FAKE_DB_RESPONSE),
+                "number_of_files_to_be_processed": len(FAKE_DB_RESPONSE),
+                "query_name": "test_query",
+                "started_at": "2023-01-01 01:00:00",
+            }
         )
-        assert result == {
-            "created_datetime": "2013-01-01 01:00:00",
-            "file_prefix": "test_query_prefix",
-            "finished_at": "2023-01-01 01:00:00",
-            "number_of_files_processed": len(fake_db_rows),
-            "number_of_files_to_be_processed": len(fake_db_rows),
-            "query_name": "test_query",
-            "started_at": "2023-01-01 01:00:00",
-        }
 
     @freezegun.freeze_time(CREATED_DATETIME_ALT)
     @mock.patch("data_migration.management.commands.import_v1_files_to_s3.s3_web.put_object_in_s3")
+    @mock.patch(
+        "data_migration.management.commands.import_v1_files_to_s3.s3_web.upload_file_obj_to_s3"
+    )
+    @mock.patch.object(OracleDBProcessor, "execute_query")
+    def test_process_query_and_upload_no_data(
+        self, mock_execute_query, mock_upload_file, mock_upload_last_run
+    ):
+        fake_db_rows = []
+        mock_upload_file.return_value = None
+        mock_upload_last_run.return_value = None
+        mock_execute_query.return_value.__enter__.return_value = iter(fake_db_rows)
+        self.cmd.process_query_and_upload(
+            self.cmd.db.QUERIES[0],
+            {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+            len(fake_db_rows),
+        )
+        assert mock_upload_last_run.called is False
+        assert mock_upload_file.called is False
+
+    @freezegun.freeze_time(CREATED_DATETIME_ALT)
+    @mock.patch("data_migration.management.commands.import_v1_files_to_s3.s3_web.put_object_in_s3")
+    @mock.patch(
+        "data_migration.management.commands.import_v1_files_to_s3.s3_web.upload_file_obj_to_s3"
+    )
     @mock.patch("data_migration.management.commands.import_v1_files_to_s3.s3_web.get_file_from_s3")
     @mock.patch.object(OracleDBProcessor, "execute_query")
     @mock.patch.object(OracleDBProcessor, "execute_count_query")
@@ -131,28 +140,32 @@ class TestImportV1FilesToS3(TestCase):
         mock_execute_count_query,
         mock_execute_query,
         mock_get_file_from_s3,
+        mock_upload_file,
         mock_put_object_in_s3,
     ):
         mock_get_file_from_s3.return_value = b'{"created_datetime": "2023-05-02 12:00:00"}'
         mock_put_object_in_s3.return_value = None
-        mock_execute_count_query.return_value = 10, 1000
-        mock_execute_query.return_value.__enter__.return_value = iter([])
+        mock_upload_file.return_value = None
+        mock_execute_count_query.return_value = 2, 1000
+        mock_execute_query.return_value.__enter__.return_value = iter(FAKE_DB_RESPONSE)
 
         self.cmd.process_queries(False, False)
 
         assert mock_execute_count_query.called is True
         assert mock_execute_query.called is True
+        assert mock_upload_file.call_count == 2
         assert mock_get_file_from_s3.called is True
+
         assert mock_put_object_in_s3.called is True
-        mock_put_object_in_s3.assert_called_once_with(
+        mock_put_object_in_s3.assert_called_with(
             json.dumps(
                 {
-                    "number_of_files_to_be_processed": 10,
-                    "number_of_files_processed": 0,
+                    "number_of_files_to_be_processed": 2,
+                    "number_of_files_processed": 2,
                     "query_name": "test_query",
                     "file_prefix": "test_query_prefix",
                     "started_at": "2023-01-01 01:00:00",
-                    "created_datetime": "2023-05-02 12:00:00",
+                    "created_datetime": "2023-01-01 01:00:00",
                     "finished_at": "2023-01-01 01:00:00",
                 }
             ),
@@ -195,6 +208,61 @@ class TestImportV1FilesToS3(TestCase):
             "started_at": "2023-01-01 01:00:00",
             "created_datetime": "2023-05-02 12:00:00",
         }
+
+    @pytest.mark.parametrize(
+        "number_of_files_processed,number_of_files_to_be_processed,expected_result",
+        [
+            (0, 100, False),
+            (10, 10, True),
+            (5, 10, True),
+            (6, 10, False),
+            (15, 16, True),
+        ],
+    )
+    def test_should_save_run_data(
+        self, number_of_files_processed, number_of_files_to_be_processed, expected_result
+    ):
+        self.cmd.SAVE_RUN_DATA = 5
+        assert (
+            self.cmd.should_save_run_data(
+                number_of_files_processed, number_of_files_to_be_processed
+            )
+            == expected_result
+        )
+
+    @freezegun.freeze_time(CREATED_DATETIME_ALT)
+    @mock.patch("data_migration.management.commands.import_v1_files_to_s3.s3_web.put_object_in_s3")
+    def test_save_run_data(self, mock_put_object_in_s3):
+        mock_put_object_in_s3.return_value = None
+        self.cmd.save_run_data(
+            {"query_name": "test_query", "number_of_files_to_be_processed": 2},
+            2,
+            FAKE_DB_RESPONSE[0],
+        )
+        assert mock_put_object_in_s3.called is True
+        mock_put_object_in_s3.assert_called_with(
+            json.dumps(
+                {
+                    "query_name": "test_query",
+                    "number_of_files_to_be_processed": 2,
+                    "number_of_files_processed": 2,
+                    "created_datetime": "2023-01-01 01:00:00",
+                    "finished_at": "2023-01-01 01:00:00",
+                }
+            ),
+            "test_query-last-run.json",
+        )
+
+    @freezegun.freeze_time(CREATED_DATETIME_ALT)
+    @mock.patch("data_migration.management.commands.import_v1_files_to_s3.s3_web.put_object_in_s3")
+    def test_save_run_data_not_called(self, mock_put_object_in_s3):
+        mock_put_object_in_s3.return_value = None
+        self.cmd.save_run_data(
+            {"query_name": "test_query", "number_of_files_to_be_processed": 3},
+            2,
+            FAKE_DB_RESPONSE[0],
+        )
+        assert mock_put_object_in_s3.called is False
 
 
 class FakeS3Client:

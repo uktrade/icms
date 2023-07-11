@@ -14,16 +14,17 @@ from data_migration.management.commands.utils.db_processor import (
 from data_migration.utils.format import pretty_print_file_size
 from web.utils import s3 as s3_web
 
-DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
-
-REQUIRED_QUERY_PARAMETERS = ["created_datetime"]
-
 
 def get_query_last_run_key(query_name: str) -> str:
     return f"{query_name}-last-run.json"
 
 
 class Command(BaseCommand):
+    # Save run data to s3 periodically after processing this number of files
+    SAVE_RUN_DATA: int = 100
+    REQUIRED_QUERY_PARAMETERS: list[str] = ["created_datetime"]
+    DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S"
+
     def add_arguments(self, parser):
         parser.add_argument(
             "--limit",
@@ -88,12 +89,12 @@ class Command(BaseCommand):
             "number_of_files_processed": 0,
             "query_name": query_model.query_name,
             "file_prefix": self.file_prefix,
-            "started_at": datetime.datetime.now().strftime(DATETIME_FORMAT),
+            "started_at": datetime.datetime.now().strftime(self.DATETIME_FORMAT),
         } | query_parameters
 
     def process_query_and_upload(
         self, query_model: QueryModel, query_parameters: dict, row_count: int
-    ) -> dict[str, Any]:
+    ) -> None:
         """Returns summary details of the last time the query was run including date time of
         last file processed (created_datetime) and parameters provided at runtime.
 
@@ -117,15 +118,43 @@ class Command(BaseCommand):
                     obj = next(rows)
                     self.upload_file_obj_to_s3(obj["BLOB_DATA"], obj["PATH"])
                     pbar.update(1)
-                    data_dict["number_of_files_processed"] = pbar.n
-                    data_dict["created_datetime"] = obj["CREATED_DATETIME"].strftime(
-                        DATETIME_FORMAT
-                    )
+                    self.save_run_data(data_dict, pbar.n, obj)
             except StopIteration:
                 pass
         pbar.close()
-        data_dict["finished_at"] = datetime.datetime.now().strftime(DATETIME_FORMAT)
-        return data_dict
+
+    def should_save_run_data(
+        self, number_of_files_processed: int, number_of_files_to_be_processed: int
+    ) -> bool:
+        """Returns True if the current run data (which maybe in progress) should be saved.
+
+        - If no files have been processed don't save the file
+        - If the run has completed save the file
+        - If the run is in progress and the number of files is a divisible to an equal number of the SAVE_RUN_DATA
+          value then save the file
+        - All other circumstances don't save the file
+        """
+        if not number_of_files_processed:
+            return False
+        if number_of_files_processed == number_of_files_to_be_processed:
+            return True
+        if not number_of_files_processed % self.SAVE_RUN_DATA:
+            return True
+        return False
+
+    def save_run_data(
+        self, data_dict: dict, number_of_files_processed: int, last_file_processed: dict
+    ) -> None:
+        """If required save the run data including the created_datetime of the last file processed to s3"""
+        if self.should_save_run_data(
+            number_of_files_processed, data_dict["number_of_files_to_be_processed"]
+        ):
+            data_dict["number_of_files_processed"] = number_of_files_processed
+            data_dict["created_datetime"] = last_file_processed["CREATED_DATETIME"].strftime(
+                self.DATETIME_FORMAT
+            )
+            data_dict["finished_at"] = datetime.datetime.now().strftime(self.DATETIME_FORMAT)
+            self.write_run_data_to_s3(data_dict)
 
     def process_queries(self, ignore_last_run: bool, count_only: bool) -> None:
         """For each of the specified queries in turn
@@ -149,10 +178,7 @@ class Command(BaseCommand):
             )
 
             if not count_only and file_count > 0:
-                last_file_processed = self.process_query_and_upload(
-                    query_model, query_parameters, file_count
-                )
-                self.write_run_data_to_s3(last_file_processed)
+                self.process_query_and_upload(query_model, query_parameters, file_count)
         self.stdout.write(
             f"\nTotal number of files to be uploaded: {total_file_count} ({pretty_print_file_size(total_file_size)})"
         )
@@ -166,7 +192,7 @@ class Command(BaseCommand):
             return query_model.parameters
 
         parameters = {}
-        for _param in REQUIRED_QUERY_PARAMETERS:
+        for _param in self.REQUIRED_QUERY_PARAMETERS:
             parameters[_param] = last_run_data[_param]
         return parameters
 
@@ -174,7 +200,6 @@ class Command(BaseCommand):
         """Writes a (json) file to s3, which contains the details of the completed or partial run."""
         data = json.dumps(result)
         s3_web.put_object_in_s3(data, get_query_last_run_key(result["query_name"]))
-        self.stdout.write(data)
 
     def get_last_run_data(self, query_model: QueryModel) -> dict:
         """Returns a dictionary of details of the last time the query was run.
