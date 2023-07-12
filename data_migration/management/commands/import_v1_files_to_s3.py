@@ -1,6 +1,6 @@
 import datetime
 import json
-from typing import IO, Any
+from typing import Any
 
 from botocore.exceptions import ClientError
 from django.core.management.base import BaseCommand
@@ -9,6 +9,7 @@ from tqdm import tqdm
 from data_migration.management.commands.config.run_order import QueryModel
 from data_migration.management.commands.utils.db_processor import (
     AVAILABLE_QUERIES,
+    QUERY_GROUPS,
     OracleDBProcessor,
 )
 from data_migration.utils.format import pretty_print_file_size
@@ -20,15 +21,25 @@ def get_query_last_run_key(query_name: str) -> str:
 
 
 class Command(BaseCommand):
-    # Save run data to s3 periodically after processing this number of files
-    SAVE_RUN_DATA: int = 100
     REQUIRED_QUERY_PARAMETERS: list[str] = ["created_datetime"]
     DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S"
 
     def add_arguments(self, parser):
         parser.add_argument(
+            "--batchsize",
+            help="Number of results per db query batch",
+            default=500,
+            type=int,
+        )
+        parser.add_argument(
+            "--run-data-batchsize",
+            help="Save run data to s3 periodically after processing this number of files",
+            type=int,
+            default=100,
+        )
+        parser.add_argument(
             "--limit",
-            help="Limit queries to only return a set number of rows",
+            help="Limit db queries to only return a set number of rows",
             type=int,
             default=None,
         )
@@ -40,23 +51,11 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             "--queries",
-            help="Specify which queries to run, defaults to all available queries",
+            help="Specify which queries to run by name or group alias (small/large), defaults to all available queries",
             nargs="+",
-            choices=AVAILABLE_QUERIES,
+            choices=AVAILABLE_QUERIES + list(QUERY_GROUPS.keys()),
             type=str,
             default=None,
-        )
-        parser.add_argument(
-            "--s3-file-prefix",
-            help="Prefix for all files when adding to s3 ie. a folder",
-            type=str,
-            default="",
-        )
-        parser.add_argument(
-            "--number-of-rows",
-            help="Number of rows to select in each batch default (10000)",
-            type=int,
-            default=10000,
         )
         parser.add_argument(
             "--count-only",
@@ -67,18 +66,12 @@ class Command(BaseCommand):
 
     def get_db(self, options: dict) -> OracleDBProcessor:
         """Returns a DB processor that facilitates executing database queries on the v1 oracle database."""
-        return OracleDBProcessor(options["limit"], options["queries"], options["number_of_rows"])
+        return OracleDBProcessor(options["limit"], options["queries"], options["batchsize"])
 
     def handle(self, *args: Any, **options: Any) -> None:
+        self.run_data_batchsize = options["run_data_batchsize"]
         self.db = self.get_db(options)
-        self.file_prefix = options["s3_file_prefix"]
         self.process_queries(options["ignore_last_run"], options["count_only"])
-
-    def upload_file_obj_to_s3(self, _file_obj: IO[Any], _key: str) -> None:
-        """Uploads a file to s3 adding a prefix to the file name (key) if required."""
-        if self.file_prefix:
-            _key = f"{self.file_prefix}/{_key}"
-        s3_web.upload_file_obj_to_s3(_file_obj, _key)
 
     def get_initial_run_data_dict(
         self, query_model: QueryModel, query_parameters: dict, number_of_files_to_be_processed: int
@@ -88,7 +81,6 @@ class Command(BaseCommand):
             "number_of_files_to_be_processed": number_of_files_to_be_processed,
             "number_of_files_processed": 0,
             "query_name": query_model.query_name,
-            "file_prefix": self.file_prefix,
             "started_at": datetime.datetime.now().strftime(self.DATETIME_FORMAT),
         } | query_parameters
 
@@ -116,7 +108,7 @@ class Command(BaseCommand):
             try:
                 while True:
                     obj = next(rows)
-                    self.upload_file_obj_to_s3(obj["BLOB_DATA"], obj["PATH"])
+                    s3_web.upload_file_obj_to_s3(obj["BLOB_DATA"], obj["PATH"])
                     pbar.update(1)
                     self.save_run_data(data_dict, pbar.n, obj)
             except StopIteration:
@@ -138,7 +130,7 @@ class Command(BaseCommand):
             return False
         if number_of_files_processed == number_of_files_to_be_processed:
             return True
-        if not number_of_files_processed % self.SAVE_RUN_DATA:
+        if not number_of_files_processed % self.run_data_batchsize:
             return True
         return False
 

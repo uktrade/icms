@@ -13,14 +13,24 @@ from data_migration.management.commands.utils.db import CONNECTION_CONFIG
 class OracleDBProcessor:
     QUERIES: list[QueryModel] = file_query_model
 
-    def __init__(self, limit: int, selected_queries: list[str], number_of_rows: int):
+    def __init__(self, limit: int, selected_queries: list[str], batchsize: int):
         self.limit = limit
-        self.selected_queries = selected_queries
-        self.number_of_rows = number_of_rows
+        self.selected_queries = self.populate_selected_queries(selected_queries)
+        self.batchsize = batchsize
+
+    def populate_selected_queries(self, selected_queries: list[str]) -> list[str]:
+        if not selected_queries:
+            return AVAILABLE_QUERIES
+        for query_alias, queries in QUERY_GROUPS.items():
+            if query_alias in selected_queries:
+                selected_queries.remove(query_alias)
+                selected_queries.extend(queries)
+        selected_queries = list(dict.fromkeys(selected_queries))
+        return selected_queries
 
     def get_query_list(self) -> Iterator[QueryModel]:
         for query in self.QUERIES:
-            if not self.selected_queries or (query.query_name in self.selected_queries):
+            if query.query_name in self.selected_queries:
                 yield query
 
     def add_select_to_sql(self, sql: str) -> str:
@@ -53,7 +63,7 @@ class OracleDBProcessor:
 
             def _rows():
                 while True:
-                    rows = cursor.fetchmany(self.number_of_rows)
+                    rows = cursor.fetchmany(self.batchsize)
                     if not rows:
                         break
                     yield from rows
@@ -71,3 +81,6 @@ class OracleDBProcessor:
 
 
 AVAILABLE_QUERIES: list[str] = [query.query_name for query in file_query_model]
+LARGE_QUERIES: list[str] = ["sps_application_files", "sps_docs", "sil_application_files"]
+SMALL_QUERIES: list[str] = list(set(AVAILABLE_QUERIES) - set(LARGE_QUERIES))
+QUERY_GROUPS: dict[str, list] = {"small": SMALL_QUERIES, "large": LARGE_QUERIES}

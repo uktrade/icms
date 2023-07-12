@@ -46,6 +46,31 @@ The following data_types are valid in the `--start` parameter
 * `f` or `file` for the file data type
 * `ia` or `import_application` for the import_application data type
 
+## File Import
+
+The following script is used to pull the file data from V1 and export into S3
+
+```
+./manage.py import_v1_files_to_s3
+```
+The command can be run with options
+* `--batchsize` to modify the size of the batches when running the migration (default: 500)
+* `--run-data-batchsize` to modify the size of the batches when periodically saving the run data to s3 (default: 100)
+* `--limit` to limit the database queries to only return a set number of rows (default: None)
+* `--ignore-last-run` to ignore the data in the last run json file (if present) in s3 (default: False)
+* `--queries` to specify which queries to run (default: All available queries)
+* `--count-only` to retrieve just the total count (and file size) of the number of files that be processed per query (default: False)
+
+Some of the queries are smaller than others, so it is recommended the script is run as follows
+```
+./manage.py import_v1_files_to_s3 --queries small
+./manage.py import_v1_files_to_s3 --queries sil_application_files
+./manage.py import_v1_files_to_s3 --queries sps_application_files
+./manage.py import_v1_files_to_s3 --queries sps_docs --limit 11000 (Run 8 times)
+./manage.py import_v1_files_to_s3
+```
+
+
 
 ## Deployment
 
