@@ -3109,3 +3109,8 @@ Test Inactive
 gmp2/ISO22716
 MB
 "Returns True
+ALLOW_DATA_MIGRATION` - True
+import_v1_data
+--skip_task
+ia.2
+./manage.py import_v1_files_to_s3 --queries

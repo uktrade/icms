@@ -44,8 +44,8 @@ class TestImportV1FilesToS3:
 
     def get_cmd_to_test(self):
         cmd = import_v1_files_to_s3.Command()
-        cmd.file_prefix = "test_query_prefix"
         cmd.db = OracleDBProcessor(100, ["test_query"], 1)
+        cmd.run_data_batchsize = 100
         return cmd
 
     def test_get_query_last_run_key(self):
@@ -97,7 +97,6 @@ class TestImportV1FilesToS3:
         mock_upload_last_run(
             {
                 "created_datetime": "2023-01-01 01:00:00",
-                "file_prefix": "test_query_prefix",
                 "finished_at": "2023-01-01 01:00:00",
                 "number_of_files_processed": len(FAKE_DB_RESPONSE),
                 "number_of_files_to_be_processed": len(FAKE_DB_RESPONSE),
@@ -163,7 +162,6 @@ class TestImportV1FilesToS3:
                     "number_of_files_to_be_processed": 2,
                     "number_of_files_processed": 2,
                     "query_name": "test_query",
-                    "file_prefix": "test_query_prefix",
                     "started_at": "2023-01-01 01:00:00",
                     "created_datetime": "2023-01-01 01:00:00",
                     "finished_at": "2023-01-01 01:00:00",
@@ -201,7 +199,6 @@ class TestImportV1FilesToS3:
         parameters = {"created_datetime": "2023-05-02 12:00:00"}
         result = self.cmd.get_initial_run_data_dict(self.test_query, parameters, 123)
         assert result == {
-            "file_prefix": "test_query_prefix",
             "number_of_files_processed": 0,
             "number_of_files_to_be_processed": 123,
             "query_name": "test_query",
@@ -222,7 +219,7 @@ class TestImportV1FilesToS3:
     def test_should_save_run_data(
         self, number_of_files_processed, number_of_files_to_be_processed, expected_result
     ):
-        self.cmd.SAVE_RUN_DATA = 5
+        self.cmd.run_data_batchsize = 5
         assert (
             self.cmd.should_save_run_data(
                 number_of_files_processed, number_of_files_to_be_processed

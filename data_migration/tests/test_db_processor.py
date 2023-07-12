@@ -1,7 +1,12 @@
-from django.test import TestCase
+import pytest
 
 from data_migration.management.commands._types import QueryModel
-from data_migration.management.commands.utils.db_processor import OracleDBProcessor
+from data_migration.management.commands.utils.db_processor import (
+    AVAILABLE_QUERIES,
+    LARGE_QUERIES,
+    SMALL_QUERIES,
+    OracleDBProcessor,
+)
 
 TEST_QUERY = """
 SELECT file_contents AS blob_data, path, created_by_id, created_datetime  from data_migration_document
@@ -12,7 +17,8 @@ ORDER BY created_datetime
 CREATED_DATETIME_ALT = "2023-01-01 01:00:00"
 
 
-class TestOracleDBProcessor(TestCase):
+class TestOracleDBProcessor:
+    @pytest.fixture(autouse=True)
     def setUp(self):
         self.db = OracleDBProcessor(100, ["test_query"], 1)
 
@@ -58,3 +64,18 @@ ORDER BY created_datetime
         db = OracleDBProcessor(100, ["gmp_files", "fir_files"], 1)
         result = [query_model.query_name for query_model in db.get_query_list()]
         assert set(result) == {"gmp_files", "fir_files"}
+
+    @pytest.mark.parametrize(
+        "selected_queries,expected_result",
+        [
+            (None, AVAILABLE_QUERIES),
+            (["gmp_files", "gmp_files"], ["gmp_files"]),
+            (["small"], SMALL_QUERIES),
+            (["large"], LARGE_QUERIES),
+            (["small", "sps_docs"], ["sps_docs"] + SMALL_QUERIES),
+            (["sps_docs", "large"], ["sps_docs", "sps_application_files", "sil_application_files"]),
+        ],
+    )
+    def test_selected_queries(self, selected_queries, expected_result):
+        db = OracleDBProcessor(100, selected_queries, 1)
+        assert db.selected_queries == expected_result

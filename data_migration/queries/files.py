@@ -22,7 +22,7 @@ LEFT JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , CONCAT(id, CONCAT('-', x.filename)) path
+    , 'derogations_application_files/' || id || '-' || x.filename path
     , secure_lob_ref
     , x.*
   FROM decmgr.file_versions fv
@@ -73,7 +73,7 @@ LEFT JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , CONCAT(id, CONCAT('-', x.filename)) path
+    , 'sps_application_files/' || id || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
@@ -124,7 +124,7 @@ LEFT JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , CONCAT(id, CONCAT('-', x.filename)) path
+    , 'dfl_application_files/' || id || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
@@ -176,7 +176,7 @@ LEFT JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , CONCAT(id, CONCAT('-', x.filename)) path
+    , 'oil_application_files/' || id || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
@@ -228,7 +228,7 @@ LEFT JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , CONCAT(id, CONCAT('-', x.filename)) path
+    , 'sil_application_files/' || id || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
@@ -280,7 +280,7 @@ LEFT JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , CONCAT(id, CONCAT('-', x.filename)) path
+    , 'sanction_application_files/' || id || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
@@ -332,7 +332,7 @@ LEFT JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , CONCAT(id, CONCAT('-', x.filename)) path
+    , 'opt_application_files/' || id || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
@@ -387,7 +387,7 @@ LEFT JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , CONCAT(id, CONCAT('-', x.filename)) path
+    , 'wood_application_files/' || id || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
@@ -439,7 +439,7 @@ LEFT JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , CONCAT(id, CONCAT('-', x.filename)) path
+    , 'textiles_application_files/' || id || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
@@ -503,7 +503,7 @@ LEFT JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , CONCAT(id, CONCAT('-', x.filename)) path
+    , 'fa_certificate_files/' || id || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
@@ -545,7 +545,7 @@ LEFT JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , CONCAT(id, CONCAT('-', x.filename)) path
+    , 'sps_docs/' || id || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv,
@@ -587,7 +587,7 @@ LEFT JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , CONCAT(id, CONCAT('-', x.filename)) path
+    , 'case_note_files/' || id || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
@@ -630,7 +630,7 @@ LEFT JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , CONCAT(id, CONCAT('-', x.filename)) path
+    , 'fir_files/' || id || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
@@ -673,7 +673,7 @@ LEFT JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , CONCAT(id, CONCAT('-', x.filename)) path
+    , 'mailshot_files/' || id || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
@@ -715,7 +715,7 @@ LEFT JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , CONCAT(id, CONCAT('-', x.filename)) path
+    , 'gmp_files/' || id || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
@@ -743,7 +743,7 @@ SELECT
   , vf.created_datetime as created_datetime
   , vf.created_by_wua_id created_by_id
   , EXTRACTVALUE(vf.metadata_xml, '/file-metadata/size') file_size
-  , vf.file_id || '-' || vf.filename path
+  , 'export_case_note_docs/' || vf.file_id || '-' || vf.filename path
   , sld.blob_data
 FROM doclibmgr.folder_details fd
 LEFT JOIN doclibmgr.vw_file_folders vff ON vff.f_id = fd.f_id
@@ -759,7 +759,7 @@ fa_supplementary_report_upload_files = """
 SELECT
     ad.ima_id
   , ad.id imad_id
-  , CONCAT(x.sr_goods_file_id, CONCAT('/', x.filename)) PATH
+  , 'fa_supplementary_report_upload_files/' || x.sr_goods_file_id || '/' || x.filename PATH
   , glf.file_content as blob_data
   , to_date(replace(created_datetime_str, 'T', chr(10)), 'YYYY-MM-DD HH24:MI:SS') created_datetime
   , x.*

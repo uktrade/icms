@@ -33,7 +33,7 @@ class Command(MigrationBaseCommand):
 
         parser.add_argument(
             "--skip_post",
-            help="Skip post exoprt tasks",
+            help="Skip post export tasks",
             action="store_true",
         )
 
