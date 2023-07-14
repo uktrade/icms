@@ -1,12 +1,10 @@
 import datetime as dt
-from collections.abc import Collection
 from typing import Any, Literal
 
 import html2text
 import structlog as logging
 from django.conf import settings
 from django.contrib.postgres.aggregates import StringAgg
-from django.db.models import F
 from django.utils import timezone
 
 from config.celery import app
@@ -41,7 +39,7 @@ def send_notification(
     context: dict[str, Any] | None = None,
     recipients: list[str] | None = None,
     cc_list: list[str] | None = None,
-    attachments: Collection[tuple[str, str]] = (),
+    attachment_ids: tuple[int, ...] = (),
 ):
     """Renders given email template and sends to recipients.
 
@@ -58,7 +56,7 @@ def send_notification(
         recipients,
         html_message=html_message,
         cc=cc_list,
-        attachments=attachments,
+        attachment_ids=attachment_ids,
     )
 
 
@@ -155,7 +153,7 @@ def send_fir_to_contacts(
     process: Process,
     fir: FurtherInformationRequest,
     context: dict[str, str],
-    attachments: Collection[tuple[str, bytes]] = (),
+    attachment_ids: tuple[int, ...] = (),
 ) -> None:
     match process:
         case AccessRequest():
@@ -174,18 +172,15 @@ def send_fir_to_contacts(
             context=context,
             recipients=utils.get_notification_emails(contact),
             cc_list=fir.email_cc_address_list,
-            # attachments=attachments, TODO ICMSLST-2061
+            attachment_ids=attachment_ids,
         )
 
 
 def send_further_information_request(process: Process, fir: FurtherInformationRequest) -> None:
     context = {"subject": fir.request_subject, "body": fir.request_detail}
-    fir_files = fir.files.filter(is_active=True).values("filename", "path").order_by("pk")
-    # TODO ICMSLST-2061 attachments need to be specific to email being sent not all attachments
-    # Different attachments sent at different point in email chain
-    attachments = utils.get_attachments(fir_files)
+    attachment_ids = fir.files.filter(is_active=True).values_list("pk", flat=True).order_by("pk")
 
-    send_fir_to_contacts(process, fir, context, attachments)
+    send_fir_to_contacts(process, fir, context, tuple(attachment_ids))
 
 
 def send_further_information_request_withdrawal(
@@ -389,15 +384,12 @@ def send_constabulary_deactivated_firearms_notification(application: DFLApplicat
     html_message = utils.render_email(template, context)
     body = html2text.html2text(html_message)
     recipients = [application.constabulary.email]
-
     doc_pack = document_pack.pack_active_get(application)
-    documents = doc_pack.document_references.values(
-        path=F("document__path"), filename=F("document__filename")
-    )
-    # TODO ICMSLST-2061 Queue email with attachments rather than calling directly
-    attachments = utils.get_attachments(documents)
+    attachment_ids = tuple(doc_pack.document_references.values_list("document__id", flat=True))
 
-    email.send_email(subject, body, recipients, attachments=attachments, html_message=html_message)
+    email.send_email.delay(
+        subject, body, recipients, attachment_ids=attachment_ids, html_message=html_message
+    )
 
 
 def send_case_complete_notifications(application: ImpOrExp):

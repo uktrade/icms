@@ -421,7 +421,7 @@ def test_send_constabulary_notification(ilb_admin_user, completed_dfl_app, monke
 
     app = completed_dfl_app
     doc_pack = document_pack.pack_active_get(app)
-    for i, doc_ref in enumerate(doc_pack.document_references.all()):
+    for i, doc_ref in enumerate(doc_pack.document_references.order_by("id")):
         doc_ref.document = models.File.objects.create(
             filename=f"file-{i}",
             content_type="pdf",
@@ -505,24 +505,13 @@ def test_send_fir_access_request(ilb_admin_user, importer_access_request, access
     process.further_information_requests.add(fir)
 
     context = {"subject": "FIR Subject", "body": "FIR Body"}
-
-    attachments = [
-        ("file-0", b"file_content"),
-        ("file-1", b"file_content"),
-    ]
-
-    notify.send_fir_to_contacts(process, fir, context, attachments)
+    notify.send_fir_to_contacts(process, fir, context)
 
     check_email_was_sent(
         1,
         user.email,
         "FIR Subject",
         "FIR Body",
-        # TODO ICMSLST-2061
-        # [
-        #    ("file-0", b"file_content", "application/octet-stream"),
-        #     ("file-1", b"file_content", "application/octet-stream"),
-        # ],
     )
 
 
@@ -612,13 +601,10 @@ def test_send_further_information_request(
 
     context = {"subject": fir.request_subject, "body": fir.request_detail}
 
-    attachments = [
-        ("file-0", b"file_content"),
-        ("file-1", b"file_content"),
-    ]
+    attachment_ids = tuple(fir.files.values_list("pk", flat=True).order_by("pk"))
 
     notify.send_further_information_request(process, fir)
-    mock_send_fir.assert_called_once_with(process, fir, context, attachments)
+    mock_send_fir.assert_called_once_with(process, fir, context, attachment_ids)
 
 
 @patch("web.notify.notify.send_fir_to_contacts")

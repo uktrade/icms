@@ -7,7 +7,7 @@ from django.template.loader import render_to_string
 
 from web.domains.case.types import ImpOrExp
 from web.domains.template.utils import get_email_template_subject_body
-from web.models import AlternativeEmail, CaseEmail, PersonalEmail
+from web.models import AlternativeEmail, CaseEmail, File, PersonalEmail
 from web.utils.s3 import get_file_from_s3, get_s3_client
 
 
@@ -72,15 +72,16 @@ def render_email(template, context):
     return render_to_string(template, context)
 
 
-# TODO ICMSLST-2061
-def get_attachments(files: QuerySet) -> Collection[tuple[str, bytes]]:
+def get_attachments(file_ids: Collection[int]) -> Collection[tuple[str, bytes]]:
+    if not file_ids:
+        return []
+
     attachments = []
+    files = File.objects.filter(pk__in=file_ids).values("path", "filename").order_by("pk")
+    s3_client = get_s3_client()
 
-    if files:
-        s3_client = get_s3_client()
-
-        for f in files:
-            file_content = get_file_from_s3(f["path"], client=s3_client)
-            attachments.append((f["filename"], file_content))
+    for f in files:
+        file_content = get_file_from_s3(f["path"], client=s3_client)
+        attachments.append((f["filename"], file_content))
 
     return attachments
