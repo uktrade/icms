@@ -3114,3 +3114,5 @@ import_v1_data
 --skip_task
 ia.2
 ./manage.py import_v1_files_to_s3 --queries
+ON ru.res_id = rmc.res_id INNER JOIN impmgr.constabularies
+ON c.uref_value

@@ -6,6 +6,8 @@ from .import_application import *  # NOQA
 from .permissions import (  # NOQA
     all_user_roles,
     all_user_roles_count,
+    constabulary_user_roles,
+    constabulary_user_roles_count,
     exporter_user_roles,
     exporter_user_roles_count,
     home_office_user_roles,

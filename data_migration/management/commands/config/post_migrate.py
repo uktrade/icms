@@ -6,4 +6,5 @@ GROUPS_TO_ROLES = {
     "ILB Case Officer": queries.ilb_user_roles,
     "Home Office Case Officer": queries.home_office_user_roles,
     "NCA Case Officer": queries.nca_user_roles,
+    "Constabulary Contact": queries.constabulary_user_roles,
 }
