@@ -257,7 +257,7 @@ def respond_update_request(
 
                 application.update_order_datetime()
                 application.save()
-                email.send_application_update_reponse_email(application)
+                email.send_application_update_response_email(application)
                 return redirect(
                     reverse(
                         application.get_edit_view_name(), kwargs={"application_pk": application_pk}

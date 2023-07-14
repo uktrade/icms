@@ -3120,3 +3120,13 @@ Import Search User
 Poirot (Import Search User
 Test Import Search User
 Import Search Users
+Access Request IAR/1
+Access Request EAR/1
+"Returns the case
+{{ update_request.request_datetime.strftime('%d-%b-%Y'
+{{ update_request.requested_by
+Request Detail
+{{ update_request.request_detail|nl2br }
+{{ update_request.closed_datetime.strftime('%d-%b-%Y
+{{ update_request.closed_by }
+MIDDLE_INITIALS

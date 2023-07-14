@@ -166,7 +166,6 @@ def test_request_withdrawal(importer_client, wood_app_submitted, importer_one_co
         [
             "ilb_admin_user@example.com",  # /PS-IGNORE
             "ilb_admin_two@example.com",  # /PS-IGNORE
-            "san_admin_user@example.com",  # /PS-IGNORE
         ],
     )
 
@@ -193,7 +192,6 @@ def test_archive_withdrawal(importer_client, wood_app_submitted, importer_one_co
         [
             "ilb_admin_user@example.com",  # /PS-IGNORE
             "ilb_admin_two@example.com",  # /PS-IGNORE
-            "san_admin_user@example.com",  # /PS-IGNORE
         ],
     )
 

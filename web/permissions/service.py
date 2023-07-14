@@ -9,6 +9,7 @@ from guardian.shortcuts import get_users_with_perms as get_users_with_obj_perm
 from guardian.shortcuts import remove_perm
 
 from web.domains.case.types import ImpOrExp
+from web.flow.models import ProcessTypes
 from web.models import (
     Constabulary,
     Exporter,
@@ -366,10 +367,32 @@ def get_users_with_permission(
     return User.objects.with_perm(permission, include_superusers=include_superusers)
 
 
-def get_ilb_admin_users() -> QuerySet[User]:
-    """Return all ilb admin users."""
+def get_all_case_officers() -> QuerySet[User]:
+    """Returns users who are case officers."""
 
     return get_users_with_permission(Perms.sys.ilb_admin)
+
+
+def get_ilb_case_officers() -> QuerySet[User]:
+    """Returns users who are ilb case officers."""
+
+    return get_all_case_officers().exclude(pk__in=get_sanctions_case_officers().values("pk"))
+
+
+def get_sanctions_case_officers() -> QuerySet[User]:
+    """Returns users who are sanctions case officers."""
+
+    return get_users_with_permission(Perms.sys.sanctions_case_officer)
+
+
+def get_case_officers_for_process_type(process_type: ProcessTypes) -> QuerySet[User]:
+    """Returns the case officers for a given process type."""
+
+    match process_type:
+        case ProcessTypes.SANCTIONS:
+            return get_all_case_officers()
+        case _:
+            return get_ilb_case_officers()
 
 
 def get_org_obj_permissions(org) -> IMP_OR_EXP_PERMS_T:
