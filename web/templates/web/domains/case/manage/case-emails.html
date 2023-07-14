@@ -4,7 +4,7 @@
 
 
 {% block content_actions_link %}
-  <a href="{{ icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': 'import'}) }}" class="prev-link">
+  <a href="{{ icms_url('case:manage', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}" class="prev-link">
     Application
   </a>
 {% endblock %}

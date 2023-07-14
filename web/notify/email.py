@@ -28,16 +28,16 @@ from . import utils
 from .constants import DatabaseEmailTemplate, VariationRequestDescription
 
 
-# TODO ICMSLST-2061 Change attachments to be fetched from S3 within this task
 @app.task(name="web.notify.email.send_email")
 def send_email(
     subject: str,
     body: str,
     recipients: Collection[str],
     cc: Collection[str] = (),
-    attachments: Collection[tuple[str, bytes]] = (),
+    attachment_ids: tuple[int, ...] = (),
     html_message: str | None = None,
 ) -> None:
+    attachments = utils.get_attachments(attachment_ids)
     message = EmailMultiAlternatives(
         subject, body, settings.EMAIL_FROM, recipients, cc=cc, attachments=attachments
     )
@@ -148,14 +148,14 @@ def send_mailshot(
 
 
 def send_case_email(case_email: CaseEmail) -> None:
-    attachments = utils.get_attachments(case_email.attachments.all())
+    attachment_ids = tuple(case_email.attachments.values_list("pk", flat=True))
 
     send_email.delay(
         case_email.subject,
         case_email.body,
         [case_email.to],
         case_email.cc_address_list,
-        attachments,
+        attachment_ids,
     )
 
     case_email.status = CaseEmail.Status.OPEN
