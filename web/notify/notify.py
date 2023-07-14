@@ -296,6 +296,9 @@ def send_section_5_expiry_notification() -> None:
         .order_by("name")
     )
 
+    if not importers:
+        return
+
     recipient_users = User.objects.filter(
         groups__permissions__codename=SysPerms.edit_section_5_firearm_authorities.codename
     )
