@@ -1,4 +1,5 @@
 from .perms import (
+    ConstabularyObjectPermissions,
     ExporterObjectPermissions,
     ImporterObjectPermissions,
     PagePermissions,
@@ -34,6 +35,7 @@ all_permissions: list[tuple[str, str]] = Perms.get_all_permissions()
 
 
 __all__ = [
+    "ConstabularyObjectPermissions",
     "ExporterObjectPermissions",
     "ImporterObjectPermissions",
     "PagePermissions",

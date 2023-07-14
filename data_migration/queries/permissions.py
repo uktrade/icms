@@ -170,6 +170,49 @@ nca_user_roles = all_user_roles + nca_where
 nca_user_roles_count = all_user_roles_count + nca_where
 
 
+# Constabulary Contacts
+
+constabulary_user_roles = """
+WITH rp_wua AS (
+  SELECT uah.resource_person_id
+  , CASE
+    WHEN COUNT(login_id) > 1
+    THEN (
+      SELECT sub.login_id
+      FROM securemgr.web_user_account_histories sub
+      WHERE sub.person_id_current IS NOT NULL
+        AND sub.resource_person_primary_flag = 'Y'
+        AND sub.resource_person_id = uah.resource_person_id
+        AND sub.account_status = 'ACTIVE'
+    )
+    ELSE MAX(login_id)
+  END login_id
+  FROM securemgr.web_user_account_histories uah
+  WHERE uah.person_id_current IS NOT NULL
+    AND uah.resource_person_primary_flag = 'Y'
+  GROUP BY uah.resource_person_id
+)
+SELECT
+  login_id username
+  , LISTAGG(DISTINCT xr.res_type || ':' || rmc.role_name, '    ') WITHIN GROUP (ORDER BY xr.res_type, rmc.role_name) roles
+  , c.id constabulary_id
+FROM appenv.xview_resources xr
+INNER JOIN decmgr.resource_members_current rmc ON rmc.res_id = xr.res_id
+INNER JOIN decmgr.xview_resource_type_roles xrtr ON xrtr.role_name = rmc.role_name AND xrtr.res_type = xr.res_type
+INNER JOIN rp_wua ON rp_wua.resource_person_id = rmc.person_id
+INNER JOIN decmgr.resource_usages_current ru ON ru.res_id = rmc.res_id
+INNER JOIN impmgr.constabularies c ON c.uref_value = ru.uref
+WHERE xr.res_type IN ('IMP_CONSTABULARY_CONTACTS')
+GROUP BY login_id, c.id
+ORDER BY login_id, c.id
+"""
+
+constabulary_user_roles_count = (
+    all_user_roles_count
+    + "WHERE roles LIKE '%IMP_CONSTABULARY_CONTACTS:FIREARMS_AUTHORITY_EDITOR%'"
+)
+
+
 users_without_roles_count = """
 SELECT count(*) FROM (
 WITH rp_wua AS (

@@ -17,16 +17,21 @@ from data_migration.management.commands.config.run_order import (
 )
 from data_migration.utils import xml_parser
 from web import models as web
-from web.permissions import ExporterObjectPermissions, ImporterObjectPermissions
+from web.permissions import (
+    ConstabularyObjectPermissions,
+    ExporterObjectPermissions,
+    ImporterObjectPermissions,
+)
 
 from . import utils
 
-sil_data_source_target = {
+user_data_source_target = {
     "user": [
         (dm.User, web.User),
         (dm.PhoneNumber, web.PhoneNumber),
         (dm.AlternativeEmail, web.AlternativeEmail),
         (dm.PersonalEmail, web.PersonalEmail),
+        (dm.Constabulary, web.Constabulary),
         (dm.Importer, web.Importer),
         (dm.Exporter, web.Exporter),
         (dm.Office, web.Office),
@@ -49,6 +54,7 @@ sil_data_source_target = {
         "reference": [],
         "user": [
             QueryModel(queries.users, "users", dm.User),
+            QueryModel(queries.constabularies, "constabularies", dm.Constabulary),
             QueryModel(queries.importers, "importers", dm.Importer),
             QueryModel(queries.importer_offices, "importer_offices", dm.Office),
             QueryModel(queries.exporters, "exporters", dm.Exporter),
@@ -57,7 +63,7 @@ sil_data_source_target = {
         ],
     },
 )
-@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, sil_data_source_target)
+@mock.patch.dict(DATA_TYPE_SOURCE_TARGET, user_data_source_target)
 @mock.patch.dict(
     DATA_TYPE_M2M,
     {
@@ -98,7 +104,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     call_command("create_icms_groups")
     call_command("post_migration")
 
-    assert web.User.objects.count() == 12
+    assert web.User.objects.count() == 13
 
     # Check User Data
 
@@ -220,7 +226,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
 
     # Check Groups / Permissions
 
-    assert web.User.objects.filter(groups__isnull=False).count() == 11
+    assert web.User.objects.filter(groups__isnull=False).count() == 12
     assert (
         web.User.objects.get(groups__name="ILB Case Officer").username
         == "ilb_case_officer@example.com"  # /PS-IGNORE
@@ -233,6 +239,13 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
         web.User.objects.get(groups__name="NCA Case Officer").username
         == "nca@example.com"  # /PS-IGNORE
     )
+
+    constabulary_user = web.User.objects.get(groups__name="Constabulary Contact")
+    constabulary = web.Constabulary.objects.get(id=1)
+    COP = ConstabularyObjectPermissions
+
+    assert constabulary_user.username == "constabulary_contact@example.com"  # /PS-IGNORE
+    assert constabulary_user.has_perm(COP.verified_fa_authority_editor, constabulary) is True
     assert web.User.objects.filter(groups__name="Importer User").count() == 4
 
     IOP = ImporterObjectPermissions

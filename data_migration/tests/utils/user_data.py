@@ -293,6 +293,28 @@ user_query_result = {
                 None,  # telephone_xml
                 0,  # share_contact_details
             ),
+            (
+                13,  # id
+                "constabulary_contact@example.com",  # username /PS-IGNORE
+                "Constabulary",  # first_name
+                "Contact",  # last_name
+                "constabulary_contact@example.com",  # email  /PS-IGNORE
+                1,  # is_active
+                "35363738",  # salt 5678
+                "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
+                "Ms",  # title
+                "Org",  # Oranisation
+                "Dept",  # Department
+                "IT",  # job_title
+                "ACTIVE",  # account_status
+                13,  # account_status_by
+                dt.date.today(),  # account_status_date
+                dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
+                "FULL",  # password_disposition
+                None,  # email_address_xml
+                None,  # telephone_xml
+                0,  # share_contact_details
+            ),
         ],
     ),
     queries.importers: (
@@ -503,7 +525,7 @@ user_query_result = {
         ],
     ),
     queries.ilb_user_roles: (
-        [("username",), ("roles")],
+        [("username",), ("roles",)],
         [
             (
                 "ilb_case_officer@example.com",  # /PS-IGNORE
@@ -512,7 +534,7 @@ user_query_result = {
         ],
     ),
     queries.nca_user_roles: (
-        [("username",), ("roles")],
+        [("username",), ("roles",)],
         [
             (
                 "nca@example.com",  # /PS-IGNORE
@@ -521,11 +543,21 @@ user_query_result = {
         ],
     ),
     queries.home_office_user_roles: (
-        [("username",), ("roles")],
+        [("username",), ("roles",)],
         [
             (
                 "home_office@example.com",  # /PS-IGNORE
                 "IMP_EXTERNAL:SECTION5_AUTHORITY_EDITOR, IMP_ADMIN_SEARCH:SEARCH_CASES",
+            )
+        ],
+    ),
+    queries.constabulary_user_roles: (
+        [("username",), ("roles",), ("constabulary_id",)],
+        [
+            (
+                "constabulary_contact@example.com",  # /PS-IGNORE
+                "IMP_CONSTABULARY_CONTACTS:FIREARMS_AUTHORITY_EDITOR",
+                1,
             )
         ],
     ),
