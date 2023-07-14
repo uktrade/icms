@@ -334,10 +334,10 @@ def test_send_reassign_email_with_comment(ilb_admin_client, fa_sil_app_submitted
     [
         (
             WithdrawApplication.Statuses.OPEN,
-            3,
+            2,
             "Withdrawal Request: ",
             "A withdrawal request has been submitted",
-            "san_admin_user@example.com",  # /PS-IGNORE
+            "ilb_admin_user@example.com",  # /PS-IGNORE
         ),
         (
             WithdrawApplication.Statuses.ACCEPTED,
@@ -355,10 +355,10 @@ def test_send_reassign_email_with_comment(ilb_admin_client, fa_sil_app_submitted
         ),
         (
             WithdrawApplication.Statuses.DELETED,
-            3,
+            2,
             "Withdrawal Request Cancelled: ",
             "has been cancelled.",
-            "san_admin_user@example.com",  # /PS-IGNORE
+            "ilb_admin_user@example.com",  # /PS-IGNORE
         ),
     ],
 )
@@ -455,9 +455,9 @@ def test_send_variation_request_email_with_unsupported_description(
         assert e_info == "Unsupported Variation Request Description"
 
 
-def test_send_application_update_reponse_email(com_app_submitted, ilb_admin_two):
+def test_send_application_update_response_email(com_app_submitted, ilb_admin_two):
     com_app_submitted.case_owner = ilb_admin_two
-    email.send_application_update_reponse_email(com_app_submitted)
+    email.send_application_update_response_email(com_app_submitted)
     check_email_was_sent(
         1,
         ilb_admin_two.email,

@@ -17,7 +17,7 @@ from web.models import (
     User,
 )
 from web.models.shared import YesNoChoices
-from web.permissions import get_ilb_admin_users
+from web.permissions import get_all_case_officers
 from web.utils.search import get_export_status_choices, get_import_status_choices
 
 # We are restricting what the user can enter in the regex search fields rather than having to
@@ -73,7 +73,7 @@ class SearchFormBase(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields["reassignment_user"].queryset = get_ilb_admin_users()
+        self.fields["reassignment_user"].queryset = get_all_case_officers()
 
     @staticmethod
     def dates_are_reversed(date_from: datetime.date | None, date_to: datetime.date | None) -> bool:
@@ -317,5 +317,5 @@ class ReassignmentUserForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields["assign_to"].queryset = get_ilb_admin_users()
+        self.fields["assign_to"].queryset = get_all_case_officers()
         self.fields["applications"].queryset = Process.objects.all()

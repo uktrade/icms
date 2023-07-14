@@ -9,7 +9,7 @@ from web.domains.file.utils import ICMSFileField
 from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import DateInput
 from web.models import ExportApplication, ImportApplication, User
-from web.permissions import get_ilb_admin_users, organisation_get_contacts
+from web.permissions import get_all_case_officers, organisation_get_contacts
 from web.types import AuthenticatedHttpRequest
 
 from .models import (
@@ -307,7 +307,7 @@ class ReassignOwnershipBaseForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields["case_owner"].queryset = get_ilb_admin_users().exclude(
+        self.fields["case_owner"].queryset = get_all_case_officers().exclude(
             id=self.instance.case_owner_id
         )
 

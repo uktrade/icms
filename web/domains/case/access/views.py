@@ -115,7 +115,7 @@ def importer_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
                     process=access_request, task_type=Task.TaskType.PROCESS, owner=request.user
                 )
 
-                notify.access_requested_importer(access_request.pk)
+                notify.send_access_requested_email(access_request)
 
                 if request.user.has_perm(Perms.sys.importer_access) or request.user.has_perm(
                     Perms.sys.exporter_access
@@ -157,7 +157,7 @@ def exporter_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
                     process=access_request, task_type=Task.TaskType.PROCESS, owner=request.user
                 )
 
-                notify.access_requested_exporter(access_request.pk)
+                notify.send_access_requested_email(access_request)
 
                 if request.user.has_perm(Perms.sys.importer_access) or request.user.has_perm(
                     Perms.sys.exporter_access

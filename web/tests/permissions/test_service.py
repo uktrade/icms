@@ -1,6 +1,7 @@
 import pytest
 from guardian.shortcuts import remove_perm
 
+from web.flow.models import ProcessTypes
 from web.models import Constabulary, User
 from web.permissions.perms import Perms
 from web.permissions.service import (
@@ -16,8 +17,11 @@ from web.permissions.service import (
     constabulary_get_contacts,
     constabulary_remove_contact,
     filter_users_with_org_access,
-    get_ilb_admin_users,
+    get_all_case_officers,
+    get_case_officers_for_process_type,
+    get_ilb_case_officers,
     get_org_obj_permissions,
+    get_sanctions_case_officers,
     get_user_exporter_permissions,
     get_user_importer_permissions,
     get_users_with_permission,
@@ -323,10 +327,20 @@ class TestPermissionsService:
         )
         assert list(ilb_admin_users) == ["ilb_admin_two", "ilb_admin_user", "san_admin_user"]
 
-    def test_get_ilb_admin_users(self):
-        ilb_admin_users = get_ilb_admin_users().values_list("username", flat=True)
+    def test_get_all_case_officers(self):
+        case_officers = get_all_case_officers().values_list("username", flat=True)
 
-        assert list(ilb_admin_users) == ["ilb_admin_two", "ilb_admin_user", "san_admin_user"]
+        assert list(case_officers) == ["ilb_admin_two", "ilb_admin_user", "san_admin_user"]
+
+    def test_get_ilb_case_officers(self):
+        case_officers = get_ilb_case_officers().values_list("username", flat=True)
+
+        assert list(case_officers) == ["ilb_admin_two", "ilb_admin_user"]
+
+    def test_get_sanctions_case_officers(self):
+        case_officers = get_sanctions_case_officers().values_list("username", flat=True)
+
+        assert list(case_officers) == ["san_admin_user"]
 
     def test_get_org_obj_permissions(self):
         perms = get_org_obj_permissions(self.importer)
@@ -532,6 +546,31 @@ class TestPermissionsService:
         assert self.exporter_contact.groups.filter(
             name=Perms.obj.exporter.get_group_name()
         ).exists()
+
+    @pytest.mark.parametrize(
+        "process_type,expected_email_addresses",
+        [
+            (
+                ProcessTypes.SANCTIONS,
+                [
+                    "ilb_admin_two@example.com",  # /PS-IGNORE
+                    "ilb_admin_user@example.com",  # /PS-IGNORE
+                    "san_admin_user@example.com",  # /PS-IGNORE
+                ],
+            ),
+            (
+                ProcessTypes.FA_DFL,
+                [
+                    "ilb_admin_two@example.com",  # /PS-IGNORE
+                    "ilb_admin_user@example.com",  # /PS-IGNORE
+                ],
+            ),
+        ],
+    )
+    def test_get_case_officers_for_process_type(self, process_type, expected_email_addresses):
+        assert [
+            user.email for user in get_case_officers_for_process_type(process_type)
+        ] == expected_email_addresses
 
 
 def test_filter_users_with_org_access():

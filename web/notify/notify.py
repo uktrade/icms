@@ -26,7 +26,7 @@ from web.models import (
     User,
     VariationRequest,
 )
-from web.permissions import SysPerms, get_ilb_admin_users
+from web.permissions import SysPerms, get_ilb_case_officers
 
 from . import email, utils
 
@@ -60,15 +60,6 @@ def send_notification(
     )
 
 
-def send_case_officer_notification(
-    subject: str, template: str, context: dict[str, Any] | None = None
-) -> None:
-    """Renders given email template and sends to case officers."""
-    html_message = utils.render_email(template, context)
-    message_text = html2text.html2text(html_message)
-    email.send_to_contacts(subject, message_text, get_ilb_admin_users(), html_message)
-
-
 def update_request(subject, content, contacts, cc_list):
     # TODO: investigate web.notify.utils.get_notification_emails
     recipients = [contact.email for contact in contacts]
@@ -90,18 +81,12 @@ def register(user, password):
     )
 
 
-def access_requested_importer(case_reference):
-    # TODO: Generate access request reference when created. Currently empty
-    subject = f"Access Request {case_reference}"
-    send_case_officer_notification(
-        subject, "email/access/access_requested.html", context={"subject": subject}
-    )
-
-
-def access_requested_exporter(case_reference):
-    subject = f"Access Request {case_reference}"
-    send_case_officer_notification(
-        subject, "email/access/access_requested.html", context={"subject": subject}
+def send_access_requested_email(access_request):
+    context = {"subject": f"Access Request {access_request.reference}"}
+    email.send_html_email(
+        "email/access/access_requested.html",
+        context,
+        list(get_ilb_case_officers()),
     )
 
 

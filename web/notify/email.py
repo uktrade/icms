@@ -19,7 +19,7 @@ from web.models import (
     WithdrawApplication,
 )
 from web.permissions import (
-    get_ilb_admin_users,
+    get_case_officers_for_process_type,
     get_org_obj_permissions,
     organisation_get_contacts,
 )
@@ -116,20 +116,6 @@ def get_application_contacts(application: ImpOrExp) -> QuerySet[User]:
     return organisation_get_contacts(org, perms=[obj_perms.edit.codename])
 
 
-def send_to_case_officers(
-    application: ImpOrExp, subject: str, message: str, html_message: str | None = None
-) -> None:
-    if application.case_owner:
-        send_email.delay(
-            subject,
-            message,
-            utils.get_notification_emails(application.case_owner),
-            html_message=html_message,
-        )
-    else:
-        send_to_contacts(subject, message, get_ilb_admin_users(), html_message)
-
-
 @app.task(name="web.notify.email.send_mailshot")
 def send_mailshot(
     subject: str,
@@ -215,7 +201,7 @@ def send_withdrawal_email(withdrawal: WithdrawApplication) -> None:
         WithdrawApplication.Statuses.OPEN,
         WithdrawApplication.Statuses.DELETED,
     ]:
-        contacts = get_ilb_admin_users()
+        contacts = get_case_officers_for_process_type(application.process_type)
     else:
         contacts = get_application_contacts(application)
 
@@ -227,7 +213,7 @@ def send_withdrawal_email(withdrawal: WithdrawApplication) -> None:
         "application": application,
     }
     template_name = f"email/application/withdraw/{withdrawal.status}.html"
-    send_html_email(template_name, context, contacts)
+    send_html_email(template_name, context, list(contacts))
 
 
 def get_variation_request_email_subject(
@@ -271,7 +257,7 @@ def send_variation_request_email(
     send_html_email(template_name, context, contacts)
 
 
-def send_application_update_reponse_email(application: ImpOrExp) -> None:
+def send_application_update_response_email(application: ImpOrExp) -> None:
     subject = f"Application Update Response - {application.reference}"
     template_name = "email/application/update/response.html"
     contacts = [application.case_owner]
