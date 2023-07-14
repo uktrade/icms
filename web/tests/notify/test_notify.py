@@ -95,6 +95,21 @@ def test_send_firearms_authority_expiry_notification(ilb_admin_client, importer)
     }
     ilb_admin_client.post(url, post_data)
 
+    post_data = {
+        "reference": "Not Expiring Auth",
+        "certificate_type": "SHOTGUN",
+        "issuing_constabulary": constabulary.pk,
+        "postcode": "abc",
+        "address": "123",
+        "start_date": timezone.now().strftime("%d-%b-%Y"),
+        "end_date": (timezone.now() + timedelta(days=120)).strftime("%d-%b-%Y"),
+        "actquantity_set-TOTAL_FORMS": 0,
+        "actquantity_set-INITIAL_FORMS": 0,
+        "actquantity_set-MIN_NUM_FORMS": 0,
+        "actquantity_set-MAX_NUM_FORMS": 1000,
+    }
+    ilb_admin_client.post(url, post_data)
+
     notify.send_firearms_authority_expiry_notification()
 
     outbox = mail.outbox
@@ -105,6 +120,32 @@ def test_send_firearms_authority_expiry_notification(ilb_admin_client, importer)
     assert m.subject.startswith("Verified Firearms Authorities Expiring")
     assert f"issued by constabulary {constabulary.name} that expire" in m.body
     assert "Firearms Authority references(s)\nAnother Auth, FA Auth\n\n" in m.body
+    assert "Not Expiring Auth" not in m.body
+
+
+def test_no_firearms_authority_expiry_notification(ilb_admin_client, importer):
+    url = reverse("importer-firearms-create", kwargs={"pk": importer.pk})
+    constabulary = models.Constabulary.objects.first()
+
+    post_data = {
+        "reference": "Not Expiring",
+        "certificate_type": "FIREARMS",
+        "issuing_constabulary": constabulary.pk,
+        "postcode": "abc",
+        "address": "123",
+        "start_date": timezone.now().strftime("%d-%b-%Y"),
+        "end_date": (timezone.now() + timedelta(days=120)).strftime("%d-%b-%Y"),
+        "actquantity_set-TOTAL_FORMS": 0,
+        "actquantity_set-INITIAL_FORMS": 0,
+        "actquantity_set-MIN_NUM_FORMS": 0,
+        "actquantity_set-MAX_NUM_FORMS": 1000,
+    }
+    ilb_admin_client.post(url, post_data)
+
+    notify.send_firearms_authority_expiry_notification()
+
+    outbox = mail.outbox
+    assert len(outbox) == 0
 
 
 def test_send_section_5_authority_expiry_notification(ilb_admin_client, importer):
@@ -136,6 +177,19 @@ def test_send_section_5_authority_expiry_notification(ilb_admin_client, importer
     }
     ilb_admin_client.post(url, post_data)
 
+    post_data = {
+        "reference": "Not Expiring Sec 5",
+        "postcode": "abc",
+        "address": "123",
+        "start_date": timezone.now().strftime("%d-%b-%Y"),
+        "end_date": (timezone.now() + timedelta(days=120)).strftime("%d-%b-%Y"),
+        "clausequantity_set-TOTAL_FORMS": 0,
+        "clausequantity_set-INITIAL_FORMS": 0,
+        "clausequantity_set-MIN_NUM_FORMS": 0,
+        "clausequantity_set-MAX_NUM_FORMS": 1000,
+    }
+    ilb_admin_client.post(url, post_data)
+
     notify.send_section_5_expiry_notification()
 
     outbox = mail.outbox
@@ -146,6 +200,30 @@ def test_send_section_5_authority_expiry_notification(ilb_admin_client, importer
     assert m.subject.startswith("Verified Section 5 Authorities Expiring")
     assert "The following 1 importers have one or more verified Section 5 Authorities" in m.body
     assert "references(s) Another Sec 5, Sec 5\n\n" in m.body
+    assert "references(s) Another Sec 5, Sec 5\n\n" in m.body
+    assert "Not Expiring Sec 5" not in m.body
+
+
+def test_no_section_5_authority_expiry_notification(ilb_admin_client, importer):
+    url = reverse("importer-section5-create", kwargs={"pk": importer.pk})
+
+    post_data = {
+        "reference": "Not Expiring Sec 5",
+        "postcode": "abc",
+        "address": "123",
+        "start_date": timezone.now().strftime("%d-%b-%Y"),
+        "end_date": (timezone.now() + timedelta(days=120)).strftime("%d-%b-%Y"),
+        "clausequantity_set-TOTAL_FORMS": 0,
+        "clausequantity_set-INITIAL_FORMS": 0,
+        "clausequantity_set-MIN_NUM_FORMS": 0,
+        "clausequantity_set-MAX_NUM_FORMS": 1000,
+    }
+    ilb_admin_client.post(url, post_data)
+
+    notify.send_section_5_expiry_notification()
+
+    outbox = mail.outbox
+    assert len(outbox) == 0
 
 
 def test_firearms_authority_archived_notification(ilb_admin_client, importer):
