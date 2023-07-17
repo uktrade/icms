@@ -14,6 +14,8 @@ from .permissions import (  # NOQA
     home_office_user_roles_count,
     ilb_user_roles,
     ilb_user_roles_count,
+    import_search_user_roles,
+    import_search_user_roles_count,
     importer_user_roles,
     importer_user_roles_count,
     nca_user_roles,

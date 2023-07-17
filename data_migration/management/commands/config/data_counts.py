@@ -412,6 +412,12 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         filter_params={"groups__name": "Constabulary Contact"},
     ),
     CheckQuery(
+        name="Import Search Users",
+        query=queries.import_search_user_roles_count,
+        model=web.User,
+        filter_params={"groups__name": "Import Search User"},
+    ),
+    CheckQuery(
         name="Users With No Group",
         query=queries.users_without_roles_count,
         model=web.User,

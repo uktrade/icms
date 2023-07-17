@@ -169,6 +169,18 @@ nca_where = """WHERE
 nca_user_roles = all_user_roles + nca_where
 nca_user_roles_count = all_user_roles_count + nca_where
 
+import_search_where = """WHERE
+    roles LIKE '%IMP_ADMIN_SEARCH:SEARCH_CASES%'
+    AND roles NOT LIKE '%IMP_CASE_OFFICERS:CASE_OFFICER%'
+    AND roles NOT LIKE '%IMP_CASE_OFFICERS:CA_CASE_OFFICER%'
+    AND roles NOT LIKE '%IMP_ADMIN:DASHBOARD_USER%'
+    AND roles NOT LIKE '%REPORTING_TEAM:REPORT_RUNNER_NOW%'
+    AND roles NOT LIKE '%REPORTING_TEAM:REPORT_VIEWER%'
+    AND roles NOT LIKE '%IMP_EXTERNAL:SECTION5_AUTHORITY_EDITOR%'
+"""
+
+import_search_user_roles = all_user_roles + import_search_where
+import_search_user_roles_count = all_user_roles_count + import_search_where
 
 # Constabulary Contacts
 

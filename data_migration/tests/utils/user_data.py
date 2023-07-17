@@ -315,6 +315,28 @@ user_query_result = {
                 None,  # telephone_xml
                 0,  # share_contact_details
             ),
+            (
+                14,  # id
+                "import_search_user@example.com",  # username /PS-IGNORE
+                "Import",  # first_name
+                "Search",  # last_name
+                "import_search_user@example.com",  # email  /PS-IGNORE
+                1,  # is_active
+                "35363738",  # salt 5678
+                "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
+                "Ms",  # title
+                "Org",  # Oranisation
+                "Dept",  # Department
+                "IT",  # job_title
+                "ACTIVE",  # account_status
+                14,  # account_status_by
+                dt.date.today(),  # account_status_date
+                dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
+                "FULL",  # password_disposition
+                None,  # email_address_xml
+                None,  # telephone_xml
+                0,  # share_contact_details
+            ),
         ],
     ),
     queries.importers: (
@@ -548,6 +570,15 @@ user_query_result = {
             (
                 "home_office@example.com",  # /PS-IGNORE
                 "IMP_EXTERNAL:SECTION5_AUTHORITY_EDITOR, IMP_ADMIN_SEARCH:SEARCH_CASES",
+            )
+        ],
+    ),
+    queries.import_search_user_roles: (
+        [("username",), ("roles",)],
+        [
+            (
+                "import_search_user@example.com",  # /PS-IGNORE
+                "IMP_ADMIN_SEARCH:SEARCH_CASES",
             )
         ],
     ),

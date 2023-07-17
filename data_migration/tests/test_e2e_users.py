@@ -104,7 +104,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     call_command("create_icms_groups")
     call_command("post_migration")
 
-    assert web.User.objects.count() == 13
+    assert web.User.objects.count() == 14
 
     # Check User Data
 
@@ -226,7 +226,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
 
     # Check Groups / Permissions
 
-    assert web.User.objects.filter(groups__isnull=False).count() == 12
+    assert web.User.objects.filter(groups__isnull=False).count() == 13
     assert (
         web.User.objects.get(groups__name="ILB Case Officer").username
         == "ilb_case_officer@example.com"  # /PS-IGNORE
@@ -238,6 +238,10 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert (
         web.User.objects.get(groups__name="NCA Case Officer").username
         == "nca@example.com"  # /PS-IGNORE
+    )
+    assert (
+        web.User.objects.get(groups__name="Import Search User").username
+        == "import_search_user@example.com"  # /PS-IGNORE
     )
 
     constabulary_user = web.User.objects.get(groups__name="Constabulary Contact")

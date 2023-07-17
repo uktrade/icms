@@ -24,6 +24,7 @@ class Command(BaseCommand):
             self.fetch_data(connection, "ILB Case Officer")
             self.fetch_data(connection, "Home Office Case Officer")
             self.fetch_data(connection, "NCA Case Officer")
+            self.fetch_data(connection, "Import Search User")
             self.fetch_data(connection, "Importer User")
             self.fetch_data(connection, "Exporter User")
 
