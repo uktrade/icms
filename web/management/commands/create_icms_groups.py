@@ -108,4 +108,12 @@ def get_groups():
             # Sys permissions
             Perms.sys.edit_firearm_authorities,
         },
+        "Import Search User": {
+            #
+            # Page permissions
+            Perms.page.view_import_case_search,
+            #
+            # Sys permissions
+            Perms.sys.search_all_cases,
+        },
     }
