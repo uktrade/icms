@@ -71,6 +71,7 @@ class Command(BaseCommand):
         self.create_nca_admin_user("nca_admin_user")
         self.create_ho_admin_user("ho_admin_user")
         self.create_san_admin_user("san_admin_user")
+        self.create_import_search_user("import_search_user")
         self.create_con_user(
             "con_user", linked_constabularies=["Nottingham", "Lincolnshire", "Derbyshire"]
         )
@@ -258,6 +259,13 @@ class Command(BaseCommand):
         for con in linked_constabularies:
             constabulary = Constabulary.objects.get(name=con)
             constabulary_add_contact(constabulary, user)
+
+    def create_import_search_user(self, username):
+        user = self.create_user(username)
+        add_personal_email(user)
+        add_group(user, "Import Search User")
+
+        return user
 
 
 def add_personal_email(user):
