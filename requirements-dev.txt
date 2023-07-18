@@ -21,8 +21,6 @@ pytest-django==4.5.2
 pytest-flake8==1.1.1
 pytest-mock==3.10.0
 pytest-xdist==2.5.0
-# What is this for?
-PyYAML==5.4.1
 requests-mock==1.10.0
 selenium==3.141.0
 sqlparse==0.4.4
