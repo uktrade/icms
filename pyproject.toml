@@ -67,6 +67,7 @@ module = [
     "weasyprint.*",
     "lxml.*",
     "playwright.*",
+    "markdownify.*",
 ]
 ignore_missing_imports = true
 

@@ -33,3 +33,5 @@ CSRF_COOKIE_SECURE = False
 
 STRICT_TEMPLATES = copy.deepcopy(TEMPLATES)
 STRICT_TEMPLATES[0]["OPTIONS"].update({"undefined": jinja2.StrictUndefined})  # type: ignore[attr-defined]
+
+SEND_ALL_EMAILS_TO = env.list("SEND_ALL_EMAILS_TO", default=[])

@@ -3,7 +3,6 @@ from typing import Any
 
 import html2text
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
 from django.db.models import QuerySet
 from django.utils import timezone
 
@@ -26,6 +25,7 @@ from web.permissions import (
 
 from . import utils
 from .constants import DatabaseEmailTemplate, VariationRequestDescription
+from .dispatch import get_email_class
 
 
 @app.task(name="web.notify.email.send_email")
@@ -38,7 +38,9 @@ def send_email(
     html_message: str | None = None,
 ) -> None:
     attachments = utils.get_attachments(attachment_ids)
-    message = EmailMultiAlternatives(
+
+    email_class = get_email_class()
+    message = email_class(
         subject, body, settings.EMAIL_FROM, recipients, cc=cc, attachments=attachments
     )
 

@@ -381,3 +381,6 @@ LOGGING = {
         },
     },
 }
+
+SEND_EMAILS = env.bool("SEND_EMAILS", default=False)
+GOV_NOTIFY_API_KEY = env.str("GOV_NOTIFY_API_KEY", default="")
