@@ -1,91 +1,6 @@
 {% extends "layout/sidebar.html" %}
 
 {% block sidebar %}
-    <h4>
-        Filter
-    </h4>
-
-    <div class="container setoutForm tightForm" >
-        <div class="row">
-            <div class="twelve columns" ><label id="pg26" for="g26" class="prompt north">Transaction / Ref
-                </label>
-            </div>
-        </div>
-        <div class="row">
-            <div class="twelve columns" ><input   type="text" value="" size="10" class="tightForm" aria-required="false" /></div>
-        </div>
-        <div class="row">
-            <div class="twelve columns" ><label id="pg27" for="g27" class="prompt north">Subject
-                </label>
-            </div>
-        </div>
-        <div class="row">
-            <div class="twelve columns" ><select   class="tightForm" aria-required="false">
-                    <option value="g27/__FX_N" selected="selected">All</option>
-                    <option value="g27/0">Account successfully created</option>
-                    <option value="g27/1">Certificate Application</option>
-                    <option value="g27/2">Exporter Access Request</option>
-                    <option value="g27/3">Importer Access Request</option>
-                </select></div>
-        </div>
-        <div class="row">
-            <div class="twelve columns" ><label id="pg28" for="g28" class="prompt north">Topic
-                </label>
-            </div>
-        </div>
-        <div class="row">
-            <div class="twelve columns" ><input   type="text" value="" size="8" class="tightForm" aria-required="false" /></div>
-        </div>
-        <div class="row">
-            <div class="twelve columns" ><label id="pg29" for="g29" class="prompt north">Company
-                </label>
-            </div>
-        </div>
-        <div class="row">
-            <div class="twelve columns" ><input   type="text" value="" size="8" class="tightForm" aria-required="false" /></div>
-        </div>
-        <div class="row">
-            <div class="twelve columns" ><label id="pg30" for="g30" class="prompt north">Status
-                </label>
-            </div>
-        </div>
-        <div class="row">
-            <div class="twelve columns" ><input   type="text" value="" size="8" class="tightForm" aria-required="false" /></div>
-        </div>
-        <div class="row">
-            <div class="twelve columns" ><label id="pg31" for="g31" class="prompt north">Information
-                </label>
-            </div>
-        </div>
-        <div class="row">
-            <div class="twelve columns" ><input   type="text" value="" size="8" class="tightForm" aria-required="false" /></div>
-        </div>
-        <div class="row">
-            <div class="twelve columns" ><label id="pg32" for="g32" class="prompt north">Filter Tag
-                </label>
-            </div>
-        </div>
-        <div class="row">
-            <div class="twelve columns" ><select   class="tightForm" aria-required="true">
-                    <option value="g32/0">All</option>
-                    <option value="g32/1" selected="selected">For Attention</option>
-                </select></div>
-        </div>
-    </div>
-    <ul class="menu-out flow-across">
-      {# NOTE: These don't work, I've removed role="action-button" as it only causes errors #}
-      <li>
-        <button type="button" data-action="action-filter-workbasket" class="primary-button small-button button">
-          Apply Filter
-        </button>
-      </li>
-      <li>
-        <button type="button" data-action="action-reset-filter" class="small-button link-button button">
-          Clear Filter
-        </button>
-      </li>
-    </ul>
-
 {% endblock %}
 
 {% block content_actions %}
@@ -118,141 +33,95 @@
 
 {% block main_content %}
 
-  {# NOTE: These buttons don't work, I've removed role="action-button" as it only causes errors #}
-  <div class="list-secondary-actions">
-    <ul class="menu-out grouped small-menu-out flow-across">
-      <li>
-        <button type="button" data-action="action-sort-wb-asc" class="icon-sort-alpha-asc button no-prompt-action" aria-describedby="hint159-content" aria-label="Sort by selected column, ascending"> </button>
-        <div id="hint159-content" role="tooltip" class="hint-content">Sorts the workbasket by the selected column in ascending order</div>
-      </li>
-      <li>
-        <button type="button" data-action="action-sort-wb-desc" class="icon-sort-alpha-desc button no-prompt-action" aria-describedby="hint160-content" aria-label="Sort by selected column, descending"> </button>
-        <div id="hint160-content" role="tooltip" class="hint-content">Sorts the workbasket by the selected column in descending order</div>
-      </li>
-      <li>
-        <button type="button" data-action="action-clear-sort" class="icon-loop2 button no-prompt-action" aria-describedby="hint161-content" aria-label="Clear sorting"> </button>
-        <div id="hint161-content" role="tooltip" class="hint-content">Clear sorting</div>
-      </li>
-    </ul>
-  </div>
-
   <table class="setoutList">
     <thead>
-      <tr>
-        <th>
-          <div class="container" role="radiogroup">
-            <label class="radio-label">
-              <input name="sort-transaction" value="sort-transaction" type="radio"> Transaction
-            </label>
-            <label class="radio-label">
-              <input name="sort-ref" value="sort-ref" type="radio"> / Ref
-            </label>
+    <tr>
+      <th>
+        <div class="container"><label>Transaction / Ref</label></div>
+      </th>
+      <th>
+        <div class="container"><label>Subject / Topic</label></div>
+      </th>
+      <th>
+        <div class="container"><label>Company</label></div>
+      </th>
+      <th>
+        <div class="container"><label>Status / Date</label></div>
+      </th>
+      <th>
+        <div class="container">
+          <div class="row">
+            <div class="six columns break-word">Information</div>
+            <div class="six columns">Actions</div>
           </div>
-        </th>
+        </div>
+      </th>
+    </tr>
+    </thead>
 
-        <th>
-          <div class="container" role="radiogroup">
-            <label class="radio-label">
-              <input name="sort-subject" value="sort-subject" type="radio">Subject
-            </label>
-            <label class="radio-label">
-              <input name="sort-topic" value="sort-topic" type="radio">/ Topic
-            </label>
-          </div>
-        </th>
+    <tbody>
+    {% for row in rows %}
+      <tr data-test-id="workbasket-row-{{ row.id }}">
+        <td>{{ row.reference }}</td>
 
-        <th>
-          <div class="container" role="radiogroup">
-            <label class="radio-label">
-              <input name="sort-company" value="sort-company" type="radio">Company
-            </label>
-          </div>
-        </th>
+        <td>{{ row.subject|nl2br }}</td>
 
-        <th>
-          <div class="container" role="radiogroup">
-            <label class="radio-label">
-              <input name="sort-status" value="sort-status" type="radio">Status
-            </label>
-            <label class="radio-label">
-              <input name="sort-date" value="sort-date" type="radio">/ Date
-            </label>
-          </div>
-        </th>
-        <th>
+        <td>
+          {{ row.company|nl2br }}
+          {% if row.company_agent %}
+            {{ row.company_agent|nl2br }}
+          {% endif %}
+        </td>
+
+        <td>
+          {{ row.status }}<br>{{ row.timestamp.strftime('%d-%b-%Y %H:%M') }}
+        </td>
+
+        <td>
           <div class="container">
-            <div class="row">
-              <div class="six columns break-word">Information</div>
-              <div class="six columns">Actions</div>
-            </div>
-          </div>
-        </th>
-      </tr>
-      </thead>
+            {% for action_block in row.sections %}
+              <div class="row">
+                {# Information section #}
+                <div class="six columns break-word">
+                  <div class="individual-input"><span class="text-widget ">{{ action_block.information|nl2br }}</span></div>
+                </div>
 
-      <tbody>
-      {% for row in rows %}
-        <tr data-test-id="workbasket-row-{{ row.id }}">
-          <td>{{ row.reference }}</td>
+                {# Actions section #}
+                <div class="six columns">
+                  <table class="nestedList setoutList">
+                    <thead>
+                    <tr>
+                      <th scope="col"></th><th scope="col"></th><th scope="col"></th><th scope="col"></th><th scope="col"></th><th scope="col"></th>
+                    </tr>
+                    </thead>
 
-          <td>{{ row.subject|nl2br }}</td>
-
-          <td>
-            {{ row.company|nl2br }}
-            {% if row.company_agent %}
-              {{ row.company_agent|nl2br }}
-            {% endif %}
-          </td>
-
-          <td>
-            {{ row.status }}<br>{{ row.timestamp.strftime('%d-%b-%Y %H:%M') }}
-          </td>
-
-          <td>
-            <div class="container">
-              {% for action_block in row.sections %}
-                <div class="row">
-                  {# Information section #}
-                  <div class="six columns break-word">
-                    <div class="individual-input"><span class="text-widget ">{{ action_block.information|nl2br }}</span></div>
-                  </div>
-
-                  {# Actions section #}
-                  <div class="six columns">
-                    <table class="nestedList setoutList">
-                      <thead>
-                        <tr>
-                          <th scope="col"></th><th scope="col"></th><th scope="col"></th><th scope="col"></th><th scope="col"></th><th scope="col"></th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        {% for action in action_block.actions %}
-                          <tr>
-                            <td>
-                               {% if action.is_post %}
-                                <form method="post" action="{{ action.url }}">
-                                  {{ csrf_input }}
-                                  <button type="submit" class="button link-button-no-padding"
-                                          {% if action.confirm %} data-confirm="{{ action.confirm }}" {% endif %}
-                                  >
-                                    {{ action.name }}
-                                  </button>
-                                </form>
-                              {% else %}
-                                <a href="{{ action.url }}" data-is-ajax="{{ 1 if action.is_ajax else 0 }}" >{{ action.name }}</a>
-                              {% endif %}
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td><span class="text-widget "></span></td>
-                          </tr>
-                        {% endfor %}
-                      </tbody>
-                    </table>
-                  </div>
+                    <tbody>
+                    {% for action in action_block.actions %}
+                      <tr>
+                        <td>
+                          {% if action.is_post %}
+                            <form method="post" action="{{ action.url }}">
+                              {{ csrf_input }}
+                              <button type="submit" class="button link-button-no-padding"
+                                {% if action.confirm %} data-confirm="{{ action.confirm }}" {% endif %}
+                              >
+                                {{ action.name }}
+                              </button>
+                            </form>
+                          {% else %}
+                            <a href="{{ action.url }}" data-is-ajax="{{ 1 if action.is_ajax else 0 }}">{{ action.name }}</a>
+                          {% endif %}
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><span class="text-widget "></span></td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
               </div>
               {% if not loop.last %}<hr>{% endif %}
             {% endfor %}
@@ -264,7 +133,7 @@
   </table>
 
   <div class="result-count">
-      {{ rows|length }} workbasket items
+    {{ rows|length }} workbasket items
   </div>
 
   <div class="content-actions"></div>
