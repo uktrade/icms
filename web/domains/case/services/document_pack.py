@@ -21,6 +21,7 @@ from web.models import (
     ImportApplication,
     ImportApplicationLicence,
     ImportApplicationType,
+    User,
 )
 
 if TYPE_CHECKING:
@@ -218,22 +219,21 @@ def pack_issued_get_all(application: ImpOrExp) -> QuerySet[DocumentPack]:
     ).order_by("created_at")
 
 
-def pack_workbasket_get_issued(application: ImpOrExp) -> QuerySet[DocumentPack]:
-    """Return issued document packs to display in the workbasket."""
+def pack_workbasket_get_issued(application: ImpOrExp, user: User) -> QuerySet[DocumentPack]:
+    """Return issued document packs to display in the workbasket for the given user."""
 
     packs = pack_issued_get_all(application)
 
-    return packs.filter(show_in_workbasket=True).order_by("created_at")
+    return packs.exclude(cleared_by=user).order_by("created_at")
 
 
-def pack_workbasket_remove_pack(application: ImpOrExp, *, pack_pk: int) -> None:
-    """Removes a document pack from displaying in the workbasket."""
+def pack_workbasket_remove_pack(application: ImpOrExp, user: User, *, pack_pk: int) -> None:
+    """Removes a document pack from displaying in the workbasket for the given user."""
 
     doc_packs = pack_issued_get_all(application)
     pack = doc_packs.select_for_update().get(pk=pack_pk)
 
-    pack.show_in_workbasket = False
-    pack.save()
+    pack.cleared_by.add(user)
 
 
 def pack_licence_history(application: ImportApplication) -> QuerySet[ImportApplicationLicence]:

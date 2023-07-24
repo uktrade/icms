@@ -766,18 +766,18 @@ class TestClearIssuedCaseDocumentsFromWorkbasketView:
         response = exporter_client.post(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
-    def test_post_only(self, importer_client):
-        response = importer_client.get(self.url)
+    def test_post_only(self):
+        response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
 
-    def test_post_success(self, admin_client, exporter_client):
-        assert self.licence.show_in_workbasket is True
+    def test_post_success(self, importer_one_contact):
+        assert not self.licence.cleared_by.filter(pk=importer_one_contact.pk).exists()
 
         response = self.client.post(self.url)
         assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
 
         self.licence.refresh_from_db()
-        assert self.licence.show_in_workbasket is False
+        assert self.licence.cleared_by.filter(pk=importer_one_contact.pk).exists()
 
 
 def _set_valid_licence(wood_application):

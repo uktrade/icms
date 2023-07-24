@@ -860,7 +860,9 @@ class ClearIssuedCaseDocumentsFromWorkbasket(
         pack_pk = self.kwargs["issued_document_pk"]
 
         try:
-            document_pack.pack_workbasket_remove_pack(self.application, pack_pk=pack_pk)
+            document_pack.pack_workbasket_remove_pack(
+                self.application, request.user, pack_pk=pack_pk
+            )
         except ObjectDoesNotExist:
             raise Http404("No %s matches the given query." % DocumentPackBase._meta.object_name)
 
