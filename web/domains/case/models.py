@@ -327,9 +327,6 @@ class DocumentPackBase(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    # Used to remove from workbasket when Clear action is performed.
-    show_in_workbasket = models.BooleanField(default=True)
-
 
 class CaseDocumentReference(models.Model):
     """All documents relevant to a case licence or certificate."""

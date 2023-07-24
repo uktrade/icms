@@ -525,6 +525,9 @@ class ExportApplicationCertificate(DocumentPackBase):
     # Set when certificate is marked active.
     case_completion_datetime = models.DateTimeField(verbose_name="Issue Date", null=True)
 
+    # Used to remove from workbasket when Clear action is performed.
+    cleared_by = models.ManyToManyField("web.User")
+
     def __str__(self):
         ea_pk, st, ca = (self.export_application_id, self.status, self.created_at)
         return f"ExportApplicationCertificate(export_application_id={ea_pk}, status={st}, created_at={ca})"

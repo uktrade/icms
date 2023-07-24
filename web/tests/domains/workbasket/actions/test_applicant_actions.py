@@ -2,6 +2,7 @@ import pytest
 from django.utils import timezone
 
 from web.domains.case.services import document_pack
+from web.domains.case.services.document_pack import pack_workbasket_remove_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.workbasket.actions import ActionConfig
 from web.domains.workbasket.actions.applicant_actions import (
@@ -147,7 +148,7 @@ class TestApplicantActions:
         assert wb_action.name == "View Issued Documents"
         assert wb_action.section_label.startswith("Documents Issued ")
 
-    def test_view_issued_documents_not_shown(self, completed_sil_app):
+    def test_view_issued_documents_not_shown(self, completed_sil_app, importer_one_contact):
         completed_sil_app.active_tasks = []
 
         # Use the wood app in `self.app` to show it not showing
@@ -158,9 +159,8 @@ class TestApplicantActions:
         assert not action.show_link()
 
         # Test completed app is no longer shown
-        licence = document_pack.pack_active_get(completed_sil_app)
-        licence.show_in_workbasket = False
-        licence.save()
+        pack = document_pack.pack_active_get(completed_sil_app)
+        pack_workbasket_remove_pack(completed_sil_app, importer_one_contact, pack_pk=pack.pk)
 
         config = ActionConfig(user=self.user, case_type="import", application=completed_sil_app)
         action = ViewIssuedDocumentsAction.from_config(config)
@@ -179,7 +179,7 @@ class TestApplicantActions:
         assert wb_action.name == "Clear"
         assert wb_action.section_label.startswith("Documents Issued ")
 
-    def test_clear_issued_documents_not_shown(self, completed_sil_app):
+    def test_clear_issued_documents_not_shown(self, completed_sil_app, importer_one_contact):
         self.app.active_tasks = []
         completed_sil_app.active_tasks = []
 
@@ -190,9 +190,8 @@ class TestApplicantActions:
         assert not action.show_link()
 
         # Test completed app is no longer shown
-        licence = document_pack.pack_active_get(completed_sil_app)
-        licence.show_in_workbasket = False
-        licence.save()
+        pack = document_pack.pack_active_get(completed_sil_app)
+        pack_workbasket_remove_pack(completed_sil_app, importer_one_contact, pack_pk=pack.pk)
 
         config = ActionConfig(user=self.user, case_type="import", application=completed_sil_app)
         action = ClearIssuedDocumentsAction.from_config(config)

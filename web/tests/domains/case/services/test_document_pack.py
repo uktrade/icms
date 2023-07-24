@@ -180,7 +180,7 @@ class TestPackServiceFunctions:
         # licence_2 is active so should return
         issued_packs.get(id=licence_2.pk)
 
-    def test_pack_workbasket_get_issued(self, fa_sil):
+    def test_pack_workbasket_get_issued(self, fa_sil, importer_one_contact):
         licence_1 = document_pack.pack_draft_create(fa_sil)
         document_pack.pack_draft_set_active(fa_sil)
         licence_2 = document_pack.pack_draft_create(fa_sil)
@@ -191,30 +191,33 @@ class TestPackServiceFunctions:
         document_pack.pack_draft_set_active(fa_sil)
         document_pack.pack_draft_create(fa_sil)
 
-        issued_packs = document_pack.pack_workbasket_get_issued(fa_sil)
+        issued_packs = document_pack.pack_workbasket_get_issued(fa_sil, importer_one_contact)
 
         assert issued_packs.count() == 2
         issued_packs.get(id=licence_1.pk)
         issued_packs.get(id=licence_2.pk)
 
-        licence_1.show_in_workbasket = False
-        licence_1.save()
+        document_pack.pack_workbasket_remove_pack(
+            fa_sil, importer_one_contact, pack_pk=licence_1.pk
+        )
 
-        issued_packs = document_pack.pack_workbasket_get_issued(fa_sil)
+        issued_packs = document_pack.pack_workbasket_get_issued(fa_sil, importer_one_contact)
 
         assert issued_packs.count() == 1
         issued_packs.get(id=licence_2.pk)
 
-    def test_pack_workbasket_remove_pack(self, fa_sil):
+    def test_pack_workbasket_remove_pack(self, fa_sil, importer_one_contact):
         licence_1 = document_pack.pack_draft_create(fa_sil)
         document_pack.pack_draft_set_active(fa_sil)
 
-        issued_packs = document_pack.pack_workbasket_get_issued(fa_sil)
+        issued_packs = document_pack.pack_workbasket_get_issued(fa_sil, importer_one_contact)
         assert issued_packs.count() == 1
 
-        document_pack.pack_workbasket_remove_pack(fa_sil, pack_pk=licence_1.pk)
+        document_pack.pack_workbasket_remove_pack(
+            fa_sil, importer_one_contact, pack_pk=licence_1.pk
+        )
 
-        issued_packs = document_pack.pack_workbasket_get_issued(fa_sil)
+        issued_packs = document_pack.pack_workbasket_get_issued(fa_sil, importer_one_contact)
         assert issued_packs.count() == 0
 
     def test_pack_licence_history(self, fa_sil):

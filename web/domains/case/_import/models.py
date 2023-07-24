@@ -424,6 +424,9 @@ class ImportApplicationLicence(DocumentPackBase):
     # Set when licence is marked active.
     case_completion_datetime = models.DateTimeField(verbose_name="Case Completion Date", null=True)
 
+    # Used to remove from workbasket when Clear action is performed.
+    cleared_by = models.ManyToManyField("web.User")
+
     def __str__(self):
         ia_pk = self.import_application_id
         st = self.status

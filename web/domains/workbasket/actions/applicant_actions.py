@@ -293,7 +293,7 @@ class IssuedDocumentsBaseAction(Action):
         """Cache the issued documents on the application to prevent duplicate queries."""
         if not hasattr(self.application, "_wb_cache_issued_documents_list"):
             issued_document_qs = document_pack.pack_workbasket_get_issued(
-                self.application.get_specific_model()
+                self.application.get_specific_model(), self.user
             )
 
             self.application._wb_cache_issued_documents_list = list(
