@@ -115,10 +115,16 @@ class ClearApplicationAction(Action):
         return show_link
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
-        section_label = "Application View"
+        kwargs = self.get_kwargs()
 
-        # ICMSLST-19 Add clear action
-        return [WorkbasketAction(is_post=False, name="Clear", url="#", section_label=section_label)]
+        return [
+            WorkbasketAction(
+                is_post=True,
+                name="Clear",
+                url=reverse("case:clear", kwargs=kwargs),
+                section_label="Application View",
+            )
+        ]
 
 
 class RespondToFurtherInformationRequestAction(Action):

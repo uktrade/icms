@@ -780,6 +780,60 @@ class TestClearIssuedCaseDocumentsFromWorkbasketView:
         assert self.licence.cleared_by.filter(pk=importer_one_contact.pk).exists()
 
 
+class TestClearCaseFromWorkbasketView:
+    @pytest.fixture(autouse=True)
+    def set_client(self, importer_client, exporter_client):
+        self.imp_client = importer_client
+        self.exp_client = exporter_client
+
+    @pytest.fixture(autouse=True)
+    def set_app(self, completed_sil_app, completed_cfs_app):
+        self.imp_app = completed_sil_app
+        self.exp_app = completed_cfs_app
+
+        self.imp_url = CaseURLS.clear_case_from_workbasket(self.imp_app.pk)
+        self.exp_url = CaseURLS.clear_case_from_workbasket(self.exp_app.pk, "export")
+
+    def test_post_only(self):
+        response = self.imp_client.get(self.imp_url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_post_success(self, importer_one_contact, exporter_one_contact):
+        #
+        # Test importer clear
+        assert not self.imp_app.cleared_by.filter(pk=importer_one_contact.pk).exists()
+
+        response = self.imp_client.post(self.imp_url, follow=True)
+        assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
+
+        self.imp_app.refresh_from_db()
+        assert self.imp_app.cleared_by.filter(pk=importer_one_contact.pk).exists()
+
+        messages = list(response.context["messages"])
+        success_msg = str(messages[0])
+
+        assert success_msg == (
+            "Case cleared, it can still be viewed in the Search Import Applications page."
+        )
+
+        #
+        # Test exporter clear
+        assert not self.exp_app.cleared_by.filter(pk=exporter_one_contact.pk).exists()
+
+        response = self.exp_client.post(self.exp_url, follow=True)
+        assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
+
+        self.exp_app.refresh_from_db()
+        assert self.exp_app.cleared_by.filter(pk=exporter_one_contact.pk).exists()
+
+        messages = list(response.context["messages"])
+        success_msg = str(messages[0])
+
+        assert success_msg == (
+            "Case cleared, it can still be viewed in the Search Certificate Applications page."
+        )
+
+
 def _set_valid_licence(wood_application):
     licence = document_pack.pack_draft_get(wood_application)
     licence.licence_start_date = datetime.date.today()

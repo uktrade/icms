@@ -289,6 +289,9 @@ class ImportApplication(ApplicationBase):
 
     imi_submit_datetime = models.DateTimeField(null=True, verbose_name="Date provided to IMI")
 
+    # Used in workbasket to clear applications
+    cleared_by = models.ManyToManyField("web.User")
+
     def is_import_application(self) -> bool:
         return True
 
@@ -424,7 +427,7 @@ class ImportApplicationLicence(DocumentPackBase):
     # Set when licence is marked active.
     case_completion_datetime = models.DateTimeField(verbose_name="Case Completion Date", null=True)
 
-    # Used to remove from workbasket when Clear action is performed.
+    # Used in workbasket to clear licences
     cleared_by = models.ManyToManyField("web.User")
 
     def __str__(self):

@@ -121,6 +121,7 @@ applicant_urls = [
         views_misc.archive_withdrawal,
         name="archive-withdrawal",
     ),
+    path("clear/", views_misc.ClearCaseFromWorkbasket.as_view(), name="clear"),
 ]
 
 variation_request_urls = [
