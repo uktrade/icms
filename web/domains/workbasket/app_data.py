@@ -259,19 +259,25 @@ def _get_importer_queryset(user: User) -> list[QuerySet]:
     # Add annotations
     import_applications = _add_user_import_annotations(import_applications)
 
-    import_applications = import_applications.filter(
-        is_active=True, status__in=APP_STATUS_TO_SHOW
-    ).filter(
-        # Has permission at main org and there is no agent specified
-        (Q(importer__in=main_importers) & Q(agent__isnull=True))
-        # or
-        |
-        # Has permission at main org and there is an agent specified and the app is complete
-        (Q(importer__in=main_importers) & Q(agent__isnull=False) & Q(status=ImpExpStatus.COMPLETED))
-        # or
-        |
-        # Has permission at the agent directly (agent contacts)
-        (Q(agent__in=agent_importers))
+    import_applications = (
+        import_applications.filter(is_active=True, status__in=APP_STATUS_TO_SHOW)
+        .filter(
+            # Has permission at main org and there is no agent specified
+            (Q(importer__in=main_importers) & Q(agent__isnull=True))
+            # or
+            |
+            # Has permission at main org and there is an agent specified and the app is complete
+            (
+                Q(importer__in=main_importers)
+                & Q(agent__isnull=False)
+                & Q(status=ImpExpStatus.COMPLETED)
+            )
+            # or
+            |
+            # Has permission at the agent directly (agent contacts)
+            (Q(agent__in=agent_importers))
+        )
+        .exclude(cleared_by=user)
     )
 
     return [importer_approval_requests, import_applications]
@@ -320,19 +326,25 @@ def _get_exporter_queryset(user: User) -> list[QuerySet]:
     export_applications = _add_user_export_annotations(export_applications)
 
     # Apply filters
-    export_applications = export_applications.filter(
-        is_active=True, status__in=APP_STATUS_TO_SHOW
-    ).filter(
-        # Has permission at main org and there is no agent specified
-        (Q(exporter__in=main_exporters) & Q(agent__isnull=True))
-        # or
-        |
-        # Has permission at main org and there is an agent specified and the app is complete
-        (Q(exporter__in=main_exporters) & Q(agent__isnull=False) & Q(status=ImpExpStatus.COMPLETED))
-        # or
-        |
-        # Has permission at the agent directly (agent contacts)
-        (Q(agent__in=agent_exporters))
+    export_applications = (
+        export_applications.filter(is_active=True, status__in=APP_STATUS_TO_SHOW)
+        .filter(
+            # Has permission at main org and there is no agent specified
+            (Q(exporter__in=main_exporters) & Q(agent__isnull=True))
+            # or
+            |
+            # Has permission at main org and there is an agent specified and the app is complete
+            (
+                Q(exporter__in=main_exporters)
+                & Q(agent__isnull=False)
+                & Q(status=ImpExpStatus.COMPLETED)
+            )
+            # or
+            |
+            # Has permission at the agent directly (agent contacts)
+            (Q(agent__in=agent_exporters))
+        )
+        .exclude(cleared_by=user)
     )
 
     return [exporter_approval_requests, export_applications]

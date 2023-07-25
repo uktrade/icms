@@ -871,6 +871,34 @@ class ClearIssuedCaseDocumentsFromWorkbasket(
         return redirect(reverse("workbasket"))
 
 
+@method_decorator(transaction.atomic, name="post")
+class ClearCaseFromWorkbasket(ApplicationTaskMixin, LoginRequiredMixin, View):
+    # ApplicationTaskMixin Config
+    current_status = [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
+
+    # View Config
+    http_method_names = ["post"]
+
+    def has_object_permission(self) -> bool:
+        return AppChecker(self.request.user, self.application).can_view()
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> Any:
+        """Remove the Case from the `request.user` workbasket."""
+
+        self.set_application_and_task()
+
+        self.application.cleared_by.add(self.request.user)
+
+        if self.kwargs["case_type"] == "import":
+            view_name = "Search Import Applications"
+        else:
+            view_name = "Search Certificate Applications"
+
+        messages.success(request, f"Case cleared, it can still be viewed in the {view_name} page.")
+
+        return redirect(reverse("workbasket"))
+
+
 def _get_primary_recipients(application: ImpOrExp) -> "QuerySet[User]":
     if application.is_import_application():
         org = application.agent or application.importer

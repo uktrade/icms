@@ -321,6 +321,12 @@ class CaseURLS:
         return reverse("case:clear-issued-case-documents", kwargs=kwargs)
 
     @staticmethod
+    def clear_case_from_workbasket(application_pk: int, case_type="import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+
+        return reverse("case:clear", kwargs=kwargs)
+
+    @staticmethod
     def get_application_history(application_pk: int, case_type="import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 

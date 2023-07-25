@@ -145,6 +145,9 @@ class ExportApplication(ApplicationBase):
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, null=True, related_name="+"
     )
 
+    # Used in workbasket to clear applications
+    cleared_by = models.ManyToManyField("web.User")
+
     def is_import_application(self) -> bool:
         return False
 
@@ -525,7 +528,7 @@ class ExportApplicationCertificate(DocumentPackBase):
     # Set when certificate is marked active.
     case_completion_datetime = models.DateTimeField(verbose_name="Issue Date", null=True)
 
-    # Used to remove from workbasket when Clear action is performed.
+    # Used in workbasket to clear certificates
     cleared_by = models.ManyToManyField("web.User")
 
     def __str__(self):
