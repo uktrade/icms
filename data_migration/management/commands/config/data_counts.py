@@ -423,4 +423,9 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         model=web.User,
         filter_params={"groups__isnull": True},
     ),
+    CheckQuery(
+        name="User Email Addresses",
+        query=queries.email_address_count,
+        model=web.Email,
+    ),
 ]

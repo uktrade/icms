@@ -124,14 +124,8 @@ class PhoneNumberParser(BaseXmlParser):
 
 
 class EmailAddressParser(BaseXmlParser):
-    FIELD = "email_address_xml"
-    ROOT_NODE = "/PERSONAL_EMAIL_LIST/PERSONAL_EMAIL"
     PARENT = dm.User
-
-    MODELS = {
-        "H": dm.PersonalEmail,
-        "W": dm.AlternativeEmail,
-    }
+    MODEL = dm.Email
 
     TYPES = {
         "H": "HOME",
@@ -152,16 +146,28 @@ class EmailAddressParser(BaseXmlParser):
 
         email_type = get_xml_val(xml, "./TYPE")
         portal = get_xml_val(xml, "./PORTAL_NOTIFICATIONS")
+        email = get_xml_val(xml, "./EMAIL_ADDRESS")
+
+        if not email:
+            return None
 
         data = {
             "user_id": parent_pk,
-            "email": get_xml_val(xml, "./EMAIL_ADDRESS"),
+            "email": email,
             "comment": get_xml_val(xml, "./COMMENT"),
             "type": cls.TYPES[email_type],
             "portal_notifications": portal in ("Primary", "Yes"),
+            "is_primary": portal == "Primary",
         }
 
-        if email_type == "H":
-            data["is_primary"] = portal == "Primary"
+        return cls.MODEL(**data)
 
-        return cls.MODELS[email_type](**data)
+
+class PersonalEmailAddressParser(EmailAddressParser):
+    FIELD = "personal_email_xml"
+    ROOT_NODE = "/PERSONAL_EMAIL_LIST/PERSONAL_EMAIL"
+
+
+class AlternativeEmailAddressParser(EmailAddressParser):
+    FIELD = "alternative_email_xml"
+    ROOT_NODE = "/DISTRIBUTION_EMAIL_LIST/DISTRIBUTION_EMAIL"

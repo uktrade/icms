@@ -44,7 +44,8 @@ CROSS JOIN XMLTABLE('/*'
     , date_joined_datetime VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/CREATED_DATE/text()'
     , security_question VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/SECURITY_QUESTION/text()'
     , security_answer VARCHAR2(4000) PATH '/RESOURCE_PERSON_DETAIL/SECURITY_ANSWER/text()'
-    , email_address_xml XMLTYPE PATH '/RESOURCE_PERSON_DETAIL/PERSONAL_EMAIL_LIST'
+    , personal_email_xml XMLTYPE PATH '/RESOURCE_PERSON_DETAIL/PERSONAL_EMAIL_LIST'
+    , alternative_email_xml XMLTYPE PATH '/RESOURCE_PERSON_DETAIL/DISTRIBUTION_EMAIL_LIST'
     , telephone_xml XMLTYPE PATH '/RESOURCE_PERSON_DETAIL/TELEPHONE_NO_LIST'
 ) x
 LEFT JOIN decmgr.resource_address_current addr ON addr.addr_id = x.work_address_id

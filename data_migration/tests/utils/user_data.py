@@ -24,7 +24,8 @@ user_query_result = {
             ("account_status_date",),
             ("last_login_datetime",),
             ("password_disposition",),
-            ("email_address_xml",),
+            ("personal_email_xml",),
+            ("alternative_email_xml",),
             ("telephone_xml",),
             ("share_contact_details",),
         ],
@@ -47,7 +48,8 @@ user_query_result = {
                 None,  # account_status_date
                 None,  # last_login_datetime
                 "FULL",  # password_disposition
-                None,  # email_address_xml
+                None,  # personal_email_xml
+                None,  # alternative_email_xml
                 None,  # telephone_xml
                 0,  # share_contact_details
             ),
@@ -69,7 +71,8 @@ user_query_result = {
                 dt.date.today(),  # account_status_date
                 dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
                 "FULL",  # password_disposition
-                xd.email_xml,  # email_address_xml
+                xd.personal_email_xml,  # personal_email_xml
+                xd.alternative_email_xml,  # alternative_email_xml
                 xd.phone_number_xml,  # telephone_xml
                 1,  # share_contact_details
             ),
@@ -91,7 +94,8 @@ user_query_result = {
                 dt.date.today(),  # account_status_date
                 dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
                 "FULL",  # password_disposition
-                None,  # email_address_xml
+                None,  # personal_email_xml
+                None,  # alternative_email_xml
                 None,  # telephone_xml
                 0,  # share_contact_details
             ),
@@ -113,7 +117,8 @@ user_query_result = {
                 dt.date.today(),  # account_status_date
                 dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
                 "FULL",  # password_disposition
-                None,  # email_address_xml
+                None,  # personal_email_xml
+                None,  # alternative_email_xml
                 None,  # telephone_xml
                 0,  # share_contact_details
             ),
@@ -135,7 +140,8 @@ user_query_result = {
                 dt.date.today(),  # account_status_date
                 dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
                 "FULL",  # password_disposition
-                None,  # email_address_xml
+                None,  # personal_email_xml
+                None,  # alternative_email_xml
                 None,  # telephone_xml
                 0,  # share_contact_details
             ),
@@ -157,7 +163,8 @@ user_query_result = {
                 dt.date.today(),  # account_status_date
                 dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
                 "FULL",  # password_disposition
-                None,  # email_address_xml
+                None,  # personal_email_xml
+                None,  # alternative_email_xml
                 None,  # telephone_xml
                 0,  # share_contact_details
             ),
@@ -179,7 +186,8 @@ user_query_result = {
                 dt.date.today(),  # account_status_date
                 dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
                 "FULL",  # password_disposition
-                None,  # email_address_xml
+                None,  # personal_email_xml
+                None,  # alternative_email_xml
                 None,  # telephone_xml
                 0,  # share_contact_details
             ),
@@ -201,7 +209,8 @@ user_query_result = {
                 dt.date.today(),  # account_status_date
                 dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
                 "FULL",  # password_disposition
-                None,  # email_address_xml
+                None,  # personal_email_xml
+                None,  # alternative_email_xml
                 None,  # telephone_xml
                 0,  # share_contact_details
             ),
@@ -223,7 +232,8 @@ user_query_result = {
                 dt.date.today(),  # account_status_date
                 dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
                 "FULL",  # password_disposition
-                None,  # email_address_xml
+                None,  # personal_email_xml
+                None,  # alternative_email_xml
                 None,  # telephone_xml
                 0,  # share_contact_details
             ),
@@ -245,7 +255,8 @@ user_query_result = {
                 dt.date.today(),  # account_status_date
                 dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
                 "FULL",  # password_disposition
-                None,  # email_address_xml
+                None,  # personal_email_xml
+                None,  # alternative_email_xml
                 None,  # telephone_xml
                 0,  # share_contact_details
             ),
@@ -267,7 +278,8 @@ user_query_result = {
                 dt.date.today(),  # account_status_date
                 dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
                 "FULL",  # password_disposition
-                None,  # email_address_xml
+                None,  # personal_email_xml
+                None,  # alternative_email_xml
                 None,  # telephone_xml
                 0,  # share_contact_details
             ),
@@ -289,7 +301,8 @@ user_query_result = {
                 dt.date.today(),  # account_status_date
                 dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
                 "FULL",  # password_disposition
-                None,  # email_address_xml
+                None,  # personal_email_xml
+                None,  # alternative_email_xml
                 None,  # telephone_xml
                 0,  # share_contact_details
             ),
@@ -311,7 +324,8 @@ user_query_result = {
                 dt.date.today(),  # account_status_date
                 dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
                 "FULL",  # password_disposition
-                None,  # email_address_xml
+                None,  # personal_email_xml
+                None,  # alternative_email_xml
                 None,  # telephone_xml
                 0,  # share_contact_details
             ),
@@ -333,7 +347,8 @@ user_query_result = {
                 dt.date.today(),  # account_status_date
                 dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
                 "FULL",  # password_disposition
-                None,  # email_address_xml
+                None,  # personal_email_xml
+                None,  # alternative_email_xml
                 None,  # telephone_xml
                 0,  # share_contact_details
             ),

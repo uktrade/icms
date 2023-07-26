@@ -15,8 +15,7 @@ DEFAULT_FILE_CREATED_DATETIME = "2013-01-01 01:00:00"
 
 user_source_target = [
     SourceTarget(dm.User, web.User),
-    SourceTarget(dm.PersonalEmail, web.PersonalEmail),
-    SourceTarget(dm.AlternativeEmail, web.AlternativeEmail),
+    SourceTarget(dm.Email, web.Email),
     SourceTarget(dm.PhoneNumber, web.PhoneNumber),
     SourceTarget(dm.Mailshot, web.Mailshot),
     SourceTarget(dm.Importer, web.Importer),
@@ -49,7 +48,8 @@ user_m2m = [
 
 user_xml = [
     xml_parser.PhoneNumberParser,
-    xml_parser.EmailAddressParser,
+    xml_parser.PersonalEmailAddressParser,
+    xml_parser.AlternativeEmailAddressParser,
     xml_parser.ApprovalRequestParser,
     xml_parser.AccessFIRParser,
 ]
@@ -144,12 +144,6 @@ file_query_model = [
     QueryModel(
         queries.sps_docs,
         "sps_docs",
-        dm.FileCombined,
-        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
-    ),
-    QueryModel(
-        queries.derogations_application_files,
-        "derogations_application_files",
         dm.FileCombined,
         {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
     ),
