@@ -13,13 +13,13 @@ from web.models import (
     Country,
     CountryGroup,
     DerogationsApplication,
+    Email,
     ExportApplication,
     ExportApplicationType,
     Exporter,
     ImportApplication,
     ImportApplicationType,
     Importer,
-    PersonalEmail,
     PhoneNumber,
     Process,
     SanctionsAndAdhocApplication,
@@ -59,7 +59,7 @@ admin.site.register(Task)
 admin.site.register(ContentType)
 admin.site.register(Process)
 admin.site.register(PhoneNumber)
-admin.site.register(PersonalEmail)
+admin.site.register(Email)
 admin.site.register(Importer, ImporterAdmin)
 admin.site.register(ImportApplicationType)
 admin.site.register(ExportApplicationType)

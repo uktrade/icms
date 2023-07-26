@@ -1,6 +1,6 @@
 import pytest
 
-from web.models import AlternativeEmail, PersonalEmail
+from web.models import Email
 from web.notify.notify import utils
 from web.tests.helpers import CaseURLS
 
@@ -8,13 +8,13 @@ from web.tests.helpers import CaseURLS
 @pytest.mark.django_db
 def test_get_notification_emails(importer_one_contact):
     user = importer_one_contact
-    PersonalEmail(
+    Email(
         user=user, email="second_email@example.com", portal_notifications=False  # /PS-IGNORE
     ).save()
-    AlternativeEmail(
+    Email(
         user=user, email="alternative@example.com", portal_notifications=False  # /PS-IGNORE
     ).save()
-    AlternativeEmail(
+    Email(
         user=user,
         email="second_alternative@example.com",  # /PS-IGNORE
         portal_notifications=True,

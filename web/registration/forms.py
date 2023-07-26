@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UsernameField
 
 from web.forms.fields import PhoneNumberField
 from web.forms.widgets import DateInput
-from web.models import PersonalEmail, User
+from web.models import Email, User
 
 
 class UserCreationForm(BaseUserCreationForm):
@@ -45,8 +45,6 @@ class UserCreationForm(BaseUserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=True)
 
-        PersonalEmail(
-            user=user, email=user.email, is_primary=True, portal_notifications=True
-        ).save()
+        Email(user=user, email=user.email, is_primary=True, portal_notifications=True).save()
 
         user.phone_numbers.create(phone=self.cleaned_data["telephone_number"])

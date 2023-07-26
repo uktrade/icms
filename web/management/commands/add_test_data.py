@@ -8,6 +8,7 @@ from guardian.shortcuts import assign_perm
 from web.management.commands.utils.load_data import load_app_test_data
 from web.models import (
     Constabulary,
+    Email,
     ExportApplicationType,
     Exporter,
     ExporterAccessRequest,
@@ -17,7 +18,6 @@ from web.models import (
     ObsoleteCalibre,
     ObsoleteCalibreGroup,
     Office,
-    PersonalEmail,
     Task,
     User,
 )
@@ -56,7 +56,7 @@ class Command(BaseCommand):
 
         # Access requests
         access_user = self.create_user("access_request_user")
-        add_personal_email(access_user)
+        add_email(access_user)
 
         self.create_import_access_request(access_user)
         self.create_export_access_request(access_user)
@@ -170,7 +170,7 @@ class Command(BaseCommand):
         main_org: Importer | Exporter | None = None,
     ) -> None:
         user = self.create_user(contact.username, contact.is_active)
-        add_personal_email(user)
+        add_email(user)
         add_group(user, obj_perms.get_group_name())
 
         for perm in contact.permissions:
@@ -226,35 +226,35 @@ class Command(BaseCommand):
 
     def create_icms_admin_user(self, username):
         user = self.create_user(username)
-        add_personal_email(user)
+        add_email(user)
         add_group(user, "ILB Case Officer")
 
         return user
 
     def create_nca_admin_user(self, username):
         user = self.create_user(username)
-        add_personal_email(user)
+        add_email(user)
         add_group(user, "NCA Case Officer")
 
         return user
 
     def create_ho_admin_user(self, username):
         user = self.create_user(username)
-        add_personal_email(user)
+        add_email(user)
         add_group(user, "Home Office Case Officer")
 
         return user
 
     def create_san_admin_user(self, username):
         user = self.create_user(username)
-        add_personal_email(user)
+        add_email(user)
         add_group(user, "Sanctions Case Officer")
 
         return user
 
     def create_con_user(self, username, linked_constabularies: list[str]):
         user = self.create_user(username)
-        add_personal_email(user)
+        add_email(user)
 
         for con in linked_constabularies:
             constabulary = Constabulary.objects.get(name=con)
@@ -262,14 +262,14 @@ class Command(BaseCommand):
 
     def create_import_search_user(self, username):
         user = self.create_user(username)
-        add_personal_email(user)
+        add_email(user)
         add_group(user, "Import Search User")
 
         return user
 
 
-def add_personal_email(user):
-    PersonalEmail.objects.create(user=user, email=user.email, portal_notifications=True)
+def add_email(user):
+    Email.objects.create(user=user, email=user.email, portal_notifications=True)
 
 
 def add_group(user, group_name):

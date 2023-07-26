@@ -151,7 +151,7 @@ def test_manage_withdrawals_post(
     withdrawal.refresh_from_db()
     assert withdrawal.status == status
 
-    sent_to = importer_one_contact.personal_emails.first().email
+    sent_to = importer_one_contact.emails.first().email
     _check_withdrawal_email_sent(exp_email_subject, [sent_to])
 
 

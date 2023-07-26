@@ -21,11 +21,7 @@ from .forms import (
     UserDetailsUpdateForm,
     UserListFilter,
 )
-from .formset import (
-    new_alternative_emails_formset,
-    new_personal_emails_formset,
-    new_user_phones_formset,
-)
+from .formset import new_emails_formset, new_user_phones_formset
 from .models import User
 
 
@@ -156,8 +152,7 @@ def _details_update(request: AuthenticatedHttpRequest, action: str, pk: int) -> 
             utils.save_forms(forms)
             # Create fresh forms  to remove objects before sending response
             forms["phones_formset"] = new_user_phones_formset(request)
-            forms["alternative_emails_formset"] = new_alternative_emails_formset(request)
-            forms["personal_emails_formset"] = new_personal_emails_formset(request)
+            forms["emails_formset"] = new_emails_formset(request)
             messages.success(request, "Central contact details have been saved.")
 
             return redirect(request.build_absolute_uri())
@@ -195,15 +190,13 @@ def _init_user_details_forms(
 
     details_form = UserDetailsUpdateForm(details_data, instance=user)
     phones_formset = new_user_phones_formset(request, data=data)
-    alternative_emails_formset = new_alternative_emails_formset(request, data=data)
-    personal_emails_formset = new_personal_emails_formset(request, data=data)
+    emails_formset = new_emails_formset(request, data=data)
 
     # get details form data from session if exists and not the first page load
     all_forms = {
         "details_form": details_form,
         "phones_formset": phones_formset,
-        "alternative_emails_formset": alternative_emails_formset,
-        "personal_emails_formset": personal_emails_formset,
+        "emails_formset": emails_formset,
     }
 
     return all_forms

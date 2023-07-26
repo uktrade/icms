@@ -46,25 +46,14 @@
     {% include 'partial/phone-numbers.html' %}
     {% endwith %}
 
-    <!-- Personal email addresses -->
-    {% with formset=personal_emails_formset,
-            title="Personal Email Addresses",
-            id="personal_emails",
+    <!-- Email addresses -->
+    {% with formset=emails_formset,
+            title="Email Addresses",
+            id="emails",
             form_item_class="person_email"
     %}
     {% include 'partial/email-addresses.html' %}
     {% endwith %}
-
-
-    <!-- Alternative email addresses -->
-    {% with formset=alternative_emails_formset,
-            title="Alternative Email Addresses",
-            id="alternative_emails",
-            form_item_class="alt_email"
-    %}
-    {% include 'partial/email-addresses.html' %}
-    {% endwith %}
-
 
     <div class="clearBoth"></div>
     <div class="container">

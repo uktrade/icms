@@ -3145,3 +3145,13 @@ WorkbasketClear
 LicenceWorkbasketClear
 web.exportapplicationcertificate
 "Remove the Case from the `request.user
+Populates
+\ Primary
+ElementTree
+"Example XML <RFI
+"Example XML <REQUEST_APPROVAL
+/RFI_LIST/RFI
+"Example XML <
+"Example XML <PERSONAL_EMAIL
+User Email Addresses
+<null/

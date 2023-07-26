@@ -1,8 +1,8 @@
 from django.forms import BaseInlineFormSet, ValidationError, inlineformset_factory
 
-from web.models import AlternativeEmail, PersonalEmail, PhoneNumber, User
+from web.models import Email, PhoneNumber, User
 
-from .forms import AlternativeEmailsForm, PersonalEmailForm, PhoneNumberForm
+from .forms import EmailForm, PhoneNumberForm
 
 
 class PhoneNumbersFormSet(BaseInlineFormSet):
@@ -13,7 +13,7 @@ class PhoneNumbersFormSet(BaseInlineFormSet):
                 e.message = "Please add at least one telephone number"
 
 
-class PersonalEmailsFormSet(BaseInlineFormSet):
+class EmailsFormSet(BaseInlineFormSet):
     def clean(self):
         # Don' validate unless each form is valid on its own
         if any(self.errors):
@@ -36,10 +36,6 @@ class PersonalEmailsFormSet(BaseInlineFormSet):
                 e.message = "Please add at least one email address"
 
 
-class AlternativeEmailsFormset(BaseInlineFormSet):
-    pass
-
-
 def new_user_phones_formset(request, data=None, initial=None):
     return inlineformset_factory(
         User,
@@ -53,23 +49,12 @@ def new_user_phones_formset(request, data=None, initial=None):
     )(data, prefix="phone", initial=initial, instance=request.user)
 
 
-def new_alternative_emails_formset(request, data=None, initial=None):
+def new_emails_formset(request, data=None, initial=None):
     return inlineformset_factory(
         User,
-        AlternativeEmail,
-        form=AlternativeEmailsForm,
-        formset=AlternativeEmailsFormset,
-        extra=0,
-        can_delete=True,
-    )(data, prefix="alternative_email", initial=initial, instance=request.user)
-
-
-def new_personal_emails_formset(request, data=None, initial=None):
-    return inlineformset_factory(
-        User,
-        PersonalEmail,
-        form=PersonalEmailForm,
-        formset=PersonalEmailsFormSet,
+        Email,
+        form=EmailForm,
+        formset=EmailsFormSet,
         extra=0,
         can_delete=True,
         validate_min=True,

@@ -18,7 +18,6 @@ from web.models import (
     ObsoleteCalibre,
     ObsoleteCalibreGroup,
     Office,
-    PersonalEmail,
     User,
 )
 from web.permissions import constabulary_add_contact, organisation_add_contact
@@ -303,7 +302,7 @@ class Command(BaseCommand):
             date_of_birth=datetime.date(2000, 1, 1),
         )
 
-        PersonalEmail.objects.create(
+        Email.objects.create(
             email=f"{username}@example.com",  # /PS-IGNORE
             is_primary=True,
             portal_notifications=True,
