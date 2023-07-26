@@ -29,20 +29,18 @@ class TestNotify(TestCase):
         )
         test_user.set_password("TestPasS")
         test_user.save()
-        models.PersonalEmail(
-            user=test_user, email=test_user.email, portal_notifications=True
-        ).save()
-        models.PersonalEmail(
+        models.Email(user=test_user, email=test_user.email, portal_notifications=True).save()
+        models.Email(
             user=test_user,
             email="second_email@example.com",  # /PS-IGNORE
             portal_notifications=False,
         ).save()
-        models.AlternativeEmail(
+        models.Email(
             user=test_user,
             email="alternative@example.com",  # /PS-IGNORE
             portal_notifications=False,
         ).save()
-        models.AlternativeEmail(
+        models.Email(
             user=test_user,
             email="second_alternative@example.com",  # /PS-IGNORE
             portal_notifications=True,

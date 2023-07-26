@@ -150,13 +150,7 @@ from web.domains.section5.models import (
 )
 from web.domains.sigl.models import SIGLTransmission
 from web.domains.template.models import CFSScheduleParagraph, Template
-from web.domains.user.models import (
-    AlternativeEmail,
-    Email,
-    PersonalEmail,
-    PhoneNumber,
-    User,
-)
+from web.domains.user.models import Email, PhoneNumber, User
 from web.flow.models import Process, Task
 from web.models.models import CaseReference, GlobalPermission
 

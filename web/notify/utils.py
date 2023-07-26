@@ -1,4 +1,3 @@
-import itertools
 from collections.abc import Collection
 
 from django.conf import settings
@@ -7,38 +6,25 @@ from django.template.loader import render_to_string
 
 from web.domains.case.types import ImpOrExp
 from web.domains.template.utils import get_email_template_subject_body
-from web.models import AlternativeEmail, CaseEmail, File, PersonalEmail
+from web.models import CaseEmail, Email, File, User
 from web.utils.s3 import get_file_from_s3, get_s3_client
 
 
-def get_user_emails_by_ids(user_ids):
+def get_user_emails_by_ids(user_ids: list[int]) -> list[str]:
     """Return a list emails for given users' ids"""
-    personal = (
-        PersonalEmail.objects.filter(user_id__in=user_ids)
+    return list(
+        Email.objects.filter(user_id__in=user_ids)
         .filter(portal_notifications=True)
         .values_list("email", flat=True)
+        .distinct()
+        .order_by("email")
     )
-    alternative = (
-        AlternativeEmail.objects.filter(user_id__in=user_ids)
-        .filter(portal_notifications=True)
-        .values_list("email", flat=True)
-    )
-    queryset = personal.union(alternative)
-    return list(queryset.all())
 
 
-def get_notification_emails(user):
+def get_notification_emails(user: User) -> list[str]:
     """Returns user's personal and alternative email addresses
     with portal notifications enabled"""
-    emails = []
-    personal = user.personal_emails.filter(portal_notifications=True)
-    alternative = user.alternative_emails.filter(portal_notifications=True)
-
-    for email in itertools.chain(personal, alternative):
-        if email.email and email.email not in emails:
-            emails.append(email.email)
-
-    return emails
+    return get_user_emails_by_ids([user.id])
 
 
 def create_case_email(

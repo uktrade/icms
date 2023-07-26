@@ -8,7 +8,7 @@ from django_filters import CharFilter, FilterSet
 import web.views.utils.countries
 from web.forms.fields import PhoneNumberField
 from web.forms.widgets import DateInput
-from web.models import AlternativeEmail, Email, PersonalEmail, PhoneNumber, User
+from web.models import Email, PhoneNumber, User
 
 
 class UserDetailsUpdateForm(forms.ModelForm):
@@ -84,31 +84,7 @@ class PhoneNumberForm(forms.ModelForm):
         widgets = {"type": Select(choices=PhoneNumber.TYPES)}
 
 
-class AlternativeEmailsForm(forms.ModelForm):
-    notifications = forms.CharField(
-        required=False, widget=Select(choices=((True, "Yes"), (False, "No")))
-    )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["notifications"].initial = self.instance.portal_notifications
-
-    def clean_notifications(self):
-        response = self.cleaned_data.get("notifications", None)
-        self.instance.portal_notifications = True if response else False
-        return response
-
-    class Meta:
-        model = AlternativeEmail
-        fields = ["email", "type", "notifications", "comment"]
-
-        widgets = {
-            "email": EmailInput(),
-            "type": Select(choices=Email.TYPES),
-        }
-
-
-class PersonalEmailForm(forms.ModelForm):
+class EmailForm(forms.ModelForm):
     PRIMARY = "PRIMARY"
     notifications = forms.CharField(
         required=False, widget=Select(choices=((PRIMARY, "Primary"), (True, "Yes"), (False, "No")))
@@ -117,18 +93,18 @@ class PersonalEmailForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance.is_primary:
-            self.fields["notifications"].initial = PersonalEmailForm.PRIMARY
+            self.fields["notifications"].initial = self.PRIMARY
         else:
             self.fields["notifications"].initial = self.instance.portal_notifications
 
     def clean_notifications(self):
         response = self.cleaned_data.get("notifications", None)
-        self.instance.is_primary = True if response == PersonalEmailForm.PRIMARY else False
+        self.instance.is_primary = True if response == self.PRIMARY else False
         self.instance.portal_notifications = True if response else False
         return response
 
     class Meta:
-        model = PersonalEmail
+        model = Email
         fields = ["email", "type", "notifications", "comment"]
 
         widgets = {
@@ -138,9 +114,7 @@ class PersonalEmailForm(forms.ModelForm):
 
 
 class PeopleFilter(FilterSet):
-    email_address = CharFilter(
-        field_name="personal_emails__email", lookup_expr="icontains", label="Email"
-    )
+    email_address = CharFilter(field_name="emails__email", lookup_expr="icontains", label="Email")
     forename = CharFilter(field_name="first_name", lookup_expr="icontains", label="Forename")
     surname = CharFilter(field_name="last_name", lookup_expr="icontains", label="Surname")
     organisation = CharFilter(

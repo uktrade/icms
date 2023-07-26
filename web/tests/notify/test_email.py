@@ -2,7 +2,7 @@ import pytest
 from django.core import mail
 from django.test import TestCase
 
-from web.models import AlternativeEmail, PersonalEmail, User, WithdrawApplication
+from web.models import Email, User, WithdrawApplication
 from web.notify import constants, email
 from web.tests.helpers import (
     CaseURLS,
@@ -19,13 +19,8 @@ class TestEmail(TestCase):
         for member in members:
             user = User.objects.get(username=member["username"])
 
-            for m in member.get("personal", []):
-                PersonalEmail(user=user, email=m["email"], portal_notifications=m["notify"]).save()
-            if "alternative" in member:
-                for m in member.get("alternative", []):
-                    AlternativeEmail(
-                        user=user, email=m["email"], portal_notifications=m["notify"]
-                    ).save()
+            for m in member.get("email", []):
+                Email(user=user, email=m["email"], portal_notifications=m["notify"]).save()
 
     def setup_user_emails(self):
         # An active import organisation
@@ -33,7 +28,7 @@ class TestEmail(TestCase):
             members=[
                 {
                     "username": "I1_main_contact",
-                    "personal": [
+                    "email": [
                         {
                             "email": "I1_main_contact_second_email@example.com",  # /PS-IGNORE
                             "notify": True,
@@ -42,8 +37,6 @@ class TestEmail(TestCase):
                             "email": "I1_main_contact_no_notify@example.com",  # /PS-IGNORE
                             "notify": False,
                         },
-                    ],
-                    "alternative": [
                         {"email": "I1_main_contact_alt@example.com", "notify": True},  # /PS-IGNORE
                         {
                             "email": "I1_main_contact_alt_no_notify@example.com",  # /PS-IGNORE
@@ -53,7 +46,7 @@ class TestEmail(TestCase):
                 },
                 {
                     "username": "I1_A1_main_contact",
-                    "alternative": [
+                    "email": [
                         {
                             "email": "I1_A1_main_contact_alt@example.com",  # /PS-IGNORE
                             "notify": True,
@@ -62,7 +55,7 @@ class TestEmail(TestCase):
                 },
                 {
                     "username": "I3_inactive_contact",
-                    "alternative": [
+                    "email": [
                         {
                             "email": "I3_inactive_contact_alt@example.com",  # /PS-IGNORE
                             "notify": True,
@@ -71,7 +64,7 @@ class TestEmail(TestCase):
                 },
                 {
                     "username": "E1_main_contact",
-                    "personal": [
+                    "email": [
                         {
                             "email": "E1_main_contact_second_email@example.com",  # /PS-IGNORE
                             "notify": True,
@@ -80,8 +73,6 @@ class TestEmail(TestCase):
                             "email": "E1_main_contact_no_notify@example.com",  # /PS-IGNORE
                             "notify": False,
                         },
-                    ],
-                    "alternative": [
                         {
                             "email": "E1_main_contact_alt@example.com",  # /PS-IGNORE
                             "notify": True,
@@ -94,7 +85,7 @@ class TestEmail(TestCase):
                 },
                 {
                     "username": "E1_A1_main_contact",
-                    "alternative": [
+                    "email": [
                         {
                             "email": "E1_A1_main_contact_alt@example.com",  # /PS-IGNORE
                             "notify": True,
@@ -107,7 +98,7 @@ class TestEmail(TestCase):
                 },
                 {
                     "username": "E3_inactive_contact",
-                    "alternative": [
+                    "email": [
                         {
                             "email": "archived_export_user_alt@example.com",  # /PS-IGNORE
                             "notify": True,

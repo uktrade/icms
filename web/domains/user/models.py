@@ -76,24 +76,10 @@ class Email(models.Model):
     type = models.CharField(max_length=30, choices=TYPES, blank=False, null=False, default=WORK)
     portal_notifications = models.BooleanField(blank=False, null=False, default=False)
     comment = models.CharField(max_length=4000, blank=True, null=True)
-
-    class Meta:
-        abstract = True
-
-
-class AlternativeEmail(Email):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="alternative_emails"
-    )
-
-    def __str__(self):
-        return self.email
-
-
-class PersonalEmail(Email):
     is_primary = models.BooleanField(blank=False, null=False, default=False)
+
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="personal_emails"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="emails"
     )
 
     def __str__(self):
