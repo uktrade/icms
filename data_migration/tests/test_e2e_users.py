@@ -29,8 +29,7 @@ user_data_source_target = {
     "user": [
         (dm.User, web.User),
         (dm.PhoneNumber, web.PhoneNumber),
-        (dm.AlternativeEmail, web.AlternativeEmail),
-        (dm.PersonalEmail, web.PersonalEmail),
+        (dm.Email, web.Email),
         (dm.Constabulary, web.Constabulary),
         (dm.Importer, web.Importer),
         (dm.Exporter, web.Exporter),
@@ -78,7 +77,8 @@ user_data_source_target = {
     DATA_TYPE_XML,
     {
         "user": [
-            xml_parser.EmailAddressParser,
+            xml_parser.PersonalEmailAddressParser,
+            xml_parser.AlternativeEmailAddressParser,
             xml_parser.PhoneNumberParser,
             xml_parser.ApprovalRequestParser,
             xml_parser.AccessFIRParser,
@@ -122,8 +122,6 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert u1.department == "Dept"
     assert u1.job_title == "IT"
     assert u1.phone_numbers.count() == 2
-    assert u1.alternative_emails.count() == 1
-    assert u1.personal_emails.count() == 2
 
     pn1, pn2 = u1.phone_numbers.order_by("pk")
     assert pn1.phone == "12345678"
@@ -133,28 +131,45 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert pn2.type == "MOBILE"
     assert pn2.comment is None
 
-    ae1 = u1.alternative_emails.first()
-    assert ae1.email == "test_b"
-    assert ae1.type == "WORK"
-    assert ae1.portal_notifications is True
-    assert ae1.comment is None
+    assert u1.emails.count() == 5
+    pe1, pe2, pe3, pe4, pe5 = u1.emails.order_by("pk")
 
-    pe1, pe2 = u1.personal_emails.order_by("pk")
+    # Personal Emails
+
     assert pe1.email == "test_a"
     assert pe1.type == "HOME"
     assert pe1.portal_notifications is True
     assert pe1.is_primary is True
     assert pe1.comment == "A COMMENT"
-    assert pe2.email == "test_c"
-    assert pe2.type == "HOME"
-    assert pe2.portal_notifications is False
-    assert pe2.is_primary is False
+
+    assert pe2.email == "test_b"
+    assert pe2.type == "WORK"
+    assert pe2.portal_notifications is True
     assert pe2.comment is None
+
+    assert pe3.email == "test_c"
+    assert pe3.type == "HOME"
+    assert pe3.portal_notifications is False
+    assert pe3.is_primary is False
+    assert pe3.comment is None
+
+    # Alternative Emails
+
+    assert pe4.email == "test_d"
+    assert pe4.type == "HOME"
+    assert pe4.portal_notifications is True
+    assert pe4.is_primary is False
+    assert pe4.comment == "A COMMENT"
+
+    assert pe5.email == "test_e"
+    assert pe5.type == "WORK"
+    assert pe5.portal_notifications is False
+    assert pe5.is_primary is False
+    assert pe5.comment is None
 
     assert u2.check_password("password123") is True
     assert u2.phone_numbers.count() == 0
-    assert u2.alternative_emails.count() == 0
-    assert u2.personal_emails.count() == 0
+    assert u2.emails.count() == 0
 
     # Check Access Request / Approval Request
 

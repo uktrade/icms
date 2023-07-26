@@ -86,3 +86,45 @@ SELECT COUNT(*)
 FROM impmgr.xview_iat_templates iat
 WHERE iat.ima_type <> 'GS'
 """
+
+email_address_count = """
+SELECT COUNT(*) FROM (
+  SELECT
+    wuam.wua_id id
+    , x.personal_email
+  FROM securemgr.web_user_account_master wuam
+  INNER JOIN securemgr.web_user_account_histories wuah ON wuah.wua_id = wuam.wua_id AND wuah.status_control = 'C'
+  INNER JOIN decmgr.resource_people_details rp ON rp.rp_id = wuah.resource_person_id AND (rp.status_control = 'C' OR rp.status = 'DELETE-DRAFT')
+  CROSS JOIN XMLTABLE('
+    for $g1 in /RESOURCE_PERSON_DETAIL/PERSONAL_EMAIL_LIST/PERSONAL_EMAIL | <null/>
+    where /RESOURCE_PERSON_DETAIL/PERSONAL_EMAIL_LIST/PERSONAL_EMAIL and not($g1/self::null)
+    return
+    <root>
+      <personal_email>{$g1/EMAIL_ADDRESS/text()}</personal_email>
+    </root>
+  '
+  PASSING rp.xml_data
+  COLUMNS
+    personal_email VARCHAR2(4000) PATH '/root/personal_email/text()'
+  ) x
+  UNION
+  SELECT
+    wuam.wua_id id
+    , x.personal_email
+  FROM securemgr.web_user_account_master wuam
+  INNER JOIN securemgr.web_user_account_histories wuah ON wuah.wua_id = wuam.wua_id AND wuah.status_control = 'C'
+  INNER JOIN decmgr.resource_people_details rp ON rp.rp_id = wuah.resource_person_id AND (rp.status_control = 'C' OR rp.status = 'DELETE-DRAFT')
+  CROSS JOIN XMLTABLE('
+    for $g1 in /RESOURCE_PERSON_DETAIL/DISTRIBUTION_EMAIL_LIST/DISTRIBUTION_EMAIL | <null/>
+    where /RESOURCE_PERSON_DETAIL/DISTRIBUTION_EMAIL_LIST/DISTRIBUTION_EMAIL and not($g1/self::null)
+    return
+    <root>
+      <personal_email>{$g1/EMAIL_ADDRESS/text()}</personal_email>
+    </root>
+  '
+  PASSING rp.xml_data
+  COLUMNS
+    personal_email VARCHAR2(4000) PATH '/root/personal_email/text()'
+  ) x
+)
+"""

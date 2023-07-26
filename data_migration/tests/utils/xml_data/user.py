@@ -49,7 +49,7 @@ phone_number_xml = """
 """.strip()
 
 
-email_xml = """
+personal_email_xml = """
 <PERSONAL_EMAIL_LIST>
   <PERSONAL_EMAIL>
     <EMAIL_ADDRESS>test_a</EMAIL_ADDRESS>
@@ -70,4 +70,21 @@ email_xml = """
     <COMMENT />
   </PERSONAL_EMAIL>
 </PERSONAL_EMAIL_LIST>
+""".strip()
+
+alternative_email_xml = """
+<DISTRIBUTION_EMAIL_LIST>
+  <DISTRIBUTION_EMAIL>
+    <EMAIL_ADDRESS>test_d</EMAIL_ADDRESS>
+    <PORTAL_NOTIFICATIONS>Yes</PORTAL_NOTIFICATIONS>
+    <TYPE>H</TYPE>
+    <COMMENT>A COMMENT</COMMENT>
+  </DISTRIBUTION_EMAIL>
+  <DISTRIBUTION_EMAIL>
+    <EMAIL_ADDRESS>test_e</EMAIL_ADDRESS>
+    <PORTAL_NOTIFICATIONS>No</PORTAL_NOTIFICATIONS>
+    <TYPE>W</TYPE>
+    <COMMENT />
+  </DISTRIBUTION_EMAIL>
+</DISTRIBUTION_EMAIL_LIST>
 """.strip()
