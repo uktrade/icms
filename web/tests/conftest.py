@@ -255,6 +255,11 @@ def ilb_admin_client(ilb_admin_user) -> Client:
 
 
 @pytest.fixture()
+def ilb_admin_two_client(ilb_admin_two) -> Client:
+    return get_test_client(ilb_admin_two)
+
+
+@pytest.fixture()
 def nca_admin_client(nca_admin_user) -> Client:
     return get_test_client(nca_admin_user)
 
@@ -267,6 +272,11 @@ def ho_admin_client(ho_admin_user) -> Client:
 @pytest.fixture()
 def importer_client(importer_one_contact) -> Client:
     return get_test_client(importer_one_contact)
+
+
+@pytest.fixture()
+def importer_agent_client(importer_one_agent_one_contact) -> Client:
+    return get_test_client(importer_one_agent_one_contact)
 
 
 @pytest.fixture()
@@ -305,7 +315,7 @@ def wood_app_submitted(
 def fa_dfl_app_in_progress(
     importer_client, importer_one_contact, importer, office
 ) -> DFLApplication:
-    """An in progress wood application with a fully valid set of data."""
+    """An in progress FA-DFL application with a fully valid set of data."""
 
     # Create the FA-DFL app
     app = create_in_progress_fa_dfl_app(importer_client, importer, office, importer_one_contact)
@@ -316,13 +326,71 @@ def fa_dfl_app_in_progress(
     return app
 
 
+@pytest.fixture
+def fa_dfl_agent_app_in_progress(
+    importer_agent_client,
+    importer_one_agent_one_contact,
+    importer,
+    office,
+    agent_importer,
+    importer_one_agent_office,
+):
+    """An in progress FA-DFL agent application with a fully valid set of data."""
+
+    # Create the FA-DFL agent app
+    app = create_in_progress_fa_dfl_app(
+        importer_agent_client,
+        importer,
+        office,
+        importer_one_agent_one_contact,
+        agent_importer,
+        importer_one_agent_office,
+    )
+
+    case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
+    case_progress.check_expected_task(app, Task.TaskType.PREPARE)
+
+    return app
+
+
 @pytest.fixture()
 def fa_dfl_app_submitted(importer_client, importer, office, importer_one_contact) -> DFLApplication:
-    """A valid FA DFL application in the submitted state."""
+    """A valid FA-DFL application in the submitted state."""
 
     app = create_in_progress_fa_dfl_app(importer_client, importer, office, importer_one_contact)
 
     submit_app(client=importer_client, view_name="import:fa-dfl:submit", app_pk=app.pk)
+
+    app.refresh_from_db()
+
+    case_progress.check_expected_status(app, [ImpExpStatus.SUBMITTED])
+    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
+
+    return app
+
+
+@pytest.fixture()
+def fa_dfl_agent_app_submitted(
+    importer_agent_client,
+    importer_one_agent_one_contact,
+    importer,
+    office,
+    agent_importer,
+    importer_one_agent_office,
+):
+    """A valid FA-DFL agent application in the submitted state."""
+
+    # Create the FA-DFL agent app
+    app = create_in_progress_fa_dfl_app(
+        importer_agent_client,
+        importer,
+        office,
+        importer_one_agent_one_contact,
+        agent_importer,
+        importer_one_agent_office,
+    )
+
+    submit_app(client=importer_agent_client, view_name="import:fa-dfl:submit", app_pk=app.pk)
 
     app.refresh_from_db()
 
@@ -387,12 +455,42 @@ def exporter_client(exporter_one_contact) -> Client:
 
 
 @pytest.fixture()
+def exporter_agent_client(exporter_one_agent_one_contact) -> Client:
+    return get_test_client(exporter_one_agent_one_contact)
+
+
+@pytest.fixture()
 def com_app_in_progress(
     exporter_client, exporter, exporter_office, exporter_one_contact
 ) -> "CertificateOfManufactureApplication":
     # Create the COM app
     app = create_in_progress_com_app(
         exporter_client, exporter, exporter_office, exporter_one_contact
+    )
+
+    case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
+    case_progress.check_expected_task(app, Task.TaskType.PREPARE)
+
+    return app
+
+
+@pytest.fixture()
+def com_agent_app_in_progress(
+    exporter_agent_client,
+    exporter_one_agent_one_contact,
+    exporter,
+    exporter_office,
+    agent_exporter,
+    exporter_one_agent_one_office,
+) -> "CertificateOfManufactureApplication":
+    # Create the COM app
+    app = create_in_progress_com_app(
+        exporter_agent_client,
+        exporter,
+        exporter_office,
+        exporter_one_agent_one_contact,
+        agent_exporter,
+        exporter_one_agent_one_office,
     )
 
     case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
@@ -411,6 +509,35 @@ def com_app_submitted(
     )
 
     submit_app(client=exporter_client, view_name="export:com-submit", app_pk=app.pk)
+
+    app.refresh_from_db()
+
+    case_progress.check_expected_status(app, [ImpExpStatus.SUBMITTED])
+    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
+
+    return app
+
+
+@pytest.fixture()
+def com_agent_app_submitted(
+    exporter_agent_client,
+    exporter_one_agent_one_contact,
+    exporter,
+    exporter_office,
+    agent_exporter,
+    exporter_one_agent_one_office,
+) -> "CertificateOfManufactureApplication":
+    # Create the COM app
+    app = create_in_progress_com_app(
+        exporter_agent_client,
+        exporter,
+        exporter_office,
+        exporter_one_agent_one_contact,
+        agent_exporter,
+        exporter_one_agent_one_office,
+    )
+
+    submit_app(client=exporter_agent_client, view_name="export:com-submit", app_pk=app.pk)
 
     app.refresh_from_db()
 

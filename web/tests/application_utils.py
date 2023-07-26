@@ -1,8 +1,9 @@
 import datetime
 import re
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test.client import Client
 from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
@@ -16,25 +17,29 @@ from web.models import (
     Country,
     DFLApplication,
     ExportApplicationType,
+    Exporter,
     GMPBrand,
+    Importer,
+    Office,
     OpenIndividualLicenceApplication,
     ProductLegislation,
     SanctionsAndAdhocApplication,
     SILApplication,
     Usage,
+    User,
     WoodQuotaApplication,
 )
 from web.models.shared import FirearmCommodity
 from web.utils.commodity import get_active_commodities, get_usage_commodities
 
-if TYPE_CHECKING:
-    from django.test.client import Client
-
-    from web.models import Exporter, Importer, Office, User
-
 
 def create_in_progress_wood_app(
-    importer_client: "Client", importer: "Importer", office: "Office", contact: "User"
+    importer_client: Client,
+    importer: Importer,
+    office: Office,
+    contact: User,
+    agent: Importer | None = None,
+    agent_office: Office | None = None,
 ) -> WoodQuotaApplication:
     """Creates a fully valid in progress wood application"""
 
@@ -44,6 +49,8 @@ def create_in_progress_wood_app(
         view_name="import:create-wood-quota",
         importer_pk=importer.pk,
         office_pk=office.pk,
+        agent_pk=agent.pk if agent else None,
+        agent_office_pk=agent_office.pk if agent_office else None,
     )
 
     # Save a valid set of data.
@@ -78,10 +85,12 @@ def create_in_progress_wood_app(
 
 
 def create_in_progress_fa_dfl_app(
-    importer_client: "Client",
-    importer: "Importer",
-    office: "Office",
-    importer_one_contact: "User",
+    importer_client: Client,
+    importer: Importer,
+    office: Office,
+    contact: User,
+    agent: Importer | None = None,
+    agent_office: Office | None = None,
 ) -> DFLApplication:
     """Creates a fully valid in progress fa dfl application"""
 
@@ -90,6 +99,8 @@ def create_in_progress_fa_dfl_app(
         view_name="import:create-fa-dfl",
         importer_pk=importer.pk,
         office_pk=office.pk,
+        agent_pk=agent.pk if agent else None,
+        agent_office_pk=agent_office.pk if agent_office else None,
     )
 
     # Save a valid set of data.
@@ -100,7 +111,7 @@ def create_in_progress_fa_dfl_app(
     consignment_country = dfl_countries[1]
     constabulary = Constabulary.objects.first()
     form_data = {
-        "contact": importer_one_contact.pk,
+        "contact": contact.pk,
         "applicant_reference": "applicant_reference value",
         "deactivated_firearm": True,
         "proof_checked": True,
@@ -141,16 +152,20 @@ def create_in_progress_fa_dfl_app(
 
 
 def create_in_progress_fa_oil_app(
-    importer_client: "Client",
-    importer: "Importer",
-    office: "Office",
-    importer_one_contact: "User",
+    importer_client: Client,
+    importer: Importer,
+    office: Office,
+    importer_one_contact: User,
+    agent: Importer | None = None,
+    agent_office: Office | None = None,
 ) -> OpenIndividualLicenceApplication:
     app_pk = create_import_app(
         client=importer_client,
         view_name="import:create-fa-oil",
         importer_pk=importer.pk,
         office_pk=office.pk,
+        agent_pk=agent.pk if agent else None,
+        agent_office_pk=agent_office.pk if agent_office else None,
     )
     any_country = Country.objects.get(name="Any Country", is_active=True)
 
@@ -195,16 +210,20 @@ def create_in_progress_fa_oil_app(
 
 
 def create_in_progress_fa_sil_app(
-    importer_client: "Client",
-    importer: "Importer",
-    office: "Office",
-    importer_one_contact: "User",
+    importer_client: Client,
+    importer: Importer,
+    office: Office,
+    importer_one_contact: User,
+    agent: Importer | None = None,
+    agent_office: Office | None = None,
 ) -> SILApplication:
     app_pk = create_import_app(
         client=importer_client,
         view_name="import:create-fa-sil",
         importer_pk=importer.pk,
         office_pk=office.pk,
+        agent_pk=agent.pk if agent else None,
+        agent_office_pk=agent_office.pk if agent_office else None,
     )
     # Save a valid set of data.
     origin_country = Country.objects.filter(
@@ -287,13 +306,20 @@ def create_in_progress_fa_sil_app(
 
 
 def create_in_progress_sanctions_app(
-    importer_client: "Client", importer: "Importer", office: "Office", importer_contact: "User"
+    importer_client: Client,
+    importer: Importer,
+    office: Office,
+    importer_contact: User,
+    agent: Importer | None = None,
+    agent_office: Office | None = None,
 ) -> SanctionsAndAdhocApplication:
     app_pk = create_import_app(
         client=importer_client,
         view_name="import:create-sanctions",
         importer_pk=importer.pk,
         office_pk=office.pk,
+        agent_pk=agent.pk if agent else None,
+        agent_office_pk=agent_office.pk if agent_office else None,
     )
     # Save a valid set of data.
     origin_country = Country.objects.filter(
@@ -363,16 +389,20 @@ def create_in_progress_sanctions_app(
 
 
 def create_in_progress_com_app(
-    exporter_client: "Client",
-    exporter: "Exporter",
-    office: "Office",
-    exporter_one_contact: "User",
+    exporter_client: Client,
+    exporter: Exporter,
+    office: Office,
+    exporter_one_contact: User,
+    agent: Exporter | None = None,
+    agent_office: Office | None = None,
 ) -> CertificateOfManufactureApplication:
     app_pk = create_export_app(
         client=exporter_client,
         type_code=ExportApplicationType.Types.MANUFACTURE.value,
         exporter_pk=exporter.pk,
         office_pk=office.pk,
+        agent_pk=agent.pk if agent else None,
+        agent_office_pk=agent_office.pk if agent_office else None,
     )
 
     form_data = {
@@ -395,16 +425,20 @@ def create_in_progress_com_app(
 
 
 def create_in_progress_gmp_app(
-    exporter_client: "Client",
-    exporter: "Exporter",
-    office: "Office",
-    exporter_one_contact: "User",
+    exporter_client: Client,
+    exporter: Exporter,
+    office: Office,
+    exporter_one_contact: User,
+    agent: Exporter | None = None,
+    agent_office: Office | None = None,
 ) -> CertificateOfGoodManufacturingPracticeApplication:
     app_pk = create_export_app(
         client=exporter_client,
         type_code=ExportApplicationType.Types.GMP.value,
         exporter_pk=exporter.pk,
         office_pk=office.pk,
+        agent_pk=agent.pk if agent else None,
+        agent_office_pk=agent_office.pk if agent_office else None,
     )
 
     form_data = {
@@ -457,16 +491,20 @@ def create_in_progress_gmp_app(
 
 
 def create_in_progress_cfs_app(
-    exporter_client: "Client",
-    exporter: "Exporter",
-    office: "Office",
-    exporter_one_contact: "User",
+    exporter_client: Client,
+    exporter: Exporter,
+    office: Office,
+    exporter_one_contact: User,
+    agent: Exporter | None = None,
+    agent_office: Office | None = None,
 ) -> CertificateOfFreeSaleApplication:
     app_pk = create_export_app(
         client=exporter_client,
         type_code=ExportApplicationType.Types.FREE_SALE.value,
         exporter_pk=exporter.pk,
         office_pk=office.pk,
+        agent_pk=agent.pk if agent else None,
+        agent_office_pk=agent_office.pk if agent_office else None,
     )
 
     form_data = {
@@ -533,11 +571,25 @@ def create_in_progress_cfs_app(
     return cfs_app
 
 
-def create_import_app(*, client: "Client", view_name: str, importer_pk: int, office_pk: int) -> int:
+def create_import_app(
+    *,
+    client: Client,
+    view_name: str,
+    importer_pk: int,
+    office_pk: int,
+    agent_pk: int | None = None,
+    agent_office_pk: int | None = None,
+) -> int:
     """Creates an application and returns the primary key"""
 
-    # TODO: Extend with agent and agent_office if needed
-    post_data = {"importer": importer_pk, "importer_office": office_pk}
+    post_data = {
+        "importer": importer_pk,
+        "importer_office": office_pk,
+    }
+
+    if agent_pk and agent_office_pk:
+        post_data["agent"] = agent_pk
+        post_data["agent_office"] = agent_office_pk
 
     url = reverse(view_name)
     resp = client.post(url, post_data)
@@ -549,10 +601,23 @@ def create_import_app(*, client: "Client", view_name: str, importer_pk: int, off
     return application_pk
 
 
-def create_export_app(*, client: "Client", type_code: str, exporter_pk: int, office_pk: int) -> int:
+def create_export_app(
+    *,
+    client: Client,
+    type_code: str,
+    exporter_pk: int,
+    office_pk: int,
+    agent_pk: int | None = None,
+    agent_office_pk: int | None = None,
+) -> int:
     url = reverse("export:create-application", kwargs={"type_code": type_code.lower()})
 
     post_data = {"exporter": exporter_pk, "exporter_office": office_pk}
+
+    if agent_pk and agent_office_pk:
+        post_data["agent"] = agent_pk
+        post_data["agent_office"] = agent_office_pk
+
     response = client.post(url, post_data)
 
     application_pk = int(re.search(r"\d+", response.url).group(0))
@@ -563,7 +628,7 @@ def create_export_app(*, client: "Client", type_code: str, exporter_pk: int, off
 
 
 def save_app_data(
-    *, client: "Client", view_name: str, app_pk: int, form_data: dict[str, Any]
+    *, client: Client, view_name: str, app_pk: int, form_data: dict[str, Any]
 ) -> None:
     """Check the form submits and redirects back to the same view."""
 
@@ -577,7 +642,7 @@ def save_app_data(
 
 def add_app_file(
     *,
-    client: "Client",
+    client: Client,
     view_name: str,
     app_pk: int,
     url_kwargs: dict[str, Any] | None = None,
@@ -596,7 +661,7 @@ def add_app_file(
     assert response.status_code == 302
 
 
-def submit_app(*, client: "Client", view_name: str, app_pk: int) -> None:
+def submit_app(*, client: Client, view_name: str, app_pk: int) -> None:
     """Submits an application."""
 
     view_kwargs = {"application_pk": app_pk}
