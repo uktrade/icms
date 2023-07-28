@@ -23,11 +23,6 @@ export_query_model = [
         dm.ExportApplicationCountries,
     ),
     QueryModel(queries.export_certificate, "export_certificate", dm.ExportApplicationCertificate),
-    QueryModel(
-        queries.export_certificate_docs,
-        "export_certificate_docs",
-        dm.ExportCertificateCaseDocumentReferenceData,
-    ),
     QueryModel(queries.beis_emails, "beis_emails", dm.CaseEmail),
     QueryModel(queries.hse_emails, "hse_emails", dm.CaseEmail),
 ]

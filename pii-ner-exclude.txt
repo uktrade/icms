@@ -3166,3 +3166,31 @@ request\nis
 Access Request Approval
 GOV_NOTIFY_API_KEY
 GOV Notify
+ON fft.ff_id =
+ON sld.id = DEREF(fv.secure_lob_ref).id WHERE xid.ima_type
+FileTarget
+ON xx.file_folder_id
+"impmgr.importer_authorities ia INNER JOIN
+SPS Application File Folders
+FA-DFL Application File Folders
+FA-OIL Application File Folders
+Mailshot File Folders
+Import Application Case Note File Folders
+GMP Application File Folders
+Export Application Case Note Document Folders
+SPS Application
+FA-DFL Application
+FA-OIL Application
+Wood Application
+Mailshot Files
+Import Application Case Note Files
+Export Application Case Note Documents
+Supplmentary Report Goods Uploaded Files
+Export Application Certificate Documents
+SELECT ir.ima_id
+ON xiad.ima_id = ia.id
+ir.licence_ref || ir.licence_check_letter reference
+xird.di_id
+REGEXP_SUBSTR(dd.created_by
+data_migration_importapplication
+web_importapplication.process_ptr_id =

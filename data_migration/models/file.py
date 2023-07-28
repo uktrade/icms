@@ -2,7 +2,7 @@ from collections.abc import Generator
 from typing import Any
 
 from django.db import models
-from django.db.models import F, Q, QuerySet
+from django.db.models import F
 from django.db.models.expressions import Window
 from django.db.models.functions import RowNumber
 
@@ -10,26 +10,6 @@ from data_migration import queries
 
 from .base import MigrationBase
 from .user import User
-
-
-class FileCombined(MigrationBase):
-    app_model = models.CharField(max_length=40, null=True)
-    doc_folder_id = models.IntegerField(null=True)
-    folder_id = models.IntegerField(null=True)
-    folder_type = models.CharField(max_length=30)
-    folder_title = models.CharField(max_length=30, null=True)
-    target_id = models.IntegerField(null=True)
-    target_type = models.CharField(max_length=30, null=True)
-    status = models.CharField(max_length=20, null=True)
-    version_id = models.IntegerField(null=True)
-    file_id = models.IntegerField(null=True)
-    filename = models.CharField(max_length=300, null=True)
-    content_type = models.CharField(max_length=100, null=True)
-    file_size = models.IntegerField(null=True)
-    path = models.CharField(max_length=4000, null=True)
-    created_datetime = models.DateTimeField(null=True)
-    created_by_id = models.IntegerField(null=True)
-    sr_goods_file_id = models.CharField(max_length=20, null=True)
 
 
 class FileFolder(MigrationBase):
@@ -40,13 +20,8 @@ class FileFolder(MigrationBase):
     folder_type = models.CharField(max_length=30)
 
     @classmethod
-    def get_from_combined(cls) -> QuerySet:
-        return (
-            FileCombined.objects.exclude(folder_id__isnull=True)
-            .values("app_model", "folder_type", "folder_id")
-            .distinct()
-            .iterator(chunk_size=2000)
-        )
+    def models_to_populate(cls) -> list[str]:
+        return ["FileTarget", cls.__name__]
 
 
 class FileTarget(MigrationBase):
@@ -59,15 +34,6 @@ class FileTarget(MigrationBase):
     target_type = models.CharField(max_length=30)
     status = models.CharField(max_length=20, null=True)
 
-    @classmethod
-    def get_from_combined(cls) -> QuerySet:
-        return (
-            FileCombined.objects.filter(target_id__isnull=False)
-            .values("folder_id", "target_type", "status", "target_id")
-            .distinct()
-            .iterator(chunk_size=2000)
-        )
-
 
 class DocFolder(MigrationBase):
     """This model is for DOCLIBMGR.FOLDERS folders"""
@@ -75,19 +41,11 @@ class DocFolder(MigrationBase):
     doc_folder_id = models.AutoField(auto_created=True, primary_key=True)
     folder_title = models.CharField(max_length=30)
 
-    @classmethod
-    def get_from_combined(cls) -> QuerySet:
-        return (
-            FileCombined.objects.exclude(doc_folder_id__isnull=True)
-            .values("folder_title", "doc_folder_id")
-            .distinct()
-            .iterator(chunk_size=2000)
-        )
-
 
 class File(MigrationBase):
     UPDATE_TIMESTAMP_QUERY = queries.file_timestamp_update
 
+    version_id = models.IntegerField(null=True)
     is_active = models.BooleanField(default=True)
     filename = models.CharField(max_length=300)
     content_type = models.CharField(max_length=100)
@@ -110,35 +68,13 @@ class File(MigrationBase):
     @classmethod
     def get_excludes(cls) -> list[str]:
         return super().get_excludes() + [
+            "version_id",
             "target_id",
             "doc_folder_id",
             "document_legacy_id",
             "created_by_str",
             "sr_goods_file_id",
         ]
-
-    @classmethod
-    def get_from_combined(cls) -> QuerySet:
-        return (
-            FileCombined.objects.exclude(content_type__isnull=True)
-            .filter(
-                Q(file_id__isnull=False)
-                | (Q(version_id__isnull=False) & Q(status="RECEIVED"))
-                | Q(sr_goods_file_id__isnull=False)
-            )
-            .values(
-                "filename",
-                "content_type",
-                "file_size",
-                "path",
-                "created_datetime",
-                "created_by_id",
-                "target_id",
-                "doc_folder_id",
-                "sr_goods_file_id",
-            )
-            .iterator(chunk_size=2000)
-        )
 
 
 class FileM2MBase(MigrationBase):
