@@ -37,7 +37,6 @@ ia_query_model = [
     QueryModel(queries.textiles_application, "textiles_application", dm.TextilesApplication),
     QueryModel(queries.textiles_checklist, "textiles_checklist", dm.TextilesChecklist),
     QueryModel(queries.ia_licence, "ia_licence", dm.ImportApplicationLicence),
-    QueryModel(queries.ia_licence_docs, "ia_licence_docs", dm.CaseDocument),
     QueryModel(queries.constabulary_emails, "constabulary_emails", dm.CaseEmail),
     QueryModel(queries.case_note, "case_note", dm.CaseNote),
     QueryModel(queries.update_request, "update_request", dm.UpdateRequest),

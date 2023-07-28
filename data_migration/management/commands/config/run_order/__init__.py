@@ -13,15 +13,19 @@ from .export_application import (
     export_source_target,
     export_xml,
 )
+from .files import file_folder_query_model, file_query_model, file_source_target
 from .import_application import ia_m2m, ia_query_model, ia_source_target, ia_xml
 from .reference import ref_m2m, ref_query_model, ref_source_target
 from .user import user_m2m, user_query_model, user_source_target, user_xml
 
-DATA_TYPE = Literal["reference", "import_application", "user", "file", "export_application"]
+DATA_TYPE = Literal[
+    "reference", "import_application", "user", "file", "file_folder", "export_application"
+]
 
 DATA_TYPE_QUERY_MODEL: dict[str, list[QueryModel]] = {
     "export_application": export_query_model,
-    "file": [],
+    "file": file_query_model,
+    "file_folder": file_folder_query_model,
     "import_application": ia_query_model,
     "reference": ref_query_model,
     "user": user_query_model,
@@ -29,7 +33,7 @@ DATA_TYPE_QUERY_MODEL: dict[str, list[QueryModel]] = {
 
 DATA_TYPE_SOURCE_TARGET: dict[str, list[SourceTarget]] = {
     "export_application": export_source_target,
-    "file": [],
+    "file": file_source_target,
     "import_application": ia_source_target,
     "reference": ref_source_target,
     "user": user_source_target,
@@ -53,8 +57,6 @@ TASK_LIST = [
     task.PrepareTask,
     task.ProcessTask,
 ]
-
-FILE_MODELS: list[type[Model]] = [dm.FileFolder, dm.FileTarget, dm.DocFolder, dm.File]
 
 
 TIMESTAMP_UPDATES: list[type[Model]] = [

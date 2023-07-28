@@ -1,5 +1,4 @@
 import argparse
-from itertools import islice
 from typing import TYPE_CHECKING
 
 import oracledb
@@ -7,7 +6,7 @@ import oracledb
 from data_migration import models
 
 from ._base import MigrationBaseCommand
-from .config.run_order import DATA_TYPE, DATA_TYPE_QUERY_MODEL, FILE_MODELS
+from .config.run_order import DATA_TYPE, DATA_TYPE_QUERY_MODEL
 from .utils.db import CONNECTION_CONFIG, new_process_pk
 from .utils.format import format_name, format_row
 
@@ -43,9 +42,10 @@ class Command(MigrationBaseCommand):
         with oracledb.connect(**CONNECTION_CONFIG) as connection:
             self._export_data("user", connection, options["skip_user"])
             self._export_data("reference", connection, options["skip_ref"])
-            self._export_data("file", connection, options["skip_file"])
+            self._export_data("file_folder", connection, options["skip_file"])
             self._export_data("import_application", connection, options["skip_ia"])
             self._export_data("export_application", connection, options["skip_export"])
+            self._export_data("file", connection, options["skip_file"])
             self._post_export_tasks(options["skip_post"])
 
         self._log_script_end()
@@ -94,9 +94,6 @@ class Command(MigrationBaseCommand):
 
             self._log_time()
 
-        if data_type == "file":
-            self._extract_file_data()
-
         self.stdout.write(f"{name} Data Export Complete!")
 
     def _export_model_data(
@@ -123,27 +120,6 @@ class Command(MigrationBaseCommand):
                     batch.append(model(**model_data))
 
             model.objects.bulk_create(batch)
-
-    def _extract_file_data(self) -> None:
-        """Normalises file data as per V1 structure"""
-
-        self.stdout.write("Extracting file data")
-
-        for model in FILE_MODELS:
-            self.stdout.write(f"\tExtracting {model.__name__}")
-            data = model.get_from_combined()
-
-            while True:
-                batch = [model(**obj) for obj in islice(data, self.batch_size)]
-
-                if not batch:
-                    break
-
-                model.objects.bulk_create(batch)
-
-            self._log_time()
-
-        self.stdout.write("File data extracted")
 
     def _post_export_tasks(self, skip: bool) -> None:
         """Data fixes after export"""

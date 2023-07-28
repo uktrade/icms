@@ -54,6 +54,7 @@ SELECT
   , dd.created_datetime
   , dd.created_by created_by_str
   , wl.wua_id created_by_id
+  , sld.blob_data
 FROM impmgr.ima_responses ir
   INNER JOIN impmgr.ima_response_details ird ON ird.ir_id = ir.id
   INNER JOIN impmgr.xview_ima_details xiad ON xiad.imad_id = ird.imad_id
@@ -64,6 +65,7 @@ FROM impmgr.ima_responses ir
   INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(dd.secure_lob_ref).id
   INNER JOIN wua_login wl ON wl.login_id = REGEXP_SUBSTR(dd.created_by, '\((.+)\)', 1, 1, NULL, 1)
 WHERE ir.response_type LIKE '%_LICENCE' OR ir.response_type LIKE '%_COVER'
+  AND dd.created_datetime TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER BY sld.id
 """
 

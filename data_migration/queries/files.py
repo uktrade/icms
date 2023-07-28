@@ -1,28 +1,48 @@
-# Join to SECURE_LOB_DATA when retrieving the file data
-# INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(fv.secure_lob_ref).id
-
-derogations_application_files = """
+import_application_folders = """
 SELECT
   ff.id folder_id
   , ff.file_folder_type folder_type
-  , 'derogationsapplication' app_model
+  , :app_model app_model
   , fft.target_mnem target_type
   , fft.status
   , fft.id target_id
+FROM impmgr.xview_ima_details xid
+INNER JOIN impmgr.import_application_types iat
+  ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
+INNER JOIN decmgr.file_folders ff ON ff.id = xid.app_docs_ff_id
+LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
+WHERE xid.ima_type = :ima_type
+  AND xid.ima_sub_type = :ima_sub_type
+  AND xid.status_control = 'C'
+  AND xid.status <> 'DELETED'
+  AND (
+    (iat.status = 'ARCHIVED' AND xid.submitted_datetime IS NOT NULL)
+    OR (
+      iat.status = 'CURRENT'
+      AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
+    )
+  )
+ORDER by fft.id
+"""
+
+
+import_application_files = """
+SELECT
+  fft.id target_id
   , fv.*
   , sld.blob_data
 FROM impmgr.xview_ima_details xid
 INNER JOIN impmgr.import_application_types iat
   ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
 INNER JOIN decmgr.file_folders ff ON ff.id = xid.app_docs_ff_id
-LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
-LEFT JOIN (
+INNER JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
+INNER JOIN (
   SELECT
     fft_id
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , 'derogations_application_files/' || id || '-' || x.filename path
+    , :path_prefix || '/' || id || '-' || x.filename path
     , secure_lob_ref
     , x.*
   FROM decmgr.file_versions fv
@@ -36,446 +56,39 @@ LEFT JOIN (
   WHERE status_control = 'C'
 ) fv ON fv.fft_id = fft.id
 INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(fv.secure_lob_ref).id
-WHERE fft.target_mnem IN ('IMP_SUPPORTING_DOC')
-AND xid.ima_type = 'SAN'
-AND xid.ima_sub_type = 'SAN1'
-AND xid.status_control = 'C'
-AND xid.status <> 'DELETED'
-AND (
-  (iat.status = 'ARCHIVED' AND xid.submitted_datetime IS NOT NULL)
-  OR (
-    iat.status = 'CURRENT'
-    AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
+WHERE xid.ima_type = :ima_type
+  AND xid.ima_sub_type = :ima_sub_type
+  AND xid.status_control = 'C'
+  AND xid.status <> 'DELETED'
+  AND (
+    (iat.status = 'ARCHIVED' AND xid.submitted_datetime IS NOT NULL)
+    OR (
+      iat.status = 'CURRENT'
+      AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
+    )
   )
-)
-AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
+  AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
 """
 
-sps_application_files = """
+
+file_folders_base = """
 SELECT
   ff.id folder_id
   , ff.file_folder_type folder_type
-  , 'priorsurveillanceapplication' app_model
   , fft.target_mnem target_type
-  , fft.status
   , fft.id target_id
-  , fv.*
-  , sld.blob_data
-FROM impmgr.xview_ima_details xid
-INNER JOIN impmgr.import_application_types iat
-  ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
-INNER JOIN decmgr.file_folders ff ON ff.id = xid.app_docs_ff_id
+  , fft.status
+FROM {from_table}
+INNER JOIN decmgr.file_folders ff ON xx.file_folder_id = ff.id
 LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
-LEFT JOIN (
-  SELECT
-    fft_id
-    , fv.id version_id
-    , create_start_datetime created_datetime
-    , create_by_wua_id created_by_id
-    , 'sps_application_files/' || id || '-' || x.filename path
-    , DEREF(secure_lob_ref).id  secure_lob_ref_id
-    , x.*
-  FROM decmgr.file_versions fv
-  CROSS JOIN XMLTABLE('/*'
-    PASSING fv.metadata_xml
-    COLUMNS
-      filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
-      , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
-      , file_size NUMBER PATH '/file-metadata/size/text()'
-  ) x
-  WHERE status_control = 'C'
-) fv ON fv.fft_id = fft.id
-INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE fft.target_mnem IN ('IMP_SUPPORTING_DOC')
-AND xid.ima_type = 'SPS'
-AND xid.ima_sub_type = 'SPS1'
-AND xid.status_control = 'C'
-AND xid.status <> 'DELETED'
-AND (
-  (iat.status = 'ARCHIVED' AND xid.submitted_datetime IS NOT NULL)
-  OR (
-    iat.status = 'CURRENT'
-    AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
-  )
-)
-AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
-ORDER by fft.id
-"""
-
-dfl_application_files = """
-SELECT
-  ff.id folder_id
-  , ff.file_folder_type folder_type
-  , 'dflapplication' app_model
-  , fft.target_mnem target_type
-  , fft.status
-  , fft.id target_id
-  , fv.*
-  , sld.blob_data
-FROM impmgr.xview_ima_details xid
-INNER JOIN impmgr.import_application_types iat
-  ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
-INNER JOIN decmgr.file_folders ff ON ff.id = xid.app_docs_ff_id
-LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
-LEFT JOIN (
-  SELECT
-    fft_id
-    , fv.id version_id
-    , create_start_datetime created_datetime
-    , create_by_wua_id created_by_id
-    , 'dfl_application_files/' || id || '-' || x.filename path
-    , DEREF(secure_lob_ref).id  secure_lob_ref_id
-    , x.*
-  FROM decmgr.file_versions fv
-  CROSS JOIN XMLTABLE('/*'
-    PASSING fv.metadata_xml
-    COLUMNS
-      filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
-      , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
-      , file_size NUMBER PATH '/file-metadata/size/text()'
-  ) x
-  WHERE status_control = 'C'
-) fv ON fv.fft_id = fft.id
-INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE fft.target_mnem IN ('IMP_FIREARMS_CERTIFICATE')
-AND xid.ima_type = 'FA'
-AND xid.ima_sub_type = 'DEACTIVATED'
-AND xid.status_control = 'C'
-AND xid.status <> 'DELETED'
-AND (
-  (iat.status = 'ARCHIVED' AND xid.submitted_datetime IS NOT NULL)
-  OR (
-    iat.status = 'CURRENT'
-    AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
-  )
-)
-AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER by fft.id
 """
 
 
-oil_application_files = """
+file_objects_base = """
 SELECT
-  ff.id folder_id
-  , ff.file_folder_type folder_type
-  , 'openindividuallicenceapplication' app_model
-  , fft.target_mnem target_type
-  , fft.status
-  , fft.id target_id
-  , fv.*
-  , sld.blob_data
-FROM impmgr.xview_ima_details xid
-INNER JOIN impmgr.import_application_types iat
-  ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
-INNER JOIN decmgr.file_folders ff ON ff.id = xid.app_docs_ff_id
-LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
-LEFT JOIN (
-  SELECT
-    fft_id
-    , fv.id version_id
-    , create_start_datetime created_datetime
-    , create_by_wua_id created_by_id
-    , 'oil_application_files/' || id || '-' || x.filename path
-    , DEREF(secure_lob_ref).id  secure_lob_ref_id
-    , x.*
-  FROM decmgr.file_versions fv
-  CROSS JOIN XMLTABLE('/*'
-    PASSING fv.metadata_xml
-    COLUMNS
-      filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
-      , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
-      , file_size NUMBER PATH '/file-metadata/size/text()'
-  ) x
-  WHERE status_control = 'C'
-) fv ON fv.fft_id = fft.id
-INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE fft.target_mnem IN ('IMP_FIREARMS_CERTIFICATE', 'IMP_SECTION5_AUTHORITY')
-AND xid.ima_type = 'FA'
-AND xid.ima_sub_type = 'OIL'
-AND xid.status_control = 'C'
-AND xid.status <> 'DELETED'
-AND (
-  (iat.status = 'ARCHIVED' AND xid.submitted_datetime IS NOT NULL)
-  OR (
-    iat.status = 'CURRENT'
-    AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
-  )
-)
-AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
-ORDER by fft.id
-"""
-
-
-sil_application_files = """
-SELECT
-  ff.id folder_id
-  , ff.file_folder_type folder_type
-  , 'silapplication' app_model
-  , fft.target_mnem target_type
-  , fft.status
-  , fft.id target_id
-  , fv.*
-  , sld.blob_data
-FROM impmgr.xview_ima_details xid
-INNER JOIN impmgr.import_application_types iat
-  ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
-INNER JOIN decmgr.file_folders ff ON ff.id = xid.app_docs_ff_id
-LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
-LEFT JOIN (
-  SELECT
-    fft_id
-    , fv.id version_id
-    , create_start_datetime created_datetime
-    , create_by_wua_id created_by_id
-    , 'sil_application_files/' || id || '-' || x.filename path
-    , DEREF(secure_lob_ref).id  secure_lob_ref_id
-    , x.*
-  FROM decmgr.file_versions fv
-  CROSS JOIN XMLTABLE('/*'
-    PASSING fv.metadata_xml
-    COLUMNS
-      filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
-      , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
-      , file_size NUMBER PATH '/file-metadata/size/text()'
-  ) x
-  WHERE status_control = 'C'
-) fv ON fv.fft_id = fft.id
-INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE fft.target_mnem IN ('IMP_FIREARMS_CERTIFICATE', 'IMP_SECTION5_AUTHORITY')
-AND xid.ima_type = 'FA'
-AND xid.ima_sub_type = 'SIL'
-AND xid.status_control = 'C'
-AND xid.status <> 'DELETED'
-AND (
-  (iat.status = 'ARCHIVED' AND xid.submitted_datetime IS NOT NULL)
-  OR (
-    iat.status = 'CURRENT'
-    AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
-  )
-)
-AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
-ORDER by fft.id
-"""
-
-
-sanction_application_files = """
-SELECT
-  ff.id folder_id
-  , ff.file_folder_type folder_type
-  , 'sanctionsandadhocapplication' app_model
-  , fft.target_mnem target_type
-  , fft.status
-  , fft.id target_id
-  , fv.*
-  , sld.blob_data
-FROM impmgr.xview_ima_details xid
-INNER JOIN impmgr.import_application_types iat
-  ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
-INNER JOIN decmgr.file_folders ff ON ff.id = xid.app_docs_ff_id
-LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
-LEFT JOIN (
-  SELECT
-    fft_id
-    , fv.id version_id
-    , create_start_datetime created_datetime
-    , create_by_wua_id created_by_id
-    , 'sanction_application_files/' || id || '-' || x.filename path
-    , DEREF(secure_lob_ref).id  secure_lob_ref_id
-    , x.*
-  FROM decmgr.file_versions fv
-  CROSS JOIN XMLTABLE('/*'
-    PASSING fv.metadata_xml
-    COLUMNS
-      filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
-      , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
-      , file_size NUMBER PATH '/file-metadata/size/text()'
-  ) x
-  WHERE status_control = 'C'
-) fv ON fv.fft_id = fft.id
-INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE fft.target_mnem IN ('IMP_SUPPORTING_DOC', 'IMP_CONTRACT_DOC')
-AND xid.ima_type = 'ADHOC'
-AND xid.ima_sub_type = 'ADHOC1'
-AND xid.status_control = 'C'
-AND xid.status <> 'DELETED'
-AND (
-  (iat.status = 'ARCHIVED' AND xid.submitted_datetime IS NOT NULL)
-  OR (
-    iat.status = 'CURRENT'
-    AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
-  )
-)
-AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
-ORDER by fft.id
-"""
-
-
-opt_application_files = """
-SELECT
-  ff.id folder_id
-  , ff.file_folder_type folder_type
-  , 'outwardprocessingtradeapplication' app_model
-  , fft.target_mnem target_type
-  , fft.status
-  , fft.id target_id
-  , fv.*
-  , sld.blob_data
-FROM impmgr.xview_ima_details xid
-INNER JOIN impmgr.import_application_types iat
-  ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
-INNER JOIN decmgr.file_folders ff ON ff.id = xid.app_docs_ff_id
-LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
-LEFT JOIN (
-  SELECT
-    fft_id
-    , fv.id version_id
-    , create_start_datetime created_datetime
-    , create_by_wua_id created_by_id
-    , 'opt_application_files/' || id || '-' || x.filename path
-    , DEREF(secure_lob_ref).id  secure_lob_ref_id
-    , x.*
-  FROM decmgr.file_versions fv
-  CROSS JOIN XMLTABLE('/*'
-    PASSING fv.metadata_xml
-    COLUMNS
-      filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
-      , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
-      , file_size NUMBER PATH '/file-metadata/size/text()'
-  ) x
-  WHERE status_control = 'C'
-) fv ON fv.fft_id = fft.id
-INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE fft.target_mnem IN (
-  'IMP_SUPPORTING_DOC', 'IMP_OPT_BENEFICIARY_DOC', 'IMP_OPT_EMPLOY_DOC', 'IMP_OPT_FURTHER_AUTH_DOC',
-  'IMP_OPT_NEW_APP_JUST_DOC', 'IMP_OPT_PRIOR_AUTH_DOC', 'IMP_OPT_SUBCONTRACT_DOC'
-)
-AND xid.ima_type = 'OPT'
-AND xid.ima_sub_type = 'QUOTA'
-AND xid.status_control = 'C'
-AND xid.status <> 'DELETED'
-AND (
-  (iat.status = 'ARCHIVED' AND xid.submitted_datetime IS NOT NULL)
-  OR (
-    iat.status = 'CURRENT'
-    AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
-  )
-)
-AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
-ORDER by fft.id
-"""
-
-
-wood_application_files = """
-SELECT
-  ff.id folder_id
-  , ff.file_folder_type folder_type
-  , 'woodquotaapplication' app_model
-  , fft.target_mnem target_type
-  , fft.status
-  , fft.id target_id
-  , fv.*
-  , sld.blob_data
-FROM impmgr.xview_ima_details xid
-INNER JOIN impmgr.import_application_types iat
-  ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
-INNER JOIN decmgr.file_folders ff ON ff.id = xid.app_docs_ff_id
-LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
-LEFT JOIN (
-  SELECT
-    fft_id
-    , fv.id version_id
-    , create_start_datetime created_datetime
-    , create_by_wua_id created_by_id
-    , 'wood_application_files/' || id || '-' || x.filename path
-    , DEREF(secure_lob_ref).id  secure_lob_ref_id
-    , x.*
-  FROM decmgr.file_versions fv
-  CROSS JOIN XMLTABLE('/*'
-    PASSING fv.metadata_xml
-    COLUMNS
-      filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
-      , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
-      , file_size NUMBER PATH '/file-metadata/size/text()'
-  ) x
-  WHERE status_control = 'C'
-) fv ON fv.fft_id = fft.id
-INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE fft.target_mnem IN ('IMP_CONTRACT_DOC', 'IMP_SUPPORTING_DOC')
-AND xid.ima_type = 'WD'
-AND xid.ima_sub_type = 'QUOTA'
-AND xid.status_control = 'C'
-AND xid.status <> 'DELETED'
-AND (
-  (iat.status = 'ARCHIVED' AND xid.submitted_datetime IS NOT NULL)
-  OR (
-    iat.status = 'CURRENT'
-    AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
-  )
-)
-AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
-ORDER by fft.id
-"""
-
-
-textiles_application_files = """
-SELECT
-  ff.id folder_id
-  , ff.file_folder_type folder_type
-  , 'textilesapplication' app_model
-  , fft.target_mnem target_type
-  , fft.status
-  , fft.id target_id
-  , fv.*
-  , sld.blob_data
-FROM impmgr.xview_ima_details xid
-INNER JOIN impmgr.import_application_types iat
-  ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
-INNER JOIN decmgr.file_folders ff ON ff.id = xid.app_docs_ff_id
-LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
-LEFT JOIN (
-  SELECT
-    fft_id
-    , fv.id version_id
-    , create_start_datetime created_datetime
-    , create_by_wua_id created_by_id
-    , 'textiles_application_files/' || id || '-' || x.filename path
-    , DEREF(secure_lob_ref).id  secure_lob_ref_id
-    , x.*
-  FROM decmgr.file_versions fv
-  CROSS JOIN XMLTABLE('/*'
-    PASSING fv.metadata_xml
-    COLUMNS
-      filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
-      , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
-      , file_size NUMBER PATH '/file-metadata/size/text()'
-  ) x
-  WHERE status_control = 'C'
-) fv ON fv.fft_id = fft.id
-INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE fft.target_mnem IN ('IMP_CONTRACT_DOC', 'IMP_SUPPORTING_DOC')
-AND xid.ima_type = 'TEX'
-AND xid.ima_sub_type = 'QUOTA'
-AND xid.status_control = 'C'
-AND xid.status <> 'DELETED'
-AND (
-  (iat.status = 'ARCHIVED' AND xid.submitted_datetime IS NOT NULL)
-  OR (
-    iat.status = 'CURRENT'
-    AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
-  )
-)
-AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
-ORDER by fft.id
-"""
-
-fa_certificate_files = """
-SELECT
-  ff.id folder_id
-  , ff.file_folder_type folder_type
-  , fft.target_mnem target_type
-  , fft.id target_id
-  , fft.status
+  fft.id target_id
   , fv.version_id
   , fv.filename
   , fv.content_type
@@ -484,26 +97,16 @@ SELECT
   , created_datetime
   , fv.created_by_id
   , sld.blob_data
-FROM impmgr.importer_authorities ia
+FROM {from_table}
+INNER JOIN decmgr.file_folders ff ON xx.file_folder_id = ff.id
+INNER JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
 INNER JOIN (
-  SELECT ia_id, x.*
-  FROM impmgr.importer_authority_details iad,
-    XMLTABLE('/*'
-    PASSING iad.xml_data
-    COLUMNS
-      file_folder_id INTEGER PATH '/AUTHORITY/DOCUMENTS_FF_ID/text()'
-    ) x
-  WHERE iad.status_control = 'C'
-) iad ON iad.ia_id = ia.id
-INNER JOIN decmgr.file_folders ff ON iad.file_folder_id = ff.id
-LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
-LEFT JOIN (
   SELECT
     fft_id target_id
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , 'fa_certificate_files/' || id || '-' || x.filename path
+    , :path_prefix || '/' || id || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
@@ -517,60 +120,59 @@ LEFT JOIN (
   WHERE status_control = 'C'
 ) fv ON fv.target_id = fft.id
 INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
+WHERE created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`'){condition}
 ORDER by fft.id
 """
 
-sps_docs = """
+
+fa_certificate_files_from = """impmgr.importer_authorities ia
+INNER JOIN (
+  SELECT ia_id, x.*
+  FROM impmgr.importer_authority_details iad,
+    XMLTABLE('/*'
+    PASSING iad.xml_data
+    COLUMNS
+      file_folder_id INTEGER PATH '/AUTHORITY/DOCUMENTS_FF_ID/text()'
+    ) x
+  WHERE iad.status_control = 'C'
+) xx ON xx.ia_id = ia.id"""
+
+fa_certificate_folders = file_folders_base.format(
+    from_table=fa_certificate_files_from, condition=""
+)
+fa_certificate_files = file_objects_base.format(from_table=fa_certificate_files_from, condition="")
+
+
+fir_files_from = "impmgr.xview_ima_rfis xx"
+fir_file_folders = file_folders_base.format(from_table=fir_files_from, condition="")
+fir_files = file_objects_base.format(from_table=fir_files_from, condition="")
+
+mailshot_files_from = "mailshotmgr.xview_mailshot_details xx"
+mailshot_files_condition = " AND xx.status_control = 'C'"
+mailshot_file_folders = file_folders_base.format(
+    from_table=mailshot_files_from, condition=mailshot_files_condition
+)
+mailshot_files = file_objects_base.format(
+    from_table=mailshot_files_from, condition=mailshot_files_condition
+)
+
+
+file_folders_folder_type = """
 SELECT
   ff.id folder_id
   , ff.file_folder_type folder_type
-  , 'priorsurveillanceapplication' app_model
   , fft.target_mnem target_type
   , fft.id target_id
   , fft.status
-  , fv.version_id
-  , fv.filename
-  , fv.content_type
-  , fv.file_size
-  , fv.path
-  , created_datetime
-  , fv.created_by_id
-  , sld.blob_data
 FROM decmgr.file_folder_targets fft
 INNER JOIN decmgr.file_folders ff ON fft.ff_id = ff.id
-LEFT JOIN (
-  SELECT
-    fft_id target_id
-    , fv.id version_id
-    , create_start_datetime created_datetime
-    , create_by_wua_id created_by_id
-    , 'sps_docs/' || id || '-' || x.filename path
-    , DEREF(secure_lob_ref).id  secure_lob_ref_id
-    , x.*
-  FROM decmgr.file_versions fv,
-    XMLTABLE('/*'
-    PASSING metadata_xml
-    COLUMNS
-      filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
-      , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
-      , file_size NUMBER PATH '/file-metadata/size/text()'
-    ) x
-  WHERE status_control = 'C'
- ) fv ON fv.target_id = fft.ID
-INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE fft.target_mnem = 'IMP_SPS_DOC'
-AND fft.status = 'RECEIVED' AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
+WHERE ff.file_folder_type = :folder_type
 ORDER by fft.id
 """
 
-case_note_files = """
+file_objects_folder_type = """
 SELECT
-  ff.id folder_id
-  , ff.file_folder_type folder_type
-  , fft.target_mnem target_type
-  , fft.id target_id
-  , fft.status
+  fft.id target_id
   , fv.version_id
   , fv.filename
   , fv.content_type
@@ -601,142 +203,23 @@ LEFT JOIN (
   WHERE status_control = 'C'
  ) fv ON fv.target_id = fft.ID
 INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE ff.file_folder_type = 'IMP_CASE_NOTE_DOCUMENTS' AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
-ORDER by fft.id
-"""
-
-
-fir_files = """
-SELECT
-  ff.id folder_id
-  , ff.file_folder_type folder_type
-  , fft.target_mnem target_type
-  , fft.id target_id
-  , fft.status
-  , fv.version_id
-  , fv.filename
-  , fv.content_type
-  , fv.file_size
-  , fv.path
-  , created_datetime
-  , fv.created_by_id
-  , sld.blob_data
-FROM impmgr.xview_ima_rfis xir
-INNER JOIN decmgr.file_folders ff ON ff.id = xir.file_folder_id
-LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
-LEFT JOIN (
-  SELECT
-    fft_id target_id
-    , fv.id version_id
-    , create_start_datetime created_datetime
-    , create_by_wua_id created_by_id
-    , 'fir_files/' || id || '-' || x.filename path
-    , DEREF(secure_lob_ref).id  secure_lob_ref_id
-    , x.*
-  FROM decmgr.file_versions fv
-  CROSS JOIN XMLTABLE('/*'
-    PASSING metadata_xml
-    COLUMNS
-      filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
-      , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
-      , file_size NUMBER PATH '/file-metadata/size/text()'
-    ) x
-  WHERE status_control = 'C'
- ) fv ON fv.target_id = fft.ID
-INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
 WHERE created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
+AND ff.file_folder_type = :folder_type
 ORDER by fft.id
 """
 
-
-mailshot_files = """
+export_case_note_folders = """
 SELECT
-  ff.id folder_id
-  , ff.file_folder_type folder_type
-  , fft.target_mnem target_type
-  , fft.id target_id
-  , fft.status
-  , fv.version_id
-  , fv.filename
-  , fv.content_type
-  , fv.file_size
-  , fv.path
-  , created_datetime
-  , fv.created_by_id
-  , sld.blob_data
-FROM mailshotmgr.xview_mailshot_details xmd
-INNER JOIN decmgr.file_folders ff ON ff.id = xmd.documents_ff_id
-LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
-LEFT JOIN (
-  SELECT
-    fft_id target_id
-    , fv.id version_id
-    , create_start_datetime created_datetime
-    , create_by_wua_id created_by_id
-    , 'mailshot_files/' || id || '-' || x.filename path
-    , DEREF(secure_lob_ref).id  secure_lob_ref_id
-    , x.*
-  FROM decmgr.file_versions fv
-  CROSS JOIN XMLTABLE('/*'
-    PASSING metadata_xml
-    COLUMNS
-      filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
-      , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
-      , file_size NUMBER PATH '/file-metadata/size/text()'
-    ) x
-  WHERE status_control = 'C'
- ) fv ON fv.target_id = fft.ID
-INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE xmd.status_control = 'C' AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
-ORDER by fft.id
-"""
-
-
-gmp_files = """
-SELECT
-  ff.id folder_id
-  , ff.file_folder_type folder_type
-  , fft.target_mnem target_type
-  , fft.id target_id
-  , fft.status
-  , fv.version_id
-  , fv.filename
-  , fv.content_type
-  , fv.file_size
-  , fv.path
-  , created_datetime
-  , fv.created_by_id
-  , sld.blob_data
-FROM decmgr.file_folder_targets fft
-INNER JOIN decmgr.file_folders ff ON fft.ff_id = ff.id
-LEFT JOIN (
-  SELECT
-    fft_id target_id
-    , fv.id version_id
-    , create_start_datetime created_datetime
-    , create_by_wua_id created_by_id
-    , 'gmp_files/' || id || '-' || x.filename path
-    , DEREF(secure_lob_ref).id  secure_lob_ref_id
-    , x.*
-  FROM decmgr.file_versions fv
-  CROSS JOIN XMLTABLE('/*'
-    PASSING metadata_xml
-    COLUMNS
-      filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
-      , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
-      , file_size NUMBER PATH '/file-metadata/size/text()'
-    ) x
-  WHERE status_control = 'C'
- ) fv ON fv.target_id = fft.ID
-INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE ff.file_folder_type = 'GMP_SUPPORTING_DOCUMENTS' AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
-ORDER by fft.id
+  fd.f_id doc_folder_id
+  , fd.folder_title
+  , vf.file_id
+FROM doclibmgr.folder_details fd
+WHERE fd.folder_title LIKE 'Case Note %'
 """
 
 export_case_note_docs = """
 SELECT
   fd.f_id doc_folder_id
-  , fd.folder_title
   , vf.file_id
   , vf.filename
   , vf.content_type
@@ -746,20 +229,19 @@ SELECT
   , 'export_case_note_docs/' || vf.file_id || '-' || vf.filename path
   , sld.blob_data
 FROM doclibmgr.folder_details fd
-LEFT JOIN doclibmgr.vw_file_folders vff ON vff.f_id = fd.f_id
-LEFT JOIN doclibmgr.vw_files vf ON vf.file_id = vff.file_id
+INNER JOIN doclibmgr.vw_file_folders vff ON vff.f_id = fd.f_id
+INNER JOIN doclibmgr.vw_files vf ON vf.file_id = vff.file_id
 INNER JOIN DOCLIBMGR.FILE_versions fv ON fv.id = vf.file_id
 INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(vf.secure_lob_ref).id
-WHERE fd.folder_title LIKE 'Case Note %' AND vf.created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
+WHERE fd.folder_title LIKE 'Case Note %'
+  AND vf.created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
 ORDER BY vf.file_id
 """
 
 
 fa_supplementary_report_upload_files = """
 SELECT
-    ad.ima_id
-  , ad.id imad_id
-  , 'fa_supplementary_report_upload_files/' || x.sr_goods_file_id || '/' || x.filename PATH
+  'fa_supplementary_report_upload_files/' || x.sr_goods_file_id || '/' || x.filename PATH
   , glf.file_content as blob_data
   , to_date(replace(created_datetime_str, 'T', chr(10)), 'YYYY-MM-DD HH24:MI:SS') created_datetime
   , x.*
