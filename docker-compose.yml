@@ -63,6 +63,7 @@ services:
             - HAWK_AUTH_KEY
             - SEND_LICENCE_TO_CHIEF
             - SET_INACTIVE_APP_TYPES_ACTIVE
+            - GOV_NOTIFY_API_KEY
         # stdin_open: true
         # tty: true
         ports:
@@ -102,6 +103,7 @@ services:
             - HAWK_AUTH_ID
             - HAWK_AUTH_KEY
             - SEND_LICENCE_TO_CHIEF
+            - GOV_NOTIFY_API_KEY
         depends_on:
             - redis
         volumes:
