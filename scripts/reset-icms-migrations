@@ -1,4 +1,6 @@
-#!/bin/zsh
+#!/bin/bash
+
+set -e
 
 rm web/migrations/*.py
 # Uncomment if needed
