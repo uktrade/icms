@@ -3,9 +3,11 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
 from guardian.admin import GuardedModelAdmin
 
+from web.mail.api import is_valid_template_id
 from web.models import (
     Commodity,
     CommodityGroup,
@@ -14,6 +16,7 @@ from web.models import (
     CountryGroup,
     DerogationsApplication,
     Email,
+    EmailTemplate,
     ExportApplication,
     ExportApplicationType,
     Exporter,
@@ -50,6 +53,27 @@ class ExporterAdmin(GuardedModelAdmin):
     ...
 
 
+class EmailTemplateForm(forms.ModelForm):
+    class Meta:
+        model = EmailTemplate
+        fields = ["name", "gov_notify_template_id"]
+
+    def clean_gov_notify_template_id(self) -> str:
+        template_id = self.cleaned_data["gov_notify_template_id"]
+        if not is_valid_template_id(template_id):
+            raise ValidationError("GOV Notify template not found")
+        return template_id
+
+
+class EmailTemplateAdmin(admin.ModelAdmin):
+    form = EmailTemplateForm
+    fields = ("name", "gov_notify_template_id")
+    readonly_fields = ("name",)
+
+    def has_delete_permission(self, request, obj=None) -> bool:
+        return False
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(CommodityType)
 admin.site.register(Commodity)
@@ -71,6 +95,7 @@ admin.site.register(Exporter, ExporterAdmin)
 admin.site.register(SanctionsAndAdhocApplication)
 admin.site.register(SanctionsAndAdhocApplicationGoods)
 admin.site.register(DerogationsApplication)
+admin.site.register(EmailTemplate, EmailTemplateAdmin)
 
 
 @admin.register(Permission)

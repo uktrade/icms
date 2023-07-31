@@ -152,6 +152,7 @@ from web.domains.sigl.models import SIGLTransmission
 from web.domains.template.models import CFSScheduleParagraph, Template
 from web.domains.user.models import Email, PhoneNumber, User
 from web.flow.models import Process, Task
+from web.mail.models import EmailTemplate
 from web.models.models import CaseReference, GlobalPermission
 
 __all__ = [
@@ -267,13 +268,12 @@ __all__ = [
     "SIGLTransmission",
     "CFSScheduleParagraph",
     "Template",
-    "AlternativeEmail",
     "Email",
-    "PersonalEmail",
     "PhoneNumber",
     "User",
     "Process",
     "Task",
     "CaseReference",
     "GlobalPermission",
+    "EmailTemplate",
 ]
