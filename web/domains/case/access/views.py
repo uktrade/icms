@@ -17,6 +17,7 @@ from web.domains.case.access.filters import (
 )
 from web.domains.case.services import case_progress, reference
 from web.flow.models import ProcessTypes
+from web.mail import emails
 from web.models import (
     AccessRequest,
     ExporterAccessRequest,
@@ -115,7 +116,7 @@ def importer_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
                     process=access_request, task_type=Task.TaskType.PROCESS, owner=request.user
                 )
 
-                notify.send_access_requested_email(access_request)
+                emails.send_access_requested_email(access_request)
 
                 if request.user.has_perm(Perms.sys.importer_access) or request.user.has_perm(
                     Perms.sys.exporter_access
@@ -157,7 +158,7 @@ def exporter_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
                     process=access_request, task_type=Task.TaskType.PROCESS, owner=request.user
                 )
 
-                notify.send_access_requested_email(access_request)
+                emails.send_access_requested_email(access_request)
 
                 if request.user.has_perm(Perms.sys.importer_access) or request.user.has_perm(
                     Perms.sys.exporter_access

@@ -29,7 +29,7 @@ pip-check
 pre-commit==2.20.0
 boto3-stubs[essential]
 types-openpyxl==3.1.0.0
-types-pytz==2021.1.0
+types-pytz==2023.3
 types-python-dateutil==2.8.19.4
 types-Pygments==2.14.0.6
 types-requests==2.25.0

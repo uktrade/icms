@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core import mail
 from django.test.client import Client
 from django.urls import reverse
@@ -5,6 +6,7 @@ from django.utils import timezone
 
 from web.domains.case.types import ImpOrExp
 from web.flow.models import ProcessTypes
+from web.mail.constants import EmailTypes
 from web.models import (
     ApprovalRequest,
     Exporter,
@@ -68,6 +70,37 @@ def check_email_was_sent(
 
         if exp_attachments:
             assert exp_attachments == sent_email.attachments
+
+
+def check_gov_notify_email_was_sent(
+    exp_num_emails: int,
+    exp_sent_to: list,
+    exp_email_name: EmailTypes,
+    exp_personalisation: dict,
+    exp_subject: str | None = "",
+    exp_in_body: str | None = "",
+) -> None:
+    outbox = mail.outbox
+    assert len(outbox) == exp_num_emails
+    sent_to = [_email.to[0] for _email in outbox]
+    assert sorted(sent_to) == sorted(exp_sent_to)
+
+    if exp_num_emails:
+        sent_email = outbox[exp_num_emails - 1]
+        assert sent_email.subject == exp_subject
+        assert exp_in_body in sent_email.body
+
+        assert sent_email.name == exp_email_name
+        assert_common_email_personalisation(sent_email.personalisation, exp_subject, exp_in_body)
+        assert sent_email.personalisation == exp_personalisation
+
+
+def assert_common_email_personalisation(personalisation: dict, exp_subject: str, exp_in_body: str):
+    assert personalisation.pop("icms_contact_email") == settings.ILB_CONTACT_EMAIL
+    assert personalisation.pop("icms_contact_phone") == settings.ILB_CONTACT_PHONE
+    assert personalisation.pop("icms_url") == settings.DEFAULT_DOMAIN
+    assert personalisation.pop("subject") == exp_subject
+    assert exp_in_body in personalisation.pop("body")
 
 
 def add_variation_request_to_app(

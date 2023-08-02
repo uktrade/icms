@@ -51,3 +51,14 @@ def test_get_template_by_id_error(mock_gov_notify_get_template):
         api.get_template_by_id(UUID("fb9a1023-3901-44e8-a7d3-a0e309e93951"))
         == HTTP_404_NOT_FOUND_ERROR
     )
+
+
+@mock.patch("notifications_python_client.NotificationsAPIClient.send_email_notification")
+def test_send_email_error(mock_gov_notify_send_email_notification):
+    fake_response = mock.Mock(status_code=404, json=lambda: HTTP_404_NOT_FOUND_ERROR)
+    fake_error = mock.Mock(response=fake_response)
+    mock_gov_notify_send_email_notification.side_effect = HTTPError.create(fake_error)
+    with pytest.raises(HTTPError):
+        api.send_email(
+            UUID("fb9a1023-3901-44e8-a7d3-a0e309e93951"), {}, "tester@example.com"  # /PS-IGNORE
+        )

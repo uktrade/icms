@@ -26,7 +26,7 @@ from web.models import (
     User,
     VariationRequest,
 )
-from web.permissions import SysPerms, get_ilb_case_officers
+from web.permissions import SysPerms
 
 from . import email, utils
 
@@ -78,15 +78,6 @@ def register(user, password):
             "first_name": user.first_name,
         },
         recipients=utils.get_notification_emails(user),
-    )
-
-
-def send_access_requested_email(access_request):
-    context = {"subject": f"Access Request {access_request.reference}"}
-    email.send_html_email(
-        "email/access/access_requested.html",
-        context,
-        list(get_ilb_case_officers()),
     )
 
 
