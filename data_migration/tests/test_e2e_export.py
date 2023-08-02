@@ -67,9 +67,14 @@ export_data_source_target = {
 
 export_query_model = {
     "user": [QueryModel(queries.users, "users", dm.User)],
+    "file_folder": [
+        QueryModel(queries.file_folders_folder_type, "GMP File Folders", dm.FileFolder),
+        QueryModel(queries.file_targets_folder_type, "GMP File Targets", dm.FileTarget),
+        QueryModel(queries.export_case_note_folders, "Export Case Note Doc Folders", dm.DocFolder),
+    ],
     "file": [
-        QueryModel(queries.gmp_files, "gmp_files", dm.FileCombined),
-        QueryModel(queries.export_case_note_docs, "export_case_note_docs", dm.FileCombined),
+        QueryModel(queries.file_objects_folder_type, "GMP Files", dm.File),
+        QueryModel(queries.export_case_note_docs, "Export Case Note Documents", dm.File),
     ],
     "import_application": [],
     "export_application": [
@@ -117,13 +122,15 @@ export_m2m = {
         (dm.CaseEmail, web.ExportApplication, "case_emails"),
         (dm.FurtherInformationRequest, web.ExportApplication, "further_information_requests"),
         (dm.UpdateRequest, web.ExportApplication, "update_requests"),
-        (dm.CaseNoteFile, web.CaseNote, "files"),
         (dm.VariationRequest, web.ExportApplication, "variation_requests"),
         (dm.CFSLegislation, web.CFSSchedule, "legislations"),
         (dm.ExportApplicationCountries, web.ExportApplication, "countries"),
-        (dm.GMPFile, web.CertificateOfGoodManufacturingPracticeApplication, "supporting_documents"),
     ],
     "import_application": [],
+    "file": [
+        (dm.CaseNoteFile, web.CaseNote, "files"),
+        (dm.GMPFile, web.CertificateOfGoodManufacturingPracticeApplication, "supporting_documents"),
+    ],
 }
 
 export_xml = {

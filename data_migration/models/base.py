@@ -85,14 +85,21 @@ class MigrationBase(models.Model):
         return list({i.split("__")[0] for i in includes})
 
     @classmethod
+    def get_exclude_parameters(cls) -> dict[str, Any]:
+        """Parameters to pass to the exclude filter for the V2 import query"""
+        return {}
+
+    @classmethod
     def get_source_data(cls) -> Generator:
         """Queries the model to get the queryset of data for the V2 import"""
 
         values = cls.get_values()
         values_kwargs = cls.get_values_kwargs()
         related = cls.get_related()
+        exclude_parameters = cls.get_exclude_parameters()
         return (
             cls.objects.select_related(*related)
+            .exclude(**exclude_parameters)
             .order_by("pk")
             .values(*values, **values_kwargs)
             .iterator(chunk_size=2000)

@@ -24,7 +24,7 @@ class Command(MigrationBaseCommand):
     DATA_TYPE_START = {
         "user": ["u", "user"],
         "reference": ["r", "ref", "reference", "r-m2m", "ref-m2m", "reference-m2m"],
-        "file": ["f", "file"],
+        "file": ["f", "file", "f-m2m", "file-m2m"],
         "import_application": ["ia", "import_application", "ia-m2m", "import_application-m2m"],
         "export_application": ["ea", "export_application", "ea-m2m", "export_application-m2m"],
     }
@@ -43,10 +43,10 @@ class Command(MigrationBaseCommand):
 
         self._import_data("user", options["skip_user"])
         self._import_data("reference", options["skip_ref"])
-        self._import_data("file", options["skip_file"])
         self._import_data("import_application", options["skip_ia"])
-        self._create_missing_ia_licences(options["skip_ia"])
         self._import_data("export_application", options["skip_export"])
+        self._import_data("file", options["skip_file"])
+        self._create_missing_ia_licences(options["skip_ia"])
         self._create_missing_export_certificates(options["skip_export"])
         self._create_tasks(options["skip_task"])
         self._update_auto_timestamps()
@@ -67,8 +67,7 @@ class Command(MigrationBaseCommand):
         if not start_m2m:
             self._import_model(data_type)
 
-        if data_type != "file":
-            self._import_m2m(data_type)
+        self._import_m2m(data_type)
 
         self.stdout.write(f"{name} Data Imported!")
 

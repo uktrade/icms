@@ -3194,3 +3194,41 @@ xird.di_id
 REGEXP_SUBSTR(dd.created_by
 data_migration_importapplication
 web_importapplication.process_ptr_id =
+fv.version_id , vf.filename
+DFL Application
+OPT Application
+"Import Application File Targets
+GMP File Folders
+GMP File Targets
+Export Case Note Doc Folders
+Export Case Note Documents
+SPS Application File Targets
+FA-DFL Application File Targets
+FA-OIL Application File Targets
+OPT Application File Targets
+Wood Application File Targets
+Mailshot File Targets
+Import Application Case Note File Targets
+GMP Application File Targets
+ON ff.id = xid.app_docs_ff_id
+Case Note Folders
+Case Note File Targets
+FIR File Folders
+FIR File Targets
+FA Certificate Folders
+FA Certificate File Targets
+Case Note Files
+FA Certificate Files
+Import Application Folders"
+Model for V1
+ON xx.{folder_column
+ON xx.{folder_column
+ON xid.app_docs_ff_id
+"Returns the data required
+"Returns the field names on the model
+"List of fields
+"List of fields to fetch through fk relationships for the V2
+"List of values
+"Dict of values
+Generates the the related models
+the M2M

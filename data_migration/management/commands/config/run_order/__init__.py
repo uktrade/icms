@@ -13,7 +13,12 @@ from .export_application import (
     export_source_target,
     export_xml,
 )
-from .files import file_folder_query_model, file_query_model, file_source_target
+from .files import (
+    file_folder_query_model,
+    file_m2m,
+    file_query_model,
+    file_source_target,
+)
 from .import_application import ia_m2m, ia_query_model, ia_source_target, ia_xml
 from .reference import ref_m2m, ref_query_model, ref_source_target
 from .user import user_m2m, user_query_model, user_source_target, user_xml
@@ -44,6 +49,7 @@ DATA_TYPE_M2M: dict[str, list[M2M]] = {
     "import_application": ia_m2m,
     "reference": ref_m2m,
     "user": user_m2m,
+    "file": file_m2m,
 }
 
 DATA_TYPE_XML: dict[str, list[type[xml_parser.BaseXmlParser]]] = {

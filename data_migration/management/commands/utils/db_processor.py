@@ -81,6 +81,11 @@ class OracleDBProcessor:
 
 
 AVAILABLE_QUERIES: list[str] = [query.query_name for query in file_query_model]
-LARGE_QUERIES: list[str] = ["sps_application_files", "sps_docs", "sil_application_files"]
+LARGE_QUERIES: list[str] = [
+    "SPS Application Files",
+    "FA-SIL Import Application Files",
+    "Import Application Licence Documents",
+    "Export Application Certificate Documents",
+]
 SMALL_QUERIES: list[str] = list(set(AVAILABLE_QUERIES) - set(LARGE_QUERIES))
 QUERY_GROUPS: dict[str, list] = {"small": SMALL_QUERIES, "large": LARGE_QUERIES}

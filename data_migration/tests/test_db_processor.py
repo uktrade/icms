@@ -58,22 +58,32 @@ ORDER BY created_datetime
     def test_get_query_list(self):
         db = OracleDBProcessor(100, None, 1)
         result = [query_model for query_model in db.get_query_list()]
-        assert len(result) == 16
+        assert len(result) == 17
 
     def test_get_filtered_query_list(self):
-        db = OracleDBProcessor(100, ["gmp_files", "fir_files"], 1)
+        db = OracleDBProcessor(
+            100, ["GMP Application Files", "Further Information Request Files"], 1
+        )
         result = [query_model.query_name for query_model in db.get_query_list()]
-        assert set(result) == {"gmp_files", "fir_files"}
+        assert set(result) == {"GMP Application Files", "Further Information Request Files"}
 
     @pytest.mark.parametrize(
         "selected_queries,expected_result",
         [
             (None, AVAILABLE_QUERIES),
-            (["gmp_files", "gmp_files"], ["gmp_files"]),
+            (["GMP Application Files", "GMP Application Files"], ["GMP Application Files"]),
             (["small"], SMALL_QUERIES),
             (["large"], LARGE_QUERIES),
-            (["small", "sps_docs"], ["sps_docs"] + SMALL_QUERIES),
-            (["sps_docs", "large"], ["sps_docs", "sps_application_files", "sil_application_files"]),
+            (["small", "SPS Application Files"], ["SPS Application Files"] + SMALL_QUERIES),
+            (
+                ["SPS Application Files", "large"],
+                [
+                    "SPS Application Files",
+                    "FA-SIL Import Application Files",
+                    "Import Application Licence Documents",
+                    "Export Application Certificate Documents",
+                ],
+            ),
         ],
     )
     def test_selected_queries(self, selected_queries, expected_result):

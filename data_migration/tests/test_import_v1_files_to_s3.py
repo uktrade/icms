@@ -9,7 +9,7 @@ from botocore.exceptions import ClientError
 
 from data_migration.management.commands import import_v1_files_to_s3
 from data_migration.management.commands._types import QueryModel
-from data_migration.management.commands.config.run_order import (
+from data_migration.management.commands.config.run_order.files import (
     DEFAULT_FILE_CREATED_DATETIME,
 )
 from data_migration.management.commands.utils.db_processor import OracleDBProcessor

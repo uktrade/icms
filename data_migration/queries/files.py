@@ -1,49 +1,59 @@
-import_application_folders = """
-SELECT
+import_application_subquery = """
+  SELECT DISTINCT app_docs_ff_id
+    FROM impmgr.xview_ima_details xid
+      INNER JOIN impmgr.import_application_types iat
+        ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
+    WHERE xid.status <> 'DELETED'
+      AND xid.ima_type = :ima_type
+      AND xid.ima_sub_type = :ima_sub_type
+      AND (
+        (iat.status = 'ARCHIVED' AND xid.submitted_datetime IS NOT NULL)
+        OR (
+          iat.status = 'CURRENT'
+          AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
+        )
+      )
+"""
+
+
+import_application_folders = f"""
+SELECT DISTINCT
   ff.id folder_id
   , ff.file_folder_type folder_type
   , :app_model app_model
+FROM decmgr.file_folders ff
+INNER JOIN ({import_application_subquery}) xid ON xid.app_docs_ff_id = ff.id
+ORDER by ff.id
+"""
+
+
+import_application_file_targets = f"""
+SELECT DISTINCT
+  ff_id folder_id
   , fft.target_mnem target_type
   , fft.status
   , fft.id target_id
-FROM impmgr.xview_ima_details xid
-INNER JOIN impmgr.import_application_types iat
-  ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
-INNER JOIN decmgr.file_folders ff ON ff.id = xid.app_docs_ff_id
-LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
-WHERE xid.ima_type = :ima_type
-  AND xid.ima_sub_type = :ima_sub_type
-  AND xid.status_control = 'C'
-  AND xid.status <> 'DELETED'
-  AND (
-    (iat.status = 'ARCHIVED' AND xid.submitted_datetime IS NOT NULL)
-    OR (
-      iat.status = 'CURRENT'
-      AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
-    )
-  )
+FROM decmgr.file_folder_targets fft
+INNER JOIN ({import_application_subquery}) xid ON fft.ff_id = xid.app_docs_ff_id
 ORDER by fft.id
 """
 
 
-import_application_files = """
+import_application_files = f"""
 SELECT
   fft.id target_id
   , fv.*
   , sld.blob_data
-FROM impmgr.xview_ima_details xid
-INNER JOIN impmgr.import_application_types iat
-  ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
-INNER JOIN decmgr.file_folders ff ON ff.id = xid.app_docs_ff_id
-INNER JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
+FROM decmgr.file_folder_targets fft
+INNER JOIN ({import_application_subquery}) xid ON fft.ff_id = xid.app_docs_ff_id
 INNER JOIN (
   SELECT
     fft_id
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , :path_prefix || '/' || id || '-' || x.filename path
-    , secure_lob_ref
+    , TO_CHAR(:path_prefix) || '/' || TO_CHAR(id) || '-' || x.filename path
+    , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
   CROSS JOIN XMLTABLE('/*'
@@ -55,33 +65,31 @@ INNER JOIN (
   ) x
   WHERE status_control = 'C'
 ) fv ON fv.fft_id = fft.id
-INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(fv.secure_lob_ref).id
-WHERE xid.ima_type = :ima_type
-  AND xid.ima_sub_type = :ima_sub_type
-  AND xid.status_control = 'C'
-  AND xid.status <> 'DELETED'
-  AND (
-    (iat.status = 'ARCHIVED' AND xid.submitted_datetime IS NOT NULL)
-    OR (
-      iat.status = 'CURRENT'
-      AND (xid.submitted_datetime IS NOT NULL OR xid.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
-    )
-  )
-  AND created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = fv.secure_lob_ref_id
+WHERE created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS')
 ORDER by fft.id
 """
 
 
 file_folders_base = """
-SELECT
+SELECT DISTINCT
   ff.id folder_id
   , ff.file_folder_type folder_type
+FROM {from_table}
+INNER JOIN decmgr.file_folders ff ON xx.{folder_column} = ff.id
+ORDER by ff.id
+"""
+
+
+file_targets_base = """
+SELECT DISTINCT
+  ff.id folder_id
   , fft.target_mnem target_type
   , fft.id target_id
   , fft.status
 FROM {from_table}
-INNER JOIN decmgr.file_folders ff ON xx.file_folder_id = ff.id
-LEFT JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
+INNER JOIN decmgr.file_folders ff ON xx.{folder_column} = ff.id
+INNER JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
 ORDER by fft.id
 """
 
@@ -98,7 +106,7 @@ SELECT
   , fv.created_by_id
   , sld.blob_data
 FROM {from_table}
-INNER JOIN decmgr.file_folders ff ON xx.file_folder_id = ff.id
+INNER JOIN decmgr.file_folders ff ON xx.{folder_column} = ff.id
 INNER JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
 INNER JOIN (
   SELECT
@@ -106,7 +114,7 @@ INNER JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , :path_prefix || '/' || id || '-' || x.filename path
+    , TO_CHAR(:path_prefix) || '/' || TO_CHAR(id) || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv
@@ -120,10 +128,11 @@ INNER JOIN (
   WHERE status_control = 'C'
 ) fv ON fv.target_id = fft.id
 INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`'){condition}
+WHERE created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS'){condition}
 ORDER by fft.id
 """
 
+folder_column = "file_folder_id"
 
 fa_certificate_files_from = """impmgr.importer_authorities ia
 INNER JOIN (
@@ -138,22 +147,36 @@ INNER JOIN (
 ) xx ON xx.ia_id = ia.id"""
 
 fa_certificate_folders = file_folders_base.format(
-    from_table=fa_certificate_files_from, condition=""
+    from_table=fa_certificate_files_from, folder_column=folder_column
 )
-fa_certificate_files = file_objects_base.format(from_table=fa_certificate_files_from, condition="")
+fa_certificate_file_targets = file_targets_base.format(
+    from_table=fa_certificate_files_from, folder_column=folder_column
+)
+fa_certificate_files = file_objects_base.format(
+    from_table=fa_certificate_files_from, condition="", folder_column=folder_column
+)
 
 
 fir_files_from = "impmgr.xview_ima_rfis xx"
-fir_file_folders = file_folders_base.format(from_table=fir_files_from, condition="")
-fir_files = file_objects_base.format(from_table=fir_files_from, condition="")
+fir_files_condition = " AND xx.status_control = 'C'"
+fir_file_folders = file_folders_base.format(from_table=fir_files_from, folder_column=folder_column)
+fir_file_targets = file_targets_base.format(from_table=fir_files_from, folder_column=folder_column)
+fir_files = file_objects_base.format(
+    from_table=fir_files_from, condition=fir_files_condition, folder_column=folder_column
+)
 
 mailshot_files_from = "mailshotmgr.xview_mailshot_details xx"
 mailshot_files_condition = " AND xx.status_control = 'C'"
 mailshot_file_folders = file_folders_base.format(
-    from_table=mailshot_files_from, condition=mailshot_files_condition
+    from_table=mailshot_files_from, folder_column="documents_ff_id"
+)
+mailshot_file_targets = file_targets_base.format(
+    from_table=mailshot_files_from, folder_column="documents_ff_id"
 )
 mailshot_files = file_objects_base.format(
-    from_table=mailshot_files_from, condition=mailshot_files_condition
+    from_table=mailshot_files_from,
+    condition=mailshot_files_condition,
+    folder_column="documents_ff_id",
 )
 
 
@@ -161,6 +184,14 @@ file_folders_folder_type = """
 SELECT
   ff.id folder_id
   , ff.file_folder_type folder_type
+FROM decmgr.file_folders ff
+WHERE ff.file_folder_type = :folder_type
+ORDER by ff.id
+"""
+
+file_targets_folder_type = """
+SELECT
+  ff.id folder_id
   , fft.target_mnem target_type
   , fft.id target_id
   , fft.status
@@ -203,7 +234,7 @@ LEFT JOIN (
   WHERE status_control = 'C'
  ) fv ON fv.target_id = fft.ID
 INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
+WHERE created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS')
 AND ff.file_folder_type = :folder_type
 ORDER by fft.id
 """
@@ -212,7 +243,6 @@ export_case_note_folders = """
 SELECT
   fd.f_id doc_folder_id
   , fd.folder_title
-  , vf.file_id
 FROM doclibmgr.folder_details fd
 WHERE fd.folder_title LIKE 'Case Note %'
 """
@@ -220,7 +250,7 @@ WHERE fd.folder_title LIKE 'Case Note %'
 export_case_note_docs = """
 SELECT
   fd.f_id doc_folder_id
-  , vf.file_id
+  , fv.id version_id
   , vf.filename
   , vf.content_type
   , vf.created_datetime as created_datetime
@@ -231,10 +261,10 @@ SELECT
 FROM doclibmgr.folder_details fd
 INNER JOIN doclibmgr.vw_file_folders vff ON vff.f_id = fd.f_id
 INNER JOIN doclibmgr.vw_files vf ON vf.file_id = vff.file_id
-INNER JOIN DOCLIBMGR.FILE_versions fv ON fv.id = vf.file_id
+INNER JOIN doclibmgr.file_versions fv ON fv.file_id = vf.file_id
 INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(vf.secure_lob_ref).id
 WHERE fd.folder_title LIKE 'Case Note %'
-  AND vf.created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
+  AND vf.created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS')
 ORDER BY vf.file_id
 """
 

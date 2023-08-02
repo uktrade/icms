@@ -9,7 +9,6 @@ from django.utils import timezone
 
 from data_migration import models, queries
 from data_migration.management.commands._types import QueryModel
-from data_migration.management.commands.config import run_order
 from data_migration.management.commands.config.run_order import (
     DATA_TYPE_QUERY_MODEL,
     DATA_TYPE_XML,
@@ -136,70 +135,13 @@ def test_extract_xml(mock_connect):
     assert firearms.filter(is_upload=False, is_manual=True, is_no_firearm=False).count() == 4
 
 
-@override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
-@pytest.mark.django_db
-@mock.patch.dict(DATA_TYPE_QUERY_MODEL, {"file": []})
-@mock.patch.object(
-    run_order,
-    "FILE_MODELS",
-    [
-        models.FileFolder,
-        models.FileTarget,
-        models.File,
-    ],
-)
-@mock.patch.object(oracledb, "connect")
-def test_export_files_data(mock_connect):
-    mock_connect.return_value = utils.MockConnect()
-    user_pk = models.User.objects.count() + 1
-    models.User.objects.create(
-        id=user_pk, username="test_import_user", salt="1234", encrypted_password="password"
-    )
-
-    models.FileCombined.objects.bulk_create(
-        [
-            models.FileCombined(
-                folder_id=f_id,
-                folder_type=f_type,
-                target_id=t_type and f_id * t_id,
-                target_type=t_type,
-                status=t_type and "RECEIVED",
-                version_id=t_type and v_id * t_id,
-                filename=t_type and v,
-                content_type=t_type and v,
-                file_size=t_type and v_id,
-                path=t_type and v,
-                created_by_id=user_pk,
-                created_datetime=timezone.now(),
-            )
-            for f_id, f_type in enumerate(["F1", "F2"], start=1)
-            for t_id, t_type in enumerate(["T1", "T2", None], start=3)
-            for v_id, v in enumerate(["a", "b", "c"], start=9)
-        ]
-    )
-
-    call_command("export_from_v1", "--skip_user", "--skip_ref", "--skip_ia", "--skip_export")
-
-    assert models.FileFolder.objects.count() == 2
-    assert models.FileTarget.objects.count() == 4
-    assert models.File.objects.count() == 12
-
-    assert models.FileFolder.objects.get(folder_id=1).file_targets.count() == 2
-    assert models.FileFolder.objects.get(folder_id=2).file_targets.count() == 2
-
-    assert models.FileTarget.objects.get(target_id=3).files.count() == 3
-    assert models.FileTarget.objects.get(target_id=4).files.count() == 3
-    assert models.FileTarget.objects.get(target_id=6).files.count() == 3
-    assert models.FileTarget.objects.get(target_id=8).files.count() == 3
-
-
 test_query_model = {
     "reference": [
         QueryModel(queries.country, "country", models.Country),
         QueryModel(queries.country_group, "country_group", models.CountryGroup),
         QueryModel(queries.unit, "unit", models.Unit),
     ],
+    "file_folder": [],
     "file": [],
     "user": [queries.users, "users", models.User],
     "import_application": [

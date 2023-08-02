@@ -52,8 +52,18 @@ opt_query_model = {
         QueryModel(queries.importers, "importers", dm.Importer),
         QueryModel(queries.importer_offices, "importer_offices", dm.Office),
     ],
+    "file_folder": [
+        QueryModel(
+            queries.import_application_folders, "Import Application File Folders", dm.FileFolder
+        ),
+        QueryModel(
+            queries.import_application_file_targets,
+            "Import Application File Targets",
+            dm.FileTarget,
+        ),
+    ],
     "file": [
-        QueryModel(queries.opt_application_files, "opt_application_files", dm.FileCombined),
+        QueryModel(queries.import_application_files, "Import Application Files", dm.File),
     ],
     "import_application": [
         QueryModel(queries.ia_type, "ia_type", dm.ImportApplicationType),
@@ -75,7 +85,8 @@ opt_query_model = {
 
 opt_m2m = {
     "export_application": [],
-    "import_application": [
+    "import_application": [],
+    "file": [
         (
             dm.OPTCpCommodity,
             web.OutwardProcessingTradeApplication,
@@ -196,21 +207,29 @@ sps_data_source_target = {
     DATA_TYPE_M2M,
     {
         "import_application": [
-            (dm.SPSSupportingDoc, web.PriorSurveillanceApplication, "supporting_documents"),
             (dm.SIGLTransmission, web.ImportApplication, "sigl_transmissions"),
         ],
         "user": [],
+        "file": [
+            (dm.SPSSupportingDoc, web.PriorSurveillanceApplication, "supporting_documents"),
+        ],
     },
 )
 @mock.patch.dict(
     DATA_TYPE_QUERY_MODEL,
     {
-        "file": [
-            QueryModel(queries.sps_application_files, "sps_application_files", dm.FileCombined),
-            QueryModel(queries.sps_docs, "sps_docs", dm.FileCombined),
+        "file_folder": [
             QueryModel(
-                queries.sanction_application_files, "sanction_application_files", dm.FileCombined
+                queries.import_application_folders, "Import Application File Folders", dm.FileFolder
             ),
+            QueryModel(
+                queries.import_application_file_targets,
+                "Import Application File Targets",
+                dm.FileTarget,
+            ),
+        ],
+        "file": [
+            QueryModel(queries.import_application_files, "Import Application Files", dm.File),
         ],
         "import_application": [
             QueryModel(queries.ia_type, "ia_type", dm.ImportApplicationType),
@@ -339,10 +358,18 @@ tex_data_source_target = {
 @mock.patch.dict(
     DATA_TYPE_QUERY_MODEL,
     {
-        "file": [
+        "file_folder": [
             QueryModel(
-                queries.textiles_application_files, "textiles_application_files", dm.FileCombined
+                queries.import_application_folders, "Import Application File Folders", dm.FileFolder
             ),
+            QueryModel(
+                queries.import_application_file_targets,
+                "Import Application File Targets",
+                dm.FileTarget,
+            ),
+        ],
+        "file": [
+            QueryModel(queries.import_application_files, "Import Application Files", dm.File),
         ],
         "import_application": [
             QueryModel(queries.ia_type, "ia_type", dm.ImportApplicationType),
@@ -370,7 +397,7 @@ tex_data_source_target = {
 )
 @mock.patch.dict(DATA_TYPE_XML, {"import_application": []})
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, tex_data_source_target)
-@mock.patch.dict(DATA_TYPE_M2M, {"import_application": []})
+@mock.patch.dict(DATA_TYPE_M2M, {"import_application": [], "file": []})
 @mock.patch.object(oracledb, "connect")
 def test_import_textiles_data(mock_connect, dummy_dm_settings):
     mock_connect.return_value = utils.MockConnect()

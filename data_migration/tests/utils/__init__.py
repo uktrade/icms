@@ -3,11 +3,14 @@ from web import models as web
 
 from . import xml_data  # NOQA
 from .ea_data import ea_query_result
+from .file_data import file_query_result
 from .ia_data import ia_query_result
 from .reference_data import ref_query_result
 from .user_data import user_query_result
 
-query_result = ia_query_result | ea_query_result | ref_query_result | user_query_result
+query_result = (
+    ia_query_result | ea_query_result | ref_query_result | user_query_result | file_query_result
+)
 
 
 class MockCursor:
@@ -27,7 +30,7 @@ class MockCursor:
         return self
 
     def execute(self, query, parameters=None):
-        self.description, self.data = query_result.get(query, (None, None))
+        self.description, self.data = query_result[query]
 
     @staticmethod
     def close():

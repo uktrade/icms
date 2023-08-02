@@ -1,6 +1,7 @@
 from data_migration import models as dm
 from data_migration import queries
-from data_migration.management.commands._types import QueryModel, source_target_list
+from data_migration.management.commands._types import M2M, QueryModel, SourceTarget
+from web import models as web
 
 DEFAULT_FILE_CREATED_DATETIME = "2013-01-01 01:00:00"
 
@@ -16,6 +17,15 @@ file_folder_query_model = [
         },
     ),
     QueryModel(
+        queries.import_application_file_targets,
+        "SPS Application File Targets",
+        dm.FileTarget,
+        {
+            "ima_type": "SPS",
+            "ima_sub_type": "SPS1",
+        },
+    ),
+    QueryModel(
         queries.import_application_folders,
         "FA-DFL Application File Folders",
         dm.FileFolder,
@@ -23,6 +33,15 @@ file_folder_query_model = [
             "ima_type": "FA",
             "ima_sub_type": "DEACTIVATED",
             "app_model": "dflapplication",
+        },
+    ),
+    QueryModel(
+        queries.import_application_file_targets,
+        "FA-DFL Application File Targets",
+        dm.FileTarget,
+        {
+            "ima_type": "FA",
+            "ima_sub_type": "DEACTIVATED",
         },
     ),
     QueryModel(
@@ -36,6 +55,15 @@ file_folder_query_model = [
         },
     ),
     QueryModel(
+        queries.import_application_file_targets,
+        "FA-OIL Application File Targets",
+        dm.FileTarget,
+        {
+            "ima_type": "FA",
+            "ima_sub_type": "OIL",
+        },
+    ),
+    QueryModel(
         queries.import_application_folders,
         "FA-SIL Application File Folders",
         dm.FileFolder,
@@ -43,6 +71,15 @@ file_folder_query_model = [
             "ima_type": "FA",
             "ima_sub_type": "SIL",
             "app_model": "silapplication",
+        },
+    ),
+    QueryModel(
+        queries.import_application_file_targets,
+        "FA-SIL Application File Targets",
+        dm.FileTarget,
+        {
+            "ima_type": "FA",
+            "ima_sub_type": "SIL",
         },
     ),
     QueryModel(
@@ -56,6 +93,15 @@ file_folder_query_model = [
         },
     ),
     QueryModel(
+        queries.import_application_file_targets,
+        "Sanctions & Adhoc Application File Targets",
+        dm.FileTarget,
+        {
+            "ima_type": "ADHOC",
+            "ima_sub_type": "ADHOC1",
+        },
+    ),
+    QueryModel(
         queries.import_application_folders,
         "OPT Application File Folders",
         dm.FileFolder,
@@ -63,6 +109,15 @@ file_folder_query_model = [
             "ima_type": "OPT",
             "ima_sub_type": "QUOTA",
             "app_model": "outwardprocessingtradeapplication",
+        },
+    ),
+    QueryModel(
+        queries.import_application_file_targets,
+        "OPT Application File Targets",
+        dm.FileTarget,
+        {
+            "ima_type": "OPT",
+            "ima_sub_type": "QUOTA",
         },
     ),
     QueryModel(
@@ -76,6 +131,15 @@ file_folder_query_model = [
         },
     ),
     QueryModel(
+        queries.import_application_file_targets,
+        "Textiles Application File Targets",
+        dm.FileTarget,
+        {
+            "ima_type": "TEX",
+            "ima_sub_type": "QUOTA",
+        },
+    ),
+    QueryModel(
         queries.import_application_folders,
         "Wood Application File Folders",
         dm.FileFolder,
@@ -86,9 +150,23 @@ file_folder_query_model = [
         },
     ),
     QueryModel(
+        queries.import_application_file_targets,
+        "Wood Application File Targets",
+        dm.FileTarget,
+        {
+            "ima_type": "WD",
+            "ima_sub_type": "QUOTA",
+        },
+    ),
+    QueryModel(
         queries.fa_certificate_folders,
         "Firearms & Ammunition Certificate File Folders",
         dm.FileFolder,
+    ),
+    QueryModel(
+        queries.fa_certificate_file_targets,
+        "Firearms & Ammunition Certificate File Targets",
+        dm.FileTarget,
     ),
     QueryModel(
         queries.fir_file_folders,
@@ -96,9 +174,19 @@ file_folder_query_model = [
         dm.FileFolder,
     ),
     QueryModel(
+        queries.fir_file_targets,
+        "Further Information Request File Targets",
+        dm.FileTarget,
+    ),
+    QueryModel(
         queries.mailshot_file_folders,
         "Mailshot File Folders",
         dm.FileFolder,
+    ),
+    QueryModel(
+        queries.mailshot_file_targets,
+        "Mailshot File Targets",
+        dm.FileTarget,
     ),
     QueryModel(
         queries.file_folders_folder_type,
@@ -107,9 +195,21 @@ file_folder_query_model = [
         {"folder_type": "IMP_CASE_NOTE_DOCUMENTS"},
     ),
     QueryModel(
+        queries.file_targets_folder_type,
+        "Import Application Case Note File Targets",
+        dm.FileTarget,
+        {"folder_type": "IMP_CASE_NOTE_DOCUMENTS"},
+    ),
+    QueryModel(
         queries.file_folders_folder_type,
         "GMP Application File Folders",
         dm.FileFolder,
+        {"folder_type": "GMP_SUPPORTING_DOCUMENTS"},
+    ),
+    QueryModel(
+        queries.file_targets_folder_type,
+        "GMP Application File Targets",
+        dm.FileTarget,
         {"folder_type": "GMP_SUPPORTING_DOCUMENTS"},
     ),
     QueryModel(
@@ -212,19 +312,19 @@ file_query_model = [
         queries.fa_certificate_files,
         "Firearms & Ammunition Certificate Files",
         dm.File,
-        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME, "path_prefix": "fa_certificate_files"},
     ),
     QueryModel(
         queries.fir_files,
         "Further Information Request Files",
         dm.File,
-        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME, "path_prefix": "fir_files"},
     ),
     QueryModel(
         queries.mailshot_files,
         "Mailshot Files",
         dm.File,
-        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME, "path_prefix": "mailshot_files"},
     ),
     QueryModel(
         queries.file_objects_folder_type,
@@ -270,4 +370,102 @@ file_query_model = [
     ),
 ]
 
-file_source_target = source_target_list(["File"])
+file_m2m = [
+    M2M(dm.MailshotDoc, web.Mailshot, "documents"),
+    M2M(dm.FIRFile, web.FurtherInformationRequest, "files"),
+    M2M(dm.CaseNoteFile, web.CaseNote, "files"),
+    M2M(dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
+    M2M(dm.Section5AuthorityFile, web.Section5Authority, "files"),
+    M2M(
+        dm.SPSSupportingDoc,
+        web.PriorSurveillanceApplication,
+        "supporting_documents",
+    ),
+    M2M(
+        dm.OPTCpCommodity,
+        web.OutwardProcessingTradeApplication,
+        "cp_commodities",
+    ),
+    M2M(
+        dm.OPTTegCommodity,
+        web.OutwardProcessingTradeApplication,
+        "teg_commodities",
+    ),
+    M2M(dm.OutwardProcessingTradeFile, web.OutwardProcessingTradeApplication, "documents"),
+    M2M(
+        dm.OILApplicationFirearmAuthority,
+        web.OpenIndividualLicenceApplication,
+        "verified_certificates",
+    ),
+    M2M(
+        dm.SILApplicationFirearmAuthority,
+        web.SILApplication,
+        "verified_certificates",
+    ),
+    M2M(
+        dm.SILApplicationSection5Authority,
+        web.SILApplication,
+        "verified_section5",
+    ),
+    M2M(dm.SILUserSection5, web.SILApplication, "user_section5"),
+    M2M(
+        dm.UserImportCertificate,
+        web.SILApplication,
+        "user_imported_certificates",
+    ),
+    M2M(
+        dm.DFLGoodsCertificate,
+        web.DFLApplication,
+        "goods_certificates",
+    ),
+    M2M(
+        dm.UserImportCertificate,
+        web.OpenIndividualLicenceApplication,
+        "user_imported_certificates",
+    ),
+    M2M(
+        dm.SanctionsAndAdhocSupportingDoc,
+        web.SanctionsAndAdhocApplication,
+        "supporting_documents",
+    ),
+    M2M(
+        dm.TextilesSupportingDoc,
+        web.TextilesApplication,
+        "supporting_documents",
+    ),
+    M2M(
+        dm.WoodContractFile,
+        web.WoodQuotaApplication,
+        "contract_documents",
+    ),
+    M2M(
+        dm.WoodSupportingDoc,
+        web.WoodQuotaApplication,
+        "supporting_documents",
+    ),
+    M2M(
+        dm.GMPFile,
+        web.CertificateOfGoodManufacturingPracticeApplication,
+        "supporting_documents",
+    ),
+]
+
+file_source_target = [
+    SourceTarget(dm.File, web.File),
+    SourceTarget(dm.DFLGoodsCertificate, web.DFLGoodsCertificate),
+    SourceTarget(dm.DFLSupplementaryReportFirearm, web.DFLSupplementaryReportFirearm),
+    SourceTarget(dm.OILSupplementaryReportFirearm, web.OILSupplementaryReportFirearm),
+    SourceTarget(dm.UserImportCertificate, web.UserImportCertificate),
+    SourceTarget(dm.SILUserSection5, web.SILUserSection5),
+    SourceTarget(dm.PriorSurveillanceContractFile, web.PriorSurveillanceContractFile),
+    SourceTarget(dm.PriorSurveillanceApplication, web.PriorSurveillanceApplication),
+    SourceTarget(dm.OutwardProcessingTradeFile, web.OutwardProcessingTradeFile),
+    SourceTarget(dm.WoodContractFile, web.WoodContractFile),
+    SourceTarget(dm.GMPFile, web.GMPFile),
+    SourceTarget(dm.ImportCaseDocument, web.CaseDocumentReference),
+    SourceTarget(dm.ExportCaseDocument, web.CaseDocumentReference),
+    SourceTarget(
+        dm.ExportCertificateCaseDocumentReferenceData,
+        web.ExportCertificateCaseDocumentReferenceData,
+    ),
+]

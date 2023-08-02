@@ -71,7 +71,7 @@ FROM impmgr.certificate_app_responses car
   INNER JOIN decmgr.xview_document_data xdd ON xdd.di_id = cardc.document_instance_id AND xdd.system_document = 'N' AND xdd.content_description = 'PDF'
   INNER JOIN decmgr.document_data dd ON dd.id = xdd.dd_id
   INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(dd.secure_lob_ref).id
-WHERE dd.created_datetime TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS`')
+WHERE dd.created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS')
 ORDER BY cardc.id
 """
 
