@@ -23,6 +23,7 @@ class Command(MigrationBaseCommand):
         "user": ["u", "user"],
         "reference": ["r", "ref", "reference"],
         "file": ["f", "file"],
+        "file_folder": ["ff", "file_folder"],
         "import_application": ["ia", "import_application"],
         "export_application": ["ea", "export_application"],
     }

@@ -107,22 +107,36 @@ sil_data_source_target = {
             QueryModel(queries.section5_clauses, "section5_clauses", dm.Section5Clause),
             QueryModel(queries.template, "templates", dm.Template),
         ],
+        "file_folder": [
+            QueryModel(queries.file_folders_folder_type, "Case Note Folders", dm.FileFolder),
+            QueryModel(queries.file_targets_folder_type, "Case Note File Targets", dm.FileTarget),
+            QueryModel(queries.fir_file_folders, "FIR File Folders", dm.FileFolder),
+            QueryModel(queries.fir_file_targets, "FIR File Targets", dm.FileTarget),
+            QueryModel(queries.import_application_folders, "Application Folders", dm.FileFolder),
+            QueryModel(
+                queries.import_application_file_targets, "Application File Targets", dm.FileTarget
+            ),
+            QueryModel(queries.fa_certificate_folders, "FA Certificate Folders", dm.FileFolder),
+            QueryModel(
+                queries.fa_certificate_file_targets, "FA Certificate File Targets", dm.FileTarget
+            ),
+        ],
         "file": [
-            QueryModel(queries.case_note_files, "case_note_files", dm.FileCombined),
-            QueryModel(queries.fir_files, "fir_files", dm.FileCombined),
-            QueryModel(queries.sil_application_files, "sil_application_files", dm.FileCombined),
-            QueryModel(queries.fa_certificate_files, "fa_certificate_files", dm.FileCombined),
+            QueryModel(queries.file_objects_folder_type, "Case Note Files", dm.File),
+            QueryModel(queries.fir_files, "FIR Files", dm.File),
+            QueryModel(queries.import_application_files, "Application Files", dm.File),
+            QueryModel(queries.fa_certificate_files, "FA Certificate Files", dm.File),
             QueryModel(
                 queries.fa_supplementary_report_upload_files,
                 "supplementary_report_uploads",
-                dm.FileCombined,
+                dm.File,
             ),
+            QueryModel(queries.ia_licence_docs, "ia_licence_docs", dm.CaseDocument),
         ],
         "import_application": [
             QueryModel(queries.ia_type, "ia_type", dm.ImportApplicationType),
             QueryModel(queries.sil_application, "sil_application", dm.SILApplication),
             QueryModel(queries.ia_licence, "ia_licence", dm.ImportApplicationLicence),
-            QueryModel(queries.ia_licence_docs, "ia_licence_docs", dm.CaseDocument),
             QueryModel(queries.fa_authorities, "fa_authorities", dm.FirearmsAuthority),
             QueryModel(
                 queries.fa_authority_linked_offices,
@@ -158,21 +172,23 @@ sil_data_source_target = {
     {
         "import_application": [
             (dm.CaseNote, web.ImportApplication, "case_notes"),
-            (dm.CaseNoteFile, web.CaseNote, "files"),
             (dm.VariationRequest, web.ImportApplication, "variation_requests"),
             (dm.CaseEmail, web.ImportApplication, "case_emails"),
             (dm.UpdateRequest, web.ImportApplication, "update_requests"),
             (dm.FurtherInformationRequest, web.ImportApplication, "further_information_requests"),
-            (dm.FIRFile, web.FurtherInformationRequest, "files"),
             (dm.FirearmsAuthorityOffice, web.FirearmsAuthority, "linked_offices"),
-            (dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
             (dm.Section5AuthorityOffice, web.Section5Authority, "linked_offices"),
-            (dm.Section5AuthorityFile, web.Section5Authority, "files"),
-            (dm.SILUserSection5, web.SILApplication, "user_section5"),
         ],
         "user": [
             (dm.Office, web.Importer, "offices"),
             (dm.Office, web.Exporter, "offices"),
+        ],
+        "file": [
+            (dm.CaseNoteFile, web.CaseNote, "files"),
+            (dm.FIRFile, web.FurtherInformationRequest, "files"),
+            (dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
+            (dm.Section5AuthorityFile, web.Section5Authority, "files"),
+            (dm.SILUserSection5, web.SILApplication, "user_section5"),
         ],
     },
 )
@@ -503,13 +519,22 @@ oil_data_source_target = {
             QueryModel(queries.constabularies, "constabularies", dm.Constabulary),
             QueryModel(queries.template, "templates", dm.Template),
         ],
+        "file_folder": [
+            QueryModel(
+                queries.import_application_folders, "Import Application Folders", dm.FileFolder
+            ),
+            QueryModel(
+                queries.import_application_file_targets,
+                "Import Application File Targets",
+                dm.FileTarget,
+            ),
+        ],
         "file": [
-            QueryModel(queries.oil_application_files, "oil_application_files", dm.FileCombined),
-            QueryModel(queries.dfl_application_files, "dfl_application_files", dm.FileCombined),
+            QueryModel(queries.import_application_files, "Import Application Files", dm.File),
             QueryModel(
                 queries.fa_supplementary_report_upload_files,
                 "supplementary_report_uploads",
-                dm.FileCombined,
+                dm.File,
             ),
         ],
         "user": [
@@ -522,7 +547,13 @@ oil_data_source_target = {
 @mock.patch.dict(DATA_TYPE_XML, {"import_application": oil_xml_parsers, "user": []})
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, oil_data_source_target)
 @mock.patch.dict(
-    DATA_TYPE_M2M, {"import_application": [(dm.Office, web.Importer, "offices")], "user": []}
+    DATA_TYPE_M2M,
+    {
+        "import_application": [(dm.Office, web.Importer, "offices")],
+        "export_application": [],
+        "file": [],
+        "user": [],
+    },
 )
 @mock.patch.object(oracledb, "connect")
 def test_import_oil_data(mock_connect, dummy_dm_settings):

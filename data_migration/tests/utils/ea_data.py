@@ -3,19 +3,6 @@ from datetime import datetime
 from data_migration import queries
 
 from . import xml_data as xd
-from .ia_data import IA_FILES_COLUMNS
-
-EA_FILES_COLUMNS = [
-    ("doc_folder_id",),
-    ("folder_title",),
-    ("file_id",),
-    ("filename",),
-    ("content_type",),
-    ("file_size",),
-    ("path",),
-    ("created_datetime",),
-    ("created_by_id",),
-]
 
 EA_BASE_COLUMNS = [
     ("ca_id",),
@@ -103,107 +90,6 @@ ea_query_result = {
             (21, 1, "GMP", "Certificate of Good Manufacturing Practice", 1, 0, 0, "C", None),
         ],
     ),
-    queries.gmp_files: (
-        IA_FILES_COLUMNS,
-        [
-            (
-                31,  # folder_id
-                "GMP_SUPPORTING_DOCUMENTS",  # folder_type
-                None,  # app_model
-                "ISO17021",  # target_type
-                "EMPTY",  # status
-                4000,  # target_id
-                4000,  # fft_id
-                None,  # version_id
-                None,  # created_date
-                None,  # created_by_id
-                None,  # path
-                None,  # filename
-                None,  # content_type
-                None,  # file_size
-            ),
-            (
-                32,  # folder_id
-                "GMP_SUPPORTING_DOCUMENTS",  # folder_type
-                None,  # app_model
-                "ISO17065",  # target_type
-                "RECEIVED",  # status
-                4001,  # target_id
-                4001,  # fft_id
-                40001,  # version_id
-                datetime(2022, 4, 27),  # created_date
-                2,  # created_by_id
-                "gmp2/ISO17065",  # path
-                "ISO17065.pdf",  # filename
-                "pdf",  # content_type
-                100,  # file_size
-            ),
-            (
-                32,  # folder_id
-                "GMP_SUPPORTING_DOCUMENTS",  # folder_type
-                None,  # app_model
-                "ISO22716",  # target_type
-                "RECEIVED",  # status
-                4002,  # target_id
-                4002,  # fft_id
-                40002,  # version_id
-                datetime(2022, 4, 27),  # created_date
-                2,  # created_by_id
-                "gmp2/ISO22716",  # path
-                "ISO22716.pdf",  # filename
-                "pdf",  # content_type
-                100,  # file_size
-            ),
-            (
-                32,  # folder_id
-                "GMP_SUPPORTING_DOCUMENTS",  # folder_type
-                None,  # app_model
-                "ISO17021",  # target_type
-                "EMPTY",  # status
-                4003,  # target_id
-                4003,  # fft_id
-                None,  # version_id
-                None,  # created_date
-                None,  # created_by_id
-                None,  # path
-                None,  # filename
-                None,  # content_type
-                None,  # file_size
-            ),
-            (
-                33,  # folder_id
-                "GMP_SUPPORTING_DOCUMENTS",  # folder_type
-                None,  # app_model
-                "ISO17021",  # target_type
-                "RECEIVED",  # status
-                4004,  # target_id
-                4004,  # fft_id
-                40004,  # version_id
-                datetime(2022, 4, 27),  # created_date
-                2,  # created_by_id
-                "gmp3/ISO17021",  # path
-                "ISO17021.pdf",  # filename
-                "pdf",  # content_type
-                100,  # file_size
-            ),
-            (
-                31,  # folder_id
-                "GMP_SUPPORTING_DOCUMENTS",  # folder_type
-                None,  # app_model
-                "BRCGS",  # target_type
-                "RECEIVED",  # status
-                4005,  # target_id
-                4005,  # fft_id
-                40005,  # version_id
-                datetime(2022, 4, 27),  # created_date
-                2,  # created_by_id
-                "gmp1/BRCGS",  # path
-                "BRCGS.pdf",  # filename
-                "pdf",  # content_type
-                100,  # file_size
-            ),
-        ],
-    ),
     queries.gmp_application: (
         EA_BASE_COLUMNS
         + [
@@ -232,7 +118,7 @@ ea_query_result = {
                 None,  # update_request_xml
                 None,  # variations_xml
                 None,  # brand_name
-                31,  # file_folder_id
+                231,  # file_folder_id
             ),
             (
                 8,
@@ -255,7 +141,7 @@ ea_query_result = {
                 xd.export_update_xml_1,  # update_request_xml
                 None,  # variations_xml
                 "A brand",
-                32,
+                232,
             ),
             (
                 9,
@@ -278,7 +164,7 @@ ea_query_result = {
                 None,  # update_request_xml
                 xd.export_varation_1,  # variations_xml
                 "Another brand",
-                33,
+                233,
             ),
         ],
     ),
@@ -685,66 +571,6 @@ ea_query_result = {
                 "path/to/cfs-cert-2.pdf",  # path
                 datetime.now(),  # created_datetime
                 2,  # created_by_id
-            ),
-        ],
-    ),
-    queries.export_case_note_docs: (
-        EA_FILES_COLUMNS,
-        [
-            (
-                1,  # doc_folder_id
-                "Case Note 1",  # folder_title
-                1,  # file_id
-                "Case Note File.pdf",  # filename
-                "pdf",  # content_type
-                1000,  # file_size
-                "1-Case Note File.pdf",  # path
-                datetime.now(),  # created_datetime
-                2,  # created_by_id
-            ),
-            (
-                2,  # doc_folder_id
-                "Case Note 1",  # folder_title
-                None,  # file_id
-                None,  # filename
-                None,  # content_type
-                None,  # file_size
-                None,  # path
-                None,  # created_datetime
-                None,  # created_by_id
-            ),
-            (
-                3,  # doc_folder_id
-                "Case Note 2",  # folder_title
-                2,  # file_id
-                "Case Note 2 File 1.pdf",  # filename
-                "pdf",  # content_type
-                1000,  # file_size
-                "2-Case Note File.pdf",  # path
-                datetime.now(),  # created_datetime
-                2,  # created_by_id
-            ),
-            (
-                3,  # doc_folder_id
-                "Case Note 2",  # folder_title
-                3,  # file_id
-                "Case Note 2 File 2.pdf",  # filename
-                "pdf",  # content_type
-                1000,  # file_size
-                "3-Case Note File.pdf",  # path
-                datetime.now(),  # created_datetime
-                2,  # created_by_id
-            ),
-            (
-                4,  # doc_folder_id
-                "Case Note 2",  # folder_title
-                None,  # file_id
-                None,  # filename
-                None,  # content_type
-                None,  # file_size
-                None,  # path
-                None,  # created_datetime
-                None,  # created_by_id
             ),
         ],
     ),

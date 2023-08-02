@@ -36,7 +36,6 @@ export_source_target = [
         dm.CertificateOfGoodManufacturingPracticeApplication,
         web.CertificateOfGoodManufacturingPracticeApplication,
     ),
-    SourceTarget(dm.GMPFile, web.GMPFile),
     SourceTarget(dm.GMPBrand, web.GMPBrand),
     SourceTarget(dm.CertificateOfFreeSaleApplication, web.CertificateOfFreeSaleApplication),
     SourceTarget(dm.CFSSchedule, web.CFSSchedule),
@@ -44,17 +43,11 @@ export_source_target = [
     SourceTarget(dm.CFSProductType, web.CFSProductType),
     SourceTarget(dm.CFSProductActiveIngredient, web.CFSProductActiveIngredient),
     SourceTarget(dm.ExportApplicationCertificate, web.ExportApplicationCertificate),
-    SourceTarget(dm.ExportCaseDocument, web.CaseDocumentReference),
-    SourceTarget(
-        dm.ExportCertificateCaseDocumentReferenceData,
-        web.ExportCertificateCaseDocumentReferenceData,
-    ),
 ]
 
 export_m2m = [
     M2M(dm.VariationRequest, web.ExportApplication, "variation_requests"),
     M2M(dm.ExportApplicationCountries, web.ExportApplication, "countries"),
-    M2M(dm.GMPFile, web.CertificateOfGoodManufacturingPracticeApplication, "supporting_documents"),
     M2M(dm.CFSLegislation, web.CFSSchedule, "legislations"),
     M2M(dm.CaseNote, web.ExportApplication, "case_notes"),
     M2M(dm.CaseEmail, web.ExportApplication, "case_emails"),

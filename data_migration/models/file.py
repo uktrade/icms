@@ -13,19 +13,15 @@ from .user import User
 
 
 class FileFolder(MigrationBase):
-    """This model is for DECMGR.FILE_FOLDERS"""
+    """Model for V1 table DECMGR.FILE_FOLDERS; parent of DECMGR.FILE_TARGETS"""
 
     app_model = models.CharField(max_length=40, null=True)
     folder_id = models.AutoField(auto_created=True, primary_key=True)
     folder_type = models.CharField(max_length=30)
 
-    @classmethod
-    def models_to_populate(cls) -> list[str]:
-        return ["FileTarget", cls.__name__]
-
 
 class FileTarget(MigrationBase):
-    """This model is for DECMGR.FILE_TARGETS"""
+    """Model for V1 table DECMGR.FILE_TARGETS; parent of DECMGR.FILE_VERSIONS"""
 
     target_id = models.AutoField(auto_created=True, primary_key=True)
     folder = models.ForeignKey(
@@ -48,7 +44,7 @@ class File(MigrationBase):
     version_id = models.IntegerField(null=True)
     is_active = models.BooleanField(default=True)
     filename = models.CharField(max_length=300)
-    content_type = models.CharField(max_length=100)
+    content_type = models.CharField(max_length=100, null=True)
     file_size = models.IntegerField()
     path = models.CharField(max_length=4000)
     created_datetime = models.DateTimeField()
@@ -62,7 +58,7 @@ class File(MigrationBase):
     )
     document_legacy_id = models.IntegerField(unique=True, null=True)
 
-    # firearms supplementary report fle id
+    # firearms supplementary report file id
     sr_goods_file_id = models.CharField(max_length=20, null=True, unique=True)
 
     @classmethod
@@ -75,6 +71,10 @@ class File(MigrationBase):
             "created_by_str",
             "sr_goods_file_id",
         ]
+
+    @classmethod
+    def get_exclude_parameters(cls) -> dict[str, Any]:
+        return {"content_type__isnull": True}
 
 
 class FileM2MBase(MigrationBase):

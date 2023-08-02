@@ -331,7 +331,7 @@ dfl_data_source_target = {
 
 
 dfl_data_m2m = {
-    "import_application": [
+    "file": [
         (
             dm.DFLGoodsCertificate,
             web.DFLApplication,
@@ -456,7 +456,7 @@ uic_data_source_target = {
 }
 
 uic_data_m2m = {
-    "import_application": [
+    "file": [
         (
             dm.UserImportCertificate,
             web.OpenIndividualLicenceApplication,
@@ -586,6 +586,7 @@ start_test_data_m2m = {
         ),
     ],
     "import_application": [],
+    "file": [],
 }
 
 

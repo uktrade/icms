@@ -2,7 +2,6 @@ from typing import Any
 
 from django.db import models
 
-from data_migration.models.file import FileM2MBase
 from data_migration.models.reference import Commodity
 from data_migration.utils.format import validate_decimal
 
@@ -51,10 +50,3 @@ class DerogationsChecklist(ChecklistBase):
             "beneficiaries_not_on_list",
             "request_purpose_confirmed",
         ]
-
-
-class DerogationsSupportingDoc(FileM2MBase):
-    APP_MODEL = "derogationsapplication"
-
-    class Meta:
-        abstract = True
