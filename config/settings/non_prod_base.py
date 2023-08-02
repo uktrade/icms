@@ -6,11 +6,7 @@ import jinja2
 from .base import *
 
 # Email settings for all non prod environments.
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-AWS_SES_ACCESS_KEY_ID = ""
-AWS_SES_SECRET_ACCESS_KEY = ""
-AWS_SES_REGION_NAME = ""
-AWS_SES_REGION_ENDPOINT = ""
+SEND_ALL_EMAILS_TO = env.list("SEND_ALL_EMAILS_TO", default=[])
 
 # Email/phone contacts
 EMAIL_FROM = env.str("ICMS_EMAIL_FROM", "enquiries.ilb@icms.trade.dev.uktrade.io")  # /PS-IGNORE

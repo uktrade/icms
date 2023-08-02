@@ -1,4 +1,5 @@
 import datetime
+from unittest import mock
 
 import pytest
 from django.conf import settings
@@ -8,6 +9,7 @@ from django.test import override_settings, signals
 from django.test.client import Client
 from django.urls import reverse
 from jinja2 import Template as Jinja2Template
+from notifications_python_client import NotificationsAPIClient
 from pytest_django.asserts import assertRedirects
 
 from web.domains.case.services import case_progress, document_pack
@@ -724,6 +726,22 @@ def strict_templates():
     """Ensure strict templates."""
     with override_settings(TEMPLATES=settings.STRICT_TEMPLATES):
         yield None
+
+
+@pytest.fixture
+def enable_gov_notify_backend():
+    with override_settings(EMAIL_BACKEND="web.mail.backends.GovNotifyEmailBackend"):
+        yield None
+
+
+@pytest.fixture
+def mock_gov_notify_client(enable_gov_notify_backend):
+    with mock.patch("web.mail.api.get_gov_notify_client") as client:
+        mock_gov_notify_client = mock.create_autospec(
+            spec=NotificationsAPIClient(settings.GOV_NOTIFY_API_KEY), instance=True
+        )
+        client.return_value = mock_gov_notify_client
+        yield mock_gov_notify_client
 
 
 def _set_valid_licence(app):

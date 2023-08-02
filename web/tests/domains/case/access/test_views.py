@@ -5,23 +5,12 @@ from django.core import mail
 from django.urls import reverse
 from pytest_django.asserts import assertInHTML, assertRedirects, assertTemplateUsed
 
+from web.mail.constants import EmailTypes
 from web.models import AccessRequest, ExporterAccessRequest, ImporterAccessRequest
 from web.permissions import organisation_get_contacts
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
-from web.tests.helpers import check_email_was_sent, get_test_client
-
-
-def check_access_request_email_was_sent(
-    exp_num_emails: int,
-    exp_sent_to_list: list[str],
-    exp_subject: str,
-    exp_in_body: str | None = None,
-):
-    check_email_was_sent(exp_num_emails, exp_sent_to_list[0], exp_subject, exp_in_body)
-    outbox = mail.outbox
-    sent_to = [_email.to[0] for _email in outbox if _email.subject == exp_subject]
-    assert set(exp_sent_to_list) == set(sent_to)
+from web.tests.helpers import check_gov_notify_email_was_sent, get_test_client
 
 
 def test_list_importer_access_request_ok(
@@ -112,14 +101,14 @@ class TestImporterAccessRequestView(AuthTestCase):
         self.access_request_user.refresh_from_db()
 
         assert self.access_request_user.submitted_access_requests.count() == 3
-        check_access_request_email_was_sent(
+        check_gov_notify_email_was_sent(
             2,
             [
                 "ilb_admin_user@example.com",  # /PS-IGNORE
                 "ilb_admin_two@example.com",  # /PS-IGNORE
             ],
-            "Access Request IAR/1",
-            "An Access Request has been delivered",
+            EmailTypes.ACCESS_REQUEST,
+            {"reference": "IAR/1"},
         )
 
 
@@ -180,14 +169,14 @@ class TestExporterAccessRequestView(AuthTestCase):
         self.access_request_user.refresh_from_db()
 
         assert self.access_request_user.submitted_access_requests.count() == 3
-        check_access_request_email_was_sent(
+        check_gov_notify_email_was_sent(
             2,
             [
                 "ilb_admin_user@example.com",  # /PS-IGNORE
                 "ilb_admin_two@example.com",  # /PS-IGNORE
             ],
-            "Access Request EAR/1",
-            "An Access Request has been delivered",
+            EmailTypes.ACCESS_REQUEST,
+            {"reference": "EAR/1"},
         )
 
 

@@ -41,8 +41,6 @@ services:
             - ICMS_SILENCED_SYSTEM_CHECKS
             - ICMS_SECRET_KEY
             - ICMS_EMAIL_FROM
-            - AWS_SES_ACCESS_KEY_ID
-            - AWS_SES_SECRET_ACCESS_KEY
             - DJANGO_SETTINGS_MODULE
             - ELASTIC_APM_SECRET_TOKEN
             - ELASTIC_APM_ENVIRONMENT
@@ -64,6 +62,8 @@ services:
             - SEND_LICENCE_TO_CHIEF
             - SET_INACTIVE_APP_TYPES_ACTIVE
             - GOV_NOTIFY_API_KEY
+            - EMAIL_BACKEND
+            - SEND_ALL_EMAILS_TO
         # stdin_open: true
         # tty: true
         ports:
@@ -96,14 +96,14 @@ services:
         command: celery --app=config.celery:app worker --loglevel=info
         environment:
             - DJANGO_SETTINGS_MODULE
-            - AWS_SES_ACCESS_KEY_ID
-            - AWS_SES_SECRET_ACCESS_KEY
             - ICMS_HMRC_DOMAIN
             - ICMS_HMRC_UPDATE_LICENCE_ENDPOINT
             - HAWK_AUTH_ID
             - HAWK_AUTH_KEY
             - SEND_LICENCE_TO_CHIEF
             - GOV_NOTIFY_API_KEY
+            - EMAIL_BACKEND
+            - SEND_ALL_EMAILS_TO
         depends_on:
             - redis
         volumes:

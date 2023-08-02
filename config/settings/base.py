@@ -130,12 +130,7 @@ AUTHENTICATION_BACKENDS = [
 
 # Email
 GOV_NOTIFY_API_KEY = env.str("GOV_NOTIFY_API_KEY", default="")
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-AWS_SES_ACCESS_KEY_ID = env.str("AWS_SES_ACCESS_KEY_ID", default="")
-AWS_SES_SECRET_ACCESS_KEY = env.str("AWS_SES_SECRET_ACCESS_KEY", default="")
-AWS_SES_REGION_NAME = "eu-west-1"
-AWS_SES_REGION_ENDPOINT = "email.eu-west-1.amazonaws.com"
+EMAIL_BACKEND = env.str("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
 
 # Email/phone contacts
 EMAIL_FROM = env.str("ICMS_EMAIL_FROM", default="")
@@ -228,6 +223,7 @@ CELERY_CACHE_BACKEND = REDIS_URL
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_EXTENDED = True
 
 # Django cache with Redis
 CACHES = {
