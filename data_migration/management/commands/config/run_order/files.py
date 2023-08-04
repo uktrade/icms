@@ -352,7 +352,7 @@ file_query_model = [
     ),
     QueryModel(
         queries.fa_supplementary_report_upload_files,
-        "Supplmentary Report Goods Uploaded Files",
+        "Supplementary Report Goods Uploaded Files",
         dm.File,
         {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
     ),

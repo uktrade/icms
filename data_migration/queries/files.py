@@ -17,7 +17,7 @@ import_application_subquery = """
 
 
 import_application_folders = f"""
-SELECT DISTINCT
+SELECT
   ff.id folder_id
   , ff.file_folder_type folder_type
   , :app_model app_model
@@ -28,7 +28,7 @@ ORDER by ff.id
 
 
 import_application_file_targets = f"""
-SELECT DISTINCT
+SELECT
   ff_id folder_id
   , fft.target_mnem target_type
   , fft.status

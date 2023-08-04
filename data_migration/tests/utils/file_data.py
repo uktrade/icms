@@ -264,8 +264,8 @@ file_query_result = {
                 datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 "contract/file/10000",  # path
-                "contract.pdf",  # filename
-                "pdf",  # content_type
+                "contract-no-content.pdf",  # filename
+                None,  # content_type
                 12345,  # file_size
             ),
             (
@@ -274,7 +274,7 @@ file_query_result = {
                 datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 "contract/file/10001",  # path
-                "contract.pdf",  # filename
+                "contract-2.pdf",  # filename
                 "pdf",  # content_type
                 12345,  # file_size
             ),

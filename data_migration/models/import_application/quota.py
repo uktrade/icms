@@ -146,3 +146,12 @@ class TextilesSupportingDoc(FileM2MBase):
 
     class Meta:
         abstract = True
+
+    @classmethod
+    def get_m2m_filter_kwargs(cls) -> dict[str, Any]:
+        filter_kwargs = super().get_m2m_filter_kwargs()
+
+        # Exclude docs that don't have an associated textiles application
+        filter_kwargs["target__folder__import_application__isnull"] = False
+
+        return filter_kwargs

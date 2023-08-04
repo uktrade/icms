@@ -62,6 +62,21 @@ class File(MigrationBase):
     sr_goods_file_id = models.CharField(max_length=20, null=True, unique=True)
 
     @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        # Data fix for pdf files without content_type set, fixing so the metadata can be migrated
+        # and maintain the reference to the S3 object
+        # Note that these files in V1 have a file_size of 0 bytes and are not able to be opened
+
+        if not data["content_type"]:
+            if data["filename"].endswith(".pdf"):
+                data["content_type"] = "application/pdf"
+            if data["filename"].endswith(".docx"):
+                docx = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                data["content_type"] = docx
+
+        return data
+
+    @classmethod
     def get_excludes(cls) -> list[str]:
         return super().get_excludes() + [
             "version_id",
@@ -71,10 +86,6 @@ class File(MigrationBase):
             "created_by_str",
             "sr_goods_file_id",
         ]
-
-    @classmethod
-    def get_exclude_parameters(cls) -> dict[str, Any]:
-        return {"content_type__isnull": True}
 
 
 class FileM2MBase(MigrationBase):
@@ -93,10 +104,7 @@ class FileM2MBase(MigrationBase):
         return data
 
     @classmethod
-    def get_m2m_data(cls, target: models.Model) -> Generator:
-        if not cls.APP_MODEL:
-            raise NotImplementedError("APP_MODEL must be defined on the model")
-
+    def get_m2m_filter_kwargs(cls) -> dict[str, Any]:
         filter_kwargs: dict[str, str | list[str]] = {
             "target__folder__folder_type": cls.FOLDER_TYPE,
         }
@@ -108,6 +116,15 @@ class FileM2MBase(MigrationBase):
 
         if cls.FILTER_APP_MODEL:
             filter_kwargs["target__folder__app_model"] = cls.APP_MODEL
+
+        return filter_kwargs
+
+    @classmethod
+    def get_m2m_data(cls, target: models.Model) -> Generator:
+        if not cls.APP_MODEL:
+            raise NotImplementedError("APP_MODEL must be defined on the model")
+
+        filter_kwargs = cls.get_m2m_filter_kwargs()
 
         return (
             File.objects.select_related("target__folder__import_application")

@@ -115,13 +115,20 @@ class OutwardProcessingTradeFile(FileM2MBase):
         abstract = True
 
     @classmethod
+    def get_m2m_filter_kwargs(cls) -> dict[str, Any]:
+        filter_kwargs = super().get_m2m_filter_kwargs()
+
+        # Exclude docs that don't have an associated opt application
+        filter_kwargs["target__folder__import_application__isnull"] = False
+
+        return filter_kwargs
+
+    @classmethod
     def get_source_data(cls) -> Generator:
+        filter_kwargs = cls.get_m2m_filter_kwargs()
+
         return (
-            File.objects.filter(
-                target__target_type__in=cls.TARGET_TYPE,
-                target__folder__folder_type="IMP_APP_DOCUMENTS",
-                target__folder__app_model=cls.APP_MODEL,
-            )
+            File.objects.filter(**filter_kwargs)
             .values(file_ptr_id=F("pk"), target_type=F("target__target_type"))
             .iterator(chunk_size=2000)
         )

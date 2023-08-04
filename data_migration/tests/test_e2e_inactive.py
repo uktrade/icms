@@ -273,6 +273,9 @@ def test_import_sps_data(mock_connect, dummy_dm_settings):
     assert sps1.value_gbp is None
     assert sps1.value_eur is None
 
+    assert sps1.contract_file.filename == "contract-no-content.pdf"
+    assert sps1.contract_file.content_type == "application/pdf"
+
     ia1 = sps1.importapplication_ptr
     assert ia1.sigl_transmissions.count() == 3
 
@@ -290,6 +293,9 @@ def test_import_sps_data(mock_connect, dummy_dm_settings):
     assert sps2.quantity == 100
     assert sps2.value_gbp == 100
     assert sps2.value_eur == 100
+
+    assert sps2.contract_file.filename == "contract-2.pdf"
+    assert sps2.contract_file.content_type == "pdf"
 
     ia2 = sps2.importapplication_ptr
     assert ia2.sigl_transmissions.count() == 2
