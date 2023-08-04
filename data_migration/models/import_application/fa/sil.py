@@ -109,15 +109,23 @@ class SILUserSection5(FileM2MBase):
         abstract = True
 
     @classmethod
+    def get_m2m_filter_kwargs(cls) -> dict[str, Any]:
+        filter_kwargs = super().get_m2m_filter_kwargs()
+
+        # Exclude docs that don't have an associated sil application
+        filter_kwargs["target__folder__import_application__isnull"] = False
+
+        return filter_kwargs
+
+    @classmethod
     def get_source_data(cls) -> Generator:
         """The data for SILSection5User certificates are files with the the target_type of
         IMP_SECTION5_AUTHORITY and the folder_type of IMP_APP_DOCUMENTS.
         """
+        filter_kwargs = cls.get_m2m_filter_kwargs()
+
         return (
-            File.objects.filter(
-                target__target_type="IMP_SECTION5_AUTHORITY",
-                target__folder__folder_type="IMP_APP_DOCUMENTS",
-            )
+            File.objects.filter(**filter_kwargs)
             .values(file_ptr_id=F("pk"))
             .iterator(chunk_size=2000)
         )
