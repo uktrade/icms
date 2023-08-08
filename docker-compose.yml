@@ -14,7 +14,7 @@ services:
         ports:
             - "6000:5432"
         networks:
-            - icms_backend
+            - backend
         healthcheck:
             test: [ "CMD-SHELL", "pg_isready -U postgres" ]
             interval: 2s
@@ -77,8 +77,8 @@ services:
             - ./test-reports:/code/test-reports # needed for ci
             - .:/code
         networks:
-            - icms_backend
-            - icms_public
+            - backend
+            - public
 
     redis:
         # NOTE: Match what we currently have deployed in cloud foundry (Upgrade when needed).
@@ -88,7 +88,7 @@ services:
         ports:
             - "6379"
         networks:
-            - icms_backend
+            - backend
 
     celery-worker:
         build:
@@ -109,8 +109,8 @@ services:
         volumes:
             - .:/code
         networks:
-            - icms_backend
-            - icms_public
+            - backend
+            - public
 
     celery-beat:
         build:
@@ -123,7 +123,7 @@ services:
         volumes:
             - .:/code
         networks:
-            - icms_backend
+            - backend
 
     localstack:
         container_name: localstack_main
@@ -142,23 +142,24 @@ services:
             - ls_data:/tmp/localstack
             - "/var/run/docker.sock:/var/run/docker.sock"
         networks:
-            - icms_backend
+            - backend
 
     playwright-runner:
         build:
             context: .
             dockerfile: playwright/Dockerfile
         networks:
-            - icms_backend
+            - backend
         ipc: host
         volumes:
             - .:/code
 
 
 networks:
-    icms_public:
+    public:
+        driver: bridge
         name: "icms_public"
-    icms_backend:
+    backend:
         name: "icms_backend"
 
 volumes:
