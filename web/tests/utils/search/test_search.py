@@ -1179,7 +1179,7 @@ def test_import_search_by_licence_type(importer_one_fixture_data: FixtureData):
 def test_import_search_by_chief_usage_status(importer_one_fixture_data: FixtureData):
     wood = Build.wood_application("wood-app-ref", importer_one_fixture_data)
 
-    for value, label in ImportApplication.ChiefUsageTypes.choices:
+    for value, label in ImportApplication.ChiefUsageStatus.choices:
         wood.chief_usage_status = value
         wood.save()
 

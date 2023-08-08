@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core import exceptions
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect
@@ -22,10 +23,16 @@ from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.views.mixins import ApplicationTaskMixin
-from web.models import ImportApplication, LiteHMRCChiefRequest, Task
+from web.models import (
+    CaseDocumentReference,
+    ImportApplication,
+    ImportApplicationLicence,
+    LiteHMRCChiefRequest,
+    Task,
+)
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
-from web.utils.sentry import capture_exception
+from web.utils.sentry import capture_exception, capture_message
 
 from . import client, types, utils
 
@@ -55,7 +62,7 @@ def validate_request(request: HttpRequest) -> mohawk.Receiver:
     except KeyError as err:
         raise exceptions.BadRequest from err
 
-    # lite-hmrc creates the payload hash before encoding the json, therefore decode it here to get the same hash.
+    # ICMS-HMRC creates the payload hash before encoding the json, therefore decode it here to get the same hash.
     content = request.body.decode()
 
     try:
@@ -74,12 +81,7 @@ def validate_request(request: HttpRequest) -> mohawk.Receiver:
 
 # Hawk view (no CSRF)
 @method_decorator(csrf_exempt, name="dispatch")
-class LicenseDataCallback(View):
-    """View used by LITE-HMRC to send application data back to ICMS."""
-
-    # View Config
-    http_method_names = ["post"]
-
+class HawkViewBase(View):
     def dispatch(self, *args, **kwargs) -> JsonResponse:
         try:
             # Validate sender request
@@ -122,6 +124,13 @@ class LicenseDataCallback(View):
 
         return hawk_response_header
 
+
+class LicenseDataCallback(HawkViewBase):
+    """View used by ICMS-HMRC to send licence data back to ICMS."""
+
+    # View Config
+    http_method_names = ["post"]
+
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
         licence_replies = types.ChiefLicenceReplyResponseData.parse_raw(
             request.body, content_type=request.content_type
@@ -157,6 +166,41 @@ class LicenseDataCallback(View):
         )
 
         return chief_req
+
+
+class UsageDataCallbackView(HawkViewBase):
+    """View used by ICMS-HMRC to send usage data back to ICMS."""
+
+    # View Config
+    http_method_names = ["post"]
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+        response = types.ChiefUsageDataResponseData.parse_raw(
+            request.body, content_type=request.content_type
+        )
+
+        with transaction.atomic():
+            for rec in response.usage_data:
+                self._update_import_application_usage_status(rec)
+
+        return JsonResponse({}, status=http.HTTPStatus.OK)
+
+    def _update_import_application_usage_status(self, rec: types.UsageRecord) -> None:
+        try:
+            licence = ImportApplicationLicence.objects.get(
+                status=ImportApplicationLicence.Status.ACTIVE,
+                document_references__document_type=CaseDocumentReference.Type.LICENCE,
+                document_references__reference=rec.licence_ref,
+            )
+        except ObjectDoesNotExist:
+            capture_message(
+                f"licence not found: Unable to set usage status for licence number: {rec.licence_ref}."
+            )
+            return
+
+        application = licence.import_application
+        application.chief_usage_status = rec.licence_status
+        application.save()
 
 
 @method_decorator(transaction.atomic, name="post")
@@ -232,7 +276,7 @@ class _BaseTemplateView(PermissionRequiredMixin, TemplateView):
 
 
 class PendingLicences(_BaseTemplateView):
-    """Licences that have been sent to lite-hmrc and therefore CHIEF."""
+    """Licences that have been sent to ICMS-HMRC and therefore CHIEF."""
 
     template_name = "web/domains/chief/pending_licences.html"
 
@@ -240,7 +284,7 @@ class PendingLicences(_BaseTemplateView):
 class FailedLicences(_BaseTemplateView):
     """Licences that have failed for reasons that are application specific.
 
-    CHIEF protocol errors (file errors) should be handled in lite-hmrc.
+    CHIEF protocol errors (file errors) should be handled in ICMS-HMRC.
     """
 
     template_name = "web/domains/chief/failed_licences.html"
