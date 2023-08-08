@@ -142,11 +142,12 @@ class ImportApplicationType(models.Model):
 
 
 class ImportApplication(ApplicationBase):
-    class ChiefUsageTypes(TypedTextChoices):
+    class ChiefUsageStatus(TypedTextChoices):
         CANCELLED = ("C", "Cancelled")
-        EXHAUSTED = ("E", "Exhausted")
-        EXPIRED = ("D", "Expired")
-        SURRENDERED = ("S", "Surrendered")
+        EXHAUSTED = ("E", "Exhausted")  # Exhaustion Notified
+        OPEN = ("O", "Open")
+        SURRENDERED = ("S", "Surrendered")  # Surrender Notified (RPA only)
+        EXPIRED = ("D", "Expired")  # Date expired
 
     class Meta:
         indexes = [
@@ -173,7 +174,7 @@ class ImportApplication(ApplicationBase):
     variation_no = models.IntegerField(blank=False, null=False, default=0)
     legacy_case_flag = models.BooleanField(blank=False, null=False, default=False)
 
-    chief_usage_status = models.CharField(max_length=1, choices=ChiefUsageTypes.choices, null=True)
+    chief_usage_status = models.CharField(max_length=1, choices=ChiefUsageStatus.choices, null=True)
 
     variation_decision = models.CharField(
         max_length=10,

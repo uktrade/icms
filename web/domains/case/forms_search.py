@@ -159,7 +159,7 @@ class ImportSearchAdvancedForm(ImportSearchForm):
     chief_usage_status = forms.ChoiceField(
         label="CHIEF Usage Status",
         required=False,
-        choices=[(None, "Any")] + ImportApplication.ChiefUsageTypes.choices,
+        choices=[(None, "Any")] + ImportApplication.ChiefUsageStatus.choices,
     )
 
     application_contact = WildcardField(

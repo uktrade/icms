@@ -148,3 +148,12 @@ class ChiefLicenceReplyResponseData(BaseModel):
     run_number: int
     accepted: list[AcceptedLicence]
     rejected: list[RejectedLicence]
+
+
+class UsageRecord(BaseModel):
+    licence_ref: str
+    licence_status: Literal["C", "E", "O", "S", "D"]
+
+
+class ChiefUsageDataResponseData(BaseModel):
+    usage_data: list[UsageRecord]

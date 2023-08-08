@@ -25,4 +25,5 @@ urlpatterns = [
     path(
         "license-data-callback", views.LicenseDataCallback.as_view(), name="license-data-callback"
     ),
+    path("usage-data-callback", views.UsageDataCallbackView.as_view(), name="usage-data-callback"),
 ]
