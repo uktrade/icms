@@ -62,4 +62,12 @@
   <div class="row">
     <div class="twelve columns"><span class="text-widget">{{ cs.status }}</span></div>
   </div>
+  {% if advanced_search and cs.chief_usage_status %}
+    <div class="row">
+      <div class="twelve columns"><label class="prompt north">CHIEF Usage Status</label></div>
+    </div>
+    <div class="row">
+      <div class="twelve columns"><span class="text-widget">{{ cs.chief_usage_status }}</span></div>
+    </div>
+  {% endif %}
 </div>
