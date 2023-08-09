@@ -58,10 +58,10 @@ SELECT
   , cardc.id certificate_id
   , 'CERTIFICATE' document_type
   , cardc.country_id
-  , xdd.title filename
+  , xdd.title || '.pdf' filename
   , xdd.content_type
   , dbms_lob.getlength(sld.blob_data) file_size
-  , sld.id || '-' || xdd.title path
+  , 'export_certificate/' || sld.id || '-' || xdd.title || '.pdf' path
   , dd.created_datetime
   , created_by_wua_id created_by_id
   , sld.blob_data
