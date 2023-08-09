@@ -41,6 +41,14 @@ CHECK_DATA_COUNTS: list[CheckCount] = [
         filter_params={"group_count__gt": 1},
         annotation={"group_count": Count("groups")},
     ),
+    CheckCount(
+        name="Duplicate File Paths",
+        expected_count=0,
+        model=web.File,
+        filter_params={"path_count__gt": 1},
+        annotation={"path_count": Count("pk")},
+        values=["path"],
+    ),
 ]
 
 CHECK_DATA_QUERIES: list[CheckQuery] = [

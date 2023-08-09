@@ -3236,3 +3236,5 @@ SELECT ff_id folder_id
 Supplementary Report Goods Uploaded Files
 Surrender Notified
 RPA
+Duplicate File Paths
+SELECT ird.imad_id licence_id

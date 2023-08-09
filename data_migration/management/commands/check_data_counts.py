@@ -1,10 +1,9 @@
 import argparse
-from typing import Any
 
 import oracledb
 from django.core.management.base import BaseCommand
 
-from ._types import ModelT, Params
+from ._types import Anno, ModelT, Params, Val
 from .config.data_counts import CHECK_DATA_COUNTS, CHECK_DATA_QUERIES
 from .utils.db import CONNECTION_CONFIG
 
@@ -26,7 +25,7 @@ class Command(BaseCommand):
         self.stdout.write(f"TOTAL PASS: {self.passes} - TOTAL FAIL: {self.failures}")
 
     def get_actual(
-        self, model: ModelT, filter_params: Params, annotation: dict[str, Any] | None = None
+        self, model: ModelT, filter_params: Params, annotation: Anno = None, values: Val = None
     ) -> int:
         """Retrieve to actual counts for the models or list of models migrated to V2
 
@@ -36,12 +35,15 @@ class Command(BaseCommand):
         if not annotation:
             annotation = {}
 
+        if not values:
+            values = []
+
         if isinstance(model, list):
             return sum(
                 m.objects.annotate(**annotation).filter(**filter_params).count() for m in model
             )
 
-        return model.objects.annotate(**annotation).filter(**filter_params).count()
+        return model.objects.values(*values).annotate(**annotation).filter(**filter_params).count()
 
     def run_queries(self):
         """Iterates over CHECK_DATA_QUERIES and runs queries in V1 to retrieve the data counts prior to data migration"""
@@ -70,7 +72,9 @@ class Command(BaseCommand):
         """Iterates over CHECK_DATA_COUNTS to compare expected counts to actual counts in V2"""
 
         for check in CHECK_DATA_COUNTS:
-            actual = self.get_actual(check.model, check.filter_params, annotation=check.annotation)
+            actual = self.get_actual(
+                check.model, check.filter_params, annotation=check.annotation, values=check.values
+            )
             self._log_result(check.name, check.expected_count, actual)
 
     def _log_result(self, name: str, expected: int, actual: int) -> None:
