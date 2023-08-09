@@ -9,6 +9,8 @@ from data_migration import models as dm
 from web import models as web
 
 ModelT = Union[T[Model], list[T[Model]]]
+Anno = dict[str, Any] | None
+Val = list[str] | None
 Params = dict[str, int | str | bool | tuple]
 
 
@@ -37,7 +39,8 @@ class CheckCount:
     expected_count: int
     model: ModelT
     filter_params: Params = field(default_factory=dict)
-    annotation: dict[str, Any] | None = None
+    annotation: Anno = None
+    values: Val = None
 
 
 @dataclass(frozen=True)
