@@ -220,7 +220,7 @@ LEFT JOIN (
     , fv.id version_id
     , create_start_datetime created_datetime
     , create_by_wua_id created_by_id
-    , 'case_note_files/' || id || '-' || x.filename path
+    , TO_CHAR(:path_prefix) || '/' || id || '-' || x.filename path
     , DEREF(secure_lob_ref).id  secure_lob_ref_id
     , x.*
   FROM decmgr.file_versions fv

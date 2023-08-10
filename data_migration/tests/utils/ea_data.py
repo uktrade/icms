@@ -95,6 +95,7 @@ ea_query_result = {
         + [
             ("brand_name",),
             ("file_folder_id",),
+            ("gmp_certificate_issued",),
         ],
         [
             (
@@ -119,6 +120,7 @@ ea_query_result = {
                 None,  # variations_xml
                 None,  # brand_name
                 231,  # file_folder_id
+                None,  # gmp_certificate_issued
             ),
             (
                 8,
@@ -142,6 +144,7 @@ ea_query_result = {
                 None,  # variations_xml
                 "A brand",
                 232,
+                "BRCGS",  # gmp_certificate_issued
             ),
             (
                 9,
@@ -165,6 +168,7 @@ ea_query_result = {
                 xd.export_varation_1,  # variations_xml
                 "Another brand",
                 233,
+                "ISO22716",  # gmp_certificate_issued
             ),
         ],
     ),
