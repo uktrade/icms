@@ -32,6 +32,16 @@ class CertificateOfGoodManufacturingPracticeApplication(ExportBase):
     auditor_certified = models.CharField(max_length=3, null=True)
 
     @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        cert = data["gmp_certificate_issued"]
+        cert_map = {"ISO22716": "ISO_22716", "BRCGS": "BRC_GSOCP"}
+
+        if cert in cert_map:
+            data["gmp_certificate_issued"] = cert_map[cert]
+
+        return data
+
+    @classmethod
     def models_to_populate(cls) -> list[str]:
         return super().models_to_populate() + ["GMPBrand"]
 

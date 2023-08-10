@@ -333,6 +333,7 @@ file_query_model = [
         {
             "created_datetime": DEFAULT_FILE_CREATED_DATETIME,
             "folder_type": "GMP_SUPPORTING_DOCUMENTS",
+            "path_prefix": "gmp_application_files",
         },
     ),
     QueryModel(
@@ -342,6 +343,7 @@ file_query_model = [
         {
             "created_datetime": DEFAULT_FILE_CREATED_DATETIME,
             "folder_type": "IMP_CASE_NOTE_DOCUMENTS",
+            "path_prefix": "import_application_case_note_files",
         },
     ),
     QueryModel(

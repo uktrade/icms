@@ -236,17 +236,26 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert gmp1.supporting_documents.count() == 1
     assert gmp1.supporting_documents.first().file_type == "BRC_GSOCP"
     assert gmp1.brands.count() == 0
+    assert gmp1.gmp_certificate_issued is None
 
     assert gmp2.supporting_documents.count() == 2
     assert gmp2.supporting_documents.filter(file_type="ISO_22716").count() == 1
     assert gmp2.supporting_documents.filter(file_type="ISO_17065").count() == 1
     assert gmp2.brands.count() == 1
     assert gmp2.brands.first().brand_name == "A brand"
+    assert (
+        gmp2.gmp_certificate_issued
+        == web.CertificateOfGoodManufacturingPracticeApplication.CertificateTypes.BRC_GSOCP
+    )
 
     assert gmp3.supporting_documents.count() == 1
     assert gmp3.supporting_documents.first().file_type == "ISO_17021"
     assert gmp3.brands.count() == 1
     assert gmp3.brands.first().brand_name == "Another brand"
+    assert (
+        gmp3.gmp_certificate_issued
+        == web.CertificateOfGoodManufacturingPracticeApplication.CertificateTypes.ISO_22716
+    )
 
     assert web.CertificateOfManufactureApplication.objects.count() == 3
     com1, com2, com3 = web.CertificateOfManufactureApplication.objects.order_by("pk")
