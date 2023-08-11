@@ -364,7 +364,11 @@ def get_users_with_permission(
     https://docs.djangoproject.com/en/4.2/ref/contrib/auth/#django.contrib.auth.models.UserManager.with_perm
     """
 
-    return User.objects.with_perm(permission, include_superusers=include_superusers)
+    return User.objects.with_perm(
+        permission,
+        include_superusers=include_superusers,
+        backend="web.auth.backends.ModelAndObjectPermissionBackend",
+    )
 
 
 def get_all_case_officers() -> QuerySet[User]:

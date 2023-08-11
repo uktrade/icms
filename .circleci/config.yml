@@ -15,7 +15,8 @@ jobs:
 
             - run:
                 name: build containers
-                command:  make build
+                # Create an empty .env file so containers build.
+                command: touch .env && make build
 
             - run:
                 name: run black (code formatting check)

@@ -23,14 +23,21 @@ class RedirectBaseDomainView(RedirectView):
         if self.request.user.is_authenticated:
             self.url = reverse("workbasket")
         else:
-            self.url = reverse("accounts:login")
+            self.url = reverse(settings.LOGIN_URL)
 
         return super().get_redirect_url(*args, **kwargs)
 
 
 urlpatterns = [
     path("", RedirectBaseDomainView.as_view()),
+    #
+    # staff-sso-client login urls
+    path("auth/", include("authbroker_client.urls")),
+    #
+    # django.contrib.auth login urls
     path("accounts/", include("web.registration.urls")),
+    #
+    # Application urls
     path("health-check/", health_check, name="health-check"),
     path("home/", home, name="home"),
     path("workbasket/", include("web.domains.workbasket.urls")),

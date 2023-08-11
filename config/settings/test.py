@@ -58,3 +58,10 @@ ICMS_V1_REPLICA_DSN = ""
 
 GOV_NOTIFY_API_KEY = "fakekey-11111111-1111-1111-1111-111111111111-22222222-2222-2222-222222222222"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+
+#
+# Staff-sso
+STAFF_SSO_ENABLED = False
+LOGIN_URL = "accounts:login"
+LOGOUT_REDIRECT_URL = "accounts:login"
