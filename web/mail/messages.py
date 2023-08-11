@@ -4,7 +4,7 @@ from uuid import UUID
 from django.conf import settings
 from django.core.mail import EmailMessage, SafeMIMEMultipart
 
-from web.models import AccessRequest
+from web.domains.case.types import ImpAccessOrExpAccess
 
 from .constants import EmailTypes
 from .models import EmailTemplate
@@ -43,9 +43,31 @@ class GOVNotifyEmailMessage(EmailMessage):
 class AccessRequestEmail(GOVNotifyEmailMessage):
     name = EmailTypes.ACCESS_REQUEST
 
-    def __init__(self, *args, access_request: AccessRequest, **kwargs):
+    def __init__(self, *args, access_request: ImpAccessOrExpAccess, **kwargs):
         self.access_request = access_request
         super().__init__(*args, **kwargs)
 
     def get_context(self) -> dict:
         return {"reference": self.access_request.reference}
+
+
+class AccessRequestClosedEmail(GOVNotifyEmailMessage):
+    name = EmailTypes.ACCESS_REQUEST_CLOSED
+
+    def __init__(self, *args, access_request: ImpAccessOrExpAccess, **kwargs):
+        self.access_request = access_request
+        super().__init__(*args, **kwargs)
+
+    def get_context(self) -> dict:
+        return {
+            "request_type": self.access_request.REQUEST_TYPE.capitalize(),
+            "agent": "Agent " if self.access_request.is_agent_request else "",
+            "organisation": self.access_request.organisation_name,
+            "outcome": self.access_request.get_response_display(),
+            "reason": self.get_reason(),
+        }
+
+    def get_reason(self) -> str:
+        if not self.access_request.response_reason:
+            return ""
+        return f"Reason: {self.access_request.response_reason}"

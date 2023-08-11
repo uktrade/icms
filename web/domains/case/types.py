@@ -30,6 +30,8 @@ from web.models import (
 ImpTypeOrExpType = Union[ImportApplicationType, ExportApplicationType]
 
 ImpOrExp = Union[ImportApplication, ExportApplication]
+ImpAccessOrExpAccess = Union[ImporterAccessRequest, ExporterAccessRequest]
+
 ImpOrExpT = type[ImpOrExp]
 
 ImpOrExpOrAccess = Union[

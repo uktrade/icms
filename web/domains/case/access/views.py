@@ -25,7 +25,6 @@ from web.models import (
     ImporterAccessRequest,
     Task,
 )
-from web.notify import notify
 from web.permissions import Perms, organisation_add_contact
 from web.types import AuthenticatedHttpRequest
 from web.views import ModelFilterView
@@ -281,7 +280,7 @@ def close_access_request(
 
                     organisation_add_contact(org, access_request.submitted_by)
 
-                notify.access_request_closed(access_request)
+                emails.send_access_request_closed_email(access_request)
 
                 return redirect(reverse("workbasket"))
         else:

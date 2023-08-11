@@ -5,6 +5,7 @@ from notifications_python_client import NotificationsAPIClient
 from notifications_python_client.errors import HTTPError
 
 from config.celery import app
+from web.mail.constants import SEND_EMAIL_TASK_NAME
 
 
 def get_gov_notify_client() -> NotificationsAPIClient:
@@ -29,7 +30,7 @@ def is_valid_template_id(template_id: UUID) -> bool:
     return gov_notify_template_id == template_id
 
 
-@app.task
+@app.task(name=SEND_EMAIL_TASK_NAME)
 def send_email(template_id: UUID, personalisation: dict, email_address: str) -> dict:
     client = get_gov_notify_client()
     return client.send_email_notification(

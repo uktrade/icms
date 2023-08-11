@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 import pytest
-from django.core import mail
 from django.urls import reverse
 from pytest_django.asserts import assertInHTML, assertRedirects, assertTemplateUsed
 
@@ -309,7 +308,18 @@ class TestCloseAccessRequest(AuthTestCase):
         self.iar.refresh_from_db()
         assert self.iar.response == AccessRequest.APPROVED
 
-        self._assert_email_sent(self.iar)
+        check_gov_notify_email_was_sent(
+            1,
+            [self.iar.submitted_by.email],
+            EmailTypes.ACCESS_REQUEST_CLOSED,
+            {
+                "agent": "",
+                "organisation": "Import Ltd",
+                "outcome": "Approved",
+                "reason": "",
+                "request_type": "Importer",
+            },
+        )
 
     def test_close_importer_access_request_refuse(self):
         response = self.ilb_admin_client.get(self.iar_url)
@@ -324,7 +334,18 @@ class TestCloseAccessRequest(AuthTestCase):
         assert self.iar.response == AccessRequest.REFUSED
         assert self.iar.response_reason == "test refuse"
 
-        self._assert_email_sent(self.iar)
+        check_gov_notify_email_was_sent(
+            1,
+            [self.iar.submitted_by.email],
+            EmailTypes.ACCESS_REQUEST_CLOSED,
+            {
+                "agent": "",
+                "organisation": "Import Ltd",
+                "outcome": "Refused",
+                "reason": "Reason: test refuse",
+                "request_type": "Importer",
+            },
+        )
 
     def test_close_exporter_access_request_approve(self):
         response = self.ilb_admin_client.get(self.ear_url)
@@ -344,7 +365,18 @@ class TestCloseAccessRequest(AuthTestCase):
         self.ear.refresh_from_db()
         assert self.ear.response == AccessRequest.APPROVED
 
-        self._assert_email_sent(self.ear)
+        check_gov_notify_email_was_sent(
+            1,
+            [self.ear.submitted_by.email],
+            EmailTypes.ACCESS_REQUEST_CLOSED,
+            {
+                "agent": "",
+                "organisation": "Export Ltd",
+                "outcome": "Approved",
+                "reason": "",
+                "request_type": "Exporter",
+            },
+        )
 
     def test_close_exporter_access_request_refuse(self):
         response = self.ilb_admin_client.get(self.ear_url)
@@ -359,7 +391,18 @@ class TestCloseAccessRequest(AuthTestCase):
         assert self.ear.response == AccessRequest.REFUSED
         assert self.ear.response_reason == "test refuse"
 
-        self._assert_email_sent(self.ear)
+        check_gov_notify_email_was_sent(
+            1,
+            [self.ear.submitted_by.email],
+            EmailTypes.ACCESS_REQUEST_CLOSED,
+            {
+                "agent": "",
+                "organisation": "Export Ltd",
+                "outcome": "Refused",
+                "reason": "Reason: test refuse",
+                "request_type": "Exporter",
+            },
+        )
 
     def test_close_iar_approve_user_permissions(self):
         """Test approving a linked IAR adds the access request user as an org contact."""
@@ -502,22 +545,6 @@ class TestCloseAccessRequest(AuthTestCase):
 
         org_contacts = organisation_get_contacts(self.exporter_agent)
         assert not org_contacts.contains(self.acc_req_user)
-
-    def _assert_email_sent(self, access_request):
-        requester = access_request.submitted_by
-        # The underlying code actually uses personal emails with portal_notifications set to True
-        expected_to_email = requester.email
-
-        outbox = mail.outbox
-
-        assert len(outbox) == 1
-        first_email = outbox[0]
-        assert first_email.to == [expected_to_email]
-        assert first_email.subject == "Import Case Management System Account"
-
-        assert f"Request Outcome: {access_request.response}" in first_email.body
-        if access_request.response:
-            assert access_request.response in first_email.body
 
 
 class TestAccessRequestHistoryView(AuthTestCase):

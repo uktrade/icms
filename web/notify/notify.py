@@ -81,17 +81,6 @@ def register(user, password):
     )
 
 
-def access_request_closed(access_request):
-    requester = access_request.submitted_by
-    subject = "Import Case Management System Account"
-    send_notification(
-        subject,
-        "email/access/access_request_closed.html",
-        context={"subject": subject, "access_request": access_request},
-        recipients=utils.get_notification_emails(requester),
-    )
-
-
 def mailshot(mailshot):
     html_message = utils.render_email(
         "email/mailshot/mailshot.html",
