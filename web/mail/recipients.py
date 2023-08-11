@@ -1,4 +1,4 @@
-from django.db.models import QuerySet
+from collections.abc import Collection
 
 from web.mail.decorators import override_recipients
 from web.models import User
@@ -12,7 +12,7 @@ def get_ilb_case_officers_email_addresses() -> list[str]:
 
 
 @override_recipients
-def get_email_addresses_for_users(users: QuerySet[User]) -> list[str]:
+def get_email_addresses_for_users(users: Collection[User]) -> list[str]:
     emails = []
     for user in users:
         emails.extend(get_notification_emails(user))

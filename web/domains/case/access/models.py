@@ -85,6 +85,7 @@ class AccessRequest(Process):
 @final
 class ImporterAccessRequest(AccessRequest):
     PROCESS_TYPE = ProcessTypes.IAR
+    REQUEST_TYPE = "importer"
     IS_FINAL = True
 
     AGENT_ACCESS = "AGENT_IMPORTER_ACCESS"
@@ -126,6 +127,7 @@ class ImporterAccessRequest(AccessRequest):
 class ExporterAccessRequest(AccessRequest):
     PROCESS_TYPE = ProcessTypes.EAR
     IS_FINAL = True
+    REQUEST_TYPE = "exporter"
 
     AGENT_ACCESS = "AGENT_EXPORTER_ACCESS"
     MAIN_EXPORTER_ACCESS = "MAIN_EXPORTER_ACCESS"

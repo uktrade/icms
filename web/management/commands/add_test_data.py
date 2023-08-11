@@ -204,6 +204,8 @@ class Command(BaseCommand):
             submitted_by=user,
             last_updated_by=user,
             reference="iar/1",
+            organisation_name="Import Ltd",
+            organisation_address="1 Main Street",
         )
 
         iar.tasks.create(is_active=True, task_type=Task.TaskType.PROCESS)
@@ -218,6 +220,8 @@ class Command(BaseCommand):
             submitted_by=user,
             last_updated_by=user,
             reference="ear/1",
+            organisation_name="Export Ltd",
+            organisation_address="2 Main Street",
         )
 
         ear.tasks.create(is_active=True, task_type=Task.TaskType.PROCESS)
