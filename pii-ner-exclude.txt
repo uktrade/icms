@@ -3238,3 +3238,6 @@ Surrender Notified
 RPA
 Duplicate File Paths
 SELECT ird.imad_id licence_id
+STAFF_SSO_AUTHBROKER_CLIENT_ID
+STAFF_SSO_AUTHBROKER_STAFF_SSO_SCOPE
+&& make

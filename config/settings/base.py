@@ -21,10 +21,6 @@ env = environ.Env()
 
 VCAP_SERVICES = env.json("VCAP_SERVICES", default={})
 
-LOGIN_URL = "accounts:login"
-LOGIN_REDIRECT_URL = "workbasket"
-LOGOUT_REDIRECT_URL = "accounts:login"
-
 # Application definition
 DEBUG = env.bool("ICMS_DEBUG", False)
 WSGI_APPLICATION = "config.wsgi.application"
@@ -47,6 +43,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # STAFF-SSO client app
+    "authbroker_client",
 ]
 
 MIDDLEWARE = [
@@ -124,9 +122,30 @@ AUTH_PASSWORD_VALIDATORS = [
 # Auth user model
 AUTH_USER_MODEL = "web.user"
 
-AUTHENTICATION_BACKENDS = [
-    "web.auth.backends.ModelAndObjectPermissionBackend",
-]
+AUTHENTICATION_BACKENDS = ["web.auth.backends.ModelAndObjectPermissionBackend"]
+
+# TODO: ICMSLST-2197 This logic will be replaced by ICMS login view.
+STAFF_SSO_ENABLED = env.bool("STAFF_SSO_ENABLED", True)
+
+if STAFF_SSO_ENABLED:
+    LOGIN_URL = "authbroker_client:login"
+    LOGOUT_REDIRECT_URL = "authbroker_client:login"
+    AUTHENTICATION_BACKENDS.append("authbroker_client.backends.AuthbrokerBackend")
+else:
+    LOGIN_URL = "accounts:login"
+    LOGOUT_REDIRECT_URL = "accounts:login"
+
+LOGIN_REDIRECT_URL = "workbasket"
+
+#
+# STAFF-SSO client app settings
+AUTHBROKER_URL = env.str("STAFF_SSO_AUTHBROKER_URL", default="")
+AUTHBROKER_CLIENT_ID = env.str("STAFF_SSO_AUTHBROKER_CLIENT_ID", default="")
+AUTHBROKER_CLIENT_SECRET = env.str("STAFF_SSO_AUTHBROKER_CLIENT_SECRET", default="")
+AUTHBROKER_STAFF_SSO_SCOPE = env.str("STAFF_SSO_AUTHBROKER_STAFF_SSO_SCOPE", default="")
+AUTHBROKER_ANONYMOUS_PATHS = env.list("STAFF_SSO_AUTHBROKER_ANONYMOUS_PATHS", default=[])
+AUTHBROKER_ANONYMOUS_URL_NAMES = env.list("STAFF_SSO_AUTHBROKER_ANONYMOUS_URL_NAMES", default=[])
+
 
 # Email
 GOV_NOTIFY_API_KEY = env.str("GOV_NOTIFY_API_KEY", default="")

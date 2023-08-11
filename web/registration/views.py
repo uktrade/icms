@@ -14,7 +14,7 @@ class RegisterView(CreateView):
     form_class = UserCreationForm
 
     def get_success_url(self):
-        return reverse("accounts:login")
+        return reverse(settings.LOGIN_URL)
 
 
 class LoginView(auth_views.LoginView):

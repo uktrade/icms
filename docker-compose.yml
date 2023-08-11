@@ -64,6 +64,8 @@ services:
             - GOV_NOTIFY_API_KEY
             - EMAIL_BACKEND
             - SEND_ALL_EMAILS_TO
+        env_file:
+            - .env
         # stdin_open: true
         # tty: true
         ports:
