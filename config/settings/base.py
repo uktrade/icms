@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 import os
 import ssl
+from urllib.parse import urljoin
 
 import environ
 import structlog
@@ -124,19 +125,6 @@ AUTH_USER_MODEL = "web.user"
 
 AUTHENTICATION_BACKENDS = ["web.auth.backends.ModelAndObjectPermissionBackend"]
 
-# TODO: ICMSLST-2197 This logic will be replaced by ICMS login view.
-STAFF_SSO_ENABLED = env.bool("STAFF_SSO_ENABLED", True)
-
-if STAFF_SSO_ENABLED:
-    LOGIN_URL = "authbroker_client:login"
-    LOGOUT_REDIRECT_URL = "authbroker_client:login"
-    AUTHENTICATION_BACKENDS.append("authbroker_client.backends.AuthbrokerBackend")
-else:
-    LOGIN_URL = "accounts:login"
-    LOGOUT_REDIRECT_URL = "accounts:login"
-
-LOGIN_REDIRECT_URL = "workbasket"
-
 #
 # STAFF-SSO client app settings
 AUTHBROKER_URL = env.str("STAFF_SSO_AUTHBROKER_URL", default="")
@@ -145,6 +133,23 @@ AUTHBROKER_CLIENT_SECRET = env.str("STAFF_SSO_AUTHBROKER_CLIENT_SECRET", default
 AUTHBROKER_STAFF_SSO_SCOPE = env.str("STAFF_SSO_AUTHBROKER_STAFF_SSO_SCOPE", default="")
 AUTHBROKER_ANONYMOUS_PATHS = env.list("STAFF_SSO_AUTHBROKER_ANONYMOUS_PATHS", default=[])
 AUTHBROKER_ANONYMOUS_URL_NAMES = env.list("STAFF_SSO_AUTHBROKER_ANONYMOUS_URL_NAMES", default=[])
+
+
+# TODO: ICMSLST-2197 This logic will be replaced by ICMS login view.
+STAFF_SSO_ENABLED = env.bool("STAFF_SSO_ENABLED", True)
+
+if STAFF_SSO_ENABLED:
+    LOGIN_URL = "authbroker_client:login"
+    # Logout steps:
+    # 1. Call "accounts:logout" (clear request.user and django session)
+    # 2. Redirect to staff-sso logout
+    LOGOUT_REDIRECT_URL = urljoin(AUTHBROKER_URL, "logout")
+    AUTHENTICATION_BACKENDS.append("authbroker_client.backends.AuthbrokerBackend")
+else:
+    LOGIN_URL = "accounts:login"
+    LOGOUT_REDIRECT_URL = "accounts:login"
+
+LOGIN_REDIRECT_URL = "workbasket"
 
 
 # Email
