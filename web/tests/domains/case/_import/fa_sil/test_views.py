@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 from django.urls import reverse
+from pytest_django.asserts import assertInHTML
 
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
@@ -54,6 +55,98 @@ class TestEditFirearmsSILApplication:
 
         self.app.refresh_from_db()
         assert self.app.applicant_reference == "A new value"
+
+    def test_add_section_1_goods(self):
+        add_goods_url = reverse(
+            "import:fa-sil:add-section",
+            kwargs={"application_pk": self.app.pk, "sil_section_type": "section1"},
+        )
+
+        # Unlimited quantity
+
+        data = {
+            "manufacture": False,
+            "description": "sec 1 goods",
+            "quantity": "",
+            "unlimited_quantity": "on",
+        }
+        response = self.client.post(add_goods_url, data=data)
+        assert response.status_code == 302
+
+        # Specified quantity
+
+        data = {
+            "manufacture": False,
+            "description": "More sec 1 goods",
+            "quantity": 10,
+            "unlimited_quantity": "off",
+        }
+        response = self.client.post(add_goods_url, data=data)
+        assert response.status_code == 302
+
+        # Invalid quantity data
+
+        data = {
+            "manufacture": True,
+            "description": "Invalid Sec 1 goods",
+            "quantity": "",
+            "unlimited_quantity": "",
+        }
+        response = self.client.post(add_goods_url, data=data)
+        assert response.status_code == 200
+        assertInHTML(
+            '<div class="error-message">You must enter either a quantity or select unlimited quantity</div>',
+            response.content.decode("utf-8"),
+        )
+
+        self.app.refresh_from_db()
+        assert self.app.goods_section1.count() == 2
+
+    def test_add_section_2_goods(self):
+        add_goods_url = reverse(
+            "import:fa-sil:add-section",
+            kwargs={"application_pk": self.app.pk, "sil_section_type": "section2"},
+        )
+
+        # Unlimited quantity
+
+        data = {
+            "manufacture": False,
+            "description": "sec 2 goods",
+            "quantity": "",
+            "unlimited_quantity": "on",
+        }
+        response = self.client.post(add_goods_url, data=data)
+        assert response.status_code == 302
+
+        # Specified quantity
+
+        data = {
+            "manufacture": False,
+            "description": "More sec 2 goods",
+            "quantity": 20,
+            "unlimited_quantity": "off",
+        }
+        response = self.client.post(add_goods_url, data=data)
+        assert response.status_code == 302
+
+        # Invalid quantity data
+
+        data = {
+            "manufacture": False,
+            "description": "Invalid Sec 2 goods",
+            "quantity": "",
+            "unlimited_quantity": "",
+        }
+        response = self.client.post(add_goods_url, data=data)
+        assert response.status_code == 200
+        assertInHTML(
+            '<div class="error-message">You must enter either a quantity or select unlimited quantity</div>',
+            response.content.decode("utf-8"),
+        )
+
+        self.app.refresh_from_db()
+        assert self.app.goods_section2.count() == 2
 
     def test_validate_query_param_shows_errors(self):
         edit_url = reverse("import:fa-sil:edit", kwargs={"application_pk": self.app.pk})

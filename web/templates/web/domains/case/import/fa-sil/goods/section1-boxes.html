@@ -44,7 +44,13 @@
         <label class="prompt west">Quantity</label>
       </div>
       <div class="six columns">
-        <span class="text-widget ">{{ section.quantity}}</span>
+        <span class="text-widget ">
+          {% if section.unlimited_quantity %}
+            Unlimited
+          {% else %}
+            {{ section.quantity }}
+          {% endif %}
+        </span>
       </div>
       <div class="three columns"></div>
     </div>

@@ -133,7 +133,10 @@ class SILGoodsSection1(models.Model):
         ),
     )
 
-    quantity = models.PositiveBigIntegerField(help_text="Enter a whole number")
+    quantity = models.PositiveBigIntegerField(
+        blank=True, null=True, help_text="Enter a whole number"
+    )
+    unlimited_quantity = models.BooleanField(verbose_name="Unlimited Quantity", default=False)
 
 
 class SILGoodsSection2(models.Model):
@@ -154,7 +157,10 @@ class SILGoodsSection2(models.Model):
         ),
     )
 
-    quantity = models.PositiveBigIntegerField(help_text="Enter a whole number")
+    quantity = models.PositiveBigIntegerField(
+        blank=True, null=True, help_text="Enter a whole number"
+    )
+    unlimited_quantity = models.BooleanField(verbose_name="Unlimited Quantity", default=False)
 
 
 class SILGoodsSection5(models.Model):

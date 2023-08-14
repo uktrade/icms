@@ -146,7 +146,8 @@ class SILGoodsSection1(MigrationBase):
     is_active = models.BooleanField(default=True)
     manufacture = models.BooleanField(null=True)
     description = models.CharField(max_length=4096)
-    quantity = models.PositiveBigIntegerField()
+    quantity = models.PositiveBigIntegerField(null=True)
+    unlimited_quantity = models.BooleanField(default=False)
     legacy_ordinal = models.PositiveIntegerField()
 
     @classmethod
@@ -161,7 +162,8 @@ class SILGoodsSection2(MigrationBase):
     is_active = models.BooleanField(default=True)
     manufacture = models.BooleanField(null=True)
     description = models.CharField(max_length=4096)
-    quantity = models.PositiveBigIntegerField()
+    quantity = models.PositiveBigIntegerField(null=True)
+    unlimited_quantity = models.BooleanField(default=False)
     legacy_ordinal = models.PositiveIntegerField()
 
 
@@ -242,8 +244,8 @@ class SILLegacyGoods(MigrationBase):
     )
     is_active = models.BooleanField(default=True)
     description = models.CharField(max_length=4096)
-    quantity = models.PositiveBigIntegerField(null=True, help_text="Enter a whole number")
-    unlimited_quantity = models.BooleanField(verbose_name="Unlimited Quantity", default=False)
+    quantity = models.PositiveBigIntegerField(null=True)
+    unlimited_quantity = models.BooleanField(default=False)
     obsolete_calibre_legacy = models.ForeignKey(
         ObsoleteCalibre, on_delete=models.SET_NULL, to_field="legacy_id", null=True
     )
