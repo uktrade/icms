@@ -26,7 +26,7 @@ from web.models import (
     User,
     VariationRequest,
 )
-from web.permissions import SysPerms
+from web.permissions import Perms, SysPerms, constabulary_get_contacts
 
 from . import email, utils
 
@@ -187,13 +187,6 @@ def send_firearms_authority_expiry_notification() -> None:
         firearmsauthority__end_date=expiry_date, is_active=True
     ).distinct()
 
-    recipient_users = User.objects.filter(
-        groups__permissions__codename=SysPerms.edit_firearm_authorities.codename
-    )
-
-    # TODO: ICMSLST-2118 Update recipients to be constabulary contacts instead of all users with authority editing permission
-    # Send emails to users who can edit firearms authorities for a specific constabulary (recipeint_users query into for loop)
-
     for constabulary in constabularies:
         importers = (
             Importer.objects.filter(
@@ -209,6 +202,9 @@ def send_firearms_authority_expiry_notification() -> None:
                 )
             )
             .order_by("name")
+        )
+        recipient_users = constabulary_get_contacts(
+            constabulary, perms=[Perms.obj.constabulary.verified_fa_authority_editor.codename]
         )
 
         for user in recipient_users:
