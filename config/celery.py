@@ -12,10 +12,11 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    "firearms_authority_expiring": {
-        "task": "web.notify.notify.send_firearms_authority_expiry_notification",
-        "schedule": crontab(hour=7),
-    },
+    # Only enable when constabulary contacts manage firearms authorities
+    # "firearms_authority_expiring": {
+    #     "task": "web.notify.notify.send_firearms_authority_expiry_notification",
+    #     "schedule": crontab(hour=7),
+    # },
     "section_5_expiring": {
         "task": "web.notify.notify.send_section_5_expiry_notification",
         "schedule": crontab(hour=7),

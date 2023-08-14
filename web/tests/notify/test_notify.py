@@ -59,9 +59,11 @@ class TestNotify(TestCase):
         assert "second_alternative@example.com" in m.to  # /PS-IGNORE
 
 
-def test_send_firearms_authority_expiry_notification(ilb_admin_client, importer):
+def test_send_firearms_authority_expiry_notification(
+    ilb_admin_client, importer, constabulary_contact
+):
     url = reverse("importer-firearms-create", kwargs={"pk": importer.pk})
-    constabulary = models.Constabulary.objects.first()
+    constabulary = models.Constabulary.objects.get(name="Nottingham")
 
     post_data = {
         "reference": "FA Auth",
@@ -111,10 +113,10 @@ def test_send_firearms_authority_expiry_notification(ilb_admin_client, importer)
     notify.send_firearms_authority_expiry_notification()
 
     outbox = mail.outbox
-    assert len(outbox) == 3
+    assert len(outbox) == 1
 
-    m = outbox[2]
-    assert m.to == ["ilb_admin_user@example.com"]  # /PS-IGNORE
+    m = outbox[0]
+    assert m.to == [constabulary_contact.email]  # /PS-IGNORE
     assert m.subject.startswith("Verified Firearms Authorities Expiring")
     assert f"issued by constabulary {constabulary.name} that expire" in m.body
     assert "Firearms Authority references(s)\nAnother Auth, FA Auth\n\n" in m.body
