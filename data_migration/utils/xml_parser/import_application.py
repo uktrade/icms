@@ -243,19 +243,21 @@ class SILGoodsParser(BaseXmlParser):
 
     @classmethod
     def parse_sec1(cls, parent_pk: int, xml: "ET") -> Optional["Model"]:
-        # TODO ICMSLST-2174 Include quaitity null and unlimited quantity
-        if not get_xml_val(xml, "./QUANTITY"):
-            return None
+        data = cls.parse_sec_base(parent_pk, xml)
+        unlimited_quantity = get_xml_val(xml, "./QUANTITY_UNLIMITED_FLAG")
 
-        return dm.SILGoodsSection1(**cls.parse_sec_base(parent_pk, xml))
+        return dm.SILGoodsSection1(
+            **data | {"unlimited_quantity": bool(str_to_bool(unlimited_quantity))}
+        )
 
     @classmethod
     def parse_sec2(cls, parent_pk: int, xml: "ET") -> Optional["Model"]:
-        # TODO ICMSLST-2174 Include quaitity null and unlimited quantity
-        if not get_xml_val(xml, "./QUANTITY"):
-            return None
+        data = cls.parse_sec_base(parent_pk, xml)
+        unlimited_quantity = get_xml_val(xml, "./QUANTITY_UNLIMITED_FLAG")
 
-        return dm.SILGoodsSection2(**cls.parse_sec_base(parent_pk, xml))
+        return dm.SILGoodsSection2(
+            **data | {"unlimited_quantity": bool(str_to_bool(unlimited_quantity))}
+        )
 
     @classmethod
     def parse_sec5(cls, parent_pk: int, xml: "ET") -> Optional["Model"]:

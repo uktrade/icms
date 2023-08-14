@@ -103,13 +103,13 @@ class SubmitFaSILForm(FirearmSILFormBase):
 class SILGoodsSection1Form(forms.ModelForm):
     class Meta:
         model = models.SILGoodsSection1
-        fields = ("manufacture", "description", "quantity")
+        fields = ("manufacture", "description", "quantity", "unlimited_quantity")
         widgets = {
             "manufacture": YesNoRadioSelectInline,
             "description": forms.Textarea({"rows": 3}),
         }
 
-    quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY)
+    quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY, required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -123,18 +123,32 @@ class SILGoodsSection1Form(forms.ModelForm):
             )
 
         return manufactured_before_1900
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        quantity = cleaned_data.get("quantity")
+        unlimited_quantity = cleaned_data.get("unlimited_quantity")
+
+        if not quantity and not unlimited_quantity:
+            self.add_error(
+                "quantity", "You must enter either a quantity or select unlimited quantity"
+            )
+
+        if unlimited_quantity:
+            cleaned_data["quantity"] = None
 
 
 class SILGoodsSection2Form(forms.ModelForm):
     class Meta:
         model = models.SILGoodsSection2
-        fields = ("manufacture", "description", "quantity")
+        fields = ("manufacture", "description", "quantity", "unlimited_quantity")
         widgets = {
             "manufacture": YesNoRadioSelectInline,
             "description": forms.Textarea({"rows": 3}),
         }
 
-    quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY)
+    quantity = forms.IntegerField(max_value=settings.CHIEF_MAX_QUANTITY, required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -148,6 +162,20 @@ class SILGoodsSection2Form(forms.ModelForm):
             )
 
         return manufactured_before_1900
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        quantity = cleaned_data.get("quantity")
+        unlimited_quantity = cleaned_data.get("unlimited_quantity")
+
+        if not quantity and not unlimited_quantity:
+            self.add_error(
+                "quantity", "You must enter either a quantity or select unlimited quantity"
+            )
+
+        if unlimited_quantity:
+            cleaned_data["quantity"] = None
 
 
 class SILGoodsSection5Form(forms.ModelForm):

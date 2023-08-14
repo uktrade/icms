@@ -87,6 +87,7 @@ def test_sil_goods_parse_xml():
     sec1 = sec1_goods[0]
     assert sec1.description == "Test Gun"
     assert sec1.quantity == 5
+    assert sec1.unlimited_quantity is False
     assert sec1.manufacture is False
     assert sec1.legacy_ordinal == 1
 
@@ -94,7 +95,8 @@ def test_sil_goods_parse_xml():
     assert len(sec2_goods) == 1
     sec2 = sec2_goods[0]
     assert sec2.description == "Test Rifle"
-    assert sec2.quantity == 5
+    assert sec2.quantity is None
+    assert sec2.unlimited_quantity is True
     assert sec2.manufacture is False
     assert sec2.legacy_ordinal == 2
 
@@ -103,6 +105,7 @@ def test_sil_goods_parse_xml():
     sec5 = sec5_goods[0]
     assert sec5.description == "Test Pistol"
     assert sec5.quantity == 10
+    assert sec5.unlimited_quantity is False
     assert sec5.manufacture is False
     assert sec5.section_5_clause_id == "5_1_ABA"
     assert sec5.legacy_ordinal == 3
