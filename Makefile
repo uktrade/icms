@@ -34,6 +34,9 @@ isort: ## run isort in check mode
 isort_format: ## run isort in reformat mode
 	unset UID && .venv/bin/python -m isort -j 4 .
 
+format: isort_format black_format
+check: flake8 black isort mypy
+
 ##@ Development
 showmigrations: ## make db migrations
 	unset UID && \

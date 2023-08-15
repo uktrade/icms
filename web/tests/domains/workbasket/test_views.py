@@ -1059,7 +1059,10 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
 
             #
             # Bypass chief for import applications
-            with patch("web.domains.chief.utils.send_case_complete_notifications", autospec=True):
+            with patch(
+                "web.domains.chief.utils.send_completed_application_process_notifications",
+                autospec=True,
+            ):
                 self.ilb_admin_client.post(
                     reverse(
                         "import:bypass-chief",
@@ -1230,7 +1233,10 @@ class TestCompleteCaseCHIEFFailWorkbasket(AuthTestCase):
 
             #
             # Bypass chief for import applications
-            with patch("web.domains.chief.utils.send_case_complete_notifications", autospec=True):
+            with patch(
+                "web.domains.chief.utils.send_completed_application_process_notifications",
+                autospec=True,
+            ):
                 self.ilb_admin_client.post(
                     reverse(
                         "import:bypass-chief",

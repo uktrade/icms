@@ -3248,3 +3248,9 @@ sec 1
 Invalid Sec 1
 Invalid Sec 2
 quantity</div
+web.mail.emails.send_application_extension_complete_email
+web.mail.emails.send_case_complete_email
+ICMSLST-2145 Update
+Application Variation Request Complete
+Application Extension Complete
+web.mail.emails.send_completed_application_email

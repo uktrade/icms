@@ -1,9 +1,12 @@
-from collections.abc import Collection
+from collections.abc import Iterable
 
-from web.mail.decorators import override_recipients
+from web.domains.case.types import ImpOrExp
 from web.models import User
+from web.notify.email import get_application_contacts
 from web.notify.utils import get_notification_emails
 from web.permissions import get_ilb_case_officers
+
+from .decorators import override_recipients
 
 
 def get_ilb_case_officers_email_addresses() -> list[str]:
@@ -11,8 +14,13 @@ def get_ilb_case_officers_email_addresses() -> list[str]:
     return get_email_addresses_for_users(users)
 
 
+def get_application_contact_email_addresses(application: ImpOrExp) -> list[str]:
+    users = get_application_contacts(application)
+    return get_email_addresses_for_users(users)
+
+
 @override_recipients
-def get_email_addresses_for_users(users: Collection[User]) -> list[str]:
+def get_email_addresses_for_users(users: Iterable[User]) -> list[str]:
     emails = []
     for user in users:
         emails.extend(get_notification_emails(user))

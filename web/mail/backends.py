@@ -3,8 +3,8 @@ from uuid import UUID
 import structlog as logging
 from django.core.mail.backends.base import BaseEmailBackend
 
-from web.mail.api import send_email
-from web.mail.messages import GOVNotifyEmailMessage
+from .api import send_email
+from .messages import GOVNotifyEmailMessage
 
 logger = logging.getLogger(__name__)
 

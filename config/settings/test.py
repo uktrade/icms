@@ -65,3 +65,4 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 STAFF_SSO_ENABLED = False
 LOGIN_URL = "accounts:login"
 LOGOUT_REDIRECT_URL = "accounts:login"
+DEFAULT_DOMAIN = "http://localhost:8080/"
