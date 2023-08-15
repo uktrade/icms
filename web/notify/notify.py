@@ -10,8 +10,6 @@ from django.utils import timezone
 from config.celery import app
 from web.domains.case._import.fa.types import FaImportApplication
 from web.domains.case.services import document_pack
-from web.domains.case.types import ImpOrExp
-from web.flow.models import ProcessTypes
 from web.models import (
     AccessRequest,
     Constabulary,
@@ -24,7 +22,6 @@ from web.models import (
     Process,
     Section5Authority,
     User,
-    VariationRequest,
 )
 from web.permissions import Perms, SysPerms, constabulary_get_contacts
 
@@ -301,36 +298,6 @@ def authority_archived_notification(
         )
 
 
-def send_application_approved_notification(application: ImpOrExp) -> None:
-    variations = application.variation_requests.filter(
-        status__in=[VariationRequest.Statuses.ACCEPTED, VariationRequest.Statuses.CLOSED]
-    )
-
-    is_variation = variations.exists()
-
-    # TODO ICMSLST-2040 Licence extension flag to be investigated
-    is_extension = variations.filter(extension_flag=True).exists()
-
-    if is_extension:
-        subject = f"Extension to application reference {application.reference} has been approved."
-    elif is_variation:
-        subject = (
-            f"Variation on application reference {application.reference} has been approved by ILB."
-        )
-    else:
-        subject = f"Application reference {application.reference} has been approved by ILB."
-
-    context = {
-        "subject": subject,
-        "case_reference": application.reference,
-        "is_extension": is_extension,
-        "is_variation": is_variation,
-    }
-    contacts = email.get_application_contacts(application)
-
-    email.send_html_email("email/application/approved.html", context, contacts)
-
-
 def send_supplementary_report_notification(application: FaImportApplication) -> None:
     subject = f"Firearms supplementary reporting information on application reference {application.reference}"
     contacts = email.get_application_contacts(application)
@@ -351,13 +318,3 @@ def send_constabulary_deactivated_firearms_notification(application: DFLApplicat
     email.send_email.delay(
         subject, body, recipients, attachment_ids=attachment_ids, html_message=html_message
     )
-
-
-def send_case_complete_notifications(application: ImpOrExp):
-    if application.process_type == ProcessTypes.FA_DFL:
-        send_constabulary_deactivated_firearms_notification(application.dflapplication)
-
-    if application.process_type in [ProcessTypes.FA_DFL, ProcessTypes.FA_OIL, ProcessTypes.FA_SIL]:
-        send_supplementary_report_notification(application)
-
-    send_application_approved_notification(application)

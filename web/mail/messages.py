@@ -1,13 +1,14 @@
-from typing import ClassVar
+from typing import ClassVar, final
 from uuid import UUID
 
 from django.conf import settings
 from django.core.mail import EmailMessage, SafeMIMEMultipart
 
-from web.domains.case.types import ImpAccessOrExpAccess
+from web.domains.case.types import ImpAccessOrExpAccess, ImpOrExp
 
 from .constants import EmailTypes
 from .models import EmailTemplate
+from .url_helpers import get_case_view_url, get_validate_digital_signatures_url
 
 
 class GOVNotifyEmailMessage(EmailMessage):
@@ -40,6 +41,20 @@ class GOVNotifyEmailMessage(EmailMessage):
         return EmailTemplate.objects.get(name=self.name).gov_notify_template_id
 
 
+class BaseApplicationEmail(GOVNotifyEmailMessage):
+    def __init__(self, *args, application: ImpOrExp, **kwargs):
+        self.application = application
+        super().__init__(*args, **kwargs)
+
+    def get_context(self) -> dict:
+        return {
+            "reference": self.application.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(self.application, full_url=True),
+        }
+
+
+@final
 class AccessRequestEmail(GOVNotifyEmailMessage):
     name = EmailTypes.ACCESS_REQUEST
 
@@ -51,6 +66,7 @@ class AccessRequestEmail(GOVNotifyEmailMessage):
         return {"reference": self.access_request.reference}
 
 
+@final
 class AccessRequestClosedEmail(GOVNotifyEmailMessage):
     name = EmailTypes.ACCESS_REQUEST_CLOSED
 
@@ -71,3 +87,18 @@ class AccessRequestClosedEmail(GOVNotifyEmailMessage):
         if not self.access_request.response_reason:
             return ""
         return f"Reason: {self.access_request.response_reason}"
+
+
+@final
+class ApplicationCompleteEmail(BaseApplicationEmail):
+    name = EmailTypes.APPLICATION_COMPLETE
+
+
+@final
+class ApplicationVariationCompleteEmail(BaseApplicationEmail):
+    name = EmailTypes.APPLICATION_VARIATION_REQUEST_COMPLETE
+
+
+@final
+class ApplicationExtensionCompleteEmail(BaseApplicationEmail):
+    name = EmailTypes.APPLICATION_EXTENSION_COMPLETE

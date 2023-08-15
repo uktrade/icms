@@ -11,11 +11,7 @@ from django.utils import timezone
 from web import models
 from web.domains.case.services import document_pack
 from web.notify import notify, utils
-from web.tests.helpers import (
-    CaseURLS,
-    add_variation_request_to_app,
-    check_email_was_sent,
-)
+from web.tests.helpers import CaseURLS, check_email_was_sent
 from web.utils.s3 import get_file_from_s3
 
 
@@ -356,52 +352,6 @@ def test_section_5_authority_archived_notification_fail(ilb_admin_client, import
     assert len(outbox) == 0
 
 
-def test_send_application_approved_notification(completed_sil_app, importer_one_contact):
-    app = completed_sil_app
-    notify.send_application_approved_notification(completed_sil_app)
-
-    check_email_was_sent(
-        1,
-        importer_one_contact.email,
-        f"Application reference {app.reference} has been approved by ILB.",
-        f"Your application, case reference {app.reference}, has been approved by ILB.",
-    )
-
-
-def test_send_sil_application_approved_email_vr(
-    ilb_admin_user, completed_sil_app, importer_one_contact
-):
-    app = completed_sil_app
-    add_variation_request_to_app(
-        app, ilb_admin_user, status=models.VariationRequest.Statuses.ACCEPTED
-    )
-    notify.send_application_approved_notification(completed_sil_app)
-
-    check_email_was_sent(
-        1,
-        importer_one_contact.email,
-        f"Variation on application reference {app.reference} has been approved by ILB.",
-        f"The requested variation on case reference {app.reference} has been approved",
-    )
-
-
-def test_send_sil_application_approved_email_licence_extension(
-    ilb_admin_user, completed_sil_app, importer_one_contact
-):
-    app = completed_sil_app
-    add_variation_request_to_app(
-        app, ilb_admin_user, status=models.VariationRequest.Statuses.ACCEPTED, extension_flag=True
-    )
-    notify.send_application_approved_notification(completed_sil_app)
-
-    check_email_was_sent(
-        1,
-        importer_one_contact.email,
-        f"Extension to application reference {app.reference} has been approved.",
-        f"The requested extension to case reference {app.reference} has been approved.",
-    )
-
-
 def test_send_supplementary_report_notification(completed_sil_app, importer_one_contact):
     app = completed_sil_app
     notify.send_supplementary_report_notification(app)
@@ -443,48 +393,6 @@ def test_send_constabulary_notification(ilb_admin_user, completed_dfl_app, monke
             ("file-1", b"file_content", "application/octet-stream"),
         ],
     )
-
-
-@patch("web.notify.notify.send_constabulary_deactivated_firearms_notification")
-@patch("web.notify.notify.send_supplementary_report_notification")
-@patch("web.notify.notify.send_application_approved_notification")
-def test_send_case_complete_notifications_dfl(
-    app_approved_mock, supplementary_report_mock, constabulary_mock, completed_dfl_app
-):
-    app = completed_dfl_app
-    notify.send_case_complete_notifications(app)
-
-    app_approved_mock.assert_called_with(app)
-    supplementary_report_mock.assert_called_with(app)
-    constabulary_mock.assert_called_with(app.dflapplication)
-
-
-@patch("web.notify.notify.send_constabulary_deactivated_firearms_notification")
-@patch("web.notify.notify.send_supplementary_report_notification")
-@patch("web.notify.notify.send_application_approved_notification")
-def test_send_case_complete_notifications_sil(
-    app_approved_mock, supplementary_report_mock, constabulary_mock, completed_sil_app
-):
-    app = completed_sil_app
-    notify.send_case_complete_notifications(app)
-
-    app_approved_mock.assert_called_with(app)
-    supplementary_report_mock.assert_called_with(app)
-    constabulary_mock.assert_not_called()
-
-
-@patch("web.notify.notify.send_constabulary_deactivated_firearms_notification")
-@patch("web.notify.notify.send_supplementary_report_notification")
-@patch("web.notify.notify.send_application_approved_notification")
-def test_send_case_complete_notifications_gmp(
-    app_approved_mock, supplementary_report_mock, constabulary_mock, gmp_app_submitted
-):
-    app = gmp_app_submitted
-    notify.send_case_complete_notifications(app)
-
-    app_approved_mock.assert_called_with(app)
-    supplementary_report_mock.assert_not_called()
-    constabulary_mock.assert_not_called()
 
 
 def _create_fir(user):
