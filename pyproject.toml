@@ -67,6 +67,7 @@ module = [
     "weasyprint.*",
     "lxml.*",
     "playwright.*",
+    "authbroker_client.*"
 ]
 ignore_missing_imports = true
 

@@ -144,7 +144,7 @@ if STAFF_SSO_ENABLED:
     # 1. Call "accounts:logout" (clear request.user and django session)
     # 2. Redirect to staff-sso logout
     LOGOUT_REDIRECT_URL = urljoin(AUTHBROKER_URL, "logout")
-    AUTHENTICATION_BACKENDS.append("authbroker_client.backends.AuthbrokerBackend")
+    AUTHENTICATION_BACKENDS.append("web.auth.backends.ICMSStaffSSOBackend")
 else:
     LOGIN_URL = "accounts:login"
     LOGOUT_REDIRECT_URL = "accounts:login"
