@@ -102,3 +102,8 @@ class ApplicationVariationCompleteEmail(BaseApplicationEmail):
 @final
 class ApplicationExtensionCompleteEmail(BaseApplicationEmail):
     name = EmailTypes.APPLICATION_EXTENSION_COMPLETE
+
+
+@final
+class ApplicationStoppedEmail(BaseApplicationEmail):
+    name = EmailTypes.APPLICATION_STOPPED
