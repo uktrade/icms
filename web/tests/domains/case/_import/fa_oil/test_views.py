@@ -1,9 +1,10 @@
 import pytest
-from django.core import mail
 from django.urls import reverse
 from pytest_django.asserts import assertInHTML, assertRedirects
 
 from web.domains.case.services import document_pack
+from web.mail.constants import EmailTypes
+from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import (
     ImportApplicationLicence,
     ImportApplicationType,
@@ -13,6 +14,7 @@ from web.models import (
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 from web.tests.domains.case._import.factory import OILApplicationFactory
+from web.tests.helpers import check_gov_notify_email_was_sent
 
 
 class TestImportAppplicationCreateView(AuthTestCase):
@@ -138,15 +140,15 @@ def test_close_case(ilb_admin_user, ilb_admin_client, importer, importer_one_con
 
     task.refresh_from_db()
     assert task.is_active is False
-
-    assert len(mail.outbox) == 1
-    stopped_email = mail.outbox[0]
-
-    assert stopped_email.to == ["I1_main_contact@example.com"]  # /PS-IGNORE
-    assert stopped_email.subject == "ICMS Case Reference IMA/123/4567 Stopped"
-    assert stopped_email.body == (
-        "Processing on ICMS Case Reference IMA/123/4567 has been stopped. "
-        "Please contact ILB if you believe this is in error or require further information."
+    check_gov_notify_email_was_sent(
+        1,
+        ["I1_main_contact@example.com"],  # /PS-IGNORE
+        EmailTypes.APPLICATION_STOPPED,
+        {
+            "reference": process.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(process, full_url=True),
+        },
     )
 
 

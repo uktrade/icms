@@ -280,19 +280,6 @@ def _check_send_refused_email(app, expected_to_email):
     assert app.refuse_reason in first_email.body
 
 
-def test_send_database_email(com_app_submitted):
-    email.send_database_email(com_app_submitted, constants.DatabaseEmailTemplate.STOP_CASE)
-    outbox = mail.outbox
-    assert len(outbox) == 1
-
-    sent_email = outbox[0]
-    assert sent_email.to == ["E1_main_contact@example.com"]  # /PS-IGNORE
-    assert sent_email.subject == f"ICMS Case Reference {com_app_submitted.reference} Stopped"
-    assert (
-        f"Processing on ICMS Case Reference {com_app_submitted.reference} has been stopped"
-    ) in sent_email.body
-
-
 def test_send_reassign_email(ilb_admin_client, fa_sil_app_submitted):
     app = fa_sil_app_submitted
     ilb_admin_client.post(CaseURLS.take_ownership(app.pk))

@@ -13,6 +13,10 @@ templates = [
         EmailTypes.APPLICATION_VARIATION_REQUEST_COMPLETE,
         "dc5ced0f-53fb-45b2-9284-b9b241aa4696",  # /PS-IGNORE
     ),
+    (
+        EmailTypes.APPLICATION_STOPPED,
+        "13b68bc7-99a5-4402-8794-e49992da54a9",  # /PS-IGNORE
+    ),
 ]
 
 

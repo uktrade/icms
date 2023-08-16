@@ -68,6 +68,23 @@ class TestEmails(AuthTestCase):
             personalisation=expected_personalisation,
         )
 
+    def test_send_application_stopped_email(self, completed_cfs_app):
+        exp_template_id = str(
+            EmailTemplate.objects.get(name=EmailTypes.APPLICATION_STOPPED).gov_notify_template_id
+        )
+        expected_personalisation = default_personalisation() | {
+            "reference": completed_cfs_app.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(completed_cfs_app, full_url=True),
+        }
+        emails.send_application_stopped_email(completed_cfs_app)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            "E1_main_contact@example.com",  # /PS-IGNORE
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
     def test_send_application_complete_email(self, completed_cfs_app):
         exp_template_id = str(
             EmailTemplate.objects.get(name=EmailTypes.APPLICATION_COMPLETE).gov_notify_template_id

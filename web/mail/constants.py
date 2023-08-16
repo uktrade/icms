@@ -15,3 +15,7 @@ class EmailTypes(TypedTextChoices):
         "APPLICATION_EXTENSION_COMPLETE",
         "Application Extension Complete",
     )
+    APPLICATION_STOPPED = (
+        "APPLICATION_STOPPED",
+        "Application Stopped",
+    )

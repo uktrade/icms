@@ -8,6 +8,7 @@ from .messages import (
     AccessRequestEmail,
     ApplicationCompleteEmail,
     ApplicationExtensionCompleteEmail,
+    ApplicationStoppedEmail,
     ApplicationVariationCompleteEmail,
 )
 from .recipients import (
@@ -75,3 +76,10 @@ def send_completed_application_process_notifications(application: ImpOrExp) -> N
         notify.send_supplementary_report_notification(application)
 
     send_completed_application_email(application)
+
+
+def send_application_stopped_email(application: ImpOrExp) -> None:
+    recipients = get_application_contact_email_addresses(application)
+    for recipient in recipients:
+        email = ApplicationStoppedEmail(application=application, to=[recipient])
+        email.send()
