@@ -1,10 +1,14 @@
+from authbroker_client.backends import AuthbrokerBackend
 from django.contrib.auth.backends import ModelBackend
 from guardian.backends import check_support
 from guardian.conf import settings as guardian_settings
 from guardian.ctypes import get_content_type
 from guardian.exceptions import WrongAppError
 
+from web.models import Email as UserEmail
 from web.models import User
+
+from .types import STAFF_SSO_ID, StaffSSOProfile
 
 
 class ModelAndObjectPermissionBackend(ModelBackend):
@@ -85,6 +89,57 @@ class ModelAndObjectPermissionBackend(ModelBackend):
         """Only user group permissions are used when checking for global permissions."""
 
         return set()
+
+
+class ICMSStaffSSOBackend(AuthbrokerBackend):
+    """ICMS Specific staff-sso backend.
+
+    Extends the staff_sso AuthbrokerBackend to do the following:
+      - Update existing records from data migration (change username field)
+      - Create an Email record for new staff-sso user.
+    """
+
+    def get_or_create_user(self, profile: StaffSSOProfile) -> User:
+        id_key: STAFF_SSO_ID = self.get_profile_id_name()
+        id_value = profile[id_key]
+
+        user_data = self.user_create_mapping(profile)
+        staff_sso_email = user_data["email"]
+        update_email = False
+
+        try:
+            # A legacy user is a user who has an email address as a username.
+            user = User.objects.get(**{User.USERNAME_FIELD: staff_sso_email})
+
+            # Migrate the legacy user to use id_value as username
+            setattr(user, User.USERNAME_FIELD, id_value)
+
+            user.set_unusable_password()
+            user.save()
+
+            update_email = True
+
+        except User.DoesNotExist:
+            user, created = User.objects.get_or_create(
+                **{User.USERNAME_FIELD: id_value}, defaults=user_data
+            )
+
+            if created:
+                user.set_unusable_password()
+                user.save()
+                update_email = True
+
+        if update_email:
+            setattr(user, User.EMAIL_FIELD, staff_sso_email)
+            user.save()
+
+            UserEmail.objects.get_or_create(
+                user=user,
+                email=staff_sso_email,
+                defaults={"is_primary": True, "portal_notifications": True},
+            )
+
+        return user
 
 
 def get_anonymous_user_instance(user_model: type[User]) -> User:
