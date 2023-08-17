@@ -1,5 +1,5 @@
 from authbroker_client.backends import AuthbrokerBackend
-from django.contrib.auth.backends import ModelBackend
+from django.contrib.auth.backends import BaseBackend, ModelBackend
 from guardian.backends import check_support
 from guardian.conf import settings as guardian_settings
 from guardian.ctypes import get_content_type
@@ -140,6 +140,11 @@ class ICMSStaffSSOBackend(AuthbrokerBackend):
             )
 
         return user
+
+
+# TODO: ICMSLST-2196 Add gov.uk one login authentication backend.
+class GovUKOneLoginBackend(BaseBackend):
+    ...
 
 
 def get_anonymous_user_instance(user_model: type[User]) -> User:

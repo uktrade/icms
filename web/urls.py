@@ -1,11 +1,14 @@
 from django.conf import settings
-from django.urls import include, path, register_converter, reverse
-from django.views.generic import RedirectView
+from django.urls import include, path, register_converter
 
-from web.views.views_healthcheck import health_check
-
-from . import converters
-from .views import home
+from web import converters
+from web.views import (
+    RedirectBaseDomainView,
+    health_check,
+    home,
+    login_start_view,
+    logout_view,
+)
 
 register_converter(converters.NegativeIntConverter, "negint")
 register_converter(converters.CaseTypeConverter, "casetype")
@@ -16,26 +19,17 @@ register_converter(converters.OrgTypeConverter, "orgtype")
 register_converter(converters.ChiefStatusConverter, "chiefstatus")
 
 
-class RedirectBaseDomainView(RedirectView):
-    """Redirects base url visits to either workbasket or login."""
-
-    def get_redirect_url(self, *args, **kwargs):
-        if self.request.user.is_authenticated:
-            self.url = reverse("workbasket")
-        else:
-            self.url = reverse(settings.LOGIN_URL)
-
-        return super().get_redirect_url(*args, **kwargs)
-
-
 urlpatterns = [
     path("", RedirectBaseDomainView.as_view()),
+    path("login-start/", login_start_view, name="login-start"),
+    path("logout/", logout_view, name="logout-user"),
     #
     # staff-sso-client login urls
     path("auth/", include("authbroker_client.urls")),
     #
-    # django.contrib.auth login urls
-    path("accounts/", include("web.registration.urls")),
+    # TODO: ICMSLST-2196 Implement gov.uk one login urls.
+    # gov-uk-one-login urls
+    # path("one-login/", []),
     #
     # Application urls
     path("health-check/", health_check, name="health-check"),
@@ -66,3 +60,9 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns.extend([path("permissions-test-harness/", include("web.perm_harness.urls"))])
+
+
+#
+# Add django model auth login urls for local development
+if not settings.STAFF_SSO_ENABLED or not settings.GOV_UK_ONE_LOGIN_ENABLED:
+    urlpatterns.extend([path("accounts/", include("web.registration.urls"))])

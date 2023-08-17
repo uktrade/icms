@@ -21,14 +21,19 @@
             <li><a href="{{ icms_url('access:importer-request') }}">Request Importer Access</a></li>
             <li><a href="{{ icms_url('access:exporter-request') }}">Request Exporter Access</a></li>
             <li><a href="{{ icms_url('current-user-details') }}">My details</a></li>
-            <li><a href="{{ icms_url('accounts:logout') }}">Log out</a></li>
+            <li>
+              <form method="post" action="{{ logout_url }}">
+                {{ csrf_input }}
+                <button class="button link-button" type="submit" style="color: #333;">Log out</button>
+              </form>
+            </li>
           </ul>
         </li>
       </ul>
     </li>
   {% else %}
     <li class="icon-user" id="user-info">
-      <a class="dropdown-label" href="{{ icms_url('accounts:login') }}">Log in</a>
+      <a class="dropdown-label" href="{{ login_url }}">Log in</a>
     </li>
   {% endif %}
 </ul>

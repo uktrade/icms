@@ -63,6 +63,7 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 #
 # Staff-sso
 STAFF_SSO_ENABLED = False
+GOV_UK_ONE_LOGIN_ENABLED = False
 LOGIN_URL = "accounts:login"
-LOGOUT_REDIRECT_URL = "accounts:login"
+LOGOUT_REDIRECT_URL = "accounts:login"  # type: ignore[assignment]
 DEFAULT_DOMAIN = "http://localhost:8080/"

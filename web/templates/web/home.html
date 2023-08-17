@@ -3,11 +3,11 @@
 {% block page_title %}Request Importer/ Exporter Access{% endblock %}
 
 {% block main_content %}
-<p>Hi {{ request.user.username }}, you are logged in</p>
+  <p>Hi {{ request.user }}, you are logged in</p>
 
-<form method="post" action="{{icms_url('accounts:logout')}}">
+  <form method="post" action="{{ logout_url }}">
     {{ csrf_input }}
-    <button type="submit" id="btnLogout">Logout</button>
-</form>
+    <button type="submit" class="button" id="btnLogout">Logout</button>
+  </form>
 
 {% endblock %}
