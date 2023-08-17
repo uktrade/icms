@@ -17,12 +17,14 @@
 
             </div>
             <ul class="menu-out flow-across">
-                <li> <a  href="{{ icms_url('access:importer-request')}}"  class="link-button button">
-                        Submit Another Importer Access Request </a></li>
-                <li> <a  href="{{ icms_url('access:exporter-request')}}"  class="link-button button">
-                        Submit Another Exporter Access Request </a></li>
-                <li> <a  href="{{ icms_url('accounts:logout') }}"  class="link-button button">
-                        Logout </a></li>
+                <li><a href="{{ icms_url('access:importer-request')}}"  class="link-button button">Submit Another Importer Access Request </a></li>
+                <li><a href="{{ icms_url('access:exporter-request')}}"  class="link-button button">Submit Another Exporter Access Request </a></li>
+                <li>
+                  <form method="post" action="{{ logout_url }}">
+                    {{ csrf_input }}
+                    <button class="button link-button" type="submit">Log out</button>
+                  </form>
+                </li>
             </ul>
 
             <div class="content-actions"></div>

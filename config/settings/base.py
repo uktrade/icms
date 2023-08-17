@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 import os
 import ssl
-from urllib.parse import urljoin
 
 import environ
 import structlog
@@ -84,6 +83,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "web.permissions.context_processors.request_user_object_permissions",
+                "web.auth.context_processors.auth",
             ],
         },
     },
@@ -135,22 +135,20 @@ AUTHBROKER_ANONYMOUS_PATHS = env.list("STAFF_SSO_AUTHBROKER_ANONYMOUS_PATHS", de
 AUTHBROKER_ANONYMOUS_URL_NAMES = env.list("STAFF_SSO_AUTHBROKER_ANONYMOUS_URL_NAMES", default=[])
 
 
-# TODO: ICMSLST-2197 This logic will be replaced by ICMS login view.
 STAFF_SSO_ENABLED = env.bool("STAFF_SSO_ENABLED", True)
+GOV_UK_ONE_LOGIN_ENABLED = env.bool("GOV_UK_ONE_LOGIN_ENABLED", True)
+
+LOGIN_URL = "login-start"
+LOGIN_REDIRECT_URL = "workbasket"
+# Do not use this (all handled in "logout-user")
+LOGOUT_REDIRECT_URL = None
+
 
 if STAFF_SSO_ENABLED:
-    LOGIN_URL = "authbroker_client:login"
-    # Logout steps:
-    # 1. Call "accounts:logout" (clear request.user and django session)
-    # 2. Redirect to staff-sso logout
-    LOGOUT_REDIRECT_URL = urljoin(AUTHBROKER_URL, "logout")
     AUTHENTICATION_BACKENDS.append("web.auth.backends.ICMSStaffSSOBackend")
-else:
-    LOGIN_URL = "accounts:login"
-    LOGOUT_REDIRECT_URL = "accounts:login"
 
-LOGIN_REDIRECT_URL = "workbasket"
-
+if GOV_UK_ONE_LOGIN_ENABLED:
+    AUTHENTICATION_BACKENDS.append("web.auth.backends.GovUKOneLoginBackend")
 
 # Email
 GOV_NOTIFY_API_KEY = env.str("GOV_NOTIFY_API_KEY", default="")
