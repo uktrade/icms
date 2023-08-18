@@ -17,6 +17,10 @@ templates = [
         EmailTypes.APPLICATION_STOPPED,
         "13b68bc7-99a5-4402-8794-e49992da54a9",  # /PS-IGNORE
     ),
+    (
+        EmailTypes.APPLICATION_REFUSED,
+        "347cbb92-03d2-495e-a8f7-f3c94ea2bf45",  # /PS-IGNORE
+    ),
 ]
 
 

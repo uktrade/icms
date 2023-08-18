@@ -85,6 +85,27 @@ class TestEmails(AuthTestCase):
             personalisation=expected_personalisation,
         )
 
+    def test_send_application_refused_email(self, fa_sil_app_submitted):
+        fa_sil_app_submitted.decision = fa_sil_app_submitted.REFUSE
+        fa_sil_app_submitted.refuse_reason = "Application Incomplete"
+        fa_sil_app_submitted.save()
+        exp_template_id = str(
+            EmailTemplate.objects.get(name=EmailTypes.APPLICATION_REFUSED).gov_notify_template_id
+        )
+        expected_personalisation = default_personalisation() | {
+            "reference": fa_sil_app_submitted.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(fa_sil_app_submitted, full_url=True),
+            "reason": fa_sil_app_submitted.refuse_reason,
+        }
+        emails.send_application_refused_email(fa_sil_app_submitted)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            "I1_main_contact@example.com",  # /PS-IGNORE
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
     def test_send_application_complete_email(self, completed_cfs_app):
         exp_template_id = str(
             EmailTemplate.objects.get(name=EmailTypes.APPLICATION_COMPLETE).gov_notify_template_id

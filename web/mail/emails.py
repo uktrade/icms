@@ -8,6 +8,7 @@ from .messages import (
     AccessRequestEmail,
     ApplicationCompleteEmail,
     ApplicationExtensionCompleteEmail,
+    ApplicationRefusedEmail,
     ApplicationStoppedEmail,
     ApplicationVariationCompleteEmail,
 )
@@ -82,4 +83,11 @@ def send_application_stopped_email(application: ImpOrExp) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
         email = ApplicationStoppedEmail(application=application, to=[recipient])
+        email.send()
+
+
+def send_application_refused_email(application: ImpOrExp) -> None:
+    recipients = get_application_contact_email_addresses(application)
+    for recipient in recipients:
+        email = ApplicationRefusedEmail(application=application, to=[recipient])
         email.send()
