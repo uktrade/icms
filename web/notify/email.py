@@ -178,16 +178,6 @@ def send_approval_request_opened_email(approval_request) -> None:
     send_html_email(template, context, contacts)
 
 
-def send_refused_email(application: ImpOrExp) -> None:
-    context = {
-        "application": application,
-        "subject": f"Application reference {application.reference} has been refused by ILB.",
-    }
-    template = "email/application/refused.html"
-    contacts = get_application_contacts(application)
-    send_html_email(template, context, contacts)
-
-
 def send_reassign_email(application: ImpOrExp, comment: str) -> None:
     context = {
         "subject": f"ICMS Case Ref. {application.reference} has been assigned to you",

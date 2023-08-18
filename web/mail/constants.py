@@ -19,3 +19,7 @@ class EmailTypes(TypedTextChoices):
         "APPLICATION_STOPPED",
         "Application Stopped",
     )
+    APPLICATION_REFUSED = (
+        "APPLICATION_REFUSED",
+        "Application Refused",
+    )

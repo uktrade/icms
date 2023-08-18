@@ -259,27 +259,6 @@ def test_send_to_application_agent_export(com_app_submitted, agent_exporter):
     assert o.body == "Test Body"
 
 
-def test_send_refused_email_import(complete_rejected_app):
-    _check_send_refused_email(complete_rejected_app, "I1_main_contact@example.com")  # /PS-IGNORE
-
-
-def test_send_refused_email_export(complete_rejected_export_app):
-    _check_send_refused_email(
-        complete_rejected_export_app, "E1_main_contact@example.com"  # /PS-IGNORE
-    )
-
-
-def _check_send_refused_email(app, expected_to_email):
-    outbox = mail.outbox
-
-    assert len(outbox) == 1
-    first_email = outbox[0]
-    assert first_email.to == [expected_to_email]
-    assert first_email.subject == f"Application reference {app.reference} has been refused by ILB."
-    assert "has been refused by ILB" in first_email.body
-    assert app.refuse_reason in first_email.body
-
-
 def test_send_reassign_email(ilb_admin_client, fa_sil_app_submitted):
     app = fa_sil_app_submitted
     ilb_admin_client.post(CaseURLS.take_ownership(app.pk))

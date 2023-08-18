@@ -107,3 +107,13 @@ class ApplicationExtensionCompleteEmail(BaseApplicationEmail):
 @final
 class ApplicationStoppedEmail(BaseApplicationEmail):
     name = EmailTypes.APPLICATION_STOPPED
+
+
+@final
+class ApplicationRefusedEmail(BaseApplicationEmail):
+    name = EmailTypes.APPLICATION_REFUSED
+
+    def get_context(self) -> dict:
+        context = super().get_context()
+        context["reason"] = self.application.refuse_reason
+        return context
