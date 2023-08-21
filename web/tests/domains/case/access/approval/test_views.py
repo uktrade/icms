@@ -4,11 +4,13 @@ import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
+from web.mail.constants import EmailTypes
 from web.models import ApprovalRequest
 from web.tests.auth import AuthTestCase
 from web.tests.helpers import (
     add_approval_request,
     check_email_was_sent,
+    check_gov_notify_email_was_sent,
     get_linked_access_request,
 )
 
@@ -76,11 +78,11 @@ class TestManageAccessApprovalView(AuthTestCase):
         assert approval_request.access_request == self.iar
         assert approval_request.requested_by == self.ilb_admin_user
 
-        check_email_was_sent(
+        check_gov_notify_email_was_sent(
             1,
-            self.importer_user.email,
-            "Access Request Approval",
-            "This request\nis asking you to approve/refuse access for a",
+            [self.importer_user.email],
+            EmailTypes.IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED,
+            {"user_type": "user"},
         )
 
     def test_post_exporter(self):
@@ -97,11 +99,11 @@ class TestManageAccessApprovalView(AuthTestCase):
         assert approval_request.requested_from == self.exporter_user
         assert approval_request.access_request == self.ear
         assert approval_request.requested_by == self.ilb_admin_user
-        check_email_was_sent(
+        check_gov_notify_email_was_sent(
             1,
-            self.exporter_user.email,
-            "Access Request Approval",
-            "This request\nis asking you to approve/refuse access for a",
+            [self.exporter_user.email],
+            EmailTypes.EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED,
+            {"user_type": "user"},
         )
 
 

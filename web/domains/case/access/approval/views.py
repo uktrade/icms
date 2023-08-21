@@ -15,6 +15,7 @@ from web.domains.case.access.approval.forms import (
     ImporterApprovalRequestForm,
 )
 from web.domains.case.services import case_progress
+from web.mail.emails import send_approval_request_opened_email
 from web.models import (
     ApprovalRequest,
     ExporterAccessRequest,
@@ -22,10 +23,7 @@ from web.models import (
     ImporterAccessRequest,
     ImporterApprovalRequest,
 )
-from web.notify.email import (
-    send_approval_request_completed_email,
-    send_approval_request_opened_email,
-)
+from web.notify.email import send_approval_request_completed_email
 from web.permissions import Perms, can_user_manage_org_contacts
 from web.types import AuthenticatedHttpRequest
 

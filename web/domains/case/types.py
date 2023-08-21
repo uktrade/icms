@@ -10,12 +10,14 @@ from web.models import (
     ExportApplication,
     ExportApplicationCertificate,
     ExportApplicationType,
+    Exporter,
     ExporterAccessRequest,
     ExporterApprovalRequest,
     File,
     ImportApplication,
     ImportApplicationLicence,
     ImportApplicationType,
+    Importer,
     ImporterAccessRequest,
     ImporterApprovalRequest,
     IronSteelApplication,
@@ -26,6 +28,8 @@ from web.models import (
     TextilesApplication,
     WoodQuotaApplication,
 )
+
+Organisation = Union[Importer, Exporter]
 
 ImpTypeOrExpType = Union[ImportApplicationType, ExportApplicationType]
 
@@ -39,6 +43,7 @@ ImpOrExpOrAccess = Union[
 ]
 ImpOrExpOrAccessT = type[ImpOrExpOrAccess]
 
+ImpOrExpApproval = Union[ImporterApprovalRequest, ExporterApprovalRequest]
 
 ImpOrExpOrAccessOrApproval = Union[
     ImportApplication,

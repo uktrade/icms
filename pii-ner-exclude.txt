@@ -3268,3 +3268,4 @@ ON dp.dp_id
 SELECT xn.dp_id importapplicationlicence_id
 SELECT xn.dp_id exportapplicationcertificate_id , x.user_id FROM decmgr.xview_notifications xn INNER JOIN decmgr.notifications
 acknowledgements__user_id
+Exporter Access Request Approval Opened
