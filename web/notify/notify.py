@@ -57,12 +57,6 @@ def send_notification(
     )
 
 
-def update_request(subject, content, contacts, cc_list):
-    # TODO: investigate web.notify.utils.get_notification_emails
-    recipients = [contact.email for contact in contacts]
-    email.send_email.delay(subject, content, recipients, cc=cc_list)
-
-
 def register(user, password):
     subject = "Import Case Management System Account"
     send_notification(

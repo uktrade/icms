@@ -8,7 +8,11 @@ from web.mail.constants import EmailTypes
 from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import EmailTemplate, ImporterAccessRequest, VariationRequest
 from web.tests.auth.auth import AuthTestCase
-from web.tests.helpers import add_variation_request_to_app
+from web.tests.helpers import (
+    add_approval_request,
+    add_variation_request_to_app,
+    get_linked_access_request,
+)
 
 
 def default_personalisation() -> dict:
@@ -64,6 +68,50 @@ class TestEmails(AuthTestCase):
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             importer_access_request.submitted_by.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_exporter_send_approval_request_opened_email(self, exporter_access_request):
+        ear = get_linked_access_request(exporter_access_request, self.exporter)
+        ear_approval = add_approval_request(ear, self.ilb_admin_user, self.exporter_user)
+
+        exp_template_id = str(
+            EmailTemplate.objects.get(
+                name=EmailTypes.EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED
+            ).gov_notify_template_id
+        )
+        expected_personalisation = default_personalisation() | {
+            "user_type": "user",
+        }
+        emails.send_approval_request_opened_email(ear_approval)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.exporter_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_importer_send_approval_request_opened_email(self, importer_access_request):
+        iar = get_linked_access_request(importer_access_request, self.importer)
+        iar.agent_link = self.importer_agent
+        iar.request_type = ImporterAccessRequest.AGENT_ACCESS
+        iar.save()
+
+        iar_approval = add_approval_request(iar, self.ilb_admin_user, self.importer_user)
+
+        exp_template_id = str(
+            EmailTemplate.objects.get(
+                name=EmailTypes.IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED
+            ).gov_notify_template_id
+        )
+        expected_personalisation = default_personalisation() | {
+            "user_type": "agent",
+        }
+        emails.send_approval_request_opened_email(iar_approval)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.importer_user.email,
             exp_template_id,
             personalisation=expected_personalisation,
         )

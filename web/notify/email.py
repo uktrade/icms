@@ -10,7 +10,6 @@ from django.utils import timezone
 from config.celery import app
 from web.domains.case.types import ImpOrExp
 from web.domains.template.utils import get_email_template_subject_body
-from web.flow.models import ProcessTypes
 from web.models import (
     CaseEmail,
     Exporter,
@@ -159,23 +158,6 @@ def send_approval_request_completed_email() -> None:
     context = {"subject": "Access Request Approval Response"}
     template = "email/access/approval/completed.html"
     send_html_email(template, context, get_ilb_case_officers())
-
-
-def send_approval_request_opened_email(approval_request) -> None:
-    entity = (
-        "exporter"
-        if approval_request.access_request.process_type == ProcessTypes.EAR
-        else "importer"
-    )
-    user_type = "agent" if approval_request.access_request.is_agent_request else "user"
-    org = approval_request.access_request.get_specific_model().link
-    context = {
-        "subject": "Access Request Approval",
-        "user_type": user_type,
-    }
-    contacts = get_organisation_contacts(org)
-    template = f"email/access/approval/{entity}/opened.html"
-    send_html_email(template, context, contacts)
 
 
 def send_reassign_email(application: ImpOrExp, comment: str) -> None:

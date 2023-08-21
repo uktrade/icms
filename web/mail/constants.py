@@ -23,3 +23,11 @@ class EmailTypes(TypedTextChoices):
         "APPLICATION_REFUSED",
         "Application Refused",
     )
+    EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED = (
+        "EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED",
+        "Exporter Access Request Approval Opened",
+    )
+    IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED = (
+        "IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED",
+        "Importer Access Request Approval Opened",
+    )

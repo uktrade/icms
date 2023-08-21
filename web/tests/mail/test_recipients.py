@@ -1,7 +1,10 @@
 import pytest
 from django.test import override_settings
 
-from web.mail.recipients import get_ilb_case_officers_email_addresses
+from web.mail.recipients import (
+    get_ilb_case_officers_email_addresses,
+    get_organisation_contact_email_addresses,
+)
 
 
 @pytest.mark.django_db
@@ -20,3 +23,8 @@ def test_get_ilb_case_officers_email_addresses_override_recipients():
         APP_ENV="dev", SEND_ALL_EMAILS_TO=["test_user@example.com"]  # /PS-IGNORE
     ):
         assert get_ilb_case_officers_email_addresses() == ["test_user@example.com"]  # /PS-IGNORE
+
+
+@pytest.mark.django_db
+def test_get_organisation_contact_email_addresses(importer, importer_one_contact):
+    assert get_organisation_contact_email_addresses(importer) == [importer_one_contact.email]

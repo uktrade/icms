@@ -2,20 +2,12 @@ import pytest
 from django.core import mail
 from django.test import TestCase
 
-from web.models import (
-    Email,
-    ExporterAccessRequest,
-    ImporterAccessRequest,
-    User,
-    WithdrawApplication,
-)
+from web.models import Email, User, WithdrawApplication
 from web.notify import constants, email
 from web.tests.helpers import (
     CaseURLS,
-    add_approval_request,
     add_variation_request_to_app,
     check_email_was_sent,
-    get_linked_access_request,
 )
 
 
@@ -439,55 +431,4 @@ def test_send_approval_request_completed_email():
         "ilb_admin_user@example.com",  # /PS-IGNORE
         "Access Request Approval Response",
         "An Access Request Approval response has been sent to your workbasket.",
-    )
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize(
-    "request_type,expected_user_type",
-    [
-        (ImporterAccessRequest.AGENT_ACCESS, "agent"),
-        (ImporterAccessRequest.MAIN_IMPORTER_ACCESS, "user"),
-    ],
-)
-def test_send_approval_request_opened_importer_email(
-    importer_access_request, importer, ilb_admin_user, request_type, expected_user_type
-):
-    importer_access_request.link = importer
-    importer_access_request.request_type = request_type
-    importer_access_request.save()
-    iar_approval = add_approval_request(importer_access_request, ilb_admin_user)
-    email.send_approval_request_opened_email(iar_approval)
-    check_email_was_sent(
-        1,
-        "I1_main_contact@example.com",  # /PS-IGNORE
-        "Access Request Approval",
-        f"This request\nis asking you to approve/refuse access for a {expected_user_type} to act under an importer\n"
-        "which you have system rights over",
-    )
-
-
-@pytest.mark.django_db
-@pytest.mark.parametrize(
-    "request_type,expected_user_type",
-    [
-        (ExporterAccessRequest.AGENT_ACCESS, "agent"),
-        (ExporterAccessRequest.MAIN_EXPORTER_ACCESS, "user"),
-    ],
-)
-def test_send_approval_request_opened_exporter_email(
-    exporter_access_request, exporter, ilb_admin_user, request_type, expected_user_type
-):
-    exporter_access_request.link = exporter
-    exporter_access_request.request_type = request_type
-    exporter_access_request.save()
-    iar = get_linked_access_request(exporter_access_request, exporter)
-    iar_approval = add_approval_request(iar, ilb_admin_user)
-    email.send_approval_request_opened_email(iar_approval)
-    check_email_was_sent(
-        1,
-        "E1_main_contact@example.com",  # /PS-IGNORE
-        "Access Request Approval",
-        f"This request\nis asking you to approve/refuse access for a {expected_user_type} to act under an exporter"
-        "\nwhich you have system rights over",
     )

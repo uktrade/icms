@@ -21,6 +21,14 @@ templates = [
         EmailTypes.APPLICATION_REFUSED,
         "347cbb92-03d2-495e-a8f7-f3c94ea2bf45",  # /PS-IGNORE
     ),
+    (
+        EmailTypes.EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED,
+        "812e532c-b617-4cf9-917d-01f49ff10964",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED,
+        "01d616e8-c2df-4fb2-aa6d-4feeb3c38eea",  # /PS-IGNORE
+    ),
 ]
 
 

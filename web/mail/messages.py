@@ -4,7 +4,7 @@ from uuid import UUID
 from django.conf import settings
 from django.core.mail import EmailMessage, SafeMIMEMultipart
 
-from web.domains.case.types import ImpAccessOrExpAccess, ImpOrExp
+from web.domains.case.types import ImpAccessOrExpAccess, ImpOrExp, ImpOrExpApproval
 
 from .constants import EmailTypes
 from .models import EmailTemplate
@@ -51,6 +51,19 @@ class BaseApplicationEmail(GOVNotifyEmailMessage):
             "reference": self.application.reference,
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
             "application_url": get_case_view_url(self.application, full_url=True),
+        }
+
+
+class BaseApprovalRequest(GOVNotifyEmailMessage):
+    def __init__(self, *args, approval_request: ImpOrExpApproval, **kwargs):
+        self.approval_request = approval_request
+        super().__init__(*args, **kwargs)
+
+    def get_context(self) -> dict:
+        return {
+            "user_type": "agent"
+            if self.approval_request.access_request.is_agent_request
+            else "user"
         }
 
 
@@ -117,3 +130,13 @@ class ApplicationRefusedEmail(BaseApplicationEmail):
         context = super().get_context()
         context["reason"] = self.application.refuse_reason
         return context
+
+
+@final
+class ExporterAccessRequestApprovalOpened(BaseApprovalRequest):
+    name = EmailTypes.EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED
+
+
+@final
+class ImporterAccessRequestApprovalOpened(BaseApprovalRequest):
+    name = EmailTypes.IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED
