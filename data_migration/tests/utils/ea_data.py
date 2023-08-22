@@ -497,7 +497,7 @@ ea_query_result = {
         ],
     ),
     queries.export_document_pack_acknowledged: (
-        [("exportapplicationcertificate_id",), ("user_id",)],
+        [("exportcertificate_id",), ("user_id",)],
         [(24, 2), (27, 2), (28, 2), (28, 6)],
     ),
     queries.export_certificate_docs: (
