@@ -154,7 +154,7 @@ class DocumentPackAcknowledgement(MigrationBase):
         null=True,
         related_name="acknowledgements",
     )
-    exportapplicationcertificate = models.ForeignKey(
+    exportcertificate = models.ForeignKey(
         ExportApplicationCertificate,
         on_delete=models.CASCADE,
         to_field="document_pack_id",
@@ -188,6 +188,7 @@ class DocumentPackAcknowledgement(MigrationBase):
                 importapplicationlicence_id=F("pk"),
             )
             .annotate(row_number=Window(expression=RowNumber()))
+            .distinct("user_id", "importapplicationlicence_id")
         )
 
     @classmethod
@@ -205,12 +206,13 @@ class DocumentPackAcknowledgement(MigrationBase):
     @classmethod
     def clear_export_doc_pack(cls) -> QuerySet:
         return (
-            ExportApplicationCertificate.objects.exclude(acknowledgements__isnull=True)
+            ExportApplicationCertificate.objects.filter(acknowledgements__isnull=False)
             .values(
                 user_id=F("acknowledgements__user_id"),
                 exportapplicationcertificate_id=F("pk"),
             )
             .annotate(row_number=Window(expression=RowNumber()))
+            .distinct("user_id", "exportapplicationcertificate_id")
         )
 
     @classmethod

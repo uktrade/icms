@@ -80,7 +80,7 @@ ORDER BY cardc.id
 
 export_document_pack_acknowledged = """
 SELECT
-  xn.dp_id exportapplicationcertificate_id
+  xn.dp_id exportcertificate_id
   , x.user_id
 FROM decmgr.xview_notifications xn
   INNER JOIN decmgr.notifications n ON n.id = xn.n_id
