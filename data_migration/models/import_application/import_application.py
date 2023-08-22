@@ -198,6 +198,7 @@ class ImportApplicationLicence(MigrationBase):
     case_completion_datetime = models.DateTimeField(null=True)
     case_reference = models.CharField(max_length=100, null=True, unique=True)
     created_at = models.DateTimeField()
+    document_pack_id = models.IntegerField(unique=True, null=True)
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
@@ -211,7 +212,7 @@ class ImportApplicationLicence(MigrationBase):
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["ima_id", "imad_id"]
+        return super().get_excludes() + ["ima_id", "imad_id", "document_pack_id"]
 
 
 class EndorsementImportApplication(MigrationBase):

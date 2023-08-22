@@ -23,6 +23,11 @@ export_query_model = [
         dm.ExportApplicationCountries,
     ),
     QueryModel(queries.export_certificate, "export_certificate", dm.ExportApplicationCertificate),
+    QueryModel(
+        queries.export_document_pack_acknowledged,
+        "Export Document Pack Acknowledgement",
+        dm.DocumentPackAcknowledgement,
+    ),
     QueryModel(queries.beis_emails, "beis_emails", dm.CaseEmail),
     QueryModel(queries.hse_emails, "hse_emails", dm.CaseEmail),
 ]
@@ -53,6 +58,8 @@ export_m2m = [
     M2M(dm.CaseEmail, web.ExportApplication, "case_emails"),
     M2M(dm.FurtherInformationRequest, web.ExportApplication, "further_information_requests"),
     M2M(dm.UpdateRequest, web.ExportApplication, "update_requests"),
+    M2M(dm.DocumentPackAcknowledgement, web.ExportApplicationCertificate, "cleared_by"),
+    M2M(dm.DocumentPackAcknowledgement, web.ExportApplication, "cleared_by"),
 ]
 
 export_xml = [

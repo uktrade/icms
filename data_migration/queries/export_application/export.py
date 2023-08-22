@@ -14,7 +14,9 @@ FROM impmgr.certificate_application_types
 
 
 export_application_countries = """
-SELECT xcac.cad_id, xcac.country_id
+SELECT
+  xcac.cad_id
+  , xcac.country_id
 FROM impmgr.xview_cert_app_countries xcac
   INNER JOIN impmgr.xview_certificate_app_details xcad ON xcad.cad_id = xcac.cad_id
 WHERE xcac.status_control = 'C'
@@ -23,7 +25,6 @@ WHERE xcac.status_control = 'C'
 """
 
 
-# TODO ICMSLST-1850: Look at statuses again
 export_certificate = """
 SELECT
   car.ca_id
@@ -41,10 +42,12 @@ SELECT
   END case_reference
   , card.start_datetime created_at
   , card.last_updated_datetime updated_at
+  , dp.dp_id document_pack_id
 FROM impmgr.certificate_app_responses car
   INNER JOIN impmgr.cert_app_response_details card ON card.car_id = car.id
   INNER JOIN impmgr.certificate_applications ca ON ca.id = car.ca_id
   INNER JOIN impmgr.certificate_app_details cad ON cad.id = card.cad_id
+  LEFT JOIN decmgr.xview_document_packs dp ON dp.ds_id = card.document_set_id
 WHERE card.status <> 'DELETED'
 ORDER BY card.id
 """
@@ -75,6 +78,21 @@ WHERE dd.created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS')
 ORDER BY cardc.id
 """
 
+export_document_pack_acknowledged = """
+SELECT
+  xn.dp_id exportapplicationcertificate_id
+  , x.user_id
+FROM decmgr.xview_notifications xn
+  INNER JOIN decmgr.notifications n ON n.id = xn.n_id
+  INNER JOIN decmgr.xview_document_packs dp ON dp.dp_id = xn.dp_id
+  INNER JOIN impmgr.cert_app_response_details card ON card.document_set_id = dp.ds_id
+  CROSS JOIN XMLTABLE('/*'
+    PASSING n.xml_data
+    COLUMNS
+      user_id INTEGER PATH '/ACKNOWLEDGEMENT/AUDIT_LIST/AUDIT/ACTION_BY_WUA_ID/text()'
+  ) x
+WHERE xn.acknowledgement_status = 'ACKNOWLEDGED'
+"""
 
 export_certificate_timestamp_update = """
 UPDATE web_exportapplicationcertificate SET created_at = data_migration_exportapplicationcertificate.created_at

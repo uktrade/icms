@@ -3260,3 +3260,11 @@ ICMSLST-2196 Add gov.uk one login authentication backend
 ICMS</p
 Applicant login</a></p
 ICMSLST-2196 Replace
+casedocument_ptr_id
+licence__isnull
+cad__pk
+SELECT xcac.cad_id , xcac.country_id
+ON dp.dp_id
+SELECT xn.dp_id importapplicationlicence_id
+SELECT xn.dp_id exportapplicationcertificate_id , x.user_id FROM decmgr.xview_notifications xn INNER JOIN decmgr.notifications
+acknowledgements__user_id

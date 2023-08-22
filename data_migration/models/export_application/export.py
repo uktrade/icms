@@ -120,10 +120,11 @@ class ExportApplicationCertificate(MigrationBase):
     case_reference = models.CharField(max_length=100, null=True, unique=True)
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField(auto_now=True)
+    document_pack_id = models.IntegerField(unique=True, null=True)
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["ca_id", "cad_id"]
+        return super().get_excludes() + ["ca_id", "cad_id", "document_pack_id"]
 
     @classmethod
     def get_values_kwargs(cls) -> dict[str, Any]:
