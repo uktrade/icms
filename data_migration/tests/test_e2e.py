@@ -137,6 +137,11 @@ sil_data_source_target = {
             QueryModel(queries.ia_type, "ia_type", dm.ImportApplicationType),
             QueryModel(queries.sil_application, "sil_application", dm.SILApplication),
             QueryModel(queries.ia_licence, "ia_licence", dm.ImportApplicationLicence),
+            QueryModel(
+                queries.ia_document_pack_acknowledged,
+                "Import Document Pack Acknowledgement",
+                dm.DocumentPackAcknowledgement,
+            ),
             QueryModel(queries.fa_authorities, "fa_authorities", dm.FirearmsAuthority),
             QueryModel(
                 queries.fa_authority_linked_offices,
@@ -178,6 +183,8 @@ sil_data_source_target = {
             (dm.FurtherInformationRequest, web.ImportApplication, "further_information_requests"),
             (dm.FirearmsAuthorityOffice, web.FirearmsAuthority, "linked_offices"),
             (dm.Section5AuthorityOffice, web.Section5Authority, "linked_offices"),
+            (dm.DocumentPackAcknowledgement, web.ImportApplicationLicence, "cleared_by"),
+            (dm.DocumentPackAcknowledgement, web.ImportApplication, "cleared_by"),
         ],
         "user": [
             (dm.Office, web.Importer, "offices"),
@@ -315,6 +322,10 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert sil2.licences.count() == 3
     assert sil2.licences.filter(status="AC").count() == 1
 
+    assert list(sil1.cleared_by.values_list("id", flat=True)) == [2]
+    assert list(sil2.cleared_by.values_list("id", flat=True).order_by("id")) == [2, 3]
+    assert list(sil3.cleared_by.values_list("id", flat=True)) == []
+
     l1: web.ImportApplicationLicence = sil1.licences.first()
     sil2_licences: QuerySet[web.ImportApplicationLicence] = sil2.licences.all()
     l2, l3, l4 = sil2_licences
@@ -323,11 +334,18 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert l1.document_references.count() == 2
     assert l1.document_references.filter(document_type="LICENCE").count() == 1
     assert l1.document_references.filter(document_type="COVER_LETTER").count() == 1
+    assert list(l1.cleared_by.values_list("id", flat=True)) == [2]
+
     assert l2.document_references.count() == 3
     assert l2.document_references.filter(document_type="LICENCE").count() == 2
     assert l2.document_references.filter(document_type="COVER_LETTER").count() == 1
+    assert list(l2.cleared_by.values_list("id", flat=True).order_by("id")) == [2, 3]
+
     assert l3.document_references.count() == 0
+    assert list(l3.cleared_by.values_list("id", flat=True)) == [2]
+
     assert l4.document_references.count() == 2
+    assert list(l4.cleared_by.values_list("id", flat=True)) == []
 
     assert sil1.checklist.authority_required == "yes"
     assert sil1.checklist.authority_received == "yes"

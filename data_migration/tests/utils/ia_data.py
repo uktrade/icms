@@ -176,6 +176,7 @@ ia_query_result = {
             ("status",),
             ("variation_no",),
             ("created_at",),
+            ("document_pack_id",),
         ],
         [
             (
@@ -188,6 +189,7 @@ ia_query_result = {
                 "AC",  # status
                 0,  # variation_number
                 datetime(2022, 4, 27, 10, 43),  # created_at
+                1,  # document_pack_id
             ),
             (
                 2,
@@ -199,6 +201,7 @@ ia_query_result = {
                 "AR",
                 0,
                 datetime(2022, 4, 27, 10, 43),  # created_at
+                2,  # document_pack_id
             ),
             (
                 2,
@@ -210,6 +213,7 @@ ia_query_result = {
                 "AR",
                 1,
                 datetime(2022, 4, 27, 10, 43),  # created_at
+                3,  # document_pack_id
             ),
             (
                 2,
@@ -221,8 +225,13 @@ ia_query_result = {
                 "AC",
                 2,
                 datetime(2022, 4, 27, 10, 43),  # created_at
+                4,  # document_pack_id
             ),
         ],
+    ),
+    queries.ia_document_pack_acknowledged: (
+        [("importapplicationlicence_id",), ("user_id",)],
+        [(1, 2), (3, 2), (4, 2), (4, 3)],
     ),
     queries.ia_licence_docs: (
         [

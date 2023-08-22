@@ -103,6 +103,11 @@ export_query_model = {
             queries.export_certificate, "export_certificate", dm.ExportApplicationCertificate
         ),
         QueryModel(
+            queries.export_document_pack_acknowledged,
+            "Export Document Pack Acknowledgement",
+            dm.DocumentPackAcknowledgement,
+        ),
+        QueryModel(
             queries.export_certificate_docs,
             "export_certificate_docs",
             dm.ExportCertificateCaseDocumentReferenceData,
@@ -125,6 +130,8 @@ export_m2m = {
         (dm.VariationRequest, web.ExportApplication, "variation_requests"),
         (dm.CFSLegislation, web.CFSSchedule, "legislations"),
         (dm.ExportApplicationCountries, web.ExportApplication, "countries"),
+        (dm.DocumentPackAcknowledgement, web.ExportApplicationCertificate, "cleared_by"),
+        (dm.DocumentPackAcknowledgement, web.ExportApplication, "cleared_by"),
     ],
     "import_application": [],
     "file": [
@@ -203,8 +210,16 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ea2.certificates.count() == 1
     assert ea3.certificates.count() == 2
 
+    assert list(ea1.cleared_by.values_list("id", flat=True)) == []
+    assert list(ea2.cleared_by.values_list("id", flat=True)) == []
+    assert list(ea2.cleared_by.values_list("id", flat=True)) == []
+
     cert1 = ea2.certificates.first()
     cert2, cert3 = ea3.certificates.order_by("pk")
+
+    assert list(cert1.cleared_by.values_list("id", flat=True)) == []
+    assert list(cert2.cleared_by.values_list("id", flat=True)) == []
+    assert list(cert3.cleared_by.values_list("id", flat=True)) == []
 
     assert cert1.status == "DR"
     assert cert1.created_at == dt.datetime(2022, 4, 29, 12, 21, tzinfo=dt.timezone.utc)
@@ -300,8 +315,15 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ea5.certificates.count() == 1
     assert ea6.certificates.count() == 1
 
+    assert list(ea4.cleared_by.values_list("id", flat=True)) == []
+    assert list(ea5.cleared_by.values_list("id", flat=True)) == []
+    assert list(ea6.cleared_by.values_list("id", flat=True)) == [2]
+
     cert4 = ea5.certificates.first()
     cert5 = ea6.certificates.first()
+
+    assert list(cert4.cleared_by.values_list("id", flat=True)) == []
+    assert list(cert5.cleared_by.values_list("id", flat=True)) == [2]
 
     assert cert4.status == "DR"
     assert cert4.document_references.count() == 1
@@ -388,8 +410,17 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ea8.certificates.count() == 1
     assert ea9.certificates.count() == 3
 
+    assert list(ea7.cleared_by.values_list("id", flat=True)) == []
+    assert list(ea8.cleared_by.values_list("id", flat=True)) == []
+    assert list(ea9.cleared_by.values_list("id", flat=True).order_by("id")) == [2, 6]
+
     cert6 = ea8.certificates.first()
     cert7, cert8, cert9 = ea9.certificates.order_by("pk")
+
+    assert list(cert6.cleared_by.values_list("id", flat=True)) == []
+    assert list(cert7.cleared_by.values_list("id", flat=True)) == []
+    assert list(cert8.cleared_by.values_list("id", flat=True)) == [2]
+    assert list(cert9.cleared_by.values_list("id", flat=True).order_by("id")) == [2, 6]
 
     assert cert6.status == "DR"
     assert cert6.document_references.count() == 1

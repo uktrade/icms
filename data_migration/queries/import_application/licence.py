@@ -1,5 +1,3 @@
-# TODO ICMSLST-1850: Look at statuses again
-
 ia_licence = """
 SELECT
   ir.ima_id
@@ -21,10 +19,12 @@ SELECT
   END status
   , ir.created_datetime created_at
   , ird.start_datetime case_completion_datetime
+  , dp.dp_id document_pack_id
 FROM impmgr.ima_responses ir
   INNER JOIN impmgr.ima_response_details ird ON ird.ir_id = ir.id
   INNER JOIN impmgr.import_applications ia ON ia.id = ir.ima_id
   INNER JOIN impmgr.xview_ima_details xiad ON xiad.ima_id = ia.id AND xiad.status_control = 'C'
+  LEFT JOIN decmgr.xview_document_packs dp ON dp.ds_id = ird.ds_id
 WHERE ir.response_type LIKE '%_LICENCE'
 ORDER BY ird.id
 """
@@ -70,6 +70,22 @@ FROM impmgr.ima_responses ir
 WHERE (ir.response_type LIKE '%_LICENCE' OR ir.response_type LIKE '%_COVER')
   AND dd.created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS')
 ORDER BY sld.id
+"""
+
+ia_document_pack_acknowledged = """
+SELECT
+  xn.dp_id importapplicationlicence_id
+  , x.user_id
+FROM decmgr.xview_notifications xn
+  INNER JOIN decmgr.notifications n ON n.id = xn.n_id
+  INNER JOIN decmgr.xview_document_packs dp ON dp.dp_id = xn.dp_id
+  INNER JOIN impmgr.ima_response_details ird ON ird.ds_id = dp.ds_id
+  CROSS JOIN XMLTABLE('/*'
+    PASSING n.xml_data
+    COLUMNS
+      user_id INTEGER PATH '/ACKNOWLEDGEMENT/AUDIT_LIST/AUDIT/ACTION_BY_WUA_ID/text()'
+  ) x
+WHERE xn.acknowledgement_status = 'ACKNOWLEDGED'
 """
 
 ia_timestamp_update = """

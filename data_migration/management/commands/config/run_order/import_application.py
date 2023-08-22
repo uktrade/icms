@@ -37,6 +37,11 @@ ia_query_model = [
     QueryModel(queries.textiles_application, "textiles_application", dm.TextilesApplication),
     QueryModel(queries.textiles_checklist, "textiles_checklist", dm.TextilesChecklist),
     QueryModel(queries.ia_licence, "ia_licence", dm.ImportApplicationLicence),
+    QueryModel(
+        queries.ia_document_pack_acknowledged,
+        "Import Document Pack Acknowledgement",
+        dm.DocumentPackAcknowledgement,
+    ),
     QueryModel(queries.constabulary_emails, "constabulary_emails", dm.CaseEmail),
     QueryModel(queries.case_note, "case_note", dm.CaseNote),
     QueryModel(queries.update_request, "update_request", dm.UpdateRequest),
@@ -120,6 +125,8 @@ ia_m2m = [
     M2M(dm.FurtherInformationRequest, web.ImportApplication, "further_information_requests"),
     M2M(dm.FirearmsAuthorityOffice, web.FirearmsAuthority, "linked_offices"),
     M2M(dm.Section5AuthorityOffice, web.Section5Authority, "linked_offices"),
+    M2M(dm.DocumentPackAcknowledgement, web.ImportApplicationLicence, "cleared_by"),
+    M2M(dm.DocumentPackAcknowledgement, web.ImportApplication, "cleared_by"),
 ]
 
 ia_xml = [

@@ -145,6 +145,91 @@ class ExportCertificateCaseDocumentReferenceData(MigrationBase):
         return {"case_document_reference_id": F("certificate__id")}
 
 
+class DocumentPackAcknowledgement(MigrationBase):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    importapplicationlicence = models.ForeignKey(
+        ImportApplicationLicence,
+        on_delete=models.CASCADE,
+        to_field="document_pack_id",
+        null=True,
+        related_name="acknowledgements",
+    )
+    exportapplicationcertificate = models.ForeignKey(
+        ExportApplicationCertificate,
+        on_delete=models.CASCADE,
+        to_field="document_pack_id",
+        null=True,
+        related_name="acknowledgements",
+    )
+
+    @classmethod
+    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        data["id"] = data.pop("row_number")
+        return data
+
+    @classmethod
+    def clear_import_application(cls) -> QuerySet:
+        return (
+            ImportApplication.objects.filter(ima__licences__acknowledgements__isnull=False)
+            .values(
+                user_id=F("ima__licences__acknowledgements__user_id"),
+                importapplication_id=F("pk"),
+            )
+            .annotate(row_number=Window(expression=RowNumber()))
+            .distinct("user_id", "importapplication_id")
+        )
+
+    @classmethod
+    def clear_import_doc_pack(cls) -> QuerySet:
+        return (
+            ImportApplicationLicence.objects.filter(acknowledgements__isnull=False)
+            .values(
+                user_id=F("acknowledgements__user_id"),
+                importapplicationlicence_id=F("pk"),
+            )
+            .annotate(row_number=Window(expression=RowNumber()))
+        )
+
+    @classmethod
+    def clear_export_application(cls) -> QuerySet:
+        return (
+            ExportApplication.objects.filter(ca__certificates__acknowledgements__isnull=False)
+            .values(
+                user_id=F("ca__certificates__acknowledgements__user_id"),
+                exportapplication_id=F("pk"),
+            )
+            .annotate(row_number=Window(expression=RowNumber()))
+            .distinct("user_id", "exportapplication_id")
+        )
+
+    @classmethod
+    def clear_export_doc_pack(cls) -> QuerySet:
+        return (
+            ExportApplicationCertificate.objects.exclude(acknowledgements__isnull=True)
+            .values(
+                user_id=F("acknowledgements__user_id"),
+                exportapplicationcertificate_id=F("pk"),
+            )
+            .annotate(row_number=Window(expression=RowNumber()))
+        )
+
+    @classmethod
+    def get_m2m_data(cls, target: models.Model) -> Generator:
+        match target._meta.model_name:
+            case "importapplicationlicence":
+                qs = cls.clear_import_doc_pack()
+            case "importapplication":
+                qs = cls.clear_import_application()
+            case "exportapplication":
+                qs = cls.clear_export_application()
+            case "exportapplicationcertificate":
+                qs = cls.clear_export_doc_pack()
+            case _:
+                raise ValueError(f"Unknown target {target._meta.model_name}")
+
+        return qs.iterator(chunk_size=2000)
+
+
 class VariationRequest(MigrationBase):
     UPDATE_TIMESTAMP_QUERY = queries.variation_request_timestamp_update
 
