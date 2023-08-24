@@ -34,6 +34,9 @@ class User(GuardianUserMixin, AbstractUser):
     work_address = models.CharField(max_length=300, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
 
+    # True for users that were migrated from V1.
+    icms_v1_user = models.BooleanField(default=False)
+
     def __str__(self):
         return self.full_name
 

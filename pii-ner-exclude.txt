@@ -3270,3 +3270,7 @@ acknowledgements__user_id
 Exporter Access Request Approval Opened
 SELECT xn.dp_id exportcertificate_id
 LEFT JOIN appenv.xview_resources
+Wesley
+Email / Username
+data</div
+f"{user.id}:{hex_bytes.decode

@@ -1,8 +1,11 @@
+import binascii
 import datetime
+import os
 from unittest import mock
 
 import pytest
 from django.conf import settings
+from django.contrib.auth.hashers import make_password
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import override_settings, signals
@@ -12,6 +15,7 @@ from jinja2 import Template as Jinja2Template
 from notifications_python_client import NotificationsAPIClient
 from pytest_django.asserts import assertRedirects
 
+from web.auth.fox_hasher import FOXPBKDF2SHA1Hasher
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import end_process_task
@@ -32,6 +36,7 @@ from web.models import (
     SILApplication,
     SILChecklist,
     Task,
+    User,
     WoodQuotaApplication,
 )
 from web.models.shared import YesNoNAChoices
@@ -167,6 +172,42 @@ def constabulary_contact(django_user_model):
       - Derbyshire
     """
     return django_user_model.objects.get(username="con_user")
+
+
+@pytest.fixture()
+def fox_hasher_enabled():
+    with override_settings(
+        PASSWORD_HASHERS=[
+            "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+            "web.auth.fox_hasher.FOXPBKDF2SHA1Hasher",
+        ]
+    ):
+        yield None
+
+
+@pytest.fixture()
+def legacy_user(db, fox_hasher_enabled):
+    user_email = "legacy_user@example.com"  # /PS-IGNORE
+    user = User.objects.create(username=user_email, email=user_email, icms_v1_user=True)
+
+    # Create a legacy password
+    hex_bytes = binascii.b2a_hex(os.urandom(15))
+    user_salt = f"{user.id}:{hex_bytes.decode()}"
+    user.password = make_password("TestPassword1!", salt=user_salt, hasher="fox_pbkdf2_sha1")
+    user.save()
+
+    # <algorithm>$<iterations>$<salt>$<hash>
+    algorithm, *_ = user.password.split("$")
+    assert algorithm == FOXPBKDF2SHA1Hasher.algorithm
+
+    return user
+
+
+@pytest.fixture()
+def one_login_user(db):
+    return User.objects.create(
+        username="one_login_id", email="one_login_user@example.com"  # /PS-IGNORE
+    )
 
 
 @pytest.fixture
