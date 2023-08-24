@@ -261,6 +261,28 @@ class Command(BaseCommand):
             groups=[import_search_user],
         )
 
+        #
+        # Add some fake V1 migrated users.
+        self.create_user(
+            username="migrated-user-1@example.com",  # /PS-IGNORE
+            password=options["password"],
+            first_name="Bill",
+            last_name="Wesley (importer_user)",
+            groups=[importer_user_group],
+            linked_importers=[importer],
+            icms_v1_user=True,
+        )
+
+        self.create_user(
+            username="migrated-user-2@example.com",  # /PS-IGNORE
+            password=options["password"],
+            first_name="Dani",
+            last_name="Winslow (exporter_user)",
+            groups=[exporter_user_group],
+            linked_importers=[exporter],
+            icms_v1_user=True,
+        )
+
         self.create_superuser("admin", options["password"])
 
         self.stdout.write(
@@ -286,6 +308,7 @@ class Command(BaseCommand):
         linked_importer_agents: Collection[Importer] = (),
         linked_exporter_agents: Collection[Exporter] = (),
         linked_constabularies: Collection[Constabulary] = (),
+        icms_v1_user: bool = False,
     ) -> User:
         """Create normal system users"""
 
@@ -300,6 +323,7 @@ class Command(BaseCommand):
             first_name=first_name,
             last_name=last_name,
             date_of_birth=datetime.date(2000, 1, 1),
+            icms_v1_user=icms_v1_user,
         )
 
         Email.objects.create(

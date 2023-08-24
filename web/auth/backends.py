@@ -1,5 +1,6 @@
 from authbroker_client.backends import AuthbrokerBackend
 from django.contrib.auth.backends import BaseBackend, ModelBackend
+from django.http import HttpRequest
 from guardian.backends import check_support
 from guardian.conf import settings as guardian_settings
 from guardian.ctypes import get_content_type
@@ -9,6 +10,7 @@ from web.models import Email as UserEmail
 from web.models import User
 
 from .types import STAFF_SSO_ID, StaffSSOProfile
+from .utils import get_legacy_user_by_username
 
 
 class ModelAndObjectPermissionBackend(ModelBackend):
@@ -95,9 +97,18 @@ class ICMSStaffSSOBackend(AuthbrokerBackend):
     """ICMS Specific staff-sso backend.
 
     Extends the staff_sso AuthbrokerBackend to do the following:
-      - Update existing records from data migration (change username field)
+      - Update existing records from V1 data migration (change username field)
       - Create an Email record for new staff-sso user.
+      - Checks the user.is_active field when authenticate is called.
     """
+
+    def authenticate(self, request: HttpRequest, **kwargs) -> User | None:
+        user = super().authenticate(request, **kwargs)
+
+        if user and self.user_can_authenticate(user):
+            return user
+
+        return None
 
     def get_or_create_user(self, profile: StaffSSOProfile) -> User:
         id_key: STAFF_SSO_ID = self.get_profile_id_name()
@@ -109,10 +120,10 @@ class ICMSStaffSSOBackend(AuthbrokerBackend):
 
         try:
             # A legacy user is a user who has an email address as a username.
-            user = User.objects.get(**{User.USERNAME_FIELD: staff_sso_email})
+            user = get_legacy_user_by_username(staff_sso_email)
 
             # Migrate the legacy user to use id_value as username
-            setattr(user, User.USERNAME_FIELD, id_value)
+            user.username = id_value
 
             user.set_unusable_password()
             user.save()
@@ -120,9 +131,7 @@ class ICMSStaffSSOBackend(AuthbrokerBackend):
             update_email = True
 
         except User.DoesNotExist:
-            user, created = User.objects.get_or_create(
-                **{User.USERNAME_FIELD: id_value}, defaults=user_data
-            )
+            user, created = User.objects.get_or_create(username=id_value, defaults=user_data)
 
             if created:
                 user.set_unusable_password()
@@ -130,7 +139,7 @@ class ICMSStaffSSOBackend(AuthbrokerBackend):
                 update_email = True
 
         if update_email:
-            setattr(user, User.EMAIL_FIELD, staff_sso_email)
+            user.email = staff_sso_email
             user.save()
 
             UserEmail.objects.get_or_create(
@@ -140,6 +149,16 @@ class ICMSStaffSSOBackend(AuthbrokerBackend):
             )
 
         return user
+
+    def user_can_authenticate(self, user: User) -> bool:
+        """Reject users with is_active=False.
+
+        Custom user models that don't have that attribute are allowed.
+        """
+
+        is_active = getattr(user, "is_active", None)
+
+        return is_active or is_active is None
 
 
 # TODO: ICMSLST-2196 Add gov.uk one login authentication backend.

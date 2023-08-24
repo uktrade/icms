@@ -161,12 +161,16 @@ def _details_update(request: AuthenticatedHttpRequest, action: str, pk: int) -> 
             if request.method == "POST":
                 messages.error(request, "Please correct the highlighted errors.")
 
+    # Only show account recovery for user accounts that haven't come from V1.
+    show_account_recovery = request.user.pk == pk and not request.user.icms_v1_user
+    context = forms | {"show_account_recovery": show_account_recovery}
+
     return render(
         request,
         "web/domains/user/details.html"
         if request.user.pk == pk
         else "web/domains/user/admin-view-details.html",
-        forms,
+        context,
     )
 
 
