@@ -25,12 +25,18 @@ class Command(BaseCommand):
         self.stdout.write(f"TOTAL PASS: {self.passes} - TOTAL FAIL: {self.failures}")
 
     def get_actual(
-        self, model: ModelT, filter_params: Params, annotation: Anno = None, values: Val = None
+        self,
+        model: ModelT,
+        filter_params: Params,
+        exclude_params: Params,
+        annotation: Anno = None,
+        values: Val = None,
     ) -> int:
         """Retrieve to actual counts for the models or list of models migrated to V2
 
         :param model: The model or list of models to be counted
         :param filter_params: A dict of filter conditions to be used when querying the model
+        :param exclude_params: A dict of exclude conditions to be used when querying the model
         """
         if not annotation:
             annotation = {}
@@ -40,10 +46,20 @@ class Command(BaseCommand):
 
         if isinstance(model, list):
             return sum(
-                m.objects.annotate(**annotation).filter(**filter_params).count() for m in model
+                m.objects.annotate(**annotation)
+                .filter(**filter_params)
+                .exclude(**exclude_params)
+                .count()
+                for m in model
             )
 
-        return model.objects.values(*values).annotate(**annotation).filter(**filter_params).count()
+        return (
+            model.objects.values(*values)
+            .annotate(**annotation)
+            .filter(**filter_params)
+            .exclude(**exclude_params)
+            .count()
+        )
 
     def run_queries(self):
         """Iterates over CHECK_DATA_QUERIES and runs queries in V1 to retrieve the data counts prior to data migration"""
@@ -51,7 +67,7 @@ class Command(BaseCommand):
         with oracledb.connect(**CONNECTION_CONFIG) as connection:
             for check in CHECK_DATA_QUERIES:
                 expected = self.run_query(connection, check.query, check.bind_vars)
-                actual = self.get_actual(check.model, check.filter_params)
+                actual = self.get_actual(check.model, check.filter_params, check.exclude_params)
                 actual += check.adjustment  # Adjust to account for excluded data. See check.note
                 self._log_result(check.name, expected, actual)
 
@@ -73,7 +89,11 @@ class Command(BaseCommand):
 
         for check in CHECK_DATA_COUNTS:
             actual = self.get_actual(
-                check.model, check.filter_params, annotation=check.annotation, values=check.values
+                check.model,
+                check.filter_params,
+                {},
+                annotation=check.annotation,
+                values=check.values,
             )
             self._log_result(check.name, check.expected_count, actual)
 

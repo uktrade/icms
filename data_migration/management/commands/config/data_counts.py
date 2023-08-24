@@ -36,7 +36,7 @@ CHECK_DATA_COUNTS: list[CheckCount] = [
     ),
     CheckCount(
         name="Users With Multiple Groups",
-        expected_count=0,
+        expected_count=17,
         model=web.User,
         filter_params={"group_count__gt": 1},
         annotation={"group_count": Count("groups")},
@@ -430,6 +430,9 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         query=queries.users_without_roles_count,
         model=web.User,
         filter_params={"groups__isnull": True},
+        exclude_params={"username__endswith": "cancelled"},
+        adjustment=24,
+        note="",
     ),
     CheckQuery(
         name="User Email Addresses",

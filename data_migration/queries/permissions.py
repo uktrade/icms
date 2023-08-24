@@ -226,7 +226,7 @@ constabulary_user_roles_count = (
 
 
 users_without_roles_count = """
-SELECT count(*) FROM (
+SELECT COUNT(*) FROM (
 WITH rp_wua AS (
   SELECT uah.resource_person_id
   , CASE
@@ -248,13 +248,14 @@ WITH rp_wua AS (
 )
 SELECT
   login_id username
+  , LISTAGG(DISTINCT xr.res_type || ':' || rmc.role_name, '    ') WITHIN GROUP (ORDER BY xr.res_type, rmc.role_name) roles
 FROM rp_wua
-LEFT JOIN decmgr.resource_members_current rmc ON rmc.person_id = rp_wua.resource_person_id
-LEFT JOIN appenv.xview_resources xr ON xr.res_id = rmc.res_id
-WHERE rmc.rd_id IS null
+LEFT JOIN decmgr.resource_members_current rmc ON rp_wua.resource_person_id = rmc.person_id
+LEFT JOIN appenv.xview_resources xr ON rmc.res_id = xr.res_id
+LEFT JOIN decmgr.xview_resource_type_roles xrtr ON xrtr.role_name = rmc.role_name AND xrtr.res_type = xr.res_type
 GROUP BY login_id
 ORDER BY login_id
-)
+) WHERE roles = ':'
 """
 
 roles_summary = """
