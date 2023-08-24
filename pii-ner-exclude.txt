@@ -3269,3 +3269,4 @@ SELECT xn.dp_id importapplicationlicence_id
 acknowledgements__user_id
 Exporter Access Request Approval Opened
 SELECT xn.dp_id exportcertificate_id
+LEFT JOIN appenv.xview_resources

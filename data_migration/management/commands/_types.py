@@ -49,6 +49,7 @@ class CheckQuery:
     query: str
     model: ModelT
     filter_params: Params = field(default_factory=dict)
+    exclude_params: Params = field(default_factory=dict)
     bind_vars: Params = field(default_factory=dict)
     adjustment: int = 0
     note: str = ""
