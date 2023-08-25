@@ -27,14 +27,11 @@ from web.flow import errors
 from web.mail.emails import (
     send_application_refused_email,
     send_application_stopped_email,
+    send_withdrawal_email,
 )
 from web.models import CaseNote, Task, User, VariationRequest, WithdrawApplication
 from web.notify.constants import VariationRequestDescription
-from web.notify.email import (
-    send_reassign_email,
-    send_variation_request_email,
-    send_withdrawal_email,
-)
+from web.notify.email import send_reassign_email, send_variation_request_email
 from web.permissions import (
     AppChecker,
     Perms,

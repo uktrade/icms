@@ -290,20 +290,6 @@ def test_send_reassign_email_with_comment(ilb_admin_client, fa_sil_app_submitted
     "withdrawal_status,exp_num_emails,exp_subject,exp_in_body,exp_sent_to",
     [
         (
-            WithdrawApplication.Statuses.OPEN,
-            2,
-            "Withdrawal Request: ",
-            "A withdrawal request has been submitted",
-            "ilb_admin_user@example.com",  # /PS-IGNORE
-        ),
-        (
-            WithdrawApplication.Statuses.ACCEPTED,
-            1,
-            "Withdrawal Request Accepted: ",
-            "This case has\nbeen withdrawn.",
-            "E1_main_contact@example.com",  # /PS-IGNORE
-        ),
-        (
             WithdrawApplication.Statuses.REJECTED,
             1,
             "Withdrawal Request Rejected: ",  # /PS-IGNORE

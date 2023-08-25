@@ -15,14 +15,8 @@ class EmailTypes(TypedTextChoices):
         "APPLICATION_EXTENSION_COMPLETE",
         "Application Extension Complete",
     )
-    APPLICATION_STOPPED = (
-        "APPLICATION_STOPPED",
-        "Application Stopped",
-    )
-    APPLICATION_REFUSED = (
-        "APPLICATION_REFUSED",
-        "Application Refused",
-    )
+    APPLICATION_STOPPED = ("APPLICATION_STOPPED", "Application Stopped")
+    APPLICATION_REFUSED = ("APPLICATION_REFUSED", "Application Refused")
     EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED = (
         "EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED",
         "Exporter Access Request Approval Opened",
@@ -31,3 +25,5 @@ class EmailTypes(TypedTextChoices):
         "IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED",
         "Importer Access Request Approval Opened",
     )
+    WITHDRAWAL_OPENED = ("WITHDRAWAL_OPENED", "Withdrawal Opened")
+    WITHDRAWAL_ACCEPTED = ("WITHDRAWAL_ACCEPTED", "Withdrawal Accepted")

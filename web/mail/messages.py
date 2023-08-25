@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.mail import EmailMessage, SafeMIMEMultipart
 
 from web.domains.case.types import ImpAccessOrExpAccess, ImpOrExp, ImpOrExpApproval
+from web.models import WithdrawApplication
 
 from .constants import EmailTypes
 from .models import EmailTemplate
@@ -65,6 +66,16 @@ class BaseApprovalRequest(GOVNotifyEmailMessage):
             if self.approval_request.access_request.is_agent_request
             else "user"
         }
+
+
+class BaseWithdrawalEmail(GOVNotifyEmailMessage):
+    def __init__(self, *args, withdrawal: WithdrawApplication, **kwargs):
+        self.withdrawal = withdrawal
+        self.application = withdrawal.export_application or withdrawal.import_application
+        super().__init__(*args, **kwargs)
+
+    def get_context(self) -> dict:
+        return {"reference": self.application.reference, "reason": self.withdrawal.response}
 
 
 @final
@@ -133,10 +144,20 @@ class ApplicationRefusedEmail(BaseApplicationEmail):
 
 
 @final
-class ExporterAccessRequestApprovalOpened(BaseApprovalRequest):
+class ExporterAccessRequestApprovalOpenedEmail(BaseApprovalRequest):
     name = EmailTypes.EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED
 
 
 @final
-class ImporterAccessRequestApprovalOpened(BaseApprovalRequest):
+class ImporterAccessRequestApprovalOpenedEmail(BaseApprovalRequest):
     name = EmailTypes.IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED
+
+
+@final
+class WithdrawalOpenedEmail(BaseWithdrawalEmail):
+    name = EmailTypes.WITHDRAWAL_OPENED
+
+
+@final
+class WithdrawalAcceptedEmail(BaseWithdrawalEmail):
+    name = EmailTypes.WITHDRAWAL_ACCEPTED

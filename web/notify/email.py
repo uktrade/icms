@@ -198,10 +198,7 @@ def send_withdrawal_email(withdrawal: WithdrawApplication) -> None:
 
     application = withdrawal.export_application or withdrawal.import_application
 
-    if withdrawal.status in [
-        WithdrawApplication.Statuses.OPEN,
-        WithdrawApplication.Statuses.DELETED,
-    ]:
+    if withdrawal.status == WithdrawApplication.Statuses.DELETED:
         contacts = get_case_officers_for_process_type(application.process_type)
     else:
         contacts = get_application_contacts(application)
