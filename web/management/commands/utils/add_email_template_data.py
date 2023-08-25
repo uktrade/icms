@@ -29,6 +29,14 @@ templates = [
         EmailTypes.IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED,
         "01d616e8-c2df-4fb2-aa6d-4feeb3c38eea",  # /PS-IGNORE
     ),
+    (
+        EmailTypes.WITHDRAWAL_OPENED,
+        "e3499a7c-ad6e-4ceb-bed3-d0a9a137f6a9",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.WITHDRAWAL_ACCEPTED,
+        "ea1a9341-8608-4af8-8eec-9c40beddd978",  # /PS-IGNORE
+    ),
 ]
 
 

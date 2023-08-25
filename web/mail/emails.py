@@ -4,8 +4,10 @@ from web.models import (
     ExporterApprovalRequest,
     ImporterApprovalRequest,
     VariationRequest,
+    WithdrawApplication,
 )
 from web.notify import notify
+from web.notify.email import send_withdrawal_email as notify_send_withdrawal_email
 
 from .messages import (
     AccessRequestClosedEmail,
@@ -15,11 +17,14 @@ from .messages import (
     ApplicationRefusedEmail,
     ApplicationStoppedEmail,
     ApplicationVariationCompleteEmail,
-    ExporterAccessRequestApprovalOpened,
-    ImporterAccessRequestApprovalOpened,
+    ExporterAccessRequestApprovalOpenedEmail,
+    ImporterAccessRequestApprovalOpenedEmail,
+    WithdrawalAcceptedEmail,
+    WithdrawalOpenedEmail,
 )
 from .recipients import (
     get_application_contact_email_addresses,
+    get_case_officers_email_addresses,
     get_email_addresses_for_users,
     get_ilb_case_officers_email_addresses,
     get_organisation_contact_email_addresses,
@@ -104,7 +109,7 @@ def send_exporter_approval_request_opened_email(approval_request: ExporterApprov
     org = approval_request.access_request.get_specific_model().link
     recipients = get_organisation_contact_email_addresses(org)
     for recipient in recipients:
-        ExporterAccessRequestApprovalOpened(
+        ExporterAccessRequestApprovalOpenedEmail(
             approval_request=approval_request, to=[recipient]
         ).send()
 
@@ -113,6 +118,29 @@ def send_importer_approval_request_opened_email(approval_request: ImporterApprov
     org = approval_request.access_request.get_specific_model().link
     recipients = get_organisation_contact_email_addresses(org)
     for recipient in recipients:
-        ImporterAccessRequestApprovalOpened(
+        ImporterAccessRequestApprovalOpenedEmail(
             approval_request=approval_request, to=[recipient]
         ).send()
+
+
+def send_withdrawal_email(withdrawal: WithdrawApplication) -> None:
+    if withdrawal.status == WithdrawApplication.Statuses.OPEN:
+        send_withdrawal_opened_email(withdrawal)
+    elif withdrawal.status == WithdrawApplication.Statuses.ACCEPTED:
+        send_withdrawal_accepted_email(withdrawal)
+    else:
+        notify_send_withdrawal_email(withdrawal)
+
+
+def send_withdrawal_opened_email(withdrawal: WithdrawApplication) -> None:
+    application = withdrawal.export_application or withdrawal.import_application
+    recipients = get_case_officers_email_addresses(application.process_type)
+    for recipient in recipients:
+        WithdrawalOpenedEmail(withdrawal=withdrawal, to=[recipient]).send()
+
+
+def send_withdrawal_accepted_email(withdrawal: WithdrawApplication) -> None:
+    application = withdrawal.export_application or withdrawal.import_application
+    recipients = get_application_contact_email_addresses(application)
+    for recipient in recipients:
+        WithdrawalAcceptedEmail(withdrawal=withdrawal, to=[recipient]).send()

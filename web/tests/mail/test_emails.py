@@ -6,7 +6,12 @@ from django.conf import settings
 from web.mail import emails
 from web.mail.constants import EmailTypes
 from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
-from web.models import EmailTemplate, ImporterAccessRequest, VariationRequest
+from web.models import (
+    EmailTemplate,
+    ImporterAccessRequest,
+    VariationRequest,
+    WithdrawApplication,
+)
 from web.tests.auth.auth import AuthTestCase
 from web.tests.helpers import (
     add_approval_request,
@@ -205,6 +210,51 @@ class TestEmails(AuthTestCase):
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             "E1_main_contact@example.com",  # /PS-IGNORE
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_withdrawal_opened_email(self, com_app_submitted):
+        exp_template_id = str(
+            EmailTemplate.objects.get(name=EmailTypes.WITHDRAWAL_OPENED).gov_notify_template_id
+        )
+        withdrawal = com_app_submitted.withdrawals.create(
+            status=WithdrawApplication.Statuses.OPEN, request_by=self.importer_user
+        )
+
+        expected_personalisation = default_personalisation() | {
+            "reference": com_app_submitted.reference,
+            "reason": withdrawal.reason,
+        }
+        emails.send_withdrawal_email(withdrawal)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 2
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            "ilb_admin_user@example.com",  # /PS-IGNORE
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            "ilb_admin_two@example.com",  # /PS-IGNORE
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_withdrawal_accepted_email(self, com_app_submitted):
+        exp_template_id = str(
+            EmailTemplate.objects.get(name=EmailTypes.WITHDRAWAL_ACCEPTED).gov_notify_template_id
+        )
+        withdrawal = com_app_submitted.withdrawals.create(
+            status=WithdrawApplication.Statuses.ACCEPTED, request_by=self.exporter_user
+        )
+
+        expected_personalisation = default_personalisation() | {
+            "reference": com_app_submitted.reference,
+            "reason": withdrawal.reason,
+        }
+        emails.send_withdrawal_email(withdrawal)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.exporter_user.email,  # /PS-IGNORE
             exp_template_id,
             personalisation=expected_personalisation,
         )

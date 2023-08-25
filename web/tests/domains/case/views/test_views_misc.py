@@ -12,6 +12,7 @@ from web.domains.case.models import DocumentPackBase, WithdrawApplication
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.flow.errors import ProcessStateError
+from web.mail.constants import EmailTypes
 from web.models import (
     Country,
     Task,
@@ -24,6 +25,7 @@ from web.tests.helpers import (
     CaseURLS,
     add_variation_request_to_app,
     check_email_was_sent,
+    check_gov_notify_email_was_sent,
     check_page_errors,
     check_pages_checked,
 )
@@ -113,46 +115,62 @@ def test_manage_withdrawals_get(
     assert resp.context["current_withdrawal"] is None
 
 
-@pytest.mark.parametrize(
-    "status,withdrawal_response,exp_email_subject",
-    [
-        (WithdrawApplication.Statuses.ACCEPTED, "", "Withdrawal Request Accepted"),
-        (
-            WithdrawApplication.Statuses.REJECTED,
-            "Withdrawn",
-            "Withdrawal Request Rejected",  # /PS-IGNORE
-        ),
-    ],
-)
-def test_manage_withdrawals_post(
+def test_manage_withdrawals_reject(
     ilb_admin_client,
     wood_app_submitted,
     importer_one_contact,
-    status,
-    withdrawal_response,
-    exp_email_subject,
 ):
-    withdrawal = wood_app_submitted.withdrawals.create(
-        status=WithdrawApplication.Statuses.OPEN, request_by=importer_one_contact
+    process_withdrawal(
+        ilb_admin_client,
+        wood_app_submitted,
+        importer_one_contact,
+        WithdrawApplication.Statuses.REJECTED,
+        "Withdrawn",
+    )
+    sent_to = importer_one_contact.emails.first().email
+    _check_withdrawal_email_sent("Withdrawal Request Rejected", [sent_to])
+
+
+def test_manage_withdrawals_accept(
+    ilb_admin_client,
+    wood_app_submitted,
+    importer_one_contact,
+):
+    process_withdrawal(
+        ilb_admin_client,
+        wood_app_submitted,
+        importer_one_contact,
+        WithdrawApplication.Statuses.ACCEPTED,
+        "",
+    )
+    sent_to = importer_one_contact.emails.first().email
+    check_gov_notify_email_was_sent(
+        1,
+        [sent_to],
+        EmailTypes.WITHDRAWAL_ACCEPTED,
+        {"reference": wood_app_submitted.reference, "reason": ""},
     )
 
-    resp = ilb_admin_client.post(CaseURLS.take_ownership(wood_app_submitted.pk))
-    assertRedirects(resp, CaseURLS.manage(wood_app_submitted.pk), HTTPStatus.FOUND)
+
+def process_withdrawal(client, app, contact, status, response):
+    withdrawal = app.withdrawals.create(
+        status=WithdrawApplication.Statuses.OPEN, request_by=contact
+    )
+
+    resp = client.post(CaseURLS.take_ownership(app.pk))
+    assertRedirects(resp, CaseURLS.manage(app.pk), HTTPStatus.FOUND)
 
     # Check withdrawal present
-    _check_withdrawal_visible(ilb_admin_client, CaseURLS.manage_withdrawals(wood_app_submitted.pk))
+    _check_withdrawal_visible(client, CaseURLS.manage_withdrawals(app.pk))
 
     # Update withdrawal status
-    data = {"status": status, "response": withdrawal_response}
-    resp = ilb_admin_client.post(CaseURLS.manage_withdrawals(wood_app_submitted.pk), data)
+    data = {"status": status, "response": response}
+    resp = client.post(CaseURLS.manage_withdrawals(app.pk), data)
     assert resp.status_code == HTTPStatus.FOUND
 
     # Check withdrawal status has been updated
     withdrawal.refresh_from_db()
     assert withdrawal.status == status
-
-    sent_to = importer_one_contact.emails.first().email
-    _check_withdrawal_email_sent(exp_email_subject, [sent_to])
 
 
 def test_request_withdrawal(importer_client, wood_app_submitted, importer_one_contact):
@@ -161,12 +179,14 @@ def test_request_withdrawal(importer_client, wood_app_submitted, importer_one_co
     resp = importer_client.post(CaseURLS.withdrawal_case(wood_app_submitted.pk), post)
     assertRedirects(resp, reverse("workbasket"), HTTPStatus.FOUND)
     assert wood_app_submitted.withdrawals.count() == 1
-    _check_withdrawal_email_sent(
-        "Withdrawal Request",
+    check_gov_notify_email_was_sent(
+        2,
         [
             "ilb_admin_user@example.com",  # /PS-IGNORE
             "ilb_admin_two@example.com",  # /PS-IGNORE
         ],
+        EmailTypes.WITHDRAWAL_OPENED,
+        {"reference": wood_app_submitted.reference, "reason": ""},
     )
 
 

@@ -1,17 +1,31 @@
 from collections.abc import Iterable
 
 from web.domains.case.types import ImpOrExp, Organisation
+from web.flow.models import ProcessTypes
 from web.models import User
 from web.notify.email import get_application_contacts, get_organisation_contacts
 from web.notify.utils import get_notification_emails
-from web.permissions import get_ilb_case_officers
+from web.permissions import get_all_case_officers, get_ilb_case_officers
 
 from .decorators import override_recipients
+
+
+def get_all_case_officers_email_addresses() -> list[str]:
+    users = get_all_case_officers()
+    return get_email_addresses_for_users(users)
 
 
 def get_ilb_case_officers_email_addresses() -> list[str]:
     users = get_ilb_case_officers()
     return get_email_addresses_for_users(users)
+
+
+def get_case_officers_email_addresses(process_type: ProcessTypes) -> list[str]:
+    match process_type:
+        case ProcessTypes.SANCTIONS:
+            return get_all_case_officers_email_addresses()
+        case _:
+            return get_ilb_case_officers_email_addresses()
 
 
 def get_application_contact_email_addresses(application: ImpOrExp) -> list[str]:
