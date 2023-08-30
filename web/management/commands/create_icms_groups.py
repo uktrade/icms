@@ -116,4 +116,12 @@ def get_groups():
             # Sys permissions
             Perms.sys.search_all_cases,
         },
+        "ICMS Admin Site User": {
+            Perms.sys.is_icms_data_admin,
+            Permission.objects.get(content_type__app_label="web", codename="change_user"),
+            Permission.objects.get(content_type__app_label="web", codename="view_user"),
+            Permission.objects.get(content_type__app_label="web", codename="change_emailtemplate"),
+            Permission.objects.get(content_type__app_label="web", codename="view_emailtemplate"),
+            Permission.objects.get(content_type__app_label="web", codename="view_email"),
+        },
     }

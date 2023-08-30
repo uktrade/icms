@@ -49,6 +49,8 @@ class SysPerms(PermissionTextChoice):
     # This permission isn't used anywhere.
     mailshot_access = "web.mailshot_access", "Can maintain mailshots"
 
+    is_icms_data_admin = "web.is_icms_data_admin", "Can maintain data in the ICMS admin site."
+
 
 class ImporterObjectPermissions(PermissionTextChoice):
     view = ("web.view_importer", "Can view all applications and licences for a particular importer")

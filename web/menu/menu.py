@@ -4,7 +4,7 @@ import structlog as logging
 from django.conf import settings
 from django.urls import resolve, reverse
 
-from web.permissions import can_user_view_search_cases
+from web.permissions import Perms, can_user_view_search_cases
 from web.types import AuthenticatedHttpRequest
 
 logger = logging.getLogger(__name__)
@@ -173,6 +173,14 @@ class MenuDropDown(MenuItem):
         """
 
 
+class ICMSAdminLink(SubMenuLink):
+    def has_access(self, request: AuthenticatedHttpRequest) -> bool:
+        return request.user.has_perm(Perms.sys.is_icms_data_admin)
+
+    def get_link(self) -> str:
+        return reverse("icms_admin:index")
+
+
 extra_menu_items = []
 if settings.DEBUG:
     extra_menu_items = [
@@ -210,6 +218,7 @@ class Menu:
         MenuDropDown(
             label="Admin",
             sub_menu_list=[
+                ICMSAdminLink(label="ICMS Site Admin"),
                 SubMenuLink(label="CHIEF Dashboard", view="chief:pending-licences"),
                 SubMenu(
                     label="Importers/Exporters",

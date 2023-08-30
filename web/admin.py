@@ -5,6 +5,7 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
+from django.urls import URLPattern, URLResolver, path
 from guardian.admin import GuardedModelAdmin
 
 from web.mail.api import is_valid_template_id
@@ -31,6 +32,8 @@ from web.models import (
     Template,
     User,
 )
+from web.permissions import Perms
+from web.views import login_start_view
 
 
 class CountryGroupModelForm(forms.ModelForm):
@@ -70,11 +73,25 @@ class EmailTemplateAdmin(admin.ModelAdmin):
     fields = ("name", "gov_notify_template_id")
     readonly_fields = ("name",)
 
+    ordering = ("name",)
+
+    search_fields = ("name",)
+
     def has_delete_permission(self, request, obj=None) -> bool:
         return False
 
 
-admin.site.register(User, UserAdmin)
+class UserEmailInline(admin.TabularInline):
+    model = Email
+
+
+class SuperUserUserAdmin(UserAdmin):
+    """UserAdmin class for default django admin site"""
+
+    inlines = (UserEmailInline,)
+
+
+admin.site.register(User, SuperUserUserAdmin)
 admin.site.register(CommodityType)
 admin.site.register(Commodity)
 admin.site.register(CommodityGroup)
@@ -144,5 +161,115 @@ def _filter_icms_permissions(qs: QuerySet[Permission]) -> QuerySet[Permission]:
             # Models with object level permissions
             "importer",
             "exporter",
+            "user",
+            "emailtemplate",
+            "email",
         ],
     )
+
+
+#
+# Django admin site for non superusers (the ILB team)
+#
+class ICMSAdminSite(admin.AdminSite):
+    """ILB Admin admin site."""
+
+    # Text to put at the end of each page's <title>.
+    site_title = "ICMS site admin"
+
+    # Text to put in each page's <h1>.
+    site_header = "ICMS administration"
+
+    # Text to put at the top of the admin index page.
+    index_title = "Site administration"
+
+    def has_permission(self, request):
+        return (
+            request.user.is_active
+            and request.user.is_authenticated
+            and request.user.has_perm(Perms.sys.is_icms_data_admin)
+        )
+
+    def get_urls(self):
+        urls = super().get_urls()
+
+        # Redirect unauthenticated users to the login_start_view instead of
+        # the ModelBackend login used by the default Django admin site.
+        # ICMS users should never use the ModelBackend login flow.
+        login_index = _get_login_index(urls)
+        urls[login_index] = path("login/", login_start_view, name="login")
+
+        return urls
+
+
+def _get_login_index(urls: list[URLPattern | URLResolver]) -> int:
+    for index, url in enumerate(urls):
+        if isinstance(url, URLPattern) and url.name == "login":
+            return index
+
+    raise ValueError("login view not in urls list")
+
+
+class ICMSAdminUserAdmin(UserAdmin):
+    """UserAdmin class for icms admin site"""
+
+    fieldsets = (
+        (None, {"fields": ("username",)}),
+        ("Personal info", {"fields": ("first_name", "last_name", "email")}),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "icms_v1_user",
+                    "groups",
+                    "user_permissions",
+                ),
+            },
+        ),
+        ("Important dates", {"fields": ("last_login", "date_joined")}),
+    )
+    readonly_fields = (
+        "username",
+        "first_name",
+        "last_name",
+        "email",
+        "is_staff",
+        "is_superuser",
+        "icms_v1_user",
+        # ICMS doesn't use user permissions
+        "user_permissions",
+        "last_login",
+        "date_joined",
+    )
+
+    list_display = (
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "is_active",
+        "icms_v1_user",
+    )
+    list_filter = (
+        "is_active",
+        "groups",
+        "icms_v1_user",
+    )
+    search_fields = (
+        "username",
+        "first_name",
+        "last_name",
+        "email",
+    )
+    ordering = ("username",)
+    filter_horizontal = ("groups",)
+
+    inlines = (UserEmailInline,)
+
+
+icms_admin_site = ICMSAdminSite(name="icms_admin")
+icms_admin_site.register(User, ICMSAdminUserAdmin)
+icms_admin_site.register(EmailTemplate, EmailTemplateAdmin)

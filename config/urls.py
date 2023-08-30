@@ -17,8 +17,17 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 
+from web.admin import icms_admin_site
+
 urlpatterns = [
+    #
+    # Django Admin Site (superuser admin site)
     path("admin/", admin.site.urls),
+    #
+    # ICMS Admin site (Restricted admin site)
+    path("icms-admin/", icms_admin_site.urls),
+    #
+    # ICMS urls
     path("", include("web.urls")),
 ]
 
