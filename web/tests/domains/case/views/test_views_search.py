@@ -223,7 +223,7 @@ class TestRequestVariationUpdateView:
         self.client = ilb_admin_client
 
     @pytest.fixture(autouse=True)
-    def set_app(self, wood_app_submitted, ilb_admin_user):
+    def set_app(self, wood_app_submitted, ilb_admin_user, importer_one_contact):
         self.wood_app = wood_app_submitted
         self.wood_app.status = ImpExpStatus.COMPLETED
         self.wood_app.save()
@@ -243,6 +243,8 @@ class TestRequestVariationUpdateView:
         task.finished = timezone.now()
         task.owner = ilb_admin_user
         task.save()
+
+        self.wood_app.cleared_by.add(importer_one_contact)
 
     def test_permission(self, importer_one_contact, exporter_one_contact, ilb_admin_client):
         importer_user_client = get_test_client(importer_one_contact)
@@ -292,7 +294,7 @@ class TestRequestVariationUpdateView:
         expected = "/case/import/search/standard/results/?case_status=VARIATION_REQUESTED"
         assert resp.context["search_results_url"] == expected
 
-    def test_post_updates_status(self, ilb_admin_user):
+    def test_post_updates_status(self, ilb_admin_user, importer_one_contact):
         url = SearchURLS.request_variation(self.wood_app.pk)
 
         live_licence = document_pack.pack_active_get(self.wood_app)
@@ -308,6 +310,8 @@ class TestRequestVariationUpdateView:
         self.wood_app.case_owner = ilb_admin_user
         self.wood_app.variation_decision = WoodQuotaApplication.REFUSE
         self.wood_app.variation_refuse_reason = "test value"
+
+        assert self.wood_app.cleared_by.filter(pk=importer_one_contact.pk).exists()
 
         resp = self.client.post(url, data=form_data)
         default_redirect_url = (
@@ -333,6 +337,9 @@ class TestRequestVariationUpdateView:
         assert live_licence.licence_end_date == latest_licence.licence_end_date
         assert live_licence.issue_paper_licence_only == latest_licence.issue_paper_licence_only
 
+        # Check cleared by has been cleared
+        assert self.wood_app.cleared_by.count() == 0
+
 
 class TestRequestVariationOpenRequestView:
     client: Client
@@ -343,7 +350,7 @@ class TestRequestVariationOpenRequestView:
         self.client = ilb_admin_client
 
     @pytest.fixture(autouse=True)
-    def set_app(self, com_app_submitted, ilb_admin_user):
+    def set_app(self, com_app_submitted, ilb_admin_user, exporter_one_contact):
         self.app = com_app_submitted
         self.app.status = ImpExpStatus.COMPLETED
         # A completed app would have a case owner (to test it gets cleared)
@@ -356,6 +363,8 @@ class TestRequestVariationOpenRequestView:
         task.finished = timezone.now()
         task.owner = ilb_admin_user
         task.save()
+
+        self.app.cleared_by.add(exporter_one_contact)
 
     def test_permission(
         self,
@@ -379,10 +388,12 @@ class TestRequestVariationOpenRequestView:
         response = self.client.get(url)
         assert response.status_code == HTTPStatus.OK
 
-    def test_post_updates_status(self, ilb_admin_user):
+    def test_post_updates_status(self, ilb_admin_user, exporter_one_contact):
         url = SearchURLS.open_variation(self.app.pk)
 
         form_data = {"what_varied": "What was varied"}
+
+        assert self.app.cleared_by.filter(pk=exporter_one_contact.pk).exists()
 
         response = self.client.post(url, data=form_data)
         default_redirect_url = (
@@ -396,6 +407,9 @@ class TestRequestVariationOpenRequestView:
 
         case_progress.check_expected_status(self.app, [ImpExpStatus.VARIATION_REQUESTED])
         case_progress.check_expected_task(self.app, Task.TaskType.PROCESS)
+
+        # Check cleared by has been cleared
+        assert self.app.cleared_by.count() == 0
 
 
 class TestRevokeCaseView:

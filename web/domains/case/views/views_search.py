@@ -300,9 +300,14 @@ class RequestVariationOpenBase(SearchActionFormBase):
 
         return "".join((search_url, "?", parse.urlencode(query_params)))
 
+    def clear_application_cleared_by(self) -> None:
+        self.application.cleared_by.clear()
+
 
 @method_decorator(transaction.atomic, name="post")
 class RequestVariationUpdateView(RequestVariationOpenBase):
+    """View to open a variation request for an import application"""
+
     permission_required = [Perms.page.view_import_case_search]
 
     # ApplicationTaskMixin Config
@@ -339,6 +344,7 @@ class RequestVariationUpdateView(RequestVariationOpenBase):
         self.application.update_order_datetime()
         self.update_application_status()
         self.update_application_tasks()
+        self.clear_application_cleared_by()
 
         document_pack.pack_draft_create(self.application, variation_request=True)
 
@@ -379,6 +385,7 @@ class RequestVariationOpenRequestView(RequestVariationOpenBase):
         self.application.update_order_datetime()
         self.update_application_status()
         self.update_application_tasks()
+        self.clear_application_cleared_by()
 
         # Create a new draft licence for this variation
         document_pack.pack_draft_create(self.application, variation_request=True)
