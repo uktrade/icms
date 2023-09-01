@@ -138,6 +138,37 @@ class TestEmails(AuthTestCase):
             personalisation=expected_personalisation,
         )
 
+    @pytest.mark.parametrize(
+        "comment,expected_comment",
+        [
+            ("Reassigned this case to you.", "Reassigned this case to you."),
+            ("", "None provided."),
+        ],
+    )
+    def test_send_application_reassigned_email(
+        self, com_app_submitted, ilb_admin_two, comment, expected_comment
+    ):
+        com_app_submitted.case_owner = ilb_admin_two
+        com_app_submitted.save()
+
+        exp_template_id = str(
+            EmailTemplate.objects.get(name=EmailTypes.APPLICATION_REASSIGNED).gov_notify_template_id
+        )
+        expected_personalisation = default_personalisation() | {
+            "reference": com_app_submitted.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(com_app_submitted, full_url=True),
+            "comment": expected_comment,
+        }
+
+        emails.send_application_reassigned_email(com_app_submitted, comment)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            "ilb_admin_two@example.com",  # /PS-IGNORE
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
     def test_send_application_refused_email(self, fa_sil_app_submitted):
         fa_sil_app_submitted.decision = fa_sil_app_submitted.REFUSE
         fa_sil_app_submitted.refuse_reason = "Application Incomplete"

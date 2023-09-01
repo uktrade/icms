@@ -161,3 +161,17 @@ class WithdrawalOpenedEmail(BaseWithdrawalEmail):
 @final
 class WithdrawalAcceptedEmail(BaseWithdrawalEmail):
     name = EmailTypes.WITHDRAWAL_ACCEPTED
+
+
+@final
+class ApplicationReassignedEmail(BaseApplicationEmail):
+    name = EmailTypes.APPLICATION_REASSIGNED
+
+    def __init__(self, *args, comment: str, **kwargs):
+        self.comment = comment
+        super().__init__(*args, **kwargs)
+
+    def get_context(self) -> dict:
+        context = super().get_context()
+        context["comment"] = self.comment or "None provided."
+        return context
