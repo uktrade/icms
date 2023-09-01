@@ -13,14 +13,9 @@ templates = [
         EmailTypes.APPLICATION_VARIATION_REQUEST_COMPLETE,
         "dc5ced0f-53fb-45b2-9284-b9b241aa4696",  # /PS-IGNORE
     ),
-    (
-        EmailTypes.APPLICATION_STOPPED,
-        "13b68bc7-99a5-4402-8794-e49992da54a9",  # /PS-IGNORE
-    ),
-    (
-        EmailTypes.APPLICATION_REFUSED,
-        "347cbb92-03d2-495e-a8f7-f3c94ea2bf45",  # /PS-IGNORE
-    ),
+    (EmailTypes.APPLICATION_STOPPED, "13b68bc7-99a5-4402-8794-e49992da54a9"),  # /PS-IGNORE
+    (EmailTypes.APPLICATION_REFUSED, "347cbb92-03d2-495e-a8f7-f3c94ea2bf45"),  # /PS-IGNORE
+    (EmailTypes.APPLICATION_REASSIGNED, "43b35460-caa4-4080-a350-fabd30c913f6"),  # /PS-IGNORE
     (
         EmailTypes.EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED,
         "812e532c-b617-4cf9-917d-01f49ff10964",  # /PS-IGNORE
@@ -29,14 +24,8 @@ templates = [
         EmailTypes.IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED,
         "01d616e8-c2df-4fb2-aa6d-4feeb3c38eea",  # /PS-IGNORE
     ),
-    (
-        EmailTypes.WITHDRAWAL_OPENED,
-        "e3499a7c-ad6e-4ceb-bed3-d0a9a137f6a9",  # /PS-IGNORE
-    ),
-    (
-        EmailTypes.WITHDRAWAL_ACCEPTED,
-        "ea1a9341-8608-4af8-8eec-9c40beddd978",  # /PS-IGNORE
-    ),
+    (EmailTypes.WITHDRAWAL_OPENED, "e3499a7c-ad6e-4ceb-bed3-d0a9a137f6a9"),  # /PS-IGNORE
+    (EmailTypes.WITHDRAWAL_ACCEPTED, "ea1a9341-8608-4af8-8eec-9c40beddd978"),  # /PS-IGNORE
 ]
 
 

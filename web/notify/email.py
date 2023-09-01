@@ -160,19 +160,6 @@ def send_approval_request_completed_email() -> None:
     send_html_email(template, context, get_ilb_case_officers())
 
 
-def send_reassign_email(application: ImpOrExp, comment: str) -> None:
-    context = {
-        "subject": f"ICMS Case Ref. {application.reference} has been assigned to you",
-        "comment": comment,
-        "reference": application.reference,
-    }
-    send_html_email(
-        "email/application/reassigned.html",
-        context,
-        [application.case_owner],
-    )
-
-
 def send_html_email(
     template: str,
     context: dict[str, Any],

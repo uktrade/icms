@@ -14,6 +14,7 @@ from .messages import (
     AccessRequestEmail,
     ApplicationCompleteEmail,
     ApplicationExtensionCompleteEmail,
+    ApplicationReassignedEmail,
     ApplicationRefusedEmail,
     ApplicationStoppedEmail,
     ApplicationVariationCompleteEmail,
@@ -144,3 +145,9 @@ def send_withdrawal_accepted_email(withdrawal: WithdrawApplication) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
         WithdrawalAcceptedEmail(withdrawal=withdrawal, to=[recipient]).send()
+
+
+def send_application_reassigned_email(application: ImpOrExp, comment: str) -> None:
+    recipients = get_email_addresses_for_users([application.case_owner])
+    for recipient in recipients:
+        ApplicationReassignedEmail(application=application, comment=comment, to=[recipient]).send()

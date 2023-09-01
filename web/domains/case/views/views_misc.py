@@ -25,13 +25,14 @@ from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task, get_case_page_title
 from web.flow import errors
 from web.mail.emails import (
+    send_application_reassigned_email,
     send_application_refused_email,
     send_application_stopped_email,
     send_withdrawal_email,
 )
 from web.models import CaseNote, Task, User, VariationRequest, WithdrawApplication
 from web.notify.constants import VariationRequestDescription
-from web.notify.email import send_reassign_email, send_variation_request_email
+from web.notify.email import send_variation_request_email
 from web.permissions import (
     AppChecker,
     Perms,
@@ -362,7 +363,7 @@ def reassign_ownership(
                     application.case_notes.add(case_note)
 
                 if form.cleaned_data["email_assignee"]:
-                    send_reassign_email(application, comment)
+                    send_application_reassigned_email(application, comment)
 
                 return redirect(reverse("workbasket"))
 

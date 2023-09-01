@@ -4,11 +4,7 @@ from django.test import TestCase
 
 from web.models import Email, User, WithdrawApplication
 from web.notify import constants, email
-from web.tests.helpers import (
-    CaseURLS,
-    add_variation_request_to_app,
-    check_email_was_sent,
-)
+from web.tests.helpers import add_variation_request_to_app, check_email_was_sent
 
 
 class TestEmail(TestCase):
@@ -249,41 +245,6 @@ def test_send_to_application_agent_export(com_app_submitted, agent_exporter):
     assert o.to == ["E1_A1_main_contact@example.com"]  # /PS-IGNORE
     assert o.subject == "Test"
     assert o.body == "Test Body"
-
-
-def test_send_reassign_email(ilb_admin_client, fa_sil_app_submitted):
-    app = fa_sil_app_submitted
-    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
-    app.refresh_from_db()
-    email.send_reassign_email(app, "")
-    outbox = mail.outbox
-
-    assert len(outbox) == 1
-
-    m = outbox[0]
-
-    assert m.to == ["ilb_admin_user@example.com"]  # /PS-IGNORE
-    assert m.subject == f"ICMS Case Ref. {app.reference} has been assigned to you"
-    assert f"ICMS Case Ref. { app.reference } has been assigned to you." in m.body
-    assert "Handover Details" not in m.body
-
-
-def test_send_reassign_email_with_comment(ilb_admin_client, fa_sil_app_submitted):
-    app = fa_sil_app_submitted
-    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
-    app.refresh_from_db()
-    email.send_reassign_email(app, "Some comment")
-    outbox = mail.outbox
-
-    assert len(outbox) == 1
-
-    m = outbox[0]
-
-    assert m.to == ["ilb_admin_user@example.com"]  # /PS-IGNORE
-    assert m.subject == f"ICMS Case Ref. {app.reference} has been assigned to you"
-    assert f"ICMS Case Ref. { app.reference } has been assigned to you." in m.body
-    assert "Handover Details" in m.body
-    assert "Some comment" in m.body
 
 
 @pytest.mark.parametrize(
