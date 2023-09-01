@@ -16,6 +16,7 @@ from .messages import (
     ApplicationExtensionCompleteEmail,
     ApplicationReassignedEmail,
     ApplicationRefusedEmail,
+    ApplicationReopenedEmail,
     ApplicationStoppedEmail,
     ApplicationVariationCompleteEmail,
     ExporterAccessRequestApprovalOpenedEmail,
@@ -151,3 +152,9 @@ def send_application_reassigned_email(application: ImpOrExp, comment: str) -> No
     recipients = get_email_addresses_for_users([application.case_owner])
     for recipient in recipients:
         ApplicationReassignedEmail(application=application, comment=comment, to=[recipient]).send()
+
+
+def send_application_reopened_email(application: ImpOrExp) -> None:
+    recipients = get_application_contact_email_addresses(application)
+    for recipient in recipients:
+        ApplicationReopenedEmail(application=application, to=[recipient]).send()

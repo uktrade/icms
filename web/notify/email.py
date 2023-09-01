@@ -9,7 +9,6 @@ from django.utils import timezone
 
 from config.celery import app
 from web.domains.case.types import ImpOrExp
-from web.domains.template.utils import get_email_template_subject_body
 from web.models import (
     CaseEmail,
     Exporter,
@@ -26,7 +25,7 @@ from web.permissions import (
 )
 
 from . import utils
-from .constants import DatabaseEmailTemplate, VariationRequestDescription
+from .constants import VariationRequestDescription
 
 
 @app.task(name="web.notify.email.send_email")
@@ -251,8 +250,3 @@ def send_application_update_response_email(application: ImpOrExp) -> None:
         "subject": subject,
     }
     send_html_email(template_name, context, contacts)
-
-
-def send_database_email(application: ImpOrExp, template_name: DatabaseEmailTemplate) -> None:
-    subject, body = get_email_template_subject_body(application, template_name)
-    send_to_application_contacts(application, subject, body)

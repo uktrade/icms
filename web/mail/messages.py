@@ -175,3 +175,8 @@ class ApplicationReassignedEmail(BaseApplicationEmail):
         context = super().get_context()
         context["comment"] = self.comment or "None provided."
         return context
+
+
+@final
+class ApplicationReopenedEmail(BaseApplicationEmail):
+    name = EmailTypes.APPLICATION_REOPENED

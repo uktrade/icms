@@ -3280,3 +3280,5 @@ URL Configuration The `
 Django Admin Site
 UserAdmin
 Restricted
+APPLICATION_REOPENED
+Application Reopened
