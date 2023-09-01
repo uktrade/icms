@@ -2,7 +2,6 @@ import enum
 
 
 class DatabaseEmailTemplate(enum.StrEnum):
-    CASE_REOPEN = "CASE_REOPEN"
     CERTIFICATE_REVOKE = "CERTIFICATE_REVOKE"
     LICENCE_REVOKE = "LICENCE_REVOKE"
 

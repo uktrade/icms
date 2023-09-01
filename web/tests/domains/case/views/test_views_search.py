@@ -11,6 +11,8 @@ from pytest_django.asserts import assertRedirects
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.flow import errors
+from web.mail.constants import EmailTypes
+from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import (
     CertificateOfManufactureApplication,
     ImportApplicationLicence,
@@ -19,7 +21,11 @@ from web.models import (
     WoodQuotaApplication,
 )
 from web.permissions import Perms
-from web.tests.helpers import SearchURLS, get_test_client
+from web.tests.helpers import (
+    SearchURLS,
+    check_gov_notify_email_was_sent,
+    get_test_client,
+)
 
 
 class TestSearchCasesView:
@@ -198,16 +204,18 @@ class TestReopenApplicationView:
         self._check_email_is_sent(application)
 
     def _check_email_is_sent(self, application):
-        outbox = mail.outbox
-        assert len(outbox) == 1
-
-        email = outbox[0]
-        assert email.to == ["I1_main_contact@example.com"]  # /PS-IGNORE
-        assert email.subject == f"Case Reopened: {application.reference}"
-        assert (
-            f"ILB has reopened case reference {application.reference} and will resume processing on this case. "
-            "Please contact ILB for further information."
-        ) in email.body
+        check_gov_notify_email_was_sent(
+            1,
+            ["I1_main_contact@example.com"],  # /PS-IGNORE
+            EmailTypes.APPLICATION_REOPENED,
+            {
+                "reference": application.reference,
+                "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                    full_url=True
+                ),
+                "application_url": get_case_view_url(application, full_url=True),
+            },
+        )
 
     def _check_email_is_not_sent(self):
         outbox = mail.outbox
