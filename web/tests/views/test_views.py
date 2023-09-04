@@ -1,9 +1,13 @@
 from http import HTTPStatus
+from unittest import mock
 
 import pytest
 from django.test import override_settings
 from django.urls import reverse, reverse_lazy
 from pytest_django.asserts import assertRedirects
+
+from web.one_login.utils import OneLoginConfig
+from web.views import views
 
 
 class TestRedirectBaseDomainView:
@@ -27,13 +31,12 @@ class TestRedirectBaseDomainView:
     [
         (False, False, reverse_lazy("accounts:login"), reverse_lazy("accounts:login")),
         (True, False, reverse_lazy("authbroker_client:login"), reverse_lazy("accounts:login")),
-        # TODO: ICMSLST-2196 Replace with gov.uk one login url
-        (False, True, reverse_lazy("accounts:login"), reverse_lazy("authbroker_client:login")),
+        (False, True, reverse_lazy("accounts:login"), reverse_lazy("one_login:login")),
         (
             True,
             True,
             reverse_lazy("authbroker_client:login"),
-            reverse_lazy("authbroker_client:login"),
+            reverse_lazy("one_login:login"),
         ),
     ],
 )
@@ -64,13 +67,20 @@ class TestLogoutView:
         )
         self._assert_logged_out(client)
 
-    def test_gov_uk_one_login_backend_logout(self, client, importer_one_contact):
-        client.force_login(importer_one_contact, backend="web.auth.backends.GovUKOneLoginBackend")
+    def test_gov_uk_one_login_backend_logout(self, client, importer_one_contact, monkeypatch):
+        client.force_login(
+            importer_one_contact, backend="web.auth.backends.ICMSGovUKOneLoginBackend"
+        )
+
+        one_login_config_mock = mock.create_autospec(spec=OneLoginConfig)
+        one_login_config_mock.return_value.end_session_url = "https://fake-one.login.gov.uk/logout/"
+        monkeypatch.setattr(views, "OneLoginConfig", one_login_config_mock)
 
         response = client.post(reverse("logout-user"))
 
-        # TODO: ICMSLST-2196 Replace with gov.uk one login url
-        assertRedirects(response, reverse("login-start"), fetch_redirect_response=False)
+        assertRedirects(
+            response, "https://fake-one.login.gov.uk/logout/", fetch_redirect_response=False
+        )
         self._assert_logged_out(client)
 
     def test_django_model_auth_backend_logout(self, client, importer_one_contact):

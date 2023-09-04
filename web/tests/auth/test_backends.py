@@ -3,7 +3,8 @@ from unittest import mock
 import pytest
 from django.contrib.auth import get_user_model
 
-from web.auth.backends import ICMSStaffSSOBackend
+from web.auth.backends import ICMSGovUKOneLoginBackend, ICMSStaffSSOBackend
+from web.one_login.types import UserInfo
 
 # NOTE: Copied tests from here:
 # https://github.com/uktrade/django-staff-sso-client/blob/master/tests/test_backends.py
@@ -157,3 +158,60 @@ def test_get_user_user_exists():
 @pytest.mark.django_db
 def test_get_user_user_doesnt_exist():
     assert ICMSStaffSSOBackend().get_user(99999) is None
+
+
+class TestICMSGovUKOneLoginBackend:
+    @mock.patch.multiple(
+        "web.one_login.backends",
+        get_client=mock.DEFAULT,
+        has_valid_token=mock.DEFAULT,
+        get_userinfo=mock.DEFAULT,
+        autospec=True,
+    )
+    def test_user_valid_user_create(self, db, rf, **mocks):
+        mocks["has_valid_token"].return_value = True
+        mocks["get_userinfo"].return_value = UserInfo(
+            sub="some-unique-key", email="user@test.com", email_verified=True  # /PS-IGNORE
+        )
+
+        user = ICMSGovUKOneLoginBackend().authenticate(rf)
+        assert user is not None
+        assert user.email == "user@test.com"  # /PS-IGNORE
+        assert user.username == "some-unique-key"
+        assert user.has_usable_password() is False
+        assert user.emails.first().email == "user@test.com"  # /PS-IGNORE
+
+    @mock.patch.multiple(
+        "web.one_login.backends",
+        get_client=mock.DEFAULT,
+        has_valid_token=mock.DEFAULT,
+        get_userinfo=mock.DEFAULT,
+        autospec=True,
+    )
+    def test_user_valid_legacy_user_not_create(self, db, rf, **mocks):
+        User = get_user_model()
+        user = User(
+            username="user@test.com",  # /PS-IGNORE
+            email="user@test.com",  # /PS-IGNORE
+            first_name="Test",
+            last_name="User",
+            icms_v1_user=True,
+        )
+        user.set_password("password")
+        user.save()
+
+        mocks["has_valid_token"].return_value = True
+        mocks["get_userinfo"].return_value = UserInfo(
+            sub="some-unique-key", email="user@test.com", email_verified=True  # /PS-IGNORE
+        )
+
+        user = ICMSGovUKOneLoginBackend().authenticate(request=rf)
+        assert user is not None
+
+        # Username has been migrated to sub value
+        assert user.username == "some-unique-key"
+        assert user.first_name == "Test"
+        assert user.last_name == "User"
+        assert user.email == "user@test.com"  # /PS-IGNORE
+        assert user.has_usable_password() is False
+        assert user.emails.first().email == "user@test.com"  # /PS-IGNORE

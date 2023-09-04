@@ -2,6 +2,9 @@ from django.db import transaction
 
 from web.models import Email as UserEmail
 from web.models import User
+from web.one_login.types import UserCreateData as OneLoginUserCreateData
+
+from .types import StaffSSOUserCreateData
 
 
 def get_legacy_user_by_username(email_address: str) -> User:
@@ -35,3 +38,42 @@ def migrate_user(current_user: User, old_icms_user: User) -> None:
 
         # Make no assumptions on primary email / portal notifications.
         UserEmail.objects.get_or_create(user=old_icms_user, email=new_email)
+
+
+def get_or_create_icms_user(
+    id_value: str, user_data: StaffSSOUserCreateData | OneLoginUserCreateData
+) -> User:
+    provider_email = user_data["email"]
+    update_email = False
+
+    try:
+        # A legacy user is a user who has an email address as a username.
+        user = get_legacy_user_by_username(provider_email)
+
+        # Migrate the legacy user to use id_value as username
+        user.username = id_value
+
+        user.set_unusable_password()
+        user.save()
+
+        update_email = True
+
+    except User.DoesNotExist:
+        user, created = User.objects.get_or_create(username=id_value, defaults=user_data)
+
+        if created:
+            user.set_unusable_password()
+            user.save()
+            update_email = True
+
+    if update_email:
+        user.email = provider_email
+        user.save()
+
+        UserEmail.objects.get_or_create(
+            user=user,
+            email=provider_email,
+            defaults={"is_primary": True, "portal_notifications": True},
+        )
+
+    return user

@@ -3256,10 +3256,8 @@ Application Extension Complete
 web.mail.emails.send_completed_application_email
 AuthbrokerBackend
 Useri
-ICMSLST-2196 Add gov.uk one login authentication backend
 ICMS</p
 Applicant login</a></p
-ICMSLST-2196 Replace
 casedocument_ptr_id
 licence__isnull
 cad__pk
@@ -3320,3 +3318,21 @@ imi-confirm-information'
 {{ application_field(app.imi_submit_datetime.strftime('%d-%b-%Y'
 class="extra
 west">Code</label
+BigAutoField
+ICMSLST-2196 Replace
+Revert
+P2
+id_token
+Bearer
+Unset
+Unset Lastname
+openid
+LOW_LEVEL & two-factor
+P1
+https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/integrate-with-code-flow/#make-a-post-request-to-the-token-endpoint
+private_key_jwt
+ICMSLST-2300 Revisit
+"Check if the user
+https://oidc.onelogin.gov.uk/.well-known/openid-configuration
+Magic
+Ensure One Login

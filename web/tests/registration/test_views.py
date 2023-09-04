@@ -21,7 +21,7 @@ class TestLegacyAccountRecoveryView:
             legacy_user, backend="web.auth.backends.ModelAndObjectPermissionBackend"
         )
 
-        self.url = reverse("accounts:recovery")
+        self.url = reverse("account-recovery")
 
     def test_can_access_view(self):
         response = self.one_login_client.get(self.url)

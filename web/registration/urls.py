@@ -16,10 +16,6 @@ urlpatterns = [
     path("login/", views.LoginView.as_view(), name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     #
-    # ICMS V1 Account recovery views
-    #
-    path("account-recovery/", views.LegacyAccountRecoveryView.as_view(), name="recovery"),
-    #
     # Change password URLs
     #
     path(

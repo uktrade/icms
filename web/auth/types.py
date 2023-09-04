@@ -22,5 +22,11 @@ class StaffSSOProfile(TypedDict):
     application_permissions: list[str]
 
 
+class StaffSSOUserCreateData(TypedDict):
+    email: str
+    first_name: str
+    last_name: str
+
+
 # ICMS uses "email_user_id"
 STAFF_SSO_ID = Literal["user_id", "email_user_id"]
