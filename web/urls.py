@@ -2,6 +2,7 @@ from django.conf import settings
 from django.urls import include, path, register_converter
 
 from web import converters
+from web.registration.views import LegacyAccountRecoveryView
 from web.views import (
     RedirectBaseDomainView,
     health_check,
@@ -20,6 +21,8 @@ register_converter(converters.ChiefStatusConverter, "chiefstatus")
 
 
 urlpatterns = [
+    #
+    # ICMS auth urls to direct users to correct auth mechanism.
     path("", RedirectBaseDomainView.as_view()),
     path("login-start/", login_start_view, name="login-start"),
     path("logout/", logout_view, name="logout-user"),
@@ -27,9 +30,11 @@ urlpatterns = [
     # staff-sso-client login urls
     path("auth/", include("authbroker_client.urls")),
     #
-    # TODO: ICMSLST-2196 Implement gov.uk one login urls.
     # gov-uk-one-login urls
-    # path("one-login/", []),
+    path("one-login/", include("web.one_login.urls")),
+    #
+    # ICMS V1 Account recovery view
+    path("account-recovery/", LegacyAccountRecoveryView.as_view(), name="account-recovery"),
     #
     # Application urls
     path("health-check/", health_check, name="health-check"),

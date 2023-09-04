@@ -60,6 +60,7 @@ MIDDLEWARE = [
     "htmlmin.middleware.HtmlMinifyMiddleware",
     "htmlmin.middleware.MarkRequestMiddleware",
     "web.middleware.common.ICMSMiddleware",
+    "web.middleware.one_login.UserFullyRegisteredMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -134,7 +135,15 @@ AUTHBROKER_STAFF_SSO_SCOPE = env.str("STAFF_SSO_AUTHBROKER_STAFF_SSO_SCOPE", def
 AUTHBROKER_ANONYMOUS_PATHS = env.list("STAFF_SSO_AUTHBROKER_ANONYMOUS_PATHS", default=[])
 AUTHBROKER_ANONYMOUS_URL_NAMES = env.list("STAFF_SSO_AUTHBROKER_ANONYMOUS_URL_NAMES", default=[])
 
+#
+# GOV.UK One Login settings
+GOV_UK_ONE_LOGIN_CLIENT_ID = env.str("GOV_UK_ONE_LOGIN_CLIENT_ID", default="")
+GOV_UK_ONE_LOGIN_CLIENT_SECRET = env.str("GOV_UK_ONE_LOGIN_CLIENT_SECRET", default="")
+GOV_UK_ONE_LOGIN_SCOPE = env.str("GOV_UK_ONE_LOGIN_SCOPE", default="")
+GOV_UK_ONE_LOGIN_OPENID_CONFIG_URL = env.str("GOV_UK_ONE_LOGIN_OPENID_CONFIG_URL", default="")
 
+#
+# Authentication feature flags
 STAFF_SSO_ENABLED = env.bool("STAFF_SSO_ENABLED", True)
 GOV_UK_ONE_LOGIN_ENABLED = env.bool("GOV_UK_ONE_LOGIN_ENABLED", True)
 
@@ -148,7 +157,7 @@ if STAFF_SSO_ENABLED:
     AUTHENTICATION_BACKENDS.append("web.auth.backends.ICMSStaffSSOBackend")
 
 if GOV_UK_ONE_LOGIN_ENABLED:
-    AUTHENTICATION_BACKENDS.append("web.auth.backends.GovUKOneLoginBackend")
+    AUTHENTICATION_BACKENDS.append("web.auth.backends.ICMSGovUKOneLoginBackend")
 
 # Email
 GOV_NOTIFY_API_KEY = env.str("GOV_NOTIFY_API_KEY", default="")

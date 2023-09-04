@@ -9,9 +9,11 @@
 <h4>My details</h4>
 <ul class="menu-out">
     <li><a href="{{ icms_url('current-user-details') }}">Contact Details</a></li>
-    <li><a href="{{ icms_url('accounts:password_change') }}">Change Password</a></li>
+    {% if show_password_change %}
+      <li><a href="{{ icms_url('accounts:password_change') }}">Change Password</a></li>
+    {% endif %}
     {% if show_account_recovery %}
-      <li><a href="{{ icms_url('accounts:recovery') }}">Account Recovery</a></li>
+      <li><a href="{{ icms_url('account-recovery') }}">Account Recovery</a></li>
     {% endif %}
 </ul>
 {% endblock %}

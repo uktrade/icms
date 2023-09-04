@@ -1,3 +1,4 @@
+Authlib==1.2.1
 boto3==1.21.29
 celery[redis]==5.3.1
 django-celery-results==2.4.0

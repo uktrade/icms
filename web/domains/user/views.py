@@ -1,5 +1,6 @@
 from typing import Any
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse
@@ -161,9 +162,16 @@ def _details_update(request: AuthenticatedHttpRequest, action: str, pk: int) -> 
             if request.method == "POST":
                 messages.error(request, "Please correct the highlighted errors.")
 
+    is_user = request.user.pk == pk
     # Only show account recovery for user accounts that haven't come from V1.
-    show_account_recovery = request.user.pk == pk and not request.user.icms_v1_user
-    context = forms | {"show_account_recovery": show_account_recovery}
+    show_account_recovery = is_user and not request.user.icms_v1_user
+
+    context = forms | {
+        "show_account_recovery": show_account_recovery,
+        "show_password_change": (
+            is_user and not settings.STAFF_SSO_ENABLED and not settings.GOV_UK_ONE_LOGIN_ENABLED
+        ),
+    }
 
     return render(
         request,

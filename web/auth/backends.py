@@ -1,16 +1,17 @@
 from authbroker_client.backends import AuthbrokerBackend
-from django.contrib.auth.backends import BaseBackend, ModelBackend
+from django.contrib.auth.backends import ModelBackend
 from django.http import HttpRequest
 from guardian.backends import check_support
 from guardian.conf import settings as guardian_settings
 from guardian.ctypes import get_content_type
 from guardian.exceptions import WrongAppError
 
-from web.models import Email as UserEmail
 from web.models import User
+from web.one_login.backends import OneLoginBackend
+from web.one_login.types import UserInfo as OneLoginUserInfo
 
-from .types import STAFF_SSO_ID, StaffSSOProfile
-from .utils import get_legacy_user_by_username
+from .types import STAFF_SSO_ID, StaffSSOProfile, StaffSSOUserCreateData
+from .utils import get_or_create_icms_user
 
 
 class ModelAndObjectPermissionBackend(ModelBackend):
@@ -113,40 +114,9 @@ class ICMSStaffSSOBackend(AuthbrokerBackend):
     def get_or_create_user(self, profile: StaffSSOProfile) -> User:
         id_key: STAFF_SSO_ID = self.get_profile_id_name()
         id_value = profile[id_key]
+        user_data: StaffSSOUserCreateData = self.user_create_mapping(profile)
 
-        user_data = self.user_create_mapping(profile)
-        staff_sso_email = user_data["email"]
-        update_email = False
-
-        try:
-            # A legacy user is a user who has an email address as a username.
-            user = get_legacy_user_by_username(staff_sso_email)
-
-            # Migrate the legacy user to use id_value as username
-            user.username = id_value
-
-            user.set_unusable_password()
-            user.save()
-
-            update_email = True
-
-        except User.DoesNotExist:
-            user, created = User.objects.get_or_create(username=id_value, defaults=user_data)
-
-            if created:
-                user.set_unusable_password()
-                user.save()
-                update_email = True
-
-        if update_email:
-            user.email = staff_sso_email
-            user.save()
-
-            UserEmail.objects.get_or_create(
-                user=user,
-                email=staff_sso_email,
-                defaults={"is_primary": True, "portal_notifications": True},
-            )
+        user = get_or_create_icms_user(id_value, user_data)
 
         return user
 
@@ -161,9 +131,15 @@ class ICMSStaffSSOBackend(AuthbrokerBackend):
         return is_active or is_active is None
 
 
-# TODO: ICMSLST-2196 Add gov.uk one login authentication backend.
-class GovUKOneLoginBackend(BaseBackend):
-    ...
+class ICMSGovUKOneLoginBackend(OneLoginBackend):
+    def get_or_create_user(self, profile: OneLoginUserInfo) -> User:
+        id_key = self.get_profile_id_name()
+        id_value = profile[id_key]
+        user_data = self.user_create_mapping(profile)
+
+        user = get_or_create_icms_user(id_value, user_data)
+
+        return user
 
 
 def get_anonymous_user_instance(user_model: type[User]) -> User:

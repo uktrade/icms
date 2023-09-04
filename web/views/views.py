@@ -1,6 +1,6 @@
 import logging
 from typing import Any
-from urllib.parse import urljoin
+from urllib import parse
 
 from django.conf import settings
 from django.contrib import auth
@@ -16,6 +16,8 @@ from django.views.generic import RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
+
+from web.one_login.utils import OneLoginConfig
 
 from .actions import PostAction
 from .mixins import DataDisplayConfigMixin, PageTitleMixin
@@ -45,11 +47,14 @@ def login_start_view(request: HttpRequest) -> HttpResponse:
         staff_sso_login_url = reverse("accounts:login")
 
     if settings.GOV_UK_ONE_LOGIN_ENABLED:
-        # TODO: ICMSLST-2196 Replace with gov.uk one login url
-        one_login_login_url = reverse("authbroker_client:login")
+        one_login_login_url = reverse("one_login:login")
     else:
         # Default login for environments where one-login is disabled.
         one_login_login_url = reverse("accounts:login")
+
+    staff_sso_login_url, one_login_login_url = _add_next_qp_to_login_urls(
+        request, staff_sso_login_url, one_login_login_url
+    )
 
     context = {
         "staff_sso_login_url": staff_sso_login_url,
@@ -57,6 +62,21 @@ def login_start_view(request: HttpRequest) -> HttpResponse:
     }
 
     return render(request, "login_start.html", context)
+
+
+def _add_next_qp_to_login_urls(request, staff_sso_login_url, one_login_login_url):
+    """Forward the ?next= query param to the auth login urls."""
+
+    url: parse.ParseResult = parse.urlparse(request.get_full_path())
+    query_params: dict[str, Any] = parse.parse_qs(url.query)
+
+    next_qp = query_params.get(auth.REDIRECT_FIELD_NAME)
+    if next_qp:
+        next_encoded = parse.urlencode({auth.REDIRECT_FIELD_NAME: next_qp[0]})
+        staff_sso_login_url = f"{staff_sso_login_url}?{next_encoded}"
+        one_login_login_url = f"{one_login_login_url}?{next_encoded}"
+
+    return staff_sso_login_url, one_login_login_url
 
 
 @require_POST
@@ -72,11 +92,10 @@ def logout_view(request: HttpRequest) -> HttpResponse:
     login_start = reverse("login-start")
     match backend:
         case "web.auth.backends.ICMSStaffSSOBackend":
-            url = urljoin(settings.AUTHBROKER_URL, "logout/")
+            url = parse.urljoin(settings.AUTHBROKER_URL, "logout/")
 
-        case "web.auth.backends.GovUKOneLoginBackend":
-            # TODO: ICMSLST-2196 Replace with gov.uk one login url
-            url = login_start
+        case "web.auth.backends.ICMSGovUKOneLoginBackend":
+            url = OneLoginConfig().end_session_url
 
         case "web.auth.backends.ModelAndObjectPermissionBackend":
             url = login_start
