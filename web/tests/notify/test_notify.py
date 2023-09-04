@@ -352,18 +352,6 @@ def test_section_5_authority_archived_notification_fail(ilb_admin_client, import
     assert len(outbox) == 0
 
 
-def test_send_supplementary_report_notification(completed_sil_app, importer_one_contact):
-    app = completed_sil_app
-    notify.send_supplementary_report_notification(app)
-
-    check_email_was_sent(
-        1,
-        importer_one_contact.email,
-        f"Firearms supplementary reporting information on application reference {app.reference}",
-        "Commission Delegated Regulation (EU) 2019/686 introduced arrangements",
-    )
-
-
 def test_send_constabulary_notification(ilb_admin_user, completed_dfl_app, monkeypatch):
     get_file_from_s3_mock = create_autospec(get_file_from_s3)
     get_file_from_s3_mock.return_value = b"file_content"

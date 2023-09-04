@@ -20,6 +20,7 @@ from .messages import (
     ApplicationStoppedEmail,
     ApplicationVariationCompleteEmail,
     ExporterAccessRequestApprovalOpenedEmail,
+    FirearmsSupplementaryReportEmail,
     ImporterAccessRequestApprovalOpenedEmail,
     WithdrawalAcceptedEmail,
     WithdrawalOpenedEmail,
@@ -82,8 +83,7 @@ def send_completed_application_process_notifications(application: ImpOrExp) -> N
         notify.send_constabulary_deactivated_firearms_notification(application.dflapplication)
 
     if application.process_type in [ProcessTypes.FA_DFL, ProcessTypes.FA_OIL, ProcessTypes.FA_SIL]:
-        # TODO: ICMSLST-2153 Update to use GOV Notify
-        notify.send_supplementary_report_notification(application)
+        send_firearms_supplementary_report_email(application)
 
     send_completed_application_email(application)
 
@@ -158,3 +158,9 @@ def send_application_reopened_email(application: ImpOrExp) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
         ApplicationReopenedEmail(application=application, to=[recipient]).send()
+
+
+def send_firearms_supplementary_report_email(application: ImpOrExp) -> None:
+    recipients = get_application_contact_email_addresses(application)
+    for recipient in recipients:
+        FirearmsSupplementaryReportEmail(application=application, to=[recipient]).send()
