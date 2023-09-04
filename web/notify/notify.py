@@ -8,7 +8,6 @@ from django.contrib.postgres.aggregates import StringAgg
 from django.utils import timezone
 
 from config.celery import app
-from web.domains.case._import.fa.types import FaImportApplication
 from web.domains.case.services import document_pack
 from web.models import (
     AccessRequest,
@@ -290,12 +289,6 @@ def authority_archived_notification(
             },
             recipients=utils.get_notification_emails(user),
         )
-
-
-def send_supplementary_report_notification(application: FaImportApplication) -> None:
-    subject = f"Firearms supplementary reporting information on application reference {application.reference}"
-    contacts = email.get_application_contacts(application)
-    email.send_html_email("email/import/fa_supplementary.html", {"subject": subject}, contacts)
 
 
 def send_constabulary_deactivated_firearms_notification(application: DFLApplication) -> None:

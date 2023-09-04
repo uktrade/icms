@@ -27,5 +27,9 @@ class EmailTypes(TypedTextChoices):
         "IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED",
         "Importer Access Request Approval Opened",
     )
+    FIREARMS_SUPPLEMENTARY_REPORT = (
+        "FIREARMS_SUPPLEMENTARY_REPORT",
+        "Firearms Supplementary Report",
+    )
     WITHDRAWAL_OPENED = ("WITHDRAWAL_OPENED", "Withdrawal Opened")
     WITHDRAWAL_ACCEPTED = ("WITHDRAWAL_ACCEPTED", "Withdrawal Accepted")

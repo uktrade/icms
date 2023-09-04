@@ -307,6 +307,26 @@ class TestEmails(AuthTestCase):
             personalisation=expected_personalisation,
         )
 
+    def test_send_firearms_supplementary_report_email(self, completed_dfl_app):
+        exp_template_id = str(
+            EmailTemplate.objects.get(
+                name=EmailTypes.FIREARMS_SUPPLEMENTARY_REPORT
+            ).gov_notify_template_id
+        )
+
+        expected_personalisation = default_personalisation() | {
+            "reference": completed_dfl_app.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(completed_dfl_app, full_url=True),
+        }
+        emails.send_firearms_supplementary_report_email(completed_dfl_app)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.importer_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
     @mock.patch("web.mail.emails.send_application_extension_complete_email")
     @mock.patch("web.mail.emails.send_application_variation_complete_email")
     @mock.patch("web.mail.emails.send_application_complete_email")
@@ -373,7 +393,7 @@ class TestEmails(AuthTestCase):
         assert mock_send_application_variation_complete_email.called is True
 
     @mock.patch("web.notify.notify.send_constabulary_deactivated_firearms_notification")
-    @mock.patch("web.notify.notify.send_supplementary_report_notification")
+    @mock.patch("web.mail.emails.send_firearms_supplementary_report_email")
     @mock.patch("web.mail.emails.send_completed_application_email")
     def test_send_completed_application_process_notifications_sil(
         self, app_approved_mock, supplementary_report_mock, constabulary_mock, completed_sil_app
@@ -386,7 +406,7 @@ class TestEmails(AuthTestCase):
         constabulary_mock.assert_not_called()
 
     @mock.patch("web.notify.notify.send_constabulary_deactivated_firearms_notification")
-    @mock.patch("web.notify.notify.send_supplementary_report_notification")
+    @mock.patch("web.mail.emails.send_firearms_supplementary_report_email")
     @mock.patch("web.mail.emails.send_completed_application_email")
     def test_send_completed_application_process_notifications_dfl(
         self, app_approved_mock, supplementary_report_mock, constabulary_mock, completed_dfl_app

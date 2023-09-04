@@ -180,3 +180,8 @@ class ApplicationReassignedEmail(BaseApplicationEmail):
 @final
 class ApplicationReopenedEmail(BaseApplicationEmail):
     name = EmailTypes.APPLICATION_REOPENED
+
+
+@final
+class FirearmsSupplementaryReportEmail(BaseApplicationEmail):
+    name = EmailTypes.FIREARMS_SUPPLEMENTARY_REPORT

@@ -22,6 +22,10 @@ templates = [
         "812e532c-b617-4cf9-917d-01f49ff10964",  # /PS-IGNORE
     ),
     (
+        EmailTypes.FIREARMS_SUPPLEMENTARY_REPORT,
+        "f7ae3f06-fad2-4835-99e1-c573b4478bc4",  # /PS-IGNORE
+    ),
+    (
         EmailTypes.IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED,
         "01d616e8-c2df-4fb2-aa6d-4feeb3c38eea",  # /PS-IGNORE
     ),
