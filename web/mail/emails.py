@@ -7,7 +7,6 @@ from web.models import (
     WithdrawApplication,
 )
 from web.notify import notify
-from web.notify.email import send_withdrawal_email as notify_send_withdrawal_email
 
 from .messages import (
     AccessRequestApprovalCompleteEmail,
@@ -24,7 +23,9 @@ from .messages import (
     FirearmsSupplementaryReportEmail,
     ImporterAccessRequestApprovalOpenedEmail,
     WithdrawalAcceptedEmail,
+    WithdrawalCancelledEmail,
     WithdrawalOpenedEmail,
+    WithdrawalRejectedEmail,
 )
 from .recipients import (
     get_application_contact_email_addresses,
@@ -133,12 +134,17 @@ def send_approval_request_completed_email(approval_request: ImpOrExpApproval) ->
 
 
 def send_withdrawal_email(withdrawal: WithdrawApplication) -> None:
-    if withdrawal.status == WithdrawApplication.Statuses.OPEN:
-        send_withdrawal_opened_email(withdrawal)
-    elif withdrawal.status == WithdrawApplication.Statuses.ACCEPTED:
-        send_withdrawal_accepted_email(withdrawal)
-    else:
-        notify_send_withdrawal_email(withdrawal)
+    match withdrawal.status:
+        case WithdrawApplication.Statuses.OPEN:
+            send_withdrawal_opened_email(withdrawal)
+        case WithdrawApplication.Statuses.ACCEPTED:
+            send_withdrawal_accepted_email(withdrawal)
+        case WithdrawApplication.Statuses.REJECTED:
+            send_withdrawal_rejected_email(withdrawal)
+        case WithdrawApplication.Statuses.DELETED:
+            send_withdrawal_cancelled_email(withdrawal)
+        case _:
+            raise ValueError("Unsupported Withdrawal Status")
 
 
 def send_withdrawal_opened_email(withdrawal: WithdrawApplication) -> None:
@@ -153,6 +159,20 @@ def send_withdrawal_accepted_email(withdrawal: WithdrawApplication) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
         WithdrawalAcceptedEmail(withdrawal=withdrawal, to=[recipient]).send()
+
+
+def send_withdrawal_cancelled_email(withdrawal: WithdrawApplication) -> None:
+    application = withdrawal.export_application or withdrawal.import_application
+    recipients = get_case_officers_email_addresses(application)
+    for recipient in recipients:
+        WithdrawalCancelledEmail(withdrawal=withdrawal, to=[recipient]).send()
+
+
+def send_withdrawal_rejected_email(withdrawal: WithdrawApplication) -> None:
+    application = withdrawal.export_application or withdrawal.import_application
+    recipients = get_application_contact_email_addresses(application)
+    for recipient in recipients:
+        WithdrawalRejectedEmail(withdrawal=withdrawal, to=[recipient]).send()
 
 
 def send_application_reassigned_email(application: ImpOrExp, comment: str) -> None:
