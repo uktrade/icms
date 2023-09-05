@@ -19,7 +19,6 @@ from web.models import (
 )
 from web.permissions import (
     get_case_officers_for_process_type,
-    get_ilb_case_officers,
     get_org_obj_permissions,
     organisation_get_contacts,
 )
@@ -151,12 +150,6 @@ def send_case_email(case_email: CaseEmail) -> None:
     case_email.status = CaseEmail.Status.OPEN
     case_email.sent_datetime = timezone.now()
     case_email.save()
-
-
-def send_approval_request_completed_email() -> None:
-    context = {"subject": "Access Request Approval Response"}
-    template = "email/access/approval/completed.html"
-    send_html_email(template, context, get_ilb_case_officers())
 
 
 def send_html_email(

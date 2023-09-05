@@ -6,6 +6,10 @@ SEND_EMAIL_TASK_NAME = "web.mail.api.send_email"
 class EmailTypes(TypedTextChoices):
     ACCESS_REQUEST = ("ACCESS_REQUEST", "Access Request")
     ACCESS_REQUEST_CLOSED = ("ACCESS_REQUEST_CLOSED", "Access Request Closed")
+    ACCESS_REQUEST_APPROVAL_COMPLETE = (
+        "ACCESS_REQUEST_APPROVAL_COMPLETE",
+        "Access Request Approval Complete",
+    )
     APPLICATION_COMPLETE = ("APPLICATION_COMPLETE", "Application Complete")
     APPLICATION_VARIATION_REQUEST_COMPLETE = (
         "APPLICATION_VARIATION_REQUEST_COMPLETE",
