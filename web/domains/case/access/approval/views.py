@@ -15,7 +15,10 @@ from web.domains.case.access.approval.forms import (
     ImporterApprovalRequestForm,
 )
 from web.domains.case.services import case_progress
-from web.mail.emails import send_approval_request_opened_email
+from web.mail.emails import (
+    send_approval_request_completed_email,
+    send_approval_request_opened_email,
+)
 from web.models import (
     ApprovalRequest,
     ExporterAccessRequest,
@@ -23,7 +26,6 @@ from web.models import (
     ImporterAccessRequest,
     ImporterApprovalRequest,
 )
-from web.notify.email import send_approval_request_completed_email
 from web.permissions import Perms, can_user_manage_org_contacts
 from web.types import AuthenticatedHttpRequest
 
@@ -273,7 +275,7 @@ def close_access_approval(
                 approval_request.response_date = timezone.now()
                 approval_request.response_by = request.user
                 approval_request.save()
-                send_approval_request_completed_email()
+                send_approval_request_completed_email(approval_request)
                 return redirect(reverse("workbasket"))
 
         else:

@@ -368,14 +368,3 @@ def test_send_application_update_response_email(com_app_submitted, ilb_admin_two
         f"Application Update Response - {com_app_submitted.reference}",
         "An application update response has been submitted for case",
     )
-
-
-@pytest.mark.django_db
-def test_send_approval_request_completed_email():
-    email.send_approval_request_completed_email()
-    check_email_was_sent(
-        2,
-        "ilb_admin_user@example.com",  # /PS-IGNORE
-        "Access Request Approval Response",
-        "An Access Request Approval response has been sent to your workbasket.",
-    )

@@ -4,6 +4,10 @@ from web.models import EmailTemplate
 templates = [
     (EmailTypes.ACCESS_REQUEST, "d8905fee-1f7d-48dc-bc11-aee71c130b3e"),
     (EmailTypes.ACCESS_REQUEST_CLOSED, "6cfc34cc-7e61-4f30-b73c-e7f5d5ae95ae"),  # /PS-IGNORE
+    (
+        EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE,
+        "387f3709-2c65-4352-b30e-0345f7d460d1",  # /PS-IGNORE
+    ),
     (EmailTypes.APPLICATION_COMPLETE, "2e03bc8e-1d57-404d-ba53-0fbf00316a4d"),  # /PS-IGNORE
     (
         EmailTypes.APPLICATION_EXTENSION_COMPLETE,

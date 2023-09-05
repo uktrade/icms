@@ -121,6 +121,31 @@ class TestEmails(AuthTestCase):
             personalisation=expected_personalisation,
         )
 
+    def test_send_approval_request_completed_email(self, exporter_access_request):
+        ear = get_linked_access_request(exporter_access_request, self.exporter)
+        ear_approval = add_approval_request(ear, self.ilb_admin_user, self.exporter_user)
+
+        exp_template_id = str(
+            EmailTemplate.objects.get(
+                name=EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE
+            ).gov_notify_template_id
+        )
+        expected_personalisation = default_personalisation() | {
+            "user_type": "user",
+        }
+        emails.send_approval_request_completed_email(ear_approval)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 2
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.ilb_admin_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.ilb_admin_two_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
     def test_send_application_stopped_email(self, completed_cfs_app):
         exp_template_id = str(
             EmailTemplate.objects.get(name=EmailTypes.APPLICATION_STOPPED).gov_notify_template_id

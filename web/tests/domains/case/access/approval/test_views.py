@@ -9,7 +9,6 @@ from web.models import ApprovalRequest
 from web.tests.auth import AuthTestCase
 from web.tests.helpers import (
     add_approval_request,
-    check_email_was_sent,
     check_gov_notify_email_was_sent,
     get_linked_access_request,
 )
@@ -385,11 +384,12 @@ class TestCloseAccessApprovalView(AuthTestCase):
         assert self.iar_approval.response_reason == ""
         assert self.iar_approval.status == ApprovalRequest.Statuses.COMPLETED
         assert self.iar_approval.response_by == self.importer_user
-        check_email_was_sent(
+
+        check_gov_notify_email_was_sent(
             2,
-            "ilb_admin_user@example.com",  # /PS-IGNORE
-            "Access Request Approval Response",
-            "An Access Request Approval response has been sent to your workbasket.",
+            ["ilb_admin_user@example.com", "ilb_admin_two@example.com"],  # /PS-IGNORE
+            EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE,
+            {"user_type": "user"},
         )
 
     def test_post_approve_exporter(self):
@@ -403,11 +403,11 @@ class TestCloseAccessApprovalView(AuthTestCase):
         assert self.ear_approval.response_reason == ""
         assert self.ear_approval.status == ApprovalRequest.Statuses.COMPLETED
         assert self.ear_approval.response_by == self.exporter_user
-        check_email_was_sent(
+        check_gov_notify_email_was_sent(
             2,
-            "ilb_admin_user@example.com",  # /PS-IGNORE
-            "Access Request Approval Response",
-            "An Access Request Approval response has been sent to your workbasket.",
+            ["ilb_admin_user@example.com", "ilb_admin_two@example.com"],  # /PS-IGNORE
+            EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE,
+            {"user_type": "user"},
         )
 
     def test_post_refuse_importer(self):
@@ -423,11 +423,11 @@ class TestCloseAccessApprovalView(AuthTestCase):
         assert self.iar_approval.response_reason == "test response reason"
         assert self.iar_approval.status == ApprovalRequest.Statuses.COMPLETED
         assert self.iar_approval.response_by == self.importer_user
-        check_email_was_sent(
+        check_gov_notify_email_was_sent(
             2,
-            "ilb_admin_user@example.com",  # /PS-IGNORE
-            "Access Request Approval Response",
-            "An Access Request Approval response has been sent to your workbasket.",
+            ["ilb_admin_user@example.com", "ilb_admin_two@example.com"],  # /PS-IGNORE
+            EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE,
+            {"user_type": "user"},
         )
 
     def test_post_refuse_exporter(self):
@@ -443,9 +443,9 @@ class TestCloseAccessApprovalView(AuthTestCase):
         assert self.ear_approval.response_reason == "test response reason"
         assert self.ear_approval.status == ApprovalRequest.Statuses.COMPLETED
         assert self.ear_approval.response_by == self.exporter_user
-        check_email_was_sent(
+        check_gov_notify_email_was_sent(
             2,
-            "ilb_admin_user@example.com",  # /PS-IGNORE
-            "Access Request Approval Response",
-            "An Access Request Approval response has been sent to your workbasket.",
+            ["ilb_admin_user@example.com", "ilb_admin_two@example.com"],  # /PS-IGNORE
+            EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE,
+            {"user_type": "user"},
         )

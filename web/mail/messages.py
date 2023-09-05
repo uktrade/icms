@@ -61,11 +61,8 @@ class BaseApprovalRequest(GOVNotifyEmailMessage):
         super().__init__(*args, **kwargs)
 
     def get_context(self) -> dict:
-        return {
-            "user_type": "agent"
-            if self.approval_request.access_request.is_agent_request
-            else "user"
-        }
+        access_request = self.approval_request.access_request.get_specific_model()
+        return {"user_type": "agent" if access_request.is_agent_request else "user"}
 
 
 class BaseWithdrawalEmail(GOVNotifyEmailMessage):
@@ -185,3 +182,8 @@ class ApplicationReopenedEmail(BaseApplicationEmail):
 @final
 class FirearmsSupplementaryReportEmail(BaseApplicationEmail):
     name = EmailTypes.FIREARMS_SUPPLEMENTARY_REPORT
+
+
+@final
+class AccessRequestApprovalCompleteEmail(BaseApprovalRequest):
+    name = EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE

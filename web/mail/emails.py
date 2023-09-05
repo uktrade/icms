@@ -10,6 +10,7 @@ from web.notify import notify
 from web.notify.email import send_withdrawal_email as notify_send_withdrawal_email
 
 from .messages import (
+    AccessRequestApprovalCompleteEmail,
     AccessRequestClosedEmail,
     AccessRequestEmail,
     ApplicationCompleteEmail,
@@ -123,6 +124,12 @@ def send_importer_approval_request_opened_email(approval_request: ImporterApprov
         ImporterAccessRequestApprovalOpenedEmail(
             approval_request=approval_request, to=[recipient]
         ).send()
+
+
+def send_approval_request_completed_email(approval_request: ImpOrExpApproval) -> None:
+    recipients = get_ilb_case_officers_email_addresses()
+    for recipient in recipients:
+        AccessRequestApprovalCompleteEmail(approval_request=approval_request, to=[recipient]).send()
 
 
 def send_withdrawal_email(withdrawal: WithdrawApplication) -> None:
