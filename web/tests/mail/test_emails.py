@@ -292,12 +292,14 @@ class TestEmails(AuthTestCase):
             EmailTemplate.objects.get(name=EmailTypes.WITHDRAWAL_OPENED).gov_notify_template_id
         )
         withdrawal = com_app_submitted.withdrawals.create(
-            status=WithdrawApplication.Statuses.OPEN, request_by=self.importer_user
+            status=WithdrawApplication.Statuses.OPEN,
+            request_by=self.importer_user,
+            reason="Raised in error",
         )
 
         expected_personalisation = default_personalisation() | {
             "reference": com_app_submitted.reference,
-            "reason": withdrawal.reason,
+            "reason": "Raised in error",
         }
         emails.send_withdrawal_email(withdrawal)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 2
@@ -322,7 +324,7 @@ class TestEmails(AuthTestCase):
 
         expected_personalisation = default_personalisation() | {
             "reference": com_app_submitted.reference,
-            "reason": withdrawal.reason,
+            "reason": "",
         }
         emails.send_withdrawal_email(withdrawal)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -331,6 +333,62 @@ class TestEmails(AuthTestCase):
             exp_template_id,
             personalisation=expected_personalisation,
         )
+
+    def test_send_withdrawal_cancelled_email(self, com_app_submitted):
+        exp_template_id = str(
+            EmailTemplate.objects.get(name=EmailTypes.WITHDRAWAL_CANCELLED).gov_notify_template_id
+        )
+        withdrawal = com_app_submitted.withdrawals.create(
+            status=WithdrawApplication.Statuses.DELETED, request_by=self.exporter_user
+        )
+
+        expected_personalisation = default_personalisation() | {
+            "reference": com_app_submitted.reference,
+            "reason": "",
+        }
+        emails.send_withdrawal_email(withdrawal)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 2
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.ilb_admin_user.email,  # /PS-IGNORE
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.ilb_admin_two_user.email,  # /PS-IGNORE
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_withdrawal_rejected_email(self, com_app_submitted):
+        exp_template_id = str(
+            EmailTemplate.objects.get(name=EmailTypes.WITHDRAWAL_REJECTED).gov_notify_template_id
+        )
+        withdrawal = com_app_submitted.withdrawals.create(
+            status=WithdrawApplication.Statuses.REJECTED,
+            request_by=self.exporter_user,
+            response="Invalid",
+        )
+        expected_personalisation = default_personalisation() | {
+            "reference": com_app_submitted.reference,
+            "reason": "",
+            "reason_rejected": "Invalid",
+        }
+        emails.send_withdrawal_email(withdrawal)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.exporter_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_withdrawal_unsupported_status_error(self, com_app_submitted):
+        withdrawal = com_app_submitted.withdrawals.create(
+            status="",
+            request_by=self.importer_user,
+        )
+        with pytest.raises(ValueError, match="Unsupported Withdrawal Status"):
+            emails.send_withdrawal_email(withdrawal)
+            assert self.mock_gov_notify_client.send_email_notification.call_count == 0
 
     def test_send_firearms_supplementary_report_email(self, completed_dfl_app):
         exp_template_id = str(

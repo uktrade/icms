@@ -128,7 +128,12 @@ def test_manage_withdrawals_reject(
         "Withdrawn",
     )
     sent_to = importer_one_contact.emails.first().email
-    _check_withdrawal_email_sent("Withdrawal Request Rejected", [sent_to])
+    check_gov_notify_email_was_sent(
+        1,
+        [sent_to],
+        EmailTypes.WITHDRAWAL_REJECTED,
+        {"reference": wood_app_submitted.reference, "reason": "", "reason_rejected": "Withdrawn"},
+    )
 
 
 def test_manage_withdrawals_accept(
@@ -164,7 +169,9 @@ def process_withdrawal(client, app, contact, status, response):
     _check_withdrawal_visible(client, CaseURLS.manage_withdrawals(app.pk))
 
     # Update withdrawal status
-    data = {"status": status, "response": response}
+    data = {"status": status}
+    if status == WithdrawApplication.Statuses.REJECTED:
+        data["response"] = response
     resp = client.post(CaseURLS.manage_withdrawals(app.pk), data)
     assert resp.status_code == HTTPStatus.FOUND
 
@@ -186,7 +193,7 @@ def test_request_withdrawal(importer_client, wood_app_submitted, importer_one_co
             "ilb_admin_two@example.com",  # /PS-IGNORE
         ],
         EmailTypes.WITHDRAWAL_OPENED,
-        {"reference": wood_app_submitted.reference, "reason": ""},
+        {"reference": wood_app_submitted.reference, "reason": "No longer required"},
     )
 
 
@@ -206,13 +213,14 @@ def test_archive_withdrawal(importer_client, wood_app_submitted, importer_one_co
     withdrawal.refresh_from_db()
     assert withdrawal.status == WithdrawApplication.Statuses.DELETED
     assert withdrawal.is_active is False
-
-    _check_withdrawal_email_sent(
-        "Withdrawal Request Cancelled",
+    check_gov_notify_email_was_sent(
+        2,
         [
             "ilb_admin_user@example.com",  # /PS-IGNORE
             "ilb_admin_two@example.com",  # /PS-IGNORE
         ],
+        EmailTypes.WITHDRAWAL_CANCELLED,
+        {"reference": wood_app_submitted.reference, "reason": ""},
     )
 
 

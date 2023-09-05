@@ -2,7 +2,7 @@ import pytest
 from django.core import mail
 from django.test import TestCase
 
-from web.models import Email, User, WithdrawApplication
+from web.models import Email, User
 from web.notify import constants, email
 from web.tests.helpers import add_variation_request_to_app, check_email_was_sent
 
@@ -245,52 +245,6 @@ def test_send_to_application_agent_export(com_app_submitted, agent_exporter):
     assert o.to == ["E1_A1_main_contact@example.com"]  # /PS-IGNORE
     assert o.subject == "Test"
     assert o.body == "Test Body"
-
-
-@pytest.mark.parametrize(
-    "withdrawal_status,exp_num_emails,exp_subject,exp_in_body,exp_sent_to",
-    [
-        (
-            WithdrawApplication.Statuses.REJECTED,
-            1,
-            "Withdrawal Request Rejected: ",  # /PS-IGNORE
-            "has been rejected for the\nfollowing reason:",
-            "E1_main_contact@example.com",  # /PS-IGNORE
-        ),
-        (
-            WithdrawApplication.Statuses.DELETED,
-            2,
-            "Withdrawal Request Cancelled: ",
-            "has been cancelled.",
-            "ilb_admin_user@example.com",  # /PS-IGNORE
-        ),
-    ],
-)
-def test_send_withdrawal_email(
-    com_app_submitted,
-    importer_one_contact,
-    withdrawal_status,
-    exp_num_emails,
-    exp_subject,
-    exp_in_body,
-    exp_sent_to,
-):
-    withdrawal = com_app_submitted.withdrawals.create(
-        status=withdrawal_status, request_by=importer_one_contact
-    )
-
-    email.send_withdrawal_email(withdrawal)
-    exp_subject = f"{exp_subject}{com_app_submitted.reference}"
-    check_email_was_sent(exp_num_emails, exp_sent_to, exp_subject, exp_in_body)
-
-
-def test_send_withdrawal_email_with_unsupported_status(com_app_submitted, importer_one_contact):
-    withdrawal = com_app_submitted.withdrawals.create(
-        status="TEST", request_by=importer_one_contact
-    )
-    with pytest.raises(ValueError) as e_info:
-        email.send_withdrawal_email(withdrawal)
-        assert e_info == "Unsupported Variation Request Description"
 
 
 @pytest.mark.parametrize(

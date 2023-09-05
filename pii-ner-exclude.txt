@@ -3284,3 +3284,4 @@ APPLICATION_REOPENED
 Application Reopened
 Firearms Supplementary Report
 Access Request Approval Complete
+Unsupported Withdrawal Status

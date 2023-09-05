@@ -72,7 +72,7 @@ class BaseWithdrawalEmail(GOVNotifyEmailMessage):
         super().__init__(*args, **kwargs)
 
     def get_context(self) -> dict:
-        return {"reference": self.application.reference, "reason": self.withdrawal.response}
+        return {"reference": self.application.reference, "reason": self.withdrawal.reason}
 
 
 @final
@@ -158,6 +158,21 @@ class WithdrawalOpenedEmail(BaseWithdrawalEmail):
 @final
 class WithdrawalAcceptedEmail(BaseWithdrawalEmail):
     name = EmailTypes.WITHDRAWAL_ACCEPTED
+
+
+@final
+class WithdrawalRejectedEmail(BaseWithdrawalEmail):
+    name = EmailTypes.WITHDRAWAL_REJECTED
+
+    def get_context(self) -> dict:
+        context = super().get_context()
+        context["reason_rejected"] = self.withdrawal.response
+        return context
+
+
+@final
+class WithdrawalCancelledEmail(BaseWithdrawalEmail):
+    name = EmailTypes.WITHDRAWAL_CANCELLED
 
 
 @final

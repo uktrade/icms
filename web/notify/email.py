@@ -9,19 +9,8 @@ from django.utils import timezone
 
 from config.celery import app
 from web.domains.case.types import ImpOrExp
-from web.models import (
-    CaseEmail,
-    Exporter,
-    Importer,
-    User,
-    VariationRequest,
-    WithdrawApplication,
-)
-from web.permissions import (
-    get_case_officers_for_process_type,
-    get_org_obj_permissions,
-    organisation_get_contacts,
-)
+from web.models import CaseEmail, Exporter, Importer, User, VariationRequest
+from web.permissions import get_org_obj_permissions, organisation_get_contacts
 
 from . import utils
 from .constants import VariationRequestDescription
@@ -160,37 +149,6 @@ def send_html_email(
     message_html = utils.render_email(template, context)
     message_text = html2text.html2text(message_html)
     send_to_contacts(context["subject"], message_text, contacts, message_html)
-
-
-def get_withdrawal_email_subject(withdrawal: WithdrawApplication, application: ImpOrExp) -> str:
-    status = ""
-    if withdrawal.status == WithdrawApplication.Statuses.DELETED:
-        status = " Cancelled"
-    elif withdrawal.status != WithdrawApplication.Statuses.OPEN:
-        status = " " + withdrawal.get_status_display().title()
-    return f"Withdrawal Request{status}: {application.reference}"
-
-
-def send_withdrawal_email(withdrawal: WithdrawApplication) -> None:
-    if withdrawal.status not in WithdrawApplication.Statuses:
-        raise ValueError(f"Unsupported Withdrawal Application Status: {withdrawal.status}")
-
-    application = withdrawal.export_application or withdrawal.import_application
-
-    if withdrawal.status == WithdrawApplication.Statuses.DELETED:
-        contacts = get_case_officers_for_process_type(application.process_type)
-    else:
-        contacts = get_application_contacts(application)
-
-    subject = get_withdrawal_email_subject(withdrawal, application)
-
-    context = {
-        "withdrawal_reason": withdrawal.response,
-        "subject": subject,
-        "application": application,
-    }
-    template_name = f"email/application/withdraw/{withdrawal.status}.html"
-    send_html_email(template_name, context, list(contacts))
 
 
 def get_variation_request_email_subject(
