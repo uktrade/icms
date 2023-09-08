@@ -9,11 +9,10 @@ from django.utils import timezone
 
 from config.celery import app
 from web.domains.case.types import ImpOrExp
-from web.models import CaseEmail, Exporter, Importer, User, VariationRequest
+from web.models import CaseEmail, Exporter, Importer, User
 from web.permissions import get_org_obj_permissions, organisation_get_contacts
 
 from . import utils
-from .constants import VariationRequestDescription
 
 
 @app.task(name="web.notify.email.send_email")
@@ -149,47 +148,6 @@ def send_html_email(
     message_html = utils.render_email(template, context)
     message_text = html2text.html2text(message_html)
     send_to_contacts(context["subject"], message_text, contacts, message_html)
-
-
-def get_variation_request_email_subject(
-    description: VariationRequestDescription, application: ImpOrExp
-) -> str:
-    match description:
-        case VariationRequestDescription.CANCELLED:
-            return "Variation Request Cancelled"
-        case VariationRequestDescription.UPDATE_REQUIRED:
-            return "Variation Update Required"
-        case VariationRequestDescription.UPDATE_CANCELLED:
-            return "Variation Update No Longer Required"
-        case VariationRequestDescription.UPDATE_RECEIVED:
-            return "Variation Update Received"
-        case VariationRequestDescription.REFUSED:
-            return f"Variation on application reference {application.reference} has been refused by ILB"
-        case _:
-            raise ValueError("Unsupported Variation Request Description")
-
-
-def send_variation_request_email(
-    variation_request: VariationRequest,
-    description: VariationRequestDescription,
-    application: ImpOrExp,
-) -> None:
-    subject = get_variation_request_email_subject(description, application)
-
-    if description == VariationRequestDescription.CANCELLED:
-        contacts = [variation_request.requested_by]
-    elif description == VariationRequestDescription.UPDATE_RECEIVED:
-        contacts = [application.case_owner]
-    else:
-        contacts = get_application_contacts(application)
-
-    context = {
-        "variation_request": variation_request,
-        "application": application,
-        "subject": subject,
-    }
-    template_name = f"email/application/variation_request/{description.lower()}.html"
-    send_html_email(template_name, context, contacts)
 
 
 def send_application_update_response_email(application: ImpOrExp) -> None:

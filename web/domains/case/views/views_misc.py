@@ -24,15 +24,15 @@ from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task, get_case_page_title
 from web.flow import errors
+from web.mail.constants import VariationRequestDescription
 from web.mail.emails import (
     send_application_reassigned_email,
     send_application_refused_email,
     send_application_stopped_email,
+    send_variation_request_email,
     send_withdrawal_email,
 )
 from web.models import CaseNote, Task, User, VariationRequest, WithdrawApplication
-from web.notify.constants import VariationRequestDescription
-from web.notify.email import send_variation_request_email
 from web.permissions import (
     AppChecker,
     Perms,

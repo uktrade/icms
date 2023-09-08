@@ -1,3 +1,5 @@
+import enum
+
 from web.types import TypedTextChoices
 
 SEND_EMAIL_TASK_NAME = "web.mail.api.send_email"
@@ -39,3 +41,31 @@ class EmailTypes(TypedTextChoices):
     WITHDRAWAL_CANCELLED = ("WITHDRAWAL_CANCELLED", "Withdrawal Cancelled")
     WITHDRAWAL_OPENED = ("WITHDRAWAL_OPENED", "Withdrawal Opened")
     WITHDRAWAL_REJECTED = ("WITHDRAWAL_REJECTED", "Withdrawal Rejected")
+    APPLICATION_VARIATION_REQUEST_CANCELLED = (
+        "APPLICATION_VARIATION_REQUEST_CANCELLED",
+        "Application Variation Request Cancelled",
+    )
+    APPLICATION_VARIATION_REQUEST_UPDATE_REQUIRED = (
+        "APPLICATION_VARIATION_REQUEST_UPDATE_REQUIRED",
+        "Application Variation Request Update Required",
+    )
+    APPLICATION_VARIATION_REQUEST_UPDATE_CANCELLED = (
+        "APPLICATION_VARIATION_REQUEST_UPDATE_CANCELLED",
+        "Application Variation Request Update Cancelled",
+    )
+    APPLICATION_VARIATION_REQUEST_UPDATE_RECEIVED = (
+        "APPLICATION_VARIATION_REQUEST_UPDATE_RECEIVED",
+        "Application Variation Request Update Received",
+    )
+    APPLICATION_VARIATION_REQUEST_REFUSED = (
+        "APPLICATION_VARIATION_REQUEST_REFUSED",
+        "Application Variation Request Refused",
+    )
+
+
+class VariationRequestDescription(enum.StrEnum):
+    CANCELLED = "CANCELLED"
+    UPDATE_REQUIRED = "UPDATE_REQUIRED"
+    UPDATE_CANCELLED = "UPDATE_CANCELLED"
+    UPDATE_RECEIVED = "UPDATE_RECEIVED"
+    REFUSED = "REFUSED"

@@ -3,8 +3,8 @@ from django.core import mail
 from django.test import TestCase
 
 from web.models import Email, User
-from web.notify import constants, email
-from web.tests.helpers import add_variation_request_to_app, check_email_was_sent
+from web.notify import email
+from web.tests.helpers import check_email_was_sent
 
 
 class TestEmail(TestCase):
@@ -245,72 +245,6 @@ def test_send_to_application_agent_export(com_app_submitted, agent_exporter):
     assert o.to == ["E1_A1_main_contact@example.com"]  # /PS-IGNORE
     assert o.subject == "Test"
     assert o.body == "Test Body"
-
-
-@pytest.mark.parametrize(
-    "desc,exp_num_emails,exp_subject,exp_in_body,exp_sent_to",
-    [
-        (
-            constants.VariationRequestDescription.CANCELLED,
-            1,
-            "Variation Request Cancelled",
-            "has been cancelled",
-            "ilb_admin_user@example.com",  # /PS-IGNORE
-        ),
-        (
-            constants.VariationRequestDescription.UPDATE_REQUIRED,
-            1,
-            "Variation Update Required",
-            "needs updating",
-            "E1_main_contact@example.com",  # /PS-IGNORE
-        ),
-        (
-            constants.VariationRequestDescription.UPDATE_CANCELLED,
-            1,
-            "Variation Update No Longer Required",
-            "no longer requires\nan update",
-            "E1_main_contact@example.com",  # /PS-IGNORE
-        ),
-        (
-            constants.VariationRequestDescription.REFUSED,
-            1,
-            "Variation on application reference CA/2023/00001 has been refused by ILB",
-            "has been refused by\nILB",
-            "E1_main_contact@example.com",  # /PS-IGNORE
-        ),
-        (
-            constants.VariationRequestDescription.UPDATE_RECEIVED,
-            1,
-            "Variation Update Received",
-            "A variation update has been received for ICMS application",
-            "ilb_admin_two@example.com",  # /PS-IGNORE
-        ),
-    ],
-)
-def test_send_variation_request_email(
-    com_app_submitted,
-    ilb_admin_user,
-    ilb_admin_two,
-    desc,
-    exp_num_emails,
-    exp_subject,
-    exp_in_body,
-    exp_sent_to,
-):
-    com_app_submitted.case_owner = ilb_admin_two
-    com_app_submitted.save()
-    vr = add_variation_request_to_app(com_app_submitted, ilb_admin_user)
-    email.send_variation_request_email(vr, desc, com_app_submitted)
-    check_email_was_sent(exp_num_emails, exp_sent_to, exp_subject, exp_in_body)
-
-
-def test_send_variation_request_email_with_unsupported_description(
-    com_app_submitted, ilb_admin_user
-):
-    vr = add_variation_request_to_app(com_app_submitted, ilb_admin_user)
-    with pytest.raises(ValueError) as e_info:
-        email.send_variation_request_email(vr, "TEST", com_app_submitted)
-        assert e_info == "Unsupported Variation Request Description"
 
 
 def test_send_application_update_response_email(com_app_submitted, ilb_admin_two):

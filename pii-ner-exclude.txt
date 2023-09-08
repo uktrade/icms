@@ -3341,3 +3341,8 @@ The Department
 The Company
 Department
 \n
+Application Variation Request
+Application Variation Request Refused
+Application Variation Request Update
+Application Variation Request Update Required
+Application Variation Request Update Received

@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.mail import EmailMessage, SafeMIMEMultipart
 
 from web.domains.case.types import ImpAccessOrExpAccess, ImpOrExp, ImpOrExpApproval
-from web.models import WithdrawApplication
+from web.models import VariationRequest, WithdrawApplication
 
 from .constants import EmailTypes
 from .models import EmailTemplate
@@ -73,6 +73,12 @@ class BaseWithdrawalEmail(GOVNotifyEmailMessage):
 
     def get_context(self) -> dict:
         return {"reference": self.application.reference, "reason": self.withdrawal.reason}
+
+
+class BaseVariationRequestEmail(BaseApplicationEmail):
+    def __init__(self, *args, variation_request: VariationRequest, **kwargs):
+        self.variation_request = variation_request
+        super().__init__(*args, **kwargs)
 
 
 @final
@@ -202,3 +208,43 @@ class FirearmsSupplementaryReportEmail(BaseApplicationEmail):
 @final
 class AccessRequestApprovalCompleteEmail(BaseApprovalRequest):
     name = EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE
+
+
+@final
+class VariationRequestCancelledEmail(BaseVariationRequestEmail):
+    name = EmailTypes.APPLICATION_VARIATION_REQUEST_CANCELLED
+
+    def get_context(self) -> dict:
+        context = super().get_context()
+        context["reason"] = self.variation_request.reject_cancellation_reason
+        return context
+
+
+@final
+class VariationRequestUpdateRequiredEmail(BaseVariationRequestEmail):
+    name = EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_REQUIRED
+
+    def get_context(self) -> dict:
+        context = super().get_context()
+        context["reason"] = self.variation_request.update_request_reason
+        return context
+
+
+@final
+class VariationRequestUpdateCancelledEmail(BaseVariationRequestEmail):
+    name = EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_CANCELLED
+
+
+@final
+class VariationRequestUpdateReceivedEmail(BaseVariationRequestEmail):
+    name = EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_RECEIVED
+
+
+@final
+class VariationRequestRefusedEmail(BaseVariationRequestEmail):
+    name = EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED
+
+    def get_context(self) -> dict:
+        context = super().get_context()
+        context["reason"] = self.application.variation_refuse_reason
+        return context

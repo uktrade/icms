@@ -8,6 +8,7 @@ from web.models import (
 )
 from web.notify import notify
 
+from .constants import VariationRequestDescription
 from .messages import (
     AccessRequestApprovalCompleteEmail,
     AccessRequestClosedEmail,
@@ -22,6 +23,11 @@ from .messages import (
     ExporterAccessRequestApprovalOpenedEmail,
     FirearmsSupplementaryReportEmail,
     ImporterAccessRequestApprovalOpenedEmail,
+    VariationRequestCancelledEmail,
+    VariationRequestRefusedEmail,
+    VariationRequestUpdateCancelledEmail,
+    VariationRequestUpdateReceivedEmail,
+    VariationRequestUpdateRequiredEmail,
     WithdrawalAcceptedEmail,
     WithdrawalCancelledEmail,
     WithdrawalOpenedEmail,
@@ -145,6 +151,76 @@ def send_withdrawal_email(withdrawal: WithdrawApplication) -> None:
             send_withdrawal_cancelled_email(withdrawal)
         case _:
             raise ValueError("Unsupported Withdrawal Status")
+
+
+def send_variation_request_email(
+    variation_request: VariationRequest,
+    description: VariationRequestDescription,
+    application: ImpOrExp,
+) -> None:
+    match description:
+        case VariationRequestDescription.CANCELLED:
+            send_variation_request_cancelled_email(variation_request, application)
+        case VariationRequestDescription.UPDATE_REQUIRED:
+            send_variation_request_update_required_email(variation_request, application)
+        case VariationRequestDescription.UPDATE_CANCELLED:
+            send_variation_request_update_cancelled_email(variation_request, application)
+        case VariationRequestDescription.UPDATE_RECEIVED:
+            send_variation_request_update_received_email(variation_request, application)
+        case VariationRequestDescription.REFUSED:
+            send_variation_request_refused_email(variation_request, application)
+        case _:
+            raise ValueError("Unsupported Variation Request Description")
+
+
+def send_variation_request_cancelled_email(
+    variation_request: VariationRequest, application: ImpOrExp
+) -> None:
+    recipients = get_email_addresses_for_users([variation_request.requested_by])
+    for recipient in recipients:
+        VariationRequestCancelledEmail(
+            application=application, variation_request=variation_request, to=[recipient]
+        ).send()
+
+
+def send_variation_request_update_required_email(
+    variation_request: VariationRequest, application: ImpOrExp
+) -> None:
+    recipients = get_application_contact_email_addresses(application)
+    for recipient in recipients:
+        VariationRequestUpdateRequiredEmail(
+            application=application, variation_request=variation_request, to=[recipient]
+        ).send()
+
+
+def send_variation_request_update_cancelled_email(
+    variation_request: VariationRequest, application: ImpOrExp
+) -> None:
+    recipients = get_application_contact_email_addresses(application)
+    for recipient in recipients:
+        VariationRequestUpdateCancelledEmail(
+            application=application, variation_request=variation_request, to=[recipient]
+        ).send()
+
+
+def send_variation_request_update_received_email(
+    variation_request: VariationRequest, application: ImpOrExp
+) -> None:
+    recipients = get_email_addresses_for_users([application.case_owner])
+    for recipient in recipients:
+        VariationRequestUpdateReceivedEmail(
+            application=application, variation_request=variation_request, to=[recipient]
+        ).send()
+
+
+def send_variation_request_refused_email(
+    variation_request: VariationRequest, application: ImpOrExp
+):
+    recipients = get_application_contact_email_addresses(application)
+    for recipient in recipients:
+        VariationRequestRefusedEmail(
+            application=application, variation_request=variation_request, to=[recipient]
+        ).send()
 
 
 def send_withdrawal_opened_email(withdrawal: WithdrawApplication) -> None:
