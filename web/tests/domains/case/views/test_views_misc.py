@@ -13,6 +13,7 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.flow.errors import ProcessStateError
 from web.mail.constants import EmailTypes
+from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import (
     Country,
     Task,
@@ -24,7 +25,6 @@ from web.models.shared import YesNoNAChoices
 from web.tests.helpers import (
     CaseURLS,
     add_variation_request_to_app,
-    check_email_was_sent,
     check_gov_notify_email_was_sent,
     check_page_errors,
     check_pages_checked,
@@ -448,11 +448,16 @@ def test_start_authorisation_rejected_variation_requested_application(
 
     assert wood_application.licences.count() == 1
     assert wood_application.licences.filter(status=DocumentPackBase.Status.ARCHIVED).exists()
-    check_email_was_sent(
+    check_gov_notify_email_was_sent(
         1,
-        "I1_main_contact@example.com",  # /PS-IGNORE
-        f"Variation on application reference {wood_application.reference} has been refused by ILB",
-        "refused by\nILB for the following reason",
+        ["I1_main_contact@example.com"],  # /PS-IGNORE
+        EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED,
+        {
+            "reference": wood_application.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(wood_application, full_url=True),
+            "reason": "test refuse reason",
+        },
     )
 
 

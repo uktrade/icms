@@ -17,6 +17,26 @@ templates = [
         EmailTypes.APPLICATION_VARIATION_REQUEST_COMPLETE,
         "dc5ced0f-53fb-45b2-9284-b9b241aa4696",  # /PS-IGNORE
     ),
+    (
+        EmailTypes.APPLICATION_VARIATION_REQUEST_CANCELLED,
+        "827b7070-62ea-4325-8fb3-e35e0d554c47",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED,
+        "35c6d0b6-2030-4d31-9ea8-c35682a5876b",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_REQUIRED,
+        "e9e519ab-f5d0-41b5-90da-d5af6da23a38",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_RECEIVED,
+        "568f5e0e-8b28-44de-9a25-f5535306b7b4",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_CANCELLED,
+        "a1d8ed94-2d04-4b97-9380-fc331b94f700",  # /PS-IGNORE
+    ),
     (EmailTypes.APPLICATION_STOPPED, "13b68bc7-99a5-4402-8794-e49992da54a9"),  # /PS-IGNORE
     (EmailTypes.APPLICATION_REFUSED, "347cbb92-03d2-495e-a8f7-f3c94ea2bf45"),  # /PS-IGNORE
     (EmailTypes.APPLICATION_REASSIGNED, "43b35460-caa4-4080-a350-fabd30c913f6"),  # /PS-IGNORE

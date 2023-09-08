@@ -21,9 +21,9 @@ from web.domains.case.forms import (
 from web.domains.case.services import document_pack, reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
+from web.mail.constants import VariationRequestDescription
+from web.mail.emails import send_variation_request_email
 from web.models import Process, Task, VariationRequest
-from web.notify import email
-from web.notify.constants import VariationRequestDescription
 from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 
@@ -147,7 +147,7 @@ class VariationRequestCancelView(
         self.application.update_order_datetime()
         self.update_application_status()
         self.update_application_tasks()
-        email.send_variation_request_email(
+        send_variation_request_email(
             self.object, VariationRequestDescription.CANCELLED, self.application
         )
         return result
@@ -192,7 +192,7 @@ class VariationRequestRequestUpdateView(
         self.application.update_order_datetime()
         self.application.save()
         self.update_application_tasks()
-        email.send_variation_request_email(
+        send_variation_request_email(
             self.object, VariationRequestDescription.UPDATE_REQUIRED, self.application
         )
         return result
@@ -241,7 +241,7 @@ class VariationRequestCancelUpdateRequestView(
 
         # Close the task
         self.update_application_tasks()
-        email.send_variation_request_email(
+        send_variation_request_email(
             variation_request, VariationRequestDescription.UPDATE_CANCELLED, self.application
         )
 
@@ -292,7 +292,7 @@ class VariationRequestRespondToUpdateRequestView(
         self.update_application_tasks()
         self.application.update_order_datetime()
         self.application.save()
-        email.send_variation_request_email(
+        send_variation_request_email(
             self.object, VariationRequestDescription.UPDATE_RECEIVED, self.application
         )
         return result

@@ -4,7 +4,7 @@ import pytest
 from django.conf import settings
 
 from web.mail import emails
-from web.mail.constants import EmailTypes
+from web.mail.constants import EmailTypes, VariationRequestDescription
 from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import (
     EmailTemplate,
@@ -389,6 +389,160 @@ class TestEmails(AuthTestCase):
         with pytest.raises(ValueError, match="Unsupported Withdrawal Status"):
             emails.send_withdrawal_email(withdrawal)
             assert self.mock_gov_notify_client.send_email_notification.call_count == 0
+
+    def test_send_variation_request_unsupported_status_error(self, completed_cfs_app):
+        vr = add_variation_request_to_app(
+            completed_cfs_app,
+            self.ilb_admin_user,
+            status=VariationRequest.Statuses.OPEN,
+        )
+        with pytest.raises(ValueError, match="Unsupported Variation Request Description"):
+            emails.send_variation_request_email(vr, None, completed_cfs_app)
+            assert self.mock_gov_notify_client.send_email_notification.call_count == 0
+
+    def test_send_variation_request_cancelled_email(self, completed_cfs_app):
+        exp_template_id = str(
+            EmailTemplate.objects.get(
+                name=EmailTypes.APPLICATION_VARIATION_REQUEST_CANCELLED
+            ).gov_notify_template_id
+        )
+        vr = add_variation_request_to_app(
+            completed_cfs_app,
+            self.ilb_admin_user,
+            status=VariationRequest.Statuses.CANCELLED,
+        )
+        vr.reject_cancellation_reason = "Cancel reason"
+        vr.save()
+
+        expected_personalisation = default_personalisation() | {
+            "reference": completed_cfs_app.reference,
+            "reason": "Cancel reason",
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(completed_cfs_app, full_url=True),
+        }
+        emails.send_variation_request_email(
+            vr, VariationRequestDescription.CANCELLED, completed_cfs_app
+        )
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.ilb_admin_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_variation_request_update_required_email(self, completed_cfs_app):
+        exp_template_id = str(
+            EmailTemplate.objects.get(
+                name=EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_REQUIRED
+            ).gov_notify_template_id
+        )
+        vr = add_variation_request_to_app(
+            completed_cfs_app,
+            self.ilb_admin_user,
+            status=VariationRequest.Statuses.OPEN,
+        )
+        vr.update_request_reason = "Please update"
+        vr.save()
+
+        expected_personalisation = default_personalisation() | {
+            "reference": completed_cfs_app.reference,
+            "reason": "Please update",
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(completed_cfs_app, full_url=True),
+        }
+        emails.send_variation_request_email(
+            vr, VariationRequestDescription.UPDATE_REQUIRED, completed_cfs_app
+        )
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.exporter_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_variation_request_update_cancelled_email(self, completed_cfs_app):
+        exp_template_id = str(
+            EmailTemplate.objects.get(
+                name=EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_CANCELLED
+            ).gov_notify_template_id
+        )
+        vr = add_variation_request_to_app(
+            completed_cfs_app,
+            self.ilb_admin_user,
+            status=VariationRequest.Statuses.OPEN,
+        )
+
+        expected_personalisation = default_personalisation() | {
+            "reference": completed_cfs_app.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(completed_cfs_app, full_url=True),
+        }
+        emails.send_variation_request_email(
+            vr, VariationRequestDescription.UPDATE_CANCELLED, completed_cfs_app
+        )
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.exporter_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_variation_request_update_received_email(self, completed_cfs_app):
+        exp_template_id = str(
+            EmailTemplate.objects.get(
+                name=EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_RECEIVED
+            ).gov_notify_template_id
+        )
+        vr = add_variation_request_to_app(
+            completed_cfs_app,
+            self.ilb_admin_user,
+            status=VariationRequest.Statuses.OPEN,
+        )
+
+        expected_personalisation = default_personalisation() | {
+            "reference": completed_cfs_app.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(completed_cfs_app, full_url=True),
+        }
+        emails.send_variation_request_email(
+            vr, VariationRequestDescription.UPDATE_RECEIVED, completed_cfs_app
+        )
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.ilb_admin_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_variation_request_refused_email(self, completed_dfl_app):
+        exp_template_id = str(
+            EmailTemplate.objects.get(
+                name=EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED
+            ).gov_notify_template_id
+        )
+        vr = add_variation_request_to_app(
+            completed_dfl_app,
+            self.ilb_admin_user,
+            status=VariationRequest.Statuses.OPEN,
+        )
+        completed_dfl_app.variation_refuse_reason = "Variation refused."
+        completed_dfl_app.save()
+
+        expected_personalisation = default_personalisation() | {
+            "reference": completed_dfl_app.reference,
+            "reason": "Variation refused.",
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(completed_dfl_app, full_url=True),
+        }
+        emails.send_variation_request_email(
+            vr, VariationRequestDescription.REFUSED, completed_dfl_app
+        )
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.importer_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
 
     def test_send_firearms_supplementary_report_email(self, completed_dfl_app):
         exp_template_id = str(

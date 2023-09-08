@@ -1,5 +1,6 @@
 import pytest
 from django.conf import settings
+from django.core import mail
 from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertRedirects, assertTemplateUsed
@@ -7,11 +8,13 @@ from pytest_django.asserts import assertRedirects, assertTemplateUsed
 from web.domains.case.models import DocumentPackBase
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
+from web.mail.constants import EmailTypes
+from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import Task, VariationRequest
 from web.tests.helpers import (
     CaseURLS,
     add_variation_request_to_app,
-    check_email_was_sent,
+    check_gov_notify_email_was_sent,
 )
 
 
@@ -142,8 +145,18 @@ class TestVariationRequestCancelView:
         # Archived now the variation has been cancelled.
         self.draft_licence.refresh_from_db()
         assert self.draft_licence.status == DocumentPackBase.Status.ARCHIVED
-        check_email_was_sent(
-            1, "ilb_admin_user@example.com", "Variation Request Cancelled"  # /PS-IGNORE
+        check_gov_notify_email_was_sent(
+            1,
+            ["ilb_admin_user@example.com"],  # /PS-IGNORE
+            EmailTypes.APPLICATION_VARIATION_REQUEST_CANCELLED,
+            {
+                "reference": self.wood_app.reference,
+                "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                    full_url=True
+                ),
+                "application_url": get_case_view_url(self.wood_app, full_url=True),
+                "reason": "Test cancellation reason",
+            },
         )
 
 
@@ -193,8 +206,18 @@ class TestVariationRequestCancelViewForExportApplication:
         # Archived now the variation has been cancelled.
         self.draft_certificate.refresh_from_db()
         assert self.draft_certificate.status == DocumentPackBase.Status.ARCHIVED
-        check_email_was_sent(
-            1, "ilb_admin_user@example.com", "Variation Request Cancelled"  # /PS-IGNORE
+        check_gov_notify_email_was_sent(
+            1,
+            ["ilb_admin_user@example.com"],  # /PS-IGNORE
+            EmailTypes.APPLICATION_VARIATION_REQUEST_CANCELLED,
+            {
+                "reference": self.app.reference,
+                "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                    full_url=True
+                ),
+                "application_url": get_case_view_url(self.app, full_url=True),
+                "reason": None,
+            },
         )
 
 
@@ -234,10 +257,18 @@ class TestVariationRequestRequestUpdateView:
         # Check the reason has been saved
         self.vr.refresh_from_db()
         assert self.vr.update_request_reason == "Dummy update request reason"
-        check_email_was_sent(
+        check_gov_notify_email_was_sent(
             1,
-            "I1_main_contact@example.com",  # /PS-IGNORE
-            "Variation Update Required",
+            ["I1_main_contact@example.com"],  # /PS-IGNORE
+            EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_REQUIRED,
+            {
+                "reference": self.wood_app.reference,
+                "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                    full_url=True
+                ),
+                "application_url": get_case_view_url(self.wood_app, full_url=True),
+                "reason": "Dummy update request reason",
+            },
         )
 
 
@@ -264,6 +295,20 @@ class TestVariationRequestCancelUpdateRequestView:
             CaseURLS.variation_request_request_update(self.app.pk, self.vr.pk),
             {"update_request_reason": "Dummy update request reason"},
         )
+        check_gov_notify_email_was_sent(
+            1,
+            ["I1_main_contact@example.com"],  # /PS-IGNORE
+            EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_REQUIRED,
+            {
+                "reference": self.app.reference,
+                "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                    full_url=True
+                ),
+                "application_url": get_case_view_url(self.app, full_url=True),
+                "reason": "Dummy update request reason",
+            },
+        )
+        mail.outbox = []
 
     @pytest.fixture(autouse=True)
     def set_url(self, set_app):
@@ -292,10 +337,18 @@ class TestVariationRequestCancelUpdateRequestView:
         assert Task.TaskType.VR_REQUEST_CHANGE not in case_progress.get_active_task_list(self.app)
 
         assert self.vr.update_request_reason is None
-        check_email_was_sent(
-            2,
-            "I1_main_contact@example.com",  # /PS-IGNORE
-            "Variation Update No Longer Required",
+
+        check_gov_notify_email_was_sent(
+            1,
+            ["I1_main_contact@example.com"],  # /PS-IGNORE
+            EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_CANCELLED,
+            {
+                "reference": self.app.reference,
+                "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                    full_url=True
+                ),
+                "application_url": get_case_view_url(self.app, full_url=True),
+            },
         )
 
 
@@ -323,6 +376,20 @@ class TestVariationRequestRespondToUpdateRequestView:
             CaseURLS.variation_request_request_update(self.wood_app.pk, self.vr.pk),
             {"update_request_reason": "Dummy update request reason"},
         )
+        check_gov_notify_email_was_sent(
+            1,
+            ["I1_main_contact@example.com"],  # /PS-IGNORE
+            EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_REQUIRED,
+            {
+                "reference": self.wood_app.reference,
+                "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                    full_url=True
+                ),
+                "application_url": get_case_view_url(self.wood_app, full_url=True),
+                "reason": "Dummy update request reason",
+            },
+        )
+        mail.outbox = []
 
     def test_respond_to_update_request_get(self):
         response = self.client.get(
@@ -359,6 +426,15 @@ class TestVariationRequestRespondToUpdateRequestView:
         self.vr.refresh_from_db()
         assert self.vr.update_request_reason is None
         assert self.vr.what_varied == "What was varied now its changed"
-        check_email_was_sent(
-            2, "ilb_admin_user@example.com", "Variation Update Received"  # /PS-IGNORE
+        check_gov_notify_email_was_sent(
+            1,
+            ["ilb_admin_user@example.com"],  # /PS-IGNORE,
+            EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_RECEIVED,
+            {
+                "reference": self.wood_app.reference,
+                "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                    full_url=True
+                ),
+                "application_url": get_case_view_url(self.wood_app, full_url=True),
+            },
         )
