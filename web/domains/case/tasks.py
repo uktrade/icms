@@ -10,6 +10,7 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task
 from web.domains.chief import client
+from web.flow.models import ProcessTypes
 from web.mail.emails import send_completed_application_process_notifications
 from web.models import (
     CaseDocumentReference,
@@ -79,7 +80,7 @@ def create_import_application_document(
             delete_file_from_s3(path=document_reference.document.path)
 
         file_obj = io.BytesIO()
-        pdf_gen = PdfGenerator(application=application, licence=licence, doc_type=doc_type)
+        pdf_gen = PdfGenerator(application=application, doc_pack=licence, doc_type=doc_type)
         pdf_gen.get_pdf(target=file_obj)
 
         # Reset read point to start of stream before uploading
@@ -91,11 +92,44 @@ def create_import_application_document(
 def create_export_application_document(
     application_pk: int, certificate_pk: int, casedocumentreference_pk: int, user_pk: int
 ) -> None:
-    # TODO: Revisit when we can generate an export certificate:
-    # https://uktrade.atlassian.net/browse/ICMSLST-1406
-    # https://uktrade.atlassian.net/browse/ICMSLST-1407
-    # https://uktrade.atlassian.net/browse/ICMSLST-1408
-    print("*************************** SKIPPING FOR NOW")
+    application = Process.objects.get(pk=application_pk).get_specific_model()
+    if application.process_type != ProcessTypes.CFS:
+        print("*************************** SKIPPING FOR NOW")
+        # TODO: Revisit when we can generate an export certificate:
+        # https://uktrade.atlassian.net/browse/ICMSLST-1407
+        # https://uktrade.atlassian.net/browse/ICMSLST-1408
+        return
+
+    with transaction.atomic():
+        user = User.objects.get(pk=user_pk)
+
+        certificate = application.certificates.get(pk=certificate_pk)
+        document_reference = certificate.document_references.select_for_update().get(
+            pk=casedocumentreference_pk
+        )
+
+        if document_reference.document_type == CaseDocumentReference.Type.CERTIFICATE:
+            doc_type = DocumentTypes.CERTIFICATE_SIGNED
+            at = application.application_type
+            country = document_reference.reference_data.country
+            filename = f"{at.type} ({country.name}).pdf"
+        else:
+            raise ValueError(
+                f"Unable to generate document - unsupported document type {document_reference.document_type}"
+            )
+
+        if document_reference.document:
+            delete_file_from_s3(path=document_reference.document.path)
+
+        file_obj = io.BytesIO()
+        pdf_gen = PdfGenerator(
+            application=application, doc_pack=certificate, doc_type=doc_type, country=country
+        )
+        pdf_gen.get_pdf(target=file_obj)
+
+        # Reset read point to start of stream before uploading
+        file_obj.seek(0)
+        upload_case_document_file(file_obj, document_reference, filename, user)
 
 
 @app.task(name="web.domains.case.tasks.create_document_pack_on_success")

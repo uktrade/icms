@@ -6,9 +6,9 @@ import weasyprint
 from django.conf import settings
 from django.template.loader import render_to_string
 
-from web.domains.case.types import ImpOrExp
+from web.domains.case.types import DocumentPack, ImpOrExp
 from web.flow.models import ProcessTypes
-from web.models import ImportApplicationLicence
+from web.models import Country
 from web.types import DocumentTypes
 
 from . import utils
@@ -17,8 +17,9 @@ from . import utils
 @dataclass
 class PdfGenerator:
     application: ImpOrExp
-    licence: ImportApplicationLicence
+    doc_pack: DocumentPack
     doc_type: DocumentTypes
+    country: Country | None = None
 
     def get_pdf(self, target: io.BytesIO | None = None) -> bytes | None:
         """Write the pdf data to the optional target or return the PDF as bytes
@@ -33,7 +34,7 @@ class PdfGenerator:
         return html.write_pdf(target=target)
 
     # TODO: Remove this when all the pdfs have been created
-    # See icms/web/domains/case/views/views_pdf.py for example
+    # See web/domains/case/views/views_pdf.py for example
     def get_document_html(self) -> str:
         return render_to_string(
             template_name=self.get_template(),
@@ -76,6 +77,14 @@ class PdfGenerator:
             # Default
             return "web/domains/case/import/manage/preview-licence.html"
 
+        if self.doc_type in (
+            DocumentTypes.CERTIFICATE_PREVIEW,
+            DocumentTypes.CERTIFICATE_PRE_SIGN,
+            DocumentTypes.CERTIFICATE_SIGNED,
+        ):
+            if self.application.process_type == ProcessTypes.CFS:
+                return "pdf/export/cfs-certificate.html"
+
         raise ValueError(f"Unsupported document type: {self.doc_type}")
 
     def get_document_context(self) -> dict[str, Any]:
@@ -97,20 +106,31 @@ class PdfGenerator:
         ]:
             if self.application.process_type == ProcessTypes.FA_OIL:
                 return utils.get_fa_oil_licence_context(
-                    self.application, self.licence, self.doc_type
+                    self.application, self.doc_pack, self.doc_type
                 )
 
             elif self.application.process_type == ProcessTypes.FA_DFL:
                 return utils.get_fa_dfl_licence_context(
-                    self.application, self.licence, self.doc_type
+                    self.application, self.doc_pack, self.doc_type
                 )
 
             elif self.application.process_type == ProcessTypes.FA_SIL:
                 return utils.get_fa_sil_licence_context(
-                    self.application, self.licence, self.doc_type
+                    self.application, self.doc_pack, self.doc_type
                 )
 
             else:
-                return utils.get_licence_context(self.application, self.licence, self.doc_type)
+                return utils.get_licence_context(self.application, self.doc_pack, self.doc_type)
+        elif self.doc_type in [
+            DocumentTypes.CERTIFICATE_PREVIEW,
+            DocumentTypes.CERTIFICATE_PRE_SIGN,
+            DocumentTypes.CERTIFICATE_SIGNED,
+        ]:
+            if not self.country:
+                raise ValueError("Country must be specified for export certificates")
+
+            return utils.get_certificate_context(
+                self.application, self.doc_pack, self.doc_type, self.country
+            )
         else:
             raise ValueError(f"Unsupported document type: {self.doc_type}")

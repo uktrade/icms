@@ -324,6 +324,25 @@ pdf_urls = [
         ),
     ),
     path(
+        "certificate/",
+        include(
+            [
+                path(
+                    "country/<int:country_pk>/preview/",
+                    views_pdf.PreviewCertificateView.as_view(),
+                    name="certificate-preview",
+                    kwargs={"document_type": DocumentTypes.CERTIFICATE_PREVIEW},
+                ),
+                path(
+                    "country/<int:country_pk>/pre-sign/",
+                    views_pdf.PreviewCertificateView.as_view(),
+                    name="certificate-pre-sign",
+                    kwargs={"document_type": DocumentTypes.CERTIFICATE_PRE_SIGN},
+                ),
+            ]
+        ),
+    ),
+    path(
         "view-case-document/<int:object_pk>/<int:casedocumentreference_pk>",
         views_pdf.view_case_document,
         name="view-case-document",

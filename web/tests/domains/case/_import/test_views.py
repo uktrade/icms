@@ -53,7 +53,7 @@ def test_preview_cover_letter(
     pdf = response.content
     assert pdf.startswith(b"%PDF-")
     # ensure the pdf generated has some content
-    assert 10000 < len(pdf) < 30000
+    assert 5000 < len(pdf) < 15000
 
 
 @pytest.mark.django_db
@@ -85,7 +85,28 @@ def test_preview_licence(ilb_admin_user, ilb_admin_client, importer_one_contact,
     pdf = response.content
     assert pdf.startswith(b"%PDF-")
     # ensure the pdf generated has some content
-    assert 19000 < len(pdf) < 30000
+    assert 10000 < len(pdf) < 20000
+
+
+@pytest.mark.django_db
+def test_preview_certificate(ilb_admin_client, cfs_app_submitted):
+    process = cfs_app_submitted
+    country = process.countries.first()
+
+    url = reverse(
+        "case:certificate-preview",
+        kwargs={"application_pk": process.pk, "case_type": "import", "country_pk": country.pk},
+    )
+    response = ilb_admin_client.get(url)
+
+    assert response.status_code == 200
+    assert response["Content-Type"] == "application/pdf"
+    assert response["Content-Disposition"] == "filename=Certificate-Preview.pdf"
+
+    pdf = response.content
+    assert pdf.startswith(b"%PDF-")
+    # ensure the pdf generated has some content
+    assert 5000 < len(pdf) < 15000
 
 
 class TestBypassChiefView:

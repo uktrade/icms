@@ -19,7 +19,9 @@
 
 {% block main_content %}
   <div class="container setoutForm">
-    {{ application_field(document_reference, "Reference") }}
+    {% if is_import %}
+      {{ application_field(document_reference, "Reference") }}
+    {% endif %}
     {{ application_field(org, "Issued to") }}
 
     {% for contact in primary_recipients %}

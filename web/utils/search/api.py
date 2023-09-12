@@ -380,28 +380,26 @@ def _get_certificate_references_and_links(rec: ExportApplication) -> list[tuple[
         return []
 
     # TODO: Revisit when we can generate an export certificate:
-    # https://uktrade.atlassian.net/browse/ICMSLST-1406
     # https://uktrade.atlassian.net/browse/ICMSLST-1407
     # https://uktrade.atlassian.net/browse/ICMSLST-1408
-    return [(reference, "#") for (_, reference) in rec.latest_certificate_references]
 
     # The below code will be correct when we have certificate files uploaded to S3
     # Uncomment when the export certificate documents have been created.
-    # return [
-    #     (
-    #         reference,
-    #         reverse(
-    #             "case:view-case-document",
-    #             kwargs={
-    #                 "application_pk": rec.id,
-    #                 "case_type": "export",
-    #                 "object_pk": rec.latest_certificate_pk,
-    #                 "casedocumentreference_pk": cdr_pk,
-    #             },
-    #         ),
-    #     )
-    #     for (cdr_pk, reference) in rec.latest_certificate_references
-    # ]
+    return [
+        (
+            reference,
+            reverse(
+                "case:view-case-document",
+                kwargs={
+                    "application_pk": rec.id,
+                    "case_type": "export",
+                    "object_pk": rec.latest_certificate_pk,
+                    "casedocumentreference_pk": cdr_pk,
+                },
+            ),
+        )
+        for (cdr_pk, reference) in rec.latest_certificate_references
+    ]
 
 
 def _apply_search(model: QuerySet[Model], terms: types.SearchTerms) -> QuerySet[Model]:

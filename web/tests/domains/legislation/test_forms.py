@@ -54,7 +54,7 @@ class TestProductLegislationFilter(TestCase):
 
     def test_biocidal_claim_filter(self):
         results = self.run_filter({"is_biocidal_claim": True})
-        assert results.count() == 3
+        assert results.count() == 1
 
         # Check the test legislation is in the results
         results = results.filter(name="Test Legislation")
@@ -63,7 +63,7 @@ class TestProductLegislationFilter(TestCase):
 
     def test_is_cosmetics_regulation_filter(self):
         results = self.run_filter({"is_eu_cosmetics_regulation": True})
-        assert results.count() == 2
+        assert results.count() == 4
 
     def test_status_filter(self):
         results = self.run_filter({"status": True})

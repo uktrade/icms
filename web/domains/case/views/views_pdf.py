@@ -11,7 +11,7 @@ from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import view_application_file
-from web.models import File, Process
+from web.models import Country, File, Process
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest, DocumentTypes
 from web.utils.pdf import PdfGenerator
@@ -45,10 +45,13 @@ class DocumentPreviewBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRe
         if document_type not in self.document_types:
             raise ValueError(f"Unable to preview document_type: {document_type}")
 
+        country_pk = self.kwargs.get("country_pk")
+
         pdf_gen = PdfGenerator(
             application=self.application,
-            licence=document_pack.pack_latest_get(self.application),
+            doc_pack=document_pack.pack_latest_get(self.application),
             doc_type=document_type,
+            country=country_pk and Country.objects.get(pk=country_pk),
         )
 
         # TODO: Remove this when all the pdfs have been created
@@ -68,6 +71,11 @@ class PreviewLicenceView(DocumentPreviewBase):
 class PreviewCoverLetterView(DocumentPreviewBase):
     document_types = [DocumentTypes.COVER_LETTER_PREVIEW, DocumentTypes.COVER_LETTER_PRE_SIGN]
     output_filename = "CoverLetter-Preview.pdf"
+
+
+class PreviewCertificateView(DocumentPreviewBase):
+    document_types = [DocumentTypes.CERTIFICATE_PREVIEW, DocumentTypes.CERTIFICATE_PRE_SIGN]
+    output_filename = "Certificate-Preview.pdf"
 
 
 def return_pdf(pdf_gen: PdfGenerator, filename: str) -> HttpResponse:

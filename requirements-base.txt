@@ -35,6 +35,6 @@ requests==2.31.0
 sentry-sdk[django]==1.17.0
 structlog==20.1.0
 tqdm==4.65
-WeasyPrint==52.4
+WeasyPrint==59.0
 whitenoise==5.2.0
 xlsxwriter==3.0.1

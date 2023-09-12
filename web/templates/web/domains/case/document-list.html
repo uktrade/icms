@@ -16,7 +16,7 @@
               <td>COMPLETE</td>
             {% endif %}
             <td>
-                <a href="{{ cover_letter_url }}" target="blank" class="link-button inline-link-button icon-file-pdf button">
+                <a href="{{ cover_letter_url }}" target="_blank" rel="noopener noreferrer" class="link-button inline-link-button icon-file-pdf button">
                   View PDF
                 </a>
             </td>
@@ -29,8 +29,11 @@
               <td>COMPLETE</td>
             {% endif %}
             <td>
-                <a href="{{ licence_url }}" target="blank" class="link-button inline-link-button icon-file-pdf button">
-                  View PDF
+                <a href="{{ licence_url }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="link-button inline-link-button icon-file-pdf button">
+                    View PDF
                 </a>
             </td>
         </tr>
@@ -41,7 +44,10 @@
                   <td>COMPLETE</td>
                 {% endif %}
                 <td>
-                    <a href="{{ licence_url }}" target="blank" class="link-button inline-link-button icon-file-pdf button">
+                    <a href="{{ licence_url }}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="link-button inline-link-button icon-file-pdf button">
                         View PDF
                     </a>
                 </td>
@@ -49,10 +55,9 @@
         {% endif %}
       {% elif case_type == "export" %}
         {# TODO: Revisit when we can generate an export certificate: #}
-        {# https://uktrade.atlassian.net/browse/ICMSLST-1406 #}
         {# https://uktrade.atlassian.net/browse/ICMSLST-1407 #}
         {# https://uktrade.atlassian.net/browse/ICMSLST-1408 #}
-        {# TODO: Use `certificate_links` to show all pdf links #}
+        {# https://uktrade.atlassian.net/browse/ICMSLST-2296 #}
         {% if is_cfs %}
             <tr>
                 <td>Certificates of Free Sale (CFS) issued by the United Kingdom (UK)</td>
@@ -62,27 +67,42 @@
                 <td>
                     <a
                         href="#"
-                        target="blank"
+                        target="_blank"
+                        rel="noopener noreferrer"
                         class="link-button inline-link-button icon-file-pdf button">
-                        View PDF
+                          View PDF
                     </a>
                 </td>
             </tr>
         {% endif %}
-        {% for country in process.countries.all() %}
+        {% for document in certificate_docs %}
+            {% set country = document.reference_data.country %}
             <tr>
-                <td>{{ type_label }} ({{ country.name }})</td>
+                <td>{{ document.reference }} - {{ type_label }} ({{ country.name }})</td>
                 {% if show_generation_status %}
                   <td>COMPLETE</td>
                 {% endif %}
-                <td>
-                    <a
-                        href="#"
-                        target="blank"
-                        class="link-button inline-link-button icon-file-pdf button">
-                        View PDF
-                    </a>
-                </td>
+                {% if is_issued %}
+                  <td>
+                      <a
+                          href="{{ icms_url('case:view-case-document', kwargs={'application_pk': process.pk, 'case_type':'export', 'object_pk': certificate_pk, 'casedocumentreference_pk': document.pk}) }}"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="link-button inline-link-button icon-file-pdf button">
+                            View PDF
+                      </a>
+                  </td>
+                {% else %}
+                  <td>
+                      <a
+                          href="{{ icms_url('case:certificate-pre-sign', kwargs={'application_pk': process.pk, 'case_type':'export', 'country_pk': country.pk}) }}"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="link-button inline-link-button icon-file-pdf button">
+                            View PDF
+                      </a>
+                  </td>
+                {% endif %}
             </tr>
         {% endfor %}
       {% endif %}

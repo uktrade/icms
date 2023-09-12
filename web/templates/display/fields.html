@@ -47,5 +47,9 @@ takes a model field like this:
 {%- endmacro %}
 
 {% macro commodity_link(commodity) -%}
-  <a href="https://www.trade-tariff.service.gov.uk/commodities/{{ commodity.commodity_code }}" target="_blank">{{ commodity.commodity_code }}</a>
+  <a href="https://www.trade-tariff.service.gov.uk/commodities/{{ commodity.commodity_code }}"
+    target="_blank"
+    rel="noopener noreferrer">
+    {{ commodity.commodity_code }}
+  </a>
 {%- endmacro %}

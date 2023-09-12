@@ -1,3 +1,5 @@
+import datetime as dt
+import re
 from typing import TYPE_CHECKING, Union
 
 from django.conf import settings
@@ -5,6 +7,7 @@ from django.utils import timezone
 
 from web.domains.case.services import document_pack
 from web.domains.template.utils import get_cover_letter_content, get_letter_fragment
+from web.models import CFSSchedule
 from web.types import DocumentTypes
 
 if TYPE_CHECKING:
@@ -14,7 +17,11 @@ if TYPE_CHECKING:
     from web.domains.case._import.fa_sil import models as sil_models
     from web.domains.case.types import ImpOrExp
     from web.models import (
+        CertificateOfFreeSaleApplication,
+        Country,
         DFLApplication,
+        ExportApplication,
+        ExportApplicationCertificate,
         ImportApplication,
         ImportApplicationLicence,
         OpenIndividualLicenceApplication,
@@ -28,7 +35,7 @@ if TYPE_CHECKING:
         sil_models.SILGoodsSection582Other,  # /PS-IGNORE
     ]
 
-    Context = dict[str, str | bool | list[str] | ImpOrExp]
+    Context = dict[str, str | bool | list[str] | ImpOrExp | dict[int, str]]
 
 
 def get_licence_context(
@@ -241,3 +248,155 @@ def _get_importer_eori_numbers(application: "FaImportApplication") -> list[str]:
         eori_numbers.append(f"XI{main_eori_num[2:]}")
 
     return eori_numbers
+
+
+# TODO ICMSLST-1913 Use paragraph strings stored in templates
+cfs_schedule_paragraphs = {
+    "SCHEDULE_HEADER": "Schedule to Certificate of Free Sale",
+    "SCHEDULE_INTRODUCTION": (
+        "{exporter_name}, of {exporter_address} has made the following legal declaration in relation to the products listed in this schedule:"
+    ),
+    "IS_MANUFACTURER": "I am the manufacturer.",
+    "IS_NOT_MANUFACTURER": "I am not the manufacturer.",
+    "EU_COSMETICS_RESPONSIBLE_PERSON": (
+        "I am the responsible person as defined by Cosmetic Regulation No 1223/2009 as applicable in GB. I am the person responsible for ensuring that the "
+        "products listed in this schedule meet the safety requirements set out in that Regulation."
+    ),
+    "EU_COSMETICS_RESPONSIBLE_PERSON_NI": (
+        "I am the responsible person as defined by Regulation (EC) No 1223/2009 of the European Parliament and of the Council of 30 November 2009 on cosmetic "
+        "products and Cosmetic Regulation No 1223/2009 as applicable in NI. I am the person responsible for ensuring that the products listed in this schedule "
+        "meet the safety requirements set out in the Regulations."
+    ),
+    "LEGISLATION_STATEMENT": "I certify that these products meet the safety requirements set out under this legislation:",
+    "ELIGIBILITY_ON_SALE": "These products are currently sold on the UK market.",
+    "ELIGIBILITY_MAY_BE_SOLD": "These products meet the product safety requirements to be sold on the UK market.",
+    "GOOD_MANUFACTURING_PRACTICE": "These products are manufactured in accordance with the Good Manufacturing Practice standards set out in UK law.",
+    "GOOD_MANUFACTURING_PRACTICE_NI": (
+        "These products are manufactured in accordance with the Good Manufacturing Practice standards set out in UK or EU law where applicable."
+    ),
+    "COUNTRY_OF_MAN_STATEMENT": "The products were manufactured in {manufacture_country}.",
+    "COUNTRY_OF_MAN_STATEMENT_WITH_NAME": "The products were manufactured in {manufacture_country} by {manufacture_name}.",
+    "COUNTRY_OF_MAN_STATEMENT_WITH_NAME_AND_ADDRESS": "The products were manufactured in {manufacture_country} by {manufacture_name} at {manufacture_address}.",
+    "PRODUCTS": "Products",
+}
+
+
+def create_schedule_paragraph(schedule: "CFSSchedule") -> str:
+    """Generate the text to appear in a Certificate of Free Sale for a specific schedule"""
+    # TODO ICMSLST-1913 Use NI paragraph strings for NI postcodes
+    # TODO ICMSLST-1913 Add unit tests
+
+    if schedule.exporter_status == schedule.ExporterStatus.IS_MANUFACTURER:
+        paragraph = cfs_schedule_paragraphs["IS_MANUFACTURER"]
+    else:
+        paragraph = cfs_schedule_paragraphs["IS_NOT_MANUFACTURER"]
+
+    if schedule.schedule_statements_is_responsible_person:
+        paragraph += " " + cfs_schedule_paragraphs["EU_COSMETICS_RESPONSIBLE_PERSON"]
+
+    legislations = ", ".join(schedule.legislations.order_by("name").values_list("name", flat=True))
+
+    paragraph += " " + cfs_schedule_paragraphs["LEGISLATION_STATEMENT"] + " " + legislations + "."
+
+    if schedule.product_eligibility == CFSSchedule.ProductEligibility.SOLD_ON_UK_MARKET:
+        paragraph += " " + cfs_schedule_paragraphs["ELIGIBILITY_ON_SALE"]
+    elif schedule.product_eligibility == CFSSchedule.ProductEligibility.MEET_UK_PRODUCT_SAFETY:
+        paragraph += " " + cfs_schedule_paragraphs["ELIGIBILITY_MAY_BE_SOLD"]
+
+    if schedule.schedule_statements_accordance_with_standards:
+        paragraph += " " + cfs_schedule_paragraphs["GOOD_MANUFACTURING_PRACTICE"]
+
+    if schedule.manufacturer_name and schedule.manufacturer_address:
+        manufacture = {
+            "manufacture_country": schedule.country_of_manufacture.name,
+            "manufacture_name": schedule.manufacturer_name,
+            "manufacture_address": clean_address(
+                schedule.manufacturer_address, schedule.manufacturer_postcode
+            ),
+        }
+        manufacture_text = cfs_schedule_paragraphs["COUNTRY_OF_MAN_STATEMENT_WITH_NAME_AND_ADDRESS"]
+    elif schedule.manufacturer_name:
+        manufacture = {
+            "manufacture_country": schedule.country_of_manufacture.name,
+            "manufacture_name": schedule.manufacturer_name,
+        }
+        manufacture_text = cfs_schedule_paragraphs["COUNTRY_OF_MAN_STATEMENT_WITH_NAME"]
+    else:
+        manufacture = {"manufacture_country": schedule.country_of_manufacture.name}
+        manufacture_text = cfs_schedule_paragraphs["COUNTRY_OF_MAN_STATEMENT"]
+
+    paragraph += " " + manufacture_text.format(**manufacture)
+
+    return paragraph
+
+
+def fetch_schedule_paragraphs(application: "CertificateOfFreeSaleApplication") -> dict[int, str]:
+    return {
+        schedule.pk: create_schedule_paragraph(schedule) for schedule in application.schedules.all()
+    }
+
+
+def clean_address(address: str, postcode: str | None) -> str:
+    """Replaces all whitespace characters in address and postcode with a single space
+
+    e.g.
+    clean_address("123\n\nSesame   St", "ABC   123") -> "123 Sesame St ABC 123"
+    """
+    if postcode:
+        return re.sub(r"\s+", " ", f"{address.strip()} {postcode.strip()}")
+
+    return re.sub(r"\s+", " ", f"{address.strip()}")
+
+
+def day_ordinal_date(date: dt.date) -> str:
+    """Get the date string with a day ordinal
+
+    Returns string of date as "{day ordinal} {month name} {year}"
+    e.g. 1st March 2023"""
+    day = date.day
+
+    match day:
+        case 1 | 21 | 31:
+            suffix = "st"
+        case 2 | 22:
+            suffix = "nd"
+        case 3 | 23:
+            suffix = "rd"
+        case _:
+            suffix = "th"
+
+    return f"{day}{suffix} {date.strftime('%B %Y')}"
+
+
+def get_certificate_context(
+    application: "ExportApplication",
+    certificate: "ExportApplicationCertificate",
+    doc_type: DocumentTypes,
+    country: "Country",
+) -> "Context":
+    preview = doc_type == DocumentTypes.CERTIFICATE_PREVIEW
+
+    if preview:
+        reference = "[[CERTIFICATE_REFERENCE]]"
+    else:
+        document = document_pack.doc_ref_certificate_get(certificate, country)
+        reference = document.reference
+
+    if certificate.case_completion_datetime:
+        issue_date = day_ordinal_date(certificate.case_completion_datetime.date())
+    else:
+        issue_date = day_ordinal_date(dt.datetime.now().date())
+
+    return {
+        "exporter_name": application.exporter.name.upper(),
+        "exporter_address": str(application.exporter_office).upper(),
+        "certificate_code": "Placeholder code",
+        "country": country.name,
+        "reference": reference,
+        "qr_check_url": "Placeholder url",
+        "issue_date": issue_date,
+        "schedule_paragraphs": fetch_schedule_paragraphs(application),
+        "process": application,
+        "page_title": f"Certificate of Free Sale ({country.name}) Preview",
+        "preview": preview,
+    }

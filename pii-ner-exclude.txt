@@ -3285,3 +3285,38 @@ Application Reopened
 Firearms Supplementary Report
 Access Request Approval Complete
 Unsupported Withdrawal Status
+ON td.id
+the European Parliament
+the Council of 30 November 2009
+ELIGIBILITY_MAY_BE_SOLD
+COUNTRY_OF_MAN_STATEMENT_WITH_NAME
+ON td.id
+TODO ICMSLST-1913 Use
+the European Parliament
+the Council of 30 November 2009
+ELIGIBILITY_MAY_BE_SOLD
+COUNTRY_OF_MAN_STATEMENT_WITH_NAME
+"Generate the text to appear in a Certificate of Free Sale
+TODO ICMSLST-1913
+TODO ICMSLST-1913 Add
+Returns
+(Holders Copy
+{{ application_field(org
+{{ application_field(contact.full_name
+Primary Recipients
+show_generation_status
+certificate_pk
+is_issued %
+\nABC
+{{ commodity.commodity_code }
+{{ application_field(licence_reference
+Reference Number
+{{ application_field
+Natural Person"
+{{ application_field(importer.display_name
+Complete IMI</h4
+imi-net//imi
+imi-confirm-information'
+{{ application_field(app.imi_submit_datetime.strftime('%d-%b-%Y'
+class="extra
+west">Code</label

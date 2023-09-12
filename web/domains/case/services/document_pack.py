@@ -405,7 +405,7 @@ def doc_ref_cover_letter_get(doc_pack: ImportApplicationLicence) -> CaseDocument
 def doc_ref_documents_all(doc_pack: DocumentPack) -> QuerySet[CaseDocumentReference]:
     """Get all document references."""
 
-    return doc_pack.document_references.all()
+    return doc_pack.document_references.order_by("pk")
 
 
 def _create_document(

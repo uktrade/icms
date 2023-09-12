@@ -53,7 +53,9 @@ class DocumentTypes(Enum):
     LICENCE_PREVIEW: Incomplete
     LICENCE_PRE_SIGN: Incomplete
     LICENCE_SIGNED: Incomplete
-    CERTIFICATE: Incomplete
+    CERTIFICATE_PREVIEW: Incomplete
+    CERTIFICATE_PRE_SIGN: Incomplete
+    CERTIFICATE_SIGNED: Incomplete
     COVER_LETTER_PREVIEW: Incomplete
     COVER_LETTER_PRE_SIGN: Incomplete
     COVER_LETTER_SIGNED: Incomplete

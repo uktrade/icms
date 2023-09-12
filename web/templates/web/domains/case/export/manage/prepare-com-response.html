@@ -2,7 +2,7 @@
 
 {% block main_content %}
   {{ super() }}
-  
+
   <div class="info-box info-box-info">
     <h4>Document Preview</h4>
 
@@ -12,9 +12,7 @@
     {% for country in countries %}
       <li>
         {# TODO: Revisit when we can generate an export certificate: #}
-        {# https://uktrade.atlassian.net/browse/ICMSLST-1406 #}
         {# https://uktrade.atlassian.net/browse/ICMSLST-1407 #}
-        {# https://uktrade.atlassian.net/browse/ICMSLST-1408 #}
         <a href="#">Certificate of Manufacture ({{ country.name }})</a>
       </li>
     {% endfor %}
