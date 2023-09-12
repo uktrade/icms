@@ -250,9 +250,9 @@ def test_get_cover_letter_context(importer_one_contact, importer, office):
     assert context_dict["LICENCE_NUMBER"] == document_pack.doc_ref_licence_get(doc_pack).reference
     assert context_dict["LICENCE_END_DATE"] == "01 December " + str(dt.date.today().year + 1)
 
-    context = CoverLetterTemplateContext(app, DocumentTypes.CERTIFICATE)
+    context = CoverLetterTemplateContext(app, DocumentTypes.CERTIFICATE_PREVIEW)
 
-    with pytest.raises(ValueError, match=r"CERTIFICATE is not a valid document type"):
+    with pytest.raises(ValueError, match=r"CERTIFICATE_PREVIEW is not a valid document type"):
         get_context_dict(template_text, context)
 
 

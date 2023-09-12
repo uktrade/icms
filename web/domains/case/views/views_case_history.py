@@ -124,20 +124,17 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
                     "documents": [
                         {
                             "name": _get_cdr_name(application, doc),
-                            "url": "#",
-                            # TODO: Revisit when we can generate an export certificate: #}
-                            # https://uktrade.atlassian.net/browse/ICMSLST-1406 #}
                             # https://uktrade.atlassian.net/browse/ICMSLST-1407 #}
                             # https://uktrade.atlassian.net/browse/ICMSLST-1408 #}
-                            # "url": reverse(
-                            #     "case:view-case-document",
-                            #     kwargs={
-                            #         "application_pk": application.id,
-                            #         "case_type": "export",
-                            #         "object_pk": cert.pk,
-                            #         "casedocumentreference_pk": doc.pk,
-                            #     },
-                            # ),
+                            "url": reverse(
+                                "case:view-case-document",
+                                kwargs={
+                                    "application_pk": application.id,
+                                    "case_type": "export",
+                                    "object_pk": cert.pk,
+                                    "casedocumentreference_pk": doc.pk,
+                                },
+                            ),
                         }
                         for doc in document_pack.doc_ref_documents_all(cert)
                     ],

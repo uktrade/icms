@@ -59,7 +59,7 @@
       Once you have confirmed the information has been provided the case will be removed
       from the list of cases in the IMI Case Management screen.
     </div>
-    <a href="https://webgate.ec.europa.eu/imi-net//imi/protected/home.imi" target="_blank">Login to the IMI System</a>
+    <a href="https://webgate.ec.europa.eu/imi-net//imi/protected/home.imi" target="_blank" rel="noopener noreferrer">Login to the IMI System</a>
     <hr>
     <form method="post" action="{{ icms_url('import:imi-confirm-information', kwargs={'application_pk': app.pk}) }}">
       {{ csrf_input }}

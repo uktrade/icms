@@ -5,6 +5,7 @@ import pytest
 from django.conf import settings
 
 from web.models import (
+    CertificateOfFreeSaleApplication,
     DFLApplication,
     OpenIndividualLicenceApplication,
     SILApplication,
@@ -76,6 +77,17 @@ def mock_get_licence_endorsements(monkeypatch):
             OpenIndividualLicenceApplication,
             DocumentTypes.COVER_LETTER_PRE_SIGN,
             "pdf/import/cover-letter.html",
+        ),
+        # Export certificates require a country
+        (
+            CertificateOfFreeSaleApplication,
+            DocumentTypes.CERTIFICATE_PREVIEW,
+            "pdf/export/cfs-certificate.html",
+        ),
+        (
+            CertificateOfFreeSaleApplication,
+            DocumentTypes.CERTIFICATE_PRE_SIGN,
+            "pdf/export/cfs-certificate.html",
         ),
     ],
 )
@@ -290,3 +302,26 @@ def test_get_pdf(oil_app, licence):
     # This tests doesn't actually do a great deal other than check it creates
     # a pdf, however all the methods have already been tested.
     assert pdf_file.startswith(b"%PDF-")
+
+
+def test_get_preview_cfs_certificate_context(cfs_app_submitted):
+    app = cfs_app_submitted
+    country = app.countries.first()
+    certificate = app.certificates.first()
+    generator = PdfGenerator(app, certificate, DocumentTypes.CERTIFICATE_PREVIEW, country)
+
+    context = generator.get_document_context()
+
+    assert context["preview"] is True
+    assert context["schedule_paragraphs"]
+    assert context["exporter_name"] == app.exporter.name.upper()
+    assert context["reference"] == "[[CERTIFICATE_REFERENCE]]"
+
+
+def test_certificate_no_country_get_document_context_invalid(cfs_app_submitted):
+    app = cfs_app_submitted
+    certificate = app.certificates.first()
+    generator = PdfGenerator(app, certificate, DocumentTypes.CERTIFICATE_PREVIEW)
+
+    with pytest.raises(ValueError, match="Country must be specified for export certificates"):
+        generator.get_document_context()

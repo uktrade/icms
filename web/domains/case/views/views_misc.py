@@ -754,25 +754,24 @@ def get_document_context(
             "document_reference": licence_doc.reference,
             "licence_url": licence_url,
             "cover_letter_url": cover_letter_url,
+            "is_import": True,
         }
     else:
         # A supplied document pack or the current draft pack
         certificate = issued_document or document_pack.pack_draft_get(application)
-
         certificate_docs = document_pack.doc_ref_certificates_all(certificate)
-        document_reference = ", ".join(c.reference for c in certificate_docs)
-
         context = {
             "cover_letter_flag": False,
             "type_label": at.type,
             "customs_copy": False,
             "is_cfs": at.type_code == at.Types.FREE_SALE,
-            "document_reference": document_reference,
+            "certificate_docs": certificate_docs,
+            "certificate_pk": certificate.pk,
+            "is_import": False,
+            "is_issued": bool(application.status == ImpExpStatus.COMPLETED or issued_document),
             # TODO: Revisit when we can generate an export certificate
-            # https://uktrade.atlassian.net/browse/ICMSLST-1406
             # https://uktrade.atlassian.net/browse/ICMSLST-1407
             # https://uktrade.atlassian.net/browse/ICMSLST-1408
-            "certificate_links": [],
         }
 
     return context

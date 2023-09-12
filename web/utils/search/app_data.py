@@ -449,7 +449,9 @@ def _add_export_certificate_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
         .order_by()
         .values("object_id")
         .annotate(
-            certificate_array=JSONBAgg(Func(F("pk"), F("reference"), function="json_build_array"))
+            certificate_array=JSONBAgg(
+                Func(F("pk"), F("reference"), function="json_build_array"), ordering="reference"
+            )
         )
         .values("certificate_array")
     )

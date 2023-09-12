@@ -2,7 +2,7 @@
 
 {% block main_content %}
   {{ super() }}
-  
+
   <div class="info-box info-box-info">
     <h4>Document Preview</h4>
 
@@ -11,11 +11,11 @@
     <ul>
     {% for country in countries %}
       <li>
-        {# TODO: Revisit when we can generate an export certificate: #}
-        {# https://uktrade.atlassian.net/browse/ICMSLST-1406 #}
-        {# https://uktrade.atlassian.net/browse/ICMSLST-1407 #}
-        {# https://uktrade.atlassian.net/browse/ICMSLST-1408 #}
-        <a href="#">Certificate of Free Sale ({{ country.name }})</a>
+          <a href="{{ icms_url('case:certificate-preview', kwargs={'application_pk': process.pk, 'country_pk': country.pk, 'case_type': case_type}) }}"
+            target="_blank"
+            rel="noopener noreferrer">
+            Certificate of Free Sale ({{ country.name }})
+          </a>
       </li>
     {% endfor %}
     </ul>

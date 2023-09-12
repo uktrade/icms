@@ -1,0 +1,168 @@
+@page {
+    size: A4;
+    margin: 95px 85px 120px 0 !important;
+
+    @top-right {
+        content: "Page " counter(page) " of " counter(pages) " ";
+        font-family: Helvetica;
+        font-size: 13px;
+        width: fit-content;
+        height: fit-content;
+        text-align: right;
+        padding-top: 78px;
+        padding-right: 10px;
+        padding-bottom: 14px;
+    }
+
+    @top-left {
+        padding-top: 78px;
+        padding-left: 10px;
+        padding-bottom: 14px;
+        content: element(header);
+    }
+
+    @bottom-left {
+        content: element(footer);
+    }
+}
+
+@page: first {
+    @bottom-left {
+        content: none;
+    }
+}
+
+body {
+    font-family: Helvetica;
+}
+
+header {
+    position: running(header);
+}
+
+footer {
+    position: running(footer);
+    margin-bottom: 24px;
+    padding-left: 10px;
+}
+
+footer>p {
+    margin: 2px 0 2px 85px;
+    font-size: 13px;
+}
+
+.footer-reference {
+    margin-bottom: 12px;
+}
+
+.preview-orange {
+    color: darkorange;
+}
+
+.page-margin {
+    margin-left: 86px;
+}
+
+.reference {
+    font-size: 13px;
+}
+
+#dbt-logo {
+    width: 210px;
+    margin: -30px 0 15px 64px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+hr {
+    margin: -10px 1px 0 86px;
+    border-top: 2px solid;
+    border-bottom: none;
+}
+
+.title-page {
+    padding-top: 8px;
+}
+
+.title-block {
+    height: 600px;
+}
+
+.title {
+    font-size: 16px;
+    color: black;
+    margin-bottom: 60px;
+}
+
+.title-line {
+    margin-bottom: 19px;
+}
+
+.country {
+    font-size: 20px;
+    margin-bottom: 38px;
+}
+
+p {
+    line-height: 1.2em;
+}
+
+.title-footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.signature-block {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: stretch;
+    flex-wrap: nowrap;
+}
+
+.signature,
+.qr-code,
+.qr-text {
+    flex: 33% 1 1;
+}
+
+.qr-text {
+    font-size: 8px;
+}
+
+.date-block {
+    margin-top: 24px;
+}
+
+.date-block>span {
+    display: block;
+    font-size: 16px;
+}
+
+.centre {
+    text-align: center;
+}
+
+.schedule-block {
+    page-break-before: always;
+}
+
+.schedule-index {
+    font-size: 13px;
+    margin-right: 0;
+    margin-top: -2px;
+    text-align: right;
+}
+
+.schedule-header {
+    margin-top: 80px;
+}
+
+.product-header {
+    margin-bottom: 2px;
+}
+
+.product-name {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}

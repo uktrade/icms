@@ -39,7 +39,9 @@
   {{ icms_link(request, icms_url('case:list-notes', kwargs={'application_pk': process.pk, 'case_type': 'export'}),
                'Case Notes (' + process.case_notes.completed().count()|string + '/' + process.case_notes.active().count()|string + ')') }}
 
-  {{ icms_link(request, icms_url('case:prepare-response', kwargs={'case_type': 'export', 'application_pk': process.pk}), 'Response Preparation') }}
+  {% if process.status != "COMPLETED" and not all_vr.exists() %}
+    {{ icms_link(request, icms_url('case:prepare-response', kwargs={'case_type': 'export', 'application_pk': process.pk}), 'Response Preparation') }}
+  {% endif %}
 
   {% if not readonly_view %}
     {{ icms_link(request, icms_url('case:start-authorisation', kwargs={'application_pk': process.pk, 'case_type': 'export'}), 'Authorisation') }}
