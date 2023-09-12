@@ -398,9 +398,5 @@ LOGGING = {
             "handlers": ["console"],
             "level": "INFO",
         },
-        "weasyprint": {
-            "level": "ERROR",
-            "handlers": ["null_handler"],
-        },
     },
 }
