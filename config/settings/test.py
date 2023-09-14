@@ -5,7 +5,14 @@ SECRET_KEY = env.str("ICMS_SECRET_KEY", default="test")
 DATABASES = {
     "default": env.db("DATABASE_URL", "postgres://postgres:password@db:5432/postgres")  # /PS-IGNORE
 }
-ALLOWED_HOSTS = ["localhost", "web"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "web",
+    # Default server in django test Client (used for ilb caseworker site currently)
+    "testserver",
+    "import-a-licence",
+    "export-a-certificate",
+]
 DEBUG = True
 
 # speed up tests; see https://docs.djangoproject.com/en/3.0/topics/testing/overview/#password-hashing

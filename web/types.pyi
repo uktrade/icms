@@ -7,6 +7,8 @@ from _typeshed import Incomplete
 from django.http import HttpRequest
 
 if TYPE_CHECKING:
+    from django.contrib.sites.models import Site
+
     from web.middleware.common import ICMSMiddlewareContext
     from web.models import User
 
@@ -48,6 +50,7 @@ class TypedTextChoices(str, Choices, metaclass=_TypedTextChoicesMeta):
 class AuthenticatedHttpRequest(HttpRequest):
     user: "User"
     icms: "ICMSMiddlewareContext"
+    site: "Site"
 
 class DocumentTypes(Enum):
     LICENCE_PREVIEW: Incomplete

@@ -15,12 +15,14 @@ FAKE_OPENID_CONFIG_URL = "https://oidc.onelogin.gov.uk/.well-known/openid-config
 FAKE_AUTHORIZE_URL = "https://oidc.onelogin.gov.uk/authorize"
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="class")
 def correct_settings():
     """Ensure One Login is enabled for all tests"""
     with override_settings(
         GOV_UK_ONE_LOGIN_ENABLED=True,
         GOV_UK_ONE_LOGIN_OPENID_CONFIG_URL=FAKE_OPENID_CONFIG_URL,
+        # Required to fix tests (these tests don't really care about SITE_ID)
+        SITE_ID=1,
     ):
         yield None
 
@@ -46,7 +48,7 @@ def openid_config(requests_mock):
 
 class TestAuthView:
     @pytest.fixture(autouse=True)
-    def setup(self, client):
+    def setup(self, db, client):
         self.client = client
         self.url = reverse("one_login:login")
 
@@ -69,7 +71,7 @@ class TestAuthView:
 
 class TestAuthCallbackView:
     @pytest.fixture(autouse=True)
-    def setup(self, client):
+    def setup(self, db, client):
         self.client = client
         self.url = reverse("one_login:callback")
 

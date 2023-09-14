@@ -6,6 +6,7 @@ from unittest import mock
 import pytest
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
+from django.contrib.sites.models import Site
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import override_settings, signals
@@ -40,6 +41,7 @@ from web.models import (
     WoodQuotaApplication,
 )
 from web.models.shared import YesNoNAChoices
+from web.sites import EXPORTER_SITE_NAME, IMPORTER_SITE_NAME
 from web.tests.helpers import CaseURLS, get_test_client
 
 from .application_utils import (
@@ -313,13 +315,18 @@ def ho_admin_client(ho_admin_user) -> Client:
 
 
 @pytest.fixture()
-def importer_client(importer_one_contact) -> Client:
-    return get_test_client(importer_one_contact)
+def importer_site(db):
+    return Site.objects.get(name=IMPORTER_SITE_NAME)
 
 
 @pytest.fixture()
-def importer_agent_client(importer_one_agent_one_contact) -> Client:
-    return get_test_client(importer_one_agent_one_contact)
+def importer_client(importer_one_contact, importer_site) -> Client:
+    return get_test_client(importer_one_contact, server_name=importer_site.domain)
+
+
+@pytest.fixture()
+def importer_agent_client(importer_one_agent_one_contact, importer_site) -> Client:
+    return get_test_client(importer_one_agent_one_contact, server_name=importer_site.domain)
 
 
 @pytest.fixture()
@@ -493,13 +500,18 @@ def sanctions_app_submitted(
 
 
 @pytest.fixture()
-def exporter_client(exporter_one_contact) -> Client:
-    return get_test_client(exporter_one_contact)
+def exporter_site(db):
+    return Site.objects.get(name=EXPORTER_SITE_NAME)
 
 
 @pytest.fixture()
-def exporter_agent_client(exporter_one_agent_one_contact) -> Client:
-    return get_test_client(exporter_one_agent_one_contact)
+def exporter_client(exporter_one_contact, exporter_site) -> Client:
+    return get_test_client(exporter_one_contact, server_name=exporter_site.domain)
+
+
+@pytest.fixture()
+def exporter_agent_client(exporter_one_agent_one_contact, exporter_site) -> Client:
+    return get_test_client(exporter_one_agent_one_contact, server_name=exporter_site.domain)
 
 
 @pytest.fixture()
