@@ -5,7 +5,13 @@ SECRET_KEY = env.str("ICMS_SECRET_KEY", default="development")
 DATABASES = {
     "default": env.db("DATABASE_URL", "postgres://postgres:password@db:5432/postgres")  # /PS-IGNORE
 }
-ALLOWED_HOSTS = ["localhost", "web"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "web",
+    "caseworker",
+    "import-a-licence",
+    "export-a-certificate",
+]
 DEBUG = True
 
 # for https://github.com/uktrade/django-chunk-s3-av-upload-handlers

@@ -26,6 +26,7 @@ from web.models import (
     Task,
 )
 from web.permissions import Perms, organisation_add_contact
+from web.sites import require_exporter, require_importer
 from web.types import AuthenticatedHttpRequest
 from web.views import ModelFilterView
 
@@ -95,6 +96,7 @@ class ListExporterAccessRequest(ModelFilterView):
 
 
 @login_required
+@require_importer(check_permission=False)
 @ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def importer_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
     with transaction.atomic():
@@ -135,6 +137,7 @@ def importer_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
 
 
 @login_required
+@require_exporter(check_permission=False)
 @ratelimit(key="ip", rate="5/m", block=True, method=UNSAFE)
 def exporter_access_request(request: AuthenticatedHttpRequest) -> HttpResponse:
     with transaction.atomic():

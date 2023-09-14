@@ -2,6 +2,7 @@ import datetime
 
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand, CommandError
 from guardian.shortcuts import assign_perm
 
@@ -26,6 +27,7 @@ from web.permissions import (
     ImporterObjectPermissions,
     constabulary_add_contact,
 )
+from web.sites import CASEWORKER_SITE_NAME, EXPORTER_SITE_NAME, IMPORTER_SITE_NAME
 from web.tests.organisations import TEST_EXPORTERS, TEST_IMPORTERS
 from web.tests.types import (
     AgentExporter,
@@ -53,6 +55,19 @@ class Command(BaseCommand):
         self.stdout.write("Adding test data for unit tests.")
 
         load_app_test_data()
+
+        site = Site.objects.get(name=CASEWORKER_SITE_NAME)
+        # Default name of django test client (used for caseworker site)
+        site.domain = "testserver"
+        site.save()
+
+        site = Site.objects.get(name=EXPORTER_SITE_NAME)
+        site.domain = "export-a-certificate"
+        site.save()
+
+        site = Site.objects.get(name=IMPORTER_SITE_NAME)
+        site.domain = "import-a-licence"
+        site.save()
 
         # Access requests
         access_user = self.create_user("access_request_user")

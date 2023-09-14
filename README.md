@@ -34,6 +34,9 @@ developing, only within Docker.
 
 ## Initial setup
 
+- copy `.env.example` to `.env`.
+  - There are a vew values you may need later stored in vault / ask another dev for correct values.
+  - If you want to see all database queries done by each request, add `SHOW_DB_QUERIES=True` to it.
 - `make build`
   - Build all Docker containers
 - `make setup`
@@ -59,30 +62,38 @@ developing, only within Docker.
 - `make add_dummy_data`
   - Create test user(s), add needed permissions to user(s), create dummy importer and exporter, etc
 
-- Ask somebody for a copy of `.env`.
-  - See `.env.example` for common settings.
-  - If you want to see all database queries done by each request, add `SHOW_DB_QUERIES=True` to it.
+- `make manage args="set_icms_sites http://caseworker http://export-a-certificate http://import-a-licence"`
+  - Creates the sites for working on ICMS locally
+
+- Add the following lines to your `/etc/hosts` file:
+```
+127.0.0.1   caseworker
+127.0.0.1   export-a-certificate
+127.0.0.1   import-a-licence
+```
 
 ## Running the application
 
 Start everything using docker-compose: `make debug`
 
-Go to http://localhost:8080, login with the one of the test accounts:
+Go to http://caseworker:8080, login with the one of the test accounts:
   - ilb_admin
   - ilb_admin_2
-  - importer_user
-  - exporter_user
-  - importer_agent
-  - exporter_agent
   - nca_admin
   - ho_admin
   - san_admin
   - san_admin_2
   - con_user
 
-The password is the same for each user: `admin`
+Go to http://import-a-licence:8080, login with the one of the test accounts:
+  - importer_user
+  - importer_agent
 
-Above script will start a PostgreSQL database and ICMS app in debug mode.
+Go to http://export-a-certificate:8080, login with the one of the test accounts:
+  - exporter_user
+  - exporter_agent
+
+The password is the same for each user: `admin`
 
 Make sure to rebuild the Docker images if new dependencies are added to the
 requirements files: `make build`.
@@ -155,6 +166,7 @@ docker volume rm icms_pgdata
 make migrate
 make manage args="create_icms_groups"
 make add_dummy_data
+make manage args="set_icms_sites http://caseworker http://export-a-certificate http://import-a-licence"
 ```
 
 Alternatively you can run the script found here: `./scripts/reset-local-docker-db`
@@ -166,6 +178,7 @@ The following commands can be run to regenerate `web/migrations/0001_initial.py`
 ```
 rm web/migrations/*.py
 make migrations
+git restore web/migrations/0002_data_add_sites.py
 make black_format
 make isort_format
 ```
@@ -218,22 +231,5 @@ ICMSFileField.
 ## Environment Variables
 
 See `.env.example`
-
-| Environment variable              | Default                                    | Notes                                                  |
-| --------------------------------- | ------------------------------------------ | ---------------------------------                      |
-| ICMS_WEB_PORT                     | 8080                                       |                                                        |
-| DATABASE_URL                      | postgres://postgres@db:5432/postgres       | Format postgres://username/password@host:port/database |
-| ICMS_SECRET_KEY                   | random                                     | Django secret key                                      |
-| ICMS_ALLOWED_HOSTS                | localhost                                  | Comma separated list of hosts                          |
-| AWS_REGION                        |                                            | E.g. eu-west-2                                         |
-| AWS_ACCESS_KEY_ID                 |                                            | Access Key ID from AWS console                         |
-| AWS_SECRET_ACCESS_KEY             |                                            | Secret Access Key from AWS console                     |
-| AWS_STORAGE_BUCKET_NAME           |                                            | E.g. icms.staging                                      |
-| CLAM_AV_DOMAIN                    |                                            | E.g. scan.com                                          |
-| CLAM_AV_USERNAME                  |                                            |                                                        |
-| CLAM_AV_PASSWORD                  |                                            |                                                        |
-| ELASTIC_APM_SECRET_TOKEN          |                                            | Elastic APM server secret token for sending metrics    |
-| ELASTIC_APM_ENVIRONMENT           |                                            | deployment env to separate metrics per env. e.g. prod  |
-| ELASTIC_APM_URL                   |                                            | Elastic APM server URL                                 |
 
 See also `docker-compose.yml` for additional debug environment variables.

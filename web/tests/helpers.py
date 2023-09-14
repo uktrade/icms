@@ -21,8 +21,16 @@ from web.models import (
 from web.utils.validation import ApplicationErrors
 
 
-def get_test_client(user: User) -> Client:
-    client = Client()
+def get_test_client(user: User, server_name: str = "testserver") -> Client:
+    """Create a test client
+
+    :param user: User instance
+    :param server_name: domain to link to the correct site.
+
+    The default "testserver" is currently being used to mean the ILB caseworker site.
+    """
+
+    client = Client(SERVER_NAME=server_name)
     assert client.login(username=user.username, password="test") is True, "Failed to login"
     return client
 

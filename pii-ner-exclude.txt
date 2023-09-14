@@ -3346,3 +3346,5 @@ Application Variation Request Refused
 Application Variation Request Update
 Application Variation Request Update Required
 Application Variation Request Update Received
+Export A Certificate
+Import A Licence
