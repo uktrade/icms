@@ -54,9 +54,6 @@
             </tr>
         {% endif %}
       {% elif case_type == "export" %}
-        {# TODO: Revisit when we can generate an export certificate: #}
-        {# https://uktrade.atlassian.net/browse/ICMSLST-1407 #}
-        {# https://uktrade.atlassian.net/browse/ICMSLST-1408 #}
         {# https://uktrade.atlassian.net/browse/ICMSLST-2296 #}
         {% if is_cfs %}
             <tr>
@@ -75,6 +72,8 @@
                 </td>
             </tr>
         {% endif %}
+        {# TODO: Revisit when we can generate a gmp certificate: #}
+        {# https://uktrade.atlassian.net/browse/ICMSLST-1408 #}
         {% for document in certificate_docs %}
             {% set country = document.reference_data.country %}
             <tr>

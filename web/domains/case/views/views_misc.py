@@ -769,8 +769,7 @@ def get_document_context(
             "certificate_pk": certificate.pk,
             "is_import": False,
             "is_issued": bool(application.status == ImpExpStatus.COMPLETED or issued_document),
-            # TODO: Revisit when we can generate an export certificate
-            # https://uktrade.atlassian.net/browse/ICMSLST-1407
+            # TODO: Revisit when we can generate a GMP certificate
             # https://uktrade.atlassian.net/browse/ICMSLST-1408
         }
 

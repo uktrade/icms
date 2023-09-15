@@ -6,6 +6,7 @@ from django.conf import settings
 
 from web.models import (
     CertificateOfFreeSaleApplication,
+    CertificateOfManufactureApplication,
     DFLApplication,
     OpenIndividualLicenceApplication,
     SILApplication,
@@ -78,7 +79,7 @@ def mock_get_licence_endorsements(monkeypatch):
             DocumentTypes.COVER_LETTER_PRE_SIGN,
             "pdf/import/cover-letter.html",
         ),
-        # Export certificates require a country
+        # Export Certificates
         (
             CertificateOfFreeSaleApplication,
             DocumentTypes.CERTIFICATE_PREVIEW,
@@ -88,6 +89,16 @@ def mock_get_licence_endorsements(monkeypatch):
             CertificateOfFreeSaleApplication,
             DocumentTypes.CERTIFICATE_PRE_SIGN,
             "pdf/export/cfs-certificate.html",
+        ),
+        (
+            CertificateOfManufactureApplication,
+            DocumentTypes.CERTIFICATE_PREVIEW,
+            "pdf/export/com-certificate.html",
+        ),
+        (
+            CertificateOfManufactureApplication,
+            DocumentTypes.CERTIFICATE_PRE_SIGN,
+            "pdf/export/com-certificate.html",
         ),
     ],
 )
@@ -314,6 +325,19 @@ def test_get_preview_cfs_certificate_context(cfs_app_submitted):
 
     assert context["preview"] is True
     assert context["schedule_paragraphs"]
+    assert context["exporter_name"] == app.exporter.name.upper()
+    assert context["reference"] == "[[CERTIFICATE_REFERENCE]]"
+
+
+def test_get_preview_com_certificate_context(com_app_submitted):
+    app = com_app_submitted
+    country = app.countries.first()
+    certificate = app.certificates.first()
+    generator = PdfGenerator(app, certificate, DocumentTypes.CERTIFICATE_PREVIEW, country)
+
+    context = generator.get_document_context()
+
+    assert context["preview"] is True
     assert context["exporter_name"] == app.exporter.name.upper()
     assert context["reference"] == "[[CERTIFICATE_REFERENCE]]"
 
