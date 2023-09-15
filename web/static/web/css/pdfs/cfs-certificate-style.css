@@ -26,7 +26,7 @@
     }
 }
 
-@page: first {
+@page:first {
     @bottom-left {
         content: none;
     }
@@ -53,10 +53,6 @@ footer>p {
 
 .footer-reference {
     margin-bottom: 12px;
-}
-
-.preview-orange {
-    color: darkorange;
 }
 
 .page-margin {
@@ -123,7 +119,8 @@ p {
 .signature,
 .qr-code,
 .qr-text {
-    flex: 33% 1 1;
+    display: block;
+    flex: 33% 0 0;
 }
 
 .qr-text {

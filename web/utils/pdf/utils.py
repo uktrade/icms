@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from web.domains.case.types import ImpOrExp
     from web.models import (
         CertificateOfFreeSaleApplication,
+        CertificateOfManufactureApplication,
         Country,
         DFLApplication,
         ExportApplication,
@@ -368,7 +369,7 @@ def day_ordinal_date(date: dt.date) -> str:
     return f"{day}{suffix} {date.strftime('%B %Y')}"
 
 
-def get_certificate_context(
+def _get_certificate_context(
     application: "ExportApplication",
     certificate: "ExportApplicationCertificate",
     doc_type: DocumentTypes,
@@ -395,8 +396,41 @@ def get_certificate_context(
         "reference": reference,
         "qr_check_url": "Placeholder url",
         "issue_date": issue_date,
-        "schedule_paragraphs": fetch_schedule_paragraphs(application),
         "process": application,
-        "page_title": f"Certificate of Free Sale ({country.name}) Preview",
         "preview": preview,
+    }
+
+
+def get_cfs_certificate_context(
+    application: "CertificateOfFreeSaleApplication",
+    certificate: "ExportApplicationCertificate",
+    doc_type: DocumentTypes,
+    country: "Country",
+) -> "Context":
+    context = _get_certificate_context(application, certificate, doc_type, country)
+
+    return context | {
+        "schedule_paragraphs": fetch_schedule_paragraphs(application),
+        "page_title": f"Certificate of Free Sale ({country.name}) Preview",
+    }
+
+
+def split_text_field_newlines(text: str) -> list[str]:
+    """Splits a text field separated by newlines into a list of strings"""
+    cleaned = re.sub(r"\n+", "\n", text.strip())
+    return [line.strip() for line in cleaned.split("\n") if line.strip()]
+
+
+def get_com_certificate_context(
+    application: "CertificateOfManufactureApplication",
+    certificate: "ExportApplicationCertificate",
+    doc_type: DocumentTypes,
+    country: "Country",
+) -> "Context":
+    context = _get_certificate_context(application, certificate, doc_type, country)
+    return context | {
+        "page_title": f"Certificate of Manufacture ({country.name}) Preview",
+        "product_name": application.product_name,
+        "chemical_name": application.chemical_name,
+        "manufacturing_process_list": split_text_field_newlines(application.manufacturing_process),
     }

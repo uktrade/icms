@@ -93,10 +93,9 @@ def create_export_application_document(
     application_pk: int, certificate_pk: int, casedocumentreference_pk: int, user_pk: int
 ) -> None:
     application = Process.objects.get(pk=application_pk).get_specific_model()
-    if application.process_type != ProcessTypes.CFS:
+    if application.process_type == ProcessTypes.GMP:
         print("*************************** SKIPPING FOR NOW")
-        # TODO: Revisit when we can generate an export certificate:
-        # https://uktrade.atlassian.net/browse/ICMSLST-1407
+        # TODO: Revisit when we can generate a GMP certificate:
         # https://uktrade.atlassian.net/browse/ICMSLST-1408
         return
 

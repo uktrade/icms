@@ -53,37 +53,41 @@ class PdfGenerator:
             return "pdf/import/cover-letter.html"
 
         if self.doc_type == DocumentTypes.LICENCE_PREVIEW:
-            if self.application.process_type == ProcessTypes.FA_OIL:
-                return "pdf/import/fa-oil-licence-preview.html"
-            if self.application.process_type == ProcessTypes.FA_DFL:
-                return "pdf/import/fa-dfl-licence-preview.html"
-            if self.application.process_type == ProcessTypes.FA_SIL:
-                return "pdf/import/fa-sil-licence-preview.html"
-
-            # Default
-            return "web/domains/case/import/manage/preview-licence.html"
+            match self.application.process_type:
+                case ProcessTypes.FA_OIL:
+                    return "pdf/import/fa-oil-licence-preview.html"
+                case ProcessTypes.FA_DFL:
+                    return "pdf/import/fa-dfl-licence-preview.html"
+                case ProcessTypes.FA_SIL:
+                    return "pdf/import/fa-sil-licence-preview.html"
+                case _:
+                    return "web/domains/case/import/manage/preview-licence.html"
 
         # TODO: ICMSLST-697 Revisit when signing the document (it may need its own context / template)
         if self.doc_type in (DocumentTypes.LICENCE_PRE_SIGN, DocumentTypes.LICENCE_SIGNED):
-            if self.application.process_type == ProcessTypes.FA_OIL:
-                return "pdf/import/fa-oil-licence-pre-sign.html"
-
-            if self.application.process_type == ProcessTypes.FA_DFL:
-                return "pdf/import/fa-dfl-licence-pre-sign.html"
-
-            if self.application.process_type == ProcessTypes.FA_SIL:
-                return "pdf/import/fa-sil-licence-pre-sign.html"
-
-            # Default
-            return "web/domains/case/import/manage/preview-licence.html"
+            match self.application.process_type:
+                case ProcessTypes.FA_OIL:
+                    return "pdf/import/fa-oil-licence-pre-sign.html"
+                case ProcessTypes.FA_DFL:
+                    return "pdf/import/fa-dfl-licence-pre-sign.html"
+                case ProcessTypes.FA_SIL:
+                    return "pdf/import/fa-sil-licence-pre-sign.html"
+                case _:
+                    return "web/domains/case/import/manage/preview-licence.html"
 
         if self.doc_type in (
             DocumentTypes.CERTIFICATE_PREVIEW,
             DocumentTypes.CERTIFICATE_PRE_SIGN,
             DocumentTypes.CERTIFICATE_SIGNED,
         ):
-            if self.application.process_type == ProcessTypes.CFS:
-                return "pdf/export/cfs-certificate.html"
+            match self.application.process_type:
+                case ProcessTypes.CFS:
+                    return "pdf/export/cfs-certificate.html"
+                case ProcessTypes.COM:
+                    return "pdf/export/com-certificate.html"
+                case ProcessTypes.GMP:
+                    # TODO ICMSLST-1408
+                    pass
 
         raise ValueError(f"Unsupported document type: {self.doc_type}")
 
@@ -104,23 +108,22 @@ class PdfGenerator:
             DocumentTypes.LICENCE_PRE_SIGN,
             DocumentTypes.LICENCE_SIGNED,
         ]:
-            if self.application.process_type == ProcessTypes.FA_OIL:
-                return utils.get_fa_oil_licence_context(
-                    self.application, self.doc_pack, self.doc_type
-                )
+            match self.application.process_type:
+                case ProcessTypes.FA_OIL:
+                    return utils.get_fa_oil_licence_context(
+                        self.application, self.doc_pack, self.doc_type
+                    )
+                case ProcessTypes.FA_DFL:
+                    return utils.get_fa_dfl_licence_context(
+                        self.application, self.doc_pack, self.doc_type
+                    )
+                case ProcessTypes.FA_SIL:
+                    return utils.get_fa_sil_licence_context(
+                        self.application, self.doc_pack, self.doc_type
+                    )
+                case _:
+                    return utils.get_licence_context(self.application, self.doc_pack, self.doc_type)
 
-            elif self.application.process_type == ProcessTypes.FA_DFL:
-                return utils.get_fa_dfl_licence_context(
-                    self.application, self.doc_pack, self.doc_type
-                )
-
-            elif self.application.process_type == ProcessTypes.FA_SIL:
-                return utils.get_fa_sil_licence_context(
-                    self.application, self.doc_pack, self.doc_type
-                )
-
-            else:
-                return utils.get_licence_context(self.application, self.doc_pack, self.doc_type)
         elif self.doc_type in [
             DocumentTypes.CERTIFICATE_PREVIEW,
             DocumentTypes.CERTIFICATE_PRE_SIGN,
@@ -129,8 +132,19 @@ class PdfGenerator:
             if not self.country:
                 raise ValueError("Country must be specified for export certificates")
 
-            return utils.get_certificate_context(
-                self.application, self.doc_pack, self.doc_type, self.country
-            )
+            match self.application.process_type:
+                case ProcessTypes.CFS:
+                    return utils.get_cfs_certificate_context(
+                        self.application, self.doc_pack, self.doc_type, self.country
+                    )
+                case ProcessTypes.COM:
+                    return utils.get_com_certificate_context(
+                        self.application, self.doc_pack, self.doc_type, self.country
+                    )
+                case ProcessTypes.GMP:
+                    # TODO ICMSLST-1408
+                    pass
+
+            raise ValueError(f"Unsupported process type: {self.application.process_type}")
         else:
             raise ValueError(f"Unsupported document type: {self.doc_type}")

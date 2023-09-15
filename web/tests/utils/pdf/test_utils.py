@@ -304,3 +304,17 @@ def test_clean_address(address, postcode, expected):
 )
 def test_day_ordinal_date(date, expected):
     assert utils.day_ordinal_date(date) == expected
+
+
+@pytest.mark.parametrize(
+    "text,expected",
+    [
+        ("Some Text", ["Some Text"]),
+        ("Some \nText", ["Some", "Text"]),
+        ("\n\nSome\n\n \nText ", ["Some", "Text"]),
+        ("\n\nSome\n\n\nMore\n\n\n\n   Text ", ["Some", "More", "Text"]),
+        ("\n\nSome\n  \n  \nMore\n \n   \n \n   Text ", ["Some", "More", "Text"]),
+    ],
+)
+def test_split_text_field_newlines(text, expected):
+    assert utils.split_text_field_newlines(text) == expected
