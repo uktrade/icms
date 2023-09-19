@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" href="{{ static('web/img/favicon.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ static('web/css/pdfs/certificate-style.css') }}"/>
+    {% block stylesheet %}
+    {% endblock %}
+    {% if preview %}
+      <link rel="stylesheet" href="{{ static('web/css/pdfs/preview.css') }}"/>
+    {% endif %}
+    <title>{% block page_title %}{{ page_title }}{% endblock %} - ICMS</title>
+  </head>
+
+  <body>
+    <header>
+        <span class="page-margin reference {{ 'preview-orange' if preview }}">{{ reference }}</span>
+    </header>
+    {% block footer %}
+    {% endblock %}
+    <div class="certificate-header">
+      <img
+        id="dbt-logo"
+        alt="DBT Logo"
+        class="header-block"
+        src="{{ static('web/img/dbt_red_transparent_bg.png') }}" />
+    </div>
+    <hr>
+
+    <div class="title-page">
+      <div class="title-block page-margin">
+          <h3 class="title centre">
+              <p class="title-line">CERTIFICATE</p>
+              <p class="title-line">BY</p>
+              <p class="title-line">DEPARTMENT FOR BUSINESS AND TRADE</p>
+          </h3>
+          <h4 class="country centre">{{ country }}</h4>
+          {% block certificate_statement %}
+          {% endblock %}
+      </div>
+
+      <div class="title-footer">
+        <div class="signature-block page-margin">
+          {# TODO ICMSLST-697 - Revist when implementing digital signatures #}
+          {% if preview %}
+            <span class="signature">Signature not verified</span>
+            <span class="qr-code">[[QR Code Placeholder]]</span>
+          {% else %}
+            <span class="signature">Signature not verified</span>
+            <span class="qr-code">[[QR Code Placeholder]]</span>
+          {% endif %}
+            <span class="qr-text">Scan this QR code to check this
+              certificate's validity. Certificate
+              Code: {{ certificate_code }}
+              Alternatively you can go to
+              {{ qr_check_url }} and
+              enter the certificate reference and
+              code.</span>
+        </div>
+        <div class="date-block page-margin">
+          <span>Date issued:</span>
+          <span>{{ issue_date }}</span>
+        </div>
+      </div>
+    </div>
+
+    {% block schedules %}
+    {% endblock %}
+  </body>
+</html>

@@ -72,8 +72,6 @@
                 </td>
             </tr>
         {% endif %}
-        {# TODO: Revisit when we can generate a gmp certificate: #}
-        {# https://uktrade.atlassian.net/browse/ICMSLST-1408 #}
         {% for document in certificate_docs %}
             {% set country = document.reference_data.country %}
             <tr>

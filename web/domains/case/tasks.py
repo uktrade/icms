@@ -10,7 +10,6 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task
 from web.domains.chief import client
-from web.flow.models import ProcessTypes
 from web.mail.emails import send_completed_application_process_notifications
 from web.models import (
     CaseDocumentReference,
@@ -93,12 +92,6 @@ def create_export_application_document(
     application_pk: int, certificate_pk: int, casedocumentreference_pk: int, user_pk: int
 ) -> None:
     application = Process.objects.get(pk=application_pk).get_specific_model()
-    if application.process_type == ProcessTypes.GMP:
-        print("*************************** SKIPPING FOR NOW")
-        # TODO: Revisit when we can generate a GMP certificate:
-        # https://uktrade.atlassian.net/browse/ICMSLST-1408
-        return
-
     with transaction.atomic():
         user = User.objects.get(pk=user_pk)
 

@@ -124,7 +124,6 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
                     "documents": [
                         {
                             "name": _get_cdr_name(application, doc),
-                            # https://uktrade.atlassian.net/browse/ICMSLST-1408 #}
                             "url": reverse(
                                 "case:view-case-document",
                                 kwargs={

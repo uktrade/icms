@@ -11,9 +11,11 @@
     <ul>
     {% for country in countries %}
       <li>
-        {# TODO: Revisit when we can generate an export certificate: #}
-        {# https://uktrade.atlassian.net/browse/ICMSLST-1408 #}
-        <a href="#">Certificate of Good Manufacturing Practice (cosmetic brand) ({{ country.name }})</a>
+        <a href="{{ icms_url('case:certificate-preview', kwargs={'application_pk': process.pk, 'country_pk': country.pk, 'case_type': case_type}) }}"
+          target="_blank"
+          rel="noopener noreferrer">
+            Certificate of Good Manufacturing Practice ({{ country.name }})
+        </a>
       </li>
     {% endfor %}
     </ul>

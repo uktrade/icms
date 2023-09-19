@@ -1,89 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <link rel="icon" href="{{ static('web/img/favicon.png') }}" type="image/png">
-    <link rel="stylesheet" href="{{ static('web/css/pdfs/cfs-certificate-style.css') }}"/>
-    {% if preview %}
-      <link rel="stylesheet" href="{{ static('web/css/pdfs/preview.css') }}"/>
-    {% endif %}
-    <title>{% block page_title %}{{ page_title }}{% endblock %} - ICMS</title>
-  </head>
+{% extends "pdf/export/certificate-base.html" %}
 
-  <body>
-    <header>
-        <span class="page-margin reference {{ 'preview-orange' if preview }}">{{ reference }}</span>
-    </header>
-    <footer>
-      <p>
-        This schedule is only valid with Certificate
-        <span class="footer-reference {{ 'preview-orange' if preview }}">{{ reference }}</span>
-      </p>
-      <p>Date Issued: {{ issue_date }}</p>
-    </footer>
-    <div class="certificate-header">
-      <img
-        id="dbt-logo"
-        alt="DBT Logo"
-        class="header-block"
-        src="{{ static('web/img/dbt_red_transparent_bg.png') }}" />
-    </div>
-    <hr>
+{% block stylesheet %}
+  <link rel="stylesheet" href="{{ static('web/css/pdfs/cfs-certificate-style.css') }}"/>
+{% endblock %}
 
-    <div class="title-page">
-      <div class="title-block page-margin">
-          <h3 class="title centre">
-              <p class="title-line">CERTIFICATE</p>
-              <p class="title-line">BY</p>
-              <p class="title-line">DEPARTMENT FOR BUSINESS AND TRADE</p>
-          </h3>
-          <h4 class="country centre">{{ country }}</h4>
-          <p>
-              It is hereby certified for the purposes of the laws of the above mentioned country that the product(s)
-              named in the Schedule which forms part of this certificate may lawfully be sold in the United Kingdom
-              if it meets the statutory requirements.
-          </p>
-      </div>
+{% block footer %}
+  <footer>
+    <p>
+      This schedule is only valid with Certificate
+      <span class="footer-reference {{ 'preview-orange' if preview }}">{{ reference }}</span>
+    </p>
+    <p>Date Issued: {{ issue_date }}</p>
+  </footer>
+{% endblock %}
 
-      <div class="title-footer">
-        <div class="signature-block page-margin">
-          {# TODO ICMSLST-697 - Revist when implementing digital signatures #}
-          {% if preview %}
-            <span class="signature">Signature not verified</span>
-            <span class="qr-code">[[QR Code Placeholder]]</span>
-          {% else %}
-            <span class="signature">Signature not verified</span>
-            <span class="qr-code">[[QR Code Placeholder]]</span>
-          {% endif %}
-            <span class="qr-text">Scan this QR code to check this
-              certificate's validity. Certificate
-              Code: {{ certificate_code }}
-              Alternatively you can go to
-              {{ qr_check_url }} and
-              enter the certificate reference and
-              code.</span>
-        </div>
-        <div class="date-block page-margin">
-          <span>Date issued:</span>
-          <span>{{ issue_date }}</span>
-        </div>
+{% block certificate_statement %}
+  <p>
+    It is hereby certified for the purposes of the laws of the above mentioned country that the product(s)
+    named in the Schedule which forms part of this certificate may lawfully be sold in the United Kingdom
+    if it meets the statutory requirements.
+  </p>
+{% endblock %}
+
+{% block schedules %}
+  {% for schedule in process.schedules.order_by('created_at') %}
+    <div class="schedule-block page-margin">
+      <p class="schedule-index">Schedule {{ loop.index }} of {{ loop.length }}</p>
+      <h4 class="schedule-header">SCHEDULE TO CERTIFICATE OF FREE SALE</h4>
+      <p>{{ exporter_name }}, of {{ exporter_address }} has made the following legal declaration in relation to the products listed in this schedule:</p>
+      <p>{{ schedule_paragraphs[schedule.pk] }}</p>
+      <h4 class="product-header">PRODUCTS</h4>
+      <div class="products-block">
+        {% for product_name in schedule.products.values_list("product_name", flat=True).order_by('pk') %}
+          <p class="product-name">{{ product_name }}</p>
+        {% endfor %}
       </div>
     </div>
-
-
-    {% for schedule in process.schedules.order_by('created_at') %}
-        <div class="schedule-block page-margin">
-            <p class="schedule-index">Schedule {{ loop.index }} of {{ loop.length }}</p>
-            <h4 class="schedule-header">SCHEDULE TO CERTIFICATE OF FREE SALE</h4>
-            <p>{{ exporter_name }}, of {{ exporter_address }} has made the following legal declaration in relation to the products listed in this schedule:</p>
-            <p>{{ schedule_paragraphs[schedule.pk] }}</p>
-            <h4 class="product-header">PRODUCTS</h4>
-            <div class="products-block">
-                {% for product_name in schedule.products.values_list("product_name", flat=True).order_by('pk') %}
-                    <p class="product-name">{{ product_name }}</p>
-                {% endfor %}
-            </div>
-          </div>
-        </div>
-    {% endfor %}
-  </body>
-</html>
+    </div>
+  {% endfor %}
+{% endblock %}

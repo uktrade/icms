@@ -86,8 +86,9 @@ class PdfGenerator:
                 case ProcessTypes.COM:
                     return "pdf/export/com-certificate.html"
                 case ProcessTypes.GMP:
-                    # TODO ICMSLST-1408
-                    pass
+                    return "pdf/export/gmp-certificate.html"
+                case _:
+                    raise ValueError(f"Unsupported process type: {self.application.process_type}")
 
         raise ValueError(f"Unsupported document type: {self.doc_type}")
 
@@ -142,9 +143,10 @@ class PdfGenerator:
                         self.application, self.doc_pack, self.doc_type, self.country
                     )
                 case ProcessTypes.GMP:
-                    # TODO ICMSLST-1408
-                    pass
-
-            raise ValueError(f"Unsupported process type: {self.application.process_type}")
+                    return utils.get_gmp_certificate_context(
+                        self.application, self.doc_pack, self.doc_type, self.country
+                    )
+                case _:
+                    raise ValueError(f"Unsupported process type: {self.application.process_type}")
         else:
             raise ValueError(f"Unsupported document type: {self.doc_type}")
