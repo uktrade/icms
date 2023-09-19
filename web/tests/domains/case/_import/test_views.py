@@ -130,6 +130,27 @@ def test_preview_com_certificate(ilb_admin_client, com_app_submitted):
     assert 5000 < len(pdf) < 15000
 
 
+@pytest.mark.django_db
+def test_preview_gmp_certificate(ilb_admin_client, gmp_app_submitted):
+    process = gmp_app_submitted
+    country = process.countries.first()
+
+    url = reverse(
+        "case:certificate-preview",
+        kwargs={"application_pk": process.pk, "case_type": "import", "country_pk": country.pk},
+    )
+    response = ilb_admin_client.get(url)
+
+    assert response.status_code == 200
+    assert response["Content-Type"] == "application/pdf"
+    assert response["Content-Disposition"] == "filename=Certificate-Preview.pdf"
+
+    pdf = response.content
+    assert pdf.startswith(b"%PDF-")
+    # ensure the pdf generated has some content
+    assert 5000 < len(pdf) < 15000
+
+
 class TestBypassChiefView:
     client: "Client"
     wood_app: WoodQuotaApplication

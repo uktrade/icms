@@ -379,11 +379,6 @@ def _get_certificate_references_and_links(rec: ExportApplication) -> list[tuple[
     if not rec.latest_certificate_references or rec.status != ImpExpStatus.COMPLETED:
         return []
 
-    # TODO: Revisit when we can generate a gmp certificate:
-    # https://uktrade.atlassian.net/browse/ICMSLST-1408
-    if rec.process_type == ProcessTypes.GMP:
-        return []
-
     # The below code will be correct when we have certificate files uploaded to S3
     # Uncomment when the export certificate documents have been created.
     return [

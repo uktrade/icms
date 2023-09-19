@@ -2,12 +2,13 @@ import datetime as dt
 import re
 from typing import TYPE_CHECKING, Union
 
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.utils import timezone
 
 from web.domains.case.services import document_pack
 from web.domains.template.utils import get_cover_letter_content, get_letter_fragment
-from web.models import CFSSchedule
+from web.models import CertificateOfGoodManufacturingPracticeApplication, CFSSchedule
 from web.types import DocumentTypes
 
 if TYPE_CHECKING:
@@ -433,4 +434,34 @@ def get_com_certificate_context(
         "product_name": application.product_name,
         "chemical_name": application.chemical_name,
         "manufacturing_process_list": split_text_field_newlines(application.manufacturing_process),
+    }
+
+
+def get_gmp_certificate_context(
+    application: "CertificateOfGoodManufacturingPracticeApplication",
+    certificate: "ExportApplicationCertificate",
+    doc_type: DocumentTypes,
+    country: "Country",
+) -> "Context":
+    brand = application.brands.first()
+    context = _get_certificate_context(application, certificate, doc_type, country)
+    expiry_delta = relativedelta(years=3)
+
+    if certificate.case_completion_datetime:
+        expiry_date = certificate.case_completion_datetime.date() + expiry_delta
+    else:
+        expiry_date = dt.datetime.now().date() + expiry_delta
+
+    ni_country_type = CertificateOfGoodManufacturingPracticeApplication.CountryType.NIR
+
+    return context | {
+        "page_title": f"Certificate of Good Manufacturing Practice ({country.name}) Preview",
+        "brand_name": brand.brand_name,
+        "manufacturer_name": application.manufacturer_name,
+        "manufacturer_address": clean_address(
+            application.manufacturer_address, application.manufacturer_postcode
+        ),
+        "manufacturer_country": application.manufacturer_country,
+        "expiry_date": day_ordinal_date(expiry_date),
+        "is_ni": application.manufacturer_country == ni_country_type,
     }

@@ -6,6 +6,7 @@ from django.conf import settings
 
 from web.models import (
     CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     DFLApplication,
     OpenIndividualLicenceApplication,
@@ -99,6 +100,16 @@ def mock_get_licence_endorsements(monkeypatch):
             CertificateOfManufactureApplication,
             DocumentTypes.CERTIFICATE_PRE_SIGN,
             "pdf/export/com-certificate.html",
+        ),
+        (
+            CertificateOfGoodManufacturingPracticeApplication,
+            DocumentTypes.CERTIFICATE_PREVIEW,
+            "pdf/export/gmp-certificate.html",
+        ),
+        (
+            CertificateOfGoodManufacturingPracticeApplication,
+            DocumentTypes.CERTIFICATE_PRE_SIGN,
+            "pdf/export/gmp-certificate.html",
         ),
     ],
 )
@@ -340,6 +351,21 @@ def test_get_preview_com_certificate_context(com_app_submitted):
     assert context["preview"] is True
     assert context["exporter_name"] == app.exporter.name.upper()
     assert context["reference"] == "[[CERTIFICATE_REFERENCE]]"
+    assert context["product_name"] == app.product_name
+
+
+def test_get_preview_gmp_certifcate_context(gmp_app_submitted):
+    app = gmp_app_submitted
+    country = app.countries.first()
+    certificate = app.certificates.first()
+    generator = PdfGenerator(app, certificate, DocumentTypes.CERTIFICATE_PREVIEW, country)
+
+    context = generator.get_document_context()
+
+    assert context["preview"] is True
+    assert context["exporter_name"] == app.exporter.name.upper()
+    assert context["reference"] == "[[CERTIFICATE_REFERENCE]]"
+    assert context["brand_name"] == "A Brand"
 
 
 def test_certificate_no_country_get_document_context_invalid(cfs_app_submitted):
