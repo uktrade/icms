@@ -49,3 +49,15 @@ def get_mailshot_detail_view_url(mailshot: Mailshot, domain: str) -> str:
 
 def get_maintain_importers_view_url() -> str:
     return urljoin(get_caseworker_site_domain(), reverse("importer-list"))
+
+
+def get_document_view_url(application: ImpOrExp, full_url: bool = False) -> str:
+    url_kwargs = {"application_pk": application.pk}
+    if application.is_import_application():
+        url_kwargs["case_type"] = "import"
+    else:
+        url_kwargs["case_type"] = "export"
+    url = reverse("case:applicant-case-history", kwargs=url_kwargs)
+    if full_url:
+        return urljoin(get_caseworker_site_domain(), url)
+    return url

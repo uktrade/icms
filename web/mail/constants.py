@@ -46,6 +46,10 @@ class EmailTypes(TypedTextChoices):
         "FIREARMS_SUPPLEMENTARY_REPORT",
         "Firearms Supplementary Report",
     )
+    CONSTABULARY_DEACTIVATED_FIREARMS = (
+        "CONSTABULARY_DEACTIVATED_FIREARMS",
+        "Constabulary Deactivated Firearms",
+    )
     WITHDRAWAL_ACCEPTED = ("WITHDRAWAL_ACCEPTED", "Withdrawal Accepted")
     WITHDRAWAL_CANCELLED = ("WITHDRAWAL_CANCELLED", "Withdrawal Cancelled")
     WITHDRAWAL_OPENED = ("WITHDRAWAL_OPENED", "Withdrawal Opened")

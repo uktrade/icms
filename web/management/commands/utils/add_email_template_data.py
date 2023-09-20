@@ -91,6 +91,10 @@ templates = [
     (EmailTypes.AUTHORITY_EXPIRING_FIREARMS, "750157e0-36a8-4f2c-9e6e-d37d11a41eff"),  # /PS-IGNORE
     (EmailTypes.MAILSHOT, "0bd18673-37f1-4fd3-9103-ae156cd95e88"),  # /PS-IGNORE
     (EmailTypes.RETRACT_MAILSHOT, "5646a26a-f855-4826-a3b4-f1ca588ba309"),  # /PS-IGNORE
+    (
+        EmailTypes.CONSTABULARY_DEACTIVATED_FIREARMS,
+        "fc56ddb3-b918-480d-b209-82ef99733ed2",  # /PS-IGNORE
+    ),
 ]
 
 

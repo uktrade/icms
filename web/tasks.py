@@ -13,4 +13,3 @@ from web.mail.tasks import (  # NOQA
     send_mailshot_email_task,
     send_retract_mailshot_email_task,
 )
-from web.notify.email import send_email  # NOQA

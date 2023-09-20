@@ -15,6 +15,7 @@ from web.flow.models import ProcessTypes
 from web.models import CaseEmail as CaseEmailModel
 from web.models import (
     Constabulary,
+    DFLApplication,
     ExportApplication,
     Exporter,
     ExporterApprovalRequest,
@@ -29,7 +30,6 @@ from web.models import (
     VariationRequest,
     WithdrawApplication,
 )
-from web.notify import notify
 from web.sites import get_exporter_site_domain, get_importer_site_domain
 
 from .constants import EmailTypes
@@ -55,6 +55,7 @@ from .messages import (
     AuthorityArchivedEmail,
     CaseEmail,
     CertificateRevokedEmail,
+    ConstabularyDeactivatedFirearmsEmail,
     ExporterAccessRequestApprovalOpenedEmail,
     FirearmsAuthorityExpiringEmail,
     FirearmsSupplementaryReportEmail,
@@ -83,6 +84,7 @@ from .recipients import (
     get_email_addresses_for_users,
     get_ilb_case_officers_email_addresses,
     get_organisation_contact_email_addresses,
+    get_shared_mailbox_for_constabulary,
 )
 from .types import ImporterDetails
 
@@ -132,8 +134,7 @@ def send_application_complete_email(application: ImpOrExp) -> None:
 
 def send_completed_application_process_notifications(application: ImpOrExp) -> None:
     if application.process_type == ProcessTypes.FA_DFL:
-        # TODO: ICMSLST-2145 Update to use GOV Notify
-        notify.send_constabulary_deactivated_firearms_notification(application.dflapplication)
+        send_constabulary_deactivated_firearms_email(application.dflapplication)
 
     if application.process_type in [ProcessTypes.FA_DFL, ProcessTypes.FA_OIL, ProcessTypes.FA_SIL]:
         send_firearms_supplementary_report_email(application)
@@ -530,3 +531,8 @@ def send_authority_expiring_firearms_email(
             constabulary=constabulary,
             to=[recipient],
         ).send()
+
+
+def send_constabulary_deactivated_firearms_email(application: DFLApplication) -> None:
+    recipient = get_shared_mailbox_for_constabulary(application.constabulary)
+    ConstabularyDeactivatedFirearmsEmail(application=application, to=recipient).send()
