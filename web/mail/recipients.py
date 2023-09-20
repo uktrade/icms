@@ -98,6 +98,11 @@ def get_email_addresses_for_constabulary(constabulary: Constabulary) -> list[str
 
 
 @override_recipients
+def get_shared_mailbox_for_constabulary(constabulary: Constabulary) -> list[str]:
+    return [constabulary.email]
+
+
+@override_recipients
 def get_email_addresses_for_users(users: Iterable[User]) -> list[str]:
     emails = []
     for user in users:

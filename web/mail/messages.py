@@ -37,6 +37,7 @@ from .types import ImporterDetails
 from .url_helpers import (
     get_authority_view_url,
     get_case_view_url,
+    get_document_view_url,
     get_importer_view_url,
     get_mailshot_detail_view_url,
     get_maintain_importers_view_url,
@@ -282,6 +283,21 @@ class ApplicationReopenedEmail(BaseApplicationEmail):
 @final
 class FirearmsSupplementaryReportEmail(BaseApplicationEmail):
     name = EmailTypes.FIREARMS_SUPPLEMENTARY_REPORT
+
+
+@final
+class ConstabularyDeactivatedFirearmsEmail(BaseApplicationEmail):
+    name = EmailTypes.CONSTABULARY_DEACTIVATED_FIREARMS
+
+    def get_context(self) -> dict:
+        context = super().get_context()
+        # TODO: ICMSLST-2393 Issued documents view for constabularies
+        # Constabularies cannot view this page so this needs to be updated to a view they have permissions to.
+        context["documents_url"] = get_document_view_url(self.application, full_url=True)
+        return context
+
+    def get_site_domain(self) -> str:
+        return get_caseworker_site_domain()
 
 
 @final

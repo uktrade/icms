@@ -4,6 +4,7 @@ from django.utils import timezone
 from web.mail.url_helpers import (
     get_authority_view_url,
     get_case_view_url,
+    get_document_view_url,
     get_mailshot_detail_view_url,
     get_validate_digital_signatures_url,
 )
@@ -61,3 +62,29 @@ def test_get_authority_view_url(authority_class, full_url, expected_url, importe
         reference="Test Authority",
     )
     assert get_authority_view_url(authority, full_url) == expected_url.format(pk=authority.pk)
+
+
+@pytest.mark.parametrize(
+    "full_url,expected_url",
+    [
+        (False, "/case/export/{pk}/applicant-case-history/"),
+        (True, "http://caseworker/case/export/{pk}/applicant-case-history/"),
+    ],
+)
+def test_get_export_document_view_url(completed_cfs_app, full_url, expected_url):
+    assert get_document_view_url(completed_cfs_app, full_url=full_url) == expected_url.format(
+        pk=completed_cfs_app.pk
+    )
+
+
+@pytest.mark.parametrize(
+    "full_url,expected_url",
+    [
+        (False, "/case/import/{pk}/applicant-case-history/"),
+        (True, "http://caseworker/case/import/{pk}/applicant-case-history/"),
+    ],
+)
+def test_get_import_document_view_url(completed_dfl_app, full_url, expected_url):
+    assert get_document_view_url(completed_dfl_app, full_url=full_url) == expected_url.format(
+        pk=completed_dfl_app.pk
+    )

@@ -817,7 +817,7 @@ class TestEmails(AuthTestCase):
         assert mock_send_application_extension_complete_email.called is False
         assert mock_send_application_variation_complete_email.called is True
 
-    @mock.patch("web.notify.notify.send_constabulary_deactivated_firearms_notification")
+    @mock.patch("web.mail.emails.send_constabulary_deactivated_firearms_email")
     @mock.patch("web.mail.emails.send_firearms_supplementary_report_email")
     @mock.patch("web.mail.emails.send_completed_application_email")
     def test_send_completed_application_process_notifications_sil(
@@ -830,7 +830,7 @@ class TestEmails(AuthTestCase):
         supplementary_report_mock.assert_called_with(app)
         constabulary_mock.assert_not_called()
 
-    @mock.patch("web.notify.notify.send_constabulary_deactivated_firearms_notification")
+    @mock.patch("web.mail.emails.send_constabulary_deactivated_firearms_email")
     @mock.patch("web.mail.emails.send_firearms_supplementary_report_email")
     @mock.patch("web.mail.emails.send_completed_application_email")
     def test_send_completed_application_process_notifications_dfl(
@@ -1152,8 +1152,34 @@ Firearms references(s): 423,476,677\r\n"""
             "icms_url": get_caseworker_site_domain(),
             "maintain_importers_url": get_maintain_importers_view_url(),
         }
+
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             constabulary_contact.email,
+            exp_template_id,
+            personalisation=expected_import_personalisation,
+        )
+
+    def test_send_constabulary_deactivated_firearms_email(
+        self, completed_dfl_app, constabulary_contact
+    ):
+        exp_template_id = get_gov_notify_template_id(EmailTypes.CONSTABULARY_DEACTIVATED_FIREARMS)
+        emails.send_constabulary_deactivated_firearms_email(completed_dfl_app)
+        expected_import_personalisation = default_personalisation() | {
+            "icms_url": get_caseworker_site_domain(),
+            "reference": completed_dfl_app.reference,
+            "application_url": get_case_view_url(completed_dfl_app, get_caseworker_site_domain()),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "documents_url": urljoin(
+                get_caseworker_site_domain(),
+                reverse(
+                    "case:applicant-case-history",
+                    kwargs={"case_type": "import", "application_pk": completed_dfl_app.pk},
+                ),
+            ),
+        }
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            completed_dfl_app.constabulary.email,
             exp_template_id,
             personalisation=expected_import_personalisation,
         )
