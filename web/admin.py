@@ -3,6 +3,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.admin import SiteAdmin
+from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
 from django.urls import URLPattern, URLResolver, path
@@ -33,6 +35,7 @@ from web.models import (
     User,
 )
 from web.permissions import Perms
+from web.sites import CASEWORKER_SITE_NAME, EXPORTER_SITE_NAME, IMPORTER_SITE_NAME
 from web.views import login_start_view
 
 
@@ -89,6 +92,26 @@ class SuperUserUserAdmin(UserAdmin):
     """UserAdmin class for default django admin site"""
 
     inlines = (UserEmailInline,)
+
+
+class ICMSSiteForm(forms.ModelForm):
+    name = forms.ChoiceField(
+        label="Name",
+        choices=[(f, f) for f in (CASEWORKER_SITE_NAME, EXPORTER_SITE_NAME, IMPORTER_SITE_NAME)],
+        required=True,
+    )
+
+    class Meta:
+        model = Site
+        fields = ("domain", "name")
+
+
+class ICMSSiteAdmin(SiteAdmin):
+    form = ICMSSiteForm
+
+
+admin.site.unregister(Site)
+admin.site.register(Site, ICMSSiteAdmin)
 
 
 admin.site.register(User, SuperUserUserAdmin)
