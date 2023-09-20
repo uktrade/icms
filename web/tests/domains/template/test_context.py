@@ -1,6 +1,7 @@
 import pytest
 
 from web.domains.template.context import (
+    ScheduleParagraphContext,
     _get_import_goods_description,
     _get_sil_goods_text,
 )
@@ -59,3 +60,19 @@ def test_get_import_goods_description_wood(wood_app_submitted):
         match=r"GOODS_DESCRIPTION placeholder not supported for process type WoodQuotaApplication",
     ):
         _get_import_goods_description(wood_app_submitted)
+
+
+def test_schedule_paragraph_context(cfs_app_submitted):
+    schedule = cfs_app_submitted.schedules.first()
+    context = ScheduleParagraphContext(schedule)
+    address = "E1 ADDRESS LINE 1 E1 ADDRESS LINE 2 HG15DB"  # /PS-IGNORE
+
+    assert context["EXPORTER_NAME"] == "TEST EXPORTER 1"
+    assert context["EXPORTER_ADDRESS_FLAT"] == address
+    assert context["COUNTRY_OF_MANUFACTURE"] == "Afghanistan"
+
+    with pytest.raises(
+        ValueError,
+        match=r"RANDOM_VALUE is not a valid schedule paragraph context value",
+    ):
+        context["RANDOM_VALUE"]
