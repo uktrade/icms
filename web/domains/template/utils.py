@@ -5,6 +5,8 @@ from web.domains.case.types import ImpOrExp
 from web.flow.models import ProcessTypes
 from web.models import (
     AccessRequest,
+    CertificateOfFreeSaleApplication,
+    CFSSchedule,
     EndorsementImportApplication,
     ExportApplication,
     ImportApplication,
@@ -13,8 +15,12 @@ from web.models import (
     User,
 )
 
-from .context import CoverLetterTemplateContext, EmailTemplateContext
-from .models import Template
+from .context import (
+    CoverLetterTemplateContext,
+    EmailTemplateContext,
+    ScheduleParagraphContext,
+)
+from .models import CFSScheduleParagraph, Template
 
 if TYPE_CHECKING:
     from web.types import DocumentTypes
@@ -93,15 +99,13 @@ def get_template_content(template: Template, context: "TemplateContextProcessor"
     return replace_template_values(template.template_content, context)
 
 
-def get_cover_letter_content(
-    application: "ImportApplication", document_type: "DocumentTypes"
-) -> str:
+def get_cover_letter_content(application: ImportApplication, document_type: "DocumentTypes") -> str:
     context = CoverLetterTemplateContext(application, document_type)
     return replace_template_values(application.cover_letter_text, context)
 
 
 def get_email_template_subject_body(
-    process: "Process",
+    process: Process,
     template_code: str,
     context_cls: type[EmailTemplateContext] = EmailTemplateContext,
     current_user_name: str = "",
@@ -117,7 +121,7 @@ def get_email_template_subject_body(
     return subject, body
 
 
-def get_letter_fragment(application: "SILApplication") -> str:
+def get_letter_fragment(application: SILApplication) -> str:
     if application.process_type != ProcessTypes.FA_SIL:
         raise ValueError(f"No letter fragments for process type {application.process_type}")
 
@@ -134,7 +138,7 @@ def get_letter_fragment(application: "SILApplication") -> str:
     raise ValueError("Unable to get letter fragment due to missing application data")
 
 
-def add_application_cover_letter(application: "ImportApplication", template: Template) -> None:
+def add_application_cover_letter(application: ImportApplication, template: Template) -> None:
     """Adds a cover letter to an import application"""
 
     application.cover_letter_text = template.template_content
@@ -194,3 +198,58 @@ def get_fir_template_data(process: Process, current_user: User) -> tuple[str, st
             raise ValueError(
                 "Process must be an instance of ImportApplication / ExportApplication / AccessRequest"
             )
+
+
+def create_schedule_paragraph(schedule: CFSSchedule) -> str:
+    """Generate the text to appear in a Certificate of Free Sale for a specific schedule"""
+
+    is_ni = schedule.application.exporter_office.postcode.upper().startswith("BT")
+    paragraph_names = CFSScheduleParagraph.ParagraphName
+    context = ScheduleParagraphContext(schedule)
+    paragraphs = []
+
+    def content(name: str) -> str:
+        paragraph = CFSScheduleParagraph.objects.get(name=name)
+        return replace_template_values(paragraph.content, context)
+
+    if schedule.exporter_status == schedule.ExporterStatus.IS_MANUFACTURER:
+        paragraphs.append(content(paragraph_names.IS_MANUFACTURER))
+    else:
+        paragraphs.append(content(paragraph_names.IS_NOT_MANUFACTURER))
+
+    if schedule.schedule_statements_is_responsible_person:
+        if is_ni:
+            paragraphs.append(content(paragraph_names.EU_COSMETICS_RESPONSIBLE_PERSON_NI))
+        else:
+            paragraphs.append(content(paragraph_names.EU_COSMETICS_RESPONSIBLE_PERSON))
+
+    paragraphs.append(content(paragraph_names.LEGISLATION_STATEMENT))
+
+    legislations = ", ".join(schedule.legislations.order_by("name").values_list("name", flat=True))
+    paragraphs.append(legislations + ".")
+
+    if schedule.product_eligibility == schedule.ProductEligibility.SOLD_ON_UK_MARKET:
+        paragraphs.append(content(paragraph_names.ELIGIBILITY_ON_SALE))
+    elif schedule.product_eligibility == schedule.ProductEligibility.MEET_UK_PRODUCT_SAFETY:
+        paragraphs.append(content(paragraph_names.ELIGIBILITY_MAY_BE_SOLD))
+
+    if schedule.schedule_statements_accordance_with_standards:
+        if is_ni:
+            paragraphs.append(content(paragraph_names.GOOD_MANUFACTURING_PRACTICE_NI))
+        else:
+            paragraphs.append(content(paragraph_names.GOOD_MANUFACTURING_PRACTICE))
+
+    if schedule.manufacturer_name and schedule.manufacturer_address:
+        paragraphs.append(content(paragraph_names.COUNTRY_OF_MAN_STATEMENT_WITH_NAME_AND_ADDRESS))
+    elif schedule.manufacturer_name:
+        paragraphs.append(content(paragraph_names.COUNTRY_OF_MAN_STATEMENT_WITH_NAME))
+    else:
+        paragraphs.append(content(paragraph_names.COUNTRY_OF_MAN_STATEMENT))
+
+    return " ".join(paragraphs)
+
+
+def fetch_schedule_paragraphs(application: CertificateOfFreeSaleApplication) -> dict[int, str]:
+    return {
+        schedule.pk: create_schedule_paragraph(schedule) for schedule in application.schedules.all()
+    }

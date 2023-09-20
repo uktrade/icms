@@ -9,6 +9,7 @@ from web.domains.template.utils import (
     add_application_default_cover_letter,
     add_endorsements_from_application_type,
     add_template_data_on_submit,
+    create_schedule_paragraph,
     find_invalid_placeholders,
     get_application_update_template_data,
     get_context_dict,
@@ -19,17 +20,21 @@ from web.domains.template.utils import (
 )
 from web.models import (
     CertificateOfManufactureApplication,
+    CFSSchedule,
     Country,
     DFLApplication,
     EndorsementImportApplication,
     ExportApplicationType,
     FurtherInformationRequest,
     ImportApplicationType,
+    Office,
     OpenIndividualLicenceApplication,
+    ProductLegislation,
     SanctionsAndAdhocApplication,
     SILApplication,
     Template,
 )
+from web.models.shared import YesNoChoices
 from web.tests.helpers import CaseURLS
 from web.types import DocumentTypes
 
@@ -514,3 +519,92 @@ def test_get_fir_template_data_error(ilb_admin_user):
         match=r"Process must be an instance of ImportApplication / ExportApplication / AccessRequest",
     ):
         get_fir_template_data(fir, ilb_admin_user)
+
+
+def test_create_schedule_paragraph_gb_manufacture_address(
+    db, cfs_app_submitted, exporter_one_contact
+):
+    country = Country.objects.get(name="Germany")
+
+    schedule = CFSSchedule.objects.create(
+        application=cfs_app_submitted,
+        exporter_status=CFSSchedule.ExporterStatus.IS_MANUFACTURER,
+        brand_name_holder=YesNoChoices.yes,
+        product_eligibility=CFSSchedule.ProductEligibility.SOLD_ON_UK_MARKET,
+        goods_placed_on_uk_market=YesNoChoices.yes,
+        goods_export_only=YesNoChoices.no,
+        country_of_manufacture=country,
+        manufacturer_name="Manufacturer Name",
+        manufacturer_address="123 Manufacturer, Manufactureton",
+        manufacturer_postcode="123456",
+        schedule_statements_is_responsible_person=True,
+        schedule_statements_accordance_with_standards=True,
+        created_by=exporter_one_contact,
+    )
+
+    pl = ProductLegislation.objects.get(
+        name="Aerosol Dispensers Regulations 2009/ 2824 as retained in UK law"
+    )
+    schedule.legislations.add(pl)
+
+    pl = ProductLegislation.objects.get(
+        name="Biocide Products Regulation 528/2012 as retained in UK law"
+    )
+    schedule.legislations.add(pl)
+
+    result = create_schedule_paragraph(schedule)
+    expected = (
+        "I am the manufacturer. I am the responsible person as defined by the "
+        "EU Cosmetics Regulation 1223/2009 and I am the person responsible for "
+        "ensuring that the products listed in this schedule meet the safety "
+        "requirements set out in the EU Cosmetics Regulation 1223/2009. I certify "
+        "that these products meet the safety requirements set out under UK and EU "
+        "legislation, specifically: Aerosol Dispensers Regulations 2009/ 2824 as "
+        "retained in UK law, Biocide Products Regulation 528/2012 as retained in UK law. "
+        "These products are currently sold on the EU market. "
+        "These products are manufactured in accordance with the Good Manufacturing Practice "
+        "standards set out in UK and EU law The products were manufactured in Germany by "
+        "Manufacturer Name at 123 Manufacturer, Manufactureton 123456"
+    )
+    assert result == expected
+
+
+def test_create_schedule_paragraph_ni_manufacture_name(cfs_app_submitted, exporter_one_contact):
+    country = Country.objects.get(name="Spain")
+    ni_office = Office.objects.filter(postcode__startswith="BT").first()
+    cfs_app_submitted.exporter_office = ni_office
+
+    schedule = CFSSchedule.objects.create(
+        application=cfs_app_submitted,
+        exporter_status=CFSSchedule.ExporterStatus.IS_NOT_MANUFACTURER,
+        brand_name_holder=YesNoChoices.yes,
+        product_eligibility=CFSSchedule.ProductEligibility.MEET_UK_PRODUCT_SAFETY,
+        goods_placed_on_uk_market=YesNoChoices.no,
+        goods_export_only=YesNoChoices.yes,
+        country_of_manufacture=country,
+        manufacturer_name="Manufacturer Name",
+        schedule_statements_is_responsible_person=True,
+        schedule_statements_accordance_with_standards=True,
+        created_by=exporter_one_contact,
+    )
+
+    pl = ProductLegislation.objects.get(
+        name="Chemicals (Hazard Information and Packaging for Supply) Regulations 2009"
+    )
+    schedule.legislations.add(pl)
+
+    result = create_schedule_paragraph(schedule)
+    expected = (
+        "I am not the manufacturer. I am the responsible person as defined by Regulation "
+        "(EC) No 1223/2009 of the European Parliament and of the Council of 30 November "
+        "2009 on cosmetic products and Cosmetic Regulation No 1223/2009 as applicable in "
+        "NI. I am the person responsible for ensuring that the products listed in this "
+        "schedule meet the safety requirements set out in the Regulations. I certify that "
+        "these products meet the safety requirements set out under UK and EU legislation, "
+        "specifically: Chemicals (Hazard Information and Packaging for Supply) Regulations "
+        "2009. These products meet the product safety requirements to be sold on the EU market. "
+        "These products are manufactured in accordance with the Good Manufacturing Practice "
+        "standards set out in UK or EU law where applicable The products were manufactured "
+        "in Spain by Manufacturer Name"
+    )
+    assert result == expected

@@ -3282,20 +3282,6 @@ Application Reopened
 Firearms Supplementary Report
 Access Request Approval Complete
 Unsupported Withdrawal Status
-ON td.id
-the European Parliament
-the Council of 30 November 2009
-ELIGIBILITY_MAY_BE_SOLD
-COUNTRY_OF_MAN_STATEMENT_WITH_NAME
-ON td.id
-TODO ICMSLST-1913 Use
-the European Parliament
-the Council of 30 November 2009
-ELIGIBILITY_MAY_BE_SOLD
-COUNTRY_OF_MAN_STATEMENT_WITH_NAME
-"Generate the text to appear in a Certificate of Free Sale
-TODO ICMSLST-1913
-TODO ICMSLST-1913 Add
 Returns
 (Holders Copy
 {{ application_field(org
@@ -3352,3 +3338,27 @@ the UK Department for Business, Energy and Industrial Strategy
 the Brand Reputation Compliance Global Standard
 Consumer Products
 the Product Safety and Metrology
+Schedule Introduction
+EU Cosmetics Responsible Person
+EU Cosmetics Responsible Person NI
+"Legislation Statement"
+Eligibility May Be Sold
+Good Manufacturing Practice NI
+Schedule Introduction
+EU Cosmetics Responsible Person
+EU Cosmetics Responsible Person NI
+"Legislation Statement"
+Eligibility May Be Sold
+Good Manufacturing Practice NI
+the European Parliament
+the Council of 30 November 2009
+ELIGIBILITY_MAY_BE_SOLD
+COUNTRY_OF_MAN_STATEMENT_WITH_NAME
+"Generate the text to appear in a Certificate of Free Sale
+TODO ICMSLST-1913 Add
+Manufacturer Name
+Manufactureton
+the EU Cosmetics Regulation
+Biocide Products Regulation
+Packaging for Supply
+the Council of 30 November

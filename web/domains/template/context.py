@@ -14,6 +14,7 @@ from web.models import (
     Process,
 )
 from web.types import DocumentTypes
+from web.utils import strip_spaces
 
 
 def _get_selected_product_data(biocidal_schedules: QuerySet[CFSSchedule]) -> str:
@@ -314,3 +315,25 @@ class RevokedEmailTemplateContext(EmailTemplateContext):
                 certificates = document_pack.doc_ref_certificates_all(pack)
                 return ", ".join(certificates.values_list("reference", flat=True))
         return super()._export_context(item)
+
+
+class ScheduleParagraphContext:
+    def __init__(self, schedule: CFSSchedule) -> None:
+        self.schedule = schedule
+
+    def __getitem__(self, item: str) -> str:
+        match item:
+            case "EXPORTER_NAME":
+                return self.schedule.application.exporter.name.upper()
+            case "EXPORTER_ADDRESS_FLAT":
+                return strip_spaces(str(self.schedule.application.exporter_office).upper())
+            case "COUNTRY_OF_MANUFACTURE":
+                return self.schedule.country_of_manufacture.name
+            case "MANUFACTURED_AT_NAME":
+                return self.schedule.manufacturer_name
+            case "MANUFACTURED_AT_ADDRESS_FLAT":
+                return strip_spaces(
+                    self.schedule.manufacturer_address, self.schedule.manufacturer_postcode
+                )
+            case _:
+                raise ValueError(f"{item} is not a valid schedule paragraph context value")

@@ -4,6 +4,7 @@ from typing import Any
 from django.db import models
 
 from web.models.mixins import Archivable
+from web.types import TypedTextChoices
 
 TEMPLATE_CONTENT_REGEX = r"\[\[{}\]\]"
 
@@ -146,13 +147,43 @@ class Template(Archivable, models.Model):
 class CFSScheduleParagraph(models.Model):
     """Paragraphs for Certificate of Free Sale Schedule and Certificate of Free Sale Schedule Translation templates"""
 
-    # TODO: do we need constants here for the paragraph names?
+    class ParagraphName(TypedTextChoices):
+        SCHEDULE_HEADER = ("SCHEDULE_HEADER", "Schedule Header")
+        SCHEDULE_INTRODUCTION = ("SCHEDULE_INTRODUCTION", "Schedule Introduction")
+        IS_MANUFACTURER = ("IS_MANUFACTURER", "Is Manufacturer")
+        IS_NOT_MANUFACTURER = ("IS_NOT_MANUFACTURER", "Is not Manufacturer")
+        EU_COSMETICS_RESPONSIBLE_PERSON = (
+            "EU_COSMETICS_RESPONSIBLE_PERSON",
+            "EU Cosmetics Responsible Person",
+        )
+        EU_COSMETICS_RESPONSIBLE_PERSON_NI = (
+            "EU_COSMETICS_RESPONSIBLE_PERSON_NI",
+            "EU Cosmetics Responsible Person NI",
+        )
+        LEGISLATION_STATEMENT = ("LEGISLATION_STATEMENT", "Legislation Statement")
+        ELIGIBILITY_ON_SALE = ("ELIGIBILITY_ON_SALE", "Eligibility on Sale")
+        ELIGIBILITY_MAY_BE_SOLD = ("ELIGIBILITY_MAY_BE_SOLD", "Eligibility May Be Sold")
+        GOOD_MANUFACTURING_PRACTICE = ("GOOD_MANUFACTURING_PRACTICE", "Good Manufacturing Practice")
+        GOOD_MANUFACTURING_PRACTICE_NI = (
+            "GOOD_MANUFACTURING_PRACTICE_NI",
+            "Good Manufacturing Practice NI",
+        )
+        COUNTRY_OF_MAN_STATEMENT = ("COUNTRY_OF_MAN_STATEMENT", "Country of Manufacture Statement")
+        COUNTRY_OF_MAN_STATEMENT_WITH_NAME = (
+            "COUNTRY_OF_MAN_STATEMENT_WITH_NAME",
+            "Country of Manufacture Statement With Name",
+        )
+        COUNTRY_OF_MAN_STATEMENT_WITH_NAME_AND_ADDRESS = (
+            "COUNTRY_OF_MAN_STATEMENT_WITH_NAME_AND_ADDRESS",
+            "Country of Manufacture Statement With Name and Address",
+        )
+        PRODUCTS = ("PRODUCTS", "Products")
 
     template = models.ForeignKey(
         "web.Template", on_delete=models.CASCADE, blank=False, null=False, related_name="paragraphs"
     )
     order = models.IntegerField(blank=False, null=False)
-    name = models.CharField(max_length=100, blank=False, null=False)
+    name = models.CharField(max_length=100, blank=False, null=False, choices=ParagraphName.choices)
     content = models.TextField(blank=False, null=True)
 
     class Meta:
