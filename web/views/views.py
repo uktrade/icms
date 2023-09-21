@@ -7,6 +7,7 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
@@ -18,6 +19,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
 from web.one_login.utils import OneLoginConfig
+from web.sites import is_caseworker_site, is_exporter_site, is_importer_site
 
 from .actions import PostAction
 from .mixins import DataDisplayConfigMixin, PageTitleMixin
@@ -56,10 +58,26 @@ def login_start_view(request: HttpRequest) -> HttpResponse:
         request, staff_sso_login_url, one_login_login_url
     )
 
-    context = {
-        "staff_sso_login_url": staff_sso_login_url,
-        "one_login_login_url": one_login_login_url,
-    }
+    if is_importer_site(request.site):
+        context = {
+            "service_title": "Apply for an Import Licence",
+            "service_description": "Use this service to apply for import licences",
+            "auth_login_url": one_login_login_url,
+        }
+    elif is_exporter_site(request.site):
+        context = {
+            "service_title": "Apply for a Certificate for Export",
+            "service_description": "Use this service to apply for certificates for export",
+            "auth_login_url": one_login_login_url,
+        }
+    elif is_caseworker_site(request.site):
+        context = {
+            "service_title": "Manage import licences and certificates for export",
+            "service_description": "",
+            "auth_login_url": staff_sso_login_url,
+        }
+    else:
+        raise PermissionDenied
 
     return render(request, "login_start.html", context)
 

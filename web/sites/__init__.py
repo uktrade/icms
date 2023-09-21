@@ -57,6 +57,10 @@ def is_importer_site(site: Site) -> bool:
     return site.name == IMPORTER_SITE_NAME
 
 
+def is_caseworker_site(site: Site) -> bool:
+    return site.name == CASEWORKER_SITE_NAME
+
+
 def get_caseworker_site_domain() -> str:
     return _get_site_domain(CASEWORKER_SITE_NAME)
 

@@ -18,6 +18,13 @@ FAKE_AUTHORIZE_URL = "https://oidc.onelogin.gov.uk/authorize"
 @pytest.fixture(autouse=True, scope="class")
 def correct_settings():
     """Ensure One Login is enabled for all tests"""
+
+    # Clear openid config before and after tests.
+    # Required for the following reasons:
+    #   - The local application has already cached the real values (will break tests)
+    #   - The tests have cached the fake value (will break local development)
+    cache.delete(OneLoginConfig.CACHE_KEY)
+
     with override_settings(
         GOV_UK_ONE_LOGIN_ENABLED=True,
         GOV_UK_ONE_LOGIN_OPENID_CONFIG_URL=FAKE_OPENID_CONFIG_URL,
@@ -26,9 +33,6 @@ def correct_settings():
     ):
         yield None
 
-    # Teardown the fake openid config at the end of the test session
-    # Required otherwise it will use this value when running the real application
-    # Also needed if you want to check the mock values in openid_config fixture.
     cache.delete(OneLoginConfig.CACHE_KEY)
 
 
