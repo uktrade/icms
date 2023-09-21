@@ -2,7 +2,7 @@ from http import HTTPStatus
 from unittest import mock
 
 import pytest
-from django.test import override_settings
+from django.test import Client, override_settings
 from django.urls import reverse, reverse_lazy
 from pytest_django.asserts import assertRedirects
 
@@ -41,18 +41,36 @@ class TestRedirectBaseDomainView:
     ],
 )
 def test_login_start_view(
-    staff_sso_enabled, one_login_enabled, staff_sso_login_url, one_login_login_url, db, client
+    staff_sso_enabled,
+    one_login_enabled,
+    staff_sso_login_url,
+    one_login_login_url,
+    db,
+    client,
+    exporter_site,
+    importer_site,
 ):
     with override_settings(
         STAFF_SSO_ENABLED=staff_sso_enabled, GOV_UK_ONE_LOGIN_ENABLED=one_login_enabled
     ):
+        # client goes to the caseworker site by default
         response = client.get(reverse("login-start"))
 
         assert response.status_code == HTTPStatus.OK
-
         context = response.context
-        assert context["staff_sso_login_url"] == staff_sso_login_url
-        assert context["one_login_login_url"] == one_login_login_url
+        assert context["auth_login_url"] == staff_sso_login_url
+
+        cli = Client(SERVER_NAME=exporter_site.domain)
+        response = cli.get(reverse("login-start"))
+        assert response.status_code == HTTPStatus.OK
+        context = response.context
+        assert context["auth_login_url"] == one_login_login_url
+
+        cli = Client(SERVER_NAME=importer_site.domain)
+        response = cli.get(reverse("login-start"))
+        assert response.status_code == HTTPStatus.OK
+        context = response.context
+        assert context["auth_login_url"] == one_login_login_url
 
 
 class TestLogoutView:

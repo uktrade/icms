@@ -1,15 +1,21 @@
 {% extends "layout/public.html" %}
 
 {% block main_content %}
+  <style>
+      a#authLogin {
+          text-decoration: none;
+          color: black;
+      }
+      a#authLogin:link, a:visited {
+          color: black;
+      }
+  </style>
 
   <div id="header">
-    <h1>ICMS</h1>
-    <p class="subheading">Import Case Management System</p>
+    <h1>GOV.UK</h1>
+    <p class="subheading">{{ service_title }}</p>
   </div>
   <div class="clearBoth"></div>
-
-  <p>Welcome to ICMS</p>
-  <p>Please click on one of the following links to begin:</p>
-  <p><a href="{{ one_login_login_url }}">Applicant login</a></p>
-  <p><a href="{{ staff_sso_login_url }}">Caseworker login</a></p>
+  <p>{{ service_description }}</p>
+  <button><a id="authLogin" href="{{ auth_login_url }}">Start Now</a></button>
 {% endblock %}
