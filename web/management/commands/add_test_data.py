@@ -57,8 +57,7 @@ class Command(BaseCommand):
         load_app_test_data()
 
         site = Site.objects.get(name=CASEWORKER_SITE_NAME)
-        # Default name of django test client (used for caseworker site)
-        site.domain = "testserver"
+        site.domain = "caseworker"
         site.save()
 
         site = Site.objects.get(name=EXPORTER_SITE_NAME)

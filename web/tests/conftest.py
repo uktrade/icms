@@ -41,7 +41,7 @@ from web.models import (
     WoodQuotaApplication,
 )
 from web.models.shared import YesNoNAChoices
-from web.sites import EXPORTER_SITE_NAME, IMPORTER_SITE_NAME
+from web.sites import CASEWORKER_SITE_NAME, EXPORTER_SITE_NAME, IMPORTER_SITE_NAME
 from web.tests.helpers import CaseURLS, get_test_client
 
 from .application_utils import (
@@ -92,6 +92,97 @@ def django_db_setup(django_db_setup, django_db_blocker):
         call_command("add_test_data")
 
 
+#
+# Site Fixtures
+#
+@pytest.fixture()
+def caseworker_site(db):
+    return Site.objects.get(name=CASEWORKER_SITE_NAME)
+
+
+@pytest.fixture()
+def importer_site(db):
+    return Site.objects.get(name=IMPORTER_SITE_NAME)
+
+
+@pytest.fixture()
+def exporter_site(db):
+    return Site.objects.get(name=EXPORTER_SITE_NAME)
+
+
+#
+# Client Fixtures
+#
+@pytest.fixture()
+def cw_client(caseworker_site):
+    """Client used to access caseworker site.
+
+    No user is logged in with this client.
+    """
+    return get_test_client(caseworker_site.domain)
+
+
+@pytest.fixture()
+def exp_client(exporter_site):
+    """Client used to access exporter site.
+
+    No user is logged in with this client.
+    """
+    return get_test_client(exporter_site.domain)
+
+
+@pytest.fixture()
+def imp_client(importer_site):
+    """Client used to access importer site.
+
+    No user is logged in with this client.
+    """
+    return get_test_client(importer_site.domain)
+
+
+@pytest.fixture()
+def ilb_admin_client(ilb_admin_user, caseworker_site) -> Client:
+    return get_test_client(caseworker_site.domain, ilb_admin_user)
+
+
+@pytest.fixture()
+def ilb_admin_two_client(ilb_admin_two, caseworker_site) -> Client:
+    return get_test_client(caseworker_site.domain, ilb_admin_two)
+
+
+@pytest.fixture()
+def nca_admin_client(nca_admin_user, caseworker_site) -> Client:
+    return get_test_client(caseworker_site.domain, nca_admin_user)
+
+
+@pytest.fixture()
+def ho_admin_client(ho_admin_user, caseworker_site) -> Client:
+    return get_test_client(caseworker_site.domain, ho_admin_user)
+
+
+@pytest.fixture()
+def importer_client(importer_one_contact, importer_site) -> Client:
+    return get_test_client(importer_site.domain, importer_one_contact)
+
+
+@pytest.fixture()
+def importer_agent_client(importer_one_agent_one_contact, importer_site) -> Client:
+    return get_test_client(importer_site.domain, importer_one_agent_one_contact)
+
+
+@pytest.fixture()
+def exporter_client(exporter_one_contact, exporter_site) -> Client:
+    return get_test_client(exporter_site.domain, exporter_one_contact)
+
+
+@pytest.fixture()
+def exporter_agent_client(exporter_one_agent_one_contact, exporter_site) -> Client:
+    return get_test_client(exporter_site.domain, exporter_one_agent_one_contact)
+
+
+#
+# User fixtures
+#
 @pytest.fixture
 def ilb_admin_user(django_user_model):
     """Fixture to get user with admin access (the ilb_admin permission)."""
@@ -177,17 +268,6 @@ def constabulary_contact(django_user_model):
 
 
 @pytest.fixture()
-def fox_hasher_enabled():
-    with override_settings(
-        PASSWORD_HASHERS=[
-            "django.contrib.auth.hashers.PBKDF2PasswordHasher",
-            "web.auth.fox_hasher.FOXPBKDF2SHA1Hasher",
-        ]
-    ):
-        yield None
-
-
-@pytest.fixture()
 def legacy_user(db, fox_hasher_enabled):
     user_email = "legacy_user@example.com"  # /PS-IGNORE
     user = User.objects.create(username=user_email, email=user_email, icms_v1_user=True)
@@ -210,6 +290,20 @@ def one_login_user(db):
     return User.objects.create(
         username="one_login_id", email="one_login_user@example.com"  # /PS-IGNORE
     )
+
+
+#
+# All Other Fixtures
+#
+@pytest.fixture()
+def fox_hasher_enabled():
+    with override_settings(
+        PASSWORD_HASHERS=[
+            "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+            "web.auth.fox_hasher.FOXPBKDF2SHA1Hasher",
+        ]
+    ):
+        yield None
 
 
 @pytest.fixture
@@ -292,41 +386,6 @@ def exporter_two(db):
 def agent_exporter(db):
     """Fixture to get an Agent Exporter model instance."""
     return Exporter.objects.get(name="Test Exporter 1 Agent 1")
-
-
-@pytest.fixture()
-def ilb_admin_client(ilb_admin_user) -> Client:
-    return get_test_client(ilb_admin_user)
-
-
-@pytest.fixture()
-def ilb_admin_two_client(ilb_admin_two) -> Client:
-    return get_test_client(ilb_admin_two)
-
-
-@pytest.fixture()
-def nca_admin_client(nca_admin_user) -> Client:
-    return get_test_client(nca_admin_user)
-
-
-@pytest.fixture()
-def ho_admin_client(ho_admin_user) -> Client:
-    return get_test_client(ho_admin_user)
-
-
-@pytest.fixture()
-def importer_site(db):
-    return Site.objects.get(name=IMPORTER_SITE_NAME)
-
-
-@pytest.fixture()
-def importer_client(importer_one_contact, importer_site) -> Client:
-    return get_test_client(importer_one_contact, server_name=importer_site.domain)
-
-
-@pytest.fixture()
-def importer_agent_client(importer_one_agent_one_contact, importer_site) -> Client:
-    return get_test_client(importer_one_agent_one_contact, server_name=importer_site.domain)
 
 
 @pytest.fixture()
@@ -497,21 +556,6 @@ def sanctions_app_submitted(
     case_progress.check_expected_task(app, Task.TaskType.PROCESS)
 
     return app
-
-
-@pytest.fixture()
-def exporter_site(db):
-    return Site.objects.get(name=EXPORTER_SITE_NAME)
-
-
-@pytest.fixture()
-def exporter_client(exporter_one_contact, exporter_site) -> Client:
-    return get_test_client(exporter_one_contact, server_name=exporter_site.domain)
-
-
-@pytest.fixture()
-def exporter_agent_client(exporter_one_agent_one_contact, exporter_site) -> Client:
-    return get_test_client(exporter_one_agent_one_contact, server_name=exporter_site.domain)
 
 
 @pytest.fixture()

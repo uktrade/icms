@@ -21,21 +21,17 @@ from web.models import (
     WoodQuotaApplication,
 )
 from web.permissions import Perms
-from web.tests.helpers import (
-    SearchURLS,
-    check_gov_notify_email_was_sent,
-    get_test_client,
-)
+from web.tests.helpers import SearchURLS, check_gov_notify_email_was_sent
 
 
 class TestSearchCasesView:
     @pytest.fixture(autouse=True)
-    def _setup(self, importer_one_contact, exporter_one_contact, ilb_admin_client):
+    def _setup(self, importer_client, exporter_client, ilb_admin_client):
         self.import_url = SearchURLS.search_cases("import")
         self.export_url = SearchURLS.search_cases("export")
 
-        self.importer_user_client = get_test_client(importer_one_contact)
-        self.exporter_user_client = get_test_client(exporter_one_contact)
+        self.importer_user_client = importer_client
+        self.exporter_user_client = exporter_client
         self.ilb_admin_user_client = ilb_admin_client
 
     def test_permission(self):
@@ -62,12 +58,12 @@ class TestSearchCasesView:
 
 class TestDownloadSpreadsheetView:
     @pytest.fixture(autouse=True)
-    def _setup(self, importer_one_contact, exporter_one_contact, ilb_admin_client):
+    def _setup(self, importer_client, exporter_client, ilb_admin_client):
         self.import_download_url = SearchURLS.download_spreadsheet("import")
         self.export_download_url = SearchURLS.download_spreadsheet("export")
 
-        self.importer_user_client = get_test_client(importer_one_contact)
-        self.exporter_user_client = get_test_client(exporter_one_contact)
+        self.importer_user_client = importer_client
+        self.exporter_user_client = exporter_client
         self.ilb_admin_user_client = ilb_admin_client
 
     def test_permission(self):
@@ -94,14 +90,10 @@ class TestDownloadSpreadsheetView:
 
 class TestReassignCaseOwnerView:
     def test_permission(
-        self,
-        importer_one_contact,
-        exporter_one_contact,
-        ilb_admin_client,
-        wood_app_submitted,
+        self, importer_client, exporter_client, ilb_admin_client, wood_app_submitted
     ):
-        importer_user_client = get_test_client(importer_one_contact)
-        exporter_user_client = get_test_client(exporter_one_contact)
+        importer_user_client = importer_client
+        exporter_user_client = exporter_client
 
         url = SearchURLS.reassign_case_owner()
 
@@ -140,16 +132,13 @@ class TestReopenApplicationView:
         task.owner = ilb_admin_user
         task.save()
 
-    def test_permission(self, importer_one_contact, exporter_one_contact):
-        importer_user_client = get_test_client(importer_one_contact)
-        exporter_user_client = get_test_client(exporter_one_contact)
-
+    def test_permission(self, importer_client, exporter_client):
         url = SearchURLS.reopen_case(self.wood_app.pk)
 
-        response = importer_user_client.get(url)
+        response = importer_client.get(url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
-        response = exporter_user_client.get(url)
+        response = exporter_client.get(url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
         # self.client is an ILB admin user
@@ -254,23 +243,23 @@ class TestRequestVariationUpdateView:
 
         self.wood_app.cleared_by.add(importer_one_contact)
 
-    def test_permission(self, importer_one_contact, exporter_one_contact, ilb_admin_client):
-        importer_user_client = get_test_client(importer_one_contact)
-        exporter_user_client = get_test_client(exporter_one_contact)
+    def test_permission(
+        self, importer_client, exporter_client, ilb_admin_client, importer_one_contact
+    ):
         ilb_admin_user_client = ilb_admin_client
 
         url = SearchURLS.request_variation(self.wood_app.pk)
 
-        response = importer_user_client.get(url)
+        response = importer_client.get(url)
         assert response.status_code == HTTPStatus.OK
 
         # Removing the edit object permission should prevent the importer contact from
         # attempting to perform a variation request.
         remove_perm(Perms.obj.importer.edit, importer_one_contact, self.wood_app.importer)
-        response = importer_user_client.get(url)
+        response = importer_client.get(url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
-        response = exporter_user_client.get(url)
+        response = exporter_client.get(url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
         response = ilb_admin_user_client.get(url)
@@ -376,20 +365,17 @@ class TestRequestVariationOpenRequestView:
 
     def test_permission(
         self,
-        importer_one_contact,
-        exporter_one_contact,
+        importer_client,
+        exporter_client,
         ilb_admin_client,
         wood_app_submitted,
     ):
-        importer_user_client = get_test_client(importer_one_contact)
-        exporter_user_client = get_test_client(exporter_one_contact)
-
         url = SearchURLS.open_variation(self.app.pk)
 
-        response = importer_user_client.get(url)
+        response = importer_client.get(url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
-        response = exporter_user_client.get(url)
+        response = exporter_client.get(url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
         # self.client is an ILB admin user

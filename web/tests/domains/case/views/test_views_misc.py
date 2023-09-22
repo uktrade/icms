@@ -675,12 +675,12 @@ class TestViewIssuedCaseDocumentsView:
             self.app.pk, issued_document_pk=self.licence.pk
         )
 
-    def test_permission(self, admin_client, exporter_client):
+    def test_permission(self, ilb_admin_client, exporter_client):
         # self.client is an importer_client client
         response = self.client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
-        response = admin_client.get(self.url)
+        response = ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
         # Exporter doesn't have access to application therefore 403

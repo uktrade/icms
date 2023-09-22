@@ -72,12 +72,12 @@ def test_preview_cover_letter_view(fa_oil_app_submitted, ilb_admin_client):
     assert pdf.startswith(b"%PDF-")
 
 
-def test_login_required(fa_oil_app_submitted, client):
+def test_login_required(fa_oil_app_submitted, cw_client):
     licence_url = CaseURLS.licence_preview(fa_oil_app_submitted.pk)
     cover_letter_url = CaseURLS.preview_cover_letter(fa_oil_app_submitted.pk)
 
     for url in [licence_url, cover_letter_url]:
-        response = client.get(url)
+        response = cw_client.get(url)
         redirect_url = f"{LOGIN_URL}?next={url}"
         assertRedirects(response, redirect_url, 302), f"URl failed to redirect: {url}"
 

@@ -8,8 +8,7 @@ DATABASES = {
 ALLOWED_HOSTS = [
     "localhost",
     "web",
-    # Default server in django test Client (used for ilb caseworker site currently)
-    "testserver",
+    "caseworker",
     "import-a-licence",
     "export-a-certificate",
 ]
