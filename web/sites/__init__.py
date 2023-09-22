@@ -1,5 +1,6 @@
 import functools
 
+from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied
 
@@ -74,4 +75,8 @@ def get_importer_site_domain() -> str:
 
 
 def _get_site_domain(name: str) -> str:
-    return Site.objects.get(name=name).domain
+    """Return a site domain with the scheme included."""
+    scheme = "https" if settings.APP_ENV not in ["local", "test"] else "http"
+    domain = Site.objects.get(name=name).domain
+
+    return f"{scheme}://{domain}"

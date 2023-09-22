@@ -62,7 +62,7 @@ developing, only within Docker.
 - `make add_dummy_data`
   - Create test user(s), add needed permissions to user(s), create dummy importer and exporter, etc
 
-- `make manage args="set_icms_sites http://caseworker http://export-a-certificate http://import-a-licence"`
+- `make manage args="set_icms_sites http://caseworker:8080 http://export-a-certificate:8080 http://import-a-licence:8080"`
   - Creates the sites for working on ICMS locally
 
 - Add the following lines to your `/etc/hosts` file:
@@ -166,7 +166,7 @@ docker volume rm icms_pgdata
 make migrate
 make manage args="create_icms_groups"
 make add_dummy_data
-make manage args="set_icms_sites http://caseworker http://export-a-certificate http://import-a-licence"
+make manage args="set_icms_sites http://caseworker:8080 http://export-a-certificate:8080 http://import-a-licence:8080"
 ```
 
 Alternatively you can run the script found here: `./scripts/reset-local-docker-db`
