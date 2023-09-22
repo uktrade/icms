@@ -83,10 +83,6 @@ HTML_MINIFY = False
 # Django Compressor (also set ICMS_DEBUG to False, to trigger compression of js on system start)
 COMPRESS_OFFLINE = False
 
-
-# Need to use the local docker-compose network name to access the static files.
-PDF_DEFAULT_DOMAIN = "http://web:8080/"
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

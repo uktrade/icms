@@ -106,6 +106,7 @@ services:
             - GOV_NOTIFY_API_KEY
             - EMAIL_BACKEND
             - SEND_ALL_EMAILS_TO
+            - APP_ENV
         depends_on:
             - redis
         volumes:
