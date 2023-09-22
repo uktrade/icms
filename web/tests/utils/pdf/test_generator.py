@@ -317,7 +317,7 @@ def test_get_document_context_raises_error_if_doc_type_unsupported(licence):
         generator.get_document_context()
 
 
-def test_get_pdf(oil_app, licence):
+def test_get_pdf(db, oil_app, licence):
     generator = PdfGenerator(oil_app, licence, DocumentTypes.LICENCE_PREVIEW)
     pdf_file = generator.get_pdf()
 

@@ -9,6 +9,7 @@ from django.template.loader import render_to_string
 from web.domains.case.types import DocumentPack, ImpOrExp
 from web.flow.models import ProcessTypes
 from web.models import Country
+from web.sites import get_caseworker_site_domain
 from web.types import DocumentTypes
 
 from . import utils
@@ -29,7 +30,7 @@ class PdfGenerator:
         """
 
         html_string = self.get_document_html()
-        html = weasyprint.HTML(string=html_string, base_url=settings.PDF_DEFAULT_DOMAIN)
+        html = weasyprint.HTML(string=html_string, base_url=get_icms_domain())
 
         return html.write_pdf(target=target)
 
@@ -150,3 +151,13 @@ class PdfGenerator:
                     raise ValueError(f"Unsupported process type: {self.application.process_type}")
         else:
             raise ValueError(f"Unsupported document type: {self.doc_type}")
+
+
+def get_icms_domain() -> str:
+    """Used to access static files when generating pdfs"""
+
+    # Need to use the local docker-compose network name to access the static files.
+    if settings.APP_ENV == "local":
+        return "http://web:8080/"
+
+    return get_caseworker_site_domain()
