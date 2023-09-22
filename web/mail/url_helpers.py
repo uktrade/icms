@@ -5,6 +5,7 @@ from django.shortcuts import reverse
 from django.templatetags.static import static
 
 from web.domains.case.types import ImpOrExp
+from web.sites import get_caseworker_site_domain
 
 
 def get_full_url(url: str) -> str:
@@ -14,7 +15,10 @@ def get_full_url(url: str) -> str:
 def get_validate_digital_signatures_url(full_url: bool = False) -> str:
     url = static("web/docs/ValidateDigSigs.pdf")
     if full_url:
-        return get_full_url(url)
+        domain = get_caseworker_site_domain()
+
+        return urljoin(domain, url)
+
     return url
 
 

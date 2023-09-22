@@ -7,10 +7,10 @@ from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatu
     "full_url,expected_url",
     [
         (False, "/static/web/docs/ValidateDigSigs.pdf"),
-        (True, "http://localhost:8080/static/web/docs/ValidateDigSigs.pdf"),
+        (True, "http://testserver/static/web/docs/ValidateDigSigs.pdf"),
     ],
 )
-def test_get_validate_digital_signatures_url(full_url, expected_url):
+def test_get_validate_digital_signatures_url(db, full_url, expected_url):
     assert get_validate_digital_signatures_url(full_url=full_url) == expected_url
 
 
