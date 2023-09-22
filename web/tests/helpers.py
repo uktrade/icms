@@ -22,17 +22,18 @@ from web.sites import get_caseworker_site_domain
 from web.utils.validation import ApplicationErrors
 
 
-def get_test_client(user: User, server_name: str = "testserver") -> Client:
-    """Create a test client
+def get_test_client(server_name: str, user: User | None = None) -> Client:
+    """Create a test client, optionally logging in a user.
 
-    :param user: User instance
-    :param server_name: domain to link to the correct site.
+    :param server_name: Domain to link to the correct site.
+    :param user: User to log in if value is supplied.
 
-    The default "testserver" is currently being used to mean the ILB caseworker site.
     """
-
     client = Client(SERVER_NAME=server_name)
-    assert client.login(username=user.username, password="test") is True, "Failed to login"
+
+    if user:
+        assert client.login(username=user.username, password="test") is True, "Failed to login"
+
     return client
 
 
@@ -176,6 +177,7 @@ class CaseURLS:
 
         return reverse("case:take-ownership", kwargs=kwargs)
 
+    @staticmethod
     def reassign_ownership(application_pk: int, case_type: str = "import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 

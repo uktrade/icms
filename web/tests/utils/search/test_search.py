@@ -1460,27 +1460,24 @@ def test_export_search_by_document_reference(exporter_one_fixture_data: ExportFi
 def test_reassignment_search(
     importer_one_fixture_data: FixtureData,
     exporter_one_fixture_data: ExportFixtureData,
-    client,
+    ilb_admin_client,
     ilb_admin_user,
 ):
     wood_app = Build.wood_application("wood-app-1", importer_one_fixture_data)
     textiles_app = Build.textiles_application("textiles-app-1", importer_one_fixture_data)
-
-    # We need to be the icms case officer to post to the take-ownership endpoint
-    client.force_login(ilb_admin_user)
 
     assert wood_app.status == ImpExpStatus.SUBMITTED
 
     take_ownership_url = reverse(
         "case:take-ownership", kwargs={"application_pk": wood_app.pk, "case_type": "import"}
     )
-    response = client.post(take_ownership_url)
+    response = ilb_admin_client.post(take_ownership_url)
     assert response.status_code == 302
 
     take_ownership_url = reverse(
         "case:take-ownership", kwargs={"application_pk": textiles_app.pk, "case_type": "import"}
     )
-    response = client.post(take_ownership_url)
+    response = ilb_admin_client.post(take_ownership_url)
     assert response.status_code == 302
 
     wood_app.refresh_from_db()
@@ -1519,7 +1516,7 @@ def test_reassignment_search(
     take_ownership_url = reverse(
         "case:take-ownership", kwargs={"application_pk": gmp_app.pk, "case_type": "export"}
     )
-    response = client.post(take_ownership_url)
+    response = ilb_admin_client.post(take_ownership_url)
     assert response.status_code == 302
 
     results = search_applications(search_terms, exporter_one_fixture_data.ilb_admin_user)

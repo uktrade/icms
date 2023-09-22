@@ -1,21 +1,20 @@
 from http import HTTPStatus
 
 import pytest
-from django.test.client import Client
 from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
 
 class TestLegacyAccountRecoveryView:
     @pytest.fixture(autouse=True)
-    def _setup(self, one_login_user, legacy_user):
-        self.one_login_client = Client()
+    def _setup(self, one_login_user, legacy_user, imp_client, exp_client):
+        self.one_login_client = imp_client
         self.one_login_user = one_login_user
         self.one_login_client.force_login(
             one_login_user, backend="web.auth.backends.ModelAndObjectPermissionBackend"
         )
 
-        self.legacy_user_client = Client()
+        self.legacy_user_client = exp_client
         self.legacy_user = legacy_user
         self.legacy_user_client.force_login(
             legacy_user, backend="web.auth.backends.ModelAndObjectPermissionBackend"

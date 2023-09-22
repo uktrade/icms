@@ -45,12 +45,12 @@ def test_list_exporter_access_request_ok(
 
 class TestImporterAccessRequestView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup, access_request_user):
+    def setup(self, _setup, access_request_user, importer_site):
         self.access_request_user = access_request_user
-        self.access_request_client = get_test_client(access_request_user)
+        self.access_request_client = get_test_client(importer_site.domain, access_request_user)
         self.url = reverse("access:importer-request")
 
-    def test_permission(self, importer_site, exporter_site):
+    def test_permission(self):
         response = self.importer_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
@@ -60,17 +60,17 @@ class TestImporterAccessRequestView(AuthTestCase):
         response = self.ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
-        response = self.anonymous_client.get(self.url, SERVER_NAME=importer_site.domain)
+        response = self.anonymous_client.get(self.url)
         assertRedirects(response, f"{LOGIN_URL}?next={self.url}")
 
-    def test_get(self, importer_site, exporter_site):
-        response = self.access_request_client.get(self.url, SERVER_NAME=importer_site.domain)
+    def test_get(self):
+        response = self.access_request_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
         context = response.context
         # access_request_user is linked to an existing importer access request
         assert context["pending_importer_access_requests"].count() == 1
 
-    def test_post(self, importer_site):
+    def test_post(self):
         # access_request_user is linked to an existing importer & exporter access request
         assert self.access_request_user.submitted_access_requests.count() == 2
 
@@ -81,9 +81,7 @@ class TestImporterAccessRequestView(AuthTestCase):
             "request_reason": "A test reason",
         }
 
-        response = self.access_request_client.post(
-            self.url, data=form_data, SERVER_NAME=importer_site.domain
-        )
+        response = self.access_request_client.post(self.url, data=form_data)
 
         redirect_url = reverse("access:requested")
         assertRedirects(response, redirect_url)
@@ -104,12 +102,12 @@ class TestImporterAccessRequestView(AuthTestCase):
 
 class TestExporterAccessRequestView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup, access_request_user):
+    def setup(self, _setup, access_request_user, exporter_site):
         self.access_request_user = access_request_user
-        self.access_request_client = get_test_client(access_request_user)
+        self.access_request_client = get_test_client(exporter_site.domain, access_request_user)
         self.url = reverse("access:exporter-request")
 
-    def test_permission(self, exporter_site):
+    def test_permission(self):
         response = self.exporter_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
@@ -119,11 +117,11 @@ class TestExporterAccessRequestView(AuthTestCase):
         response = self.ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
-        response = self.anonymous_client.get(self.url, SERVER_NAME=exporter_site.domain)
+        response = self.anonymous_client.get(self.url)
         assertRedirects(response, f"{LOGIN_URL}?next={self.url}")
 
-    def test_get(self, exporter_site):
-        response = self.access_request_client.get(self.url, SERVER_NAME=exporter_site.domain)
+    def test_get(self):
+        response = self.access_request_client.get(self.url)
 
         assert response.status_code == HTTPStatus.OK
         context = response.context
@@ -134,7 +132,7 @@ class TestExporterAccessRequestView(AuthTestCase):
         # access_request_user is linked to an existing exporter access request
         assert context["pending_exporter_access_requests"].count() == 1
 
-    def test_post(self, exporter_site):
+    def test_post(self):
         # access_request_user is linked to an existing importer & exporter access request
         assert self.access_request_user.submitted_access_requests.count() == 2
 
@@ -145,9 +143,7 @@ class TestExporterAccessRequestView(AuthTestCase):
             "request_reason": "A test reason",
         }
 
-        response = self.access_request_client.post(
-            self.url, data=form_data, SERVER_NAME=exporter_site.domain
-        )
+        response = self.access_request_client.post(self.url, data=form_data)
 
         redirect_url = reverse("access:requested")
         assertRedirects(response, redirect_url)

@@ -27,8 +27,8 @@ from .conftest import (
 
 JSON_TYPE = "application/json"
 # This has to match the request, because it is used to calculate the request's
-# Hawk MAC digest. Django's test client uses "testserver" by default.
-SERVER_NAME = "testserver"
+# Hawk MAC digest.
+SERVER_NAME = "caseworker"
 
 
 def make_testing_hawk_sender(method: HTTPMethod, url: str, **kwargs):
@@ -39,8 +39,8 @@ def make_testing_hawk_sender(method: HTTPMethod, url: str, **kwargs):
 
 class TestLicenseDataCallbackAuthentication:
     @pytest.fixture(autouse=True)
-    def _setup(self, client, importer_one_contact, fa_sil_app_with_chief):
-        self.client = client
+    def _setup(self, importer_one_contact, fa_sil_app_with_chief, cw_client):
+        self.client = cw_client
         self.user = importer_one_contact
         self.app = fa_sil_app_with_chief
         self.url = reverse("chief:license-data-callback")
@@ -106,8 +106,8 @@ class TestLicenseDataCallbackAuthentication:
 
 class TestLicenseDataCallbackView:
     @pytest.fixture(autouse=True)
-    def _setup(self, client, importer_one_contact, fa_sil_app_with_chief, monkeypatch):
-        self.client = client
+    def _setup(self, importer_one_contact, fa_sil_app_with_chief, monkeypatch, cw_client):
+        self.client = cw_client
         self.user = importer_one_contact
         self.app = fa_sil_app_with_chief
         self.monkeypatch = monkeypatch

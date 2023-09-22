@@ -152,9 +152,9 @@ class TestConstabularyDetailView(AuthTestCase):
 
 class TestAddConstabularyContactView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup, constabulary_contact, strict_templates):
+    def setup(self, _setup, constabulary_contact, strict_templates, caseworker_site):
         self.con_user = constabulary_contact
-        self.con_client = get_test_client(self.con_user)
+        self.con_client = get_test_client(caseworker_site.domain, self.con_user)
         self.constabulary = Constabulary.objects.get(name="Cumbria")
         self.url = reverse("constabulary:add-contact", kwargs={"pk": self.constabulary.pk})
 
@@ -190,9 +190,9 @@ class TestAddConstabularyContactView(AuthTestCase):
 
 class TestDeleteConstabularyContactView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup, constabulary_contact, strict_templates):
+    def setup(self, _setup, constabulary_contact, strict_templates, caseworker_site):
         self.con_user = constabulary_contact
-        self.con_client = get_test_client(self.con_user)
+        self.con_client = get_test_client(caseworker_site.domain, self.con_user)
         # A constabulary the user is already linked to
         self.constabulary = Constabulary.objects.get(name="Derbyshire")
         self.url = reverse(

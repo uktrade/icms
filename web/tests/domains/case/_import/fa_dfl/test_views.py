@@ -49,7 +49,9 @@ def dfl_app_pk(importer_client, office, importer):
     return application_pk
 
 
-def test_edit_dfl_get(dfl_app_pk, importer_client, exporter_client, importer_two_contact):
+def test_edit_dfl_get(
+    dfl_app_pk, importer_client, exporter_client, importer_two_contact, importer_site
+):
     url = _get_view_url("edit", {"application_pk": dfl_app_pk})
 
     response = importer_client.get(url)
@@ -66,7 +68,7 @@ def test_edit_dfl_get(dfl_app_pk, importer_client, exporter_client, importer_two
     assert response.status_code == 403
 
     # A different importer can't access it
-    importer_two_client = get_test_client(importer_two_contact)
+    importer_two_client = get_test_client(importer_site.domain, importer_two_contact)
     response = importer_two_client.get(url)
     assert response.status_code == 403
 

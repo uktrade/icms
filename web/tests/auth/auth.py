@@ -23,6 +23,7 @@ class AuthTestCase:
         importer_agent_client,
         exporter_client,
         exporter_agent_client,
+        cw_client,
     ):
         self.importer = importer
         self.importer_office = office
@@ -36,7 +37,7 @@ class AuthTestCase:
         self.ilb_admin_user = ilb_admin_user
         self.ilb_admin_two_user = ilb_admin_two
 
-        self.anonymous_client = client
+        self.anonymous_client = cw_client
         self.exporter_client = exporter_client
         self.exporter_agent_client = exporter_agent_client
         self.importer_client = importer_client

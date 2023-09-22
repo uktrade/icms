@@ -2,7 +2,9 @@ from django.urls import reverse
 from pytest_django.asserts import assertInHTML, assertRedirects
 
 
-def test_login_redirects_to_workbasket(client, ilb_admin_user):
+def test_login_redirects_to_workbasket(ilb_admin_user, cw_client):
+    client = cw_client
+
     url = reverse("accounts:login")
 
     resp = client.post(url, data={"username": "Unknown", "password": "password"})
