@@ -7,6 +7,7 @@ from django.template.loader import render_to_string
 from web.domains.case.types import ImpOrExp
 from web.domains.template.utils import get_email_template_subject_body
 from web.models import CaseEmail, Email, File, User
+from web.sites import get_caseworker_site_domain
 from web.utils.s3 import get_file_from_s3, get_s3_client
 
 
@@ -52,7 +53,8 @@ def create_case_email(
 def render_email(template, context):
     """Adds shared variables into context and renders the email"""
     context = context or {}
-    context["url"] = settings.DEFAULT_DOMAIN
+    # TODO: ICMSLST-2313 Revisit (render_email used in 5 places)
+    context["url"] = get_caseworker_site_domain()
     context["contact_email"] = settings.ILB_CONTACT_EMAIL
     context["contact_phone"] = settings.ILB_CONTACT_PHONE
     return render_to_string(template, context)

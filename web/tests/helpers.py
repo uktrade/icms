@@ -18,6 +18,7 @@ from web.models import (
     User,
     VariationRequest,
 )
+from web.sites import get_caseworker_site_domain
 from web.utils.validation import ApplicationErrors
 
 
@@ -106,7 +107,9 @@ def check_gov_notify_email_was_sent(
 def assert_common_email_personalisation(personalisation: dict, exp_subject: str, exp_in_body: str):
     assert personalisation.pop("icms_contact_email") == settings.ILB_CONTACT_EMAIL
     assert personalisation.pop("icms_contact_phone") == settings.ILB_CONTACT_PHONE
-    assert personalisation.pop("icms_url") == settings.DEFAULT_DOMAIN
+
+    # TODO: ICMSLST-2313 Revisit this as it will change depending on the email type.
+    assert personalisation.pop("icms_url") == get_caseworker_site_domain()
     assert personalisation.pop("subject") == exp_subject
     assert exp_in_body in personalisation.pop("body")
 

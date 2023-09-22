@@ -18,9 +18,9 @@ def test_get_validate_digital_signatures_url(db, full_url, expected_url):
     "application,full_url,expected_url",
     [
         ("completed_cfs_app", False, "/case/export/{pk}/view/"),
-        ("completed_cfs_app", True, "http://localhost:8080/case/export/{pk}/view/"),
+        ("completed_cfs_app", True, "http://export-a-certificate/case/export/{pk}/view/"),
         ("completed_dfl_app", False, "/case/import/{pk}/view/"),
-        ("completed_dfl_app", True, "http://localhost:8080/case/import/{pk}/view/"),
+        ("completed_dfl_app", True, "http://import-a-licence/case/import/{pk}/view/"),
     ],
 )
 def test_get_case_view_url(application, full_url, expected_url, request):

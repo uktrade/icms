@@ -278,9 +278,6 @@ SESSION_COOKIE_AGE = env.int("DJANGO_SESSION_COOKIE_AGE", default=60 * 30)
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-# Default domain is used in email templates to point users to ICMS from emails
-DEFAULT_DOMAIN = env.str("ICMS_DEFAULT_DOMAIN", default="http://localhost:8080/")
-
 SELECT2_CACHE_BACKEND = "default"
 SELECT2_CSS = os.path.join(STATIC_URL, "3rdparty/select2/select2.min.css")
 SELECT2_JS = os.path.join(STATIC_URL, "3rdparty/select2/select2.min.js")

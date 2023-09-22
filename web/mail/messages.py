@@ -6,6 +6,7 @@ from django.core.mail import EmailMessage, SafeMIMEMultipart
 
 from web.domains.case.types import ImpAccessOrExpAccess, ImpOrExp, ImpOrExpApproval
 from web.models import VariationRequest, WithdrawApplication
+from web.sites import get_caseworker_site_domain
 
 from .constants import EmailTypes
 from .models import EmailTemplate
@@ -31,7 +32,8 @@ class GOVNotifyEmailMessage(EmailMessage):
 
     def get_personalisation(self) -> dict:
         return {
-            "icms_url": settings.DEFAULT_DOMAIN,
+            # TODO: ICMSLST-2313 Revisit this as it will change depending on the email type.
+            "icms_url": get_caseworker_site_domain(),
             "icms_contact_email": settings.ILB_CONTACT_EMAIL,
             "icms_contact_phone": settings.ILB_CONTACT_PHONE,
             "subject": self.subject,
