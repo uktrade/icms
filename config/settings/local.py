@@ -6,8 +6,6 @@ DATABASES = {
     "default": env.db("DATABASE_URL", "postgres://postgres:password@db:5432/postgres")  # /PS-IGNORE
 }
 ALLOWED_HOSTS = [
-    "localhost",
-    "web",
     "caseworker",
     "import-a-licence",
     "export-a-certificate",

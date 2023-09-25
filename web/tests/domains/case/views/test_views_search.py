@@ -271,14 +271,14 @@ class TestRequestVariationUpdateView:
         url = SearchURLS.request_variation(self.wood_app.pk)
 
         # Test referrer query params are remembered
-        referrer = "http://localhost:8080/case/import/search/standard/results/?status=COMPLETED&decision=APPROVE"
+        referrer = "http://caseworker:8080/case/import/search/standard/results/?status=COMPLETED&decision=APPROVE"
         resp = self.client.get(url, HTTP_REFERER=referrer)
 
         expected = "/case/import/search/standard/results/?status=COMPLETED&decision=APPROVE"
         assert resp.context["search_results_url"] == expected
 
         # Test referrer set without query params
-        referrer = "http://localhost:8080/case/import/search/standard/results/"
+        referrer = "http://caseworker:8080/case/import/search/standard/results/"
         resp = self.client.get(url, HTTP_REFERER=referrer)
 
         expected = "/case/import/search/standard/results/"
