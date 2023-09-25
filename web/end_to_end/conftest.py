@@ -27,8 +27,7 @@ class UserPages:
     @contextmanager
     def imp_page(self) -> Generator[Page, None, None]:
         """Return a page logged in as an importer viewing the workbasket."""
-
-        page = self._get_page("importer_user.json")
+        page = self._get_page("http://import-a-licence:8080/", "importer_user.json")
         debug_page(page)
 
         yield page
@@ -38,8 +37,7 @@ class UserPages:
     @contextmanager
     def exp_page(self) -> Generator[Page, None, None]:
         """Return a page logged in as an exporter viewing the workbasket."""
-
-        page = self._get_page("exporter_user.json")
+        page = self._get_page("http://export-a-certificate:8080/", "exporter_user.json")
         debug_page(page)
 
         yield page
@@ -49,22 +47,23 @@ class UserPages:
     @contextmanager
     def ilb_page(self) -> Generator[Page, None, None]:
         """Return a page logged in as an ILB admin viewing the workbasket."""
-
-        page = self._get_page("ilb_admin.json")
+        page = self._get_page("http://caseworker:8080/", "ilb_admin.json")
         debug_page(page)
 
         yield page
 
         page.close()
 
-    def _get_page(self, storage_state: str) -> Page:
+    def _get_page(self, base_url: str, storage_state: str) -> Page:
         if not pathlib.Path(storage_state).exists():
             logger.info("Creating storage state: %s", storage_state)
-            self._login_user(storage_state)
+            self._login_user(base_url, storage_state)
 
         logger.info("Creating context from storage state: %s", storage_state)
         context: BrowserContext = self.browser.new_context(
-            storage_state=storage_state, **self.browser_context_args
+            base_url=base_url,
+            storage_state=storage_state,
+            **self.browser_context_args,
         )
 
         # Timeout in ms
@@ -77,16 +76,22 @@ class UserPages:
 
         return page
 
-    def _login_user(self, storage_state: str, user_password: str = "admin") -> None:
+    def _login_user(self, base_url: str, storage_state: str, user_password: str = "admin") -> None:
         username = storage_state.replace(".json", "")
 
         logger.info("Logging in the following user: %s", username)
 
-        context: BrowserContext = self.browser.new_context(**self.browser_context_args)
+        context: BrowserContext = self.browser.new_context(
+            base_url=base_url, **self.browser_context_args
+        )
+
         page: Page = context.new_page()
 
-        # Go to base url
+        # Go to base url (Will redirect to login-start/)
         page.goto("")
+        # Click button common to all login journeys
+        page.get_by_role("button", name="Start Now").click()
+
         page.get_by_label("Username").click()
         page.get_by_label("Username").fill(username)
 

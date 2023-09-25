@@ -79,8 +79,12 @@ services:
             - ./test-reports:/code/test-reports # needed for ci
             - .:/code
         networks:
-            - backend
-            - public
+          backend:
+            aliases:
+              - caseworker
+              - export-a-certificate
+              - import-a-licence
+          public:
 
     redis:
         # NOTE: Match what we currently have deployed in cloud foundry (Upgrade when needed).

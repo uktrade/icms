@@ -54,7 +54,7 @@ data_migrations: ## make data_migration migrations
 
 check_migrations: ## Check for missing migrations:
 	unset UID && \
-	docker-compose run --no-TTY --rm web python ./manage.py makemigrations --check --dry-run
+	docker-compose run --no-TTY --rm web python ./manage.py makemigrations --check --dry-run --settings=config.settings.local
 
 migrate: ## execute db migration
 	unset UID && \
@@ -180,21 +180,27 @@ end_to_end_clear_session: ## Clears the session cookies stored after running end
 	rm -f ilb_admin.json
 
 end_to_end_test: ## Run end to end tests in a container
-	docker-compose run -it --rm playwright-runner pytest -c playwright/pytest.ini web/end_to_end/ --base-url http://web:8080 --numprocesses=auto ${args} && \
+	docker-compose run -it --rm playwright-runner pytest -c playwright/pytest.ini web/end_to_end/ --numprocesses=auto ${args} && \
 	make end_to_end_clear_session
 
 
 end_to_end_test_firearm_chief: ## Ran to send applications to icms-hmrc
-	docker-compose run -it --rm playwright-runner pytest -c playwright/pytest.ini web/end_to_end/ --base-url http://web:8080 -k test_can_create_fa_ --numprocesses 3 ${args} && \
+	docker-compose run -it --rm playwright-runner pytest -c playwright/pytest.ini web/end_to_end/ -k test_can_create_fa_ --numprocesses 3 ${args} && \
 	make end_to_end_clear_session
 
 
 end_to_end_test_local: ## Run end to end tests locally
-	.venv/bin/python -m pytest -c playwright/pytest.ini web/end_to_end/ --base-url http://localhost:8080 ${args} && \
+	.venv/bin/python -m pytest -c playwright/pytest.ini web/end_to_end/ ${args} && \
 	make end_to_end_clear_session
 
-create_end_to_end: ## Create an end to end test using codegen
-	.venv/bin/python -m playwright codegen http://localhost:8080/ --target python-pytest --viewport-size "1920, 1080" ${args}
+create_end_to_end_caseworker: ## Create an end to end test using codegen for the caseworker site
+	.venv/bin/python -m playwright codegen http://caseworker:8080/ --target python-pytest --viewport-size "1920, 1080" ${args}
+
+create_end_to_end_export: ## Create an end to end test using codegen for the exporter site
+	.venv/bin/python -m playwright codegen http://export-a-certificate:8080/ --target python-pytest --viewport-size "1920, 1080" ${args}
+
+create_end_to_end_import: ## Create an end to end test using codegen for the importer site
+	.venv/bin/python -m playwright codegen http://import-a-licence:8080/ --target python-pytest --viewport-size "1920, 1080" ${args}
 
 ##@ Server
 debug: ## runs system in debug mode
