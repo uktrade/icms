@@ -6,6 +6,11 @@ from pytest_django.asserts import assertRedirects
 
 from web.mail.constants import EmailTypes
 from web.models import ApprovalRequest
+from web.sites import (
+    get_caseworker_site_domain,
+    get_exporter_site_domain,
+    get_importer_site_domain,
+)
 from web.tests.auth import AuthTestCase
 from web.tests.helpers import (
     add_approval_request,
@@ -81,7 +86,7 @@ class TestManageAccessApprovalView(AuthTestCase):
             1,
             [self.importer_user.email],
             EmailTypes.IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED,
-            {"user_type": "user"},
+            {"user_type": "user", "icms_url": get_importer_site_domain()},
         )
 
     def test_post_exporter(self):
@@ -102,7 +107,7 @@ class TestManageAccessApprovalView(AuthTestCase):
             1,
             [self.exporter_user.email],
             EmailTypes.EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED,
-            {"user_type": "user"},
+            {"user_type": "user", "icms_url": get_exporter_site_domain()},
         )
 
 
@@ -389,7 +394,7 @@ class TestCloseAccessApprovalView(AuthTestCase):
             2,
             ["ilb_admin_user@example.com", "ilb_admin_two@example.com"],  # /PS-IGNORE
             EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE,
-            {"user_type": "user"},
+            {"user_type": "user", "icms_url": get_caseworker_site_domain()},
         )
 
     def test_post_approve_exporter(self):
@@ -407,7 +412,7 @@ class TestCloseAccessApprovalView(AuthTestCase):
             2,
             ["ilb_admin_user@example.com", "ilb_admin_two@example.com"],  # /PS-IGNORE
             EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE,
-            {"user_type": "user"},
+            {"user_type": "user", "icms_url": get_caseworker_site_domain()},
         )
 
     def test_post_refuse_importer(self):
@@ -427,7 +432,7 @@ class TestCloseAccessApprovalView(AuthTestCase):
             2,
             ["ilb_admin_user@example.com", "ilb_admin_two@example.com"],  # /PS-IGNORE
             EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE,
-            {"user_type": "user"},
+            {"user_type": "user", "icms_url": get_caseworker_site_domain()},
         )
 
     def test_post_refuse_exporter(self):
@@ -447,5 +452,5 @@ class TestCloseAccessApprovalView(AuthTestCase):
             2,
             ["ilb_admin_user@example.com", "ilb_admin_two@example.com"],  # /PS-IGNORE
             EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE,
-            {"user_type": "user"},
+            {"user_type": "user", "icms_url": get_caseworker_site_domain()},
         )

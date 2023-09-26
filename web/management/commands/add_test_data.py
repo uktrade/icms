@@ -27,7 +27,7 @@ from web.permissions import (
     ImporterObjectPermissions,
     constabulary_add_contact,
 )
-from web.sites import CASEWORKER_SITE_NAME, EXPORTER_SITE_NAME, IMPORTER_SITE_NAME
+from web.sites import SiteName
 from web.tests.organisations import TEST_EXPORTERS, TEST_IMPORTERS
 from web.tests.types import (
     AgentExporter,
@@ -56,15 +56,15 @@ class Command(BaseCommand):
 
         load_app_test_data()
 
-        site = Site.objects.get(name=CASEWORKER_SITE_NAME)
+        site = Site.objects.get(name=SiteName.CASEWORKER)
         site.domain = "caseworker"
         site.save()
 
-        site = Site.objects.get(name=EXPORTER_SITE_NAME)
+        site = Site.objects.get(name=SiteName.EXPORTER)
         site.domain = "export-a-certificate"
         site.save()
 
-        site = Site.objects.get(name=IMPORTER_SITE_NAME)
+        site = Site.objects.get(name=SiteName.IMPORTER)
         site.domain = "import-a-licence"
         site.save()
 

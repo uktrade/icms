@@ -11,6 +11,7 @@ from web.models import (
     OpenIndividualLicenceApplication,
     Task,
 )
+from web.sites import get_importer_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 from web.tests.domains.case._import.factory import OILApplicationFactory
@@ -147,7 +148,8 @@ def test_close_case(ilb_admin_user, ilb_admin_client, importer, importer_one_con
         {
             "reference": process.reference,
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
-            "application_url": get_case_view_url(process, full_url=True),
+            "application_url": get_case_view_url(process, get_importer_site_domain()),
+            "icms_url": get_importer_site_domain(),
         },
     )
 

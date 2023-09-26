@@ -35,7 +35,7 @@ from web.models import (
     User,
 )
 from web.permissions import Perms
-from web.sites import CASEWORKER_SITE_NAME, EXPORTER_SITE_NAME, IMPORTER_SITE_NAME
+from web.sites import SiteName
 from web.views import login_start_view
 
 
@@ -97,7 +97,7 @@ class SuperUserUserAdmin(UserAdmin):
 class ICMSSiteForm(forms.ModelForm):
     name = forms.ChoiceField(
         label="Name",
-        choices=[(f, f) for f in (CASEWORKER_SITE_NAME, EXPORTER_SITE_NAME, IMPORTER_SITE_NAME)],
+        choices=SiteName.choices,
         required=True,
     )
 
