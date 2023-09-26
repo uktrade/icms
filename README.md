@@ -35,7 +35,7 @@ developing, only within Docker.
 ## Initial setup
 
 - copy `.env.example` to `.env`.
-  - There are a vew values you may need later stored in vault / ask another dev for correct values.
+  - There are a few values you may need later stored in vault / ask another dev for correct values.
   - If you want to see all database queries done by each request, add `SHOW_DB_QUERIES=True` to it.
 - `make build`
   - Build all Docker containers

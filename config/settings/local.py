@@ -52,9 +52,11 @@ DEBUG_TOOLBAR_PANELS = [
     "debug_toolbar.panels.profiling.ProfilingPanel",
 ]
 
+SHOW_DEBUG_TOOLBAR = env.bool("SHOW_DEBUG_TOOLBAR", default=True)
+
 DEBUG_TOOLBAR_CONFIG = {
     "INTERCEPT_REDIRECTS": False,
-    "SHOW_TOOLBAR_CALLBACK": lambda x: False if "DISABLE_DEBUG_TOOLBAR" in os.environ else True,
+    "SHOW_TOOLBAR_CALLBACK": lambda x: SHOW_DEBUG_TOOLBAR,
 }
 
 NPM_STATIC_FILES_LOCATION = "web/static/3rdparty"
