@@ -22,6 +22,7 @@ from web.models import (
     WoodQuotaChecklist,
 )
 from web.models.shared import YesNoNAChoices
+from web.sites import get_caseworker_site_domain, get_importer_site_domain
 from web.tests.helpers import (
     CaseURLS,
     add_variation_request_to_app,
@@ -132,7 +133,12 @@ def test_manage_withdrawals_reject(
         1,
         [sent_to],
         EmailTypes.WITHDRAWAL_REJECTED,
-        {"reference": wood_app_submitted.reference, "reason": "", "reason_rejected": "Withdrawn"},
+        {
+            "reference": wood_app_submitted.reference,
+            "reason": "",
+            "reason_rejected": "Withdrawn",
+            "icms_url": get_importer_site_domain(),
+        },
     )
 
 
@@ -153,7 +159,11 @@ def test_manage_withdrawals_accept(
         1,
         [sent_to],
         EmailTypes.WITHDRAWAL_ACCEPTED,
-        {"reference": wood_app_submitted.reference, "reason": ""},
+        {
+            "reference": wood_app_submitted.reference,
+            "reason": "",
+            "icms_url": get_importer_site_domain(),
+        },
     )
 
 
@@ -193,7 +203,11 @@ def test_request_withdrawal(importer_client, wood_app_submitted, importer_one_co
             "ilb_admin_two@example.com",  # /PS-IGNORE
         ],
         EmailTypes.WITHDRAWAL_OPENED,
-        {"reference": wood_app_submitted.reference, "reason": "No longer required"},
+        {
+            "reference": wood_app_submitted.reference,
+            "reason": "No longer required",
+            "icms_url": get_caseworker_site_domain(),
+        },
     )
 
 
@@ -220,7 +234,11 @@ def test_archive_withdrawal(importer_client, wood_app_submitted, importer_one_co
             "ilb_admin_two@example.com",  # /PS-IGNORE
         ],
         EmailTypes.WITHDRAWAL_CANCELLED,
-        {"reference": wood_app_submitted.reference, "reason": ""},
+        {
+            "reference": wood_app_submitted.reference,
+            "reason": "",
+            "icms_url": get_caseworker_site_domain(),
+        },
     )
 
 
@@ -455,8 +473,9 @@ def test_start_authorisation_rejected_variation_requested_application(
         {
             "reference": wood_application.reference,
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
-            "application_url": get_case_view_url(wood_application, full_url=True),
+            "application_url": get_case_view_url(wood_application, get_importer_site_domain()),
             "reason": "test refuse reason",
+            "icms_url": get_importer_site_domain(),
         },
     )
 

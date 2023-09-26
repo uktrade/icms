@@ -2,7 +2,7 @@ from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 from pydantic import AnyHttpUrl, BaseModel, Extra
 
-from web.sites import CASEWORKER_SITE_NAME, EXPORTER_SITE_NAME, IMPORTER_SITE_NAME
+from web.sites import SiteName
 
 
 class CmdArgs(BaseModel):
@@ -26,15 +26,15 @@ class Command(BaseCommand):
     def handle(self, *args, **options) -> None:
         cmd_args = CmdArgs(**options)
 
-        site = Site.objects.get(name=CASEWORKER_SITE_NAME)
+        site = Site.objects.get(name=SiteName.CASEWORKER)
         site.domain = get_site_domain(cmd_args.caseworker_url)
         site.save()
 
-        site = Site.objects.get(name=EXPORTER_SITE_NAME)
+        site = Site.objects.get(name=SiteName.EXPORTER)
         site.domain = get_site_domain(cmd_args.exporter_url)
         site.save()
 
-        site = Site.objects.get(name=IMPORTER_SITE_NAME)
+        site = Site.objects.get(name=SiteName.IMPORTER)
         site.domain = get_site_domain(cmd_args.importer_url)
         site.save()
 

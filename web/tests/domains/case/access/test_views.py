@@ -7,6 +7,11 @@ from pytest_django.asserts import assertInHTML, assertRedirects, assertTemplateU
 from web.mail.constants import EmailTypes
 from web.models import AccessRequest, ExporterAccessRequest, ImporterAccessRequest
 from web.permissions import organisation_get_contacts
+from web.sites import (
+    get_caseworker_site_domain,
+    get_exporter_site_domain,
+    get_importer_site_domain,
+)
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 from web.tests.helpers import check_gov_notify_email_was_sent, get_test_client
@@ -96,7 +101,7 @@ class TestImporterAccessRequestView(AuthTestCase):
                 "ilb_admin_two@example.com",  # /PS-IGNORE
             ],
             EmailTypes.ACCESS_REQUEST,
-            {"reference": "IAR/1"},
+            {"reference": "IAR/1", "icms_url": get_caseworker_site_domain()},
         )
 
 
@@ -158,7 +163,7 @@ class TestExporterAccessRequestView(AuthTestCase):
                 "ilb_admin_two@example.com",  # /PS-IGNORE
             ],
             EmailTypes.ACCESS_REQUEST,
-            {"reference": "EAR/1"},
+            {"reference": "EAR/1", "icms_url": get_caseworker_site_domain()},
         )
 
 
@@ -301,6 +306,7 @@ class TestCloseAccessRequest(AuthTestCase):
                 "outcome": "Approved",
                 "reason": "",
                 "request_type": "Importer",
+                "icms_url": get_importer_site_domain(),
             },
         )
 
@@ -327,6 +333,7 @@ class TestCloseAccessRequest(AuthTestCase):
                 "outcome": "Refused",
                 "reason": "Reason: test refuse",
                 "request_type": "Importer",
+                "icms_url": get_importer_site_domain(),
             },
         )
 
@@ -358,6 +365,7 @@ class TestCloseAccessRequest(AuthTestCase):
                 "outcome": "Approved",
                 "reason": "",
                 "request_type": "Exporter",
+                "icms_url": get_exporter_site_domain(),
             },
         )
 
@@ -384,6 +392,7 @@ class TestCloseAccessRequest(AuthTestCase):
                 "outcome": "Refused",
                 "reason": "Reason: test refuse",
                 "request_type": "Exporter",
+                "icms_url": get_exporter_site_domain(),
             },
         )
 

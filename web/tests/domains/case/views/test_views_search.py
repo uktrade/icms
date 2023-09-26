@@ -12,7 +12,11 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.flow import errors
 from web.mail.constants import EmailTypes
-from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
+from web.mail.url_helpers import (
+    get_case_view_url,
+    get_importer_site_domain,
+    get_validate_digital_signatures_url,
+)
 from web.models import (
     CertificateOfManufactureApplication,
     ImportApplicationLicence,
@@ -202,7 +206,8 @@ class TestReopenApplicationView:
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
                     full_url=True
                 ),
-                "application_url": get_case_view_url(application, full_url=True),
+                "application_url": get_case_view_url(application, get_importer_site_domain()),
+                "icms_url": get_importer_site_domain(),
             },
         )
 

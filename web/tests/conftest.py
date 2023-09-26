@@ -41,7 +41,7 @@ from web.models import (
     WoodQuotaApplication,
 )
 from web.models.shared import YesNoNAChoices
-from web.sites import CASEWORKER_SITE_NAME, EXPORTER_SITE_NAME, IMPORTER_SITE_NAME
+from web.sites import SiteName
 from web.tests.helpers import CaseURLS, get_test_client
 
 from .application_utils import (
@@ -97,17 +97,17 @@ def django_db_setup(django_db_setup, django_db_blocker):
 #
 @pytest.fixture()
 def caseworker_site(db):
-    return Site.objects.get(name=CASEWORKER_SITE_NAME)
+    return Site.objects.get(name=SiteName.CASEWORKER)
 
 
 @pytest.fixture()
 def importer_site(db):
-    return Site.objects.get(name=IMPORTER_SITE_NAME)
+    return Site.objects.get(name=SiteName.IMPORTER)
 
 
 @pytest.fixture()
 def exporter_site(db):
-    return Site.objects.get(name=EXPORTER_SITE_NAME)
+    return Site.objects.get(name=SiteName.EXPORTER)
 
 
 #

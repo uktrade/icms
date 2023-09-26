@@ -5,11 +5,13 @@ from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied
 
 from web.permissions import Perms
-from web.types import AuthenticatedHttpRequest
+from web.types import AuthenticatedHttpRequest, TypedTextChoices
 
-CASEWORKER_SITE_NAME = "Caseworker"
-EXPORTER_SITE_NAME = "Export A Certificate"
-IMPORTER_SITE_NAME = "Import A Licence"
+
+class SiteName(TypedTextChoices):
+    CASEWORKER = ("Caseworker", "Caseworker")
+    EXPORTER = ("Export A Certificate", "Export A Certificate")
+    IMPORTER = ("Import A Licence", "Import A Licence")
 
 
 def require_importer(check_permission=True):
@@ -51,30 +53,30 @@ def require_exporter(check_permission=True):
 
 
 def is_exporter_site(site: Site) -> bool:
-    return site.name == EXPORTER_SITE_NAME
+    return site.name == SiteName.EXPORTER
 
 
 def is_importer_site(site: Site) -> bool:
-    return site.name == IMPORTER_SITE_NAME
+    return site.name == SiteName.IMPORTER
 
 
 def is_caseworker_site(site: Site) -> bool:
-    return site.name == CASEWORKER_SITE_NAME
+    return site.name == SiteName.CASEWORKER
 
 
 def get_caseworker_site_domain() -> str:
-    return _get_site_domain(CASEWORKER_SITE_NAME)
+    return _get_site_domain(SiteName.CASEWORKER)
 
 
 def get_exporter_site_domain() -> str:
-    return _get_site_domain(EXPORTER_SITE_NAME)
+    return _get_site_domain(SiteName.EXPORTER)
 
 
 def get_importer_site_domain() -> str:
-    return _get_site_domain(IMPORTER_SITE_NAME)
+    return _get_site_domain(SiteName.IMPORTER)
 
 
-def _get_site_domain(name: str) -> str:
+def _get_site_domain(name: SiteName) -> str:
     """Return a site domain with the scheme included."""
     scheme = "https" if settings.APP_ENV not in ["local", "test"] else "http"
     domain = Site.objects.get(name=name).domain

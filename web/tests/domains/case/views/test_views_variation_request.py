@@ -11,6 +11,7 @@ from web.domains.case.shared import ImpExpStatus
 from web.mail.constants import EmailTypes
 from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import Task, VariationRequest
+from web.sites import get_caseworker_site_domain, get_importer_site_domain
 from web.tests.helpers import (
     CaseURLS,
     add_variation_request_to_app,
@@ -93,13 +94,13 @@ class TestVariationRequestCancelView:
         self.client = ilb_admin_client
 
     @pytest.fixture(autouse=True)
-    def set_app(self, set_client, wood_app_submitted, ilb_admin_user):
+    def set_app(self, set_client, wood_app_submitted, importer_one_contact):
         self.wood_app = wood_app_submitted
         self.client.post(CaseURLS.take_ownership(self.wood_app.pk))
 
         self.wood_app.refresh_from_db()
         self.wood_app.status = ImpExpStatus.VARIATION_REQUESTED
-        add_variation_request_to_app(self.wood_app, ilb_admin_user)
+        add_variation_request_to_app(self.wood_app, importer_one_contact)
         self.wood_app.save()
 
         # Set the draft licence active and create a second one
@@ -147,15 +148,16 @@ class TestVariationRequestCancelView:
         assert self.draft_licence.status == DocumentPackBase.Status.ARCHIVED
         check_gov_notify_email_was_sent(
             1,
-            ["ilb_admin_user@example.com"],  # /PS-IGNORE
+            ["I1_main_contact@example.com"],  # /PS-IGNORE
             EmailTypes.APPLICATION_VARIATION_REQUEST_CANCELLED,
             {
                 "reference": self.wood_app.reference,
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
                     full_url=True
                 ),
-                "application_url": get_case_view_url(self.wood_app, full_url=True),
+                "application_url": get_case_view_url(self.wood_app, get_importer_site_domain()),
                 "reason": "Test cancellation reason",
+                "icms_url": get_importer_site_domain(),
             },
         )
 
@@ -215,8 +217,9 @@ class TestVariationRequestCancelViewForExportApplication:
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
                     full_url=True
                 ),
-                "application_url": get_case_view_url(self.app, full_url=True),
+                "application_url": get_case_view_url(self.app, get_caseworker_site_domain()),
                 "reason": None,
+                "icms_url": get_caseworker_site_domain(),
             },
         )
 
@@ -266,8 +269,9 @@ class TestVariationRequestRequestUpdateView:
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
                     full_url=True
                 ),
-                "application_url": get_case_view_url(self.wood_app, full_url=True),
+                "application_url": get_case_view_url(self.wood_app, get_importer_site_domain()),
                 "reason": "Dummy update request reason",
+                "icms_url": get_importer_site_domain(),
             },
         )
 
@@ -304,8 +308,9 @@ class TestVariationRequestCancelUpdateRequestView:
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
                     full_url=True
                 ),
-                "application_url": get_case_view_url(self.app, full_url=True),
+                "application_url": get_case_view_url(self.app, get_importer_site_domain()),
                 "reason": "Dummy update request reason",
+                "icms_url": get_importer_site_domain(),
             },
         )
         mail.outbox = []
@@ -347,7 +352,8 @@ class TestVariationRequestCancelUpdateRequestView:
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
                     full_url=True
                 ),
-                "application_url": get_case_view_url(self.app, full_url=True),
+                "application_url": get_case_view_url(self.app, get_importer_site_domain()),
+                "icms_url": get_importer_site_domain(),
             },
         )
 
@@ -385,8 +391,9 @@ class TestVariationRequestRespondToUpdateRequestView:
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
                     full_url=True
                 ),
-                "application_url": get_case_view_url(self.wood_app, full_url=True),
+                "application_url": get_case_view_url(self.wood_app, get_importer_site_domain()),
                 "reason": "Dummy update request reason",
+                "icms_url": get_importer_site_domain(),
             },
         )
         mail.outbox = []
@@ -435,6 +442,7 @@ class TestVariationRequestRespondToUpdateRequestView:
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
                     full_url=True
                 ),
-                "application_url": get_case_view_url(self.wood_app, full_url=True),
+                "application_url": get_case_view_url(self.wood_app, get_caseworker_site_domain()),
+                "icms_url": get_caseworker_site_domain(),
             },
         )
