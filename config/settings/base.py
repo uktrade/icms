@@ -309,7 +309,7 @@ ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD = env.bool(
     "ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD", default=False
 )
 
-# getAddress.io api key
+# getAddress.io api key for post code search
 ADDRESS_API_KEY = env.str("ICMS_ADDRESS_API_KEY", default="")
 
 SILENCED_SYSTEM_CHECKS = env.list("ICMS_SILENCED_SYSTEM_CHECKS", default=[])

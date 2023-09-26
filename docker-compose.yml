@@ -27,43 +27,10 @@ services:
         # user: ${UID}
         command: scripts/entry.sh
         environment:
+            - DJANGO_SETTINGS_MODULE
             - PYTHONUNBUFFERED=1
             - ICMS_WEB_PORT
             - ICMS_DEBUG=True # Used in entry.sh
-            - ICMS_NUM_WORKERS # Gunicorn workers number
-            - ICMS_ADDRESS_API_KEY # getAddress.io api key for post code search
-            # https://developer.company-information.service.gov.uk/
-            - COMPANIES_HOUSE_DOMAIN
-            - COMPANIES_HOUSE_TOKEN
-            # DATABASE_URL not namespaced due to GOV PaaS setting DATABASE_URL env var
-            - DATABASE_URL
-            - ICMS_ALLOWED_HOSTS
-            - ICMS_SILENCED_SYSTEM_CHECKS
-            - ICMS_SECRET_KEY
-            - ICMS_EMAIL_FROM
-            - DJANGO_SETTINGS_MODULE
-            - ELASTIC_APM_SECRET_TOKEN
-            - ELASTIC_APM_ENVIRONMENT
-            - ELASTIC_APM_URL
-            - DISABLE_DEBUG_TOOLBAR
-            - CLAM_AV_USERNAME
-            - CLAM_AV_PASSWORD
-            - CLAM_AV_URL
-            - APP_ENV
-            - ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD
-            - ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD
-            - SHOW_DB_QUERIES
-            - WORKBASKET_PER_PAGE
-            - DJANGO_SESSION_COOKIE_AGE
-            - ICMS_HMRC_DOMAIN
-            - ICMS_HMRC_UPDATE_LICENCE_ENDPOINT
-            - HAWK_AUTH_ID
-            - HAWK_AUTH_KEY
-            - SEND_LICENCE_TO_CHIEF
-            - SET_INACTIVE_APP_TYPES_ACTIVE
-            - GOV_NOTIFY_API_KEY
-            - EMAIL_BACKEND
-            - SEND_ALL_EMAILS_TO
         env_file:
             - .env
         # stdin_open: true
@@ -102,15 +69,8 @@ services:
         command: celery --app=config.celery:app worker --loglevel=info
         environment:
             - DJANGO_SETTINGS_MODULE
-            - ICMS_HMRC_DOMAIN
-            - ICMS_HMRC_UPDATE_LICENCE_ENDPOINT
-            - HAWK_AUTH_ID
-            - HAWK_AUTH_KEY
-            - SEND_LICENCE_TO_CHIEF
-            - GOV_NOTIFY_API_KEY
-            - EMAIL_BACKEND
-            - SEND_ALL_EMAILS_TO
-            - APP_ENV
+        env_file:
+            - .env
         depends_on:
             - redis
         volumes:
