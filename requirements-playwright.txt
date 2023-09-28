@@ -2,3 +2,7 @@ pytest==7.4.2
 pytest-base-url==2.0.0
 pytest-playwright==0.4.2
 pytest-xdist==3.3.1
+# phonenumber imports required due to this import:
+# from web.forms.fields import JQUERY_DATE_FORMAT
+django-phonenumber-field==5.0.0
+phonenumbers==8.12.12

@@ -4,13 +4,13 @@ from django.contrib.auth.forms import UsernameField
 from django.core.exceptions import ObjectDoesNotExist
 
 from web.auth.utils import get_legacy_user_by_username
-from web.forms.fields import PhoneNumberField
-from web.forms.widgets import DateInput
+from web.forms.fields import JqueryDateField, PhoneNumberField
 from web.models import Email, User
 
 
 class UserCreationForm(BaseUserCreationForm):
     telephone_number = PhoneNumberField()
+    date_of_birth = JqueryDateField(required=False, label="Date of Birth")
 
     class Meta:
         model = User
@@ -30,11 +30,6 @@ class UserCreationForm(BaseUserCreationForm):
             "first_name": "Forename",
             "last_name": "Surname",
             "telephone_number": "Telephone Number",
-            "date_of_birth": "Date of Birth",
-        }
-
-        widgets = {
-            "date_of_birth": DateInput(),
         }
 
         field_classes = {"username": UsernameField}

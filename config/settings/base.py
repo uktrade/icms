@@ -187,13 +187,6 @@ AWS_ACCESS_KEY_ID = app_bucket_creds.get("aws_access_key_id")
 AWS_SECRET_ACCESS_KEY = app_bucket_creds.get("aws_secret_access_key")
 AWS_STORAGE_BUCKET_NAME = app_bucket_creds.get("bucket_name")
 
-# Date formats
-
-DATE_INPUT_FORMATS = ["%d-%b-%Y"]  # input formats
-DATETIME_INPUT_FORMATS = ["%d-%b-%Y %H:%M:%S"]
-DATE_FORMAT = ["d-M-Y"]  # format for displaying date
-DATETIME_FORMAT = ["d-M-Y H:i:s"]
-
 # Phone number format
 PHONENUMBER_DB_FORMAT = "INTERNATIONAL"
 PHONENUMBER_DEFAULT_REGION = "GB"
@@ -203,7 +196,6 @@ PHONENUMBER_DEFAULT_REGION = "GB"
 LANGUAGE_CODE = "en-gb"
 TIME_ZONE = "Europe/London"
 USE_I18N = True
-USE_L10N = False
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)

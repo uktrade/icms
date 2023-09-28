@@ -11,7 +11,7 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models import Model
 from django.http import HttpRequest
 from django.urls import reverse
-from django.utils.formats import get_format
+from django.utils import formats
 from guardian.core import ObjectPermissionChecker
 from jinja2 import Environment, pass_eval_context
 from markupsafe import Markup, escape
@@ -54,7 +54,7 @@ def input_datetime(value):
     if not value:
         return ""
 
-    input_formats = get_format("DATETIME_INPUT_FORMATS")
+    input_formats = formats.get_format("DATETIME_INPUT_FORMATS")
     for format in input_formats:
         try:
             datetime.strptime(value, format)
@@ -66,7 +66,7 @@ def input_datetime(value):
     naive_datetime = datetime.strptime(value, "%Y-%m-%d %H:%M:%S.%f")
     local_datetime = local_timezone.localize(naive_datetime, is_dst=None)
     utc_datetime = local_datetime.astimezone(pytz.utc)
-    for format in get_format("DATETIME_INPUT_FORMATS"):
+    for format in formats.get_format("DATETIME_INPUT_FORMATS"):
         try:
             return utc_datetime.strftime(format)
         except (ValueError, TypeError):
@@ -196,4 +196,6 @@ def environment(**options):
     env.filters["input_datetime"] = input_datetime
     env.filters["nl2br"] = nl2br
     env.filters["verbose_name"] = verbose_name
+    env.filters["localize"] = formats.localize
+
     return env

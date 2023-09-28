@@ -28,6 +28,7 @@ def get_groups():
             #
             # Page permissions
             Perms.page.view_permission_harness,
+            Perms.page.view_l10n_harness,
             Perms.page.view_import_case_search,
             Perms.page.view_export_case_search,
             Perms.page.view_imi,

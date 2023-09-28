@@ -1,7 +1,8 @@
 from django import forms
 
 from web.domains.file.utils import ICMSFileField
-from web.forms.widgets import DateInput, YesNoRadioSelectInline
+from web.forms.fields import JqueryDateField
+from web.forms.widgets import YesNoRadioSelectInline
 
 from .models import ImportContact, UserImportCertificate
 from .types import FaImportApplication
@@ -74,6 +75,9 @@ class ImportContactLegalEntityForm(forms.ModelForm):
 class UserImportCertificateForm(forms.ModelForm):
     document = ICMSFileField(required=True)
 
+    date_issued = JqueryDateField(required=True, label="Date Issued")
+    expiry_date = JqueryDateField(required=True, label="Expiry Date")
+
     class Meta:
         model = UserImportCertificate
         fields = (
@@ -84,7 +88,6 @@ class UserImportCertificateForm(forms.ModelForm):
             "expiry_date",
             "document",
         )
-        widgets = {"date_issued": DateInput, "expiry_date": DateInput}
 
     def __init__(self, *args, application, **kwargs):
         super().__init__(*args, **kwargs)

@@ -4,6 +4,8 @@ import phonenumber_field.formfields
 from django import forms
 from phonenumber_field.widgets import PhoneNumberInternationalFallbackWidget
 
+from .widgets import DateInput
+
 
 class PhoneNumberField(phonenumber_field.formfields.PhoneNumberField):
     widget = PhoneNumberInternationalFallbackWidget
@@ -35,3 +37,13 @@ class WildcardField(forms.RegexField):
         stripped = re.sub("%+", "%", val)
 
         return stripped
+
+
+# Always match the format here: web/static/web/js/fox/core-footer.js
+# dateFormat: "dd'-'M'-'yy"
+JQUERY_DATE_FORMAT = "%d-%b-%Y"
+
+
+class JqueryDateField(forms.DateField):
+    widget = DateInput(format=JQUERY_DATE_FORMAT)
+    input_formats = [JQUERY_DATE_FORMAT]

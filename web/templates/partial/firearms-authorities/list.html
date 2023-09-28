@@ -26,8 +26,8 @@
       <td>{{ firearms_authority.issuing_constabulary.name }}</td>
       <td>{{ firearms_authority.address|nl2br() or '' }}</td>
       <td>{{ firearms_authority.postcode }}</td>
-      <td>{{ firearms_authority.start_date }}</td>
-      <td>{{ firearms_authority.end_date }}</td>
+      <td>{{ firearms_authority.start_date|localize }}</td>
+      <td>{{ firearms_authority.end_date|localize }}</td>
       {% if not read_only %}
         <td>
           <a

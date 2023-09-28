@@ -64,7 +64,7 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-    urlpatterns.extend([path("permissions-test-harness/", include("web.perm_harness.urls"))])
+    urlpatterns.extend([path("test-harness/", include("web.harness.urls"))])
 
 
 #

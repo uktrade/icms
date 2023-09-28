@@ -1,3 +1,5 @@
+import datetime as dt
+import decimal
 import random
 from typing import Any
 
@@ -11,6 +13,52 @@ from web.models import Exporter, Importer, Office, User
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 
+from . import forms
+
+
+class L10NTestHarnessView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):  # /PS-IGNORE
+    # PermissionRequiredMixin config
+    permission_required = [Perms.page.view_l10n_harness]
+
+    # TemplateView config
+    http_method_names = ["get"]
+    template_name = "web/harness/l10n.html"
+
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        date_value = dt.date.today()
+        datetime_value = dt.datetime.now()
+        time_value = dt.datetime.now().time()
+        int_field = 123_456_789
+        float_field = 123_456_789.45
+        decimal_field = decimal.Decimal(123_456_789.456)
+        split_date_time_field = [date_value, time_value]
+
+        form_data = {
+            "date_field": date_value,
+            "datetime_field": datetime_value,
+            "time_field": time_value,
+            "int_field": int_field,
+            "float_field": float_field,
+            "decimal_field": decimal_field,
+            "split_date_time_field": split_date_time_field,
+        }
+
+        localised_form = forms.LocalizedForm(initial=form_data)
+        non_localised_form = forms.NonLocalizedForm(initial=form_data)
+
+        return context | {
+            "date_value": date_value,
+            "datetime_value": datetime_value,
+            "time_value": time_value,
+            "int_field": int_field,
+            "float_field": float_field,
+            "decimal_field": decimal_field,
+            "localised_form": localised_form,
+            "non_localised_form": non_localised_form,
+        }
+
 
 class PermissionTestHarnessView(PermissionRequiredMixin, LoginRequiredMixin, TemplateView):
     # PermissionRequiredMixin config
@@ -18,7 +66,7 @@ class PermissionTestHarnessView(PermissionRequiredMixin, LoginRequiredMixin, Tem
 
     # TemplateView config
     http_method_names = ["get"]
-    template_name = "web/perm_harness/index.html"
+    template_name = "web/harness/permissions.html"
 
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -46,7 +94,7 @@ class CreateHarnessDataView(PermissionRequiredMixin, LoginRequiredMixin, View):
     def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
         self._create_harness_data()
 
-        return redirect("perm_test:harness")
+        return redirect("harness:permissions")
 
     @staticmethod
     def _create_harness_data(r: int = 100) -> None:

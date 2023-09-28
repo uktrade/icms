@@ -5,8 +5,7 @@ from django_select2.forms import Select2MultipleWidget
 
 from web.domains.case.models import ApplicationBase
 from web.domains.contacts.widgets import ContactWidget
-from web.forms.fields import WildcardField
-from web.forms.widgets import DateInput
+from web.forms.fields import JqueryDateField, WildcardField
 from web.models import (
     CommodityGroup,
     Country,
@@ -52,8 +51,8 @@ class SearchFormBase(forms.Form):
         required=False,
     )
 
-    submitted_from = forms.DateField(label="Submitted Date", required=False, widget=DateInput)
-    submitted_to = forms.DateField(label="To", required=False, widget=DateInput)
+    submitted_from = JqueryDateField(label="Submitted Date", required=False)
+    submitted_to = JqueryDateField(label="To", required=False)
 
     reassignment = forms.BooleanField(label="Reassignment", required=False)
 
@@ -119,11 +118,11 @@ class ImportSearchForm(SearchFormBase):
         error_messages={"invalid": wildcard_invalid_error},
     )
 
-    licence_from = forms.DateField(label="Licence Date", required=False, widget=DateInput)
-    licence_to = forms.DateField(label="To", required=False, widget=DateInput)
+    licence_from = JqueryDateField(label="Licence Date", required=False)
+    licence_to = JqueryDateField(label="To", required=False)
 
-    issue_from = forms.DateField(label="Issue Date", required=False, widget=DateInput)
-    issue_to = forms.DateField(label="To", required=False, widget=DateInput)
+    issue_from = JqueryDateField(label="Issue Date", required=False)
+    issue_to = JqueryDateField(label="To", required=False)
 
     def clean(self):
         cd = super().clean()

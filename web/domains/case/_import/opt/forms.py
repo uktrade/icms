@@ -7,6 +7,7 @@ import web.forms.widgets as icms_widgets
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
 from web.domains.commodity.widgets import CommodityWidget
+from web.forms.fields import JqueryDateField
 from web.forms.mixins import OptionalFormMixin
 from web.models import Commodity, Country
 from web.models.shared import YesNoChoices, YesNoNAChoices
@@ -16,6 +17,12 @@ from .widgets import OptCompensatingProductsCommodityWidget
 
 
 class OptFormBase(forms.ModelForm):
+    last_export_day = JqueryDateField(
+        required=True,
+        label="Last Export Day",
+        help_text="Requested last day of authorised exportation.",
+    )
+
     class Meta:
         model = models.OutwardProcessingTradeApplication
 
@@ -33,7 +40,6 @@ class OptFormBase(forms.ModelForm):
         )
 
         widgets = {
-            "last_export_day": icms_widgets.DateInput,
             "customs_office_address": forms.Textarea({"rows": 4}),
             "rate_of_yield_calc_method": forms.Textarea({"rows": 2}),
             "nature_process_ops": forms.Textarea({"rows": 2}),

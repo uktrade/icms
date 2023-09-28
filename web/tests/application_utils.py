@@ -7,6 +7,7 @@ from django.test.client import Client
 from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
+from web.forms.fields import JQUERY_DATE_FORMAT
 from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
@@ -187,8 +188,8 @@ def create_in_progress_fa_oil_app(
         "reference": "Certificate Reference Value",
         "certificate_type": "registered",
         "constabulary": Constabulary.objects.first().pk,
-        "date_issued": datetime.date.today().strftime("%d-%b-%Y"),
-        "expiry_date": datetime.date.today().strftime("%d-%b-%Y"),
+        "date_issued": datetime.date.today().strftime(JQUERY_DATE_FORMAT),
+        "expiry_date": datetime.date.today().strftime(JQUERY_DATE_FORMAT),
     }
 
     add_app_file(
@@ -258,8 +259,8 @@ def create_in_progress_fa_sil_app(
         "reference": "Certificate Reference Value",
         "certificate_type": "registered",
         "constabulary": Constabulary.objects.first().pk,
-        "date_issued": datetime.date.today().strftime("%d-%b-%Y"),
-        "expiry_date": datetime.date.today().strftime("%d-%b-%Y"),
+        "date_issued": datetime.date.today().strftime(JQUERY_DATE_FORMAT),
+        "expiry_date": datetime.date.today().strftime(JQUERY_DATE_FORMAT),
     }
 
     add_app_file(

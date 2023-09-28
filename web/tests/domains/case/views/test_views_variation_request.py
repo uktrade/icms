@@ -1,5 +1,4 @@
 import pytest
-from django.conf import settings
 from django.core import mail
 from django.urls import reverse
 from django.utils import timezone
@@ -8,6 +7,7 @@ from pytest_django.asserts import assertRedirects, assertTemplateUsed
 from web.domains.case.models import DocumentPackBase
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
+from web.forms.fields import JQUERY_DATE_FORMAT
 from web.mail.constants import EmailTypes
 from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import Task, VariationRequest
@@ -415,7 +415,7 @@ class TestVariationRequestRespondToUpdateRequestView:
             {
                 "what_varied": "What was varied now its changed",
                 "why_varied": self.vr.why_varied,
-                "when_varied": self.vr.when_varied.strftime(settings.DATE_INPUT_FORMATS[0]),
+                "when_varied": self.vr.when_varied.strftime(JQUERY_DATE_FORMAT),
             },
         )
 
