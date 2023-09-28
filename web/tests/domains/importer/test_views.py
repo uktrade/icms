@@ -101,11 +101,19 @@ class TestImporterListRegulatorView(AuthTestCase):
     url = reverse("regulator-importer-list")
 
     @pytest.fixture(autouse=True)
-    def setup(self, _setup, ho_admin_client):
+    def setup(self, _setup, ho_admin_client, nca_admin_client, constabulary_client):
         self.ho_admin_client = ho_admin_client
+        self.nca_admin_client = nca_admin_client
+        self.constabulary_client = constabulary_client
 
     def test_permission(self):
         response = self.ho_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.nca_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.constabulary_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
         response = self.ilb_admin_client.get(self.url)
@@ -130,12 +138,22 @@ class TestImporterListRegulatorView(AuthTestCase):
 
 class TestImporterDetailRegulatorView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup, strict_templates, ho_admin_client):
+    def setup(
+        self, _setup, strict_templates, ho_admin_client, nca_admin_client, constabulary_client
+    ):
         self.ho_admin_client = ho_admin_client
+        self.nca_admin_client = nca_admin_client
+        self.constabulary_client = constabulary_client
         self.url = reverse("regulator-importer-detail", kwargs={"importer_pk": self.importer.id})
 
     def test_permission(self):
         response = self.ho_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.nca_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.constabulary_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
         response = self.ilb_admin_client.get(self.url)
