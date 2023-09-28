@@ -67,6 +67,7 @@ def get_groups():
         ],
         "NCA Case Officer": [
             # Page permissions
+            Perms.sys.importer_regulator,
             Perms.page.view_import_case_search,
             # Sys permissions
             Perms.sys.search_all_cases,

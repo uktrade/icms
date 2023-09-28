@@ -145,6 +145,7 @@ class ImporterListRegulatorView(ModelFilterView):
     Groups:
       - Home Office Case Officer
       - Constabulary Contact
+      - NCA Case Officer
     """
 
     # PermissionRequiredMixin config
@@ -172,6 +173,7 @@ class ImporterDetailRegulatorView(PermissionRequiredMixin, LoginRequiredMixin, D
     Groups:
       - Home Office Case Officer
       - Constabulary Contact
+      - NCA Case Officer
     """
 
     permission_required = Perms.sys.importer_regulator
