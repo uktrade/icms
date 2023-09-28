@@ -101,9 +101,9 @@ LOGGING = {
         },
         "web": {"level": "DEBUG"},
         # We don't want this noise locally
-        "django_structlog": {
-            "propagate": False,
-        },
+        "django_structlog": {"propagate": False},
+        # https://github.com/Kozea/WeasyPrint/issues/412#issuecomment-1724928357
+        "fontTools.subset": {"propagate": False},
         # Uncomment if needed (Used when debugging mohawk stuff)
         # "mohawk": {
         #     'handlers': ['console'], "level": "DEBUG"
