@@ -4,8 +4,8 @@ from django import forms
 
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
+from web.forms.fields import JqueryDateField
 from web.forms.mixins import OptionalFormMixin
-from web.forms.widgets import DateInput
 from web.models import Country, ImportApplicationType
 from web.utils.commodity import get_usage_records
 
@@ -19,6 +19,9 @@ if TYPE_CHECKING:
 
 
 class DerogationsFormBase(forms.ModelForm):
+    contract_sign_date = JqueryDateField(required=True, label="Contract Sign Date")
+    contract_completion_date = JqueryDateField(required=True, label="Contract Completion Date")
+
     class Meta:
         model = DerogationsApplication
         fields = (
@@ -41,8 +44,6 @@ class DerogationsFormBase(forms.ModelForm):
             "civilian_purpose_details",
         )
         widgets = {
-            "contract_sign_date": DateInput,
-            "contract_completion_date": DateInput,
             "explanation": forms.Textarea(attrs={"cols": 50, "rows": 3}),
             "origin_country": DerogationCountryOfOriginSelect,
             "commodity": DerogationCommoditySelect,

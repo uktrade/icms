@@ -14,17 +14,21 @@ from django_filters import (
     BooleanFilter,
     CharFilter,
     ChoiceFilter,
-    DateFilter,
+    Filter,
     FilterSet,
     ModelChoiceFilter,
 )
 
 from web.domains.commodity.widgets import CommodityGroupCommodityWidget
-from web.forms.widgets import DateInput
+from web.forms.fields import JqueryDateField
 from web.models import ImportApplicationType
 
 from .models import Commodity, CommodityGroup, CommodityType, Unit, Usage
 from .widgets import UsageCountryWidget
+
+
+class JqueryDateFilter(Filter):
+    field_class = JqueryDateField
 
 
 class CommodityFilter(FilterSet):
@@ -36,13 +40,11 @@ class CommodityFilter(FilterSet):
         queryset=CommodityType.objects.all(), label="Commodity Types"
     )
 
-    valid_start = DateFilter(
-        field_name="validity_start_date", lookup_expr="gte", widget=DateInput, label="Valid between"
+    valid_start = JqueryDateFilter(
+        field_name="validity_start_date", lookup_expr="gte", label="Valid between"
     )
 
-    valid_end = DateFilter(
-        field_name="validity_end_date", lookup_expr="lte", widget=DateInput, label="and"
-    )
+    valid_end = JqueryDateFilter(field_name="validity_end_date", lookup_expr="lte", label="and")
 
     is_archived = BooleanFilter(
         field_name="is_active",
@@ -58,6 +60,25 @@ class CommodityFilter(FilterSet):
 
 
 class CommodityForm(ModelForm):
+    validity_start_date = JqueryDateField(
+        required=True,
+        label="First day of validity",
+        help_text=(
+            "The commodity code will be available for applications to"
+            " choose on applications forms, starting on this date."
+        ),
+    )
+
+    validity_end_date = JqueryDateField(
+        required=False,
+        label="Last day of validity",
+        help_text=(
+            "After this date, the commodity will no longer be available for"
+            " applications to choose on application forms. Leave blank for"
+            " indefinitely continuing validity."
+        ),
+    )
+
     class Meta:
         model = Commodity
         fields = [
@@ -70,24 +91,12 @@ class CommodityForm(ModelForm):
         ]
         labels = {
             "commodity_code": "Commodity Code",
-            "validity_start_date": "First day of validity",
-            "validity_end_date": "Last day of validity",
             "sigl_product_type": "SIGL Product Type",
         }
         help_texts = {
-            "validity_start_date": (
-                "The commodity code will be available for applications to"
-                " choose on applications forms, starting on this date."
-            ),
-            "validity_end_date": (
-                "After this date, the commodity will no longer be available for"
-                " applications to choose on application forms. Leave blank for"
-                " indefinitely continuing validity."
-            ),
             "quantity_threshold": "Quantity threshold is only necessary for Iron, Steel and Aluminium commodities.",
             "sigl_product_type": "Mandatory for Iron, Steel, Aluminium and Textile commodities.",
         }
-        widgets = {"validity_start_date": DateInput, "validity_end_date": DateInput}
 
 
 class CommodityEditForm(CommodityForm):
@@ -206,6 +215,8 @@ class CommodityGroupEditForm(CommodityGroupForm):
 
 class UsageForm(ModelForm):
     commodity_group = ModelChoiceField(disabled=True, queryset=CommodityGroup.objects.none())
+    start_date = JqueryDateField(required=True)
+    end_date = JqueryDateField(required=False)
 
     class Meta:
         model = Usage
@@ -232,8 +243,6 @@ class UsageForm(ModelForm):
                     "data-placeholder": "Pick an Application Type to see available countries",
                 },
             ),
-            "start_date": DateInput,
-            "end_date": DateInput,
         }
 
     def __init__(self, *args, **kwargs):

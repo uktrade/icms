@@ -5,8 +5,8 @@ from django import forms
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
 from web.domains.file.utils import ICMSFileField
+from web.forms.fields import JqueryDateField
 from web.forms.mixins import OptionalFormMixin
-from web.forms.widgets import DateInput
 from web.models import Commodity
 from web.utils.commodity import get_active_commodities
 
@@ -79,21 +79,28 @@ class SubmitWoodQuotaForm(WoodQuotaFormBase):
 
 class AddContractDocumentForm(forms.ModelForm):
     document = ICMSFileField(required=True)
+    contract_date = JqueryDateField(
+        required=True,
+        label="Contract Date",
+        help_text="Enter the date of the contract/pre-contract between the importer and exporter.",
+    )
 
     class Meta:
         model = models.WoodContractFile
         fields = ("reference", "contract_date")
-
-        widgets = {"contract_date": DateInput()}
 
 
 class EditContractDocumentForm(forms.ModelForm):
+    contract_date = JqueryDateField(
+        required=True,
+        label="Contract Date",
+        help_text="Enter the date of the contract/pre-contract between the importer and exporter.",
+    )
+
     class Meta:
         model = models.WoodContractFile
 
         fields = ("reference", "contract_date")
-
-        widgets = {"contract_date": DateInput()}
 
 
 class WoodQuotaChecklistForm(ChecklistBaseForm):

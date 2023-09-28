@@ -6,8 +6,8 @@ from django_select2 import forms as s2forms
 
 from web.domains.case.widgets import CheckboxSelectMultipleTable
 from web.domains.file.utils import ICMSFileField
+from web.forms.fields import JqueryDateField
 from web.forms.mixins import OptionalFormMixin
-from web.forms.widgets import DateInput
 from web.models import ExportApplication, ImportApplication, User
 from web.permissions import get_all_case_officers, organisation_get_contacts
 from web.types import AuthenticatedHttpRequest
@@ -240,6 +240,10 @@ def application_contacts(application: ImpOrExp) -> "QuerySet[User]":
 
 
 class VariationRequestForm(forms.ModelForm):
+    when_varied = JqueryDateField(
+        required=True, label="What date would the varied licence(s) come into effect"
+    )
+
     class Meta:
         model = VariationRequest
         fields = ("what_varied", "why_varied", "when_varied")
@@ -247,7 +251,6 @@ class VariationRequestForm(forms.ModelForm):
         widgets = {
             "what_varied": forms.Textarea({"rows": 4, "cols": 50}),
             "why_varied": forms.Textarea({"rows": 4, "cols": 50}),
-            "when_varied": DateInput(),
         }
 
 

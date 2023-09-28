@@ -3366,3 +3366,9 @@ a#authLogin {
 https
 Start Now
 "Add to a page
+L10N Test Harness</title
+{{ localised_form.as_div
+L10N
+Contract Date
+NDD:\n\
+FORMAT

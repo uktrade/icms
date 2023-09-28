@@ -1,7 +1,7 @@
 from django import forms
 from django_select2.forms import Select2MultipleWidget
 
-from web.forms.widgets import DateInput
+from web.forms.fields import JqueryDateField
 from web.models import ClauseQuantity, Office, Section5Authority, Section5Clause
 
 
@@ -18,10 +18,9 @@ class Section5AuthorityForm(forms.ModelForm):
             the applicant may use this authority with any office they select.
         """,
     )
-    start_date = forms.DateField(label="Start Date", widget=DateInput)
-    end_date = forms.DateField(
+    start_date = JqueryDateField(label="Start Date")
+    end_date = JqueryDateField(
         label="End Date",
-        widget=DateInput,
         help_text="A user will not be able to use this verified Authority on an application past this date.",
     )
 

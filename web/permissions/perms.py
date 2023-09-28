@@ -6,6 +6,10 @@ class PagePermissions(PermissionTextChoice):
         "web.can_view_permission_harness",
         "Can view the permission test harness",
     )
+    view_l10n_harness = (
+        "web.can_view_l10n_harness",
+        "Can view the L10N test harness",
+    )
     view_importer_details = (
         "web.can_view_importer_details",
         "Can view the importer details list page.",

@@ -7,7 +7,8 @@ from guardian.shortcuts import get_objects_for_user
 
 from web.domains.template.context import CoverLetterTemplateContext
 from web.domains.template.utils import find_invalid_placeholders
-from web.forms.widgets import DateInput, JoditTextArea
+from web.forms.fields import JqueryDateField
+from web.forms.widgets import JoditTextArea
 from web.models import (
     EndorsementImportApplication,
     ImportApplication,
@@ -191,10 +192,8 @@ class CoverLetterForm(forms.ModelForm):
 
 
 class LicenceDateForm(forms.ModelForm):
-    licence_start_date = forms.DateField(
-        required=True, label="Licence Start Date", widget=DateInput
-    )
-    licence_end_date = forms.DateField(required=True, label="Licence End Date", widget=DateInput)
+    licence_start_date = JqueryDateField(required=True, label="Licence Start Date")
+    licence_end_date = JqueryDateField(required=True, label="Licence End Date")
 
     class Meta:
         model = ImportApplicationLicence

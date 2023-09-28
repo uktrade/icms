@@ -4,12 +4,12 @@ from unittest.mock import patch
 
 import freezegun
 import pytest
-from django.conf import settings
 from django.test.client import Client
 from django.urls import reverse
 
 from web.domains.case.tasks import create_document_pack_on_success
 from web.domains.workbasket.base import WorkbasketRow
+from web.forms.fields import JQUERY_DATE_FORMAT
 from web.models import AccessRequest, ImportApplication
 from web.models.shared import YesNoNAChoices
 from web.tests.auth.auth import AuthTestCase
@@ -679,8 +679,8 @@ class TestAuthorisedCaseWorkbasket(AuthTestCase):
         start_date = datetime.date.today()
         end_date = datetime.date(start_date.year + 3, 1, 1)
         form_data = {
-            "licence_start_date": start_date.strftime(settings.DATE_INPUT_FORMATS[0]),
-            "licence_end_date": end_date.strftime(settings.DATE_INPUT_FORMATS[0]),
+            "licence_start_date": start_date.strftime(JQUERY_DATE_FORMAT),
+            "licence_end_date": end_date.strftime(JQUERY_DATE_FORMAT),
             "issue_paper_licence_only": False,
         }
         self.ilb_admin_client.post(
@@ -820,8 +820,8 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
         start_date = datetime.date.today()
         end_date = datetime.date(start_date.year + 3, 1, 1)
         form_data = {
-            "licence_start_date": start_date.strftime(settings.DATE_INPUT_FORMATS[0]),
-            "licence_end_date": end_date.strftime(settings.DATE_INPUT_FORMATS[0]),
+            "licence_start_date": start_date.strftime(JQUERY_DATE_FORMAT),
+            "licence_end_date": end_date.strftime(JQUERY_DATE_FORMAT),
             "issue_paper_licence_only": False,
         }
         self.ilb_admin_client.post(
@@ -1011,8 +1011,8 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
         start_date = datetime.date.today()
         end_date = datetime.date(start_date.year + 3, 1, 1)
         form_data = {
-            "licence_start_date": start_date.strftime(settings.DATE_INPUT_FORMATS[0]),
-            "licence_end_date": end_date.strftime(settings.DATE_INPUT_FORMATS[0]),
+            "licence_start_date": start_date.strftime(JQUERY_DATE_FORMAT),
+            "licence_end_date": end_date.strftime(JQUERY_DATE_FORMAT),
             "issue_paper_licence_only": False,
         }
         self.ilb_admin_client.post(
@@ -1197,8 +1197,8 @@ class TestCompleteCaseCHIEFFailWorkbasket(AuthTestCase):
         start_date = datetime.date.today()
         end_date = datetime.date(start_date.year + 3, 1, 1)
         form_data = {
-            "licence_start_date": start_date.strftime(settings.DATE_INPUT_FORMATS[0]),
-            "licence_end_date": end_date.strftime(settings.DATE_INPUT_FORMATS[0]),
+            "licence_start_date": start_date.strftime(JQUERY_DATE_FORMAT),
+            "licence_end_date": end_date.strftime(JQUERY_DATE_FORMAT),
             "issue_paper_licence_only": False,
         }
         self.ilb_admin_client.post(

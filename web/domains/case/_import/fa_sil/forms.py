@@ -7,8 +7,9 @@ from django_select2 import forms as s2forms
 
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
+from web.forms.fields import JqueryDateField
 from web.forms.mixins import OptionalFormMixin
-from web.forms.widgets import DateInput, YesNoRadioSelectInline
+from web.forms.widgets import YesNoRadioSelectInline
 from web.models import Country, ObsoleteCalibre, Template
 
 from . import models
@@ -573,10 +574,11 @@ class SILSupplementaryInfoForm(forms.ModelForm):
 
 
 class SILSupplementaryReportForm(forms.ModelForm):
+    date_received = JqueryDateField(required=True, label="Date Received")
+
     class Meta:
         model = models.SILSupplementaryReport
         fields = ("transport", "date_received", "bought_from")
-        widgets = {"date_received": DateInput}
 
     def __init__(self, *args, application: models.SILApplication, **kwargs) -> None:
         super().__init__(*args, **kwargs)

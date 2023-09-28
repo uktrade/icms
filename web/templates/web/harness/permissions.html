@@ -28,7 +28,7 @@
 <h1>Permission Test Harness</h1>
 
 <h2>Actions</h2>
-<form action="{{ icms_url("perm_test:create-data") }}" method="post">
+<form action="{{ icms_url("harness:create-permission-data") }}" method="post">
   {{ csrf_input }}
   <input type="submit" value="Create Test Data">
 </form>

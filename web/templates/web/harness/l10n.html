@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>L10N Test Harness</title>
+</head>
+<body>
+
+<h1>L10N Test Harness</h1>
+
+<h2>Raw values</h2>
+<p>Date: {{ date_value }}</p>
+<p>Datetime: {{ datetime_value }}</p>
+<p>Time: {{ time_value }}</p>
+<p>Int: {{ int_field }}</p>
+<p>Float: {{ float_field }}</p>
+<p>Decimal: {{ decimal_field }}</p>
+
+<h2>Localize ignoring USE_L10N settings and defaulting to False</h2>
+<p>Date: {{ date_value|localize(False) }}</p>
+<p>Datetime: {{ datetime_value|localize(False) }}</p>
+<p>Time: {{ time_value|localize(False) }}</p>
+<p>Int: {{ int_field|localize(False) }}</p>
+<p>Float: {{ float_field|localize(False) }}</p>
+<p>Decimal: {{ decimal_field|localize(False) }}</p>
+
+<h2>Localize ignoring USE_L10N settings and defaulting to True</h2>
+<p>Date: {{ date_value|localize(True) }}</p>
+<p>Datetime: {{ datetime_value|localize(True) }}</p>
+<p>Time: {{ time_value|localize(True) }}</p>
+<p>Int: {{ int_field|localize(True) }}</p>
+<p>Float: {{ float_field|localize(True) }}</p>
+<p>Decimal: {{ decimal_field|localize(True) }}</p>
+
+<h2>Localize using USE_L10N settings</h2>
+<p>Date: {{ date_value|localize }}</p>
+<p>Datetime: {{ datetime_value|localize }}</p>
+<p>Time: {{ time_value|localize }}</p>
+<p>Int: {{ int_field|localize }}</p>
+<p>Float: {{ float_field|localize }}</p>
+<p>Decimal: {{ decimal_field|localize }}</p>
+
+<h2>Non Localized form</h2>
+{{ non_localised_form.as_div() }}
+
+<h2>Localized form</h2>
+{{ localised_form.as_div() }}
+
+</body>
+</html>

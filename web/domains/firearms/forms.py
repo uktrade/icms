@@ -1,6 +1,5 @@
 from django.forms import (
     CharField,
-    DateField,
     ModelChoiceField,
     ModelForm,
     ModelMultipleChoiceField,
@@ -12,7 +11,8 @@ from django_filters import BooleanFilter, CharFilter, ChoiceFilter, FilterSet
 from django_select2.forms import Select2MultipleWidget
 from guardian.shortcuts import get_objects_for_user
 
-from web.forms.widgets import CheckboxSelectMultiple, DateInput
+from web.forms.fields import JqueryDateField
+from web.forms.widgets import CheckboxSelectMultiple
 from web.models import (
     ActQuantity,
     Constabulary,
@@ -87,11 +87,8 @@ class FirearmsAuthorityForm(ModelForm):
             the applicant may use this authority with any office they select.
         """,
     )
-    start_date = DateField(label="Start Date", widget=DateInput)
-    end_date = DateField(
-        label="End Date",
-        widget=DateInput,
-    )
+    start_date = JqueryDateField(label="Start Date")
+    end_date = JqueryDateField(label="End Date")
 
     class Meta:
         model = FirearmsAuthority

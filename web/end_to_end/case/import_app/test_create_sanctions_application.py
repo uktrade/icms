@@ -3,6 +3,7 @@ import re
 from playwright.sync_api import Page
 
 from web.end_to_end import conftest, types, utils
+from web.forms.fields import JQUERY_DATE_FORMAT
 
 
 def test_can_create_sanctions(
@@ -112,7 +113,7 @@ def sanctions_manage_and_complete_case(page: Page, app_id) -> None:
     #
     page.locator('[data-test-id="edit-licence"]').click()
 
-    future_date = utils.get_future_datetime().date().strftime("%d-%b-%Y")
+    future_date = utils.get_future_datetime().date().strftime(JQUERY_DATE_FORMAT)
     page.get_by_label("Licence End Date").click()
     page.get_by_label("Licence End Date").fill(future_date)
     page.get_by_role("button", name="Done").click()

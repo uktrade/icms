@@ -4,6 +4,7 @@ import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertTemplateUsed
 
+from web.forms.fields import JQUERY_DATE_FORMAT
 from web.models import (
     Commodity,
     Country,
@@ -83,8 +84,8 @@ class TestDegrogationDetailsView(AuthTestCase):
             "applicant_reference": app_ref,
             "origin_country": self.valid_country.pk,
             "consignment_country": self.valid_country.pk,
-            "contract_sign_date": contract_sign_date.strftime("%d-%b-%Y"),
-            "contract_completion_date": contract_completion_date.strftime("%d-%b-%Y"),
+            "contract_sign_date": contract_sign_date.strftime(JQUERY_DATE_FORMAT),
+            "contract_completion_date": contract_completion_date.strftime(JQUERY_DATE_FORMAT),
             "explanation": "Test explanation",
             "commodity": Commodity.objects.get(commodity_code="4402100010").pk,
             "goods_description": "Test description",

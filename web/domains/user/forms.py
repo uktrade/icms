@@ -6,8 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django_filters import CharFilter, FilterSet
 
 import web.views.utils.countries
-from web.forms.fields import PhoneNumberField
-from web.forms.widgets import DateInput
+from web.forms.fields import JqueryDateField, PhoneNumberField
 from web.models import Email, PhoneNumber, User
 
 
@@ -16,6 +15,8 @@ class UserDetailsUpdateForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["first_name"].required = True
         self.fields["last_name"].required = True
+
+    date_of_birth = JqueryDateField(required=False)
 
     class Meta:
         model = User
@@ -43,7 +44,6 @@ class UserDetailsUpdateForm(forms.ModelForm):
         }
         widgets = {
             "location_at_address": Textarea({"rows": 2, "cols": 50}),
-            "date_of_birth": DateInput(),
             "work_address": Textarea({"rows": 5, "readonly": "readonly"}),
         }
 
