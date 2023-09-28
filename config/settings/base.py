@@ -404,5 +404,7 @@ LOGGING = {
             "handlers": ["console"],
             "level": "INFO",
         },
+        # https://github.com/Kozea/WeasyPrint/issues/412#issuecomment-1724928357
+        "fontTools.subset": {"propagate": False},
     },
 }

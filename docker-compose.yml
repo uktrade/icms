@@ -24,7 +24,6 @@ services:
     web:
         build:
             context: .
-        # user: ${UID}
         command: scripts/entry.sh
         environment:
             - DJANGO_SETTINGS_MODULE
@@ -33,8 +32,6 @@ services:
             - ICMS_DEBUG=True # Used in entry.sh
         env_file:
             - .env
-        # stdin_open: true
-        # tty: true
         ports:
             - "8080:8080"
         depends_on:

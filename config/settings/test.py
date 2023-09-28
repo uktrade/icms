@@ -49,10 +49,9 @@ LOGGING = {
     "loggers": {
         "faker": {"level": "INFO"},
         "mohawk": {"level": "INFO"},
-        # We don't want this noise when testing
-        "django_structlog": {
-            "propagate": False,
-        },
+        "django_structlog": {"propagate": False},
+        # https://github.com/Kozea/WeasyPrint/issues/412#issuecomment-1724928357
+        "fontTools.subset": {"propagate": False},
     },
 }
 
