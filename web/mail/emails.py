@@ -1,5 +1,10 @@
+from django.db.models import QuerySet
+from django.utils import timezone
+
 from web.domains.case.types import ImpAccessOrExpAccess, ImpOrExp, ImpOrExpApproval
+from web.domains.template.utils import get_email_template_subject_body
 from web.flow.models import ProcessTypes
+from web.models import CaseEmail as CaseEmailModel
 from web.models import (
     ExporterApprovalRequest,
     ImporterApprovalRequest,
@@ -8,7 +13,7 @@ from web.models import (
 )
 from web.notify import notify
 
-from .constants import VariationRequestDescription
+from .constants import CaseEmailTemplate, VariationRequestDescription
 from .messages import (
     AccessRequestApprovalCompleteEmail,
     AccessRequestClosedEmail,
@@ -20,6 +25,7 @@ from .messages import (
     ApplicationReopenedEmail,
     ApplicationStoppedEmail,
     ApplicationVariationCompleteEmail,
+    CaseEmail,
     ExporterAccessRequestApprovalOpenedEmail,
     FirearmsSupplementaryReportEmail,
     ImporterAccessRequestApprovalOpenedEmail,
@@ -36,6 +42,7 @@ from .messages import (
 from .recipients import (
     get_application_contact_email_addresses,
     get_case_officers_email_addresses,
+    get_email_addresses_for_case_email,
     get_email_addresses_for_users,
     get_ilb_case_officers_email_addresses,
     get_organisation_contact_email_addresses,
@@ -267,3 +274,32 @@ def send_firearms_supplementary_report_email(application: ImpOrExp) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
         FirearmsSupplementaryReportEmail(application=application, to=[recipient]).send()
+
+
+def send_case_email(case_email: CaseEmailModel) -> None:
+    # TODO: ICMSLST-2333 Gov Notify - Email attachments
+    recipients = get_email_addresses_for_case_email(case_email)
+    for recipient in recipients:
+        CaseEmail(case_email=case_email, to=[recipient]).send()
+    case_email.status = CaseEmailModel.Status.OPEN
+    case_email.sent_datetime = timezone.now()
+    case_email.save()
+
+
+def create_case_email(
+    application: ImpOrExp,
+    template_code: CaseEmailTemplate,
+    to: str | None = None,
+    cc: list[str] | None = None,
+    attachments: QuerySet | None = None,
+) -> CaseEmail:
+    subject, body = get_email_template_subject_body(application, template_code)
+
+    case_email = CaseEmailModel.objects.create(
+        subject=subject, body=body, to=to, cc_address_list=cc, template_code=template_code
+    )
+
+    if attachments:
+        case_email.attachments.add(*attachments)
+
+    return case_email

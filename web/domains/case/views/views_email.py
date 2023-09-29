@@ -12,6 +12,8 @@ from django.views.decorators.http import require_POST
 
 from web.domains.case.services import case_progress
 from web.flow.models import ProcessTypes
+from web.mail.constants import CaseEmailTemplate
+from web.mail.emails import create_case_email, send_case_email
 from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
@@ -24,8 +26,6 @@ from web.models import (
     SanctionsAndAdhocApplication,
     SILApplication,
 )
-from web.notify.email import send_case_email
-from web.notify.utils import create_case_email
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 
@@ -43,7 +43,6 @@ def manage_case_emails(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp(case_type)
-
     with transaction.atomic():
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
@@ -89,7 +88,6 @@ def create_draft_case_email(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp(case_type)
-
     with transaction.atomic():
         imp_exp_application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
@@ -123,7 +121,6 @@ def edit_case_email(
     case_type: str,
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp(case_type)
-
     with transaction.atomic():
         imp_exp_application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
@@ -225,7 +222,6 @@ def add_response_case_email(
     case_type: str,
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp(case_type)
-
     with transaction.atomic():
         application: ImpOrExp = get_object_or_404(
             model_class.objects.select_for_update(), pk=application_pk
@@ -371,25 +367,31 @@ def _get_case_email_application(application: ImpOrExp) -> ApplicationsWithCaseEm
 
 def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
     pt = ProcessTypes
-
     match application.process_type:
         # import applications
         case pt.FA_OIL | pt.FA_DFL | pt.FA_SIL:
             return create_case_email(
-                application, "IMA_CONSTAB_EMAIL", cc=[settings.ICMS_FIREARMS_HOMEOFFICE_EMAIL]
+                application,
+                CaseEmailTemplate.IMA_CONSTAB_EMAIL,
+                cc=[settings.ICMS_FIREARMS_HOMEOFFICE_EMAIL],
             )
 
         case pt.SANCTIONS:
-            return create_case_email(application, "IMA_SANCTION_EMAIL")
+            return create_case_email(application, CaseEmailTemplate.IMA_SANCTION_EMAIL)
 
         # certificate applications
         case pt.CFS:
-            return create_case_email(application, "CA_HSE_EMAIL", settings.ICMS_CFS_HSE_EMAIL)
+            return create_case_email(
+                application, CaseEmailTemplate.CA_HSE_EMAIL, settings.ICMS_CFS_HSE_EMAIL
+            )
 
         case pt.GMP:
             attachments = application.supporting_documents.filter(is_active=True)
             return create_case_email(
-                application, "CA_BEIS_EMAIL", settings.ICMS_GMP_BEIS_EMAIL, attachments=attachments
+                application,
+                CaseEmailTemplate.CA_BEIS_EMAIL,
+                settings.ICMS_GMP_BEIS_EMAIL,
+                attachments=attachments,
             )
 
         case _:

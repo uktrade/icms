@@ -5,11 +5,10 @@ import html2text
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import QuerySet
-from django.utils import timezone
 
 from config.celery import app
 from web.domains.case.types import ImpOrExp
-from web.models import CaseEmail, Exporter, Importer, User
+from web.models import Exporter, Importer, User
 from web.permissions import get_org_obj_permissions, organisation_get_contacts
 
 from . import utils
@@ -122,22 +121,6 @@ def send_mailshot(
         send_to_all_importers(subject, message, html_message=html_message)
     if to_exporters:
         send_to_all_exporters(subject, message, html_message=html_message)
-
-
-def send_case_email(case_email: CaseEmail) -> None:
-    attachment_ids = tuple(case_email.attachments.values_list("pk", flat=True))
-
-    send_email.delay(
-        case_email.subject,
-        case_email.body,
-        [case_email.to],
-        case_email.cc_address_list,
-        attachment_ids,
-    )
-
-    case_email.status = CaseEmail.Status.OPEN
-    case_email.sent_datetime = timezone.now()
-    case_email.save()
 
 
 def send_html_email(
