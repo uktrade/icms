@@ -290,8 +290,43 @@ class CaseURLS:
     @staticmethod
     def manage_case_emails(application_pk: int, case_type: str = "import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
-
         return reverse("case:manage-case-emails", kwargs=kwargs)
+
+    @staticmethod
+    def create_case_emails(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "case_type": case_type}
+        return reverse("case:create-case-email", kwargs=kwargs)
+
+    @staticmethod
+    def edit_case_emails(application_pk: int, case_email_pk: int, case_type: str = "import") -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "case_type": case_type,
+            "case_email_pk": case_email_pk,
+        }
+        return reverse("case:edit-case-email", kwargs=kwargs)
+
+    @staticmethod
+    def archive_case_emails(
+        application_pk: int, case_email_pk: int, case_type: str = "import"
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "case_type": case_type,
+            "case_email_pk": case_email_pk,
+        }
+        return reverse("case:archive-case-email", kwargs=kwargs)
+
+    @staticmethod
+    def add_response_case_emails(
+        application_pk: int, case_email_pk: int, case_type: str = "import"
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "case_type": case_type,
+            "case_email_pk": case_email_pk,
+        }
+        return reverse("case:add-response-case-email", kwargs=kwargs)
 
     @staticmethod
     def manage_variations(application_pk: int, case_type: str = "import") -> str:

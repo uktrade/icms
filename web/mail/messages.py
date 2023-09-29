@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.mail import EmailMessage, SafeMIMEMultipart
 
 from web.domains.case.types import ImpAccessOrExpAccess, ImpOrExp, ImpOrExpApproval
+from web.models import CaseEmail as CaseEmailModel
 from web.models import VariationRequest, WithdrawApplication
 from web.permissions import Perms
 from web.sites import (
@@ -13,7 +14,7 @@ from web.sites import (
     get_importer_site_domain,
 )
 
-from .constants import EmailTypes
+from .constants import IMPORT_CASE_EMAILS, EmailTypes
 from .models import EmailTemplate
 from .url_helpers import get_case_view_url, get_validate_digital_signatures_url
 
@@ -307,3 +308,21 @@ class VariationRequestRefusedEmail(BaseVariationRequestEmail):
         context = super().get_context()
         context["reason"] = self.application.variation_refuse_reason
         return context
+
+
+@final
+class CaseEmail(GOVNotifyEmailMessage):
+    name = EmailTypes.CASE_EMAIL
+
+    def __init__(self, *args, case_email: CaseEmailModel, **kwargs):
+        self.case_email = case_email
+        super().__init__(*args, **kwargs)
+
+    def get_site_domain(self) -> str:
+        if self.case_email.template_code in IMPORT_CASE_EMAILS:
+            return get_importer_site_domain()
+        else:
+            return get_exporter_site_domain()
+
+    def get_context(self) -> dict:
+        return {"subject": self.case_email.subject, "body": self.case_email.body}

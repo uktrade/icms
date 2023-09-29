@@ -1,12 +1,9 @@
 from collections.abc import Collection
 
 from django.conf import settings
-from django.db.models import QuerySet
 from django.template.loader import render_to_string
 
-from web.domains.case.types import ImpOrExp
-from web.domains.template.utils import get_email_template_subject_body
-from web.models import CaseEmail, Email, File, User
+from web.models import Email, File, User
 from web.sites import get_caseworker_site_domain
 from web.utils.s3 import get_file_from_s3, get_s3_client
 
@@ -26,28 +23,6 @@ def get_notification_emails(user: User) -> list[str]:
     """Returns user's personal and alternative email addresses
     with portal notifications enabled"""
     return get_user_emails_by_ids([user.id])
-
-
-def create_case_email(
-    application: ImpOrExp,
-    template_code: str,
-    to: str | None = None,
-    cc: list[str] | None = None,
-    attachments: QuerySet | None = None,
-) -> CaseEmail:
-    subject, body = get_email_template_subject_body(application, template_code)
-
-    case_email = CaseEmail.objects.create(
-        subject=subject,
-        body=body,
-        to=to,
-        cc_address_list=cc,
-    )
-
-    if attachments:
-        case_email.attachments.add(*attachments)
-
-    return case_email
 
 
 def render_email(template, context):

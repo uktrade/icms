@@ -61,11 +61,24 @@ class EmailTypes(TypedTextChoices):
         "APPLICATION_VARIATION_REQUEST_REFUSED",
         "Application Variation Request Refused",
     )
+    CASE_EMAIL = ("CASE_EMAIL", "Case Email")
 
 
+# TODO: ICMSLST-2348 Gov Notify - Review constants
 class VariationRequestDescription(enum.StrEnum):
     CANCELLED = "CANCELLED"
     UPDATE_REQUIRED = "UPDATE_REQUIRED"
     UPDATE_CANCELLED = "UPDATE_CANCELLED"
     UPDATE_RECEIVED = "UPDATE_RECEIVED"
     REFUSED = "REFUSED"
+
+
+class CaseEmailTemplate(TypedTextChoices):
+    IMA_CONSTAB_EMAIL = ("IMA_CONSTAB_EMAIL", "Constabulary Email")
+    IMA_SANCTION_EMAIL = ("IMA_SANCTION_EMAIL", "Sanctions Email")
+    CA_HSE_EMAIL = ("CA_HSE_EMAIL", "Health and Safety Email")
+    CA_BEIS_EMAIL = ("CA_BEIS_EMAIL", "Business, Energy & Industrial Strategy Email")
+
+
+IMPORT_CASE_EMAILS = [CaseEmailTemplate.IMA_CONSTAB_EMAIL, CaseEmailTemplate.IMA_SANCTION_EMAIL]
+EXPORT_CASE_EMAILS = [CaseEmailTemplate.CA_HSE_EMAIL, CaseEmailTemplate.CA_BEIS_EMAIL]
