@@ -5,7 +5,7 @@ django-celery-results==2.4.0
 django-chunk-upload-handlers==0.0.11
 django-compressor==4.1
 django-environ==0.4.5
-django-filter==2.4.0
+django-filter==23.3
 django-guardian==2.4.0
 django-htmlmin==0.11.0
 django-phonenumber-field==5.0.0
