@@ -25,7 +25,6 @@ from .models import (
     CFSProductType,
     CFSSchedule,
     ExportApplicationType,
-    GMPBrand,
 )
 
 
@@ -540,12 +539,6 @@ class ProductsFileUploadForm(forms.Form):
     file = ICMSFileField()
 
 
-class GMPBrandForm(forms.ModelForm):
-    class Meta:
-        model = GMPBrand
-        fields = ("brand_name",)
-
-
 class EditGMPFormBase(forms.ModelForm):
     """Base class for all GMP forms (editing and creating from a template)"""
 
@@ -553,6 +546,7 @@ class EditGMPFormBase(forms.ModelForm):
         model = CertificateOfGoodManufacturingPracticeApplication
 
         fields = (
+            "brand_name",
             "contact",
             "is_manufacturer",
             "is_responsible_person",

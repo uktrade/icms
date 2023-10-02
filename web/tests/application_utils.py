@@ -19,7 +19,6 @@ from web.models import (
     DFLApplication,
     ExportApplicationType,
     Exporter,
-    GMPBrand,
     Importer,
     Office,
     OpenIndividualLicenceApplication,
@@ -443,6 +442,7 @@ def create_in_progress_gmp_app(
     )
 
     form_data = {
+        "brand_name": "A Brand",
         "contact": exporter_one_contact.pk,
         "countries": Country.objects.first().pk,
         "is_responsible_person": "yes",
@@ -465,7 +465,6 @@ def create_in_progress_gmp_app(
     )
 
     gmp_app = CertificateOfGoodManufacturingPracticeApplication.objects.get(pk=app_pk)
-    GMPBrand.objects.create(application=gmp_app, brand_name="A Brand")
 
     add_app_file(
         client=exporter_client,

@@ -29,18 +29,8 @@ def gmp_create(page: Page, sample_upload_file: types.FilePayload) -> int:
 
     gmp_id = utils.get_application_id(page.url, r"export/gmp/(?P<app_pk>\d+)/edit/")
 
-    page.get_by_role("link", name="Add brand name").click()
     page.get_by_label("Name of the brand").click()
-    page.get_by_label("Name of the brand").fill("Brand 1")
-    page.get_by_role("button", name="Save").click()
-    page.get_by_role("link", name="Add brand name").click()
-    page.get_by_label("Name of the brand").click()
-    page.get_by_label("Name of the brand").fill("Brand 2")
-    page.get_by_role("button", name="Save").click()
-    page.get_by_role("link", name="Add brand name").click()
-    page.get_by_label("Name of the brand").click()
-    page.get_by_label("Name of the brand").fill("Brand 3")
-    page.get_by_role("button", name="Save").click()
+    page.get_by_label("Name of the brand").fill("A brand")
 
     page.locator("#id_is_responsible_person_0").check()
     page.locator("#id_responsible_person_name").click()

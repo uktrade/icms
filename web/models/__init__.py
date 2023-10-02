@@ -94,7 +94,6 @@ from web.domains.case.export.models import (
     ExportApplicationCertificate,
     ExportApplicationType,
     ExportCertificateCaseDocumentReferenceData,
-    GMPBrand,
     GMPFile,
 )
 from web.domains.case.fir.models import FurtherInformationRequest
@@ -226,7 +225,6 @@ __all__ = [
     "ExportApplicationCertificate",
     "ExportApplicationType",
     "ExportCertificateCaseDocumentReferenceData",
-    "GMPBrand",
     "GMPFile",
     "FurtherInformationRequest",
     "CaseDocumentReference",

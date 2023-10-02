@@ -200,7 +200,6 @@ country_group_legacy_id
 country_of_manufacture_cg_id"
 process_ptr_id
 exportapplication_ptr_id"
-GMPBrand
 BRCGS
 param
 -pk
@@ -1531,7 +1530,6 @@ related_file_manager
 Translation Set Name
 Mailshot (New
 class="prompt west">Obsolete
-gmp_brand_id
 ON card.car_id = car.id INNER JOIN
 ON ca.id = car.ca_id INNER
 ON card.car_id = car.id INNER JOIN impmgr.cert_app_response_detail_certs cardc
@@ -3379,3 +3377,19 @@ XI1111111111ABCDE
 Health and Safety
 Notify - Review
 Gov Notify - Email
+Countries</h4
+{{ fields.field(form.brand_name
+Person</h4
+{{ fields.field(form.is_responsible_person
+{{ fields.address_fields
+Manufacturer</h4
+fields.field(form.is_manufacturer
+{{ fields.field(form.gmp_certificate_issued
+div id="iso-fields-wrapper
+CertificateTypes
+{{ application_field(process.brand_name
+{{ application_field(process.is_responsible_person|capitalize
+{{ application_field(process.responsible_person_postcode
+{{ application_field(process.manufacturer_postcode
+{{ application_field(process.gmp_certificate_issued
+GMPBrand

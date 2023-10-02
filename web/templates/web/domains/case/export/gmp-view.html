@@ -7,12 +7,7 @@
 
   {% call application_section("Certificate of Good Manufacturing Practice") %}
     {{ application_field(country, "Countries") }}
-  {% endcall %}
-    
-  {% call application_section("Brands") %}
-    {% with read_only = True, brands = process.brands.all() %}
-      {% include "web/domains/case/export/partials/gmp/brands_list.html" %}
-    {% endwith %}
+    {{ application_field(process.brand_name, process|verbose_name('brand_name')) }}
   {% endcall %}
 
   {% call application_section("Responisbible Person") %}

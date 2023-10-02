@@ -9,7 +9,6 @@ from web.models import (
     CertificateOfManufactureApplication,
     Country,
     ExportApplicationType,
-    GMPBrand,
     ImportApplicationType,
     SanctionsAndAdhocApplication,
     SILApplication,
@@ -134,10 +133,6 @@ def gmp_with_draft(db, exporter_one_contact, exporter, exporter_office):
 
     app.countries.add(Country.objects.get(name="Finland"))
     app.countries.add(Country.objects.get(name="Germany"))
-
-    GMPBrand.objects.create(application=app, brand_name="Brand 1")
-    GMPBrand.objects.create(application=app, brand_name="Brand 2")
-    GMPBrand.objects.create(application=app, brand_name="Brand 3")
 
     document_pack.pack_draft_create(app)
 
