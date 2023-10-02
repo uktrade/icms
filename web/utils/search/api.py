@@ -655,7 +655,7 @@ def _get_commodity_code_filter(terms: types.SearchTerms) -> models.Q:
             "outwardprocessingtradeapplication__teg_commodities",
         ],
         ImportApplicationType.Types.SANCTION_ADHOC: [
-            "sanctionsandadhocapplication__sanctionsandadhocapplicationgoods__commodity"
+            "sanctionsandadhocapplication__sanctions_goods__commodity"
         ],
         ImportApplicationType.Types.SPS: [
             "priorsurveillanceapplication__commodity",

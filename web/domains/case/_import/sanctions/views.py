@@ -159,7 +159,7 @@ def edit_goods(
 
         case_progress.application_in_progress(application)
 
-        goods = get_object_or_404(application.sanctionsandadhocapplicationgoods_set, pk=goods_pk)
+        goods = get_object_or_404(application.sanctions_goods, pk=goods_pk)
         if request.method == "POST":
             form = GoodsForm(request.POST, instance=goods, application=application)
 
@@ -209,7 +209,7 @@ def edit_goods_licence(
 
         case_progress.application_in_processing(application)
 
-        goods = get_object_or_404(application.sanctionsandadhocapplicationgoods_set, pk=goods_pk)
+        goods = get_object_or_404(application.sanctions_goods, pk=goods_pk)
 
         if request.method == "POST":
             form = GoodsSanctionsLicenceForm(request.POST, instance=goods)
@@ -252,7 +252,7 @@ def delete_goods(
 
         check_can_edit_application(request.user, application)
 
-        get_object_or_404(application.sanctionsandadhocapplicationgoods_set, pk=goods_pk).delete()
+        get_object_or_404(application.sanctions_goods, pk=goods_pk).delete()
 
     return redirect(reverse("import:sanctions:edit", kwargs={"application_pk": application_pk}))
 

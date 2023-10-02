@@ -72,7 +72,7 @@ def sanction_serializer(
     licence_ref = document_pack.doc_ref_licence_get(licence)
 
     sanction_goods: "QuerySet[SanctionsAndAdhocApplicationGoods]" = (
-        application.sanctionsandadhocapplicationgoods_set.all().select_related("commodity")
+        application.sanctions_goods.all().select_related("commodity")
     )
     goods_qs = annotate_commodity_unit(sanction_goods, "commodity__").distinct()
 

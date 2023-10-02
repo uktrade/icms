@@ -1,0 +1,142 @@
+:root {
+    font-family: Helvetica;
+}
+
+@page {
+    size: A4;
+    margin: 48px 36px 60px 72px;
+
+
+    @top-left {
+        content: element(header);
+    }
+
+}
+
+
+header {
+    font-size: 10px;
+    position: running(header);
+}
+
+footer {
+    position: fixed;
+    left: -172.8px;
+    top: 206px;
+    transform: rotate(270deg);
+
+}
+
+main {
+    box-decoration-break: clone;
+}
+
+
+p {
+    font-size: 14px;
+    margin: 2px;
+}
+
+.bordered {
+    border: 1px solid #000;
+    box-decoration-break: clone;
+}
+
+.b-left {
+    border-left: 1px solid #000;
+}
+
+.b-right {
+    border-right: 1px solid #000;
+}
+
+.b-top {
+    border-top: 1px solid #000;
+}
+
+.b-bottom {
+    border-bottom: 1px solid #000;
+}
+
+.holders {
+    padding: 10px 103px 11px 135px;
+    font-size: 14px;
+}
+
+.holder-number {
+    padding: 4px 9px 20px 8px;
+    height: 20px;
+    width: 18px;
+    position: fixed;
+    left: -28px;
+    text-align: center;
+}
+.holder-number-first {
+    top: 8px;
+}
+.holder-number-last {
+    top: 376px;
+}
+
+.content-block {
+    padding: 8px;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.space-between {
+    justify-content: space-between;
+}
+
+.flex-end {
+    justify-content: flex-end;
+}
+
+
+.wrap {
+    flex-wrap: wrap;
+}
+
+.row {
+    flex: 100% 0 0;
+}
+
+.half {
+    flex: 50% 0 0;
+    justify-content: space-evenly;
+}
+
+.details-text {
+    font-size: 10px;
+}
+
+.issue-number, .port {
+    flex-basis: 50px;
+    padding-top: 0;
+}
+
+.authority {
+    flex: 100px 0 0;
+    padding-top: 0;
+}
+
+.manufacture, .shipment, .validity {
+    padding-top: 0;
+}
+
+.endorsements {
+    min-height: 150px;
+}
+
+#dbt-logo {
+    width: 330px;
+    margin: -40px 0 -35px -40px;
+}

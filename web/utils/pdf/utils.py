@@ -32,6 +32,8 @@ if TYPE_CHECKING:
         ImportApplication,
         ImportApplicationLicence,
         OpenIndividualLicenceApplication,
+        SanctionsAndAdhocApplication,
+        SanctionsAndAdhocApplicationGoods,
     )
 
     SILGoods = Union[
@@ -48,33 +50,34 @@ if TYPE_CHECKING:
 def get_licence_context(
     application: "ImpOrExp", licence: "ImportApplicationLicence", doc_type: DocumentTypes
 ) -> "Context":
+    importer = application.importer
+    office = application.importer_office
+    endorsements = get_licence_endorsements(application)
+
     return {
         "process": application,
-        "issue_date": timezone.now().date().strftime("%d %B %Y"),
         "page_title": "Licence Preview",
         "preview_licence": doc_type == DocumentTypes.LICENCE_PREVIEW,
-        "paper_licence_only": licence.issue_paper_licence_only or False,
+        "importer_name": importer.display_name,
+        "eori_numbers": _get_importer_eori_numbers(application),
+        "importer_address": office.address.split("\n"),
+        "importer_postcode": office.postcode,
+        "endorsements": endorsements,
+        "licence_number": _get_licence_number(application, doc_type),
+        "licence_start_date": _get_licence_start_date(licence),
+        "licence_end_date": _get_licence_end_date(licence),
     }
 
 
 def _get_fa_licence_context(
     application: "FaImportApplication", licence: "ImportApplicationLicence", doc_type: DocumentTypes
 ) -> "Context":
-    importer = application.importer
-    office = application.importer_office
-    endorsements = get_licence_endorsements(application)
     context = get_licence_context(application, licence, doc_type)
 
     return context | {
         "applicant_reference": application.applicant_reference,
-        "importer_name": importer.display_name,
-        "licence_start_date": _get_licence_start_date(licence),
-        "licence_end_date": _get_licence_end_date(licence),
-        "licence_number": _get_licence_number(application, doc_type),
-        "eori_numbers": _get_importer_eori_numbers(application),
-        "importer_address": office.address.split("\n"),
-        "importer_postcode": office.postcode,
-        "endorsements": endorsements,
+        "issue_date": day_ordinal_date(timezone.now().date()),
+        "paper_licence_only": licence.issue_paper_licence_only or False,
     }
 
 
@@ -117,6 +120,38 @@ def get_fa_sil_licence_context(
         "origin_country": application.origin_country.name,
         "goods": _get_fa_sil_goods(application),
         "markings_text": markings_text,
+    }
+
+
+def get_country_and_geo_code(country: "Country") -> str:
+    return f"{country.name} {country.hmrc_code} {country.commission_code}"
+
+
+def get_sanctions_goods_line(goods: "SanctionsAndAdhocApplicationGoods") -> list[str]:
+    goods_line = _split_text_field_newlines(goods.goods_description)
+    last_line = goods_line.pop()
+    quantity = f"{goods.quantity_amount:.3f}".rstrip("0").rstrip(".")
+    value = f"{goods.value:.2f}".rstrip("0").rstrip(".")
+    goods_line.append(f"{last_line}, {goods.commodity.commodity_code}, {quantity} kilos, {value}")
+    return goods_line
+
+
+def get_sanctions_licence_context(
+    application: "SanctionsAndAdhocApplication",
+    licence: "ImportApplicationLicence",
+    doc_type: DocumentTypes,
+) -> "Context":
+    context = get_licence_context(application, licence, doc_type)
+    goods_list = [
+        get_sanctions_goods_line(goods) for goods in application.sanctions_goods.order_by("pk")
+    ]
+
+    return context | {
+        "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+        "country_of_manufacture": get_country_and_geo_code(application.origin_country),
+        "country_of_shipment": get_country_and_geo_code(application.consignment_country),
+        "ref": application.applicant_reference,
+        "goods_list": goods_list,
     }
 
 
@@ -212,14 +247,14 @@ def get_fa_sil_goods_item(
 
 def _get_licence_start_date(licence: "ImportApplicationLicence") -> str:
     if licence.licence_start_date:
-        return licence.licence_start_date.strftime("%d %B %Y")
+        return day_ordinal_date(licence.licence_start_date)
 
     return "Licence Start Date not set"
 
 
 def _get_licence_end_date(licence: "ImportApplicationLicence") -> str:
     if licence.licence_end_date:
-        return licence.licence_end_date.strftime("%d %B %Y")
+        return day_ordinal_date(licence.licence_end_date)
 
     return "Licence End Date not set"
 

@@ -5,17 +5,12 @@ from web.models import (
     Country,
     DFLApplication,
     ImportApplicationLicence,
-    Importer,
     Office,
     OpenIndividualLicenceApplication,
     SILApplication,
     Template,
 )
-
-
-@pytest.fixture()
-def importer():
-    return Importer(eori_number="GB123456789", type=Importer.ORGANISATION, name="Importer Name")
+from web.utils import day_ordinal_date
 
 
 @pytest.fixture()
@@ -82,7 +77,7 @@ def oil_expected_preview_context():
 
     return {
         "applicant_reference": "Applicant Reference",
-        "importer_name": "Importer Name",
+        "importer_name": "Test Importer 1",
         "consignment_country": "Any Country",
         "origin_country": "Any Country",
         "goods_description": (
@@ -93,11 +88,11 @@ def oil_expected_preview_context():
         "licence_start_date": "Licence Start Date not set",
         "licence_end_date": "Licence End Date not set",
         "licence_number": "[[Licence Number]]",
-        "eori_numbers": ["GB123456789"],
+        "eori_numbers": ["GB1111111111ABCDE"],
         "importer_address": ["22 Some Avenue", "Some Way", "Some Town"],
         "importer_postcode": "S93bl",  # /PS-IGNORE
         "endorsements": [],
-        "issue_date": timezone.now().date().strftime("%d %B %Y"),
+        "issue_date": day_ordinal_date(timezone.now().date()),
         "page_title": "Licence Preview",
     }
 
@@ -108,18 +103,18 @@ def dfl_expected_preview_context():
 
     return {
         "applicant_reference": "Applicant Reference",
-        "importer_name": "Importer Name",
+        "importer_name": "Test Importer 1",
         "consignment_country": "Spain",
         "origin_country": "Italy",
         "goods": [],
         "licence_start_date": "Licence Start Date not set",
         "licence_end_date": "Licence End Date not set",
         "licence_number": "[[Licence Number]]",
-        "eori_numbers": ["GB123456789"],
+        "eori_numbers": ["GB1111111111ABCDE"],
         "importer_address": ["22 Some Avenue", "Some Way", "Some Town"],
         "importer_postcode": "S93bl",  # /PS-IGNORE
         "endorsements": [],
-        "issue_date": timezone.now().date().strftime("%d %B %Y"),
+        "issue_date": day_ordinal_date(timezone.now().date()),
         "page_title": "Licence Preview",
     }
 
@@ -131,18 +126,42 @@ def sil_expected_preview_context():
 
     return {
         "applicant_reference": "Applicant Reference",
-        "importer_name": "Importer Name",
+        "importer_name": "Test Importer 1",
         "consignment_country": "Poland",
         "origin_country": "Ireland",
         "goods": [],
         "licence_start_date": "Licence Start Date not set",
         "licence_end_date": "Licence End Date not set",
         "licence_number": "[[Licence Number]]",
-        "eori_numbers": ["GB123456789"],
+        "eori_numbers": ["GB1111111111ABCDE"],
         "importer_address": ["22 Some Avenue", "Some Way", "Some Town"],
         "importer_postcode": "S93bl",  # /PS-IGNORE
         "endorsements": [],
         "markings_text": template.template_content,
-        "issue_date": timezone.now().date().strftime("%d %B %Y"),
+        "issue_date": day_ordinal_date(timezone.now().date()),
         "page_title": "Licence Preview",
+    }
+
+
+@pytest.fixture()
+def sanctions_expected_preview_context():
+    """Returns the minimum expected context values - tests then override the different keys in the tests."""
+    return {
+        "page_title": "Licence Preview",
+        "preview_licence": True,
+        "importer_name": "Test Importer 1",
+        "eori_numbers": ["GB0123456789ABCDE", "XI0123456789ABCDE"],
+        "importer_address": ["I1 address line 1", "I1 address line 2"],
+        "importer_postcode": "BT180LZ",  # /PS-IGNORE
+        "endorsements": [],
+        "licence_number": "[[Licence Number]]",
+        "licence_start_date": "Licence Start Date not set",
+        "licence_end_date": "Licence End Date not set",
+        "country_of_manufacture": "Iran IR 616",
+        "country_of_shipment": "Afghanistan AF 660",
+        "ref": "applicant_reference value",
+        "goods_list": [
+            ["Test Goods, 2707100010, 1000 kilos, 10500"],
+            ["More Commoditites, 7112990090, 56.78 kilos, 789"],
+        ],
     }
