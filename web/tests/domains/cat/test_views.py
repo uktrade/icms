@@ -148,6 +148,7 @@ class TestCATEditStepView(AuthTestCase):
         cat.refresh_from_db()
 
         expected = {
+            "brand_name": None,
             "auditor_accredited": None,
             "auditor_certified": None,
             "contact": None,

@@ -359,7 +359,6 @@ def get_gmp_certificate_context(
     doc_type: DocumentTypes,
     country: "Country",
 ) -> "Context":
-    brand = application.brands.first()
     context = _get_certificate_context(application, certificate, doc_type, country)
     expiry_delta = relativedelta(years=3)
 
@@ -372,7 +371,7 @@ def get_gmp_certificate_context(
 
     return context | {
         "page_title": f"Certificate of Good Manufacturing Practice ({country.name}) Preview",
-        "brand_name": brand.brand_name,
+        "brand_name": application.brand_name,
         "manufacturer_name": application.manufacturer_name,
         "manufacturer_address": strip_spaces(
             application.manufacturer_address, application.manufacturer_postcode

@@ -1,6 +1,5 @@
 import datetime as dt
 import re
-from itertools import product
 
 import pytest
 
@@ -322,12 +321,9 @@ class TestDocRefServiceFunctions:
         pack = document_pack.pack_draft_get(gmp_with_draft)
 
         countries = gmp_with_draft.countries.order_by("name")
-        brands = gmp_with_draft.brands.order_by("brand_name")
 
-        # A certificate should exist for each country/brand combo linked to the application
-        for c, b in product(countries, brands):
-            certificate = document_pack.doc_ref_certificate_get(pack, country=c, brand=b)
-
+        for c in countries:
+            certificate = document_pack.doc_ref_certificate_get(pack, country=c)
             assert certificate.document_type == DocumentType.CERTIFICATE
 
     def test_doc_ref_certificate_create(self, com_with_draft):
@@ -368,7 +364,6 @@ class TestDocRefServiceFunctions:
         assert certificate.document_type == DocumentType.CERTIFICATE
         assert certificate.reference_data.country == country
         assert re.match(cert_ref_pattern, certificate.reference) is not None
-        assert certificate.reference_data.gmp_brand is None
 
     def test_doc_ref_certificates_all(self, gmp_with_draft, com_with_draft):
         # Test GMP certificate count
@@ -376,11 +371,10 @@ class TestDocRefServiceFunctions:
 
         pack = document_pack.pack_draft_get(gmp_with_draft)
         country_count = gmp_with_draft.countries.count()
-        brand_count = gmp_with_draft.brands.count()
 
         certificates = document_pack.doc_ref_certificates_all(pack)
 
-        assert certificates.count() == country_count * brand_count
+        assert certificates.count() == country_count
 
         # Test COM certificate count
         document_pack.doc_ref_documents_create(com_with_draft, self.lm)
@@ -448,9 +442,8 @@ class TestDocRefServiceFunctions:
         pack = document_pack.pack_draft_get(gmp_with_draft)
 
         pack_documents = document_pack.doc_ref_documents_all(pack)
-        # Certificate document for each country and brand combination e.g.
-        # (Finland and Germany) * (Brand 1, Brand 2, Brand 3)
-        assert pack_documents.count() == 6
+        # Certificate document for each country (Finland and Germany)
+        assert pack_documents.count() == 2
 
         document_pack.doc_ref_documents_create(com_with_draft, self.lm)
         pack = document_pack.pack_draft_get(com_with_draft)

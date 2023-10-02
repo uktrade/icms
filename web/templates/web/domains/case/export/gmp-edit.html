@@ -12,17 +12,12 @@
     the information requested. The information will be used to create a
     Certificate of Good Manufacturing Practice.
   </div>
-
-  <h4>Countries</h4>
-  {{ display.application_field(country, "Country") }}
-
-  <h4>Brands</h4>
-  {% with read_only = False, brands = process.brands.all() %}
-    {% include "web/domains/case/export/partials/gmp/brands_list.html" %}
-  {% endwith %}
 {% endblock %}
 
 {% block form_content %}
+  <h4>Countries</h4>
+  {{ display.application_field(country, "Country") }}
+  {{ fields.field(form.brand_name) }}
 
   {% include "partial/case/application-contact-details.html" %}
 

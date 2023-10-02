@@ -156,8 +156,8 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
 def _get_cdr_name(app: "ExportApplication", cdr: "CaseDocumentReference") -> str:
     app_label = ProcessTypes(app.process_type).label
 
-    if cdr.reference_data.gmp_brand:
-        brand = f" ({cdr.reference_data.gmp_brand.brand_name})"
+    if app.process_type == ProcessTypes.GMP:
+        brand = f" ({app.brand_name})"
     else:
         brand = ""
 

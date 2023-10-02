@@ -380,6 +380,13 @@ class CertificateOfGoodManufacturingPracticeApplication(ExportApplication):
         GB = ("GB", "Great Britain")
         NIR = ("NIR", "Northern Ireland")
 
+    brand_name = models.CharField(
+        max_length=100,
+        verbose_name="Name of the brand",
+        null=True,
+        help_text="You must enter the cosmetic product brand name here",
+    )
+
     # Responsible person fields
     is_responsible_person = models.CharField(
         max_length=3,
@@ -510,16 +517,6 @@ class GMPFile(File):
     file_type = models.CharField(max_length=10, choices=Type.choices)
 
 
-class GMPBrand(models.Model):
-    application = models.ForeignKey(
-        "web.CertificateOfGoodManufacturingPracticeApplication",
-        related_name="brands",
-        on_delete=models.CASCADE,
-    )
-
-    brand_name = models.CharField(max_length=100, verbose_name="Name of the brand")
-
-
 class ExportApplicationCertificate(DocumentPackBase):
     export_application = models.ForeignKey(
         "ExportApplication", on_delete=models.CASCADE, related_name="certificates"
@@ -545,7 +542,7 @@ class ExportCertificateCaseDocumentReferenceData(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["case_document_reference", "country", "gmp_brand"],
+                fields=["case_document_reference", "country"],
                 name="cert_doc_ref_data_unique",
             )
         ]
@@ -555,14 +552,10 @@ class ExportCertificateCaseDocumentReferenceData(models.Model):
     )
     country = models.ForeignKey("web.Country", on_delete=models.PROTECT)
 
-    # Extra information for GMP applications
-    gmp_brand = models.ForeignKey("GMPBrand", on_delete=models.PROTECT, null=True)
-
     def __str__(self):
         return (
             f"ExportCertificateCaseDocumentReferenceData("
             f"case_document_reference_id={self.case_document_reference_id}"
             f", country_id={self.country_id}"
-            f", gmp_brand_id={self.gmp_brand_id}"
             f")"
         )

@@ -270,7 +270,8 @@ class EmailTemplateContext:
             case "RESPONSIBLE_PERSON_POSTCODE":
                 return self.process.responsible_person_postcode
             case "BRAND_NAMES":
-                return ", ".join(self.process.brands.values_list("brand_name", flat=True))
+                # No longer a list of values
+                return self.process.brand_name
 
         return self._application_context(item)
 

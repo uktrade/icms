@@ -1,4 +1,3 @@
-from itertools import product
 from typing import TYPE_CHECKING
 
 from django.db.models import Manager, QuerySet
@@ -10,14 +9,10 @@ from web.domains.case.types import DocumentPack, ImpOrExp
 from web.flow.models import ProcessTypes
 from web.models import (
     CaseDocumentReference,
-    CertificateOfFreeSaleApplication,
-    CertificateOfGoodManufacturingPracticeApplication,
-    CertificateOfManufactureApplication,
     Country,
     ExportApplication,
     ExportApplicationCertificate,
     ExportCertificateCaseDocumentReferenceData,
-    GMPBrand,
     ImportApplication,
     ImportApplicationLicence,
     ImportApplicationType,
@@ -293,10 +288,8 @@ def _create_export_documents(application: ExportApplication, lock_manager: "Lock
     # Clear all document references as they may have changed
     doc_ref_documents_all(certificate).delete()
 
-    if application.process_type in [ProcessTypes.COM, ProcessTypes.CFS]:
-        app: (
-            CertificateOfManufactureApplication | CertificateOfFreeSaleApplication
-        ) = application.get_specific_model()
+    if application.process_type in [ProcessTypes.COM, ProcessTypes.CFS, ProcessTypes.GMP]:
+        app = application.get_specific_model()
 
         for country in app.countries.all().order_by("name"):
             doc_ref_certificate_create(
@@ -304,28 +297,12 @@ def _create_export_documents(application: ExportApplication, lock_manager: "Lock
                 reference.get_export_certificate_reference(lock_manager, app),
                 country=country,
             )
-
-    elif application.process_type == ProcessTypes.GMP:
-        gmp_app: CertificateOfGoodManufacturingPracticeApplication = (
-            application.get_specific_model()
-        )
-        countries = gmp_app.countries.order_by("name")
-        brands = gmp_app.brands.order_by("brand_name")
-
-        for country, brand in product(countries, brands):
-            doc_ref_certificate_create(
-                certificate,
-                reference.get_export_certificate_reference(lock_manager, gmp_app),
-                country=country,
-                brand=brand,
-            )
-
     else:
         raise NotImplementedError(f"Unknown process_type: {application.process_type}")
 
 
 def doc_ref_certificate_create(
-    doc_pack: DocumentPack, doc_reference: str, *, country: Country, brand: GMPBrand | None = None
+    doc_pack: DocumentPack, doc_reference: str, *, country: Country
 ) -> CaseDocumentReference:
     """Create the certificate document reference"""
 
@@ -335,22 +312,20 @@ def doc_ref_certificate_create(
     cdr = _create_document(doc_pack, DocumentType.CERTIFICATE, doc_reference)
 
     ExportCertificateCaseDocumentReferenceData.objects.create(
-        case_document_reference=cdr, country=country, gmp_brand=brand
+        case_document_reference=cdr, country=country
     )
 
     return cdr
 
 
 def doc_ref_certificate_get(
-    doc_pack: ExportApplicationCertificate, country: Country, brand: GMPBrand | None = None
+    doc_pack: ExportApplicationCertificate, country: Country
 ) -> CaseDocumentReference:
     """Get the certificate document reference"""
 
     certificates = doc_ref_certificates_all(doc_pack)
 
     kwargs = {"reference_data__country": country}
-    if brand:
-        kwargs["reference_data__gmp_brand"] = brand
 
     return certificates.get(**kwargs)
 
