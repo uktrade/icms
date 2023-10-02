@@ -4967,7 +4967,8 @@ ul.radio-input, ul.radio-input-inline {
 }
 
 /* Display the radios inline */
-ul.radio-input-inline > li {
+ul.radio-input-inline > li,
+div.radio-input-inline > div {
     display: inline;
     padding-right: 0.7em;
 }
