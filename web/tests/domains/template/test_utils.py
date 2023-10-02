@@ -569,6 +569,48 @@ def test_create_schedule_paragraph_gb_manufacture_address(
     assert result == expected
 
 
+def test_create_schedule_paragraph_gb_manufacture_country(
+    db, cfs_app_submitted, exporter_one_contact
+):
+    country = Country.objects.get(name="Germany")
+
+    schedule = CFSSchedule.objects.create(
+        application=cfs_app_submitted,
+        exporter_status=CFSSchedule.ExporterStatus.IS_MANUFACTURER,
+        brand_name_holder=YesNoChoices.yes,
+        product_eligibility=CFSSchedule.ProductEligibility.SOLD_ON_UK_MARKET,
+        goods_placed_on_uk_market=YesNoChoices.yes,
+        goods_export_only=YesNoChoices.no,
+        country_of_manufacture=country,
+        manufacturer_name=None,
+        manufacturer_address=None,
+        manufacturer_postcode=None,
+        schedule_statements_is_responsible_person=False,
+        schedule_statements_accordance_with_standards=False,
+        created_by=exporter_one_contact,
+    )
+
+    pl = ProductLegislation.objects.get(
+        name="Aerosol Dispensers Regulations 2009/ 2824 as retained in UK law"
+    )
+    schedule.legislations.add(pl)
+
+    pl = ProductLegislation.objects.get(
+        name="Biocide Products Regulation 528/2012 as retained in UK law"
+    )
+    schedule.legislations.add(pl)
+
+    result = create_schedule_paragraph(schedule)
+    expected = (
+        "I am the manufacturer. I certify that these products meet the safety requirements "
+        "set out under UK and EU legislation, specifically: Aerosol Dispensers Regulations 2009/ 2824 as "
+        "retained in UK law, Biocide Products Regulation 528/2012 as retained in UK law. "
+        "These products are currently sold on the EU market. "
+        "The products were manufactured in Germany"
+    )
+    assert result == expected
+
+
 def test_create_schedule_paragraph_ni_manufacture_name(cfs_app_submitted, exporter_one_contact):
     country = Country.objects.get(name="Spain")
     ni_office = Office.objects.filter(postcode__startswith="BT").first()

@@ -61,6 +61,8 @@ class PdfGenerator:
                     return "pdf/import/fa-dfl-licence-preview.html"
                 case ProcessTypes.FA_SIL:
                     return "pdf/import/fa-sil-licence-preview.html"
+                case ProcessTypes.SANCTIONS:
+                    return "pdf/import/sanctions-licence.html"
                 case _:
                     return "web/domains/case/import/manage/preview-licence.html"
 
@@ -73,6 +75,8 @@ class PdfGenerator:
                     return "pdf/import/fa-dfl-licence-pre-sign.html"
                 case ProcessTypes.FA_SIL:
                     return "pdf/import/fa-sil-licence-pre-sign.html"
+                case ProcessTypes.SANCTIONS:
+                    return "pdf/import/sanctions-licence.html"
                 case _:
                     return "web/domains/case/import/manage/preview-licence.html"
 
@@ -121,6 +125,10 @@ class PdfGenerator:
                     )
                 case ProcessTypes.FA_SIL:
                     return utils.get_fa_sil_licence_context(
+                        self.application, self.doc_pack, self.doc_type
+                    )
+                case ProcessTypes.SANCTIONS:
+                    return utils.get_sanctions_licence_context(
                         self.application, self.doc_pack, self.doc_type
                     )
                 case _:

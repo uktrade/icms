@@ -3372,3 +3372,7 @@ L10N
 Contract Date
 NDD:\n\
 FORMAT
+Import of Goods
+Consignee
+House
+XI1111111111ABCDE

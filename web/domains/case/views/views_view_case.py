@@ -161,9 +161,7 @@ def _view_fa_sil(request: AuthenticatedHttpRequest, application: SILApplication)
 def _view_sanctions_and_adhoc(
     request: AuthenticatedHttpRequest, application: SanctionsAndAdhocApplication
 ) -> HttpResponse:
-    goods = annotate_commodity_unit(
-        application.sanctionsandadhocapplicationgoods_set.all(), "commodity__"
-    ).distinct()
+    goods = annotate_commodity_unit(application.sanctions_goods.all(), "commodity__").distinct()
 
     context = {
         "process": application,

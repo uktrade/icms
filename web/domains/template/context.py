@@ -102,7 +102,7 @@ def _get_import_goods_description(app: ImportApplication) -> str:
             return "\n".join(
                 [
                     f"{str(quantity).rstrip('0').rstrip('.')} x {desc}"
-                    for quantity, desc in app.sanctionsandadhocapplicationgoods_set.values_list(
+                    for quantity, desc in app.sanctions_goods.values_list(
                         "quantity_amount", "goods_description"
                     ).order_by("pk")
                 ]

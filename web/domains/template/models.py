@@ -1,6 +1,3 @@
-import re
-from typing import Any
-
 from django.db import models
 
 from web.models.mixins import Archivable
@@ -88,54 +85,6 @@ class Template(Archivable, models.Model):
             return label + " - " + self.template_name
         else:
             return label
-
-    def get_content(self, replacements: dict[str, Any] | None = None):
-        """Returns the template content with the placeholders replaced with their value
-
-        Calling this function with replacements={'foo': 'bar'} will return the template content
-        with all occurences of [[foo]] replaced with bar"""
-        content = self.template_content
-
-        if content is None:
-            return ""
-
-        if replacements is None:
-            return content
-
-        for replacement, value in replacements.items():
-            content = re.sub(TEMPLATE_CONTENT_REGEX.format(replacement), str(value), content)
-
-        return content
-
-    def get_title(self, replacements: dict[str, Any] | None = None):
-        """Returns the template title with the placeholders replaced with their value
-
-        Calling this function with replacements={'foo': 'bar'} will return the template title
-        with all occurences of [[foo]] replaced with bar"""
-        title = self.template_title
-
-        if title is None:
-            return ""
-
-        if replacements is None:
-            return title
-
-        for replacement, value in replacements.items():
-            title = re.sub(TEMPLATE_CONTENT_REGEX.format(replacement), str(value), title)
-
-        return title
-
-    @staticmethod
-    def get_choice_entry(items, search):
-        """Returns the entry that matched the `search` term on the `items` collection
-        This is meant to be used to create form that need a choice with only a few of the
-        configured choices
-
-        e.g: Template.get_choice_entry(Template.DOMAINS, Template.IMPORT_APPLICATION)
-        returns  (IMPORT_APPLICATION, "Import Applications")"""
-        for entry in items:
-            if entry[0] == search:
-                return entry
 
     class Meta:
         ordering = (

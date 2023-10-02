@@ -24,6 +24,7 @@ from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task, get_case_page_title
 from web.flow import errors
+from web.flow.models import ProcessTypes
 from web.mail.constants import VariationRequestDescription
 from web.mail.emails import (
     send_application_reassigned_email,
@@ -714,7 +715,6 @@ def get_document_context(
         licence = issued_document or document_pack.pack_draft_get(application)
 
         licence_doc = document_pack.doc_ref_licence_get(licence)
-        cover_letter = document_pack.doc_ref_cover_letter_get(licence)
 
         # If issued_document is not None then we are viewing completed documents
         if application.status == ImpExpStatus.COMPLETED or issued_document:
@@ -727,22 +727,9 @@ def get_document_context(
                     "casedocumentreference_pk": licence_doc.pk,
                 },
             )
-            cover_letter_url = reverse(
-                "case:view-case-document",
-                kwargs={
-                    "application_pk": application.id,
-                    "case_type": "import",
-                    "object_pk": licence.pk,
-                    "casedocumentreference_pk": cover_letter.pk,
-                },
-            )
         else:
             licence_url = reverse(
                 "case:licence-pre-sign",
-                kwargs={"application_pk": application.pk, "case_type": "import"},
-            )
-            cover_letter_url = reverse(
-                "case:cover-letter-pre-sign",
                 kwargs={"application_pk": application.pk, "case_type": "import"},
             )
 
@@ -753,9 +740,34 @@ def get_document_context(
             "is_cfs": False,
             "document_reference": licence_doc.reference,
             "licence_url": licence_url,
-            "cover_letter_url": cover_letter_url,
             "is_import": True,
         }
+
+        if application.process_type in [
+            ProcessTypes.FA_DFL,
+            ProcessTypes.FA_OIL,
+            ProcessTypes.FA_SIL,
+        ]:
+            cover_letter = document_pack.doc_ref_cover_letter_get(licence)
+
+            if application.status == ImpExpStatus.COMPLETED or issued_document:
+                cover_letter_url = reverse(
+                    "case:view-case-document",
+                    kwargs={
+                        "application_pk": application.id,
+                        "case_type": "import",
+                        "object_pk": licence.pk,
+                        "casedocumentreference_pk": cover_letter.pk,
+                    },
+                )
+            else:
+                cover_letter_url = reverse(
+                    "case:cover-letter-pre-sign",
+                    kwargs={"application_pk": application.pk, "case_type": "import"},
+                )
+
+            context["cover_letter_url"] = cover_letter_url
+
     else:
         # A supplied document pack or the current draft pack
         certificate = issued_document or document_pack.pack_draft_get(application)

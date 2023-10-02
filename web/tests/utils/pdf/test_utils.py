@@ -33,8 +33,8 @@ def test_fa_oil_setting_licence_dates(oil_app, licence, oil_expected_preview_con
     licence.licence_start_date = dt.date(2022, 1, 1)
     licence.licence_end_date = dt.date(2025, 2, 21)
 
-    oil_expected_preview_context["licence_start_date"] = "01 January 2022"
-    oil_expected_preview_context["licence_end_date"] = "21 February 2025"
+    oil_expected_preview_context["licence_start_date"] = "1st January 2022"
+    oil_expected_preview_context["licence_end_date"] = "21st February 2025"
     oil_expected_preview_context["preview_licence"] = True
     oil_expected_preview_context["paper_licence_only"] = False
     oil_expected_preview_context["process"] = oil_app
@@ -65,7 +65,7 @@ def test_fa_oil_ni_office_postcode_returns_two_eori_numbers(
     oil_app.importer_office.postcode = "BT125QB"  # /PS-IGNORE
 
     oil_expected_preview_context["importer_postcode"] = "BT125QB"  # /PS-IGNORE
-    oil_expected_preview_context["eori_numbers"] = ["GB123456789", "XI123456789"]
+    oil_expected_preview_context["eori_numbers"] = ["GB1111111111ABCDE", "XI1111111111ABCDE"]
     oil_expected_preview_context["preview_licence"] = True
     oil_expected_preview_context["paper_licence_only"] = False
     oil_expected_preview_context["process"] = oil_app

@@ -10,10 +10,12 @@ from web.models import (
     CertificateOfManufactureApplication,
     DFLApplication,
     OpenIndividualLicenceApplication,
+    SanctionsAndAdhocApplication,
     SILApplication,
     Template,
     WoodQuotaApplication,
 )
+from web.tests.helpers import CaseURLS
 from web.types import DocumentTypes
 from web.utils.pdf import PdfGenerator, utils
 
@@ -53,6 +55,21 @@ def mock_get_licence_endorsements(monkeypatch):
             SILApplication,
             DocumentTypes.LICENCE_PREVIEW,
             "pdf/import/fa-sil-licence-preview.html",
+        ),
+        (
+            SILApplication,
+            DocumentTypes.LICENCE_PRE_SIGN,
+            "pdf/import/fa-sil-licence-pre-sign.html",
+        ),
+        (
+            SanctionsAndAdhocApplication,
+            DocumentTypes.LICENCE_PREVIEW,
+            "pdf/import/sanctions-licence.html",
+        ),
+        (
+            SanctionsAndAdhocApplication,
+            DocumentTypes.LICENCE_PRE_SIGN,
+            "pdf/import/sanctions-licence.html",
         ),
         (
             SILApplication,
@@ -249,18 +266,51 @@ def test_get_fa_sil_licence_pre_sign_context(sil_app, licence, sil_expected_prev
     assert sil_expected_preview_context == actual_context
 
 
-# TODO: Remove the default tests when every app type has been implemented
-def test_get_default_preview_licence_context(licence):
-    app = WoodQuotaApplication(process_type=WoodQuotaApplication.PROCESS_TYPE)
-
+def test_get_sanctions_preview_licence_context(
+    sanctions_app_submitted, sanctions_expected_preview_context
+):
+    app = sanctions_app_submitted
+    licence = app.licences.first()
     generator = PdfGenerator(app, licence, DocumentTypes.LICENCE_PREVIEW)
 
-    expected_context = {
+    expected_context = sanctions_expected_preview_context | {
         "process": app,
-        "page_title": "Licence Preview",
-        "preview_licence": True,
-        "paper_licence_only": False,
-        "issue_date": datetime.date.today().strftime("%d %B %Y"),
+        "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+    }
+
+    actual_context = generator.get_document_context()
+    assert expected_context == actual_context
+
+
+def test_get_sanctions_pre_sign_licence_context(
+    sanctions_app_submitted, sanctions_expected_preview_context, ilb_admin_client
+):
+    app = sanctions_app_submitted
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    app.refresh_from_db()
+    app.decision = app.APPROVE
+    app.save()
+
+    licence = app.licences.first()
+    licence.case_completion_datetime = datetime.datetime(2023, 9, 1, tzinfo=datetime.UTC)
+    licence.licence_start_date = datetime.date(2023, 9, 1)
+    licence.licence_end_date = datetime.date(2024, 3, 1)
+    licence.issue_paper_licence_only = False
+    licence.save()
+
+    ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+    licence.refresh_from_db()
+
+    generator = PdfGenerator(app, licence, DocumentTypes.LICENCE_PRE_SIGN)
+
+    expected_context = sanctions_expected_preview_context | {
+        "preview_licence": False,
+        "process": app,
+        "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+        "licence_number": "GBSAN0000001B",
+        "licence_end_date": "1st March 2024",
+        "licence_start_date": "1st September 2023",
     }
 
     actual_context = generator.get_document_context()
