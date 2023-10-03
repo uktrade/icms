@@ -47,7 +47,6 @@ export_data_source_target = {
         ),
         (dm.CertificateOfManufactureApplication, web.CertificateOfManufactureApplication),
         (dm.GMPFile, web.GMPFile),
-        (dm.GMPBrand, web.GMPBrand),
         (dm.CertificateOfFreeSaleApplication, web.CertificateOfFreeSaleApplication),
         (dm.CFSSchedule, web.CFSSchedule),
         (dm.CFSProduct, web.CFSProduct),
@@ -233,31 +232,26 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     assert refs.count() == 3
     assert refs[0].reference == "GMP/2022/00001"
-    assert refs[0].reference_data.gmp_brand_id == 2
     assert refs[0].reference_data.country_id == 1
     assert refs[1].reference == "GMP/2022/00002"
-    assert refs[1].reference_data.gmp_brand_id == 2
     assert refs[1].reference_data.country_id == 2
     assert refs[2].reference == "GMP/2022/00003"
-    assert refs[2].reference_data.gmp_brand_id == 2
     assert refs[2].reference_data.country_id == 3
 
     assert ref2.reference == "GMP/2022/00004"
-    assert ref2.reference_data.gmp_brand_id == 3
     assert ref2.reference_data.country_id == 1
 
     gmp1, gmp2, gmp3 = web.CertificateOfGoodManufacturingPracticeApplication.objects.order_by("pk")
 
     assert gmp1.supporting_documents.count() == 1
     assert gmp1.supporting_documents.first().file_type == "BRC_GSOCP"
-    assert gmp1.brands.count() == 0
+    assert gmp1.brand_name is None
     assert gmp1.gmp_certificate_issued is None
 
     assert gmp2.supporting_documents.count() == 2
     assert gmp2.supporting_documents.filter(file_type="ISO_22716").count() == 1
     assert gmp2.supporting_documents.filter(file_type="ISO_17065").count() == 1
-    assert gmp2.brands.count() == 1
-    assert gmp2.brands.first().brand_name == "A brand"
+    assert gmp2.brand_name == "A brand"
     assert (
         gmp2.gmp_certificate_issued
         == web.CertificateOfGoodManufacturingPracticeApplication.CertificateTypes.BRC_GSOCP
@@ -265,8 +259,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     assert gmp3.supporting_documents.count() == 1
     assert gmp3.supporting_documents.first().file_type == "ISO_17021"
-    assert gmp3.brands.count() == 1
-    assert gmp3.brands.first().brand_name == "Another brand"
+    assert gmp3.brand_name == "Another brand"
     assert (
         gmp3.gmp_certificate_issued
         == web.CertificateOfGoodManufacturingPracticeApplication.CertificateTypes.ISO_22716
@@ -334,11 +327,9 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     ref4 = cert5.document_references.first()
 
     assert ref3.reference == "COM/2022/00001"
-    assert ref3.reference_data.gmp_brand_id is None
     assert ref3.reference_data.country_id == 1
 
     assert ref4.reference == "COM/2022/00002"
-    assert ref4.reference_data.gmp_brand_id is None
     assert ref4.reference_data.country_id == 1
 
     assert com1.is_pesticide_on_free_sale_uk is None
@@ -433,12 +424,10 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     ref5 = cert6.document_references.first()
     assert ref5.reference == "CFS/2022/00001"
-    assert ref5.reference_data.gmp_brand_id is None
     assert ref5.reference_data.country_id == 1
 
     ref6 = cert9.document_references.first()
     assert ref6.reference == "CFS/2022/00002"
-    assert ref6.reference_data.gmp_brand_id is None
     assert ref6.reference_data.country_id == 1
 
     assert cfs1.schedules.count() == 0

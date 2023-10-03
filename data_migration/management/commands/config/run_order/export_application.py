@@ -41,7 +41,6 @@ export_source_target = [
         dm.CertificateOfGoodManufacturingPracticeApplication,
         web.CertificateOfGoodManufacturingPracticeApplication,
     ),
-    SourceTarget(dm.GMPBrand, web.GMPBrand),
     SourceTarget(dm.CertificateOfFreeSaleApplication, web.CertificateOfFreeSaleApplication),
     SourceTarget(dm.CFSSchedule, web.CFSSchedule),
     SourceTarget(dm.CFSProduct, web.CFSProduct),
