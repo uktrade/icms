@@ -197,7 +197,6 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
     application_details_errors = PageErrors(page_name="Application details", url=edit_url)
     application_form = forms.SubmitFaSILForm(data=model_to_dict(application), instance=application)
     create_page_errors(application_form, application_details_errors)
-    errors.add(application_details_errors)
 
     # Check know bought from
     bought_from_errors = PageErrors(
@@ -218,7 +217,15 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
     errors.add(bought_from_errors)
 
     # Goods validation
-    if application.section1 and not application.goods_section1.filter(is_active=True).exists():
+    has_section1_goods = application.goods_section1.filter(is_active=True).exists()
+    has_section2_goods = application.goods_section2.filter(is_active=True).exists()
+    has_section5_goods = application.goods_section5.filter(is_active=True).exists()
+    has_section58_obsolete_goods = application.goods_section582_obsoletes.filter(
+        is_active=True
+    ).exists()
+    has_section58_other_goods = application.goods_section582_others.filter(is_active=True).exists()
+
+    if application.section1 and not has_section1_goods:
         url = reverse(
             "import:fa-sil:add-section",
             kwargs={"application_pk": application.pk, "sil_section_type": "section1"},
@@ -229,7 +236,7 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
         )
         errors.add(section_errors)
 
-    if application.section2 and not application.goods_section2.filter(is_active=True).exists():
+    if application.section2 and not has_section2_goods:
         url = reverse(
             "import:fa-sil:add-section",
             kwargs={"application_pk": application.pk, "sil_section_type": "section2"},
@@ -240,7 +247,7 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
         )
         errors.add(section_errors)
 
-    if application.section5 and not application.goods_section5.filter(is_active=True).exists():
+    if application.section5 and not has_section5_goods:
         url = reverse(
             "import:fa-sil:add-section",
             kwargs={"application_pk": application.pk, "sil_section_type": "section5"},
@@ -251,10 +258,7 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
         )
         errors.add(section_errors)
 
-    if (
-        application.section58_obsolete
-        and not application.goods_section582_obsoletes.filter(is_active=True).exists()
-    ):
+    if application.section58_obsolete and not has_section58_obsolete_goods:
         url = reverse(
             "import:fa-sil:add-section",
             kwargs={"application_pk": application.pk, "sil_section_type": "section582-obsolete"},
@@ -268,10 +272,7 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
         )
         errors.add(section_errors)
 
-    if (
-        application.section58_other
-        and not application.goods_section582_others.filter(is_active=True).exists()
-    ):
+    if application.section58_other and not has_section58_other_goods:
         url = reverse(
             "import:fa-sil:add-section",
             kwargs={"application_pk": application.pk, "sil_section_type": "section582-other"},
@@ -284,6 +285,28 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
             )
         )
         errors.add(section_errors)
+
+    # Check "Licence For" sections match application goods lines.
+    licence_for_checks = (
+        (has_section1_goods, application.section1),
+        (has_section2_goods, application.section2),
+        (has_section5_goods, application.section5),
+        (has_section58_obsolete_goods, application.section58_obsolete),
+        (has_section58_other_goods, application.section58_other),
+    )
+    for has_goods, section in licence_for_checks:
+        if has_goods and not section:
+            application_details_errors.add(
+                FieldError(
+                    field_name="Firearm Licence For",
+                    messages=[
+                        "The sections selected here do not match those selected in the goods items."
+                    ],
+                )
+            )
+
+    # Add application detail errors now we have checked licence for
+    errors.add(application_details_errors)
 
     importer_has_section5 = application.importer.section5_authorities.currently_active().exists()
     selected_section5 = application.verified_section5.currently_active().exists()
