@@ -3,7 +3,7 @@ from typing import Any
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models import F, OuterRef, QuerySet, Subquery, Value
+from django.db.models import F, QuerySet, Value
 from django.db.models.expressions import Window
 from django.db.models.functions import RowNumber
 
@@ -12,7 +12,7 @@ from data_migration.models.export_application.export import ExportApplication
 from data_migration.utils.format import str_to_list
 
 from .base import MigrationBase
-from .export_application import ExportApplicationCertificate, GMPBrand
+from .export_application import ExportApplicationCertificate
 from .file import DocFolder, File, FileFolder
 from .flow import Process
 from .import_application import ImportApplication, ImportApplicationLicence
@@ -118,19 +118,6 @@ class ExportCertificateCaseDocumentReferenceData(MigrationBase):
         CaseDocument, on_delete=models.CASCADE, to_field="certificate_id"
     )
     country = models.ForeignKey(Country, on_delete=models.PROTECT)
-
-    @classmethod
-    def get_source_data(cls) -> Generator:
-        sub_query = GMPBrand.objects.filter(cad_id=OuterRef("certificate__cad_id")).values("pk")
-
-        values = cls.get_values()
-        values_kwargs = cls.get_values_kwargs()
-
-        return (
-            cls.objects.annotate(gmp_brand_id=Subquery(sub_query[:1]))
-            .values("gmp_brand_id", *values, **values_kwargs)
-            .iterator(chunk_size=2000)
-        )
 
     @classmethod
     def models_to_populate(cls) -> list[str]:
