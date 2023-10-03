@@ -3403,3 +3403,9 @@ Products</h4
 Download Template Spreadsheet
 id="legislation_config
 {{ application_field(schedule_legislation_names|join("\n
+{{ fields.field(form.section1
+{{ fields.field(form.section5
+{{ fields.field(form.section58_other
+{{ fields.field(form.military_police
+Goods - Licence for</h4
+Firearm Licence For

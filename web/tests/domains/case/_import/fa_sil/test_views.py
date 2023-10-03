@@ -8,6 +8,8 @@ from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.models import ImportApplicationLicence, SILApplication, Task
 from web.tests.application_utils import create_import_app, save_app_data
+from web.tests.helpers import check_page_errors
+from web.utils.validation import ApplicationErrors, PageErrors
 
 if TYPE_CHECKING:
     from django.test.client import Client
@@ -163,6 +165,31 @@ class TestEditFirearmsSILApplication:
         form = response.context["form"]
         message = form.errors["origin_country"][0]
         assert message == "You must enter this item"
+
+
+class TestSubmitFaSIL:
+    @pytest.fixture(autouse=True)
+    def setup(self, importer_client, fa_sil_app_in_progress):
+        self.app = fa_sil_app_in_progress
+        self.client = importer_client
+
+    def test_submit_catches_incorrect_licence_for(self):
+        # The app has a goods line for every section (so let's disable a section)
+        self.app.section5 = False
+        self.app.save()
+
+        url = reverse("import:fa-sil:submit", kwargs={"application_pk": self.app.pk})
+
+        response = self.client.get(url)
+
+        errors: ApplicationErrors = response.context["errors"]
+        check_page_errors(errors, "Application details", ["Firearm Licence For"])
+
+        page_errors: PageErrors = errors.get_page_errors("Application details")
+        page_errors.errors[0].field_name = "Firearm Licence For"
+        page_errors.errors[0].messages = [
+            "The sections selected here do not match those selected in the goods items."
+        ]
 
 
 def test_fa_sil_app_submitted_has_a_licence(fa_sil_app_submitted):
