@@ -3395,3 +3395,11 @@ CertificateTypes
 GMPBrand
 Adhoc License Application - Submit Application
 Goods 2
+{{ fields.field(form.brand_name_holder
+div id="schedule-statements
+Include Manufacturer Information?</p
+Remove Manufacturer
+Products</h4
+Download Template Spreadsheet
+id="legislation_config
+{{ application_field(schedule_legislation_names|join("\n

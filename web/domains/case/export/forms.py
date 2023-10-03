@@ -437,6 +437,15 @@ class CFSManufacturerDetailsForm(forms.ModelForm):
             if self.instance.manufacturer_address_entry_type == AddressEntryType.SEARCH:
                 self.fields["manufacturer_address"].widget.attrs["readonly"] = True
 
+    def clean(self):
+        cleaned_data = super().clean()
+
+        postcode = cleaned_data.get("manufacturer_postcode")
+        address = cleaned_data.get("manufacturer_address")
+
+        if postcode and not address:
+            self.add_error("manufacturer_address", "You must enter this item")
+
 
 class CFSProductForm(forms.ModelForm):
     class Meta:
