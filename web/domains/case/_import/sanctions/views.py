@@ -1,3 +1,5 @@
+from collections import Counter
+
 import structlog as logging
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -382,6 +384,22 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
                     )
                 )
 
+        # Check for duplicate commodities
+        goods = Counter(goods_commodities)
+        duplicate_commodities = [commodity for commodity, count in goods.items() if count > 1]
+
+        if duplicate_commodities:
+            duplicates = ", ".join(duplicate_commodities)
+
+            page_errors.add(
+                FieldError(
+                    field_name="Goods - Commodity Code",
+                    messages=[
+                        f"Duplicate commodity codes. Please ensure these codes are only listed once: {duplicates}."
+                    ],
+                )
+            )
+
         errors.add(page_errors)
 
         errors.add(get_org_update_request_errors(application, "import"))
@@ -399,6 +417,7 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
             form = SubmitForm()
 
     context = {
+        "page_title": "Sanctions and Adhoc License Application - Submit Application",
         "process": application,
         "form": form,
         "application_title": "Sanctions and Adhoc License Application",

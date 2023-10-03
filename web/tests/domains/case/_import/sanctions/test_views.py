@@ -16,6 +16,9 @@ from web.tests.domains.case._import.factory import (
     SanctionsAndAdhocApplicationGoodsFactory,
     SanctionsAndAdhocLicenseApplicationFactory,
 )
+from web.tests.helpers import check_page_errors
+from web.utils.commodity import get_usage_commodities, get_usage_records
+from web.utils.validation import ApplicationErrors, PageErrors
 
 
 class TestSanctionsAndAdhocImportAppplicationCreateView(AuthTestCase):
@@ -284,3 +287,43 @@ class TestSanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             "import:sanctions:edit", kwargs={"application_pk": self.process.pk}
         )
         assert len(SanctionsAndAdhocApplicationGoods.objects.all()) == 1
+
+
+class TestSubmitSanctions:
+    @pytest.fixture(autouse=True)
+    def setup(self, importer_client, sanctions_app_in_progress):
+        self.app = sanctions_app_in_progress
+        self.client = importer_client
+
+    def test_submit_catches_duplicate_commodities(self):
+        sanction_usage = get_usage_records(ImportApplicationType.Types.SANCTION_ADHOC).filter(
+            country=self.app.origin_country
+        )
+        available_commodities = get_usage_commodities(sanction_usage)
+        commodity = available_commodities.first()
+        another_commodity = available_commodities.last()
+
+        self.app.sanctions_goods.create(
+            commodity=commodity, goods_description="Goods 1", quantity_amount=1, value=1
+        )
+
+        self.app.sanctions_goods.create(
+            commodity=commodity, goods_description="Goods 2 (dupe)", quantity_amount=1, value=1
+        )
+
+        self.app.sanctions_goods.create(
+            commodity=another_commodity, goods_description="Goods 3", quantity_amount=1, value=1
+        )
+
+        url = reverse("import:sanctions:submit-sanctions", kwargs={"application_pk": self.app.pk})
+
+        response = self.client.get(url)
+
+        errors: ApplicationErrors = response.context["errors"]
+        check_page_errors(errors, "Application details", ["Goods - Commodity Code"])
+
+        page_errors: PageErrors = errors.get_page_errors("Application details")
+        page_errors.errors[0].field_name = "Goods - Commodity Code"
+        page_errors.errors[0].messages = [
+            f"Duplicate commodity codes. Please ensure these codes are only listed once: {commodity.commodity_code}"
+        ]
