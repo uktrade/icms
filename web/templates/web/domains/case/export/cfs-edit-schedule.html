@@ -72,8 +72,8 @@
   {% else %}
     {% call application_section("Manufacturer Address") %}
       {{ application_field(schedule.manufacturer_name, "Name") }}
-      {{ application_field(schedule.manufacturer_postcode, "Postcode") }}
-      {{ application_field((schedule.manufacturer_address or "") |nl2br, "Address") }}
+      {{ application_field(schedule.manufacturer_postcode or "" , "Postcode") }}
+      {{ application_field(schedule.manufacturer_address or "", "Address") }}
     {% endcall %}
     <a class="button small-button icon-pencil"
        href="{{ icms_url('export:cfs-schedule-set-manufacturer', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}">Edit
