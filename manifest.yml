@@ -3,3 +3,4 @@ applications:
   - name: icms
     buildpacks:
       - python_buildpack
+    stack: cflinuxfs4
