@@ -1,6 +1,7 @@
 Using Playwright
 ----------------
 Playwright requires ICMS to be running: `make debug`
+Playwright requires the following envrionment variables `STAFF_SSO_ENABLED=False` and `GOV_UK_ONE_LOGIN_ENABLED=False`
 
 The tests can be run locally or in a container.
 ```bash

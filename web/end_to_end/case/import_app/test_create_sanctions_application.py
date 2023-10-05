@@ -151,7 +151,12 @@ def sanctions_manage_and_complete_case(page: Page, app_id) -> None:
 
     # Close the popup: "Authorise Success: Application xxx/xxxx/xxxxx has been queued for document signing"
     page.get_by_role("button", name="Close this message").click()
+
+    # Annoying bug causing test to fail.
+    # Wait for networkidle and then reload the workbasket to see the bypass CHIEF link
+    page.wait_for_load_state("networkidle")
     page.get_by_role("link", name="Workbasket").click()
+
     utils.assert_page_url(page, "/workbasket/")
 
     #
