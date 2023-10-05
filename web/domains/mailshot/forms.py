@@ -24,7 +24,11 @@ class MailshotFilter(FilterSet):
     description = CharFilter(field_name="description", lookup_expr="icontains", label="Description")
 
     status = ChoiceFilter(
-        field_name="status", lookup_expr="exact", choices=Mailshot.Statuses.choices, label="Status"
+        field_name="status",
+        lookup_expr="exact",
+        choices=Mailshot.Statuses.choices,
+        label="Status",
+        empty_label="Any",
     )
 
     latest_version = BooleanFilter(
