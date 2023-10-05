@@ -4,6 +4,7 @@ from django.utils import timezone
 from web.models import (
     Country,
     DFLApplication,
+    ExportApplicationCertificate,
     ImportApplicationLicence,
     Office,
     OpenIndividualLicenceApplication,
@@ -69,6 +70,11 @@ def sil_app(importer, importer_office):
 @pytest.fixture()
 def licence():
     return ImportApplicationLicence()
+
+
+@pytest.fixture()
+def certificate():
+    return ExportApplicationCertificate()
 
 
 @pytest.fixture()

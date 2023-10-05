@@ -138,10 +138,18 @@ def test_get_template(AppCls, doc_type, expected_template, licence):
     assert expected_template == actual_template
 
 
-def get_static_doc_template():
+def get_static_cfs_cover_letter_template():
     generator = StaticPdfGenerator(DocumentTypes.CFS_COVER_LETTER)
     template = generator.get_template()
     assert template == "pdf/export/cfs-letter.html"
+
+
+def get_static_doc_template():
+    generator = StaticPdfGenerator(DocumentTypes.CERTIFICATE_PRE_SIGN)
+    with pytest.raises(
+        ValueError, match=f"Unsupported document type: {DocumentTypes.CERTIFICATE_PRE_SIGN}"
+    ):
+        generator.get_template()
 
 
 def test_get_template_raises_error_if_doc_type_unsupported(licence):
@@ -456,3 +464,12 @@ def test_get_cfs_cover_letter_certificate_context():
         "ilb_contact_name": settings.ILB_CONTACT_NAME,
         "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
     }
+
+
+def test_get_cfs_cover_letter_certificate_context_invalid_doc_type():
+    generator = StaticPdfGenerator(DocumentTypes.CERTIFICATE_PREVIEW)
+
+    with pytest.raises(
+        ValueError, match=f"Unsupported document type: {DocumentTypes.CERTIFICATE_PREVIEW}"
+    ):
+        generator.get_document_context()
