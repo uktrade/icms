@@ -1,6 +1,7 @@
 import datetime
 from http import HTTPStatus
 from typing import TYPE_CHECKING
+from unittest.mock import Mock
 
 import pytest
 from django.core import mail
@@ -11,11 +12,13 @@ from pytest_django.asserts import assertContains, assertRedirects, assertTemplat
 from web.domains.case.models import DocumentPackBase, WithdrawApplication
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
+from web.domains.case.views.views_misc import get_document_context
 from web.flow.errors import ProcessStateError
 from web.mail.constants import EmailTypes
 from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import (
     Country,
+    File,
     Task,
     UpdateRequest,
     VariationRequest,
@@ -30,6 +33,7 @@ from web.tests.helpers import (
     check_page_errors,
     check_pages_checked,
 )
+from web.utils.pdf.utils import cfs_cover_letter_key_filename
 from web.utils.validation import ApplicationErrors
 
 if TYPE_CHECKING:
@@ -905,3 +909,58 @@ def _add_valid_checklist(wood_application):
         authorisation=True,
         sigl_wood_application_logged=True,
     )
+
+
+def test_cfs_get_document_context(cfs_app_submitted):
+    app = cfs_app_submitted
+    certificate = document_pack.pack_draft_get(app)
+    document_pack.doc_ref_documents_create(app, Mock())
+    certificate_docs = document_pack.doc_ref_certificates_all(certificate)
+    context = get_document_context(app)
+    context_cert_docs = context.pop("certificate_docs")
+
+    expected = {
+        "cover_letter_flag": False,
+        "type_label": "Certificate of Free Sale",
+        "customs_copy": False,
+        "is_cfs": True,
+        "certificate_pk": certificate.pk,
+        "is_import": False,
+        "is_issued": False,
+        "cfs_cover_letter_pk": None,
+    }
+
+    assert context == expected
+    assert list(context_cert_docs) == list(certificate_docs)
+
+
+def test_cfs_get_document_context_with_cover_letter(db, cfs_app_submitted):
+    app = cfs_app_submitted
+    certificate = document_pack.pack_draft_get(app)
+    document_pack.doc_ref_documents_create(app, Mock())
+    certificate_docs = document_pack.doc_ref_certificates_all(certificate)
+    path, filename = cfs_cover_letter_key_filename()
+    f = File.objects.create(
+        path=path,
+        filename=filename,
+        content_type="application/pdf",
+        file_size=100,
+        created_by_id=0,
+    )
+
+    context = get_document_context(app)
+    context_cert_docs = context.pop("certificate_docs")
+
+    expected = {
+        "cover_letter_flag": False,
+        "type_label": "Certificate of Free Sale",
+        "customs_copy": False,
+        "is_cfs": True,
+        "certificate_pk": certificate.pk,
+        "is_import": False,
+        "is_issued": False,
+        "cfs_cover_letter_pk": f.pk,
+    }
+
+    assert context == expected
+    assert list(context_cert_docs) == list(certificate_docs)
