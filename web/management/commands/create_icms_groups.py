@@ -42,7 +42,6 @@ def get_groups():
             Perms.sys.edit_section_5_firearm_authorities,
             Perms.sys.commodity_admin,
             Perms.sys.search_all_cases,
-            Perms.sys.mailshot_access,
         ],
         #
         # "Importer User": (System group + object permissions to related importers)

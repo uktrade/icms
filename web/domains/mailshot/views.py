@@ -46,7 +46,10 @@ class ReceivedMailshotsView(ModelFilterView):
     page_title = "Received Mailshots"
 
     def has_permission(self) -> bool:
-        return _check_permission(self.request.user)
+        importer_access = self.request.user.has_perm(Perms.sys.importer_access)
+        exporter_acesss = self.request.user.has_perm(Perms.sys.exporter_access)
+
+        return importer_access or exporter_acesss
 
     def get_filterset(self):
         return super().get_filterset(user=self.request.user)
@@ -256,7 +259,7 @@ class MailshotReceivedDetailView(MailshotDetailView):
         if mailshot.is_to_importers and user.has_perm(Perms.sys.importer_access):
             return True
 
-        if mailshot.is_to_exporters and user.has_perm("web.export_access"):
+        if mailshot.is_to_exporters and user.has_perm(Perms.sys.exporter_access):
             return True
 
         return False
@@ -343,12 +346,17 @@ def add_document(request: AuthenticatedHttpRequest, *, mailshot_pk: int) -> Http
 def view_document(
     request: AuthenticatedHttpRequest, *, mailshot_pk: int, document_pk: int
 ) -> HttpResponse:
-    mailshot = get_object_or_404(Mailshot, pk=mailshot_pk)
-    document = get_object_or_404(mailshot.documents, pk=document_pk)
+    has_perm = (
+        request.user.has_perm(Perms.sys.ilb_admin)
+        or request.user.has_perm(Perms.sys.importer_access)
+        or request.user.has_perm(Perms.sys.exporter_access)
+    )
 
-    has_perm = _check_permission(request.user)
     if not has_perm:
         raise PermissionDenied
+
+    mailshot = get_object_or_404(Mailshot, pk=mailshot_pk)
+    document = get_object_or_404(mailshot.documents, pk=document_pk)
 
     file_content = get_file_from_s3(document.path)
 
@@ -387,15 +395,3 @@ def republish(request: AuthenticatedHttpRequest, *, mailshot_pk: int) -> HttpRes
         mailshot.save()
 
         return redirect(reverse("mailshot-edit", kwargs={"mailshot_pk": mailshot.pk}))
-
-
-def _check_permission(user: User) -> bool:
-    """Check the given user has permission to access mailshot."""
-
-    if user.has_perm(Perms.sys.ilb_admin):
-        return True
-
-    importer_access = user.has_perm(Perms.sys.importer_access)
-    exporter_acesss = user.has_perm(Perms.sys.exporter_access)
-
-    return importer_access or exporter_acesss

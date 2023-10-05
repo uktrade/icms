@@ -60,7 +60,7 @@ class TestReceivedMailshotsView(AuthTestCase):
 
     def test_case_worker_access(self):
         response = self.ilb_admin_client.get(self.url)
-        assert response.status_code == 200
+        assert response.status_code == 403
 
     def test_exporter_access(self):
         response = self.exporter_client.get(self.url)
