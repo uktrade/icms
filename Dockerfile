@@ -1,4 +1,4 @@
-FROM python:3.11.2
+FROM python:3.11.4
 
 # Install dependencies
 RUN apt-get update && apt-get install wget graphviz libgraphviz-dev gcc libpq-dev postgresql-client npm -y
