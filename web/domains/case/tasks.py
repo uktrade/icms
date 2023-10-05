@@ -79,7 +79,7 @@ def create_import_application_document(
             delete_file_from_s3(path=document_reference.document.path)
 
         file_obj = io.BytesIO()
-        pdf_gen = PdfGenerator(application=application, doc_pack=licence, doc_type=doc_type)
+        pdf_gen = PdfGenerator(doc_type=doc_type, application=application, doc_pack=licence)
         pdf_gen.get_pdf(target=file_obj)
 
         # Reset read point to start of stream before uploading
@@ -115,7 +115,7 @@ def create_export_application_document(
 
         file_obj = io.BytesIO()
         pdf_gen = PdfGenerator(
-            application=application, doc_pack=certificate, doc_type=doc_type, country=country
+            doc_type=doc_type, application=application, doc_pack=certificate, country=country
         )
         pdf_gen.get_pdf(target=file_obj)
 

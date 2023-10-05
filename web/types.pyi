@@ -62,3 +62,4 @@ class DocumentTypes(Enum):
     COVER_LETTER_PREVIEW: Incomplete
     COVER_LETTER_PRE_SIGN: Incomplete
     COVER_LETTER_SIGNED: Incomplete
+    CFS_COVER_LETTER: Incomplete

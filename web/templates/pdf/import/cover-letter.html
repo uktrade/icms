@@ -18,11 +18,9 @@
         src="{{ static('web/img/dbt_red_transparent_bg.png') }}" />
 
         <div id="address-text" class="header-block">
-          <p class="address-line">Import Licencing Branch</p>
-          <p class="address-line">Queensway House</p>
-          <p class="address-line">West Precinct</p>
-          <p class="address-line">Billingham</p>
-          <p class="address-line">TS23 2NF</p>  <!-- /PS-IGNORE -->
+          {% for line in ilb_contact_address_split %}
+              <p class="address-line">{{ line }}</p>
+          {% endfor %}
         </div>
         <div class="header-block" id="dbt-url">
           <span class="url">gov.uk/dit</span>

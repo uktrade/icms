@@ -17,9 +17,9 @@ from . import utils
 
 @dataclass
 class PdfGenerator:
-    application: ImpOrExp
-    doc_pack: DocumentPack
     doc_type: DocumentTypes
+    application: ImpOrExp | None = None
+    doc_pack: DocumentPack | None = None
     country: Country | None = None
 
     def get_pdf(self, target: io.BytesIO | None = None) -> bytes | None:
@@ -95,6 +95,9 @@ class PdfGenerator:
                 case _:
                     raise ValueError(f"Unsupported process type: {self.application.process_type}")
 
+        if self.doc_type == DocumentTypes.CFS_COVER_LETTER:
+            return "pdf/export/cfs-letter.html"
+
         raise ValueError(f"Unsupported document type: {self.doc_type}")
 
     def get_document_context(self) -> dict[str, Any]:
@@ -157,6 +160,13 @@ class PdfGenerator:
                     )
                 case _:
                     raise ValueError(f"Unsupported process type: {self.application.process_type}")
+        elif self.doc_type == DocumentTypes.CFS_COVER_LETTER:
+            # CFS Cover letter has static content only
+            return {
+                "ilb_contact_address_split": settings.ILB_CONTACT_ADDRESS.split(", "),
+                "ilb_contact_name": settings.ILB_CONTACT_NAME,
+                "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+            }
         else:
             raise ValueError(f"Unsupported document type: {self.doc_type}")
 

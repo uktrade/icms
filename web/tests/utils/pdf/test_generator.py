@@ -132,24 +132,30 @@ def mock_get_licence_endorsements(monkeypatch):
 )
 def test_get_template(AppCls, doc_type, expected_template, licence):
     app = AppCls(process_type=AppCls.PROCESS_TYPE)
-    generator = PdfGenerator(app, licence, doc_type)
+    generator = PdfGenerator(doc_type, app, licence)
     actual_template = generator.get_template()
 
     assert expected_template == actual_template
+
+
+def get_static_doc_template():
+    generator = PdfGenerator(DocumentTypes.CFS_COVER_LETTER)
+    template = generator.get_template()
+    assert template == "pdf/export/cfs-letter.html"
 
 
 def test_get_template_raises_error_if_doc_type_unsupported(licence):
     app = OpenIndividualLicenceApplication(
         process_type=OpenIndividualLicenceApplication.PROCESS_TYPE
     )
-    generator = PdfGenerator(app, licence, "INVALID_DOC_TYPE")
+    generator = PdfGenerator("INVALID_DOC_TYPE", app, licence)
 
     with pytest.raises(ValueError, match="Unsupported document type"):
         generator.get_template()
 
 
 def test_get_fa_oil_preview_licence_context(oil_app, licence, oil_expected_preview_context):
-    generator = PdfGenerator(oil_app, licence, DocumentTypes.LICENCE_PREVIEW)
+    generator = PdfGenerator(DocumentTypes.LICENCE_PREVIEW, oil_app, licence)
 
     oil_expected_preview_context["preview_licence"] = True
     oil_expected_preview_context["paper_licence_only"] = False
@@ -164,7 +170,7 @@ def test_get_fa_oil_preview_licence_context(oil_app, licence, oil_expected_previ
 def test_get_fa_oil_licence_pre_sign_context(
     licence_mock, oil_app, licence, oil_expected_preview_context
 ):
-    generator = PdfGenerator(oil_app, licence, DocumentTypes.LICENCE_PRE_SIGN)
+    generator = PdfGenerator(DocumentTypes.LICENCE_PRE_SIGN, oil_app, licence)
 
     oil_expected_preview_context["preview_licence"] = False
     oil_expected_preview_context["paper_licence_only"] = False
@@ -182,7 +188,7 @@ def test_get_fa_dfl_preview_licence_context(
 ):
     mock_get_goods.return_value = ["goods one", "goods two", "goods three"]
 
-    generator = PdfGenerator(dfl_app, licence, DocumentTypes.LICENCE_PREVIEW)
+    generator = PdfGenerator(DocumentTypes.LICENCE_PREVIEW, dfl_app, licence)
 
     dfl_expected_preview_context["goods"] = ["goods one", "goods two", "goods three"]
     dfl_expected_preview_context["preview_licence"] = True
@@ -202,7 +208,7 @@ def test_get_fa_dfl_preview_licence_context(
 def test_get_fa_dfl_licence_pre_sign_context(
     dfl_app, licence, dfl_expected_preview_context, **mocks
 ):
-    generator = PdfGenerator(dfl_app, licence, DocumentTypes.LICENCE_PRE_SIGN)
+    generator = PdfGenerator(DocumentTypes.LICENCE_PRE_SIGN, dfl_app, licence)
 
     dfl_expected_preview_context["goods"] = ["goods one", "goods two", "goods three"]
     dfl_expected_preview_context["preview_licence"] = False
@@ -221,7 +227,7 @@ def test_get_fa_sil_preview_licence_context(
     mock_get_goods, sil_app, licence, sil_expected_preview_context
 ):
     mock_get_goods.return_value = [("goods one", 10), ("goods two", 20), ("goods three", 30)]
-    generator = PdfGenerator(sil_app, licence, DocumentTypes.LICENCE_PREVIEW)
+    generator = PdfGenerator(DocumentTypes.LICENCE_PREVIEW, sil_app, licence)
     sil_app.manufactured = True
     template = Template.objects.get(template_code="FIREARMS_MARKINGS_NON_STANDARD")
 
@@ -249,7 +255,7 @@ def test_get_fa_sil_preview_licence_context(
     _get_licence_number=MagicMock(return_value="0000001B"),
 )
 def test_get_fa_sil_licence_pre_sign_context(sil_app, licence, sil_expected_preview_context):
-    generator = PdfGenerator(sil_app, licence, DocumentTypes.LICENCE_PRE_SIGN)
+    generator = PdfGenerator(DocumentTypes.LICENCE_PRE_SIGN, sil_app, licence)
 
     sil_expected_preview_context["goods"] = [
         ("goods one", 10),
@@ -271,7 +277,7 @@ def test_get_sanctions_preview_licence_context(
 ):
     app = sanctions_app_submitted
     licence = app.licences.first()
-    generator = PdfGenerator(app, licence, DocumentTypes.LICENCE_PREVIEW)
+    generator = PdfGenerator(DocumentTypes.LICENCE_PREVIEW, app, licence)
 
     expected_context = sanctions_expected_preview_context | {
         "process": app,
@@ -302,7 +308,7 @@ def test_get_sanctions_pre_sign_licence_context(
     ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
     licence.refresh_from_db()
 
-    generator = PdfGenerator(app, licence, DocumentTypes.LICENCE_PRE_SIGN)
+    generator = PdfGenerator(DocumentTypes.LICENCE_PRE_SIGN, app, licence)
 
     expected_context = sanctions_expected_preview_context | {
         "preview_licence": False,
@@ -321,7 +327,7 @@ def test_get_preview_cover_letter_context(licence):
     app = DFLApplication(process_type=DFLApplication.PROCESS_TYPE)
     app.cover_letter_text = "ABC"
 
-    generator = PdfGenerator(app, licence, DocumentTypes.COVER_LETTER_PREVIEW)
+    generator = PdfGenerator(DocumentTypes.COVER_LETTER_PREVIEW, app, licence)
 
     expected_context = {
         "process": app,
@@ -330,6 +336,13 @@ def test_get_preview_cover_letter_context(licence):
         "issue_date": datetime.date.today().strftime("%d %B %Y"),
         "page_title": "Cover Letter Preview",
         "preview": True,
+        "ilb_contact_address_split": [
+            "Import Licencing Branch",
+            "Queensway House",
+            "West Precinct",
+            "Billingham",
+            "TS23 2NF",  # /PS-IGNORE
+        ],
     }
 
     actual_context = generator.get_document_context()
@@ -341,7 +354,7 @@ def test_get_pre_sign_cover_letter_context(licence):
     app = DFLApplication(process_type=DFLApplication.PROCESS_TYPE)
     app.cover_letter_text = "ABC"
 
-    generator = PdfGenerator(app, licence, DocumentTypes.COVER_LETTER_PRE_SIGN)
+    generator = PdfGenerator(DocumentTypes.COVER_LETTER_PRE_SIGN, app, licence)
 
     expected_context = {
         "process": app,
@@ -350,6 +363,13 @@ def test_get_pre_sign_cover_letter_context(licence):
         "issue_date": datetime.date.today().strftime("%d %B %Y"),
         "page_title": "Cover Letter Preview",
         "preview": False,
+        "ilb_contact_address_split": [
+            "Import Licencing Branch",
+            "Queensway House",
+            "West Precinct",
+            "Billingham",
+            "TS23 2NF",  # /PS-IGNORE
+        ],
     }
 
     actual_context = generator.get_document_context()
@@ -363,12 +383,12 @@ def test_get_document_context_raises_error_if_doc_type_unsupported(licence):
     )
 
     with pytest.raises(ValueError, match="Unsupported document type"):
-        generator = PdfGenerator(app, licence, "INVALID_DOC_TYPE")
+        generator = PdfGenerator("INVALID_DOC_TYPE", app, licence)
         generator.get_document_context()
 
 
 def test_get_pdf(db, oil_app, licence):
-    generator = PdfGenerator(oil_app, licence, DocumentTypes.LICENCE_PREVIEW)
+    generator = PdfGenerator(DocumentTypes.LICENCE_PREVIEW, oil_app, licence)
     pdf_file = generator.get_pdf()
 
     # This tests doesn't actually do a great deal other than check it creates
@@ -380,7 +400,7 @@ def test_get_preview_cfs_certificate_context(cfs_app_submitted):
     app = cfs_app_submitted
     country = app.countries.first()
     certificate = app.certificates.first()
-    generator = PdfGenerator(app, certificate, DocumentTypes.CERTIFICATE_PREVIEW, country)
+    generator = PdfGenerator(DocumentTypes.CERTIFICATE_PREVIEW, app, certificate, country)
 
     context = generator.get_document_context()
 
@@ -394,7 +414,7 @@ def test_get_preview_com_certificate_context(com_app_submitted):
     app = com_app_submitted
     country = app.countries.first()
     certificate = app.certificates.first()
-    generator = PdfGenerator(app, certificate, DocumentTypes.CERTIFICATE_PREVIEW, country)
+    generator = PdfGenerator(DocumentTypes.CERTIFICATE_PREVIEW, app, certificate, country)
 
     context = generator.get_document_context()
 
@@ -408,7 +428,7 @@ def test_get_preview_gmp_certifcate_context(gmp_app_submitted):
     app = gmp_app_submitted
     country = app.countries.first()
     certificate = app.certificates.first()
-    generator = PdfGenerator(app, certificate, DocumentTypes.CERTIFICATE_PREVIEW, country)
+    generator = PdfGenerator(DocumentTypes.CERTIFICATE_PREVIEW, app, certificate, country)
 
     context = generator.get_document_context()
 
@@ -421,7 +441,18 @@ def test_get_preview_gmp_certifcate_context(gmp_app_submitted):
 def test_certificate_no_country_get_document_context_invalid(cfs_app_submitted):
     app = cfs_app_submitted
     certificate = app.certificates.first()
-    generator = PdfGenerator(app, certificate, DocumentTypes.CERTIFICATE_PREVIEW)
+    generator = PdfGenerator(DocumentTypes.CERTIFICATE_PREVIEW, app, certificate)
 
     with pytest.raises(ValueError, match="Country must be specified for export certificates"):
         generator.get_document_context()
+
+
+def test_get_cfs_cover_letter_certificate_context():
+    generator = PdfGenerator(DocumentTypes.CFS_COVER_LETTER)
+    context = generator.get_document_context()
+
+    assert context == {
+        "ilb_contact_address_split": settings.ILB_CONTACT_ADDRESS.split(", "),
+        "ilb_contact_name": settings.ILB_CONTACT_NAME,
+        "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+    }

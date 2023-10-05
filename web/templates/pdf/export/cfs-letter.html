@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="icon" href="{{ static('web/img/favicon.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ static('web/css/pdfs/cfs-letter-style.css') }}"/>
+    <title>{% block page_title %}{{ page_title }}{% endblock %} - ICMS</title>
+  </head>
+
+  <body class="page-margin">
+    <div class="letter-header flex-row">
+      <div class="header-image">
+        <img
+            id="dbt-logo"
+            alt="DBT Logo"
+            src="{{ static('web/img/dbt_red_transparent_bg.png') }}" />
+      </div>
+      <div class="flex-row header-block">
+        <div class="address-text">
+        {% for line in ilb_contact_address_split %}
+            <p class="address-line">{{ line }}</p>
+        {% endfor %}
+        </div>
+        <p class="dbt-url">gov.uk/dbt</p>
+      </div>
+    </div>
+    <div class="address-block">
+        <p>ATTENTION OF OVERSEAS PRODUCT</p>
+        <p>SAFETY AUTHORITIES</p>
+    </div>
+    <div class="content-block">
+      <p class="issue-date">31 December 2020</p>
+      <div class="letter-content">
+        <h4 class="centre"><strong>CERTIFICATES OF FREE SALE (CFS) ISSUED BY THE UNITED KINGDOM (UK)</strong></h4>
+        <p>
+            The Import Licensing Branch (ILB) is part of the Department for International Trade (DIT) in the United
+            Kingdom (UK). We are responsible for the issue of Certificates of Free Sale (CFS) except in relation
+            to food, drink and pesticides (Department of the Environment, Food and Rural Affairs - DEFRA),
+            medicines and medical equipment (Medicines & Healthcare Regulatory Authority – MHRA) and
+            biocides (Health & Safety Executive – HSE).
+        </p>
+        <p>
+            I am writing to you to explain the changes that we have made to DIT issued CFS as a result of the UK
+            leaving the EU. The DIT CFS inform regarding the listed products ability to be placed on the UK
+            market.
+        </p>
+        <p>
+            The security of the DIT CFS has been improved by upgrades to the QR code so that more information
+            is available with which to confirm the validity of the DIT CFS. You are now able to download a copy of
+            the issued CFS by using the QR code so you can do your own comparison if you have any concerns
+            about the document presented. We believe that these changes make the CFS we issue one of the
+            safest in the world and resilient to attempts to copy or manipulate an issued CFS. We hope that this
+            will also remove any need to have any additional validation, e.g. by the UK’s Foreign &
+            Commonwealth Development Office to confirm that the CFS was issued by a UK Government
+            Department.
+        </p>
+        <p>
+            Please note that due to the terms of the Northern Ireland Protocol which impacts upon traders based
+            in Northern Ireland in some instances both EU and UK legislation may be listed while traders based in
+            Great Britain will only list UK legislation. An example of this is cosmetics legislation where the UK
+            Cosmetics Regulation, Cosmetic Regulation No 1223/2009 as retained in UK law (which is based on
+            retained EU legislation as established in the Withdrawal Agreement) will be listed for UK traders while
+            those based in Northern Ireland will also have the EU cosmetic regulation, Regulation (EC) No
+            1223/2009 of the European Parliament and of the Council of 30 November 2009 on cosmetic
+            products, listed.
+        </p>
+        <p>
+            These changes do not affect the safety of our products as all EU product safety law was introduced
+            into UK law unchanged before we left the EU on 29th March 2019. Goods placed on the UK market
+            continue to have to meet the strict product safety standards that applied when the UK was part of
+            the EU. You can therefore be confident that the CFS we issue will continue to provide the
+            assurance you want that our products are safe to be sold on your market.
+        </p>
+        <p>
+            Please note that previously issued CFS remain valid.
+        </p>
+        <p>
+            This branch can be contacted via {{ ilb_contact_email }} if you have any questions on the
+            information provided.
+        </p>
+      </div>
+    </div>
+    <div class="signature-block">
+      <div class="signature">
+          <p class="signature-text">{{ ilb_contact_name }}</p>
+      </div>
+      <div>
+        <p>{{ ilb_contact_name }}</p>
+        <p>DBT Import Licensing Branch</p>
+      </div>
+    </div>
+  </body>
+</html>
+
+
