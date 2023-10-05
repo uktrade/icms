@@ -28,9 +28,7 @@ class MailshotFilter(FilterSet):
     )
 
     latest_version = BooleanFilter(
-        label="Only show the current mailshot version",
-        widget=CheckboxInput,
-        method="get_latest_version",
+        label="Current Version Only", widget=CheckboxInput, method="get_latest_version"
     )
 
     class Meta:
