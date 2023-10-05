@@ -135,6 +135,7 @@ class ModelFilterView(
 ):
     paginate_by = 50
     paginate = True
+    default_filters: dict | None = None
 
     def post(self, request, *args, **kwargs):
         action = request.POST.get("action")
@@ -164,7 +165,7 @@ class ModelFilterView(
 
     def get_filterset(self, **kwargs):
         return self.filterset_class(
-            self.request.GET or None, queryset=self.get_queryset(), **kwargs
+            self.request.GET or self.default_filters, queryset=self.get_queryset(), **kwargs
         )
 
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:

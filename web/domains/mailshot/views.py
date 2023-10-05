@@ -72,6 +72,9 @@ class MailshotListView(ModelFilterView):
     permission_required = Perms.sys.ilb_admin
     page_title = "Maintain Mailshots"
 
+    # Only set when the page is first loaded.
+    default_filters = {"latest_version": ["on"]}
+
     class Display:
         fields = [
             "reference",
