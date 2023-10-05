@@ -33,7 +33,7 @@ from web.mail.emails import (
     send_variation_request_email,
     send_withdrawal_email,
 )
-from web.models import CaseNote, Task, User, VariationRequest, WithdrawApplication
+from web.models import CaseNote, File, Task, User, VariationRequest, WithdrawApplication
 from web.permissions import (
     AppChecker,
     Perms,
@@ -41,6 +41,7 @@ from web.permissions import (
     organisation_get_contacts,
 )
 from web.types import AuthenticatedHttpRequest
+from web.utils.pdf.utils import cfs_cover_letter_key_filename
 from web.utils.s3 import delete_file_from_s3, get_s3_client
 from web.utils.validation import ApplicationErrors
 
@@ -782,6 +783,15 @@ def get_document_context(
             "is_import": False,
             "is_issued": bool(application.status == ImpExpStatus.COMPLETED or issued_document),
         }
+
+        if application.process_type == ProcessTypes.CFS:
+            try:
+                key, filename = cfs_cover_letter_key_filename()
+                cfs_cover_letter_pk = File.objects.get(filename=filename, path=key).pk
+            except File.DoesNotExist:
+                cfs_cover_letter_pk = None
+
+            context["cfs_cover_letter_pk"] = cfs_cover_letter_pk
 
     return context
 

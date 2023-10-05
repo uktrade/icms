@@ -54,8 +54,7 @@
             </tr>
         {% endif %}
       {% elif case_type == "export" %}
-        {# https://uktrade.atlassian.net/browse/ICMSLST-2296 #}
-        {% if is_cfs %}
+        {% if is_cfs and cfs_cover_letter_pk %}
             <tr>
                 <td>Certificates of Free Sale (CFS) issued by the United Kingdom (UK)</td>
                 {% if show_generation_status %}
@@ -63,7 +62,7 @@
                 {% endif %}
                 <td>
                     <a
-                        href="#"
+                        href="{{ icms_url('case:view-static-document', kwargs={'application_pk': process.pk, 'case_type':'export', 'file_pk': cfs_cover_letter_pk}) }}"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="link-button inline-link-button icon-file-pdf button">

@@ -123,3 +123,32 @@ def view_case_document(
         related_file_model=File.objects,
         file_pk=cdr.document.pk,
     )
+
+
+@require_GET
+@login_required
+def view_static_document(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    case_type: str,
+    file_pk: int,
+) -> HttpResponse:
+    """Return a case document pdf.
+
+    :param request: Django request object
+    :param application_pk: Application pk
+    :param case_type: "import" or "export"
+    :param file_pk: File pk
+    :return: Static document pdf
+    """
+
+    # Application permission is checked in "view_application_file"
+    application: ImpOrExp = get_object_or_404(Process, pk=application_pk).get_specific_model()
+
+    return view_application_file(
+        user=request.user,
+        application=application,
+        related_file_model=File.objects,
+        file_pk=file_pk,
+    )

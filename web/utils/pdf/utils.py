@@ -163,6 +163,7 @@ def get_cover_letter_context(
 
     return {
         "content": content,
+        "ilb_contact_address_split": settings.ILB_CONTACT_ADDRESS.split(", "),
         "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
         "issue_date": timezone.now().date().strftime("%d %B %Y"),
         "page_title": "Cover Letter Preview",
@@ -389,3 +390,9 @@ def _split_text_field_newlines(text: str) -> list[str]:
     cleaned = re.sub(r"\n+", "\n", text.strip())
 
     return [line.strip() for line in cleaned.split("\n") if line.strip()]
+
+
+def cfs_cover_letter_key_filename() -> tuple[str, str]:
+    filename = f"{settings.CFS_COVER_LETTER_FILENAME}.pdf"
+    key = f"{settings.STATIC_FILES_S3_PREFIX}/{filename}"
+    return key, filename

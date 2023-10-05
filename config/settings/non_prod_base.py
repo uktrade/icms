@@ -17,6 +17,11 @@ ILB_GSI_CONTACT_EMAIL = env.str(
     "ICMS_ILB_GSI_CONTACT_EMAIL", "enquiries.ilb.gsi@icms.trade.dev.uktrade.io"  # /PS-IGNORE
 )
 ILB_CONTACT_PHONE = env.str("ICMS_ILB_CONTACT_PHONE", "N/A")
+ILB_CONTACT_NAME = env.str("ICMS_ILB_CONTACT_NAME", default="John Doe")
+ILB_CONTACT_ADDRESS = env.str(
+    "ICMS_ILB_CONTACT_ADDRESS",
+    default="Import Licencing Branch, Queensway House, West Precinct, Billingham, TS23 2NF",  # /PS-IGNORE
+)
 ICMS_FIREARMS_HOMEOFFICE_EMAIL = env.str(
     "ICMS_FIREARMS_HOMEOFFICE_EMAIL", "firearms-homeoffice@example.com"  # /PS-IGNORE
 )

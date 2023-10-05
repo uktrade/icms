@@ -280,3 +280,9 @@ def test_invalid_section_returns_no_goods():
 )
 def test_split_text_field_newlines(text, expected):
     assert utils._split_text_field_newlines(text) == expected
+
+
+def test_cfs_cover_letter_key_filename():
+    key, filename = utils.cfs_cover_letter_key_filename()
+    assert filename == "CFS Letter.pdf"
+    assert key == "static_documents/CFS Letter.pdf"

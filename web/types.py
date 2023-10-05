@@ -31,6 +31,7 @@ class DocumentTypes(Enum):
     COVER_LETTER_PREVIEW = auto()
     COVER_LETTER_PRE_SIGN = auto()
     COVER_LETTER_SIGNED = auto()
+    CFS_COVER_LETTER = auto()
 
 
 class TypedTextChoices(models.TextChoices):

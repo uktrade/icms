@@ -347,6 +347,11 @@ pdf_urls = [
         views_pdf.view_case_document,
         name="view-case-document",
     ),
+    path(
+        "view-static-document/<int:file_pk>/",
+        views_pdf.view_static_document,
+        name="view-static-document",
+    ),
 ]
 
 

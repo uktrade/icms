@@ -171,6 +171,8 @@ EMAIL_FROM = env.str("ICMS_EMAIL_FROM", default="")
 ILB_CONTACT_EMAIL = env.str("ICMS_ILB_CONTACT_EMAIL", default="")
 ILB_GSI_CONTACT_EMAIL = env.str("ICMS_ILB_GSI_CONTACT_EMAIL", default="")
 ILB_CONTACT_PHONE = env.str("ICMS_ILB_CONTACT_PHONE", default="")
+ILB_CONTACT_NAME = env.str("ICMS_ILB_CONTACT_NAME", default="")
+ILB_CONTACT_ADDRESS = env.str("ICMS_ILB_CONTACT_ADDRESS", default="")
 ICMS_FIREARMS_HOMEOFFICE_EMAIL = env.str("ICMS_FIREARMS_HOMEOFFICE_EMAIL", default="")
 ICMS_CFS_HSE_EMAIL = env.str("ICMS_CFS_HSE_EMAIL", default="")
 ICMS_GMP_BEIS_EMAIL = env.str("ICMS_GMP_BEIS_EMAIL", default="")
@@ -226,6 +228,10 @@ FILE_UPLOAD_HANDLERS = (
     "django_chunk_upload_handlers.clam_av.ClamAVFileUploadHandler",
     "django_chunk_upload_handlers.s3.S3FileUploadHandler",
 )
+
+# Used for static documents stored in S3
+STATIC_FILES_S3_PREFIX = "static_documents"
+CFS_COVER_LETTER_FILENAME = "CFS Letter"
 
 # Anti virus settings
 CLAM_AV_USERNAME = env.str("CLAM_AV_USERNAME", default="test")

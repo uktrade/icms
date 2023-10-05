@@ -3411,3 +3411,17 @@ Goods - Licence for</h4
 Firearm Licence For
 GOV_UK_ONE_LOGIN_ENABLED=False`
 SEND_LICENCE_TO_CHIEF=True`
+letter.\n
+CFS Cover
+THE UNITED KINGDOM
+UK)</strong></h4
+The Import Licensing Branch
+Department of the Environment, Food and Rural Affairs - DEFRA
+Medicines & Healthcare Regulatory Authority
+Health & Safety Executive
+Foreign &
+Commonwealth Development Office
+the Northern Ireland Protocol
+Cosmetics Regulation
+the Withdrawal Agreement
+DBT Import Licensing Branch</p

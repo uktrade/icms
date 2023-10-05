@@ -1,0 +1,116 @@
+@page {
+    margin: 25px 65px 35px 0 !important;
+    size: A4;
+}
+
+body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.3em;
+}
+
+.page-margin {
+    margin-left: 77px;
+}
+
+.url {
+    text-align: right;
+    font-weight: bold;
+}
+
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.centre {
+    text-align: center;
+}
+
+.letter-header {
+    margin-bottom: 68px;
+    justify-content: flex-start;
+}
+
+.header-image {
+    flex: 334px 0 0;
+}
+
+.header-block {
+    flex: 300px 0 0;
+}
+
+img {
+    width: 220px;
+}
+
+#dbt-logo {
+    margin-left: -42px;
+    margin-top: -6px;
+}
+
+.address-text {
+    margin-top: 67px;
+    flex: 160px 0 0;
+}
+
+.address-line {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.1em;
+}
+
+.dbt-url {
+    margin-top: 65px;
+    flex: 80px 0 0;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.1em;
+    color: red;
+    width: 100%;
+}
+
+.address-block {
+    margin-bottom: 64px;
+}
+
+.address-block p {
+    font-size: 15px;
+    margin: 0;
+    line-height: 1.1em;
+}
+
+.content-block {
+    margin-bottom: 16px;
+}
+
+.issue-date {
+    font-size: 14px;
+}
+
+.letter-content {
+    margin-top: 34px;
+}
+
+.letter-content h4 {
+    font-size: 15px;
+}
+
+.letter-content p {
+    font-size: 14px;
+    line-height: 1.1em;
+}
+
+.signature-block p {
+    margin: 0;
+}
+
+.signature {
+    margin: 16px 0;
+}
+
+.signature p {
+    font-family: serif;
+    font-weight: bold;
+}
