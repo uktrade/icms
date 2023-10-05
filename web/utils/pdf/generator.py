@@ -16,11 +16,8 @@ from . import utils
 
 
 @dataclass
-class PdfGenerator:
+class PdfGenBase:
     doc_type: DocumentTypes
-    application: ImpOrExp | None = None
-    doc_pack: DocumentPack | None = None
-    country: Country | None = None
 
     def get_pdf(self, target: io.BytesIO | None = None) -> bytes | None:
         """Write the pdf data to the optional target or return the PDF as bytes
@@ -41,6 +38,21 @@ class PdfGenerator:
             template_name=self.get_template(),
             context=self.get_document_context(),
         )
+
+    def get_template(self) -> str:
+        """Returns the correct template"""
+        raise ValueError(f"Unsupported document type: {self.doc_type}")
+
+    def get_document_context(self) -> dict[str, Any]:
+        """Return the document context"""
+        raise ValueError(f"Unsupported document type: {self.doc_type}")
+
+
+@dataclass
+class PdfGenerator(PdfGenBase):
+    application: ImpOrExp
+    doc_pack: DocumentPack
+    country: Country | None = None
 
     def get_template(self) -> str:
         """Returns the correct template"""
@@ -95,10 +107,7 @@ class PdfGenerator:
                 case _:
                     raise ValueError(f"Unsupported process type: {self.application.process_type}")
 
-        if self.doc_type == DocumentTypes.CFS_COVER_LETTER:
-            return "pdf/export/cfs-letter.html"
-
-        raise ValueError(f"Unsupported document type: {self.doc_type}")
+        return super().get_template()
 
     def get_document_context(self) -> dict[str, Any]:
         """Return the document context"""
@@ -160,15 +169,31 @@ class PdfGenerator:
                     )
                 case _:
                     raise ValueError(f"Unsupported process type: {self.application.process_type}")
-        elif self.doc_type == DocumentTypes.CFS_COVER_LETTER:
+
+        return super().get_document_context()
+
+
+@dataclass
+class StaticPdfGenerator(PdfGenBase):
+    def get_template(self) -> str:
+        """Returns the correct template"""
+        if self.doc_type == DocumentTypes.CFS_COVER_LETTER:
+            return "pdf/export/cfs-letter.html"
+
+        return super().get_template()
+
+    def get_document_context(self) -> dict[str, Any]:
+        """Return the document context"""
+
+        if self.doc_type == DocumentTypes.CFS_COVER_LETTER:
             # CFS Cover letter has static content only
             return {
                 "ilb_contact_address_split": settings.ILB_CONTACT_ADDRESS.split(", "),
                 "ilb_contact_name": settings.ILB_CONTACT_NAME,
                 "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
             }
-        else:
-            raise ValueError(f"Unsupported document type: {self.doc_type}")
+
+        return super().get_document_context()
 
 
 def get_icms_domain() -> str:

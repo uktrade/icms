@@ -1,3 +1,3 @@
-from .generator import PdfGenerator
+from .generator import PdfGenerator, StaticPdfGenerator
 
-__all__ = ["PdfGenerator"]
+__all__ = ["PdfGenerator", "StaticPdfGenerator"]

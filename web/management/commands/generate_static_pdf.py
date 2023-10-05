@@ -6,7 +6,7 @@ from guardian.utils import get_anonymous_user
 
 from web.models import File
 from web.types import DocumentTypes
-from web.utils.pdf import PdfGenerator
+from web.utils.pdf import StaticPdfGenerator
 from web.utils.pdf.utils import cfs_cover_letter_key_filename
 from web.utils.s3 import upload_file_obj_to_s3
 
@@ -18,7 +18,7 @@ class Command(BaseCommand):
         self.stdout.write("Generating CFS cover letter.")
 
         file_obj = BytesIO()
-        pdf_gen = PdfGenerator(DocumentTypes.CFS_COVER_LETTER)
+        pdf_gen = StaticPdfGenerator(DocumentTypes.CFS_COVER_LETTER)
         pdf_gen.get_pdf(target=file_obj)
         file_obj.seek(0)
         key, filename = cfs_cover_letter_key_filename()
