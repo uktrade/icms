@@ -36,7 +36,7 @@
 <hr>
 <h2>System permissions (Django) for request user {{ request.user }}</h2>
 <ul>
-  {% for perm in ["web.importer_access", "web.exporter_access", "web.ilb_admin", "web.mailshot_access"] %}
+  {% for perm in ["web.importer_access", "web.exporter_access", "web.ilb_admin"] %}
     <li>{{ perm }} in user system perms: {{ perm in perms }}</li>
   {% endfor %}
 </ul>

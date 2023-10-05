@@ -49,10 +49,6 @@ class SysPerms(PermissionTextChoice):
         "Can edit Importer Verified Section 5 Firearm Authorities",
     )
     search_all_cases = ("web.search_all_cases", "Can search across all cases.")
-
-    # This permission isn't used anywhere.
-    mailshot_access = "web.mailshot_access", "Can maintain mailshots"
-
     is_icms_data_admin = "web.is_icms_data_admin", "Can maintain data in the ICMS admin site."
 
 
