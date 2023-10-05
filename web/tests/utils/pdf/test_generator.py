@@ -17,7 +17,7 @@ from web.models import (
 )
 from web.tests.helpers import CaseURLS
 from web.types import DocumentTypes
-from web.utils.pdf import PdfGenerator, utils
+from web.utils.pdf import PdfGenerator, StaticPdfGenerator, utils
 
 
 # TODO: Revisit when doing ICMSLST-1428
@@ -139,7 +139,7 @@ def test_get_template(AppCls, doc_type, expected_template, licence):
 
 
 def get_static_doc_template():
-    generator = PdfGenerator(DocumentTypes.CFS_COVER_LETTER)
+    generator = StaticPdfGenerator(DocumentTypes.CFS_COVER_LETTER)
     template = generator.get_template()
     assert template == "pdf/export/cfs-letter.html"
 
@@ -448,7 +448,7 @@ def test_certificate_no_country_get_document_context_invalid(cfs_app_submitted):
 
 
 def test_get_cfs_cover_letter_certificate_context():
-    generator = PdfGenerator(DocumentTypes.CFS_COVER_LETTER)
+    generator = StaticPdfGenerator(DocumentTypes.CFS_COVER_LETTER)
     context = generator.get_document_context()
 
     assert context == {
