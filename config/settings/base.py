@@ -229,10 +229,6 @@ FILE_UPLOAD_HANDLERS = (
     "django_chunk_upload_handlers.s3.S3FileUploadHandler",
 )
 
-# Used for static documents stored in S3
-STATIC_FILES_S3_PREFIX = "static_documents"
-CFS_COVER_LETTER_FILENAME = "CFS Letter"
-
 # Anti virus settings
 CLAM_AV_USERNAME = env.str("CLAM_AV_USERNAME", default="test")
 CLAM_AV_PASSWORD = env.str("CLAM_AV_PASSWORD", default="")

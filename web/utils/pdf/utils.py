@@ -393,6 +393,8 @@ def _split_text_field_newlines(text: str) -> list[str]:
 
 
 def cfs_cover_letter_key_filename() -> tuple[str, str]:
-    filename = f"{settings.CFS_COVER_LETTER_FILENAME}.pdf"
-    key = f"{settings.STATIC_FILES_S3_PREFIX}/{filename}"
+    static_files_s3_prefix = "static_documents"
+    cfs_cover_letter_filename = "CFS Letter"
+    filename = f"{cfs_cover_letter_filename}.pdf"
+    key = f"{static_files_s3_prefix}/{filename}"
     return key, filename
