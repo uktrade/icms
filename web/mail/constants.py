@@ -62,6 +62,7 @@ class EmailTypes(TypedTextChoices):
         "Application Variation Request Refused",
     )
     CASE_EMAIL = ("CASE_EMAIL", "Case Email")
+    FURTHER_INFORMATION_REQUEST = ("FURTHER_INFORMATION_REQUEST", "Further Information Request")
 
 
 # TODO: ICMSLST-2348 Gov Notify - Review constants

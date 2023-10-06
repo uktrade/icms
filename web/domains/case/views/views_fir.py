@@ -21,6 +21,7 @@ from web.domains.case.utils import get_case_page_title
 from web.domains.file.utils import create_file_model
 from web.domains.template.utils import get_fir_template_data
 from web.flow.models import ProcessTypes
+from web.mail.emails import send_further_information_request_email
 from web.models import FurtherInformationRequest, User
 from web.notify import notify
 from web.permissions import AppChecker, Perms
@@ -169,8 +170,7 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: CASE_TYPES
                 if "send" in form.data:
                     fir.status = FurtherInformationRequest.OPEN
                     fir.save()
-
-                    notify.send_further_information_request(application, fir)
+                    send_further_information_request_email(fir, application)
 
                     application.update_order_datetime()
                     application.save()

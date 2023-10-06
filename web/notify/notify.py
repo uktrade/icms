@@ -131,13 +131,6 @@ def send_fir_to_contacts(
         )
 
 
-def send_further_information_request(process: Process, fir: FurtherInformationRequest) -> None:
-    context = {"subject": fir.request_subject, "body": fir.request_detail}
-    attachment_ids = fir.files.filter(is_active=True).values_list("pk", flat=True).order_by("pk")
-
-    send_fir_to_contacts(process, fir, context, tuple(attachment_ids))
-
-
 def send_further_information_request_withdrawal(
     process: Process, fir: FurtherInformationRequest
 ) -> None:

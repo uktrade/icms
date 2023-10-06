@@ -1,12 +1,21 @@
 from django.db.models import QuerySet
 from django.utils import timezone
 
-from web.domains.case.types import ImpAccessOrExpAccess, ImpOrExp, ImpOrExpApproval
+from web.domains.case.types import (
+    ImpAccessOrExpAccess,
+    ImpOrExp,
+    ImpOrExpApproval,
+    ImpOrExpOrAccess,
+)
 from web.domains.template.utils import get_email_template_subject_body
 from web.flow.models import ProcessTypes
+from web.models import AccessRequest
 from web.models import CaseEmail as CaseEmailModel
 from web.models import (
+    ExportApplication,
     ExporterApprovalRequest,
+    FurtherInformationRequest,
+    ImportApplication,
     ImporterApprovalRequest,
     VariationRequest,
     WithdrawApplication,
@@ -18,8 +27,10 @@ from .messages import (
     AccessRequestApprovalCompleteEmail,
     AccessRequestClosedEmail,
     AccessRequestEmail,
+    AccessRequestFurtherInformationRequestEmail,
     ApplicationCompleteEmail,
     ApplicationExtensionCompleteEmail,
+    ApplicationFurtherInformationRequestEmail,
     ApplicationReassignedEmail,
     ApplicationRefusedEmail,
     ApplicationReopenedEmail,
@@ -274,6 +285,43 @@ def send_firearms_supplementary_report_email(application: ImpOrExp) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
         FirearmsSupplementaryReportEmail(application=application, to=[recipient]).send()
+
+
+def send_further_information_request_email(
+    fir: FurtherInformationRequest, process: ImpOrExpOrAccess
+) -> None:
+    match process:
+        case AccessRequest():
+            send_access_request_further_information_request_email(fir, process)
+        case ImportApplication() | ExportApplication():
+            send_application_further_information_request_email(fir, process)
+        case _:
+            raise ValueError(
+                "Process must be an instance of ImportApplication / ExportApplication / AccessRequest"
+            )
+
+
+def send_access_request_further_information_request_email(
+    fir: FurtherInformationRequest, access_request: ImpAccessOrExpAccess
+) -> None:
+    # TODO: ICMSLST-2333 Gov Notify - Email attachments
+    recipients = get_email_addresses_for_users([access_request.submitted_by])
+    for recipient in recipients:
+        AccessRequestFurtherInformationRequestEmail(
+            fir=fir, access_request=access_request, to=[recipient]
+        ).send()
+
+
+def send_application_further_information_request_email(
+    fir: FurtherInformationRequest, application: ImpOrExp
+) -> None:
+    # TODO: ICMSLST-2333 Gov Notify - Email attachments
+    application = application.get_specific_model()
+    recipients = get_application_contact_email_addresses(application)
+    for recipient in recipients:
+        ApplicationFurtherInformationRequestEmail(
+            fir=fir, application=application, to=[recipient]
+        ).send()
 
 
 def send_case_email(case_email: CaseEmailModel) -> None:

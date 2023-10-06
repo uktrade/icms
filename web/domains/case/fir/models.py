@@ -62,7 +62,7 @@ class FurtherInformationRequest(Process):
         models.EmailField(max_length=254),
         help_text=(
             "You may enter a list of email addresses to CC this email to. Use a comma (,) to"
-            " seperate multiple addresses. E.g. john@smith.com,jane@smith.com"  # /PS-IGNORE
+            " separate multiple addresses. E.g. john@smith.com,jane@smith.com"  # /PS-IGNORE
         ),
         verbose_name="Request CC Email Addresses",
         size=15,

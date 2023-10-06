@@ -1,193 +1,239 @@
 from http import HTTPStatus
 from typing import TYPE_CHECKING
+from unittest import mock
 
 import pytest
 from django.urls import reverse
-from pytest_django.asserts import assertContains, assertTemplateUsed
 
+from web.mail.constants import EmailTypes
+from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import FurtherInformationRequest
+from web.sites import get_exporter_site_domain, get_importer_site_domain
 from web.tests.auth import AuthTestCase
-from web.tests.helpers import CaseURLS
+from web.tests.helpers import CaseURLS, check_gov_notify_email_was_sent
 
 if TYPE_CHECKING:
     from django.test.client import Client
 
-    from web.models import Process, WoodQuotaApplication
+    from web.models import Process
 
 
 def _create_fir(
     process: "Process", ilb_admin_client: "Client", case_type: str, subject: str = "test_subject"
 ):
+    if case_type in ["export", "import"]:
+        ilb_admin_client.post(CaseURLS.take_ownership(process.pk, case_type))
+
     resp = ilb_admin_client.post(CaseURLS.add_fir(process.pk, case_type))
 
-    ilb_admin_client.post(
-        resp.url,
-        {
-            "status": "DRAFT",
-            "request_subject": subject,
-            "request_detail": "test request detail",
-            "send": "",
-        },
-    )
+    with mock.patch(
+        "web.domains.case.views.views_fir.send_further_information_request_email"
+    ) as mock_send_email:
+        mock_send_email.return_value = None
+        ilb_admin_client.post(
+            resp.url,
+            {
+                "request_subject": subject,
+                "request_detail": "test request detail",
+                "send": "",
+            },
+        )
+        assert mock_send_email.called is True
 
     return FurtherInformationRequest.objects.get(request_subject=subject)
 
 
-class TestManageFirsView(AuthTestCase):
-    def _add_fir_to_app(
-        self, application: "Process", case_type: str = "import"
-    ) -> FurtherInformationRequest:
-        fir = _create_fir(application, self.ilb_admin_client, case_type)
-
-        return fir
-
-    def test_permission(self, fa_dfl_app_submitted):
-        app = fa_dfl_app_submitted
-        self.ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
-        url = CaseURLS.manage_firs(app.pk, "import")
-
-        response = self.ilb_admin_client.get(url)
-        assert response.status_code == HTTPStatus.OK
-
-        response = self.importer_client.get(url)
-        assert response.status_code == HTTPStatus.FORBIDDEN
-
-        response = self.exporter_client.get(url)
-        assert response.status_code == HTTPStatus.FORBIDDEN
-
-    def test_manage_import_application_fir(self, fa_dfl_app_submitted):
-        app = fa_dfl_app_submitted
-        self.ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
-        url = CaseURLS.manage_firs(app.pk, "import")
-
-        response = self.ilb_admin_client.get(url)
-        assert response.status_code == HTTPStatus.OK
-
-        context = response.context
-        assert context["process"].get_specific_model() == app
-        assert context["case_type"] == "import"
-        assert context["firs"].count() == 0
-
-        fir = self._add_fir_to_app(app)
-
-        response = self.ilb_admin_client.get(url)
-        assert response.status_code == HTTPStatus.OK
-
-        context = response.context
-        assert context["firs"].count() == 1
-        assert context["firs"][0] == fir
-
-    def test_manage_export_application_fir(self, com_app_submitted):
-        app = com_app_submitted
-
-        self.ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
-        url = CaseURLS.manage_firs(app.pk, "export")
-
-        response = self.ilb_admin_client.get(url)
-        assert response.status_code == HTTPStatus.OK
-
-        context = response.context
-        assert context["process"].get_specific_model() == app
-        assert context["case_type"] == "export"
-        assert context["firs"].count() == 0
-
-        fir = self._add_fir_to_app(app, "export")
-
-        response = self.ilb_admin_client.get(url)
-        assert response.status_code == HTTPStatus.OK
-
-        context = response.context
-        assert context["firs"].count() == 1
-        assert context["firs"][0] == fir
-
-    def test_manage_importer_access_request_fir(self, importer_access_request):
-        app = importer_access_request
-
-        url = CaseURLS.manage_firs(app.pk, "access")
-        response = self.ilb_admin_client.get(url)
-        assert response.status_code == HTTPStatus.OK
-
-        context = response.context
-        assert context["case_type"] == "access"
-        assert context["firs"].count() == 0
-
-        fir = self._add_fir_to_app(app, "access")
-
-        response = self.ilb_admin_client.get(url)
-        assert response.status_code == HTTPStatus.OK
-
-        context = response.context
-        assert context["firs"].count() == 1
-        assert context["firs"][0] == fir
-
-    def test_manage_exporter_access_request_fir(self, exporter_access_request):
-        app = exporter_access_request
-
-        url = CaseURLS.manage_firs(app.pk, "access")
-        response = self.ilb_admin_client.get(url)
-        assert response.status_code == HTTPStatus.OK
-
-        context = response.context
-        assert context["case_type"] == "access"
-        assert context["firs"].count() == 0
-
-        fir = self._add_fir_to_app(app, "access")
-
-        response = self.ilb_admin_client.get(url)
-        assert response.status_code == HTTPStatus.OK
-
-        context = response.context
-        assert context["firs"].count() == 1
-        assert context["firs"][0] == fir
-
-
-def test_manage_update_requests_get(
-    ilb_admin_client: "Client", wood_app_submitted: "WoodQuotaApplication"
-) -> None:
-    resp = ilb_admin_client.get(CaseURLS.manage_firs(wood_app_submitted.pk))
-    assert resp.status_code == 200
-
-    assertContains(resp, "Wood (Quota) - Further Information Requests")
-    assertTemplateUsed(resp, "web/domains/case/manage/list-firs.html")
-
-    assert resp.context["firs"].count() == 0
-
-
-# def test_manage_update_requests_post():
-#     # TODO: Add test for sending an update request
-#     ...
-
-
-class TestImporterAccessRequestFIRListView(AuthTestCase):
-    @pytest.fixture(autouse=True)
-    def setup(self, _setup, importer_access_request):
+class TestImporterAccessRequestFIRView(AuthTestCase):
+    @pytest.fixture
+    def setup_process(self, importer_access_request):
         self.process = importer_access_request
         self.process.link = self.importer
         self.process.submitted_by = self.importer_user
         self.process.save()
+        self.case_type = "access"
+        self.fir_type = "access request"
+        self.client = self.importer_client
+        self.expected_site = get_importer_site_domain()
 
-        self.fir_process = _create_fir(self.process, self.ilb_admin_client, "access")
-        self.process.further_information_requests.add(self.fir_process)
-
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, setup_process):
         self.url = reverse(
-            "case:list-firs", kwargs={"application_pk": self.process.pk, "case_type": "access"}
+            "case:list-firs",
+            kwargs={"application_pk": self.process.pk, "case_type": self.case_type},
         )
 
     def test_forbidden_access(self):
         response = self.ilb_admin_client.get(self.url)
-        assert response.status_code == 403
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
     def test_authorized_access(self):
-        response = self.importer_client.get(self.url)
-        assert response.status_code == 200
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
 
-    def test_deleted_firs_not_shown(self):
-        fir = _create_fir(self.process, self.ilb_admin_client, "access", "test delete")
-        self.ilb_admin_client.post(CaseURLS.delete_fir(self.process.pk, fir.pk, "access"))
+    def test_open_fir(self):
+        if self.case_type in ["import", "export"]:
+            self.ilb_admin_client.post(CaseURLS.take_ownership(self.process.pk, self.case_type))
+        add_fir_response = self.ilb_admin_client.post(
+            CaseURLS.add_fir(self.process.pk, self.case_type),
+        )
+        assert add_fir_response.status_code == HTTPStatus.FOUND
 
-        response = self.importer_client.get(self.url)
-
-        assert response.status_code == 200
+        response = self.ilb_admin_client.post(
+            add_fir_response.url,
+            data={
+                "request_subject": "open fir",
+                "request_detail": "test request detail",
+                "send": "",
+            },
+            follow=True,
+        )
+        assert response.status_code == HTTPStatus.OK
         fir_list = response.context["firs"]
         assert len(fir_list) == 1
-        assert fir_list.first() == self.fir_process
+        check_gov_notify_email_was_sent(
+            1,
+            [self.process.submitted_by.email],
+            EmailTypes.FURTHER_INFORMATION_REQUEST,
+            self.expected_email_personalisation(),
+            exp_subject="open fir",
+            exp_in_body="test request detail",
+        )
+
+    def expected_email_personalisation(self):
+        return {
+            "reference": self.process.reference,
+            "icms_url": self.expected_site,
+            "fir_type": self.fir_type,
+        }
+
+    def test_deleted_firs(self):
+        fir = _create_fir(self.process, self.ilb_admin_client, self.case_type, "test delete")
+        assert fir.status == FurtherInformationRequest.OPEN
+
+        response = self.client.get(self.url)
+        fir_list = response.context["firs"]
+        assert len(fir_list) == 1
+        assert fir_list.first() == fir
+
+        self.ilb_admin_client.post(CaseURLS.delete_fir(self.process.pk, fir.pk, self.case_type))
+
+        response = self.client.get(self.url)
+
+        fir_list = response.context["firs"]
+        assert len(fir_list) == 0
+        fir.refresh_from_db()
+        assert fir.status == FurtherInformationRequest.DELETED
+
+    def test_withdraw_firs(self):
+        fir = _create_fir(self.process, self.ilb_admin_client, self.case_type, "test withdraw")
+        assert fir.status == FurtherInformationRequest.OPEN
+
+        response = self.client.get(self.url)
+
+        fir_list = response.context["firs"]
+        assert fir_list.first() == fir
+
+        self.ilb_admin_client.post(CaseURLS.withdraw_fir(self.process.pk, fir.pk, self.case_type))
+
+        response = self.client.get(self.url)
+
+        fir_list = response.context["firs"]
+        assert len(fir_list) == 0
+        fir.refresh_from_db()
+        assert fir.status == FurtherInformationRequest.DRAFT
+
+    def test_respond_to_firs(self):
+        fir = _create_fir(self.process, self.ilb_admin_client, self.case_type, "test withdraw")
+        response = self.client.post(
+            CaseURLS.respond_to_fir(self.process.pk, fir.pk, self.case_type),
+            data={"response_detail": "Thanks"},
+        )
+        assert response.status_code == HTTPStatus.FOUND
+
+        response = self.client.get(self.url)
+
+        fir_list = response.context["firs"]
+
+        assert len(fir_list) == 1
+        actual_firs = fir_list.first()
+        assert actual_firs.status == FurtherInformationRequest.RESPONDED
+        assert actual_firs.response_detail == "Thanks"
+
+    def test_close_firs(self):
+        fir = _create_fir(self.process, self.ilb_admin_client, self.case_type, "test withdraw")
+        fir.status = FurtherInformationRequest.RESPONDED
+        fir.response_detail = "OK"
+        fir.save()
+
+        response = self.ilb_admin_client.post(
+            CaseURLS.close_fir(self.process.pk, fir.pk, self.case_type),
+        )
+        assert response.status_code == HTTPStatus.FOUND
+
+        response = self.client.get(self.url)
+
+        fir_list = response.context["firs"]
+        assert len(fir_list) == 1
+        assert fir_list.first() == fir
+
+        fir.refresh_from_db()
+        assert fir.status == FurtherInformationRequest.CLOSED
+
+
+class TestExportAccessRequestFIRView(TestImporterAccessRequestFIRView):
+    @pytest.fixture
+    def setup_process(self, exporter_access_request):
+        self.process = exporter_access_request
+        self.process.link = self.exporter
+        self.process.submitted_by = self.exporter_user
+        self.process.save()
+        self.case_type = "access"
+        self.fir_type = "access request"
+        self.client = self.exporter_client
+        self.expected_site = get_exporter_site_domain()
+
+
+class TestExportApplicationFIRView(TestImporterAccessRequestFIRView):
+    @pytest.fixture
+    def setup_process(self, cfs_app_submitted):
+        self.process = cfs_app_submitted
+        self.process.link = self.exporter
+        self.process.submitted_by = self.exporter_user
+        self.process.save()
+
+        self.case_type = "export"
+        self.fir_type = "case"
+        self.client = self.exporter_client
+        self.expected_site = get_exporter_site_domain()
+
+    def expected_email_personalisation(self):
+        return {
+            "reference": self.process.reference,
+            "icms_url": self.expected_site,
+            "fir_type": self.fir_type,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(self.process, self.expected_site),
+        }
+
+
+class TestImportApplicationFIRView(TestImporterAccessRequestFIRView):
+    @pytest.fixture
+    def setup_process(self, sanctions_app_submitted):
+        self.process = sanctions_app_submitted
+        self.process.link = self.importer
+        self.process.submitted_by = self.importer_user
+        self.process.save()
+
+        self.case_type = "import"
+        self.fir_type = "case"
+        self.client = self.importer_client
+        self.expected_site = get_importer_site_domain()
+
+    def expected_email_personalisation(self):
+        return {
+            "reference": self.process.reference,
+            "icms_url": self.expected_site,
+            "fir_type": self.fir_type,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(self.process, self.expected_site),
+        }

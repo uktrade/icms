@@ -14,7 +14,7 @@ class GovNotifyEmailBackend(BaseEmailBackend):
         for message in email_messages:
             for recipient in message.recipients():
                 logger.info("Sending %s email to %s", message.name.label, recipient)
-                self._send_message(message.template_id, message.personalisation, recipient)
+                self._send_message(message.template_id, message.get_personalisation(), recipient)
 
     def _send_message(self, template_id: UUID, personalisation: dict, recipient: str) -> None:
         send_email.delay(template_id, personalisation, recipient)
