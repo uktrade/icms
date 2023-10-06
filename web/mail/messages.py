@@ -6,7 +6,7 @@ from django.core.mail import EmailMessage, SafeMIMEMultipart
 
 from web.domains.case.types import ImpAccessOrExpAccess, ImpOrExp, ImpOrExpApproval
 from web.models import CaseEmail as CaseEmailModel
-from web.models import VariationRequest, WithdrawApplication
+from web.models import FurtherInformationRequest, VariationRequest, WithdrawApplication
 from web.permissions import Perms
 from web.sites import (
     get_caseworker_site_domain,
@@ -25,16 +25,15 @@ class GOVNotifyEmailMessage(EmailMessage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.template_id = self.get_template_id()
-        self.personalisation = self.get_personalisation()
 
     def message(self) -> SafeMIMEMultipart:
         """Adds the personalisation data to the message header, so it is visible when using the console backend."""
         message = super().message()
-        message["Personalisation"] = self.personalisation
+        message["Personalisation"] = self.get_personalisation()
         return message
 
     def get_context(self) -> dict:
-        raise NotImplementedError
+        return {}
 
     def get_personalisation(self) -> dict:
         return {
@@ -54,11 +53,12 @@ class GOVNotifyEmailMessage(EmailMessage):
 
 class BaseApplicationEmail(GOVNotifyEmailMessage):
     def __init__(self, *args, application: ImpOrExp, **kwargs):
-        self.application = application
         super().__init__(*args, **kwargs)
+        self.application = application
 
     def get_context(self) -> dict:
-        return {
+        context = super().get_context()
+        return context | {
             "reference": self.application.reference,
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
             "application_url": get_case_view_url(self.application, self.get_site_domain()),
@@ -73,8 +73,8 @@ class BaseApplicationEmail(GOVNotifyEmailMessage):
 
 class BaseApprovalRequest(GOVNotifyEmailMessage):
     def __init__(self, *args, approval_request: ImpOrExpApproval, **kwargs):
-        self.approval_request = approval_request
         super().__init__(*args, **kwargs)
+        self.approval_request = approval_request
 
     def get_context(self) -> dict:
         access_request = self.approval_request.access_request.get_specific_model()
@@ -83,9 +83,9 @@ class BaseApprovalRequest(GOVNotifyEmailMessage):
 
 class BaseWithdrawalEmail(GOVNotifyEmailMessage):
     def __init__(self, *args, withdrawal: WithdrawApplication, **kwargs):
+        super().__init__(*args, **kwargs)
         self.withdrawal = withdrawal
         self.application = withdrawal.export_application or withdrawal.import_application
-        super().__init__(*args, **kwargs)
 
     def get_context(self) -> dict:
         return {"reference": self.application.reference, "reason": self.withdrawal.reason}
@@ -99,8 +99,8 @@ class BaseWithdrawalEmail(GOVNotifyEmailMessage):
 
 class BaseVariationRequestEmail(BaseApplicationEmail):
     def __init__(self, *args, variation_request: VariationRequest, **kwargs):
-        self.variation_request = variation_request
         super().__init__(*args, **kwargs)
+        self.variation_request = variation_request
 
 
 @final
@@ -108,8 +108,8 @@ class AccessRequestEmail(GOVNotifyEmailMessage):
     name = EmailTypes.ACCESS_REQUEST
 
     def __init__(self, *args, access_request: ImpAccessOrExpAccess, **kwargs):
-        self.access_request = access_request
         super().__init__(*args, **kwargs)
+        self.access_request = access_request
 
     def get_context(self) -> dict:
         return {"reference": self.access_request.reference}
@@ -123,8 +123,8 @@ class AccessRequestClosedEmail(GOVNotifyEmailMessage):
     name = EmailTypes.ACCESS_REQUEST_CLOSED
 
     def __init__(self, *args, access_request: ImpAccessOrExpAccess, **kwargs):
-        self.access_request = access_request
         super().__init__(*args, **kwargs)
+        self.access_request = access_request
 
     def get_context(self) -> dict:
         return {
@@ -232,8 +232,8 @@ class ApplicationReassignedEmail(BaseApplicationEmail):
     name = EmailTypes.APPLICATION_REASSIGNED
 
     def __init__(self, *args, comment: str, **kwargs):
-        self.comment = comment
         super().__init__(*args, **kwargs)
+        self.comment = comment
 
     def get_context(self) -> dict:
         context = super().get_context()
@@ -315,8 +315,8 @@ class CaseEmail(GOVNotifyEmailMessage):
     name = EmailTypes.CASE_EMAIL
 
     def __init__(self, *args, case_email: CaseEmailModel, **kwargs):
-        self.case_email = case_email
         super().__init__(*args, **kwargs)
+        self.case_email = case_email
 
     def get_site_domain(self) -> str:
         if self.case_email.template_code in IMPORT_CASE_EMAILS:
@@ -326,3 +326,48 @@ class CaseEmail(GOVNotifyEmailMessage):
 
     def get_context(self) -> dict:
         return {"subject": self.case_email.subject, "body": self.case_email.body}
+
+
+class BaseFurtherInformationRequestEmail(GOVNotifyEmailMessage):
+    name = EmailTypes.FURTHER_INFORMATION_REQUEST
+
+    def __init__(self, *args, fir: FurtherInformationRequest, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fir = fir
+
+    def get_context(self) -> dict:
+        context = super().get_context()
+        context["subject"] = self.fir.request_subject
+        context["body"] = self.fir.request_detail
+        return context
+
+
+class ApplicationFurtherInformationRequestEmail(
+    BaseApplicationEmail, BaseFurtherInformationRequestEmail
+):
+    def get_context(self) -> dict:
+        context = super().get_context() | {"fir_type": "case"}
+        return context
+
+
+class AccessRequestFurtherInformationRequestEmail(BaseFurtherInformationRequestEmail):
+    def __init__(self, *args, access_request: ImpAccessOrExpAccess, **kwargs):
+        self.access_request = access_request
+        super().__init__(*args, **kwargs)
+
+    def get_context(self) -> dict:
+        context = super().get_context() | {
+            "reference": self.access_request.reference,
+            "fir_type": "access request",
+        }
+        return context
+
+    def get_site_domain(self) -> str:
+        access_request = self.access_request.get_specific_model()
+        match access_request.REQUEST_TYPE:
+            case "importer":
+                return get_importer_site_domain()
+            case "exporter":
+                return get_exporter_site_domain()
+            case _:
+                raise ValueError(f"Unknown access request type: {access_request.REQUEST_TYPE}")

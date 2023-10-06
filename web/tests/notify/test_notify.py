@@ -474,37 +474,6 @@ def test_send_fir_error(ilb_admin_user):
 
 
 @patch("web.notify.notify.send_fir_to_contacts")
-def test_send_further_information_request(
-    mock_send_fir, monkeypatch, ilb_admin_user, importer_access_request
-):
-    get_file_from_s3_mock = create_autospec(get_file_from_s3)
-    get_file_from_s3_mock.return_value = b"file_content"
-    monkeypatch.setattr(utils, "get_file_from_s3", get_file_from_s3_mock)
-
-    process = importer_access_request
-
-    fir = _create_fir(ilb_admin_user)
-    process.further_information_requests.add(fir)
-
-    for i in range(2):
-        f = models.File.objects.create(
-            filename=f"file-{i}",
-            content_type="pdf",
-            file_size=1,
-            path=f"file-path-{i}",
-            created_by=ilb_admin_user,
-        )
-        fir.files.add(f)
-
-    context = {"subject": fir.request_subject, "body": fir.request_detail}
-
-    attachment_ids = tuple(fir.files.values_list("pk", flat=True).order_by("pk"))
-
-    notify.send_further_information_request(process, fir)
-    mock_send_fir.assert_called_once_with(process, fir, context, attachment_ids)
-
-
-@patch("web.notify.notify.send_fir_to_contacts")
 def test_send_send_further_information_request_withdrawal(
     mock_send_fir, ilb_admin_user, fa_sil_app_submitted
 ):

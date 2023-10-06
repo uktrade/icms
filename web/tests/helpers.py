@@ -96,12 +96,10 @@ def check_gov_notify_email_was_sent(
 
     if exp_num_emails:
         sent_email = outbox[exp_num_emails - 1]
-        assert sent_email.subject == exp_subject
-        assert exp_in_body in sent_email.body
-
         assert sent_email.name == exp_email_name
-        assert_common_email_personalisation(sent_email.personalisation, exp_subject, exp_in_body)
-        assert sent_email.personalisation == exp_personalisation
+        act_personalisation = sent_email.get_personalisation()
+        assert_common_email_personalisation(act_personalisation, exp_subject, exp_in_body)
+        assert act_personalisation == exp_personalisation
 
 
 def assert_common_email_personalisation(personalisation: dict, exp_subject: str, exp_in_body: str):
@@ -200,10 +198,28 @@ class CaseURLS:
         return reverse("case:add-fir", kwargs=kwargs)
 
     @staticmethod
+    def respond_to_fir(application_pk: int, fir_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "fir_pk": fir_pk, "case_type": case_type}
+
+        return reverse("case:respond-fir", kwargs=kwargs)
+
+    @staticmethod
     def delete_fir(application_pk: int, fir_pk: int, case_type: str = "import") -> str:
         kwargs = {"application_pk": application_pk, "fir_pk": fir_pk, "case_type": case_type}
 
         return reverse("case:delete-fir", kwargs=kwargs)
+
+    @staticmethod
+    def withdraw_fir(application_pk: int, fir_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "fir_pk": fir_pk, "case_type": case_type}
+
+        return reverse("case:withdraw-fir", kwargs=kwargs)
+
+    @staticmethod
+    def close_fir(application_pk: int, fir_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "fir_pk": fir_pk, "case_type": case_type}
+
+        return reverse("case:close-fir", kwargs=kwargs)
 
     @staticmethod
     def manage_withdrawals(application_pk: int, case_type: str = "import") -> str:

@@ -9,6 +9,7 @@ from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatu
 from web.models import (
     EmailTemplate,
     ExporterAccessRequest,
+    FurtherInformationRequest,
     ImporterAccessRequest,
     VariationRequest,
     WithdrawApplication,
@@ -615,6 +616,65 @@ class TestEmails(AuthTestCase):
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.importer_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_access_request_further_information_request_email(self, importer_access_request):
+        exp_template_id = str(
+            EmailTemplate.objects.get(
+                name=EmailTypes.FURTHER_INFORMATION_REQUEST
+            ).gov_notify_template_id
+        )
+        fir = importer_access_request.further_information_requests.create(
+            status=FurtherInformationRequest.DRAFT,
+            requested_by=self.ilb_admin_user,
+            request_subject="More Information Required",
+            request_detail="details",
+            process_type=FurtherInformationRequest.PROCESS_TYPE,
+        )
+
+        expected_personalisation = default_personalisation() | {
+            "subject": "More Information Required",
+            "body": "details",
+            "reference": importer_access_request.reference,
+            "fir_type": "access request",
+            "icms_url": get_importer_site_domain(),
+        }
+        emails.send_further_information_request_email(fir, importer_access_request)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            "access_request_user@example.com",  # /PS-IGNORE
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_application_further_information_request_email(self, com_app_submitted):
+        exp_template_id = str(
+            EmailTemplate.objects.get(
+                name=EmailTypes.FURTHER_INFORMATION_REQUEST
+            ).gov_notify_template_id
+        )
+        fir = com_app_submitted.further_information_requests.create(
+            status=FurtherInformationRequest.DRAFT,
+            requested_by=self.ilb_admin_user,
+            request_subject="More Information Required",
+            request_detail="details",
+            process_type=FurtherInformationRequest.PROCESS_TYPE,
+        )
+        expected_personalisation = default_personalisation() | {
+            "subject": "More Information Required",
+            "body": "details",
+            "fir_type": "case",
+            "icms_url": get_exporter_site_domain(),
+            "reference": com_app_submitted.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(com_app_submitted, get_exporter_site_domain()),
+        }
+        emails.send_further_information_request_email(fir, com_app_submitted)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.exporter_user.email,
             exp_template_id,
             personalisation=expected_personalisation,
         )
