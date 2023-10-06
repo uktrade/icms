@@ -146,8 +146,8 @@ dmypy.json
 .pii-secret-hook/
 ner_output_file.txt
 
-# data migration
-oracle/
+# generate_static_pdf output folder
+output_documents/
 
 # Added by pyenv after setting a local python version on mac
 .python-version

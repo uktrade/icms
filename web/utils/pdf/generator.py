@@ -186,7 +186,6 @@ class StaticPdfGenerator(PdfGenBase):
         """Return the document context"""
 
         if self.doc_type == DocumentTypes.CFS_COVER_LETTER:
-            # CFS Cover letter has static content only
             return {
                 "ilb_contact_address_split": settings.ILB_CONTACT_ADDRESS.split(", "),
                 "ilb_contact_name": settings.ILB_CONTACT_NAME,

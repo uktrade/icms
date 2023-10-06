@@ -3425,3 +3425,12 @@ the Northern Ireland Protocol
 Cosmetics Regulation
 the Withdrawal Agreement
 DBT Import Licensing Branch</p
+parts/
+Installer
+htmlcov/
+.cache
+db.sqlite3
+celery
+"Generate the pdf bytes
+"Save the generated
+"Upload the generated
