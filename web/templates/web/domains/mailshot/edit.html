@@ -55,27 +55,10 @@
           <div class="three columns"></div>
           <div class="eight columns">
             <ul class="menu-out flow-across">
-              <li>
-                <button
-                  {% if not documents.exists() %} disabled {% endif %}
-                                                  name="action" value="publish"
-                                                  type="submit"
-                                                  data-confirm="Are you sure you want to publish this mailshot?"
-                                                  class="primary-button button"
-                >
-                  Publish
-                </button>
-              </li>
               {% if form.instance.status == 'DRAFT' %}
                 <li>
                   <button type="submit" name='action' value='save_draft' class="secondary-button button">
                     Save Draft
-                  </button>
-                </li>
-                <li>
-                  <button type="submit" data-confirm="Are you sure you want to cancel this mailshot?" name='action'
-                          value='cancel' class="secondary-button button">
-                    Cancel Draft
                   </button>
                 </li>
               {% endif %}
@@ -100,5 +83,21 @@
     {% with read_only = False %}
       {% include "web/domains/mailshot/partials/document_list.html" %}
     {% endwith %}
+    <hr>
 
+    <form method="post" action="{{ icms_url('mailshot-publish-draft', kwargs={'mailshot_pk': mailshot.pk}) }}" class="form-inline">
+      {{ csrf_input }}
+      <button type="submit" data-confirm="Are you sure you want to publish this mailshot?" class="primary-button button"
+        {% if not documents.exists() %} disabled {% endif %}
+      >
+        Publish
+      </button>
+    </form>
+
+    <form method="post" action="{{ icms_url('mailshot-cancel-draft', kwargs={'mailshot_pk': mailshot.pk}) }}" class="form-inline">
+      {{ csrf_input }}
+      <button type="submit" data-confirm="Are you sure you want to cancel this mailshot?" class="secondary-button button">
+        Cancel Draft
+      </button>
+    </form>
 {% endblock %}
