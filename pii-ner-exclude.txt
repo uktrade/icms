@@ -3434,3 +3434,5 @@ celery
 "Generate the pdf bytes
 "Save the generated
 "Upload the generated
+ILB Admin Mailshot Views
+Cancel Draft

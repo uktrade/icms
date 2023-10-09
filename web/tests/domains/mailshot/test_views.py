@@ -123,16 +123,6 @@ class TestMailshotEditView(AuthTestCase):
         response = self.ilb_admin_client.get(self.url)
         assert response.status_code == 200
 
-    def test_cancel_draft(self):
-        self.ilb_admin_client.post(self.url, {"action": "cancel"})
-        self.mailshot.refresh_from_db()
-        assert self.mailshot.status == Mailshot.Statuses.CANCELLED
-
-    def test_cancel_redirects_to_list(self):
-        response = self.ilb_admin_client.post(self.url, {"action": "cancel"})
-        assert response.status_code == 302
-        assertRedirects(response, "/mailshot/")
-
     def test_save_draft(self):
         self.ilb_admin_client.post(self.url, {"title": "Test", "action": "save_draft"})
         self.mailshot.refresh_from_db()
@@ -145,13 +135,67 @@ class TestMailshotEditView(AuthTestCase):
             response, reverse("mailshot-edit", kwargs={"mailshot_pk": self.mailshot.pk})
         )
 
+    def test_page_title(self):
+        response = self.ilb_admin_client.get(self.url)
+        assert response.context_data["page_title"] == f"Editing {self.mailshot}"
+
+
+class TestMailshotCancelDraftView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, importer_two_contact):
+        self.mailshot = MailshotFactory(
+            status=Mailshot.Statuses.DRAFT, created_by=importer_two_contact
+        )  # Create a mailshot
+        self.mailshot.save()
+        self.url = reverse("mailshot-cancel-draft", kwargs={"mailshot_pk": self.mailshot.id})
+
+    def test_forbidden_access(self):
+        response = self.importer_client.post(self.url)
+        assert response.status_code == 403
+
+    def test_authorized_access(self):
+        response = self.ilb_admin_client.post(self.url)
+        assert response.status_code == 302
+
+    def test_cancel_draft(self):
+        self.ilb_admin_client.post(self.url)
+        self.mailshot.refresh_from_db()
+        assert self.mailshot.status == Mailshot.Statuses.CANCELLED
+
+    def test_cancel_redirects_to_list(self):
+        response = self.ilb_admin_client.post(self.url)
+        assert response.status_code == 302
+        assertRedirects(response, reverse("mailshot-list"))
+
+
+class TestMailshotPublishDraftView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, importer_two_contact):
+        self.mailshot = MailshotFactory(
+            status=Mailshot.Statuses.DRAFT, created_by=importer_two_contact
+        )  # Create a mailshot
+        self.mailshot.save()
+        self.url = reverse("mailshot-publish-draft", kwargs={"mailshot_pk": self.mailshot.id})
+
+    def test_forbidden_access(self):
+        response = self.importer_client.post(self.url)
+        assert response.status_code == 403
+
+    def test_authorized_access(self):
+        response = self.ilb_admin_client.post(self.url)
+        assert response.status_code == 302
+
     def test_publish_fails_with_no_document(self):
-        response = self.ilb_admin_client.post(self.url, {"title": "Test", "action": "publish"})
+        response = self.ilb_admin_client.post(self.url, follow=True)
         assert response.status_code == 200
 
-        mailshot_form = response.context_data["form"]
-        assert mailshot_form.is_valid() is False
-        assert "A document must be uploaded before publishing" in mailshot_form.non_field_errors()
+        messages = list(response.context["messages"])
+        assert len(messages) == 2
+        msg = str(messages[0])
+        assert msg == "A document must be uploaded before publishing."
+
+        msg = str(messages[1])
+        assert msg == "Please complete form before publishing."
 
     def test_valid_publish_redirects_to_list(self):
         self.mailshot.documents.create(
@@ -162,29 +206,22 @@ class TestMailshotEditView(AuthTestCase):
             path="dummy",
             created_by=self.ilb_admin_user,
         )
+
+        self.mailshot.save()
+        self.mailshot.title = "Test"
+        self.mailshot.description = "Test Description"
+        self.mailshot.email_subject = "Test email subject"
+        self.mailshot.email_body = "Test email body"
+        self.mailshot.recipients = "importers"
         self.mailshot.save()
 
-        response = self.ilb_admin_client.post(
-            self.url,
-            {
-                "action": "publish",
-                "title": "Test",
-                "description": "Test Description",
-                "email_subject": "Test email subject",
-                "email_body": "Test email body",
-                "recipients": "importers",
-            },
-        )
+        response = self.ilb_admin_client.post(self.url)
 
         assert response.status_code == 302
-        assertRedirects(response, "/mailshot/")
+        assertRedirects(response, reverse("mailshot-list"))
 
         self.mailshot.refresh_from_db()
         assert self.mailshot.status == Mailshot.Statuses.PUBLISHED
-
-    def test_page_title(self):
-        response = self.ilb_admin_client.get(self.url)
-        assert response.context_data["page_title"] == f"Editing {self.mailshot}"
 
 
 class TestMailshotRetractView(AuthTestCase):

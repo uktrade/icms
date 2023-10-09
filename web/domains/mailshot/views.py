@@ -5,7 +5,8 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import models, transaction
-from django.http import HttpResponse, HttpResponseRedirect
+from django.forms.models import model_to_dict
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -39,6 +40,9 @@ if TYPE_CHECKING:
     from django.db import QuerySet
 
 
+#
+# Importer / Exporter applicant mailshot views.
+#
 class ReceivedMailshotsView(ModelFilterView):
     template_name = "web/domains/mailshot/received.html"
     model = Mailshot
@@ -65,11 +69,39 @@ class ReceivedMailshotsView(ModelFilterView):
         actions = [ViewReceived()]
 
 
+class MailshotReceivedDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+    model = Mailshot
+    pk_url_kwarg = "mailshot_pk"
+    template_name = "web/domains/mailshot/view_received.html"
+
+    def has_permission(self) -> bool:
+        user: User = self.request.user
+        mailshot: Mailshot = self.get_object()
+
+        if mailshot.is_to_importers and user.has_perm(Perms.sys.importer_access):
+            return True
+
+        if mailshot.is_to_exporters and user.has_perm(Perms.sys.exporter_access):
+            return True
+
+        return False
+
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["documents"] = self.object.documents.filter(is_active=True)
+        context["page_title"] = f"Viewing Mailshot ({self.object.get_reference()})"
+
+        return context
+
+
+#
+# ILB Admin Mailshot Views
+#
 class MailshotListView(ModelFilterView):
     template_name = "web/domains/mailshot/list.html"
     model = Mailshot
     filterset_class = MailshotFilter
-    permission_required = Perms.sys.ilb_admin
+    permission_required = [Perms.sys.ilb_admin]
     page_title = "Maintain Mailshots"
 
     # Only set when the page is first loaded.
@@ -111,7 +143,7 @@ class MailshotListView(ModelFilterView):
 
 class MailshotCreateView(PermissionRequiredMixin, LoginRequiredMixin, View):
     MAILSHOT_TEMPLATE_CODE = "PUBLISH_MAILSHOT"
-    permission_required = Perms.sys.ilb_admin
+    permission_required = [Perms.sys.ilb_admin]
 
     def get(self, request):
         """
@@ -130,9 +162,7 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
     template_name = "web/domains/mailshot/edit.html"
     form_class = MailshotForm
     model = Mailshot
-    success_url = reverse_lazy("mailshot-list")
-    cancel_url = success_url
-    permission_required = Perms.sys.ilb_admin
+    permission_required = [Perms.sys.ilb_admin]
     pk_url_kwarg = "mailshot_pk"
 
     def get_success_url(self):
@@ -142,54 +172,6 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
             return reverse("mailshot-edit", kwargs={"mailshot_pk": self.object.pk})
 
         return reverse("mailshot-list")
-
-    def handle_notification(self, mailshot):
-        if mailshot.is_email:
-            notify.mailshot(mailshot)
-
-    def form_valid(self, form):
-        """
-        Publish mailshot if form is valid.
-        """
-
-        with transaction.atomic():
-            mailshot = form.save(commit=False)
-            mailshot.status = Mailshot.Statuses.PUBLISHED
-            mailshot.published_datetime = timezone.now()
-            mailshot.published_by = self.request.user
-
-            if not mailshot.reference:
-                mailshot.reference = reference.get_mailshot_reference(
-                    self.request.icms.lock_manager
-                )
-                mailshot.version = models.F("version") + 1
-
-            mailshot.save()
-
-        mailshot.refresh_from_db()
-        self.object = mailshot
-
-        self.handle_notification(mailshot)
-
-        # Finally add the success message before returning the response.
-        messages.success(self.request, self.get_success_message(form.cleaned_data))
-
-        return HttpResponseRedirect(self.get_success_url())
-
-    def publish(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
-        """Publish mailshot post action."""
-        self.object = self.get_object()
-        form = self.get_form()
-
-        has_documents = self.object.documents.filter(is_active=True).exists()
-
-        if not has_documents:
-            form.add_error(None, "A document must be uploaded before publishing")
-
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
 
     def save_draft(self, request, **kwargs):
         """Saves mailshot draft post action bypassing all validation."""
@@ -202,23 +184,6 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
             return super().form_valid(form)
         else:
             return super().form_invalid(form)
-
-    def cancel(self, request, **kwargs):
-        """Cancel post action"""
-
-        mailshot = self.get_object()
-        mailshot.status = Mailshot.Statuses.CANCELLED
-        mailshot.save()
-        messages.success(request, "Mailshot cancelled successfully")
-        return redirect(self.success_url)
-
-    def get_success_message(self, cleaned_data):
-        # TODO: ICMSLST-1173 fix success message
-        action = self.request.POST.get("action")
-        if action and action == "save_draft":
-            return super().get_success_message(cleaned_data)
-
-        return f"{self.object.get_reference()} published successfully"
 
     def get_queryset(self):
         """
@@ -234,38 +199,85 @@ class MailshotEditView(PostActionMixin, ModelUpdateView):
         return context
 
 
-class MailshotDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
+@require_POST
+@login_required
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+def cancel_mailshot(request: AuthenticatedHttpRequest, *, mailshot_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        mailshot = get_object_or_404(Mailshot.objects.select_for_update(), pk=mailshot_pk)
+
+        if mailshot.status != Mailshot.Statuses.DRAFT:
+            messages.error(request, "Unable to cancel a mailshot that isn't a draft.")
+        else:
+            mailshot.status = Mailshot.Statuses.CANCELLED
+            mailshot.save()
+            messages.success(request, "Mailshot cancelled successfully")
+
+    return redirect("mailshot-list")
+
+
+@require_POST
+@login_required
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+def publish_mailshot(request: AuthenticatedHttpRequest, *, mailshot_pk: int) -> HttpResponse:
+    with transaction.atomic():
+        mailshot = get_object_or_404(Mailshot.objects.select_for_update(), pk=mailshot_pk)
+
+        if mailshot.status != Mailshot.Statuses.DRAFT:
+            messages.error(request, "Unable to publish a mailshot that isn't a draft.")
+            return redirect(reverse("mailshot-edit", kwargs={"mailshot_pk": mailshot.pk}))
+
+        else:
+            has_documents = mailshot.documents.filter(is_active=True).exists()
+
+            recipients = []
+            if mailshot.is_to_importers:
+                recipients.append("importers")
+            if mailshot.is_to_exporters:
+                recipients.append("exporters")
+            form = MailshotForm(
+                data=model_to_dict(mailshot) | {"recipients": recipients},
+                instance=mailshot,
+            )
+
+            if not has_documents:
+                messages.error(request, "A document must be uploaded before publishing.")
+
+            if form.is_valid():
+                with transaction.atomic():
+                    mailshot = form.save(commit=False)
+                    mailshot.status = Mailshot.Statuses.PUBLISHED
+                    mailshot.published_datetime = timezone.now()
+                    mailshot.published_by = request.user
+
+                    if not mailshot.reference:
+                        mailshot.reference = reference.get_mailshot_reference(
+                            request.icms.lock_manager
+                        )
+                        mailshot.version = models.F("version") + 1
+
+                    mailshot.save()
+
+                mailshot.refresh_from_db()
+
+                if mailshot.is_email:
+                    notify.mailshot(mailshot)
+
+                # Finally add the success message before returning the response.
+                messages.success(request, f"{mailshot.get_reference()} published successfully")
+
+                return redirect("mailshot-list")
+            else:
+                messages.error(request, "Please complete form before publishing.")
+
+                return redirect(reverse("mailshot-edit", kwargs={"mailshot_pk": mailshot.pk}))
+
+
+class MailshotDetailView(MailshotReceivedDetailView):
     template_name = "web/domains/mailshot/view.html"
-    model = Mailshot
-    pk_url_kwarg = "mailshot_pk"
-    permission_required = Perms.sys.ilb_admin
 
-    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["documents"] = self.object.documents.filter(is_active=True)
-        context["page_title"] = f"Viewing Mailshot ({self.object.get_reference()})"
-
-        return context
-
-
-class MailshotReceivedDetailView(MailshotDetailView):
-    template_name = "web/domains/mailshot/view_received.html"
-
-    def has_permission(self) -> bool:
-        user: User = self.request.user
-
-        if user.has_perm(Perms.sys.ilb_admin):
-            return True
-
-        mailshot: Mailshot = self.get_object()
-
-        if mailshot.is_to_importers and user.has_perm(Perms.sys.importer_access):
-            return True
-
-        if mailshot.is_to_exporters and user.has_perm(Perms.sys.exporter_access):
-            return True
-
-        return False
+    def has_permission(self):
+        return self.request.user.has_perm(Perms.sys.ilb_admin)
 
 
 class MailshotRetractView(ModelUpdateView):
@@ -275,7 +287,7 @@ class MailshotRetractView(ModelUpdateView):
     model = Mailshot
     success_url = reverse_lazy("mailshot-list")
     cancel_url = success_url
-    permission_required = Perms.sys.ilb_admin
+    permission_required = [Perms.sys.ilb_admin]
     pk_url_kwarg = "mailshot_pk"
 
     def __init__(self, *args, **kwargs):

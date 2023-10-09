@@ -33,6 +33,8 @@ urlpatterns = [
             [
                 path("", views.MailshotDetailView.as_view(), name="mailshot-detail"),
                 path("edit/", views.MailshotEditView.as_view(), name="mailshot-edit"),
+                path("cancel-draft/", views.cancel_mailshot, name="mailshot-cancel-draft"),
+                path("publish-draft/", views.publish_mailshot, name="mailshot-publish-draft"),
                 path("retract/", views.MailshotRetractView.as_view(), name="mailshot-retract"),
                 path(
                     "received/",
