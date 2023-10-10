@@ -5,7 +5,7 @@
     <meta name="description" content="ICMS import licence">
     <title>{{ page_title }}</title>
     <link href="{{ static("web/css/pdfs/licence-and-certificate-common-style.css") }}" rel="stylesheet">
-    <link href="{{ static("web/css/pdfs/sanctions-licence-style.css") }}" rel="stylesheet">
+    <link href="{{ static("web/css/pdfs/wood-licence-style.css") }}" rel="stylesheet">
     {% block css %} {% endblock css %}
     {% if preview_licence %}
       <link href="{{ static("web/css/pdfs/preview.css") }}" rel="stylesheet">
@@ -13,12 +13,10 @@
   </head>
   <body>
     <header>
-      {% if paper_licence_only %}
-        <h3>DIT IMPORT LICENCE</h3>
-        <p class="content">under Article 2, Import of Goods (Control) Order 1954</p>
-      {% else %}
-        <p><strong>ELECTRONIC LICENCE</strong> issued on {{ licence_start_date }} and sent to HM Revenue and Customs.</p>
-      {% endif %}
+      <div class="flex-row">
+        <p class="half eu"><strong>EUROPEAN UNION</strong></p>
+        <p class="quota"><strong>QUOTA AUTHORISATION</strong></p>
+      </div>
     </header>
     <div class="holder-number holder-number-first b-top b-left b-right">
       <span>1</span>
@@ -30,13 +28,13 @@
     <main class="bordered flex-row wrap">
       <div class="flex-row row b-bottom">
         <div class="consignee half content-block b-right">
-          <p class="details-text"><strong>1. </strong>Consignee (name, full address, country, VAT number)</p>
+          <p class="details-text"><strong>1. </strong>Importer (name, full address, country, VAT No)</p>
           <p class="content">{{ importer_name | upper }}</p>
           {% for line in importer_address %}
             <p class="content">{{ line | upper }}</p>
           {% endfor %}
           <p class="content">{{ importer_postcode | upper }}</p>
-          {% if ref and preview_licence %}
+          {% if ref %}
             <div class="flex-row space-between">
               <p class="content">Your ref: {{ ref }}</p>
           {% else %}
@@ -49,24 +47,25 @@
               </div>
             </div>
         </div>
-        <div class="half flex-column">
-          <div class="issue-number content-block b-bottom">
+        <div class="half flex-row wrap">
+          <div class="issue-number content-block b-bottom row">
             <p class="details-text"><strong>2. </strong>Issue number</p>
             <p class="{{ 'preview-orange' if preview_licence }}">{{ licence_number }}</p>
           </div>
-          <div class="port content-block b-bottom">
-            <p class="details-text"><strong>3. </strong>Proposed place and date of import</p>
-            <div class="flex-row space-between">
-              <p>Any UK Port</p>
-              <p>{{ licence_start_date }}</p>
-            </div>
+          <div class="port content-block b-bottom row">
+            <p class="details-text"><strong>3. </strong>Exporter (name, full address, VAT No)</p>
+              <p>{{ exporter_name }}</p>
+              {% for line in exporter_address %}
+                <p>{{ line }}</p>
+              {% endfor %}
+              <p>{{ exporter_vat_number }}</p>
           </div>
-          <div class="authority content-block">
-            <p class="details-text"><strong>4. </strong>Authority responsible for issue</p>
-            <p class="address-line">Department for Business and Trade</p>
-            <p class="address-line">Queensway House, West Precinct</p>
-            <p class="address-line">Billingham, United Kingdom, TS23 2NF</p>  <!-- /PS-IGNORE -->
-            <p>Email: {{ ilb_contact_email }}</p>
+          <div class="authority content-block row flex-row wrap">
+            <p class="details-text row"><strong>4. </strong>Authority responsible for issue (name, address and telephone No)</p>
+            <p class="address-line row">Department for Business and Trade</p>
+            <p class="address-line row">Queensway House, West Precinct</p>
+            <p class="address-line row">Billingham, United Kingdom, TS23 2NF</p>  <!-- /PS-IGNORE -->
+            <p class="row">Email: {{ ilb_contact_email }}</p>
           </div>
         </div>
       </div>
@@ -86,28 +85,26 @@
             </div>
           </div>
         </div>
-        <div class="half flex-column">
-          <div class="manufacture content-block b-bottom">
-            <p class="details-text"><strong>6. </strong>Country of manufacture (and geonomeclature code)</p>
-            <p>{{ country_of_manufacture }}</p>
-          </div>
-          <div class="shipment content-block b-bottom">
-            <p class="details-text"><strong>7. </strong>Country of shipment (and geonomenclature code)</p>
-            <p>{{ country_of_shipment }}</p>
-          </div>
-          <div class="validity content-block">
-            <p class="details-text"><strong>8. </strong>Last day of validity</p>
-            <p>{{ licence_end_date }}</p>
-          </div>
+        <div class="validity content-block half">
+          <p class="details-text"><strong>6. </strong>Last day of validity</p>
+          <p>{{ licence_end_date }}</p>
         </div>
       </div>
-      <div class="goods content-block row b-bottom">
-        <p class="details-text"><strong>9. </strong>Description of goods, commodity code and category, quantity, and value in GBP (cif at UK frontier)</p>
-        {% for goods in goods_list %}
-          {% for goods_line in goods %}
-            <p>{{ goods_line }}</p>
-          {% endfor %}
-        {% endfor %}
+      <div class="row b-bottom flex-row">
+        <div class="content-block goods two-third b-right">
+          <p class="details-text"><strong>7. </strong>Description of goods, commodity code and category, quantity, and value in GBP (cif at UK frontier)</p>
+          <p>{{ goods }}</p>
+        </div>
+        <div class="flex-row third wrap">
+          <div class="commodity-code content-block b-bottom row">
+            <p class="details-text"><strong>8. </strong>CN code</p>
+            <p>{{ commodity_code }}</p>
+          </div>
+          <div class="quantity content-block row">
+            <p class="details-text"><strong>9. </strong>Quantity in m³</p>
+            <p>{{ quantity }}</p>
+          </div>
+        </div>
       </div>
       <div class="endorsements content-block row b-bottom">
         <p class="details-text"><strong>10. </strong>Additional remarks</p>

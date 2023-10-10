@@ -4,19 +4,41 @@
 
 @page {
     size: A4;
-    margin: 48px 36px 60px 72px;
+    margin: 60px 40px 60px 80px;
 
 
-    @top-left {
+    @top-center {
         content: element(header);
+        width: 100%;
     }
 
 }
 
+p {
+    font-size: 10px;
+    margin: 1px;
+}
 
 header {
     font-size: 10px;
     position: running(header);
+}
+
+header > div {
+    align-content: flex-end;
+    margin-top: 24px;
+}
+
+header > div > p {
+    font-size: 12px;
+}
+
+.eu {
+    padding-left: 16px;
+}
+
+.quota {
+    padding-left: 24px;
 }
 
 footer {
@@ -29,12 +51,6 @@ footer {
 
 main {
     box-decoration-break: clone;
-}
-
-
-p {
-    font-size: 14px;
-    margin: 2px;
 }
 
 .holders {
@@ -50,46 +66,33 @@ p {
     left: -28px;
     text-align: center;
 }
+
 .holder-number-first {
     top: 8px;
 }
+
 .holder-number-last {
     top: 376px;
 }
 
 .content-block {
     padding: 8px;
-}
-
-.flex-column {
-    display: flex;
-    flex-direction: column;
-}
-
-.flex-row {
-    display: flex;
-    flex-direction: row;
+    min-height: 40px;
 }
 
 .details-text {
     font-size: 10px;
 }
 
-.issue-number, .port {
-    flex-basis: 50px;
-    padding-top: 0;
+.commodity-code {
+    min-height: 60px;
 }
 
-.authority {
-    flex: 100px 0 0;
-    padding-top: 0;
+.quantity {
+    margin-top: -32px;
 }
 
-.manufacture, .shipment, .validity {
-    padding-top: 0;
-}
-
-.endorsements {
+.goods, .endorsements {
     min-height: 150px;
 }
 

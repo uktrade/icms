@@ -34,6 +34,7 @@ if TYPE_CHECKING:
         OpenIndividualLicenceApplication,
         SanctionsAndAdhocApplication,
         SanctionsAndAdhocApplicationGoods,
+        WoodQuotaApplication,
     )
 
     SILGoods = Union[
@@ -152,6 +153,25 @@ def get_sanctions_licence_context(
         "country_of_shipment": get_country_and_geo_code(application.consignment_country),
         "ref": application.applicant_reference,
         "goods_list": goods_list,
+    }
+
+
+def get_wood_licence_context(
+    application: "WoodQuotaApplication",
+    licence: "ImportApplicationLicence",
+    doc_type: DocumentTypes,
+) -> "Context":
+    context = get_licence_context(application, licence, doc_type)
+
+    return context | {
+        "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+        "ref": application.applicant_reference,
+        "goods": application.goods_description,
+        "commodity_code": application.commodity.commodity_code,
+        "quantity": f"{application.goods_qty:.2f}".rstrip("0").rstrip("."),
+        "exporter_name": application.exporter_name,
+        "exporter_address": _split_text_field_newlines(application.exporter_address),
+        "exporter_vat_number": application.exporter_vat_nr,
     }
 
 

@@ -1,6 +1,5 @@
 @page {
     size: A4;
-    margin: 0.25cm 1cm;
 }
 
 @media print {
@@ -17,4 +16,57 @@
 .flex-row {
     display: flex;
     flex-direction: row;
+}
+
+.space-between {
+    justify-content: space-between;
+}
+
+.space-evenly {
+    justify-content: space-evenly;
+}
+
+.flex-end {
+    justify-content: flex-end;
+}
+
+.wrap {
+    flex-wrap: wrap;
+}
+
+.row {
+    flex: 100% 0 0;
+}
+
+.half {
+    flex: 50% 0 0;
+}
+
+.third {
+    flex: 33% 0 0;
+}
+
+.two-third {
+    flex: 67% 0 0;
+}
+
+.bordered {
+    border: 1px solid #000;
+    box-decoration-break: clone;
+}
+
+.b-left {
+    border-left: 1px solid #000;
+}
+
+.b-right {
+    border-right: 1px solid #000;
+}
+
+.b-top {
+    border-top: 1px solid #000;
+}
+
+.b-bottom {
+    border-bottom: 1px solid #000;
 }

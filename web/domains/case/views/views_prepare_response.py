@@ -94,11 +94,9 @@ def prepare_response(
 
         if case_type == "import":
             cover_letter_flag = application.application_type.cover_letter_flag
-            electronic_licence_flag = application.application_type.electronic_licence_flag
             certificate_flag = False
         else:
             cover_letter_flag = False
-            electronic_licence_flag = False
             certificate_flag = True
 
         context = {
@@ -106,7 +104,6 @@ def prepare_response(
             "page_title": get_case_page_title(case_type, application, "Response Preparation"),
             "form": form,
             "cover_letter_flag": cover_letter_flag,
-            "electronic_licence_flag": electronic_licence_flag,
             "certificate_flag": certificate_flag,
             "readonly_view": readonly_view,
             "readonly_decision": readonly_decision,
