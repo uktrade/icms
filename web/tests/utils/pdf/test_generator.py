@@ -13,8 +13,11 @@ from web.models import (
     SanctionsAndAdhocApplication,
     SILApplication,
     Template,
+    TextilesApplication,
     WoodQuotaApplication,
+    WoodQuotaChecklist,
 )
+from web.models.shared import YesNoNAChoices
 from web.tests.helpers import CaseURLS
 from web.types import DocumentTypes
 from web.utils.pdf import PdfGenerator, StaticPdfGenerator, utils
@@ -76,14 +79,24 @@ def mock_get_licence_endorsements(monkeypatch):
             DocumentTypes.LICENCE_PRE_SIGN,
             "pdf/import/fa-sil-licence-pre-sign.html",
         ),
-        # All other licence types use the default for LICENCE_PREVIEW
         (
             WoodQuotaApplication,
+            DocumentTypes.LICENCE_PREVIEW,
+            "pdf/import/wood-licence.html",
+        ),
+        (
+            WoodQuotaApplication,
+            DocumentTypes.LICENCE_PRE_SIGN,
+            "pdf/import/wood-licence.html",
+        ),
+        # All other licence types use the default for LICENCE_PREVIEW
+        (
+            TextilesApplication,
             DocumentTypes.LICENCE_PREVIEW,
             "web/domains/case/import/manage/preview-licence.html",
         ),
         (
-            WoodQuotaApplication,
+            TextilesApplication,
             DocumentTypes.LICENCE_PRE_SIGN,
             "web/domains/case/import/manage/preview-licence.html",
         ),
@@ -323,6 +336,67 @@ def test_get_sanctions_pre_sign_licence_context(
         "process": app,
         "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
         "licence_number": "GBSAN0000001B",
+        "licence_end_date": "1st March 2024",
+        "licence_start_date": "1st September 2023",
+    }
+
+    actual_context = generator.get_document_context()
+    assert expected_context == actual_context
+
+
+def test_get_wood_preview_licence_context(wood_app_submitted, wood_expected_preview_context):
+    app = wood_app_submitted
+    licence = app.licences.first()
+    generator = PdfGenerator(DocumentTypes.LICENCE_PREVIEW, app, licence)
+
+    expected_context = wood_expected_preview_context | {
+        "process": app,
+        "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+    }
+
+    actual_context = generator.get_document_context()
+    assert expected_context == actual_context
+
+
+def test_get_wood_pre_sign_licence_context(
+    wood_app_submitted, wood_expected_preview_context, ilb_admin_client
+):
+    app = wood_app_submitted
+    licence = app.licences.first()
+
+    app.refresh_from_db()
+    app.decision = app.APPROVE
+    app.save()
+
+    licence = app.licences.first()
+    licence.case_completion_datetime = datetime.datetime(2023, 9, 1, tzinfo=datetime.UTC)
+    licence.licence_start_date = datetime.date(2023, 9, 1)
+    licence.licence_end_date = datetime.date(2024, 3, 1)
+    licence.issue_paper_licence_only = True
+    licence.save()
+
+    WoodQuotaChecklist.objects.create(
+        **{
+            "import_application": app,
+            "case_update": YesNoNAChoices.yes,
+            "fir_required": YesNoNAChoices.yes,
+            "response_preparation": True,
+            "validity_period_correct": YesNoNAChoices.yes,
+            "endorsements_listed": YesNoNAChoices.yes,
+            "authorisation": True,
+            "sigl_wood_application_logged": True,
+        }
+    )
+
+    ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+    licence.refresh_from_db()
+    generator = PdfGenerator(DocumentTypes.LICENCE_PRE_SIGN, app, licence)
+
+    expected_context = wood_expected_preview_context | {
+        "preview_licence": False,
+        "process": app,
+        "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+        "licence_number": "0000001B",
         "licence_end_date": "1st March 2024",
         "licence_start_date": "1st September 2023",
     }

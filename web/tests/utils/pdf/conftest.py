@@ -171,3 +171,27 @@ def sanctions_expected_preview_context():
             ["More Commoditites, 7112990090, 56.78 kilos, 789"],
         ],
     }
+
+
+@pytest.fixture()
+def wood_expected_preview_context():
+    """Returns the minimum expected context values - tests then override the different keys in the tests."""
+    return {
+        "page_title": "Licence Preview",
+        "preview_licence": True,
+        "importer_name": "Test Importer 1",
+        "eori_numbers": ["GB0123456789ABCDE", "XI0123456789ABCDE"],
+        "importer_address": ["I1 address line 1", "I1 address line 2"],
+        "importer_postcode": "BT180LZ",  # /PS-IGNORE
+        "endorsements": [],
+        "licence_number": "[[Licence Number]]",
+        "licence_start_date": "Licence Start Date not set",
+        "licence_end_date": "Licence End Date not set",
+        "ref": "Wood App Reference",
+        "exporter_name": "Some Exporter",
+        "exporter_address": ["Some Exporter Address"],
+        "exporter_vat_number": "123456789",
+        "quantity": "43",
+        "goods": "Very Woody",
+        "commodity_code": "4403211000",
+    }
