@@ -62,6 +62,9 @@ class Mailshot(models.Model):
     reference = models.CharField(max_length=100, blank=True, null=True)
     version = models.PositiveIntegerField(default=0)
 
+    # Used in workbasket to clear mailshots
+    cleared_by = models.ManyToManyField("web.User")
+
     def get_reference(self) -> str:
         if not self.reference:
             return "Not Yet Assigned"

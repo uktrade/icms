@@ -328,8 +328,48 @@ def test_mailshot_list_queryset(ilb_admin_user):
     assert draft.last_version_for_ref is None
 
 
+class TestClearMailshotFromWorkbasketView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, ilb_admin_user, _setup):
+        self.importer_mailshot = _create_mailshot(Mailshot.Statuses.PUBLISHED, ilb_admin_user)
+        self.exporter_mailshot = _create_mailshot(
+            Mailshot.Statuses.PUBLISHED, ilb_admin_user, is_to_importers=False, is_to_exporters=True
+        )
+
+    def test_clear_importer_mailshot(self):
+        url = reverse("mailshot-clear", kwargs={"mailshot_pk": self.importer_mailshot.pk})
+
+        for client in [self.exporter_client, self.exporter_agent_client, self.ilb_admin_client]:
+            response = client.post(url)
+            assert response.status_code == 403
+
+        response = self.importer_client.post(url)
+        assert response.status_code == 302
+
+        self.importer_mailshot.refresh_from_db()
+        assert self.importer_mailshot.cleared_by.filter(pk=self.importer_user.pk).exists()
+
+    def test_clear_exporter_mailshot(self):
+        url = reverse("mailshot-clear", kwargs={"mailshot_pk": self.exporter_mailshot.pk})
+
+        for client in [self.importer_client, self.importer_agent_client, self.ilb_admin_client]:
+            response = client.post(url)
+            assert response.status_code == 403
+
+        response = self.exporter_client.post(url)
+        assert response.status_code == 302
+
+        self.exporter_mailshot.refresh_from_db()
+        assert self.exporter_mailshot.cleared_by.filter(pk=self.exporter_user.pk).exists()
+
+
 def _create_mailshot(
-    status: str, user: User, retracted: bool = False, reference_version: bool = False
+    status: str,
+    user: User,
+    retracted: bool = False,
+    reference_version: bool = False,
+    is_to_importers=True,
+    is_to_exporters=False,
 ) -> Mailshot:
     mailshot = Mailshot.objects.create(
         status=status,
@@ -337,8 +377,8 @@ def _create_mailshot(
         description=f"Description {status}",
         email_subject=f"Email subject {status}",
         email_body=f"Email body {status}",
-        is_to_importers=True,
-        is_to_exporters=False,
+        is_to_importers=is_to_importers,
+        is_to_exporters=is_to_exporters,
         published_by=user,
         published_datetime=timezone.now(),
         created_by=user,
