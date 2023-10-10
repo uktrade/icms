@@ -11,6 +11,7 @@ from web.models import (
     ExporterApprovalRequest,
     ImporterAccessRequest,
     ImporterApprovalRequest,
+    Mailshot,
     User,
 )
 
@@ -76,6 +77,12 @@ def get_workbasket_row_func(process_type: str) -> GetWorkbasketRow:
             return _get_approval_wb_row
         case ProcessTypes.ImpApprovalReq:
             return _get_approval_wb_row
+        #
+        # Mailshots
+        #
+        case "MAILSHOT":
+            return get_mailshot_row  # type:ignore[return-value]
+
         case _:
             raise NotImplementedError(f"Unsupported process_type: {process_type}")
 
@@ -263,5 +270,38 @@ def _get_approval_wb_row(
         )
 
     r.sections.append(WorkbasketSection(information=information, actions=actions))
+
+    return r
+
+
+def get_mailshot_row(mailshot: Mailshot, user: User, is_ilb_admin: bool) -> WorkbasketRow:
+    mailshot_sections = [
+        WorkbasketSection(
+            "Mailshot Received",
+            actions=[
+                WorkbasketAction(
+                    is_post=False,
+                    url=reverse("mailshot-detail-received", kwargs={"mailshot_pk": mailshot.id}),
+                    name="View",
+                ),
+                WorkbasketAction(
+                    is_post=True,
+                    url=reverse("mailshot-clear", kwargs={"mailshot_pk": mailshot.id}),
+                    name="Clear",
+                ),
+            ],
+        )
+    ]
+
+    r = WorkbasketRow(
+        id=mailshot.id,
+        reference=mailshot.get_reference(),
+        subject="\n".join(["Mailshot", mailshot.title]),
+        company="N/a",
+        company_agent="",
+        status=mailshot.get_status_display(),
+        timestamp=mailshot.published_datetime,
+        sections=mailshot_sections,
+    )
 
     return r

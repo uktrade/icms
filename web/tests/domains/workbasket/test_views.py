@@ -10,7 +10,7 @@ from django.urls import reverse
 from web.domains.case.tasks import create_document_pack_on_success
 from web.domains.workbasket.base import WorkbasketRow
 from web.forms.fields import JQUERY_DATE_FORMAT
-from web.models import AccessRequest, ImportApplication
+from web.models import AccessRequest, ImportApplication, Mailshot, Template
 from web.models.shared import YesNoNAChoices
 from web.tests.auth.auth import AuthTestCase
 from web.tests.helpers import CaseURLS
@@ -1290,6 +1290,124 @@ class TestCompleteCaseCHIEFFailWorkbasket(AuthTestCase):
         }
 
         check_expected_rows(self.importer_agent_client, expected_rows)
+
+
+class TestMailshotsAppearInWorkbasket(AuthTestCase):
+    """Test workbasket rows with mailshots."""
+
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
+        self.all_org_mailshot = self._create_mailshot(
+            "All Org Mailshot", "MAIL/1", is_to_importers=True, is_to_exporters=True
+        )
+        self.exporter_mailshot = self._create_mailshot(
+            "Exporter Mailshot", "MAIL/2", is_to_exporters=True
+        )
+        self.importer_mailshot = self._create_mailshot(
+            "Importer Mailshot", "MAIL/3", is_to_importers=True
+        )
+        self.draft_all_org_mailshot = self._create_mailshot(
+            "All Org Mailshot",
+            "MAIL/4",
+            status=Mailshot.Statuses.DRAFT,
+            is_to_importers=True,
+            is_to_exporters=True,
+        )
+
+        _fix_access_request_data()
+
+    def test_workbasket(self):
+        self._test_ilb_admin_wb()
+        self._test_importer_contact_wb()
+        self._test_importer_agent_wb()
+        self._test_exporter_contact_wb()
+        self._test_exporter_agent_wb()
+
+    def _test_ilb_admin_wb(self):
+        expected_rows = {}
+        check_expected_rows(self.ilb_admin_client, expected_rows)
+
+    def _test_importer_contact_wb(self):
+        expected_rows = {
+            self.all_org_mailshot.get_reference(): {
+                "Published": {"Mailshot Received": ["View", "Clear"]}
+            },
+            self.importer_mailshot.get_reference(): {
+                "Published": {"Mailshot Received": ["View", "Clear"]}
+            },
+        }
+
+        check_expected_rows(self.importer_client, expected_rows)
+
+    def _test_importer_agent_wb(self):
+        expected_rows = {
+            self.all_org_mailshot.get_reference(): {
+                "Published": {"Mailshot Received": ["View", "Clear"]}
+            },
+            self.importer_mailshot.get_reference(): {
+                "Published": {"Mailshot Received": ["View", "Clear"]}
+            },
+        }
+
+        check_expected_rows(self.importer_agent_client, expected_rows)
+
+    def _test_exporter_contact_wb(self):
+        expected_rows = {
+            self.all_org_mailshot.get_reference(): {
+                "Published": {"Mailshot Received": ["View", "Clear"]}
+            },
+            self.exporter_mailshot.get_reference(): {
+                "Published": {"Mailshot Received": ["View", "Clear"]}
+            },
+        }
+
+        check_expected_rows(self.exporter_client, expected_rows)
+
+    def _test_exporter_agent_wb(self):
+        expected_rows = {
+            self.all_org_mailshot.get_reference(): {
+                "Published": {"Mailshot Received": ["View", "Clear"]}
+            },
+            self.exporter_mailshot.get_reference(): {
+                "Published": {"Mailshot Received": ["View", "Clear"]}
+            },
+        }
+        check_expected_rows(self.exporter_agent_client, expected_rows)
+
+    def _create_mailshot(
+        self,
+        title,
+        reference,
+        version=1,
+        *,
+        description="Test Desc",
+        status=Mailshot.Statuses.PUBLISHED,
+        is_to_exporters=False,
+        is_to_importers=False,
+    ):
+        template = Template.objects.get(template_code="PUBLISH_MAILSHOT")
+        mailshot = Mailshot(
+            title=title,
+            description=description,
+            status=status,
+            is_email=True,
+            email_subject=template.template_title,
+            email_body=template.template_content,
+            created_by=self.ilb_admin_user,
+            is_to_exporters=is_to_exporters,
+            is_to_importers=is_to_importers,
+            reference=reference,
+            version=version,
+        )
+
+        if status == Mailshot.Statuses.PUBLISHED:
+            mailshot.published_datetime = datetime.datetime.now()
+            mailshot.order_datetime = mailshot.published_datetime
+            mailshot.process_type = "MAILSHOT"
+
+        mailshot.save()
+
+        return mailshot
 
 
 def check_expected_rows(

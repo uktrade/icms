@@ -42,6 +42,9 @@ urlpatterns = [
                     name="mailshot-detail-received",
                 ),
                 path("republish/", views.republish, name="mailshot-republish"),
+                path(
+                    "clear/", views.ClearMailshotFromWorkbasketView.as_view(), name="mailshot-clear"
+                ),
                 path("document/", include(document_urls)),
             ]
         ),

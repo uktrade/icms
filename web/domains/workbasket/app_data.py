@@ -18,6 +18,7 @@ from web.models import (
     Importer,
     ImporterAccessRequest,
     ImporterApprovalRequest,
+    Mailshot,
     Task,
     UpdateRequest,
     User,
@@ -280,7 +281,17 @@ def _get_importer_queryset(user: User) -> list[QuerySet]:
         .exclude(cleared_by=user)
     )
 
-    return [importer_approval_requests, import_applications]
+    # These annotations are required to work with other workbasket code.
+    # Prior to mailshots, all workbasket rows derived from class Process
+    mailshots = (
+        Mailshot.objects.filter(
+            is_active=True, status=Mailshot.Statuses.PUBLISHED, is_to_importers=True
+        )
+        .annotate(order_datetime=F("published_datetime"), process_type=Value("MAILSHOT"))
+        .exclude(cleared_by=user)
+    )
+
+    return [importer_approval_requests, import_applications, mailshots]
 
 
 def _get_exporter_queryset(user: User) -> list[QuerySet]:
@@ -347,7 +358,17 @@ def _get_exporter_queryset(user: User) -> list[QuerySet]:
         .exclude(cleared_by=user)
     )
 
-    return [exporter_approval_requests, export_applications]
+    # These annotations are required to work with other workbasket code.
+    # Prior to mailshots, all workbasket rows derived from class Process
+    mailshots = (
+        Mailshot.objects.filter(
+            is_active=True, status=Mailshot.Statuses.PUBLISHED, is_to_exporters=True
+        )
+        .annotate(order_datetime=F("published_datetime"), process_type=Value("MAILSHOT"))
+        .exclude(cleared_by=user)
+    )
+
+    return [exporter_approval_requests, export_applications, mailshots]
 
 
 def _add_user_import_annotations(

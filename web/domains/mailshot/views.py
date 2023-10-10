@@ -12,7 +12,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views import View
 from django.views.decorators.http import require_GET, require_POST
-from django.views.generic.detail import DetailView
+from django.views.generic.detail import DetailView, SingleObjectMixin
 
 from web.domains.case.forms import DocumentForm
 from web.domains.case.services import reference
@@ -92,6 +92,41 @@ class MailshotReceivedDetailView(PermissionRequiredMixin, LoginRequiredMixin, De
         context["page_title"] = f"Viewing Mailshot ({self.object.get_reference()})"
 
         return context
+
+
+class ClearMailshotFromWorkbasketView(
+    PermissionRequiredMixin, LoginRequiredMixin, SingleObjectMixin, View
+):
+    # View config
+    http_method_names = ["post"]
+
+    # SingleObjectMixin config
+    model = Mailshot
+    pk_url_kwarg = "mailshot_pk"
+
+    def has_permission(self) -> bool:
+        user: User = self.request.user
+        mailshot: Mailshot = self.get_object()
+
+        if mailshot.is_to_importers and user.has_perm(Perms.sys.importer_access):
+            return True
+
+        if mailshot.is_to_exporters and user.has_perm(Perms.sys.exporter_access):
+            return True
+
+        return False
+
+    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
+        """Remove the mailshot from the `request.user` workbasket."""
+
+        mailshot = self.get_object()
+        mailshot.cleared_by.add(self.request.user)
+
+        messages.success(
+            request, "Mailshot cleared, it can still be viewed in the Search Mailshots page."
+        )
+
+        return redirect(reverse("workbasket"))
 
 
 #
@@ -257,6 +292,9 @@ def publish_mailshot(request: AuthenticatedHttpRequest, *, mailshot_pk: int) -> 
                         mailshot.version = models.F("version") + 1
 
                     mailshot.save()
+
+                    # Reset cleared by as mailshot may be being republished.
+                    mailshot.cleared_by.clear()
 
                 mailshot.refresh_from_db()
 
