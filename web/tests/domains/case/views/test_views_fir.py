@@ -90,10 +90,13 @@ class TestImporterAccessRequestFIRView(AuthTestCase):
         assert response.status_code == HTTPStatus.OK
         fir_list = response.context["firs"]
         assert len(fir_list) == 1
+        self.assert_request_email_sent()
+
+    def assert_request_email_sent(self):
         check_gov_notify_email_was_sent(
             1,
             [self.process.submitted_by.email],
-            EmailTypes.FURTHER_INFORMATION_REQUEST,
+            EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST,
             self.expected_email_personalisation(),
             exp_subject="open fir",
             exp_in_body="test request detail",
@@ -141,9 +144,22 @@ class TestImporterAccessRequestFIRView(AuthTestCase):
         assert len(fir_list) == 0
         fir.refresh_from_db()
         assert fir.status == FurtherInformationRequest.DRAFT
+        self.assert_withdrawn_email_sent()
+
+    def assert_withdrawn_email_sent(self):
+        check_gov_notify_email_was_sent(
+            1,
+            [self.process.submitted_by.email],
+            EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_WITHDRAWN,
+            self.expected_email_personalisation(),
+            exp_subject="test withdraw",
+            exp_in_body="test request detail",
+        )
 
     def test_respond_to_firs(self):
-        fir = _create_fir(self.process, self.ilb_admin_client, self.case_type, "test withdraw")
+        fir = _create_fir(
+            self.process, self.ilb_admin_client, self.case_type, "test responded email"
+        )
         response = self.client.post(
             CaseURLS.respond_to_fir(self.process.pk, fir.pk, self.case_type),
             data={"response_detail": "Thanks"},
@@ -158,6 +174,17 @@ class TestImporterAccessRequestFIRView(AuthTestCase):
         actual_firs = fir_list.first()
         assert actual_firs.status == FurtherInformationRequest.RESPONDED
         assert actual_firs.response_detail == "Thanks"
+        self.assert_response_email_sent()
+
+    def assert_response_email_sent(self):
+        check_gov_notify_email_was_sent(
+            1,
+            [self.ilb_admin_user.email],
+            EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_RESPONDED,
+            self.expected_email_personalisation(),
+            exp_subject="test responded email",
+            exp_in_body="test request detail",
+        )
 
     def test_close_firs(self):
         fir = _create_fir(self.process, self.ilb_admin_client, self.case_type, "test withdraw")
@@ -206,6 +233,36 @@ class TestExportApplicationFIRView(TestImporterAccessRequestFIRView):
         self.client = self.exporter_client
         self.expected_site = get_exporter_site_domain()
 
+    def assert_request_email_sent(self):
+        check_gov_notify_email_was_sent(
+            1,
+            [self.process.submitted_by.email],
+            EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST,
+            self.expected_email_personalisation(),
+            exp_subject="open fir",
+            exp_in_body="test request detail",
+        )
+
+    def assert_response_email_sent(self):
+        check_gov_notify_email_was_sent(
+            1,
+            [self.ilb_admin_user.email],
+            EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST_RESPONDED,
+            self.expected_email_personalisation(),
+            exp_subject="test responded email",
+            exp_in_body="test request detail",
+        )
+
+    def assert_withdrawn_email_sent(self):
+        check_gov_notify_email_was_sent(
+            1,
+            [self.process.submitted_by.email],
+            EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST_WITHDRAWN,
+            self.expected_email_personalisation(),
+            exp_subject="test withdraw",
+            exp_in_body="test request detail",
+        )
+
     def expected_email_personalisation(self):
         return {
             "reference": self.process.reference,
@@ -216,7 +273,7 @@ class TestExportApplicationFIRView(TestImporterAccessRequestFIRView):
         }
 
 
-class TestImportApplicationFIRView(TestImporterAccessRequestFIRView):
+class TestImportApplicationFIRView(TestExportApplicationFIRView):
     @pytest.fixture
     def setup_process(self, sanctions_app_submitted):
         self.process = sanctions_app_submitted
@@ -228,12 +285,3 @@ class TestImportApplicationFIRView(TestImporterAccessRequestFIRView):
         self.fir_type = "case"
         self.client = self.importer_client
         self.expected_site = get_importer_site_domain()
-
-    def expected_email_personalisation(self):
-        return {
-            "reference": self.process.reference,
-            "icms_url": self.expected_site,
-            "fir_type": self.fir_type,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
-            "application_url": get_case_view_url(self.process, self.expected_site),
-        }

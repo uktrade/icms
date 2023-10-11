@@ -3448,3 +3448,8 @@ process.current_update_requests
 UniqueReference
 Health and Safety Executive
 New Update
+Application Further Information Request
+Application Further Information Request Responded
+Application Further Information Request Withdrawn
+Access Request Further Information Request Responded
+Access Request Further Information Request Withdrawn

@@ -10,15 +10,10 @@ from django.utils import timezone
 from config.celery import app
 from web.domains.case.services import document_pack
 from web.models import (
-    AccessRequest,
     Constabulary,
     DFLApplication,
-    ExportApplication,
     FirearmsAuthority,
-    FurtherInformationRequest,
-    ImportApplication,
     Importer,
-    Process,
     Section5Authority,
     User,
 )
@@ -103,57 +98,6 @@ def retract_mailshot(mailshot):
         html_message=html_message,
         to_importers=mailshot.is_to_importers,
         to_exporters=mailshot.is_to_exporters,
-    )
-
-
-def send_fir_to_contacts(
-    process: Process,
-    fir: FurtherInformationRequest,
-    context: dict[str, str],
-    attachment_ids: tuple[int, ...] = (),
-) -> None:
-    match process:
-        case AccessRequest():
-            contacts = [process.submitted_by]
-        case ImportApplication() | ExportApplication():
-            contacts = email.get_application_contacts(process)
-        case _:
-            raise ValueError(
-                "Process must be an instance of ImportApplication / ExportApplication / AccessRequest"
-            )
-
-    for contact in contacts:
-        send_notification(
-            context["subject"],
-            "email/base.html",
-            context=context,
-            recipients=utils.get_notification_emails(contact),
-            cc_list=fir.email_cc_address_list,
-            attachment_ids=attachment_ids,
-        )
-
-
-def send_further_information_request_withdrawal(
-    process: Process, fir: FurtherInformationRequest
-) -> None:
-    subject = f"Withdrawn - {process.reference} Further Information Request"
-    body = "The FIR request has been withdrawn by ILB."
-
-    send_fir_to_contacts(process, fir, {"subject": subject, "body": body})
-
-
-def further_information_responded(process: Process, fir: FurtherInformationRequest) -> None:
-    subject = f"FIR Response - {process.reference} - {fir.request_subject}"
-    fir_type = "access request" if isinstance(process, AccessRequest) else "case"
-
-    send_notification(
-        subject,
-        "email/base.html",
-        context={
-            "subject": subject,
-            "body": f"A FIR response has been submitted for {fir_type} {process.reference}.",
-        },
-        recipients=utils.get_notification_emails(fir.requested_by),
     )
 
 
