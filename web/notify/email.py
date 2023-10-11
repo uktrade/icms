@@ -43,49 +43,6 @@ def send_to_contacts(
         )
 
 
-def send_to_importer_contacts(
-    importer: Importer, subject: str, message: str, html_message: str | None = None
-) -> None:
-    if importer.type == Importer.INDIVIDUAL:
-        # TODO: ICMSLST-1948 Revisit this
-        # The importer.user is set when creating an individual importer.
-        # However they also get set as a contact so this special case might not be needed.
-        if importer.user and importer.user.is_active:
-            send_email.delay(
-                subject,
-                message,
-                utils.get_notification_emails(importer.user),
-                html_message=html_message,
-            )
-
-        return
-
-    obj_perms = get_org_obj_permissions(importer)
-    contacts = organisation_get_contacts(importer, perms=[obj_perms.edit.codename])
-    send_to_contacts(subject, message, contacts, html_message)
-
-
-def send_to_all_importers(subject: str, message: str, html_message: str | None = None) -> None:
-    importers = Importer.objects.filter(is_active=True)
-    for importer in importers:
-        send_to_importer_contacts(importer, subject, message, html_message)
-
-
-def send_to_exporter_contacts(
-    exporter: Exporter, subject: str, message: str, html_message: str | None = None
-) -> None:
-    obj_perms = get_org_obj_permissions(exporter)
-
-    contacts = organisation_get_contacts(exporter, perms=[obj_perms.edit.codename])
-    send_to_contacts(subject, message, contacts, html_message)
-
-
-def send_to_all_exporters(subject: str, message: str, html_message: str | None = None) -> None:
-    exporters = Exporter.objects.filter(is_active=True)
-    for exporter in exporters:
-        send_to_exporter_contacts(exporter, subject, message, html_message)
-
-
 def send_to_application_contacts(
     application: ImpOrExp, subject: str, message: str, html_message: str | None = None
 ) -> None:
@@ -114,13 +71,37 @@ def send_mailshot(
     to_importers: bool = False,
     to_exporters: bool = False,
 ) -> None:
+    """Sends mailshot emails.
+
+    Used in two places:
+        web/notify/notify.py -> def mailshot
+        web/notify/notify.py -> def retract_mailshot
+
+    The html message is derived from a template, but they are editable by the ILB Team
+    on a per-mailshot basis.
+    The two template codes to search for are as follows:
+      - PUBLISH_MAILSHOT
+      - RETRACT_MAILSHOT
+
+    The mailshot detail view the applicant will see in the workbasket includes the files
+    therefore we won't need to include them in the email sent via GOV.UK Notify.
     """
-    Sends mailshots
-    """
+
+    # Note: Decided to send mailshots to all org contacts.
+    # Previously it only sent them to contacts with edit permission.
     if to_importers:
-        send_to_all_importers(subject, message, html_message=html_message)
+        importers = Importer.objects.filter(is_active=True)
+
+        for importer in importers:
+            contacts = organisation_get_contacts(importer)
+            send_to_contacts(subject, message, contacts, html_message)
+
     if to_exporters:
-        send_to_all_exporters(subject, message, html_message=html_message)
+        exporters = Exporter.objects.filter(is_active=True)
+
+        for exporter in exporters:
+            contacts = organisation_get_contacts(exporter)
+            send_to_contacts(subject, message, contacts, html_message)
 
 
 def send_html_email(
