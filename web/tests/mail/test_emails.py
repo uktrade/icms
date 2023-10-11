@@ -36,15 +36,17 @@ def default_personalisation() -> dict:
     }
 
 
+def get_gov_notify_template_id(email_type: EmailTypes):
+    return str(EmailTemplate.objects.get(name=email_type).gov_notify_template_id)
+
+
 class TestEmails(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, _setup, mock_gov_notify_client):
         self.mock_gov_notify_client = mock_gov_notify_client
 
     def test_access_request_email(self, importer_access_request):
-        exp_template_id = str(
-            EmailTemplate.objects.get(name=EmailTypes.ACCESS_REQUEST).gov_notify_template_id
-        )
+        exp_template_id = get_gov_notify_template_id(EmailTypes.ACCESS_REQUEST)
         expected_personalisation = default_personalisation() | {
             "reference": importer_access_request.reference,
             "icms_url": get_caseworker_site_domain(),
@@ -65,10 +67,7 @@ class TestEmails(AuthTestCase):
     def test_importer_access_request_closed_email(self, importer_access_request):
         importer_access_request.response = ImporterAccessRequest.APPROVED
         importer_access_request.request_type = ImporterAccessRequest.AGENT_ACCESS
-
-        exp_template_id = str(
-            EmailTemplate.objects.get(name=EmailTypes.ACCESS_REQUEST_CLOSED).gov_notify_template_id
-        )
+        exp_template_id = get_gov_notify_template_id(EmailTypes.ACCESS_REQUEST_CLOSED)
         expected_personalisation = default_personalisation() | {
             "agent": "Agent ",
             "organisation": "Import Ltd",
@@ -88,10 +87,7 @@ class TestEmails(AuthTestCase):
     def test_exporter_access_request_closed_email(self, exporter_access_request):
         exporter_access_request.response = ExporterAccessRequest.REFUSED
         exporter_access_request.request_type = ExporterAccessRequest.MAIN_EXPORTER_ACCESS
-
-        exp_template_id = str(
-            EmailTemplate.objects.get(name=EmailTypes.ACCESS_REQUEST_CLOSED).gov_notify_template_id
-        )
+        exp_template_id = get_gov_notify_template_id(EmailTypes.ACCESS_REQUEST_CLOSED)
         expected_personalisation = default_personalisation() | {
             "agent": "",
             "organisation": "Export Ltd",
@@ -116,11 +112,8 @@ class TestEmails(AuthTestCase):
     def test_exporter_send_approval_request_opened_email(self, exporter_access_request):
         ear = get_linked_access_request(exporter_access_request, self.exporter)
         ear_approval = add_approval_request(ear, self.ilb_admin_user, self.exporter_user)
-
-        exp_template_id = str(
-            EmailTemplate.objects.get(
-                name=EmailTypes.EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED
-            ).gov_notify_template_id
+        exp_template_id = get_gov_notify_template_id(
+            EmailTypes.EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED
         )
         expected_personalisation = default_personalisation() | {
             "user_type": "user",
@@ -141,11 +134,8 @@ class TestEmails(AuthTestCase):
         iar.save()
 
         iar_approval = add_approval_request(iar, self.ilb_admin_user, self.importer_user)
-
-        exp_template_id = str(
-            EmailTemplate.objects.get(
-                name=EmailTypes.IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED
-            ).gov_notify_template_id
+        exp_template_id = get_gov_notify_template_id(
+            EmailTypes.IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED
         )
         expected_personalisation = default_personalisation() | {
             "user_type": "agent",
@@ -162,12 +152,7 @@ class TestEmails(AuthTestCase):
     def test_send_approval_request_completed_email(self, exporter_access_request):
         ear = get_linked_access_request(exporter_access_request, self.exporter)
         ear_approval = add_approval_request(ear, self.ilb_admin_user, self.exporter_user)
-
-        exp_template_id = str(
-            EmailTemplate.objects.get(
-                name=EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE
-            ).gov_notify_template_id
-        )
+        exp_template_id = get_gov_notify_template_id(EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE)
         expected_personalisation = default_personalisation() | {
             "user_type": "user",
             "icms_url": get_caseworker_site_domain(),
@@ -186,9 +171,7 @@ class TestEmails(AuthTestCase):
         )
 
     def test_send_application_stopped_email(self, completed_cfs_app):
-        exp_template_id = str(
-            EmailTemplate.objects.get(name=EmailTypes.APPLICATION_STOPPED).gov_notify_template_id
-        )
+        exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_STOPPED)
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
@@ -204,9 +187,7 @@ class TestEmails(AuthTestCase):
         )
 
     def test_send_application_reopened_email(self, completed_cfs_app):
-        exp_template_id = str(
-            EmailTemplate.objects.get(name=EmailTypes.APPLICATION_REOPENED).gov_notify_template_id
-        )
+        exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_REOPENED)
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
@@ -233,10 +214,7 @@ class TestEmails(AuthTestCase):
     ):
         com_app_submitted.case_owner = ilb_admin_two
         com_app_submitted.save()
-
-        exp_template_id = str(
-            EmailTemplate.objects.get(name=EmailTypes.APPLICATION_REASSIGNED).gov_notify_template_id
-        )
+        exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_REASSIGNED)
         expected_personalisation = default_personalisation() | {
             "reference": com_app_submitted.reference,
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
@@ -257,9 +235,7 @@ class TestEmails(AuthTestCase):
         fa_sil_app_submitted.decision = fa_sil_app_submitted.REFUSE
         fa_sil_app_submitted.refuse_reason = "Application Incomplete"
         fa_sil_app_submitted.save()
-        exp_template_id = str(
-            EmailTemplate.objects.get(name=EmailTypes.APPLICATION_REFUSED).gov_notify_template_id
-        )
+        exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_REFUSED)
         expected_personalisation = default_personalisation() | {
             "reference": fa_sil_app_submitted.reference,
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
@@ -276,9 +252,7 @@ class TestEmails(AuthTestCase):
         )
 
     def test_send_application_complete_email(self, completed_cfs_app):
-        exp_template_id = str(
-            EmailTemplate.objects.get(name=EmailTypes.APPLICATION_COMPLETE).gov_notify_template_id
-        )
+        exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_COMPLETE)
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
@@ -294,10 +268,8 @@ class TestEmails(AuthTestCase):
         )
 
     def test_send_application_variation_complete_email(self, completed_cfs_app):
-        exp_template_id = str(
-            EmailTemplate.objects.get(
-                name=EmailTypes.APPLICATION_VARIATION_REQUEST_COMPLETE
-            ).gov_notify_template_id
+        exp_template_id = get_gov_notify_template_id(
+            EmailTypes.APPLICATION_VARIATION_REQUEST_COMPLETE
         )
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
@@ -314,11 +286,7 @@ class TestEmails(AuthTestCase):
         )
 
     def test_send_application_extension_complete_email(self, completed_cfs_app):
-        exp_template_id = str(
-            EmailTemplate.objects.get(
-                name=EmailTypes.APPLICATION_EXTENSION_COMPLETE
-            ).gov_notify_template_id
-        )
+        exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_EXTENSION_COMPLETE)
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
@@ -334,9 +302,7 @@ class TestEmails(AuthTestCase):
         )
 
     def test_send_withdrawal_opened_email(self, com_app_submitted):
-        exp_template_id = str(
-            EmailTemplate.objects.get(name=EmailTypes.WITHDRAWAL_OPENED).gov_notify_template_id
-        )
+        exp_template_id = get_gov_notify_template_id(EmailTypes.WITHDRAWAL_OPENED)
         withdrawal = com_app_submitted.withdrawals.create(
             status=WithdrawApplication.Statuses.OPEN,
             request_by=self.importer_user,
@@ -362,9 +328,7 @@ class TestEmails(AuthTestCase):
         )
 
     def test_send_withdrawal_accepted_email(self, com_app_submitted):
-        exp_template_id = str(
-            EmailTemplate.objects.get(name=EmailTypes.WITHDRAWAL_ACCEPTED).gov_notify_template_id
-        )
+        exp_template_id = get_gov_notify_template_id(EmailTypes.WITHDRAWAL_ACCEPTED)
         withdrawal = com_app_submitted.withdrawals.create(
             status=WithdrawApplication.Statuses.ACCEPTED, request_by=self.exporter_user
         )
@@ -383,9 +347,7 @@ class TestEmails(AuthTestCase):
         )
 
     def test_send_withdrawal_cancelled_email(self, com_app_submitted):
-        exp_template_id = str(
-            EmailTemplate.objects.get(name=EmailTypes.WITHDRAWAL_CANCELLED).gov_notify_template_id
-        )
+        exp_template_id = get_gov_notify_template_id(EmailTypes.WITHDRAWAL_CANCELLED)
         withdrawal = com_app_submitted.withdrawals.create(
             status=WithdrawApplication.Statuses.DELETED, request_by=self.exporter_user
         )
@@ -409,9 +371,7 @@ class TestEmails(AuthTestCase):
         )
 
     def test_send_withdrawal_rejected_email(self, com_app_submitted):
-        exp_template_id = str(
-            EmailTemplate.objects.get(name=EmailTypes.WITHDRAWAL_REJECTED).gov_notify_template_id
-        )
+        exp_template_id = get_gov_notify_template_id(EmailTypes.WITHDRAWAL_REJECTED)
         withdrawal = com_app_submitted.withdrawals.create(
             status=WithdrawApplication.Statuses.REJECTED,
             request_by=self.exporter_user,
@@ -451,10 +411,8 @@ class TestEmails(AuthTestCase):
             assert self.mock_gov_notify_client.send_email_notification.call_count == 0
 
     def test_send_variation_request_cancelled_email(self, completed_cfs_app):
-        exp_template_id = str(
-            EmailTemplate.objects.get(
-                name=EmailTypes.APPLICATION_VARIATION_REQUEST_CANCELLED
-            ).gov_notify_template_id
+        exp_template_id = get_gov_notify_template_id(
+            EmailTypes.APPLICATION_VARIATION_REQUEST_CANCELLED
         )
         vr = add_variation_request_to_app(
             completed_cfs_app,
@@ -482,10 +440,8 @@ class TestEmails(AuthTestCase):
         )
 
     def test_send_variation_request_update_required_email(self, completed_cfs_app):
-        exp_template_id = str(
-            EmailTemplate.objects.get(
-                name=EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_REQUIRED
-            ).gov_notify_template_id
+        exp_template_id = get_gov_notify_template_id(
+            EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_REQUIRED
         )
         vr = add_variation_request_to_app(
             completed_cfs_app,
@@ -513,10 +469,8 @@ class TestEmails(AuthTestCase):
         )
 
     def test_send_variation_request_update_cancelled_email(self, completed_cfs_app):
-        exp_template_id = str(
-            EmailTemplate.objects.get(
-                name=EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_CANCELLED
-            ).gov_notify_template_id
+        exp_template_id = get_gov_notify_template_id(
+            EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_CANCELLED
         )
         vr = add_variation_request_to_app(
             completed_cfs_app,
@@ -541,10 +495,8 @@ class TestEmails(AuthTestCase):
         )
 
     def test_send_variation_request_update_received_email(self, completed_cfs_app):
-        exp_template_id = str(
-            EmailTemplate.objects.get(
-                name=EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_RECEIVED
-            ).gov_notify_template_id
+        exp_template_id = get_gov_notify_template_id(
+            EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_RECEIVED
         )
         vr = add_variation_request_to_app(
             completed_cfs_app,
@@ -569,10 +521,8 @@ class TestEmails(AuthTestCase):
         )
 
     def test_send_variation_request_refused_email(self, completed_dfl_app):
-        exp_template_id = str(
-            EmailTemplate.objects.get(
-                name=EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED
-            ).gov_notify_template_id
+        exp_template_id = get_gov_notify_template_id(
+            EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED
         )
         vr = add_variation_request_to_app(
             completed_dfl_app,
@@ -600,12 +550,7 @@ class TestEmails(AuthTestCase):
         )
 
     def test_send_firearms_supplementary_report_email(self, completed_dfl_app):
-        exp_template_id = str(
-            EmailTemplate.objects.get(
-                name=EmailTypes.FIREARMS_SUPPLEMENTARY_REPORT
-            ).gov_notify_template_id
-        )
-
+        exp_template_id = get_gov_notify_template_id(EmailTypes.FIREARMS_SUPPLEMENTARY_REPORT)
         expected_personalisation = default_personalisation() | {
             "reference": completed_dfl_app.reference,
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
@@ -621,10 +566,8 @@ class TestEmails(AuthTestCase):
         )
 
     def test_send_access_request_further_information_request_email(self, importer_access_request):
-        exp_template_id = str(
-            EmailTemplate.objects.get(
-                name=EmailTypes.FURTHER_INFORMATION_REQUEST
-            ).gov_notify_template_id
+        exp_template_id = get_gov_notify_template_id(
+            EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST
         )
         fir = importer_access_request.further_information_requests.create(
             status=FurtherInformationRequest.DRAFT,
@@ -641,7 +584,7 @@ class TestEmails(AuthTestCase):
             "fir_type": "access request",
             "icms_url": get_importer_site_domain(),
         }
-        emails.send_further_information_request_email(fir, importer_access_request)
+        emails.send_further_information_request_email(fir)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             "access_request_user@example.com",  # /PS-IGNORE
@@ -650,10 +593,8 @@ class TestEmails(AuthTestCase):
         )
 
     def test_send_application_further_information_request_email(self, com_app_submitted):
-        exp_template_id = str(
-            EmailTemplate.objects.get(
-                name=EmailTypes.FURTHER_INFORMATION_REQUEST
-            ).gov_notify_template_id
+        exp_template_id = get_gov_notify_template_id(
+            EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST
         )
         fir = com_app_submitted.further_information_requests.create(
             status=FurtherInformationRequest.DRAFT,
@@ -671,10 +612,124 @@ class TestEmails(AuthTestCase):
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
             "application_url": get_case_view_url(com_app_submitted, get_exporter_site_domain()),
         }
-        emails.send_further_information_request_email(fir, com_app_submitted)
+        emails.send_further_information_request_email(fir)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.exporter_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_access_request_further_information_request_withdrawn_email(
+        self, importer_access_request
+    ):
+        exp_template_id = get_gov_notify_template_id(
+            EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_WITHDRAWN
+        )
+        fir = importer_access_request.further_information_requests.create(
+            status=FurtherInformationRequest.OPEN,
+            requested_by=self.ilb_admin_user,
+            request_subject="More Information Required",
+            request_detail="details",
+            process_type=FurtherInformationRequest.PROCESS_TYPE,
+        )
+
+        expected_personalisation = default_personalisation() | {
+            "subject": "More Information Required",
+            "body": "details",
+            "reference": importer_access_request.reference,
+            "fir_type": "access request",
+            "icms_url": get_importer_site_domain(),
+        }
+        emails.send_further_information_request_withdrawn_email(fir)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            "access_request_user@example.com",  # /PS-IGNORE
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_application_further_information_request_withdrawn_email(self, com_app_submitted):
+        exp_template_id = get_gov_notify_template_id(
+            EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST_WITHDRAWN
+        )
+        fir = com_app_submitted.further_information_requests.create(
+            status=FurtherInformationRequest.DRAFT,
+            requested_by=self.ilb_admin_user,
+            request_subject="More Information Required",
+            request_detail="details",
+            process_type=FurtherInformationRequest.PROCESS_TYPE,
+        )
+        expected_personalisation = default_personalisation() | {
+            "subject": "More Information Required",
+            "body": "details",
+            "fir_type": "case",
+            "icms_url": get_exporter_site_domain(),
+            "reference": com_app_submitted.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(com_app_submitted, get_exporter_site_domain()),
+        }
+        emails.send_further_information_request_withdrawn_email(fir)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.exporter_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_access_request_further_information_request_response_email(
+        self, importer_access_request
+    ):
+        exp_template_id = get_gov_notify_template_id(
+            EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_RESPONDED
+        )
+        fir = importer_access_request.further_information_requests.create(
+            status=FurtherInformationRequest.OPEN,
+            requested_by=self.ilb_admin_user,
+            request_subject="More Information Required",
+            request_detail="details",
+            process_type=FurtherInformationRequest.PROCESS_TYPE,
+        )
+
+        expected_personalisation = default_personalisation() | {
+            "subject": "More Information Required",
+            "body": "details",
+            "reference": importer_access_request.reference,
+            "fir_type": "access request",
+            "icms_url": get_importer_site_domain(),
+        }
+        emails.send_further_information_request_responded_email(fir)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.ilb_admin_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_application_further_information_request_response_email(self, com_app_submitted):
+        exp_template_id = get_gov_notify_template_id(
+            EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST_RESPONDED
+        )
+        fir = com_app_submitted.further_information_requests.create(
+            status=FurtherInformationRequest.DRAFT,
+            requested_by=self.ilb_admin_user,
+            request_subject="More Information Required",
+            request_detail="details",
+            process_type=FurtherInformationRequest.PROCESS_TYPE,
+        )
+        expected_personalisation = default_personalisation() | {
+            "subject": "More Information Required",
+            "body": "details",
+            "fir_type": "case",
+            "icms_url": get_exporter_site_domain(),
+            "reference": com_app_submitted.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(com_app_submitted, get_exporter_site_domain()),
+        }
+        emails.send_further_information_request_responded_email(fir)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.ilb_admin_user.email,
             exp_template_id,
             personalisation=expected_personalisation,
         )

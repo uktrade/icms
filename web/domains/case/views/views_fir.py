@@ -21,9 +21,12 @@ from web.domains.case.utils import get_case_page_title
 from web.domains.file.utils import create_file_model
 from web.domains.template.utils import get_fir_template_data
 from web.flow.models import ProcessTypes
-from web.mail.emails import send_further_information_request_email
+from web.mail.emails import (
+    send_further_information_request_email,
+    send_further_information_request_responded_email,
+    send_further_information_request_withdrawn_email,
+)
 from web.models import FurtherInformationRequest, User
-from web.notify import notify
 from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
@@ -170,7 +173,7 @@ def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: CASE_TYPES
                 if "send" in form.data:
                     fir.status = FurtherInformationRequest.OPEN
                     fir.save()
-                    send_further_information_request_email(fir, application)
+                    send_further_information_request_email(fir)
 
                     application.update_order_datetime()
                     application.save()
@@ -233,7 +236,7 @@ def withdraw_fir(
         fir.status = FurtherInformationRequest.DRAFT
         fir.save()
 
-        notify.send_further_information_request_withdrawal(application, fir)
+        send_further_information_request_withdrawn_email(fir)
 
     return _manage_fir_redirect(application_pk, case_type)
 
@@ -498,7 +501,7 @@ def respond_fir(
                 application.update_order_datetime()
                 application.save()
 
-                notify.further_information_responded(application, fir)
+                send_further_information_request_responded_email(fir)
 
                 return redirect(reverse("workbasket"))
         else:

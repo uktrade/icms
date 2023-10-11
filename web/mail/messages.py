@@ -329,8 +329,6 @@ class CaseEmail(GOVNotifyEmailMessage):
 
 
 class BaseFurtherInformationRequestEmail(GOVNotifyEmailMessage):
-    name = EmailTypes.FURTHER_INFORMATION_REQUEST
-
     def __init__(self, *args, fir: FurtherInformationRequest, **kwargs):
         super().__init__(*args, **kwargs)
         self.fir = fir
@@ -345,12 +343,16 @@ class BaseFurtherInformationRequestEmail(GOVNotifyEmailMessage):
 class ApplicationFurtherInformationRequestEmail(
     BaseApplicationEmail, BaseFurtherInformationRequestEmail
 ):
+    name = EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST
+
     def get_context(self) -> dict:
         context = super().get_context() | {"fir_type": "case"}
         return context
 
 
 class AccessRequestFurtherInformationRequestEmail(BaseFurtherInformationRequestEmail):
+    name = EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST
+
     def __init__(self, *args, access_request: ImpAccessOrExpAccess, **kwargs):
         self.access_request = access_request
         super().__init__(*args, **kwargs)
@@ -371,3 +373,27 @@ class AccessRequestFurtherInformationRequestEmail(BaseFurtherInformationRequestE
                 return get_exporter_site_domain()
             case _:
                 raise ValueError(f"Unknown access request type: {access_request.REQUEST_TYPE}")
+
+
+@final
+class AccessRequestFurtherInformationRequestRespondedEmail(
+    AccessRequestFurtherInformationRequestEmail
+):
+    name = EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_RESPONDED
+
+
+@final
+class AccessRequestFurtherInformationRequestWithdrawnEmail(
+    AccessRequestFurtherInformationRequestEmail
+):
+    name = EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_WITHDRAWN
+
+
+@final
+class ApplicationFurtherInformationRequestRespondedEmail(ApplicationFurtherInformationRequestEmail):
+    name = EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST_RESPONDED
+
+
+@final
+class ApplicationFurtherInformationRequestWithdrawnEmail(ApplicationFurtherInformationRequestEmail):
+    name = EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST_WITHDRAWN

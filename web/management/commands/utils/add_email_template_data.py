@@ -58,7 +58,30 @@ templates = [
     (EmailTypes.WITHDRAWAL_OPENED, "e3499a7c-ad6e-4ceb-bed3-d0a9a137f6a9"),  # /PS-IGNORE
     (EmailTypes.WITHDRAWAL_REJECTED, "ffbed03f-bebc-4f87-a602-e83df0c72890"),  # /PS-IGNORE
     (EmailTypes.CASE_EMAIL, "657aa427-8dda-496a-b933-fa7be10f16fd"),  # /PS-IGNORE
-    (EmailTypes.FURTHER_INFORMATION_REQUEST, "fc26629c-51bd-427a-bd7d-81322f669f65"),  # /PS-IGNORE
+    (
+        EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST,
+        "fc26629c-51bd-427a-bd7d-81322f669f65",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST_RESPONDED,
+        "da80be69-ea12-4529-95ed-b79c7e9b1f52",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST_WITHDRAWN,
+        "21851ee5-5541-4c01-b961-caec57d8dfda",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST,
+        "08f3e82d-2246-4dff-9784-369c601bcf11",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_RESPONDED,
+        "3dda4e25-cd32-43ef-a038-9fd78beb1087",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_WITHDRAWN,
+        "2cadfb82-0888-4c43-bc58-ffce9b6055d5",  # /PS-IGNORE
+    ),
 ]
 
 

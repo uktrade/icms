@@ -1,7 +1,6 @@
 from datetime import timedelta
-from unittest.mock import create_autospec, patch
+from unittest.mock import create_autospec
 
-import pytest
 from django.core import mail
 from django.test import TestCase
 from django.test.client import RequestFactory
@@ -12,7 +11,7 @@ from web import models
 from web.domains.case.services import document_pack
 from web.forms.fields import JQUERY_DATE_FORMAT
 from web.notify import notify, utils
-from web.tests.helpers import CaseURLS, check_email_was_sent
+from web.tests.helpers import check_email_was_sent
 from web.utils.s3 import get_file_from_s3
 
 
@@ -381,134 +380,4 @@ def test_send_constabulary_notification(ilb_admin_user, completed_dfl_app, monke
             ("file-0", b"file_content", "application/octet-stream"),
             ("file-1", b"file_content", "application/octet-stream"),
         ],
-    )
-
-
-def _create_fir(user):
-    return models.FurtherInformationRequest.objects.create(
-        process_type=models.FurtherInformationRequest.PROCESS_TYPE,
-        requested_by=user,
-        status=models.FurtherInformationRequest.OPEN,
-        request_subject="test subject",
-        request_detail="test request detail",
-    )
-
-
-def test_send_fir_access_request(ilb_admin_user, importer_access_request, access_request_user):
-    process = importer_access_request
-    user = access_request_user
-
-    fir = _create_fir(ilb_admin_user)
-    process.further_information_requests.add(fir)
-
-    context = {"subject": "FIR Subject", "body": "FIR Body"}
-    notify.send_fir_to_contacts(process, fir, context)
-
-    check_email_was_sent(
-        1,
-        user.email,
-        "FIR Subject",
-        "FIR Body",
-    )
-
-
-def test_send_fir_import_application(
-    ilb_admin_client, ilb_admin_user, fa_sil_app_submitted, importer_one_contact
-):
-    process = fa_sil_app_submitted
-    user = importer_one_contact
-
-    ilb_admin_client.post(CaseURLS.take_ownership(process.pk))
-    process.refresh_from_db()
-
-    fir = _create_fir(ilb_admin_user)
-    process.further_information_requests.add(fir)
-
-    context = {"subject": "FIR Subject", "body": "FIR Body"}
-
-    notify.send_fir_to_contacts(process, fir, context)
-
-    check_email_was_sent(
-        1,
-        user.email,
-        "FIR Subject",
-        "FIR Body",
-    )
-
-
-def test_send_fir_export_application(
-    ilb_admin_client, ilb_admin_user, gmp_app_submitted, exporter_one_contact
-):
-    process = gmp_app_submitted
-    user = exporter_one_contact
-
-    ilb_admin_client.post(CaseURLS.take_ownership(process.pk, "export"))
-    process.refresh_from_db()
-
-    fir = _create_fir(ilb_admin_user)
-    process.further_information_requests.add(fir)
-
-    context = {"subject": "FIR Subject", "body": "FIR Body"}
-
-    notify.send_fir_to_contacts(process, fir, context)
-
-    check_email_was_sent(
-        1,
-        user.email,
-        "FIR Subject",
-        "FIR Body",
-    )
-
-
-def test_send_fir_error(ilb_admin_user):
-    process = _create_fir(ilb_admin_user)
-    fir = _create_fir(ilb_admin_user)
-    context = {"subject": "FIR Subject", "body": "FIR Body"}
-
-    with pytest.raises(ValueError) as e_info:
-        notify.send_fir_to_contacts(process, fir, context)
-        assert (
-            e_info
-            == "Process must be an instance of ImportApplication / ExportApplication / AccessRequest"
-        )
-
-
-@patch("web.notify.notify.send_fir_to_contacts")
-def test_send_send_further_information_request_withdrawal(
-    mock_send_fir, ilb_admin_user, fa_sil_app_submitted
-):
-    process = fa_sil_app_submitted
-    fir = _create_fir(ilb_admin_user)
-    subject = f"Withdrawn - {process.reference} Further Information Request"
-    body = "The FIR request has been withdrawn by ILB."
-
-    notify.send_further_information_request_withdrawal(process, fir)
-    mock_send_fir.assert_called_once_with(process, fir, {"subject": subject, "body": body})
-
-
-def test_fir_responded_access_request(ilb_admin_user, importer_access_request):
-    process = importer_access_request
-    fir = _create_fir(ilb_admin_user)
-    subject = f"FIR Response - {process.reference} - {fir.request_subject}"
-    notify.further_information_responded(process, fir)
-
-    check_email_was_sent(
-        1,
-        ilb_admin_user.email,
-        subject,
-        f"A FIR response has been submitted for access request {process.reference}",
-    )
-
-
-def test_fir_responded_case(ilb_admin_user, fa_sil_app_submitted):
-    process = fa_sil_app_submitted
-    fir = _create_fir(ilb_admin_user)
-    subject = f"FIR Response - {process.reference} - {fir.request_subject}"
-    notify.further_information_responded(process, fir)
-
-    check_email_was_sent(
-        1,
-        ilb_admin_user.email,
-        subject,
-        f"A FIR response has been submitted for case {process.reference}",
     )

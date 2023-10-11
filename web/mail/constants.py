@@ -62,7 +62,30 @@ class EmailTypes(TypedTextChoices):
         "Application Variation Request Refused",
     )
     CASE_EMAIL = ("CASE_EMAIL", "Case Email")
-    FURTHER_INFORMATION_REQUEST = ("FURTHER_INFORMATION_REQUEST", "Further Information Request")
+    APPLICATION_FURTHER_INFORMATION_REQUEST = (
+        "APPLICATION_FURTHER_INFORMATION_REQUEST",
+        "Application Further Information Request",
+    )
+    APPLICATION_FURTHER_INFORMATION_REQUEST_RESPONDED = (
+        "APPLICATION_FURTHER_INFORMATION_REQUEST_RESPONDED",
+        "Application Further Information Request Responded",
+    )
+    APPLICATION_FURTHER_INFORMATION_REQUEST_WITHDRAWN = (
+        "APPLICATION_FURTHER_INFORMATION_REQUEST_WITHDRAWN",
+        "Application Further Information Request Withdrawn",
+    )
+    ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST = (
+        "ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST",
+        "Application Further Information Request",
+    )
+    ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_RESPONDED = (
+        "ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_RESPONDED",
+        "Access Request Further Information Request Responded",
+    )
+    ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_WITHDRAWN = (
+        "ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_WITHDRAWN",
+        "Access Request Further Information Request Withdrawn",
+    )
 
 
 # TODO: ICMSLST-2348 Gov Notify - Review constants
