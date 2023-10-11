@@ -6,6 +6,7 @@ import freezegun
 import pytest
 from django.test.client import Client
 from django.urls import reverse
+from django.utils import timezone
 
 from web.domains.case.tasks import create_document_pack_on_success
 from web.domains.workbasket.base import WorkbasketRow
@@ -1401,7 +1402,7 @@ class TestMailshotsAppearInWorkbasket(AuthTestCase):
         )
 
         if status == Mailshot.Statuses.PUBLISHED:
-            mailshot.published_datetime = datetime.datetime.now()
+            mailshot.published_datetime = timezone.now()
             mailshot.order_datetime = mailshot.published_datetime
             mailshot.process_type = "MAILSHOT"
 

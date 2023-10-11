@@ -71,6 +71,7 @@ def register(user, password):
     )
 
 
+# TODO: Replace in ICMSLST-2161
 def mailshot(mailshot):
     html_message = utils.render_email(
         "email/mailshot/mailshot.html",
@@ -86,6 +87,7 @@ def mailshot(mailshot):
     )
 
 
+# TODO: Replace in ICMSLST-2162
 def retract_mailshot(mailshot):
     html_message = utils.render_email(
         "email/mailshot/mailshot.html",
