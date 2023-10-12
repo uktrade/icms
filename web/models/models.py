@@ -4,8 +4,7 @@ from web.permissions import all_permissions
 from web.types import TypedTextChoices
 
 
-# TODO: ICMSLST-1175 Rename CaseReference
-class CaseReference(models.Model):
+class UniqueReference(models.Model):
     class Prefix(TypedTextChoices):
         # Import application case reference
         IMPORT_APP = "IMA"
@@ -35,7 +34,7 @@ class CaseReference(models.Model):
         ]
 
     def __str__(self):
-        return f"CaseReference(prefix={self.prefix!r}, year={self.year!r}, reference={self.reference!r})"
+        return f"UniqueReference(prefix={self.prefix!r}, year={self.year!r}, reference={self.reference!r})"
 
     prefix = models.CharField(max_length=8, choices=Prefix.choices)
 

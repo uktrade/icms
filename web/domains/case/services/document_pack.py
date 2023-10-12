@@ -270,7 +270,7 @@ def doc_ref_documents_create(application: ImpOrExp, lock_manager: "LockManager")
         if application.application_type.cover_letter_flag:
             licence_pack.document_references.get_or_create(document_type=DocumentType.COVER_LETTER)
 
-        # Only call `get_import_licence_reference` if licence doc doesn't exist as it creates a record in CaseReference.
+        # Only call `get_import_licence_reference` if licence doc doesn't exist as it creates a record in UniqueReference.
         if not doc_ref_licence_get_optional(licence_pack):
             doc_ref = reference.get_import_licence_reference(
                 lock_manager, application, licence_pack
