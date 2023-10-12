@@ -61,7 +61,7 @@ def cfs_create(page: Page) -> int:
     page.get_by_role("button", name="Save").click()
 
     # Navigagte back to main schedule view of application
-    page.get_by_role("link", name="Application Details").click()
+    page.get_by_role("link", name="CFS Application").click()
 
     # Copy Schedule 1 (opens schedule 2)
     page.get_by_role("link", name="Copy").click()

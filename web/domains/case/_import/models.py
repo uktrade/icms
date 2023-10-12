@@ -189,7 +189,7 @@ class ImportApplication(ApplicationBase):
     licence_extended_flag = models.BooleanField(blank=False, null=False, default=False)
 
     licence_reference = models.OneToOneField(
-        "web.CaseReference", on_delete=models.PROTECT, related_name="+", null=True
+        "web.UniqueReference", on_delete=models.PROTECT, related_name="+", null=True
     )
 
     last_update_datetime = models.DateTimeField(blank=False, null=False, auto_now=True)

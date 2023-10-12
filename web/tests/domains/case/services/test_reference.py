@@ -7,7 +7,6 @@ from django.utils import timezone
 from web.domains.case.services import document_pack, reference
 from web.flow.models import ProcessTypes
 from web.models import (
-    CaseReference,
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
@@ -23,6 +22,7 @@ from web.models import (
     SanctionsAndAdhocApplication,
     SILApplication,
     TextilesApplication,
+    UniqueReference,
     VariationRequest,
     WoodQuotaApplication,
 )
@@ -44,8 +44,8 @@ CASE_REF_PATTERN = re.compile(
 def test_digits(lock_manager):
     # put in two rows, neither of which should match the later calls
     year = timezone.now().year
-    CaseReference.objects.create(prefix="bluu", year=None, reference=500)
-    CaseReference.objects.create(prefix="blaa", year=year, reference=500)
+    UniqueReference.objects.create(prefix="bluu", year=None, reference=500)
+    UniqueReference.objects.create(prefix="blaa", year=year, reference=500)
 
     ref1 = reference._get_next_reference(lock_manager, prefix="blaa", use_year=False)
     assert reference._get_reference_string(ref1, False, min_digits=0) == "blaa/1"
@@ -56,7 +56,7 @@ def test_digits(lock_manager):
 
 @pytest.mark.django_db
 def test_digits_overflow(lock_manager):
-    CaseReference.objects.create(prefix="bluu", year=None, reference=500)
+    UniqueReference.objects.create(prefix="bluu", year=None, reference=500)
 
     ref = reference._get_next_reference(lock_manager, prefix="bluu", use_year=False)
     assert reference._get_reference_string(ref, False, min_digits=2) == "bluu/501"
@@ -318,14 +318,14 @@ def test_import_application_licence_reference_is_reused(
     ref = reference.get_import_licence_reference(lock_manager, app, licence)
 
     assert ref == "GBSIL0000001B"
-    assert app.licence_reference.prefix == CaseReference.Prefix.IMPORT_LICENCE_DOCUMENT
+    assert app.licence_reference.prefix == UniqueReference.Prefix.IMPORT_LICENCE_DOCUMENT
     assert app.licence_reference.reference == 1
 
     # This should now reuse the same reference
     licence = document_pack.pack_draft_get(app)
     ref = reference.get_import_licence_reference(lock_manager, app, licence)
     assert ref == "GBSIL0000001B"
-    assert app.licence_reference.prefix == CaseReference.Prefix.IMPORT_LICENCE_DOCUMENT
+    assert app.licence_reference.prefix == UniqueReference.Prefix.IMPORT_LICENCE_DOCUMENT
     assert app.licence_reference.reference == 1
 
 

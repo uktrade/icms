@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Literal
 from django.utils import timezone
 
 from web.flow.models import ProcessTypes
-from web.models import CaseReference
+from web.models import UniqueReference
 
 if TYPE_CHECKING:
     from web.domains.case.types import ImpOrExp
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     )
     from web.utils.lock_manager import LockManager
 
-Prefix = CaseReference.Prefix
+Prefix = UniqueReference.Prefix
 
 
 def get_application_case_reference(lock_manager: "LockManager", application: "ImpOrExp") -> str:
@@ -118,10 +118,10 @@ def get_exporter_access_request_reference(lock_manager: "LockManager") -> str:
 
 def _get_next_reference(
     lock_manager: "LockManager", *, prefix: str, use_year: bool
-) -> "CaseReference":
-    """Return the next available CaseReference instance."""
+) -> UniqueReference:
+    """Return the next available UniqueReference instance."""
 
-    lock_manager.ensure_tables_are_locked([CaseReference])
+    lock_manager.ensure_tables_are_locked([UniqueReference])
 
     year: int | None
 
@@ -130,19 +130,19 @@ def _get_next_reference(
     else:
         year = None
 
-    last_ref = CaseReference.objects.filter(prefix=prefix, year=year).order_by("reference").last()
+    last_ref = UniqueReference.objects.filter(prefix=prefix, year=year).order_by("reference").last()
 
     if last_ref:
         new_ref = last_ref.reference + 1
     else:
         new_ref = 1
 
-    case_reference = CaseReference.objects.create(prefix=prefix, year=year, reference=new_ref)
+    case_reference = UniqueReference.objects.create(prefix=prefix, year=year, reference=new_ref)
 
     return case_reference
 
 
-def _get_reference_string(case_reference: "CaseReference", use_year: bool, min_digits: int) -> str:
+def _get_reference_string(case_reference: UniqueReference, use_year: bool, min_digits: int) -> str:
     new_ref_str = f"{case_reference.reference:0{min_digits}}"
 
     if use_year:

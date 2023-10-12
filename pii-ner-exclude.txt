@@ -951,7 +951,6 @@ Applicant Case Management" Views
 ILB Admin
 Close Case Processing
 get_import_licence_reference
-CaseReference
 "Creates document reference records for Export
 f"Authorise Success: Application
 PermissionRequiredMixin Config
@@ -3446,3 +3445,4 @@ Notify
 Iron & Steel
 Sanctions and Adhoc"
 process.current_update_requests
+UniqueReference

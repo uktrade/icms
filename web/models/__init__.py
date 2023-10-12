@@ -152,7 +152,7 @@ from web.domains.template.models import CFSScheduleParagraph, Template
 from web.domains.user.models import Email, PhoneNumber, User
 from web.flow.models import Process, Task
 from web.mail.models import EmailTemplate
-from web.models.models import CaseReference, GlobalPermission
+from web.models.models import GlobalPermission, UniqueReference
 
 __all__ = [
     "DerogationsApplication",
@@ -271,7 +271,7 @@ __all__ = [
     "User",
     "Process",
     "Task",
-    "CaseReference",
+    "UniqueReference",
     "GlobalPermission",
     "EmailTemplate",
 ]

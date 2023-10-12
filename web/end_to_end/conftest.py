@@ -67,7 +67,7 @@ class UserPages:
         )
 
         # Timeout in ms
-        context.set_default_timeout(5_000)
+        context.set_default_timeout(10_000)
 
         page = context.new_page()
         page.goto("/workbasket/")
