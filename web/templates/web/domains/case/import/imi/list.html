@@ -1,40 +1,45 @@
 {% extends "layout/no-sidebar.html" %}
+{% import "messages/banners.html" as banners %}
 
 {% block main_content %}
-  <div id="content">
-    <div id="content-ie8-float">
-      <div class="content-actions"></div>
-      <table class="setoutList">
-        <thead>
-        <tr>
-          <th scope="col">Case Reference</th>
-          <th scope="col">Applicant Details</th>
-          <th scope="col">Approval Date</th>
-          <th scope="col">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for app in imi_list %}
+  {% if not imi_list %}
+    {{ banners.info("There are no applications waiting for IMI submission.") }}
+  {% else %}
+    <div id="content">
+      <div id="content-ie8-float">
+        <div class="content-actions"></div>
+        <table class="setoutList">
+          <thead>
           <tr>
-            <td><span class="text-widget">{{ app.reference }}</span></td>
-            <td>{{ app.importer.name }}</td>
-            {% set case_completion_datetime = get_latest_issued_document(app).case_completion_datetime %}
-            <td>
-                <span class="text-widget">{{ case_completion_datetime.strftime('%d-%b-%Y') }}</span>
-            </td>
-            <td>
-              <ul class="menu-out">
-                <li>
-                  <a href="{{ icms_url('import:imi-case-detail', kwargs={'application_pk': app.pk }) }}">
-                    View IMI Summary
-                  </a>
-                </li>
-              </ul>
-            </td>
+            <th scope="col">Case Reference</th>
+            <th scope="col">Applicant Details</th>
+            <th scope="col">Approval Date</th>
+            <th scope="col">Actions</th>
           </tr>
-        {% endfor %}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+          {% for app in imi_list %}
+            <tr>
+              <td><span class="text-widget">{{ app.reference }}</span></td>
+              <td>{{ app.importer.name }}</td>
+              {% set case_completion_datetime = get_latest_issued_document(app).case_completion_datetime %}
+              <td>
+                <span class="text-widget">{{ case_completion_datetime.strftime('%d-%b-%Y') }}</span>
+              </td>
+              <td>
+                <ul class="menu-out">
+                  <li>
+                    <a href="{{ icms_url('import:imi-case-detail', kwargs={'application_pk': app.pk }) }}">
+                      View IMI Summary
+                    </a>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
+  {% endif %}
 {% endblock %}
