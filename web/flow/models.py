@@ -62,6 +62,42 @@ class Process(models.Model):
     # Used to order the workbasket - Changes when a variety of actions are performed
     order_datetime = models.DateTimeField(default=timezone.now)
 
+    def get_application_details_link(self) -> str:
+        """Used in applicant views when creating an application.
+
+        Places used:
+            - web/templates/partial/case/sidebar.html
+        """
+
+        pt = ProcessTypes
+        match self.process_type:
+            case pt.FA_DFL | pt.FA_OIL | pt.FA_SIL:
+                return "Firearms and Ammunition"
+            case pt.IRON_STEEL:
+                return "Iron & Steel"
+            case pt.TEXTILES:
+                return "Textiles"
+            case pt.WOOD:
+                return "Wood"
+            case pt.DEROGATIONS:
+                return "Sanctions Derogation"
+            case pt.SPS:
+                return "Prior Surveillance"
+            case pt.SANCTIONS:
+                return "Sanctions and Adhoc"
+            case pt.OPT:
+                return "Outward Processing Trade"
+            # Export
+            case pt.CFS:
+                return "CFS Application"
+            case pt.COM:
+                return "COM Application"
+            case pt.GMP:
+                return "GMP Application"
+            case _:
+                # Return the old default if we have missed any / add more.
+                return "Application Details"
+
     def get_specific_model(self) -> "Process":
         """Downcast to specific model class."""
 

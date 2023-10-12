@@ -6,7 +6,7 @@
                  'Application Updates') }}
   {% endif %}
 
-  {{ icms_link(request, icms_url(process.get_edit_view_name(), kwargs={'application_pk': process.pk}), 'Application Details') }}
+  {{ icms_link(request, icms_url(process.get_edit_view_name(), kwargs={'application_pk': process.pk}), process.get_application_details_link()) }}
 
   {% if process.process_type == "OpenIndividualLicenceApplication" %}
     {{ icms_link(request, icms_url('import:fa:manage-certificates', kwargs={'application_pk': process.pk}), 'Certificates') }}
