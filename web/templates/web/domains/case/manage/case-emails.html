@@ -10,12 +10,12 @@
 {% endblock %}
 
 {% block main_content %}
-  <h3>Emails</h3>
-
+  <h3>{{ email_title }}</h3>
   {% if info_email %}
-  <div class="info-box info-box-info">
-    {{ info_email }}
-  </div>
+    <div class="info-box info-box-info">{{ info_email }}</div>
+  {% endif %}
+  {% if email_subtitle %}
+    <h4>{{ email_subtitle }}</h4>
   {% endif %}
 
   {% if not readonly_view %}
@@ -33,6 +33,6 @@
   {% for object in case_emails %}
     {% include 'web/domains/case/manage/case-email-box.html' %}
   {% else %}
-    <div class="info-box info-box-info">There aren't any emails.</div>
+    <div class="info-box info-box-info">{{ no_emails_msg }}</div>
   {% endfor %}
 {% endblock %}
