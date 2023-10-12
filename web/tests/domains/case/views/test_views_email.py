@@ -30,6 +30,27 @@ class TestViewEmail(AuthTestCase):
             "This screen is used to email relevant constabularies. You may attach multiple"
             " firearms certificates to a single email. You can also record responses from the constabulary."
         )
+        assert resp.context["email_title"] == "Emails"
+        assert resp.context["email_subtitle"] == ""
+        assert resp.context["no_emails_msg"] == "There aren't any emails."
+
+    def test_manage_cfs_hse_emails_get(self, cfs_app_submitted):
+        app = cfs_app_submitted
+
+        self.ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
+        response = self.ilb_admin_client.get(CaseURLS.manage_case_emails(app.pk, "export"))
+
+        assert response.status_code == 200
+        assert response.context["case_emails"].count() == 0
+
+        assertTemplateUsed(response, "web/domains/case/manage/case-emails.html")
+        assert response.context["info_email"] == (
+            "Biocidal products: this screen is used to email and record responses from"
+            " the Health and Safety Executive."
+        )
+        assert response.context["email_title"] == "Health and Safety Executive (HSE) Checks"
+        assert response.context["email_subtitle"] == "HSE Emails"
+        assert response.context["no_emails_msg"] == "There aren't any HSE emails."
 
     def test_create_case_email(self, fa_dfl_app_submitted):
         resp = self.create_case_for_application(fa_dfl_app_submitted)

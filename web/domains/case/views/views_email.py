@@ -50,6 +50,10 @@ def manage_case_emails(
 
         readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
 
+    email_title = "Emails"
+    email_subtitle = ""
+    no_emails_msg = "There aren't any emails."
+
     if application.process_type in [
         OpenIndividualLicenceApplication.PROCESS_TYPE,
         DFLApplication.PROCESS_TYPE,
@@ -60,7 +64,10 @@ def manage_case_emails(
             " firearms certificates to a single email. You can also record responses from the constabulary."
         )
     elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
+        email_title = "Health and Safety Executive (HSE) Checks"
+        email_subtitle = "HSE Emails"
         info_email = "Biocidal products: this screen is used to email and record responses from the Health and Safety Executive."
+        no_emails_msg = "There aren't any HSE emails."
 
     else:
         info_email = ""
@@ -70,6 +77,9 @@ def manage_case_emails(
         "page_title": "Manage Emails",
         "case_emails": application.case_emails.filter(is_active=True),
         "case_type": case_type,
+        "email_title": email_title,
+        "email_subtitle": email_subtitle,
+        "no_emails_msg": no_emails_msg,
         "info_email": info_email,
         "readonly_view": readonly_view,
     }
