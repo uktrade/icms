@@ -67,10 +67,7 @@ class Constabulary(Archivable, models.Model):
         return dict(Constabulary.REGIONS)[self.region]
 
     def __str__(self):
-        if self.id:
-            return f"Constabulary ({self.name})"
-        else:
-            return "Constabulary (New)"
+        return self.name
 
     class Meta:
         ordering = (
