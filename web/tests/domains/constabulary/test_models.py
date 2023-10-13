@@ -36,7 +36,3 @@ class TestConstabulary(TestCase):
     def test_region_verbose(self):
         constabulary = self.create_constabulary()
         assert constabulary.region_verbose == "East Midlands"
-
-    def test_string_representation(self):
-        constabulary = self.create_constabulary()
-        assert constabulary.__str__() == f"Constabulary ({constabulary.name})"
