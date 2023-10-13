@@ -1,8 +1,9 @@
-import datetime
+import datetime as dt
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 from unittest.mock import Mock
 
+import freezegun
 import pytest
 from django.core import mail
 from django.urls import reverse
@@ -77,6 +78,39 @@ def test_take_ownership_in_progress(ilb_admin_client: "Client", wood_app_in_prog
     # Can't own an in progress application
     with pytest.raises(ProcessStateError):
         ilb_admin_client.post(CaseURLS.take_ownership(wood_app_in_progress.pk))
+
+
+@pytest.mark.parametrize(
+    ["app_fixture", "expected_licence_end_date"],
+    [
+        ("fa_oil_app_submitted", dt.date(2022, 8, 29)),
+        # Test we can end licence on a leap year.
+        ("fa_dfl_app_submitted", dt.date(2020, 2, 29)),
+        ("fa_sil_app_submitted", dt.date(2020, 2, 29)),
+        ("sanctions_app_submitted", dt.date(2020, 2, 29)),
+        ("wood_app_submitted", dt.date(2020, 2, 29)),
+    ],
+)
+def test_take_ownership_licence_dates(
+    app_fixture: str,
+    expected_licence_end_date,
+    ilb_admin_client,
+    request: pytest.FixtureRequest,
+):
+    submitted_app = request.getfixturevalue(app_fixture)
+    licence = document_pack.pack_draft_get(submitted_app)
+
+    assert not licence.licence_start_date
+    assert not licence.licence_end_date
+
+    with freezegun.freeze_time("2019-08-29 10:21:12"):
+        resp = ilb_admin_client.post(CaseURLS.take_ownership(submitted_app.pk, "import"))
+
+    assert resp.status_code == 302
+
+    licence.refresh_from_db()
+    assert licence.licence_start_date == dt.date(2019, 8, 29)
+    assert licence.licence_end_date == expected_licence_end_date
 
 
 def test_manage_case_get(ilb_admin_client: "Client", wood_application):
@@ -277,7 +311,7 @@ def test_start_authorisation_approved_application_has_errors(ilb_admin_client, w
     check_pages_checked(errors, ["Checklist", "Response Preparation", "Application Updates"])
 
     check_page_errors(errors, "Checklist", ["Checklist"])
-    check_page_errors(errors, "Response Preparation", ["Licence end date"])
+    check_page_errors(errors, "Response Preparation", [])
     check_page_errors(errors=errors, page_name="Application Updates", error_field_names=["Status"])
 
 
@@ -357,7 +391,7 @@ def test_start_authorisation_approved_application_has_no_errors_export_app(
     germany_dr = document_pack.doc_ref_certificate_get(cert, germany)
     poland_dr = document_pack.doc_ref_certificate_get(cert, poland)
 
-    this_year = datetime.date.today().year
+    this_year = dt.date.today().year
     assert finland_dr.reference == f"COM/{this_year}/00001"
     assert germany_dr.reference == f"COM/{this_year}/00002"
     assert poland_dr.reference == f"COM/{this_year}/00003"
@@ -715,9 +749,7 @@ class TestViewIssuedCaseDocumentsView:
         assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
 
     def test_get_success(self):
-        self.licence.case_completion_datetime = datetime.datetime(
-            2020, 6, 15, 11, 44, 0, tzinfo=datetime.UTC
-        )
+        self.licence.case_completion_datetime = dt.datetime(2020, 6, 15, 11, 44, 0, tzinfo=dt.UTC)
         self.licence.save()
 
         response = self.client.get(self.url)
@@ -892,8 +924,8 @@ class TestClearCaseFromWorkbasketView:
 
 def _set_valid_licence(wood_application):
     licence = document_pack.pack_draft_get(wood_application)
-    licence.licence_start_date = datetime.date.today()
-    licence.licence_end_date = datetime.date(datetime.date.today().year + 1, 12, 1)
+    licence.licence_start_date = dt.date.today()
+    licence.licence_end_date = dt.date(dt.date.today().year + 1, 12, 1)
     licence.issue_paper_licence_only = True
     licence.save()
 

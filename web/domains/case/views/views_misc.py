@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, Any, Optional
 
+from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -287,12 +288,36 @@ def take_ownership(
         if application.status == model_class.Statuses.SUBMITTED:
             application.status = model_class.Statuses.PROCESSING
 
+            # licence start and end date set the first time a caseworker
+            # takes ownership of a case.
             if case_type == "import":
-                # Licence start date is set when ILB Admin takes the case
                 licence = document_pack.pack_draft_get(application)
+                now = timezone.now()
 
                 if not licence.licence_start_date:
-                    licence.licence_start_date = timezone.now().date()
+                    licence.licence_start_date = now.date()
+
+                if not licence.licence_end_date:
+                    pt = ProcessTypes
+
+                    match application.process_type:
+                        case pt.FA_DFL | pt.FA_SIL | pt.SANCTIONS | pt.WOOD:
+                            delta = relativedelta(months=6)
+                        case pt.FA_OIL:
+                            delta = relativedelta(years=3)
+                        case pt.IRON_STEEL | pt.SPS:
+                            delta = relativedelta(months=4)
+                        case pt.TEXTILES:
+                            delta = relativedelta(months=9)
+                        case pt.OPT:
+                            delta = relativedelta(months=8)
+                        case _:
+                            # All other app types don't set the licence_end_date.
+                            delta = relativedelta()
+
+                    if delta:
+                        licence.licence_end_date = (now + delta).date()
+
                     licence.save()
 
         application.case_owner = request.user

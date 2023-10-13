@@ -79,7 +79,7 @@ def test_get_app_errors_application_approved_has_errors(
     check_page_errors(
         errors=errors,
         page_name="Response Preparation",
-        error_field_names=["Licence end date"],
+        error_field_names=[],
     )
 
     # Open update requests must be closed
