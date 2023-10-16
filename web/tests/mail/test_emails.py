@@ -3,6 +3,7 @@ from unittest import mock
 import pytest
 from django.conf import settings
 
+from web.domains.case.services import document_pack
 from web.mail import emails
 from web.mail.constants import EmailTypes, VariationRequestDescription
 from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
@@ -824,3 +825,24 @@ class TestEmails(AuthTestCase):
         app_approved_mock.assert_called_with(app)
         supplementary_report_mock.assert_called_with(app)
         constabulary_mock.assert_called_with(app)
+
+    def test_send_licence_revoked_email(self, completed_dfl_app):
+        document_pack.pack_active_revoke(completed_dfl_app, "TEST", True)
+        pack = document_pack.pack_revoked_get(completed_dfl_app)
+        expected_licence_number = document_pack.doc_ref_licence_get(pack).reference
+
+        exp_template_id = get_gov_notify_template_id(EmailTypes.LICENCE_REVOKED)
+        expected_personalisation = default_personalisation() | {
+            "reference": completed_dfl_app.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(completed_dfl_app, get_importer_site_domain()),
+            "icms_url": get_importer_site_domain(),
+            "licence_number": expected_licence_number,
+        }
+        emails.send_licence_revoked_email(completed_dfl_app)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.importer_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )

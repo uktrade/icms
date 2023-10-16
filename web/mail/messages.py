@@ -4,6 +4,7 @@ from uuid import UUID
 from django.conf import settings
 from django.core.mail import EmailMessage, SafeMIMEMultipart
 
+from web.domains.case.services import document_pack
 from web.domains.case.types import ImpAccessOrExpAccess, ImpOrExp, ImpOrExpApproval
 from web.models import CaseEmail as CaseEmailModel
 from web.models import FurtherInformationRequest, VariationRequest, WithdrawApplication
@@ -397,3 +398,18 @@ class ApplicationFurtherInformationRequestRespondedEmail(ApplicationFurtherInfor
 @final
 class ApplicationFurtherInformationRequestWithdrawnEmail(ApplicationFurtherInformationRequestEmail):
     name = EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST_WITHDRAWN
+
+
+@final
+class LicenceRevokedEmail(BaseApplicationEmail):
+    name = EmailTypes.LICENCE_REVOKED
+
+    def get_context(self) -> dict:
+        context = super().get_context() | {
+            "licence_number": self.get_licence_number(),
+        }
+        return context
+
+    def get_licence_number(self) -> str:
+        pack = document_pack.pack_revoked_get(self.application)
+        return document_pack.doc_ref_licence_get(pack).reference

@@ -82,6 +82,10 @@ templates = [
         EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_WITHDRAWN,
         "2cadfb82-0888-4c43-bc58-ffce9b6055d5",  # /PS-IGNORE
     ),
+    (
+        EmailTypes.LICENCE_REVOKED,
+        "fd150e67-ac38-47e8-b7fd-b0fdd8e131b2",  # /PS-IGNORE
+    ),
 ]
 
 

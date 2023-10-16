@@ -409,19 +409,6 @@ def test_find_invalid_placeholders(content, placeholders, expected):
     assert find_invalid_placeholders(content, placeholders) == expected
 
 
-def test_import_email_template_subject_body(importer_one_contact, importer, office):
-    app = _create_dfl_app(importer_one_contact, importer, office, extra={"status": "COMPLETED"})
-    doc_pack = document_pack.pack_active_get(app)
-    licence_reference = document_pack.doc_ref_licence_get(doc_pack).reference
-    email_subject, email_body = get_email_template_subject_body(app, "LICENCE_REVOKE")
-
-    assert email_subject == f"ICMS Licence {licence_reference} Revoked"
-    assert email_body == (
-        f"Licence {licence_reference} has been revoked. "
-        "Please contact ILB if you believe this is in error or require further information."
-    )
-
-
 def test_export_email_template_subject_body(exporter_one_contact, exporter, office):
     app = _create_com_app(exporter_one_contact, exporter, office, extra={"status": "COMPLETED"})
     doc_pack = document_pack.pack_active_get(app)

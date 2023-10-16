@@ -817,18 +817,6 @@ Yours sincerely,
 
 [[CASE_OFFICER_NAME]]""",
     )
-    Template.objects.get_or_create(
-        start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("22-FEB-2019 12:49:28", DATETIME_FORMAT), is_dst=None
-        ),
-        is_active=True,
-        template_name="Licence Revocation email",
-        template_code="LICENCE_REVOKE",
-        template_type="EMAIL_TEMPLATE",
-        application_domain="IMA",
-        template_title="ICMS Licence [[LICENCE_NUMBER]] Revoked",
-        template_content="Licence [[LICENCE_NUMBER]] has been revoked. Please contact ILB if you believe this is in error or require further information.",
-    )
     # TODO: template extracted from the test system not from the db as missing
     # search IMA_SANCTION_EMAIL to see usage
     Template.objects.get_or_create(
