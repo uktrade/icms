@@ -454,14 +454,19 @@ class TestRevokeCaseView:
         assert pack.revoke_reason == "test reason"
         assert pack.revoke_email_sent is True
 
-        assert len(mail.outbox) == 1
-        revoke_email = mail.outbox[0]
-
-        assert revoke_email.to == ["I1_main_contact@example.com"]  # /PS-IGNORE
-        assert revoke_email.subject == f"ICMS Licence {licence.reference} Revoked"
-        assert revoke_email.body == (
-            f"Licence {licence.reference} has been revoked."
-            f" Please contact ILB if you believe this is in error or require further information."
+        check_gov_notify_email_was_sent(
+            1,
+            ["I1_main_contact@example.com"],  # /PS-IGNORE,
+            EmailTypes.LICENCE_REVOKED,
+            {
+                "reference": self.app.reference,
+                "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                    full_url=True
+                ),
+                "application_url": get_case_view_url(self.app, get_importer_site_domain()),
+                "icms_url": get_importer_site_domain(),
+                "licence_number": licence.reference,
+            },
         )
 
         # check what is in the context on the revoked licence page after revoking

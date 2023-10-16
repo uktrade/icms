@@ -8,6 +8,7 @@ from web.models import CaseEmail as CaseEmailModel
 from web.models import (
     ExporterApprovalRequest,
     FurtherInformationRequest,
+    ImportApplication,
     ImporterApprovalRequest,
     VariationRequest,
     WithdrawApplication,
@@ -36,6 +37,7 @@ from .messages import (
     ExporterAccessRequestApprovalOpenedEmail,
     FirearmsSupplementaryReportEmail,
     ImporterAccessRequestApprovalOpenedEmail,
+    LicenceRevokedEmail,
     VariationRequestCancelledEmail,
     VariationRequestRefusedEmail,
     VariationRequestUpdateCancelledEmail,
@@ -406,3 +408,9 @@ def create_case_email(
         case_email.attachments.add(*attachments)
 
     return case_email
+
+
+def send_licence_revoked_email(application: ImportApplication) -> None:
+    recipients = get_application_contact_email_addresses(application)
+    for recipient in recipients:
+        LicenceRevokedEmail(application=application, to=[recipient]).send()

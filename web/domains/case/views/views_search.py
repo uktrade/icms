@@ -33,7 +33,7 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import client
 from web.domains.template.context import RevokedEmailTemplateContext
 from web.domains.template.utils import get_email_template_subject_body
-from web.mail.emails import send_application_reopened_email
+from web.mail.emails import send_application_reopened_email, send_licence_revoked_email
 from web.models import (
     ExportApplication,
     ImportApplication,
@@ -475,11 +475,7 @@ class RevokeCaseView(SearchActionFormBase):
 
         if email_applicants:
             if is_import:
-                email_subject, email_body = get_email_template_subject_body(
-                    self.application,
-                    DatabaseEmailTemplate.LICENCE_REVOKE,
-                    RevokedEmailTemplateContext,
-                )
+                send_licence_revoked_email(self.application)
             else:
                 email_subject, email_body = get_email_template_subject_body(
                     self.application,
@@ -487,7 +483,7 @@ class RevokeCaseView(SearchActionFormBase):
                     RevokedEmailTemplateContext,
                 )
 
-            send_to_application_contacts(self.application, email_subject, email_body)
+                send_to_application_contacts(self.application, email_subject, email_body)
 
         return super().form_valid(form)
 
