@@ -13,6 +13,7 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task, get_case_page_title
 from web.domains.template.utils import get_application_update_template_data
+from web.mail.emails import send_application_update_response_email
 from web.models import Task, User
 from web.notify import email
 from web.permissions import AppChecker, Perms
@@ -269,7 +270,7 @@ def respond_update_request(
 
                 application.update_order_datetime()
                 application.save()
-                email.send_application_update_response_email(application)
+                send_application_update_response_email(application)
                 return redirect(
                     reverse(
                         application.get_edit_view_name(), kwargs={"application_pk": application_pk}

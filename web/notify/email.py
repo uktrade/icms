@@ -1,7 +1,5 @@
 from collections.abc import Collection
-from typing import Any
 
-import html2text
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import QuerySet
@@ -102,24 +100,3 @@ def send_mailshot(
         for exporter in exporters:
             contacts = organisation_get_contacts(exporter)
             send_to_contacts(subject, message, contacts, html_message)
-
-
-def send_html_email(
-    template: str,
-    context: dict[str, Any],
-    contacts: list[User],
-) -> None:
-    message_html = utils.render_email(template, context)
-    message_text = html2text.html2text(message_html)
-    send_to_contacts(context["subject"], message_text, contacts, message_html)
-
-
-def send_application_update_response_email(application: ImpOrExp) -> None:
-    subject = f"Application Update Response - {application.reference}"
-    template_name = "email/application/update/response.html"
-    contacts = [application.case_owner]
-    context = {
-        "application": application,
-        "subject": subject,
-    }
-    send_html_email(template_name, context, contacts)

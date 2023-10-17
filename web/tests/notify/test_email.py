@@ -4,7 +4,6 @@ from django.test import TestCase
 
 from web.models import Email, User
 from web.notify import email
-from web.tests.helpers import check_email_was_sent
 
 
 class TestEmail(TestCase):
@@ -245,14 +244,3 @@ def test_send_to_application_agent_export(com_app_submitted, agent_exporter):
     assert o.to == ["E1_A1_main_contact@example.com"]  # /PS-IGNORE
     assert o.subject == "Test"
     assert o.body == "Test Body"
-
-
-def test_send_application_update_response_email(com_app_submitted, ilb_admin_two):
-    com_app_submitted.case_owner = ilb_admin_two
-    email.send_application_update_response_email(com_app_submitted)
-    check_email_was_sent(
-        1,
-        ilb_admin_two.email,
-        f"Application Update Response - {com_app_submitted.reference}",
-        "An application update response has been submitted for case",
-    )

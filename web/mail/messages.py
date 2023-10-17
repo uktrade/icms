@@ -172,6 +172,11 @@ class ApplicationStoppedEmail(BaseApplicationEmail):
 
 
 @final
+class ApplicationUpdateResponseEmail(BaseApplicationEmail):
+    name = EmailTypes.APPLICATION_UPDATE_RESPONSE
+
+
+@final
 class ApplicationRefusedEmail(BaseApplicationEmail):
     name = EmailTypes.APPLICATION_REFUSED
 
