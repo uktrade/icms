@@ -509,7 +509,7 @@ def create_in_progress_cfs_app(
 
     form_data = {
         "contact": exporter_one_contact.pk,
-        "countries": Country.objects.first().pk,
+        "countries": [Country.objects.first().pk, Country.objects.last().pk],
     }
 
     save_app_data(

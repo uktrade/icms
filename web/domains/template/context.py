@@ -301,23 +301,6 @@ class EmailTemplateContext:
                 raise ValueError(f"{item} is not a valid email template context value")
 
 
-class RevokedEmailTemplateContext(EmailTemplateContext):
-    def _import_context(self, item: str) -> str:
-        match item:
-            case "LICENCE_NUMBER":
-                pack = document_pack.pack_revoked_get(self.process)
-                return document_pack.doc_ref_licence_get(pack).reference
-        return super()._import_context(item)
-
-    def _export_context(self, item: str) -> str:
-        match item:
-            case "CERTIFICATE_REFERENCES":
-                pack = document_pack.pack_revoked_get(self.process)
-                certificates = document_pack.doc_ref_certificates_all(pack)
-                return ", ".join(certificates.values_list("reference", flat=True))
-        return super()._export_context(item)
-
-
 class ScheduleParagraphContext:
     def __init__(self, schedule: CFSSchedule) -> None:
         self.schedule = schedule

@@ -3454,3 +3454,5 @@ Application Further Information Request Withdrawn
 Access Request Further Information Request Responded
 Access Request Further Information Request Withdrawn
 Licence Revoked
+Certificate Revoked
+CERTIFICATE_REVOKED

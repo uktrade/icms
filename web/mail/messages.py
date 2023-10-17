@@ -413,3 +413,20 @@ class LicenceRevokedEmail(BaseApplicationEmail):
     def get_licence_number(self) -> str:
         pack = document_pack.pack_revoked_get(self.application)
         return document_pack.doc_ref_licence_get(pack).reference
+
+
+@final
+class CertificateRevokedEmail(BaseApplicationEmail):
+    name = EmailTypes.CERTIFICATE_REVOKED
+
+    def get_context(self) -> dict:
+        context = super().get_context() | {
+            "certificate_references": ",".join(self.get_certificate_references()),
+        }
+        return context
+
+    def get_certificate_references(self) -> list[str]:
+        pack = document_pack.pack_revoked_get(self.application)
+        return list(
+            document_pack.doc_ref_certificates_all(pack).values_list("reference", flat=True)
+        )
