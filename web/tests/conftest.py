@@ -789,6 +789,9 @@ def completed_cfs_app(cfs_app_submitted, ilb_admin_client):
     app.save()
     task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
     end_process_task(task)
+
+    document_pack.pack_draft_set_active(app)
+
     return app
 
 

@@ -6,6 +6,7 @@ from web.domains.template.utils import get_email_template_subject_body
 from web.flow.models import ProcessTypes
 from web.models import CaseEmail as CaseEmailModel
 from web.models import (
+    ExportApplication,
     ExporterApprovalRequest,
     FurtherInformationRequest,
     ImportApplication,
@@ -34,6 +35,7 @@ from .messages import (
     ApplicationStoppedEmail,
     ApplicationVariationCompleteEmail,
     CaseEmail,
+    CertificateRevokedEmail,
     ExporterAccessRequestApprovalOpenedEmail,
     FirearmsSupplementaryReportEmail,
     ImporterAccessRequestApprovalOpenedEmail,
@@ -414,3 +416,9 @@ def send_licence_revoked_email(application: ImportApplication) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
         LicenceRevokedEmail(application=application, to=[recipient]).send()
+
+
+def send_certificate_revoked_email(application: ExportApplication) -> None:
+    recipients = get_application_contact_email_addresses(application)
+    for recipient in recipients:
+        CertificateRevokedEmail(application=application, to=[recipient]).send()

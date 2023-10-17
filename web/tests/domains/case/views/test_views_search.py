@@ -12,11 +12,7 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.flow import errors
 from web.mail.constants import EmailTypes
-from web.mail.url_helpers import (
-    get_case_view_url,
-    get_importer_site_domain,
-    get_validate_digital_signatures_url,
-)
+from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import (
     CertificateOfManufactureApplication,
     ImportApplicationLicence,
@@ -25,6 +21,7 @@ from web.models import (
     WoodQuotaApplication,
 )
 from web.permissions import Perms
+from web.sites import get_exporter_site_domain, get_importer_site_domain
 from web.tests.helpers import SearchURLS, check_gov_notify_email_was_sent
 
 
@@ -431,6 +428,39 @@ class TestRevokeCaseView:
 
         response = exporter_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_revoke_certificate_with_send_email(self, completed_cfs_app):
+        app = completed_cfs_app
+        url = SearchURLS.revoke_licence(app.pk)
+        response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        form_data = {"send_email": "on", "reason": "test reason"}
+        resp = self.client.post(url, data=form_data, follow=True)
+        assert resp.status_code == HTTPStatus.OK
+
+        app.refresh_from_db()
+        assert app.status == ImpExpStatus.REVOKED
+
+        pack = document_pack.pack_revoked_get(app)
+        assert pack.revoke_reason == "test reason"
+        assert pack.revoke_email_sent is True
+
+        year = timezone.now().year
+        check_gov_notify_email_was_sent(
+            1,
+            ["E1_main_contact@example.com"],  # /PS-IGNORE,
+            EmailTypes.CERTIFICATE_REVOKED,
+            {
+                "reference": app.reference,
+                "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                    full_url=True
+                ),
+                "application_url": get_case_view_url(app, get_exporter_site_domain()),
+                "icms_url": get_exporter_site_domain(),
+                "certificate_references": f"CFS/{year}/00001,CFS/{year}/00002",
+            },
+        )
 
     def test_revoke_licence_with_send_email(self):
         # check what is in the context on the initial page load

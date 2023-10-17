@@ -922,18 +922,6 @@ Thanks and best regards
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("22-FEB-2019 12:32:26", DATETIME_FORMAT), is_dst=None
-        ),
-        is_active=True,
-        template_name="Certificate Revocation email",
-        template_code="CERTIFICATE_REVOKE",
-        template_type="EMAIL_TEMPLATE",
-        application_domain="CA",
-        template_title="ICMS Certificate(s) Revoked",
-        template_content="Certificate(s) [[CERTIFICATE_REFERENCES]] have been revoked. Please contact ILB if you believe this is in error or require further information.",
-    )
-    Template.objects.get_or_create(
-        start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("19-MAR-2019 11:01:26", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,

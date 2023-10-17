@@ -14,7 +14,6 @@ from web.domains.template.utils import (
     get_application_update_template_data,
     get_context_dict,
     get_cover_letter_content,
-    get_email_template_subject_body,
     get_fir_template_data,
     get_letter_fragment,
 )
@@ -407,20 +406,6 @@ def test_sil_get_letter_fragment(importer_one_contact, importer, office, mp, eu,
 )
 def test_find_invalid_placeholders(content, placeholders, expected):
     assert find_invalid_placeholders(content, placeholders) == expected
-
-
-def test_export_email_template_subject_body(exporter_one_contact, exporter, office):
-    app = _create_com_app(exporter_one_contact, exporter, office, extra={"status": "COMPLETED"})
-    doc_pack = document_pack.pack_active_get(app)
-    certificates = document_pack.doc_ref_certificates_all(doc_pack)
-    references = ", ".join(certificates.values_list("reference", flat=True))
-
-    email_subject, email_body = get_email_template_subject_body(app, "CERTIFICATE_REVOKE")
-    assert email_subject == "ICMS Certificate(s) Revoked"
-    assert email_body == (
-        f"Certificate(s) {references} have been revoked. "
-        "Please contact ILB if you believe this is in error or require further information."
-    )
 
 
 def test_get_import_application_update_request_contents(wood_app_submitted, ilb_admin_two):

@@ -31,9 +31,11 @@ from web.domains.case.forms_search import (
 from web.domains.case.services import case_progress, document_pack, reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import client
-from web.domains.template.context import RevokedEmailTemplateContext
-from web.domains.template.utils import get_email_template_subject_body
-from web.mail.emails import send_application_reopened_email, send_licence_revoked_email
+from web.mail.emails import (
+    send_application_reopened_email,
+    send_certificate_revoked_email,
+    send_licence_revoked_email,
+)
 from web.models import (
     ExportApplication,
     ImportApplication,
@@ -43,8 +45,6 @@ from web.models import (
     User,
     VariationRequest,
 )
-from web.notify.constants import DatabaseEmailTemplate
-from web.notify.email import send_to_application_contacts
 from web.permissions import AppChecker, Perms, can_user_view_search_cases
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
@@ -477,13 +477,7 @@ class RevokeCaseView(SearchActionFormBase):
             if is_import:
                 send_licence_revoked_email(self.application)
             else:
-                email_subject, email_body = get_email_template_subject_body(
-                    self.application,
-                    DatabaseEmailTemplate.CERTIFICATE_REVOKE,
-                    RevokedEmailTemplateContext,
-                )
-
-                send_to_application_contacts(self.application, email_subject, email_body)
+                send_certificate_revoked_email(self.application)
 
         return super().form_valid(form)
 

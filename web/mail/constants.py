@@ -86,10 +86,8 @@ class EmailTypes(TypedTextChoices):
         "ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_WITHDRAWN",
         "Access Request Further Information Request Withdrawn",
     )
-    LICENCE_REVOKED = (
-        "LICENCE_REVOKED",
-        "Licence Revoked",
-    )
+    LICENCE_REVOKED = ("LICENCE_REVOKED", "Licence Revoked")
+    CERTIFICATE_REVOKED = ("CERTIFICATE_REVOKED", "Certificate Revoked")
 
 
 # TODO: ICMSLST-2348 Gov Notify - Review constants

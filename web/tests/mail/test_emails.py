@@ -2,6 +2,7 @@ from unittest import mock
 
 import pytest
 from django.conf import settings
+from django.utils import timezone
 
 from web.domains.case.services import document_pack
 from web.mail import emails
@@ -843,6 +844,26 @@ class TestEmails(AuthTestCase):
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.importer_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_certificate_revoked_email(self, completed_cfs_app):
+        document_pack.pack_active_revoke(completed_cfs_app, "TEST", True)
+        year = timezone.now().year
+
+        exp_template_id = get_gov_notify_template_id(EmailTypes.CERTIFICATE_REVOKED)
+        expected_personalisation = default_personalisation() | {
+            "reference": completed_cfs_app.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
+            "icms_url": get_exporter_site_domain(),
+            "certificate_references": f"CFS/{year}/00001,CFS/{year}/00002",
+        }
+        emails.send_certificate_revoked_email(completed_cfs_app)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.exporter_user.email,
             exp_template_id,
             personalisation=expected_personalisation,
         )
