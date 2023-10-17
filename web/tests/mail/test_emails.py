@@ -867,3 +867,19 @@ class TestEmails(AuthTestCase):
             exp_template_id,
             personalisation=expected_personalisation,
         )
+
+    def test_application_update_response_email(self, completed_dfl_app):
+        exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_UPDATE_RESPONSE)
+        expected_personalisation = default_personalisation() | {
+            "reference": completed_dfl_app.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(completed_dfl_app, get_importer_site_domain()),
+            "icms_url": get_importer_site_domain(),
+        }
+        emails.send_application_update_response_email(completed_dfl_app)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.ilb_admin_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )

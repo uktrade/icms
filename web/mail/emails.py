@@ -33,6 +33,7 @@ from .messages import (
     ApplicationRefusedEmail,
     ApplicationReopenedEmail,
     ApplicationStoppedEmail,
+    ApplicationUpdateResponseEmail,
     ApplicationVariationCompleteEmail,
     CaseEmail,
     CertificateRevokedEmail,
@@ -279,6 +280,12 @@ def send_application_reopened_email(application: ImpOrExp) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
         ApplicationReopenedEmail(application=application, to=[recipient]).send()
+
+
+def send_application_update_response_email(application: ImpOrExp) -> None:
+    recipients = get_email_addresses_for_users([application.case_owner])
+    for recipient in recipients:
+        ApplicationUpdateResponseEmail(application=application, to=[recipient]).send()
 
 
 def send_firearms_supplementary_report_email(application: ImpOrExp) -> None:
