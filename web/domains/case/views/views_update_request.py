@@ -13,9 +13,11 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task, get_case_page_title
 from web.domains.template.utils import get_application_update_template_data
-from web.mail.emails import send_application_update_response_email
+from web.mail.emails import (
+    send_application_update_email,
+    send_application_update_response_email,
+)
 from web.models import Task, User
-from web.notify import email
 from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 
@@ -97,11 +99,7 @@ def manage_update_requests(
                 Task.objects.create(
                     process=application, task_type=Task.TaskType.PREPARE, previous=task
                 )
-
-                email.send_to_application_contacts(
-                    application, update_request.request_subject, update_request.request_detail
-                )
-
+                send_application_update_email(update_request)
                 application.update_order_datetime()
                 application.save()
 

@@ -13,6 +13,7 @@ from web.models import (
     ExporterAccessRequest,
     FurtherInformationRequest,
     ImporterAccessRequest,
+    UpdateRequest,
     VariationRequest,
     WithdrawApplication,
 )
@@ -880,6 +881,28 @@ class TestEmails(AuthTestCase):
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.ilb_admin_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_application_update_email(self, wood_app_submitted):
+        exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_UPDATE)
+        update_request = UpdateRequest.objects.create(
+            request_detail="Update details", request_subject="Application Update"
+        )
+        wood_app_submitted.update_requests.add(update_request)
+        expected_personalisation = default_personalisation() | {
+            "subject": "Application Update",
+            "body": "Update details",
+            "reference": wood_app_submitted.reference,
+            "icms_url": get_importer_site_domain(),
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(wood_app_submitted, get_importer_site_domain()),
+        }
+        emails.send_application_update_email(update_request)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.importer_user.email,
             exp_template_id,
             personalisation=expected_personalisation,
         )

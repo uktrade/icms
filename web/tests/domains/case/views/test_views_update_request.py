@@ -8,11 +8,7 @@ from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatu
 from web.models import ImportApplication, UpdateRequest
 from web.sites import get_importer_site_domain
 from web.tests.application_utils import submit_app
-from web.tests.helpers import (
-    CaseURLS,
-    check_email_was_sent,
-    check_gov_notify_email_was_sent,
-)
+from web.tests.helpers import CaseURLS, check_gov_notify_email_was_sent
 
 
 def get_open_update_request(
@@ -60,11 +56,18 @@ def test_manage_update_requests(ilb_admin_client: Client, wood_app_submitted: Im
         "request_detail": "Please update your application",
     }
     update_request = get_open_update_request(ilb_admin_client, wood_app_submitted, post=post)
-    check_email_was_sent(
+    check_gov_notify_email_was_sent(
         1,
-        "I1_main_contact@example.com",  # /PS-IGNORE
-        post["request_subject"],
-        post["request_detail"],
+        ["I1_main_contact@example.com"],  # /PS-IGNORE
+        EmailTypes.APPLICATION_UPDATE,
+        {
+            "reference": wood_app_submitted.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(wood_app_submitted, get_importer_site_domain()),
+            "icms_url": get_importer_site_domain(),
+        },
+        exp_subject=post["request_subject"],
+        exp_in_body=post["request_detail"],
     )
     assert update_request.status == UpdateRequest.Status.OPEN
 

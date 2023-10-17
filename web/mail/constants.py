@@ -25,7 +25,9 @@ class EmailTypes(TypedTextChoices):
     APPLICATION_REFUSED = ("APPLICATION_REFUSED", "Application Refused")
     APPLICATION_REASSIGNED = ("APPLICATION_REASSIGNED", "Application Reassigned")
     APPLICATION_REOPENED = ("APPLICATION_REOPENED", "Application Reopened")
+    APPLICATION_UPDATE = ("APPLICATION_UPDATE", "Application Update")
     APPLICATION_UPDATE_RESPONSE = ("APPLICATION_UPDATE_RESPONSE", "Application Update Response")
+
     EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED = (
         "EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED",
         "Exporter Access Request Approval Opened",
