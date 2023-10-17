@@ -1,13 +1,32 @@
 from collections.abc import Iterable
 
+from django.db.models import QuerySet
+
 from web.domains.case.types import ImpOrExp, Organisation
 from web.flow.models import ProcessTypes
 from web.models import CaseEmail, User
-from web.notify.email import get_application_contacts, get_organisation_contacts
 from web.notify.utils import get_notification_emails
-from web.permissions import get_all_case_officers, get_ilb_case_officers
+from web.permissions import (
+    get_all_case_officers,
+    get_ilb_case_officers,
+    get_org_obj_permissions,
+    organisation_get_contacts,
+)
 
 from .decorators import override_recipients
+
+
+def get_application_contacts(application: ImpOrExp) -> QuerySet[User]:
+    if application.is_import_application():
+        org = application.agent or application.importer
+    else:
+        org = application.agent or application.exporter
+    return get_organisation_contacts(org)
+
+
+def get_organisation_contacts(org):
+    obj_perms = get_org_obj_permissions(org)
+    return organisation_get_contacts(org, perms=[obj_perms.edit.codename])
 
 
 def get_all_case_officers_email_addresses() -> list[str]:

@@ -5,9 +5,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.db.models import QuerySet
 
 from config.celery import app
-from web.domains.case.types import ImpOrExp
 from web.models import Exporter, Importer, User
-from web.permissions import get_org_obj_permissions, organisation_get_contacts
+from web.permissions import organisation_get_contacts
 
 from . import utils
 
@@ -39,26 +38,6 @@ def send_to_contacts(
         send_email.delay(
             subject, message, utils.get_notification_emails(contact), html_message=html_message
         )
-
-
-def send_to_application_contacts(
-    application: ImpOrExp, subject: str, message: str, html_message: str | None = None
-) -> None:
-    contacts = get_application_contacts(application)
-    send_to_contacts(subject, message, contacts, html_message)
-
-
-def get_application_contacts(application: ImpOrExp) -> QuerySet[User]:
-    if application.is_import_application():
-        org = application.agent or application.importer
-    else:
-        org = application.agent or application.exporter
-    return get_organisation_contacts(org)
-
-
-def get_organisation_contacts(org):
-    obj_perms = get_org_obj_permissions(org)
-    return organisation_get_contacts(org, perms=[obj_perms.edit.codename])
 
 
 @app.task(name="web.notify.email.send_mailshot")

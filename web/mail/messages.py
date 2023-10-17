@@ -7,7 +7,12 @@ from django.core.mail import EmailMessage, SafeMIMEMultipart
 from web.domains.case.services import document_pack
 from web.domains.case.types import ImpAccessOrExpAccess, ImpOrExp, ImpOrExpApproval
 from web.models import CaseEmail as CaseEmailModel
-from web.models import FurtherInformationRequest, VariationRequest, WithdrawApplication
+from web.models import (
+    FurtherInformationRequest,
+    UpdateRequest,
+    VariationRequest,
+    WithdrawApplication,
+)
 from web.permissions import Perms
 from web.sites import (
     get_caseworker_site_domain,
@@ -435,3 +440,18 @@ class CertificateRevokedEmail(BaseApplicationEmail):
         return list(
             document_pack.doc_ref_certificates_all(pack).values_list("reference", flat=True)
         )
+
+
+@final
+class ApplicationUpdateEmail(BaseApplicationEmail):
+    name = EmailTypes.APPLICATION_UPDATE
+
+    def __init__(self, *args, update_request: UpdateRequest, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.update_request = update_request
+
+    def get_context(self) -> dict:
+        context = super().get_context()
+        context["subject"] = self.update_request.request_subject
+        context["body"] = self.update_request.request_detail
+        return context
