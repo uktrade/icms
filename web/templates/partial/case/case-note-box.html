@@ -13,18 +13,18 @@
         Edit
       </a>
     {% endif %}
-    {% if note.is_active and note.status != "COMPLETED" %}
+    {% if note.is_active %}
       <form method="post"
-            action="{{ icms_url('case:archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type }) }}"
-            class="form-inline">
-        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
+        action="{{ icms_url('case:archive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type }) }}"
+        class="form-inline">
+        {{ csrf_input }}
         <button type="submit" class="small-button icon-bin">Delete</button>
       </form>
     {% elif not note.is_active %}
       <form method="post"
-            action="{{ icms_url('case:unarchive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type }) }}"
-            class="form-inline">
-        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
+        action="{{ icms_url('case:unarchive-note', kwargs={'application_pk': process.pk, 'note_pk': note.pk, 'case_type': case_type }) }}"
+        class="form-inline">
+        {{ csrf_input }}
         <button type="submit" class="small-button icon-undo">Restore</button>
       </form>
     {% endif %}
@@ -34,8 +34,6 @@
     <div class="two columns"></div>
     <div class="eight columns">
       <dl>
-        <dt class="bold">Status</dt>
-        <dd class="status {{ note.status.lower() }}"><span class="text-widget">{{ note.get_status_display() }}</span></dd>
         <dt class="bold">Case Note</dt>
         <dd>{{ note.note|default('N/A', true) }}</dd>
         <dt class="bold">Documents</dt>

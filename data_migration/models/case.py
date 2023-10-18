@@ -356,6 +356,8 @@ class CaseNote(MigrationBase):
             "export_application_id",
             "file_folder_id",
             "doc_folder_id",
+            # V2 Has removed this field.
+            "status",
         ]
 
     @classmethod

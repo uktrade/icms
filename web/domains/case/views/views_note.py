@@ -6,15 +6,15 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 
+from web.domains.case import forms
 from web.domains.case.services import case_progress
+from web.domains.case.types import ImpOrExp
+from web.domains.case.utils import get_case_page_title
 from web.domains.file.utils import create_file_model
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 
-from .. import forms, models
-from ..types import ImpOrExp
-from ..utils import get_case_page_title
 from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
 
 
@@ -63,7 +63,7 @@ def add_note(
 
         case_progress.application_in_processing(application)
 
-        note = application.case_notes.create(status=models.CASE_NOTE_DRAFT, created_by=request.user)
+        note = application.case_notes.create(created_by=request.user)
 
     return redirect(
         reverse(
