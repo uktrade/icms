@@ -1,5 +1,10 @@
 {% extends "web/domains/case/manage/base.html" %}
 
+{% block page_js %}
+  {{ super() }}
+  <script src="{{ static('web/js/pages/case-notes.js') }}" type="text/javascript"></script>
+{% endblock %}
+
 {% block main_content %}
   <h3>Case Notes</h3>
   <div class="info-box info-box-info">
@@ -9,12 +14,12 @@
   </div>
 
   <ul class="tabs -tabs " data-tab-group="tg-notes" role="tablist">
-      <li id="tg-notes-CURRENT" class="current-tab" aria-selected="true" data-tab-key="CURRENT" role="tab" aria-controls="tg-notes-CURRENT">
-          <a href="javascript:FOXtabs.switchTab('tg-notes', 'CURRENT')">Current</a>
-      </li>
-      <li id="tg-notes-ARCHIVED" class="disabled-tab" aria-selected="false" data-tab-key="ARCHIVED" role="tab" aria-controls="tg-notes-archived">
-          <a href="javascript:FOXtabs.switchTab('tg-notes', 'ARCHIVED')">Deleted</a>
-      </li>
+    <li id="notes-current" class="current-tab" aria-selected="true" role="tab" aria-controls="tg-notes-CURRENT">
+      <a href="#">Current</a>
+    </li>
+    <li id="notes-archived" aria-selected="false" role="tab" aria-controls="tg-notes-archived" data-note-count="{{ notes.inactive().count() }}">
+      <a href="#">Deleted</a>
+    </li>
   </ul>
 
   {% if not readonly_view %}
@@ -22,7 +27,7 @@
       <ul class="menu-out flow-across">
         <li>
           <form method="post" action="{{ icms_url('case:add-note', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}" class="form-inline">
-            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}" />
+            {{ csrf_input }}
             <button type="submit" class="small-button icon-plus">New Case note</button>
           </form>
         </li>
@@ -30,12 +35,13 @@
     </div>
   {% endif %}
 
-  <div aria-labelledby="notes-current" class="tab-content " style="" data-tab-group="tg-notes" data-tab-key="CURRENT" aria-hidden="false">
+  <div id="current-notes-list" class="tab-content">
     {% for note in notes.active() %}
       {% include 'partial/case/case-note-box.html' %}
     {% endfor %}
   </div>
-  <div id="tcs1Kzx6n_plrnqVW43-tg-notesARCHIVED" aria-labelledby="tks1Kzx6n_plrnqVW43-tg-notesARCHIVED" class="tab-content " style="display: none;" data-tab-group="tg-notes" data-tab-key="ARCHIVED" aria-hidden="true">
+
+  <div id="deleted-notes-list" class="tab-content" style="display: none;">
     {% for note in notes.inactive() %}
       {% include 'partial/case/case-note-box.html' %}
     {% endfor %}
