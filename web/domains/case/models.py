@@ -140,10 +140,14 @@ class CaseNote(models.Model):
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
-        blank=False,
-        null=False,
         related_name="created_import_case_notes",
     )
+
+    updated_at = models.DateTimeField(auto_now=True)
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, related_name="+"
+    )
+
     files = models.ManyToManyField("web.File")
 
     class Meta:

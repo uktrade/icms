@@ -3467,3 +3467,4 @@ Estos
 el mercado
 Unido
 Unido Los
+{{ note.updated_at|localize }}

@@ -88,7 +88,7 @@ def archive_note(
 
         case_progress.application_in_processing(application)
 
-        application.case_notes.filter(pk=note_pk).update(is_active=False)
+        application.case_notes.filter(pk=note_pk).update(is_active=False, updated_by=request.user)
 
     return redirect(
         reverse(
@@ -112,7 +112,7 @@ def unarchive_note(
 
         case_progress.application_in_processing(application)
 
-        application.case_notes.filter(pk=note_pk).update(is_active=True)
+        application.case_notes.filter(pk=note_pk).update(is_active=True, updated_by=request.user)
 
     return redirect(
         reverse(
@@ -151,7 +151,9 @@ def edit_note(
             note_form = forms.CaseNoteForm(request.POST, instance=note)
 
             if note_form.is_valid():
-                note_form.save()
+                note = note_form.save(commit=False)
+                note.updated_by = request.user
+                note.save()
 
                 return redirect(
                     reverse(

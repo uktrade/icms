@@ -1,8 +1,9 @@
 <fieldset>
-  <legend class="bold">
-    Case Note created by {{ note.created_by }} on {{ note.create_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
-  </legend>
-
+  <legend class="bold">Case Note: {{ note.create_datetime.date()|localize }}</legend>
+  <div class="extra-info case-item-extra-info">
+      Created by {{ note.created_by }} on {{ note.create_datetime|localize }} {% if note.updated_by %}(Last updated by {{ note.updated_by }} on {{ note.updated_at|localize }}){% endif %}
+  </div>
+  <br>
 
   {% if not readonly_view %}
     {% if note.is_active %}
