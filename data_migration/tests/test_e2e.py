@@ -452,10 +452,7 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
 
     fir1, fir2, fir3 = ia1.further_information_requests.order_by("pk")
 
-    assert len(fir1.email_cc_address_list) == 2
     assert fir1.requested_datetime == dt.datetime(2021, 1, 2, 12, 23, tzinfo=dt.timezone.utc)
-    assert len(fir2.email_cc_address_list) == 1
-    assert fir3.email_cc_address_list is None
 
     assert fir1.files.count() == 2
     assert fir2.files.count() == 1

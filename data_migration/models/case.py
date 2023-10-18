@@ -501,14 +501,12 @@ class FurtherInformationRequest(MigrationBase):
             "folder_id",
             "export_application_id",
             "access_request_id",
+            "email_cc_address_list_str",
         ]
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        address_list_str = data.pop("email_cc_address_list_str") or ""
-        data["email_cc_address_list"] = str_to_list(address_list_str)
         data["process_ptr_id"] = data.pop("id")
-
         return data
 
     @classmethod

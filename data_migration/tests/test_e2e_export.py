@@ -302,7 +302,6 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     fir1 = ea6.further_information_requests.first()
     assert fir1.status == "CLOSED"
-    assert len(fir1.email_cc_address_list) == 1
 
     assert ea4.certificates.count() == 0
     assert ea5.certificates.count() == 1
@@ -391,7 +390,6 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     fir2 = ea8.further_information_requests.first()
     assert fir2.status == "OPEN"
-    assert len(fir2.email_cc_address_list) == 2
 
     case_note2, case_note3 = ea9.case_notes.order_by("pk")
     assert case_note2.files.count() == 0
