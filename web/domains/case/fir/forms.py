@@ -11,7 +11,7 @@ class FurtherInformationRequestForm(ModelForm):
 
     class Meta:
         model = FurtherInformationRequest
-        fields = ("status", "request_subject", "email_cc_address_list", "request_detail")
+        fields = ("status", "request_subject", "request_detail")
 
 
 class FurtherInformationRequestResponseForm(ModelForm):

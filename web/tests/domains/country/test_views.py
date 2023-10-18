@@ -30,7 +30,7 @@ class TestCountryListView(AuthTestCase):
 
     def test_page_results(self):
         for i in range(3):
-            CountryFactory()
+            CountryFactory(name=f"Test Country {i}")
         response = self.ilb_admin_client.get(self.url)
         results = response.context_data["object_list"]
         assert len(results) == 183

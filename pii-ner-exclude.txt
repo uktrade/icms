@@ -3468,3 +3468,6 @@ el mercado
 Unido
 Unido Los
 {{ note.updated_at|localize }}
+{{ fir.requested_datetime.strftime('%d-%b-%Y %
+fir.request_subject|default('N/A'
+{{ fir.response_datetime.strftime('%d-%b-%Y %

@@ -20,16 +20,6 @@
         <dd>{{ fir.requested_by }}</dd>
         <dt class="bold">Request Subject</dt>
         <dd>{{ fir.request_subject|default('N/A', true) }}</dd>
-        <dt class="bold">Request CC Email Addresses</dt>
-        <dd>
-          {% if fir.email_cc_address_list %}
-            {% for cc in fir.email_cc_address_list %}
-              {{ cc }}{% if not loop.last %},{% endif %}
-            {% endfor %}
-          {% else %}
-            N/A
-          {% endif %}
-        </dd>
         <dt class="bold">Request Details</dt>
         <dd>{{ fir.request_detail|default('N/A', true)|nl2br }}</dd>
         <dt class="bold">Documents</dt>
