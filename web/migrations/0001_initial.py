@@ -1249,6 +1249,7 @@ class Migration(migrations.Migration):
                             ),
                             ("LICENCE_REVOKED", "Licence Revoked"),
                             ("CERTIFICATE_REVOKED", "Certificate Revoked"),
+                            ("AUTHORITY_ARCHIVED", "Authority Archived"),
                         ],
                         max_length=255,
                         unique=True,

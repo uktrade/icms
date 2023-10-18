@@ -14,6 +14,8 @@ class ActiveFirearmsAuthorityManager(models.Manager):
 
 
 class FirearmsAuthority(models.Model):
+    AUTHORITY_TYPE = "Firearms"
+
     DEACTIVATED_FIREARMS = "DEACTIVATED"
     FIREARMS = "FIREARMS"
     REGISTERED_FIREARMS_DEALER = "RFD"

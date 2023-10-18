@@ -15,6 +15,8 @@ class Section5AuthorityManager(models.Manager):
 
 
 class Section5Authority(models.Model):
+    AUTHORITY_TYPE = "Section 5"
+
     # Address Entry type
     MANUAL = "MANUAL"
     SEARCH = "SEARCH"

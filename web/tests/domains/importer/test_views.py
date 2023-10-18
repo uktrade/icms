@@ -1,6 +1,8 @@
 from http import HTTPStatus
 from unittest.mock import create_autospec, patch
+from urllib.parse import urljoin
 
+import freezegun
 import pytest
 from django.urls import reverse
 from django.utils import timezone
@@ -8,11 +10,14 @@ from guardian.shortcuts import remove_perm
 from pytest_django.asserts import assertInHTML, assertRedirects
 
 from web.domains.importer import views
+from web.mail.constants import EmailTypes
 from web.models import Importer, Section5Authority
 from web.permissions import Perms
+from web.sites import get_caseworker_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 from web.tests.domains.importer.factory import ImporterFactory
+from web.tests.helpers import check_gov_notify_email_was_sent
 from web.utils.s3 import get_file_from_s3
 
 
@@ -378,7 +383,10 @@ class TestArchiveSection5View(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, _setup):
         self.section5 = Section5Authority.objects.create(
-            importer=self.importer, start_date=timezone.now().date(), end_date=timezone.now().date()
+            importer=self.importer,
+            start_date=timezone.now().date(),
+            end_date=timezone.now().date(),
+            reference="Test Section 5 Authority",
         )
         self.url = reverse("importer-section5-archive", kwargs={"pk": self.section5.id})
 
@@ -392,12 +400,41 @@ class TestArchiveSection5View(AuthTestCase):
         response = self.exporter_client.post(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
+    @freezegun.freeze_time("2020-01-01 12:00:00")
     def test_post(self):
-        response = self.ilb_admin_client.post(self.url)
+        response = self.ilb_admin_client.post(
+            self.url,
+            data={
+                "archive_reason": ["REVOKED", "OTHER", "REFUSED"],
+                "other_archive_reason": "Another reason",
+            },
+        )
         assert response.status_code == HTTPStatus.FOUND
 
         self.section5.refresh_from_db()
         assert not self.section5.is_active
+        check_gov_notify_email_was_sent(
+            2,
+            ["ilb_admin_two@example.com", "ilb_admin_user@example.com"],  # /PS-IGNORE
+            EmailTypes.AUTHORITY_ARCHIVED,
+            {
+                "reason": "Revoked\r\nRefused",
+                "reason_other": "Another reason",
+                "authority_name": "Test Section 5 Authority",
+                "authority_type": "Section 5",
+                "authority_url": urljoin(
+                    get_caseworker_site_domain(),
+                    reverse("importer-section5-view", kwargs={"pk": self.section5.pk}),
+                ),
+                "date": "1 January 2020",
+                "icms_url": get_caseworker_site_domain(),
+                "importer_name": self.importer.name,
+                "importer_url": urljoin(
+                    get_caseworker_site_domain(),
+                    reverse("importer-view", kwargs={"pk": self.importer.pk}),
+                ),
+            },
+        )
 
     def test_get(self):
         response = self.ilb_admin_client.get(self.url)

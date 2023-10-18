@@ -1,11 +1,18 @@
+import copy
 from typing import ClassVar, final
 from uuid import UUID
 
 from django.conf import settings
 from django.core.mail import EmailMessage, SafeMIMEMultipart
+from django.utils import timezone
 
 from web.domains.case.services import document_pack
-from web.domains.case.types import ImpAccessOrExpAccess, ImpOrExp, ImpOrExpApproval
+from web.domains.case.types import (
+    Authority,
+    ImpAccessOrExpAccess,
+    ImpOrExp,
+    ImpOrExpApproval,
+)
 from web.models import CaseEmail as CaseEmailModel
 from web.models import (
     FurtherInformationRequest,
@@ -13,6 +20,7 @@ from web.models import (
     VariationRequest,
     WithdrawApplication,
 )
+from web.models.shared import ArchiveReasonChoices
 from web.permissions import Perms
 from web.sites import (
     get_caseworker_site_domain,
@@ -22,7 +30,12 @@ from web.sites import (
 
 from .constants import IMPORT_CASE_EMAILS, EmailTypes
 from .models import EmailTemplate
-from .url_helpers import get_case_view_url, get_validate_digital_signatures_url
+from .url_helpers import (
+    get_authority_view_url,
+    get_case_view_url,
+    get_importer_view_url,
+    get_validate_digital_signatures_url,
+)
 
 
 class GOVNotifyEmailMessage(EmailMessage):
@@ -455,3 +468,34 @@ class ApplicationUpdateEmail(BaseApplicationEmail):
         context["subject"] = self.update_request.request_subject
         context["body"] = self.update_request.request_detail
         return context
+
+
+@final
+class AuthorityArchivedEmail(GOVNotifyEmailMessage):
+    name = EmailTypes.AUTHORITY_ARCHIVED
+
+    def __init__(self, *args, authority: Authority, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.authority = authority
+
+    def get_context(self) -> dict:
+        context = super().get_context()
+        return context | {
+            "authority_name": self.authority.reference,
+            "authority_type": self.authority.AUTHORITY_TYPE,
+            "authority_url": get_authority_view_url(self.authority, full_url=True),
+            "date": timezone.now().strftime("%-d %B %Y"),
+            "importer_url": get_importer_view_url(self.authority.importer, full_url=True),
+            "importer_name": self.authority.importer.name,
+            "reason": self.get_reason(),
+            "reason_other": self.authority.other_archive_reason or "",
+        }
+
+    def get_reason(self) -> str:
+        reasons = copy.copy(self.authority.archive_reason)
+        if ArchiveReasonChoices.OTHER in reasons:
+            reasons.remove(ArchiveReasonChoices.OTHER)
+        return "\r\n".join([reason.title() for reason in reasons])
+
+    def get_site_domain(self) -> str:
+        return get_caseworker_site_domain()
