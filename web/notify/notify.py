@@ -1,5 +1,5 @@
 import datetime as dt
-from typing import Any, Literal
+from typing import Any
 
 import html2text
 import structlog as logging
@@ -9,14 +9,7 @@ from django.utils import timezone
 
 from config.celery import app
 from web.domains.case.services import document_pack
-from web.models import (
-    Constabulary,
-    DFLApplication,
-    FirearmsAuthority,
-    Importer,
-    Section5Authority,
-    User,
-)
+from web.models import Constabulary, DFLApplication, Importer, User
 from web.permissions import Perms, SysPerms, constabulary_get_contacts
 
 from . import email, utils
@@ -204,30 +197,6 @@ def send_section_5_expiry_notification() -> None:
     logger.info(
         f"Section 5 authority expiry notifications sent to {importers.count()} importers contacts"
     )
-
-
-def authority_archived_notification(
-    authority: FirearmsAuthority | Section5Authority,
-    authority_type: Literal["Firearms", "Section 5"],
-) -> None:
-    """Sends a notification to all importer maintainers when a verified authority is archived"""
-
-    archived_date = timezone.now().strftime("%-d %B %Y")
-    subject = f"Importer {authority.importer.id} Verified {authority_type} Authority {authority.reference} Archived {archived_date}"
-
-    recipient_users = User.objects.filter(groups__permissions__codename=SysPerms.ilb_admin.codename)
-
-    for user in recipient_users:
-        send_notification(
-            subject,
-            "email/import/authority_archived.html",
-            context={
-                "authority_type": authority_type,
-                "authority": authority,
-                "subject": subject,
-            },
-            recipients=utils.get_notification_emails(user),
-        )
 
 
 def send_constabulary_deactivated_firearms_notification(application: DFLApplication) -> None:

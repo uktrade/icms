@@ -1,7 +1,12 @@
 from django.db.models import QuerySet
 from django.utils import timezone
 
-from web.domains.case.types import ImpAccessOrExpAccess, ImpOrExp, ImpOrExpApproval
+from web.domains.case.types import (
+    Authority,
+    ImpAccessOrExpAccess,
+    ImpOrExp,
+    ImpOrExpApproval,
+)
 from web.domains.template.utils import get_email_template_subject_body
 from web.flow.models import ProcessTypes
 from web.models import CaseEmail as CaseEmailModel
@@ -37,6 +42,7 @@ from .messages import (
     ApplicationUpdateEmail,
     ApplicationUpdateResponseEmail,
     ApplicationVariationCompleteEmail,
+    AuthorityArchivedEmail,
     CaseEmail,
     CertificateRevokedEmail,
     ExporterAccessRequestApprovalOpenedEmail,
@@ -442,3 +448,9 @@ def send_certificate_revoked_email(application: ExportApplication) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
         CertificateRevokedEmail(application=application, to=[recipient]).send()
+
+
+def send_authority_archived_email(authority: Authority) -> None:
+    recipients = get_ilb_case_officers_email_addresses()
+    for recipient in recipients:
+        AuthorityArchivedEmail(authority=authority, to=[recipient]).send()

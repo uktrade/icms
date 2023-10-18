@@ -91,6 +91,7 @@ class EmailTypes(TypedTextChoices):
     )
     LICENCE_REVOKED = ("LICENCE_REVOKED", "Licence Revoked")
     CERTIFICATE_REVOKED = ("CERTIFICATE_REVOKED", "Certificate Revoked")
+    AUTHORITY_ARCHIVED = ("AUTHORITY_ARCHIVED", "Authority Archived")
 
 
 # TODO: ICMSLST-2348 Gov Notify - Review constants

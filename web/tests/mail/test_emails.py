@@ -1,7 +1,10 @@
 from unittest import mock
+from urllib.parse import urljoin
 
+import freezegun
 import pytest
 from django.conf import settings
+from django.urls import reverse
 from django.utils import timezone
 
 from web.domains.case.services import document_pack
@@ -11,8 +14,10 @@ from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatu
 from web.models import (
     EmailTemplate,
     ExporterAccessRequest,
+    FirearmsAuthority,
     FurtherInformationRequest,
     ImporterAccessRequest,
+    Section5Authority,
     UpdateRequest,
     VariationRequest,
     WithdrawApplication,
@@ -903,6 +908,51 @@ class TestEmails(AuthTestCase):
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.importer_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    @pytest.mark.parametrize(
+        "authority_class,authority_type,expected_view_name",
+        [
+            (Section5Authority, "Section 5", "importer-section5-view"),
+            (FirearmsAuthority, "Firearms", "importer-firearms-view"),
+        ],
+    )
+    @freezegun.freeze_time("2020-01-01 12:00:00")
+    def test_send_archived_authority_email(
+        self, authority_class, authority_type, expected_view_name
+    ):
+        exp_template_id = get_gov_notify_template_id(EmailTypes.AUTHORITY_ARCHIVED)
+        authority = authority_class.objects.create(
+            importer=self.importer,
+            start_date=timezone.now().date(),
+            end_date=timezone.now().date(),
+            archive_reason=["REVOKED", "WITHDRAWN"],
+            other_archive_reason="Moved",
+            reference=f"Test {authority_type} Authority",
+        )
+        expected_personalisation = default_personalisation() | {
+            "reason": "Revoked\r\nWithdrawn",
+            "reason_other": "Moved",
+            "authority_name": authority.reference,
+            "authority_type": authority_type,
+            "authority_url": urljoin(
+                get_caseworker_site_domain(),
+                reverse(expected_view_name, kwargs={"pk": authority.pk}),
+            ),
+            "date": "1 January 2020",
+            "icms_url": get_caseworker_site_domain(),
+            "importer_name": self.importer.name,
+            "importer_url": urljoin(
+                get_caseworker_site_domain(),
+                reverse("importer-view", kwargs={"pk": self.importer.pk}),
+            ),
+        }
+        emails.send_authority_archived_email(authority)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 2
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.ilb_admin_user.email,
             exp_template_id,
             personalisation=expected_personalisation,
         )

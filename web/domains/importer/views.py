@@ -28,8 +28,8 @@ from web.domains.importer.forms import (
 )
 from web.domains.office.forms import ImporterOfficeEORIForm, ImporterOfficeForm
 from web.domains.section5.forms import ClauseQuantityForm, Section5AuthorityForm
+from web.mail.emails import send_authority_archived_email
 from web.models import ClauseQuantity, Importer, Section5Authority, Section5Clause, User
-from web.notify.notify import authority_archived_notification
 from web.permissions import (
     Perms,
     can_user_edit_firearm_authorities,
@@ -399,7 +399,7 @@ def archive_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
             section5.is_active = False
             section5.save()
 
-            authority_archived_notification(section5, "Section 5")
+            send_authority_archived_email(section5)
             redirect_to = _get_section_5_redirect_url(request.user, section5.importer)
             return redirect(redirect_to)
     else:

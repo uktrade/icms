@@ -14,6 +14,7 @@ from web.models import (
     ExporterAccessRequest,
     ExporterApprovalRequest,
     File,
+    FirearmsAuthority,
     ImportApplication,
     ImportApplicationLicence,
     ImportApplicationType,
@@ -24,12 +25,14 @@ from web.models import (
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     SanctionsAndAdhocApplication,
+    Section5Authority,
     SILApplication,
     TextilesApplication,
     WoodQuotaApplication,
 )
 
 Organisation = Union[Importer, Exporter]
+Authority = Union[FirearmsAuthority, Section5Authority]
 
 ImpTypeOrExpType = Union[ImportApplicationType, ExportApplicationType]
 

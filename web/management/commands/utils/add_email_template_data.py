@@ -86,6 +86,7 @@ templates = [
     ),
     (EmailTypes.LICENCE_REVOKED, "fd150e67-ac38-47e8-b7fd-b0fdd8e131b2"),  # /PS-IGNORE
     (EmailTypes.CERTIFICATE_REVOKED, "c82e2599-d8fb-4cbe-9bf5-ef92ab2b54cd"),  # /PS-IGNORE
+    (EmailTypes.AUTHORITY_ARCHIVED, "69f08523-3f45-40b0-bfcb-c7aac3fca547"),  # /PS-IGNORE
 ]
 
 

@@ -13,8 +13,8 @@ from django.views.decorators.http import require_POST
 
 from web.domains.case.forms import DocumentForm
 from web.domains.file.utils import create_file_model
+from web.mail.emails import send_authority_archived_email
 from web.models import Importer, User
-from web.notify.notify import authority_archived_notification
 from web.permissions import Perms, can_user_edit_firearm_authorities
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
@@ -382,8 +382,7 @@ def archive_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse
             firearms = form.save(commit=False)
             firearms.is_active = False
             firearms.save()
-
-            authority_archived_notification(firearms, "Firearms")
+            send_authority_archived_email(firearms)
             redirect_to = _get_firearms_redirect_url(request.user, firearms.importer)
             return redirect(redirect_to)
     else:
