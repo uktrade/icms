@@ -76,8 +76,6 @@ def get_app_errors(application: ImpOrExp, case_type: str) -> ApplicationErrors:
 
     application_errors.add_many(_get_fir_errors(application, case_type))
 
-    application_errors.add_many(_get_case_notes_errors(application, case_type))
-
     return application_errors
 
 
@@ -469,35 +467,6 @@ def _get_fir_errors(application: ImpOrExp, case_type: str) -> list[PageErrors]:
         )
 
         errors.append(fir_errors)
-
-    return errors
-
-
-def _get_case_notes_errors(application: ImpOrExp, case_type: str) -> list[PageErrors]:
-    errors = []
-
-    open_notes = application.case_notes.filter(is_active=True).filter(status=models.CASE_NOTE_DRAFT)
-    for note in open_notes:
-        note_errors = PageErrors(
-            page_name="Case Notes",
-            url=reverse(
-                "case:edit-note",
-                kwargs={
-                    "application_pk": application.pk,
-                    "case_type": case_type,
-                    "note_pk": note.pk,
-                },
-            ),
-        )
-
-        note_errors.add(
-            FieldError(
-                field_name="Status",
-                messages=["Case notes must be completed or deleted before the case can be closed."],
-            )
-        )
-
-        errors.append(note_errors)
 
     return errors
 

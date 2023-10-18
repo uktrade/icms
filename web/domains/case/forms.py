@@ -1,7 +1,8 @@
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from django import forms
 from django.contrib.auth import authenticate
+from django.db.models import QuerySet
 from django_select2 import forms as s2forms
 
 from web.domains.case.widgets import CheckboxSelectMultipleTable
@@ -13,7 +14,6 @@ from web.permissions import get_all_case_officers, organisation_get_contacts
 from web.types import AuthenticatedHttpRequest
 
 from .models import (
-    CASE_NOTE_STATUSES,
     ApplicationBase,
     CaseEmail,
     CaseNote,
@@ -22,9 +22,6 @@ from .models import (
     WithdrawApplication,
 )
 from .types import CaseEmailConfig, ImpOrExp
-
-if TYPE_CHECKING:
-    from django.db.models import QuerySet
 
 
 class DocumentForm(forms.Form):
@@ -46,11 +43,9 @@ class SubmitForm(forms.Form):
 
 
 class CaseNoteForm(forms.ModelForm):
-    status = forms.ChoiceField(choices=CASE_NOTE_STATUSES)
-
     class Meta:
         model = CaseNote
-        fields = ["status", "note"]
+        fields = ["note"]
 
 
 class CloseCaseForm(forms.Form):
@@ -228,7 +223,7 @@ class CaseEmailResponseForm(forms.ModelForm):
         fields = ("response",)
 
 
-def application_contacts(application: ImpOrExp) -> "QuerySet[User]":
+def application_contacts(application: ImpOrExp) -> QuerySet[User]:
     if application.is_import_application():
         org = application.agent or application.importer
     else:

@@ -11,13 +11,6 @@ from web.types import TypedTextChoices
 
 from .shared import ImpExpStatus
 
-CASE_NOTE_DRAFT = "DRAFT"
-CASE_NOTE_COMPLETED = "COMPLETED"
-CASE_NOTE_STATUSES = (
-    (CASE_NOTE_DRAFT, "Draft"),
-    (CASE_NOTE_COMPLETED, "Completed"),
-)
-
 
 class VariationRequest(models.Model):
     """Variation requests for licenses or certificates issued requested by
@@ -115,12 +108,6 @@ class UpdateRequest(models.Model):
 
 
 class CaseNoteStatuses(models.Manager):
-    def draft(self):
-        return self.filter(is_active=True, status=CASE_NOTE_DRAFT)
-
-    def completed(self):
-        return self.filter(is_active=True, status=CASE_NOTE_COMPLETED)
-
     def active(self):
         return self.filter(is_active=True)
 
@@ -131,11 +118,10 @@ class CaseNoteStatuses(models.Manager):
 class CaseNote(models.Model):
     objects = CaseNoteStatuses()
 
-    is_active = models.BooleanField(blank=False, null=False, default=True)
-    status = models.CharField(
-        max_length=20, choices=CASE_NOTE_STATUSES, blank=False, null=False, default=CASE_NOTE_DRAFT
-    )
     note = models.TextField(blank=True, null=True)
+    files = models.ManyToManyField("web.File")
+    is_active = models.BooleanField(blank=False, null=False, default=True)
+
     create_datetime = models.DateTimeField(blank=False, null=False, auto_now_add=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -147,8 +133,6 @@ class CaseNote(models.Model):
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, related_name="+"
     )
-
-    files = models.ManyToManyField("web.File")
 
     class Meta:
         ordering = ["-create_datetime"]

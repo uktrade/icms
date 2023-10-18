@@ -14,11 +14,11 @@ window.addEventListener('load', function (event) {
     });
 
     archivedNotesLink.addEventListener("click", function (event) {
+        event.preventDefault();
         if (parseInt(this.dataset.noteCount) === 0) {
             return;
         }
 
-        event.preventDefault();
         showCurrentNotes(false);
         showArchivedNotes(true);
         archivedNotesLink.classList.add("current-tab");

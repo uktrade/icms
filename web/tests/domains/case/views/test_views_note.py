@@ -1,20 +1,14 @@
-from typing import TYPE_CHECKING
-
+from django.test.client import Client
 from pytest_django.asserts import assertContains, assertTemplateUsed
 
-from web.domains.case.models import CASE_NOTE_DRAFT
+from web.models import WoodQuotaApplication
 from web.tests.helpers import CaseURLS
-
-if TYPE_CHECKING:
-    from django.test.client import Client
-
-    from web.models import WoodQuotaApplication
 
 
 def test_manage_update_requests_get(
-    ilb_admin_client: "Client", wood_app_submitted: "WoodQuotaApplication", ilb_admin_user
+    ilb_admin_client: Client, wood_app_submitted: WoodQuotaApplication, ilb_admin_user
 ) -> None:
-    wood_app_submitted.case_notes.create(status=CASE_NOTE_DRAFT, created_by=ilb_admin_user)
+    wood_app_submitted.case_notes.create(created_by=ilb_admin_user)
 
     resp = ilb_admin_client.get(CaseURLS.list_notes(wood_app_submitted.pk))
     assert resp.status_code == 200

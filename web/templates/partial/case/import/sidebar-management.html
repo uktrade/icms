@@ -67,7 +67,7 @@
   {% endwith %}
 
   {{ icms_link(request, icms_url('case:list-notes', kwargs={'case_type': 'import', 'application_pk': process.pk}),
-      'Case Notes (' + process.case_notes.completed().count()|string + '/' + process.case_notes.active().count()|string + ')') }}
+      'Case Notes (' + process.case_notes.active().count()|string + ')') }}
 
   {{ icms_link(request, icms_url('case:prepare-response', kwargs={'case_type': 'import', 'application_pk': process.pk}), 'Response Preparation') }}
 
