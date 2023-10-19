@@ -9,6 +9,7 @@ from web.models import (
     AccessRequest,
     CFSProduct,
     CFSSchedule,
+    CountryTranslationSet,
     ExportApplication,
     ImportApplication,
     Process,
@@ -302,8 +303,11 @@ class EmailTemplateContext:
 
 
 class ScheduleParagraphContext:
-    def __init__(self, schedule: CFSSchedule) -> None:
+    def __init__(
+        self, schedule: CFSSchedule, country_translation_set: CountryTranslationSet | None = None
+    ) -> None:
         self.schedule = schedule
+        self.country_translation_set = country_translation_set
 
     def __getitem__(self, item: str) -> str:
         match item:
@@ -312,12 +316,21 @@ class ScheduleParagraphContext:
             case "EXPORTER_ADDRESS_FLAT":
                 return strip_spaces(str(self.schedule.application.exporter_office).upper())
             case "COUNTRY_OF_MANUFACTURE":
-                return self.schedule.country_of_manufacture.name
+                country = self.schedule.country_of_manufacture
+                if not self.country_translation_set:
+                    return country.name
+
+                country_translation = self.country_translation_set.countrytranslation_set.get(
+                    country=country
+                )
+                return country_translation.translation
+
             case "MANUFACTURED_AT_NAME":
                 return self.schedule.manufacturer_name
             case "MANUFACTURED_AT_ADDRESS_FLAT":
                 return strip_spaces(
-                    self.schedule.manufacturer_address, self.schedule.manufacturer_postcode
+                    self.schedule.manufacturer_address.upper(),
+                    self.schedule.manufacturer_postcode.upper(),
                 )
             case _:
                 raise ValueError(f"{item} is not a valid schedule paragraph context value")

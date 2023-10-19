@@ -3,13 +3,14 @@ from datetime import datetime
 import pytz
 from django.conf import settings
 
-from web.models import CFSScheduleParagraph, CountryTranslationSet, Template
+from web.models import CFSScheduleParagraph, Country, CountryTranslationSet, Template
 
 
 def add_cfs_schedule_data():
     t = Template.objects.create(
         template_name="CFS Schedule template",
         template_type="CFS_SCHEDULE",
+        template_code="CFS_SCHEDULE",
         application_domain="CA",
     )
 
@@ -109,7 +110,7 @@ def remove_templates():
 
 
 def add_cfs_declaration_templates():
-    Template.objects.get_or_create(
+    spanish, _ = Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("01-MAY-2015 16:23:30", DATETIME_FORMAT), is_dst=None
         ),
@@ -117,8 +118,38 @@ def add_cfs_declaration_templates():
         template_name="Spanish",
         template_type="CFS_DECLARATION_TRANSLATION",
         application_domain="CA",
+        template_content=(
+            "Se certifica por el presente, a los efectos de la legislación de país citado precedentemente, "
+            "que los productos mecionados en el anexo, que forma parte integral de este certificado, se pueden "
+            "vender legalmente en el Reino Unido si satisfacen los requisitos reglamentarios."
+        ),
     )
-    Template.objects.get_or_create(
+    spanish.countries.add(
+        *Country.objects.filter(
+            name__in=[
+                "Algeria",
+                "Argentina",
+                "Bolivia",
+                "Chile",
+                "Colombia",
+                "Costa Rica",
+                "Dominican Republic",
+                "Ecuador",
+                "El Salvador",
+                "Guatemala",
+                "Honduras",
+                "Jamaica",
+                "Mexico",
+                "Nicaragua",
+                "Panama",
+                "Paraguay",
+                "Peru",
+                "Uruguay",
+                "Venezuela",
+            ]
+        )
+    )
+    french, _ = Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("05-MAR-2019 12:27:57", DATETIME_FORMAT), is_dst=None
         ),
@@ -126,8 +157,16 @@ def add_cfs_declaration_templates():
         template_name="French",
         template_type="CFS_DECLARATION_TRANSLATION",
         application_domain="CA",
+        template_content=(
+            "Il est certifié par les présentes, pour l&apos;application des lois du pays susnommé, "
+            "que la vente des préparations mentionnées à l&apos;annexe qui fait partie intégrale de "
+            "ce certificat est légalement permise au Royaume-Uni dans la mesure où les prescriptions "
+            "légales sont satisfaites."
+        ),
     )
-    Template.objects.get_or_create(
+    french.countries.add(*Country.objects.filter(name__in=["Algeria", "Tunisia"]))
+
+    portuguese, _ = Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("24-APR-2015 08:59:21", DATETIME_FORMAT), is_dst=None
         ),
@@ -135,8 +174,15 @@ def add_cfs_declaration_templates():
         template_name="Portuguese",
         template_type="CFS_DECLARATION_TRANSLATION",
         application_domain="CA",
+        template_content=(
+            "Pelo presente documento certifica-se, para os fins das leis do pais acima referido, "
+            "que os preparados designados no anexo, que faz parte integrante do presente certificado, "
+            "podem ser vendidos legalmente no Reino Unido desde que sejam satisfeitos os requisitos regulamentários."
+        ),
     )
-    Template.objects.get_or_create(
+    portuguese.countries.add(*Country.objects.filter(name__in=["Brazil"]))
+
+    russian, _ = Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("23-APR-2015 16:25:35", DATETIME_FORMAT), is_dst=None
         ),
@@ -144,8 +190,15 @@ def add_cfs_declaration_templates():
         template_name="Russian",
         template_type="CFS_DECLARATION_TRANSLATION",
         application_domain="CA",
+        template_content=(
+            "Настоящим удостоверяется для целей законоввышеупомянутой страны, что продукт(ы), указанный "
+            "в списке, которыйявляется частью настоящего сертификата, может на законном основаниипродаваться "
+            "в Соединённом Королевстве при условии удовлетворенияофициальных требований."
+        ),
     )
-    Template.objects.get_or_create(
+    russian.countries.add(*Country.objects.filter(name__in=["Russian Federation"]))
+
+    turkish, _ = Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("24-APR-2015 09:01:34", DATETIME_FORMAT), is_dst=None
         ),
@@ -153,11 +206,17 @@ def add_cfs_declaration_templates():
         template_name="Turkish",
         template_type="CFS_DECLARATION_TRANSLATION",
         application_domain="CA",
+        template_content=(
+            "Bu sertifikanın bir parçası olan Listede gösterilen preparatın, mevzuatın öngördüğü şartlara "
+            "uyduğu takdirde Birleşik Krallıkta yasal olarak satılabileceği yukarıda anılan ülke kanunları "
+            "gereği tasdik olunur."
+        ),
     )
+    turkish.countries.add(*Country.objects.filter(name__in=["Turkey"]))
 
 
 def add_schedule_translation_templates():
-    Template.objects.get_or_create(
+    t, _ = Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             datetime.strptime("13-FEB-2019 18:56:17", DATETIME_FORMAT), is_dst=None
         ),
@@ -167,6 +226,100 @@ def add_schedule_translation_templates():
         template_type="CFS_SCHEDULE_TRANSLATION",
         application_domain="CA",
         country_translation_set=CountryTranslationSet.objects.get(name="Spanish"),
+    )
+
+    t.countries.add(
+        *Country.objects.filter(
+            name__in=[
+                "Argentina",
+                "Bolivia",
+                "Chile",
+                "Colombia",
+                "Costa Rica",
+                "Dominican Republic",
+                "Ecuador",
+                "El Salvador",
+                "Guatemala",
+                "Honduras",
+                "Jamaica",
+                "Mexico",
+                "Nicaragua",
+                "Panama",
+                "Paraguay",
+                "Peru",
+                "Uruguay",
+                "Venezuela",
+            ]
+        )
+    )
+
+    CFSScheduleParagraph.objects.bulk_create(
+        CFSScheduleParagraph(template=t, **data)
+        for data in [
+            {
+                "order": 1,
+                "name": "SCHEDULE_HEADER",
+                "content": "Horario para el Certificado de Libre Venta",
+            },
+            {
+                "order": 2,
+                "name": "SCHEDULE_INTRODUCTION",
+                "content": "[[EXPORTER_NAME]], de [[EXPORTER_ADDRESS_FLAT]] ha hecho la siguiente declaración legal en relación con los productos enumerados en este cronograma:",
+            },
+            {"order": 3, "name": "IS_MANUFACTURER", "content": "Yo soy el fabricante."},
+            {"order": 4, "name": "IS_NOT_MANUFACTURER", "content": "No soy el fabricante."},
+            {
+                "order": 5,
+                "name": "EU_COSMETICS_RESPONSIBLE_PERSON",
+                "content": "Soy la persona responsable según lo definido por el Reglamento de cosméticos n. ° 1223/2009 según se aplique en GB. Soy la persona responsable de garantizar que los productos enumerados en este programa cumplan con los requisitos de seguridad establecidos en ese Reglamento.",
+            },
+            {
+                "order": 6,
+                "name": "LEGISLATION_STATEMENT",
+                "content": "Certifico que estos productos cumplen con los requisitos de seguridad establecidos en esta legislación:",
+            },
+            {
+                "order": 7,
+                "name": "ELIGIBILITY_ON_SALE",
+                "content": "Estos productos se venden actualmente en el mercado del Reino Unido.",
+            },
+            {
+                "order": 8,
+                "name": "ELIGIBILITY_MAY_BE_SOLD",
+                "content": "Estos productos cumplen con los requisitos de seguridad de los productos para ser vendidos en el mercado del Reino Unido.",
+            },
+            {
+                "order": 9,
+                "name": "GOOD_MANUFACTURING_PRACTICE",
+                "content": "Estos productos se fabrican de acuerdo con las normas de buenas prácticas de fabricación establecidas en las leyes del Reino Unido",
+            },
+            {
+                "order": 10,
+                "name": "COUNTRY_OF_MAN_STATEMENT",
+                "content": "Los productos fueron fabricados en [[COUNTRY_OF_MANUFACTURE]]",
+            },
+            {
+                "order": 11,
+                "name": "COUNTRY_OF_MAN_STATEMENT_WITH_NAME",
+                "content": "Los productos fueron fabricados en [[COUNTRY_OF_MANUFACTURE]] por [[MANUFACTURED_AT_NAME]]",
+            },
+            {
+                "order": 12,
+                "name": "COUNTRY_OF_MAN_STATEMENT_WITH_NAME_AND_ADDRESS",
+                "content": "Los productos fueron fabricados en [[COUNTRY_OF_MANUFACTURE]] por [[MANUFACTURED_AT_NAME]] en [[MANUFACTURED_AT_ADDRESS_FLAT]]",
+            },
+            {"order": 13, "name": "PRODUCTS", "content": "Productos"},
+            {
+                "order": 14,
+                "name": "EU_COSMETICS_RESPONSIBLE_PERSON_NI",
+                "content": "Soy la persona responsable según lo definido por el Reglamento (CE) n. ° 1223/2009 del Parlamento Europeo y del Consejo de 30 de noviembre de 2009 sobre productos cosméticos y el Reglamento sobre cosméticos n. ° 1223/2009 según corresponda en NI. Soy la persona responsable de asegurar que los productos enumerados en este programa cumplan con los requisitos de seguridad establecidos en el Reglamento.",
+            },
+            {
+                "order": 15,
+                "name": "GOOD_MANUFACTURING_PRACTICE_NI",
+                "content": "Estos productos se fabrican de acuerdo con las normas de buenas prácticas de fabricación establecidas en la legislación del Reino Unido o de la UE, cuando corresponda.",
+            },
+        ]
     )
 
 

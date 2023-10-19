@@ -487,7 +487,8 @@ def test_get_preview_cfs_certificate_context(cfs_app_submitted):
     context = generator.get_document_context()
 
     assert context["preview"] is True
-    assert context["schedule_paragraphs"]
+    assert context["schedule_text"]
+    assert context["statement_translations"] == []
     assert context["exporter_name"] == app.exporter.name.upper()
     assert context["reference"] == "[[CERTIFICATE_REFERENCE]]"
 
