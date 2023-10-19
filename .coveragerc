@@ -11,7 +11,12 @@ omit =
     data_migration/queries/*
     web/end_to_end/*
     web/tests/*
-    web/management/commands/*
+    web/management/commands/utils/*
+    web/management/commands/add_dummy_data.py
+    web/management/commands/add_test_data.py
+    web/management/commands/countries.py
+    web/management/commands/drop_all_tables.py
+    web/management/commands/query_task_result.py
 
 [report]
 exclude_lines =

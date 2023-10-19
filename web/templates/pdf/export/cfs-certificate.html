@@ -20,22 +20,33 @@
     named in the Schedule which forms part of this certificate may lawfully be sold in the United Kingdom
     if it meets the statutory requirements.
   </p>
+  {% for statement_translation in statement_translations %}
+    <p class="statement_translation">{{ statement_translation }}</p>
+  {% endfor %}
 {% endblock %}
 
 {% block schedules %}
   {% for schedule in process.schedules.order_by('created_at') %}
+    {% set english_paragraphs = schedule_text[schedule.pk].english_paragraphs %}
+    {% set translation_paragraphs = schedule_text[schedule.pk].translation_paragraphs %}
     <div class="schedule-block page-margin">
       <p class="schedule-index">Schedule {{ loop.index }} of {{ loop.length }}</p>
-      <h4 class="schedule-header">SCHEDULE TO CERTIFICATE OF FREE SALE</h4>
-      <p>{{ exporter_name }}, of {{ exporter_address }} has made the following legal declaration in relation to the products listed in this schedule:</p>
-      <p>{{ schedule_paragraphs[schedule.pk] }}</p>
-      <h4 class="product-header">PRODUCTS</h4>
+      <h4 class="schedule-header">{{ english_paragraphs.header | upper }}</h4>
+      <p>{{ english_paragraphs.introduction }}</p>
+      <p>{{ english_paragraphs.paragraph }}</p>
+      {% if translation_paragraphs %}
+        <h4>{{ translation_paragraphs.header | upper }}</h4>
+        <p>{{ translation_paragraphs.introduction }}</p>
+        <p>{{ translation_paragraphs.paragraph }}</p>
+        <h4 class="product-header">{{ english_paragraphs.product | upper }} / {{ translation_paragraphs.product | upper }}</h4>
+      {% else %}
+        <h4 class="product-header">{{ english_paragraphs.product | upper }}</h4>
+      {% endif %}
       <div class="products-block">
         {% for product_name in schedule.products.values_list("product_name", flat=True).order_by('pk') %}
           <p class="product-name">{{ product_name }}</p>
         {% endfor %}
       </div>
-    </div>
     </div>
   {% endfor %}
 {% endblock %}

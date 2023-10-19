@@ -1,5 +1,6 @@
 import datetime as dt
 import re
+from collections.abc import Collection
 from typing import TYPE_CHECKING, Union
 
 from dateutil.relativedelta import relativedelta
@@ -8,7 +9,9 @@ from django.utils import timezone
 
 from web.domains.case.services import document_pack
 from web.domains.template.utils import (
-    fetch_schedule_paragraphs,
+    ScheduleText,
+    fetch_cfs_declaration_translations,
+    fetch_schedule_text,
     get_cover_letter_content,
     get_letter_fragment,
 )
@@ -45,7 +48,7 @@ if TYPE_CHECKING:
         sil_models.SILGoodsSection582Other,  # /PS-IGNORE
     ]
 
-    Context = dict[str, str | bool | list[str] | ImpOrExp | dict[int, str]]
+    Context = dict[str, str | bool | Collection[str] | ImpOrExp | dict[int, ScheduleText]]
 
 
 def get_licence_context(
@@ -353,10 +356,13 @@ def get_cfs_certificate_context(
 ) -> "Context":
     context = _get_certificate_context(application, certificate, doc_type, country)
 
-    return context | {
-        "schedule_paragraphs": fetch_schedule_paragraphs(application),
+    context |= {
+        "schedule_text": fetch_schedule_text(application, country),
+        "statement_translations": fetch_cfs_declaration_translations(country),
         "page_title": f"Certificate of Free Sale ({country.name}) Preview",
     }
+
+    return context
 
 
 def get_com_certificate_context(
