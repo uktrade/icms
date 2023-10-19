@@ -1,5 +1,6 @@
 import dataclasses
 import re
+from collections.abc import Iterator
 from typing import TYPE_CHECKING
 
 from web.domains.case.types import ImpOrExp
@@ -212,66 +213,60 @@ class ScheduleParagraphs:
     product: str = dataclasses.field(init=False)
 
     def __post_init__(self) -> None:
-        context = ScheduleParagraphContext(self.schedule, self.template.country_translation_set)
+        self._ctx = ScheduleParagraphContext(self.schedule, self.template.country_translation_set)
         names = CFSScheduleParagraph.ParagraphName
-        self.header = self.content(names.SCHEDULE_HEADER, context)
-        self.introduction = self.content(names.SCHEDULE_INTRODUCTION, context)
-        self.create_paragraph(context)
-        self.product = self.content(names.PRODUCTS, context)
+        self.header = self.content(names.SCHEDULE_HEADER)
+        self.introduction = self.content(names.SCHEDULE_INTRODUCTION)
+        self.product = self.content(names.PRODUCTS)
+        self.paragraph = " ".join(self._get_paragraphs())
 
-    def content(self, name: str, context: ScheduleParagraphContext) -> str:
-        paragraph = CFSScheduleParagraph.objects.get(name=name, template=self.template)
-        return replace_template_values(paragraph.content, context)
-
-    def create_paragraph(self, context: ScheduleParagraphContext) -> None:
-        """Generate the text to appear in a Certificate of Free Sale for a specific schedule"""
-
+    def _get_paragraphs(self) -> Iterator[str]:
         is_ni = self.schedule.application.exporter_office.postcode.upper().startswith("BT")
-        paragraphs = []
         names = CFSScheduleParagraph.ParagraphName
 
         if self.schedule.exporter_status == self.schedule.ExporterStatus.IS_MANUFACTURER:
-            paragraphs.append(self.content(names.IS_MANUFACTURER, context))
+            yield self.content(names.IS_MANUFACTURER)
         else:
-            paragraphs.append(self.content(names.IS_NOT_MANUFACTURER, context))
+            yield self.content(names.IS_NOT_MANUFACTURER)
 
         if self.schedule.schedule_statements_is_responsible_person:
             if is_ni:
-                paragraphs.append(self.content(names.EU_COSMETICS_RESPONSIBLE_PERSON_NI, context))
+                yield self.content(names.EU_COSMETICS_RESPONSIBLE_PERSON_NI)
             else:
-                paragraphs.append(self.content(names.EU_COSMETICS_RESPONSIBLE_PERSON, context))
+                yield self.content(names.EU_COSMETICS_RESPONSIBLE_PERSON)
 
-        paragraphs.append(self.content(names.LEGISLATION_STATEMENT, context))
+        yield self.content(names.LEGISLATION_STATEMENT)
 
         legislations = ", ".join(
             self.schedule.legislations.order_by("name").values_list("name", flat=True)
         )
-        paragraphs.append(legislations + ".")
+        yield legislations + "."
 
         if self.schedule.product_eligibility == self.schedule.ProductEligibility.SOLD_ON_UK_MARKET:
-            paragraphs.append(self.content(names.ELIGIBILITY_ON_SALE, context))
+            yield self.content(names.ELIGIBILITY_ON_SALE)
         elif (
             self.schedule.product_eligibility
             == self.schedule.ProductEligibility.MEET_UK_PRODUCT_SAFETY
         ):
-            paragraphs.append(self.content(names.ELIGIBILITY_MAY_BE_SOLD, context))
+            yield self.content(names.ELIGIBILITY_MAY_BE_SOLD)
 
         if self.schedule.schedule_statements_accordance_with_standards:
             if is_ni:
-                paragraphs.append(self.content(names.GOOD_MANUFACTURING_PRACTICE_NI, context))
+                yield self.content(names.GOOD_MANUFACTURING_PRACTICE_NI)
             else:
-                paragraphs.append(self.content(names.GOOD_MANUFACTURING_PRACTICE, context))
+                yield self.content(names.GOOD_MANUFACTURING_PRACTICE)
 
         if self.schedule.manufacturer_name and self.schedule.manufacturer_address:
-            paragraphs.append(
-                self.content(names.COUNTRY_OF_MAN_STATEMENT_WITH_NAME_AND_ADDRESS, context)
-            )
-        elif self.schedule.manufacturer_name:
-            paragraphs.append(self.content(names.COUNTRY_OF_MAN_STATEMENT_WITH_NAME, context))
-        else:
-            paragraphs.append(self.content(names.COUNTRY_OF_MAN_STATEMENT, context))
+            yield self.content(names.COUNTRY_OF_MAN_STATEMENT_WITH_NAME_AND_ADDRESS)
 
-        self.paragraph = " ".join(paragraphs)
+        elif self.schedule.manufacturer_name:
+            yield self.content(names.COUNTRY_OF_MAN_STATEMENT_WITH_NAME)
+        else:
+            yield self.content(names.COUNTRY_OF_MAN_STATEMENT)
+
+    def content(self, name: str) -> str:
+        paragraph = CFSScheduleParagraph.objects.get(name=name, template=self.template)
+        return replace_template_values(paragraph.content, self._ctx)
 
 
 @dataclasses.dataclass
@@ -282,14 +277,14 @@ class ScheduleText:
     translation_paragraphs: ScheduleParagraphs | None = dataclasses.field(init=False)
 
     def __post_init__(self) -> None:
-        self.get_english_paragraphs()
-        self.get_translation_paragraphs()
+        self.set_english_paragraphs()
+        self.set_translation_paragraphs()
 
-    def get_english_paragraphs(self) -> None:
+    def set_english_paragraphs(self) -> None:
         template = Template.objects.get(is_active=True, template_type=Template.CFS_SCHEDULE)
         self.english_paragraphs = ScheduleParagraphs(self.schedule, template)
 
-    def get_translation_paragraphs(self):
+    def set_translation_paragraphs(self) -> None:
         try:
             template = Template.objects.get(
                 is_active=True,
