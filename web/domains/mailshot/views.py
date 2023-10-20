@@ -18,8 +18,8 @@ from web.domains.case.forms import DocumentForm
 from web.domains.case.services import reference
 from web.domains.file.utils import create_file_model
 from web.models import Template, User
-from web.notify import notify
 from web.permissions import Perms
+from web.tasks import send_mailshot_email_task, send_retract_mailshot_email_task
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 from web.views import ModelFilterView, ModelUpdateView
@@ -299,7 +299,7 @@ def publish_mailshot(request: AuthenticatedHttpRequest, *, mailshot_pk: int) -> 
                 mailshot.refresh_from_db()
 
                 if mailshot.is_email:
-                    notify.mailshot(mailshot)
+                    send_mailshot_email_task.delay(mailshot.pk)
 
                 # Finally add the success message before returning the response.
                 messages.success(request, f"{mailshot.get_reference()} published successfully")
@@ -337,7 +337,7 @@ class MailshotRetractView(ModelUpdateView):
 
     def handle_notification(self, mailshot):
         if mailshot.is_retraction_email:
-            notify.retract_mailshot(mailshot)
+            send_retract_mailshot_email_task.delay(mailshot.pk)
 
     def form_valid(self, form):
         """

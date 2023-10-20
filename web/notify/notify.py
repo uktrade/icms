@@ -59,41 +59,6 @@ def register(user, password):
     )
 
 
-# TODO: Replace in ICMSLST-2161
-def mailshot(mailshot):
-    html_message = utils.render_email(
-        "email/mailshot/mailshot.html",
-        {"subject": mailshot.email_subject, "body": mailshot.email_body},
-    )
-    message_text = html2text.html2text(html_message)
-    email.send_mailshot.delay(
-        f"{mailshot.email_subject}",
-        message_text,
-        html_message=html_message,
-        to_importers=mailshot.is_to_importers,
-        to_exporters=mailshot.is_to_exporters,
-    )
-
-
-# TODO: Replace in ICMSLST-2162
-def retract_mailshot(mailshot):
-    html_message = utils.render_email(
-        "email/mailshot/mailshot.html",
-        {
-            "subject": mailshot.retract_email_subject,
-            "body": mailshot.retract_email_body,
-        },
-    )
-    message_text = html2text.html2text(html_message)
-    email.send_mailshot.delay(
-        f"{mailshot.retract_email_subject}",
-        message_text,
-        html_message=html_message,
-        to_importers=mailshot.is_to_importers,
-        to_exporters=mailshot.is_to_exporters,
-    )
-
-
 @app.task(name="web.notify.notify.send_firearms_authority_expiry_notification")
 def send_firearms_authority_expiry_notification() -> None:
     """Sends a notification to constabulary contacts verified firearms authority editors for verified firearms

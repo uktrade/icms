@@ -6,21 +6,26 @@ from web.domains.case.types import (
     ImpAccessOrExpAccess,
     ImpOrExp,
     ImpOrExpApproval,
+    Organisation,
 )
 from web.domains.template.utils import get_email_template_subject_body
 from web.flow.models import ProcessTypes
 from web.models import CaseEmail as CaseEmailModel
 from web.models import (
     ExportApplication,
+    Exporter,
     ExporterApprovalRequest,
     FurtherInformationRequest,
     ImportApplication,
+    Importer,
     ImporterApprovalRequest,
+    Mailshot,
     UpdateRequest,
     VariationRequest,
     WithdrawApplication,
 )
 from web.notify import notify
+from web.sites import get_exporter_site_domain, get_importer_site_domain
 
 from .constants import CaseEmailTemplate, VariationRequestDescription
 from .messages import (
@@ -49,6 +54,8 @@ from .messages import (
     FirearmsSupplementaryReportEmail,
     ImporterAccessRequestApprovalOpenedEmail,
     LicenceRevokedEmail,
+    MailshotEmail,
+    RetractMailshotEmail,
     VariationRequestCancelledEmail,
     VariationRequestRefusedEmail,
     VariationRequestUpdateCancelledEmail,
@@ -63,6 +70,7 @@ from .recipients import (
     get_application_contact_email_addresses,
     get_case_officers_email_addresses,
     get_email_addresses_for_case_email,
+    get_email_addresses_for_mailshot,
     get_email_addresses_for_users,
     get_ilb_case_officers_email_addresses,
     get_organisation_contact_email_addresses,
@@ -407,6 +415,36 @@ def send_application_further_information_request_email(
         ApplicationFurtherInformationRequestEmail(
             fir=fir, application=application, to=[recipient]
         ).send()
+
+
+def send_mailshot_email(mailshot: Mailshot) -> None:
+    if mailshot.is_to_importers:
+        send_mailshot_email_to_organisations(mailshot, Importer, get_importer_site_domain())
+    if mailshot.is_to_exporters:
+        send_mailshot_email_to_organisations(mailshot, Exporter, get_exporter_site_domain())
+
+
+def send_mailshot_email_to_organisations(
+    mailshot: Mailshot, organisation_class: type[Organisation], site_domain: str
+) -> None:
+    recipients = get_email_addresses_for_mailshot(organisation_class)
+    for recipient in recipients:
+        MailshotEmail(mailshot=mailshot, site_domain=site_domain, to=[recipient]).send()
+
+
+def send_retract_mailshot_email(mailshot: Mailshot) -> None:
+    if mailshot.is_to_importers:
+        send_retract_mailshot_email_to_organisations(mailshot, Importer, get_importer_site_domain())
+    if mailshot.is_to_exporters:
+        send_retract_mailshot_email_to_organisations(mailshot, Exporter, get_exporter_site_domain())
+
+
+def send_retract_mailshot_email_to_organisations(
+    mailshot: Mailshot, organisation_class: type[Organisation], site_domain: str
+) -> None:
+    recipients = get_email_addresses_for_mailshot(organisation_class)
+    for recipient in recipients:
+        RetractMailshotEmail(mailshot=mailshot, site_domain=site_domain, to=[recipient]).send()
 
 
 def send_case_email(case_email: CaseEmailModel) -> None:

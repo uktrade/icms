@@ -10,13 +10,18 @@ from django.utils import timezone
 from web.domains.case.services import document_pack
 from web.mail import emails
 from web.mail.constants import EmailTypes, VariationRequestDescription
-from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
+from web.mail.url_helpers import (
+    get_case_view_url,
+    get_mailshot_detail_view_url,
+    get_validate_digital_signatures_url,
+)
 from web.models import (
     EmailTemplate,
     ExporterAccessRequest,
     FirearmsAuthority,
     FurtherInformationRequest,
     ImporterAccessRequest,
+    Mailshot,
     Section5Authority,
     UpdateRequest,
     VariationRequest,
@@ -955,4 +960,110 @@ class TestEmails(AuthTestCase):
             self.ilb_admin_user.email,
             exp_template_id,
             personalisation=expected_personalisation,
+        )
+
+    def test_send_retract_mailshot_email(self, draft_mailshot):
+        exp_template_id = get_gov_notify_template_id(EmailTypes.RETRACT_MAILSHOT)
+        mailshot = draft_mailshot
+        mailshot.is_to_exporters = True
+        mailshot.is_to_importers = True
+        mailshot.status = Mailshot.Statuses.RETRACTED
+        mailshot.save()
+        emails.send_retract_mailshot_email(mailshot)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 6
+        expected_import_personalisation = default_personalisation() | {
+            "body": "retract message",
+            "icms_url": get_importer_site_domain(),
+            "subject": "retract subject",
+            "mailshot_url": get_mailshot_detail_view_url(mailshot, get_importer_site_domain()),
+        }
+        expected_export_personalisation = expected_import_personalisation.copy()
+        expected_export_personalisation["icms_url"] = get_exporter_site_domain()
+        expected_export_personalisation["mailshot_url"] = get_mailshot_detail_view_url(
+            mailshot, get_exporter_site_domain()
+        )
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.importer_user.email,
+            exp_template_id,
+            personalisation=expected_import_personalisation,
+        )
+
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.importer_two_user.email,
+            exp_template_id,
+            personalisation=expected_import_personalisation,
+        )
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.importer_agent_user.email,
+            exp_template_id,
+            personalisation=expected_import_personalisation,
+        )
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.exporter_user.email,
+            exp_template_id,
+            personalisation=expected_export_personalisation,
+        )
+
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.exporter_two_user.email,
+            exp_template_id,
+            personalisation=expected_export_personalisation,
+        )
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.exporter_agent_user.email,
+            exp_template_id,
+            personalisation=expected_export_personalisation,
+        )
+
+    def test_send_mailshot_email(self, draft_mailshot):
+        exp_template_id = get_gov_notify_template_id(EmailTypes.MAILSHOT)
+        mailshot = draft_mailshot
+        mailshot.is_to_importers = True
+        mailshot.is_to_exporters = True
+        mailshot.status = Mailshot.Statuses.PUBLISHED
+        mailshot.save()
+        emails.send_mailshot_email(mailshot)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 6
+        expected_import_personalisation = default_personalisation() | {
+            "body": "original message",
+            "icms_url": get_importer_site_domain(),
+            "subject": "original subject",
+            "mailshot_url": get_mailshot_detail_view_url(mailshot, get_importer_site_domain()),
+        }
+        expected_export_personalisation = expected_import_personalisation.copy()
+        expected_export_personalisation["icms_url"] = get_exporter_site_domain()
+        expected_export_personalisation["mailshot_url"] = get_mailshot_detail_view_url(
+            mailshot, get_exporter_site_domain()
+        )
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.importer_user.email,
+            exp_template_id,
+            personalisation=expected_import_personalisation,
+        )
+
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.importer_two_user.email,
+            exp_template_id,
+            personalisation=expected_import_personalisation,
+        )
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.importer_agent_user.email,
+            exp_template_id,
+            personalisation=expected_import_personalisation,
+        )
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.exporter_user.email,
+            exp_template_id,
+            personalisation=expected_export_personalisation,
+        )
+
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.exporter_two_user.email,
+            exp_template_id,
+            personalisation=expected_export_personalisation,
+        )
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.exporter_agent_user.email,
+            exp_template_id,
+            personalisation=expected_export_personalisation,
         )

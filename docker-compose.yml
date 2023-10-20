@@ -64,7 +64,7 @@ services:
     celery-worker:
         build:
             context: .
-        command: celery --app=config.celery:app worker --loglevel=info
+        command: celery --app=config.celery:app worker --loglevel=info -Q celery,mail
         environment:
             - DJANGO_SETTINGS_MODULE
         env_file:
