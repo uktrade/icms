@@ -6,12 +6,14 @@ from pytest_django.asserts import assertRedirects
 
 from web.domains.case.services import reference
 from web.domains.mailshot.views import MailshotListView
+from web.mail.constants import EmailTypes
+from web.mail.url_helpers import get_mailshot_detail_view_url
 from web.middleware.common import ICMSMiddlewareContext
 from web.models import Mailshot, User
+from web.sites import get_importer_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
-
-from .factory import MailshotFactory
+from web.tests.helpers import check_gov_notify_email_was_sent
 
 
 class TestMailshotListView(AuthTestCase):
@@ -35,15 +37,20 @@ class TestMailshotListView(AuthTestCase):
         response = self.ilb_admin_client.get(self.url)
         assert response.context_data["page_title"] == "Maintain Mailshots"
 
-    def test_number_of_pages(self, importer_one_contact):
-        MailshotFactory.create_batch(62, created_by=importer_one_contact)
-
+    def test_number_of_pages(self, importer_one_contact, draft_mailshot):
+        objs = [
+            Mailshot(title="Mailshot %s" % i, created_by=importer_one_contact) for i in range(62)
+        ]
+        Mailshot.objects.bulk_create(objs)
         response = self.ilb_admin_client.get(self.url, {"reference": ""})
         page = response.context_data["page"]
         assert page.paginator.num_pages == 2
 
     def test_page_results(self, importer_one_contact):
-        MailshotFactory.create_batch(65, created_by=importer_one_contact)
+        objs = [
+            Mailshot(title="Mailshot %s" % i, created_by=importer_one_contact) for i in range(65)
+        ]
+        Mailshot.objects.bulk_create(objs)
         response = self.ilb_admin_client.get(self.url, {"page": "2", "reference": ""})
         page = response.context_data["page"]
         assert len(page.object_list) == 15
@@ -102,11 +109,8 @@ class TestMailshotCreateView(AuthTestCase):
 
 class TestMailshotEditView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup, importer_two_contact):
-        self.mailshot = MailshotFactory(
-            status=Mailshot.Statuses.DRAFT, created_by=importer_two_contact
-        )  # Create a mailshot
-        self.mailshot.save()
+    def setup(self, _setup, draft_mailshot):
+        self.mailshot = draft_mailshot
         self.url = f"/mailshot/{self.mailshot.id}/edit/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
@@ -142,11 +146,8 @@ class TestMailshotEditView(AuthTestCase):
 
 class TestMailshotCancelDraftView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup, importer_two_contact):
-        self.mailshot = MailshotFactory(
-            status=Mailshot.Statuses.DRAFT, created_by=importer_two_contact
-        )  # Create a mailshot
-        self.mailshot.save()
+    def setup(self, _setup, draft_mailshot):
+        self.mailshot = draft_mailshot
         self.url = reverse("mailshot-cancel-draft", kwargs={"mailshot_pk": self.mailshot.id})
 
     def test_forbidden_access(self):
@@ -170,11 +171,8 @@ class TestMailshotCancelDraftView(AuthTestCase):
 
 class TestMailshotPublishDraftView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup, importer_two_contact):
-        self.mailshot = MailshotFactory(
-            status=Mailshot.Statuses.DRAFT, created_by=importer_two_contact
-        )  # Create a mailshot
-        self.mailshot.save()
+    def setup(self, _setup, draft_mailshot):
+        self.mailshot = draft_mailshot
         self.url = reverse("mailshot-publish-draft", kwargs={"mailshot_pk": self.mailshot.id})
 
     def test_forbidden_access(self):
@@ -212,7 +210,8 @@ class TestMailshotPublishDraftView(AuthTestCase):
         self.mailshot.description = "Test Description"
         self.mailshot.email_subject = "Test email subject"
         self.mailshot.email_body = "Test email body"
-        self.mailshot.recipients = "importers"
+        self.mailshot.is_to_importers = True
+        self.mailshot.is_email = True
         self.mailshot.save()
 
         response = self.ilb_admin_client.post(self.url)
@@ -222,18 +221,34 @@ class TestMailshotPublishDraftView(AuthTestCase):
 
         self.mailshot.refresh_from_db()
         assert self.mailshot.status == Mailshot.Statuses.PUBLISHED
+        check_gov_notify_email_was_sent(
+            3,
+            [
+                "I1_A1_main_contact@example.com",  # /PS-IGNORE
+                "I1_main_contact@example.com",  # /PS-IGNORE
+                "I2_main_contact@example.com",  # /PS-IGNORE
+            ],
+            EmailTypes.MAILSHOT,
+            {
+                "icms_url": get_importer_site_domain(),
+                "mailshot_url": get_mailshot_detail_view_url(
+                    self.mailshot, get_importer_site_domain()
+                ),
+            },
+            exp_subject="Test email subject",
+            exp_in_body="Test email body",
+        )
 
 
 class TestMailshotRetractView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup):
-        self.mailshot = MailshotFactory.create(
-            status=Mailshot.Statuses.PUBLISHED,
-            published_datetime=timezone.now(),
-            reference="MAIL/42",
-            version=43,
-            created_by=self.importer_two_user,
-        )
+    def setup(self, _setup, draft_mailshot):
+        self.mailshot = draft_mailshot
+        self.mailshot.status = Mailshot.Statuses.PUBLISHED
+        self.mailshot.published_datetime = timezone.now()
+        self.mailshot.reference = "MAIL/42"
+        self.mailshot.version = 43
+        self.mailshot.save()
         self.url = f"/mailshot/{self.mailshot.pk}/retract/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
@@ -258,17 +273,15 @@ class TestMailshotRetractView(AuthTestCase):
 
 class TestMailshotDetailView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup):
-        self.mailshot = MailshotFactory.create(
-            is_to_importers=True,
-            is_to_exporters=True,
-            status=Mailshot.Statuses.PUBLISHED,
-            published_datetime=timezone.now(),
-            reference="MAIL/44",
-            version=45,
-            created_by=self.importer_two_user,
-        )
-
+    def setup(self, _setup, draft_mailshot):
+        self.mailshot = draft_mailshot
+        self.mailshot.is_to_importers = True
+        self.mailshot.is_to_exporters = True
+        self.mailshot.status = Mailshot.Statuses.PUBLISHED
+        self.mailshot.published_datetime = timezone.now()
+        self.mailshot.reference = "MAIL/44"
+        self.mailshot.version = 45
+        self.mailshot.save()
         self.url = f"/mailshot/{self.mailshot.pk}/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 

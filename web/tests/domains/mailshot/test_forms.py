@@ -12,34 +12,32 @@ from web.models import Mailshot
 from web.permissions import Perms
 from web.tests.auth import AuthTestCase
 
-from .factory import MailshotFactory
-
 
 class TestMailshotsFilter(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, db):
-        MailshotFactory(
+        Mailshot.objects.create(
             title="Draft Mailshot",
             description="This is a draft mailshot",
             status=Mailshot.Statuses.DRAFT,
             is_active=False,
             created_by=self.importer_two_user,
         )
-        MailshotFactory(
+        Mailshot.objects.create(
             title="Published Mailshot",
             description="This is a published mailshot",
             status=Mailshot.Statuses.PUBLISHED,
             is_active=True,
             created_by=self.importer_two_user,
         )
-        MailshotFactory(
+        Mailshot.objects.create(
             title="Retracted Mailshot",
             description="This is a retracted mailshot",
             status=Mailshot.Statuses.RETRACTED,
             is_active=True,
             created_by=self.importer_two_user,
         )
-        MailshotFactory(
+        Mailshot.objects.create(
             title="Cancelled Mailshot",
             description="This is a cancelled mailshot",
             status=Mailshot.Statuses.CANCELLED,
@@ -91,13 +89,13 @@ class TestReceivedMailshotsFilter:
         importer_two_contact.groups.add(exporter_group)
         self.importer_exporter = importer_two_contact
 
-        MailshotFactory(
+        Mailshot.objects.create(
             title="Draft Mailshot",
             description="This is a draft mailshot",
             status=Mailshot.Statuses.DRAFT,
             created_by=importer_two_contact,
         )
-        MailshotFactory(
+        Mailshot.objects.create(
             title="Retracted Mailshot",
             description="This is a retracted mailshot",
             status=Mailshot.Statuses.RETRACTED,
@@ -105,7 +103,7 @@ class TestReceivedMailshotsFilter:
             is_to_exporters=True,
             created_by=importer_two_contact,
         )
-        MailshotFactory(
+        Mailshot.objects.create(
             title="Cancelled Mailshot",
             description="This is a cancelled mailshot",
             status=Mailshot.Statuses.CANCELLED,
@@ -113,7 +111,7 @@ class TestReceivedMailshotsFilter:
             is_to_exporters=True,
             created_by=importer_two_contact,
         )
-        MailshotFactory(
+        Mailshot.objects.create(
             title="Published Mailshot to importers",
             description="This is a published mailshot to importers",
             status=Mailshot.Statuses.PUBLISHED,
@@ -121,7 +119,7 @@ class TestReceivedMailshotsFilter:
             is_to_exporters=False,
             created_by=importer_two_contact,
         )
-        MailshotFactory(
+        Mailshot.objects.create(
             title="Published Mailshot to exporters",
             description="This is a published mailshot to exporters",
             status=Mailshot.Statuses.PUBLISHED,
@@ -129,7 +127,7 @@ class TestReceivedMailshotsFilter:
             is_to_exporters=True,
             created_by=importer_two_contact,
         )
-        MailshotFactory(
+        Mailshot.objects.create(
             title="Published Mailshot to all",
             description="This is a published mailshot to all",
             status=Mailshot.Statuses.PUBLISHED,

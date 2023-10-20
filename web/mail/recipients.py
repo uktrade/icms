@@ -57,6 +57,13 @@ def get_organisation_contact_email_addresses(org: Organisation) -> list[str]:
     return get_email_addresses_for_users(users)
 
 
+def get_email_addresses_for_mailshot(organisation_class: type[Organisation]) -> list[str]:
+    emails = []
+    for org in organisation_class.objects.filter(is_active=True):
+        emails.extend(get_organisation_contact_email_addresses(org))
+    return list(set(emails))
+
+
 @override_recipients
 def get_email_addresses_for_users(users: Iterable[User]) -> list[str]:
     emails = []

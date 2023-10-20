@@ -31,6 +31,7 @@ from web.models import (
     ExporterAccessRequest,
     Importer,
     ImporterAccessRequest,
+    Mailshot,
     Office,
     OpenIndividualLicenceApplication,
     SanctionsAndAdhocApplication,
@@ -914,3 +915,18 @@ def _add_valid_checklist(app):
             )
         case _:
             raise ValueError(f"Invalid process_type: {app.process_type}")
+
+
+@pytest.fixture
+def draft_mailshot(ilb_admin_user):
+    return Mailshot.objects.create(
+        email_body="original message",
+        email_subject="original subject",
+        retract_email_body="retract message",
+        retract_email_subject="retract subject",
+        created_by=ilb_admin_user,
+        is_email=True,
+        title="Test Mailshot",
+        description="A mailshot to use for testing",
+        status=Mailshot.Statuses.DRAFT,
+    )

@@ -16,6 +16,7 @@ from web.domains.case.types import (
 from web.models import CaseEmail as CaseEmailModel
 from web.models import (
     FurtherInformationRequest,
+    Mailshot,
     UpdateRequest,
     VariationRequest,
     WithdrawApplication,
@@ -34,6 +35,7 @@ from .url_helpers import (
     get_authority_view_url,
     get_case_view_url,
     get_importer_view_url,
+    get_mailshot_detail_view_url,
     get_validate_digital_signatures_url,
 )
 
@@ -41,7 +43,7 @@ from .url_helpers import (
 class GOVNotifyEmailMessage(EmailMessage):
     name: ClassVar[EmailTypes]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.template_id = self.get_template_id()
 
@@ -71,7 +73,7 @@ class GOVNotifyEmailMessage(EmailMessage):
 
 
 class BaseApplicationEmail(GOVNotifyEmailMessage):
-    def __init__(self, *args, application: ImpOrExp, **kwargs):
+    def __init__(self, *args, application: ImpOrExp, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.application = application
 
@@ -91,7 +93,7 @@ class BaseApplicationEmail(GOVNotifyEmailMessage):
 
 
 class BaseApprovalRequest(GOVNotifyEmailMessage):
-    def __init__(self, *args, approval_request: ImpOrExpApproval, **kwargs):
+    def __init__(self, *args, approval_request: ImpOrExpApproval, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.approval_request = approval_request
 
@@ -101,7 +103,7 @@ class BaseApprovalRequest(GOVNotifyEmailMessage):
 
 
 class BaseWithdrawalEmail(GOVNotifyEmailMessage):
-    def __init__(self, *args, withdrawal: WithdrawApplication, **kwargs):
+    def __init__(self, *args, withdrawal: WithdrawApplication, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.withdrawal = withdrawal
         self.application = withdrawal.export_application or withdrawal.import_application
@@ -117,7 +119,7 @@ class BaseWithdrawalEmail(GOVNotifyEmailMessage):
 
 
 class BaseVariationRequestEmail(BaseApplicationEmail):
-    def __init__(self, *args, variation_request: VariationRequest, **kwargs):
+    def __init__(self, *args, variation_request: VariationRequest, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.variation_request = variation_request
 
@@ -126,7 +128,7 @@ class BaseVariationRequestEmail(BaseApplicationEmail):
 class AccessRequestEmail(GOVNotifyEmailMessage):
     name = EmailTypes.ACCESS_REQUEST
 
-    def __init__(self, *args, access_request: ImpAccessOrExpAccess, **kwargs):
+    def __init__(self, *args, access_request: ImpAccessOrExpAccess, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.access_request = access_request
 
@@ -141,7 +143,7 @@ class AccessRequestEmail(GOVNotifyEmailMessage):
 class AccessRequestClosedEmail(GOVNotifyEmailMessage):
     name = EmailTypes.ACCESS_REQUEST_CLOSED
 
-    def __init__(self, *args, access_request: ImpAccessOrExpAccess, **kwargs):
+    def __init__(self, *args, access_request: ImpAccessOrExpAccess, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.access_request = access_request
 
@@ -255,7 +257,7 @@ class WithdrawalCancelledEmail(BaseWithdrawalEmail):
 class ApplicationReassignedEmail(BaseApplicationEmail):
     name = EmailTypes.APPLICATION_REASSIGNED
 
-    def __init__(self, *args, comment: str, **kwargs):
+    def __init__(self, *args, comment: str, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.comment = comment
 
@@ -338,7 +340,7 @@ class VariationRequestRefusedEmail(BaseVariationRequestEmail):
 class CaseEmail(GOVNotifyEmailMessage):
     name = EmailTypes.CASE_EMAIL
 
-    def __init__(self, *args, case_email: CaseEmailModel, **kwargs):
+    def __init__(self, *args, case_email: CaseEmailModel, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.case_email = case_email
 
@@ -353,7 +355,7 @@ class CaseEmail(GOVNotifyEmailMessage):
 
 
 class BaseFurtherInformationRequestEmail(GOVNotifyEmailMessage):
-    def __init__(self, *args, fir: FurtherInformationRequest, **kwargs):
+    def __init__(self, *args, fir: FurtherInformationRequest, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.fir = fir
 
@@ -377,9 +379,9 @@ class ApplicationFurtherInformationRequestEmail(
 class AccessRequestFurtherInformationRequestEmail(BaseFurtherInformationRequestEmail):
     name = EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST
 
-    def __init__(self, *args, access_request: ImpAccessOrExpAccess, **kwargs):
-        self.access_request = access_request
+    def __init__(self, *args, access_request: ImpAccessOrExpAccess, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.access_request = access_request
 
     def get_context(self) -> dict:
         context = super().get_context() | {
@@ -459,7 +461,7 @@ class CertificateRevokedEmail(BaseApplicationEmail):
 class ApplicationUpdateEmail(BaseApplicationEmail):
     name = EmailTypes.APPLICATION_UPDATE
 
-    def __init__(self, *args, update_request: UpdateRequest, **kwargs):
+    def __init__(self, *args, update_request: UpdateRequest, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.update_request = update_request
 
@@ -474,7 +476,7 @@ class ApplicationUpdateEmail(BaseApplicationEmail):
 class AuthorityArchivedEmail(GOVNotifyEmailMessage):
     name = EmailTypes.AUTHORITY_ARCHIVED
 
-    def __init__(self, *args, authority: Authority, **kwargs):
+    def __init__(self, *args, authority: Authority, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.authority = authority
 
@@ -499,3 +501,48 @@ class AuthorityArchivedEmail(GOVNotifyEmailMessage):
 
     def get_site_domain(self) -> str:
         return get_caseworker_site_domain()
+
+
+class BaseMailshotEmail(GOVNotifyEmailMessage):
+    def __init__(self, *args, mailshot: Mailshot, site_domain: str, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.mailshot = mailshot
+        self.site_domain = site_domain
+
+    def get_context(self) -> dict:
+        context = super().get_context()
+        context["subject"] = self.get_subject()
+        context["body"] = self.get_body()
+        context["mailshot_url"] = get_mailshot_detail_view_url(self.mailshot, self.site_domain)
+        return context
+
+    def get_subject(self) -> str:
+        raise NotImplementedError
+
+    def get_body(self) -> str:
+        raise NotImplementedError
+
+    def get_site_domain(self) -> str:
+        return self.site_domain
+
+
+@final
+class MailshotEmail(BaseMailshotEmail):
+    name = EmailTypes.MAILSHOT
+
+    def get_subject(self) -> str:
+        return self.mailshot.email_subject
+
+    def get_body(self) -> str:
+        return self.mailshot.email_body
+
+
+@final
+class RetractMailshotEmail(BaseMailshotEmail):
+    name = EmailTypes.RETRACT_MAILSHOT
+
+    def get_subject(self) -> str:
+        return self.mailshot.retract_email_subject
+
+    def get_body(self) -> str:
+        return self.mailshot.retract_email_body

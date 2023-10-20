@@ -4,7 +4,7 @@ from django.shortcuts import reverse
 from django.templatetags.static import static
 
 from web.domains.case.types import Authority, ImpOrExp
-from web.models import FirearmsAuthority, Importer
+from web.models import FirearmsAuthority, Importer, Mailshot
 from web.sites import get_caseworker_site_domain, get_importer_site_domain
 
 
@@ -41,3 +41,7 @@ def get_authority_view_url(authority: Authority, full_url: bool = False) -> str:
     if full_url:
         return urljoin(get_caseworker_site_domain(), url)
     return url
+
+
+def get_mailshot_detail_view_url(mailshot: Mailshot, domain: str) -> str:
+    return urljoin(domain, reverse("mailshot-detail-received", kwargs={"mailshot_pk": mailshot.pk}))

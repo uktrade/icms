@@ -1,6 +1,13 @@
 import pytest
+from django.utils import timezone
 
-from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
+from web.mail.url_helpers import (
+    get_authority_view_url,
+    get_case_view_url,
+    get_mailshot_detail_view_url,
+    get_validate_digital_signatures_url,
+)
+from web.models import FirearmsAuthority, Section5Authority
 from web.sites import get_exporter_site_domain, get_importer_site_domain
 
 
@@ -28,3 +35,29 @@ def test_get_import_case_view_url(completed_dfl_app):
 def test_get_case_view_url(completed_dfl_app):
     expected_url = f"/case/import/{completed_dfl_app.pk}/view/"
     assert get_case_view_url(completed_dfl_app, "") == expected_url
+
+
+def test_get_mailshot_detail_view_url(draft_mailshot):
+    expected_url = f"http://import-a-licence/mailshot/{draft_mailshot.pk}/received/"
+    assert get_mailshot_detail_view_url(draft_mailshot, get_importer_site_domain()) == expected_url
+
+
+@pytest.mark.parametrize(
+    "authority_class,full_url,expected_url",
+    [
+        (Section5Authority, False, "/importer/section5/{pk}/view/"),
+        (Section5Authority, True, "http://caseworker/importer/section5/{pk}/view/"),
+        (FirearmsAuthority, False, "/importer/firearms/{pk}/view/"),
+        (FirearmsAuthority, True, "http://caseworker/importer/firearms/{pk}/view/"),
+    ],
+)
+def test_get_authority_view_url(authority_class, full_url, expected_url, importer):
+    authority = authority_class.objects.create(
+        importer=importer,
+        start_date=timezone.now().date(),
+        end_date=timezone.now().date(),
+        archive_reason=["REVOKED", "WITHDRAWN"],
+        other_archive_reason="Moved",
+        reference="Test Authority",
+    )
+    assert get_authority_view_url(authority, full_url) == expected_url.format(pk=authority.pk)
