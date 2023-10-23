@@ -30,13 +30,16 @@ class TestCommodityListView(AuthTestCase):
         assert response.context_data["page_title"] == "Maintain Commodities"
 
     def test_number_of_pages(self):
-        response = self.ilb_admin_client.get(self.url)
+        response = self.ilb_admin_client.get(self.url, {"commodity_code": ""})
         page = response.context_data["page"]
-        assert page.paginator.num_pages == 68
+
+        # Page count has reduced as it is filter excluded commodity codes.
+        assert page.paginator.num_pages == 59
 
     def test_page_results(self):
-        response = self.ilb_admin_client.get(self.url + "?page=2")
+        response = self.ilb_admin_client.get(self.url, {"page": "2", "commodity_code": ""})
         page = response.context_data["page"]
+
         assert len(page.object_list) == 50
 
 

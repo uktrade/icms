@@ -8,7 +8,7 @@ from web.tests.domains.section5.factories import Section5ClauseFactory
 def test_list_ok(ilb_admin_user, ilb_admin_client):
     Section5ClauseFactory.create(clause="42aaa", created_by=ilb_admin_user)
 
-    response = ilb_admin_client.get("/section5/")
+    response = ilb_admin_client.get("/section5/", {"description": ""})
 
     assert response.status_code == 200
     assert "42aaa" in response.content.decode()

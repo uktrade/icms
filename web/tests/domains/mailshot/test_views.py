@@ -38,13 +38,13 @@ class TestMailshotListView(AuthTestCase):
     def test_number_of_pages(self, importer_one_contact):
         MailshotFactory.create_batch(62, created_by=importer_one_contact)
 
-        response = self.ilb_admin_client.get(self.url)
+        response = self.ilb_admin_client.get(self.url, {"reference": ""})
         page = response.context_data["page"]
         assert page.paginator.num_pages == 2
 
     def test_page_results(self, importer_one_contact):
         MailshotFactory.create_batch(65, created_by=importer_one_contact)
-        response = self.ilb_admin_client.get(self.url + "?page=2")
+        response = self.ilb_admin_client.get(self.url, {"page": "2", "reference": ""})
         page = response.context_data["page"]
         assert len(page.object_list) == 15
 

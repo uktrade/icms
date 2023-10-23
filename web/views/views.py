@@ -17,6 +17,7 @@ from django.views.generic import RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
+from django_filters import FilterSet
 
 from web.one_login.utils import OneLoginConfig
 from web.sites import is_caseworker_site, is_exporter_site, is_importer_site
@@ -136,6 +137,7 @@ class ModelFilterView(
     paginate_by = 50
     paginate = True
     default_filters: dict | None = None
+    filterset_class: type[FilterSet]
 
     def post(self, request, *args, **kwargs):
         action = request.POST.get("action")
@@ -163,10 +165,34 @@ class ModelFilterView(
         except EmptyPage:
             return paginator.page(paginator.num_pages)
 
-    def get_filterset(self, **kwargs):
-        return self.filterset_class(
-            self.request.GET or self.default_filters, queryset=self.get_queryset(), **kwargs
-        )
+    def get_filterset(self, **kwargs) -> FilterSet:
+        queryset = self.get_queryset()
+
+        if self.is_initial_page_load():
+            filterset_data = self.default_filters
+            # Do not show results until a search has been performed.
+            queryset = queryset.none()
+        else:
+            filterset_data = self.request.GET
+
+        return self.filterset_class(filterset_data, queryset=queryset, **kwargs)
+
+    def is_initial_page_load(self):
+        """Work out if this view has been loaded for the first time.
+
+        Evaluates to True if there are no query params or the params supplied do not match
+        the filterset fields.
+        This is to allow the views to work correctly with extra query params that have nothing
+        to do with filtering the queryset.
+        """
+
+        if not self.request.GET:
+            return True
+
+        form_filters = set(self.filterset_class.declared_filters.keys())
+        request_query_params = set(self.request.GET.keys())
+
+        return form_filters.isdisjoint(request_query_params)
 
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -176,6 +202,9 @@ class ModelFilterView(
             context["page"] = self._paginate(filterset.qs)
         else:
             context["results"] = filterset.qs
+
+        context["initial_page_load"] = self.is_initial_page_load()
+
         return context
 
 

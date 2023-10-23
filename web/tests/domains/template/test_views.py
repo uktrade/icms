@@ -31,14 +31,14 @@ class TestTemplateListView(AuthTestCase):
     def test_number_of_pages(self):
         TemplateFactory.create_batch(118, is_active=True)
 
-        response = self.ilb_admin_client.get(self.url)
+        response = self.ilb_admin_client.get(self.url, {"template_name": ""})
         page = response.context_data["page"]
         assert page.paginator.num_pages == 5
 
     def test_page_results(self):
         TemplateFactory.create_batch(103, is_active=True)
 
-        response = self.ilb_admin_client.get(self.url + "?page=3")
+        response = self.ilb_admin_client.get(self.url, {"page": "3", "template_name": ""})
         page = response.context_data["page"]
         assert len(page.object_list) == 50
 

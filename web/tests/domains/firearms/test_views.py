@@ -34,7 +34,7 @@ class TestObsoleteCalibreGroupListView(AuthTestCase):
     def test_page_results(self):
         for i in range(58):
             ObsoleteCalibreGroupFactory(is_active=True)
-        response = self.ilb_admin_client.get(self.url)
+        response = self.ilb_admin_client.get(self.url, {"calibre_name": ""})
         results = response.context_data["results"]
         assert len(results) == 59
 
