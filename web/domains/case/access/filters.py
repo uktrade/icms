@@ -47,7 +47,10 @@ class ExporterAccessRequestFilter(FilterSet):
         """,
     )
     request_type = ChoiceFilter(
-        choices=ExporterAccessRequest.REQUEST_TYPES, lookup_expr="exact", label="Request Type"
+        choices=ExporterAccessRequest.REQUEST_TYPES,
+        lookup_expr="exact",
+        label="Request Type",
+        empty_label="Any",
     )
 
     class Meta:
