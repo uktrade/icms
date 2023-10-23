@@ -14,7 +14,10 @@ class ImporterAccessRequestFilter(FilterSet):
         """,
     )
     request_type = ChoiceFilter(
-        choices=ImporterAccessRequest.REQUEST_TYPES, lookup_expr="exact", label="Request Type"
+        choices=ImporterAccessRequest.REQUEST_TYPES,
+        lookup_expr="exact",
+        label="Request Type",
+        empty_label="Any",
     )
 
     class Meta:
