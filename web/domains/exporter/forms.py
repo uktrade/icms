@@ -2,7 +2,7 @@ from typing import Any
 
 from django import forms
 from django.core.exceptions import ValidationError
-from django_filters import CharFilter, FilterSet
+from django_filters import CharFilter, ChoiceFilter, FilterSet
 from guardian.forms import UserObjectPermissionsForm
 
 from web.errors import APIError
@@ -13,8 +13,14 @@ from .models import Exporter
 
 
 class ExporterFilter(FilterSet):
+    status = ChoiceFilter(
+        field_name="is_active",
+        choices=((True, "Current"), (False, "Archived")),
+        lookup_expr="exact",
+        label="Status",
+        empty_label="Any",
+    )
     exporter_name = CharFilter(field_name="name", lookup_expr="icontains", label="Exporter Name")
-
     agent_name = CharFilter(field_name="agents__name", lookup_expr="icontains", label="Agent Name")
 
     class Meta:

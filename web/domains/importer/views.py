@@ -95,6 +95,9 @@ class ImporterListAdminView(ModelFilterView):
 
     template_name = "web/domains/importer/list.html"
     filterset_class = ImporterFilter
+    # Only set when the page is first loaded.
+    default_filters = {"status": True}
+
     model = Importer
     # TODO: ICMSLST-2093 Fix duplicate rows being returned.
     queryset = Importer.objects.select_related("main_importer")
@@ -160,6 +163,8 @@ class ImporterListRegulatorView(ModelFilterView):
     # ModelFilterView config
     page_title = "Maintain Importers"
     filterset_class = ImporterFilter
+    # Only set when the page is first loaded.
+    default_filters = {"status": True}
 
     class Display:
         fields = get_importer_list_fields()
