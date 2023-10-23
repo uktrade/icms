@@ -113,7 +113,10 @@ class ImporterOrganisationForm(forms.ModelForm):
 
 class ImporterFilter(FilterSet):
     importer_entity_type = ChoiceFilter(
-        field_name="type", choices=Importer.TYPES, label="Importer Entity Type"
+        field_name="type",
+        choices=Importer.TYPES,
+        label="Importer Entity Type",
+        empty_label="Any",
     )
 
     status = ChoiceFilter(
@@ -121,6 +124,7 @@ class ImporterFilter(FilterSet):
         choices=((True, "Current"), (False, "Archived")),
         lookup_expr="exact",
         label="Status",
+        empty_label="Any",
     )
 
     name = CharFilter(lookup_expr="icontains", label="Importer Name", method="filter_importer_name")
