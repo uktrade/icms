@@ -60,16 +60,16 @@ class TestConstabularyListView(AuthTestCase):
     def test_number_of_pages(self):
         # Create 51 product legislation as paging lists 50 items per page
         for i in range(62):
-            ConstabularyFactory()
+            ConstabularyFactory(is_active=True)
 
-        response = self.ilb_admin_client.get(self.url)
+        response = self.ilb_admin_client.get(self.url, {"name": ""})
         page = response.context_data["page"]
         assert page.paginator.num_pages == 2
 
     def test_page_results(self):
         for i in range(65):
             ConstabularyFactory(is_active=True)
-        response = self.ilb_admin_client.get(self.url + "?page=2")
+        response = self.ilb_admin_client.get(self.url, {"page": "2", "name": ""})
         page = response.context_data["page"]
         assert len(page.object_list) == 15
 

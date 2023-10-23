@@ -25,9 +25,10 @@
           <div class="three columns"></div>
           <div class="six columns">
             <ul class="menu-out flow-across">
-              <button id="btn-submit-search" type="submit" name="" value="" class="primary-button button">
-                Search
-              </button>
+              <li>
+                <button id="btn-submit-search" type="submit" name="" value="" class="primary-button button">
+                  Search
+                </button>
               </li>
             </ul>
           </div>
@@ -86,7 +87,9 @@
     {% endif %}
 
   {% else %}
-    {{banners.warning(empty_message)}}
+    {% if not initial_page_load %}
+      {{ banners.warning(empty_message) }}
+    {% endif %}
   {% endif %}
 
 <div class=content-actions></div>

@@ -29,7 +29,7 @@ class TestProductLegislationListView(AuthTestCase):
         assert response.context_data["page_title"] == "Maintain Product Legislation"
 
     def test_number_of_results(self):
-        response = self.ilb_admin_client.get(self.url)
+        response = self.ilb_admin_client.get(self.url, {"name": ""})
         results = response.context_data["results"]
         assert results.count() == 26
 

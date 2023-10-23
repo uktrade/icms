@@ -63,7 +63,7 @@ class TestImporterListAdminView(AuthTestCase):
         for i in range(58):
             ImporterFactory()
 
-        response = self.ilb_admin_client.get(self.url)
+        response = self.ilb_admin_client.get(self.url, {"name": ""})
         page = response.context_data["page"]
         assert page.paginator.num_pages == 2
 
@@ -71,7 +71,7 @@ class TestImporterListAdminView(AuthTestCase):
         for i in range(50):
             ImporterFactory(is_active=True)
 
-        response = self.ilb_admin_client.get(self.url + "?page=2")
+        response = self.ilb_admin_client.get(self.url, {"page": "2", "name": ""})
         page = response.context_data["page"]
 
         # We have added three to use as a pytest fixture
