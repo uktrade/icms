@@ -39,6 +39,9 @@ class ExporterListAdminView(ModelFilterView):
     permission_required = Perms.sys.exporter_admin
     page_title = "Maintain Exporters"
 
+    # Only set when the page is first loaded.
+    default_filters = {"status": True}
+
     class Display:
         fields = ["name", "offices", "agents"]
         fields_config = {
