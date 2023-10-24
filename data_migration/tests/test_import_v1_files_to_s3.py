@@ -11,21 +11,31 @@ from data_migration.management.commands import import_v1_files_to_s3
 from data_migration.management.commands._types import QueryModel
 from data_migration.management.commands.config.run_order.files import (
     DEFAULT_FILE_CREATED_DATETIME,
+    DEFAULT_SECURE_LOB_REF_ID,
 )
 from data_migration.management.commands.utils.db_processor import OracleDBProcessor
 
 CREATED_DATETIME_ALT = "2023-01-01 01:00:00"
+CREATED_DATETIME_ALT_2 = "2023-01-02 01:00:00"
 
 FAKE_DB_RESPONSE = [
     {
         "BLOB_DATA": "blob",
         "PATH": "testfile.txt",
         "CREATED_DATETIME": datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
+        "SECURE_LOB_REF_ID": 1,
     },
     {
         "BLOB_DATA": "blob2",
         "PATH": "testfile2.txt",
         "CREATED_DATETIME": datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
+        "SECURE_LOB_REF_ID": 2,
+    },
+    {
+        "BLOB_DATA": "blob2",
+        "PATH": "testfile3.txt",
+        "CREATED_DATETIME": datetime.strptime(CREATED_DATETIME_ALT_2, "%Y-%m-%d %H:%M:%S"),
+        "SECURE_LOB_REF_ID": 3,
     },
 ]
 
@@ -34,10 +44,10 @@ class TestImportV1FilesToS3:
     @pytest.fixture(autouse=True)
     def setUp(self) -> None:
         self.test_query = QueryModel(
-            "select * from test_query_table",
+            "select * from test_query_table where col=:col_type",
             "test_query",
             None,
-            {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+            {"secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID, "col_type": "col1"},
         )
         self.cmd = self.get_cmd_to_test()
         self.cmd.db.QUERIES = [self.test_query]
@@ -51,17 +61,24 @@ class TestImportV1FilesToS3:
     def test_get_query_last_run_key(self):
         assert import_v1_files_to_s3.get_query_last_run_key("TEST") == "TEST-last-run.json"
 
-    def test_get_start_from_datetime_ignore_true(self):
+    def test_get_start_position_ignore_true(self):
         result = self.cmd.get_query_parameters(self.test_query, True)
-        assert result == {"created_datetime": DEFAULT_FILE_CREATED_DATETIME}
+        assert result == {"secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID, "col_type": "col1"}
 
     @mock.patch(
         "data_migration.management.commands.import_v1_files_to_s3.Command.get_last_run_data"
     )
-    def test_get_start_from_datetime_ignore_false(self, mock_get_last_run_file):
-        mock_get_last_run_file.return_value = {"created_datetime": CREATED_DATETIME_ALT}
+    def test_get_start_position_ignore_false(self, mock_get_last_run_file):
+        mock_get_last_run_file.return_value = {
+            "created_datetime": "2024-01-01 12:00:00",
+            "col_type": "col1",
+            "secure_lob_ref_id": 123,
+        }
         result = self.cmd.get_query_parameters(self.test_query, False)
-        assert result == {"created_datetime": CREATED_DATETIME_ALT}
+        assert result == {
+            "col_type": "col1",
+            "secure_lob_ref_id": 123,
+        }
 
     @mock.patch("web.utils.s3.get_s3_client")
     def test_get_last_run_data(self, mock_get_client):
@@ -142,28 +159,32 @@ class TestImportV1FilesToS3:
         mock_upload_file,
         mock_put_object_in_s3,
     ):
-        mock_get_file_from_s3.return_value = b'{"created_datetime": "2023-05-02 12:00:00"}'
+        mock_get_file_from_s3.return_value = (
+            b'{"created_datetime": "2023-05-02 12:00:00", "secure_lob_ref_id": 0}'
+        )
         mock_put_object_in_s3.return_value = None
         mock_upload_file.return_value = None
-        mock_execute_count_query.return_value = 2, 1000
+        mock_execute_count_query.return_value = 3, 1000
         mock_execute_query.return_value.__enter__.return_value = iter(FAKE_DB_RESPONSE)
 
         self.cmd.process_queries(False, False)
 
         assert mock_execute_count_query.called is True
         assert mock_execute_query.called is True
-        assert mock_upload_file.call_count == 2
+        assert mock_upload_file.call_count == 3
         assert mock_get_file_from_s3.called is True
 
         assert mock_put_object_in_s3.called is True
         mock_put_object_in_s3.assert_called_with(
             json.dumps(
                 {
-                    "number_of_files_to_be_processed": 2,
-                    "number_of_files_processed": 2,
+                    "number_of_files_to_be_processed": 3,
+                    "number_of_files_processed": 3,
                     "query_name": "test_query",
                     "started_at": "2023-01-01 01:00:00",
-                    "created_datetime": "2023-01-01 01:00:00",
+                    "secure_lob_ref_id": 3,
+                    "col_type": "col1",
+                    "created_datetime": "2023-01-02 01:00:00",
                     "finished_at": "2023-01-01 01:00:00",
                 }
             ),
@@ -245,6 +266,7 @@ class TestImportV1FilesToS3:
                     "number_of_files_processed": 2,
                     "created_datetime": "2023-01-01 01:00:00",
                     "finished_at": "2023-01-01 01:00:00",
+                    "secure_lob_ref_id": 1,
                 }
             ),
             "test_query-last-run.json",

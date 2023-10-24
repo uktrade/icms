@@ -4,6 +4,7 @@ from data_migration.management.commands._types import M2M, QueryModel, SourceTar
 from web import models as web
 
 DEFAULT_FILE_CREATED_DATETIME = "2013-01-01 01:00:00"
+DEFAULT_SECURE_LOB_REF_ID = 0
 
 file_folder_query_model = [
     QueryModel(
@@ -225,7 +226,7 @@ file_query_model = [
         "SPS Application Files",
         dm.File,
         {
-            "created_datetime": DEFAULT_FILE_CREATED_DATETIME,
+            "secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID,
             "ima_type": "SPS",
             "ima_sub_type": "SPS1",
             "path_prefix": "sps_application_files",
@@ -236,7 +237,7 @@ file_query_model = [
         "FA-DFL Application Files",
         dm.File,
         {
-            "created_datetime": DEFAULT_FILE_CREATED_DATETIME,
+            "secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID,
             "ima_type": "FA",
             "ima_sub_type": "DEACTIVATED",
             "path_prefix": "dfl_application_files",
@@ -247,7 +248,7 @@ file_query_model = [
         "FA-OIL Application Files",
         dm.File,
         {
-            "created_datetime": DEFAULT_FILE_CREATED_DATETIME,
+            "secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID,
             "ima_type": "FA",
             "ima_sub_type": "OIL",
             "path_prefix": "oil_application_files",
@@ -258,7 +259,7 @@ file_query_model = [
         "FA-SIL Application Files",
         dm.File,
         {
-            "created_datetime": DEFAULT_FILE_CREATED_DATETIME,
+            "secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID,
             "ima_type": "FA",
             "ima_sub_type": "SIL",
             "path_prefix": "sil_application_files",
@@ -269,7 +270,7 @@ file_query_model = [
         "Sanctions & Adhoc Application Files",
         dm.File,
         {
-            "created_datetime": DEFAULT_FILE_CREATED_DATETIME,
+            "secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID,
             "ima_type": "ADHOC",
             "ima_sub_type": "ADHOC1",
             "path_prefix": "sanctions_application_files",
@@ -280,7 +281,7 @@ file_query_model = [
         "OPT Application Files",
         dm.File,
         {
-            "created_datetime": DEFAULT_FILE_CREATED_DATETIME,
+            "secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID,
             "ima_type": "OPT",
             "ima_sub_type": "QUOTA",
             "path_prefix": "opt_application_files",
@@ -291,7 +292,7 @@ file_query_model = [
         "Wood Application Files",
         dm.File,
         {
-            "created_datetime": DEFAULT_FILE_CREATED_DATETIME,
+            "secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID,
             "ima_type": "WD",
             "ima_sub_type": "QUOTA",
             "path_prefix": "wood_application_files",
@@ -302,7 +303,7 @@ file_query_model = [
         "Textiles Application Files",
         dm.File,
         {
-            "created_datetime": DEFAULT_FILE_CREATED_DATETIME,
+            "secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID,
             "ima_type": "TEX",
             "ima_sub_type": "QUOTA",
             "path_prefix": "textiles_application_files",
@@ -312,26 +313,26 @@ file_query_model = [
         queries.fa_certificate_files,
         "Firearms & Ammunition Certificate Files",
         dm.File,
-        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME, "path_prefix": "fa_certificate_files"},
+        {"secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID, "path_prefix": "fa_certificate_files"},
     ),
     QueryModel(
         queries.fir_files,
         "Further Information Request Files",
         dm.File,
-        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME, "path_prefix": "fir_files"},
+        {"secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID, "path_prefix": "fir_files"},
     ),
     QueryModel(
         queries.mailshot_files,
         "Mailshot Files",
         dm.File,
-        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME, "path_prefix": "mailshot_files"},
+        {"secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID, "path_prefix": "mailshot_files"},
     ),
     QueryModel(
         queries.file_objects_folder_type,
         "GMP Application Files",
         dm.File,
         {
-            "created_datetime": DEFAULT_FILE_CREATED_DATETIME,
+            "secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID,
             "folder_type": "GMP_SUPPORTING_DOCUMENTS",
             "path_prefix": "gmp_application_files",
         },
@@ -341,7 +342,7 @@ file_query_model = [
         "Import Application Case Note Files",
         dm.File,
         {
-            "created_datetime": DEFAULT_FILE_CREATED_DATETIME,
+            "secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID,
             "folder_type": "IMP_CASE_NOTE_DOCUMENTS",
             "path_prefix": "import_application_case_note_files",
         },
@@ -350,25 +351,26 @@ file_query_model = [
         queries.export_case_note_docs,
         "Export Application Case Note Documents",
         dm.File,
-        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+        {"secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID},
     ),
     QueryModel(
         queries.fa_supplementary_report_upload_files,
         "Supplementary Report Goods Uploaded Files",
         dm.File,
         {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+        "created_datetime",
     ),
     QueryModel(
         queries.ia_licence_docs,
         "Import Application Licence Documents",
         dm.CaseDocument,
-        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+        {"secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID},
     ),
     QueryModel(
         queries.export_certificate_docs,
         "Export Application Certificate Documents",
         dm.ExportCertificateCaseDocumentReferenceData,
-        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+        {"secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID},
     ),
 ]
 

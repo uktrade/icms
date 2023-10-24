@@ -20,6 +20,7 @@ class QueryModel:
     query_name: str
     model: Model
     parameters: Params = field(default_factory=dict)
+    limit_by_field: str = "secure_lob_ref_id"
 
 
 class SourceTarget(NamedTuple):

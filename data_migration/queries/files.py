@@ -1,9 +1,10 @@
 import_application_subquery = """
-  SELECT DISTINCT app_docs_ff_id
+  SELECT DISTINCT app_docs_ff_id, ima_id
     FROM impmgr.xview_ima_details xid
       INNER JOIN impmgr.import_application_types iat
         ON iat.ima_type = xid.ima_type AND iat.ima_sub_type = xid.ima_sub_type
     WHERE xid.status <> 'DELETED'
+      AND status_control = 'C'
       AND xid.ima_type = :ima_type
       AND xid.ima_sub_type = :ima_sub_type
       AND (
@@ -42,10 +43,12 @@ ORDER by fft.id
 import_application_files = f"""
 SELECT
   fft.id target_id
+  , case_ref
   , fv.*
   , sld.blob_data
 FROM decmgr.file_folder_targets fft
 INNER JOIN ({import_application_subquery}) xid ON fft.ff_id = xid.app_docs_ff_id
+INNER JOIN impmgr.import_applications ia ON ia.id = xid.ima_id
 INNER JOIN (
   SELECT
     fft_id
@@ -66,8 +69,8 @@ INNER JOIN (
   WHERE status_control = 'C'
 ) fv ON fv.fft_id = fft.id
 INNER JOIN securemgr.secure_lob_data sld ON sld.id = fv.secure_lob_ref_id
-WHERE created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS')
-ORDER by fft.id
+WHERE fv.secure_lob_ref_id > :secure_lob_ref_id
+ORDER by fv.secure_lob_ref_id
 """
 
 
@@ -105,6 +108,7 @@ SELECT
   , created_datetime
   , fv.created_by_id
   , sld.blob_data
+  , fv.secure_lob_ref_id
 FROM {from_table}
 INNER JOIN decmgr.file_folders ff ON xx.{folder_column} = ff.id
 INNER JOIN decmgr.file_folder_targets fft ON fft.ff_id = ff.id
@@ -128,8 +132,8 @@ INNER JOIN (
   WHERE status_control = 'C'
 ) fv ON fv.target_id = fft.id
 INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS'){condition}
-ORDER by fft.id
+WHERE fv.secure_lob_ref_id > :secure_lob_ref_id{condition}
+ORDER by fv.secure_lob_ref_id
 """
 
 folder_column = "file_folder_id"
@@ -212,6 +216,7 @@ SELECT
   , created_datetime
   , fv.created_by_id
   , sld.blob_data
+  , fv.secure_lob_ref_id
 FROM decmgr.file_folder_targets fft
 INNER JOIN decmgr.file_folders ff ON fft.ff_id = ff.id
 LEFT JOIN (
@@ -234,9 +239,9 @@ LEFT JOIN (
   WHERE status_control = 'C'
  ) fv ON fv.target_id = fft.ID
 INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
-WHERE created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS')
+WHERE fv.secure_lob_ref_id > :secure_lob_ref_id
 AND ff.file_folder_type = :folder_type
-ORDER by fft.id
+ORDER by fv.secure_lob_ref_id
 """
 
 export_case_note_folders = """
@@ -258,14 +263,15 @@ SELECT
   , EXTRACTVALUE(vf.metadata_xml, '/file-metadata/size') file_size
   , 'export_case_note_docs/' || vf.file_id || '-' || vf.filename path
   , sld.blob_data
+  , sld.id AS secure_lob_ref_id
 FROM doclibmgr.folder_details fd
 INNER JOIN doclibmgr.vw_file_folders vff ON vff.f_id = fd.f_id
 INNER JOIN doclibmgr.vw_files vf ON vf.file_id = vff.file_id
 INNER JOIN doclibmgr.file_versions fv ON fv.file_id = vf.file_id
 INNER JOIN securemgr.secure_lob_data sld ON sld.id = DEREF(vf.secure_lob_ref).id
 WHERE fd.folder_title LIKE 'Case Note %'
-  AND vf.created_datetime > TO_DATE(:created_datetime, 'YYYY-MM-DD HH24:MI:SS')
-ORDER BY vf.file_id
+  AND sld.id > :secure_lob_ref_id
+ORDER BY secure_lob_ref_id
 """
 
 
@@ -275,6 +281,7 @@ SELECT
   , glf.file_content as blob_data
   , to_date(replace(created_datetime_str, 'T', chr(10)), 'YYYY-MM-DD HH24:MI:SS') created_datetime
   , x.*
+  , glf.id as secure_lob_ref_id
 FROM impmgr.import_application_details ad
 INNER JOIN impmgr.xview_ima_details xid ON ad.id = xid.imad_id AND ima_type = 'FA'
 CROSS JOIN XMLTABLE('
