@@ -21,7 +21,6 @@ def get_query_last_run_key(query_name: str) -> str:
 
 
 class Command(BaseCommand):
-    REQUIRED_QUERY_PARAMETERS: list[str] = ["created_datetime"]
     DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S"
 
     def add_arguments(self, parser):
@@ -146,6 +145,7 @@ class Command(BaseCommand):
                 self.DATETIME_FORMAT
             )
             data_dict["finished_at"] = datetime.datetime.now().strftime(self.DATETIME_FORMAT)
+            data_dict["secure_lob_ref_id"] = last_file_processed["SECURE_LOB_REF_ID"]
             self.write_run_data_to_s3(data_dict)
 
     def process_queries(self, ignore_last_run: bool, count_only: bool) -> None:
@@ -160,7 +160,6 @@ class Command(BaseCommand):
         total_file_size = 0
         for query_model in self.db.get_query_list():
             query_parameters = self.get_query_parameters(query_model, ignore_last_run)
-
             file_count, file_size = self.db.execute_count_query(query_model, query_parameters)
             total_file_count += file_count
             total_file_size += file_size
@@ -182,10 +181,8 @@ class Command(BaseCommand):
         last_run_data = self.get_last_run_data(query_model)
         if not last_run_data:
             return query_model.parameters
-
-        parameters = {}
-        for _param in self.REQUIRED_QUERY_PARAMETERS:
-            parameters[_param] = last_run_data[_param]
+        parameters = query_model.parameters.copy()
+        parameters[query_model.limit_by_field] = last_run_data[query_model.limit_by_field]
         return parameters
 
     def write_run_data_to_s3(self, result: dict[str, Any]) -> None:

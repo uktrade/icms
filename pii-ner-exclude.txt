@@ -3472,3 +3472,8 @@ Unido Los
 fir.request_subject|default('N/A'
 {{ fir.response_datetime.strftime('%d-%b-%Y %
 {{fields.field(filter.form[field]
+SECURE_LOB_REF_ID
+col1
+sld.id AS secure_lob_ref_id FROM
+case_ref
+sld.id AS secure_lob_ref_id
