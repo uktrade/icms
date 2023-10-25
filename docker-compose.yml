@@ -49,7 +49,8 @@ services:
               - export-a-certificate
               - import-a-licence
           public:
-
+            aliases:
+              - caseworker  # Required for ICMS-HMRC to communicate with ICMS.
     redis:
         # NOTE: Match what we currently have deployed in cloud foundry (Upgrade when needed).
         image: redis:5.0.6
