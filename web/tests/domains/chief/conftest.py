@@ -7,9 +7,9 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.models import (
     Country,
+    ICMSHMRCChiefRequest,
     ImportApplicationLicence,
     ImportApplicationType,
-    LiteHMRCChiefRequest,
     SILApplication,
     Task,
 )
@@ -62,7 +62,7 @@ def fa_sil_app_with_chief(_fa_sil: SILApplication) -> SILApplication:
     # Current active task
     app.tasks.create(task_type=Task.TaskType.CHIEF_WAIT)
 
-    LiteHMRCChiefRequest.objects.create(
+    ICMSHMRCChiefRequest.objects.create(
         import_application=app,
         case_reference=app.reference,
         request_data={"foo": "bar"},
@@ -109,17 +109,17 @@ def check_licence_reject_correct(
     case_progress.check_expected_task(app, Task.TaskType.CHIEF_ERROR)
 
 
-def check_complete_chief_request_correct(chief_request: LiteHMRCChiefRequest) -> None:
+def check_complete_chief_request_correct(chief_request: ICMSHMRCChiefRequest) -> None:
     chief_request.refresh_from_db()
 
-    assert chief_request.status == LiteHMRCChiefRequest.CHIEFStatus.SUCCESS
+    assert chief_request.status == ICMSHMRCChiefRequest.CHIEFStatus.SUCCESS
     assert chief_request.request_sent_datetime < chief_request.response_received_datetime
 
 
-def check_fail_chief_request_correct(chief_request: LiteHMRCChiefRequest) -> None:
+def check_fail_chief_request_correct(chief_request: ICMSHMRCChiefRequest) -> None:
     chief_request.refresh_from_db()
 
-    assert chief_request.status == LiteHMRCChiefRequest.CHIEFStatus.ERROR
+    assert chief_request.status == ICMSHMRCChiefRequest.CHIEFStatus.ERROR
     assert chief_request.request_sent_datetime < chief_request.response_received_datetime
     assert chief_request.response_errors.count() == 1
 

@@ -328,7 +328,7 @@ ICMS_HMRC_DOMAIN = env.str(
 ICMS_HMRC_UPDATE_LICENCE_ENDPOINT = env.str(
     "ICMS_HMRC_UPDATE_LICENCE_ENDPOINT", default="mail/update-licence/"
 )
-HAWK_AUTH_ID = env.str("HAWK_AUTH_ID", default="icms")
+HAWK_AUTH_ID = env.str("HAWK_AUTH_ID", default="icms-api")
 HAWK_AUTH_KEY = env.str("HAWK_AUTH_KEY", default="secret")
 
 # CHIEF spec: quantityIssued n(11).n(3) decimal field with up to n digits before the decimal point and

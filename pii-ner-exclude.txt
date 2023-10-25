@@ -1706,7 +1706,6 @@ Complete Response Preparation
 Complete Authorisation
 Start Authorisation (Close Case Processing
 Authorise Success: Application xxx/xxxx/xxxxx
-LITE-HMRC
 Resend Licence
 Awaiting Response - Licence
 is_staff
@@ -2984,7 +2983,7 @@ Postcodes
 NDD
 docker-compose.yml
 COMPANIES_HOUSE_TOKEN=
-HAWK_AUTH_KEY="LITE_API_HAWK_KEY
+HAWK_AUTH_KEY="ICMS_API_HAWK_KEY
 north">Subject
 north">Company
 Tag
@@ -3477,3 +3476,4 @@ col1
 sld.id AS secure_lob_ref_id FROM
 case_ref
 sld.id AS secure_lob_ref_id
+cr.response_errors.order_by("pk

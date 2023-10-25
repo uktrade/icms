@@ -51,7 +51,7 @@ class TestLicenseDataCallbackAuthentication:
         # Current active task
         self.chief_wait_task = self.app.tasks.get(task_type=Task.TaskType.CHIEF_WAIT)
 
-        # The current LiteHMRCChiefRequest record
+        # The current ICMSHMRCChiefRequest record
         self.chief_req = self.app.chief_references.first()
 
     def test_auth_valid(self):
@@ -72,7 +72,7 @@ class TestLicenseDataCallbackAuthentication:
 
         payload = types.ChiefLicenceReplyResponseData(
             run_number=1,
-            accepted=[types.AcceptedLicence(id=str(self.chief_req.lite_hmrc_id))],
+            accepted=[types.AcceptedLicence(id=str(self.chief_req.icms_hmrc_id))],
             rejected=[],
         )
 
@@ -141,13 +141,13 @@ class TestLicenseDataCallbackView:
         # Current active task
         self.chief_wait_task = self.app.tasks.get(task_type=Task.TaskType.CHIEF_WAIT)
 
-        # The current LiteHMRCChiefRequest record
+        # The current ICMSHMRCChiefRequest record
         self.chief_req = self.app.chief_references.first()
 
     def test_callback_approves_licence(self):
         payload = types.ChiefLicenceReplyResponseData(
             run_number=1,
-            accepted=[types.AcceptedLicence(id=str(self.chief_req.lite_hmrc_id))],
+            accepted=[types.AcceptedLicence(id=str(self.chief_req.icms_hmrc_id))],
             rejected=[],
         )
         response = self.client.post(
@@ -166,7 +166,7 @@ class TestLicenseDataCallbackView:
             accepted=[],
             rejected=[
                 types.RejectedLicence(
-                    id=str(self.chief_req.lite_hmrc_id),
+                    id=str(self.chief_req.icms_hmrc_id),
                     errors=[
                         types.ResponseError(
                             error_code=1,
@@ -258,7 +258,7 @@ class TestChiefRequestDataView:
     def test_can_see_request_data(self, db, fa_sil_app_with_chief, ilb_admin_client):
         chief_req = fa_sil_app_with_chief.chief_references.latest("pk")
 
-        url = reverse("chief:request-data", kwargs={"litehmrcchiefrequest_id": chief_req.pk})
+        url = reverse("chief:request-data", kwargs={"icmshmrcchiefrequest_id": chief_req.pk})
 
         response = ilb_admin_client.get(url)
 
