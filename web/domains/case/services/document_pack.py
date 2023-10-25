@@ -15,7 +15,6 @@ from web.models import (
     ExportCertificateCaseDocumentReferenceData,
     ImportApplication,
     ImportApplicationLicence,
-    ImportApplicationType,
     User,
 )
 
@@ -89,9 +88,7 @@ def pack_draft_create(application: ImpOrExp, *, variation_request: bool = False)
                 "licence_end_date": active_licence.licence_end_date,
             }
         else:
-            kwargs = {
-                "issue_paper_licence_only": _get_paper_licence_only(application.application_type)
-            }
+            kwargs = {"issue_paper_licence_only": _get_paper_licence_only(application)}
 
         issued = application.licences.create(status=PackStatus.DRAFT, **kwargs)
     else:
@@ -101,12 +98,13 @@ def pack_draft_create(application: ImpOrExp, *, variation_request: bool = False)
     return issued
 
 
-def _get_paper_licence_only(app_t: ImportApplicationType) -> bool | None:
+def _get_paper_licence_only(application: ImportApplication) -> bool | None:
     """Get initial value for `issue_paper_licence_only` field.
 
     Some application types have a fixed value, others can choose it in the response
     preparation screen.
     """
+    app_t = application.application_type
 
     # For when it is hardcoded True
     if app_t.paper_licence_flag and not app_t.electronic_licence_flag:
@@ -115,6 +113,12 @@ def _get_paper_licence_only(app_t: ImportApplicationType) -> bool | None:
     # For when it is hardcoded False
     if app_t.electronic_licence_flag and not app_t.paper_licence_flag:
         return False
+
+    # Specific check for FA_SIL applications
+    # Default to "no" for everything other than a NI importer.
+    if app_t.sub_type == app_t.SubTypes.SIL:
+        if not application.importer_office.postcode.casefold().startswith("bt"):
+            return False
 
     # Default to None so the user can pick it later
     return None
