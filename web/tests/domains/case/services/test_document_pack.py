@@ -41,21 +41,36 @@ class TestPackServiceFunctions:
         assert licence_2.licence_start_date == licence.licence_start_date
         assert licence_2.licence_end_date == licence.licence_end_date
 
-    def test__get_paper_licence_only(self):
+    def test__get_paper_licence_only(self, sanctions):
         """Private method but testing it directly is the easiest way to test the logic"""
-        app_t = ImportApplicationType(electronic_licence_flag=True, paper_licence_flag=True)
-        plo = document_pack._get_paper_licence_only(app_t)
+
+        # Fake the application_type for sanctions to test different logic.
+        sanctions.application_type = ImportApplicationType(
+            electronic_licence_flag=True, paper_licence_flag=True
+        )
+        plo = document_pack._get_paper_licence_only(sanctions)
         assert plo is None
 
-        app_t.electronic_licence_flag = True
-        app_t.paper_licence_flag = False
-        plo = document_pack._get_paper_licence_only(app_t)
+        sanctions.application_type.electronic_licence_flag = True
+        sanctions.application_type.paper_licence_flag = False
+        plo = document_pack._get_paper_licence_only(sanctions)
         assert plo is False
 
-        app_t.paper_licence_flag = True
-        app_t.electronic_licence_flag = False
-        plo = document_pack._get_paper_licence_only(app_t)
+        sanctions.application_type.paper_licence_flag = True
+        sanctions.application_type.electronic_licence_flag = False
+        plo = document_pack._get_paper_licence_only(sanctions)
         assert plo is True
+
+    def test__get_paper_licence_only_fa_sil(self, fa_sil):
+        # TEST FA-SIL specific paper licence logic
+        # fa_sil.importer_office is a NI office so should default to None
+        plo = document_pack._get_paper_licence_only(fa_sil)
+        assert plo is None
+
+        fa_sil.importer_office.postcode = "S93BL"  # /PS-IGNORE
+        fa_sil.importer_office.save()
+        plo = document_pack._get_paper_licence_only(fa_sil)
+        assert plo is False
 
     def test_pack_draft_get(self, fa_sil):
         document_pack.pack_draft_create(fa_sil)
