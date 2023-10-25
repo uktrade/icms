@@ -10,7 +10,7 @@ from django.utils import timezone
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief.utils import seen_nonce
 from web.flow.models import ProcessTypes
-from web.models import LiteHMRCChiefRequest, Task
+from web.models import ICMSHMRCChiefRequest, Task
 from web.utils.sentry import capture_exception
 
 from . import serializers, types
@@ -53,13 +53,13 @@ def send_application_to_chief(
                 action,
             )
 
-            chief_req = LiteHMRCChiefRequest.objects.create(
+            chief_req = ICMSHMRCChiefRequest.objects.create(
                 import_application=application,
                 case_reference=application.reference,
                 request_sent_datetime=timezone.now(),
             )
             serialize = get_serializer(application.process_type, action)
-            data = serialize(application.get_specific_model(), action, str(chief_req.lite_hmrc_id))
+            data = serialize(application.get_specific_model(), action, str(chief_req.icms_hmrc_id))
 
             # Django JSONField encodes python objects therefore data.json() can't be used
             chief_req.request_data = data.dict()
@@ -70,7 +70,7 @@ def send_application_to_chief(
         else:
             # Create a dummy one for testing
             logger.debug("Faking chief request for application %r", application.reference)
-            chief_req = LiteHMRCChiefRequest.objects.create(
+            chief_req = ICMSHMRCChiefRequest.objects.create(
                 import_application=application,
                 case_reference=application.reference,
                 request_data={"foo": "bar", "test": "data"},
@@ -82,7 +82,7 @@ def send_application_to_chief(
         next_task = Task.TaskType.CHIEF_ERROR
 
         if chief_req:
-            chief_req.status = LiteHMRCChiefRequest.CHIEFStatus.INTERNAL_ERROR
+            chief_req.status = ICMSHMRCChiefRequest.CHIEFStatus.INTERNAL_ERROR
             chief_req.save()
 
     Task.objects.create(process=application, task_type=next_task, previous=previous_task)
@@ -160,7 +160,7 @@ def request_license(data: types.LicenceDataPayload) -> requests.Response:
     )
 
     # log the response in case `raise_for_status` throws an error
-    # Enable this line if there are issues sending data to lite-hmrc
+    # Enable this line if there are issues sending data to icms-hmrc
     # logger.info(str(response.content))
 
     response.raise_for_status()

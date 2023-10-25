@@ -60,19 +60,19 @@
               </li>
               <li>
                 <a href="{{ icms_url('case:manage', kwargs={'application_pk': app.pk, 'case_type': "import"}) }}"
-                   target="_blank" class="button link-button icon-eye">
+                   target="_blank" rel="noopener noreferrer" class="button link-button icon-eye">
                   View Case
                 </a>
               </li>
               <li>
-                <a href="{{ icms_url('chief:request-data', kwargs={'litehmrcchiefrequest_id': cr.pk}) }}"
-                   target="_blank" class="button link-button icon-download">
+                <a href="{{ icms_url('chief:request-data', kwargs={'icmshmrcchiefrequest_id': cr.pk}) }}"
+                   target="_blank" rel="noopener noreferrer" class="button link-button icon-download">
                   View Request Data
                 </a>
               </li>
               <li>
-                <a href="{{ icms_url('importer-edit', kwargs={'pk': app.importer.pk}) }}" target="_blank"
-                   class="button link-button icon-pencil">
+                <a href="{{ icms_url('importer-edit', kwargs={'pk': app.importer.pk}) }}"
+                   target="_blank" rel="noopener noreferrer" class="button link-button icon-pencil">
                   Update importer details
                 </a>
               </li>

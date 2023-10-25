@@ -45,10 +45,10 @@ from web.domains.case._import.ironsteel.models import (
 from web.domains.case._import.models import (
     ChiefRequestResponseErrors,
     EndorsementImportApplication,
+    ICMSHMRCChiefRequest,
     ImportApplication,
     ImportApplicationLicence,
     ImportApplicationType,
-    LiteHMRCChiefRequest,
 )
 from web.domains.case._import.opt.models import (
     OPTChecklist,
@@ -195,7 +195,7 @@ __all__ = [
     "ImportApplication",
     "ImportApplicationLicence",
     "ImportApplicationType",
-    "LiteHMRCChiefRequest",
+    "ICMSHMRCChiefRequest",
     "OPTChecklist",
     "OutwardProcessingTradeApplication",
     "OutwardProcessingTradeFile",

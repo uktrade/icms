@@ -27,7 +27,7 @@ class TestChiefUtils:
         # Current active task
         self.chief_wait_task = self.app.tasks.get(task_type=Task.TaskType.CHIEF_WAIT)
 
-        # The current LiteHMRCChiefRequest record
+        # The current ICMSHMRCChiefRequest record
         self.chief_req = self.app.chief_references.first()
 
     def test_chief_licence_reply_approve_licence(self):

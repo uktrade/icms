@@ -25,9 +25,9 @@ from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.views.mixins import ApplicationTaskMixin
 from web.models import (
     CaseDocumentReference,
+    ICMSHMRCChiefRequest,
     ImportApplication,
     ImportApplicationLicence,
-    LiteHMRCChiefRequest,
     Task,
 )
 from web.permissions import Perms
@@ -158,11 +158,11 @@ class LicenseDataCallback(HawkViewBase):
         utils.fail_chief_request(chief_req, rejected_licence.errors)
 
     @staticmethod
-    def get_chief_request(lite_hmrc_id: str) -> LiteHMRCChiefRequest:
+    def get_chief_request(icms_hmrc_id: str) -> ICMSHMRCChiefRequest:
         chief_req = (
-            LiteHMRCChiefRequest.objects.select_related("import_application")
+            ICMSHMRCChiefRequest.objects.select_related("import_application")
             .select_for_update()
-            .get(lite_hmrc_id=lite_hmrc_id)
+            .get(icms_hmrc_id=icms_hmrc_id)
         )
 
         return chief_req
@@ -293,8 +293,8 @@ class FailedLicences(_BaseTemplateView):
 class ChiefRequestDataView(PermissionRequiredMixin, DetailView):
     permission_required = Perms.sys.ilb_admin
     http_method_names = ["get"]
-    pk_url_kwarg = "litehmrcchiefrequest_id"
-    model = LiteHMRCChiefRequest
+    pk_url_kwarg = "icmshmrcchiefrequest_id"
+    model = ICMSHMRCChiefRequest
 
     def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         return JsonResponse(data=self.get_object().request_data)

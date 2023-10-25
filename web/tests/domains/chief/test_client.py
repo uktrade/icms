@@ -8,7 +8,7 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import client
 from web.domains.chief.types import LicenceDataPayload
-from web.models import ImportApplicationLicence, LiteHMRCChiefRequest, Task
+from web.models import ICMSHMRCChiefRequest, ImportApplicationLicence, Task
 
 
 @pytest.fixture(autouse=True)
@@ -62,7 +62,7 @@ class TestChiefClient:
         app.refresh_from_db()
         assert app.chief_references.count() == 1
 
-        chief_req: LiteHMRCChiefRequest = app.chief_references.first()
+        chief_req: ICMSHMRCChiefRequest = app.chief_references.first()
 
         assert chief_req.case_reference == app.reference
         assert chief_req.request_data == {
@@ -75,7 +75,7 @@ class TestChiefClient:
                 "start_date": licence.licence_start_date.strftime("%Y-%m-%d"),
                 "end_date": licence.licence_end_date.strftime("%Y-%m-%d"),
                 "goods": [],
-                "id": str(chief_req.lite_hmrc_id),
+                "id": str(chief_req.icms_hmrc_id),
                 "organisation": {
                     "address": {
                         "line_1": "I1 address line 1",
@@ -102,7 +102,7 @@ class TestChiefClient:
         app = fa_sil_app_doc_signing
         current_task = case_progress.get_expected_task(app, Task.TaskType.DOCUMENT_SIGNING)
 
-        # make request_licence fail after the LiteHMRCChiefRequest object is created
+        # make request_licence fail after the ICMSHMRCChiefRequest object is created
         request_license_mock = mock.create_autospec(
             spec=client.request_license,
             side_effect=RuntimeError("Something unexpected has happened..."),
@@ -118,7 +118,7 @@ class TestChiefClient:
 
         assert app.chief_references.count() == 1
         assert (
-            app.chief_references.first().status == LiteHMRCChiefRequest.CHIEFStatus.INTERNAL_ERROR
+            app.chief_references.first().status == ICMSHMRCChiefRequest.CHIEFStatus.INTERNAL_ERROR
         )
 
     def test_send_application_to_chief_variation_request(self, fa_sil_app_doc_signing, monkeypatch):
@@ -131,8 +131,8 @@ class TestChiefClient:
         request_license_mock = mock.create_autospec(spec=client.request_license)
         monkeypatch.setattr(client, "request_license", request_license_mock)
 
-        # Create a fake LiteHMRCChiefRequest (for the previous payload)
-        LiteHMRCChiefRequest.objects.create(
+        # Create a fake ICMSHMRCChiefRequest (for the previous payload)
+        ICMSHMRCChiefRequest.objects.create(
             import_application=app,
             case_reference=app.reference,
             request_data={"foo": "bar", "test": "data"},
@@ -151,7 +151,7 @@ class TestChiefClient:
         app.refresh_from_db()
         assert app.chief_references.count() == 2
 
-        chief_req: LiteHMRCChiefRequest = app.chief_references.latest("request_sent_datetime")
+        chief_req: ICMSHMRCChiefRequest = app.chief_references.latest("request_sent_datetime")
 
         assert chief_req.case_reference == app.reference
         assert chief_req.request_data == {
@@ -162,7 +162,7 @@ class TestChiefClient:
                 "country_code": "DE",
                 "country_group": None,
                 "goods": [],
-                "id": str(chief_req.lite_hmrc_id),
+                "id": str(chief_req.icms_hmrc_id),
                 "organisation": {
                     "address": {
                         "line_1": "I1 address line 1",
@@ -203,7 +203,7 @@ class TestChiefClient:
         app.refresh_from_db()
         assert app.chief_references.count() == 1
 
-        chief_req: LiteHMRCChiefRequest = app.chief_references.first()
+        chief_req: ICMSHMRCChiefRequest = app.chief_references.first()
 
         assert chief_req.case_reference == app.reference
 
@@ -211,7 +211,7 @@ class TestChiefClient:
             "licence": {
                 "action": "cancel",
                 "reference": app.reference,
-                "id": str(chief_req.lite_hmrc_id),
+                "id": str(chief_req.icms_hmrc_id),
                 "type": "SIL",
                 "start_date": licence.licence_start_date.strftime("%Y-%m-%d"),
                 "end_date": licence.licence_end_date.strftime("%Y-%m-%d"),

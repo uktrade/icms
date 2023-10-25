@@ -5,7 +5,7 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import end_process_task
 from web.mail.emails import send_completed_application_process_notifications
-from web.models import ImportApplication, LiteHMRCChiefRequest, Task, VariationRequest
+from web.models import ICMSHMRCChiefRequest, ImportApplication, Task, VariationRequest
 
 from .types import ResponseError
 
@@ -65,18 +65,18 @@ def _finish_chief_wait_task(application: ImportApplication) -> Task:
     return task
 
 
-def complete_chief_request(chief_req: LiteHMRCChiefRequest) -> None:
-    """Mark a LiteHMRCChiefRequest record as complete."""
+def complete_chief_request(chief_req: ICMSHMRCChiefRequest) -> None:
+    """Mark a ICMSHMRCChiefRequest record as complete."""
 
-    chief_req.status = LiteHMRCChiefRequest.CHIEFStatus.SUCCESS
+    chief_req.status = ICMSHMRCChiefRequest.CHIEFStatus.SUCCESS
     chief_req.response_received_datetime = timezone.now()
     chief_req.save()
 
 
-def fail_chief_request(chief_req: LiteHMRCChiefRequest, errors: list[ResponseError]) -> None:
-    """Mark a LiteHMRCChiefRequest record as a failure detailing the error code and message."""
+def fail_chief_request(chief_req: ICMSHMRCChiefRequest, errors: list[ResponseError]) -> None:
+    """Mark a ICMSHMRCChiefRequest record as a failure detailing the error code and message."""
 
-    chief_req.status = LiteHMRCChiefRequest.CHIEFStatus.ERROR
+    chief_req.status = ICMSHMRCChiefRequest.CHIEFStatus.ERROR
     chief_req.response_received_datetime = timezone.now()
     chief_req.save()
 

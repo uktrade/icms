@@ -27,12 +27,12 @@ from web.models import (
     CountryGroup,
     DerogationsApplication,
     DFLApplication,
+    ICMSHMRCChiefRequest,
     ImportApplication,
     ImportApplicationLicence,
     ImportApplicationType,
     Importer,
     IronSteelApplication,
-    LiteHMRCChiefRequest,
     OpenIndividualLicenceApplication,
     OutwardProcessingTradeApplication,
     PriorSurveillanceApplication,
@@ -498,8 +498,8 @@ def bypass_chief(
             [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED, ImpExpStatus.REVOKED],
         )
 
-        # Get the latest fake LiteHMRCChiefRequest record
-        chief_req = LiteHMRCChiefRequest.objects.latest("pk")
+        # Get the latest fake ICMSHMRCChiefRequest record
+        chief_req = ICMSHMRCChiefRequest.objects.latest("pk")
 
         if chief_status == "success":
             chief_utils.chief_licence_reply_approve_licence(application)

@@ -444,7 +444,7 @@ class ImportApplicationLicence(DocumentPackBase):
         )
 
 
-class LiteHMRCChiefRequest(models.Model):
+class ICMSHMRCChiefRequest(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -463,7 +463,7 @@ class LiteHMRCChiefRequest(models.Model):
         "ImportApplication", on_delete=models.CASCADE, related_name="chief_references"
     )
     case_reference = models.CharField(max_length=100, verbose_name="Case Reference")
-    lite_hmrc_id = models.UUIDField(default=uuid.uuid4, editable=False)
+    icms_hmrc_id = models.UUIDField(default=uuid.uuid4, editable=False)
     status = models.CharField(
         max_length=1, choices=CHIEFStatus.choices, default=CHIEFStatus.PROCESSING
     )
@@ -478,7 +478,7 @@ class LiteHMRCChiefRequest(models.Model):
 
 class ChiefRequestResponseErrors(models.Model):
     request = models.ForeignKey(
-        "web.LiteHMRCChiefRequest", on_delete=models.PROTECT, related_name="response_errors"
+        "web.ICMSHMRCChiefRequest", on_delete=models.PROTECT, related_name="response_errors"
     )
     error_code = models.CharField(null=True, max_length=8)
     error_msg = models.CharField(null=True, max_length=255)

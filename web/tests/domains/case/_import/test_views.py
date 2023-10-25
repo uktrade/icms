@@ -9,8 +9,8 @@ from pytest_django.asserts import assertRedirects
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.models import (
+    ICMSHMRCChiefRequest,
     ImportApplicationType,
-    LiteHMRCChiefRequest,
     SILApplication,
     Task,
     VariationRequest,
@@ -175,7 +175,7 @@ class TestBypassChiefView:
         )
 
         self.wood_app = wood_app_submitted
-        LiteHMRCChiefRequest.objects.create(
+        ICMSHMRCChiefRequest.objects.create(
             import_application=self.wood_app,
             case_reference=self.wood_app.reference,
             request_data={"foo": "bar"},
