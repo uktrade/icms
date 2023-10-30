@@ -45,3 +45,7 @@ def get_authority_view_url(authority: Authority, full_url: bool = False) -> str:
 
 def get_mailshot_detail_view_url(mailshot: Mailshot, domain: str) -> str:
     return urljoin(domain, reverse("mailshot-detail-received", kwargs={"mailshot_pk": mailshot.pk}))
+
+
+def get_maintain_importers_view_url() -> str:
+    return urljoin(get_caseworker_site_domain(), reverse("importer-list"))

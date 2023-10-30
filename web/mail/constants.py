@@ -7,6 +7,10 @@ CELERY_MAIL_QUEUE_NAME = "mail"
 SEND_EMAIL_TASK_NAME = "web.mail.send_email"
 SEND_MAILSHOT_TASK_NAME = "web.mail.send_mailshot_email"
 SEND_RETRACT_MAILSHOT_TASK_NAME = "web.mail.send_retract_mailshot_email"
+SEND_AUTHORITY_EXPIRING_SECTION_5_TASK_NAME = "web.mail.send_authority_expiring_section_5_email"
+SEND_AUTHORITY_EXPIRING_FIREARMS_TASK_NAME = "web.mail.send_authority_expiring_firearms_email"
+
+DATE_FORMAT = "%-d %B %Y"
 
 
 class EmailTypes(TypedTextChoices):
@@ -97,6 +101,8 @@ class EmailTypes(TypedTextChoices):
     LICENCE_REVOKED = ("LICENCE_REVOKED", "Licence Revoked")
     CERTIFICATE_REVOKED = ("CERTIFICATE_REVOKED", "Certificate Revoked")
     AUTHORITY_ARCHIVED = ("AUTHORITY_ARCHIVED", "Authority Archived")
+    AUTHORITY_EXPIRING_SECTION_5 = ("AUTHORITY_EXPIRING_SECTION_5", "Authority Expiring Section 5")
+    AUTHORITY_EXPIRING_FIREARMS = ("AUTHORITY_EXPIRING_FIREARMS", "Authority Expiring Firearms")
     MAILSHOT = ("MAILSHOT", "Mailshot")
     RETRACT_MAILSHOT = ("RETRACT_MAILSHOT", "Retract Mailshot")
 

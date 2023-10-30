@@ -1,4 +1,5 @@
 import copy
+import datetime
 from typing import ClassVar, final
 from uuid import UUID
 
@@ -15,6 +16,7 @@ from web.domains.case.types import (
 )
 from web.models import CaseEmail as CaseEmailModel
 from web.models import (
+    Constabulary,
     FurtherInformationRequest,
     Mailshot,
     UpdateRequest,
@@ -29,13 +31,15 @@ from web.sites import (
     get_importer_site_domain,
 )
 
-from .constants import IMPORT_CASE_EMAILS, EmailTypes
+from .constants import DATE_FORMAT, IMPORT_CASE_EMAILS, EmailTypes
 from .models import EmailTemplate
+from .types import ImporterDetails
 from .url_helpers import (
     get_authority_view_url,
     get_case_view_url,
     get_importer_view_url,
     get_mailshot_detail_view_url,
+    get_maintain_importers_view_url,
     get_validate_digital_signatures_url,
 )
 
@@ -486,7 +490,7 @@ class AuthorityArchivedEmail(GOVNotifyEmailMessage):
             "authority_name": self.authority.reference,
             "authority_type": self.authority.AUTHORITY_TYPE,
             "authority_url": get_authority_view_url(self.authority, full_url=True),
-            "date": timezone.now().strftime("%-d %B %Y"),
+            "date": timezone.now().strftime(DATE_FORMAT),
             "importer_url": get_importer_view_url(self.authority.importer, full_url=True),
             "importer_name": self.authority.importer.name,
             "reason": self.get_reason(),
@@ -501,6 +505,62 @@ class AuthorityArchivedEmail(GOVNotifyEmailMessage):
 
     def get_site_domain(self) -> str:
         return get_caseworker_site_domain()
+
+
+class BaseAuthorityExpiringEmail(GOVNotifyEmailMessage):
+    def __init__(
+        self,
+        *args,
+        importers_details: list[ImporterDetails],
+        authority_type: str,
+        expiry_date: datetime.date,
+        **kwargs,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.importers_details = importers_details
+        self.authority_type = authority_type
+        self.expiry_date = expiry_date
+
+    def get_context(self) -> dict:
+        context = super().get_context()
+        return context | {
+            "importers_count": len(self.importers_details),
+            "authority_type": self.authority_type,
+            "summary_text": self.get_summary_text(),
+            "expiry_date": self.expiry_date.strftime(DATE_FORMAT),
+            "maintain_importers_url": get_maintain_importers_view_url(),
+        }
+
+    def get_summary_text(self) -> str:
+        summary_text = []
+        for importer in self.importers_details:
+            summary_text.append(
+                f"Importer name: {importer['name']}\r\n"
+                f"Importer ID: {importer['id']}\r\n"
+                f"{self.authority_type} references(s): {importer['authority_refs']}\r\n"
+            )
+        return "\r\n".join(summary_text)
+
+    def get_site_domain(self) -> str:
+        return get_caseworker_site_domain()
+
+
+@final
+class Section5AuthorityExpiringEmail(BaseAuthorityExpiringEmail):
+    name = EmailTypes.AUTHORITY_EXPIRING_SECTION_5
+
+
+@final
+class FirearmsAuthorityExpiringEmail(BaseAuthorityExpiringEmail):
+    name = EmailTypes.AUTHORITY_EXPIRING_FIREARMS
+
+    def __init__(self, *args, constabulary: Constabulary, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.constabulary = constabulary
+
+    def get_context(self) -> dict:
+        context = super().get_context()
+        return context | {"constabulary_name": self.constabulary.name}
 
 
 class BaseMailshotEmail(GOVNotifyEmailMessage):

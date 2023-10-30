@@ -3477,3 +3477,8 @@ sld.id AS secure_lob_ref_id FROM
 case_ref
 sld.id AS secure_lob_ref_id
 cr.response_errors.order_by("pk
+authority_expiring_firearms_email
+Authority Expiring Section 5
+Authority Expiring Firearms
+f"Importer
+12345,67890

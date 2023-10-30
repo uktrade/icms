@@ -10,12 +10,15 @@ from django.utils import timezone
 from web.domains.case.services import document_pack
 from web.mail import emails
 from web.mail.constants import EmailTypes, VariationRequestDescription
+from web.mail.types import ImporterDetails
 from web.mail.url_helpers import (
     get_case_view_url,
     get_mailshot_detail_view_url,
+    get_maintain_importers_view_url,
     get_validate_digital_signatures_url,
 )
 from web.models import (
+    Constabulary,
     EmailTemplate,
     ExporterAccessRequest,
     FirearmsAuthority,
@@ -1066,4 +1069,89 @@ class TestEmails(AuthTestCase):
             self.exporter_agent_user.email,
             exp_template_id,
             personalisation=expected_export_personalisation,
+        )
+
+    @freezegun.freeze_time("2020-10-02")
+    def test_send_authority_expiring_section_5_email(self):
+        exp_template_id = get_gov_notify_template_id(EmailTypes.AUTHORITY_EXPIRING_SECTION_5)
+        importer_details_1: ImporterDetails = {
+            "id": 1,
+            "name": "Importer 1",
+            "authority_refs": "123,456,677",
+        }
+        importer_details_2: ImporterDetails = {
+            "id": 2,
+            "name": "Importer 2",
+            "authority_refs": "423,476,677",
+        }
+
+        emails.send_authority_expiring_section_5_email(
+            [importer_details_1, importer_details_2], timezone.now()
+        )
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 3
+        exp_summary_text = """Importer name: Importer 1\r
+Importer ID: 1\r
+Section 5 references(s): 123,456,677\r
+\r
+Importer name: Importer 2\r
+Importer ID: 2\r
+Section 5 references(s): 423,476,677\r\n"""
+
+        expected_import_personalisation = default_personalisation() | {
+            "authority_type": "Section 5",
+            "body": "",
+            "subject": "",
+            "expiry_date": "2 October 2020",
+            "importers_count": 2,
+            "summary_text": exp_summary_text,
+            "icms_url": get_caseworker_site_domain(),
+            "maintain_importers_url": get_maintain_importers_view_url(),
+        }
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            self.ilb_admin_user.email,
+            exp_template_id,
+            personalisation=expected_import_personalisation,
+        )
+
+    @freezegun.freeze_time("2020-10-02")
+    def test_send_authority_expiring_firearms_email(self, constabulary_contact):
+        exp_template_id = get_gov_notify_template_id(EmailTypes.AUTHORITY_EXPIRING_FIREARMS)
+        importer_details_1: ImporterDetails = {
+            "id": 1,
+            "name": "Importer 1",
+            "authority_refs": "123,456,677",
+        }
+        importer_details_2: ImporterDetails = {
+            "id": 2,
+            "name": "Importer 2",
+            "authority_refs": "423,476,677",
+        }
+        constabulary = Constabulary.objects.get(name="Derbyshire")
+        emails.send_authority_expiring_firearms_email(
+            [importer_details_1, importer_details_2], timezone.now(), constabulary
+        )
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        exp_summary_text = """Importer name: Importer 1\r
+Importer ID: 1\r
+Firearms references(s): 123,456,677\r
+\r
+Importer name: Importer 2\r
+Importer ID: 2\r
+Firearms references(s): 423,476,677\r\n"""
+
+        expected_import_personalisation = default_personalisation() | {
+            "authority_type": "Firearms",
+            "constabulary_name": "Derbyshire",
+            "body": "",
+            "subject": "",
+            "expiry_date": "2 October 2020",
+            "importers_count": 2,
+            "summary_text": exp_summary_text,
+            "icms_url": get_caseworker_site_domain(),
+            "maintain_importers_url": get_maintain_importers_view_url(),
+        }
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            constabulary_contact.email,
+            exp_template_id,
+            personalisation=expected_import_personalisation,
         )

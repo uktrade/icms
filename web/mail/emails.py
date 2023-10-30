@@ -1,3 +1,5 @@
+import datetime
+
 from django.db.models import QuerySet
 from django.utils import timezone
 
@@ -12,14 +14,17 @@ from web.domains.template.utils import get_email_template_subject_body
 from web.flow.models import ProcessTypes
 from web.models import CaseEmail as CaseEmailModel
 from web.models import (
+    Constabulary,
     ExportApplication,
     Exporter,
     ExporterApprovalRequest,
+    FirearmsAuthority,
     FurtherInformationRequest,
     ImportApplication,
     Importer,
     ImporterApprovalRequest,
     Mailshot,
+    Section5Authority,
     UpdateRequest,
     VariationRequest,
     WithdrawApplication,
@@ -51,11 +56,13 @@ from .messages import (
     CaseEmail,
     CertificateRevokedEmail,
     ExporterAccessRequestApprovalOpenedEmail,
+    FirearmsAuthorityExpiringEmail,
     FirearmsSupplementaryReportEmail,
     ImporterAccessRequestApprovalOpenedEmail,
     LicenceRevokedEmail,
     MailshotEmail,
     RetractMailshotEmail,
+    Section5AuthorityExpiringEmail,
     VariationRequestCancelledEmail,
     VariationRequestRefusedEmail,
     VariationRequestUpdateCancelledEmail,
@@ -70,11 +77,14 @@ from .recipients import (
     get_application_contact_email_addresses,
     get_case_officers_email_addresses,
     get_email_addresses_for_case_email,
+    get_email_addresses_for_constabulary,
     get_email_addresses_for_mailshot,
+    get_email_addresses_for_section_5_expiring_authorities,
     get_email_addresses_for_users,
     get_ilb_case_officers_email_addresses,
     get_organisation_contact_email_addresses,
 )
+from .types import ImporterDetails
 
 
 def send_access_requested_email(access_request: ImpAccessOrExpAccess) -> None:
@@ -250,7 +260,7 @@ def send_variation_request_update_received_email(
 
 def send_variation_request_refused_email(
     variation_request: VariationRequest, application: ImpOrExp
-):
+) -> None:
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
         VariationRequestRefusedEmail(
@@ -321,7 +331,7 @@ def send_firearms_supplementary_report_email(application: ImpOrExp) -> None:
         FirearmsSupplementaryReportEmail(application=application, to=[recipient]).send()
 
 
-def send_further_information_request_email(fir: FurtherInformationRequest):
+def send_further_information_request_email(fir: FurtherInformationRequest) -> None:
     application = fir.exportapplication_set.first() or fir.importapplication_set.first()
     access_request = fir.accessrequest_set.first()
     if application:
@@ -330,7 +340,7 @@ def send_further_information_request_email(fir: FurtherInformationRequest):
         send_access_request_further_information_request_email(fir, access_request)
 
 
-def send_further_information_request_responded_email(fir: FurtherInformationRequest):
+def send_further_information_request_responded_email(fir: FurtherInformationRequest) -> None:
     application = fir.exportapplication_set.first() or fir.importapplication_set.first()
     access_request = fir.accessrequest_set.first()
     if application:
@@ -339,7 +349,7 @@ def send_further_information_request_responded_email(fir: FurtherInformationRequ
         send_access_request_further_information_request_responded_email(fir, access_request)
 
 
-def send_further_information_request_withdrawn_email(fir: FurtherInformationRequest):
+def send_further_information_request_withdrawn_email(fir: FurtherInformationRequest) -> None:
     application = fir.exportapplication_set.first() or fir.importapplication_set.first()
     access_request = fir.accessrequest_set.first()
     if application:
@@ -492,3 +502,30 @@ def send_authority_archived_email(authority: Authority) -> None:
     recipients = get_ilb_case_officers_email_addresses()
     for recipient in recipients:
         AuthorityArchivedEmail(authority=authority, to=[recipient]).send()
+
+
+def send_authority_expiring_section_5_email(
+    importers_details: list[ImporterDetails], expiry_date: datetime.date
+) -> None:
+    recipients = get_email_addresses_for_section_5_expiring_authorities()
+    for recipient in recipients:
+        Section5AuthorityExpiringEmail(
+            importers_details=importers_details,
+            authority_type=Section5Authority.AUTHORITY_TYPE,
+            expiry_date=expiry_date,
+            to=[recipient],
+        ).send()
+
+
+def send_authority_expiring_firearms_email(
+    importers_details: list[ImporterDetails], expiry_date: datetime.date, constabulary: Constabulary
+) -> None:
+    recipients = get_email_addresses_for_constabulary(constabulary)
+    for recipient in recipients:
+        FirearmsAuthorityExpiringEmail(
+            importers_details=importers_details,
+            authority_type=FirearmsAuthority.AUTHORITY_TYPE,
+            expiry_date=expiry_date,
+            constabulary=constabulary,
+            to=[recipient],
+        ).send()
