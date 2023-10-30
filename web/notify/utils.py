@@ -3,26 +3,9 @@ from collections.abc import Collection
 from django.conf import settings
 from django.template.loader import render_to_string
 
-from web.models import Email, File, User
+from web.models import File
 from web.sites import get_caseworker_site_domain
 from web.utils.s3 import get_file_from_s3, get_s3_client
-
-
-def get_user_emails_by_ids(user_ids: list[int]) -> list[str]:
-    """Return a list emails for given users' ids"""
-    return list(
-        Email.objects.filter(user_id__in=user_ids)
-        .filter(portal_notifications=True)
-        .values_list("email", flat=True)
-        .distinct()
-        .order_by("email")
-    )
-
-
-def get_notification_emails(user: User) -> list[str]:
-    """Returns user's personal and alternative email addresses
-    with portal notifications enabled"""
-    return get_user_emails_by_ids([user.id])
 
 
 def render_email(template, context):
