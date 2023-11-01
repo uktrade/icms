@@ -9,7 +9,7 @@ from django.utils import timezone
 
 from web.domains.case.services import document_pack
 from web.mail import emails
-from web.mail.constants import EmailTypes, VariationRequestDescription
+from web.mail.constants import EmailTypes
 from web.mail.types import ImporterDetails
 from web.mail.url_helpers import (
     get_case_view_url,
@@ -422,8 +422,10 @@ class TestEmails(AuthTestCase):
             self.ilb_admin_user,
             status=VariationRequest.Statuses.OPEN,
         )
-        with pytest.raises(ValueError, match="Unsupported Variation Request Description"):
-            emails.send_variation_request_email(vr, None, completed_cfs_app)
+        with pytest.raises(
+            ValueError, match="Unsupported Email Type RETRACT_MAILSHOT for Variation Request"
+        ):
+            emails.send_variation_request_email(vr, EmailTypes.RETRACT_MAILSHOT, completed_cfs_app)
             assert self.mock_gov_notify_client.send_email_notification.call_count == 0
 
     def test_send_variation_request_cancelled_email(self, completed_cfs_app):
@@ -446,7 +448,7 @@ class TestEmails(AuthTestCase):
             "application_url": get_case_view_url(completed_cfs_app, get_caseworker_site_domain()),
         }
         emails.send_variation_request_email(
-            vr, VariationRequestDescription.CANCELLED, completed_cfs_app
+            vr, EmailTypes.APPLICATION_VARIATION_REQUEST_CANCELLED, completed_cfs_app
         )
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
@@ -475,7 +477,7 @@ class TestEmails(AuthTestCase):
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
         }
         emails.send_variation_request_email(
-            vr, VariationRequestDescription.UPDATE_REQUIRED, completed_cfs_app
+            vr, EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_REQUIRED, completed_cfs_app
         )
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
@@ -501,7 +503,7 @@ class TestEmails(AuthTestCase):
             "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
         }
         emails.send_variation_request_email(
-            vr, VariationRequestDescription.UPDATE_CANCELLED, completed_cfs_app
+            vr, EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_CANCELLED, completed_cfs_app
         )
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
@@ -527,7 +529,7 @@ class TestEmails(AuthTestCase):
             "application_url": get_case_view_url(completed_cfs_app, get_caseworker_site_domain()),
         }
         emails.send_variation_request_email(
-            vr, VariationRequestDescription.UPDATE_RECEIVED, completed_cfs_app
+            vr, EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_RECEIVED, completed_cfs_app
         )
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
@@ -556,7 +558,7 @@ class TestEmails(AuthTestCase):
             "icms_url": get_importer_site_domain(),
         }
         emails.send_variation_request_email(
-            vr, VariationRequestDescription.REFUSED, completed_dfl_app
+            vr, EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED, completed_dfl_app
         )
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(

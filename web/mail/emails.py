@@ -32,7 +32,7 @@ from web.models import (
 from web.notify import notify
 from web.sites import get_exporter_site_domain, get_importer_site_domain
 
-from .constants import CaseEmailTemplate, VariationRequestDescription
+from .constants import CaseEmailTemplate, EmailTypes
 from .messages import (
     AccessRequestApprovalCompleteEmail,
     AccessRequestClosedEmail,
@@ -200,22 +200,22 @@ def send_withdrawal_email(withdrawal: WithdrawApplication) -> None:
 
 def send_variation_request_email(
     variation_request: VariationRequest,
-    description: VariationRequestDescription,
+    email_type: EmailTypes,
     application: ImpOrExp,
 ) -> None:
-    match description:
-        case VariationRequestDescription.CANCELLED:
+    match email_type:
+        case EmailTypes.APPLICATION_VARIATION_REQUEST_CANCELLED:
             send_variation_request_cancelled_email(variation_request, application)
-        case VariationRequestDescription.UPDATE_REQUIRED:
+        case EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_REQUIRED:
             send_variation_request_update_required_email(variation_request, application)
-        case VariationRequestDescription.UPDATE_CANCELLED:
+        case EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_CANCELLED:
             send_variation_request_update_cancelled_email(variation_request, application)
-        case VariationRequestDescription.UPDATE_RECEIVED:
+        case EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_RECEIVED:
             send_variation_request_update_received_email(variation_request, application)
-        case VariationRequestDescription.REFUSED:
+        case EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED:
             send_variation_request_refused_email(variation_request, application)
         case _:
-            raise ValueError("Unsupported Variation Request Description")
+            raise ValueError("Unsupported Email Type %s for Variation Request" % email_type)
 
 
 def send_variation_request_cancelled_email(

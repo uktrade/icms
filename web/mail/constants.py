@@ -1,5 +1,3 @@
-import enum
-
 from web.types import TypedTextChoices
 
 CELERY_MAIL_QUEUE_NAME = "mail"
@@ -105,15 +103,6 @@ class EmailTypes(TypedTextChoices):
     AUTHORITY_EXPIRING_FIREARMS = ("AUTHORITY_EXPIRING_FIREARMS", "Authority Expiring Firearms")
     MAILSHOT = ("MAILSHOT", "Mailshot")
     RETRACT_MAILSHOT = ("RETRACT_MAILSHOT", "Retract Mailshot")
-
-
-# TODO: ICMSLST-2348 Gov Notify - Review constants
-class VariationRequestDescription(enum.StrEnum):
-    CANCELLED = "CANCELLED"
-    UPDATE_REQUIRED = "UPDATE_REQUIRED"
-    UPDATE_CANCELLED = "UPDATE_CANCELLED"
-    UPDATE_RECEIVED = "UPDATE_RECEIVED"
-    REFUSED = "REFUSED"
 
 
 class CaseEmailTemplate(TypedTextChoices):
