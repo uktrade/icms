@@ -32,7 +32,7 @@ from web.models import (
 from web.notify import notify
 from web.sites import get_exporter_site_domain, get_importer_site_domain
 
-from .constants import CaseEmailTemplate, EmailTypes
+from .constants import EmailTypes
 from .messages import (
     AccessRequestApprovalCompleteEmail,
     AccessRequestClosedEmail,
@@ -469,11 +469,12 @@ def send_case_email(case_email: CaseEmailModel) -> None:
 
 def create_case_email(
     application: ImpOrExp,
-    template_code: CaseEmailTemplate,
+    email_type: EmailTypes,
     to: str | None = None,
     cc: list[str] | None = None,
     attachments: QuerySet | None = None,
 ) -> CaseEmail:
+    template_code = email_type.value
     subject, body = get_email_template_subject_body(application, template_code)
 
     case_email = CaseEmailModel.objects.create(

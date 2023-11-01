@@ -104,13 +104,15 @@ class EmailTypes(TypedTextChoices):
     MAILSHOT = ("MAILSHOT", "Mailshot")
     RETRACT_MAILSHOT = ("RETRACT_MAILSHOT", "Retract Mailshot")
 
+    # Case emails
+    CONSTABULARY_CASE_EMAIL = ("IMA_CONSTAB_EMAIL", "Constabulary Email")
+    SANCTIONS_CASE_EMAIL = ("IMA_SANCTION_EMAIL", "Sanctions Email")
+    HSE_CASE_EMAIL = ("CA_HSE_EMAIL", "Health and Safety Email")
+    BEIS_CASE_EMAIL = ("CA_BEIS_EMAIL", "Business, Energy & Industrial Strategy Email")
 
-class CaseEmailTemplate(TypedTextChoices):
-    IMA_CONSTAB_EMAIL = ("IMA_CONSTAB_EMAIL", "Constabulary Email")
-    IMA_SANCTION_EMAIL = ("IMA_SANCTION_EMAIL", "Sanctions Email")
-    CA_HSE_EMAIL = ("CA_HSE_EMAIL", "Health and Safety Email")
-    CA_BEIS_EMAIL = ("CA_BEIS_EMAIL", "Business, Energy & Industrial Strategy Email")
 
-
-IMPORT_CASE_EMAILS = [CaseEmailTemplate.IMA_CONSTAB_EMAIL, CaseEmailTemplate.IMA_SANCTION_EMAIL]
-EXPORT_CASE_EMAILS = [CaseEmailTemplate.CA_HSE_EMAIL, CaseEmailTemplate.CA_BEIS_EMAIL]
+IMPORT_CASE_EMAILS = [EmailTypes.CONSTABULARY_CASE_EMAIL, EmailTypes.SANCTIONS_CASE_EMAIL]
+EXPORT_CASE_EMAILS = [EmailTypes.HSE_CASE_EMAIL, EmailTypes.BEIS_CASE_EMAIL]
+CASE_EMAIL_TYPES = [
+    (email_type.value, email_type.label) for email_type in IMPORT_CASE_EMAILS + EXPORT_CASE_EMAILS
+]
