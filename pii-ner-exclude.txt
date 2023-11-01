@@ -3482,3 +3482,5 @@ Authority Expiring Section 5
 Authority Expiring Firearms
 f"Importer
 12345,67890
+Unsupported Email Type %
+Unsupported Email Type RETRACT_MAILSHOT for Variation Request

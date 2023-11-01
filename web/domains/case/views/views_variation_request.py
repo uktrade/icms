@@ -21,7 +21,7 @@ from web.domains.case.forms import (
 from web.domains.case.services import document_pack, reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
-from web.mail.constants import VariationRequestDescription
+from web.mail.constants import EmailTypes
 from web.mail.emails import send_variation_request_email
 from web.models import Process, Task, VariationRequest
 from web.permissions import AppChecker, Perms
@@ -148,7 +148,7 @@ class VariationRequestCancelView(
         self.update_application_status()
         self.update_application_tasks()
         send_variation_request_email(
-            self.object, VariationRequestDescription.CANCELLED, self.application
+            self.object, EmailTypes.APPLICATION_VARIATION_REQUEST_CANCELLED, self.application
         )
         return result
 
@@ -193,7 +193,7 @@ class VariationRequestRequestUpdateView(
         self.application.save()
         self.update_application_tasks()
         send_variation_request_email(
-            self.object, VariationRequestDescription.UPDATE_REQUIRED, self.application
+            self.object, EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_REQUIRED, self.application
         )
         return result
 
@@ -242,7 +242,9 @@ class VariationRequestCancelUpdateRequestView(
         # Close the task
         self.update_application_tasks()
         send_variation_request_email(
-            variation_request, VariationRequestDescription.UPDATE_CANCELLED, self.application
+            variation_request,
+            EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_CANCELLED,
+            self.application,
         )
 
         return redirect(
@@ -293,7 +295,7 @@ class VariationRequestRespondToUpdateRequestView(
         self.application.update_order_datetime()
         self.application.save()
         send_variation_request_email(
-            self.object, VariationRequestDescription.UPDATE_RECEIVED, self.application
+            self.object, EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_RECEIVED, self.application
         )
         return result
 

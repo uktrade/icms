@@ -26,7 +26,7 @@ from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task, get_case_page_title
 from web.flow import errors
 from web.flow.models import ProcessTypes
-from web.mail.constants import VariationRequestDescription
+from web.mail.constants import EmailTypes
 from web.mail.emails import (
     send_application_reassigned_email,
     send_application_refused_email,
@@ -535,7 +535,9 @@ def start_authorisation(
                 send_application_refused_email(application)
 
             if send_vr_email:
-                send_variation_request_email(vr, VariationRequestDescription.REFUSED, application)
+                send_variation_request_email(
+                    vr, EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED, application
+                )
             return redirect(reverse("workbasket"))
 
         else:
