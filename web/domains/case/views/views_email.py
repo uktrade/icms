@@ -12,7 +12,7 @@ from django.views.decorators.http import require_POST
 
 from web.domains.case.services import case_progress
 from web.flow.models import ProcessTypes
-from web.mail.constants import CaseEmailTemplate
+from web.mail.constants import EmailTypes
 from web.mail.emails import create_case_email, send_case_email
 from web.models import (
     CertificateOfFreeSaleApplication,
@@ -382,24 +382,24 @@ def _create_email(application: ApplicationsWithCaseEmail) -> models.CaseEmail:
         case pt.FA_OIL | pt.FA_DFL | pt.FA_SIL:
             return create_case_email(
                 application,
-                CaseEmailTemplate.IMA_CONSTAB_EMAIL,
+                EmailTypes.CONSTABULARY_CASE_EMAIL,
                 cc=[settings.ICMS_FIREARMS_HOMEOFFICE_EMAIL],
             )
 
         case pt.SANCTIONS:
-            return create_case_email(application, CaseEmailTemplate.IMA_SANCTION_EMAIL)
+            return create_case_email(application, EmailTypes.SANCTIONS_CASE_EMAIL)
 
         # certificate applications
         case pt.CFS:
             return create_case_email(
-                application, CaseEmailTemplate.CA_HSE_EMAIL, settings.ICMS_CFS_HSE_EMAIL
+                application, EmailTypes.HSE_CASE_EMAIL, settings.ICMS_CFS_HSE_EMAIL
             )
 
         case pt.GMP:
             attachments = application.supporting_documents.filter(is_active=True)
             return create_case_email(
                 application,
-                CaseEmailTemplate.CA_BEIS_EMAIL,
+                EmailTypes.BEIS_CASE_EMAIL,
                 settings.ICMS_GMP_BEIS_EMAIL,
                 attachments=attachments,
             )

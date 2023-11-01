@@ -2,7 +2,7 @@ import pytest
 from django.conf import settings
 from freezegun import freeze_time
 
-from web.mail.constants import CaseEmailTemplate, EmailTypes
+from web.mail.constants import EmailTypes
 from web.mail.emails import create_case_email, send_case_email
 from web.models import CaseEmail as CaseEmailModel
 from web.models import EmailTemplate
@@ -27,7 +27,7 @@ class TestExportCaseEmails(AuthTestCase):
         attachments = app.supporting_documents.filter(is_active=True)
         case_email = create_case_email(
             app,
-            CaseEmailTemplate.CA_BEIS_EMAIL,
+            EmailTypes.BEIS_CASE_EMAIL,
             "to_address@example.com",  # /PS-IGNORE
             attachments=attachments,
         )
@@ -50,7 +50,7 @@ class TestExportCaseEmails(AuthTestCase):
         gmp_app_submitted.refresh_from_db()
         case_email = create_case_email(
             gmp_app_submitted,
-            CaseEmailTemplate.CA_BEIS_EMAIL,
+            EmailTypes.BEIS_CASE_EMAIL,
             "to_address@example.com",  # /PS-IGNORE
         )
         assert case_email.status == CaseEmailModel.Status.DRAFT
@@ -78,7 +78,7 @@ class TestExportCaseEmails(AuthTestCase):
         app.refresh_from_db()
 
         case_email = create_case_email(
-            app, CaseEmailTemplate.CA_HSE_EMAIL, "to_address@example.com"  # /PS-IGNORE
+            app, EmailTypes.HSE_CASE_EMAIL, "to_address@example.com"  # /PS-IGNORE
         )
 
         assert case_email.to == "to_address@example.com"  # /PS-IGNORE
@@ -101,7 +101,7 @@ class TestImportCaseEmails(AuthTestCase):
         app.refresh_from_db()
 
         case_email = create_case_email(
-            app, CaseEmailTemplate.IMA_CONSTAB_EMAIL, cc=["cc_address@example.com"]  # /PS-IGNORE
+            app, EmailTypes.CONSTABULARY_CASE_EMAIL, cc=["cc_address@example.com"]  # /PS-IGNORE
         )
 
         assert case_email.to is None
@@ -114,7 +114,7 @@ class TestImportCaseEmails(AuthTestCase):
         fa_dfl_app_submitted.refresh_from_db()
         case_email = create_case_email(
             fa_dfl_app_submitted,
-            CaseEmailTemplate.IMA_CONSTAB_EMAIL,
+            EmailTypes.CONSTABULARY_CASE_EMAIL,
             "to_address@example.com",  # /PS-IGNORE
             cc=["cc_address@example.com", "to_address@example.com"],  # /PS-IGNORE
         )
@@ -139,7 +139,7 @@ class TestImportCaseEmails(AuthTestCase):
         app.refresh_from_db()
 
         case_email = create_case_email(
-            app, CaseEmailTemplate.IMA_CONSTAB_EMAIL, cc=["cc_address@example.com"]  # /PS-IGNORE
+            app, EmailTypes.CONSTABULARY_CASE_EMAIL, cc=["cc_address@example.com"]  # /PS-IGNORE
         )
 
         assert case_email.to is None
@@ -158,7 +158,7 @@ class TestImportCaseEmails(AuthTestCase):
         app.refresh_from_db()
 
         case_email = create_case_email(
-            app, CaseEmailTemplate.IMA_CONSTAB_EMAIL, cc=["cc_address@example.com"]  # /PS-IGNORE
+            app, EmailTypes.CONSTABULARY_CASE_EMAIL, cc=["cc_address@example.com"]  # /PS-IGNORE
         )
 
         assert case_email.to is None
@@ -178,7 +178,7 @@ class TestImportCaseEmails(AuthTestCase):
         app = sanctions_app_submitted
         self.ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "import"))
         app.refresh_from_db()
-        case_email = create_case_email(app, CaseEmailTemplate.IMA_SANCTION_EMAIL)
+        case_email = create_case_email(app, EmailTypes.SANCTIONS_CASE_EMAIL)
 
         assert case_email.to is None
         assert case_email.cc_address_list is None

@@ -6,7 +6,7 @@ from django.db import models
 from django.db.models import Q
 
 from web.flow.models import Process
-from web.mail.constants import CaseEmailTemplate
+from web.mail.constants import CASE_EMAIL_TYPES
 from web.types import TypedTextChoices
 
 from .shared import ImpExpStatus
@@ -274,7 +274,7 @@ class CaseEmail(models.Model):
         null=True,
     )
 
-    template_code = models.CharField(max_length=30, choices=CaseEmailTemplate.choices)
+    template_code = models.CharField(max_length=30, choices=CASE_EMAIL_TYPES)
     subject = models.CharField(max_length=100, null=True)
     body = models.TextField(max_length=4000, null=True)
     attachments = models.ManyToManyField("web.File")
