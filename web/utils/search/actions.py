@@ -268,9 +268,14 @@ class ReopenExportCaseAction(ActionProtocol):
 
     @staticmethod
     def get_action(app: ExportApplication) -> types.SearchAction:
-        # TODO: ICMSLST-1213 Implement action
         return types.SearchAction(
-            url="#", name="reopen-case", label="Reopen Case", icon="icon-redo2"
+            url=reverse(
+                "case:search-reopen-case",
+                kwargs={"application_pk": app.pk, "case_type": "export"},
+            ),
+            name="reopen-case",
+            label="Reopen Case",
+            icon="icon-redo2",
         )
 
 
