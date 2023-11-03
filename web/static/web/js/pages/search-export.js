@@ -28,4 +28,5 @@ window.addEventListener('load', function (event) {
   setupToggleCheckboxEventHandler(unselectAllBtn, false)
 
   /* Results table row actions */
+  setupReopenCaseFormHandlers();
 });

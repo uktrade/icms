@@ -114,7 +114,7 @@ class TestReassignCaseOwnerView:
         ...
 
 
-class TestReopenApplicationView:
+class TestReopenApplicationViewImportApplication:
     client: Client
     wood_app: WoodQuotaApplication
 
@@ -205,6 +205,105 @@ class TestReopenApplicationView:
                 ),
                 "application_url": get_case_view_url(application, get_importer_site_domain()),
                 "icms_url": get_importer_site_domain(),
+            },
+        )
+
+    def _check_email_is_not_sent(self):
+        outbox = mail.outbox
+        assert len(outbox) == 0
+
+
+class TestReopenApplicationViewExportApplication:
+    client: Client
+    app: CertificateOfManufactureApplication
+
+    @pytest.fixture(autouse=True)
+    def set_client(self, ilb_admin_client):
+        self.client = ilb_admin_client
+
+    @pytest.fixture(autouse=True)
+    def set_app(self, com_app_submitted, ilb_admin_user):
+        self.app = com_app_submitted
+
+        # End the PROCESS task as we are testing reopening the application
+        task = case_progress.get_expected_task(self.app, Task.TaskType.PROCESS)
+        task.is_active = False
+        task.finished = timezone.now()
+        task.owner = ilb_admin_user
+        task.save()
+
+    def test_permission(self, importer_client, exporter_client):
+        url = SearchURLS.reopen_case(self.app.pk, case_type="export")
+
+        response = importer_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = exporter_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        # self.client is an ILB admin user
+        self.app.status = ImpExpStatus.STOPPED
+        self.app.save()
+        resp = self.client.post(url)
+
+        self._check_valid_response(resp, self.app)
+
+    def test_reopen_application_when_stopped(self):
+        self.app.status = ImpExpStatus.STOPPED
+        self.app.save()
+
+        url = SearchURLS.reopen_case(application_pk=self.app.pk)
+        resp = self.client.post(url)
+
+        self._check_valid_response(resp, self.app)
+
+    def test_reopen_application_when_withdrawn(self):
+        self.app.status = ImpExpStatus.WITHDRAWN
+        self.app.save()
+
+        url = SearchURLS.reopen_case(application_pk=self.app.pk)
+        resp = self.client.post(url)
+
+        self._check_valid_response(resp, self.app)
+
+    def test_reopen_application_when_processing_errors(self):
+        with pytest.raises(expected_exception=errors.ProcessStateError):
+            url = SearchURLS.reopen_case(application_pk=self.app.pk)
+            self.client.post(url)
+            self._check_email_is_not_sent()
+
+    def test_reopen_application_unsets_caseworker(self, ilb_admin_user):
+        self.app.status = ImpExpStatus.STOPPED
+        self.app.case_owner = ilb_admin_user
+        self.app.save()
+
+        url = SearchURLS.reopen_case(application_pk=self.app.pk)
+        resp = self.client.post(url)
+
+        self._check_valid_response(resp, self.app)
+        assert self.app.case_owner is None
+
+    def _check_valid_response(self, resp, application):
+        assert resp.status_code == HTTPStatus.NO_CONTENT
+        application.refresh_from_db()
+
+        case_progress.check_expected_status(application, [application.Statuses.SUBMITTED])
+        case_progress.check_expected_task(application, Task.TaskType.PROCESS)
+
+        self._check_email_is_sent(application)
+
+    def _check_email_is_sent(self, application):
+        check_gov_notify_email_was_sent(
+            1,
+            ["E1_main_contact@example.com"],  # /PS-IGNORE
+            EmailTypes.APPLICATION_REOPENED,
+            {
+                "reference": application.reference,
+                "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                    full_url=True
+                ),
+                "application_url": get_case_view_url(application, get_exporter_site_domain()),
+                "icms_url": get_exporter_site_domain(),
             },
         )
 
