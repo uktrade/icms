@@ -175,6 +175,10 @@ if GOV_UK_ONE_LOGIN_ENABLED:
 GOV_NOTIFY_API_KEY = env.gov_notify_api_key
 EMAIL_BACKEND = env.email_backend
 
+MAIL_TASK_RATE_LIMIT = env.mail_task_rate_limit
+MAIL_TASK_RETRY_JITTER = env.mail_task_retry_jitter
+MAIL_TASK_MAX_RETRIES = env.mail_task_max_retries
+
 # Same logic here: icms/web/mail/decorators.py
 if APP_ENV in ("local", "dev", "staging"):
     SEND_ALL_EMAILS_TO = env.send_all_emails_to
@@ -269,6 +273,7 @@ CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_EXTENDED = True
+
 
 # Django cache with Redis
 CACHES = {
