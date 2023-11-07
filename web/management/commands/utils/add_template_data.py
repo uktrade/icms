@@ -1149,18 +1149,21 @@ We have received a [[APPLICATION_TYPE]] application from:
 Please review and advise whether or not this branch can issue a GMP Certificate for this
 request.
 
-MANUFACTURER:
+Manufacturer:
 [[MANUFACTURER_NAME]]
 [[MANUFACTURER_ADDRESS]]
 [[MANUFACTURER_POSTCODE]]
 
-RESPONSIBLE PERSON:
+Responsible person:
 [[RESPONSIBLE_PERSON_NAME]]
 [[RESPONSIBLE_PERSON_ADDRESS]]
 [[RESPONSIBLE_PERSON_POSTCODE]]
 
-NAME OF BRANDS:
+Name of brands:
 [[BRAND_NAMES]]
+
+The application is for the following countries:
+[[CERT_COUNTRIES]]
 
 Thanks and best regards
 
