@@ -55,3 +55,7 @@ STAFF_SSO_ENABLED = False
 GOV_UK_ONE_LOGIN_ENABLED = False
 LOGIN_URL = "accounts:login"
 LOGOUT_REDIRECT_URL = "accounts:login"  # type: ignore[assignment]
+
+MAIL_TASK_RATE_LIMIT = "1/m"
+MAIL_TASK_RETRY_JITTER = True
+MAIL_TASK_MAX_RETRIES = 5

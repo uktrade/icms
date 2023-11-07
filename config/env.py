@@ -75,6 +75,9 @@ class Environment(BaseSettings):
     # GOV.UK Notify to send/receive emails (which are implemented using gov notify)
     gov_notify_api_key: str
     email_backend: str
+    mail_task_rate_limit: str
+    mail_task_retry_jitter: bool
+    mail_task_max_retries: int
     # Your email address (used to test GOV.UK Notify)
     # Need to have registered with GOV Notify and have been invited to the ICMS project
     send_all_emails_to: list[str]

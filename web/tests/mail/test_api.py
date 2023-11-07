@@ -2,6 +2,7 @@ from unittest import mock
 from uuid import UUID
 
 import pytest
+from celery.exceptions import Retry
 from notifications_python_client.errors import HTTPError
 
 from web.mail import api
@@ -53,12 +54,39 @@ def test_get_template_by_id_error(mock_gov_notify_get_template):
     )
 
 
+@mock.patch("web.mail.api.capture_exception")
+@mock.patch("celery.app.task.Task.request")
 @mock.patch("notifications_python_client.NotificationsAPIClient.send_email_notification")
-def test_send_email_error(mock_gov_notify_send_email_notification):
+def test_send_email_retry_on_http_error(
+    mock_gov_notify_send_email_notification, mock_request, mock_capture_exception
+):
+    mock_capture_exception.return_value = None
     fake_response = mock.Mock(status_code=404, json=lambda: HTTP_404_NOT_FOUND_ERROR)
     fake_error = mock.Mock(response=fake_response)
     mock_gov_notify_send_email_notification.side_effect = HTTPError.create(fake_error)
+    mock_request.called_directly = False
+    mock_request.retries = 1
+    with pytest.raises(Retry):
+        api.send_email(
+            UUID("fb9a1023-3901-44e8-a7d3-a0e309e93951"), {}, "tester@example.com"  # /PS-IGNORE
+        )
+    assert mock_capture_exception.called is False
+
+
+@mock.patch("web.mail.api.capture_exception")
+@mock.patch("celery.app.task.Task.request")
+@mock.patch("notifications_python_client.NotificationsAPIClient.send_email_notification")
+def test_send_email_max_retries_exceeded(
+    mock_gov_notify_send_email_notification, mock_request, mock_capture_exception
+):
+    mock_capture_exception.return_value = None
+    fake_response = mock.Mock(status_code=404, json=lambda: HTTP_404_NOT_FOUND_ERROR)
+    fake_error = mock.Mock(response=fake_response)
+    mock_gov_notify_send_email_notification.side_effect = HTTPError.create(fake_error)
+    mock_request.called_directly = False
+    mock_request.retries = 5
     with pytest.raises(HTTPError):
         api.send_email(
             UUID("fb9a1023-3901-44e8-a7d3-a0e309e93951"), {}, "tester@example.com"  # /PS-IGNORE
         )
+    assert mock_capture_exception.called is True

@@ -3521,3 +3521,5 @@ div aria-labelledby="agents-current
 aria-labelledby="tg-agentsARCHIVED
 assert template.user_can_edit(bob
 template.form_data
+MAIL_TASK_RATE_LIMIT='1000/m'
+MAIL_TASK_MAX_RETRIES=5
