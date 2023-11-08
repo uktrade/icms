@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Any, Literal, Protocol
 
 from web.domains.case.services import document_pack
 from web.flow.models import ProcessTypes
+from web.forms.utils import clean_postcode
 from web.utils.commodity import annotate_commodity_unit
 
 from . import types
@@ -305,7 +306,7 @@ def _get_organisation(application: "ImportApplication") -> types.OrganisationDat
         address=types.AddressData(
             # max address lines is 5
             **address_lines,
-            postcode=office.postcode,
+            postcode=clean_postcode(office.postcode),
         ),
         start_date=None,
         end_date=None,

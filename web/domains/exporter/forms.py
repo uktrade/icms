@@ -6,6 +6,7 @@ from django_filters import CharFilter, ChoiceFilter, FilterSet
 from guardian.forms import UserObjectPermissionsForm
 
 from web.errors import APIError
+from web.forms.utils import clean_postcode
 from web.permissions import ExporterObjectPermissions, Perms
 from web.utils.companieshouse import api_get_company
 
@@ -62,6 +63,9 @@ class ExporterForm(forms.ModelForm):
             address_line_2 = office_address.get("address_line_2")
             locality = office_address.get("locality")
             postcode = office_address.get("postal_code")
+
+            if postcode:
+                postcode = clean_postcode(postcode)
 
             if address_line_1 and postcode:
                 instance.offices.get_or_create(

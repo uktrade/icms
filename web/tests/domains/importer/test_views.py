@@ -633,6 +633,27 @@ class TestCreateOfficeView(AuthTestCase):
 
         assert self.importer.offices.count() == 2
 
+    def test_post_cleans_postcode(self):
+        assert self.importer.offices.count() == 1
+        data = {
+            "address_1": "Address line 1",
+            "address_2": "Address line 2",
+            "address_3": "Address line 3",
+            "address_4": "Address line 4",
+            "address_5": "Address line 5",
+            "postcode": "s1 2ss",  # /PS-IGNORE
+            "eori_number": "GB0123456789ABCDE",
+        }
+
+        response = self.ilb_admin_client.post(self.url, data=data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        assert self.importer.offices.count() == 2
+
+        latest = self.importer.offices.last()
+        # test space stripped and upper case.
+        assert latest.postcode == "S12SS"  # /PS-IGNORE
+
 
 class TestEditOfficeView(AuthTestCase):
     @pytest.fixture(autouse=True)

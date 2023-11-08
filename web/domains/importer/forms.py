@@ -8,6 +8,7 @@ from guardian.forms import UserObjectPermissionsForm
 
 from web.domains.importer.fields import PersonWidget
 from web.errors import APIError
+from web.forms.utils import clean_postcode
 from web.forms.widgets import CheckboxSelectMultiple
 from web.models import Importer, Section5Authority
 from web.models.shared import ArchiveReasonChoices
@@ -97,6 +98,9 @@ class ImporterOrganisationForm(forms.ModelForm):
             address_line_2 = office_address.get("address_line_2")
             locality = office_address.get("locality")
             postcode = office_address.get("postal_code")
+
+            if postcode:
+                postcode = clean_postcode(postcode)
 
             if address_line_1 and postcode:
                 instance.offices.get_or_create(
