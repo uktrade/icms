@@ -515,7 +515,7 @@ class SearchURLS:
     @staticmethod
     def revoke_licence(application_pk: int, case_type: str = "import") -> str:
         return reverse(
-            "case:search-revoke-licence",
+            "case:search-revoke-case",
             kwargs={"application_pk": application_pk, "case_type": case_type},
         )
 

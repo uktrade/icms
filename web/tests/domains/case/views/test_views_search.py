@@ -6,7 +6,7 @@ from django.core import mail
 from django.test.client import Client
 from django.utils import timezone
 from guardian.shortcuts import remove_perm
-from pytest_django.asserts import assertRedirects
+from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
@@ -530,9 +530,12 @@ class TestRevokeCaseView:
 
     def test_revoke_certificate_with_send_email(self, completed_cfs_app):
         app = completed_cfs_app
-        url = SearchURLS.revoke_licence(app.pk)
-        response = self.client.get(self.url)
+        url = SearchURLS.revoke_licence(app.pk, case_type="export")
+        response = self.client.get(url)
         assert response.status_code == HTTPStatus.OK
+
+        assertTemplateUsed(response, "web/domains/case/manage/revoke-certificate.html")
+        assert "Certificate Revocation" in response.content.decode()
 
         form_data = {"send_email": "on", "reason": "test reason"}
         resp = self.client.post(url, data=form_data, follow=True)
@@ -564,6 +567,9 @@ class TestRevokeCaseView:
     def test_revoke_licence_with_send_email(self):
         # check what is in the context on the initial page load
         response = self.client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        assertTemplateUsed(response, "web/domains/case/manage/revoke-licence.html")
+        assert "Licence Revocation" in response.content.decode()
 
         assert response.context["active_pack"] == document_pack.pack_active_get(self.app)
         assert response.context["process"] == self.app
