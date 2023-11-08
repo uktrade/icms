@@ -1,9 +1,13 @@
 from django import forms
 
+from web.forms.fields import UKPostcodeField
 from web.models import Office
 
 
 class ImporterOfficeEORIForm(forms.ModelForm):
+    # Importer postcode sent to CHIEF/CDS must be valid
+    postcode = UKPostcodeField(required=True)
+
     class Meta:
         model = Office
         fields = [
@@ -18,6 +22,9 @@ class ImporterOfficeEORIForm(forms.ModelForm):
 
 
 class ImporterOfficeForm(forms.ModelForm):
+    # Importer postcode sent to CHIEF/CDS must be valid
+    postcode = UKPostcodeField(required=True)
+
     class Meta:
         model = Office
         fields = ["address_1", "address_2", "address_3", "address_4", "address_5", "postcode"]

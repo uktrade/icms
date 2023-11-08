@@ -3492,3 +3492,4 @@ confirm_email_before_download
 CONSTABULARY_DEACTIVATED_FIREARMS
 Constabulary Deactivated Firearms
 web.mail.emails.send_constabulary_deactivated_firearms_email
+r"^[A-Z]{1,2}[0-9][A-Z0-9
