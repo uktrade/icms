@@ -1,0 +1,61 @@
+{% extends "web/domains/case/manage/base.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ search_results_url }}" class="prev-link">Search Results</a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  <h3>Certificate Revocation</h3>
+
+  {# Only show this warning if we are submitting a case revocation. #}
+  {% if process.status == "COMPLETED" %}
+    <div class="info-box info-box-info">
+      <div class="screen-reader-only">Information box,</div>
+      <p>Enter the reason for revocation below.</p>
+      <p>All certificates issued for this case will be revoked (i.e. if certificates have been issued for multiple countries, they will all be revoked).</p>
+    </div>
+  {% endif %}
+
+  {# Tooltip for the send email message #}
+  <div id="send_email_tooltip" role="tooltip" class="hint-content" aria-hidden="true">
+    <div class="screen-reader-only">This item has hint text,</div>
+    <p>The applicant will be emailed the Certificate Revocation email template. The applicant will not be informed of the reason for revocation.</p>
+  </div>
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {% for field in form %}
+      {% if field.name == "send_email" %}
+        {{ fields.field(field, checkbox_label="Send certificate revocation email", show_optional_indicator=False, input_cols="two", tooltip_msg_id="send_email_tooltip") }}
+      {% else %}
+        {{ fields.field(field) }}
+      {% endif %}
+    {% endfor %}
+    {# If completed show warnings and submit button as we are submitting a case revocation. #}
+    {% if process.status == "COMPLETED" %}
+      <div class="info-box info-box-warning">
+        <div class="screen-reader-only">Warning information box,</div>
+        Ensure that you have performed all necessary checks before revoking the certificates. This cannot be undone.
+      </div>
+
+      <div class="container">
+        <div class="row">
+          <div class="twelve columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <input type="submit" class="primary-button button" value="Revoke Certificates"/>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endcall %}
+{% endblock %}

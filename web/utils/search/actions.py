@@ -114,7 +114,7 @@ class RevokeLicenceAction(ActionProtocol):
     def get_action(app: ImportApplication) -> types.SearchAction:
         return types.SearchAction(
             url=reverse(
-                "case:search-revoke-licence",
+                "case:search-revoke-case",
                 kwargs={"application_pk": app.pk, "case_type": "import"},
             ),
             name="revoke-licence",
@@ -247,12 +247,15 @@ class RevokeCertificateAction(ActionProtocol):
 
     @staticmethod
     def get_action(app: ExportApplication) -> types.SearchAction:
-        # TODO: ICMSLST-1006 Implement action
         return types.SearchAction(
-            url="#",
+            url=reverse(
+                "case:search-revoke-case",
+                kwargs={"application_pk": app.pk, "case_type": "export"},
+            ),
             name="revoke-certificates",
             label="Revoke Certificates",
             icon="icon-undo2",
+            is_post=False,
         )
 
 

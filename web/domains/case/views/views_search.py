@@ -409,6 +409,12 @@ class RevokeCaseView(SearchActionFormBase):
     form_class = RevokeApplicationForm
     template_name = "web/domains/case/manage/revoke-licence.html"
 
+    def get_template_names(self):
+        if self.application.is_import_application():
+            return ["web/domains/case/manage/revoke-licence.html"]
+        else:
+            return ["web/domains/case/manage/revoke-certificate.html"]
+
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 

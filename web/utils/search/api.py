@@ -376,7 +376,10 @@ def _get_certificate_references_and_links(rec: ExportApplication) -> list[tuple[
 
     :param rec: Export Application
     """
-    if not rec.latest_certificate_references or rec.status != ImpExpStatus.COMPLETED:
+    if not rec.latest_certificate_references or rec.status not in [
+        ImpExpStatus.COMPLETED,
+        ImpExpStatus.REVOKED,
+    ]:
         return []
 
     # The below code will be correct when we have certificate files uploaded to S3
