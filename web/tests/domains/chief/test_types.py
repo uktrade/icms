@@ -36,7 +36,7 @@ def test_fa_dfl_licence_data_can_serialise_using_enum_json_encoder():
         ],
     )
     create_licence_data = types.LicenceDataPayload(licence=fa_dfl_licence)
-    dict_data = create_licence_data.dict()
+    dict_data = create_licence_data.model_dump()
 
     licence_json = json.dumps(dict_data, cls=EnumJsonEncoder)
     licence_data = json.loads(licence_json)

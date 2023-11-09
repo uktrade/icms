@@ -132,9 +132,7 @@ class LicenseDataCallback(HawkViewBase):
     http_method_names = ["post"]
 
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-        licence_replies = types.ChiefLicenceReplyResponseData.parse_raw(
-            request.body, content_type=request.content_type
-        )
+        licence_replies = types.ChiefLicenceReplyResponseData.model_validate_json(request.body)
 
         with transaction.atomic():
             for accepted in licence_replies.accepted:
@@ -175,9 +173,7 @@ class UsageDataCallbackView(HawkViewBase):
     http_method_names = ["post"]
 
     def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
-        response = types.ChiefUsageDataResponseData.parse_raw(
-            request.body, content_type=request.content_type
-        )
+        response = types.ChiefUsageDataResponseData.model_validate_json(request.body)
 
         with transaction.atomic():
             for rec in response.usage_data:

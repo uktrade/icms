@@ -32,7 +32,7 @@ class TestChiefClient:
         # Finished mocking the API response.
 
         data = mock.create_autospec(spec=LicenceDataPayload, instance=True)
-        data.json.return_value = '{"foo": "bar"}'
+        data.model_dump_json.return_value = '{"foo": "bar"}'
 
         with mock.patch("mohawk.sender.Sender.accept_response"):
             with override_settings(

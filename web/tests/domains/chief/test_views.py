@@ -76,12 +76,12 @@ class TestLicenseDataCallbackAuthentication:
             rejected=[],
         )
 
-        content = payload.json().encode("UTF-8")
+        content = payload.model_dump_json().encode("UTF-8")
         sender = make_testing_hawk_sender("POST", self.url, content=content, content_type=JSON_TYPE)
 
         response = self.client.post(
             self.url,
-            payload.dict(),
+            payload.model_dump_json(),
             content_type=JSON_TYPE,
             HTTP_HAWK_AUTHENTICATION=sender.request_header,
         )
@@ -151,7 +151,10 @@ class TestLicenseDataCallbackView:
             rejected=[],
         )
         response = self.client.post(
-            self.url, data=payload.dict(), content_type=JSON_TYPE, HTTP_HAWK_AUTHENTICATION="foo"
+            self.url,
+            data=payload.model_dump(),
+            content_type=JSON_TYPE,
+            HTTP_HAWK_AUTHENTICATION="foo",
         )
 
         assert response.status_code == HTTPStatus.OK
@@ -178,7 +181,10 @@ class TestLicenseDataCallbackView:
         )
 
         response = self.client.post(
-            self.url, data=payload.dict(), content_type=JSON_TYPE, HTTP_HAWK_AUTHENTICATION="foo"
+            self.url,
+            data=payload.model_dump(),
+            content_type=JSON_TYPE,
+            HTTP_HAWK_AUTHENTICATION="foo",
         )
 
         assert response.status_code == HTTPStatus.OK
@@ -209,7 +215,10 @@ class TestLicenseDataCallbackView:
         )
 
         response = self.client.post(
-            self.url, data=payload.dict(), content_type=JSON_TYPE, HTTP_HAWK_AUTHENTICATION="foo"
+            self.url,
+            data=payload.model_dump(),
+            content_type=JSON_TYPE,
+            HTTP_HAWK_AUTHENTICATION="foo",
         )
 
         assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY

@@ -2,7 +2,7 @@ import datetime
 from enum import Enum, IntEnum
 from typing import Literal
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 
 
 # https://www.gov.uk/government/publications/uk-trade-tariff-quantity-codes/uk-trade-tariff-quantity-codes
@@ -44,7 +44,8 @@ class OrganisationData(BaseModel):
     start_date: datetime.date | None = None
     end_date: datetime.date | None = None
 
-    @validator("eori_number")
+    @field_validator("eori_number")
+    @classmethod
     def eori_number_must_be_valid(cls, v):
         """Basic validation for EORI number.
 
