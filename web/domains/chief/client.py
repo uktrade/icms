@@ -61,8 +61,8 @@ def send_application_to_chief(
             serialize = get_serializer(application.process_type, action)
             data = serialize(application.get_specific_model(), action, str(chief_req.icms_hmrc_id))
 
-            # Django JSONField encodes python objects therefore data.json() can't be used
-            chief_req.request_data = data.dict()
+            # Django JSONField encodes python objects therefore data.model_dump_json() can't be used
+            chief_req.request_data = data.model_dump()
             chief_req.save()
 
             request_license(data)
@@ -156,7 +156,7 @@ def request_license(data: types.LicenceDataPayload) -> requests.Response:
     url = urljoin(settings.ICMS_HMRC_DOMAIN, settings.ICMS_HMRC_UPDATE_LICENCE_ENDPOINT)
 
     hawk_sender, response = make_request(
-        "POST", url, data=data.json(), headers={"Content-Type": "application/json"}
+        "POST", url, data=data.model_dump_json(), headers={"Content-Type": "application/json"}
     )
 
     # log the response in case `raise_for_status` throws an error

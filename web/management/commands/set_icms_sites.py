@@ -1,14 +1,15 @@
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
-from pydantic import AnyHttpUrl, BaseModel, Extra
+from pydantic import AnyHttpUrl, BaseModel, ConfigDict
 
 from web.sites import SiteName
 
 
 class CmdArgs(BaseModel):
-    class Config:
+    model_config = ConfigDict(
         # Ignore extra django command arguments
-        extra = Extra.allow
+        extra="allow",
+    )
 
     caseworker_url: AnyHttpUrl
     exporter_url: AnyHttpUrl
