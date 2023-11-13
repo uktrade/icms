@@ -2,7 +2,7 @@
 
 set -e
 
-export DJANGO_SETTINGS_MODULE=config.settings.test
+export DJANGO_SETTINGS_MODULE=config.settings_test
 
 # we are using this work flow:
 # https://pytest-django.readthedocs.io/en/latest/database.html#example-work-flow-with-reuse-db-and-create-db

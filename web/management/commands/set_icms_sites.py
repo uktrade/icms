@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 from pydantic import AnyHttpUrl, BaseModel, ConfigDict
@@ -51,7 +52,7 @@ def get_site_domain(url: AnyHttpUrl) -> str:
     e.g. running in docker the port is important
     """
 
-    if url.port:
+    if settings.APP_ENV in ("local", "test"):
         return f"{url.host}:{url.port}"
 
     return url.host  # type: ignore[return-value]

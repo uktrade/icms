@@ -34,7 +34,7 @@ developing, only within Docker.
 
 ## Initial setup
 
-- copy `.env.example` to `.env`.
+- copy `.env.local-docker` to `.env`.
   - There are a few values you may need later stored in vault / ask another dev for correct values.
   - If you want to see all database queries done by each request, add `SHOW_DB_QUERIES=True` to it.
 - `make build`
@@ -230,6 +230,6 @@ ICMSFileField.
 
 ## Environment Variables
 
-See `.env.example`
+See `.env.local-docker`
 
 See also `docker-compose.yml` for additional debug environment variables.

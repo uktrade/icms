@@ -9,22 +9,28 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
+import copy
 import os
 import ssl
+from pathlib import Path
 
-import environ
+import dj_database_url
+import jinja2
 import structlog
 from django.forms import Field
 
-BASE_DIR = environ.Path(__file__) - 3  # 2 level up ../..
-env = environ.Env()
+from config.env import env
+from web.utils.sentry import init_sentry
 
-VCAP_SERVICES = env.json("VCAP_SERVICES", default={})
+# Build paths inside the project like this: BASE_DIR / "subdir".
+BASE_DIR: Path = Path(__file__).resolve().parent.parent
 
 # Application definition
-DEBUG = env.bool("ICMS_DEBUG", False)
+DEBUG = env.icms_debug
 WSGI_APPLICATION = "config.wsgi.application"
-APP_ENV = env.str("APP_ENV", default="notset")
+APP_ENV = env.app_env
+SECRET_KEY = env.icms_secret_key
+ALLOWED_HOSTS = env.icms_allowed_hosts
 
 INSTALLED_APPS = [
     "web",
@@ -69,6 +75,8 @@ ROOT_URLCONF = "config.urls"
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
+DATABASES = {"default": dj_database_url.parse(str(env.database_url))}
+
 # https://docs.djangoproject.com/en/4.2/ref/settings/#std-setting-FORM_RENDERER
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
@@ -76,7 +84,7 @@ TEMPLATES = [
     # Jinja defined for IMCS templates.
     {
         "BACKEND": "django.template.backends.jinja2.Jinja2",
-        "DIRS": [os.path.join(BASE_DIR, "web/templates")],
+        "DIRS": [BASE_DIR / "web/templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "environment": "web.jinja2.environment",
@@ -131,24 +139,24 @@ AUTHENTICATION_BACKENDS = ["web.auth.backends.ModelAndObjectPermissionBackend"]
 
 #
 # STAFF-SSO client app settings
-AUTHBROKER_URL = env.str("STAFF_SSO_AUTHBROKER_URL", default="")
-AUTHBROKER_CLIENT_ID = env.str("STAFF_SSO_AUTHBROKER_CLIENT_ID", default="")
-AUTHBROKER_CLIENT_SECRET = env.str("STAFF_SSO_AUTHBROKER_CLIENT_SECRET", default="")
-AUTHBROKER_STAFF_SSO_SCOPE = env.str("STAFF_SSO_AUTHBROKER_STAFF_SSO_SCOPE", default="")
-AUTHBROKER_ANONYMOUS_PATHS = env.list("STAFF_SSO_AUTHBROKER_ANONYMOUS_PATHS", default=[])
-AUTHBROKER_ANONYMOUS_URL_NAMES = env.list("STAFF_SSO_AUTHBROKER_ANONYMOUS_URL_NAMES", default=[])
+AUTHBROKER_URL = env.staff_sso_authbroker_url
+AUTHBROKER_CLIENT_ID = env.staff_sso_authbroker_client_id
+AUTHBROKER_CLIENT_SECRET = env.staff_sso_authbroker_client_secret
+AUTHBROKER_STAFF_SSO_SCOPE = env.staff_sso_authbroker_staff_sso_scope
+AUTHBROKER_ANONYMOUS_PATHS = env.staff_sso_authbroker_anonymous_paths
+AUTHBROKER_ANONYMOUS_URL_NAMES = env.staff_sso_authbroker_anonymous_url_names
 
 #
 # GOV.UK One Login settings
-GOV_UK_ONE_LOGIN_CLIENT_ID = env.str("GOV_UK_ONE_LOGIN_CLIENT_ID", default="")
-GOV_UK_ONE_LOGIN_CLIENT_SECRET = env.str("GOV_UK_ONE_LOGIN_CLIENT_SECRET", default="")
-GOV_UK_ONE_LOGIN_SCOPE = env.str("GOV_UK_ONE_LOGIN_SCOPE", default="")
-GOV_UK_ONE_LOGIN_OPENID_CONFIG_URL = env.str("GOV_UK_ONE_LOGIN_OPENID_CONFIG_URL", default="")
+GOV_UK_ONE_LOGIN_CLIENT_ID = env.gov_uk_one_login_client_id
+GOV_UK_ONE_LOGIN_CLIENT_SECRET = env.gov_uk_one_login_client_secret
+GOV_UK_ONE_LOGIN_SCOPE = env.gov_uk_one_login_scope
+GOV_UK_ONE_LOGIN_OPENID_CONFIG_URL = env.gov_uk_one_login_openid_config_url
 
 #
 # Authentication feature flags
-STAFF_SSO_ENABLED = env.bool("STAFF_SSO_ENABLED", True)
-GOV_UK_ONE_LOGIN_ENABLED = env.bool("GOV_UK_ONE_LOGIN_ENABLED", True)
+STAFF_SSO_ENABLED = env.staff_sso_enabled
+GOV_UK_ONE_LOGIN_ENABLED = env.gov_uk_one_login_enabled
 
 LOGIN_URL = "login-start"
 LOGIN_REDIRECT_URL = "workbasket"
@@ -163,24 +171,31 @@ if GOV_UK_ONE_LOGIN_ENABLED:
     AUTHENTICATION_BACKENDS.append("web.auth.backends.ICMSGovUKOneLoginBackend")
 
 # Email
-GOV_NOTIFY_API_KEY = env.str("GOV_NOTIFY_API_KEY", default="")
-EMAIL_BACKEND = env.str("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+GOV_NOTIFY_API_KEY = env.gov_notify_api_key
+EMAIL_BACKEND = env.email_backend
+
+# Same logic here: icms/web/mail/decorators.py
+if APP_ENV in ("local", "dev", "staging"):
+    SEND_ALL_EMAILS_TO = env.send_all_emails_to
+else:
+    SEND_ALL_EMAILS_TO = []
 
 # Email/phone contacts
-EMAIL_FROM = env.str("ICMS_EMAIL_FROM", default="")
-ILB_CONTACT_EMAIL = env.str("ICMS_ILB_CONTACT_EMAIL", default="")
-ILB_GSI_CONTACT_EMAIL = env.str("ICMS_ILB_GSI_CONTACT_EMAIL", default="")
-ILB_CONTACT_PHONE = env.str("ICMS_ILB_CONTACT_PHONE", default="")
-ILB_CONTACT_NAME = env.str("ICMS_ILB_CONTACT_NAME", default="")
-ILB_CONTACT_ADDRESS = env.str("ICMS_ILB_CONTACT_ADDRESS", default="")
-ICMS_FIREARMS_HOMEOFFICE_EMAIL = env.str("ICMS_FIREARMS_HOMEOFFICE_EMAIL", default="")
-ICMS_CFS_HSE_EMAIL = env.str("ICMS_CFS_HSE_EMAIL", default="")
-ICMS_GMP_BEIS_EMAIL = env.str("ICMS_GMP_BEIS_EMAIL", default="")
+EMAIL_FROM = env.icms_email_from
+ILB_CONTACT_EMAIL = env.icms_ilb_contact_email
+ILB_GSI_CONTACT_EMAIL = env.icms_ilb_gsi_contact_email
+ILB_CONTACT_PHONE = env.icms_ilb_contact_phone
+ILB_CONTACT_NAME = env.icms_ilb_contact_name
+ILB_CONTACT_ADDRESS = env.icms_ilb_contact_address
+ICMS_FIREARMS_HOMEOFFICE_EMAIL = env.icms_firearms_homeoffice_email
+ICMS_CFS_HSE_EMAIL = env.icms_cfs_hse_email
+ICMS_GMP_BEIS_EMAIL = env.icms_gmp_beis_email
 
 # File storage
 # for https://github.com/uktrade/django-chunk-s3-av-upload-handlers
-if "aws-s3-bucket" in VCAP_SERVICES:
-    app_bucket_creds = VCAP_SERVICES["aws-s3-bucket"][0]["credentials"]
+
+if env.vcap_services:
+    app_bucket_creds = env.vcap_services.aws_s3_bucket[0]["credentials"]
 else:
     app_bucket_creds = {}
 
@@ -204,7 +219,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATIC_ROOT = BASE_DIR / "static/"
+
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
@@ -230,20 +246,20 @@ FILE_UPLOAD_HANDLERS = (
 )
 
 # Anti virus settings
-CLAM_AV_USERNAME = env.str("CLAM_AV_USERNAME", default="test")
-CLAM_AV_PASSWORD = env.str("CLAM_AV_PASSWORD", default="")
-CLAM_AV_DOMAIN = env.str("CLAM_AV_DOMAIN", default="clamav.london.cloudapps.digital")
+CLAM_AV_USERNAME = env.clam_av_username
+CLAM_AV_PASSWORD = env.clam_av_password
+CLAM_AV_DOMAIN = env.clam_av_domain
 
 # Storage Folders
 PATH_STORAGE_FIR = "/documents/fir/"  # start with /
 
 # Celery & Redis shared configuration
-if "redis" in VCAP_SERVICES:
-    REDIS_URL = VCAP_SERVICES["redis"][0]["credentials"]["uri"]
+if env.vcap_services:
+    REDIS_URL = env.vcap_services.redis[0]["credentials"]["uri"]
     CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_REQUIRED}
 
 else:
-    REDIS_URL = env.str("REDIS_URL", default="redis://redis:6379")
+    REDIS_URL = "redis://redis:6379"
 
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = "django-db"
@@ -266,7 +282,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 
 # Age in seconds
-SESSION_COOKIE_AGE = env.int("DJANGO_SESSION_COOKIE_AGE", default=60 * 30)
+SESSION_COOKIE_AGE = env.django_session_cookie_age
 
 # Secure cookies only
 SESSION_COOKIE_SECURE = True
@@ -276,15 +292,12 @@ SELECT2_CACHE_BACKEND = "default"
 SELECT2_CSS = os.path.join(STATIC_URL, "3rdparty/select2/select2.min.css")
 SELECT2_JS = os.path.join(STATIC_URL, "3rdparty/select2/select2.min.js")
 
-COMPANIES_HOUSE_DOMAIN = os.environ.get(
-    "COMPANIES_HOUSE_DOMAIN", "https://api.companieshouse.gov.uk/"
-)
-
+COMPANIES_HOUSE_DOMAIN = env.companies_house_domain
 # To view / change this token log in to the following: https://developer.company-information.service.gov.uk
 # Login details can be found in passman, this requires icms group access.
 # Once logged in, navigate to the following
 # Manage Applications  -> View All Applications -> ICMS
-COMPANIES_HOUSE_TOKEN = os.environ.get("COMPANIES_HOUSE_TOKEN", "changeme")
+COMPANIES_HOUSE_TOKEN = env.companies_house_token
 
 # guardian config
 # https://django-guardian.readthedocs.io/en/stable/userguide/custom-user-model.html#custom-user-model
@@ -294,19 +307,17 @@ GUARDIAN_RENDER_403 = True
 GUARDIAN_GET_INIT_ANONYMOUS_USER = "web.auth.backends.get_anonymous_user_instance"
 
 # Used to add dummy test in non prod environments
-ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD = env.bool(
-    "ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD", default=False
+ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD = (
+    env.allow_disastrous_data_drops_never_enable_in_prod
 )
 
 # Used to bypass chief in non prod environments
-ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD = env.bool(
-    "ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD", default=False
-)
+ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD = env.allow_bypass_chief_never_enable_in_prod
 
 # getAddress.io api key for post code search
-ADDRESS_API_KEY = env.str("ICMS_ADDRESS_API_KEY", default="")
+ADDRESS_API_KEY = env.icms_address_api_key
 
-SILENCED_SYSTEM_CHECKS = env.list("ICMS_SILENCED_SYSTEM_CHECKS", default=[])
+SILENCED_SYSTEM_CHECKS = env.icms_silenced_system_checks
 SILENCED_SYSTEM_CHECKS.extend(
     [
         # Guardian authentication backend is not hooked (Replaced with ModelAndObjectPermissionBackend).
@@ -321,15 +332,11 @@ HTML_MINIFY = True
 COMPRESS_OFFLINE = True
 
 # ICMS-HMRC settings
-SEND_LICENCE_TO_CHIEF = env.bool("SEND_LICENCE_TO_CHIEF", default=False)
-ICMS_HMRC_DOMAIN = env.str(
-    "ICMS_HMRC_DOMAIN", default="https://icms-hmrc.trade.dev.uktrade.digital/"
-)
-ICMS_HMRC_UPDATE_LICENCE_ENDPOINT = env.str(
-    "ICMS_HMRC_UPDATE_LICENCE_ENDPOINT", default="mail/update-licence/"
-)
-HAWK_AUTH_ID = env.str("HAWK_AUTH_ID", default="icms-api")
-HAWK_AUTH_KEY = env.str("HAWK_AUTH_KEY", default="secret")
+SEND_LICENCE_TO_CHIEF = env.send_licence_to_chief
+ICMS_HMRC_DOMAIN = env.icms_hmrc_domain
+ICMS_HMRC_UPDATE_LICENCE_ENDPOINT = env.icms_hmrc_update_licence_endpoint
+HAWK_AUTH_ID = env.hawk_auth_id
+HAWK_AUTH_KEY = env.hawk_auth_key
 
 # CHIEF spec: quantityIssued n(11).n(3) decimal field with up to n digits before the decimal point and
 # up to m digits after.
@@ -339,18 +346,18 @@ HAWK_AUTH_KEY = env.str("HAWK_AUTH_KEY", default="secret")
 CHIEF_MAX_QUANTITY = 99_999_999_999.999
 
 # Data migration settings
-ALLOW_DATA_MIGRATION = env.bool("ALLOW_DATA_MIGRATION", default=False)
-ICMS_V1_REPLICA_USER = env.str("ICMS_V1_REPLICA_USER", default="")
-ICMS_V1_REPLICA_PASSWORD = env.str("ICMS_V1_REPLICA_PASSWORD", default="")
-ICMS_V1_REPLICA_DSN = env.str("ICMS_V1_REPLICA_DSN", default="")
-ICMS_PROD_USER = env.str("ICMS_PROD_USER", default="")
-ICMS_PROD_PASSWORD = env.str("ICMS_PROD_PASSWORD", default="")
+ALLOW_DATA_MIGRATION = env.allow_data_migration
+ICMS_V1_REPLICA_USER = env.icms_v1_replica_user
+ICMS_V1_REPLICA_PASSWORD = env.icms_v1_replica_password
+ICMS_V1_REPLICA_DSN = env.icms_v1_replica_dsn
+ICMS_PROD_USER = env.icms_prod_user
+ICMS_PROD_PASSWORD = env.icms_prod_password
 
 # Workbasket pagination setting
-WORKBASKET_PER_PAGE = env.int("WORKBASKET_PER_PAGE", 100)
+WORKBASKET_PER_PAGE = env.workbasket_per_page
 
 # Set to true to mark inactive application types active when running add_dummy_data.py
-SET_INACTIVE_APP_TYPES_ACTIVE = env.bool("SET_INACTIVE_APP_TYPES_ACTIVE", default=False)
+SET_INACTIVE_APP_TYPES_ACTIVE = env.set_inactive_app_types_active
 
 # Structured logging shared configuration
 structlog.configure(
@@ -402,3 +409,44 @@ LOGGING = {
         "fontTools.subset": {"propagate": False},
     },
 }
+
+# Initialise Sentry if enabled
+if env.sentry_enabled:
+    init_sentry(env.sentry_dsn, env.sentry_environment)
+
+
+# Settings for production environment
+if APP_ENV == "production":
+    # TODO compression causes 50 error on server
+    # STATICFILES_STORAGE='whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+    # Elastic APM config
+    INSTALLED_APPS += [  # NOQA
+        "elasticapm.contrib.django",
+        "django_audit_log_middleware",
+    ]
+
+    MIDDLEWARE += [  # NOQA
+        "django_audit_log_middleware.AuditLogMiddleware",
+    ]
+
+    # Audit log middleware user field
+    AUDIT_LOG_USER_FIELD = "username"
+
+    ELASTIC_APM = {
+        "SERVICE_NAME": "ICMS",
+        "SECRET_TOKEN": env.elastic_apm_secret_token,
+        "SERVER_URL": env.elastic_apm_url,
+        "ENVIRONMENT": env.elastic_apm_environment,
+        "SERVER_TIMEOUT": env.elastic_apm_server_timeout,
+    }
+
+# Settings for non-production environments:
+else:
+    # Override secure cookies to use playwright in non-prod environments
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+
+    # Used in tests to override the TEMPLATES setting.
+    STRICT_TEMPLATES = copy.deepcopy(TEMPLATES)
+    STRICT_TEMPLATES[0]["OPTIONS"].update({"undefined": jinja2.StrictUndefined})  # type: ignore[attr-defined]
