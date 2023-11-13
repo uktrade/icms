@@ -54,7 +54,7 @@ data_migrations: ## make data_migration migrations
 
 check_migrations: ## Check for missing migrations:
 	unset UID && \
-	docker-compose run --no-TTY --rm web python ./manage.py makemigrations --check --dry-run --settings=config.settings.local
+	docker-compose run --no-TTY --rm web python ./manage.py makemigrations --check --dry-run --settings=config.settings_local
 
 migrate: ## execute db migration
 	unset UID && \
@@ -68,18 +68,18 @@ check-development: ## run Django check for development environment settings
 	unset UID && \
 	export DATABASE_URL="unset" && \
 	export ICMS_ALLOWED_HOSTS="unset" && \
-	docker-compose run --rm web python ./manage.py check --settings=config.settings.development
+	docker-compose run --rm web python ./manage.py check --settings=config.settings
 
 check-staging: ## run Django check for staging environment settings
 	unset UID && \
 	export DATABASE_URL="unset" && \
 	export ICMS_ALLOWED_HOSTS="unset" && \
-	docker-compose run --rm web python ./manage.py check --settings=config.settings.staging
+	docker-compose run --rm web python ./manage.py check --settings=config.settings
 
 check-staging-with-deploy: ## run Django check for staging environment settings with deploy flag
 	unset UID && \
 	export DATABASE_URL="unset" && \
-	docker-compose run --rm web python ./manage.py check --deploy --settings=config.settings.staging
+	docker-compose run --rm web python ./manage.py check --deploy --settings=config.settings
 
 manage: ## execute manage.py
 	unset UID && \

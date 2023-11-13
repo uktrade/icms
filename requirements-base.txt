@@ -1,10 +1,10 @@
 Authlib==1.2.1
 boto3==1.21.29
 celery[redis]==5.3.1
+dj-database-url==2.1.0
 django-celery-results==2.4.0
 django-chunk-upload-handlers==0.0.11
 django-compressor==4.1
-django-environ==0.4.5
 django-filter==23.3
 django-guardian==2.4.0
 django-htmlmin==0.11.0
@@ -31,6 +31,7 @@ pytz==2023.3
 psycogreen==1.0.2
 psycopg2-binary==2.9.3
 pydantic==2.4.2
+pydantic-settings==2.0.3
 python-dateutil==2.8.2
 requests==2.31.0
 sentry-sdk[django]==1.17.0

@@ -82,6 +82,8 @@ services:
             context: .
         environment:
             - DJANGO_SETTINGS_MODULE
+        env_file:
+            - .env
         command: celery --app=config.celery:app beat --loglevel=info
         depends_on:
             - redis

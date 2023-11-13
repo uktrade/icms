@@ -1,4 +1,3 @@
-import os
 import traceback
 
 import sentry_sdk
@@ -9,12 +8,12 @@ from sentry_sdk.integrations.redis import RedisIntegration
 sentry_initialized = False
 
 
-def init_sentry() -> None:
+def init_sentry(sentry_dsn: str, sentry_environment: str) -> None:
     """Initialize Sentry client."""
 
     sentry_sdk.init(
-        dsn=os.environ.get("SENTRY_DSN"),
-        environment=os.environ.get("SENTRY_ENVIRONMENT"),
+        dsn=sentry_dsn,
+        environment=sentry_environment,
         integrations=[DjangoIntegration(), RedisIntegration()],
     )
 

@@ -1,15 +1,6 @@
 # flake8: noqa: F405
-from .non_prod_base import *
+from .settings import *
 
-SECRET_KEY = env.str("ICMS_SECRET_KEY", default="test")
-DATABASES = {
-    "default": env.db("DATABASE_URL", "postgres://postgres:password@db:5432/postgres")  # /PS-IGNORE
-}
-ALLOWED_HOSTS = [
-    "caseworker",
-    "import-a-licence",
-    "export-a-certificate",
-]
 DEBUG = True
 
 # speed up tests; see https://docs.djangoproject.com/en/3.0/topics/testing/overview/#password-hashing

@@ -1,15 +1,6 @@
 # flake8: noqa: F405
-from .non_prod_base import *
+from .settings import *
 
-SECRET_KEY = env.str("ICMS_SECRET_KEY", default="development")
-DATABASES = {
-    "default": env.db("DATABASE_URL", "postgres://postgres:password@db:5432/postgres")  # /PS-IGNORE
-}
-ALLOWED_HOSTS = [
-    "caseworker",
-    "import-a-licence",
-    "export-a-certificate",
-]
 DEBUG = True
 
 # for https://github.com/uktrade/django-chunk-s3-av-upload-handlers
@@ -31,7 +22,7 @@ MIDDLEWARE += [
 ]
 
 # When debugging queries in console
-SHOW_DB_QUERIES = env.bool("SHOW_DB_QUERIES", False)
+SHOW_DB_QUERIES = env.show_db_queries
 
 if SHOW_DB_QUERIES:
     MIDDLEWARE += ["web.middleware.common.DBQueriesMiddleware"]
@@ -52,7 +43,7 @@ DEBUG_TOOLBAR_PANELS = [
     "debug_toolbar.panels.profiling.ProfilingPanel",
 ]
 
-SHOW_DEBUG_TOOLBAR = env.bool("SHOW_DEBUG_TOOLBAR", default=True)
+SHOW_DEBUG_TOOLBAR = env.show_debug_toolbar
 
 DEBUG_TOOLBAR_CONFIG = {
     "INTERCEPT_REDIRECTS": False,
