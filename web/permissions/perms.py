@@ -27,6 +27,10 @@ class PagePermissions(PermissionTextChoice):
         "Can view search certificate applications page",
     )
     view_imi = ("web.view_imi", "Can view IMI pages.")
+    view_documents_constabulary = (
+        "web.can_view_documents_constabulary",
+        "Can view issued documents within constabulary region page",
+    )
 
 
 class SysPerms(PermissionTextChoice):

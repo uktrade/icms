@@ -476,6 +476,27 @@ class CaseURLS:
 
         return reverse("chief:check-progress", kwargs=kwargs)
 
+    @staticmethod
+    def constabulary_documents(application_pk: int, doc_pack_pk: int, case_type="import") -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "doc_pack_pk": doc_pack_pk,
+            "case_type": case_type,
+        }
+        return reverse("case:constabulary-doc", kwargs=kwargs)
+
+    @staticmethod
+    def constabulary_documents_download(
+        application_pk: int, doc_pack_pk: int, cdr_pk: int, case_type="import"
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "doc_pack_pk": doc_pack_pk,
+            "case_type": case_type,
+            "cdr_pk": cdr_pk,
+        }
+        return reverse("case:constabulary-doc-download", kwargs=kwargs)
+
 
 class SearchURLS:
     @staticmethod
