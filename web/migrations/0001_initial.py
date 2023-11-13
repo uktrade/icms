@@ -49,6 +49,10 @@ class Migration(migrations.Migration):
                         "Can view search certificate applications page",
                     ),
                     ("view_imi", "Can view IMI pages."),
+                    (
+                        "can_view_documents_constabulary",
+                        "Can view issued documents within constabulary region page",
+                    ),
                     ("importer_access", "Can act as an importer"),
                     ("exporter_access", "Can act as an exporter"),
                     ("ilb_admin", "Is an ILB administrator"),

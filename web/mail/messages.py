@@ -11,6 +11,7 @@ from django.utils import timezone
 from web.domains.case.services import document_pack
 from web.domains.case.types import (
     Authority,
+    DocumentPack,
     ImpAccessOrExpAccess,
     ImpOrExp,
     ImpOrExpApproval,
@@ -42,7 +43,7 @@ from .url_helpers import (
     get_account_recovery_url,
     get_authority_view_url,
     get_case_view_url,
-    get_document_view_url,
+    get_constabulary_document_view_url,
     get_exporter_access_request_url,
     get_importer_access_request_url,
     get_importer_view_url,
@@ -332,13 +333,16 @@ class ConstabularyDeactivatedFirearmsEmail(BaseApplicationEmail):
 
     def get_context(self) -> dict:
         context = super().get_context()
-        # TODO: ICMSLST-2393 Issued documents view for constabularies
-        # Constabularies cannot view this page so this needs to be updated to a view they have permissions to.
-        context["documents_url"] = get_document_view_url(self.application, full_url=True)
+        context["documents_url"] = get_constabulary_document_view_url(
+            self.application, self.get_document_pack(), full_url=True
+        )
         return context
 
     def get_site_domain(self) -> str:
         return get_caseworker_site_domain()
+
+    def get_document_pack(self) -> DocumentPack:
+        return document_pack.pack_active_get(self.application)
 
 
 @final

@@ -873,7 +873,7 @@ class ViewIssuedCaseDocumentsView(ApplicationTaskMixin, LoginRequiredMixin, Temp
 
         issued_doc = issued_documents.get(pk=self.kwargs["issued_document_pk"])
         context["issue_date"] = issued_doc.case_completion_datetime
-
+        context["show_help_text"] = True
         return context | get_document_context(self.application, issued_doc)
 
 

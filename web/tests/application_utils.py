@@ -109,7 +109,7 @@ def create_in_progress_fa_dfl_app(
     )
     origin_country = dfl_countries[0]
     consignment_country = dfl_countries[1]
-    constabulary = Constabulary.objects.first()
+    constabulary = Constabulary.objects.get(name="Derbyshire")
     form_data = {
         "contact": contact.pk,
         "applicant_reference": "applicant_reference value",

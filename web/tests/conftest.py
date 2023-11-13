@@ -30,6 +30,7 @@ from web.models import (
     DFLChecklist,
     Exporter,
     ExporterAccessRequest,
+    File,
     Importer,
     ImporterAccessRequest,
     Mailshot,
@@ -713,7 +714,7 @@ def cfs_app_submitted(
 
 
 @pytest.fixture
-def completed_sil_app(fa_sil_app_submitted, ilb_admin_client):
+def completed_sil_app(fa_sil_app_submitted, ilb_admin_client, ilb_admin_user):
     """A completed firearms sil application."""
     app = fa_sil_app_submitted
 
@@ -738,12 +739,12 @@ def completed_sil_app(fa_sil_app_submitted, ilb_admin_client):
     task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
     end_process_task(task)
     document_pack.pack_draft_set_active(app)
-
+    _add_files_to_active_document_pack(app, ilb_admin_user)
     return app
 
 
 @pytest.fixture
-def completed_dfl_app(fa_dfl_app_submitted, ilb_admin_client):
+def completed_dfl_app(fa_dfl_app_submitted, ilb_admin_client, ilb_admin_user):
     """A completed firearms dfl application."""
     app = fa_dfl_app_submitted
 
@@ -768,12 +769,12 @@ def completed_dfl_app(fa_dfl_app_submitted, ilb_admin_client):
     task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
     end_process_task(task)
     document_pack.pack_draft_set_active(app)
-
+    _add_files_to_active_document_pack(app, ilb_admin_user)
     return app
 
 
 @pytest.fixture
-def completed_cfs_app(cfs_app_submitted, ilb_admin_client):
+def completed_cfs_app(cfs_app_submitted, ilb_admin_client, ilb_admin_user):
     """A Certificate of Free Sale (export) application that has been approved."""
     app = cfs_app_submitted
 
@@ -794,7 +795,7 @@ def completed_cfs_app(cfs_app_submitted, ilb_admin_client):
     end_process_task(task)
 
     document_pack.pack_draft_set_active(app)
-
+    _add_files_to_active_document_pack(app, ilb_admin_user)
     return app
 
 
@@ -917,6 +918,22 @@ def _add_valid_checklist(app):
             )
         case _:
             raise ValueError(f"Invalid process_type: {app.process_type}")
+
+
+def _add_files_to_active_document_pack(app, ilb_admin_user) -> None:
+    """Simulates what happens when upload_case_document_file is called without uploading a file to s3"""
+    active_pack = document_pack.pack_active_get(app)
+
+    for cdr in active_pack.document_references.all():
+        cdr.document = File.objects.create(
+            is_active=True,
+            filename=f"{cdr.document_type}.pdf",
+            content_type="application/pdf",
+            file_size=10,
+            path=f"{cdr.document_type}.pdf",
+            created_by=ilb_admin_user,
+        )
+        cdr.save()
 
 
 @pytest.fixture

@@ -1170,6 +1170,7 @@ Firearms references(s): 423,476,677\r\n"""
     ):
         exp_template_id = get_gov_notify_template_id(EmailTypes.CONSTABULARY_DEACTIVATED_FIREARMS)
         emails.send_constabulary_deactivated_firearms_email(completed_dfl_app)
+        active_pack = document_pack.pack_active_get(completed_dfl_app)
         expected_import_personalisation = default_personalisation() | {
             "icms_url": get_caseworker_site_domain(),
             "reference": completed_dfl_app.reference,
@@ -1178,8 +1179,12 @@ Firearms references(s): 423,476,677\r\n"""
             "documents_url": urljoin(
                 get_caseworker_site_domain(),
                 reverse(
-                    "case:applicant-case-history",
-                    kwargs={"case_type": "import", "application_pk": completed_dfl_app.pk},
+                    "case:constabulary-doc",
+                    kwargs={
+                        "case_type": "import",
+                        "application_pk": completed_dfl_app.pk,
+                        "doc_pack_pk": active_pack.pk,
+                    },
                 ),
             ),
         }
