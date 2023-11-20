@@ -7,12 +7,22 @@ import pytest
 from django.test.client import Client
 from django.urls import reverse
 from django.utils import timezone
+from guardian.shortcuts import remove_perm
 
 from web.domains.case.tasks import create_document_pack_on_success
 from web.domains.workbasket.base import WorkbasketRow
 from web.forms.fields import JQUERY_DATE_FORMAT
-from web.models import AccessRequest, ImportApplication, Mailshot, Template
+from web.models import (
+    AccessRequest,
+    Exporter,
+    ImportApplication,
+    Importer,
+    Mailshot,
+    Template,
+    User,
+)
 from web.models.shared import YesNoNAChoices
+from web.permissions import Perms
 from web.tests.auth.auth import AuthTestCase
 from web.tests.helpers import CaseURLS
 
@@ -55,12 +65,20 @@ class TestApplicationInProgressWorkbasket(AuthTestCase):
 
         check_expected_rows(self.importer_client, expected_rows)
 
+        _remove_edit_permission(self.importer_user, self.imp_app.importer)
+        expected_rows = {"Not Assigned": {"In Progress": {}}}
+        check_expected_rows(self.importer_client, expected_rows)
+
     def _test_importer_agent_wb(self):
         expected_rows = {
             # self.imp_agent_app.reference == "Not Assigned"
             "Not Assigned": {"In Progress": {"Prepare Application": ["Resume", "Cancel"]}}
         }
 
+        check_expected_rows(self.importer_agent_client, expected_rows)
+
+        _remove_edit_permission(self.importer_agent_user, self.imp_agent_app.agent)
+        expected_rows = {"Not Assigned": {"In Progress": {}}}
         check_expected_rows(self.importer_agent_client, expected_rows)
 
     def _test_exporter_contact_wb(self):
@@ -71,12 +89,20 @@ class TestApplicationInProgressWorkbasket(AuthTestCase):
 
         check_expected_rows(self.exporter_client, expected_rows)
 
+        _remove_edit_permission(self.exporter_user, self.exp_app.exporter)
+        expected_rows = {"Not Assigned": {"In Progress": {}}}
+        check_expected_rows(self.exporter_client, expected_rows)
+
     def _test_exporter_agent_wb(self):
         expected_rows = {
             # self.exp_agent_app.reference == "Not Assigned"
             "Not Assigned": {"In Progress": {"Prepare Application": ["Resume", "Cancel"]}}
         }
 
+        check_expected_rows(self.exporter_agent_client, expected_rows)
+
+        _remove_edit_permission(self.exporter_agent_user, self.exp_agent_app.agent)
+        expected_rows = {"Not Assigned": {"In Progress": {}}}
         check_expected_rows(self.exporter_agent_client, expected_rows)
 
 
@@ -132,6 +158,12 @@ class TestApplicationSubmittedWorkbasket(AuthTestCase):
 
         check_expected_rows(self.importer_client, expected_rows)
 
+        _remove_edit_permission(self.importer_user, self.imp_app.importer)
+        expected_rows = {
+            self.imp_app.reference: {"Submitted": {"Application Submitted": ["View Application"]}}
+        }
+        check_expected_rows(self.importer_client, expected_rows)
+
     def _test_importer_agent_wb(self):
         expected_rows = {
             self.imp_agent_app.reference: {
@@ -139,6 +171,14 @@ class TestApplicationSubmittedWorkbasket(AuthTestCase):
             }
         }
 
+        check_expected_rows(self.importer_agent_client, expected_rows)
+
+        _remove_edit_permission(self.importer_agent_user, self.imp_agent_app.agent)
+        expected_rows = {
+            self.imp_agent_app.reference: {
+                "Submitted": {"Application Submitted": ["View Application"]}
+            }
+        }
         check_expected_rows(self.importer_agent_client, expected_rows)
 
     def _test_exporter_contact_wb(self):
@@ -150,6 +190,12 @@ class TestApplicationSubmittedWorkbasket(AuthTestCase):
 
         check_expected_rows(self.exporter_client, expected_rows)
 
+        _remove_edit_permission(self.exporter_user, self.exp_app.exporter)
+        expected_rows = {
+            self.exp_app.reference: {"Submitted": {"Application Submitted": ["View Application"]}}
+        }
+        check_expected_rows(self.exporter_client, expected_rows)
+
     def _test_exporter_agent_wb(self):
         expected_rows = {
             self.exp_agent_app.reference: {
@@ -157,6 +203,14 @@ class TestApplicationSubmittedWorkbasket(AuthTestCase):
             }
         }
 
+        check_expected_rows(self.exporter_agent_client, expected_rows)
+
+        _remove_edit_permission(self.exporter_agent_user, self.exp_agent_app.agent)
+        expected_rows = {
+            self.exp_agent_app.reference: {
+                "Submitted": {"Application Submitted": ["View Application"]}
+            }
+        }
         check_expected_rows(self.exporter_agent_client, expected_rows)
 
 
@@ -214,6 +268,12 @@ class TestApplicationManagedWorkbasket(AuthTestCase):
 
         check_expected_rows(self.importer_client, expected_rows)
 
+        _remove_edit_permission(self.importer_user, self.imp_app.importer)
+        expected_rows = {
+            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+        }
+        check_expected_rows(self.importer_client, expected_rows)
+
     def _test_importer_agent_wb(self):
         expected_rows = {
             self.imp_agent_app.reference: {
@@ -221,6 +281,14 @@ class TestApplicationManagedWorkbasket(AuthTestCase):
             }
         }
 
+        check_expected_rows(self.importer_agent_client, expected_rows)
+
+        _remove_edit_permission(self.importer_agent_user, self.imp_agent_app.agent)
+        expected_rows = {
+            self.imp_agent_app.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            }
+        }
         check_expected_rows(self.importer_agent_client, expected_rows)
 
     def _test_exporter_contact_wb(self):
@@ -232,6 +300,12 @@ class TestApplicationManagedWorkbasket(AuthTestCase):
 
         check_expected_rows(self.exporter_client, expected_rows)
 
+        _remove_edit_permission(self.exporter_user, self.exp_app.exporter)
+        expected_rows = {
+            self.exp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+        }
+        check_expected_rows(self.exporter_client, expected_rows)
+
     def _test_exporter_agent_wb(self):
         expected_rows = {
             self.exp_agent_app.reference: {
@@ -239,6 +313,14 @@ class TestApplicationManagedWorkbasket(AuthTestCase):
             }
         }
 
+        check_expected_rows(self.exporter_agent_client, expected_rows)
+
+        _remove_edit_permission(self.exporter_agent_user, self.exp_agent_app.agent)
+        expected_rows = {
+            self.exp_agent_app.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            }
+        }
         check_expected_rows(self.exporter_agent_client, expected_rows)
 
 
@@ -341,6 +423,12 @@ class TestApplicationWithdrawalWorkbasket(AuthTestCase):
 
         check_expected_rows(self.importer_client, expected_rows)
 
+        _remove_edit_permission(self.importer_user, self.imp_app.importer)
+        expected_rows = {
+            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+        }
+        check_expected_rows(self.importer_client, expected_rows)
+
     def _test_importer_agent_wb(self):
         expected_rows = {
             self.imp_agent_app.reference: {
@@ -348,6 +436,14 @@ class TestApplicationWithdrawalWorkbasket(AuthTestCase):
             }
         }
 
+        check_expected_rows(self.importer_agent_client, expected_rows)
+
+        _remove_edit_permission(self.importer_agent_user, self.imp_agent_app.agent)
+        expected_rows = {
+            self.imp_agent_app.reference: {
+                "Submitted": {"Application Submitted": ["View Application"]}
+            }
+        }
         check_expected_rows(self.importer_agent_client, expected_rows)
 
     def _test_exporter_contact_wb(self):
@@ -359,6 +455,12 @@ class TestApplicationWithdrawalWorkbasket(AuthTestCase):
 
         check_expected_rows(self.exporter_client, expected_rows)
 
+        _remove_edit_permission(self.exporter_user, self.exp_app.exporter)
+        expected_rows = {
+            self.exp_app.reference: {"Submitted": {"Application Submitted": ["View Application"]}}
+        }
+        check_expected_rows(self.exporter_client, expected_rows)
+
     def _test_exporter_agent_wb(self):
         expected_rows = {
             self.exp_agent_app.reference: {
@@ -366,6 +468,14 @@ class TestApplicationWithdrawalWorkbasket(AuthTestCase):
             }
         }
 
+        check_expected_rows(self.exporter_agent_client, expected_rows)
+
+        _remove_edit_permission(self.exporter_agent_user, self.exp_agent_app.agent)
+        expected_rows = {
+            self.exp_agent_app.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            }
+        }
         check_expected_rows(self.exporter_agent_client, expected_rows)
 
 
@@ -455,6 +565,12 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
 
         check_expected_rows(self.importer_client, expected_rows)
 
+        _remove_edit_permission(self.importer_user, self.imp_app.importer)
+        expected_rows = {
+            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+        }
+        check_expected_rows(self.importer_client, expected_rows)
+
     def _test_importer_agent_wb(self):
         expected_rows = {
             self.imp_agent_app.reference: {
@@ -465,6 +581,14 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
             }
         }
 
+        check_expected_rows(self.importer_agent_client, expected_rows)
+
+        _remove_edit_permission(self.importer_agent_user, self.imp_agent_app.agent)
+        expected_rows = {
+            self.imp_agent_app.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            }
+        }
         check_expected_rows(self.importer_agent_client, expected_rows)
 
     def _test_exporter_contact_wb(self):
@@ -479,6 +603,12 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
 
         check_expected_rows(self.exporter_client, expected_rows)
 
+        _remove_edit_permission(self.exporter_user, self.exp_app.exporter)
+        expected_rows = {
+            self.exp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+        }
+        check_expected_rows(self.exporter_client, expected_rows)
+
     def _test_exporter_agent_wb(self):
         expected_rows = {
             self.exp_agent_app.reference: {
@@ -489,6 +619,14 @@ class TestApplicationFurtherInformationRequestedWorkbasket(AuthTestCase):
             }
         }
 
+        check_expected_rows(self.exporter_agent_client, expected_rows)
+
+        _remove_edit_permission(self.exporter_agent_user, self.exp_agent_app.agent)
+        expected_rows = {
+            self.exp_agent_app.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            }
+        }
         check_expected_rows(self.exporter_agent_client, expected_rows)
 
 
@@ -583,6 +721,12 @@ class TestApplicationUpdatesWorkbasket(AuthTestCase):
 
         check_expected_rows(self.importer_client, expected_rows)
 
+        _remove_edit_permission(self.importer_user, self.imp_app.importer)
+        expected_rows = {
+            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+        }
+        check_expected_rows(self.importer_client, expected_rows)
+
     def _test_importer_agent_wb(self):
         expected_rows = {
             self.imp_agent_app.reference: {
@@ -593,6 +737,14 @@ class TestApplicationUpdatesWorkbasket(AuthTestCase):
             }
         }
 
+        check_expected_rows(self.importer_agent_client, expected_rows)
+
+        _remove_edit_permission(self.importer_agent_user, self.imp_agent_app.agent)
+        expected_rows = {
+            self.imp_agent_app.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            }
+        }
         check_expected_rows(self.importer_agent_client, expected_rows)
 
     def _test_exporter_contact_wb(self):
@@ -607,6 +759,12 @@ class TestApplicationUpdatesWorkbasket(AuthTestCase):
 
         check_expected_rows(self.exporter_client, expected_rows)
 
+        _remove_edit_permission(self.exporter_user, self.exp_app.exporter)
+        expected_rows = {
+            self.exp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+        }
+        check_expected_rows(self.exporter_client, expected_rows)
+
     def _test_exporter_agent_wb(self):
         expected_rows = {
             self.exp_agent_app.reference: {
@@ -617,6 +775,14 @@ class TestApplicationUpdatesWorkbasket(AuthTestCase):
             }
         }
 
+        check_expected_rows(self.exporter_agent_client, expected_rows)
+
+        _remove_edit_permission(self.exporter_agent_user, self.exp_agent_app.agent)
+        expected_rows = {
+            self.exp_agent_app.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            }
+        }
         check_expected_rows(self.exporter_agent_client, expected_rows)
 
 
@@ -733,6 +899,12 @@ class TestAuthorisedCaseWorkbasket(AuthTestCase):
 
         check_expected_rows(self.importer_client, expected_rows)
 
+        _remove_edit_permission(self.importer_user, self.imp_app.importer)
+        expected_rows = {
+            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+        }
+        check_expected_rows(self.importer_client, expected_rows)
+
     def _test_importer_agent_wb(self):
         expected_rows = {
             self.imp_agent_app.reference: {
@@ -740,6 +912,14 @@ class TestAuthorisedCaseWorkbasket(AuthTestCase):
             }
         }
 
+        check_expected_rows(self.importer_agent_client, expected_rows)
+
+        _remove_edit_permission(self.importer_agent_user, self.imp_agent_app.agent)
+        expected_rows = {
+            self.imp_agent_app.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            }
+        }
         check_expected_rows(self.importer_agent_client, expected_rows)
 
     def _test_exporter_contact_wb(self):
@@ -751,6 +931,12 @@ class TestAuthorisedCaseWorkbasket(AuthTestCase):
 
         check_expected_rows(self.exporter_client, expected_rows)
 
+        _remove_edit_permission(self.exporter_user, self.exp_app.exporter)
+        expected_rows = {
+            self.exp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+        }
+        check_expected_rows(self.exporter_client, expected_rows)
+
     def _test_exporter_agent_wb(self):
         expected_rows = {
             self.exp_agent_app.reference: {
@@ -758,6 +944,14 @@ class TestAuthorisedCaseWorkbasket(AuthTestCase):
             }
         }
 
+        check_expected_rows(self.exporter_agent_client, expected_rows)
+
+        _remove_edit_permission(self.exporter_agent_user, self.exp_agent_app.agent)
+        expected_rows = {
+            self.exp_agent_app.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            }
+        }
         check_expected_rows(self.exporter_agent_client, expected_rows)
 
 
@@ -912,6 +1106,12 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
 
         check_expected_rows(self.importer_client, expected_rows)
 
+        _remove_edit_permission(self.importer_user, self.imp_app.importer)
+        expected_rows = {
+            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+        }
+        check_expected_rows(self.importer_client, expected_rows)
+
     def _test_importer_agent_wb(self):
         expected_rows = {
             self.imp_agent_app.reference: {
@@ -919,6 +1119,14 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
             }
         }
 
+        check_expected_rows(self.importer_agent_client, expected_rows)
+
+        _remove_edit_permission(self.importer_agent_user, self.imp_agent_app.agent)
+        expected_rows = {
+            self.imp_agent_app.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            }
+        }
         check_expected_rows(self.importer_agent_client, expected_rows)
 
     def _test_exporter_contact_wb(self):
@@ -931,12 +1139,21 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
                 }
             },
             self.exp_agent_app.reference: {
-                "Completed": {
-                    "Application View": ["View Application", "Clear"],
-                }
+                "Completed": {"Application View": ["View Application", "Clear"]}
             },
         }
 
+        check_expected_rows(self.exporter_client, expected_rows)
+
+        _remove_edit_permission(self.exporter_user, self.exp_app.exporter)
+        expected_rows = {
+            self.exp_app.reference: {
+                "Completed": {"Application View": ["View Application", "Clear"]}
+            },
+            self.exp_agent_app.reference: {
+                "Completed": {"Application View": ["View Application", "Clear"]}
+            },
+        }
         check_expected_rows(self.exporter_client, expected_rows)
 
     def _test_exporter_agent_wb(self):
@@ -949,6 +1166,14 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
             }
         }
 
+        check_expected_rows(self.exporter_agent_client, expected_rows)
+
+        _remove_edit_permission(self.exporter_agent_user, self.exp_agent_app.agent)
+        expected_rows = {
+            self.exp_agent_app.reference: {
+                "Completed": {"Application View": ["View Application", "Clear"]}
+            }
+        }
         check_expected_rows(self.exporter_agent_client, expected_rows)
 
 
@@ -1103,12 +1328,21 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
                 }
             },
             self.imp_agent_app.reference: {
-                "Completed": {
-                    "Application View": ["View Application", "Clear"],
-                }
+                "Completed": {"Application View": ["View Application", "Clear"]}
             },
         }
 
+        check_expected_rows(self.importer_client, expected_rows)
+
+        _remove_edit_permission(self.importer_user, self.imp_app.importer)
+        expected_rows = {
+            self.imp_app.reference: {
+                "Completed": {"Application View": ["View Application", "Clear"]}
+            },
+            self.imp_agent_app.reference: {
+                "Completed": {"Application View": ["View Application", "Clear"]}
+            },
+        }
         check_expected_rows(self.importer_client, expected_rows)
 
     def _test_importer_agent_wb(self):
@@ -1124,6 +1358,14 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
 
         check_expected_rows(self.importer_agent_client, expected_rows)
 
+        _remove_edit_permission(self.importer_agent_user, self.imp_agent_app.agent)
+        expected_rows = {
+            self.imp_agent_app.reference: {
+                "Completed": {"Application View": ["View Application", "Clear"]}
+            }
+        }
+        check_expected_rows(self.importer_agent_client, expected_rows)
+
     def _test_exporter_contact_wb(self):
         # Main org contacts see completed agent applications.
         expected_rows = {
@@ -1134,12 +1376,21 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
                 }
             },
             self.exp_agent_app.reference: {
-                "Completed": {
-                    "Application View": ["View Application", "Clear"],
-                }
+                "Completed": {"Application View": ["View Application", "Clear"]}
             },
         }
 
+        check_expected_rows(self.exporter_client, expected_rows)
+
+        _remove_edit_permission(self.exporter_user, self.exp_app.exporter)
+        expected_rows = {
+            self.exp_app.reference: {
+                "Completed": {"Application View": ["View Application", "Clear"]}
+            },
+            self.exp_agent_app.reference: {
+                "Completed": {"Application View": ["View Application", "Clear"]}
+            },
+        }
         check_expected_rows(self.exporter_client, expected_rows)
 
     def _test_exporter_agent_wb(self):
@@ -1152,6 +1403,14 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
             }
         }
 
+        check_expected_rows(self.exporter_agent_client, expected_rows)
+
+        _remove_edit_permission(self.exporter_agent_user, self.exp_agent_app.agent)
+        expected_rows = {
+            self.exp_agent_app.reference: {
+                "Completed": {"Application View": ["View Application", "Clear"]}
+            }
+        }
         check_expected_rows(self.exporter_agent_client, expected_rows)
 
 
@@ -1283,6 +1542,12 @@ class TestCompleteCaseCHIEFFailWorkbasket(AuthTestCase):
 
         check_expected_rows(self.importer_client, expected_rows)
 
+        _remove_edit_permission(self.importer_user, self.imp_app.importer)
+        expected_rows = {
+            self.imp_app.reference: {"Processing": {"Application Submitted": ["View Application"]}}
+        }
+        check_expected_rows(self.importer_client, expected_rows)
+
     def _test_importer_agent_wb(self):
         expected_rows = {
             self.imp_agent_app.reference: {
@@ -1290,6 +1555,14 @@ class TestCompleteCaseCHIEFFailWorkbasket(AuthTestCase):
             }
         }
 
+        check_expected_rows(self.importer_agent_client, expected_rows)
+
+        _remove_edit_permission(self.importer_agent_user, self.imp_agent_app.agent)
+        expected_rows = {
+            self.imp_agent_app.reference: {
+                "Processing": {"Application Submitted": ["View Application"]}
+            }
+        }
         check_expected_rows(self.importer_agent_client, expected_rows)
 
 
@@ -1463,3 +1736,15 @@ def _fix_access_request_data():
         - exporter_access_request
     """
     AccessRequest.objects.all().delete()
+
+
+def _remove_edit_permission(user: User, org: Importer | Exporter) -> None:
+    match org:
+        case Importer():
+            perm = Perms.obj.importer.edit
+        case Exporter():
+            perm = Perms.obj.exporter.edit
+        case _:
+            raise ValueError(f"Unknown Org: {org}")
+
+    remove_perm(perm, user, org)

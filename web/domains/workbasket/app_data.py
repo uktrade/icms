@@ -230,12 +230,14 @@ def _get_importer_queryset(user: User) -> list[QuerySet]:
             Perms.obj.importer.manage_contacts_and_agents,
         ],
         Importer.objects.filter(is_active=True, main_importer__isnull=True),
+        any_perm=True,
     )
 
     agent_importers = get_objects_for_user(
         user,
         [Perms.obj.importer.view, Perms.obj.importer.edit],
         Importer.objects.filter(is_active=True, main_importer__isnull=False),
+        any_perm=True,
     )
 
     importer_approval_requests = (
@@ -306,12 +308,14 @@ def _get_exporter_queryset(user: User) -> list[QuerySet]:
             Perms.obj.exporter.manage_contacts_and_agents,
         ],
         Exporter.objects.filter(is_active=True, main_exporter__isnull=True),
+        any_perm=True,
     )
 
     agent_exporters = get_objects_for_user(
         user,
         [Perms.obj.exporter.view, Perms.obj.exporter.edit],
         Exporter.objects.filter(is_active=True, main_exporter__isnull=False),
+        any_perm=True,
     )
 
     exporter_approval_requests = (
