@@ -1,7 +1,6 @@
 from typing import Any
 
 from django import forms
-from django.contrib.auth import authenticate
 from django.db.models import QuerySet
 from django_select2 import forms as s2forms
 
@@ -11,7 +10,6 @@ from web.forms.fields import JqueryDateField
 from web.forms.mixins import OptionalFormMixin
 from web.models import ExportApplication, ImportApplication, User
 from web.permissions import get_all_case_officers, organisation_get_contacts
-from web.types import AuthenticatedHttpRequest
 
 from .models import (
     ApplicationBase,
@@ -100,29 +98,6 @@ class WithdrawResponseForm(forms.ModelForm):
             self.add_error("response", "This field is required when Withdrawal is refused")
 
         return cleaned_data
-
-
-class AuthoriseForm(forms.Form):
-    password = forms.CharField(strip=False, widget=forms.widgets.PasswordInput)
-
-    def __init__(self, *args, request: AuthenticatedHttpRequest, **kwargs) -> None:
-        self.request = request
-        super().__init__(*args, **kwargs)
-
-    def clean_password(self) -> str:
-        password = self.cleaned_data["password"]
-        user = self.request.user
-
-        if not user.is_active:
-            self.add_error("password", "User account has been deactivated.")
-            return password
-
-        user_cache = authenticate(self.request, username=user.username, password=password)
-
-        if user_cache is None:
-            self.add_error("password", "Please enter your password.")
-
-        return password
 
 
 class ResponsePreparationBaseForm(forms.ModelForm):

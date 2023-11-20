@@ -522,8 +522,6 @@ class TestAuthoriseDocumentsView:
     needed_task = Task.TaskType.AUTHORISE
     needed_status = [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
 
-    form_data = {"password": "test"}
-
     @pytest.fixture(autouse=True)
     def set_client(self, ilb_admin_client):
         self.client = ilb_admin_client
@@ -549,11 +547,22 @@ class TestAuthoriseDocumentsView:
         licence = document_pack.pack_draft_get(self.wood_app)
         assert licence.status == DocumentPackBase.Status.DRAFT
 
-    def test_authorise_post_valid(self):
-        post_data = {"password": "test"}
-        resp = self.client.post(CaseURLS.authorise_documents(self.wood_app.pk), post_data)
+    def test_permission(self, importer_client, exporter_client):
+        url = CaseURLS.authorise_documents(self.wood_app.pk)
 
-        assertRedirects(resp, reverse("workbasket"), status_code=302)
+        response = importer_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = exporter_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.client.get(url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_authorise_post_valid(self):
+        resp = self.client.post(CaseURLS.authorise_documents(self.wood_app.pk))
+
+        assertRedirects(resp, reverse("workbasket"), status_code=HTTPStatus.FOUND)
 
         self.wood_app.refresh_from_db()
 
@@ -568,8 +577,7 @@ class TestAuthoriseDocumentsView:
         add_variation_request_to_app(self.wood_app, ilb_admin_user)
         self.wood_app.save()
 
-        post_data = {"password": "test"}
-        resp = self.client.post(CaseURLS.authorise_documents(self.wood_app.pk), post_data)
+        resp = self.client.post(CaseURLS.authorise_documents(self.wood_app.pk))
 
         assertRedirects(resp, reverse("workbasket"), status_code=302)
 
@@ -590,8 +598,7 @@ class TestAuthoriseDocumentsView:
         iat.chief_flag = True
         iat.save()
 
-        post_data = {"password": "test"}
-        resp = self.client.post(CaseURLS.authorise_documents(self.wood_app.pk), post_data)
+        resp = self.client.post(CaseURLS.authorise_documents(self.wood_app.pk))
 
         assertRedirects(resp, reverse("workbasket"), status_code=302)
 

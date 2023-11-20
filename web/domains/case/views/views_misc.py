@@ -12,7 +12,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView, View
 
@@ -556,7 +555,6 @@ def start_authorisation(
 
 
 @login_required
-@sensitive_post_parameters("password")
 @permission_required(Perms.sys.ilb_admin, raise_exception=True)
 def authorise_documents(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
@@ -572,35 +570,29 @@ def authorise_documents(
         task = case_progress.get_expected_task(application, Task.TaskType.AUTHORISE)
 
         if request.method == "POST":
-            form = forms.AuthoriseForm(data=request.POST, request=request)
+            end_process_task(task, request.user)
 
-            if form.is_valid():
-                end_process_task(task, request.user)
-                Task.objects.create(
-                    process=application, task_type=Task.TaskType.DOCUMENT_SIGNING, previous=task
-                )
+            Task.objects.create(
+                process=application, task_type=Task.TaskType.DOCUMENT_SIGNING, previous=task
+            )
 
-                application.update_order_datetime()
-                application.save()
+            application.update_order_datetime()
+            application.save()
 
-                # Queues all documents to be created
-                create_case_document_pack(application, request.user)
+            # Queues all documents to be created
+            create_case_document_pack(application, request.user)
 
-                messages.success(
-                    request,
-                    f"Authorise Success: Application {application.reference} has been queued for document signing",
-                )
+            messages.success(
+                request,
+                f"Authorise Success: Application {application.reference} has been queued for document signing",
+            )
 
-                return redirect(reverse("workbasket"))
-
-        else:
-            form = forms.AuthoriseForm(request=request)
+            return redirect(reverse("workbasket"))
 
         context = {
             "case_type": case_type,
             "process": application,
             "page_title": get_case_page_title(case_type, application, "Authorisation"),
-            "form": form,
             "primary_recipients": _get_primary_recipients(application),
             "copy_recipients": _get_copy_recipients(application),
         }

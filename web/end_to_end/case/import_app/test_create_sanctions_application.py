@@ -145,9 +145,8 @@ def sanctions_manage_and_complete_case(page: Page, app_id) -> None:
     #
     workbasket_row = utils.get_wb_row(page, app_id)
     workbasket_row.get_by_role("link", name="Authorise Documents").click()
-    page.get_by_label("Password").click()
-    page.get_by_label("Password").fill("admin")
     page.get_by_role("button", name="Sign and Authorise").click()
+    page.get_by_role("button", name="OK").click()
 
     # Close the popup: "Authorise Success: Application xxx/xxxx/xxxxx has been queued for document signing"
     page.get_by_role("button", name="Close this message").click()

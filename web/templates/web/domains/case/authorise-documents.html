@@ -1,6 +1,5 @@
 {% extends "web/domains/case/applicant-base.html" %}
 {% import "forms/forms.html" as forms %}
-{% import "forms/fields.html" as fields %}
 {% from "display/fields.html" import application_field %}
 
 {% block sidebar %}{% endblock %}
@@ -22,12 +21,13 @@
   {% include "web/domains/case/manage/document-packs-list.html" %}
 
   <h3>Sign & Authorise</h3>
-  <div class="info-box info-box-info">
-    <div class="screen-reader-only">Information box,</div>
-    Please re-enter your password to digitally sign and authorise these documents.
-  </div>
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-    {{ fields.field(form.password) }}
-    <input type="submit" name="action" class="primary-button button" value="Sign and Authorise" />
+    <input
+      type="submit"
+      name="action"
+      class="primary-button button"
+      value="Sign and Authorise"
+      data-confirm="Are you sure you want to authorise these documents?"
+    />
   {% endcall %}
 {% endblock %}
