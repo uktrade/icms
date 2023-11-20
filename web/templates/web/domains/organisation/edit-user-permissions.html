@@ -13,7 +13,7 @@
   <br>
   <form action="" method="post">
     {{ csrf_input }}
-    {{ form }}
+    {{ form.as_p() }}
     <input type="submit" class="primary-button button" value="Save">
   </form>
 {% endblock %}
