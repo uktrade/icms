@@ -21,7 +21,7 @@ class EditApplicationAction(Action):
     def show_link(self) -> bool:
         show_link = False
 
-        if self.status == ImpExpStatus.IN_PROGRESS:
+        if self.status == ImpExpStatus.IN_PROGRESS and self.app_checker.can_edit():
             show_link = True
 
         return show_link
@@ -46,7 +46,7 @@ class CancelApplicationAction(Action):
     def show_link(self) -> bool:
         show_link = False
 
-        if self.status == ImpExpStatus.IN_PROGRESS:
+        if self.status == ImpExpStatus.IN_PROGRESS and self.app_checker.can_edit():
             show_link = True
 
         return show_link
@@ -79,7 +79,7 @@ class ViewApplicationAction(Action):
             ImpExpStatus.REVOKED,
         ]
 
-        if self.status in valid_statuses:
+        if self.status in valid_statuses and self.app_checker.can_view():
             show_link = True
 
         return show_link
@@ -131,7 +131,11 @@ class RespondToFurtherInformationRequestAction(Action):
     def show_link(self) -> bool:
         correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
 
-        return correct_status and self.application.annotation_open_fir_pairs
+        return (
+            correct_status
+            and self.application.annotation_open_fir_pairs
+            and self.app_checker.can_edit()
+        )
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
@@ -153,8 +157,9 @@ class RespondToUpdateRequestAction(Action):
 
         correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
         correct_task = Task.TaskType.PREPARE in self.active_tasks
+        can_edit = self.app_checker.can_edit()
 
-        if correct_status and correct_task and self.application.annotation_open_ur_pks:
+        if correct_status and correct_task and self.application.annotation_open_ur_pks and can_edit:
             show_link = True
 
         return show_link
@@ -183,8 +188,14 @@ class ResumeUpdateRequestAction(Action):
 
         correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
         correct_task = Task.TaskType.PREPARE in self.active_tasks
+        can_edit = self.app_checker.can_edit()
 
-        if correct_status and correct_task and self.application.annotation_has_in_progress_ur:
+        if (
+            correct_status
+            and correct_task
+            and self.application.annotation_has_in_progress_ur
+            and can_edit
+        ):
             show_link = True
 
         return show_link
@@ -215,7 +226,8 @@ class WithdrawApplicationAction(Action):
             ImpExpStatus.VARIATION_REQUESTED,
         ]
 
-        if self.status in valid_statuses:
+        can_edit = self.app_checker.can_edit()
+        if self.status in valid_statuses and can_edit:
             show_link = True
 
         return show_link
@@ -242,9 +254,12 @@ class SubmitVariationUpdateAction(Action):
     def show_link(self) -> bool:
         show_link = False
 
-        if self.status == ImpExpStatus.VARIATION_REQUESTED:
-            if Task.TaskType.VR_REQUEST_CHANGE in self.active_tasks:
-                show_link = True
+        correct_status = self.status == ImpExpStatus.VARIATION_REQUESTED
+        correct_task = Task.TaskType.VR_REQUEST_CHANGE in self.active_tasks
+        can_edit = self.app_checker.can_edit()
+
+        if correct_status and correct_task and can_edit:
+            show_link = True
 
         return show_link
 
