@@ -218,9 +218,8 @@ def fa_oil_manage_and_complete_case(page: Page, app_id) -> None:
     #
     workbasket_row = utils.get_wb_row(page, app_id)
     workbasket_row.get_by_role("link", name="Authorise Documents").click()
-    page.get_by_label("Password").click()
-    page.get_by_label("Password").fill("admin")
     page.get_by_role("button", name="Sign and Authorise").click()
+    page.get_by_role("button", name="OK").click()
 
     # Annoying bug causing test to fail.
     # Wait for networkidle and then reload the workbasket to see the bypass CHIEF link
