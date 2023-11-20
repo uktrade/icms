@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+import logging
+
+from config.celery import app
 
 # Celery tasks
 from web.domains.case.tasks import (  # NOQA
@@ -13,3 +15,11 @@ from web.mail.tasks import (  # NOQA
     send_mailshot_email_task,
     send_retract_mailshot_email_task,
 )
+
+logger = logging.getLogger(__name__)
+
+
+# Test Task
+@app.task(name="web.tasks.check_celery_beat_running")
+def check_celery_beat_running() -> None:
+    logger.debug("Celery beat test task working correctly.")
