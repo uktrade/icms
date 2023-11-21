@@ -50,6 +50,6 @@ def get_imcs_dev_beat_schedule():
     return {
         "check_celery_beat_running": {
             "task": "web.tasks.check_celery_beat_running",
-            "schedule": crontab(minute="*/1"),
+            "schedule": crontab(minute="*/15"),
         },
     }
