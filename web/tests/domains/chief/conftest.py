@@ -38,7 +38,7 @@ def _fa_sil(db, importer_one_contact, importer, office):
     doc_pack.licence_end_date = datetime.date(datetime.date.today().year + 1, 12, 1)
     doc_pack.save()
 
-    document_pack.doc_ref_licence_create(doc_pack, doc_reference="dummy-reference")
+    document_pack.doc_ref_licence_create(doc_pack, doc_reference="0000010K")
 
     return app
 
