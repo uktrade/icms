@@ -46,20 +46,46 @@ class ChiefSerializer(Protocol):
         ...
 
 
+def fix_licence_reference(process_type: str, licence_reference: str) -> str:
+    """Fix the licence reference sent to CHIEF.
+
+    For paper licences the prefix isn't stored, however CHIEF requires it in the payload.
+    """
+
+    if licence_reference.casefold().startswith("gb"):
+        return licence_reference
+
+    prefix = {
+        ProcessTypes.DEROGATIONS: "SAN",
+        ProcessTypes.FA_DFL: "SIL",
+        ProcessTypes.FA_OIL: "OIL",
+        ProcessTypes.FA_SIL: "SIL",
+        ProcessTypes.IRON_STEEL: "AOG",
+        ProcessTypes.SPS: "AOG",
+        ProcessTypes.SANCTIONS: "SAN",
+        ProcessTypes.TEXTILES: "TEX",
+    }
+    xxx = prefix[process_type]  # type: ignore[index]
+
+    return f"GB{xxx}{licence_reference}"
+
+
 def cancel_licence_serializer(
     application: "CHIEF_APPLICATIONS", action: CHIEF_ACTION, chief_id: str
 ) -> types.LicenceDataPayload:
-    licence = document_pack.pack_revoked_get(application)
-    licence_ref = document_pack.doc_ref_licence_get(licence)
+    doc_pack = document_pack.pack_revoked_get(application)
+    licence_reference = fix_licence_reference(
+        application.process_type, document_pack.doc_ref_licence_get(doc_pack).reference
+    )
 
     licence_data = types.CancelLicencePayload(
         type=_get_type(application),
         action=action,  # type:ignore[arg-type]
         id=chief_id,
         reference=application.reference,
-        licence_reference=licence_ref.reference,
-        start_date=licence.licence_start_date,
-        end_date=licence.licence_end_date,
+        licence_reference=licence_reference,
+        start_date=doc_pack.licence_start_date,
+        end_date=doc_pack.licence_end_date,
     )
 
     return types.LicenceDataPayload(licence=licence_data)
@@ -69,8 +95,10 @@ def sanction_serializer(
     application: "SanctionsAndAdhocApplication", action: CHIEF_ACTION, chief_id: str
 ) -> types.LicenceDataPayload:
     organisation = _get_organisation(application)
-    licence = document_pack.pack_draft_get(application)
-    licence_ref = document_pack.doc_ref_licence_get(licence)
+    doc_pack = document_pack.pack_draft_get(application)
+    licence_reference = fix_licence_reference(
+        application.process_type, document_pack.doc_ref_licence_get(doc_pack).reference
+    )
 
     sanction_goods: "QuerySet[SanctionsAndAdhocApplicationGoods]" = (
         application.sanctions_goods.all().select_related("commodity")
@@ -93,9 +121,9 @@ def sanction_serializer(
         action=action,  # type:ignore[arg-type]
         id=chief_id,
         reference=application.reference,
-        licence_reference=licence_ref.reference,
-        start_date=licence.licence_start_date,
-        end_date=licence.licence_end_date,
+        licence_reference=licence_reference,
+        start_date=doc_pack.licence_start_date,
+        end_date=doc_pack.licence_end_date,
         organisation=organisation,
         restrictions=_get_restrictions(application),
         goods=goods,
@@ -112,6 +140,10 @@ def fa_dfl_serializer(
 
     organisation = _get_organisation(application)
     doc_pack = document_pack.pack_draft_get(application)
+    licence_reference = fix_licence_reference(
+        application.process_type, document_pack.doc_ref_licence_get(doc_pack).reference
+    )
+
     goods = [
         types.FirearmGoodsData(description=g.goods_description)
         for g in application.goods_certificates.all()
@@ -124,7 +156,7 @@ def fa_dfl_serializer(
         action=action,  # type:ignore[arg-type]
         id=chief_id,
         reference=application.reference,
-        licence_reference=document_pack.doc_ref_licence_get(doc_pack).reference,
+        licence_reference=licence_reference,
         start_date=doc_pack.licence_start_date,
         end_date=doc_pack.licence_end_date,
         organisation=organisation,
@@ -143,6 +175,9 @@ def fa_oil_serializer(
 
     organisation = _get_organisation(application)
     doc_pack = document_pack.pack_draft_get(application)
+    licence_reference = fix_licence_reference(
+        application.process_type, document_pack.doc_ref_licence_get(doc_pack).reference
+    )
 
     # fa-oil hard codes the value to any country therefore it is a group
     country_group_code = application.origin_country.hmrc_code
@@ -153,7 +188,7 @@ def fa_oil_serializer(
         action=action,  # type:ignore[arg-type]
         id=chief_id,
         reference=application.reference,
-        licence_reference=document_pack.doc_ref_licence_get(doc_pack).reference,
+        licence_reference=licence_reference,
         start_date=doc_pack.licence_start_date,
         end_date=doc_pack.licence_end_date,
         organisation=organisation,
@@ -170,6 +205,9 @@ def fa_sil_serializer(
 ) -> types.LicenceDataPayload:
     organisation = _get_organisation(application)
     doc_pack = document_pack.pack_draft_get(application)
+    licence_reference = fix_licence_reference(
+        application.process_type, document_pack.doc_ref_licence_get(doc_pack).reference
+    )
 
     goods = []
 
@@ -207,7 +245,7 @@ def fa_sil_serializer(
         action=action,  # type:ignore[arg-type]
         id=chief_id,
         reference=application.reference,
-        licence_reference=document_pack.doc_ref_licence_get(doc_pack).reference,
+        licence_reference=licence_reference,
         start_date=doc_pack.licence_start_date,
         end_date=doc_pack.licence_end_date,
         organisation=organisation,

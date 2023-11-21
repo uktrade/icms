@@ -69,7 +69,7 @@ class TestChiefClient:
             "licence": {
                 "action": "insert",
                 "reference": "IMI/2022/12345",
-                "licence_reference": "dummy-reference",
+                "licence_reference": "GBSIL0000010K",
                 "country_code": "DE",
                 "country_group": None,
                 "start_date": licence.licence_start_date.strftime("%Y-%m-%d"),
@@ -158,7 +158,7 @@ class TestChiefClient:
             "licence": {
                 "action": "replace",
                 "reference": "IMI/2022/12345/1",
-                "licence_reference": "dummy-reference",
+                "licence_reference": "GBSIL0000010K",
                 "country_code": "DE",
                 "country_group": None,
                 "goods": [],
