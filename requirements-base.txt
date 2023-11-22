@@ -21,12 +21,13 @@ gunicorn==20.1.0
 html2text==2020.1.16
 humanize==3.1.0
 Jinja2==3.0.3
-lxml==4.9.1
+lxml==4.9.3
 mohawk==1.1.0
 notifications-python-client==8.0.1
 openpyxl==3.0.7
-oracledb==1.2.0
+oracledb==1.4.2
 phonenumbers==8.12.12
+pyhanko==0.20.1
 pytz==2023.3
 psycogreen==1.0.2
 psycopg2-binary==2.9.3

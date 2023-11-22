@@ -325,6 +325,12 @@ SILENCED_SYSTEM_CHECKS.extend(
     ]
 )
 
+# Used to turn on digital signing for licence and certificate documents
+DIGITAL_SIGN_FLAG = env.digital_sign_flag
+
+# PKS12 certificate for digital signing encoded as a base64 string
+SIGNING_CERTIFICATE_PKCS12 = env.signing_certificate_pkcs12
+
 # minifi html (django-htmlmin)
 HTML_MINIFY = True
 

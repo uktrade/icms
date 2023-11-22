@@ -114,6 +114,10 @@ class Environment(BaseSettings):
     hawk_auth_id: str
     hawk_auth_key: str
 
+    # Digital signing
+    digital_sign_flag: bool = False
+    signing_certificate_pkcs12: str = ""
+
     # Data migration - Section has defaults as they are only set in production
     allow_data_migration: bool
     icms_v1_replica_user: str = ""
