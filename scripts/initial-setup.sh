@@ -2,7 +2,7 @@
 
 set -e
 
-virtualenv --python=python3 .venv
+virtualenv --python=python3.11 .venv
 . .venv/bin/activate
 
 echo "Installing local requirements in a virtualenv"
