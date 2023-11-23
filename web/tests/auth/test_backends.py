@@ -2,9 +2,11 @@ from unittest import mock
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.contrib.sites.models import Site
 
 from web.auth.backends import ICMSGovUKOneLoginBackend, ICMSStaffSSOBackend
 from web.one_login.types import UserInfo
+from web.sites import SiteName
 
 # NOTE: Copied tests from here:
 # https://github.com/uktrade/django-staff-sso-client/blob/master/tests/test_backends.py
@@ -168,7 +170,10 @@ class TestICMSGovUKOneLoginBackend:
         get_userinfo=mock.DEFAULT,
         autospec=True,
     )
-    def test_user_valid_user_create(self, db, rf, **mocks):
+    @mock.patch("web.auth.backends.send_new_user_welcome_email", autospec=True)
+    def test_user_valid_user_create(self, mock_send_new_user_welcome_email, db, rf, **mocks):
+        rf.site = Site.objects.get(name=SiteName.EXPORTER)
+
         mocks["has_valid_token"].return_value = True
         mocks["get_userinfo"].return_value = UserInfo(
             sub="some-unique-key", email="user@test.com", email_verified=True  # /PS-IGNORE
@@ -180,6 +185,7 @@ class TestICMSGovUKOneLoginBackend:
         assert user.username == "some-unique-key"
         assert user.has_usable_password() is False
         assert user.emails.first().email == "user@test.com"  # /PS-IGNORE
+        assert mock_send_new_user_welcome_email.call_args == mock.call(user, rf.site)
 
     @mock.patch.multiple(
         "web.one_login.backends",
@@ -188,7 +194,11 @@ class TestICMSGovUKOneLoginBackend:
         get_userinfo=mock.DEFAULT,
         autospec=True,
     )
-    def test_user_valid_legacy_user_not_create(self, db, rf, **mocks):
+    @mock.patch("web.auth.backends.send_new_user_welcome_email", autospec=True)
+    def test_user_valid_legacy_user_not_create(
+        self, mock_send_new_user_welcome_email, db, rf, **mocks
+    ):
+        rf.site = Site.objects.get(name=SiteName.EXPORTER)
         User = get_user_model()
         user = User(
             username="user@test.com",  # /PS-IGNORE
@@ -215,3 +225,5 @@ class TestICMSGovUKOneLoginBackend:
         assert user.email == "user@test.com"  # /PS-IGNORE
         assert user.has_usable_password() is False
         assert user.emails.first().email == "user@test.com"  # /PS-IGNORE
+
+        assert mock_send_new_user_welcome_email.call_count == 0

@@ -1,5 +1,6 @@
 import datetime
 
+from django.contrib.sites.models import Site
 from django.db.models import QuerySet
 from django.utils import timezone
 
@@ -27,6 +28,7 @@ from web.models import (
     Mailshot,
     Section5Authority,
     UpdateRequest,
+    User,
     VariationRequest,
     WithdrawApplication,
 )
@@ -62,6 +64,7 @@ from .messages import (
     ImporterAccessRequestApprovalOpenedEmail,
     LicenceRevokedEmail,
     MailshotEmail,
+    NewUserWelcomeEmail,
     RetractMailshotEmail,
     Section5AuthorityExpiringEmail,
     VariationRequestCancelledEmail,
@@ -87,6 +90,10 @@ from .recipients import (
     get_shared_mailbox_for_constabulary,
 )
 from .types import ImporterDetails
+
+
+def send_new_user_welcome_email(user: User, site: Site) -> None:
+    NewUserWelcomeEmail(user=user, site=site, to=[user.email]).send()
 
 
 def send_access_requested_email(access_request: ImpAccessOrExpAccess) -> None:

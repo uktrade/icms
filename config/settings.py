@@ -135,6 +135,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Auth user model
 AUTH_USER_MODEL = "web.user"
 
+# Extended later if staff-sso or one-login are enabled.
 AUTHENTICATION_BACKENDS = ["web.auth.backends.ModelAndObjectPermissionBackend"]
 
 #
