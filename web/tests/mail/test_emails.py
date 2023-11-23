@@ -4,6 +4,7 @@ from urllib.parse import urljoin
 import freezegun
 import pytest
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.urls import reverse
 from django.utils import timezone
 
@@ -12,7 +13,10 @@ from web.mail import emails
 from web.mail.constants import EmailTypes
 from web.mail.types import ImporterDetails
 from web.mail.url_helpers import (
+    get_account_recovery_url,
     get_case_view_url,
+    get_exporter_access_request_url,
+    get_importer_access_request_url,
     get_mailshot_detail_view_url,
     get_maintain_importers_view_url,
     get_validate_digital_signatures_url,
@@ -27,10 +31,12 @@ from web.models import (
     Mailshot,
     Section5Authority,
     UpdateRequest,
+    User,
     VariationRequest,
     WithdrawApplication,
 )
 from web.sites import (
+    SiteName,
     get_caseworker_site_domain,
     get_exporter_site_domain,
     get_importer_site_domain,
@@ -1183,3 +1189,57 @@ Firearms references(s): 423,476,677\r\n"""
             exp_template_id,
             personalisation=expected_import_personalisation,
         )
+
+    def test_send_new_user_welcome_email_importer(self):
+        exp_template_id = get_gov_notify_template_id(EmailTypes.NEW_USER_WELCOME)
+
+        # Test Importer
+        user = User(email="importer@example.com")  # /PS-IGNORE
+        site = Site.objects.get(name=SiteName.IMPORTER)
+        expected_domain = get_importer_site_domain()
+
+        emails.send_new_user_welcome_email(user, site)
+        expected_import_personalisation = default_personalisation() | {
+            "icms_url": expected_domain,
+            "service_name": "Import A Licence",
+            "account_recovery_url": get_account_recovery_url(expected_domain),
+            "access_request_url": get_importer_access_request_url(),
+            "organisation_type": "Importer",
+        }
+
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            user.email,
+            exp_template_id,
+            personalisation=expected_import_personalisation,
+        )
+
+    def test_send_new_user_welcome_email_exporter(self):
+        # Test Exporter
+        exp_template_id = get_gov_notify_template_id(EmailTypes.NEW_USER_WELCOME)
+        user = User(email="exporter@example.com")  # /PS-IGNORE
+        site = Site.objects.get(name=SiteName.EXPORTER)
+        expected_domain = get_exporter_site_domain()
+
+        emails.send_new_user_welcome_email(user, site)
+        expected_import_personalisation = default_personalisation() | {
+            "icms_url": expected_domain,
+            "service_name": "Export A Certificate",
+            "account_recovery_url": get_account_recovery_url(expected_domain),
+            "access_request_url": get_exporter_access_request_url(),
+            "organisation_type": "Exporter",
+        }
+
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            user.email,
+            exp_template_id,
+            personalisation=expected_import_personalisation,
+        )
+
+    def test_send_new_user_welcome_email_caseworker_raises_exception(self):
+        user = User(email="caseworker@example.com")  # /PS-IGNORE
+        site = Site.objects.get(name=SiteName.CASEWORKER)
+
+        with pytest.raises(ValueError, match="Unknown site: "):
+            emails.send_new_user_welcome_email(user, site)

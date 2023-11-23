@@ -107,6 +107,7 @@ class EmailTypes(TypedTextChoices):
     AUTHORITY_EXPIRING_FIREARMS = ("AUTHORITY_EXPIRING_FIREARMS", "Authority Expiring Firearms")
     MAILSHOT = ("MAILSHOT", "Mailshot")
     RETRACT_MAILSHOT = ("RETRACT_MAILSHOT", "Retract Mailshot")
+    NEW_USER_WELCOME = ("NEW_USER_WELCOME", "New User Welcome")
 
     # Case emails
     CONSTABULARY_CASE_EMAIL = ("IMA_CONSTAB_EMAIL", "Constabulary Email")

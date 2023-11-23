@@ -5,7 +5,11 @@ from django.templatetags.static import static
 
 from web.domains.case.types import Authority, ImpOrExp
 from web.models import FirearmsAuthority, Importer, Mailshot
-from web.sites import get_caseworker_site_domain, get_importer_site_domain
+from web.sites import (
+    get_caseworker_site_domain,
+    get_exporter_site_domain,
+    get_importer_site_domain,
+)
 
 
 def get_validate_digital_signatures_url(full_url: bool = False) -> str:
@@ -61,3 +65,15 @@ def get_document_view_url(application: ImpOrExp, full_url: bool = False) -> str:
     if full_url:
         return urljoin(get_caseworker_site_domain(), url)
     return url
+
+
+def get_account_recovery_url(site_domain: str) -> str:
+    return urljoin(site_domain, reverse("account-recovery"))
+
+
+def get_importer_access_request_url() -> str:
+    return urljoin(get_importer_site_domain(), reverse("access:importer-request"))
+
+
+def get_exporter_access_request_url() -> str:
+    return urljoin(get_exporter_site_domain(), reverse("access:exporter-request"))

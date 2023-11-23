@@ -117,7 +117,7 @@ class AuthCallbackView(View):
         delete_oauth_state(self.request)
         delete_oauth_nonce(self.request)
 
-        # create the user
+        # Get or create the user
         user = authenticate(request)
 
         if user is not None:

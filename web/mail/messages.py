@@ -4,6 +4,7 @@ from typing import ClassVar, final
 from uuid import UUID
 
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage, SafeMIMEMultipart
 from django.utils import timezone
 
@@ -20,6 +21,7 @@ from web.models import (
     FurtherInformationRequest,
     Mailshot,
     UpdateRequest,
+    User,
     VariationRequest,
     WithdrawApplication,
 )
@@ -29,15 +31,20 @@ from web.sites import (
     get_caseworker_site_domain,
     get_exporter_site_domain,
     get_importer_site_domain,
+    is_exporter_site,
+    is_importer_site,
 )
 
 from .constants import DATE_FORMAT, IMPORT_CASE_EMAILS, EmailTypes
 from .models import EmailTemplate
 from .types import ImporterDetails
 from .url_helpers import (
+    get_account_recovery_url,
     get_authority_view_url,
     get_case_view_url,
     get_document_view_url,
+    get_exporter_access_request_url,
+    get_importer_access_request_url,
     get_importer_view_url,
     get_mailshot_detail_view_url,
     get_maintain_importers_view_url,
@@ -52,14 +59,14 @@ class GOVNotifyEmailMessage(EmailMessage):
         super().__init__(*args, **kwargs)
         self.template_id = self.get_template_id()
 
+    def get_template_id(self) -> UUID:
+        return EmailTemplate.objects.get(name=self.name).gov_notify_template_id
+
     def message(self) -> SafeMIMEMultipart:
         """Adds the personalisation data to the message header, so it is visible when using the console backend."""
         message = super().message()
         message["Personalisation"] = self.get_personalisation()
         return message
-
-    def get_context(self) -> dict:
-        return {}
 
     def get_personalisation(self) -> dict:
         return {
@@ -70,11 +77,45 @@ class GOVNotifyEmailMessage(EmailMessage):
             "body": self.body,
         } | self.get_context()
 
-    def get_template_id(self) -> UUID:
-        return EmailTemplate.objects.get(name=self.name).gov_notify_template_id
+    def get_context(self) -> dict:
+        return {}
 
     def get_site_domain(self) -> str:
         raise NotImplementedError
+
+
+@final
+class NewUserWelcomeEmail(GOVNotifyEmailMessage):
+    name = EmailTypes.NEW_USER_WELCOME
+
+    def __init__(self, *args, user: User, site: Site, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.user = user
+        self.site = site
+
+    def get_context(self) -> dict:
+        site_domain = self.get_site_domain()
+        context = {
+            "service_name": self.site.name,
+            "account_recovery_url": get_account_recovery_url(site_domain),
+        }
+
+        if is_importer_site(self.site):
+            context["organisation_type"] = "Importer"
+            context["access_request_url"] = get_importer_access_request_url()
+        else:
+            context["organisation_type"] = "Exporter"
+            context["access_request_url"] = get_exporter_access_request_url()
+
+        return context
+
+    def get_site_domain(self) -> str:
+        if is_importer_site(self.site):
+            return get_importer_site_domain()
+        elif is_exporter_site(self.site):
+            return get_exporter_site_domain()
+
+        raise ValueError(f"Unknown site: {self.site}")
 
 
 class BaseApplicationEmail(GOVNotifyEmailMessage):

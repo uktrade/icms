@@ -42,9 +42,10 @@ def migrate_user(current_user: User, old_icms_user: User) -> None:
 
 def get_or_create_icms_user(
     id_value: str, user_data: StaffSSOUserCreateData | OneLoginUserCreateData
-) -> User:
+) -> tuple[User, bool]:
     provider_email = user_data["email"]
     update_email = False
+    created = False
 
     try:
         # A legacy user is a user who has an email address as a username.
@@ -76,4 +77,4 @@ def get_or_create_icms_user(
             defaults={"is_primary": True, "portal_notifications": True},
         )
 
-    return user
+    return user, created

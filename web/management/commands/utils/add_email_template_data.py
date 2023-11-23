@@ -95,6 +95,7 @@ templates = [
         EmailTypes.CONSTABULARY_DEACTIVATED_FIREARMS,
         "fc56ddb3-b918-480d-b209-82ef99733ed2",  # /PS-IGNORE
     ),
+    (EmailTypes.NEW_USER_WELCOME, "53cdc837-947f-408d-a87b-ef5664e48617"),  # /PS-IGNORE
 ]
 
 

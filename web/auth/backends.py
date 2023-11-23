@@ -1,3 +1,5 @@
+from typing import Any
+
 from authbroker_client.backends import AuthbrokerBackend
 from django.contrib.auth.backends import ModelBackend
 from django.http import HttpRequest
@@ -6,6 +8,7 @@ from guardian.conf import settings as guardian_settings
 from guardian.ctypes import get_content_type
 from guardian.exceptions import WrongAppError
 
+from web.mail.emails import send_new_user_welcome_email
 from web.models import User
 from web.one_login.backends import OneLoginBackend
 from web.one_login.types import UserInfo as OneLoginUserInfo
@@ -116,7 +119,7 @@ class ICMSStaffSSOBackend(AuthbrokerBackend):
         id_value = profile[id_key]
         user_data: StaffSSOUserCreateData = self.user_create_mapping(profile)
 
-        user = get_or_create_icms_user(id_value, user_data)
+        user, _ = get_or_create_icms_user(id_value, user_data)
 
         return user
 
@@ -132,12 +135,24 @@ class ICMSStaffSSOBackend(AuthbrokerBackend):
 
 
 class ICMSGovUKOneLoginBackend(OneLoginBackend):
+    def __init__(self) -> None:
+        self.site = None
+
+    def authenticate(self, request: HttpRequest, **credentials: Any) -> User | None:
+        # Store the site attribute so that get_or_create_user can use it.
+        # Done here instead of OneLoginBackend as that class is ICMS agnostic.
+        self.site = request.site
+
+        return super().authenticate(request, **credentials)
+
     def get_or_create_user(self, profile: OneLoginUserInfo) -> User:
         id_key = self.get_profile_id_name()
         id_value = profile[id_key]
         user_data = self.user_create_mapping(profile)
 
-        user = get_or_create_icms_user(id_value, user_data)
+        user, created = get_or_create_icms_user(id_value, user_data)
+        if created:
+            send_new_user_welcome_email(user, self.site)
 
         return user
 
