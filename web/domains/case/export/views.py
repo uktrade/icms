@@ -12,9 +12,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import TemplateView
+from django_ratelimit import UNSAFE
+from django_ratelimit.decorators import ratelimit
 from guardian.shortcuts import get_objects_for_user
-from ratelimit import UNSAFE
-from ratelimit.decorators import ratelimit
 
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm

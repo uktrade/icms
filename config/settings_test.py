@@ -8,11 +8,6 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
 CELERY_TASK_ALWAYS_EAGER = True
 
-# SELENIUM
-SELENIUM_BROWSER = "chrome"
-SELENIUM_HUB_HOST = "selenium-hub"
-SELENIUM_HOST = "web"
-
 # django-ratelimit
 RATELIMIT_ENABLE = False
 

@@ -8,8 +8,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import DetailView, TemplateView
-from ratelimit import UNSAFE
-from ratelimit.decorators import ratelimit
+from django_ratelimit import UNSAFE
+from django_ratelimit.decorators import ratelimit
 
 from web.domains.case.access.filters import (
     ExporterAccessRequestFilter,

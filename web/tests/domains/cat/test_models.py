@@ -35,6 +35,10 @@ class TestCertificateApplicationTemplate:
             "alice": alice,
             "objects": User.objects.filter(username="alice"),
         }
+        # TODO: ICMSLST-2411 Fix this test when upgrading to psycopg 3.
+        # This line causes the application to hang forever in psycopg 3.
+        # I think it relates to evaluating this line when creating the template
+        # record: User.objects.filter(username="alice")
         template = CertificateApplicationTemplate.objects.create(
             owner=alice,
             data=data,

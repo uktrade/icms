@@ -60,7 +60,7 @@ module = [
     "humanize.*",
     "environ.*",
     "compressor.*",
-    "ratelimit.*",
+    "django_ratelimit.*",
     "django_chunk_upload_handlers.*",
     "storages.*",
     "mohawk.*",
