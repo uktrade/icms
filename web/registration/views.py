@@ -8,7 +8,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import CreateView, FormView
-from ratelimit.decorators import ratelimit
+from django_ratelimit.decorators import ratelimit
 
 from web.auth.utils import migrate_user
 from web.types import AuthenticatedHttpRequest

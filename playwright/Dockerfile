@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright/python:v1.38.0-jammy
+FROM mcr.microsoft.com/playwright/python:v1.40.0-jammy
 # Available playwright tags:
 #https://mcr.microsoft.com/en-us/product/playwright/tags
 

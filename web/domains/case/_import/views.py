@@ -14,9 +14,9 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView, TemplateView
+from django_ratelimit import UNSAFE
+from django_ratelimit.decorators import ratelimit
 from guardian.shortcuts import get_objects_for_user
-from ratelimit import UNSAFE
-from ratelimit.decorators import ratelimit
 
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus

@@ -3033,7 +3033,6 @@ sld.blob_data
 SELECT sld.blob_data
 ON ff.id
 DummyFileUploadHandler
-SELENIUM
 SELECT glf.file_content , CONCAT(glf.id, CONCAT('/'
 x.created_datetime
 f"WITH DOC_QUERY AS
@@ -3520,3 +3519,5 @@ CaseReference
 New User Welcome
 div aria-labelledby="agents-current
 aria-labelledby="tg-agentsARCHIVED
+assert template.user_can_edit(bob
+template.form_data
