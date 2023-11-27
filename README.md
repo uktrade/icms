@@ -77,21 +77,29 @@ developing, only within Docker.
 Start everything using docker-compose: `make debug`
 
 Go to http://caseworker:8080, login with the one of the test accounts:
+  - admin (Superuser that doesn't reflect a real user of the system)
   - ilb_admin
   - ilb_admin_2
   - nca_admin
+  - nca_admin_2
   - ho_admin
+  - ho_admin_2
   - san_admin
   - san_admin_2
   - con_user
+  - con_user_2
+  - import_search_user
+  - import_search_user_2
 
 Go to http://import-a-licence:8080, login with the one of the test accounts:
   - importer_user
   - importer_agent
+  - importer_user_2
 
 Go to http://export-a-certificate:8080, login with the one of the test accounts:
   - exporter_user
   - exporter_agent
+  - exporter_user_2
 
 The password is the same for each user: `admin`
 

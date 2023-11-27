@@ -79,7 +79,10 @@ services:
         env_file:
             - .env
         depends_on:
-            - redis
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_started
         volumes:
             - .:/code
         networks:
