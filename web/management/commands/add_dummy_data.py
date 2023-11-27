@@ -71,8 +71,8 @@ class Command(BaseCommand):
             ImportApplicationType.objects.update(is_active=True)
             ExportApplicationType.objects.update(is_active=True)
 
-        # exporter
-        exporter = Exporter.objects.create(
+        # exporter 1
+        exporter_1 = Exporter.objects.create(
             is_active=True, name="Dummy exporter", registered_number="42"
         )
 
@@ -82,7 +82,7 @@ class Command(BaseCommand):
             address_2="London",
             postcode="SW1A 1AA",  # /PS-IGNORE
         )
-        exporter.offices.add(office)
+        exporter_1.offices.add(office)
 
         office = Office.objects.create(
             is_active=True,
@@ -90,10 +90,22 @@ class Command(BaseCommand):
             address_2="Belfast",
             postcode="BT12 5QB",  # /PS-IGNORE
         )
-        exporter.offices.add(office)
+        exporter_1.offices.add(office)
+
+        # exporter 2
+        exporter_2 = Exporter.objects.create(
+            is_active=True, name="Dummy exporter 2", registered_number="43"
+        )
+        e_office = Office.objects.create(
+            is_active=True,
+            address_1="Address line 1",
+            address_2="Adress line 2",
+            postcode="SW1A 1AA",  # /PS-IGNORE
+        )
+        exporter_2.offices.add(e_office)
 
         # importer
-        importer = Importer.objects.create(
+        importer_1 = Importer.objects.create(
             is_active=True,
             name="Dummy importer",
             registered_number="84",
@@ -108,7 +120,7 @@ class Command(BaseCommand):
             address_3="London",
             postcode="SW1A 2HP",  # /PS-IGNORE
         )
-        importer.offices.add(office)
+        importer_1.offices.add(office)
 
         office = Office.objects.create(
             is_active=True,
@@ -116,9 +128,35 @@ class Command(BaseCommand):
             address_2="Belfast",
             postcode="BT12 5QB",  # /PS-IGNORE
         )
-        importer.offices.add(office)
+        importer_1.offices.add(office)
 
-        self.stdout.write("Created dummy importer/exporter")
+        # importer 2
+        importer_2 = Importer.objects.create(
+            is_active=True,
+            name="Dummy importer 2",
+            registered_number="85",
+            eori_number="GB123456789054321",
+            type=Importer.ORGANISATION,
+        )
+
+        office = Office.objects.create(
+            is_active=True,
+            address_1="Some Road",
+            address_2="Some lane",
+            address_3="London",
+            postcode="SW1A 2PH",  # /PS-IGNORE
+        )
+        importer_2.offices.add(office)
+
+        office = Office.objects.create(
+            is_active=True,
+            address_1="1 Some other place",
+            address_2="Belfast",
+            postcode="BT12 5QB",  # /PS-IGNORE
+        )
+        importer_2.offices.add(office)
+
+        self.stdout.write("Created dummy importer's / exporter's")
 
         # agent for importer
         importer_one_agent_one = Importer.objects.create(
@@ -126,7 +164,7 @@ class Command(BaseCommand):
             name="Dummy agent for importer",
             registered_number="842",
             type=Importer.ORGANISATION,
-            main_importer=importer,
+            main_importer=importer_1,
         )
 
         office = Office.objects.create(
@@ -143,7 +181,7 @@ class Command(BaseCommand):
             name="Dummy agent 2 for importer",
             registered_number="123",
             type=Importer.ORGANISATION,
-            main_importer=importer,
+            main_importer=importer_1,
         )
         office = Office.objects.create(
             is_active=True,
@@ -158,7 +196,7 @@ class Command(BaseCommand):
             is_active=True,
             name="Dummy agent exporter",
             registered_number="422",
-            main_exporter=exporter,
+            main_exporter=exporter_1,
         )
 
         office = Office.objects.create(
@@ -175,7 +213,7 @@ class Command(BaseCommand):
             username="ilb_admin",
             password=options["password"],
             first_name="Ashley",
-            last_name="Smith (ilb_admin)",
+            last_name="Smith",
             groups=[ilb_admin_group],
         )
 
@@ -183,7 +221,7 @@ class Command(BaseCommand):
             username="ilb_admin_2",
             password=options["password"],
             first_name="Samantha",
-            last_name="Stevens (ilb_admin)",
+            last_name="Stevens",
             groups=[ilb_admin_group],
         )
 
@@ -191,25 +229,43 @@ class Command(BaseCommand):
             username="importer_user",
             password=options["password"],
             first_name="Dave",
-            last_name="Jones (importer_user)",
+            last_name="Jones",
             groups=[importer_user_group],
-            linked_importers=[importer],
+            linked_importers=[importer_1],
+        )
+
+        self.create_user(
+            username="importer_user_2",
+            password=options["password"],
+            first_name="Luke",
+            last_name="Mosley",
+            groups=[importer_user_group],
+            linked_importers=[importer_2],
         )
 
         exporter_user = self.create_user(
             username="exporter_user",
             password=options["password"],
             first_name="Sally",
-            last_name="Davis (exporter_user)",
+            last_name="Davis",
             groups=[exporter_user_group],
-            linked_exporters=[exporter],
+            linked_exporters=[exporter_1],
+        )
+
+        self.create_user(
+            username="exporter_user_2",
+            password=options["password"],
+            first_name="Jesse",
+            last_name="Carey",
+            groups=[exporter_user_group],
+            linked_exporters=[exporter_2],
         )
 
         self.create_user(
             username="importer_agent",
             password=options["password"],
             first_name="Cameron",
-            last_name="Hasra (agent)",
+            last_name="Hasra",
             groups=[importer_user_group],
             linked_importer_agents=[importer_one_agent_one, importer_one_agent_two],
         )
@@ -218,7 +274,7 @@ class Command(BaseCommand):
             username="exporter_agent",
             password=options["password"],
             first_name="Marie",
-            last_name="Jacobs (agent)",
+            last_name="Jacobs",
             groups=[exporter_user_group],
             linked_exporter_agents=[agent_exporter],
         )
@@ -227,7 +283,14 @@ class Command(BaseCommand):
             username="nca_admin",
             password=options["password"],
             first_name="Clara",
-            last_name="Boone (NCA Case Officer)",
+            last_name="Boone",
+            groups=[nca_case_officer],
+        )
+        self.create_user(
+            username="nca_admin_2",
+            password=options["password"],
+            first_name="Kara",
+            last_name="Moses",
             groups=[nca_case_officer],
         )
 
@@ -235,7 +298,15 @@ class Command(BaseCommand):
             username="ho_admin",
             password=options["password"],
             first_name="Steven",
-            last_name="Hall (HO Case Officer)",
+            last_name="Hall",
+            groups=[ho_case_officer],
+        )
+
+        self.create_user(
+            username="ho_admin_2",
+            password=options["password"],
+            first_name="Dawn",
+            last_name="Cabrera",
             groups=[ho_case_officer],
         )
 
@@ -243,7 +314,7 @@ class Command(BaseCommand):
             username="san_admin",
             password=options["password"],
             first_name="Karen",
-            last_name="Bradley (SAN Case Officer)",
+            last_name="Bradley",
             groups=[san_case_officer],
         )
 
@@ -251,7 +322,7 @@ class Command(BaseCommand):
             username="san_admin_2",
             password=options["password"],
             first_name="Emilio",
-            last_name="Mcgee (SAN Case Officer)",
+            last_name="Mcgee",
             groups=[san_case_officer],
         )
 
@@ -266,10 +337,28 @@ class Command(BaseCommand):
         )
 
         self.create_user(
+            username="con_user_2",
+            password=options["password"],
+            first_name="Patrick",
+            last_name="Ashley",
+            linked_constabularies=Constabulary.objects.filter(
+                name__in=["Lancashire", "Merseyside"]
+            ),
+        )
+
+        self.create_user(
             username="import_search_user",
             password=options["password"],
             first_name="Hercule",
-            last_name="Poirot (Import Search User)",
+            last_name="Poirot",
+            groups=[import_search_user],
+        )
+
+        self.create_user(
+            username="import_search_user_2",
+            password=options["password"],
+            first_name="Safiyyah",
+            last_name="Thomson",
             groups=[import_search_user],
         )
 
@@ -287,9 +376,9 @@ class Command(BaseCommand):
             username="migrated-user-1@example.com",  # /PS-IGNORE
             password=options["password"],
             first_name="Bill",
-            last_name="Wesley (importer_user)",
+            last_name="Wesley",
             groups=[importer_user_group],
-            linked_importers=[importer],
+            linked_importers=[importer_1],
             icms_v1_user=True,
         )
 
@@ -297,9 +386,9 @@ class Command(BaseCommand):
             username="migrated-user-2@example.com",  # /PS-IGNORE
             password=options["password"],
             first_name="Dani",
-            last_name="Winslow (exporter_user)",
+            last_name="Winslow",
             groups=[exporter_user_group],
-            linked_importers=[exporter],
+            linked_importers=[exporter_1],
             icms_v1_user=True,
         )
 
