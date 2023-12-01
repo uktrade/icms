@@ -233,15 +233,27 @@ def organisation_remove_contact(org: ORGANISATION, user: User) -> None:
 def can_user_view_org(user: User, org: ORGANISATION) -> bool:
     """Check if the supplied user can view an organisation."""
 
-    is_admin = _is_org_admin(user, org)
     obj_perms = get_org_obj_permissions(org)
 
-    return (
-        is_admin
-        or user.has_perm(obj_perms.view, org)
+    can_view_org = (
+        user.has_perm(obj_perms.view, org)
         or user.has_perm(obj_perms.edit, org)
         or user.has_perm(obj_perms.manage_contacts_and_agents, org)
     )
+
+    if org.is_agent():
+        main_org = org.get_main_org()
+        can_view_main_org = (
+            user.has_perm(obj_perms.view, main_org)
+            or user.has_perm(obj_perms.edit, main_org)
+            or user.has_perm(obj_perms.manage_contacts_and_agents, main_org)
+        )
+    else:
+        can_view_main_org = False
+
+    is_admin = _is_org_admin(user, org)
+
+    return is_admin or can_view_org or can_view_main_org
 
 
 def can_user_edit_org(user: User, org: ORGANISATION) -> bool:

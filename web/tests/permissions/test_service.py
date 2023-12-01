@@ -292,12 +292,14 @@ class TestPermissionsService:
     def test_can_user_view_org(self):
         assert can_user_view_org(self.ilb_admin, self.importer)
         assert can_user_view_org(self.importer_contact, self.importer)
+        assert can_user_view_org(self.importer_contact, self.agent_importer)
         assert not can_user_view_org(self.importer_agent_contact, self.importer)
         assert not can_user_view_org(self.exporter_contact, self.importer)
         assert not can_user_view_org(self.exporter_agent_contact, self.importer)
 
         assert can_user_view_org(self.ilb_admin, self.exporter)
         assert can_user_view_org(self.exporter_contact, self.exporter)
+        assert can_user_view_org(self.exporter_contact, self.agent_exporter)
         assert not can_user_view_org(self.exporter_agent_contact, self.exporter)
         assert not can_user_view_org(self.importer_contact, self.exporter)
         assert not can_user_view_org(self.importer_agent_contact, self.exporter)
