@@ -54,9 +54,9 @@
 
   {% if not object.is_agent() %}
     {% with
+      is_importer = True,
       agents = object.agents,
       read_only = True,
-      is_importer = True,
       agent_view_url_name = "importer-view"
     %}
       {% include "partial/agents.html" %}
