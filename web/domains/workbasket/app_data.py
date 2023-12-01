@@ -118,10 +118,14 @@ def get_ilb_admin_qs(user: User) -> chain[QuerySet]:
     open_fir_pks_annotation = _get_open_firs_pk_annotation("further_information_requests")
 
     open_exporter_approval_requests = Exists(
-        ExporterApprovalRequest.objects.filter(access_request=OuterRef("pk"))
+        ExporterApprovalRequest.objects.filter(
+            access_request=OuterRef("pk"), status=ExporterApprovalRequest.Statuses.OPEN
+        )
     )
     open_importer_approval_requests = Exists(
-        ImporterApprovalRequest.objects.filter(access_request=OuterRef("pk"))
+        ImporterApprovalRequest.objects.filter(
+            access_request=OuterRef("pk"), status=ImporterApprovalRequest.Statuses.OPEN
+        )
     )
 
     exporter_access_requests = (
