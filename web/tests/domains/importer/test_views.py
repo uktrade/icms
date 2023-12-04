@@ -267,6 +267,11 @@ class TestImporterEditView(AuthTestCase):
         response = self.exporter_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
+    def test_edit_agent_forbidden(self, agent_importer):
+        url = reverse("importer-edit", kwargs={"pk": agent_importer.id})
+        response = self.ilb_admin_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
     def test_authorized_access(self):
         response = self.ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.OK

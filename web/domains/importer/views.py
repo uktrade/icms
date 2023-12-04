@@ -230,6 +230,10 @@ def create_importer(request: AuthenticatedHttpRequest, *, entity_type: str) -> H
 def edit_importer(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     importer: Importer = get_object_or_404(Importer, pk=pk)
 
+    # This view is for editing main importers not agents.
+    if importer.is_agent():
+        raise PermissionDenied
+
     if not can_user_edit_org(request.user, importer):
         raise PermissionDenied
 
