@@ -704,6 +704,13 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
 
     user_context = _get_user_context(request.user)
 
+    if can_user_edit_org(request.user, agent.main_importer):
+        parent_url = reverse("importer-edit", kwargs={"pk": agent.main_importer.pk})
+        parent_url_label = agent.main_importer.display_name
+    else:
+        parent_url = reverse("user-importer-list")
+        parent_url_label = "Importers"
+
     context = {
         "object": agent.main_importer,
         "object_permissions": object_permissions,
@@ -713,6 +720,8 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
         "contacts": contacts,
         "org_type": "importer",
         "base_template": user_context["base_template"],
+        "parent_url": parent_url,
+        "parent_url_label": parent_url_label,
     }
 
     return render(request, "web/domains/importer/edit-agent.html", context=context)

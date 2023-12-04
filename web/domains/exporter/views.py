@@ -296,6 +296,13 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     can_manage_contacts = can_user_manage_org_contacts(request.user, exporter)
     user_context = _get_user_context(request.user)
 
+    if can_user_edit_org(request.user, exporter.main_exporter):
+        parent_url = reverse("exporter-edit", kwargs={"pk": exporter.main_exporter.pk})
+        parent_url_label = exporter.name
+    else:
+        parent_url = reverse("user-exporter-list")
+        parent_url_label = "Exporters"
+
     context = {
         "object": exporter.main_exporter,
         "form": form,
@@ -305,9 +312,11 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
         "can_manage_contacts": can_manage_contacts,
         "org_type": "exporter",
         "base_template": user_context["base_template"],
+        "parent_url": parent_url,
+        "parent_url_label": parent_url_label,
     }
 
-    return render(request, "web/domains/exporter/edit-agent.html", context=context | user_context)
+    return render(request, "web/domains/exporter/edit-agent.html", context=context)
 
 
 @login_required

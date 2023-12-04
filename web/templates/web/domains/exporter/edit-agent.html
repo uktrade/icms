@@ -10,11 +10,7 @@
 {% block content_actions %}
   <div class="content-actions">
     <ul class="menu-out flow-across">
-      <li>
-        <a href="{{ icms_url('exporter-edit', kwargs={'pk': object.pk}) }}" class="prev-link">
-          Exporter {{ object.name }}
-        </a>
-      </li>
+      <li><a href="{{ parent_url }}" class="prev-link">{{ parent_url_label }}</a></li>
     </ul>
   </div>
 {% endblock %}
