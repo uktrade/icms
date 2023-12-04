@@ -14,7 +14,9 @@
                 {% endif %}
               {% else %}
                 {% if read_only %}
+                  <a href="{{ icms_url(agent_view_url_name, args=[agent.id]) }}">
                     {{ agent.name }}
+                  </a>
                 {% else %}
                   <a href="{{ icms_url(agent_edit_url_name, args=[agent.id]) }}">
                     {{ agent.name }}
