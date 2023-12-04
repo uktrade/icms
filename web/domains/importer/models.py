@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.urls import reverse
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from web.models.mixins import Archivable
@@ -91,6 +92,12 @@ class Importer(Archivable, models.Model):
     main_importer = models.ForeignKey(
         "self", on_delete=models.SET_NULL, blank=True, null=True, related_name="agents"
     )
+
+    def get_edit_view_name(self) -> str:
+        if self.is_agent():
+            return reverse("importer-agent-edit", kwargs={"pk": self.pk})
+
+        return reverse("importer-edit", kwargs={"pk": self.pk})
 
     def is_agent(self):
         return self.main_importer is not None

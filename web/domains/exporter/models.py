@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
 from web.models.mixins import Archivable
@@ -51,6 +52,12 @@ class Exporter(Archivable, models.Model):
     main_exporter = models.ForeignKey(
         "self", on_delete=models.SET_NULL, blank=True, null=True, related_name="agents"
     )
+
+    def get_edit_view_name(self) -> str:
+        if self.is_agent():
+            return reverse("exporter-agent-edit", kwargs={"pk": self.pk})
+
+        return reverse("exporter-edit", kwargs={"pk": self.pk})
 
     def is_agent(self):
         return self.main_exporter is not None

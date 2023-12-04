@@ -104,7 +104,7 @@ class TestExporterCreateView(AuthTestCase):
 class TestEditExporterView(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, _setup):
-        self.url = f"/exporter/{self.exporter.id}/edit/"
+        self.url = reverse("exporter-edit", kwargs={"pk": self.exporter.id})
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_permission(self):
@@ -124,6 +124,11 @@ class TestEditExporterView(AuthTestCase):
     def test_page_title(self):
         response = self.ilb_admin_client.get(self.url)
         assert f"Editing Exporter '{self.exporter.name}'" in response.content.decode()
+
+    def test_edit_agent_forbidden(self, agent_exporter):
+        url = reverse("exporter-edit", kwargs={"pk": agent_exporter.id})
+        response = self.ilb_admin_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
 
 class TestDetailExporterView(AuthTestCase):

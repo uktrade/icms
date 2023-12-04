@@ -100,6 +100,10 @@ def create_exporter(request: AuthenticatedHttpRequest) -> HttpResponse:
 def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     exporter: Exporter = get_object_or_404(Exporter, pk=pk)
 
+    # This view is for editing main exporters not agents.
+    if exporter.is_agent():
+        raise PermissionDenied
+
     if not can_user_edit_org(request.user, exporter):
         raise PermissionDenied
 

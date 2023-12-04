@@ -64,7 +64,7 @@
               {% if user_obj_perms.can_edit_org(importer) %}
                 <div class="row">
                   <div class="twelve columns">
-                    <a href="{{ icms_url("importer-edit", kwargs={'pk': importer.pk}) }}"
+                    <a href="{{ importer.get_edit_view_name() }}"
                        class="button small-button icon-pencil">
                       Edit
                     </a>
