@@ -1,8 +1,6 @@
 {% if importer.is_agent() %}
   <div class="info-box info-box-info">
-    This importer is an agent of
-    <a href="{{ icms_url(importer_url_name, args=[importer.main_importer.id]) }}">
-      {{ importer.main_importer.display_name }}</a>.
+    This importer is an agent of importer '{{ importer.main_importer.display_name }}'.
   </div>
 {% endif %}
 
