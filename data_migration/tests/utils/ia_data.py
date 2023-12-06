@@ -192,38 +192,38 @@ ia_query_result = {
                 1,  # document_pack_id
             ),
             (
-                2,
-                9,
-                datetime(2022, 4, 27).date(),
-                datetime(2023, 4, 30).date(),
-                "IMA/2022/2345",
-                0,
-                "AR",
-                0,
+                2,  # ima_id
+                9,  # imad_id
+                datetime(2022, 4, 27).date(),  # licence_start_date
+                datetime(2023, 4, 30).date(),  # licence_end_date
+                "IMA/2022/2345",  # case_reference
+                0,  # is_paper_only
+                "AR",  # status
+                0,  # variation_number
                 datetime(2022, 4, 27, 10, 43),  # created_at
                 2,  # document_pack_id
             ),
             (
-                2,
-                10,
-                datetime(2022, 4, 27).date(),
-                datetime(2023, 5, 30).date(),
-                "IMA/2022/2345/1",
-                0,
-                "AR",
-                1,
+                2,  # ima_id
+                10,  # imad_id
+                datetime(2022, 4, 27).date(),  # licence_start_date
+                datetime(2023, 5, 30).date(),  # licence_end_date
+                "IMA/2022/2345/1",  # case_reference
+                0,  # is_papaer_only
+                "AR",  # status
+                1,  # variation_number
                 datetime(2022, 4, 27, 10, 43),  # created_at
                 3,  # document_pack_id
             ),
             (
-                2,
-                12,
-                datetime(2022, 4, 27).date(),
-                datetime(2023, 6, 30).date(),
-                "IMA/2022/2345/2",
-                0,
-                "AC",
-                2,
+                2,  # ima_id
+                12,  # imad_id
+                datetime(2022, 4, 27).date(),  # licence_start_date
+                datetime(2023, 6, 30).date(),  # licence_end_date
+                "IMA/2022/2345/2",  # case_reference
+                0,  # is_paper_only
+                "AC",  # status
+                2,  # variation_number
                 datetime(2022, 4, 27, 10, 43),  # created_at
                 4,  # document_pack_id
             ),
@@ -261,7 +261,7 @@ ia_query_result = {
                 datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 datetime(2022, 4, 27),  # signed_datetime
-                2,  # signed_by
+                2,  # signed_by_id
             ),
             (
                 None,  # reference
@@ -275,63 +275,63 @@ ia_query_result = {
                 datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 datetime(2022, 4, 27),  # signed_datetime
-                2,  # signed_by
+                2,  # signed_by_id
             ),
             (
-                "1235B",
-                9,
-                2,
-                "LICENCE",
-                "Firearms Licence",
-                "application/pdf",
-                100,
-                "firearms-licence-2.pdf",
-                datetime(2022, 4, 27),
-                2,
-                datetime(2022, 4, 27),
-                2,
+                "1235B",  # reference
+                9,  # licence_id
+                2,  # document_legacy_id
+                "LICENCE",  # document_type
+                "Firearms Licence",  # filename
+                "application/pdf",  # content_type
+                100,  # file_size
+                "firearms-licence-2.pdf",  # path
+                datetime(2022, 4, 27),  # created_datetime
+                2,  # created_by_id
+                datetime(2022, 4, 27),  # signed_datetime
+                2,  # signed_by_id
             ),
             (
-                "1236C",
-                9,
-                3,
-                "LICENCE",
-                "Firearms Licence",
-                "application/pdf",
-                100,
-                "firearms-licence-3.pdf",
-                datetime(2022, 4, 27),
-                2,
-                datetime(2022, 4, 27),
-                2,
+                "1236C",  # referece
+                9,  # licence_id
+                3,  # document_legacy_id
+                "LICENCE",  # document_type
+                "Firearms Licence",  # filename
+                "application/pdf",  # content_type
+                100,  # file_size
+                "firearms-licence-3.pdf",  # path
+                datetime(2022, 4, 27),  # created_datetime
+                2,  # created_by_id
+                datetime(2022, 4, 27),  # signed_datetime
+                2,  # signed_by_id
             ),
             (
-                "1235D",
-                12,
-                4,
-                "LICENCE",
-                "Firearms Licence",
-                "application/pdf",
-                100,
-                "firearms-licence-4.pdf",
-                datetime(2022, 4, 30),
-                2,
-                datetime(2022, 4, 30),
-                2,
+                "1235D",  # referece
+                12,  # licence_id
+                4,  # document_legacy_id
+                "LICENCE",  # document_type
+                "Firearms Licence",  # filename
+                "application/pdf",  # content_type
+                100,  # content_type
+                "firearms-licence-4.pdf",  # path
+                datetime(2022, 4, 30),  # created_datetime
+                2,  # created_by_id
+                datetime(2022, 4, 30),  # signed_datetime
+                2,  # signed_by_id
             ),
             (
-                "1236E",
-                12,
-                5,
-                "LICENCE",
-                "Firearms Licence",
-                "application/pdf",
-                100,
-                "firearms-licence-5.pdf",
-                datetime(2022, 4, 30),
-                2,
-                datetime(2022, 4, 30),
-                2,
+                "1236E",  # referece
+                12,  # licence_id
+                5,  # document_legacy_id
+                "LICENCE",  # filename
+                "Firearms Licence",  # content_type
+                "application/pdf",  # content_type
+                100,  # path
+                "firearms-licence-5.pdf",  # path
+                datetime(2022, 4, 30),  # created_datetime
+                2,  # created_by_id
+                datetime(2022, 4, 30),  # signed_datetime
+                2,  # signed_by_id
             ),
             (
                 None,  # reference
@@ -345,7 +345,7 @@ ia_query_result = {
                 datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 datetime(2022, 4, 27),  # signed_datetime
-                2,  # signed_by
+                2,  # signed_by_id
             ),
         ],
     ),

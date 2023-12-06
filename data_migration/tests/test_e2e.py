@@ -327,25 +327,31 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert list(sil3.cleared_by.values_list("id", flat=True)) == []
 
     l1: web.ImportApplicationLicence = sil1.licences.first()
-    sil2_licences: QuerySet[web.ImportApplicationLicence] = sil2.licences.all()
+    sil2_licences: QuerySet[web.ImportApplicationLicence] = sil2.licences.order_by("id")
     l2, l3, l4 = sil2_licences
 
     assert l1.created_at == dt.datetime(2022, 4, 27, 9, 43, tzinfo=dt.timezone.utc)
-    assert l1.document_references.count() == 2
+    assert list(l1.document_references.values_list("reference", flat=True)) == ["1234A", None]
     assert l1.document_references.filter(document_type="LICENCE").count() == 1
     assert l1.document_references.filter(document_type="COVER_LETTER").count() == 1
     assert list(l1.cleared_by.values_list("id", flat=True)) == [2]
 
-    assert l2.document_references.count() == 3
+    assert list(l2.document_references.values_list("reference", flat=True)) == ["1235B", "1236C"]
     assert l2.document_references.filter(document_type="LICENCE").count() == 2
-    assert l2.document_references.filter(document_type="COVER_LETTER").count() == 1
-    assert list(l2.cleared_by.values_list("id", flat=True).order_by("id")) == [2, 3]
+    assert l2.document_references.filter(document_type="COVER_LETTER").count() == 0
+    assert list(l2.cleared_by.values_list("id", flat=True).order_by("id")) == []
 
     assert l3.document_references.count() == 0
     assert list(l3.cleared_by.values_list("id", flat=True)) == [2]
 
-    assert l4.document_references.count() == 2
-    assert list(l4.cleared_by.values_list("id", flat=True)) == []
+    assert list(l4.document_references.values_list("reference", flat=True)) == [
+        "1235D",
+        "1236E",
+        None,
+    ]
+    assert l4.document_references.filter(document_type="LICENCE").count() == 2
+    assert l4.document_references.filter(document_type="COVER_LETTER").count() == 1
+    assert list(l4.cleared_by.values_list("id", flat=True)) == [3, 2]
 
     assert sil1.checklist.authority_required == "yes"
     assert sil1.checklist.authority_received == "yes"
