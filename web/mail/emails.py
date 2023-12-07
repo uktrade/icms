@@ -20,11 +20,13 @@ from web.models import (
     ExportApplication,
     Exporter,
     ExporterApprovalRequest,
+    ExporterContactInvite,
     FirearmsAuthority,
     FurtherInformationRequest,
     ImportApplication,
     Importer,
     ImporterApprovalRequest,
+    ImporterContactInvite,
     Mailshot,
     Section5Authority,
     UpdateRequest,
@@ -65,6 +67,7 @@ from .messages import (
     LicenceRevokedEmail,
     MailshotEmail,
     NewUserWelcomeEmail,
+    OrganisationContactInviteEmail,
     RetractMailshotEmail,
     Section5AuthorityExpiringEmail,
     VariationRequestCancelledEmail,
@@ -543,3 +546,11 @@ def send_authority_expiring_firearms_email(
 def send_constabulary_deactivated_firearms_email(application: DFLApplication) -> None:
     recipient = get_shared_mailbox_for_constabulary(application.constabulary)
     ConstabularyDeactivatedFirearmsEmail(application=application, to=recipient).send()
+
+
+def send_org_contact_invite_email(
+    organisation: Importer | Exporter, invite: ImporterContactInvite | ExporterContactInvite
+) -> None:
+    OrganisationContactInviteEmail(
+        organisation=organisation, invite=invite, to=[invite.email]
+    ).send()

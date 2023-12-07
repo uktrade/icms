@@ -251,7 +251,7 @@ def can_user_view_org(user: User, org: ORGANISATION) -> bool:
     else:
         can_view_main_org = False
 
-    is_admin = _is_org_admin(user, org)
+    is_admin = is_user_org_admin(user, org)
 
     return is_admin or can_view_org or can_view_main_org
 
@@ -275,7 +275,7 @@ def can_user_edit_org(user: User, org: ORGANISATION) -> bool:
     else:
         can_edit_main_org = False
 
-    is_admin = _is_org_admin(user, org)
+    is_admin = is_user_org_admin(user, org)
 
     return is_admin or can_edit_org or can_edit_main_org
 
@@ -296,12 +296,12 @@ def can_user_manage_org_contacts(user: User, org: ORGANISATION) -> bool:
     else:
         can_manage_main_org_contacts = False
 
-    is_admin = _is_org_admin(user, org)
+    is_admin = is_user_org_admin(user, org)
 
     return is_admin or can_manage_contacts or can_manage_main_org_contacts
 
 
-def _is_org_admin(user: User, org: ORGANISATION) -> bool:
+def is_user_org_admin(user: User, org: ORGANISATION) -> bool:
     """Return True if the supplied user is an org admin.
 
     An org admin is a user who can edit that type of organisation.

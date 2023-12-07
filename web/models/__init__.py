@@ -122,6 +122,7 @@ from web.domains.country.models import (
 )
 from web.domains.exporter.models import (
     Exporter,
+    ExporterContactInvite,
     ExporterGroupObjectPermission,
     ExporterUserObjectPermission,
 )
@@ -135,6 +136,7 @@ from web.domains.firearms.models import (
 )
 from web.domains.importer.models import (
     Importer,
+    ImporterContactInvite,
     ImporterGroupObjectPermission,
     ImporterUserObjectPermission,
 )
@@ -200,6 +202,7 @@ __all__ = [
     "Exporter",
     "ExporterAccessRequest",
     "ExporterApprovalRequest",
+    "ExporterContactInvite",
     "ExporterGroupObjectPermission",
     "ExporterUserObjectPermission",
     "File",
@@ -216,6 +219,7 @@ __all__ = [
     "Importer",
     "ImporterAccessRequest",
     "ImporterApprovalRequest",
+    "ImporterContactInvite",
     "ImporterGroupObjectPermission",
     "ImporterUserObjectPermission",
     "IronSteelApplication",

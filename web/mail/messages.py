@@ -19,7 +19,11 @@ from web.domains.case.types import (
 from web.models import CaseEmail as CaseEmailModel
 from web.models import (
     Constabulary,
+    Exporter,
+    ExporterContactInvite,
     FurtherInformationRequest,
+    Importer,
+    ImporterContactInvite,
     Mailshot,
     UpdateRequest,
     User,
@@ -29,6 +33,7 @@ from web.models import (
 from web.models.shared import ArchiveReasonChoices
 from web.permissions import Perms
 from web.sites import (
+    SiteName,
     get_caseworker_site_domain,
     get_exporter_site_domain,
     get_importer_site_domain,
@@ -40,6 +45,7 @@ from .constants import DATE_FORMAT, IMPORT_CASE_EMAILS, EmailTypes
 from .models import EmailTemplate
 from .types import ImporterDetails
 from .url_helpers import (
+    get_accept_org_invite_url,
     get_account_recovery_url,
     get_authority_view_url,
     get_case_view_url,
@@ -667,3 +673,50 @@ class RetractMailshotEmail(BaseMailshotEmail):
 
     def get_body(self) -> str:
         return self.mailshot.retract_email_body
+
+
+@final
+class OrganisationContactInviteEmail(GOVNotifyEmailMessage):
+    name = EmailTypes.ORG_CONTACT_INVITE
+
+    def __init__(
+        self,
+        *args,
+        organisation: Importer | Exporter,
+        invite: ImporterContactInvite | ExporterContactInvite,
+        **kwargs,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.organisation = organisation
+        self.invite = invite
+
+    def get_context(self) -> dict:
+        match self.organisation:
+            case Importer():
+                service_name = SiteName.IMPORTER.label
+            case Exporter():
+                service_name = SiteName.EXPORTER.label
+            case _:
+                raise ValueError(f"Unknown organisation: {self.organisation}")
+
+        # importer display_name or name (common to exporter and importer)
+        org = self.invite.organisation
+        organisation_name = getattr(org, "display_name", org.name)
+
+        return {
+            "service_name": service_name,
+            "organisation_name": organisation_name,
+            "first_name": self.invite.first_name,
+            "last_name": self.invite.last_name,
+            "invited_by": self.invite.invited_by.full_name,
+            "accept_invite_url": get_accept_org_invite_url(self.organisation, self.invite),
+        }
+
+    def get_site_domain(self) -> str:
+        match self.organisation:
+            case Importer():
+                return get_importer_site_domain()
+            case Exporter():
+                return get_exporter_site_domain()
+            case _:
+                raise ValueError(f"Unknown organisation: {self.organisation}")

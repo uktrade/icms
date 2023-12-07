@@ -7,9 +7,12 @@ from web.domains.case.types import Authority, DocumentPack, ImpOrExp
 from web.models import (
     CaseDocumentReference,
     DFLApplication,
+    Exporter,
+    ExporterContactInvite,
     FirearmsAuthority,
     ImportApplication,
     Importer,
+    ImporterContactInvite,
     Mailshot,
 )
 from web.sites import (
@@ -104,3 +107,17 @@ def get_importer_access_request_url() -> str:
 
 def get_exporter_access_request_url() -> str:
     return urljoin(get_exporter_site_domain(), reverse("access:exporter-request"))
+
+
+def get_accept_org_invite_url(
+    org: Importer | Exporter, invite: ImporterContactInvite | ExporterContactInvite
+) -> str:
+    match org:
+        case Importer():
+            site_url = get_importer_site_domain()
+        case Exporter():
+            site_url = get_exporter_site_domain()
+        case _:
+            raise ValueError(f"Unknown organisation: {org}")
+
+    return urljoin(site_url, reverse("contacts:accept-org-invite", kwargs={"code": invite.code}))

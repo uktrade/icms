@@ -28,6 +28,11 @@ class ExporterFilter(FilterSet):
         model = Exporter
         fields: list[Any] = []
 
+    # Filter base queryset to only get exporters that are not agents.
+    @property
+    def qs(self):
+        return super().qs.filter(main_exporter__isnull=True)
+
 
 class ExporterForm(forms.ModelForm):
     class Meta:

@@ -13,6 +13,7 @@ from web.mail import emails
 from web.mail.constants import EmailTypes
 from web.mail.types import ImporterDetails
 from web.mail.url_helpers import (
+    get_accept_org_invite_url,
     get_account_recovery_url,
     get_case_view_url,
     get_exporter_access_request_url,
@@ -25,9 +26,11 @@ from web.models import (
     Constabulary,
     EmailTemplate,
     ExporterAccessRequest,
+    ExporterContactInvite,
     FirearmsAuthority,
     FurtherInformationRequest,
     ImporterAccessRequest,
+    ImporterContactInvite,
     Mailshot,
     Section5Authority,
     UpdateRequest,
@@ -1248,3 +1251,63 @@ Firearms references(s): 423,476,677\r\n"""
 
         with pytest.raises(ValueError, match="Unknown site: "):
             emails.send_new_user_welcome_email(user, site)
+
+    def test_send_org_contact_invite_email_importer(self):
+        exp_template_id = get_gov_notify_template_id(EmailTypes.ORG_CONTACT_INVITE)
+        expected_domain = get_importer_site_domain()
+        invite = ImporterContactInvite.objects.create(
+            organisation=self.importer,
+            invited_by=self.importer_user,
+            email="email@example.com",  # /PS-IGNORE
+            first_name="bobs",
+            last_name="burgers",
+        )
+
+        emails.send_org_contact_invite_email(self.importer, invite)
+
+        expected_import_personalisation = default_personalisation() | {
+            "icms_url": expected_domain,
+            "service_name": "Import A Licence",
+            "organisation_name": self.importer.display_name,
+            "first_name": invite.first_name,
+            "last_name": invite.last_name,
+            "invited_by": invite.invited_by.full_name,
+            "accept_invite_url": get_accept_org_invite_url(self.importer, invite),
+        }
+
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            invite.email,
+            exp_template_id,
+            personalisation=expected_import_personalisation,
+        )
+
+    def test_send_org_contact_invite_email_exporter(self):
+        exp_template_id = get_gov_notify_template_id(EmailTypes.ORG_CONTACT_INVITE)
+        expected_domain = get_exporter_site_domain()
+        invite = ExporterContactInvite.objects.create(
+            organisation=self.exporter,
+            invited_by=self.exporter_user,
+            email="email@example.com",  # /PS-IGNORE
+            first_name="bobs",
+            last_name="burgers",
+        )
+
+        emails.send_org_contact_invite_email(self.exporter, invite)
+
+        expected_import_personalisation = default_personalisation() | {
+            "icms_url": expected_domain,
+            "service_name": "Export A Certificate",
+            "organisation_name": self.exporter.name,
+            "first_name": invite.first_name,
+            "last_name": invite.last_name,
+            "invited_by": invite.invited_by.full_name,
+            "accept_invite_url": get_accept_org_invite_url(self.exporter, invite),
+        }
+
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            invite.email,
+            exp_template_id,
+            personalisation=expected_import_personalisation,
+        )
