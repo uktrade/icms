@@ -1,3 +1,6 @@
+import uuid
+
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
@@ -79,6 +82,16 @@ class Exporter(Archivable, models.Model):
 
         default_permissions: list[str] = []
         permissions = ExporterObjectPerms()
+
+
+class ExporterContactInvite(models.Model):
+    organisation = models.ForeignKey("web.Exporter", on_delete=models.CASCADE)
+    invited_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    email = models.EmailField()
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
+    processed = models.BooleanField(default=False)
+    code = models.UUIDField(default=uuid.uuid4, editable=False)
 
 
 # Direct foreign key support for Django-Guardian

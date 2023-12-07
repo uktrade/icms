@@ -6,7 +6,6 @@ from web.models import Constabulary, User
 from web.permissions.perms import Perms
 from web.permissions.service import (
     AppChecker,
-    _is_org_admin,
     can_user_edit_firearm_authorities,
     can_user_edit_org,
     can_user_edit_section5_authorities,
@@ -25,6 +24,7 @@ from web.permissions.service import (
     get_user_exporter_permissions,
     get_user_importer_permissions,
     get_users_with_permission,
+    is_user_org_admin,
     organisation_add_contact,
     organisation_get_contacts,
     organisation_remove_contact,
@@ -586,4 +586,4 @@ def test_filter_users_with_org_access():
 def test__is_org_admin_raises(db):
     # Added for 100% test coverage
     with pytest.raises(ValueError, match=r"Unknown org "):
-        _is_org_admin(User.objects.first(), object())
+        is_user_org_admin(User.objects.first(), object())

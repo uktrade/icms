@@ -1,11 +1,11 @@
 from django import forms
 
+from web.forms.widgets import YesNoRadioSelectInline
 from web.models import User
 
 from .widgets import ContactWidget
 
 
-# TODO: ICMSLST-1943 This should restrict the users it returns.
 class ContactForm(forms.Form):
     contact = forms.ModelChoiceField(
         label="",
@@ -28,3 +28,18 @@ class ContactForm(forms.Form):
         if contacts_to_exclude:
             contacts = self.fields["contact"].queryset
             self.fields["contact"].queryset = contacts.exclude(pk__in=contacts_to_exclude)
+
+
+class InviteOrgContactForm(forms.Form):
+    first_name = forms.CharField(help_text="Your contact's first name")  # /PS-IGNORE
+    last_name = forms.CharField(help_text="Your contact's last name")  # /PS-IGNORE
+    email = forms.EmailField(help_text="Email address used to log in to GOV.UK One Login")
+
+
+class AcceptOrgInviteForm(forms.Form):
+    accept_invite = forms.BooleanField(
+        label="Would you like to accept this invite?",
+        required=False,
+        widget=YesNoRadioSelectInline,
+        initial=False,
+    )

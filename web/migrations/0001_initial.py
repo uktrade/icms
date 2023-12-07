@@ -22,8 +22,8 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("auth", "0012_alter_user_first_name_max_length"),
         ("contenttypes", "0002_remove_content_type_name"),
+        ("auth", "0012_alter_user_first_name_max_length"),
     ]
 
     operations = [
@@ -1264,6 +1264,7 @@ class Migration(migrations.Migration):
                             ("MAILSHOT", "Mailshot"),
                             ("RETRACT_MAILSHOT", "Retract Mailshot"),
                             ("NEW_USER_WELCOME", "New User Welcome"),
+                            ("ORG_CONTACT_INVITE", "New Organisation Contact Invite"),
                             ("IMA_CONSTAB_EMAIL", "Constabulary Email"),
                             ("IMA_SANCTION_EMAIL", "Sanctions Email"),
                             ("CA_HSE_EMAIL", "Health and Safety Email"),
@@ -1412,6 +1413,22 @@ class Migration(migrations.Migration):
                 "default_permissions": [],
             },
             bases=(web.models.mixins.Archivable, models.Model),
+        ),
+        migrations.CreateModel(
+            name="ExporterContactInvite",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("email", models.EmailField(max_length=254)),
+                ("first_name", models.CharField(max_length=150)),
+                ("last_name", models.CharField(max_length=150)),
+                ("processed", models.BooleanField(default=False)),
+                ("code", models.UUIDField(default=uuid.uuid4, editable=False)),
+            ],
         ),
         migrations.CreateModel(
             name="ExporterGroupObjectPermission",
@@ -1787,6 +1804,22 @@ class Migration(migrations.Migration):
                 "default_permissions": [],
             },
             bases=(web.models.mixins.Archivable, models.Model),
+        ),
+        migrations.CreateModel(
+            name="ImporterContactInvite",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("email", models.EmailField(max_length=254)),
+                ("first_name", models.CharField(max_length=150)),
+                ("last_name", models.CharField(max_length=150)),
+                ("processed", models.BooleanField(default=False)),
+                ("code", models.UUIDField(default=uuid.uuid4, editable=False)),
+            ],
         ),
         migrations.CreateModel(
             name="ImporterGroupObjectPermission",
@@ -4630,6 +4663,18 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AddField(
+            model_name="importercontactinvite",
+            name="invited_by",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
+        ),
+        migrations.AddField(
+            model_name="importercontactinvite",
+            name="organisation",
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="web.importer"),
+        ),
+        migrations.AddField(
             model_name="importer",
             name="main_importer",
             field=models.ForeignKey(
@@ -4826,6 +4871,18 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 on_delete=django.db.models.deletion.CASCADE, to="auth.permission"
             ),
+        ),
+        migrations.AddField(
+            model_name="exportercontactinvite",
+            name="invited_by",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
+        ),
+        migrations.AddField(
+            model_name="exportercontactinvite",
+            name="organisation",
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="web.exporter"),
         ),
         migrations.AddField(
             model_name="exporter",
