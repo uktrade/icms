@@ -39,6 +39,7 @@ class SysPerms(PermissionTextChoice):
     exporter_admin = "web.exporter_admin", "Can manage Exporter records."
     commodity_admin = "web.commodity_admin", "Is a commodity administrator"
     manage_sanction_contacts = "web.manage_sanction_contacts", "Manage sanction email contacts"
+    manage_signatures = "web.manage_signatures", "Manage signatures"
 
     edit_firearm_authorities = (
         "web.edit_firearm_authorities",

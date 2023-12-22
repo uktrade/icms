@@ -1,8 +1,10 @@
+{% from "web/domains/signature/macros.html" import document_signature %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <link rel="icon" href="{{ static('web/img/favicon.png') }}" type="image/png">
     <link rel="stylesheet" href="{{ static('web/css/pdfs/certificate-style.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ static('web/css/components/signature.css') }}">
     {% block stylesheet %}
     {% endblock %}
     {% if preview %}
@@ -42,10 +44,10 @@
         <div class="signature-block page-margin">
           {# TODO ICMSLST-697 - Revist when implementing digital signatures #}
           {% if preview %}
-            <span class="signature">Signature not verified</span>
+            {{ document_signature(signature_file, signature.content_type, signature.signatory) }}
             <span class="qr-code">[[QR Code Placeholder]]</span>
           {% else %}
-            <span class="signature">Signature not verified</span>
+            {{ document_signature(signature_file, signature.content_type, signature.signatory) }}
             <span class="qr-code">[[QR Code Placeholder]]</span>
           {% endif %}
             <span class="qr-text">Scan this QR code to check this

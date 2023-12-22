@@ -78,7 +78,7 @@ def certificate():
 
 
 @pytest.fixture()
-def oil_expected_preview_context():
+def oil_expected_preview_context(active_signature):
     """Returns the minimum expected context values - tests then override the different keys in the tests."""
 
     return {
@@ -100,11 +100,13 @@ def oil_expected_preview_context():
         "endorsements": [],
         "issue_date": day_ordinal_date(timezone.now().date()),
         "page_title": "Licence Preview",
+        "signature": active_signature,
+        "signature_file": "",
     }
 
 
 @pytest.fixture()
-def dfl_expected_preview_context():
+def dfl_expected_preview_context(active_signature):
     """Returns the minimum expected context values - tests then override the different keys in the tests."""
 
     return {
@@ -122,11 +124,13 @@ def dfl_expected_preview_context():
         "endorsements": [],
         "issue_date": day_ordinal_date(timezone.now().date()),
         "page_title": "Licence Preview",
+        "signature": active_signature,
+        "signature_file": "",
     }
 
 
 @pytest.fixture()
-def sil_expected_preview_context():
+def sil_expected_preview_context(active_signature):
     """Returns the minimum expected context values - tests then override the different keys in the tests."""
     template = Template.objects.get(template_code="FIREARMS_MARKINGS_STANDARD")
 
@@ -146,11 +150,13 @@ def sil_expected_preview_context():
         "markings_text": template.template_content,
         "issue_date": day_ordinal_date(timezone.now().date()),
         "page_title": "Licence Preview",
+        "signature": active_signature,
+        "signature_file": "",
     }
 
 
 @pytest.fixture()
-def sanctions_expected_preview_context():
+def sanctions_expected_preview_context(active_signature):
     """Returns the minimum expected context values - tests then override the different keys in the tests."""
     return {
         "page_title": "Licence Preview",
@@ -170,11 +176,13 @@ def sanctions_expected_preview_context():
             ["Test Goods, 2707100010, 1000 kilos, 10500"],
             ["More Commoditites, 7112990090, 56.78 kilos, 789"],
         ],
+        "signature": active_signature,
+        "signature_file": "",
     }
 
 
 @pytest.fixture()
-def wood_expected_preview_context():
+def wood_expected_preview_context(active_signature):
     """Returns the minimum expected context values - tests then override the different keys in the tests."""
     return {
         "page_title": "Licence Preview",
@@ -194,4 +202,6 @@ def wood_expected_preview_context():
         "quantity": "43",
         "goods": "Very Woody",
         "commodity_code": "4403211000",
+        "signature": active_signature,
+        "signature_file": "",
     }

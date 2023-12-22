@@ -20,6 +20,7 @@ from web.auth.fox_hasher import FOXPBKDF2SHA1Hasher
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import end_process_task
+from web.domains.signature import utils as signature_utils
 from web.flow.models import ProcessTypes
 from web.models import (
     CertificateOfFreeSaleApplication,
@@ -35,6 +36,7 @@ from web.models import (
     Office,
     OpenIndividualLicenceApplication,
     SanctionsAndAdhocApplication,
+    Signature,
     SILApplication,
     SILChecklist,
     Task,
@@ -930,3 +932,15 @@ def draft_mailshot(ilb_admin_user):
         description="A mailshot to use for testing",
         status=Mailshot.Statuses.DRAFT,
     )
+
+
+@pytest.fixture()
+def active_signature():
+    return Signature.objects.get(name="Test Active Signature", is_active=True)
+
+
+@pytest.fixture(autouse=True)
+def mock_signature_file(monkeypatch):
+    mock_file = mock.create_autospec(signature_utils.get_signature_file_base64)
+    mock_file.return_value = ""
+    monkeypatch.setattr(signature_utils, "get_signature_file_base64", mock_file)

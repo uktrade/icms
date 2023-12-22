@@ -38,6 +38,7 @@ def get_groups():
             Perms.sys.exporter_admin,
             Perms.sys.importer_admin,
             Perms.sys.manage_sanction_contacts,
+            Perms.sys.manage_signatures,
             Perms.sys.edit_firearm_authorities,
             Perms.sys.edit_section_5_firearm_authorities,
             Perms.sys.commodity_admin,

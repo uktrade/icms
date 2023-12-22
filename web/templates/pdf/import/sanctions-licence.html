@@ -1,3 +1,4 @@
+{% from "web/domains/signature/macros.html" import document_signature %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -6,7 +7,7 @@
     <title>{{ page_title }}</title>
     <link href="{{ static("web/css/pdfs/licence-and-certificate-common-style.css") }}" rel="stylesheet">
     <link href="{{ static("web/css/pdfs/sanctions-licence-style.css") }}" rel="stylesheet">
-    {% block css %} {% endblock css %}
+    <link rel="stylesheet" type="text/css" href="{{ static('web/css/components/signature.css') }}">
     {% if preview_licence %}
       <link href="{{ static("web/css/pdfs/preview.css") }}" rel="stylesheet">
     {% endif %}
@@ -123,7 +124,7 @@
       </div>
       <div class="signature content-block flex-row row wrap">
         <p class="details-text row"><strong>11. </strong>Competent authority's endorsement</p>
-        <div class="digital-signature half"><p>DIGITAL SIGNATURE</p></div>
+        <div class="digital-signature half">{{ document_signature(signature_file, signature.content_type, signature.signatory) }}</div>
         <div class="dbt-logo-block half">
           <img
             id="dbt-logo"

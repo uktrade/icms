@@ -9,7 +9,7 @@ from storages.backends.s3boto3 import S3Boto3StorageFile
 from web.models import User
 from web.utils.s3 import delete_file_from_s3
 
-EXTENSION_BLACKLIST = [
+EXTENSION_DENY_LIST = [
     "bat",
     "bin",
     "com",
@@ -28,7 +28,14 @@ EXTENSION_BLACKLIST = [
 ]
 
 HELP_TEXT = "The following file extensions (types) are not allowed to be uploaded: " + ", ".join(
-    EXTENSION_BLACKLIST
+    EXTENSION_DENY_LIST
+)
+
+IMAGE_EXTENSION_ALLOW_LIST = ["jpeg", "jpg", "png"]
+
+IMAGE_HELP_TEXT = (
+    "Only the following file extensions (types) are allowed to be uploaded: "
+    + ", ".join(IMAGE_EXTENSION_ALLOW_LIST)
 )
 
 
@@ -43,19 +50,46 @@ class ICMSFileField(forms.FileField):
         )
 
 
+class ImageFileField(forms.FileField):
+    def __init__(self, *, validators=(), help_text=IMAGE_HELP_TEXT, **kwargs) -> None:
+        super().__init__(
+            # order is important: validate_file_extension can delete the file
+            # from S3, so has to be after the virus check
+            validators=[validate_virus_check_result, validate_image_file_extension, *validators],
+            help_text=help_text,
+            **kwargs,
+        )
+
+
 def validate_file_extension(file: S3Boto3StorageFile) -> None:
     """Django validator that blocks forbidden file extensions in ICMS."""
 
-    file_name, file_extension = os.path.splitext(file.name)
+    _, file_extension = os.path.splitext(file.name)
 
-    if file_extension.lstrip(".") in EXTENSION_BLACKLIST:
+    if file_extension.lstrip(".") in EXTENSION_DENY_LIST:
         # by the time custom validations are called, file upload handlers have
         # already done their job and the file is in S3, so we have to delete it
         delete_file_from_s3(file.name)
 
         raise forms.ValidationError(
             "Invalid file extension. These extensions are not allowed: "
-            + ", ".join(EXTENSION_BLACKLIST)
+            + ", ".join(EXTENSION_DENY_LIST)
+        )
+
+
+def validate_image_file_extension(file: S3Boto3StorageFile) -> None:
+    """Django validator that only allows specific image file extensions."""
+
+    _, file_extension = os.path.splitext(file.name)
+
+    if file_extension.lstrip(".") not in IMAGE_EXTENSION_ALLOW_LIST:
+        # by the time custom validations are called, file upload handlers have
+        # already done their job and the file is in S3, so we have to delete it
+        delete_file_from_s3(file.name)
+
+        raise forms.ValidationError(
+            "Invalid file extension. Only these extensions are allowed: "
+            + ", ".join(IMAGE_EXTENSION_ALLOW_LIST)
         )
 
 

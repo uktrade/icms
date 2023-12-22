@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from unittest.mock import patch
 
 import pytest
 from django.test import Client
@@ -57,7 +58,11 @@ def test_preview_cover_letter(
 
 
 @pytest.mark.django_db
-def test_preview_licence(ilb_admin_user, ilb_admin_client, importer_one_contact, importer, office):
+@patch("web.domains.signature.utils.get_signature_file_base64")
+def test_preview_licence(
+    mock_file, ilb_admin_user, ilb_admin_client, importer_one_contact, importer, office
+):
+    mock_file.return_value = ""
     ilb_admin = ilb_admin_user
     user = importer_one_contact
 
