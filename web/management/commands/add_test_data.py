@@ -19,6 +19,7 @@ from web.models import (
     ObsoleteCalibre,
     ObsoleteCalibreGroup,
     Office,
+    Signature,
     Task,
     User,
 )
@@ -260,6 +261,7 @@ class Command(BaseCommand):
         user = self.create_user(username)
         add_email(user)
         add_group(user, "Home Office Case Officer")
+        add_signature(user)
 
         return user
 
@@ -293,3 +295,17 @@ def add_email(user):
 def add_group(user, group_name):
     group = Group.objects.get(name=group_name)
     user.groups.add(group)
+
+
+def add_signature(user):
+    Signature.objects.create(
+        name="Test Active Signature",
+        signatory="Test Signatory",
+        history="Created",
+        is_active=True,
+        filename="signature_filname.png",
+        content_type="png",
+        file_size=100,
+        path="path/to/file/signature_filname.png",
+        created_by=user,
+    )

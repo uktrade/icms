@@ -243,6 +243,7 @@ class Menu:
                         SubMenuLink(label="Product legislation", view="product-legislation-list"),
                         SubMenuLink(label="Countries", view="country:list"),
                         SubMenuLink(label="Templates", view="template-list"),
+                        SubMenuLink(label="Signatures", view="signature-list"),
                     ],
                 ),
                 SubMenu(

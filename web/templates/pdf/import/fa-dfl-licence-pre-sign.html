@@ -1,5 +1,5 @@
 {% extends "pdf/import/fa-dfl-licence-preview.html" %}
 
 {% block signature %}
-  <img alt="DIT Signature" src="{{ static('web/img/dit-no-signature.png') }}"/>
+  {{ document_signature(signature_file, signature.content_type, signature.signatory) }}
 {% endblock %}

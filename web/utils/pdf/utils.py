@@ -8,6 +8,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from web.domains.case.services import document_pack
+from web.domains.signature.utils import get_active_signature_file
 from web.domains.template.utils import (
     ScheduleText,
     fetch_cfs_declaration_translations,
@@ -57,6 +58,7 @@ def get_licence_context(
     importer = application.importer
     office = application.importer_office
     endorsements = get_licence_endorsements(application)
+    signature, signature_file = get_active_signature_file()
 
     return {
         "process": application,
@@ -70,6 +72,8 @@ def get_licence_context(
         "licence_number": _get_licence_number(application, doc_type),
         "licence_start_date": _get_licence_start_date(licence),
         "licence_end_date": _get_licence_end_date(licence),
+        "signature": signature,
+        "signature_file": signature_file,
     }
 
 
@@ -323,6 +327,7 @@ def _get_certificate_context(
     country: "Country",
 ) -> "Context":
     preview = doc_type == DocumentTypes.CERTIFICATE_PREVIEW
+    signature, signature_file = get_active_signature_file()
 
     if preview:
         reference = "[[CERTIFICATE_REFERENCE]]"
@@ -345,6 +350,8 @@ def _get_certificate_context(
         "issue_date": issue_date,
         "process": application,
         "preview": preview,
+        "signature": signature,
+        "signature_file": signature_file,
     }
 
 
