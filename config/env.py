@@ -143,10 +143,12 @@ class Environment(BaseSettings):
     sentry_dsn: str = ""
     sentry_environment: str = ""
 
-    #
     # Cloud Foundry Environment Variables
     vcap_services: VCAPServices | None = None
     vcap_application: VCAPApplication | None = None
+
+    # Redis settings
+    redis_url: str = "redis://redis:6379"
 
 
 env: Environment = Environment()  # type:ignore[call-arg]

@@ -264,7 +264,7 @@ if env.vcap_services:
     CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_REQUIRED}
 
 else:
-    REDIS_URL = "redis://redis:6379"
+    REDIS_URL = env.redis_url
 
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = "django-db"
@@ -386,7 +386,7 @@ structlog.configure(
 )
 
 # Print json formatted logs to console. We override this for local development
-# and testing.
+# and testing.sdf
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
