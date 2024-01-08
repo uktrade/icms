@@ -386,7 +386,7 @@ structlog.configure(
 )
 
 # Print json formatted logs to console. We override this for local development
-# and testing.sdf
+# and testing.
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
