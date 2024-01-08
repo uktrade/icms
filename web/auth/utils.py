@@ -14,7 +14,7 @@ def get_legacy_user_by_username(email_address: str) -> User:
 def migrate_user(current_user: User, old_icms_user: User) -> None:
     """Migrate a user to a V1 ICMS user.
 
-    :param current_user: The current logged-in user (linked to a gov.uk one login account)
+    :param current_user: The current logged-in user (linked to a GOV.UK One Login account)
     :param old_icms_user: A user migrated from ICMS V1.
     """
 

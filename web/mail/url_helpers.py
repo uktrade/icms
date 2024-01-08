@@ -3,8 +3,18 @@ from urllib.parse import urljoin
 from django.shortcuts import reverse
 from django.templatetags.static import static
 
-from web.domains.case.types import Authority, ImpOrExp
-from web.models import FirearmsAuthority, Importer, Mailshot
+from web.domains.case.types import Authority, DocumentPack, ImpOrExp
+from web.models import (
+    CaseDocumentReference,
+    DFLApplication,
+    Exporter,
+    ExporterContactInvite,
+    FirearmsAuthority,
+    ImportApplication,
+    Importer,
+    ImporterContactInvite,
+    Mailshot,
+)
 from web.sites import (
     get_caseworker_site_domain,
     get_exporter_site_domain,
@@ -55,13 +65,33 @@ def get_maintain_importers_view_url() -> str:
     return urljoin(get_caseworker_site_domain(), reverse("importer-list"))
 
 
-def get_document_view_url(application: ImpOrExp, full_url: bool = False) -> str:
-    url_kwargs = {"application_pk": application.pk}
-    if application.is_import_application():
-        url_kwargs["case_type"] = "import"
-    else:
-        url_kwargs["case_type"] = "export"
-    url = reverse("case:applicant-case-history", kwargs=url_kwargs)
+def get_constabulary_document_view_url(
+    application: DFLApplication, doc_pack: DocumentPack, full_url: bool = False
+) -> str:
+    url_kwargs = {
+        "application_pk": application.pk,
+        "doc_pack_pk": doc_pack.pk,
+        "case_type": "import",
+    }
+    url = reverse("case:constabulary-doc", kwargs=url_kwargs)
+    if full_url:
+        return urljoin(get_caseworker_site_domain(), url)
+    return url
+
+
+def get_constabulary_document_download_view_url(
+    application: ImportApplication,
+    doc_pack: DocumentPack,
+    cdr: CaseDocumentReference,
+    full_url: bool = False,
+) -> str:
+    url_kwargs = {
+        "application_pk": application.pk,
+        "doc_pack_pk": doc_pack.pk,
+        "case_type": "import",
+        "cdr_pk": cdr.pk,
+    }
+    url = reverse("case:constabulary-doc-download", kwargs=url_kwargs)
     if full_url:
         return urljoin(get_caseworker_site_domain(), url)
     return url
@@ -77,3 +107,17 @@ def get_importer_access_request_url() -> str:
 
 def get_exporter_access_request_url() -> str:
     return urljoin(get_exporter_site_domain(), reverse("access:exporter-request"))
+
+
+def get_accept_org_invite_url(
+    org: Importer | Exporter, invite: ImporterContactInvite | ExporterContactInvite
+) -> str:
+    match org:
+        case Importer():
+            site_url = get_importer_site_domain()
+        case Exporter():
+            site_url = get_exporter_site_domain()
+        case _:
+            raise ValueError(f"Unknown organisation: {org}")
+
+    return urljoin(site_url, reverse("contacts:accept-org-invite", kwargs={"code": invite.code}))

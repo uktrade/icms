@@ -1,0 +1,56 @@
+{% extends "layout/sidebar.html" %}
+{% from "display/fields.html" import application_field %}
+{% from "web/domains/signature/macros.html" import document_signature %}
+
+{% block css %}
+  <link rel="stylesheet" type="text/css" href="{{ static('web/css/components/signature.css') }}">
+{% endblock %}
+
+{% block main_content %}
+  <h3>View Signature</h3>
+  {{ application_field(object.name, "Name") }}
+  {{ application_field(object.signatory, "Signatory") }}
+  {{ application_field(object.is_active, "Active") }}
+  {{ application_field(object.created_datetime.strftime('%d %B %Y'), "Created Date") }}
+  <div class="section-break"></div>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">Signature</label>
+    </div>
+    <div class="nine columns">
+      {{ document_signature(signature_file, object.content_type, object.signatory) }}
+    </div>
+  </div>
+  <div class="section-break"></div>
+
+  <div class="row">
+    <div class="three columns">
+      <label class="prompt west">History Log</label>
+    </div>
+    <div class="nine columns">
+      {% for line in object.history.split('\n') %}
+        <p class="helptext">{{line}}</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="section-break"></div>
+
+  <div class="container">
+    <div class="row">
+    <div class="three columns"></div>
+    <div class="eight columns">
+      <ul class="menu-out flow-across actions">
+      <li>
+        <a href="{{ icms_url('signature-list') }}" class="button link-button">
+        Back
+        </a>
+      </li>
+      </ul>
+    </div>
+    <div class="one columns"></div>
+    </div>
+  </div>
+
+{% endblock %}

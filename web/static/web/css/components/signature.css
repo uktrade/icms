@@ -1,0 +1,23 @@
+div[name="signature-widget"] {
+    display: flex;
+    flex-wrap: wrap;
+    width: 200px;
+    height: 110px;
+}
+
+div[name="signature-widget"] > span {
+    flex: 0 0 100%;
+    display: block;
+    font-size: 12px;
+    margin: 1px 0;
+}
+
+#signature-widget-image-container {
+    flex: 0 0 100%;
+    display: block;
+    margin: 1px 0;
+}
+
+#signature-widget-image {
+    max-width: 175px;
+}

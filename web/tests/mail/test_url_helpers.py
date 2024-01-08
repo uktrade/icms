@@ -1,10 +1,12 @@
 import pytest
 from django.utils import timezone
 
+from web.domains.case.services import document_pack
 from web.mail.url_helpers import (
     get_authority_view_url,
     get_case_view_url,
-    get_document_view_url,
+    get_constabulary_document_download_view_url,
+    get_constabulary_document_view_url,
     get_mailshot_detail_view_url,
     get_validate_digital_signatures_url,
 )
@@ -67,24 +69,27 @@ def test_get_authority_view_url(authority_class, full_url, expected_url, importe
 @pytest.mark.parametrize(
     "full_url,expected_url",
     [
-        (False, "/case/export/{pk}/applicant-case-history/"),
-        (True, "http://caseworker/case/export/{pk}/applicant-case-history/"),
+        (False, "/case/import/{pk}/documents/{doc_pack_pk}/"),
+        (True, "http://caseworker/case/import/{pk}/documents/{doc_pack_pk}/"),
     ],
 )
-def test_get_export_document_view_url(completed_cfs_app, full_url, expected_url):
-    assert get_document_view_url(completed_cfs_app, full_url=full_url) == expected_url.format(
-        pk=completed_cfs_app.pk
-    )
+def test_get_constabulary_document_view_url(completed_dfl_app, full_url, expected_url):
+    active_pack = document_pack.pack_active_get(completed_dfl_app)
+    assert get_constabulary_document_view_url(
+        completed_dfl_app, active_pack, full_url=full_url
+    ) == expected_url.format(pk=completed_dfl_app.pk, doc_pack_pk=active_pack.pk)
 
 
 @pytest.mark.parametrize(
     "full_url,expected_url",
     [
-        (False, "/case/import/{pk}/applicant-case-history/"),
-        (True, "http://caseworker/case/import/{pk}/applicant-case-history/"),
+        (False, "/case/import/{pk}/documents/{doc_pack_pk}/download/{cdr_pk}/"),
+        (True, "http://caseworker/case/import/{pk}/documents/{doc_pack_pk}/download/{cdr_pk}/"),
     ],
 )
-def test_get_import_document_view_url(completed_dfl_app, full_url, expected_url):
-    assert get_document_view_url(completed_dfl_app, full_url=full_url) == expected_url.format(
-        pk=completed_dfl_app.pk
-    )
+def test_get_constabulary_document_download_view_url(completed_dfl_app, full_url, expected_url):
+    active_pack = document_pack.pack_active_get(completed_dfl_app)
+    cdr = active_pack.document_references.first()
+    assert get_constabulary_document_download_view_url(
+        completed_dfl_app, active_pack, cdr, full_url=full_url
+    ) == expected_url.format(pk=completed_dfl_app.pk, cdr_pk=cdr.pk, doc_pack_pk=active_pack.pk)

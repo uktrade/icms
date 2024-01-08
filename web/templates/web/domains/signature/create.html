@@ -1,0 +1,76 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% from "web/domains/signature/macros.html" import document_signature %}
+
+{% block css %}
+  <link rel="stylesheet" type="text/css" href="{{ static('web/css/components/signature.css') }}">
+{% endblock %}
+
+{% block page_js %}
+  {{ super() }}
+  <script src="{{ static('web/js/components/signature.js') }}" type="text/javascript"></script>
+{% endblock %}
+
+{% block main_content %}
+  <h4>Add new signature</h4>
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
+  {{ fields.field(form.name) }}
+  {{ fields.field(form.signatory) }}
+  {{ fields.field(form.file) }}
+
+  <div class="row row_{{ form.is_active.id_for_label  }}" >
+    <div class="three columns">
+      <label for="{{ form.is_active.id_for_label }}" class="prompt west">
+        {{ form.is_active.field.label }}
+      </label>
+    </div>
+    <div class="one columns input-group {% if show_errors and form.is_active.errors %} input-error {% endif %}">
+        {{ form.is_active }}
+    </div>
+    <div class="ten columns">
+      <div class="input-group-addon hint-addon"><div aria-describedby="signature-set-active-tooltip" class="hint icon-info tooltipstered"></div></div>
+    </div>
+  </div>
+
+  <div id="signature-set-active-tooltip" role="tooltip" class="hint-content" aria-hidden="true">
+    <div class="screen-reader-only">This item has hint text,</div>
+    <span>
+      Checking this will set this signature to the active signature that appears on licence and certificate documents.
+      The currently active signature will be archived.
+    </span>
+  </div>
+
+
+  <div class="section-break"></div>
+
+  <div class="row" id="signature-widget-row" hidden>
+    <div class="three columns">
+      <label class="prompt west">Signature Example</label>
+    </div>
+    <div class="nine columns">
+      {{ document_signature("", "", "") }}
+    </div>
+  </div>
+  <div class="section-break"></div>
+
+
+  <div class="container">
+    <div class="row">
+      <div class="three columns"></div>
+      <div class="eight columns">
+        <ul class="menu-out flow-across">
+          <li>
+            <button id="btn-submit" type="submit" class="primary-button button">Save</button>
+          </li>
+          <li>
+            <a href="{{ icms_url('signature-list') }}" class="button link-button">Cancel</a>
+          </li>
+        </ul>
+      </div>
+      <div class="one columns"></div>
+    </div>
+  </div>
+  {% endcall %}
+
+{% endblock %}

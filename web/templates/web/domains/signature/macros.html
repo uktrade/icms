@@ -1,0 +1,11 @@
+{% macro document_signature(image_base64, content_type, signatory) -%}
+    <div name="signature-widget">
+        <span id="signature-widget-signatory">{{ signatory }}</span>
+        <div id="signature-widget-image-container">
+            <img id="signature-widget-image" src="data:{{ content_type }};base64, {{ image_base64 }}">
+        </div>
+        <span>On behalf of the Secretary of State</span>
+        <span>Department for Business and Trade</span>
+    </div>
+{%- endmacro %}
+

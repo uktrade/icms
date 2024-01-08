@@ -108,6 +108,7 @@ class EmailTypes(TypedTextChoices):
     MAILSHOT = ("MAILSHOT", "Mailshot")
     RETRACT_MAILSHOT = ("RETRACT_MAILSHOT", "Retract Mailshot")
     NEW_USER_WELCOME = ("NEW_USER_WELCOME", "New User Welcome")
+    ORG_CONTACT_INVITE = ("ORG_CONTACT_INVITE", "New Organisation Contact Invite")
 
     # Case emails
     CONSTABULARY_CASE_EMAIL = ("IMA_CONSTAB_EMAIL", "Constabulary Email")

@@ -38,6 +38,7 @@ def get_groups():
             Perms.sys.exporter_admin,
             Perms.sys.importer_admin,
             Perms.sys.manage_sanction_contacts,
+            Perms.sys.manage_signatures,
             Perms.sys.edit_firearm_authorities,
             Perms.sys.edit_section_5_firearm_authorities,
             Perms.sys.commodity_admin,
@@ -104,9 +105,10 @@ def get_groups():
         Perms.obj.constabulary.get_group_name(): {
             #
             # Page permissions
-            Perms.sys.importer_regulator,
+            Perms.page.view_documents_constabulary,
             #
             # Sys permissions
+            Perms.sys.importer_regulator,
             Perms.sys.edit_firearm_authorities,
         },
         "Import Search User": {

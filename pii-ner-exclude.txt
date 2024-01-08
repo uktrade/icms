@@ -3523,3 +3523,41 @@ assert template.user_can_edit(bob
 template.form_data
 MAIL_TASK_RATE_LIMIT='1000/m'
 MAIL_TASK_MAX_RETRIES=5
+Set Active
+Signatures</h4
+Active</button
+base64
+Department for Business
+{{ application_field(object.name
+{{ application_field(object.signatory
+Signatory
+{{ application_field(object.created_datetime.strftime('%d %B %
+Created Date
+{{ document_signature(signature_file
+west">History
+Test Signature
+Test Signatory
+f'2023-12-19
+12:51:59 - Signature "Test Signature
+12:51:59 - Archived
+Test Active Signature
+ICMSLST-1430 Revisit
+right">Date Issued
+the Department for International Trade.</li
+Fetch the signature file object from s3
+Fetch the active signature and base64 file string
+f"2023-12-19
+null &&
+signature_pk
+kwargs={'signature_pk
+upload_case_document_file
+Filter Users
+New Organisation Contact Invite
+Django 4.2.7
+"Check the invite exists
+Views
+Invite</h4
+Invite an Importer Contact
+Invite an Exporter Contact
+user.department
+xps

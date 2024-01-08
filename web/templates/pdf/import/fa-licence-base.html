@@ -1,3 +1,4 @@
+{% from "web/domains/signature/macros.html" import document_signature %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,7 @@
   <title>{{ page_title }}</title>
   <link href="{{ static("web/css/pdfs/licence-and-certificate-common-style.css") }}" rel="stylesheet">
   <link href="{{ static("web/css/pdfs/fa-common-licence-style.css") }}" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{{ static('web/css/components/signature.css') }}">
   {% block css %} {% endblock css %}
   {% if preview_licence %}
     <link href="{{ static("web/css/pdfs/import-licence-preview-style.css") }}" rel="stylesheet">
@@ -103,10 +105,7 @@
       <div class="flex-row" id="signature-and-date-issued">
         <div id="signature">
           {% block signature %}
-            <p class="content">Signed by Import Licensing Branch</p>
-            <img alt="DIT Signature" src="{{ static('web/img/dit-dummy-signature.png') }}"/>
-            <p class="content">On behalf of the Secretary of State</p>
-            <p class="content">Department for International Trade</p>
+            {{ document_signature(signature_file, signature.content_type, signature.signatory) }}
           {% endblock %}
         </div>
         <div>

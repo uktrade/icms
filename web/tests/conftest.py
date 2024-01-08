@@ -20,6 +20,7 @@ from web.auth.fox_hasher import FOXPBKDF2SHA1Hasher
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import end_process_task
+from web.domains.signature import utils as signature_utils
 from web.flow.models import ProcessTypes
 from web.models import (
     CertificateOfFreeSaleApplication,
@@ -29,12 +30,14 @@ from web.models import (
     DFLChecklist,
     Exporter,
     ExporterAccessRequest,
+    File,
     Importer,
     ImporterAccessRequest,
     Mailshot,
     Office,
     OpenIndividualLicenceApplication,
     SanctionsAndAdhocApplication,
+    Signature,
     SILApplication,
     SILChecklist,
     Task,
@@ -711,7 +714,7 @@ def cfs_app_submitted(
 
 
 @pytest.fixture
-def completed_sil_app(fa_sil_app_submitted, ilb_admin_client):
+def completed_sil_app(fa_sil_app_submitted, ilb_admin_client, ilb_admin_user):
     """A completed firearms sil application."""
     app = fa_sil_app_submitted
 
@@ -736,12 +739,12 @@ def completed_sil_app(fa_sil_app_submitted, ilb_admin_client):
     task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
     end_process_task(task)
     document_pack.pack_draft_set_active(app)
-
+    _add_files_to_active_document_pack(app, ilb_admin_user)
     return app
 
 
 @pytest.fixture
-def completed_dfl_app(fa_dfl_app_submitted, ilb_admin_client):
+def completed_dfl_app(fa_dfl_app_submitted, ilb_admin_client, ilb_admin_user):
     """A completed firearms dfl application."""
     app = fa_dfl_app_submitted
 
@@ -766,12 +769,12 @@ def completed_dfl_app(fa_dfl_app_submitted, ilb_admin_client):
     task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
     end_process_task(task)
     document_pack.pack_draft_set_active(app)
-
+    _add_files_to_active_document_pack(app, ilb_admin_user)
     return app
 
 
 @pytest.fixture
-def completed_cfs_app(cfs_app_submitted, ilb_admin_client):
+def completed_cfs_app(cfs_app_submitted, ilb_admin_client, ilb_admin_user):
     """A Certificate of Free Sale (export) application that has been approved."""
     app = cfs_app_submitted
 
@@ -792,7 +795,7 @@ def completed_cfs_app(cfs_app_submitted, ilb_admin_client):
     end_process_task(task)
 
     document_pack.pack_draft_set_active(app)
-
+    _add_files_to_active_document_pack(app, ilb_admin_user)
     return app
 
 
@@ -917,6 +920,22 @@ def _add_valid_checklist(app):
             raise ValueError(f"Invalid process_type: {app.process_type}")
 
 
+def _add_files_to_active_document_pack(app, ilb_admin_user) -> None:
+    """Simulates what happens when upload_case_document_file is called without uploading a file to s3"""
+    active_pack = document_pack.pack_active_get(app)
+
+    for cdr in active_pack.document_references.all():
+        cdr.document = File.objects.create(
+            is_active=True,
+            filename=f"{cdr.document_type}.pdf",
+            content_type="application/pdf",
+            file_size=10,
+            path=f"{cdr.document_type}.pdf",
+            created_by=ilb_admin_user,
+        )
+        cdr.save()
+
+
 @pytest.fixture
 def draft_mailshot(ilb_admin_user):
     return Mailshot.objects.create(
@@ -930,3 +949,15 @@ def draft_mailshot(ilb_admin_user):
         description="A mailshot to use for testing",
         status=Mailshot.Statuses.DRAFT,
     )
+
+
+@pytest.fixture()
+def active_signature():
+    return Signature.objects.get(name="Test Active Signature", is_active=True)
+
+
+@pytest.fixture(autouse=True)
+def mock_signature_file(monkeypatch):
+    mock_file = mock.create_autospec(signature_utils.get_signature_file_base64)
+    mock_file.return_value = ""
+    monkeypatch.setattr(signature_utils, "get_signature_file_base64", mock_file)

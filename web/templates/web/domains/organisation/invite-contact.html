@@ -1,0 +1,26 @@
+{% extends "layout/sidebar.html" %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li><a href="{{ parent_url }}" class="prev-link">Edit {{ organisation }}</a></li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  <h4>Add an {{ organisation }} contact</h4>
+  <br>
+  <div class="row">
+    <form action="" method="post" class="column six">
+      {{ csrf_input }}
+      {{ form.as_p() }}
+      <input
+        type="submit"
+        class="primary-button button"
+        value="Invite Contact"
+        data-confirm="Are you sure this is the email address the contact will use to log in to GOV.UK One Login?"
+      >
+    </form>
+  </div>
+{% endblock %}

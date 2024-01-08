@@ -27,6 +27,10 @@ class PagePermissions(PermissionTextChoice):
         "Can view search certificate applications page",
     )
     view_imi = ("web.view_imi", "Can view IMI pages.")
+    view_documents_constabulary = (
+        "web.can_view_documents_constabulary",
+        "Can view issued documents within constabulary region page",
+    )
 
 
 class SysPerms(PermissionTextChoice):
@@ -39,6 +43,7 @@ class SysPerms(PermissionTextChoice):
     exporter_admin = "web.exporter_admin", "Can manage Exporter records."
     commodity_admin = "web.commodity_admin", "Is a commodity administrator"
     manage_sanction_contacts = "web.manage_sanction_contacts", "Manage sanction email contacts"
+    manage_signatures = "web.manage_signatures", "Manage signatures"
 
     edit_firearm_authorities = (
         "web.edit_firearm_authorities",

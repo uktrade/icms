@@ -11,7 +11,17 @@ urlpatterns = [
             [
                 path("add/", views.add, name="add"),
                 path("<int:contact_pk>/delete/", views.delete, name="delete"),
+                path(
+                    "invite-contact/",
+                    views.InviteOrgContactView.as_view(),
+                    name="invite-org-contact",
+                ),
             ]
         ),
-    )
+    ),
+    path(
+        "accept-org-invite/<uuid:code>/",
+        views.AcceptOrgContactInviteView.as_view(),
+        name="accept-org-invite",
+    ),
 ]

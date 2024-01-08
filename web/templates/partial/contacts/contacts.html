@@ -7,6 +7,27 @@
   </div>
 {% endif %}
 
+{% if not read_only and can_manage_contacts %}
+  {% if "web.ilb_admin" in perms %}
+    <form method="post" action="{{ icms_url('contacts:add', kwargs={'org_type': org_type, 'org_pk': object.pk}) }}">
+      {{ csrf_input }}
+      <div class="container setoutForm">
+        <div class="row">
+          <div class="four columns">
+            {{ contact_form.as_p() }}
+          </div>
+          <div class="two columns">
+            <button type="submit" class="button small-button icon-add">Add contact</button>
+          </div>
+          <div class="six columns"></div>
+        </div>
+      </div>
+    </form>
+  {% else %}
+    <a class="button" href="{{ icms_url('contacts:invite-org-contact', kwargs={'org_type': org_type, 'org_pk': object.pk}) }}">Invite contact to organisation</a>
+  {% endif %}
+{% endif %}
+
 <div id="team-members" class="tab-content big-tabs" aria-hidden="false">
   {% if not contacts %}
     <div class="info-box info-box-info">There are no contacts attached</div>
@@ -48,11 +69,17 @@
               </div>
               <div class="row">
                 <div class="twelve columns">
-                <span class="text-widget ">{{ user.email or 'email' }}
-                  <br/> {{ user.organisation or 'organisation' }}
-                  <br/> {{ user.department or 'department' }}
-                  <br/> {{ user.job_title or 'job_title' }}
-                  <br> {{ user.phone_number or 'phone_number' }}
+                <span class="text-widget ">
+                  {{ user.email or "" }}
+                  {% for field in [user.organisation, user.department, user.job_title] %}
+                    {% if field %}
+                      <br/> {{ field }}
+                    {% endif %}
+                  {% endfor %}
+
+                  {% for number in user.phone_numbers.all() %}
+                    <br/> {{ number.entity_type }}: {{ number.phone }}
+                  {% endfor %}
                 </span>
                 </div>
               </div>
@@ -96,21 +123,5 @@
       </tbody>
     </table>
 
-  {% endif %}
-  {% if not read_only and can_manage_contacts %}
-    <form method="post" action="{{ icms_url('contacts:add', kwargs={'org_type': org_type, 'org_pk': object.pk}) }}">
-      {{ csrf_input }}
-      <div class="container setoutForm">
-        <div class="row">
-          <div class="four columns">
-            {{ contact_form.as_p() }}
-          </div>
-          <div class="two columns">
-            <button type="submit" class="button small-button icon-add">Add contact</button>
-          </div>
-          <div class="six columns"></div>
-        </div>
-      </div>
-    </form>
   {% endif %}
 </div>
