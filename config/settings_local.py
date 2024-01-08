@@ -8,7 +8,7 @@ AWS_REGION = "eu-west-2"
 AWS_ACCESS_KEY_ID = "test"
 AWS_SECRET_ACCESS_KEY = "test"
 AWS_STORAGE_BUCKET_NAME = "icms.local"
-AWS_S3_ENDPOINT_URL = "http://localstack:4566/"
+AWS_S3_ENDPOINT_URL = env.aws_s3_endpoint_url
 
 # Debug toolbar config
 INTERNAL_IPS = ("127.0.0.1", "localhost")
@@ -107,3 +107,8 @@ LOGGING = {
 
 # django-ratelimit
 RATELIMIT_ENABLE = False
+
+# celery settings
+# sometimes we want to run celery tasks synchronously to help with debugging
+CELERY_ALWAYS_EAGER = env.celery_always_eager
+CELERY_EAGER_PROPAGATES_EXCEPTIONS = env.celery_eager_propagates_exceptions
