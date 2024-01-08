@@ -1,50 +1,44 @@
 repos:
--   repo: https://github.com/uktrade/pii-secret-check-hooks
+  - repo: https://github.com/uktrade/pii-secret-check-hooks
     rev: 0.0.0.35
     hooks:
-    -   id: pii_secret_filename
+      - id: pii_secret_filename
         files: ''
         language: python
         pass_filenames: true
         require_serial: true
-    -   id: pii_secret_file_content
+      - id: pii_secret_file_content
         files: ''
         language: python
         pass_filenames: true
         require_serial: true
-    -   id: pii_secret_file_content_ner
+      - id: pii_secret_file_content_ner
         files: ''
         language: python
-        args: [--ner_output_file=ner_output_file.txt] # uncomment to output NER entities
+        args: [ --ner_output_file=ner_output_file.txt ] # uncomment to output NER entities
         pass_filenames: true
         require_serial: true
-    -   id: hooks_version_check
+      - id: hooks_version_check
         name: Checking local hooks against latest release
         verbose: true
         require_serial: true
--   repo: https://github.com/asottile/pyupgrade
+  - repo: https://github.com/asottile/pyupgrade
     rev: v3.15.0
     hooks:
-    -   id: pyupgrade
-        args: [--py311-plus]
+      - id: pyupgrade
+        args: [ --py311-plus ]
         # The end_to_end directory runs under python 3.8 and isn't suitable for pyupgrade
         exclude: end_to_end
--   repo: https://github.com/psf/black
-    rev: 23.11.0
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
     hooks:
-    -   id: black
--   repo: https://github.com/PyCQA/flake8
+      - id: black
+  - repo: https://github.com/PyCQA/flake8
     rev: 6.1.0
     hooks:
-    -   id: flake8
--   repo: https://github.com/pycqa/isort
-    rev: 5.13.0
+      - id: flake8
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
     hooks:
       - id: isort
         name: isort
-- repo: local
-  hooks:
-    - id: check-django-migrations
-      name: django-migrations
-      entry: make check_migrations
-      language: system

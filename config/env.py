@@ -143,10 +143,19 @@ class Environment(BaseSettings):
     sentry_dsn: str = ""
     sentry_environment: str = ""
 
-    #
     # Cloud Foundry Environment Variables
     vcap_services: VCAPServices | None = None
     vcap_application: VCAPApplication | None = None
+
+    # Redis settings
+    redis_url: str = "redis://redis:6379"
+
+    # S3 endpoint URL
+    aws_s3_endpoint_url: str = "http://localstack:4566/"
+
+    # celery settings
+    celery_always_eager: bool = False
+    celery_eager_propagates_exceptions: bool = False
 
 
 env: Environment = Environment()  # type:ignore[call-arg]
