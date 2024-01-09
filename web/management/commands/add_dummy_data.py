@@ -57,6 +57,7 @@ class Command(BaseCommand):
         ho_case_officer = Group.objects.get(name="Home Office Case Officer")
         san_case_officer = Group.objects.get(name="Sanctions Case Officer")
         import_search_user = Group.objects.get(name="Import Search User")
+        report_user = Group.objects.get(name="Report User")
 
         # Enable disabled application types to test / develop them
         if settings.SET_INACTIVE_APP_TYPES_ACTIVE:
@@ -263,6 +264,14 @@ class Command(BaseCommand):
             first_name="Hercule",
             last_name="Poirot (Import Search User)",
             groups=[import_search_user],
+        )
+
+        self.create_user(
+            username="report_user",
+            password=options["password"],
+            first_name="Neville",
+            last_name="Southall (Report User)",
+            groups=[report_user],
         )
 
         #

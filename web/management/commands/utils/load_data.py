@@ -20,6 +20,7 @@ from .add_country_data import (
 )
 from .add_email_template_data import add_email_gov_notify_templates
 from .add_product_legislation_data import add_product_legislation_data
+from .add_reports_data import add_reports
 from .add_sanction_data import add_sanction_data
 from .add_template_data import (
     add_cfs_declaration_templates,
@@ -59,3 +60,4 @@ def load_app_test_data():
     add_product_legislation_data()
     add_sanction_data()
     add_email_gov_notify_templates()
+    add_reports()
