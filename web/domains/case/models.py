@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -302,7 +302,6 @@ class DocumentPackBase(models.Model):
         REVOKED = "RE"
 
     status = models.TextField(choices=Status.choices, max_length=2, default=Status.DRAFT)
-    document_references = GenericRelation("CaseDocumentReference")
 
     # This is set when the licence / certificate is set to active.
     case_reference = models.CharField(

@@ -31,6 +31,10 @@ class PagePermissions(PermissionTextChoice):
         "web.can_view_documents_constabulary",
         "Can view issued documents within constabulary region page",
     )
+    view_reports = (
+        "web.can_view_reports",
+        "Can view reports",
+    )
 
 
 class SysPerms(PermissionTextChoice):
@@ -44,6 +48,7 @@ class SysPerms(PermissionTextChoice):
     commodity_admin = "web.commodity_admin", "Is a commodity administrator"
     manage_sanction_contacts = "web.manage_sanction_contacts", "Manage sanction email contacts"
     manage_signatures = "web.manage_signatures", "Manage signatures"
+    generate_reports = "web.generate_reports", "Generate reports"
 
     edit_firearm_authorities = (
         "web.edit_firearm_authorities",

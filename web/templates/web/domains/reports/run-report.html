@@ -1,0 +1,26 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ icms_url('run-history-view', kwargs={'report_pk': report.pk}) }}" class="prev-link">{{ report.name }} - Run History</a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+
+    <h3>Parameters</h3>
+      {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
+          {{ fields.field(form.title) }}
+          {{ fields.field(form.notes) }}
+          {{ fields.field(form.application_type) }}
+          {{ fields.field(form.date_from) }}
+          {{ fields.field(form.date_to) }}
+          <input type="submit" class="primary-button button" value="Run Now" />
+  {% endcall %}
+{% endblock %}

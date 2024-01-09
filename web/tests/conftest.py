@@ -36,7 +36,9 @@ from web.models import (
     Mailshot,
     Office,
     OpenIndividualLicenceApplication,
+    Report,
     SanctionsAndAdhocApplication,
+    ScheduleReport,
     Signature,
     SILApplication,
     SILChecklist,
@@ -45,6 +47,7 @@ from web.models import (
     WoodQuotaApplication,
 )
 from web.models.shared import YesNoNAChoices
+from web.reports.constants import ReportType
 from web.sites import SiteName
 from web.tests.helpers import CaseURLS, get_test_client
 
@@ -189,6 +192,11 @@ def exporter_agent_client(exporter_one_agent_one_contact, exporter_site) -> Clie
     return get_test_client(exporter_site.domain, exporter_one_agent_one_contact)
 
 
+@pytest.fixture()
+def report_user_client(report_user, caseworker_site) -> Client:
+    return get_test_client(caseworker_site.domain, report_user)
+
+
 #
 # User fixtures
 #
@@ -220,6 +228,12 @@ def san_admin_user(django_user_model):
 def import_search_user(django_user_model):
     """Fixture to get a Import Search user."""
     return django_user_model.objects.get(username="import_search_user")
+
+
+@pytest.fixture
+def report_user(django_user_model):
+    """Fixture to get a Reports user."""
+    return django_user_model.objects.get(username="report_user")
 
 
 @pytest.fixture
@@ -1027,3 +1041,19 @@ def mock_signature_file(monkeypatch):
     mock_file = mock.create_autospec(signature_utils.get_signature_file_base64)
     mock_file.return_value = ""
     monkeypatch.setattr(signature_utils, "get_signature_file_base64", mock_file)
+
+
+@pytest.fixture
+def report_schedule(report_user):
+    issued_cert_report = Report.objects.get(report_type=ReportType.ISSUED_CERTIFICATES)
+    return ScheduleReport.objects.create(
+        report=issued_cert_report,
+        title="test report",
+        scheduled_by=report_user,
+        notes="",
+        parameters={
+            "date_from": "2020-02-01",
+            "date_to": "2030-01-01",
+            "application_type": "",
+        },
+    )

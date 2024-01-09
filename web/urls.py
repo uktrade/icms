@@ -61,6 +61,7 @@ urlpatterns = [
     path("template/", include("web.domains.template.urls")),
     path("user/", include("web.domains.user.urls")),
     path("workbasket/", include("web.domains.workbasket.urls")),
+    path("reports/", include("web.reports.urls")),
     #
     # Health check url
     path("health-check/", health_check, name="health-check"),
