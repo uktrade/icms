@@ -264,7 +264,7 @@ if env.vcap_services:
     CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_REQUIRED}
 
 else:
-    REDIS_URL = "redis://redis:6379"
+    REDIS_URL = env.local_redis_url
 
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = "django-db"
@@ -456,3 +456,6 @@ else:
     # Used in tests to override the TEMPLATES setting.
     STRICT_TEMPLATES = copy.deepcopy(TEMPLATES)
     STRICT_TEMPLATES[0]["OPTIONS"].update({"undefined": jinja2.StrictUndefined})  # type: ignore[attr-defined]
+
+# Local site URL management
+LOCAL_SITE_URL = env.local_site_url

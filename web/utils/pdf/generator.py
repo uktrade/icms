@@ -208,6 +208,6 @@ def get_icms_domain() -> str:
 
     # Need to use the local docker-compose network name to access the static files.
     if settings.APP_ENV == "local":
-        return "http://web:8080/"
+        return settings.LOCAL_SITE_URL
 
     return get_caseworker_site_domain()

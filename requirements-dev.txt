@@ -24,7 +24,7 @@ requests-mock==1.10.0
 sqlparse==0.4.4
 pipdeptree
 pip-check
-pre-commit==3.5.0
+pre-commit==3.6.0
 boto3-stubs[essential]
 types-openpyxl==3.1.0.0
 types-pytz==2023.3
