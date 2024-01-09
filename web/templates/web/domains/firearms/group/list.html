@@ -2,6 +2,10 @@
 {% block empty_message %}There aren't any obsolete calibres that match your search{% endblock %}
 {% set filtered = request.GET.group_name or request.GET.calibre_name  %}
 
+{% block page_js %}
+  {{ super() }}
+  <script src="{{ static('web/js/pages/obsolete-calibre-utils.js') }}" type="text/javascript"></script>
+{% endblock %}
 
 {% block sidebar %}
     {% include "partial/firearms/sidebar.html" %}
