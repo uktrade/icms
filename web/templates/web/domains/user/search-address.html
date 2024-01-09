@@ -4,81 +4,82 @@
 {% block page_title %}Search Addresses{% endblock %}
 {% block context_header %}Search Addresses{% endblock %}
 
+{% block page_js %}
+  {{ super() }}
+    <script src="{{ static('web/js/pages/user-search-address.js') }}" type="text/javascript"></script>
+{% endblock %}
 
 {% block main_content %}
-<div class="container">
+  <div class="container">
     <div class="row">
-        <div class="six columns">
-            <h3>UK Address</h3>
-            {% call forms.form(method='post', csrf_input=csrf_input) -%}
-              {{ fields.field(postcode_form.post_code, show_optional_indicator=false, prompt='north') }}
-              <div class="container">
-                <div class="row">
-                  <div class="three columns"></div>
-                  <div class="five columns">
-                    <ul class="menu-out flow-across">
-                      <li>
-                        <button type="submit" name="action" value="search_address" class="primary-button button">
-                          Search
-                        </button>
-                      </li>
-                      <li>
-                        <a href="" class="button link-button"></a>
-                      </li>
-                    </ul>
-                  </div>
-                  <div class="four columns"></div>
-                </div>
+      <div class="six columns">
+        <h3>UK Address</h3>
+        {% call forms.form(method='post', csrf_input=csrf_input) -%}
+          {{ fields.field(postcode_form.post_code, show_optional_indicator=false, prompt='north') }}
+          <div class="container">
+            <div class="row">
+              <div class="three columns"></div>
+              <div class="five columns">
+                <ul class="menu-out flow-across">
+                  <li>
+                    <button type="submit" name="action" value="search_address" class="primary-button button">
+                      Search
+                    </button>
+                  </li>
+                  <li>
+                    <a href="" class="button link-button"></a>
+                  </li>
+                </ul>
               </div>
-            {%- endcall %}
-
-
-        </div>
-        <div class="six columns">
-            <form id="form-manual-address" method="post" action="">
-                <h3>International/Manual Address</h3>
-                {{csrf_input}}
-                <input type="hidden" name="action" value="manual_address" />
-                {{ fields.field(postcode_form.country, show_optional_indicator=False, prompt='north') }}
-            </form>
-        </div>
+              <div class="four columns"></div>
+            </div>
+          </div>
+        {%- endcall %}
+      </div>
+      <div class="six columns">
+        <form id="form-manual-address" method="post" action="">
+          <h3>International/Manual Address</h3>
+          {{ csrf_input }}
+          <input type="hidden" name="action" value="manual_address"/>
+          {{ fields.field(postcode_form.country, show_optional_indicator=False, prompt='north') }}
+        </form>
+      </div>
     </div>
 
     <div class="section-break"></div>
 
-    {% if addresses  %}
-    <form id="form-save-address" method="post" action="">
-        {{csrf_input}}
-        <input id="input-address" name="address" type="hidden" />
-        <input type="hidden" name="action" value="save_address" />
+    {% if addresses %}
+      <form id="form-save-address" method="post" action="">
+        {{ csrf_input }}
+        <input id="input-address" name="address" type="hidden"/>
+        <input type="hidden" name="action" value="save_address"/>
         <table class="setoutList">
-            <thead>
-                <tr>
-                    <th scope="col">Address
-                    </th>
-                </tr>
-            </thead>
-            {% for address in addresses %}
+          <thead>
+          <tr>
+            <th scope="col">Address</th>
+          </tr>
+          </thead>
+          {% for address in addresses %}
             <tr>
-                <td>
-                    <a href="" class="link-save-address">{% for line in address.formatted_address if line %}{{line}}, {% endfor %}</a>
-                </td>
+              <td>
+                <a href="" class="link-save-address">{% for line in address.formatted_address if line %}{{ line }}, {% endfor %}</a>
+              </td>
             </tr>
-            {% endfor %}
+          {% endfor %}
         </table>
-    </form>
+      </form>
 
-    <div class="result-count">
-        {{addresses|length}} addresses found
-    </div>
+      <div class="result-count">
+        {{ addresses|length }} addresses found
+      </div>
 
-    <!-- TODO: Use message macros -->
+      <!-- TODO: Use message macros -->
     {% else %}
-    {% if not request.POST.action == 'edit_address' and not postcode_form.errors  %}
-    <div class="info-box info-box-warning">
-      There aren't any addresses that match your search. You can turn on advanced mode for more options.
-    </div>
+      {% if not request.POST.action == 'edit_address' and not postcode_form.errors %}
+        <div class="info-box info-box-warning">
+          There aren't any addresses that match your search. You can turn on advanced mode for more options.
+        </div>
+      {% endif %}
     {% endif %}
-    {% endif %}
-
-    {% endblock %}
+  </div>
+{% endblock %}

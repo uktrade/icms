@@ -3563,3 +3563,6 @@ user.department
 xps
 Active Dummy Signature
 "Creates a dummy active
+document.cookie
+{{ calibre.name
+Search Addresses{% endblock %

@@ -1,6 +1,11 @@
 {% extends "model/view.html" %}
 {% from "web/domains/country/country-selections.html" import country_selector %}
 
+{% block page_js %}
+  {{ super() }}
+  <script src="{{ static('web/js/pages/country-group-utils.js') }}" type="text/javascript"></script>
+{% endblock %}
+
 {% block sidebar %}
   {% include "web/domains/country/sidebar.html" %}
 {% endblock %}
