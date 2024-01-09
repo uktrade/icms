@@ -156,6 +156,7 @@ from web.domains.user.models import Email, PhoneNumber, User
 from web.flow.models import Process, Task
 from web.mail.models import EmailTemplate
 from web.models.models import GlobalPermission, UniqueReference
+from web.reports.models import GeneratedReport, Report, ScheduleReport
 
 __all__ = [
     "AccessRequest",
@@ -209,6 +210,7 @@ __all__ = [
     "FirearmsAct",
     "FirearmsAuthority",
     "FurtherInformationRequest",
+    "GeneratedReport",
     "GMPFile",
     "GlobalPermission",
     "ICMSHMRCChiefRequest",
@@ -241,6 +243,8 @@ __all__ = [
     "PriorSurveillanceContractFile",
     "Process",
     "ProductLegislation",
+    "Report",
+    "ScheduleReport",
     "SIGLTransmission",
     "SILApplication",
     "SILChecklist",

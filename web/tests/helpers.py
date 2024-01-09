@@ -503,6 +503,34 @@ class CaseURLS:
         }
         return reverse("case:constabulary-doc-download", kwargs=kwargs)
 
+    @staticmethod
+    def report_list_view() -> str:
+        return reverse("report-list-view", kwargs={})
+
+    @staticmethod
+    def run_history_view(report_pk: int) -> str:
+        kwargs = {"report_pk": report_pk}
+
+        return reverse("run-history-view", kwargs=kwargs)
+
+    @staticmethod
+    def run_output_view(report_pk: int, schedule_pk: int) -> str:
+        kwargs = {"report_pk": report_pk, "schedule_pk": schedule_pk}
+
+        return reverse("run-output-view", kwargs=kwargs)
+
+    @staticmethod
+    def download_report_view(report_pk: int, file_pk: int) -> str:
+        kwargs = {"report_pk": report_pk, "pk": file_pk}
+
+        return reverse("download-report-view", kwargs=kwargs)
+
+    @staticmethod
+    def run_report_view(report_pk: int) -> str:
+        kwargs = {"report_pk": report_pk}
+
+        return reverse("run-report-view", kwargs=kwargs)
+
 
 class SearchURLS:
     @staticmethod

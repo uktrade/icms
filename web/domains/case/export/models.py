@@ -1,6 +1,7 @@
 from typing import final
 
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
 from django.urls import reverse
@@ -524,7 +525,9 @@ class ExportApplicationCertificate(DocumentPackBase):
 
     # Set when certificate is marked active.
     case_completion_datetime = models.DateTimeField(verbose_name="Issue Date", null=True)
-
+    document_references = GenericRelation(
+        "CaseDocumentReference", related_query_name="export_application_certificates"
+    )
     # Used in workbasket to clear certificates
     cleared_by = models.ManyToManyField("web.User")
 

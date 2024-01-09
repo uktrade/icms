@@ -1,0 +1,61 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ icms_url('run-history-view', kwargs={'report_pk': object.report.pk}) }}" class="prev-link">{{ object.report.name }} - Run History</a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+
+{% block main_content %}
+
+    <h3>Report Output</h3>
+      <table responsiveList id="signatures-table" class="setoutList">
+    <thead>
+      <tr>
+      <th>Part Title</th>
+      <th>Run Status</th>
+      <th scope="col">Output</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+          <td>Issued Certificates</td>
+          <td>{{ object.get_status_display() }}</td>
+          <td>
+              <ul class="menu-out">
+                {% for obj in object.generatedreport_set.all() %}
+                  <li>
+                      <a class="" href="{{ icms_url('download-report-view', kwargs={'report_pk': object.report.pk, 'pk': obj.pk }) }}">{{ obj.document.filename }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+        </td>
+      </tr>
+
+    </tbody>
+      </table>
+    <h4>Scheduling</h4>
+    <dl>
+        <dt class="bold">Title</dt>
+        <dd>{{ object.title }}</dd>
+        <dt class="bold">Status</dt>
+        <dd>{{ object.get_status_display() }}</dd>
+        <dt class="bold">Scheduled by</dt>
+        <dd>{{ object.scheduled_by }}</dd>
+        <dt class="bold">Started Date</dt>
+        <dd>{% if object.started_at %}{{ object.started_at.strftime('%d %b %Y %H:%M:%S') }}{% else %}&nbsp;{% endif %}</dd>
+        <dt class="bold">Completed Date</dt>
+        <dd>{% if object.finished_at %}{{ object.finished_at.strftime('%d %b %Y %H:%M:%S') }}{% else %}&nbsp;{% endif %}</dd>
+        <dt class="bold">Notes</dt>
+        <dd>{{ object.notes }}</dd>
+      </dl>
+
+{% endblock %}

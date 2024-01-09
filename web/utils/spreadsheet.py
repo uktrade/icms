@@ -1,5 +1,6 @@
 import io
 from dataclasses import dataclass, field
+from typing import Any
 
 import xlsxwriter
 
@@ -18,11 +19,11 @@ class XlsxConfig:
     rows: list[list[str]] | None = field(repr=False, default=None)
 
 
-def generate_xlsx_file(config: XlsxConfig) -> bytes:
+def generate_xlsx_file(config: XlsxConfig, options: dict[str, Any] | None = None) -> bytes:
     """Generates an xlsx file from the provided config"""
 
     output = io.BytesIO()
-    with xlsxwriter.Workbook(output) as workbook:
+    with xlsxwriter.Workbook(output, options) as workbook:
         worksheet = workbook.add_worksheet(config.sheet_name)
         header_style = workbook.add_format(config.header.styles)
         for column, value in enumerate(config.header.data):

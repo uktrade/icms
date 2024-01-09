@@ -32,6 +32,7 @@ def get_groups():
             Perms.page.view_import_case_search,
             Perms.page.view_export_case_search,
             Perms.page.view_imi,
+            Perms.page.view_reports,
             #
             # Sys permissions
             Perms.sys.ilb_admin,
@@ -43,6 +44,7 @@ def get_groups():
             Perms.sys.edit_section_5_firearm_authorities,
             Perms.sys.commodity_admin,
             Perms.sys.search_all_cases,
+            Perms.sys.generate_reports,
         ],
         #
         # "Importer User": (System group + object permissions to related importers)
@@ -118,6 +120,10 @@ def get_groups():
             #
             # Sys permissions
             Perms.sys.search_all_cases,
+        },
+        "Report User": {
+            Perms.page.view_reports,
+            Perms.sys.generate_reports,
         },
         "ICMS Admin Site User": {
             Perms.sys.is_icms_data_admin,
