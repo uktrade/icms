@@ -303,9 +303,9 @@ def add_signature(user):
         signatory="Test Signatory",
         history="Created",
         is_active=True,
-        filename="signature_filname.png",
+        filename="signature_filename.png",
         content_type="png",
         file_size=100,
-        path="path/to/file/signature_filname.png",
+        path="path/to/file/signature_filename.png",
         created_by=user,
     )

@@ -1,5 +1,6 @@
 import datetime
 from collections.abc import Collection
+from pathlib import Path
 from typing import Any
 
 from django.conf import settings
@@ -18,9 +19,11 @@ from web.models import (
     ObsoleteCalibre,
     ObsoleteCalibreGroup,
     Office,
+    Signature,
     User,
 )
 from web.permissions import constabulary_add_contact, organisation_add_contact
+from web.utils.s3 import upload_file_obj_to_s3
 
 
 class Command(BaseCommand):
@@ -296,6 +299,8 @@ class Command(BaseCommand):
         group = ObsoleteCalibreGroup.objects.create(name="Group 1", order=1)
         ObsoleteCalibre.objects.create(calibre_group=group, name="9mm", order=1)
 
+        create_dummy_signature(ilb_admin_user)
+
     def create_user(
         self,
         username: str,
@@ -398,3 +403,26 @@ def create_certificate_application_templates(
         )
 
     return CertificateApplicationTemplate.objects.bulk_create(objs)
+
+
+def create_dummy_signature(user: User) -> None:
+    """Creates a dummy active signature object to appear in licence and certificate documents"""
+    file_path = Path(settings.BASE_DIR) / "web/static/web/img/dit-no-signature.png"
+    filename = "active_dummy_signature.png"
+    key = f"dummy_signature/{filename}"
+
+    if file_path.is_file():
+        f = file_path.open("rb")
+        file_size = upload_file_obj_to_s3(f, key)
+
+    Signature.objects.create(
+        name="Active Dummy Signature",
+        signatory="Import Licencing Branch",
+        history=f"Created by add_dummy_data command on {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+        filename=filename,
+        path=key,
+        content_type="image/png",
+        created_by=user,
+        file_size=file_size,
+        is_active=True,
+    )

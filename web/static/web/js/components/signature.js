@@ -1,5 +1,5 @@
 function signatureUploadOnInput(e) {
-  window.fileUrl !== null && window.fileUrl.revokeObjectURL();
+  window.fileUrl !== null && window.URL.revokeObjectURL(window.fileUrl);
   window.fileUrl = window.URL.createObjectURL(e.srcElement.files[0]);
   document.querySelector("#signature-widget-image").src = window.fileUrl;
   document.querySelector("#signature-widget-row").hidden = false;
