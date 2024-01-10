@@ -6,7 +6,7 @@
     FIR requested by {{ fir.requested_by }} on {{ fir.requested_datetime.strftime('%d-%b-%Y %H:%M:%S') }}
   </legend>
 
-  {% if fir.status in ["DRAFT", "OPEN"] %}
+  {% if fir.status == "DRAFT" %}
   <form
     method="post"
     action="{{ icms_url(
