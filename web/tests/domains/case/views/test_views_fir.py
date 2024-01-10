@@ -206,6 +206,32 @@ class TestImporterAccessRequestFIRView(AuthTestCase):
         fir.refresh_from_db()
         assert fir.status == FurtherInformationRequest.CLOSED
 
+    def test_fir_can_be_deleted_if_draft(self):
+        fir = _create_fir(self.process, self.ilb_admin_client, self.case_type, "test withdraw")
+        fir.status = FurtherInformationRequest.DRAFT
+        fir.save()
+
+        decoded_response = self.ilb_admin_client.get(
+            CaseURLS.edit_fir(self.process.pk, fir.pk, self.case_type),
+        ).content.decode("utf-8")
+
+        assert CaseURLS.delete_fir(self.process.pk, fir.pk, self.case_type) in decoded_response
+        assert (
+            CaseURLS.withdraw_fir(self.process.pk, fir.pk, self.case_type) not in decoded_response
+        )
+
+    def test_fir_cannot_be_deleted_if_sent(self):
+        fir = _create_fir(self.process, self.ilb_admin_client, self.case_type, "test withdraw")
+        fir.status = FurtherInformationRequest.OPEN
+        fir.save()
+
+        decoded_response = self.ilb_admin_client.get(
+            CaseURLS.manage_firs(self.process.pk, self.case_type),
+        ).content.decode("utf-8")
+
+        assert CaseURLS.delete_fir(self.process.pk, fir.pk, self.case_type) not in decoded_response
+        assert CaseURLS.withdraw_fir(self.process.pk, fir.pk, self.case_type) in decoded_response
+
 
 class TestExportAccessRequestFIRView(TestImporterAccessRequestFIRView):
     @pytest.fixture

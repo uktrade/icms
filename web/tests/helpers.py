@@ -222,6 +222,12 @@ class CaseURLS:
         return reverse("case:close-fir", kwargs=kwargs)
 
     @staticmethod
+    def edit_fir(application_pk: int, fir_pk: int, case_type: str = "import") -> str:
+        kwargs = {"application_pk": application_pk, "fir_pk": fir_pk, "case_type": case_type}
+
+        return reverse("case:edit-fir", kwargs=kwargs)
+
+    @staticmethod
     def manage_withdrawals(application_pk: int, case_type: str = "import") -> str:
         kwargs = {"application_pk": application_pk, "case_type": case_type}
 

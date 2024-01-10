@@ -28,7 +28,7 @@
       </form>
     {% endif %}
 
-    {% if fir.status in ['DRAFT', 'OPEN'] %}
+    {% if fir.status == 'DRAFT' %}
       <form method="post"
             action="{{ icms_url(
                          'case:delete-fir',
