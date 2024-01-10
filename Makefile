@@ -206,5 +206,8 @@ create_end_to_end_import: ## Create an end to end test using codegen for the imp
 debug: ## runs system in debug mode
 	docker-compose up -d
 
+localstack: ## runs localstack (s3) container
+	docker-compose up -d localstack
+
 down: ## Stops and downs containers
 	docker-compose down --remove-orphans
