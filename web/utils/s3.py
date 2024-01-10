@@ -2,6 +2,7 @@ import logging
 from typing import IO, TYPE_CHECKING, Any, Optional
 
 import boto3
+from botocore.exceptions import ClientError
 from django.conf import settings
 
 if TYPE_CHECKING:
@@ -71,3 +72,27 @@ def put_object_in_s3(file_data: str, key: str, client: Optional["S3Client"] = No
     object_meta = client.head_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=key)
 
     return object_meta["ContentLength"]
+
+
+def create_presigned_url(key: str, expiration: int = 3600) -> str | None:
+    """Generate a presigned URL to share an S3 object
+
+    :param key: string
+    :param expiration: Time in seconds for the presigned URL to remain valid
+    :return: Presigned URL as string. If error, returns None.
+    """
+
+    # Generate a presigned URL for the S3 object
+    s3_client = get_s3_client()
+    try:
+        response = s3_client.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": settings.AWS_STORAGE_BUCKET_NAME, "Key": key},
+            ExpiresIn=expiration,
+        )
+    except ClientError as e:
+        logging.error(e)
+        return None
+
+    # The response contains the presigned URL
+    return response

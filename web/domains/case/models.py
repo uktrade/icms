@@ -332,6 +332,9 @@ class CaseDocumentReference(models.Model):
     # Nullable because import application cover letters don't have a reference.
     reference = models.CharField(max_length=20, verbose_name="Document Reference", null=True)
 
+    # Code to verify document at /check
+    check_code = models.CharField(null=True, max_length=16)
+
     # Fields to set up the generic model for import / export models.
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()

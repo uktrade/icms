@@ -814,6 +814,58 @@ def completed_cfs_app(cfs_app_submitted, ilb_admin_client, ilb_admin_user):
 
 
 @pytest.fixture
+def completed_com_app(com_app_submitted, ilb_admin_client):
+    """A Certificate of Free Sale (export) application that has been approved."""
+    app = com_app_submitted
+
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
+
+    app.refresh_from_db()
+    app.decision = app.APPROVE
+    app.save()
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk, "export"))
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    app.refresh_from_db()
+    app.status = ImpExpStatus.COMPLETED
+    app.save()
+    task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
+    end_process_task(task)
+
+    document_pack.pack_draft_set_active(app)
+
+    return app
+
+
+@pytest.fixture
+def completed_gmp_app(gmp_app_submitted, ilb_admin_client):
+    """A Certificate of Free Sale (export) application that has been approved."""
+    app = gmp_app_submitted
+
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
+
+    app.refresh_from_db()
+    app.decision = app.APPROVE
+    app.save()
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk, "export"))
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    app.refresh_from_db()
+    app.status = ImpExpStatus.COMPLETED
+    app.save()
+    task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
+    end_process_task(task)
+
+    document_pack.pack_draft_set_active(app)
+
+    return app
+
+
+@pytest.fixture
 def complete_rejected_export_app(cfs_app_submitted, ilb_admin_client):
     """A Certificate of Free Sale (export) application that has been rejected."""
     app = cfs_app_submitted

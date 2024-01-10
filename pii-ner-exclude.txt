@@ -3576,3 +3576,26 @@ in_progress
 delete-fir'
 novalidate
 <li>0-9</li
+CERTIFICATE_REFERENCE
+field(field
+{{ checkbox_label }
+{{ field_markup }}
+{{ tooltip
+{{field_markup}}
+=True
+{{ field.id_for_label
+{{ inline_field_with_label(field
+{{ label(field,
+{{_
+NumberInput
+{{ field(form[name_field]
+{{ field(form[address_type_field
+{{ field(form[postcode_field]
+west">Please
+The DBT Import Licensing Branch's
+Certificates of Manufacture (COM
+Certificates of Good Manufacturing
+State for International Trade
+DBT
+Department of the
+"Generate a presigned URL

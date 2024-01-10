@@ -41,6 +41,7 @@ urlpatterns = [
     path("access/", include("web.domains.case.access.urls", namespace="access")),
     path("case/", include("web.domains.case.urls")),
     path("cat/", include("web.domains.cat.urls")),
+    path("check/", include("web.domains.checker.urls")),
     path("chief/", include("web.domains.chief.urls", namespace="chief")),
     path("commodity/", include("web.domains.commodity.urls")),
     path("constabulary/", include("web.domains.constabulary.urls")),
