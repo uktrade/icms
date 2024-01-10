@@ -1,6 +1,5 @@
 import datetime
 from collections.abc import Collection
-from pathlib import Path
 from typing import Any
 
 from django.conf import settings
@@ -407,13 +406,14 @@ def create_certificate_application_templates(
 
 def create_dummy_signature(user: User) -> None:
     """Creates a dummy active signature object to appear in licence and certificate documents"""
-    file_path = Path(settings.BASE_DIR) / "web/static/web/img/dit-no-signature.png"
+    file_path = settings.BASE_DIR / "web/static/web/img/dit-no-signature.png"
+
+    if not file_path.is_file():
+        raise CommandError("Dummy signature file missing")
+
     filename = "active_dummy_signature.png"
     key = f"dummy_signature/{filename}"
-
-    if file_path.is_file():
-        f = file_path.open("rb")
-        file_size = upload_file_obj_to_s3(f, key)
+    file_size = upload_file_obj_to_s3(file_path.open("rb"), key)
 
     Signature.objects.create(
         name="Active Dummy Signature",
