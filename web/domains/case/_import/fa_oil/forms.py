@@ -32,12 +32,19 @@ class FirearmOILFormBase(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields["contact"].queryset = application_contacts(self.instance)
+
         self.fields["origin_country"].empty_label = None
         self.fields["consignment_country"].empty_label = None
 
         countries = Country.objects.filter(name="Any Country", is_active=True)
         self.fields["origin_country"].queryset = countries
         self.fields["consignment_country"].queryset = countries
+
+        self.fields["origin_country"].disabled = True
+        self.fields["consignment_country"].disabled = True
+
+        self.fields["origin_country"].help_text = None
+        self.fields["consignment_country"].help_text = None
 
 
 class EditFaOILForm(OptionalFormMixin, FirearmOILFormBase):
