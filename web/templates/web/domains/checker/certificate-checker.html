@@ -1,0 +1,75 @@
+{% extends "layout/public.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% import "messages/banners.html" as banners %}
+
+{% block main_content %}
+  <div id="header">
+    <h1>Certificate Checker</h1>
+    <p class="subheading">
+      The DBT Import Licensing Branch's system for checking the validity of Certificates of Free
+      Sale (CFS), Certificates of Manufacture (COM), and Certificates of Good Manufacturing
+      Practice (GMP)
+    </p>
+  </div>
+  <p>
+      <strong>Enter the certificate reference and code below to check if the certificate is valid.
+      The certificate reference can be found on the certificate in the format 'CFS/2000/00001',
+      'COM/2000/00001', or 'GMP/2000/00001'. The certificate code is found under the QR code on
+      the certificate and is 8 digits long. Note that this service can only be used to validate
+      certificates with a certificate code.</strong>
+  </p>
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {% block extra_main_content_form %}{% endblock %}
+    {% for field in form %}
+      {{ fields.field(field, show_errors=False) }}
+    {% endfor %}
+    <button id="btn-submit" type="submit" class="primary-button button">
+      Check Certificate
+    </button>
+  {% endcall %}
+
+  {% if warning_message %}
+    {{ banners.warning(warning_message) }}
+  {% elif success_message %}
+    {{ banners.success(success_message) }}
+  {% endif %}
+
+  {% if document %}
+  <p>
+    This Certificate was issued on behalf of the Secretary of State for International Trade by the
+    Import Licensing Branch of the Department for Business and Trade (DBT), a Department of the
+    government of the United Kingdom of Great Britain and Northern Ireland on {{ issue_date }}.
+  </p>
+  <p>
+    As a security measure to confirm the validity of the Certificate and that it was issued by the
+    Import Licensing Branch of the Department for Business and Trade (DBT), a Department of the
+    government of the United Kingdom of Great Britain and Northern Ireland, a copy of the
+    Certificate has been added to this certificate check.
+  </p>
+  <table id="certificate-details" class="setoutList">
+    <thead>
+      <tr>
+        <th>Certificate Reference</th>
+        <th>Exporter</th>
+        <th>Country</th>
+        <th>Goods</th>
+        <th>Issue Date</th>
+        <th>Status</th>
+        <th>Certificate Document</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td id="certificate-reference">{{ document.reference }}</td>
+      <td id="certificate-exporter-name">{{ exporter }}</td>
+      <td id="certificate-country">{{ country }}</td>
+      <td id="certificate-goods">{{ goods }}</td>
+      <td id="certificate-issue-date">{{ issue_date }}</td>
+      <td id="certificate-status">{{ is_valid }}</td>
+      <td id="certificate-document">
+        <a style="display: block" href="{{ download_url }}">Download</a>
+      </td>
+    </tr></tbody>
+  </table>
+  {% endif %}
+{% endblock %}

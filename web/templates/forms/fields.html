@@ -9,7 +9,7 @@
     {% if checkbox_label %}
     <label for="id_{{ field.name }}" class="radio-label">
       {{ field }}
-      {{checkbox_label}}
+      {{ checkbox_label }}
     </label>
     {% else %}
       {{ field }}
@@ -17,7 +17,7 @@
 
     {% if show_errors and field.errors %}
       {% for error in field.errors %}
-        <div class="error-message">{{error}}</div>
+        <div class="error-message">{{ error }}</div>
       {% endfor %}
     {% endif %}
   {% endset %}
