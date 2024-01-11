@@ -87,6 +87,9 @@
   {% include "web/domains/case/search/warnings.html" %}
   {% include "web/domains/case/search/actions.html" %}
   {% include "web/domains/case/search/results.html" %}
+  <div class="list-actions">
+    <div class="result-count">Showing {{ search_records|length }} out of {{ total_rows }} applications found</div>
+  </div>
   <hr>
   <div class="info-box info-box-info">
     <p>Click <a href="#search-actions">here</a> to return to top of list.</p>
