@@ -537,6 +537,20 @@ def fa_oil_app_submitted(
 
 
 @pytest.fixture()
+def fa_oil_app_in_progress(
+    importer_client, importer, office, importer_one_contact
+) -> OpenIndividualLicenceApplication:
+    """A valid FA OIL application in the in_progress state."""
+
+    app = create_in_progress_fa_oil_app(importer_client, importer, office, importer_one_contact)
+
+    case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
+    case_progress.check_expected_task(app, Task.TaskType.PREPARE)
+
+    return app
+
+
+@pytest.fixture()
 def fa_sil_app_in_progress(
     importer_client, importer, office, importer_one_contact
 ) -> SILApplication:
