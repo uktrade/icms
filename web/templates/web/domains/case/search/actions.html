@@ -18,6 +18,7 @@
       <li><button type="button" id="unselect-all-records" class="icon-checkbox-unchecked button">Unselect All</button></li>
     </ul>
   {% endif %}
+  <div class="result-count">Showing {{ search_records|length }} out of {{ total_rows }} applications found</div>
 </div>
 
 {% if reassignment_search %}
