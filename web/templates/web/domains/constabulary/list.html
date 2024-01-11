@@ -1,5 +1,10 @@
 {% extends "model/list.html" %}
 
+{% block css %}
+  {{ super() }}
+  {{ filter.form.media.css }}
+{% endblock %}
+
 {% block sidebar %}
 <ul class="menu-out">
     <li> <a href="{{ icms_url('constabulary:new')}}">New Constabulary</a></li>
@@ -8,4 +13,9 @@
 
 {% block empty_message %}
         There aren't any constabularies that match your search
+{% endblock %}
+
+{% block page_js %}
+  {{ super() }}
+  {{ filter.form.media.js }}
 {% endblock %}

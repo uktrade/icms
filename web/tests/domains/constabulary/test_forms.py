@@ -59,6 +59,13 @@ class TestConstabulariesFilter(TestCase):
         assert first.name == "Big London Constabulary"
         assert last.name == "That Constabulary"
 
+    def test_form_name_field(self):
+        """Tests that the form field is a ModelChoiceField with the correct ModelSelect2Widget."""
+        form = ConstabulariesFilter().form
+        assert form.fields["name"].widget.__class__.__name__ == "ModelSelect2Widget"
+        assert form.fields["name"].queryset.model == Constabulary
+        assert form.fields["name"].widget.search_fields == ("name__icontains",)
+
 
 class TestConstabularyForm(TestCase):
     def test_form_valid(self):

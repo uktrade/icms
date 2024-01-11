@@ -1,8 +1,9 @@
 from typing import Any
 
-from django.forms import ModelForm
+from django.forms import ModelChoiceField, ModelForm
 from django.forms.widgets import CheckboxInput, Select
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter, FilterSet
+from django_select2.forms import ModelSelect2Widget
 
 from .models import Constabulary
 
@@ -30,6 +31,23 @@ class ConstabulariesFilter(FilterSet):
     class Meta:
         model = Constabulary
         fields: list[Any] = []
+
+    @property
+    def form(self):
+        form = super().form
+        form.fields["name"] = ModelChoiceField(
+            queryset=Constabulary.objects.all(),
+            label="Constabulary Name",
+            widget=ModelSelect2Widget(
+                attrs={
+                    "data-minimum-input-length": 0,
+                    "data-placeholder": "-- Select Constabulary Name",
+                },
+                search_fields=("name__icontains",),
+            ),
+        )
+
+        return form
 
 
 class ConstabularyForm(ModelForm):
