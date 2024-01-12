@@ -512,6 +512,12 @@ class SearchURLS:
         return reverse("case:search", kwargs=kwargs)
 
     @staticmethod
+    def search_cases_get_results(case_type: str = "import", mode: str = "standard"):
+        kwargs = {"case_type": case_type, "mode": mode}
+
+        return reverse("case:search-results", kwargs=kwargs)
+
+    @staticmethod
     def download_spreadsheet(case_type: str = "import"):
         kwargs = {"case_type": case_type}
 

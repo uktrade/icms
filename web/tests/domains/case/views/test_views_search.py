@@ -1,4 +1,5 @@
 import datetime
+import io
 from http import HTTPStatus
 
 import pytest
@@ -6,6 +7,7 @@ from django.core import mail
 from django.test.client import Client
 from django.utils import timezone
 from guardian.shortcuts import remove_perm
+from openpyxl import load_workbook
 from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
 from web.domains.case.services import case_progress, document_pack
@@ -22,7 +24,8 @@ from web.models import (
 )
 from web.permissions import Perms
 from web.sites import get_exporter_site_domain, get_importer_site_domain
-from web.tests.helpers import SearchURLS, check_gov_notify_email_was_sent
+from web.tests.helpers import CaseURLS, SearchURLS, check_gov_notify_email_was_sent
+from web.utils.search.types import ExportResultRow, ImportResultRow
 
 
 class TestSearchCasesView:
@@ -52,9 +55,31 @@ class TestSearchCasesView:
             response = self.ilb_admin_user_client.get(search_url)
             assert response.status_code == HTTPStatus.OK
 
-    # TODO: ICMSLST-1957 Add missing unittests
-    def test_view_functionality(self):
-        ...
+    def test_can_search_for_a_case_import(self, completed_sil_app):
+        form_data = {"case_ref": completed_sil_app.reference}
+
+        results_url = SearchURLS.search_cases_get_results("import")
+        response = self.importer_user_client.get(results_url, form_data)
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.context["show_search_results"] is True
+        assert response.context["total_rows"] == 1
+
+        result: ImportResultRow = response.context["search_records"][0]
+        assert result.case_status.case_reference == completed_sil_app.reference
+
+    def test_can_search_for_a_case_export(self, completed_cfs_app):
+        form_data = {"case_ref": completed_cfs_app.reference}
+
+        results_url = SearchURLS.search_cases_get_results("export")
+        response = self.exporter_user_client.get(results_url, form_data)
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.context["show_search_results"] is True
+        assert response.context["total_rows"] == 1
+
+        result: ExportResultRow = response.context["search_records"][0]
+        assert result.case_reference == completed_cfs_app.reference
 
 
 class TestDownloadSpreadsheetView:
@@ -84,15 +109,93 @@ class TestDownloadSpreadsheetView:
             response = self.ilb_admin_user_client.post(search_url, data={})
             assert response.status_code == HTTPStatus.OK
 
-    # TODO: ICMSLST-1957 Add missing unittests
-    def test_view_functionality(self):
-        ...
+    def test_can_download_spreadsheet_import(self, completed_sil_app):
+        form_data = {"case_ref": completed_sil_app.reference}
+        response = self.importer_user_client.post(self.import_download_url, form_data)
+
+        assert response.status_code == HTTPStatus.OK
+        workbook = load_workbook(filename=io.BytesIO(response.content), read_only=True)
+
+        assert workbook.sheetnames == ["Sheet 1"]
+
+        sheet = workbook["Sheet 1"]
+
+        assert sheet.max_column == 19
+        assert sheet.max_row == 2
+
+        spreadsheet_rows = sheet.values
+        header = next(spreadsheet_rows)
+
+        assert list(header) == [
+            "Case Reference",
+            "Applicant's Reference",
+            "Licence Reference",
+            "Licence Type",
+            "Licence Start Date",
+            "Licence End Date",
+            "Application Type",
+            "Application Sub-Type",
+            "Case Status",
+            "Chief Usage Status",
+            "Submitted Date",
+            "Importer",
+            "Agent",
+            "Application Contact",
+            "Country of Origin",
+            "Country of Consignment",
+            "Shipping Year",
+            "Goods Category",
+            "Commodity Code(s)",
+        ]
+
+        applicant_refs = []
+
+        # Iterate over the remaining data rows
+        for row_data in spreadsheet_rows:
+            applicant_refs.append(row_data[0])
+
+        assert applicant_refs == [completed_sil_app.reference]
+
+    def test_can_download_spreadsheet_export(self, completed_cfs_app):
+        form_data = {"case_ref": completed_cfs_app.reference}
+        response = self.exporter_user_client.post(self.export_download_url, form_data)
+
+        assert response.status_code == HTTPStatus.OK
+        workbook = load_workbook(filename=io.BytesIO(response.content), read_only=True)
+
+        assert workbook.sheetnames == ["Sheet 1"]
+
+        sheet = workbook["Sheet 1"]
+        assert sheet.max_column == 10
+        assert sheet.max_row == 2
+
+        spreadsheet_rows = sheet.values
+        header = next(spreadsheet_rows)
+
+        assert list(header) == [
+            "Case Reference",
+            "Certificates",
+            "Application Type",
+            "Status",
+            "Submitted Date",
+            "Certificate Countries",
+            "Countries of Manufacture",
+            "Exporter",
+            "Agent",
+            "Application Contact",
+        ]
+
+        case_refs = []
+
+        # Iterate over the remaining data rows
+        for row_data in spreadsheet_rows:
+            case_refs.append(row_data[0])
+
+        assert case_refs == [completed_cfs_app.reference]
 
 
 class TestReassignCaseOwnerView:
-    def test_permission(
-        self, importer_client, exporter_client, ilb_admin_client, wood_app_submitted
-    ):
+    def test_permission(self, importer_client, exporter_client, ilb_admin_client):
         importer_user_client = importer_client
         exporter_user_client = exporter_client
 
@@ -109,9 +212,49 @@ class TestReassignCaseOwnerView:
         response = ilb_admin_client.post(url, data={})
         assert response.status_code == HTTPStatus.BAD_REQUEST
 
-    # TODO: ICMSLST-1957 Add missing unittests
-    def test_view_functionality(self):
-        ...
+    def test_reassign_case_owner_import(
+        self, fa_dfl_app_submitted, ilb_admin_client, ilb_admin_user, ilb_admin_two
+    ):
+        app = fa_dfl_app_submitted
+
+        assert app.case_owner is None
+
+        ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "import"))
+        app.refresh_from_db()
+        assert app.case_owner == ilb_admin_user
+
+        # Test reassignment
+        form_data = {"assign_to": ilb_admin_two.pk, "applications": fa_dfl_app_submitted.pk}
+        url = SearchURLS.reassign_case_owner("import")
+        response = ilb_admin_client.post(url, form_data)
+
+        assert response.status_code == HTTPStatus.NO_CONTENT
+
+        app.refresh_from_db()
+
+        assert app.case_owner == ilb_admin_two
+
+    def test_reassign_case_owner_export(
+        self, com_app_submitted, ilb_admin_client, ilb_admin_user, ilb_admin_two
+    ):
+        app = com_app_submitted
+
+        assert app.case_owner is None
+
+        ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
+        app.refresh_from_db()
+        assert app.case_owner == ilb_admin_user
+
+        # Test reassignment
+        form_data = {"assign_to": ilb_admin_two.pk, "applications": com_app_submitted.pk}
+        url = SearchURLS.reassign_case_owner("export")
+        response = ilb_admin_client.post(url, form_data)
+
+        assert response.status_code == HTTPStatus.NO_CONTENT
+
+        app.refresh_from_db()
+
+        assert app.case_owner == ilb_admin_two
 
 
 class TestReopenApplicationViewImportApplication:
