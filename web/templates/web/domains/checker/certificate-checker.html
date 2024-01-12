@@ -3,6 +3,12 @@
 {% import "forms/fields.html" as fields %}
 {% import "messages/banners.html" as banners %}
 
+{% block css %}
+  {{ super() }}
+  {{ form.media.css }}
+  <link href="{{ static("web/css/pages/certificate-checker.css") }}" rel="stylesheet">
+{% endblock %}
+
 {% block main_content %}
   <div id="header">
     <h1>Certificate Checker</h1>
@@ -22,8 +28,50 @@
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
     {% block extra_main_content_form %}{% endblock %}
     {% for field in form %}
-      {{ fields.field(field, show_errors=False) }}
+      {{ fields.field(field) }}
     {% endfor %}
+    <div class="helper-block">
+      <div role="group" id="help_country_toggle" class="helper-toggle">
+        <div role="button">
+          <span class="arrow">►</span>
+          <span class="summary whereToFind closed">Where to find the country</span>
+        </div>
+        <div class="helper-panel">
+          <p class="helper-text">The country can be found on the title page of the certificate</p>
+          <img class="helper-img" src="{{ static("web/img/export-country-example.png") }}">
+        </div>
+      </div>
+      <div role="group" id="help_com_exporter_name_toggle" class="helper-toggle">
+        <div role="button">
+          <span class="arrow">►</span>
+          <span class="summary whereToFind closed">Where to find the organisation name - Certificate of Manufacture</span>
+        </div>
+        <div class="helper-panel">
+          <p class="helper-text">The organisation name can be found on the first paragraph in the Certificate of Manufacture</p>
+          <img class="helper-img" src="{{ static("web/img/com-exporter-example.png") }}">
+        </div>
+      </div>
+      <div role="group" id="help_cfs_exporter_name_toggle" class="helper-toggle">
+        <div role="button">
+          <span class="arrow">►</span>
+          <span class="summary whereToFind closed">Where to find the organisation name - Certificate of Free Sale</span>
+        </div>
+        <div class="helper-panel">
+          <p class="helper-text">The organisation name can be found on the second page in the Certificate of Free Sale</p>
+          <img class="helper-img" src="{{ static("web/img/cfs-exporter-example.png") }}">
+        </div>
+      </div>
+      <div role="group" id="help_gmp_exporter_name_toggle" class="helper-toggle">
+        <div role="button">
+          <span class="arrow">►</span>
+          <span class="summary whereToFind closed">Where to find the organisation name - Certificate of Good Manufacturing Practice</span>
+        </div>
+        <div class="helper-panel">
+          <p class="helper-text">The organisation name can be found in the second paragraph in the Certificate of Good Manufacturing Practice</p>
+          <img class="helper-img" src="{{ static("web/img/gmp-exporter-example.png") }}">
+        </div>
+      </div>
+    </div>
     <button id="btn-submit" type="submit" class="primary-button button">
       Check Certificate
     </button>
@@ -31,6 +79,8 @@
 
   {% if warning_message %}
     {{ banners.warning(warning_message) }}
+  {% elif error_message %}
+    {{ banners.error(error_message) }}
   {% elif success_message %}
     {{ banners.success(success_message) }}
   {% endif %}
@@ -67,9 +117,21 @@
       <td id="certificate-issue-date">{{ issue_date }}</td>
       <td id="certificate-status">{{ is_valid }}</td>
       <td id="certificate-document">
-        <a style="display: block" href="{{ download_url }}">Download</a>
+        {%- if download_url -%}
+          {%- if download_url == "Error" -%}
+            Error
+          {%- else -%}
+            <a style="display: block" href="{{ download_url }}">Download</a>
+          {%- endif -%}
+        {%- endif -%}
       </td>
     </tr></tbody>
   </table>
   {% endif %}
+{% endblock %}
+
+{% block page_js %}
+  {{ super() }}
+  {{ form.media.js }}
+  <script src="{{ static('web/js/pages/certificate-checker.js') }}" type="text/javascript"></script>
 {% endblock %}
