@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 from collections import defaultdict
 from collections.abc import Iterable
 from operator import attrgetter
@@ -466,14 +466,14 @@ def _apply_search(model: QuerySet[Model], terms: types.SearchTerms) -> QuerySet[
 
     if terms.submitted_date_start:
         start_datetime = timezone.make_aware(
-            datetime.datetime.combine(terms.submitted_date_start, datetime.datetime.min.time())
+            dt.datetime.combine(terms.submitted_date_start, dt.datetime.min.time())
         )
 
         model = model.filter(submit_datetime__gte=start_datetime)
 
     if terms.submitted_date_end:
         end_datetime = timezone.make_aware(
-            datetime.datetime.combine(terms.submitted_date_end, datetime.datetime.max.time())
+            dt.datetime.combine(terms.submitted_date_end, dt.datetime.max.time())
         )
 
         model = model.filter(submit_datetime__lte=end_datetime)
@@ -596,12 +596,24 @@ def _apply_import_application_filter(
         )
 
     if terms.issue_date_start:
-        # TODO: ICMSLST-1743: Add search by issue date (field on ImportApplicationlicence model)
-        pass
+        start_datetime = timezone.make_aware(
+            dt.datetime.combine(terms.issue_date_start, dt.datetime.min.time())
+        )
+
+        model = model.filter(
+            licences__status=DocumentPackBase.Status.ACTIVE,
+            licences__case_completion_datetime__gte=start_datetime,
+        )
 
     if terms.issue_date_end:
-        # TODO: ICMSLST-1743: Add search by issue date (field on ImportApplicationlicence model)
-        pass
+        end_datetime = timezone.make_aware(
+            dt.datetime.combine(terms.issue_date_end, dt.datetime.max.time())
+        )
+
+        model = model.filter(
+            licences__status=DocumentPackBase.Status.ACTIVE,
+            licences__case_completion_datetime__lte=end_datetime,
+        )
 
     return model
 

@@ -1535,7 +1535,6 @@ ON cardc.card_id
 COM/2022/00002
 ON sld.id = DEREF(dd.secure_lob_ref).id WHERE card.status_control = 'C' ORDER
 View Issued Documents
-ICMSLST-1743
 case_completion_datetime
 export_application_id
 Firearms and Ammunition Cover Letter

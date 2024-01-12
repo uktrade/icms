@@ -2,7 +2,6 @@ import pytest
 from django.utils import timezone
 
 from web.domains.case.services import document_pack
-from web.domains.case.services.document_pack import pack_workbasket_remove_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.workbasket.actions import ActionConfig
 from web.domains.workbasket.actions.applicant_actions import (
@@ -160,7 +159,9 @@ class TestApplicantActions:
 
         # Test completed app is no longer shown
         pack = document_pack.pack_active_get(completed_sil_app)
-        pack_workbasket_remove_pack(completed_sil_app, importer_one_contact, pack_pk=pack.pk)
+        document_pack.pack_workbasket_remove_pack(
+            completed_sil_app, importer_one_contact, pack_pk=pack.pk
+        )
 
         config = ActionConfig(user=self.user, case_type="import", application=completed_sil_app)
         action = ViewIssuedDocumentsAction.from_config(config)
@@ -191,7 +192,9 @@ class TestApplicantActions:
 
         # Test completed app is no longer shown
         pack = document_pack.pack_active_get(completed_sil_app)
-        pack_workbasket_remove_pack(completed_sil_app, importer_one_contact, pack_pk=pack.pk)
+        document_pack.pack_workbasket_remove_pack(
+            completed_sil_app, importer_one_contact, pack_pk=pack.pk
+        )
 
         config = ActionConfig(user=self.user, case_type="import", application=completed_sil_app)
         action = ClearIssuedDocumentsAction.from_config(config)

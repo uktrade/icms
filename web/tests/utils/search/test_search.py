@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import io
 
 import pytest
@@ -574,13 +574,13 @@ def _test_search_by_importer_or_agent_name(importer_conf: FixtureData):
 
 def _test_search_by_submitted_datetime(importer_conf: FixtureData):
     application = Build.wood_application("Wood ref 4", importer_conf)
-    application.submit_datetime = make_aware(datetime.datetime(2020, 1, 1, 23, 59, 59))
+    application.submit_datetime = make_aware(dt.datetime(2020, 1, 1, 23, 59, 59))
     application.save()
 
     search_terms = SearchTerms(
         case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,
-        submitted_date_start=datetime.date(2020, 1, 2),
+        submitted_date_start=dt.date(2020, 1, 2),
     )
     results = search_applications(search_terms, importer_conf.request.user)
 
@@ -592,8 +592,8 @@ def _test_search_by_submitted_datetime(importer_conf: FixtureData):
     search_terms = SearchTerms(
         case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,
-        submitted_date_start=datetime.date(2020, 1, 1),
-        submitted_date_end=datetime.date(2020, 1, 2),
+        submitted_date_start=dt.date(2020, 1, 1),
+        submitted_date_end=dt.date(2020, 1, 2),
     )
     results = search_applications(search_terms, importer_conf.request.user)
 
@@ -604,13 +604,13 @@ def _test_search_by_submitted_datetime(importer_conf: FixtureData):
 
 def test_search_by_submitted_end_date(importer_one_fixture_data):
     application = Build.wood_application("Wood ref 1", importer_one_fixture_data)
-    application.submit_datetime = make_aware(datetime.datetime(2020, 1, 2, 23, 59, 59))
+    application.submit_datetime = make_aware(dt.datetime(2020, 1, 2, 23, 59, 59))
     application.save()
 
     search_terms = SearchTerms(
         case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,
-        submitted_date_end=datetime.date(2020, 1, 2),
+        submitted_date_end=dt.date(2020, 1, 2),
     )
     results = search_applications(search_terms, importer_one_fixture_data.ilb_admin_user)
 
@@ -623,15 +623,15 @@ def _test_search_by_licence_date(importer_conf: FixtureData):
     # Set the licence dates on a submitted application (26/AUG/2021 - 26/FEB/2022)
     application = WoodQuotaApplication.objects.get(applicant_reference="Wood ref 4")
     application.licences.create(
-        licence_start_date=datetime.date(2021, 8, 26), licence_end_date=datetime.date(2022, 2, 26)
+        licence_start_date=dt.date(2021, 8, 26), licence_end_date=dt.date(2022, 2, 26)
     )
 
     # Should find the record when the search terms are the same day as the licence dates
     search_terms = SearchTerms(
         case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,
-        licence_date_start=datetime.date(2021, 8, 26),
-        licence_date_end=datetime.date(2022, 2, 26),
+        licence_date_start=dt.date(2021, 8, 26),
+        licence_date_end=dt.date(2022, 2, 26),
     )
 
     results = search_applications(search_terms, importer_conf.request.user)
@@ -644,8 +644,8 @@ def _test_search_by_licence_date(importer_conf: FixtureData):
     search_terms = SearchTerms(
         case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,
-        licence_date_start=datetime.date(2021, 8, 27),
-        licence_date_end=datetime.date(2022, 2, 26),
+        licence_date_start=dt.date(2021, 8, 27),
+        licence_date_end=dt.date(2022, 2, 26),
     )
     results = search_applications(search_terms, importer_conf.request.user)
 
@@ -655,8 +655,8 @@ def _test_search_by_licence_date(importer_conf: FixtureData):
     search_terms = SearchTerms(
         case_type="import",
         app_type=ImportApplicationType.Types.WOOD_QUOTA,
-        licence_date_start=datetime.date(2021, 8, 26),
-        licence_date_end=datetime.date(2022, 2, 25),
+        licence_date_start=dt.date(2021, 8, 26),
+        licence_date_end=dt.date(2022, 2, 25),
     )
     results = search_applications(search_terms, importer_conf.request.user)
 
@@ -1556,6 +1556,45 @@ def test_can_search_refused_application(fa_dfl_app_submitted, ilb_admin_client, 
     results = search_applications(search_terms, ilb_admin_user)
     assert results.total_rows == 1
     assert len(results.records) == 1
+
+
+def test_can_search_by_issued_date(ilb_admin_user, completed_dfl_app, completed_sil_app):
+    # Setup to make the applicant reference unique.
+    completed_dfl_app.applicant_reference = "dfl-app"
+    completed_dfl_app.save()
+    completed_sil_app.applicant_reference = "sil-app"
+    completed_sil_app.save()
+
+    today = dt.date.today()
+
+    dfl_pack = document_pack.pack_active_get(completed_dfl_app)
+    sil_pack = document_pack.pack_active_get(completed_sil_app)
+
+    # Check the fixtures packs were completed today
+    assert dfl_pack.case_completion_datetime.date() == today
+    assert sil_pack.case_completion_datetime.date() == today
+
+    # Test we can search by issue date.
+    search_terms = SearchTerms(case_type="import", issue_date_start=today, issue_date_end=today)
+    results = search_applications(search_terms, ilb_admin_user)
+    assert results.total_rows == 2
+    assert len(results.records) == 2
+    check_application_references(
+        results.records,
+        completed_dfl_app.applicant_reference,
+        completed_sil_app.applicant_reference,
+        sort_results=True,
+    )
+
+    # Set one to the packs to have a case completion datetime in the past.
+    dfl_pack.case_completion_datetime = dt.datetime(2020, 1, 1, tzinfo=dt.UTC)
+    dfl_pack.save()
+
+    search_terms = SearchTerms(case_type="import", issue_date_start=today, issue_date_end=today)
+    results = search_applications(search_terms, ilb_admin_user)
+    assert results.total_rows == 1
+    assert len(results.records) == 1
+    check_application_references(results.records, completed_sil_app.applicant_reference)
 
 
 class TestImporterSearchPermissions:
