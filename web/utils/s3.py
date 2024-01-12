@@ -5,6 +5,8 @@ import boto3
 from botocore.exceptions import ClientError
 from django.conf import settings
 
+from web.utils.sentry import capture_exception
+
 if TYPE_CHECKING:
     from mypy_boto3_s3 import Client as S3Client
 
@@ -90,8 +92,8 @@ def create_presigned_url(key: str, expiration: int = 3600) -> str | None:
             Params={"Bucket": settings.AWS_STORAGE_BUCKET_NAME, "Key": key},
             ExpiresIn=expiration,
         )
-    except ClientError as e:
-        logging.error(e)
+    except ClientError:
+        capture_exception()
         return None
 
     # The response contains the presigned URL
