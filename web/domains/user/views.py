@@ -17,7 +17,6 @@ from web.views import ModelFilterView
 from . import actions
 from .forms import (
     ManualAddressEntryForm,
-    PeopleFilter,
     PostCodeSearchForm,
     UserDetailsUpdateForm,
     UserListFilter,
@@ -59,34 +58,6 @@ class UsersListView(ModelFilterView):
             "account_last_login_date": {"header": "Last Login Date"},
         }
         actions = [actions.DeactivateUser(), actions.ActivateUser()]
-        select = True
-
-
-class PeopleSearchView(ModelFilterView):
-    template_name = "web/domains/user/search-people.html"
-    filterset_class = PeopleFilter
-    model = User
-    permission_required: list[str] = []
-    page_title = "Search People"
-
-    def get_page(self):
-        return self.request.POST.get("page")
-
-    def get_filterset(self, **kwargs):
-        return self.filterset_class(
-            self.request.POST or None, queryset=self.get_queryset(), **kwargs
-        )
-
-    class Display:
-        fields = [("title", "first_name", "last_name"), ("organisation", "email"), "work_address"]
-        fields_config = {
-            "title": {"header": "Name"},
-            "first_name": {"no_header": True},
-            "last_name": {"no_header": True},
-            "organisation": {"header": "Job Details"},
-            "email": {"no_header": True},
-            "work_address": {"header": "Organisation Address"},
-        }
         select = True
 
 
