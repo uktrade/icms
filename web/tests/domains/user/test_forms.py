@@ -3,7 +3,6 @@ import random
 from django.test import TestCase
 
 from web.domains.user.forms import (
-    PeopleFilter,
     PhoneNumberForm,
     UserDetailsUpdateForm,
     UserListFilter,
@@ -47,43 +46,6 @@ class TestUserListFilter(TestCase):
         first = results.first()
         last = results.last()
         assert first.username == "E1_inactive_contact"
-        assert last.username == "I3_inactive_contact"
-
-
-class TestPeopleFilter(TestCase):
-    def run_filter(self, data=None):
-        return PeopleFilter(data=data).qs
-
-    def test_email_filter(self):
-        results = self.run_filter({"email_address": "example.com"})
-        assert results.count() == TOTAL_TEST_USERS
-
-    def test_first_name_filter(self):
-        results = self.run_filter({"forename": "E1"})
-        assert results.count() == 3
-
-    def test_last_name_filter(self):
-        results = self.run_filter({"surname": "I1"})
-        assert results.count() == 3
-
-    def test_organisation_filter(self):
-        results = self.run_filter({"organisation": "inactive_contact"})
-        assert results.count() == 4
-
-    def test_department_filter(self):
-        results = self.run_filter({"department": "A1"})
-        assert results.count() == 2
-
-    def test_job_title_filter(self):
-        results = self.run_filter({"job": "job"})
-        assert results.count() == TOTAL_TEST_USERS
-
-    def test_filter_order(self):
-        results = self.run_filter({"email_address": "example"})
-        assert results.count() == TOTAL_TEST_USERS
-        first = results.first()
-        last = results.last()
-        assert first.username == "access_request_user"
         assert last.username == "I3_inactive_contact"
 
 

@@ -113,21 +113,6 @@ class EmailForm(forms.ModelForm):
         }
 
 
-class PeopleFilter(FilterSet):
-    email_address = CharFilter(field_name="emails__email", lookup_expr="icontains", label="Email")
-    forename = CharFilter(field_name="first_name", lookup_expr="icontains", label="Forename")
-    surname = CharFilter(field_name="last_name", lookup_expr="icontains", label="Surname")
-    organisation = CharFilter(
-        field_name="organisation", lookup_expr="icontains", label="Organisation"
-    )
-    department = CharFilter(field_name="department", lookup_expr="icontains", label="Department")
-    job = CharFilter(field_name="job_title", lookup_expr="icontains", label="Job")
-
-    class Meta:
-        model = User
-        fields: list[Any] = []
-
-
 class UserListFilter(FilterSet):
     email_address = CharFilter(field_name="email", lookup_expr="icontains", label="Email Address")
     username = CharFilter(field_name="username", lookup_expr="icontains", label="Login Name")
