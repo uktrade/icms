@@ -119,3 +119,34 @@ class TestLogoutView:
     def _assert_logged_out(self, client):
         response = client.get("")
         assertRedirects(response, reverse("login-start"))
+
+
+class TestSecurityHeaders:
+    @override_settings(CSP_REPORT_ONLY=True, CSP_REPORT_URI="https://example.com")
+    def test_csp_headers_report_only(self, importer_client):
+        response = importer_client.get("")
+        assert "Content-Security-Policy-Report-Only" in response.headers
+        assert (
+            "report-uri https://example.com"
+            in response.headers["Content-Security-Policy-Report-Only"]
+        )
+
+    @override_settings(CSP_REPORT_ONLY=False)
+    def test_normal_csp_headers(self, importer_client):
+        response = importer_client.get("")
+        assert "Content-Security-Policy" in response.headers
+
+    @override_settings(CSP_REPORT_ONLY=False)
+    def test_csp_nonce(self, ilb_admin_client):
+        # checking that the script elements have a nonce in them
+        with mock.patch("csp.middleware.CSPMiddleware._make_nonce") as mocked_make_nonce:
+            mocked_make_nonce.return_value = "test-nonce"
+            decoded_response = ilb_admin_client.get(reverse("exporter-create")).content.decode(
+                "utf-8"
+            )
+            assert 'nonce="test-nonce"' in decoded_response
+
+    def test_x_permitted_domains_header(self, importer_client):
+        response = importer_client.get("")
+        assert "X-Permitted-Cross-Domain-Policies" in response.headers
+        assert response.headers["X-Permitted-Cross-Domain-Policies"] == "none"

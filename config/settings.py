@@ -69,6 +69,8 @@ MIDDLEWARE = [
     "htmlmin.middleware.MarkRequestMiddleware",
     "web.middleware.common.ICMSMiddleware",
     "web.middleware.one_login.UserFullyRegisteredMiddleware",
+    "csp.middleware.CSPMiddleware",
+    "web.middleware.common.SetPermittedCrossDomainPolicyHeaderMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -163,7 +165,6 @@ LOGIN_URL = "login-start"
 LOGIN_REDIRECT_URL = "workbasket"
 # Do not use this (all handled in "logout-user")
 LOGOUT_REDIRECT_URL = None
-
 
 if STAFF_SSO_ENABLED:
     AUTHENTICATION_BACKENDS.append("web.auth.backends.ICMSStaffSSOBackend")
@@ -273,7 +274,6 @@ CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_EXTENDED = True
-
 
 # Django cache with Redis
 CACHES = {
@@ -420,7 +420,6 @@ LOGGING = {
 if env.sentry_enabled:
     init_sentry(env.sentry_dsn, env.sentry_environment)
 
-
 # Settings for production environment
 if APP_ENV == "production":
     # TODO compression causes 50 error on server
@@ -459,3 +458,35 @@ else:
 
 # Local site URL management
 LOCAL_SITE_URL = env.local_site_url
+
+# CSP Settings
+
+# CSP policies
+CSP_DEFAULT_SRC = ("'self'",)
+
+# JS tags with a src attribute can only be loaded from ICMS itself or the DBT Sentry instance
+CSP_SCRIPT_SRC = (
+    "'self'",
+    "https://sentry.ci.uktrade.digital/",
+)
+# CSS elements with a src attribute can only be loaded from ICMS itself or inline, e.g. <style> tags
+CSP_STYLE_SRC = (
+    "'self'",
+    "'unsafe-inline'",
+)
+# Fonts can only be loaded from ICMS itself or data URIs
+CSP_FONT_SRC = (
+    "'self'",
+    "data:",
+)
+
+# CSP meta-settings
+
+# inline scripts without a src attribute must have a nonce attribute
+CSP_INCLUDE_NONCE_IN = ["script-src"]
+
+# if True, CSP violations are reported but not enforced
+CSP_REPORT_ONLY = env.csp_report_only
+
+# URL to send CSP violation reports to
+CSP_REPORT_URI = env.csp_report_uri

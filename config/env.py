@@ -160,5 +160,9 @@ class Environment(BaseSettings):
     # local site URL management
     local_site_url: str = "http://web:8080/"
 
+    # CSP settings
+    csp_report_only: bool = True
+    csp_report_uri: list[str] | None = None
+
 
 env: Environment = Environment()  # type:ignore[call-arg]
