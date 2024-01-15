@@ -1,4 +1,4 @@
-<script>
+<script nonce="{{ request.csp_nonce }}">
   $('.icon-search').on('click', function(evt) {
       evt.preventDefault();
       $ta = $(this).closest('div.input-group').find('input, textarea');

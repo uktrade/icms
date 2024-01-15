@@ -10,7 +10,7 @@
 {% endblock main_content %}
 
 {% block page_js %}
-  <script type="text/javascript">
+  <script nonce="{{ request.csp_nonce }}" type="text/javascript">
     // Add the current-tab to the link with the current-page class.
     const active_link = document.querySelector("li.current-page");
 

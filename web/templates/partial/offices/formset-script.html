@@ -1,4 +1,4 @@
-<script id="office-postcode-lookup-ui" type="text/html">
+<script nonce="{{ request.csp_nonce }}" id="office-postcode-lookup-ui" type="text/html">
   <div class="modal-popover-container">
     <div class="modal-popover small-popover modal-alert-confirm">
       <div class="modal-popover-content" role="alertdialog">
@@ -22,7 +22,7 @@
   </div>
 </script>
 
-<script>
+<script nonce="{{ request.csp_nonce }}">
   $('#lookup_postcode').on('click', '.icon-search', function (evt) {
     evt.preventDefault();
 

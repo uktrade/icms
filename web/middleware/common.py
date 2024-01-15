@@ -38,3 +38,13 @@ class DBQueriesMiddleware:
         show_queries(ignore=0, show_time=True, fancy_print=True, msg="")
 
         return response
+
+
+class SetPermittedCrossDomainPolicyHeaderMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
+        return response

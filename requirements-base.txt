@@ -42,3 +42,4 @@ tqdm==4.65
 WeasyPrint==59.0
 whitenoise==6.6.0
 xlsxwriter==3.0.1
+django-csp~=3.7

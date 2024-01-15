@@ -206,15 +206,15 @@ Run the following command, this will install dependencies and copy them to the c
 make requirements-web
 ```
 
-see the following file for the config:
+see the following code for the config:
 
 ```
-# icms/config/settings/development.py
+# icms/config/settings_local.py
 NPM_STATIC_FILES_LOCATION =
 NPM_FILE_PATTERNS
 ```
 
-Currently we only have this config defined in the development.py settings file.
+Currently, we only have this config defined in the settings_local.py config file.
 
 ## Deployments
 

@@ -54,7 +54,7 @@
 {% block page_js %}
   {{ super() }}
   {{ form.media.js }}
-    <script>
+    <script nonce="{{ request.csp_nonce }}">
         var buttons = [
             'bold',
             'strikethrough',
