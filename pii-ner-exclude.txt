@@ -3639,3 +3639,15 @@ web.middleware.common
 DBT Sentry
 id_name').val(data['title
 Status
+5(1A)(b
+ICMSLST-2440
+the User Details UI
+equiv="X-UA-Compatible
+container_class=
+north">Select
+Cancel</button
+ui.find('.approve').on('click'
+JSON.parse($('#address_list
+addressTextArea
+address.join
+911 12345678

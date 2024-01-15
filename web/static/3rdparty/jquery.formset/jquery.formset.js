@@ -9,6 +9,7 @@
  * Licensed under the New BSD License
  * See: http://www.opensource.org/licenses/bsd-license.php
  */
+// TODO: Remove in ICMSLST-2440
 ;(function($) {
     $.fn.formset = function(opts)
     {

@@ -1,4 +1,11 @@
 $(document).ready(function(){
+    /**
+     * TODO: Remove in ICMSLST-2440
+     * Only used in two places (both relating to updating user details).
+     * web/templates/partial/phone-numbers.html
+     * web/templates/partial/email-addresses.html
+     * Goal is to remove this when refactoring the User Details UI.
+     */
     $('[role=formset]').each(function(index, el){
         var $el = $(el);
         var prefix = $el.attr('data-formset-prefix');

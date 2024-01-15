@@ -31,8 +31,7 @@
   {% endif %}
 {% endmacro %}
 
-{# this is for formsets #}
-{% macro errors(form) -%}
+{% macro formset_errors(form) -%}
   {% if form.non_form_errors() %}
     <div class="input-error">
     {% for error in form.non_form_errors() %}

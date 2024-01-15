@@ -13,11 +13,13 @@ from web.models import (
     Email,
     ExportApplicationType,
     Exporter,
+    FirearmsAct,
     ImportApplicationType,
     Importer,
     ObsoleteCalibre,
     ObsoleteCalibreGroup,
     Office,
+    Section5Clause,
     Signature,
     User,
 )
@@ -299,6 +301,33 @@ class Command(BaseCommand):
         ObsoleteCalibre.objects.create(calibre_group=group, name="9mm", order=1)
 
         create_dummy_signature(ilb_admin_user)
+
+        # Add a few dummy section 5 clauses (The real values will come from the data migration)
+        Section5Clause.objects.create(
+            clause="5(1A)(a)", description="Test value 1", created_by=ilb_admin_user
+        )
+        Section5Clause.objects.create(
+            clause="5(1A)(b)", description="Test value 2", created_by=ilb_admin_user
+        )
+        Section5Clause.objects.create(
+            clause="5(1A)(c)", description="Test value 3", created_by=ilb_admin_user
+        )
+
+        # Add some Firearm acts (Copied from data migration)
+        FirearmsAct.objects.bulk_create(
+            [
+                FirearmsAct(created_by=ilb_admin_user, act=act)
+                for act in [
+                    "Section 1 Firearms",
+                    "Section 1 Shotguns",
+                    "Section 2 Shotguns",
+                    "Section 1 Component Parts",
+                    "Section 1 Ammunition",
+                    "Expanding Ammunition 5(1A)(f)",
+                    "Suppressors",
+                ]
+            ]
+        )
 
     def create_user(
         self,
