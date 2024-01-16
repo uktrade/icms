@@ -39,6 +39,7 @@ class CaseDocument(MigrationBase):
     )
     document_type = models.CharField(max_length=12)
     reference = models.CharField(max_length=20, null=True)
+    check_code = models.CharField(null=True, max_length=16)
 
     @classmethod
     def models_to_populate(cls) -> list[str]:

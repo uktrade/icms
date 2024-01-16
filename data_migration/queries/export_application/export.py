@@ -61,6 +61,7 @@ SELECT
   , cardc.id certificate_id
   , 'CERTIFICATE' document_type
   , cardc.country_id
+  , cardc.certificate_code check_code
   , xdd.title || '.pdf' filename
   , xdd.content_type
   , dbms_lob.getlength(sld.blob_data) file_size
