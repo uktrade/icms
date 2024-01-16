@@ -8,14 +8,14 @@ div[name="signature-widget"] {
 div[name="signature-widget"] > span {
     flex: 0 0 100%;
     display: block;
-    font-size: 12px;
-    margin: 1px 0;
+    font-size: 11px;
+    margin: 0;
 }
 
 #signature-widget-image-container {
     flex: 0 0 100%;
     display: block;
-    margin: 1px 0;
+    margin: 0;
 }
 
 #signature-widget-image {

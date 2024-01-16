@@ -1,11 +1,16 @@
+import base64
 import datetime as dt
 import re
 from collections.abc import Collection
+from tempfile import NamedTemporaryFile
 from typing import TYPE_CHECKING, Union
+from urllib.parse import urlencode, urljoin
 
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
+from django.urls import reverse
 from django.utils import timezone
+from qrcode import QRCode
 
 from web.domains.case.services import document_pack
 from web.domains.signature.utils import get_active_signature_file
@@ -17,6 +22,7 @@ from web.domains.template.utils import (
     get_letter_fragment,
 )
 from web.models import CertificateOfGoodManufacturingPracticeApplication
+from web.sites import get_exporter_site_domain
 from web.types import DocumentTypes
 from web.utils import day_ordinal_date, strip_spaces
 
@@ -320,33 +326,60 @@ def _get_importer_eori_numbers(application: "FaImportApplication") -> list[str]:
     return eori_numbers
 
 
+def _certificate_document_context(
+    application: "ExportApplication",
+    certificate: "ExportApplicationCertificate",
+    doc_type: DocumentTypes,
+    country: "Country",
+) -> "Context":
+    qr_check_url = urljoin(get_exporter_site_domain(), reverse("checker:certificate-checker"))
+    context: "Context" = {"qr_check_url": qr_check_url}
+
+    if doc_type == DocumentTypes.CERTIFICATE_PREVIEW:
+        context["reference"] = "[[CERTIFICATE_REFERENCE]]"
+        return context
+
+    document = document_pack.doc_ref_certificate_get(certificate, country)
+    reference = document.reference
+
+    query_params = {
+        "CERTIFICATE_REFERENCE": reference,
+        "CERTIFICATE_CODE": document.check_code,
+        "COUNTRY": document.reference_data.country.id,
+        "ORGANSIATION": application.exporter.name,
+    }
+    qr = QRCode(border=0, box_size=10)
+    qr.add_data(qr_check_url + "?" + urlencode(query_params))
+    qr_image = qr.make_image()
+    tmpfile = NamedTemporaryFile(delete=True)
+    qr_image.save(tmpfile.name)
+    qr_img = base64.b64encode(tmpfile.read())  # /PS-IGNORE
+
+    return context | {
+        "certificate_code": document.check_code,
+        "qr_img_base64": qr_img.decode("utf8"),
+        "reference": reference,
+    }
+
+
 def _get_certificate_context(
     application: "ExportApplication",
     certificate: "ExportApplicationCertificate",
     doc_type: DocumentTypes,
     country: "Country",
 ) -> "Context":
+    context = _certificate_document_context(application, certificate, doc_type, country)
     preview = doc_type == DocumentTypes.CERTIFICATE_PREVIEW
     signature, signature_file = get_active_signature_file()
-
-    if preview:
-        reference = "[[CERTIFICATE_REFERENCE]]"
-    else:
-        document = document_pack.doc_ref_certificate_get(certificate, country)
-        reference = document.reference
-
     if certificate.case_completion_datetime:
         issue_date = day_ordinal_date(certificate.case_completion_datetime.date())
     else:
         issue_date = day_ordinal_date(dt.datetime.now().date())
 
-    return {
+    return context | {
         "exporter_name": application.exporter.name.upper(),
         "exporter_address": str(application.exporter_office).upper(),
-        "certificate_code": "Placeholder code",
         "country": country.name,
-        "reference": reference,
-        "qr_check_url": "Placeholder url",
         "issue_date": issue_date,
         "process": application,
         "preview": preview,

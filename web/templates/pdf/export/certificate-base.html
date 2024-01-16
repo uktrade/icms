@@ -42,21 +42,29 @@
 
       <div class="title-footer">
         <div class="signature-block page-margin">
-          {# TODO ICMSLST-697 - Revist when implementing digital signatures #}
+          {{ document_signature(signature_file, signature.content_type, signature.signatory) }}
           {% if preview %}
-            {{ document_signature(signature_file, signature.content_type, signature.signatory) }}
-            <span class="qr-code">[[QR Code Placeholder]]</span>
+            <div class="qr-code">
+              <span class="qr-placeholder">[[QR_PLACEHOLDER]]</span>
+            </div>
+            <div class="qr-text-block">
+              <span class="qr-text">QR code will be genrated when documents are authorised.</span>
+            </div>
           {% else %}
-            {{ document_signature(signature_file, signature.content_type, signature.signatory) }}
-            <span class="qr-code">[[QR Code Placeholder]]</span>
+            <div class="qr-code">
+              <img class="qr-img" src="data:image/png;base64, {{ qr_img_base64 }}" />
+            </div>
+            <div class="qr-text-block">
+              <p class="qr-text">
+                Scan this QR code to check this certificate's validity.
+                <strong>Certificate Code: {{ certificate_code }}</strong>
+              </p>
+              <p class="qr-text">
+                Alternatively you can go to <strong>{{ qr_check_url }}</strong>
+                and enter the certificate reference and code.
+              </p>
+            </div>
           {% endif %}
-            <span class="qr-text">Scan this QR code to check this
-              certificate's validity. Certificate
-              Code: {{ certificate_code }}
-              Alternatively you can go to
-              {{ qr_check_url }} and
-              enter the certificate reference and
-              code.</span>
         </div>
         <div class="date-block page-margin">
           <span>Date issued:</span>

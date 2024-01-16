@@ -68,7 +68,8 @@ module = [
     "lxml.*",
     "playwright.*",
     "authbroker_client.*",
-    "authlib.*"
+    "authlib.*",
+    "qrcode.*"
 ]
 ignore_missing_imports = true
 

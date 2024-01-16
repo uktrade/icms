@@ -39,24 +39,22 @@ class CheckCertificateView(FormView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context_kwargs = {
-            "page_title": "Certificate Checker",
-            "document": None,
-        } | kwargs
-        return super().get_context_data(**context_kwargs)
+        context = super().get_context_data(**kwargs)
+        context["document"] = context.get("document")
+        context["page_title"] = "Certificate Checker"
 
-    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        form_data = {
-            "certificate_reference": request.GET.get("CERTIFICATE_REFERENCE"),
-            "certificate_code": request.GET.get("CERTIFICATE_CODE"),
-            "country": request.GET.get("COUNTRY"),
-            "organisation_name": request.GET.get("ORGANISATION"),
+        return context
+
+    def get_initial(self) -> dict[str, Any]:
+        return {
+            "certificate_reference": self.request.GET.get("CERTIFICATE_REFERENCE"),
+            "certificate_code": self.request.GET.get("CERTIFICATE_CODE"),
+            "country": self.request.GET.get("COUNTRY"),
+            "organisation_name": self.request.GET.get("ORGANISATION"),
         }
 
-        return self.render_to_response(self.get_context_data(form=self.form_class(form_data)))
-
     def form_valid(self, form: CertificateCheckForm) -> HttpResponse:
-        context = {}
+        context = self.get_context_data(form=form)
         check = form.clean()
         reference = check["certificate_reference"]
         code = check["certificate_code"]
@@ -112,7 +110,8 @@ class CheckCertificateView(FormView):
                 f"Please ensure all details are entered correctly and try again."
             )
 
-        return self.render_to_response(self.get_context_data(**context))
+        # Renders page with extra context when form submission valid
+        return self.render_to_response(context)
 
     def form_invalid(self, form: CertificateCheckForm) -> HttpResponse:
         return self.render_to_response(
