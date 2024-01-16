@@ -233,13 +233,19 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert refs.count() == 3
     assert refs[0].reference == "GMP/2022/00001"
     assert refs[0].reference_data.country_id == 1
+    assert refs[0].check_code == "12345678"
+
     assert refs[1].reference == "GMP/2022/00002"
     assert refs[1].reference_data.country_id == 2
+    assert refs[1].check_code == "56781234"
+
     assert refs[2].reference == "GMP/2022/00003"
     assert refs[2].reference_data.country_id == 3
+    assert refs[2].check_code == "43215678"
 
     assert ref2.reference == "GMP/2022/00004"
     assert ref2.reference_data.country_id == 1
+    assert ref2.check_code == "87654321"
 
     gmp1, gmp2, gmp3 = web.CertificateOfGoodManufacturingPracticeApplication.objects.order_by("pk")
 
@@ -327,9 +333,11 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     assert ref3.reference == "COM/2022/00001"
     assert ref3.reference_data.country_id == 1
+    assert ref3.check_code == "87651432"
 
     assert ref4.reference == "COM/2022/00002"
     assert ref4.reference_data.country_id == 1
+    assert ref4.check_code == "87651432"
 
     assert com1.is_pesticide_on_free_sale_uk is None
     assert com1.is_manufacturer is None
@@ -423,10 +431,12 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     ref5 = cert6.document_references.first()
     assert ref5.reference == "CFS/2022/00001"
     assert ref5.reference_data.country_id == 1
+    assert ref5.check_code == "32415678"
 
     ref6 = cert9.document_references.first()
     assert ref6.reference == "CFS/2022/00002"
     assert ref6.reference_data.country_id == 1
+    assert ref6.check_code == "32415679"
 
     assert cfs1.schedules.count() == 0
     assert cfs2.schedules.count() == 1

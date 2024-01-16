@@ -515,6 +515,7 @@ ea_query_result = {
             ("path",),
             ("created_datetime",),
             ("created_by_id",),
+            ("check_code",),
         ],
         [
             (
@@ -523,7 +524,7 @@ ea_query_result = {
                 101,  # document_legacy_id
                 "GMP/2022/00001",  # reference
                 "GMP/2022/00001",  # case_document_ref_id
-                "CERTIFICATE",  # documnet_type
+                "CERTIFICATE",  # document_type
                 1,  # country_id
                 "gmp-cert-1.pdf",  # filename
                 "pdf",  # content_type
@@ -531,6 +532,7 @@ ea_query_result = {
                 "path/to/gmp-cert-1.pdf",  # path
                 datetime.now(),  # created_datetime
                 2,  # created_by_id
+                12345678,  # check_code
             ),
             (
                 18,  # cad_id
@@ -538,7 +540,7 @@ ea_query_result = {
                 102,  # document_legacy_id
                 "GMP/2022/00002",  # reference
                 "GMP/2022/00002",  # case_document_ref_id
-                "CERTIFICATE",  # documnet_type
+                "CERTIFICATE",  # document_type
                 2,  # country_id
                 "gmp-cert-2.pdf",  # filename
                 "pdf",  # content_type
@@ -546,6 +548,7 @@ ea_query_result = {
                 "path/to/gmp-cert-2.pdf",  # path
                 datetime.now(),  # created_datetime
                 2,  # created_by_id
+                56781234,  # check_code
             ),
             (
                 18,  # cad_id
@@ -553,7 +556,7 @@ ea_query_result = {
                 103,  # document_legacy_id
                 "GMP/2022/00003",  # reference
                 "GMP/2022/00003",  # case_document_ref_id
-                "CERTIFICATE",  # documnet_type
+                "CERTIFICATE",  # document_type
                 3,  # country_id
                 "gmp-cert-1.pdf",  # filename
                 "pdf",  # content_type
@@ -561,6 +564,7 @@ ea_query_result = {
                 "path/to/gmp-cert-3.pdf",  # path
                 datetime.now(),  # created_datetime
                 2,  # created_by_id
+                43215678,  # check_code
             ),
             (
                 19,  # cad_id
@@ -568,7 +572,7 @@ ea_query_result = {
                 104,  # document_legacy_id
                 "GMP/2022/00004",  # reference
                 "GMP/2022/00004",  # case_document_ref_id
-                "CERTIFICATE",  # documnet_type
+                "CERTIFICATE",  # document_type
                 1,  # country_id
                 "gmp-cert-4.pdf",  # filename
                 "pdf",  # content_type
@@ -576,6 +580,7 @@ ea_query_result = {
                 "path/to/gmp-cert-4.pdf",  # path
                 datetime.now(),  # created_datetime
                 2,  # created_by_id
+                87654321,  # check_code
             ),
             (
                 21,  # cad_id
@@ -583,7 +588,7 @@ ea_query_result = {
                 105,  # document_legacy_id
                 "COM/2022/00001",  # reference
                 "COM/2022/00001",  # case_document_ref_id
-                "CERTIFICATE",  # documnet_type
+                "CERTIFICATE",  # document_type
                 1,  # country_id
                 "com-cert-1.pdf",  # filename
                 "pdf",  # content_type
@@ -591,6 +596,7 @@ ea_query_result = {
                 "path/to/com-cert-1.pdf",  # path
                 datetime.now(),  # created_datetime
                 2,  # created_by_id
+                87651432,  # check_code
             ),
             (
                 22,  # cad_id
@@ -598,7 +604,7 @@ ea_query_result = {
                 106,  # document_legacy_id
                 "COM/2022/00002",  # reference
                 "COM/2022/00002",  # case_document_ref_id
-                "CERTIFICATE",  # documnet_type
+                "CERTIFICATE",  # document_type
                 1,  # country_id
                 "com-cert-2.pdf",  # filename
                 "pdf",  # content_type
@@ -606,6 +612,7 @@ ea_query_result = {
                 "path/to/com-cert-2.pdf",  # path
                 datetime.now(),  # created_datetime
                 2,  # created_by_id
+                87651432,  # check_code
             ),
             (
                 24,  # cad_id
@@ -613,7 +620,7 @@ ea_query_result = {
                 107,  # document_legacy_id
                 "CFS/2022/00001",  # reference
                 "CFS/2022/00001",  # case_document_ref_id
-                "CERTIFICATE",  # documnet_type
+                "CERTIFICATE",  # document_type
                 1,  # country_id
                 "cfs-cert-1.pdf",  # filename
                 "pdf",  # content_type
@@ -621,6 +628,7 @@ ea_query_result = {
                 "path/to/cfs-cert-1.pdf",  # path
                 datetime.now(),  # created_datetime
                 2,  # created_by_id
+                32415678,  # check_code
             ),
             (
                 25,  # cad_id
@@ -628,7 +636,7 @@ ea_query_result = {
                 108,  # document_legacy_id
                 "CFS/2022/00002",  # reference
                 "CFS/2022/00002",  # case_document_ref_id
-                "CERTIFICATE",  # documnet_type
+                "CERTIFICATE",  # document_type
                 1,  # country_id
                 "cfs-cert-2.pdf",  # filename
                 "pdf",  # content_type
@@ -636,6 +644,7 @@ ea_query_result = {
                 "path/to/cfs-cert-2.pdf",  # path
                 datetime.now(),  # created_datetime
                 2,  # created_by_id
+                32415679,  # check_code
             ),
         ],
     ),

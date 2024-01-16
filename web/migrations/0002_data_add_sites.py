@@ -12,11 +12,18 @@ def add_icms_sites(apps, schema_editor):
     Site.objects.create(domain="import-a-licence-unset", name=SiteName.IMPORTER)
 
 
+def reverse_icms_sites(apps, schema_editor):
+    Site = apps.get_model("sites", "Site")
+    Site.objects.filter(
+        name__in=(SiteName.CASEWORKER, SiteName.EXPORTER, SiteName.IMPORTER)
+    ).delete()
+
+
 class Migration(migrations.Migration):
     dependencies = [
         ("web", "0001_initial"),
     ]
 
     operations = [
-        migrations.RunPython(add_icms_sites),
+        migrations.RunPython(add_icms_sites, reverse_icms_sites),
     ]
