@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, create_autospec, patch
 import pytest
 from django.conf import settings
 
+from web.domains.case.services import document_pack
 from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
@@ -519,6 +520,58 @@ def test_get_preview_gmp_certifcate_context(gmp_app_submitted):
     assert context["exporter_name"] == app.exporter.name.upper()
     assert context["reference"] == "[[CERTIFICATE_REFERENCE]]"
     assert context["brand_name"] == "A Brand"
+
+
+def test_get_pre_sign_cfs_certificate_context(completed_cfs_app):
+    app = completed_cfs_app
+    country = app.countries.first()
+    certificate = app.certificates.first()
+    document = document_pack.doc_ref_certificate_get(certificate, country)
+    generator = PdfGenerator(DocumentTypes.CERTIFICATE_PRE_SIGN, app, certificate, country)
+
+    context = generator.get_document_context()
+
+    assert context["preview"] is False
+    assert context["schedule_text"]
+    assert context["statement_translations"] == []
+    assert context["exporter_name"] == app.exporter.name.upper()
+    assert context["reference"] == document.reference
+    assert context["certificate_code"] == document.check_code
+    assert context["qr_img_base64"].startswith("iVBORw")
+
+
+def test_get_pre_sign_com_certificate_context(completed_com_app):
+    app = completed_com_app
+    country = app.countries.first()
+    certificate = app.certificates.first()
+    document = document_pack.doc_ref_certificate_get(certificate, country)
+    generator = PdfGenerator(DocumentTypes.CERTIFICATE_PRE_SIGN, app, certificate, country)
+
+    context = generator.get_document_context()
+
+    assert context["preview"] is False
+    assert context["exporter_name"] == app.exporter.name.upper()
+    assert context["product_name"] == app.product_name
+    assert context["reference"] == document.reference
+    assert context["certificate_code"] == document.check_code
+    assert context["qr_img_base64"].startswith("iVBORw")
+
+
+def test_get_pre_sign_gmp_certifcate_context(completed_gmp_app):
+    app = completed_gmp_app
+    country = app.countries.first()
+    certificate = app.certificates.first()
+    document = document_pack.doc_ref_certificate_get(certificate, country)
+    generator = PdfGenerator(DocumentTypes.CERTIFICATE_PRE_SIGN, app, certificate, country)
+
+    context = generator.get_document_context()
+
+    assert context["preview"] is False
+    assert context["exporter_name"] == app.exporter.name.upper()
+    assert context["brand_name"] == "A Brand"
+    assert context["reference"] == document.reference
+    assert context["certificate_code"] == document.check_code
+    assert context["qr_img_base64"].startswith("iVBORw")
 
 
 def test_certificate_no_country_get_document_context_invalid(cfs_app_submitted):

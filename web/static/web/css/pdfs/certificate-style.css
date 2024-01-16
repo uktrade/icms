@@ -1,6 +1,6 @@
 @page {
     size: A4;
-    margin: 95px 85px 120px 0 !important;
+    margin: 95px 85px 80px 0 !important;
 
     @top-right {
         content: "Page " counter(page) " of " counter(pages) " ";
@@ -53,10 +53,22 @@ hr {
 
 .title-page {
     padding-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    height: 815px;
+    align-content: space-between;
 }
 
 .title-block {
-    height: 595px;
+    flex: 100% 0 0;
+}
+
+.title-footer {
+    display: block;
+    flex: 100% 0 0;
+    flex-direction: column;
+    justify-content: space-between;
+    align-self: flex-end;
 }
 
 .title {
@@ -78,12 +90,6 @@ p {
     line-height: 1.2em;
 }
 
-.title-footer {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
 .signature-block {
     display: flex;
     justify-content: space-evenly;
@@ -92,14 +98,35 @@ p {
 }
 
 .signature,
-.qr-code,
-.qr-text {
+.qr-text-block {
     display: block;
-    flex: 33% 0 0;
+    flex: 31% 0 0;
+}
+
+.qr-code {
+    flex: 38% 0 0;
+    flex-direction: column;
+}
+
+.qr-img {
+    width: 132px;
+    display: block;
+    margin: 0 auto;
+}
+
+.qr-placeholder {
+    display: block;
+    text-align: center;
+    margin-top: 24px;
+}
+
+.qr-text-block {
+    padding-top: 12px;
 }
 
 .qr-text {
-    font-size: 8px;
+    font-size: 11px;
+    margin: 0;
 }
 
 .date-block {

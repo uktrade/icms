@@ -35,6 +35,7 @@ psycopg2-binary==2.9.9
 pydantic==2.5.2
 pydantic-settings==2.1.0
 python-dateutil==2.8.2
+qrcode==7.4.2
 requests==2.31.0
 sentry-sdk[django]==1.37.1
 structlog==23.2.0
