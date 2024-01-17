@@ -468,7 +468,12 @@ CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = (
     "'self'",
     "https://sentry.ci.uktrade.digital/",
+    "https://cdnjs.cloudflare.com",
 )
+
+# JS scripts can import other scripts, following the same rules as above
+CSP_CONNECT_SRC = CSP_SCRIPT_SRC
+
 # CSS elements with a src attribute can only be loaded from ICMS itself or inline, e.g. <style> tags
 CSP_STYLE_SRC = (
     "'self'",
@@ -476,6 +481,11 @@ CSP_STYLE_SRC = (
 )
 # Fonts can only be loaded from ICMS itself or data URIs
 CSP_FONT_SRC = (
+    "'self'",
+    "data:",
+)
+# Images can only be loaded from ICMS itself or data URIs
+CSP_IMAGE_SRC = (
     "'self'",
     "data:",
 )
