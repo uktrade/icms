@@ -18,7 +18,6 @@ class VCAPServices(BaseModel):
 
     postgres: list[dict[str, Any]]
     redis: list[dict[str, Any]]
-    user_provided: list[dict[str, Any]] = Field(alias="user-provided")
     aws_s3_bucket: list[dict[str, Any]] = Field(alias="aws-s3-bucket")
 
 
