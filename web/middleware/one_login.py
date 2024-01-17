@@ -24,7 +24,7 @@ class UserFullyRegisteredMiddleware:
 
         # Views allowed to bypass the UserFullyRegisteredMiddleware
         allowed_views = (
-            "current-user-details",
+            "user-edit",
             "logout-user",
             "account-recovery",
             "contacts:accept-org-invite",
@@ -37,7 +37,7 @@ class UserFullyRegisteredMiddleware:
         ):
             messages.info(request, "Please set your Forename and Surname")
 
-            return redirect(reverse("current-user-details"))
+            return redirect(reverse("user-edit", kwargs={"user_pk": request.user.pk}))
 
         response = self.get_response(request)
 

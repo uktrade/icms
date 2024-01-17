@@ -1,0 +1,20 @@
+{% extends "web/domains/user/user_edit.html" %}
+
+{% block main_content %}
+  <h3>{{ sub_title }}</h3>
+  {% call forms.form(method='post', csrf_input=csrf_input, class="prevent-data-loss")-%}
+    {% for field_name in form.fields %}
+      {{ fields.field(form[field_name], label_cols='four', input_cols='four') }}
+    {% endfor %}
+    <div class="container">
+      <div class="row">
+        <div class="four columns">
+          <ul class="menu-out flow-across">
+            <li><button type="submit" name="action" value="save" class="primary-button button">Save</button></li>
+          </ul>
+        </div>
+        <div class="four columns"></div>
+      </div>
+    </div>
+  {%- endcall %}
+{% endblock %}
