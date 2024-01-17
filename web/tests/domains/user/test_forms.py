@@ -52,6 +52,9 @@ class TestUserListFilter(TestCase):
 class TestUserDetailsUpdateForm(TestCase):
     def test_form_valid(self):
         form = UserDetailsUpdateForm(
+            initial={
+                "email": "emaill@example.com",  # /PS-IGNORE
+            },
             data={
                 "title": "Mx",
                 "first_name": "Deniz",
@@ -61,7 +64,7 @@ class TestUserDetailsUpdateForm(TestCase):
                 "job_title": "Developer",
                 "work_address": "Windsor House",
                 "date_of_birth": "13-Jan-1956",
-            }
+            },
         )
         assert form.is_valid() is True
 
@@ -71,6 +74,9 @@ class TestUserDetailsUpdateForm(TestCase):
 
     def test_invalid_form_message(self):
         form = UserDetailsUpdateForm(
+            initial={
+                "email": "emaill@example.com",  # /PS-IGNORE
+            },
             data={
                 "title": "Mx",
                 "first_name": "",
@@ -79,7 +85,7 @@ class TestUserDetailsUpdateForm(TestCase):
                 "department": "DDaT",
                 "work_address": "Windsor House",
                 "date_of_birth": "13-Jan-1956",
-            }
+            },
         )
         assert len(form.errors) == 1
         message = form.errors["first_name"][0]

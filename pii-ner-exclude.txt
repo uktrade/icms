@@ -3651,3 +3651,16 @@ JSON.parse($('#address_list
 addressTextArea
 address.join
 911 12345678
+kwargs={'user_pk
+{{ fields.field(details_form.department
+Primary
+Admin Views
+{{ application_field(user.title
+{{ application_field(user.last_name
+{{ application_field(user.date_of_birth
+{{ application_field(user.organisation or
+{{ application_field(user.department
+Job Title (Employer
+Add Phone Number
+Add Email Address
+Edit Email Address

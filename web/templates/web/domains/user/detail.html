@@ -1,0 +1,65 @@
+{% extends "layout/sidebar.html" %}
+
+{% from "display/fields.html" import application_section, application_field %}
+
+{% block sidebar %}
+{% endblock %}
+
+{% block main_content %}
+  {% call application_section("General Details") %}
+    {{ application_field(user.title or "", "Title") }}
+    {{ application_field(user.first_name, "Forename") }}
+    {{ application_field(user.last_name, "Surname") }}
+    {{ application_field(user.date_of_birth or "", "Date of birth") }}
+    {{ application_field(user.organisation or "", "Organisation Name (Employer)") }}
+    {{ application_field(user.department or "", "Department Name (Employer)") }}
+    {{ application_field(user.job_title or "", "Job Title (Employer)") }}
+    {{ application_field(user.location_at_address or "", "Floor/Room/Bay/Location") }}
+    {{ application_field(user.work_address or "", "Work Address") }}
+  {% endcall %}
+
+  {% call application_section("Contact Details") %}
+    <!-- Phone numbers -->
+    <table class="setoutList">
+      <thead>
+      <tr>
+        <th>Telephone Number</th>
+        <th>Type</th>
+        <th>Comment</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for number in user.phone_numbers.all() %}
+        <tr>
+          <td>{{ number.phone }}</td>
+          <td>{{ number.get_type_display() }}</td>
+          <td>{{ number.comment or "" }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <!-- Email addresses -->
+    <table class="setoutList">
+      <thead>
+      <tr>
+        <th>Email Address</th>
+        <th>Type</th>
+        <th>Primary Email</th>
+        <th>Portal Notifications</th>
+        <th>Comment</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for email in user.emails.all() %}
+        <tr>
+          <td>{{ email.email }}</td>
+          <td>{{ email.get_type_display() }}</td>
+          <td>{{ "Yes" if email.is_primary }}</td>
+          <td>{{ "Yes" if email.portal_notifications else "No" }}</td>
+          <td>{{ email.comment or "" }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% endcall %}
+{% endblock %}
