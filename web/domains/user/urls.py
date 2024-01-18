@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from django.urls import include, path
 
 from . import views
@@ -70,7 +69,6 @@ urlpatterns = [
             ]
         ),
     ),
-    path("", views.current_user_details, name="current-user-details"),
     # Admin Views to view users in ICMS.
     path("users/", views.UsersListView.as_view(), name="users-list"),
     path("users/<int:user_pk>/", views.UserDetailView.as_view(), name="user-details"),

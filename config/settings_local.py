@@ -55,7 +55,6 @@ NPM_FILE_PATTERNS = {
     "jquery": ["dist/jquery.min.js"],
     "jquery-ui-dist": ["jquery-ui.min.js"],
     "html5shiv": ["dist/html5shiv.min.js"],
-    "jquery.formset": ["src/jquery.formset.js"],
     "jodit": ["build/jodit.min.*"],
     "jquery-fontspy": ["jQuery-FontSpy.js"],
     "select2": ["dist/css/select2.min.css", "dist/js/select2.min.js"],
