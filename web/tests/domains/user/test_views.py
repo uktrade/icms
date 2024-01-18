@@ -206,29 +206,6 @@ class TestUserDeleteEmailView:
         assert response.status_code == HTTPStatus.FOUND
 
 
-class TestCurrentUserDetailsView(AuthTestCase):
-    url = reverse("current-user-details")
-    redirect_url = f"{LOGIN_URL}?next={url}"
-
-    def test_anonymous_access_redirects(self):
-        response = self.anonymous_client.get(self.url)
-        assert response.status_code == HTTPStatus.FOUND
-        assertRedirects(response, self.redirect_url)
-
-    def test_authorized_access(self):
-        response = self.importer_client.get(self.url)
-        assert response.status_code == HTTPStatus.OK
-
-    def test_post_action_anonymous_access_redirects(self):
-        response = self.anonymous_client.post(self.url, {"action": "edit_address"})
-        assert response.status_code == HTTPStatus.FOUND
-        assertRedirects(response, self.redirect_url)
-
-    def test_post_action_authorized_access(self):
-        response = self.importer_client.post(self.url, {"action": "edit_address"})
-        assert response.status_code == HTTPStatus.OK
-
-
 class TestUsersListView(AuthTestCase):
     url = reverse("users-list")
     redirect_url = f"{LOGIN_URL}?next={url}"

@@ -3,9 +3,9 @@ import random
 from django.test import TestCase
 
 from web.domains.user.forms import (
-    PhoneNumberForm,
     UserDetailsUpdateForm,
     UserListFilter,
+    UserPhoneNumberForm,
 )
 from web.models import PhoneNumber
 
@@ -92,10 +92,10 @@ class TestUserDetailsUpdateForm(TestCase):
         assert message == "You must enter this item"
 
 
-class TestPhoneNumberForm(TestCase):
+class TestUserPhoneNumberForm(TestCase):
     def phone_number(self, number):
         return {
-            "telephone_number": number,
+            "phone": number,
             "type": random.choice(
                 [
                     PhoneNumber.WORK,
@@ -108,33 +108,33 @@ class TestPhoneNumberForm(TestCase):
         }
 
     def test_landline_phone_number_valid(self):
-        form = PhoneNumberForm(data=self.phone_number("02012345678"))
+        form = UserPhoneNumberForm(data=self.phone_number("02012345678"))
         assert form.is_valid() is True
-        form = PhoneNumberForm(data=self.phone_number("0201234 5678"))
+        form = UserPhoneNumberForm(data=self.phone_number("0201234 5678"))
         assert form.is_valid() is True
-        form = PhoneNumberForm(data=self.phone_number("020 1234 5678"))
+        form = UserPhoneNumberForm(data=self.phone_number("020 1234 5678"))
         assert form.is_valid() is True
-        form = PhoneNumberForm(data=self.phone_number("020 12 345678"))
+        form = UserPhoneNumberForm(data=self.phone_number("020 12 345678"))
         assert form.is_valid() is True
 
     def test_mobile_phone_number_valid(self):
-        form = PhoneNumberForm(data=self.phone_number("07123456789"))
+        form = UserPhoneNumberForm(data=self.phone_number("07123456789"))
         assert form.is_valid() is True
-        form = PhoneNumberForm(data=self.phone_number("07123 456789"))
+        form = UserPhoneNumberForm(data=self.phone_number("07123 456789"))
         assert form.is_valid() is True
-        form = PhoneNumberForm(data=self.phone_number("07123 456 789"))
+        form = UserPhoneNumberForm(data=self.phone_number("07123 456 789"))
         assert form.is_valid() is True
 
     def test_international_phone_number_valid(self):
-        form = PhoneNumberForm(data=self.phone_number("+902161234567"))
+        form = UserPhoneNumberForm(data=self.phone_number("+902161234567"))
         assert form.is_valid() is True
-        form = PhoneNumberForm(data=self.phone_number("00902161234567"))
+        form = UserPhoneNumberForm(data=self.phone_number("00902161234567"))
         assert form.is_valid() is True
-        form = PhoneNumberForm(data=self.phone_number("+90 216 1234567"))
+        form = UserPhoneNumberForm(data=self.phone_number("+90 216 1234567"))
         assert form.is_valid() is True
-        form = PhoneNumberForm(data=self.phone_number("0090 216 1234567"))
+        form = UserPhoneNumberForm(data=self.phone_number("0090 216 1234567"))
         assert form.is_valid() is True
-        form = PhoneNumberForm(data=self.phone_number("+90 216 123 4567"))
+        form = UserPhoneNumberForm(data=self.phone_number("+90 216 123 4567"))
         assert form.is_valid() is True
-        form = PhoneNumberForm(data=self.phone_number("+90 216 123 45 67"))
+        form = UserPhoneNumberForm(data=self.phone_number("+90 216 123 45 67"))
         assert form.is_valid() is True
