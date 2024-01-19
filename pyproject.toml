@@ -69,7 +69,8 @@ module = [
     "playwright.*",
     "authbroker_client.*",
     "authlib.*",
-    "qrcode.*"
+    "qrcode.*",
+    "dbt_copilot_python.*"
 ]
 ignore_missing_imports = true
 

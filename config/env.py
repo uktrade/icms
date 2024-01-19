@@ -1,46 +1,27 @@
+import os
 from typing import Annotated, Any
 
-from pydantic import BaseModel, ConfigDict, Field, PostgresDsn, TypeAdapter
+import dj_database_url
+from dbt_copilot_python.database import database_url_from_env
+from dbt_copilot_python.network import setup_allowed_hosts
+from dbt_copilot_python.utility import is_copilot
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    PostgresDsn,
+    TypeAdapter,
+    computed_field,
+)
 from pydantic.functional_validators import PlainValidator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-# Convert the database_url to a PostgresDsn instance
-def validate_postgres_dsn_str(val) -> PostgresDsn:
-    return TypeAdapter(PostgresDsn).validate_python(val)
-
-
-CFPostgresDSN = Annotated[PostgresDsn, PlainValidator(validate_postgres_dsn_str)]
-
-
-class VCAPServices(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-
-    postgres: list[dict[str, Any]]
-    redis: list[dict[str, Any]]
-    aws_s3_bucket: list[dict[str, Any]] = Field(alias="aws-s3-bucket")
-
-
-class VCAPApplication(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-
-    application_id: str
-    application_name: str
-    application_uris: list[str]
-    cf_api: str
-    limits: dict[str, Any]
-    name: str
-    organization_id: str
-    organization_name: str
-    space_id: str
-    uris: list[str]
-
-
-class Environment(BaseSettings):
+class EnvironmentBase(BaseSettings):
     """Class holding all environment variables for ICMS.
 
     Instance attributes are matched to environment variables by name (ignoring case).
-    e.g. Environment.app_env loads and validates the APP_ENV environment variable.
+    e.g. DBTPlatformEnvironment.app_env loads and validates the APP_ENV environment variable.
     """
 
     model_config = SettingsConfigDict(
@@ -53,7 +34,6 @@ class Environment(BaseSettings):
     icms_secret_key: str
     icms_allowed_hosts: list[str]
     icms_debug: bool = False
-    database_url: CFPostgresDSN
 
     # Staff SSO
     staff_sso_enabled: bool
@@ -143,10 +123,6 @@ class Environment(BaseSettings):
     sentry_dsn: str = ""
     sentry_environment: str = ""
 
-    # Cloud Foundry Environment Variables
-    vcap_services: VCAPServices | None = None
-    vcap_application: VCAPApplication | None = None
-
     # Redis settings
     local_redis_url: str = "redis://redis:6379"
 
@@ -164,5 +140,163 @@ class Environment(BaseSettings):
     csp_report_only: bool = True
     csp_report_uri: list[str] | None = None
 
+    @computed_field  # type: ignore[misc]
+    @property
+    def allowed_hosts(self) -> list[str]:
+        raise NotImplementedError
 
-env: Environment = Environment()  # type:ignore[call-arg]
+    @computed_field  # type: ignore[misc]
+    @property
+    def database_config(self) -> dict:
+        raise NotImplementedError
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def s3_bucket_config(self) -> dict:
+        raise NotImplementedError
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def redis_url(self) -> str:
+        raise NotImplementedError
+
+
+# Convert the database_url to a PostgresDsn instance
+def validate_postgres_dsn_str(val) -> PostgresDsn:
+    return TypeAdapter(PostgresDsn).validate_python(val)
+
+
+CFPostgresDSN = Annotated[PostgresDsn, PlainValidator(validate_postgres_dsn_str)]
+
+
+class VCAPServices(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    postgres: list[dict[str, Any]]
+    redis: list[dict[str, Any]]
+    aws_s3_bucket: list[dict[str, Any]] = Field(alias="aws-s3-bucket")
+
+
+class VCAPApplication(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    application_id: str
+    application_name: str
+    application_uris: list[str]
+    cf_api: str
+    limits: dict[str, Any]
+    name: str
+    organization_id: str
+    organization_name: str
+    space_id: str
+    uris: list[str]
+
+
+class CloudFoundryEnvironment(EnvironmentBase):
+    database_url: CFPostgresDSN
+
+    # Cloud Foundry Environment Variables
+    vcap_services: VCAPServices | None = None
+    vcap_application: VCAPApplication | None = None
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def allowed_hosts(self) -> list[str]:
+        return self.icms_allowed_hosts
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def database_config(self) -> dict:
+        return {"default": dj_database_url.parse(str(self.database_url))}
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def s3_bucket_config(self) -> dict:
+        if self.vcap_services:
+            app_bucket_creds = self.vcap_services.aws_s3_bucket[0]["credentials"]
+        else:
+            app_bucket_creds = {}
+
+        return app_bucket_creds
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def redis_url(self) -> str:
+        if self.vcap_services:
+            return self.vcap_services.redis[0]["credentials"]["uri"]
+
+        return self.local_redis_url
+
+
+class DBTPlatformEnvironment(EnvironmentBase):
+    build_step: bool = False
+
+    # S3 env vars
+    aws_region: str = ""
+    aws_storage_bucket_name: str = ""
+
+    # Redis env vars
+    celery_broker_url: str = ""
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def allowed_hosts(self) -> list[str]:
+        if self.build_step:
+            return self.icms_allowed_hosts
+
+        # Makes an external network request so only call when running on DBT Platform
+        return setup_allowed_hosts(self.icms_allowed_hosts)
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def database_config(self) -> dict:
+        if self.build_step:
+            return {"default": {}}
+
+        return {
+            "default": dj_database_url.config(default=database_url_from_env("DATABASE_CREDENTIALS"))
+        }
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def s3_bucket_config(self) -> dict:
+        """Return s3 bucket config that matches keys used in CF"""
+
+        if self.build_step:
+            return {
+                "aws_region": "",
+                "aws_access_key_id": "",
+                "aws_secret_access_key": "",
+                "bucket_name": "",
+            }
+
+        return {
+            "aws_region": self.aws_region,
+            # TODO: ICMSLST-2501 Check with Lawrence what these should be
+            "aws_access_key_id": "",
+            # TODO: ICMSLST-2501 Check with Lawrence what these should be
+            "aws_secret_access_key": "",
+            "bucket_name": self.aws_storage_bucket_name,
+        }
+
+    @computed_field  # type: ignore[misc]
+    @property
+    def redis_url(self) -> str:
+        if self.build_step:
+            return ""
+
+        return self.celery_broker_url
+
+
+if is_copilot():
+    if "BUILD_STEP" in os.environ:
+        # When building use the fake settings in .env.circleci
+        env: DBTPlatformEnvironment | CloudFoundryEnvironment = DBTPlatformEnvironment(
+            _env_file=".env.circleci", _env_file_encoding="utf-8"
+        )  # type:ignore[call-arg]
+    else:
+        # When deployed read values from environment variables
+        env = DBTPlatformEnvironment()  # type:ignore[call-arg]
+else:
+    # Cloud Foundry environemnt
+    env = CloudFoundryEnvironment()  # type:ignore[call-arg]
