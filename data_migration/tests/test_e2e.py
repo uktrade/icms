@@ -737,7 +737,13 @@ def test_import_template(mock_connect, dummy_dm_settings):
     assert cfs_template.template_content is None
     assert cfs_template.paragraphs.count() == 3
 
+    # CFS Template Paragraphs
+    p1, p2, p3 = cfs_template.paragraphs.order_by("order")
+    assert p1.content == "Content 1"
+    assert p2.content == "Content 2"
+    assert p3.content == "Content '3'"
+
     assert web.Template.objects.filter(template_type="CFS_DECLARATION_TRANSLATION").count() == 1
     cfs_dec_template = web.Template.objects.get(template_type="CFS_DECLARATION_TRANSLATION")
-    assert cfs_dec_template.template_content == "Some translated text"
+    assert cfs_dec_template.template_content == "Some translated text with ' data '"
     assert list(cfs_dec_template.countries.values_list("id", flat=True)) == [2, 3]

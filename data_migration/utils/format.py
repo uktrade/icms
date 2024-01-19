@@ -294,3 +294,11 @@ def pretty_print_file_size(size: float) -> str:
             return f"{size:3.1f} {x}"
         size /= 1024.0
     return str(size)
+
+
+def replace_apos(content: str) -> str:
+    """Replace html apostrophe with character
+
+    &apos; -> '
+    """
+    return re.sub("&apos;", "'", content)

@@ -19,6 +19,7 @@ from data_migration.utils.format import (
     int_or_none,
     pretty_print_file_size,
     reformat_placeholders,
+    replace_apos,
     str_to_bool,
     str_to_list,
     str_to_yes_no,
@@ -315,3 +316,16 @@ def test_reformat_placeholders():
 )
 def test_pretty_print_file_size(file_size, expected):
     assert pretty_print_file_size(file_size) == expected
+
+
+@pytest.mark.parametrize(
+    "content,expected",
+    [
+        ("abc", "abc"),
+        ("abc&apos;", "abc'"),
+        ("&apos;abc&apos;", "'abc'"),
+        ("&apos;&apos;&apos;&apos;", "''''"),
+    ],
+)
+def test_replace_apos(content, expected):
+    assert replace_apos(content) == expected

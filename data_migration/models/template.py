@@ -5,7 +5,11 @@ from django.db.models import F
 
 from data_migration import queries
 from data_migration.models.reference.country import Country, CountryTranslationSet
-from data_migration.utils.format import reformat_placeholders, strip_foxid_attribute
+from data_migration.utils.format import (
+    reformat_placeholders,
+    replace_apos,
+    strip_foxid_attribute,
+)
 
 from .base import MigrationBase
 
@@ -29,7 +33,12 @@ class Template(MigrationBase):
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
         content = data["template_content"]
-        content = content and strip_foxid_attribute(content)
+
+        if not content:
+            return data
+
+        content = strip_foxid_attribute(content)
+        content = replace_apos(content)
 
         if data["template_type"] == "LETTER_TEMPLATE":
             content = reformat_placeholders(content)
@@ -49,6 +58,13 @@ class CFSScheduleParagraph(MigrationBase):
     ordinal = models.IntegerField()
     name = models.CharField(max_length=100)
     content = models.TextField(null=True)
+
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        content = data["content"]
+        data["content"] = content and replace_apos(content)
+
+        return data
 
     @classmethod
     def get_values_kwargs(cls) -> dict[str, Any]:

@@ -196,7 +196,7 @@ ref_query_result = {
                 "CFS_DECLARATION_TRANSLATION",  # template_type
                 "CA",  # application_domain
                 None,  # template_title
-                "Some translated text",  # template_content
+                "Some translated text with &apos; data &apos;",  # template_content
             ),
             (
                 8,  # id
@@ -258,7 +258,7 @@ ref_query_result = {
         [
             (6, 1, "Paragraph 1", "Content 1"),
             (6, 2, "Paragraph 2", "Content 2"),
-            (6, 3, "Paragraph 3", "Content 3"),
+            (6, 3, "Paragraph 3", "Content &apos;3&apos;"),
         ],
     ),
     queries.template_country: (

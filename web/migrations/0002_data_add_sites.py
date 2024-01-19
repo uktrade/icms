@@ -14,9 +14,7 @@ def add_icms_sites(apps, schema_editor):
 
 def reverse_icms_sites(apps, schema_editor):
     Site = apps.get_model("sites", "Site")
-    Site.objects.filter(
-        name__in=(SiteName.CASEWORKER, SiteName.EXPORTER, SiteName.IMPORTER)
-    ).delete()
+    Site.objects.all().delete()
 
 
 class Migration(migrations.Migration):
