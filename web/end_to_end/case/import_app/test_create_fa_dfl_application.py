@@ -1,3 +1,5 @@
+import os
+
 from playwright.sync_api import Page
 
 from web.end_to_end import conftest, types, utils
@@ -187,6 +189,10 @@ def fa_dfl_manage_and_complete_case(page: Page, dfl_id: int) -> None:
     page.get_by_role("button", name="Close this message").click()
     page.get_by_role("link", name="Workbasket").click()
     utils.assert_page_url(page, "/workbasket/")
+
+    # Supplied when running end-to-end tests for CHIEF.
+    if "CHIEF_END_TO_END_TEST" in os.environ:
+        return
 
     #
     # Bypass CHIEF and check application complete
