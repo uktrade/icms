@@ -6,6 +6,7 @@ from django.db.models import Model, OuterRef, QuerySet, Subquery, Value
 from pydantic import BaseModel, ConfigDict, SerializeAsAny
 
 from web.flow.models import ProcessTypes
+from web.mail.constants import EmailTypes
 from web.models import (
     CaseDocumentReference,
     CFSSchedule,
@@ -67,6 +68,7 @@ class IssuedCertificateReportInterface(ReportInterface):
 
     def get_queryset(self) -> QuerySet:
         queryset = CaseDocumentReference.objects.filter(
+            document_type=CaseDocumentReference.Type.CERTIFICATE,
             export_application_certificates__status=ExportApplicationCertificate.Status.ACTIVE,
             export_application_certificates__case_completion_datetime__date__gte=self.filters.date_from,
             export_application_certificates__case_completion_datetime__date__lte=self.filters.date_to,
@@ -125,9 +127,19 @@ class IssuedCertificateReportInterface(ReportInterface):
             if not is_cfs
             else self.get_is_responsible_person(export_application),
             countries_of_manufacture="" if not is_cfs else ",".join(cdr.manufacturer_countries),
-            hse_email_count=export_application.case_emails.count(),
-            beis_email_count=export_application.case_emails.count(),
-            application_update_count=export_application.update_requests.count(),
+            hse_email_count=export_application.case_emails.filter(
+                template_code=EmailTypes.HSE_CASE_EMAIL
+            )
+            .exclude(status="DRAFT")
+            .count(),
+            beis_email_count=export_application.case_emails.filter(
+                template_code=EmailTypes.BEIS_CASE_EMAIL
+            )
+            .exclude(status="DRAFT")
+            .count(),
+            application_update_count=export_application.update_requests.exclude(
+                status="OPEN"
+            ).count(),
             fir_count=export_application.further_information_requests.count(),
             product_legislation="" if not is_cfs else ",".join(cdr.legislations),
             case_processing_time=self.get_total_processing_time(cdr, export_application),

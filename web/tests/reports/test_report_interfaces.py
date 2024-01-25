@@ -2,7 +2,14 @@ from datetime import datetime
 
 import pytest
 
+from web.domains.case.services import document_pack
+from web.domains.case.shared import ImpExpStatus
+from web.domains.case.types import ImpOrExp
+from web.mail.constants import EmailTypes
+from web.mail.emails import create_case_email, send_case_email
+from web.models import User, VariationRequest
 from web.reports.interfaces import IssuedCertificateReportInterface
+from web.tests.helpers import add_variation_request_to_app
 
 EXPECTED_HEADER = [
     "Certificate Reference",
@@ -28,6 +35,13 @@ EXPECTED_HEADER = [
 ]
 
 
+def _setup_app_with_variation_request(app: ImpOrExp, ilb_admin_user: User) -> None:
+    document_pack.pack_draft_create(app)
+    add_variation_request_to_app(app, ilb_admin_user, status=VariationRequest.Statuses.OPEN)
+    app.status = ImpExpStatus.VARIATION_REQUESTED
+    app.save()
+
+
 def update_submitted_and_completed_dates_on_app(app):
     app.submit_datetime = datetime(2024, 1, 1, 12, 0, 0)
     app.save()
@@ -47,7 +61,10 @@ def test_issued_certificate_report_interface_get_data_header(report_schedule):
 
 
 @pytest.mark.django_db
-def test_issued_certificate_report_interface_get_data_cfs(report_schedule, completed_cfs_app):
+def test_issued_certificate_report_interface_get_data_cfs(
+    ilb_admin_user, report_schedule, completed_cfs_app
+):
+    _setup_app_with_variation_request(completed_cfs_app, ilb_admin_user)
     update_submitted_and_completed_dates_on_app(completed_cfs_app)
     interface = IssuedCertificateReportInterface(report_schedule)
     data = interface.get_data()
@@ -102,6 +119,9 @@ def test_issued_certificate_report_interface_get_data_cfs(report_schedule, compl
 @pytest.mark.django_db
 def test_issued_certificate_report_interface_get_data_gmp(report_schedule, completed_gmp_app):
     update_submitted_and_completed_dates_on_app(completed_gmp_app)
+    case_email = create_case_email(completed_gmp_app, EmailTypes.BEIS_CASE_EMAIL)
+    send_case_email(case_email)
+    completed_gmp_app.case_emails.add(case_email)
     interface = IssuedCertificateReportInterface(report_schedule)
     data = interface.get_data()
     assert data["results"] == [
@@ -109,7 +129,7 @@ def test_issued_certificate_report_interface_get_data_gmp(report_schedule, compl
             "Agent": "",
             "Application Type": "Certificate of Good Manufacturing Practice",
             "Application Update Count": 0,
-            "BEIS Email Count": 0,
+            "BEIS Email Count": 1,
             "Business Days to Process": 7,
             "Case Processing Time": "8d 1h 7m",
             "Case Reference": "GA/2024/00001",
