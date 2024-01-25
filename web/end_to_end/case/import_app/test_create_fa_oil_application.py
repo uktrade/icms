@@ -1,4 +1,5 @@
 import datetime as dt
+import os
 import re
 
 from playwright.sync_api import Page
@@ -225,6 +226,10 @@ def fa_oil_manage_and_complete_case(page: Page, app_id) -> None:
     # Wait for networkidle and then reload the workbasket to see the bypass CHIEF link
     page.wait_for_load_state("networkidle")
     page.get_by_role("link", name="Workbasket").click()
+
+    # Supplied when running end-to-end tests for CHIEF.
+    if "CHIEF_END_TO_END_TEST" in os.environ:
+        return
 
     #
     # Bypass CHIEF and check application complete

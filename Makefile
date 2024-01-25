@@ -188,7 +188,7 @@ end_to_end_test: ## Run end to end tests in a container
 
 
 end_to_end_test_firearm_chief: ## Ran to send applications to icms-hmrc
-	docker-compose run -it --rm playwright-runner pytest -c playwright/pytest.ini web/end_to_end/ -k test_can_create_fa_ --numprocesses 3 ${args} && \
+	docker-compose run -it --rm -e CHIEF_END_TO_END_TEST=1 playwright-runner pytest -c playwright/pytest.ini web/end_to_end/ -k test_can_create_fa_ --numprocesses 3 ${args} && \
 	make end_to_end_clear_session
 
 
