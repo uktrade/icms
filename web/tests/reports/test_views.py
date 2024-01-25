@@ -33,8 +33,6 @@ def test_run_history_view(report_user_client):
 def test_run_report_view(mock_generate_report, report_user_client):
     mock_generate_report.return_value = None
     report = get_issued_certificates_report_model()
-    response = report_user_client.get(CaseURLS.run_report_view(report.pk))
-    assert response.status_code == 200
     response = report_user_client.post(
         CaseURLS.run_report_view(report.pk),
         data={

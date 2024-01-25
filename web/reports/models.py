@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
@@ -10,11 +12,12 @@ class Report(models.Model):
     description = models.TextField()
     report_type = models.CharField(max_length=120, choices=ReportType.choices, unique=True)
 
-    def last_run_completed_at(self) -> str:
+    @property
+    def last_run_completed_at(self) -> datetime | None:
         last_run = self.schedules.order_by("-finished_at").first()
         if last_run and last_run.finished_at:
-            return last_run.finished_at.strftime("%d %b %Y %H:%M:%S")
-        return ""
+            return last_run.finished_at
+        return None
 
 
 class ScheduleReport(models.Model):

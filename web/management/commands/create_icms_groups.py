@@ -122,7 +122,11 @@ def get_groups():
             Perms.sys.search_all_cases,
         },
         "Report User": {
+            #
+            # Page permissions
             Perms.page.view_reports,
+            #
+            # Sys permissions
             Perms.sys.generate_reports,
         },
         "ICMS Admin Site User": {

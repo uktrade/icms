@@ -35,7 +35,9 @@ def write_files(report_interface: IssuedCertificateReportInterface) -> None:
     _write_xlsx_file(scheduled_report, file_name, data["results"], data["header"])
 
 
-def _write_xlsx_file(scheduled_report, file_name, data, header) -> None:
+def _write_xlsx_file(
+    scheduled_report: ScheduleReport, file_name: str, data: list, header: list
+) -> None:
     file_name = f"{file_name}.xlsx"
     config = XlsxConfig()
     config.header.data = header
@@ -52,7 +54,9 @@ def _write_xlsx_file(scheduled_report, file_name, data, header) -> None:
     )
 
 
-def _write_csv_file(scheduled_report, file_name, data, header) -> None:
+def _write_csv_file(
+    scheduled_report: ScheduleReport, file_name: str, data: list, header: list
+) -> None:
     file_name = f"{file_name}.csv"
     dest = StringIO()
     writer = csv.DictWriter(dest, header)
@@ -62,7 +66,9 @@ def _write_csv_file(scheduled_report, file_name, data, header) -> None:
     dest.close()
 
 
-def write_file_data(scheduled_report, data, file_name, content_type) -> GeneratedReport:
+def write_file_data(
+    scheduled_report: ScheduleReport, data: str | bytes, file_name: str, content_type: str
+) -> GeneratedReport:
     path = f"REPORTS/{scheduled_report.report.pk}/{file_name}"
     file_size = put_object_in_s3(data, path)
     document = File.objects.create(

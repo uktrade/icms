@@ -63,7 +63,7 @@ def upload_file_obj_to_s3(file_obj: IO[Any], key: str, client: Optional["S3Clien
     return object_meta["ContentLength"]
 
 
-def put_object_in_s3(file_data: str, key: str, client: Optional["S3Client"] = None) -> int:
+def put_object_in_s3(file_data: str | bytes, key: str, client: Optional["S3Client"] = None) -> int:
     """Uploads data as file to s3 and return the size of the file (bytes)."""
 
     if not client:

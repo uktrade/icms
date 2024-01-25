@@ -1,10 +1,11 @@
+from datetime import datetime, timedelta
 from typing import Any
 
-import numpy
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import Model, OuterRef, QuerySet, Subquery, Value
 from pydantic import BaseModel, ConfigDict, SerializeAsAny
 
+from web.flow.models import ProcessTypes
 from web.models import (
     CaseDocumentReference,
     CFSSchedule,
@@ -108,6 +109,7 @@ class IssuedCertificateReportInterface(ReportInterface):
 
     def serialize_row(self, cdr: CaseDocumentReference) -> ReportSerializer:  # type: ignore[valid-type]
         export_application = cdr.content_object.export_application.get_specific_model()
+        is_cfs = export_application.process_type == ProcessTypes.CFS
         return self.ReportSerializer(
             certificate_reference=cdr.reference,
             case_reference=cdr.content_object.case_reference,
@@ -118,26 +120,22 @@ class IssuedCertificateReportInterface(ReportInterface):
             contact=export_application.contact.full_name,
             agent=export_application.agent.name if export_application.agent else "",
             country=cdr.reference_data.country.name,
-            is_manufacturer=self.get_is_manufacturer(export_application),
-            responsible_person_statement=self.get_is_responsible_person(export_application),
-            countries_of_manufacture=""
-            if not hasattr(export_application, "schedules")
-            else ", ".join(cdr.manufacturer_countries),
+            is_manufacturer="" if not is_cfs else self.get_is_manufacturer(export_application),
+            responsible_person_statement=""
+            if not is_cfs
+            else self.get_is_responsible_person(export_application),
+            countries_of_manufacture="" if not is_cfs else ",".join(cdr.manufacturer_countries),
             hse_email_count=export_application.case_emails.count(),
             beis_email_count=export_application.case_emails.count(),
             application_update_count=export_application.update_requests.count(),
             fir_count=export_application.further_information_requests.count(),
-            product_legislation=""
-            if not hasattr(export_application, "schedules")
-            else ", ".join(cdr.legislations),
+            product_legislation="" if not is_cfs else ",".join(cdr.legislations),
             case_processing_time=self.get_total_processing_time(cdr, export_application),
             total_processing_time=self.get_total_processing_time(cdr, export_application),
             business_days_to_process=self.get_business_days_to_process(cdr, export_application),
         )
 
     def get_is_responsible_person(self, export_application: ExportApplication) -> str:
-        if not hasattr(export_application, "schedules"):
-            return ""
         if any(
             export_application.schedules.values_list(
                 "schedule_statements_is_responsible_person", flat=True
@@ -147,8 +145,6 @@ class IssuedCertificateReportInterface(ReportInterface):
         return "No"
 
     def get_is_manufacturer(self, export_application: ExportApplication) -> str:
-        if not hasattr(export_application, "schedules"):
-            return ""
         if export_application.schedules.filter(
             exporter_status=CFSSchedule.ExporterStatus.IS_MANUFACTURER
         ):
@@ -162,7 +158,7 @@ class IssuedCertificateReportInterface(ReportInterface):
             cdr.content_object.case_completion_datetime, export_application.submit_datetime
         )
 
-    def _format_time_delta(self, from_datetime, to_datetime) -> str:
+    def _format_time_delta(self, from_datetime: datetime, to_datetime: datetime) -> str:
         time_delta = from_datetime - to_datetime
         hours = time_delta.seconds // 3600
         minutes = (time_delta.seconds % 3600) // 60
@@ -171,6 +167,14 @@ class IssuedCertificateReportInterface(ReportInterface):
     def get_business_days_to_process(
         self, cdr: CaseDocumentReference, export_application: ExportApplication
     ) -> int:
-        completed_date = cdr.content_object.case_completion_datetime.date()
-        submitted_date = export_application.submit_datetime.date()
-        return numpy.busday_count(submitted_date, completed_date) + 1
+        start = export_application.submit_datetime.date()
+        end = cdr.content_object.case_completion_datetime.date()
+        date_diff = end - start
+        business_days = 0
+
+        for i in range(date_diff.days + 1):
+            day = start + timedelta(days=i)
+            if day.weekday() < 5:
+                business_days += 1
+
+        return business_days

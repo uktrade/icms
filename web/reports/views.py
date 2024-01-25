@@ -16,14 +16,14 @@ from .forms import IssuedCertificatesForm
 from .tasks import generate_issued_certificate_report_task
 
 
-class ReportViewMixin(LoginRequiredMixin, PermissionRequiredMixin):
+class BaseReportView(LoginRequiredMixin, PermissionRequiredMixin):
     permission_required = [Perms.page.view_reports]
 
     def get_report(self) -> Report:
         return get_object_or_404(Report, pk=self.kwargs["report_pk"])
 
 
-class ReportListView(ReportViewMixin, ListView):
+class ReportListView(BaseReportView, ListView):
     template_name = "web/domains/reports/list-view.html"
     model = Report
 
@@ -33,7 +33,7 @@ class ReportListView(ReportViewMixin, ListView):
         return context
 
 
-class RunHistoryListView(ReportViewMixin, ListView):
+class RunHistoryListView(BaseReportView, ListView):
     template_name = "web/domains/reports/run-history-view.html"
     paginate_by = 20
 
@@ -48,7 +48,7 @@ class RunHistoryListView(ReportViewMixin, ListView):
         return context
 
 
-class RunOutputView(ReportViewMixin, DetailView):
+class RunOutputView(BaseReportView, DetailView):
     template_name = "web/domains/reports/run-output-view.html"
     pk_url_kwarg = "schedule_pk"
     model = ScheduleReport
@@ -60,7 +60,7 @@ class RunOutputView(ReportViewMixin, DetailView):
         return context
 
 
-class RunReportView(ReportViewMixin, CreateView):
+class RunReportView(BaseReportView, CreateView):
     permission_required = [Perms.page.view_reports, Perms.sys.generate_reports]  # type: ignore[list-item]
     template_name = "web/domains/reports/run-report.html"
     form_class = IssuedCertificatesForm
@@ -76,9 +76,12 @@ class RunReportView(ReportViewMixin, CreateView):
         report = self.get_report()
         scheduled_report = form.save(commit=False)
         scheduled_report.report = report
-        scheduled_report.parameters = self.get_report_parameters(form)
+
         scheduled_report.scheduled_by = self.request.user
         scheduled_report.status = ReportStatus.SUBMITTED
+        form.cleaned_data.pop("title")
+        form.cleaned_data.pop("notes")
+        scheduled_report.parameters = form.cleaned_data
         scheduled_report.save()
         generate_issued_certificate_report_task.delay(scheduled_report.pk)
         return super().form_valid(form)
@@ -86,15 +89,8 @@ class RunReportView(ReportViewMixin, CreateView):
     def get_success_url(self) -> str:
         return reverse("run-history-view", kwargs={"report_pk": self.kwargs["report_pk"]})
 
-    def get_report_parameters(self, form) -> dict:
-        data = {}
-        for field, value in form.cleaned_data.items():
-            if field not in ["title", "notes"]:
-                data[field] = value
-        return data
 
-
-class DownloadReportView(ReportViewMixin, DetailView):
+class DownloadReportView(BaseReportView, DetailView):
     model = GeneratedReport
     pk_url_kwarg = "pk"
 
