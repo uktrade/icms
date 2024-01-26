@@ -123,6 +123,7 @@ class Environment(BaseSettings):
     icms_v1_replica_dsn: str = ""
     icms_prod_user: str = ""
     icms_prod_password: str = ""
+    data_migration_email_domain_exclude: str = ""
 
     workbasket_per_page: int = 100
     set_inactive_app_types_active: bool = False

@@ -3665,3 +3665,17 @@ Edit Email Address
 Country Groups Management
 cardc.certificate_code
 data &apos
+rm data_migration/
+git restore data_migration
+SELECT xid.ima_id
+ON cnd.cn_id = cn.id
+CLOB
+xid.status_control =
+request_cc_email_list
+xir.request_by_wua_id requested_by_id ,
+xir.ima_id
+created_by_wua_id sent_by_id
+create_icms_groups
+manage.py import_v1_files_to_s3 --queries
+manage.py import_v1_files_to_s3 --queries sps_docs --limit
+Test Excluded

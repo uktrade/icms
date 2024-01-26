@@ -1,6 +1,7 @@
 from collections.abc import Generator
 from typing import Any
 
+from django.conf import settings
 from django.db import models
 from django.db.models import F
 
@@ -9,6 +10,8 @@ from data_migration.models.base import MigrationBase
 from data_migration.models.flow import Process
 
 from .user import Exporter, Importer, User
+
+EXCLUDE_DOMAIN = settings.DATA_MIGRATION_EMAIL_DOMAIN_EXCLUDE
 
 
 class AccessRequest(MigrationBase):
@@ -57,6 +60,19 @@ class AccessRequest(MigrationBase):
         return data
 
     @classmethod
+    def get_source_data(cls) -> Generator:
+        values = cls.get_values()
+        values_kwargs = cls.get_values_kwargs()
+        related = cls.get_related()
+        return (
+            cls.objects.select_related(*related)
+            .exclude(submitted_by__username__iendswith=EXCLUDE_DOMAIN)
+            .order_by("pk")
+            .values(*values, **values_kwargs)
+            .iterator(chunk_size=2000)
+        )
+
+    @classmethod
     def models_to_populate(cls) -> list[str]:
         return ["Process", cls.__name__]
 
@@ -85,6 +101,7 @@ class ImporterAccessRequest(MigrationBase):
             AccessRequest.objects.filter(
                 request_type__in=["MAIN_IMPORTER_ACCESS", "AGENT_IMPORTER_ACCESS"]
             )
+            .exclude(submitted_by__username__iendswith=EXCLUDE_DOMAIN)
             .values("request_type", accessrequest_ptr_id=F("id"), link_id=F("importer__id"))
             .iterator(chunk_size=2000)
         )
@@ -100,6 +117,7 @@ class ExporterAccessRequest(MigrationBase):
             AccessRequest.objects.filter(
                 request_type__in=["MAIN_EXPORTER_ACCESS", "AGENT_EXPORTER_ACCESS"]
             )
+            .exclude(submitted_by__username__iendswith=EXCLUDE_DOMAIN)
             .values("request_type", accessrequest_ptr_id=F("id"), link_id=F("exporter__id"))
             .iterator(chunk_size=2000)
         )

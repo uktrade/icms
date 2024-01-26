@@ -121,6 +121,8 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert u1.organisation == "Org"
     assert u1.department == "Dept"
     assert u1.job_title == "IT"
+    assert u1.last_login == dt.datetime(2022, 11, 1, 12, 32, tzinfo=dt.timezone.utc)
+    assert u1.icms_v1_user
     assert u1.phone_numbers.count() == 2
 
     pn1, pn2 = u1.phone_numbers.order_by("pk")
@@ -170,6 +172,8 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert u2.check_password("password123") is True
     assert u2.phone_numbers.count() == 0
     assert u2.emails.count() == 0
+    assert u2.last_login == dt.datetime(2022, 11, 1, 12, 32, tzinfo=dt.timezone.utc)
+    assert u2.icms_v1_user
 
     # Check Access Request / Approval Request
 
@@ -336,3 +340,16 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert user.has_perm(EOP.view, exporter_agent_org) is True
     assert user.has_perm(EOP.edit, exporter_agent_org) is True
     assert user.has_perm(EOP.manage_contacts_and_agents, exporter_agent_org) is False
+
+    # Check users that are excluded from V2 migration
+    assert dm.User.objects.filter(id=15).exists()
+    assert not web.User.objects.filter(id=15).exists()
+
+    assert dm.Email.objects.filter(email="test_a_excluded").exists()
+    assert not web.Email.objects.filter(email="test_a_excluded").exists()
+
+    assert dm.PhoneNumber.objects.filter(phone="999").exists()
+    assert not web.PhoneNumber.objects.filter(phone="999").exists()
+
+    assert dm.Importer.objects.filter(pk=4).exists()
+    assert not web.Importer.objects.filter(pk=4).exists()

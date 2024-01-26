@@ -118,7 +118,10 @@ ia_data_source_target = {
 def test_import_wood_application_data(dummy_dm_settings):
     user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
     dm.User.objects.create(
-        id=user_pk, username="test_user", salt="1234", encrypted_password="password"
+        id=user_pk,
+        username="test_user@example.com",  # /PS-IGNORE
+        salt="1234",
+        encrypted_password="password",
     )
     importer_pk = max(web.Importer.objects.count(), dm.Importer.objects.count()) + 1
     dm.Importer.objects.create(id=importer_pk, name="test_org", type="ORGANISATION")
@@ -216,7 +219,10 @@ oil_data_source_target = {
 def test_import_oil_data(dummy_dm_settings):
     user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
     dm.User.objects.create(
-        id=user_pk, username="test_user", salt="1234", encrypted_password="password"
+        id=user_pk,
+        username="test_user@example.com",  # /PS-IGNORE
+        salt="1234",
+        encrypted_password="password",
     )
     importer_pk = max(web.Importer.objects.count(), dm.Importer.objects.count()) + 1
     dm.Importer.objects.create(id=importer_pk, name="test_org", type="ORGANISATION")
@@ -347,7 +353,10 @@ dfl_data_m2m = {
 def test_import_dfl_data(dummy_dm_settings):
     user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
     dm.User.objects.create(
-        id=user_pk, username="test_user", salt="1234", encrypted_password="password"
+        id=user_pk,
+        username="test_user@example.com",  # /PS-IGNORE
+        salt="1234",
+        encrypted_password="password",
     )
     importer_pk = max(web.Importer.objects.count(), dm.Importer.objects.count()) + 1
     dm.Importer.objects.create(id=importer_pk, name="test_org", type="ORGANISATION")
@@ -478,7 +487,10 @@ uic_data_m2m = {
 def test_import_user_import_certificate_data(dummy_dm_settings):
     user_pk = max(web.User.objects.count(), dm.User.objects.count()) + 1
     dm.User.objects.create(
-        id=user_pk, username="test_user", salt="1234", encrypted_password="password"
+        id=user_pk,
+        username="test_user@example.com",  # /PS-IGNORE
+        salt="1234",
+        encrypted_password="password",
     )
     importer_pk = max(web.Importer.objects.count(), dm.Importer.objects.count()) + 1
     dm.Importer.objects.create(id=importer_pk, name="test_org", type="ORGANISATION")

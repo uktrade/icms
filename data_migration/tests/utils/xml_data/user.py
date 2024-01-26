@@ -72,6 +72,7 @@ personal_email_xml = """
 </PERSONAL_EMAIL_LIST>
 """.strip()
 
+
 alternative_email_xml = """
 <DISTRIBUTION_EMAIL_LIST>
   <DISTRIBUTION_EMAIL>
@@ -87,4 +88,27 @@ alternative_email_xml = """
     <COMMENT />
   </DISTRIBUTION_EMAIL>
 </DISTRIBUTION_EMAIL_LIST>
+""".strip()
+
+
+personal_email_excluded_xml = """
+<PERSONAL_EMAIL_LIST>
+  <PERSONAL_EMAIL>
+    <EMAIL_ADDRESS>test_a_excluded</EMAIL_ADDRESS>
+    <PORTAL_NOTIFICATIONS>Primary</PORTAL_NOTIFICATIONS>
+    <TYPE>H</TYPE>
+    <COMMENT>A COMMENT</COMMENT>
+  </PERSONAL_EMAIL>
+</PERSONAL_EMAIL_LIST>
+""".strip()
+
+
+phone_number_excluded_xml = """
+<TELEPHONE_NO_LIST>
+  <TELEPHONE_NO>
+    <TELEPHONE_HASH_CODE>999</TELEPHONE_HASH_CODE>
+    <TYPE>H</TYPE>
+    <COMMENT>My Home</COMMENT>
+  </TELEPHONE_NO>
+</TELEPHONE_NO_LIST>
 """.strip()
