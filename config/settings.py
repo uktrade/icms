@@ -358,6 +358,7 @@ ICMS_V1_REPLICA_PASSWORD = env.icms_v1_replica_password
 ICMS_V1_REPLICA_DSN = env.icms_v1_replica_dsn
 ICMS_PROD_USER = env.icms_prod_user
 ICMS_PROD_PASSWORD = env.icms_prod_password
+DATA_MIGRATION_EMAIL_DOMAIN_EXCLUDE = env.data_migration_email_domain_exclude
 
 # Workbasket pagination setting
 WORKBASKET_PER_PAGE = env.workbasket_per_page

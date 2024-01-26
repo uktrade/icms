@@ -1,6 +1,7 @@
 from collections.abc import Generator
 from typing import Any
 
+from django.conf import settings
 from django.db import models
 from django.db.models import F, Value
 from django.db.models.expressions import Window
@@ -9,6 +10,8 @@ from django.utils import timezone
 
 from data_migration.models.base import MigrationBase
 from data_migration.utils.format import split_address
+
+EXCLUDE_DOMAIN = settings.DATA_MIGRATION_EMAIL_DOMAIN_EXCLUDE
 
 
 class User(MigrationBase):
@@ -91,8 +94,11 @@ class User(MigrationBase):
         return (
             cls.objects.select_related(*related)
             .exclude(pk=0)
+            .exclude(username__iendswith=EXCLUDE_DOMAIN)
+            .filter(username__contains="@")
             .order_by("pk")
-            .values(*values, **values_kwargs)
+            .annotate(icms_v1_user=Value(True))
+            .values("icms_v1_user", *values, **values_kwargs)
             .iterator(chunk_size=2000)
         )
 
@@ -103,6 +109,22 @@ class PhoneNumber(MigrationBase):
     comment = models.CharField(max_length=4000, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="phone_numbers")
 
+    @classmethod
+    def get_source_data(cls) -> Generator:
+        """Queries the model to get the queryset of data for the V2 import"""
+
+        values = cls.get_values()
+        values_kwargs = cls.get_values_kwargs()
+        related = cls.get_related()
+        return (
+            cls.objects.select_related(*related)
+            .exclude(user__username__iendswith=EXCLUDE_DOMAIN)
+            .filter(user__username__contains="@")
+            .order_by("pk")
+            .values(*values, **values_kwargs)
+            .iterator(chunk_size=2000)
+        )
+
 
 class Email(MigrationBase):
     is_primary = models.BooleanField(blank=False, null=False, default=False)
@@ -111,6 +133,22 @@ class Email(MigrationBase):
     type = models.CharField(max_length=30)
     portal_notifications = models.BooleanField(default=False)
     comment = models.CharField(max_length=4000, null=True)
+
+    @classmethod
+    def get_source_data(cls) -> Generator:
+        """Queries the model to get the queryset of data for the V2 import"""
+
+        values = cls.get_values()
+        values_kwargs = cls.get_values_kwargs()
+        related = cls.get_related()
+        return (
+            cls.objects.select_related(*related)
+            .exclude(user__username__iendswith=EXCLUDE_DOMAIN)
+            .filter(user__username__contains="@")
+            .order_by("pk")
+            .values(*values, **values_kwargs)
+            .iterator(chunk_size=2000)
+        )
 
 
 class Importer(MigrationBase):
@@ -137,6 +175,21 @@ class Importer(MigrationBase):
         data["name"] = data["name"] or ""
         return data
 
+    @classmethod
+    def get_source_data(cls) -> Generator:
+        """Queries the model to get the queryset of data for the V2 import"""
+
+        values = cls.get_values()
+        values_kwargs = cls.get_values_kwargs()
+        related = cls.get_related()
+        return (
+            cls.objects.select_related(*related)
+            .exclude(user__username__iendswith=EXCLUDE_DOMAIN)
+            .order_by("pk")
+            .values(*values, **values_kwargs)
+            .iterator(chunk_size=2000)
+        )
+
 
 class Exporter(MigrationBase):
     is_active = models.BooleanField(null=False, default=True)
@@ -162,14 +215,35 @@ class Office(MigrationBase):
     def get_m2m_data(cls, target: models.Model) -> Generator:
         m2m_id = f"{target._meta.model_name}_id"
 
+        if target._meta.model_name == "importer":
+            extra_exclude = {"importer__user__username__endswith": EXCLUDE_DOMAIN}
+        else:
+            extra_exclude = {}
+
         return (
             cls.objects.exclude(**{f"{m2m_id}__isnull": True})
+            .exclude(**extra_exclude)
             .annotate(row_number=Window(expression=RowNumber()))
             .values(
                 "row_number",
                 m2m_id,
                 office_id=F("id"),
             )
+            .iterator(chunk_size=2000)
+        )
+
+    @classmethod
+    def get_source_data(cls) -> Generator:
+        """Queries the model to get the queryset of data for the V2 import"""
+
+        values = cls.get_values()
+        values_kwargs = cls.get_values_kwargs()
+        related = cls.get_related()
+        return (
+            cls.objects.select_related(*related)
+            .exclude(importer__user__username__iendswith=EXCLUDE_DOMAIN)
+            .order_by("pk")
+            .values(*values, **values_kwargs)
             .iterator(chunk_size=2000)
         )
 

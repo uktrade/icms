@@ -1,3 +1,8 @@
+from django.conf import settings
+
+EXCLUDE_DOMAIN = settings.DATA_MIGRATION_EMAIL_DOMAIN_EXCLUDE
+
+
 user_roles_statement = """
 FROM (
 WITH rp_wua AS (
@@ -40,7 +45,7 @@ all_user_roles_count = "SELECT COUNT(*)" + user_roles_statement
 
 # Importer Group Permissions
 
-importer_user_roles = """
+importer_user_roles = f"""
 WITH rp_wua AS (
   SELECT uah.resource_person_id
   , CASE
@@ -57,6 +62,8 @@ WITH rp_wua AS (
   END login_id
   FROM securemgr.web_user_account_histories uah
   WHERE uah.person_id_current IS NOT NULL
+    AND login_id LIKE '%@%'
+    AND login_id NOT LIKE '%{EXCLUDE_DOMAIN}' COLLATE BINARY_CI
     AND uah.resource_person_primary_flag = 'Y'
   GROUP BY uah.resource_person_id
 )

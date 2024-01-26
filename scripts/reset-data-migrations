@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+rm data_migration/migrations/*.py
+make data_migrations
+
+# Restore the data migrations
+git restore data_migration/migrations/0002_data_firearms_act.py
+
+make black_format
+make isort_format

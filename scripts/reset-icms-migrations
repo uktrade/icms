@@ -3,17 +3,10 @@
 set -e
 
 rm web/migrations/*.py
-# Uncomment if needed
-#rm data_migration/migrations/*.py
-
 make migrations
 
 # Restore the data migrations
 git restore web/migrations/0002_data_add_sites.py
-
-# Uncomment if needed
-#make data_migrations
-#git restore data_migration/migrations/0002_data_firearms_act.py
 
 make black_format
 make isort_format

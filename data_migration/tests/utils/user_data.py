@@ -352,6 +352,29 @@ user_query_result = {
                 None,  # telephone_xml
                 0,  # share_contact_details
             ),
+            (
+                15,  # id
+                "test@example.org",  # username /PS-IGNORE
+                "Test",  # first_name
+                "User",  # last_name
+                "test@example.org",  # email  /PS-IGNORE
+                1,  # is_active
+                "35363738",  # salt 5678
+                "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
+                "Ms",  # title
+                "Org",  # Oranisation
+                "Dept",  # Department
+                "IT",  # job_title
+                "ACTIVE",  # account_status
+                14,  # account_status_by
+                dt.date.today(),  # account_status_date
+                dt.datetime(2022, 11, 1, 12, 32),  # last_login_datetime
+                "FULL",  # password_disposition
+                xd.personal_email_excluded_xml,  # personal_email_xml
+                None,  # alternative_email_xml
+                xd.phone_number_excluded_xml,  # telephone_xml
+                0,  # share_contact_details
+            ),
         ],
     ),
     queries.importers: (
@@ -370,6 +393,7 @@ user_query_result = {
             (1, 1, "INDIVIDUAL", None, 123, "GB123456789012", 2, None, "O"),
             (2, 1, "ORGANISATION", "Test Org", 124, "GB123456789013", 2, None, None),
             (3, 1, "INDIVIDUAL", "Test Agent", 125, "GB123456789014", 2, 2, None),
+            (4, 1, "INDIVIDUAL", "Test Excluded", 126, "GB123456789015", 15, 2, None),
         ],
     ),
     queries.importer_offices: (
@@ -394,6 +418,7 @@ user_query_result = {
                 "GB123456789017",
                 "MANUAL",
             ),
+            (4, "i-4-1", 1, "EXC", "123 Excluded", "GB123456789017", "MANUAL"),
         ],
     ),
     queries.exporters: (
