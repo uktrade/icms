@@ -1,8 +1,9 @@
 from typing import Any
 
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView
+from django_ratelimit.decorators import ratelimit
 
 from web.flow.models import ProcessTypes
 from web.models import (
@@ -30,13 +31,12 @@ def _get_export_application_goods(app: ExportApplication) -> str:
             raise ValueError(f"{app.process_type} not an ExportApplication process type.")
 
 
+@method_decorator(ratelimit(key="ip", rate="10/m", method="POST", block=True), name="post")
+@method_decorator(ratelimit(key="ip", rate="20/m", method="GET", block=True), name="get")
+@method_decorator(require_exporter(check_permission=False), name="dispatch")
 class CheckCertificateView(FormView):
     form_class = CertificateCheckForm
     template_name = "web/domains/checker/certificate-checker.html"
-
-    @method_decorator(require_exporter(check_permission=False))
-    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
-        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
