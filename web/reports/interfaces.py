@@ -153,11 +153,9 @@ class IssuedCertificateReportInterface(ReportInterface):
         )
 
     def get_is_responsible_person(self, export_application: ExportApplication) -> YesNoChoices:
-        if any(
-            export_application.schedules.values_list(
-                "schedule_statements_is_responsible_person", flat=True
-            )
-        ):
+        if export_application.schedules.filter(
+            schedule_statements_is_responsible_person=True
+        ).exists():
             return YesNoChoices.yes
         return YesNoChoices.no
 
