@@ -7,7 +7,7 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.mail.constants import EmailTypes
 from web.mail.emails import create_case_email, send_case_email
-from web.models import User, VariationRequest
+from web.models import FurtherInformationRequest, User, VariationRequest
 from web.reports.interfaces import IssuedCertificateReportInterface
 from web.tests.helpers import add_variation_request_to_app
 
@@ -66,6 +66,9 @@ def test_issued_certificate_report_interface_get_data_cfs(
 ):
     _setup_app_with_variation_request(completed_cfs_app, ilb_admin_user)
     update_submitted_and_completed_dates_on_app(completed_cfs_app)
+    case_email = create_case_email(completed_cfs_app, EmailTypes.HSE_CASE_EMAIL)
+    send_case_email(case_email)
+    completed_cfs_app.case_emails.add(case_email)
     interface = IssuedCertificateReportInterface(report_schedule)
     data = interface.get_data()
     assert data["results"] == [
@@ -83,7 +86,7 @@ def test_issued_certificate_report_interface_get_data_cfs(
             "Country": "Zimbabwe",
             "Exporter": "Test Exporter 1",
             "FIR Count": 0,
-            "HSE Email Count": 0,
+            "HSE Email Count": 1,
             "Is Manufacturer": "Yes",
             "Issue Datetime": "09/01/2024 13:07:00",
             "Product Legislation": "Biocide Products Regulation 528/2012 as retained in UK law",
@@ -105,7 +108,7 @@ def test_issued_certificate_report_interface_get_data_cfs(
             "Country": "Afghanistan",
             "Exporter": "Test Exporter 1",
             "FIR Count": 0,
-            "HSE Email Count": 0,
+            "HSE Email Count": 1,
             "Is Manufacturer": "Yes",
             "Issue Datetime": "09/01/2024 13:07:00",
             "Product Legislation": "Biocide Products Regulation 528/2012 as retained in UK law",
@@ -119,9 +122,16 @@ def test_issued_certificate_report_interface_get_data_cfs(
 @pytest.mark.django_db
 def test_issued_certificate_report_interface_get_data_gmp(report_schedule, completed_gmp_app):
     update_submitted_and_completed_dates_on_app(completed_gmp_app)
+
+    draft_case_email = create_case_email(completed_gmp_app, EmailTypes.BEIS_CASE_EMAIL)
     case_email = create_case_email(completed_gmp_app, EmailTypes.BEIS_CASE_EMAIL)
     send_case_email(case_email)
+    case_email_2 = create_case_email(completed_gmp_app, EmailTypes.BEIS_CASE_EMAIL)
+    send_case_email(case_email_2)
+    completed_gmp_app.case_emails.add(draft_case_email)
     completed_gmp_app.case_emails.add(case_email)
+    completed_gmp_app.case_emails.add(case_email_2)
+
     interface = IssuedCertificateReportInterface(report_schedule)
     data = interface.get_data()
     assert data["results"] == [
@@ -129,7 +139,7 @@ def test_issued_certificate_report_interface_get_data_gmp(report_schedule, compl
             "Agent": "",
             "Application Type": "Certificate of Good Manufacturing Practice",
             "Application Update Count": 0,
-            "BEIS Email Count": 1,
+            "BEIS Email Count": 2,
             "Business Days to Process": 7,
             "Case Processing Time": "8d 1h 7m",
             "Case Reference": "GA/2024/00001",
@@ -151,9 +161,19 @@ def test_issued_certificate_report_interface_get_data_gmp(report_schedule, compl
 
 
 @pytest.mark.django_db
-def test_issued_certificate_report_interface_get_data_com(report_schedule, completed_com_app):
+def test_issued_certificate_report_interface_get_data_com(
+    report_schedule, completed_com_app, ilb_admin_user
+):
     update_submitted_and_completed_dates_on_app(completed_com_app)
     interface = IssuedCertificateReportInterface(report_schedule)
+
+    completed_com_app.further_information_requests.create(
+        status=FurtherInformationRequest.CLOSED,
+        requested_by=ilb_admin_user,
+        request_subject="subject",
+        request_detail="body",
+        process_type=FurtherInformationRequest.PROCESS_TYPE,
+    )
     data = interface.get_data()
     assert data["results"] == [
         {
@@ -169,7 +189,7 @@ def test_issued_certificate_report_interface_get_data_com(report_schedule, compl
             "Countries of Manufacture": "",
             "Country": "Afghanistan",
             "Exporter": "Test Exporter 1",
-            "FIR Count": 0,
+            "FIR Count": 1,
             "HSE Email Count": 0,
             "Is Manufacturer": "",
             "Issue Datetime": "09/01/2024 13:07:00",

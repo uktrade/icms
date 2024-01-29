@@ -9,12 +9,15 @@ from web.flow.models import ProcessTypes
 from web.mail.constants import EmailTypes
 from web.models import (
     CaseDocumentReference,
+    CaseEmail,
     CFSSchedule,
     ExportApplication,
     ExportApplicationCertificate,
     ProductLegislation,
     ScheduleReport,
+    UpdateRequest,
 )
+from web.models.shared import YesNoChoices
 
 from .serializers import IssuedCertificateReportSerializer
 
@@ -122,46 +125,48 @@ class IssuedCertificateReportInterface(ReportInterface):
             contact=export_application.contact.full_name,
             agent=export_application.agent.name if export_application.agent else "",
             country=cdr.reference_data.country.name,
-            is_manufacturer="" if not is_cfs else self.get_is_manufacturer(export_application),
+            is_manufacturer=""
+            if not is_cfs
+            else self.get_is_manufacturer(export_application).title(),
             responsible_person_statement=""
             if not is_cfs
-            else self.get_is_responsible_person(export_application),
+            else self.get_is_responsible_person(export_application).title(),
             countries_of_manufacture="" if not is_cfs else ",".join(cdr.manufacturer_countries),
             hse_email_count=export_application.case_emails.filter(
                 template_code=EmailTypes.HSE_CASE_EMAIL
             )
-            .exclude(status="DRAFT")
+            .exclude(status=CaseEmail.Status.DRAFT)
             .count(),
             beis_email_count=export_application.case_emails.filter(
                 template_code=EmailTypes.BEIS_CASE_EMAIL
             )
-            .exclude(status="DRAFT")
+            .exclude(status=CaseEmail.Status.DRAFT)
             .count(),
-            application_update_count=export_application.update_requests.exclude(
-                status="OPEN"
+            application_update_count=export_application.update_requests.filter(
+                status__in=[UpdateRequest.Status.CLOSED, UpdateRequest.Status.RESPONDED]
             ).count(),
-            fir_count=export_application.further_information_requests.count(),
+            fir_count=export_application.further_information_requests.completed().count(),
             product_legislation="" if not is_cfs else ",".join(cdr.legislations),
             case_processing_time=self.get_total_processing_time(cdr, export_application),
             total_processing_time=self.get_total_processing_time(cdr, export_application),
             business_days_to_process=self.get_business_days_to_process(cdr, export_application),
         )
 
-    def get_is_responsible_person(self, export_application: ExportApplication) -> str:
+    def get_is_responsible_person(self, export_application: ExportApplication) -> YesNoChoices:
         if any(
             export_application.schedules.values_list(
                 "schedule_statements_is_responsible_person", flat=True
             )
         ):
-            return "Yes"
-        return "No"
+            return YesNoChoices.yes
+        return YesNoChoices.no
 
-    def get_is_manufacturer(self, export_application: ExportApplication) -> str:
+    def get_is_manufacturer(self, export_application: ExportApplication) -> YesNoChoices:
         if export_application.schedules.filter(
             exporter_status=CFSSchedule.ExporterStatus.IS_MANUFACTURER
         ):
-            return "Yes"
-        return "No"
+            return YesNoChoices.yes
+        return YesNoChoices.no
 
     def get_total_processing_time(
         self, cdr: CaseDocumentReference, export_application: ExportApplication
