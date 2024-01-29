@@ -99,6 +99,7 @@ LEFT JOIN case_owner ON case_owner.ima_id = xiad.ima_id
 WHERE
   xiad.ima_type = 'SPS'
   AND xiad.IMA_SUB_TYPE = 'SPS1'
+  AND xiad.imad_id NOT IN (5893, 5894, 5896, 6083)
   AND xiad.status_control = 'C'
   AND xiad.status <> 'DELETED'
   AND (

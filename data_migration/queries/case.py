@@ -29,6 +29,7 @@ SELECT
   , u.closed_by_wua_id closed_by_id
 FROM impmgr.xview_ima_updates u
 INNER JOIN impmgr.xview_ima_details xid ON xid.ima_id = u.ima_id AND xid.status_control = 'C'
+WHERE xid.imad_id NOT IN (5893, 5894, 5896, 6083)
 """
 
 
@@ -63,6 +64,8 @@ endorsement = """
 SELECT imad_id, endorsement_text content
 FROM impmgr.xview_ima_endorsements xie
 WHERE xie.status_control = 'C'
+AND imad_id NOT IN (5893, 5894, 5896, 6083)
+AND endorsement_text IS NOT NULL
 """
 
 
@@ -78,6 +81,7 @@ SELECT
   , response_code
   , response_msg response_message
 FROM impmgr.sigl_transmissions
+WHERE ima_id NOT IN (4871, 4872, 4873, 4899)
 """
 
 

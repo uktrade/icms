@@ -26,6 +26,7 @@ FROM impmgr.ima_responses ir
   INNER JOIN impmgr.xview_ima_details xiad ON xiad.ima_id = ia.id AND xiad.status_control = 'C'
   LEFT JOIN decmgr.xview_document_packs dp ON dp.ds_id = ird.ds_id
 WHERE ir.response_type LIKE '%_LICENCE'
+  AND xiad.imad_id NOT IN (5893, 5894, 5896, 6083)
 ORDER BY ird.id
 """
 
@@ -70,6 +71,7 @@ FROM impmgr.ima_responses ir
   ) wl ON wl.login_id = REGEXP_SUBSTR(dd.created_by, '\((.+)\)', 1, 1, NULL, 1)
 WHERE (ir.response_type LIKE '%_LICENCE' OR ir.response_type LIKE '%_COVER')
   AND sld.id > :secure_lob_ref_id
+  AND xiad.ima_id NOT IN (4871, 4872, 4873, 4899)
 ORDER BY sld.id
 """
 
@@ -87,6 +89,7 @@ FROM decmgr.xview_notifications xn
       user_id INTEGER PATH '/ACKNOWLEDGEMENT/AUDIT_LIST/AUDIT/ACTION_BY_WUA_ID/text()'
   ) x
 WHERE xn.acknowledgement_status = 'ACKNOWLEDGED'
+  AND ird.imad_id NOT IN (5893, 5894, 5896, 6083)
 """
 
 ia_timestamp_update = """

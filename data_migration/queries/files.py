@@ -70,6 +70,7 @@ INNER JOIN (
 ) fv ON fv.fft_id = fft.id
 INNER JOIN securemgr.secure_lob_data sld ON sld.id = fv.secure_lob_ref_id
 WHERE fv.secure_lob_ref_id > :secure_lob_ref_id
+AND ima_id NOT IN (4871, 4872, 4873, 4899)
 ORDER by fv.secure_lob_ref_id
 """
 
