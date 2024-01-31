@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, ClassVar
 
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import Model, OuterRef, QuerySet, Subquery, Value
@@ -41,8 +41,8 @@ class ReportResults(BaseModel):
 class ReportInterface:
     """The reporting interface all reports must subclass."""
 
-    ReportFilter: ReportFilterT
-    ReportSerializer: ReportSerializerT
+    ReportFilter: ClassVar[type[BaseModel]]
+    ReportSerializer: ClassVar[type[BaseModel]]
 
     def __init__(self, scheduled_report: ScheduleReport) -> None:
         self.scheduled_report = scheduled_report
@@ -68,6 +68,9 @@ class ReportInterface:
 class IssuedCertificateReportInterface(ReportInterface):
     ReportSerializer = IssuedCertificateReportSerializer
     ReportFilter = IssuedCertificateReportFilter
+
+    # Added to fix typing
+    filters: IssuedCertificateReportFilter
 
     def get_queryset(self) -> QuerySet:
         queryset = CaseDocumentReference.objects.filter(
@@ -112,10 +115,11 @@ class IssuedCertificateReportInterface(ReportInterface):
         )
         return queryset.order_by("-reference")
 
-    def serialize_row(self, cdr: CaseDocumentReference) -> ReportSerializer:  # type: ignore[valid-type]
+    def serialize_row(self, cdr: CaseDocumentReference) -> IssuedCertificateReportSerializer:
         export_application = cdr.content_object.export_application.get_specific_model()
         is_cfs = export_application.process_type == ProcessTypes.CFS
-        return self.ReportSerializer(
+
+        return IssuedCertificateReportSerializer(
             certificate_reference=cdr.reference,
             case_reference=cdr.content_object.case_reference,
             application_type=export_application.application_type.type,
