@@ -6,21 +6,18 @@ from web.forms.fields import JqueryDateField
 from web.models import ExportApplicationType, ScheduleReport
 
 
-class IssuedCertificatesForm(forms.ModelForm):
+class ReportForm(forms.ModelForm):
     class Meta:
         model = ScheduleReport
         fields = ["title", "notes"]
 
-    application_type = forms.ChoiceField(
-        choices=[(None, "All")] + ExportApplicationType.Types.choices, required=False
-    )
     date_from = JqueryDateField(
         label="Date from",
-        help_text="Application Submitted date (inclusive of this day ie 1-Jan-24 00:00:01)",
+        help_text="Date (inclusive of this day ie 1-Jan-24 00:00:01)",
     )
     date_to = JqueryDateField(
         label="Date to",
-        help_text="Application Completed date (inclusive of this day ie 31-Jan-24 23:59:59)",
+        help_text="Date (inclusive of this day ie 31-Jan-24 23:59:59)",
     )
 
     def clean(self):
@@ -35,3 +32,17 @@ class IssuedCertificatesForm(forms.ModelForm):
                 self.add_error("date_from", "Date range cannot be greater than 2 years")
                 self.add_error("date_to", "Date range cannot be greater than 2 years")
         return cleaned_data
+
+
+class IssuedCertificatesForm(ReportForm):
+    application_type = forms.ChoiceField(
+        choices=[(None, "All")] + ExportApplicationType.Types.choices, required=False
+    )
+
+    class Meta:
+        model = ReportForm.Meta.model
+        fields = ["application_type"] + ReportForm.Meta.fields
+        help_texts = {
+            "date_from": "Application Submitted date (inclusive of this day ie 1-Jan-24 00:00:01)",
+            "date_to": "Application Completed date (inclusive of this day ie 31-Jan-24 23:59:59)",
+        }

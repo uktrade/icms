@@ -1052,7 +1052,7 @@ def report_schedule(report_user):
         scheduled_by=report_user,
         notes="",
         parameters={
-            "date_from": "2020-02-01",
+            "date_from": "2010-02-01",
             "date_to": "2030-01-01",
             "application_type": "",
         },

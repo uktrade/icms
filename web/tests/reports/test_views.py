@@ -29,7 +29,7 @@ def test_run_history_view(report_user_client):
     assertTemplateUsed(response, "web/domains/reports/run-history-view.html")
 
 
-@mock.patch("web.reports.tasks.generate_issued_certificate_report_task.delay")
+@mock.patch("web.reports.tasks.generate_report_task.delay")
 def test_run_report_view(mock_generate_report, report_user_client):
     mock_generate_report.return_value = None
     report = get_issued_certificates_report_model()
@@ -101,7 +101,7 @@ def test_run_report_view(mock_generate_report, report_user_client):
         ),
     ),
 )
-@mock.patch("web.reports.tasks.generate_issued_certificate_report_task.delay")
+@mock.patch("web.reports.tasks.generate_report_task.delay")
 def test_run_report_view_form_errors(
     mock_generate_report, report_user_client, post_data, expected_errors
 ):

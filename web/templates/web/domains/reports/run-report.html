@@ -13,14 +13,17 @@
 {% endblock %}
 
 {% block main_content %}
-
-    <h3>Parameters</h3>
-      {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
-          {{ fields.field(form.title) }}
-          {{ fields.field(form.notes) }}
-          {{ fields.field(form.application_type) }}
-          {{ fields.field(form.date_from) }}
-          {{ fields.field(form.date_to) }}
-          <input type="submit" class="primary-button button" value="Run Now" />
+  <h3>Parameters</h3>
+  <div class="row">
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
+    {{ fields.field(form.title) }}
+    {{ fields.field(form.notes) }}
+    {% if form.application_type %}
+      {{ fields.field(form.application_type) }}
+    {% endif %}
+    {{ fields.field(form.date_from) }}
+    {{ fields.field(form.date_to) }}
+    <input type="submit" class="primary-button button" value="Run Now" />
   {% endcall %}
+  </div>
 {% endblock %}

@@ -1,15 +1,57 @@
 from datetime import datetime
 
 import pytest
+from django.utils.timezone import make_aware
+from freezegun import freeze_time
 
 from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.mail.constants import EmailTypes
 from web.mail.emails import create_case_email, send_case_email
-from web.models import FurtherInformationRequest, UpdateRequest, VariationRequest
-from web.reports.interfaces import IssuedCertificateReportInterface
+from web.models import (
+    ExporterAccessRequest,
+    FurtherInformationRequest,
+    ImporterAccessRequest,
+    Task,
+    UpdateRequest,
+    VariationRequest,
+)
+from web.reports.interfaces import (
+    AccessRequestTotalsInterface,
+    ExporterAccessRequestInterface,
+    ImporterAccessRequestInterface,
+    IssuedCertificateReportInterface,
+)
 from web.tests.helpers import add_variation_request_to_app
+
+EXPECTED_IMPORT_ACCESS_REQUEST_HEADER = [
+    "Request Date",
+    "Request Type",
+    "Importer Name",
+    "Importer Address",
+    "Agent Name",
+    "Agent Address",
+    "Response",
+    "Response Reason",
+]
+
+EXPECTED_EXPORT_ACCESS_REQUEST_HEADER = [
+    "Request Date",
+    "Request Type",
+    "Exporter Name",
+    "Exporter Address",
+    "Agent Name",
+    "Agent Address",
+    "Response",
+    "Response Reason",
+]
+
+EXPECTED_ACCESS_REQUEST_TOTALS_HEADER = [
+    "Total Requests",
+    "Approved Requests",
+    "Refused Requests",
+]
 
 EXPECTED_HEADER = [
     "Certificate Reference",
@@ -33,6 +75,60 @@ EXPECTED_HEADER = [
     "FIR Count",
     "Business Days to Process",
 ]
+
+
+@pytest.fixture
+@freeze_time("2021-02-01 12:00:00")
+def approved_importer_access_request(importer_access_request):
+    importer_access_request.response = ImporterAccessRequest.APPROVED
+    importer_access_request.save()
+
+
+@pytest.fixture
+@freeze_time("2021-02-01 12:00:00")
+def refused_importer_access_request(report_user):
+    iar = ImporterAccessRequest.objects.create(
+        process_type=ImporterAccessRequest.PROCESS_TYPE,
+        request_type=ImporterAccessRequest.AGENT_ACCESS,
+        status=ImporterAccessRequest.Statuses.CLOSED,
+        response=ImporterAccessRequest.REFUSED,
+        submitted_by=report_user,
+        last_updated_by=report_user,
+        reference="iar/2",
+        organisation_name="Import Ltd",
+        organisation_address="1 Main Street",
+        agent_name="Test Agent",
+        agent_address="1 Agent House",
+        response_reason="Test refusing request",
+    )
+    iar.tasks.create(is_active=True, task_type=Task.TaskType.PROCESS)
+
+
+@pytest.fixture
+@freeze_time("2021-02-01 12:00:00")
+def approved_exporter_access_request(exporter_access_request):
+    exporter_access_request.response = ExporterAccessRequest.APPROVED
+    exporter_access_request.save()
+
+
+@pytest.fixture
+@freeze_time("2021-02-01 12:00:00")
+def refused_exporter_access_request(report_user):
+    ear = ExporterAccessRequest.objects.create(
+        process_type=ExporterAccessRequest.PROCESS_TYPE,
+        request_type=ExporterAccessRequest.AGENT_ACCESS,
+        status=ExporterAccessRequest.Statuses.CLOSED,
+        response=ExporterAccessRequest.REFUSED,
+        submitted_by=report_user,
+        last_updated_by=report_user,
+        reference="ear/2",
+        organisation_name="Export Ltd",
+        organisation_address="2 Main Street",
+        agent_name="Test Agent",
+        agent_address="2 Agent House",
+        response_reason="Test refusing request",
+    )
+    ear.tasks.create(is_active=True, task_type=Task.TaskType.PROCESS)
 
 
 class TestIssuedCertificateReportInterface:
@@ -73,10 +169,10 @@ class TestIssuedCertificateReportInterface:
         )
 
     def _setup_app_update_submitted_and_completed_dates(self, app):
-        app.submit_datetime = datetime(2024, 1, 1, 12, 0, 0)
+        app.submit_datetime = make_aware(datetime(2024, 1, 1, 12, 0, 0))
         app.save()
         for cert in app.certificates.all():
-            cert.case_completion_datetime = datetime(2024, 1, 9, 13, 7, 0)
+            cert.case_completion_datetime = make_aware(datetime(2024, 1, 9, 13, 7, 0))
             cert.save()
 
     def test_issued_certificate_report_interface_get_data_header(self):
@@ -205,3 +301,121 @@ class TestIssuedCertificateReportInterface:
                 "Total Processing Time": "8d 1h 7m",
             },
         ]
+
+
+class TestImporterAccessRequestInterface:
+    @pytest.fixture(autouse=True)
+    def _setup(self, report_schedule, ilb_admin_user):
+        self.report_schedule = report_schedule
+        self.ilb_admin_user = ilb_admin_user
+
+    def test_get_data_header(self):
+        interface = ImporterAccessRequestInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data == {
+            "header": EXPECTED_IMPORT_ACCESS_REQUEST_HEADER,
+            "results": [],
+        }
+
+    def test_get_approved_request_data(self, approved_importer_access_request):
+        interface = ImporterAccessRequestInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Agent Address": "",
+                "Agent Name": "",
+                "Importer Address": "1 Main Street",
+                "Importer Name": "Import Ltd",
+                "Request Date": "01/02/2021",
+                "Request Type": "Importer Access Request",
+                "Response": "Approved",
+                "Response Reason": "",
+            }
+        ]
+
+    @freeze_time("2021-02-01 12:00:00")
+    def test_get_refused_agent_request_data(self, refused_importer_access_request):
+        interface = ImporterAccessRequestInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Agent Address": "1 Agent House",
+                "Agent Name": "Test Agent",
+                "Importer Address": "1 Main Street",
+                "Importer Name": "Import Ltd",
+                "Request Date": "01/02/2021",
+                "Request Type": "Agent Importer Access Request",
+                "Response": "Refused",
+                "Response Reason": "Test refusing request",
+            }
+        ]
+
+
+class TestExporterAccessRequestInterface:
+    @pytest.fixture(autouse=True)
+    def _setup(self, report_schedule, ilb_admin_user):
+        self.report_schedule = report_schedule
+        self.ilb_admin_user = ilb_admin_user
+
+    def test_get_data_header(self, exporter_access_request):
+        interface = ExporterAccessRequestInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data == {
+            "header": EXPECTED_EXPORT_ACCESS_REQUEST_HEADER,
+            "results": [],
+        }
+
+    @freeze_time("2021-02-01 12:00:00")
+    def test_get_approved_request_data(self, approved_exporter_access_request):
+        interface = ExporterAccessRequestInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Agent Address": "",
+                "Agent Name": "",
+                "Exporter Address": "2 Main Street",
+                "Exporter Name": "Export Ltd",
+                "Request Date": "01/02/2021",
+                "Request Type": "Exporter Access Request",
+                "Response": "Approved",
+                "Response Reason": "",
+            },
+        ]
+
+    @freeze_time("2021-02-01 12:00:00")
+    def test_get_refused_agent_request_data(self, refused_exporter_access_request):
+        interface = ExporterAccessRequestInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Agent Address": "2 Agent House",
+                "Agent Name": "Test Agent",
+                "Exporter Address": "2 Main Street",
+                "Exporter Name": "Export Ltd",
+                "Request Date": "01/02/2021",
+                "Request Type": "Agent Exporter Access Request",
+                "Response": "Refused",
+                "Response Reason": "Test refusing request",
+            },
+        ]
+
+
+class TestAccessRequestTotalsInterface:
+    @pytest.fixture(autouse=True)
+    def _setup(self, report_schedule, ilb_admin_user):
+        self.report_schedule = report_schedule
+        self.ilb_admin_user = ilb_admin_user
+
+    def test_get_data(
+        self,
+        approved_importer_access_request,
+        approved_exporter_access_request,
+        refused_importer_access_request,
+        refused_exporter_access_request,
+    ):
+        interface = AccessRequestTotalsInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data == {
+            "header": EXPECTED_ACCESS_REQUEST_TOTALS_HEADER,
+            "results": [{"Approved Requests": 2, "Refused Requests": 2, "Total Requests": 4}],
+        }

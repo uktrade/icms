@@ -40,7 +40,9 @@ class ScheduleReport(models.Model):
 
 
 class GeneratedReport(models.Model):
-    schedule = models.ForeignKey(ScheduleReport, on_delete=models.CASCADE)
+    schedule = models.ForeignKey(
+        ScheduleReport, on_delete=models.CASCADE, related_name="generated_files"
+    )
     document = models.OneToOneField("web.File", on_delete=models.CASCADE, null=True)
     status = models.CharField(
         max_length=255,

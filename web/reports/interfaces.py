@@ -2,29 +2,44 @@ from datetime import datetime, timedelta
 from typing import Any, ClassVar
 
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import Model, OuterRef, QuerySet, Subquery, Value
+from django.db.models import Count, Model, OuterRef, QuerySet, Subquery, Value
 from pydantic import BaseModel, ConfigDict, SerializeAsAny
 
+from web.domains.case.types import ImpAccessOrExpAccess
 from web.flow.models import ProcessTypes
 from web.mail.constants import EmailTypes
 from web.models import (
+    AccessRequest,
     CaseDocumentReference,
     CaseEmail,
     CFSSchedule,
     ExportApplication,
     ExportApplicationCertificate,
+    ExporterAccessRequest,
+    ImporterAccessRequest,
     ProductLegislation,
     ScheduleReport,
     UpdateRequest,
 )
 from web.models.shared import YesNoChoices
 
-from .serializers import IssuedCertificateReportSerializer
+from .serializers import (
+    AccessRequestTotalsReportSerializer,
+    ExporterAccessRequestReportSerializer,
+    ImporterAccessRequestReportSerializer,
+    IssuedCertificateReportSerializer,
+)
 
 
 class IssuedCertificateReportFilter(BaseModel):
     model_config = ConfigDict(extra="ignore")
     application_type: str
+    date_from: str
+    date_to: str
+
+
+class BasicReportFilter(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     date_from: str
     date_to: str
 
@@ -39,6 +54,7 @@ class ReportInterface:
 
     ReportFilter: ClassVar[type[BaseModel]]
     ReportSerializer: ClassVar[type[BaseModel]]
+    name: ClassVar[str]
 
     def __init__(self, scheduled_report: ScheduleReport) -> None:
         self.scheduled_report = scheduled_report
@@ -46,9 +62,12 @@ class ReportInterface:
 
     def get_data(self) -> dict[str, Any]:
         return ReportResults(
-            results=[self.serialize_row(r) for r in self.get_queryset()],
+            results=self.process_results(),
             header=self.get_header(),
         ).model_dump(by_alias=True)
+
+    def process_results(self) -> list[BaseModel]:
+        return [self.serialize_row(r) for r in self.get_queryset()]
 
     def get_header(self) -> list[str]:
         schema = self.ReportSerializer.model_json_schema(by_alias=True, mode="serialization")
@@ -64,6 +83,7 @@ class ReportInterface:
 class IssuedCertificateReportInterface(ReportInterface):
     ReportSerializer = IssuedCertificateReportSerializer
     ReportFilter = IssuedCertificateReportFilter
+    name = "Issued Certificates"
 
     # Added to fix typing
     filters: IssuedCertificateReportFilter
@@ -193,3 +213,69 @@ class IssuedCertificateReportInterface(ReportInterface):
                 business_days += 1
 
         return business_days
+
+
+class ImporterAccessRequestInterface(ReportInterface):
+    ReportSerializer = ImporterAccessRequestReportSerializer
+    ReportFilter = BasicReportFilter
+    filters: BasicReportFilter
+    model: Model = ImporterAccessRequest
+    name = "Importer Access Requests"
+
+    def get_queryset(self) -> QuerySet:
+        return self.model.objects.filter(
+            response__isnull=False,
+            submit_datetime__date__range=(self.filters.date_from, self.filters.date_to),
+        )
+
+    def serialize_row(self, ar: ImpAccessOrExpAccess) -> ImporterAccessRequestReportSerializer:
+        is_agent = ar.is_agent_request
+        request_type = f"{ar.REQUEST_TYPE.title()} Access Request"
+        return self.ReportSerializer(
+            request_date=ar.submit_datetime.date(),
+            request_type=f"Agent {request_type}" if is_agent else request_type,
+            name=ar.organisation_name,
+            address=ar.organisation_address.replace("\r", ""),
+            agent_name=ar.agent_name if is_agent else "",
+            agent_address=ar.agent_address.replace("\r", "") if is_agent else "",
+            response=ar.get_response_display(),
+            response_reason=ar.response_reason,
+        )
+
+
+class ExporterAccessRequestInterface(ImporterAccessRequestInterface):
+    ReportSerializer = ExporterAccessRequestReportSerializer
+    model: Model = ExporterAccessRequest
+    name = "Exporter Access Requests"
+
+
+class AccessRequestTotalsInterface(ReportInterface):
+    name = "Access Requests Totals"
+    ReportFilter = BasicReportFilter
+    filters: BasicReportFilter
+    ReportSerializer = AccessRequestTotalsReportSerializer
+
+    def get_queryset(self) -> QuerySet:
+        return (
+            AccessRequest.objects.filter(
+                response__isnull=False,
+                submit_datetime__date__range=(self.filters.date_from, self.filters.date_to),
+            )
+            .values("response")
+            .annotate(total=Count("id"))
+            .order_by()
+        )
+
+    def process_results(self) -> list[BaseModel]:
+        data = {}
+        for r in self.get_queryset():
+            data[r["response"]] = r["total"]
+        approved = data.get("APPROVED", 0)
+        refused = data.get("REFUSED", 0)
+        return [
+            self.ReportSerializer(
+                total_requests=approved + refused,
+                approved_requests=approved,
+                refused_requests=refused,
+            )
+        ]

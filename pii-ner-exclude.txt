@@ -3758,6 +3758,7 @@ Lawrence
 Cloud Foundry
 Django Log Formatter
 Display
+<<<<<<< HEAD
 "Example XML <VARIATION
 "Example XML <NOTE
 "Example XML <UPDATE
@@ -3785,3 +3786,12 @@ UPDATE_ID>2</UPDATE_ID
 "Example XML <WITHDRAW
 "Example XML <WITHDRAWAL
 "Mock get_licence_endorsements to
+Access Request Report for Importers and Exporters
+Report for Importer / Exporter
+f"{ar
+Total Requests
+Unsupported Report Type
+Access Requests Totals
+\r
+Exporter Access
+Sheet 2
