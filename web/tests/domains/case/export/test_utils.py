@@ -6,11 +6,11 @@ from django.core.files.base import File
 from web.domains.case.export.utils import CustomError, process_products_file
 from web.models import CFSSchedule
 from web.tests.domains.legislation.factory import ProductLegislationFactory
-from web.utils.spreadsheet import XlsxConfig, generate_xlsx_file
+from web.utils.spreadsheet import XlsxSheetConfig, generate_xlsx_file
 
 
-def create_dummy_config(is_biocidal: bool = False) -> XlsxConfig:
-    config = XlsxConfig()
+def create_dummy_config(is_biocidal: bool = False) -> XlsxSheetConfig:
+    config = XlsxSheetConfig()
     config.sheet_name = "CFS Products"
 
     if is_biocidal:
@@ -38,8 +38,8 @@ def create_dummy_config(is_biocidal: bool = False) -> XlsxConfig:
     return config
 
 
-def create_dummy_xlsx_file(config: XlsxConfig) -> File:
-    xlsx_data = generate_xlsx_file(config)
+def create_dummy_xlsx_file(config: XlsxSheetConfig) -> File:
+    xlsx_data = generate_xlsx_file([config])
     xlsx_file = File(io.BytesIO(xlsx_data))
 
     return xlsx_file

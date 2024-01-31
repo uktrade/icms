@@ -10,10 +10,11 @@ from django.views.generic import CreateView, DetailView, ListView
 from web.models import GeneratedReport, Report, ScheduleReport
 from web.permissions import Perms
 from web.utils.s3 import get_file_from_s3
+from web.utils.spreadsheet import MIMETYPE
 
-from .constants import ReportStatus
-from .forms import IssuedCertificatesForm
-from .tasks import generate_issued_certificate_report_task
+from .constants import ReportStatus, ReportType
+from .forms import IssuedCertificatesForm, ReportForm
+from .tasks import generate_report_task
 
 
 class BaseReportView(LoginRequiredMixin, PermissionRequiredMixin):
@@ -57,37 +58,52 @@ class RunOutputView(BaseReportView, DetailView):
         context = super().get_context_data(*args, **kwargs)
         report = self.get_report()
         context["page_title"] = report.name
+        context["csv_files"] = self.object.generated_files.filter(
+            document__content_type=MIMETYPE.CSV
+        )
+        context["xlsx_files"] = self.object.generated_files.filter(
+            document__content_type=MIMETYPE.XLSX
+        )
         return context
 
 
 class RunReportView(BaseReportView, CreateView):
     permission_required = [Perms.page.view_reports, Perms.sys.generate_reports]  # type: ignore[list-item]
     template_name = "web/domains/reports/run-report.html"
-    form_class = IssuedCertificatesForm
 
     def get_context_data(self, *args, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(*args, **kwargs)
-        report = self.get_report()
-        context["report"] = report
-        context["page_title"] = f"{report.name} - Run Report"
+        context["report"] = self.report
+        context["page_title"] = f"{self.report.name} - Run Report"
         return context
 
-    def form_valid(self, form) -> HttpResponseRedirect:
-        report = self.get_report()
-        scheduled_report = form.save(commit=False)
-        scheduled_report.report = report
+    def get(self, request, *args, **kwargs):
+        self.report = self.get_report()
+        return super().get(request, *args, **kwargs)
 
+    def post(self, request, *args, **kwargs):
+        self.report = self.get_report()
+        return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form) -> HttpResponseRedirect:
+        scheduled_report = form.save(commit=False)
+        scheduled_report.report = self.report
         scheduled_report.scheduled_by = self.request.user
         scheduled_report.status = ReportStatus.SUBMITTED
         form.cleaned_data.pop("title")
         form.cleaned_data.pop("notes")
         scheduled_report.parameters = form.cleaned_data
         scheduled_report.save()
-        generate_issued_certificate_report_task.delay(scheduled_report.pk)
+        generate_report_task.delay(scheduled_report.pk)
         return super().form_valid(form)
 
     def get_success_url(self) -> str:
-        return reverse("run-history-view", kwargs={"report_pk": self.kwargs["report_pk"]})
+        return reverse("run-history-view", kwargs={"report_pk": self.report.pk})
+
+    def get_form_class(self):
+        if self.report.report_type == ReportType.ISSUED_CERTIFICATES:
+            return IssuedCertificatesForm
+        return ReportForm
 
 
 class DownloadReportView(BaseReportView, DetailView):

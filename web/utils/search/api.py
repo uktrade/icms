@@ -26,7 +26,7 @@ from web.models import (
     User,
 )
 from web.models.shared import FirearmCommodity, YesNoChoices
-from web.utils.spreadsheet import XlsxConfig, generate_xlsx_file
+from web.utils.spreadsheet import XlsxSheetConfig, generate_xlsx_file
 
 from . import app_data, types, utils
 from .actions import get_export_record_actions, get_import_record_actions
@@ -102,14 +102,14 @@ def get_search_results_spreadsheet(case_type: str, results: types.SearchResults)
 
         rows = _get_export_spreadsheet_rows(results.records)  # type:ignore[arg-type]
 
-    config = XlsxConfig()
+    config = XlsxSheetConfig()
     config.header.data = header_data
     config.header.styles = {"bold": True}
     config.rows = rows  # type: ignore[assignment]
     config.column_width = 25
     config.sheet_name = "Sheet 1"
 
-    return generate_xlsx_file(config)
+    return generate_xlsx_file([config])
 
 
 def get_import_status_choices() -> list[tuple[Any, str]]:

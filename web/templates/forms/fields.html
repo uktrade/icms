@@ -51,7 +51,7 @@
 
 {# Renders a single form field with icms styling #}
 {% macro field(field, tooltip=None, checkbox_label=None, field_description=None, show_errors=True, show_optional_indicator=True, prompt='west', padding='three', input_cols='six', label_cols='three', lookup=False, mark_safe=False, tooltip_msg_id="") -%}
-  <div class="row row_{{ field.id_for_label  }}" >
+    <div class="row row_{{ field.id_for_label  }}" >
     {{ inline_field_with_label(field, tooltip, checkbox_label, field_description, show_errors, show_optional_indicator, prompt, padding, input_cols, label_cols, lookup, mark_safe, tooltip_msg_id) }}
   </div>
 {%- endmacro %}

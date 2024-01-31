@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from django.core.files.base import File
 from openpyxl import load_workbook
 
-from web.utils.spreadsheet import XlsxConfig, generate_xlsx_file
+from web.utils.spreadsheet import XlsxSheetConfig, generate_xlsx_file
 
 from .forms import CFSActiveIngredientForm, CFSProductForm, CFSProductTypeForm
 from .models import CFSProduct, CFSSchedule
@@ -26,13 +26,13 @@ def generate_product_template_xlsx(is_biocidal: bool = False) -> bytes:
     """Generates the schedule products xslx template for download"""
 
     header_data = _get_header(is_biocidal)
-    config = XlsxConfig()
+    config = XlsxSheetConfig()
     config.header.data = header_data
     config.header.styles = {"bold": True}
     config.column_width = 25
     config.sheet_name = "CFS Products"
 
-    xlsx_data = generate_xlsx_file(config)
+    xlsx_data = generate_xlsx_file([config])
     return xlsx_data
 
 
