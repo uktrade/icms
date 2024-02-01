@@ -1,16 +1,20 @@
-{% from "web/domains/signature/macros.html" import document_signature %}
+{% from "web/domains/signature/macros.html" import document_signature_placeholder %}
+{% from "web/domains/signature/macros.html" import dbt_logo %}
+{% from "web/domains/signature/macros.html" import not_signed_image %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
     <meta name="description" content="ICMS import licence">
     <title>{{ page_title }}</title>
-    <link href="{{ static("web/css/pdfs/licence-and-certificate-common-style.css") }}" rel="stylesheet">
-    <link href="{{ static("web/css/pdfs/sanctions-licence-style.css") }}" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{ static('web/css/components/signature.css') }}">
-    {% if preview_licence %}
-      <link href="{{ static("web/css/pdfs/preview.css") }}" rel="stylesheet">
-    {% endif %}
+    <style>
+      {{ get_css_rules_as_string("web/css/pdfs/licence-and-certificate-common-style.css")|safe }}
+      {{ get_css_rules_as_string("web/css/pdfs/sanctions-licence-style.css")|safe }}
+      {{ get_css_rules_as_string("web/css/components/signature.css")|safe }}
+      {% if preview_licence %}
+        {{ get_css_rules_as_string("web/css/pdfs/preview.css")|safe }}
+      {% endif %}
+    </style>
   </head>
   <body>
     <header>
@@ -50,7 +54,7 @@
               </div>
             </div>
         </div>
-        <div class="half flex-column">
+        <div class="flex-column" style="flex:49 0 0;">
           <div class="issue-number content-block b-bottom">
             <p class="details-text"><strong>2. </strong>Issue number</p>
             <p class="{{ 'preview-orange' if preview_licence }}">{{ licence_number }}</p>
@@ -58,8 +62,8 @@
           <div class="port content-block b-bottom">
             <p class="details-text"><strong>3. </strong>Proposed place and date of import</p>
             <div class="flex-row space-between">
-              <p>Any UK Port</p>
-              <p>{{ licence_start_date }}</p>
+              <p style="align-self: flex-start">Any UK Port</p>
+              <p style="align-self: flex-end">{{ licence_start_date }}</p>
             </div>
           </div>
           <div class="authority content-block">
@@ -124,14 +128,15 @@
       </div>
       <div class="signature content-block flex-row row wrap">
         <p class="details-text row"><strong>11. </strong>Competent authority's endorsement</p>
-        <div class="digital-signature half">{{ document_signature(signature_file, signature.content_type, signature.signatory) }}</div>
-        <div class="dbt-logo-block half">
-          <img
-            id="dbt-logo"
-            alt="DBT Logo"
-            class="header-block"
-            src="{{ static('web/img/dbt_red_transparent_bg.png') }}" />
+        <div class="digital-signature half">
+          {% if preview_licence %}
+            {{ not_signed_image() }}
+          {% else %}
+            {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory)  }}
+          {% endif %}
         </div>
+        <div class="dbt-logo-block half">
+          {{ dbt_logo(classes="header-block") }}
       </div>
     </main>
   </body>

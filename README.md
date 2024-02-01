@@ -233,3 +233,16 @@ ICMSFileField.
 See `.env.local-docker`
 
 See also `docker-compose.yml` for additional debug environment variables.
+
+
+## PDF generation and signing
+
+### Generation
+We use [playwright](https://playwright.dev/python/) to generate PDFs from raw HTML, doing so requires installation of chromium which can be done locally and manually 
+by running `playright install && playwright install-deps`. This is however taken care of in the Dockerfile.
+
+### Signing
+We use [endesive](https://github.com/m32/endesive) to sign the generated PDFs, this requires installation of various dependencies which are taken care of in the Dockerfile and the initial-setup.sh script, although you can install them manually by running `brew install swig` and `pip install endesive`.
+
+You will also need to generate a .p12 certificate to sign the PDFs with, this can be done with the openssl CLI or an easier solution is to use the [KeyStone Explorer App](https://keystore-explorer.org/). 
+Alternatively you can use the `P12_SIGNATURE_BASE_64` and `P12_SIGNATURE_PASSWORD` values found in Vault

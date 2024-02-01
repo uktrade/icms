@@ -1,16 +1,9 @@
 @page {
-    margin: 45px 85px 65px 0 !important;
     size: A4;
-}
-
-body {
-    font-family: "nta", Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.3em;
-}
-
-.page-margin {
-    margin-left: 85px;
+    margin-top: 40px;
+    margin-right: 65px;
+    margin-bottom: 20px;
+    margin-left: 65px;
 }
 
 .url {
@@ -53,9 +46,9 @@ img {
 }
 
 .address-line {
-    margin: 0;
     font-size: 14px;
     line-height: 1.1em;
+    margin: 0;
 }
 
 .placeholder {
@@ -72,4 +65,20 @@ img {
 
 .signature {
     margin: 16px 0;
+}
+
+.header-row {
+    margin-bottom: 70px;
+}
+
+p {
+    line-height: 1.1;
+}
+
+.address-line:first-of-type {
+    margin-top: 35px;
+}
+
+.quarter .url{
+    margin-top: 35px;
 }

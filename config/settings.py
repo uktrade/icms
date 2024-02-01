@@ -9,11 +9,13 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
+
 import copy
 import os
 import ssl
 from pathlib import Path
 
+import dj_database_url
 import jinja2
 import structlog
 from django.forms import Field
@@ -29,7 +31,7 @@ DEBUG = env.icms_debug
 WSGI_APPLICATION = "config.wsgi.application"
 APP_ENV = env.app_env
 SECRET_KEY = env.icms_secret_key
-ALLOWED_HOSTS = env.allowed_hosts
+ALLOWED_HOSTS = env.icms_allowed_hosts
 
 INSTALLED_APPS = [
     "web",
@@ -76,7 +78,7 @@ ROOT_URLCONF = "config.urls"
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-DATABASES = env.database_config
+DATABASES = {"default": dj_database_url.parse(str(env.database_url))}
 
 # https://docs.djangoproject.com/en/4.2/ref/settings/#std-setting-FORM_RENDERER
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
@@ -199,7 +201,11 @@ ICMS_GMP_BEIS_EMAIL = env.icms_gmp_beis_email
 # File storage
 # for https://github.com/uktrade/django-chunk-s3-av-upload-handlers
 
-app_bucket_creds = env.s3_bucket_config
+if env.vcap_services:
+    app_bucket_creds = env.vcap_services.aws_s3_bucket[0]["credentials"]
+else:
+    app_bucket_creds = {}
+
 AWS_REGION = app_bucket_creds.get("aws_region")
 AWS_ACCESS_KEY_ID = app_bucket_creds.get("aws_access_key_id")
 AWS_SECRET_ACCESS_KEY = app_bucket_creds.get("aws_secret_access_key")
@@ -225,7 +231,7 @@ STATIC_ROOT = BASE_DIR / "static/"
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    # other finders.
+    # other finders..
     "compressor.finders.CompressorFinder",
 )
 
@@ -255,10 +261,12 @@ CLAM_AV_DOMAIN = env.clam_av_domain
 PATH_STORAGE_FIR = "/documents/fir/"  # start with /
 
 # Celery & Redis shared configuration
-REDIS_URL = env.redis_url
-# Set use_SSL as we are deployed to CF or DBT Platform
-if REDIS_URL not in [env.local_redis_url, ""]:
+if env.vcap_services:
+    REDIS_URL = env.vcap_services.redis[0]["credentials"]["uri"]
     CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_REQUIRED}
+
+else:
+    REDIS_URL = env.local_redis_url
 
 CELERY_BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = "django-db"
@@ -494,3 +502,7 @@ CSP_REPORT_ONLY = env.csp_report_only
 
 # URL to send CSP violation reports to
 CSP_REPORT_URI = env.csp_report_uri
+
+# PDF signature certificate stuff
+P12_SIGNATURE_BASE_64 = env.p12_signature_base_64
+P12_SIGNATURE_PASSWORD = env.p12_signature_password
