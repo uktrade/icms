@@ -1,7 +1,9 @@
-{% extends "pdf/import/fa-licence-base.html" %}
+{% extends "pdf/shared/fa-licence-base.html" %}
 
 {% block css %}
-  <link href="{{ static("web/css/pdfs/fa-paper-licence-quantity-table-style.css") }}" rel="stylesheet">
+  <style>
+      {{ get_css_rules_as_string("web/css/pdfs/fa-paper-licence-quantity-table-style.css")|safe }}
+  </style>
 {% endblock %}
 
 {% block goods_section %}
@@ -19,12 +21,14 @@
 
 {% block post_endorsement_statement %}
   <p class="content">This licence is only valid for section 5 goods when they are imported using a carrier authorised to carry Section 5 goods.</p>
-  {{ markings_text | safe }}
+  <div class="post_endorsement_statement">
+    {{ markings_text | safe }}
+  </div>
 {% endblock %}
 
 
 {% block extra_section %}
   {% if paper_licence_only %}
-      {% include 'pdf/import/fa-paper-licence-quantity-table.html' %}
+      {% include 'pdf/shared/fa-paper-licence-quantity-table.html' %}
   {% endif %}
 {% endblock %}

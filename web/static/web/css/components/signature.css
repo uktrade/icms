@@ -21,3 +21,41 @@ div[name="signature-widget"] > span {
 #signature-widget-image {
     max-width: 175px;
 }
+
+@media print {
+  #signature-and-date-issued {
+    break-inside: avoid;
+  }
+}
+
+.signature_image {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+}
+
+/* Add padding to the last container */
+#signature-and-date-issued {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+#signature > p {
+    color: black;
+}
+
+#signature > img {
+    padding-left: 5px;
+}
+
+#not_signed_image{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    max-width: 175px;
+}
+
+.footer_signature{
+    width: 300px;
+    height: 150px;
+}
