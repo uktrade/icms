@@ -1,0 +1,78 @@
+{% from "web/domains/signature/macros.html" import document_signature_placeholder %}
+{% from "web/domains/signature/macros.html" import dbt_logo %}
+{% from "web/domains/signature/macros.html" import not_signed_image %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      {{ get_css_rules_as_string('web/css/pdfs/licence-and-certificate-common-style.css')|safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/certificate-style.css')|safe }}
+      {{ get_css_rules_as_string('web/css/components/signature.css')|safe }}
+    </style>
+    {% block stylesheet %}{% endblock %}
+    <title>{% block page_title %}{{ page_title }}{% endblock %} - ICMS</title>
+  </head>
+
+  <body>
+    <div class="page-margin">
+      <header>
+        <div class="flex-row">
+          <p><span class="reference {{ 'preview-orange' if preview }}">{{ reference }}</span></p>
+        </div>
+        <div class="flex-row">
+          {{ dbt_logo(classes="header-block") }}
+        </div>
+        <hr>
+      </header>
+
+      <div class="title-page">
+        <div class="title-block dbt_logo_watermark">
+          <h3 class="title centre">
+            <p class="title-line black">CERTIFICATE</p>
+            <p class="title-line black">BY</p>
+            <p class="title-line black">DEPARTMENT FOR BUSINESS AND TRADE</p>
+          </h3>
+          <h4 class="country centre">{{ country }}</h4>
+          {% block certificate_statement %}
+          {% endblock %}
+        </div>
+
+        <footer class="title-footer">
+          <div class="signature-block">
+            {% if preview %}
+              {{ not_signed_image() }}
+              <div class="qr-code">
+                <span class="qr-placeholder {{ 'preview-orange' if preview }}">[[QR_PLACEHOLDER]]</span>
+              </div>
+              <div class="qr-text-block">
+                <span class="qr-text">QR code will be generated when documents are authorised.</span>
+              </div>
+            {% else %}
+              {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory)  }}
+              <div class="qr-code">
+                <img class="qr-img" src="data:image/png;base64, {{ qr_img_base64 }}"/>
+              </div>
+              <div class="qr-text-block">
+                <p class="qr-text">
+                  Scan this QR code to check this certificate's validity.
+                  <strong>Certificate Code: {{ certificate_code }}</strong>
+                </p>
+                <p class="qr-text">
+                  Alternatively you can go to <strong>{{ qr_check_url }}</strong>
+                  and enter the certificate reference and code.
+                </p>
+              </div>
+            {% endif %}
+          </div>
+          <div class="date-block">
+              <span>Date issued:</span>
+              <span>{{ issue_date }}</span>
+            </div>
+        </footer>
+      </div>
+
+      {% block schedules %}
+      {% endblock %}
+    </div>
+  </body>
+</html>

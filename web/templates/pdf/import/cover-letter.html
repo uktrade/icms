@@ -1,30 +1,34 @@
+{% from "web/domains/signature/macros.html" import dbt_logo %}
+{% from "web/domains/signature/macros.html" import not_signed_image %}
+{% from "web/domains/signature/macros.html" import document_signature_placeholder %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="icon" href="{{ static('web/img/favicon.png') }}" type="image/png">
-    <link rel="stylesheet" href="{{ static('web/css/pdfs/cover-letter.css') }}"/>
-    {% if preview %}
-      <link rel="stylesheet" href="{{ static('web/css/pdfs/preview.css') }}"/>
-    {% endif %}
+    <style>
+        {{ get_css_rules_as_string("web/css/pdfs/licence-and-certificate-common-style.css")|safe }}
+        {{ get_css_rules_as_string("web/css/pdfs/cover-letter.css")|safe }}
+        {{ get_css_rules_as_string("web/css/components/signature.css")|safe }}
+				{% if preview %}
+					{{ get_css_rules_as_string("web/css/pdfs/preview.css")|safe }}
+				{% endif %}
+    </style>
     <title>{% block page_title %}{{ page_title }}{% endblock %} - ICMS</title>
   </head>
 
   <body>
-    <div class="letter-header">
-      <img
-        id="dbt-logo"
-        alt="DBT Logo"
-        class="header-block"
-        src="{{ static('web/img/dbt_red_transparent_bg.png') }}" />
-
-        <div id="address-text" class="header-block">
-          {% for line in ilb_contact_address_split %}
-              <p class="address-line">{{ line }}</p>
-          {% endfor %}
-        </div>
-        <div class="header-block" id="dbt-url">
-          <span class="url">gov.uk/dit</span>
-        </div>
+    <div class="flex-row header-row">
+      <div class="flex-column half">
+        {{ dbt_logo() }}
+      </div>
+      <div class="flex-column quarter">
+        {% for line in ilb_contact_address_split %}
+          <p class="address-line">{{ line }}</p>
+        {% endfor %}
+      </div>
+      <div class="flex-column quarter">
+        <span class="url">www.gov.uk/dbt</span>
+      </div>
     </div>
 
     <div class="address-block page-margin">
@@ -52,18 +56,13 @@
     {% endif %}
 
 
-    <div class="signature-block page-margin">
+    <div class="signature-block page-margin no_print_break">
       <p>Yours sincerely</p>
       <div class="signature">
-        {# TODO ICMSLST-697 - Revist when implementing digital signatures #}
         {% if preview %}
-          <p>Signature not verified</p>
+          {{ not_signed_image() }}
         {% else %}
-          <img
-            id="dbt-logo"
-            alt="DBT Logo"
-            class="header-block"
-            src="{{ static('web/img/dit-dummy-signature.png') }}" />
+          {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory)  }}
         {% endif %}
       </div>
       <div>

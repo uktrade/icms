@@ -1,4 +1,4 @@
-{% macro document_signature(image_base64, content_type, signatory) -%}
+{% macro document_signature_placeholder(image_base64, content_type, signatory) -%}
     <div name="signature-widget">
         <span id="signature-widget-signatory">Signed by {{ signatory }}</span>
         <div id="signature-widget-image-container">
@@ -9,3 +9,14 @@
     </div>
 {%- endmacro %}
 
+{% macro not_signed_image(classes) -%}
+    <div name="no-signature-widget">
+        <div id="signature-widget-image-container">
+            <img id="not_signed_image" class="{% if classes %}{{ classes }}{% endif %}" src="data:jpg;base64,{{ get_file_base64('web/img/not_signed.png') }}">
+        </div>
+    </div>
+{%- endmacro %}
+
+{% macro dbt_logo(classes) -%}
+    <img alt="DBT Logo" class="{% if classes %}{{ classes }}{% endif %}" src="data:image/png;base64,{{ get_file_base64('web/img/dbt_logo.png') }}"/>
+{%- endmacro %}

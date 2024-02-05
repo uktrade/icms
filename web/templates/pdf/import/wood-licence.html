@@ -1,22 +1,26 @@
-{% from "web/domains/signature/macros.html" import document_signature %}
+{% from "web/domains/signature/macros.html" import document_signature_placeholder %}
+{% from "web/domains/signature/macros.html" import not_signed_image %}
+{% from "web/domains/signature/macros.html" import dbt_logo %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
     <meta name="description" content="ICMS import licence">
     <title>{{ page_title }}</title>
-    <link href="{{ static("web/css/pdfs/licence-and-certificate-common-style.css") }}" rel="stylesheet">
-    <link href="{{ static("web/css/pdfs/wood-licence-style.css") }}" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{ static('web/css/components/signature.css') }}">
-    {% if preview_licence %}
-      <link href="{{ static("web/css/pdfs/preview.css") }}" rel="stylesheet">
-    {% endif %}
+    <style>
+      {{ get_css_rules_as_string("web/css/pdfs/licence-and-certificate-common-style.css")|safe }}
+      {{ get_css_rules_as_string("web/css/pdfs/wood-licence-style.css")|safe }}
+      {{ get_css_rules_as_string("web/css/components/signature.css")|safe }}
+      {% if preview_licence %}
+        {{ get_css_rules_as_string("web/css/pdfs/preview.css")|safe }}
+      {% endif %}
+    </style>
   </head>
   <body>
     <header>
       <div class="flex-row">
-        <p class="half eu"><strong>EUROPEAN UNION</strong></p>
-        <p class="quota"><strong>QUOTA AUTHORISATION</strong></p>
+        <div class="half eu"><strong>EUROPEAN UNION</strong></div>
+        <div class="quota"><strong>QUOTA AUTHORISATION</strong></div>
       </div>
     </header>
     <div class="holder-number holder-number-first b-top b-left b-right">
@@ -121,13 +125,15 @@
       </div>
       <div class="signature content-block flex-row row wrap">
         <p class="details-text row"><strong>11. </strong>Competent authority's endorsement</p>
-        <div class="digital-signature half">{{ document_signature(signature_file, signature.content_type, signature.signatory) }}</div>
+        <div class="digital-signature half">
+            {% if preview_licence %}
+                {{ not_signed_image() }}
+            {% else %}
+                {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory)  }}
+            {% endif %}
+        </div>
         <div class="dbt-logo-block half">
-          <img
-            id="dbt-logo"
-            alt="DBT Logo"
-            class="header-block"
-            src="{{ static('web/img/dbt_red_transparent_bg.png') }}" />
+            {{ dbt_logo(classes="header-block") }}
         </div>
       </div>
     </main>
