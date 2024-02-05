@@ -20,7 +20,7 @@ p {
 }
 
 header {
-    font-size: 14px;
+    font-size: 10px;
     position: running(header);
 }
 
@@ -86,6 +86,10 @@ main {
 
 .commodity-code {
     min-height: 60px;
+}
+
+.quantity {
+    margin-top: -32px;
 }
 
 .goods, .endorsements {

@@ -27,7 +27,7 @@ ul {
 }
 
 /* Padding for all p elements */
-div > p.content, .post_endorsement_statement p {
+div > p.content {
     padding-left: 5px;
     padding-right: 5px;
 }
@@ -73,8 +73,6 @@ footer li {
 /* Add padding to the last container */
 #signature-and-date-issued {
     padding-bottom: 2em;
-    padding-left: 5px;
-    padding-right: 5px;
 }
 
 #signature > p {

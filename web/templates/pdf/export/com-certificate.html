@@ -1,31 +1,43 @@
-{% from "web/domains/signature/macros.html" import dbt_logo %}
-{% from "web/domains/signature/macros.html" import not_signed_image %}
-{% from "web/domains/signature/macros.html" import document_signature_placeholder %}
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <style>
-      {{ get_css_rules_as_string("web/css/pdfs/licence-and-certificate-common-style.css")|safe }}
-      {{ get_css_rules_as_string("web/css/pdfs/com-certificate-style.css")|safe }}
-      {{ get_css_rules_as_string("web/css/components/signature.css")|safe }}
-			{% if preview %}
-				{{ get_css_rules_as_string("web/css/pdfs/preview.css")|safe }}
-      {% endif %}
-    </style>
+    <link rel="icon" href="{{ static('web/img/favicon.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ static('web/css/pdfs/com-certificate-style.css') }}"/>
+    {% if preview %}
+      <link rel="stylesheet" href="{{ static('web/css/pdfs/preview.css') }}"/>
+    {% endif %}
     <title>{% block page_title %}{{ page_title }}{% endblock %} - ICMS</title>
   </head>
 
   <body>
-    <div class="page-margin">
-      <div class="certificate-header flex-row">
-        <div class="flex-column two-third">
-          {{ dbt_logo(classes="header-block") }}
-        </div>
-        <div class="flex-column thirty_width">
-          <p class="reference {{ 'preview-orange' if preview }}">{{ reference }}</p>
-        </div>
+    <footer>
+      <div class="signature-block page-margin">
+        {# TODO ICMSLST-697 - Revist when implementing digital signatures #}
+        {% if preview %}
+          <span class="signature">Signature not verified</span>
+          <span class="qr-code">[[QR Code Placeholder]]</span>
+        {% else %}
+          <span class="signature">Signature not verified</span>
+          <span class="qr-code">[[QR Code Placeholder]]</span>
+        {% endif %}
+          <span class="qr-text">Scan this QR code to check this
+            certificate's validity. Certificate
+            Code: {{ certificate_code }}
+            Alternatively you can go to
+            {{ qr_check_url }} and
+            enter the certificate reference and
+            code.</span>
       </div>
+    </footer>
+    <div class="certificate-header">
+      <img
+        id="dbt-logo"
+        alt="DBT Logo"
+        class="header-block"
+        src="{{ static('web/img/dbt_red_transparent_bg.png') }}" />
+        <span class="reference {{ 'preview-orange' if preview }}">{{ reference }}</span>
+    </div>
+    <div class="page-margin">
       <p class="issue-date">{{ issue_date }}</p>
       <p class="title-line">TO WHOM IT MAY CONCERN</p>
       <ol>
@@ -60,36 +72,6 @@
           Company to manufacture it.
         </li>
       </ol>
-      <footer class="align_bottom_footer">
-        <div class="signature-block flex-row">
-          <div class="flex-column third">
-            {% if preview %}
-              {{ not_signed_image(classes="footer_signature") }}
-            {% else %}
-              {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory)  }}
-            {% endif %}
-          </div>
-          <div class="flex-column third align_centre">
-            {% if preview %}
-              <span class="qr-code">[[QR Code Placeholder]]</span>
-            {% else %}
-              <div class="qr-code">
-                <img class="qr-img" src="data:image/png;base64, {{ qr_img_base64 }}"/>
-              </div>
-            {% endif %}
-          </div>
-          <div class="flex-column third">
-            <span class="qr-text">Scan this QR code to check this
-                  certificate's validity. <strong>Certificate
-                Code:</strong> <p class="{{ 'preview-orange' if preview }}">{{ certificate_code }}</p>
-                  Alternatively you can go to
-                  {{ qr_check_url }} and
-                  enter the certificate reference and
-                  code.
-            </span>
-          </div>
-        </div>
-      </footer>
     </div>
   </body>
 </html>

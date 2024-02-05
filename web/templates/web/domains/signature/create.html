@@ -1,7 +1,7 @@
 {% extends "layout/sidebar.html" %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
-{% from "web/domains/signature/macros.html" import document_signature_placeholder %}
+{% from "web/domains/signature/macros.html" import document_signature %}
 
 {% block css %}
   <link rel="stylesheet" type="text/css" href="{{ static('web/css/components/signature.css') }}">
@@ -49,7 +49,7 @@
       <label class="prompt west">Signature Example</label>
     </div>
     <div class="nine columns">
-      {{ document_signature_placeholder("", "", "") }}
+      {{ document_signature("", "", "") }}
     </div>
   </div>
   <div class="section-break"></div>

@@ -1,7 +1,3 @@
-* {
-    color: black;
-}
-
 :root {
     font-family: Helvetica;
 }
@@ -21,7 +17,6 @@
 header {
     font-size: 10px;
     position: running(header);
-    margin-bottom: 15px;
 }
 
 footer {

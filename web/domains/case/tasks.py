@@ -20,7 +20,7 @@ from web.models import (
     VariationRequest,
 )
 from web.types import DocumentTypes
-from web.utils.pdf import PdfGenerator, signer
+from web.utils.pdf import PdfGenerator
 from web.utils.s3 import delete_file_from_s3, upload_file_obj_to_s3
 from web.utils.sentry import capture_exception, capture_message
 
@@ -82,9 +82,8 @@ def create_import_application_document(
         pdf_gen = PdfGenerator(doc_type=doc_type, application=application, doc_pack=licence)
         pdf_gen.get_pdf(target=file_obj)
 
-        # Add digital signature to the licence pdf
-        file_obj = signer.sign_pdf(file_obj)
-
+        # Reset read point to start of stream before uploading
+        file_obj.seek(0)
         upload_case_document_file(file_obj, document_reference, filename, user)
 
 
@@ -120,9 +119,8 @@ def create_export_application_document(
         )
         pdf_gen.get_pdf(target=file_obj)
 
-        # Add digital signature to the pdf
-        file_obj = signer.sign_pdf(file_obj)
-
+        # Reset read point to start of stream before uploading
+        file_obj.seek(0)
         upload_case_document_file(file_obj, document_reference, filename, user)
 
 

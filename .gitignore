@@ -151,5 +151,4 @@ output_documents/
 
 # Added by pyenv after setting a local python version on mac
 .python-version
-/.env
-/scripts/reset-local-db-no-docker
+/local.env
