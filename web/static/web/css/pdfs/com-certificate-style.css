@@ -1,12 +1,15 @@
 @page {
     size: A4;
-    margin-top: 80px;
-    margin-right: 80px;
-    margin-bottom: 80px;
-    margin-left: 80px;
+    margin: 80px 85px 220px 86px !important;
+
     @bottom-center {
         content: element(footer);
     }
+}
+
+footer {
+    position: running(footer);
+    margin-bottom: 85px;
 }
 
 .signature-block {
@@ -24,12 +27,7 @@
 }
 
 .qr-text {
-    font-size: 12px;
-}
-
-.qr-img {
-    height: 100px;
-    width: 100px;
+    font-size: 8px;
 }
 
 body {
@@ -49,8 +47,17 @@ p {
     vertical-align: top;
 }
 
+.reference {
+    font-size: 13px;
+    margin-left: 210px;
+}
+
+.reference.preview-orange {
+    margin-left: 124px;
+}
 
 .issue-date {
+    margin-top: -6px;
     margin-bottom: 18px;
 }
 
@@ -59,12 +66,22 @@ p {
 }
 
 
+ol {
+    list-style: none;
+}
+
 ol:first-of-type {
     margin-bottom: 40px;
 }
 
 ol li {
     counter-increment: li-counter;
+}
+
+ol li::before {
+    content: counter(li-counter) ". ";
+    position: absolute;
+    left: 8px;
 }
 
 ol li:not(:last-child) {
@@ -81,13 +98,4 @@ div.com-item p {
 
 .statements {
     margin-top: 40px;
-}
-
-
-ol li {
-    padding-left: 20px;
-}
-
-ol {
-    padding-left: 20px;
 }

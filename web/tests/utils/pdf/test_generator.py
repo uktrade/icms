@@ -1,5 +1,4 @@
 import datetime
-import io
 from unittest.mock import MagicMock, create_autospec, patch
 
 import pytest
@@ -15,6 +14,7 @@ from web.models import (
     SanctionsAndAdhocApplication,
     SILApplication,
     Template,
+    TextilesApplication,
     WoodQuotaApplication,
     WoodQuotaChecklist,
 )
@@ -38,32 +38,32 @@ def mock_get_licence_endorsements(monkeypatch):
         (
             OpenIndividualLicenceApplication,
             DocumentTypes.LICENCE_PREVIEW,
-            "pdf/import/fa-oil-licence.html",
+            "pdf/import/fa-oil-licence-preview.html",
         ),
         (
             OpenIndividualLicenceApplication,
             DocumentTypes.LICENCE_PRE_SIGN,
-            "pdf/import/fa-oil-licence.html",
+            "pdf/import/fa-oil-licence-pre-sign.html",
         ),
         (
             DFLApplication,
             DocumentTypes.LICENCE_PREVIEW,
-            "pdf/import/fa-dfl-licence.html",
+            "pdf/import/fa-dfl-licence-preview.html",
         ),
         (
             DFLApplication,
             DocumentTypes.LICENCE_PRE_SIGN,
-            "pdf/import/fa-dfl-licence.html",
+            "pdf/import/fa-dfl-licence-pre-sign.html",
         ),
         (
             SILApplication,
             DocumentTypes.LICENCE_PREVIEW,
-            "pdf/import/fa-sil-licence.html",
+            "pdf/import/fa-sil-licence-preview.html",
         ),
         (
             SILApplication,
             DocumentTypes.LICENCE_PRE_SIGN,
-            "pdf/import/fa-sil-licence.html",
+            "pdf/import/fa-sil-licence-pre-sign.html",
         ),
         (
             SanctionsAndAdhocApplication,
@@ -78,7 +78,7 @@ def mock_get_licence_endorsements(monkeypatch):
         (
             SILApplication,
             DocumentTypes.LICENCE_PRE_SIGN,
-            "pdf/import/fa-sil-licence.html",
+            "pdf/import/fa-sil-licence-pre-sign.html",
         ),
         (
             WoodQuotaApplication,
@@ -91,6 +91,16 @@ def mock_get_licence_endorsements(monkeypatch):
             "pdf/import/wood-licence.html",
         ),
         # All other licence types use the default for LICENCE_PREVIEW
+        (
+            TextilesApplication,
+            DocumentTypes.LICENCE_PREVIEW,
+            "web/domains/case/import/manage/preview-licence.html",
+        ),
+        (
+            TextilesApplication,
+            DocumentTypes.LICENCE_PRE_SIGN,
+            "web/domains/case/import/manage/preview-licence.html",
+        ),
         (
             OpenIndividualLicenceApplication,
             DocumentTypes.COVER_LETTER_PREVIEW,
@@ -157,10 +167,12 @@ def get_static_doc_template():
 
 
 def test_get_template_raises_error_if_doc_type_unsupported(licence):
-    app = OpenIndividualLicenceApplication(process_type="Invalid process type")
-    generator = PdfGenerator(DocumentTypes.LICENCE_PREVIEW, app, licence)
+    app = OpenIndividualLicenceApplication(
+        process_type=OpenIndividualLicenceApplication.PROCESS_TYPE
+    )
+    generator = PdfGenerator("INVALID_DOC_TYPE", app, licence)
 
-    with pytest.raises(ValueError, match="Unsupported process type"):
+    with pytest.raises(ValueError, match="Unsupported document type"):
         generator.get_template()
 
 
@@ -394,10 +406,7 @@ def test_get_wood_pre_sign_licence_context(
     assert expected_context == actual_context
 
 
-@patch("web.utils.pdf.utils.get_active_signature_file")
-def test_get_preview_cover_letter_context(patched_get_active_signature_file, licence):
-    magic_mock = MagicMock()
-    patched_get_active_signature_file.return_value = (magic_mock, "A")
+def test_get_preview_cover_letter_context(licence):
     app = DFLApplication(process_type=DFLApplication.PROCESS_TYPE)
     app.cover_letter_text = "ABC"
 
@@ -417,8 +426,6 @@ def test_get_preview_cover_letter_context(patched_get_active_signature_file, lic
             "Billingham",
             "TS23 2NF",  # /PS-IGNORE
         ],
-        "signature": magic_mock,
-        "signature_file": "A",
     }
 
     actual_context = generator.get_document_context()
@@ -426,10 +433,7 @@ def test_get_preview_cover_letter_context(patched_get_active_signature_file, lic
     assert expected_context == actual_context
 
 
-@patch("web.utils.pdf.utils.get_active_signature_file")
-def test_get_pre_sign_cover_letter_context(patched_get_active_signature_file, licence):
-    magic_mock = MagicMock()
-    patched_get_active_signature_file.return_value = (magic_mock, "A")
+def test_get_pre_sign_cover_letter_context(licence):
     app = DFLApplication(process_type=DFLApplication.PROCESS_TYPE)
     app.cover_letter_text = "ABC"
 
@@ -449,8 +453,6 @@ def test_get_pre_sign_cover_letter_context(patched_get_active_signature_file, li
             "Billingham",
             "TS23 2NF",  # /PS-IGNORE
         ],
-        "signature": magic_mock,
-        "signature_file": "A",
     }
 
     actual_context = generator.get_document_context()
@@ -458,11 +460,13 @@ def test_get_pre_sign_cover_letter_context(patched_get_active_signature_file, li
     assert expected_context == actual_context
 
 
-def test_get_document_context_raises_error_if_process_type_unsupported(licence):
-    app = OpenIndividualLicenceApplication(process_type="INVALID_PROCESS_TYPE")
+def test_get_document_context_raises_error_if_doc_type_unsupported(licence):
+    app = OpenIndividualLicenceApplication(
+        process_type=OpenIndividualLicenceApplication.PROCESS_TYPE
+    )
 
-    with pytest.raises(ValueError, match="Unsupported process type"):
-        generator = PdfGenerator(DocumentTypes.LICENCE_PREVIEW, app, licence)
+    with pytest.raises(ValueError, match="Unsupported document type"):
+        generator = PdfGenerator("INVALID_DOC_TYPE", app, licence)
         generator.get_document_context()
 
 
@@ -597,20 +601,3 @@ def test_get_cfs_cover_letter_certificate_context_invalid_doc_type():
         ValueError, match=f"Unsupported document type: {DocumentTypes.CERTIFICATE_PREVIEW}"
     ):
         generator.get_document_context()
-
-
-@patch("web.utils.pdf.generator.PdfGenerator.get_document_html", return_value="<html>test</html>")
-@patch("playwright.sync_api.Page.set_content")
-def test_playwright_used(mocked_page_object, mocked_get_document_html, oil_app, licence):
-    target = io.BytesIO()
-    generator = PdfGenerator(DocumentTypes.LICENCE_PREVIEW, oil_app, licence)
-    generator.get_pdf(target=target)
-    assert mocked_page_object.called_with("<html>test</html>")
-    assert target.getvalue().startswith(b"%PDF-")
-
-
-def test_get_pdf_returns_bytes(oil_app, licence):
-    generator = PdfGenerator(DocumentTypes.LICENCE_PREVIEW, oil_app, licence)
-    pdf_file = generator.get_pdf()
-    assert isinstance(pdf_file, bytes)
-    assert pdf_file.startswith(b"%PDF-")

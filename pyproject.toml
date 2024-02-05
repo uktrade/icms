@@ -64,14 +64,13 @@ module = [
     "django_chunk_upload_handlers.*",
     "storages.*",
     "mohawk.*",
+    "weasyprint.*",
     "lxml.*",
     "playwright.*",
     "authbroker_client.*",
     "authlib.*",
     "qrcode.*",
-    "fitz.*",
-    "endesive.*",
-    "PIL.*",
+    "dbt_copilot_python.*"
 ]
 ignore_missing_imports = true
 

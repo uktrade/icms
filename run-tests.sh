@@ -4,8 +4,6 @@ set -e
 
 export DJANGO_SETTINGS_MODULE=config.settings_test
 
-# some tests require static files to be collected, e.g. the pdf file generation tests
-docker-compose run --rm web python manage.py collectstatic --noinput
 # we are using this work flow:
 # https://pytest-django.readthedocs.io/en/latest/database.html#example-work-flow-with-reuse-db-and-create-db
 #

@@ -1,21 +1,17 @@
-{% from "web/domains/signature/macros.html" import document_signature_placeholder %}
-{% from "web/domains/signature/macros.html" import not_signed_image %}
-{% from "web/domains/signature/macros.html" import dbt_logo %}
+{% from "web/domains/signature/macros.html" import document_signature %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="description" content="ICMS import licence">
   <title>{{ page_title }}</title>
-  <style>
-    {{ get_css_rules_as_string("web/css/pdfs/licence-and-certificate-common-style.css")|safe }}
-    {{ get_css_rules_as_string("web/css/pdfs/fa-common-licence-style.css")|safe }}
-    {{ get_css_rules_as_string("web/css/components/signature.css")|safe }}
-    {% if preview_licence %}
-        {{ get_css_rules_as_string("web/css/pdfs/preview.css")|safe }}
-    {% endif %}
-  </style>
+  <link href="{{ static("web/css/pdfs/licence-and-certificate-common-style.css") }}" rel="stylesheet">
+  <link href="{{ static("web/css/pdfs/fa-common-licence-style.css") }}" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{{ static('web/css/components/signature.css') }}">
   {% block css %} {% endblock css %}
+  {% if preview_licence %}
+    <link href="{{ static("web/css/pdfs/import-licence-preview-style.css") }}" rel="stylesheet">
+  {% endif %}
 </head>
 <body>
 <header>
@@ -33,7 +29,7 @@
       {% if applicant_reference %}
         <p class="content">{{ applicant_reference }}</p>
       {% elif preview_licence %}
-        <p class="content {{ 'preview-green' if preview_licence }}" id="applicant-reference">[[APPLICANT_REFERENCE]]</p>
+        <p class="content" id="applicant-reference">[[APPLICANT_REFERENCE]]</p>
       {% endif %}
     </div>
 
@@ -43,7 +39,7 @@
 
     <div class="bordered">
       <p class="content">Licence No.</p>
-      <p class="content {{ 'preview-orange' if preview_licence }}" id="licence-number">{{ licence_number }}</p>
+      <p class="content" id="licence-number">{{ licence_number }}</p>
     </div>
   </div>
 
@@ -62,7 +58,7 @@
       </div>
     </div>
     <div>
-      {{ dbt_logo(classes="header-block ml-1") }}
+      <img alt="DIT Logo" src="{{ static('web/img/dit_logo.png') }}"/>
     </div>
   </div>
 
@@ -108,11 +104,9 @@
       <p class="content">This licence will cease to be valid for importations after {{ licence_end_date }}.</p>
       <div class="flex-row" id="signature-and-date-issued">
         <div id="signature">
-            {% if preview_licence %}
-                {{ not_signed_image() }}
-            {% else %}
-                {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory)  }}
-            {% endif %}
+          {% block signature %}
+            {{ document_signature(signature_file, signature.content_type, signature.signatory) }}
+          {% endblock %}
         </div>
         <div>
           <p class="content text-right">Date Issued: {{ licence_start_date }}</p>
@@ -132,7 +126,7 @@
   <br/>
   <p class="content">This licence</p>
   <ul>
-    <li>is not transferable and may be used only for importations by the holder named above.</li>
+    <li>is not transferrable and may be used only for importations by the holder named above.</li>
     <li>may be revoked at any time without reason given.</li>
     <li>may be altered only by the Department for International Trade.</li>
   </ul>

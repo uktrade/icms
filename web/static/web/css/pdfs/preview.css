@@ -1,4 +1,11 @@
-* {
-    color: rgb(128, 128, 128);
-    -webkit-print-color-adjust: exact;
+body {
+    color: #888;
+}
+
+.additional-remarks {
+    color: #0B8433;
+}
+
+.preview-orange {
+    color: darkorange;
 }

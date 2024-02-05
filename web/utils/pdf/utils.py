@@ -193,7 +193,6 @@ def get_cover_letter_context(
 ) -> "Context":
     content = get_cover_letter_content(application, doc_type)
     preview = doc_type == DocumentTypes.COVER_LETTER_PREVIEW
-    signature, signature_file = get_active_signature_file()
 
     return {
         "content": content,
@@ -203,8 +202,6 @@ def get_cover_letter_context(
         "page_title": "Cover Letter Preview",
         "preview": preview,
         "process": application,
-        "signature": signature,
-        "signature_file": signature_file,
     }
 
 
@@ -297,6 +294,7 @@ def _get_licence_end_date(licence: "ImportApplicationLicence") -> str:
 
 
 def _get_licence_number(application: "ImportApplication", doc_type: DocumentTypes) -> str:
+    # TODO: ICMSLST-697 Revisit when signing the document (it may need its own context / template)
     if doc_type in (DocumentTypes.LICENCE_PRE_SIGN, DocumentTypes.LICENCE_SIGNED):
         doc_pack = document_pack.pack_latest_get(application)
         licence_doc = document_pack.doc_ref_licence_get(doc_pack)

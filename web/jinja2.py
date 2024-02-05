@@ -1,4 +1,3 @@
-import base64
 import re
 from datetime import datetime
 from typing import TYPE_CHECKING
@@ -191,8 +190,6 @@ def environment(**options):
             "get_active_task_list": get_active_task_list,
             "get_user_obj_perms": get_user_obj_perms,
             "page_title": "Import Case Management System",
-            "get_css_rules_as_string": get_css_rules_as_string,
-            "get_file_base64": get_file_base64,
         }
     )
     env.filters["show_all_attrs"] = show_all_attrs
@@ -202,15 +199,3 @@ def environment(**options):
     env.filters["localize"] = formats.localize
 
     return env
-
-
-def get_css_rules_as_string(path: str) -> str:
-    """Get the css rules as a string from the supplied path."""
-    css_file_path = settings.STATIC_ROOT / path
-    return css_file_path.read_text()
-
-
-def get_file_base64(path: str) -> str:
-    """Get the file as a base64 string from the supplied path."""
-    file_path = settings.STATIC_ROOT / path
-    return base64.b64encode(file_path.read_bytes()).decode("utf-8")  # /PS-IGNORE

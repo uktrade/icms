@@ -1,2 +1,0 @@
-class SignatureTextNotFound(Exception):
-    pass

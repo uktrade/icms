@@ -1,9 +1,7 @@
-{% extends "pdf/shared/fa-licence-base.html" %}
+{% extends "pdf/import/fa-licence-base.html" %}
 
 {% block css %}
-    <style>
-      {{ get_css_rules_as_string("web/css/pdfs/fa-oil-licence-style.css")|safe }}
-    </style>
+  <link href="{{ static("web/css/pdfs/fa-oil-licence-style.css") }}" rel="stylesheet">
 {% endblock %}
 
 {% block goods_section %}

@@ -10,8 +10,22 @@
     }
 }
 
+footer {
+    position: running(footer);
+    margin-bottom: 24px;
+    padding-left: 10px;
+}
+
+footer>p {
+    margin: 2px 0 2px 85px;
+    font-size: 13px;
+}
+
+.footer-reference {
+    margin-bottom: 12px;
+}
+
 .schedule-block {
-    page-break-after: always;
     page-break-before: always;
 }
 
@@ -33,15 +47,4 @@
 .product-name {
     margin-top: 2px;
     margin-bottom: 2px;
-}
-
-.schedule-block {
-    height: 100vh;
-    position: relative;
-}
-
-.schedule-block .schedule_only_valid_block{
-    position: absolute;
-    bottom: 0;
-    left: 0;
 }

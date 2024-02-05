@@ -1,9 +1,7 @@
-{% extends "pdf/shared/certificate-base.html" %}
+{% extends "pdf/export/certificate-base.html" %}
 
 {% block stylesheet %}
-<style>
-    {{ get_css_rules_as_string("web/css/pdfs/gmp-certificate-style.css")|safe }}
-</style>
+  <link rel="stylesheet" href="{{ static('web/css/pdfs/gmp-certificate-style.css') }}"/>
 {% endblock %}
 
 {% block certificate_statement %}
