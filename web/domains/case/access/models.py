@@ -1,6 +1,6 @@
+import logging
 from typing import final
 
-import structlog as logging
 from django.conf import settings
 from django.db import models
 from django.utils.functional import cached_property

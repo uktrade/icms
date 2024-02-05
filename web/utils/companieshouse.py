@@ -1,8 +1,8 @@
 import base64
+import logging
 from typing import Any
 
 import requests
-import structlog as logging
 from django.conf import settings
 
 from web.errors import APIError

@@ -35,9 +35,6 @@ LOGGING = {
     "loggers": {
         "faker": {"level": "INFO"},
         "mohawk": {"level": "INFO"},
-        "django_structlog": {"propagate": False},
-        # https://github.com/Kozea/WeasyPrint/issues/412#issuecomment-1724928357
-        "fontTools.subset": {"propagate": False},
     },
 }
 

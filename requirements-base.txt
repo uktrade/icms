@@ -9,12 +9,12 @@ django-compressor==4.4
 django-filter==23.4
 django-guardian==2.4.0
 django-htmlmin==0.11.0
+django-log-formatter-asim==0.0.4
 django-phonenumber-field==7.2.0
 django-ratelimit==4.1.0
 django-redis==5.4.0
 django-select2==8.1.2
 django-staff-sso-client==4.2.1
-django-structlog==6.0.0
 Django==4.2.*
 elastic-apm==6.19.0
 gevent==23.9.1
@@ -39,7 +39,6 @@ python-dateutil==2.8.2
 qrcode==7.4.2
 requests==2.31.0
 sentry-sdk[django]==1.37.1
-structlog==23.2.0
 tqdm==4.65
 WeasyPrint==59.0
 whitenoise==6.6.0

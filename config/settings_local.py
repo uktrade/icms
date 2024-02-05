@@ -72,36 +72,8 @@ HTML_MINIFY = False
 # Django Compressor (also set ICMS_DEBUG to False, to trigger compression of js on system start)
 COMPRESS_OFFLINE = False
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "INFO",
-    },
-    "loggers": {
-        "django": {
-            "level": "INFO",
-        },
-        "web": {"level": "DEBUG"},
-        # We don't want this noise locally
-        "django_structlog": {"propagate": False},
-        # https://github.com/Kozea/WeasyPrint/issues/412#issuecomment-1724928357
-        "fontTools.subset": {"propagate": False},
-        # Uncomment if needed (Used when debugging mohawk stuff)
-        # "mohawk": {
-        #     'handlers': ['console'], "level": "DEBUG"
-        # },
-        # "urllib3": {
-        #     'handlers': ['console'], "level": "DEBUG"
-        # },
-    },
-}
+# Override asim handler locally (easier to read console handler)
+LOGGING["loggers"]["django"]["handlers"] = ["console"]
 
 # django-ratelimit
 RATELIMIT_ENABLE = False

@@ -1,4 +1,5 @@
-import structlog as logging
+import logging
+
 from django.forms import Form
 
 logger = logging.getLogger(__name__)

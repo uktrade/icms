@@ -1,6 +1,6 @@
+import logging
 from typing import TYPE_CHECKING, Any
 
-import structlog as logging
 from django.db import models
 from django.forms import ModelForm, MultipleChoiceField
 from django.forms.widgets import CheckboxInput, CheckboxSelectMultiple, Textarea
@@ -13,7 +13,7 @@ from .models import Mailshot
 if TYPE_CHECKING:
     from django.db import QuerySet
 
-logger = logging.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class MailshotFilter(FilterSet):

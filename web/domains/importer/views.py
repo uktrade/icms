@@ -1,6 +1,6 @@
+import logging
 from typing import Any
 
-import structlog as logging
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied

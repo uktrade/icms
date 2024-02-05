@@ -47,7 +47,6 @@ module = [
     "django.*",
     "django_select2.*",
     "django_filters.*",
-    "structlog.*",
     "guardian.*",
     "debug_toolbar.*",
     "gunicorn.*",
@@ -70,7 +69,8 @@ module = [
     "authbroker_client.*",
     "authlib.*",
     "qrcode.*",
-    "dbt_copilot_python.*"
+    "dbt_copilot_python.*",
+    "django_log_formatter_asim.*",
 ]
 ignore_missing_imports = true
 
