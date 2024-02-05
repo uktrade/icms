@@ -63,7 +63,6 @@ module = [
     "django_chunk_upload_handlers.*",
     "storages.*",
     "mohawk.*",
-    "weasyprint.*",
     "lxml.*",
     "playwright.*",
     "authbroker_client.*",
@@ -71,6 +70,10 @@ module = [
     "qrcode.*",
     "dbt_copilot_python.*",
     "django_log_formatter_asim.*",
+    "dbt_copilot_python.*",
+    "fitz.*",
+    "endesive.*",
+    "PIL.*",
 ]
 ignore_missing_imports = true
 

@@ -140,6 +140,9 @@ class EnvironmentBase(BaseSettings):
     csp_report_only: bool = True
     csp_report_uri: list[str] | None = None
 
+    p12_signature_base_64: str = ""
+    p12_signature_password: str = ""
+
     @computed_field  # type: ignore[misc]
     @property
     def allowed_hosts(self) -> list[str]:

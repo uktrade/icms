@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="icon" href="{{ static('web/img/favicon.png') }}" type="image/png">
-    <link rel="stylesheet" href="{{ static('web/css/pdfs/cfs-letter-style.css') }}"/>
+    <style>
+      {{ get_css_rules_as_string('web/css/pdfs/cfs-letter-style.css')|safe }}
+    </style>
     <title>{% block page_title %}{{ page_title }}{% endblock %} - ICMS</title>
   </head>
 
@@ -12,12 +13,12 @@
         <img
             id="dbt-logo"
             alt="DBT Logo"
-            src="{{ static('web/img/dbt_red_transparent_bg.png') }}" />
+            src="data:image/png;base64, {{ get_file_base64('web/img/dbt_logo.png') }}" />
       </div>
       <div class="flex-row header-block">
         <div class="address-text">
         {% for line in ilb_contact_address_split %}
-            <p class="address-line">{{ line }}</p>
+          <p class="address-line">{{ line }}</p>
         {% endfor %}
         </div>
         <p class="dbt-url">gov.uk/dbt</p>

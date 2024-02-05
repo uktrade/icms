@@ -1,17 +1,9 @@
-{% extends "pdf/export/certificate-base.html" %}
+{% extends "pdf/shared/certificate-base.html" %}
 
 {% block stylesheet %}
-  <link rel="stylesheet" href="{{ static('web/css/pdfs/cfs-certificate-style.css') }}"/>
-{% endblock %}
-
-{% block footer %}
-  <footer>
-    <p>
-      This schedule is only valid with Certificate
-      <span class="footer-reference {{ 'preview-orange' if preview }}">{{ reference }}</span>
-    </p>
-    <p>Date Issued: {{ issue_date }}</p>
-  </footer>
+  <style>
+    {{ get_css_rules_as_string('web/css/pdfs/cfs-certificate-style.css')|safe }}
+  </style>
 {% endblock %}
 
 {% block certificate_statement %}
@@ -38,7 +30,8 @@
         <h4>{{ translation_paragraphs.header | upper }}</h4>
         <p>{{ translation_paragraphs.introduction }}</p>
         <p>{{ translation_paragraphs.paragraph }}</p>
-        <h4 class="product-header">{{ english_paragraphs.product | upper }} / {{ translation_paragraphs.product | upper }}</h4>
+        <h4 class="product-header">{{ english_paragraphs.product | upper }}
+          / {{ translation_paragraphs.product | upper }}</h4>
       {% else %}
         <h4 class="product-header">{{ english_paragraphs.product | upper }}</h4>
       {% endif %}
@@ -47,6 +40,13 @@
           <p class="product-name">{{ product_name }}</p>
         {% endfor %}
       </div>
+      <footer class="schedule_only_valid_block">
+        <p>
+          This schedule is only valid with Certificate
+          <span class="footer-reference {{ 'preview-orange' if preview }}">{{ reference }}</span>
+        </p>
+        <p>Date Issued: {{ issue_date }}</p>
+      </footer>
     </div>
   {% endfor %}
 {% endblock %}

@@ -40,7 +40,20 @@ qrcode==7.4.2
 requests==2.31.0
 sentry-sdk[django]==1.37.1
 tqdm==4.65
-WeasyPrint==59.0
 whitenoise==6.6.0
 xlsxwriter==3.0.1
 django-csp~=3.7
+PyMuPDF~=1.23.16
+playwright~=1.14
+pyOpenSSL~=24.0
+# Pin endesive sub-dependencies as they aren't pinned in endesive repo
+# Periodically review these to see if we can install newer versions
+endesive~=2.17.0
+pykcs11==1.4.4      # endesive sub-dependency (>=1.5 macOS install bug)
+cryptography~=42.0  # endesive sub-dependency
+asn1crypto~=1.5     # endesive sub-dependency
+oscrypto~=1.3       # endesive sub-dependency
+certvalidator~=0.11 # endesive sub-dependency
+pillow~=10.2        # endesive sub-dependency
+paramiko~=3.4       # endesive sub-dependency
+attrs~=23.2         # endesive sub-dependency

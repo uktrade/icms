@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
+
 import copy
 import os
 import ssl
@@ -485,3 +486,7 @@ CSP_REPORT_ONLY = env.csp_report_only
 
 # URL to send CSP violation reports to
 CSP_REPORT_URI = env.csp_report_uri
+
+# PDF signature certificate stuff
+P12_SIGNATURE_BASE_64 = env.p12_signature_base_64
+P12_SIGNATURE_PASSWORD = env.p12_signature_password
