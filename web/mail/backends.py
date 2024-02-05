@@ -1,6 +1,6 @@
+import logging
 from uuid import UUID
 
-import structlog as logging
 from django.core.mail.backends.base import BaseEmailBackend
 
 from .api import send_email

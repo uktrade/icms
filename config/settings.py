@@ -13,10 +13,12 @@ import copy
 import os
 import ssl
 from pathlib import Path
+from typing import Any
 
 import jinja2
-import structlog
+from dbt_copilot_python.utility import is_copilot
 from django.forms import Field
+from django_log_formatter_asim import ASIMFormatter
 
 from config.env import env
 from web.utils.sentry import init_sentry
@@ -63,7 +65,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.contrib.sites.middleware.CurrentSiteMiddleware",
-    "django_structlog.middlewares.RequestMiddleware",
     "htmlmin.middleware.HtmlMinifyMiddleware",
     "htmlmin.middleware.MarkRequestMiddleware",
     "web.middleware.common.ICMSMiddleware",
@@ -359,56 +360,46 @@ WORKBASKET_PER_PAGE = env.workbasket_per_page
 # Set to true to mark inactive application types active when running add_dummy_data.py
 SET_INACTIVE_APP_TYPES_ACTIVE = env.set_inactive_app_types_active
 
-# Structured logging shared configuration
-structlog.configure(
-    processors=[
-        structlog.stdlib.filter_by_level,
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.stdlib.add_logger_name,
-        structlog.stdlib.add_log_level,
-        structlog.stdlib.PositionalArgumentsFormatter(),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-        structlog.processors.UnicodeDecoder(),
-        structlog.processors.ExceptionPrettyPrinter(),
-        structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
-    ],
-    context_class=structlog.threadlocal.wrap_dict(dict),
-    logger_factory=structlog.stdlib.LoggerFactory(),
-    wrapper_class=structlog.stdlib.BoundLogger,
-    cache_logger_on_first_use=True,
-)
 
-# Print json formatted logs to console. We override this for local development
-# and testing.
-LOGGING = {
+LOGGING: dict[str, Any] = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "json_formatter": {
-            "()": structlog.stdlib.ProcessorFormatter,
-            "processor": structlog.processors.JSONRenderer(),
+        "asim_formatter": {
+            "()": ASIMFormatter,
+        },
+        "simple": {
+            "style": "{",
+            "format": "{asctime} {levelname} {message}",
         },
     },
     "handlers": {
+        "asim": {
+            "class": "logging.StreamHandler",
+            "formatter": "asim_formatter",
+        },
         "console": {
             "class": "logging.StreamHandler",
-            "formatter": "json_formatter",
+            "formatter": "simple",
         },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
     },
     "loggers": {
         "django": {
-            "handlers": ["console"],
-            "level": "ERROR",
-        },
-        "web": {
-            "handlers": ["console"],
+            "handlers": ["asim"],
             "level": "INFO",
+            "propagate": False,
         },
-        # https://github.com/Kozea/WeasyPrint/issues/412#issuecomment-1724928357
-        "fontTools.subset": {"propagate": False},
     },
 }
+
+# Django Log Formatter ASIM settings
+if is_copilot():
+    DLFA_TRACE_HEADERS = ("X-B3-TraceId", "X-B3-SpanId")
+
 
 # Initialise Sentry if enabled
 if env.sentry_enabled:

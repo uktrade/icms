@@ -1,4 +1,5 @@
-import structlog as logging
+import logging
+
 from django.forms import ChoiceField, ModelForm, Textarea
 
 from web.models import FurtherInformationRequest

@@ -1,6 +1,6 @@
+import logging
 from typing import Any
 
-import structlog as logging
 from django.conf import settings
 from django.urls import resolve, reverse
 

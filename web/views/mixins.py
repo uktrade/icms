@@ -1,10 +1,7 @@
 from typing import Any
 
-import structlog as logging
 from django.views.generic.base import View
 from django.views.generic.list import ListView
-
-logger = logging.getLogger(__name__)
 
 
 class PageTitleMixin(View):
@@ -41,9 +38,6 @@ class PostActionMixin:
     def post(self, request, *args, **kwargs):
         action = request.POST.get("action")
         if action:
-            logger.debug(
-                "Received post action", action=action, inputs=request.POST, args=args, kwargs=kwargs
-            )
             if hasattr(self, action):
                 return getattr(self, action)(request, *args, **kwargs)
 
