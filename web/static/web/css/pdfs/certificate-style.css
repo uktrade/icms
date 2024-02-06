@@ -144,3 +144,19 @@ p {
 .title-line {
     font-weight: bold;
 }
+
+.dbt_logo_watermark {
+    background-size: contain;
+    background-repeat: no-repeat;
+    filter: grayscale(100%) opacity(0.1);
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    margin-top: 20px;
+    margin-right: 5px;
+}
+
+.above_watermark {
+    z-index: 2;
+}

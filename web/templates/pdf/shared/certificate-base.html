@@ -8,6 +8,9 @@
       {{ get_css_rules_as_string('web/css/pdfs/licence-and-certificate-common-style.css')|safe }}
       {{ get_css_rules_as_string('web/css/pdfs/certificate-style.css')|safe }}
       {{ get_css_rules_as_string('web/css/components/signature.css')|safe }}
+      .dbt_logo_watermark {
+        background-image: url("data:image/png;base64,{{ get_file_base64('web/img/dbt_logo.png') }}");
+      }
     </style>
     {% block stylesheet %}{% endblock %}
     <title>{% block page_title %}{{ page_title }}{% endblock %} - ICMS</title>
@@ -26,17 +29,19 @@
       </header>
 
       <div class="title-page">
-        <div class="title-block dbt_logo_watermark">
-          <h3 class="title centre">
-            <p class="title-line black">CERTIFICATE</p>
-            <p class="title-line black">BY</p>
-            <p class="title-line black">DEPARTMENT FOR BUSINESS AND TRADE</p>
-          </h3>
-          <h4 class="country centre">{{ country }}</h4>
-          {% block certificate_statement %}
-          {% endblock %}
+        <div class="watermark_container">
+          <div class="dbt_logo_watermark"></div>
+          <div class="title-block above_watermark">
+            <h3 class="title centre">
+              <p class="title-line black">CERTIFICATE</p>
+              <p class="title-line black">BY</p>
+              <p class="title-line black">DEPARTMENT FOR BUSINESS AND TRADE</p>
+            </h3>
+            <h4 class="country centre">{{ country }}</h4>
+            {% block certificate_statement %}
+            {% endblock %}
+          </div>
         </div>
-
         <footer class="title-footer">
           <div class="signature-block">
             {% if preview %}
@@ -48,7 +53,7 @@
                 <span class="qr-text">QR code will be generated when documents are authorised.</span>
               </div>
             {% else %}
-              {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory)  }}
+              {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory) }}
               <div class="qr-code">
                 <img class="qr-img" src="data:image/png;base64, {{ qr_img_base64 }}"/>
               </div>
@@ -65,9 +70,9 @@
             {% endif %}
           </div>
           <div class="date-block">
-              <span>Date issued:</span>
-              <span>{{ issue_date }}</span>
-            </div>
+            <span>Date issued:</span>
+            <span>{{ issue_date }}</span>
+          </div>
         </footer>
       </div>
 
