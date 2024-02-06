@@ -101,6 +101,7 @@ class ExportApplication(MigrationBase):
             "process_ptr_id": F("id"),
             "exporter_office_id": F("exporter_office_legacy__id"),
             "agent_office_id": F("agent_office_legacy__id"),
+            "last_submit_datetime": F("submit_datetime"),
         }
 
 

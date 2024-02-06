@@ -3638,6 +3638,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("submit_datetime", models.DateTimeField(blank=True, null=True)),
+                ("last_submit_datetime", models.DateTimeField(blank=True, null=True)),
                 ("reassign_datetime", models.DateTimeField(blank=True, null=True)),
                 (
                     "reference",
@@ -3775,6 +3776,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("submit_datetime", models.DateTimeField(blank=True, null=True)),
+                ("last_submit_datetime", models.DateTimeField(blank=True, null=True)),
                 ("reassign_datetime", models.DateTimeField(blank=True, null=True)),
                 (
                     "reference",

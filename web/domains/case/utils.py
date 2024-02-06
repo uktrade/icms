@@ -101,7 +101,10 @@ def submit_application(app: ImpOrExp, request: AuthenticatedHttpRequest, task: T
     else:
         app.status = app.Statuses.SUBMITTED
 
-    app.submit_datetime = timezone.now()
+    current_date_time = timezone.now()
+    if not app.submit_datetime:
+        app.submit_datetime = current_date_time
+    app.last_submit_datetime = current_date_time
     app.submitted_by = request.user
     app.update_order_datetime()
     app.save()
