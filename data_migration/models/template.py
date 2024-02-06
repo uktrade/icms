@@ -3,7 +3,6 @@ from typing import Any
 from django.db import models
 from django.db.models import F
 
-from data_migration import queries
 from data_migration.models.reference.country import Country, CountryTranslationSet
 from data_migration.utils.format import (
     reformat_placeholders,
@@ -15,8 +14,6 @@ from .base import MigrationBase
 
 
 class Template(MigrationBase):
-    UPDATE_TIMESTAMP_QUERY = queries.template_timestamp_update
-
     start_datetime = models.DateTimeField(null=False)
     end_datetime = models.DateTimeField(null=True)
     is_active = models.BooleanField(default=True)

@@ -4,7 +4,6 @@ from typing import Any
 from django.db import models
 from django.db.models import F, OuterRef, Q, Subquery
 
-from data_migration import queries
 from data_migration.models.base import MigrationBase
 from data_migration.models.file import File, FileTarget
 from data_migration.models.reference import CommodityGroup
@@ -121,8 +120,6 @@ class UserImportCertificate(MigrationBase):
 
 
 class ImportContact(MigrationBase):
-    UPDATE_TIMESTAMP_QUERY = queries.import_contact_timestamp_update
-
     import_application = models.ForeignKey(ImportApplication, on_delete=models.PROTECT)
     legacy_id = models.IntegerField()
     entity = models.CharField(max_length=20)

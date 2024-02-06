@@ -3758,3 +3758,10 @@ Lawrence
 Cloud Foundry
 Django Log Formatter
 Display
+"Example XML <VARIATION
+"Example XML <NOTE
+"Example XML <UPDATE
+Import Application Case Notes
+ia.id CROSS JOIN XMLTABLE
+report_id>{$g1
+SELECT count(x.serial

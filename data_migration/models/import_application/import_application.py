@@ -4,7 +4,6 @@ from typing import Any
 from django.db import models
 from django.db.models import F
 
-from data_migration import queries
 from data_migration.models.base import MigrationBase
 from data_migration.models.file import FileFolder
 from data_migration.models.flow import Process
@@ -22,7 +21,6 @@ from .import_application_type import ImportApplicationType
 
 class ImportApplication(MigrationBase):
     PROCESS_PK = True
-    UPDATE_TIMESTAMP_QUERY = queries.ia_timestamp_update
 
     file_folder = models.OneToOneField(
         FileFolder, on_delete=models.PROTECT, related_name="import_application", null=True
@@ -184,8 +182,6 @@ class ChecklistBase(MigrationBase):
 
 
 class ImportApplicationLicence(MigrationBase):
-    UPDATE_TIMESTAMP_QUERY = queries.ia_licence_timestamp_update
-
     ima = models.ForeignKey(
         Process, on_delete=models.PROTECT, related_name="licences", to_field="ima_id"
     )

@@ -6,7 +6,6 @@ from django.db.models import F
 from django.db.models.expressions import Window
 from django.db.models.functions import RowNumber
 
-from data_migration import queries
 from data_migration.models.base import MigrationBase
 from data_migration.models.file import FileFolder
 from data_migration.models.reference import Constabulary
@@ -133,8 +132,6 @@ class Section5Authority(MigrationBase):
 
 
 class Section5Clause(MigrationBase):
-    UPDATE_TIMESTAMP_QUERY = queries.section5_clause_timestamp_update
-
     clause = models.CharField(max_length=100)
     legacy_code = models.CharField(max_length=100, unique=True)
     description = models.TextField()

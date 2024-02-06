@@ -81,8 +81,10 @@ FROM impmgr.sigl_transmissions
 """
 
 
-case_note_timestamp_update = """
-UPDATE web_casenote SET create_datetime = data_migration_casenote.create_datetime
+# Case note has no updated timestamp in V1 so use created
+
+case_note_created_timestamp_update = """
+UPDATE web_casenote SET create_datetime = data_migration_casenote.create_datetime, updated_at = data_migration_casenote.create_datetime
 FROM data_migration_casenote
 WHERE web_casenote.id = data_migration_casenote.id
 """

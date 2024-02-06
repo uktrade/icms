@@ -178,8 +178,7 @@ class CaseNoteExportParser(BaseXmlParser):
         return cls.MODEL(
             **{
                 "export_application_id": parent_pk,
-                "is_active": status != "DELETED",
-                "status": status if status == "COMPLETED" else "DRAFT",
+                "status": status if status in ["COMPLETED", "DELETED"] else "DRAFT",
                 "note": note,
                 "create_datetime": create_datetime,
                 "created_by_id": created_by_id,

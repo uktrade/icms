@@ -1,8 +1,6 @@
 from typing import Literal
 
-from django.db.models import Model
-
-from data_migration import models as dm
+from data_migration import queries
 from data_migration.management.commands._types import M2M, QueryModel, SourceTarget
 from data_migration.models import task
 from data_migration.utils import xml_parser
@@ -65,23 +63,23 @@ TASK_LIST = [
 ]
 
 
-TIMESTAMP_UPDATES: list[type[Model]] = [
-    dm.ApprovalRequest,
-    dm.CFSSchedule,
-    dm.CaseNote,
-    dm.Commodity,
-    dm.CommodityGroup,
-    dm.ExportApplicationCertificate,
-    dm.File,
-    dm.FurtherInformationRequest,
-    dm.ImportApplication,
-    dm.ImportApplicationLicence,
-    dm.ImportContact,
-    dm.Mailshot,
-    dm.Process,
-    dm.Section5Clause,
-    dm.Template,
-    dm.VariationRequest,
+TIMESTAMP_UPDATES: list[str] = [
+    queries.approval_request_timestamp_update,
+    queries.cfs_schedule_timestamp_update,
+    queries.case_note_created_timestamp_update,
+    queries.commodity_timestamp_update,
+    queries.commodity_group_timestamp_update,
+    queries.export_certificate_timestamp_update,
+    queries.file_timestamp_update,
+    queries.fir_timestamp_update,
+    queries.ia_timestamp_update,
+    queries.ia_licence_timestamp_update,
+    queries.import_contact_timestamp_update,
+    queries.mailshot_timestamp_update,
+    queries.process_timestamp_update,
+    queries.section5_clause_timestamp_update,
+    queries.template_timestamp_update,
+    queries.variation_request_timestamp_update,
 ]
 
 # TODO ICMSLST-1832 EndorsementImportApplication - check if needed in V2

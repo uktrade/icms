@@ -6,8 +6,6 @@ from django.db.models import F
 from django.db.models.expressions import Window
 from django.db.models.functions import RowNumber
 
-from data_migration import queries
-
 from .base import MigrationBase
 from .user import User
 
@@ -39,8 +37,6 @@ class DocFolder(MigrationBase):
 
 
 class File(MigrationBase):
-    UPDATE_TIMESTAMP_QUERY = queries.file_timestamp_update
-
     version_id = models.IntegerField(null=True)
     is_active = models.BooleanField(default=True)
     filename = models.CharField(max_length=300)
