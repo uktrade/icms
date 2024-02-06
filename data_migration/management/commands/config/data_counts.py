@@ -1,8 +1,8 @@
 from django.db.models import Count
 
 import web.models as web
+from data_migration import queries
 from data_migration.management.commands._types import CheckCount, CheckQuery
-from data_migration.models import queries
 from web.flow.models import ProcessTypes
 
 CHECK_DATA_COUNTS: list[CheckCount] = [
@@ -438,5 +438,15 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         name="User Email Addresses",
         query=queries.email_address_count,
         model=web.Email,
+    ),
+    CheckQuery(
+        name="Import Application Case Notes",
+        query=queries.import_application_case_notes_count,
+        model=web.ImportApplication.case_notes.through,
+    ),
+    CheckQuery(
+        name="Export Application Case Notes",
+        query=queries.export_application_case_notes_count,
+        model=web.ExportApplication.case_notes.through,
     ),
 ]

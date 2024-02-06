@@ -7,7 +7,6 @@ from django.db.models import F, QuerySet, Value
 from django.db.models.expressions import Window
 from django.db.models.functions import RowNumber
 
-from data_migration import queries
 from data_migration.models.export_application.export import ExportApplication
 from data_migration.utils.format import str_to_list
 
@@ -221,8 +220,6 @@ class DocumentPackAcknowledgement(MigrationBase):
 
 
 class VariationRequest(MigrationBase):
-    UPDATE_TIMESTAMP_QUERY = queries.variation_request_timestamp_update
-
     import_application = models.ForeignKey(ImportApplication, on_delete=models.SET_NULL, null=True)
     export_application = models.ForeignKey(ExportApplication, on_delete=models.CASCADE, null=True)
     is_active = models.BooleanField(default=True)
@@ -328,11 +325,8 @@ class CaseEmail(MigrationBase):
 
 
 class CaseNote(MigrationBase):
-    UPDATE_TIMESTAMP_QUERY = queries.case_note_timestamp_update
-
     ima = models.ForeignKey(Process, on_delete=models.CASCADE, to_field="ima_id", null=True)
     export_application = models.ForeignKey(ExportApplication, on_delete=models.CASCADE, null=True)
-    is_active = models.BooleanField(null=False, default=True)
     status = models.CharField(max_length=20, null=False, default="DRAFT")
     note = models.TextField(null=True)
     create_datetime = models.DateTimeField(null=False)
@@ -357,12 +351,21 @@ class CaseNote(MigrationBase):
             "export_application_id",
             "file_folder_id",
             "doc_folder_id",
-            # V2 Has removed this field.
-            "status",
         ]
 
     @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        # Updated by is a new field in V2
+        return {"updated_by_id": F("created_by_id")}
+
+    @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        status = data.pop("status")
+        data["is_active"] = status != "DELETED"
+        return data
+
+    @classmethod
+    def m2m_export(cls, data: dict[str, Any]) -> dict[str, Any]:
         return data
 
     @classmethod
@@ -469,7 +472,6 @@ class UpdateRequest(MigrationBase):
 
 class FurtherInformationRequest(MigrationBase):
     PROCESS_PK = True
-    UPDATE_TIMESTAMP_QUERY = queries.fir_timestamp_update
 
     ia_ima = models.ForeignKey(Process, on_delete=models.CASCADE, to_field="ima_id", null=True)
     export_application = models.ForeignKey(ExportApplication, on_delete=models.CASCADE, null=True)
@@ -578,8 +580,6 @@ class FIRFile(MigrationBase):
 
 
 class Mailshot(MigrationBase):
-    UPDATE_TIMESTAMP_QUERY = queries.mailshot_timestamp_update
-
     is_active = models.BooleanField(default=True)
     status = models.CharField(max_length=20)
     title = models.CharField(max_length=200, null=True)

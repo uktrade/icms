@@ -263,3 +263,10 @@ WHERE ad.status_control = 'C'
 AND x.uploads IS NULL
 AND x.details IS NULL
 """
+
+import_application_case_notes_count = """
+SELECT count(*)
+FROM impmgr.case_notes cn
+INNER JOIN impmgr.xview_ima_details xid ON xid.ima_id = cn.ima_id AND xid.status_control = 'C'
+INNER JOIN impmgr.case_note_details cnd ON cnd.cn_id = cn.id AND cnd.status_control = 'C'
+"""

@@ -450,8 +450,16 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     cn1, cn2, cn3 = web.CaseNote.objects.order_by("pk")
     assert cn1.files.count() == 2
     assert cn1.create_datetime == dt.datetime(2020, 1, 1, 11, 12, 13, tzinfo=dt.timezone.utc)
+    assert cn1.created_by_id == 2
+    assert cn1.updated_at == dt.datetime(2020, 1, 1, 11, 12, 13, tzinfo=dt.timezone.utc)
+    assert cn1.updated_by_id == 2
+    assert cn1.is_active is True
+
     assert cn2.files.count() == 1
+    assert cn2.is_active is True
+
     assert cn3.files.count() == 0
+    assert cn3.is_active is True
 
     assert ia1.further_information_requests.count() == 3
     assert ia2.further_information_requests.count() == 0

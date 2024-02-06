@@ -199,6 +199,5 @@ class Command(MigrationBaseCommand):
         """Updates the auto_now_add timestamp fields to match the source data"""
 
         with connection.cursor() as cursor:
-            for model in TIMESTAMP_UPDATES:
-                query = model.UPDATE_TIMESTAMP_QUERY
+            for query in TIMESTAMP_UPDATES:
                 cursor.execute(query)

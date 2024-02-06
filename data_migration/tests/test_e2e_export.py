@@ -190,6 +190,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ea1.case_notes.count() == 0
     assert ea2.case_notes.count() == 2
     assert ea2.case_notes.filter(is_active=True).count() == 1
+    assert ea2.case_notes.filter(is_active=False).count() == 1
     assert ea3.case_notes.count() == 0
 
     assert ea1.case_emails.count() == 0
@@ -202,8 +203,14 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     case_note1 = ea2.case_notes.filter(is_active=True).first()
     assert case_note1.note == "This is a case note"
-    # assert case_note1.create_datetime == datetime(2022, 9, 20, 8, 31, 34)
+    assert case_note1.create_datetime == dt.datetime(2022, 9, 20, 7, 31, 34, tzinfo=dt.timezone.utc)
+    assert case_note1.created_by_id == 2
+    assert case_note1.updated_at == dt.datetime(2022, 9, 20, 7, 31, 34, tzinfo=dt.timezone.utc)
+    assert case_note1.updated_by_id == 2
     assert case_note1.files.count() == 1
+
+    case_note4 = ea2.case_notes.filter(is_active=False).first()
+    assert case_note4.note == "This is a deleted case note"
 
     assert ea1.certificates.count() == 0
     assert ea2.certificates.count() == 1

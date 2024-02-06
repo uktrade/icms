@@ -105,3 +105,22 @@ WHERE xcad.status_control = 'C'
   AND xcad.status <> 'DELETED'
   AND (xcad.status <> 'IN_PROGRESS' OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
 """
+
+export_application_case_notes_count = """
+SELECT count(*)
+FROM impmgr.xview_certificate_app_details xcad
+INNER JOIN impmgr.certificate_app_details cad ON cad.id = xcad.cad_id
+CROSS JOIN XMLTABLE('
+for $g1 in /CA/CASE/NOTES/NOTE_LIST/NOTE | <null/>
+where /CA/CASE/NOTES/NOTE_LIST/NOTE and not($g1/self::null)
+return
+<root>
+  <note_id>{$g1/NOTE_ID/text()}</note_id>
+</root>
+'
+PASSING cad.xml_data
+COLUMNS
+  note_id VARCHAR2(4000) PATH '/root/note_id/text()'
+) x
+WHERE xcad.status_control = 'C'
+"""

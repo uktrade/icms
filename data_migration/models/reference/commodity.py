@@ -1,6 +1,5 @@
 from django.db import models
 
-from data_migration import queries
 from data_migration.models.base import MigrationBase
 
 
@@ -17,8 +16,6 @@ class CommodityType(MigrationBase):
 
 
 class Commodity(MigrationBase):
-    UPDATE_TIMESTAMP_QUERY = queries.commodity_timestamp_update
-
     is_active = models.BooleanField(default=True)
     commodity_code = models.CharField(max_length=10)
     validity_start_date = models.DateField()
@@ -37,8 +34,6 @@ class Commodity(MigrationBase):
 
 
 class CommodityGroup(MigrationBase):
-    UPDATE_TIMESTAMP_QUERY = queries.commodity_group_timestamp_update
-
     is_active = models.BooleanField(default=True)
     group_type = models.CharField(max_length=20)
     group_code = models.CharField(max_length=25, unique=True)

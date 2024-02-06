@@ -3,7 +3,6 @@ from typing import Any
 from django.db import models
 from django.db.models import F
 
-from data_migration import queries
 from data_migration.models.base import MigrationBase
 from data_migration.models.flow import Process
 from data_migration.models.reference import Country, CountryGroup
@@ -109,8 +108,6 @@ class ExportApplicationCountries(MigrationBase):
 
 
 class ExportApplicationCertificate(MigrationBase):
-    UPDATE_TIMESTAMP_QUERY = queries.export_certificate_timestamp_update
-
     ca = models.ForeignKey(
         Process, on_delete=models.PROTECT, related_name="certificates", to_field="ca_id"
     )
