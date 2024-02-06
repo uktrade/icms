@@ -109,3 +109,12 @@ UPDATE web_variationrequest SET requested_datetime = data_migration_variationreq
 FROM data_migration_variationrequest
 WHERE web_variationrequest.id = data_migration_variationrequest.id
 """
+
+
+withdraw_application_timestamp_update = """
+UPDATE web_withdrawapplication
+SET created_datetime = data_migration_withdrawapplication.created_datetime
+  , updated_datetime = data_migration_withdrawapplication.updated_datetime
+FROM data_migration_withdrawapplication
+WHERE web_withdrawapplication.id = data_migration_withdrawapplication.id
+"""

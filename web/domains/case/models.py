@@ -140,10 +140,10 @@ class CaseNote(models.Model):
 
 class WithdrawApplication(models.Model):
     class Statuses(TypedTextChoices):
-        OPEN = ("open", "OPEN")
-        REJECTED = ("rejected", "REJECTED")
-        ACCEPTED = ("accepted", "ACCEPTED")
-        DELETED = ("deleted", "DELETED")
+        OPEN = ("OPEN", "Open")
+        REJECTED = ("REJECTED", "Rejected")
+        ACCEPTED = ("ACCEPTED", "Accepeted")
+        DELETED = ("DELETED", "Deleted")
 
     # alternative to having two foreignkeys here would be to have
     # ManyToMany(WithdrawApplication, ...) on both Import/ExportApplication, but

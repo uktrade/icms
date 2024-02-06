@@ -128,3 +128,27 @@ SELECT COUNT(*) FROM (
   ) x
 )
 """
+
+withdrawal_export_application_count = """
+SELECT COUNT(*) FROM impmgr.xview_cert_app_withdrawals xcaw
+WHERE withdrawal_status <> 'DRAFT' AND status_control = 'C'
+"""
+
+withdrawal_import_application_count = """
+SELECT COUNT(*)
+FROM impmgr.import_application_details ad
+INNER JOIN impmgr.xview_ima_details xid ON ad.id = xid.imad_id
+CROSS JOIN XMLTABLE('for $g1 in /IMA/APP_PROCESSING/WITHDRAWAL/WITHDRAW_LIST/WITHDRAW | <null/>
+where /IMA/APP_PROCESSING/WITHDRAWAL/WITHDRAW_LIST/WITHDRAW and $g1/WITHDRAW_STATUS/text()
+return
+<root>
+  <status>{$g1/WITHDRAW_STATUS/text()}</status>
+</root>
+'
+PASSING ad.xml_data
+COLUMNS
+  status VARCHAR2(4000) PATH '/root/status/text()'
+) x
+WHERE ad.status_control = 'C'
+AND x.status <> 'DRAFT'
+"""

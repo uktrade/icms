@@ -449,4 +449,16 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         query=queries.export_application_case_notes_count,
         model=web.ExportApplication.case_notes.through,
     ),
+    CheckQuery(
+        name="Import Application Withdrawals",
+        query=queries.withdrawal_import_application_count,
+        model=web.WithdrawApplication,
+        filter_params={"import_application__isnull": False},
+    ),
+    CheckQuery(
+        name="Export Application Withdrawals",
+        query=queries.withdrawal_export_application_count,
+        model=web.WithdrawApplication,
+        filter_params={"export_application__isnull": False},
+    ),
 ]

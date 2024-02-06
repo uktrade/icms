@@ -81,6 +81,7 @@ class ImportApplication(MigrationBase):
 
     imi_submit_datetime = models.DateTimeField(null=True)
     variations_xml = models.TextField(null=True)
+    withdrawal_xml = models.TextField(null=True)
 
     # TODO ICMSLST-1694: licence_reference is FK to CaseReference
 
@@ -93,6 +94,7 @@ class ImportApplication(MigrationBase):
             "importer_office_legacy_id",
             "agent_office_legacy_id",
             "variations_xml",
+            "withdrawal_xml",
         ]
 
     @classmethod

@@ -685,6 +685,7 @@ ia_query_result = {
             ("supplementary_report_xml",),
             ("fa_goods_certs_xml",),
             ("cover_letter_text",),
+            ("withdrawal_xml",),
         ],
         [
             (
@@ -714,6 +715,7 @@ ia_query_result = {
                 xd.dfl_sr,  # supplementary_report_xml
                 xd.dfl_goods_cert,  # fa_goods_cert_xml
                 xd.cover_letter_text_dfl_v1,  # cover_letter_text
+                None,  # withdrawal_xml
             ),
             (
                 52,  # ima_id
@@ -742,6 +744,36 @@ ia_query_result = {
                 None,  # supplementary_report_xml
                 None,  # fa_goods_cert_xml
                 None,  # cover_letter_text
+                None,  # withdrawal_xml
+            ),
+            (
+                53,  # ima_id
+                63,  # imad_id
+                53,  # file_folder_id
+                "IMA/2022/5236",  # reference
+                "WITHDRAWN",  # status
+                datetime(2022, 4, 23),  # submit_datetime
+                datetime(2022, 4, 22),  # create_datetime
+                datetime(2022, 4, 22),  # created
+                0,  # vartiation_no
+                None,  # licence_reference
+                2,  # submitted_by_id
+                2,  # created_by_id
+                2,  # last_updated_by_id
+                2,  # importer_id
+                "i-2-1",  # importer_office_legacy_id
+                2,  # contact_id
+                10,  # application_type
+                "DFLApplication",  # process_type
+                None,  # decision
+                None,  # variations_xml
+                True,  # deactivated_firearm
+                True,  # proof_checked
+                1,  # constabulary_id
+                None,  # supplementary_report_xml
+                None,  # fa_goods_cert_xml
+                None,  # cover_letter_text
+                xd.import_withdrawal,  # withdrawal_xml
             ),
         ],
     ),

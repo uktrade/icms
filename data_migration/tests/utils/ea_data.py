@@ -96,6 +96,7 @@ ea_query_result = {
             ("brand_name",),
             ("file_folder_id",),
             ("gmp_certificate_issued",),
+            ("withdrawal_xml",),
         ],
         [
             (
@@ -121,6 +122,7 @@ ea_query_result = {
                 None,  # brand_name
                 231,  # file_folder_id
                 None,  # gmp_certificate_issued
+                None,  # withdrawal_xml
             ),
             (
                 8,
@@ -145,6 +147,7 @@ ea_query_result = {
                 "A brand",
                 232,
                 "BRCGS",  # gmp_certificate_issued
+                None,  # withdrawal_xml
             ),
             (
                 9,
@@ -167,8 +170,34 @@ ea_query_result = {
                 None,  # update_request_xml
                 xd.export_varation_1,  # variations_xml
                 "Another brand",
-                233,
+                233,  # file_folder_id
                 "ISO22716",  # gmp_certificate_issued
+                None,  # withdrawal_xml
+            ),
+            (
+                16,  # ca_id
+                26,  # cad_id
+                "CertificateofGoodManufacturingPractice",  # process_type
+                "CA/2022/9910",  # reference
+                "WITHDRAWN",  # status
+                2,  # created_by_id
+                datetime(2022, 4, 28),  # create_datetime
+                datetime(2022, 4, 28),  # created
+                datetime(2022, 4, 29),  # submit_datetime
+                2,  # last_updated_by_id
+                datetime(2022, 4, 29),  # last_updated_datetime
+                0,  # variation_id
+                21,  # application_type_id
+                2,  # exporter_id
+                "e-2-2",  # exporter_office_legacy_id
+                None,  # case_note_xml
+                None,  # fir_xml
+                None,  # update_request_xml
+                None,  # variations_xml
+                "Test brand",  # brand_name
+                234,  # file_folder_id
+                "ISO22716",  # gmp_certificate_issued
+                xd.export_withdrawal,  # withdrawal_xml
             ),
         ],
     ),

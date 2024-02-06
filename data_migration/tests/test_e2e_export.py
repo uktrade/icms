@@ -58,6 +58,7 @@ export_data_source_target = {
             dm.ExportCertificateCaseDocumentReferenceData,
             web.ExportCertificateCaseDocumentReferenceData,
         ),
+        (dm.WithdrawApplication, web.WithdrawApplication),
     ],
     "file": [
         (dm.File, web.File),
@@ -149,6 +150,7 @@ export_xml = {
         xml_parser.FIRExportParser,
         xml_parser.UpdateExportParser,
         xml_parser.VariationExportParser,
+        xml_parser.WithdrawalExportParser,
     ],
     "import_application": [],
 }
@@ -166,10 +168,11 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     call_command("extract_v1_xml")
     call_command("import_v1_data")
 
-    assert web.CertificateOfGoodManufacturingPracticeApplication.objects.count() == 3
-    ea1, ea2, ea3 = web.ExportApplication.objects.filter(
+    assert web.CertificateOfGoodManufacturingPracticeApplication.objects.count() == 4
+    ea1, ea2, ea3, _ = web.ExportApplication.objects.filter(
         process_ptr__process_type=ProcessTypes.GMP
     ).order_by("pk")
+
     assert ea1.countries.count() == 0
     assert ea2.countries.count() == 3
     assert ea3.countries.count() == 1
@@ -254,7 +257,9 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ref2.reference_data.country_id == 1
     assert ref2.check_code == "87654321"
 
-    gmp1, gmp2, gmp3 = web.CertificateOfGoodManufacturingPracticeApplication.objects.order_by("pk")
+    gmp1, gmp2, gmp3, _ = web.CertificateOfGoodManufacturingPracticeApplication.objects.order_by(
+        "pk"
+    )
 
     assert gmp1.supporting_documents.count() == 1
     assert gmp1.supporting_documents.first().file_type == "BRC_GSOCP"
@@ -474,3 +479,32 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert p1.product_type_numbers.count() == 2
     assert p2.active_ingredients.count() == 1
     assert p2.product_type_numbers.count() == 1
+
+    # Testing Withdrawal
+    ea10 = web.ExportApplication.objects.get(status="WITHDRAWN")
+    assert ea10.withdrawals.count() == 3
+    w1, w2, w3 = ea10.withdrawals.order_by("pk")
+
+    assert w1.reason == "First reason"
+    assert w1.status == "DELETED"
+    assert w1.is_active is False
+    assert w1.response == ""
+    assert w1.response_by_id is None
+    assert w1.created_datetime == dt.datetime(2024, 1, 31, 11, 27, 36, tzinfo=dt.UTC)
+    assert w1.updated_datetime == dt.datetime(2024, 1, 31, 12, 27, 36, tzinfo=dt.UTC)
+
+    assert w2.reason == "Second reason"
+    assert w2.status == "REJECTED"
+    assert w2.is_active is False
+    assert w2.response == "Reject Reason"
+    assert w2.response_by_id == 2
+    assert w2.created_datetime == dt.datetime(2024, 1, 31, 13, 37, 36, tzinfo=dt.UTC)
+    assert w2.updated_datetime == dt.datetime(2024, 1, 31, 13, 40, 00, tzinfo=dt.UTC)
+
+    assert w3.reason == "Third reason"
+    assert w3.status == "ACCEPTED"
+    assert w3.is_active is False
+    assert w3.response == ""
+    assert w3.response_by_id == 2
+    assert w3.created_datetime == dt.datetime(2024, 1, 31, 15, 00, 00, tzinfo=dt.UTC)
+    assert w3.updated_datetime == dt.datetime(2024, 1, 31, 15, 10, 00, tzinfo=dt.UTC)

@@ -150,4 +150,5 @@ ia_xml = [
     xml_parser.OILSupplementaryReportParser,
     xml_parser.OILReportFirearmParser,
     xml_parser.WoodContractParser,
+    xml_parser.WithdrawalImportParser,
 ]
