@@ -219,7 +219,11 @@ class ApplicationBase(Process):
         default=Statuses.IN_PROGRESS,
     )
 
+    # The date and time the application was first submitted
     submit_datetime = models.DateTimeField(blank=True, null=True)
+
+    # The date and time the application was last submitted
+    last_submit_datetime = models.DateTimeField(blank=True, null=True)
 
     # Used exclusively in search to indicate when a case has been reassigned.
     reassign_datetime = models.DateTimeField(blank=True, null=True)

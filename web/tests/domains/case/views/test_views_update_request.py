@@ -136,9 +136,21 @@ def test_close_update_request(
         data={"response_detail": "fixed it"},
     )
 
+    # Check submitted date time and last submitted date time match e.g. The application has not been updated
+    original_date_time_submitted = wood_app_submitted.submit_datetime
+    original_last_date_time_submitted = wood_app_submitted.last_submit_datetime
+    assert original_date_time_submitted is not None
+    assert original_date_time_submitted == original_last_date_time_submitted
+
     submit_app(
         client=importer_client, view_name="import:wood:submit-quota", app_pk=wood_app_submitted.pk
     )
+
+    wood_app_submitted.refresh_from_db()
+
+    # Check submitted date time and last submitted date time do not match e.g. The application has been updated
+    assert original_date_time_submitted == wood_app_submitted.submit_datetime
+    assert original_last_date_time_submitted != wood_app_submitted.last_submit_datetime
 
     resp = ilb_admin_client.post(
         CaseURLS.close_update_request(wood_app_submitted.pk, update_request.pk, "import"),

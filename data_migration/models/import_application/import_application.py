@@ -103,6 +103,7 @@ class ImportApplication(MigrationBase):
             "importer_office_id": F("importer_office_legacy__id"),
             "agent_office_id": F("agent_office_legacy__id"),
             "process_ptr_id": F("id"),
+            "last_submit_datetime": F("submit_datetime"),
         }
 
     @classmethod
