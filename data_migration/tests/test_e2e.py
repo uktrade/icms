@@ -492,6 +492,7 @@ oil_xml_parsers = [
     xml_parser.DFLGoodsCertificateParser,
     xml_parser.DFLSupplementaryReportParser,
     xml_parser.DFLReportFirearmParser,
+    xml_parser.WithdrawalImportParser,
 ]
 
 oil_data_source_target = {
@@ -522,6 +523,7 @@ oil_data_source_target = {
         (dm.OILSupplementaryInfo, web.OILSupplementaryInfo),
         (dm.OILSupplementaryReport, web.OILSupplementaryReport),
         (dm.OILSupplementaryReportFirearm, web.OILSupplementaryReportFirearm),
+        (dm.WithdrawApplication, web.WithdrawApplication),
     ],
     "file": [
         (dm.File, web.File),
@@ -649,6 +651,38 @@ def test_import_oil_data(mock_connect, dummy_dm_settings):
     dfl_revoked = web.DFLApplication.objects.get(status="REVOKED")
     assert dfl_revoked.licences.count() == 1
     assert dfl_revoked.licences.filter(status="RE").count() == 1
+
+    dfl_withdrawn = web.DFLApplication.objects.get(status="WITHDRAWN")
+    assert dfl_withdrawn.withdrawals.count() == 3
+    (
+        w1,
+        w2,
+        w3,
+    ) = dfl_withdrawn.withdrawals.order_by("id")
+
+    assert w1.reason == "First reason"
+    assert w1.status == "DELETED"
+    assert w1.is_active is False
+    assert w1.response == ""
+    assert w1.response_by_id is None
+    assert w1.created_datetime == dt.datetime(2024, 2, 1, tzinfo=dt.UTC)
+    assert w1.updated_datetime == dt.datetime(2024, 2, 1, tzinfo=dt.UTC)
+
+    assert w2.reason == "Second reason"
+    assert w2.status == "REJECTED"
+    assert w2.is_active is False
+    assert w2.response == "Rejection Reason"
+    assert w2.response_by_id == 2
+    assert w2.created_datetime == dt.datetime(2024, 2, 2, tzinfo=dt.UTC)
+    assert w2.updated_datetime == dt.datetime(2024, 2, 3, tzinfo=dt.UTC)
+
+    assert w3.reason == "Third reason"
+    assert w3.status == "ACCEPTED"
+    assert w3.is_active is False
+    assert w3.response == ""
+    assert w3.response_by_id == 2
+    assert w3.created_datetime == dt.datetime(2024, 2, 2, tzinfo=dt.UTC)
+    assert w3.updated_datetime == dt.datetime(2024, 2, 2, tzinfo=dt.UTC)
 
 
 template_data_source_target = {

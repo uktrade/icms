@@ -260,3 +260,106 @@ class UpdateExportParser(BaseXmlParser):
                 "closed_by_id": closed_by_id,
             }
         )
+
+
+class WithdrawalImportParser(BaseXmlParser):
+    MODEL = dm.WithdrawApplication
+    PARENT = dm.ImportApplication
+    FIELD = "withdrawal_xml"
+    ROOT_NODE = "/WITHDRAW_LIST/WITHDRAW"
+
+    @classmethod
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Model | None:
+        """Example XML
+
+        <WITHDRAW>
+          <WITHDRAW_STATUS />
+          <WITHDRAW_REASON />
+          <WITHDRAW_REQUESTER_WUA />
+          <WITHDRAW_REQUESTED_DATE />
+          <WITHDRAW_REQUESTER_FULLNAME />
+          <WITHDRAW_DECISION />
+          <WITHDRAW_REJECT_REASON />
+          <WITHDRAW_RESPONDER_WUA />
+          <WITHDRAW_RESPONDER_FULLNAME />
+        </WITHDRAW>
+        """
+
+        status = get_xml_val(xml, "./WITHDRAW_STATUS")
+        reason = get_xml_val(xml, "./WITHDRAW_REASON")
+        request_by_id = int_or_none(get_xml_val(xml, "./WITHDRAW_REQUESTER_WUA"))
+        response = get_xml_val(xml, "./WITHDRAW_REJECT_REASON")
+        response_by_id = int_or_none(get_xml_val(xml, "./WITHDRAW_RESPONDER_WUA"))
+        created_date = date_or_none(get_xml_val(xml, "./WITHDRAW_REQUESTED_DATE"))
+        updated_date = date_or_none(get_xml_val(xml, "./WITHDRAW_RESPONDED_DATE"))
+
+        return cls.MODEL(
+            **{
+                "import_application_id": parent_pk,
+                "is_active": status == "OPEN",
+                "status": status,
+                "reason": reason,
+                "request_by_id": request_by_id,
+                "response": response or "",
+                "response_by_id": response_by_id,
+                "created_datetime": created_date,
+                "updated_datetime": updated_date or created_date,
+            }
+        )
+
+
+class WithdrawalExportParser(BaseXmlParser):
+    MODEL = dm.WithdrawApplication
+    PARENT = dm.ExportApplication
+    FIELD = "withdrawal_xml"
+    ROOT_NODE = "/WITHDRAWAL_LIST/WITHDRAWAL"
+
+    @classmethod
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Model | None:
+        """Example XML
+
+        <WITHDRAWAL>
+          <WITHDRAWAL_ID />
+          <STATUS />
+          <REQUEST>
+            <REQUESTED_DATETIME />
+            <REQUESTED_BY_WUA_ID />
+            <BODY />
+          </REQUEST>
+          <RESPONSE>
+            <RESPONDED_DATETIME />
+            <RESPONDED_BY_WUA_ID />
+            <DECISION />
+            <REJECT_REASON />
+          </RESPONSE>
+          <DELETE>
+            <DELETED_DATETIME />
+            <DELETED_BY_WUA_ID />
+          </DELETE>
+          <RETRACT_LIST />
+        </WITHDRAWAL>
+        """
+
+        status = get_xml_val(xml, "./STATUS")
+        reason = get_xml_val(xml, "./REQUEST/BODY")
+        request_by_id = int_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_BY_WUA_ID"))
+        response = get_xml_val(xml, "./RESPONSE/REJECT_REASON")
+        response_by_id = int_or_none(get_xml_val(xml, "./RESPONSE/RESPONDED_BY_WUA_ID"))
+        created_datetime = datetime_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_DATETIME"))
+        updated_datetime = datetime_or_none(
+            get_xml_val(xml, "./DELETE/DELETED_DATETIME")
+        ) or datetime_or_none(get_xml_val(xml, "./RESPONSE/RESPONDED_DATETIME"))
+
+        return cls.MODEL(
+            **{
+                "export_application_id": parent_pk,
+                "is_active": status == "OPEN",
+                "status": status,
+                "reason": reason,
+                "request_by_id": request_by_id,
+                "response": response or "",
+                "response_by_id": response_by_id,
+                "created_datetime": created_datetime,
+                "updated_datetime": updated_datetime or created_datetime,
+            }
+        )

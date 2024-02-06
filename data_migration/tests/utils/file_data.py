@@ -70,6 +70,11 @@ file_query_result = {
                 "dflapplication",  # app_model
             ),
             (
+                53,  # folder_id
+                "IMP_APP_DOCUMENTS",  # folder_type
+                "dflapplication",  # app_model
+            ),
+            (
                 60,  # folder_id
                 "IMP_APP_DOCUMENTS",  # folder_type
                 "sanctionsapplication",  # app_model
@@ -529,6 +534,10 @@ file_query_result = {
             ),
             (
                 233,  # folder_id
+                "GMP_SUPPORTING_DOCUMENTS",  # folder_type
+            ),
+            (
+                234,  # folder_id
                 "GMP_SUPPORTING_DOCUMENTS",  # folder_type
             ),
         ],

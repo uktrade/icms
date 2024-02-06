@@ -47,6 +47,7 @@ export_source_target = [
     SourceTarget(dm.CFSProductType, web.CFSProductType),
     SourceTarget(dm.CFSProductActiveIngredient, web.CFSProductActiveIngredient),
     SourceTarget(dm.ExportApplicationCertificate, web.ExportApplicationCertificate),
+    SourceTarget(dm.WithdrawApplication, web.WithdrawApplication),
 ]
 
 export_m2m = [
@@ -70,4 +71,5 @@ export_xml = [
     xml_parser.FIRExportParser,
     xml_parser.UpdateExportParser,
     xml_parser.VariationExportParser,
+    xml_parser.WithdrawalExportParser,
 ]

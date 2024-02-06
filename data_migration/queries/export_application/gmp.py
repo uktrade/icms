@@ -90,6 +90,7 @@ FROM impmgr.xview_certificate_app_details xcad
     , file_folder_id
     , case_note_xml
     , XMLTYPE.getClobVal(x.variations_xml) variations_xml
+    , XMLTYPE.getClobVal(x.withdrawal_xml) withdrawal_xml
   FROM
     impmgr.certificate_app_details cad,
     XMLTABLE('/*'
@@ -116,6 +117,7 @@ FROM impmgr.xview_certificate_app_details xcad
       , fir_xml XMLTYPE PATH '/CA/CASE/RFIS/RFI_LIST'
       , update_request_xml XMLTYPE PATH '/CA/CASE/APPLICATION_UPDATES/UPDATE_LIST'
       , variations_xml XMLTYPE PATH '/CA/CASE/VARIATIONS/VARIATION_LIST'
+      , withdrawal_xml XMLTYPE PATH '/CA/CASE/APPLICATION_WITHDRAWALS/WITHDRAWAL_LIST'
     ) x
   ) cad on cad.cad_id = xcad.cad_id
   LEFT JOIN rp_wua ON rp_wua.resource_person_id = xcad.contact_rp_id

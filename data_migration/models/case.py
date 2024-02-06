@@ -636,3 +636,21 @@ class MailshotDoc(MigrationBase):
             )
             .iterator(chunk_size=2000)
         )
+
+
+class WithdrawApplication(MigrationBase):
+    import_application = models.ForeignKey(ImportApplication, on_delete=models.CASCADE, null=True)
+    export_application = models.ForeignKey(ExportApplication, on_delete=models.CASCADE, null=True)
+    is_active = models.BooleanField()
+    status = models.CharField(max_length=10)
+    reason = models.TextField()
+    request_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name="+")
+    response = models.TextField()
+    response_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
+    created_datetime = models.DateTimeField()
+    updated_datetime = models.DateTimeField()
+
+    @classmethod
+    def get_exclude_parameters(cls) -> dict[str, Any]:
+        # No concept of draft withdrawal requests in V2. Do not migrate any that haven't been submitted
+        return {"status": "DRAFT"}

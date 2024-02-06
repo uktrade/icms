@@ -80,8 +80,8 @@ TIMESTAMP_UPDATES: list[str] = [
     queries.section5_clause_timestamp_update,
     queries.template_timestamp_update,
     queries.variation_request_timestamp_update,
+    queries.withdraw_application_timestamp_update,
 ]
 
 # TODO ICMSLST-1832 EndorsementImportApplication - check if needed in V2
-# TODO ICMSLST-1832 WithdrawApplication
 # TODO ICMSLST-1833 CertificateApplicationTemplate
