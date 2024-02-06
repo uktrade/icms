@@ -1,9 +1,8 @@
 import base64
 import datetime as dt
 import re
-from collections.abc import Collection
 from tempfile import NamedTemporaryFile
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Any, Union
 from urllib.parse import urlencode, urljoin
 
 from dateutil.relativedelta import relativedelta
@@ -15,7 +14,6 @@ from qrcode import QRCode
 from web.domains.case.services import document_pack
 from web.domains.signature.utils import get_active_signature_file
 from web.domains.template.utils import (
-    ScheduleText,
     fetch_cfs_declaration_translations,
     fetch_schedule_text,
     get_cover_letter_content,
@@ -55,7 +53,7 @@ if TYPE_CHECKING:
         sil_models.SILGoodsSection582Other,  # /PS-IGNORE
     ]
 
-    Context = dict[str, str | bool | Collection[str] | ImpOrExp | dict[int, ScheduleText]]
+    Context = dict[str, Any]
 
 
 def get_licence_context(
@@ -208,9 +206,8 @@ def get_cover_letter_context(
     }
 
 
-# TODO: ICMSLST-1428 Revisit this - See nl2br
-#       Add proper test for this function
-def get_licence_endorsements(application: "ImpOrExp") -> list[str]:
+def get_licence_endorsements(application: "ImpOrExp") -> list[list[str]] | list[str]:
+    """Return a list of endorsements for the application."""
     endorsements = [
         content.split("\r\n")
         for content in application.endorsements.values_list("content", flat=True)

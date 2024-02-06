@@ -5,17 +5,28 @@ import pytest
 
 from web.models import SILGoodsSection582Obsolete  # /PS-IGNORE
 from web.models import SILGoodsSection582Other  # /PS-IGNORE
-from web.models import SILGoodsSection1, SILGoodsSection2, SILGoodsSection5, Template
+from web.models import (
+    EndorsementImportApplication,
+    SILGoodsSection1,
+    SILGoodsSection2,
+    SILGoodsSection5,
+    Template,
+)
 from web.types import DocumentTypes
 from web.utils.pdf import utils
 
 
-# TODO: Revisit when doing ICMSLST-1428
 @pytest.fixture(autouse=True)
-def mock_get_licence_endorsements(monkeypatch):
-    mock_get_licence_endorsements = create_autospec(utils.get_licence_endorsements)
-    mock_get_licence_endorsements.return_value = []
-    monkeypatch.setattr(utils, "get_licence_endorsements", mock_get_licence_endorsements)
+def mock_get_licence_endorsements(request, monkeypatch):
+    """Mock get_licence_endorsements to avoid hitting the database."""
+
+    # sometimes we want to test the real function, so we need to skip this fixture by marking the test
+    if "no_mock_get_endorsements" in request.keywords:
+        return
+    else:
+        mock_get_licence_endorsements = create_autospec(utils.get_licence_endorsements)
+        mock_get_licence_endorsements.return_value = []
+        monkeypatch.setattr(utils, "get_licence_endorsements", mock_get_licence_endorsements)
 
 
 def test_fa_oil_get_preview_context(oil_app, licence, oil_expected_preview_context):
@@ -286,3 +297,35 @@ def test_cfs_cover_letter_key_filename():
     key, filename = utils.cfs_cover_letter_key_filename()
     assert filename == "CFS Letter.pdf"
     assert key == "static_documents/CFS Letter.pdf"
+
+
+@pytest.mark.django_db
+@pytest.mark.no_mock_get_endorsements
+def test_collect_endorsements_empty(fa_sil_app_submitted):
+    fa_sil_app_submitted.endorsements.all().delete()
+    endorsements = utils.get_licence_endorsements(fa_sil_app_submitted)
+    assert not endorsements
+
+
+@pytest.mark.django_db
+@pytest.mark.no_mock_get_endorsements
+def test_collect_endorsements_normal(fa_sil_app_submitted):
+    endorsements = utils.get_licence_endorsements(fa_sil_app_submitted)
+    assert endorsements
+    assert len(endorsements) == fa_sil_app_submitted.endorsements.count()
+    assert endorsements[0][0] == fa_sil_app_submitted.endorsements.first().content
+
+
+@pytest.mark.django_db
+@pytest.mark.no_mock_get_endorsements
+def test_collect_endorsements_split_newline_return_characters(fa_sil_app_submitted):
+    EndorsementImportApplication.objects.create(
+        import_application=fa_sil_app_submitted,
+        content="This is a\r\ntest",
+    )
+    endorsements = utils.get_licence_endorsements(fa_sil_app_submitted)
+    assert endorsements
+    assert len(endorsements) == fa_sil_app_submitted.endorsements.count()
+    assert len(endorsements[-1]) == 2
+    assert endorsements[-1][0] == "This is a"
+    assert endorsements[-1][1] == "test"
