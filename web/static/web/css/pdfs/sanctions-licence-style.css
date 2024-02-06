@@ -55,9 +55,11 @@ p {
     left: -28px;
     text-align: center;
 }
+
 .holder-number-first {
     top: 8px;
 }
+
 .holder-number-last {
     top: 376px;
 }
@@ -102,3 +104,19 @@ p {
     width: 330px;
     margin: -40px 0 -35px -40px;
 }
+
+@media print {
+    .break_endorsement {
+        page-break-after: always;
+        border-bottom: 1px solid black;
+        margin-left: -8px;
+        margin-right: -8px;
+    }
+
+    .break_endorsement_after {
+        border-top: 1px solid black;
+        margin-left: -8px;
+        margin-right: -8px;
+    }
+}
+

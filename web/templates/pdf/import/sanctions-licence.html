@@ -114,12 +114,27 @@
           {% endfor %}
         {% endfor %}
       </div>
-      <div class="endorsements content-block row b-bottom">
+
+      <div class="endorsements content-block b-bottom">
         <p class="details-text"><strong>10. </strong>Additional remarks</p>
         {% if endorsements %}
+          {% set character_count = namespace(value=0) %}
           {% for endorsement in endorsements %}
             {% for endorsement_line in endorsement %}
-              <p>{{ endorsement_line }}</p>
+              {# 
+                We want to break the div after 2500 characters (just below the amount that will run over 1 page)
+                So we count the characters and if we are over 2500 we add a page break and reset the count 
+              #}
+              {% set character_count.value = character_count.value + endorsement_line|length %}
+              {% if character_count.value >= 2500 %}
+                <div class="break_endorsement"></div>
+                <div class="break_endorsement_after"></div>
+                <p>{{ endorsement_line }}</p>
+                {% set character_count.value = 0 %}
+              {% else %}
+                <p>{{ endorsement_line }}</p>
+              {% endif %}
+              <br>
             {% endfor %}
           {% endfor %}
         {% elif preview_licence %}
