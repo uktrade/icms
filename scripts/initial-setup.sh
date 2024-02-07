@@ -23,8 +23,8 @@ echo "Installing local requirements in a virtualenv"
 pip install -U pip
 pip install -r requirements-dev.txt
 
-echo "Installing playwright browsers"
-playwright install
+echo "Installing playwright chromium browser & dependencies"
+playwright install --with-deps chromium
 
 echo "Installing pre-commit hooks"
 pre-commit install

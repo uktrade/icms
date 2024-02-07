@@ -11,8 +11,7 @@ COPY requirements-*.txt /code/
 
 RUN pip install --no-cache-dir --upgrade -r requirements-dev.txt
 
-# Install playwright dependencies & browsers
-RUN playwright install
-RUN playwright install-deps
+# Install playwright dependencies & browsers (we only use chromium when building PDFs)
+RUN playwright install --with-deps chromium
 
 CMD scripts/entry.sh
