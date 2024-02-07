@@ -124,6 +124,7 @@ def test_import_application_get_data_export():
     data = {k: None for k in ia.get_values()}
     data["legacy_case_flag"] = "true"
     data["licence_extended_flag"] = "false"
+    data["variation_no"] = 0
     result = ia.data_export(data)
 
     assert result["legacy_case_flag"] is True

@@ -380,8 +380,16 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ea8.countries.count() == 1
     assert ea9.countries.count() == 1
 
+    assert ea7.variation_no == 0
+    assert ea7.reference == "CA/2022/9907"
     assert ea7.variation_requests.count() == 0
+
+    assert ea8.variation_no == 0
+    assert ea8.reference == "CA/2022/9908"
     assert ea8.variation_requests.count() == 0
+
+    assert ea9.variation_no == 2
+    assert ea9.reference == "CA/2022/9909/2"
     assert ea9.variation_requests.count() == 2
 
     vr2, vr3 = ea9.variation_requests.order_by("pk")
