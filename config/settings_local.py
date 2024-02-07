@@ -72,9 +72,6 @@ HTML_MINIFY = False
 # Django Compressor (also set ICMS_DEBUG to False, to trigger compression of js on system start)
 COMPRESS_OFFLINE = False
 
-# Override asim handler locally (easier to read console handler)
-LOGGING["loggers"]["django"]["handlers"] = ["console"]
-
 # django-ratelimit
 RATELIMIT_ENABLE = False
 
