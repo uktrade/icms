@@ -69,6 +69,12 @@ class User(MigrationBase):
         ]
 
     @classmethod
+    def get_exclude_parameters(cls) -> dict[str, Any]:
+        if EXCLUDE_DOMAIN:
+            return {"username__iendswith": EXCLUDE_DOMAIN}
+        return {}
+
+    @classmethod
     def get_values_kwargs(cls) -> dict[str, Any]:
         return {
             "last_login": F("last_login_datetime"),
@@ -94,7 +100,7 @@ class User(MigrationBase):
         return (
             cls.objects.select_related(*related)
             .exclude(pk=0)
-            .exclude(username__iendswith=EXCLUDE_DOMAIN)
+            .exclude(**cls.get_exclude_parameters())
             .filter(username__contains="@")
             .order_by("pk")
             .annotate(icms_v1_user=Value(True))
@@ -110,6 +116,12 @@ class PhoneNumber(MigrationBase):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="phone_numbers")
 
     @classmethod
+    def get_exclude_parameters(cls) -> dict[str, Any]:
+        if EXCLUDE_DOMAIN:
+            return {"user__username__iendswith": EXCLUDE_DOMAIN}
+        return {}
+
+    @classmethod
     def get_source_data(cls) -> Generator:
         """Queries the model to get the queryset of data for the V2 import"""
 
@@ -118,7 +130,7 @@ class PhoneNumber(MigrationBase):
         related = cls.get_related()
         return (
             cls.objects.select_related(*related)
-            .exclude(user__username__iendswith=EXCLUDE_DOMAIN)
+            .exclude(**cls.get_exclude_parameters())
             .filter(user__username__contains="@")
             .order_by("pk")
             .values(*values, **values_kwargs)
@@ -135,6 +147,12 @@ class Email(MigrationBase):
     comment = models.CharField(max_length=4000, null=True)
 
     @classmethod
+    def get_exclude_parameters(cls) -> dict[str, Any]:
+        if EXCLUDE_DOMAIN:
+            return {"user__username__iendswith": EXCLUDE_DOMAIN}
+        return {}
+
+    @classmethod
     def get_source_data(cls) -> Generator:
         """Queries the model to get the queryset of data for the V2 import"""
 
@@ -143,7 +161,7 @@ class Email(MigrationBase):
         related = cls.get_related()
         return (
             cls.objects.select_related(*related)
-            .exclude(user__username__iendswith=EXCLUDE_DOMAIN)
+            .exclude(**cls.get_exclude_parameters())
             .filter(user__username__contains="@")
             .order_by("pk")
             .values(*values, **values_kwargs)
@@ -176,19 +194,10 @@ class Importer(MigrationBase):
         return data
 
     @classmethod
-    def get_source_data(cls) -> Generator:
-        """Queries the model to get the queryset of data for the V2 import"""
-
-        values = cls.get_values()
-        values_kwargs = cls.get_values_kwargs()
-        related = cls.get_related()
-        return (
-            cls.objects.select_related(*related)
-            .exclude(user__username__iendswith=EXCLUDE_DOMAIN)
-            .order_by("pk")
-            .values(*values, **values_kwargs)
-            .iterator(chunk_size=2000)
-        )
+    def get_exclude_parameters(cls) -> dict[str, Any]:
+        if EXCLUDE_DOMAIN:
+            return {"user__username__iendswith": EXCLUDE_DOMAIN}
+        return {}
 
 
 class Exporter(MigrationBase):
@@ -215,7 +224,7 @@ class Office(MigrationBase):
     def get_m2m_data(cls, target: models.Model) -> Generator:
         m2m_id = f"{target._meta.model_name}_id"
 
-        if target._meta.model_name == "importer":
+        if target._meta.model_name == "importer" and EXCLUDE_DOMAIN:
             extra_exclude = {"importer__user__username__endswith": EXCLUDE_DOMAIN}
         else:
             extra_exclude = {}
@@ -233,19 +242,10 @@ class Office(MigrationBase):
         )
 
     @classmethod
-    def get_source_data(cls) -> Generator:
-        """Queries the model to get the queryset of data for the V2 import"""
-
-        values = cls.get_values()
-        values_kwargs = cls.get_values_kwargs()
-        related = cls.get_related()
-        return (
-            cls.objects.select_related(*related)
-            .exclude(importer__user__username__iendswith=EXCLUDE_DOMAIN)
-            .order_by("pk")
-            .values(*values, **values_kwargs)
-            .iterator(chunk_size=2000)
-        )
+    def get_exclude_parameters(cls) -> dict[str, Any]:
+        if EXCLUDE_DOMAIN:
+            return {"importer__user__username__iendswith": EXCLUDE_DOMAIN}
+        return {}
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
