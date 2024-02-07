@@ -47,21 +47,21 @@ def get_signature_coordinates(
     # the text before and after where the signature should go on the page
     # known as the signature_header and signature_footer respectively
     for page in pdf_file.pages():
-        signature_header_text = page.search_for(signature_header_text)
-        signature_footer_text = page.search_for(signature_footer_text)
+        header_found = page.search_for(signature_header_text)
+        footer_found = page.search_for(signature_footer_text)
 
-        if signature_footer_text and signature_header_text:
-            signature_footer_text_rect = signature_footer_text[0]
-            signature_header_text_rect = signature_header_text[0]
+        if header_found and footer_found:
+            signature_header_text_rect = header_found[0]
+            signature_footer_text_rect = footer_found[0]
 
             # Because PyMuPDF uses a different coordinate system to endesive we need to convert between the two
             # PyMuPDF uses the top left corner as 0,0 and endesive uses the bottom left corner as 0,0
             page_size = page.bound()
             signature_image_coordinates = (
-                signature_footer_text_rect.x0,  # type: ignore[attr-defined]
-                page_size.y1 - signature_footer_text_rect.y0,  # type: ignore[attr-defined]
-                signature_footer_text_rect.x1,  # type: ignore[attr-defined]
-                page_size.y1 - signature_header_text_rect.y1,  # type: ignore[attr-defined]
+                signature_footer_text_rect.x0,
+                page_size.y1 - signature_footer_text_rect.y0,
+                signature_footer_text_rect.x1,
+                page_size.y1 - signature_header_text_rect.y1,
             )
             return signature_image_coordinates, page.number
 
