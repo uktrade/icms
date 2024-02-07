@@ -117,6 +117,12 @@ class ImportApplication(MigrationBase):
 
         cover_letter_text = data["cover_letter_text"]
 
+        variation_no = data["variation_no"]
+
+        if variation_no > 0:
+            reference = data["reference"]
+            data["reference"] = f"{reference}/{variation_no}"
+
         if cover_letter_text:
             cover_letter_text = strip_foxid_attribute(cover_letter_text)
             cover_letter_text = reformat_placeholders(cover_letter_text)

@@ -893,7 +893,7 @@ ia_query_result = {
                 datetime(2022, 4, 23),  # submit_datetime
                 datetime(2022, 4, 22, 8, 44, 44),  # create_datetime
                 datetime(2022, 4, 22, 8, 44, 44),  # created
-                0,  # vartiation_no
+                2,  # vartiation_no
                 8901,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -923,7 +923,7 @@ ia_query_result = {
                 datetime(2022, 4, 23),  # submit_datetime
                 datetime(2022, 4, 22, 7, 52, 4),  # create_datetime
                 datetime(2022, 4, 22, 7, 52, 4),  # created
-                0,  # vartiation_no
+                1,  # vartiation_no
                 8901,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id

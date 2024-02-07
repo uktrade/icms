@@ -373,6 +373,7 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
 
     ia1 = sil1.importapplication_ptr
     ia2 = sil2.importapplication_ptr
+    ia3 = sil3.importapplication_ptr
 
     assert ia1.last_updated_by_id == 2
     assert ia1.created == dt.datetime(2022, 4, 22, 8, 23, 22, tzinfo=dt.timezone.utc)
@@ -437,6 +438,13 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
 
     closed_email = ia1.case_emails.get(status="CLOSED")
     assert len(closed_email.cc_address_list) == 1
+
+    assert ia1.variation_no == 0
+    assert ia1.reference == "IMA/2022/1234"
+    assert ia2.variation_no == 2
+    assert ia2.reference == "IMA/2022/2345/2"
+    assert ia3.variation_no == 1
+    assert ia3.reference == "IMA/2022/2346/1"
 
     assert ia1.variation_requests.count() == 0
     assert ia2.variation_requests.count() == 2

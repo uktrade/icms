@@ -78,6 +78,15 @@ class ExportApplication(MigrationBase):
     withdrawal_xml = models.TextField(null=True)
 
     @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        variation_no = data["variation_no"]
+
+        if variation_no > 0:
+            reference = data["reference"]
+            data["reference"] = f"{reference}/{variation_no}"
+        return data
+
+    @classmethod
     def get_excludes(cls) -> list[str]:
         return super().get_excludes() + [
             "ca_id",
