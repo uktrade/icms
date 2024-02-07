@@ -361,7 +361,6 @@ WORKBASKET_PER_PAGE = env.workbasket_per_page
 # Set to true to mark inactive application types active when running add_dummy_data.py
 SET_INACTIVE_APP_TYPES_ACTIVE = env.set_inactive_app_types_active
 
-
 LOGGING: dict[str, Any] = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -390,7 +389,7 @@ LOGGING: dict[str, Any] = {
     },
     "loggers": {
         "django": {
-            "handlers": ["asim"],
+            "handlers": ["console"],
             "level": "INFO",
             "propagate": False,
         },
@@ -401,6 +400,10 @@ LOGGING: dict[str, Any] = {
 if is_copilot():
     DLFA_TRACE_HEADERS = ("X-B3-TraceId", "X-B3-SpanId")
 
+    # Set the correct handlers when running in DBT Platform
+    # console handler set as default as it's easier to read
+    LOGGING["root"]["handlers"] = ["asim"]
+    LOGGING["loggers"]["django"]["handlers"] = ["asim"]
 
 # Initialise Sentry if enabled
 if env.sentry_enabled:
