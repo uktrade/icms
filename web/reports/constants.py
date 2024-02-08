@@ -10,5 +10,5 @@ class ReportStatus(TypedTextChoices):
 
 
 class ReportType(TypedTextChoices):
-    ISSUED_CERTIFICATES = ("ISSUED CERTIFICATES", "Issued Certificates")
+    ISSUED_CERTIFICATES = ("ISSUED_CERTIFICATES", "Issued Certificates")
     ACCESS_REQUESTS = ("ACCESS_REQUESTS", "Access Requests")

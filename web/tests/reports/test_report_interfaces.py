@@ -85,7 +85,7 @@ def approved_importer_access_request(importer_access_request):
 
 
 @pytest.fixture
-@freeze_time("2021-02-01 12:00:00")
+@freeze_time("2021-02-11 12:00:00")
 def refused_importer_access_request(report_user):
     iar = ImporterAccessRequest.objects.create(
         process_type=ImporterAccessRequest.PROCESS_TYPE,
@@ -112,7 +112,7 @@ def approved_exporter_access_request(exporter_access_request):
 
 
 @pytest.fixture
-@freeze_time("2021-02-01 12:00:00")
+@freeze_time("2021-02-11 12:00:00")
 def refused_exporter_access_request(report_user):
     ear = ExporterAccessRequest.objects.create(
         process_type=ExporterAccessRequest.PROCESS_TYPE,
@@ -317,10 +317,22 @@ class TestImporterAccessRequestInterface:
             "results": [],
         }
 
-    def test_get_approved_request_data(self, approved_importer_access_request):
+    def test_get_data_results(
+        self, approved_importer_access_request, refused_importer_access_request
+    ):
         interface = ImporterAccessRequestInterface(self.report_schedule)
         data = interface.get_data()
         assert data["results"] == [
+            {
+                "Agent Address": "1 Agent House",
+                "Agent Name": "Test Agent",
+                "Importer Address": "1 Main Street",
+                "Importer Name": "Import Ltd",
+                "Request Date": "11/02/2021",
+                "Request Type": "Agent Importer Access Request",
+                "Response": "Refused",
+                "Response Reason": "Test refusing request",
+            },
             {
                 "Agent Address": "",
                 "Agent Name": "",
@@ -330,24 +342,7 @@ class TestImporterAccessRequestInterface:
                 "Request Type": "Importer Access Request",
                 "Response": "Approved",
                 "Response Reason": "",
-            }
-        ]
-
-    @freeze_time("2021-02-01 12:00:00")
-    def test_get_refused_agent_request_data(self, refused_importer_access_request):
-        interface = ImporterAccessRequestInterface(self.report_schedule)
-        data = interface.get_data()
-        assert data["results"] == [
-            {
-                "Agent Address": "1 Agent House",
-                "Agent Name": "Test Agent",
-                "Importer Address": "1 Main Street",
-                "Importer Name": "Import Ltd",
-                "Request Date": "01/02/2021",
-                "Request Type": "Agent Importer Access Request",
-                "Response": "Refused",
-                "Response Reason": "Test refusing request",
-            }
+            },
         ]
 
 
@@ -365,11 +360,22 @@ class TestExporterAccessRequestInterface:
             "results": [],
         }
 
-    @freeze_time("2021-02-01 12:00:00")
-    def test_get_approved_request_data(self, approved_exporter_access_request):
+    def test_get_data_results(
+        self, approved_exporter_access_request, refused_exporter_access_request
+    ):
         interface = ExporterAccessRequestInterface(self.report_schedule)
         data = interface.get_data()
         assert data["results"] == [
+            {
+                "Agent Address": "2 Agent House",
+                "Agent Name": "Test Agent",
+                "Exporter Address": "2 Main Street",
+                "Exporter Name": "Export Ltd",
+                "Request Date": "11/02/2021",
+                "Request Type": "Agent Exporter Access Request",
+                "Response": "Refused",
+                "Response Reason": "Test refusing request",
+            },
             {
                 "Agent Address": "",
                 "Agent Name": "",
@@ -379,23 +385,6 @@ class TestExporterAccessRequestInterface:
                 "Request Type": "Exporter Access Request",
                 "Response": "Approved",
                 "Response Reason": "",
-            },
-        ]
-
-    @freeze_time("2021-02-01 12:00:00")
-    def test_get_refused_agent_request_data(self, refused_exporter_access_request):
-        interface = ExporterAccessRequestInterface(self.report_schedule)
-        data = interface.get_data()
-        assert data["results"] == [
-            {
-                "Agent Address": "2 Agent House",
-                "Agent Name": "Test Agent",
-                "Exporter Address": "2 Main Street",
-                "Exporter Name": "Export Ltd",
-                "Request Date": "01/02/2021",
-                "Request Type": "Agent Exporter Access Request",
-                "Response": "Refused",
-                "Response Reason": "Test refusing request",
             },
         ]
 
