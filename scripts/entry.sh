@@ -12,7 +12,14 @@ python manage.py migrate
 if [ "$ICMS_DEBUG" = 'False' ]; then
   python manage.py collectstatic --noinput --traceback
   python manage.py compress --engine jinja2
-  gunicorn config.wsgi --config config/gunicorn.py
+
+  if [ -n "${COPILOT_ENVIRONMENT_NAME}" ]; then
+      echo "Running in DBT Platform"
+      opentelemetry-instrument gunicorn config.wsgi --config config/gunicorn.py
+  else
+      echo "Running in Cloud Foundry"
+      gunicorn config.wsgi --config config/gunicorn.py
+  fi
 else
   python manage.py runserver 0:"$ICMS_WEB_PORT"
 fi
