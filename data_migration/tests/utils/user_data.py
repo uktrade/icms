@@ -489,11 +489,11 @@ user_query_result = {
                 "ImporterAccessRequest",  # process_type
                 "IAR/0001",  # reference
                 "SUBMITTED",  # status
-                dt.datetime(2022, 11, 14, 8, 24),  # created
+                dt.datetime(2022, 10, 14, 8, 24),  # created
                 "MAIN_IMPORTER_ACCESS",  # request_type
-                dt.datetime(2022, 11, 14),  # submit_datetime
+                dt.datetime(2022, 10, 14, 8, 24),  # submit_datetime
                 2,  # submitted_by_id
-                dt.datetime(2022, 11, 14),  # last_updated_datetime
+                dt.datetime(2022, 10, 14, 8, 24),  # last_updated_datetime
                 2,  # last_updated_by_id
                 None,  # closed_datetime
                 None,  # closed_by_id
@@ -516,11 +516,11 @@ user_query_result = {
                 "CLOSED",  # status
                 dt.datetime(2022, 11, 14, 8, 47),  # created
                 "AGENT_IMPORTER_ACCESS",  # request_type
-                dt.datetime(2022, 11, 14),  # submit_datetime
+                dt.datetime(2022, 11, 14, 8, 47),  # submit_datetime
                 2,  # submitted_by_id
-                dt.datetime(2022, 11, 14),  # last_updated_datetime
+                dt.datetime(2022, 11, 14, 8, 48),  # last_updated_datetime
                 2,  # last_updated_by_id
-                dt.datetime(2022, 11, 14),  # closed_datetime
+                dt.datetime(2022, 11, 14, 8, 48),  # closed_datetime
                 2,  # closed_by_id
                 "Test Org",  # organisation_name
                 "Test Address",  # organisation_address

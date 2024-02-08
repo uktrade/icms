@@ -208,6 +208,15 @@ ORDER BY iar.id
 """
 
 
+access_request_timestamp_update = """
+UPDATE web_accessrequest
+SET submit_datetime = data_migration_accessrequest.submit_datetime
+  , last_update_datetime = data_migration_accessrequest.last_update_datetime
+FROM data_migration_accessrequest
+WHERE web_accessrequest.process_ptr_id = data_migration_accessrequest.id
+"""
+
+
 approval_request_timestamp_update = """
 UPDATE web_approvalrequest SET request_date = data_migration_approvalrequest.request_date
 FROM data_migration_approvalrequest
