@@ -16,7 +16,7 @@ country = """
         , commission_code VARCHAR(6) PATH '/COUNTRY/ATTRIBUTE_LIST/ATTRIBUTE_SET/ATTRIBUTE[NAME="COMMISSION_CODE"]/VALUE/text()'
         , hmrc_code VARCHAR2(4) PATH '/COUNTRY/ATTRIBUTE_LIST/ATTRIBUTE_SET/ATTRIBUTE[NAME="HMRC_CODE"]/VALUE/text()'
     ) x
-  WHERE end_datetime IS NULL OR country_id = 155
+  WHERE end_datetime IS NULL
 """
 
 
@@ -33,11 +33,11 @@ WHERE group_status = 'ACTIVE'
 
 country_group_country = """
 SELECT
-  xcgc.country_group_detail_id countrygroup_id
-  , xcgc.country_id
-FROM bpmmgr.xview_country_group_countries xcgc
-INNER JOIN bpmmgr.xview_country_groups xcg ON xcg.country_group_detail_id = xcgc.country_group_detail_id
-WHERE xcg.group_status = 'ACTIVE'
+  cg.id countrygroup_id
+  , cgc.country_id
+FROM bpmmgr.country_group_countries cgc
+INNER JOIN bpmmgr.country_group_details cg ON cg.country_group_id = cgc.country_group_id
+WHERE cg.end_datetime IS NULL
 """
 
 

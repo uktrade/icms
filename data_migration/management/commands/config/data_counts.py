@@ -53,6 +53,11 @@ CHECK_DATA_COUNTS: list[CheckCount] = [
 
 CHECK_DATA_QUERIES: list[CheckQuery] = [
     CheckQuery(
+        name="Country Group Countries",
+        query=queries.country_group_countries_count,
+        model=web.CountryGroup.countries.through,
+    ),
+    CheckQuery(
         name="DFL Goods Certificates",
         query=queries.fa_goods_certificate_count,
         model=web.DFLGoodsCertificate,

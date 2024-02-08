@@ -3795,3 +3795,10 @@ Access Requests Totals
 \r
 Exporter Access
 Sheet 2
+Country Group Countries
+country_id
+x.hmrc_code
+bpmmgr.xview_country_groups xcg
+SELECT cg.id countrygroup_id , cgc.country_id FROM bpmmgr.country_group_countries
+ON cg.country_group_id
+bpmmgr.country_group_countries
