@@ -64,6 +64,7 @@ TASK_LIST = [
 
 
 TIMESTAMP_UPDATES: list[str] = [
+    queries.access_request_timestamp_update,
     queries.approval_request_timestamp_update,
     queries.cfs_schedule_timestamp_update,
     queries.case_note_created_timestamp_update,

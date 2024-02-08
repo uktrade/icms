@@ -193,7 +193,10 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert ar1.importeraccessrequest.link_id == 2
     assert ar1.further_information_requests.count() == 0
     assert ar1.approval_requests.count() == 0
-    assert ar1.created == dt.datetime(2022, 11, 14, 8, 24, tzinfo=dt.timezone.utc)
+    assert ar1.created == dt.datetime(2022, 10, 14, 7, 24, tzinfo=dt.timezone.utc)
+    assert ar1.submit_datetime == dt.datetime(2022, 10, 14, 7, 24, tzinfo=dt.timezone.utc)
+    assert ar1.last_update_datetime == dt.datetime(2022, 10, 14, 7, 24, tzinfo=dt.timezone.utc)
+    assert ar1.closed_datetime is None
 
     assert ar2.process_ptr.process_type == "ImporterAccessRequest"
     assert ar2.process_ptr.tasks.count() == 0
@@ -209,6 +212,9 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert ar2.further_information_requests.count() == 0
     assert ar2.approval_requests.count() == 1
     assert ar2.created == dt.datetime(2022, 11, 14, 8, 47, tzinfo=dt.timezone.utc)
+    assert ar2.submit_datetime == dt.datetime(2022, 11, 14, 8, 47, tzinfo=dt.timezone.utc)
+    assert ar2.last_update_datetime == dt.datetime(2022, 11, 14, 8, 48, tzinfo=dt.timezone.utc)
+    assert ar2.closed_datetime == dt.datetime(2022, 11, 14, 8, 48, tzinfo=dt.timezone.utc)
 
     ar2_ar = ar2.approval_requests.first()
     assert ar2_ar.process_ptr.process_type == "ImporterApprovalRequest"
