@@ -145,12 +145,12 @@ class IssuedCertificateReportInterface(ReportInterface):
             contact=export_application.contact.full_name,
             agent=export_application.agent.name if export_application.agent else "",
             country=cdr.reference_data.country.name,
-            is_manufacturer=""
-            if not is_cfs
-            else self.get_is_manufacturer(export_application).title(),
-            responsible_person_statement=""
-            if not is_cfs
-            else self.get_is_responsible_person(export_application).title(),
+            is_manufacturer=(
+                "" if not is_cfs else self.get_is_manufacturer(export_application).title()
+            ),
+            responsible_person_statement=(
+                "" if not is_cfs else self.get_is_responsible_person(export_application).title()
+            ),
             countries_of_manufacture="" if not is_cfs else ",".join(cdr.manufacturer_countries),
             hse_email_count=export_application.case_emails.filter(
                 template_code=EmailTypes.HSE_CASE_EMAIL
@@ -226,7 +226,7 @@ class ImporterAccessRequestInterface(ReportInterface):
         return self.model.objects.filter(
             response__isnull=False,
             submit_datetime__date__range=(self.filters.date_from, self.filters.date_to),
-        )
+        ).order_by("-submit_datetime")
 
     def serialize_row(self, ar: ImpAccessOrExpAccess) -> ImporterAccessRequestReportSerializer:
         is_agent = ar.is_agent_request
