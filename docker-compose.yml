@@ -85,6 +85,12 @@ services:
         networks:
             - backend
             - public
+        healthcheck:
+            test: [ "CMD-SHELL", "python -m dbt_copilot_python.celery_health_check.healthcheck" ]
+            interval: 10s
+            timeout: 5s
+            retries: 2
+            start_period: 5s
 
     celery-beat:
         build:
