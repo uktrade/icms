@@ -24,7 +24,8 @@ services:
     web:
         build:
             context: .
-        command: scripts/entry.sh
+            dockerfile: local_deployment/Dockerfile
+        command: local_deployment/entry.sh
         environment:
             - DJANGO_SETTINGS_MODULE
             - PYTHONUNBUFFERED=1
@@ -71,6 +72,7 @@ services:
     celery-worker:
         build:
             context: .
+            dockerfile: local_deployment/Dockerfile
         command: celery --app=config.celery:app worker --loglevel=INFO -Q celery,mail
         environment:
             - DJANGO_SETTINGS_MODULE
@@ -87,6 +89,7 @@ services:
     celery-beat:
         build:
             context: .
+            dockerfile: local_deployment/Dockerfile
         environment:
             - DJANGO_SETTINGS_MODULE
         env_file:
