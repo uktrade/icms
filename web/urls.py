@@ -65,6 +65,7 @@ urlpatterns = [
     #
     # Health check url
     path("health-check/", health_check, name="health-check"),
+    path("pingdom/ping.xml", health_check, name="dbt-platform-health-check"),
     #
     # Django select2 urls
     path("select2/", include("django_select2.urls")),
