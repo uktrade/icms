@@ -2,6 +2,7 @@ import os
 
 from celery import Celery
 from celery.schedules import crontab
+from dbt_copilot_python.celery_health_check import healthcheck
 from django.conf import settings
 
 from web.mail.constants import SEND_AUTHORITY_EXPIRING_SECTION_5_TASK_NAME
@@ -11,6 +12,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
 app = Celery("icms")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 app.autodiscover_tasks()
+
+celery_app = healthcheck.setup(app)
 
 
 @app.on_after_configure.connect
