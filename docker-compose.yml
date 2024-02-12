@@ -60,8 +60,8 @@ services:
             aliases:
               - caseworker  # Required for ICMS-HMRC to communicate with ICMS.
     redis:
-        # NOTE: Match what we currently have deployed in cloud foundry (Upgrade when needed).
-        image: redis:5.0.6
+        # The version we will run when migrating to DBT Platform
+        image: redis:7.0.15
         volumes:
             - redis_data:/data
         ports:
