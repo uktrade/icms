@@ -9,9 +9,11 @@ if [ -n "${COPILOT_ENVIRONMENT_NAME}" ]; then
 else
     echo "Running in Cloud Foundry"
 
+# TODO ICMSLST-2505 Install playwright successfully.
     # In DBT platform the following will be done at the build stage
-    echo "Installing playwright chromium browser & dependencies"
-    playwright install --with-deps chromium
+#    echo "Installing playwright chromium browser & dependencies"
+#    playwright install --with-deps chromium
+
     echo "Collecting static files"
     python manage.py collectstatic --noinput --traceback
     python manage.py compress --engine jinja2
