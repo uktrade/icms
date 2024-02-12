@@ -12,6 +12,7 @@ from .interfaces import (
     AccessRequestTotalsInterface,
     ExporterAccessRequestInterface,
     ImporterAccessRequestInterface,
+    ImportLicenceInterface,
     IssuedCertificateReportInterface,
     ReportInterface,
 )
@@ -49,6 +50,13 @@ def generate_access_request_report(scheduled_report: ScheduleReport) -> None:
     totals = AccessRequestTotalsInterface(scheduled_report)
     write_files(scheduled_report, [import_report_interface, export_report_interface, totals])
 
+    _end_processing_report(scheduled_report)
+
+
+def generate_import_licence_report(scheduled_report: ScheduleReport) -> None:
+    scheduled_report = _start_processing_report(scheduled_report)
+    report_interface = ImportLicenceInterface(scheduled_report)
+    write_files(scheduled_report, [report_interface])
     _end_processing_report(scheduled_report)
 
 

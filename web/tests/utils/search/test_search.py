@@ -1565,17 +1565,20 @@ def test_can_search_by_issued_date(ilb_admin_user, completed_dfl_app, completed_
     completed_sil_app.applicant_reference = "sil-app"
     completed_sil_app.save()
 
-    today = dt.date.today()
+    # Date is set to 2024-01-02 within pytest fixture
+    day_completed = dt.date(2024, 1, 2)
 
     dfl_pack = document_pack.pack_active_get(completed_dfl_app)
     sil_pack = document_pack.pack_active_get(completed_sil_app)
 
-    # Check the fixtures packs were completed today
-    assert dfl_pack.case_completion_datetime.date() == today
-    assert sil_pack.case_completion_datetime.date() == today
+    # Check the fixtures packs were completed on 2024-01-02
+    assert dfl_pack.case_completion_datetime.date() == day_completed
+    assert sil_pack.case_completion_datetime.date() == day_completed
 
     # Test we can search by issue date.
-    search_terms = SearchTerms(case_type="import", issue_date_start=today, issue_date_end=today)
+    search_terms = SearchTerms(
+        case_type="import", issue_date_start=day_completed, issue_date_end=day_completed
+    )
     results = search_applications(search_terms, ilb_admin_user)
     assert results.total_rows == 2
     assert len(results.records) == 2
@@ -1590,7 +1593,9 @@ def test_can_search_by_issued_date(ilb_admin_user, completed_dfl_app, completed_
     dfl_pack.case_completion_datetime = dt.datetime(2020, 1, 1, tzinfo=dt.UTC)
     dfl_pack.save()
 
-    search_terms = SearchTerms(case_type="import", issue_date_start=today, issue_date_end=today)
+    search_terms = SearchTerms(
+        case_type="import", issue_date_start=day_completed, issue_date_end=day_completed
+    )
     results = search_applications(search_terms, ilb_admin_user)
     assert results.total_rows == 1
     assert len(results.records) == 1

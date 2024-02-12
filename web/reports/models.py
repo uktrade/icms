@@ -19,6 +19,9 @@ class Report(models.Model):
             return last_run.finished_at
         return None
 
+    def __str__(self):
+        return self.get_report_type_display()
+
 
 class ScheduleReport(models.Model):
     title = models.CharField(max_length=400)
@@ -37,6 +40,9 @@ class ScheduleReport(models.Model):
         choices=ReportStatus.choices,
         default=ReportStatus.SUBMITTED,
     )
+
+    def __str__(self):
+        return f"{self.report.get_report_type_display()} - Schedule:{self.pk}"
 
 
 class GeneratedReport(models.Model):

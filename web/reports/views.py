@@ -13,7 +13,7 @@ from web.utils.s3 import get_file_from_s3
 from web.utils.spreadsheet import MIMETYPE
 
 from .constants import ReportStatus, ReportType
-from .forms import IssuedCertificatesForm, ReportForm
+from .forms import ImportLicenceForm, IssuedCertificatesForm, ReportForm
 from .tasks import generate_report_task
 
 
@@ -101,9 +101,13 @@ class RunReportView(BaseReportView, CreateView):
         return reverse("run-history-view", kwargs={"report_pk": self.report.pk})
 
     def get_form_class(self):
-        if self.report.report_type == ReportType.ISSUED_CERTIFICATES:
-            return IssuedCertificatesForm
-        return ReportForm
+        match self.report.report_type:
+            case ReportType.ISSUED_CERTIFICATES:
+                return IssuedCertificatesForm
+            case ReportType.IMPORT_LICENCES:
+                return ImportLicenceForm
+            case _:
+                return ReportForm
 
 
 class DownloadReportView(BaseReportView, DetailView):

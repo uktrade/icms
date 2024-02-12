@@ -12,13 +12,20 @@ templates = [
         "Report for Importer / Exporter access request filtering on dates",
         ReportType.ACCESS_REQUESTS,
     ),
+    (
+        "ICMS Import Licence Data Extract Report",
+        "Data extract of import licences filtering on licence type, submitted date and issued date",
+        ReportType.IMPORT_LICENCES,
+    ),
 ]
 
 
 def add_reports():
-    Report.objects.bulk_create(
-        [
-            Report(name=name, description=description, report_type=report_type)
-            for name, description, report_type in templates
-        ]
-    )
+    for name, description, report_type in templates:
+        Report.objects.get_or_create(
+            report_type=report_type,
+            defaults={
+                "name": name,
+                "description": description,
+            },
+        )

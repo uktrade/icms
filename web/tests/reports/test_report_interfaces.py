@@ -21,6 +21,7 @@ from web.reports.interfaces import (
     AccessRequestTotalsInterface,
     ExporterAccessRequestInterface,
     ImporterAccessRequestInterface,
+    ImportLicenceInterface,
     IssuedCertificateReportInterface,
 )
 from web.tests.helpers import add_variation_request_to_app
@@ -74,6 +75,35 @@ EXPECTED_HEADER = [
     "Application Update Count",
     "FIR Count",
     "Business Days to Process",
+]
+
+EXPECTED_IMPORT_LICENCE_HEADER = [
+    "Case Ref",
+    "Licence Ref",
+    "Licence Type",
+    "Under Appeal",
+    "Ima Type",
+    "Ima Type Title",
+    "Ima Sub Type",
+    "Variation No",
+    "Status",
+    "Ima Sub Type Title",
+    "Importer Name",
+    "Agent Name",
+    "App Contact Name",
+    "Coo Country Name",
+    "Coc Country Name",
+    "Shipping Year",
+    "Com Group Name",
+    "Commodity Codes",
+    "Initial Submitted Datetime",
+    "Initial Case Closed Datetime",
+    "Time to Initial Close",
+    "Latest Case Closed Datetime",
+    "Licence Dates",
+    "Licence Start Date",
+    "Licence End Date",
+    "Importer Printable",
 ]
 
 
@@ -408,3 +438,222 @@ class TestAccessRequestTotalsInterface:
             "header": EXPECTED_ACCESS_REQUEST_TOTALS_HEADER,
             "results": [{"Approved Requests": 2, "Refused Requests": 2, "Total Requests": 4}],
         }
+
+
+class TestImportLicenceInterface:
+    @pytest.fixture(autouse=True)
+    def _setup(self, report_schedule, ilb_admin_user):
+        self.report_schedule = report_schedule
+        self.ilb_admin_user = ilb_admin_user
+
+    def test_get_data_header(self):
+        interface = ImportLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data == {
+            "header": EXPECTED_IMPORT_LICENCE_HEADER,
+            "results": [],
+        }
+
+    def test_get_data_dfl(self, completed_dfl_app):
+        interface = ImportLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Case Ref": "IMA/2024/00001",
+                "Licence Ref": "GBSIL0000001B",
+                "Licence Type": "Electronic",
+                "Under Appeal": "",
+                "Ima Type": "FA",
+                "Ima Type Title": "Firearms and Ammunition",
+                "Ima Sub Type": "DEACTIVATED",
+                "Variation No": 0,
+                "Status": "COMPLETED",
+                "Ima Sub Type Title": "Deactivated Firearms Import Licence",
+                "Importer Name": "Test Importer 1",
+                "Agent Name": "",
+                "App Contact Name": "I1_main_contact_first_name I1_main_contact_last_name",
+                "Coo Country Name": "Afghanistan",
+                "Coc Country Name": "Albania",
+                "Shipping Year": "",
+                "Com Group Name": "",
+                "Commodity Codes": "",
+                "Initial Submitted Datetime": "01/01/2024 12:00:00",
+                "Initial Case Closed Datetime": "02/01/2024 17:02:00",
+                "Time to Initial Close": "1d 5h 2m",
+                "Latest Case Closed Datetime": "02/01/2024 17:02:00",
+                "Licence Dates": "01 Jun 2020 - 31 Dec 2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence End Date": "31/12/2024",
+                "Importer Printable": False,
+            }
+        ]
+
+    def test_get_data_sil(self, completed_sil_app):
+        interface = ImportLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Case Ref": "IMA/2024/00001",
+                "Licence Ref": "GBSIL0000001B",
+                "Licence Type": "Electronic",
+                "Under Appeal": "",
+                "Ima Type": "FA",
+                "Ima Type Title": "Firearms and Ammunition",
+                "Ima Sub Type": "SIL",
+                "Variation No": 0,
+                "Status": "COMPLETED",
+                "Ima Sub Type Title": "Specific Individual Import Licence",
+                "Importer Name": "Test Importer 1",
+                "Agent Name": "",
+                "App Contact Name": "I1_main_contact_first_name I1_main_contact_last_name",
+                "Coo Country Name": "Afghanistan",
+                "Coc Country Name": "Afghanistan",
+                "Shipping Year": "",
+                "Com Group Name": "",
+                "Commodity Codes": "",
+                "Initial Submitted Datetime": "01/01/2024 12:00:00",
+                "Initial Case Closed Datetime": "02/01/2024 17:02:00",
+                "Time to Initial Close": "1d 5h 2m",
+                "Latest Case Closed Datetime": "02/01/2024 17:02:00",
+                "Licence Dates": "01 Jun 2020 - 31 Dec 2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence End Date": "31/12/2024",
+                "Importer Printable": False,
+            }
+        ]
+
+    def test_get_data_oil(self, completed_oil_app):
+        interface = ImportLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Case Ref": "IMA/2024/00001",
+                "Licence Ref": "GBOIL0000001B",
+                "Licence Type": "Electronic",
+                "Under Appeal": "",
+                "Ima Type": "FA",
+                "Ima Type Title": "Firearms and Ammunition",
+                "Ima Sub Type": "OIL",
+                "Variation No": 0,
+                "Status": "COMPLETED",
+                "Ima Sub Type Title": "Open Individual Import Licence",
+                "Importer Name": "Test Importer 1",
+                "Agent Name": "",
+                "App Contact Name": "I1_main_contact_first_name I1_main_contact_last_name",
+                "Coo Country Name": "Any Country",
+                "Coc Country Name": "Any Country",
+                "Shipping Year": "",
+                "Com Group Name": "",
+                "Commodity Codes": "",
+                "Initial Submitted Datetime": "01/01/2024 12:00:00",
+                "Initial Case Closed Datetime": "02/01/2024 17:02:00",
+                "Time to Initial Close": "1d 5h 2m",
+                "Latest Case Closed Datetime": "02/01/2024 17:02:00",
+                "Licence Dates": "01 Jun 2020 - 31 Dec 2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence End Date": "31/12/2024",
+                "Importer Printable": False,
+            }
+        ]
+
+    def test_get_data_wood(self, completed_wood_app):
+        interface = ImportLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Case Ref": "IMA/2024/00001",
+                "Licence Ref": "0000001B",
+                "Licence Type": "Paper",
+                "Under Appeal": "",
+                "Ima Type": "WD",
+                "Ima Type Title": "Wood (Quota)",
+                "Ima Sub Type": "QUOTA",
+                "Variation No": 0,
+                "Status": "COMPLETED",
+                "Ima Sub Type Title": "QUOTA",
+                "Importer Name": "Test Importer 1",
+                "Agent Name": "",
+                "App Contact Name": "I1_main_contact_first_name I1_main_contact_last_name",
+                "Coo Country Name": "",
+                "Coc Country Name": "",
+                "Shipping Year": 2024,
+                "Com Group Name": "",
+                "Commodity Codes": "",
+                "Initial Submitted Datetime": "01/01/2024 12:00:00",
+                "Initial Case Closed Datetime": "02/01/2024 17:02:00",
+                "Time to Initial Close": "1d 5h 2m",
+                "Latest Case Closed Datetime": "02/01/2024 17:02:00",
+                "Licence Dates": "01 Jun 2020 - 31 Dec 2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence End Date": "31/12/2024",
+                "Importer Printable": False,
+            }
+        ]
+
+    def test_get_data_sps(self, completed_sps_app):
+        interface = ImportLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Case Ref": "IMA/2024/00001",
+                "Licence Ref": "GBAOG0000001B",
+                "Licence Type": "Electronic",
+                "Under Appeal": "",
+                "Ima Type": "SPS",
+                "Ima Type Title": "Prior Surveillance",
+                "Ima Sub Type": "SPS1",
+                "Variation No": 0,
+                "Status": "COMPLETED",
+                "Ima Sub Type Title": "SPS1",
+                "Importer Name": "Test Importer 1",
+                "Agent Name": "",
+                "App Contact Name": "I1_main_contact_first_name I1_main_contact_last_name",
+                "Coo Country Name": "Afghanistan",
+                "Coc Country Name": "Armenia",
+                "Shipping Year": "",
+                "Com Group Name": "",
+                "Commodity Codes": "Code: 111111",
+                "Initial Submitted Datetime": "01/01/2024 12:00:00",
+                "Initial Case Closed Datetime": "02/01/2024 17:02:00",
+                "Time to Initial Close": "1d 5h 2m",
+                "Latest Case Closed Datetime": "02/01/2024 17:02:00",
+                "Licence Dates": "01 Jun 2020 - 31 Dec 2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence End Date": "31/12/2024",
+                "Importer Printable": True,
+            }
+        ]
+
+    def test_get_data_sanctions(self, completed_sanctions_app):
+        interface = ImportLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Case Ref": "IMA/2024/00001",
+                "Licence Ref": "GBSAN0000001B",
+                "Licence Type": "Electronic",
+                "Under Appeal": "",
+                "Ima Type": "ADHOC",
+                "Ima Type Title": "Sanctions and Adhoc Licence Application",
+                "Ima Sub Type": "ADHOC1",
+                "Variation No": 0,
+                "Status": "COMPLETED",
+                "Ima Sub Type Title": "ADHOC1",
+                "Importer Name": "Test Importer 1",
+                "Agent Name": "",
+                "App Contact Name": "I1_main_contact_first_name I1_main_contact_last_name",
+                "Coo Country Name": "Iran",
+                "Coc Country Name": "Afghanistan",
+                "Shipping Year": "",
+                "Com Group Name": "",
+                "Commodity Codes": "Code: 7112990090; Desc: More Commoditites, Code: 2707100010; Desc: Test Goods",
+                "Initial Submitted Datetime": "01/01/2024 12:00:00",
+                "Initial Case Closed Datetime": "02/01/2024 17:02:00",
+                "Time to Initial Close": "1d 5h 2m",
+                "Latest Case Closed Datetime": "02/01/2024 17:02:00",
+                "Licence Dates": "01 Jun 2020 - 31 Dec 2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence End Date": "31/12/2024",
+                "Importer Printable": False,
+            }
+        ]

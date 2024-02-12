@@ -12,12 +12,12 @@ from django.core.management import call_command
 from django.test import override_settings, signals
 from django.test.client import Client
 from django.urls import reverse
+from freezegun import freeze_time
 from jinja2 import Template as Jinja2Template
 from notifications_python_client import NotificationsAPIClient
 from pytest_django.asserts import assertRedirects
 
 from web.auth.fox_hasher import FOXPBKDF2SHA1Hasher
-from web.domains.case._import.fa_oil.models import ChecklistFirearmsOILApplication
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import end_process_task
@@ -27,6 +27,7 @@ from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
+    ChecklistFirearmsOILApplication,
     DFLApplication,
     DFLChecklist,
     Exporter,
@@ -46,11 +47,13 @@ from web.models import (
     Task,
     User,
     WoodQuotaApplication,
+    WoodQuotaChecklist,
 )
 from web.models.shared import YesNoNAChoices
-from web.reports.constants import ReportType
+from web.reports.constants import DateFilterType, ReportType
 from web.sites import SiteName
 from web.tests.helpers import CaseURLS, get_test_client
+from web.tests.utils.search.conftest import Build, importer_one_fixture_data  # NOQA
 
 from .application_utils import (
     create_in_progress_cfs_app,
@@ -847,7 +850,110 @@ def completed_sil_app(fa_sil_app_submitted, ilb_admin_client, ilb_admin_user):
 
     task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
     end_process_task(task)
-    document_pack.pack_draft_set_active(app)
+    _set_document_pack_active(app)
+    _add_files_to_active_document_pack(app, ilb_admin_user)
+    return app
+
+
+@pytest.fixture
+def completed_oil_app(fa_oil_app_submitted, ilb_admin_client, ilb_admin_user):
+    """A completed firearms oil application."""
+    app = fa_oil_app_submitted
+
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    app.refresh_from_db()
+    app.cover_letter_text = "Example Cover letter"
+    app.decision = app.APPROVE
+    app.save()
+
+    _set_valid_licence(app)
+    _add_valid_checklist(app)
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    # Now fake complete the app
+    app.status = ImpExpStatus.COMPLETED
+    app.save()
+
+    task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
+    end_process_task(task)
+    _set_document_pack_active(app)
+    _add_files_to_active_document_pack(app, ilb_admin_user)
+    return app
+
+
+@pytest.fixture
+def completed_sps_app(importer_one_fixture_data, ilb_admin_client, ilb_admin_user):  # NOQA
+    with freeze_time("2024-01-01 12:00:00"):
+        app = Build.sps_application(
+            "sps app 1",
+            importer_one_fixture_data,
+            origin_country="Afghanistan",
+            consignment_country="Armenia",
+            commodity_code="111111",
+        )
+        ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    app.refresh_from_db()
+    app.cover_letter_text = "Example Cover letter"
+    app.decision = app.APPROVE
+    app.save()
+
+    _set_valid_licence(app)
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    # Now fake complete the app
+    app.status = ImpExpStatus.COMPLETED
+    app.save()
+
+    task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
+    end_process_task(task)
+    _set_document_pack_active(app)
+    _add_files_to_active_document_pack(app, ilb_admin_user)
+    return app
+
+
+def _set_document_pack_active(app):
+    with freeze_time(app.submit_datetime) as frozen_datetime:
+        frozen_datetime.tick(delta=datetime.timedelta(days=1, hours=5, minutes=2))
+        document_pack.pack_draft_set_active(app)
+
+
+@pytest.fixture
+def completed_wood_app(wood_app_submitted, ilb_admin_client, ilb_admin_user):
+    """A completed wood application."""
+    app = wood_app_submitted
+
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    app.refresh_from_db()
+    app.cover_letter_text = "Example Cover letter"
+    app.decision = app.APPROVE
+    app.save()
+
+    licence = _set_valid_licence(app)
+    licence.issue_paper_licence_only = True
+    licence.save()
+
+    _add_valid_checklist(app)
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    # Now fake complete the app
+    app.status = ImpExpStatus.COMPLETED
+    app.save()
+
+    task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
+    end_process_task(task)
+    _set_document_pack_active(app)
     _add_files_to_active_document_pack(app, ilb_admin_user)
     return app
 
@@ -877,7 +983,35 @@ def completed_dfl_app(fa_dfl_app_submitted, ilb_admin_client, ilb_admin_user):
 
     task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
     end_process_task(task)
-    document_pack.pack_draft_set_active(app)
+    _set_document_pack_active(app)
+    _add_files_to_active_document_pack(app, ilb_admin_user)
+    return app
+
+
+@pytest.fixture
+def completed_sanctions_app(sanctions_app_submitted, ilb_admin_client, ilb_admin_user):
+    app = sanctions_app_submitted
+
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    app.refresh_from_db()
+    app.cover_letter_text = "Example Cover letter"
+    app.decision = app.APPROVE
+    app.save()
+
+    _set_valid_licence(app)
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    # Now fake complete the app
+    app.status = ImpExpStatus.COMPLETED
+    app.save()
+
+    task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
+    end_process_task(task)
+    _set_document_pack_active(app)
     _add_files_to_active_document_pack(app, ilb_admin_user)
     return app
 
@@ -903,7 +1037,7 @@ def completed_cfs_app(cfs_app_submitted, ilb_admin_client, ilb_admin_user):
     task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
     end_process_task(task)
 
-    document_pack.pack_draft_set_active(app)
+    _set_document_pack_active(app)
     _add_files_to_active_document_pack(app, ilb_admin_user)
     return app
 
@@ -1045,6 +1179,7 @@ def _set_valid_licence(app):
     licence.licence_end_date = datetime.date(2024, 12, 31)
     licence.issue_paper_licence_only = False
     licence.save()
+    return licence
 
 
 def _add_valid_checklist(app):
@@ -1084,6 +1219,13 @@ def _add_valid_checklist(app):
                     "authority_required": YesNoNAChoices.yes,
                     "authority_received": YesNoNAChoices.yes,
                     "authority_police": YesNoNAChoices.yes,
+                }
+            )
+        case ProcessTypes.WOOD:
+            app.checklist = WoodQuotaChecklist.objects.create(
+                **checklist
+                | {
+                    "sigl_wood_application_logged": True,
                 }
             )
         case _:
@@ -1143,7 +1285,8 @@ def report_schedule(report_user):
         notes="",
         parameters={
             "date_from": "2010-02-01",
-            "date_to": "2030-01-01",
+            "date_to": "2024-01-12",
+            "date_filter_type": DateFilterType.SUBMITTED,
             "application_type": "",
         },
     )
