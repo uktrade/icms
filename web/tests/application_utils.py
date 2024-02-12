@@ -5,6 +5,7 @@ from typing import Any
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.client import Client
 from django.urls import reverse
+from freezegun import freeze_time
 from pytest_django.asserts import assertRedirects
 
 from web.forms.fields import JQUERY_DATE_FORMAT
@@ -661,13 +662,22 @@ def add_app_file(
     assert response.status_code == 302
 
 
-def submit_app(*, client: Client, view_name: str, app_pk: int) -> None:
+def submit_app(client: Client, view_name: str, app_pk: int) -> None:
+    with freeze_time("2024-01-01 12:00:00"):
+        _submit_app(client=client, view_name=view_name, app_pk=app_pk)
+
+
+def resubmit_app(client: Client, view_name: str, app_pk: int) -> None:
+    _submit_app(client=client, view_name=view_name, app_pk=app_pk)
+
+
+def _submit_app(client: Client, view_name: str, app_pk: int) -> None:
     """Submits an application."""
 
     view_kwargs = {"application_pk": app_pk}
     submit_url = reverse(view_name, kwargs=view_kwargs)
-
     form_data = {"confirmation": "I AGREE"}
+
     response = client.post(submit_url, form_data)
 
     if response.status_code == 200:

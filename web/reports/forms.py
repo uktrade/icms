@@ -3,7 +3,9 @@ from datetime import timedelta
 from django import forms
 
 from web.forms.fields import JqueryDateField
-from web.models import ExportApplicationType, ScheduleReport
+from web.models import ExportApplicationType, ImportApplicationType, ScheduleReport
+
+from .constants import DateFilterType
 
 
 class ReportForm(forms.ModelForm):
@@ -45,4 +47,21 @@ class IssuedCertificatesForm(ReportForm):
         help_texts = {
             "date_from": "Application Submitted date (inclusive of this day ie 1-Jan-24 00:00:01)",
             "date_to": "Application Completed date (inclusive of this day ie 31-Jan-24 23:59:59)",
+        }
+
+
+class ImportLicenceForm(ReportForm):
+    application_type = forms.ChoiceField(
+        choices=[(None, "All")] + ImportApplicationType.Types.choices, required=False
+    )
+    date_filter_type = forms.ChoiceField(
+        choices=DateFilterType.choices, initial=DateFilterType.SUBMITTED
+    )
+
+    class Meta:
+        model = ReportForm.Meta.model
+        fields = ["application_type", "date_filter_type"] + ReportForm.Meta.fields
+        help_texts = {
+            "date_from": "Application Submitted/Initially closed date (inclusive of this day ie 1-Jan-24 00:00:01)",
+            "date_to": "Application Submitted/Initially closed date (inclusive of this day ie 31-Jan-24 23:59:59)",
         }

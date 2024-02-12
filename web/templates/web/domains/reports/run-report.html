@@ -21,6 +21,9 @@
     {% if form.application_type %}
       {{ fields.field(form.application_type) }}
     {% endif %}
+    {% if form.date_filter_type %}
+      {{ fields.field(form.date_filter_type) }}
+    {% endif %}
     {{ fields.field(form.date_from) }}
     {{ fields.field(form.date_to) }}
     <input type="submit" class="primary-button button" value="Run Now" />

@@ -4,9 +4,9 @@ from datetime import date
 from itertools import islice
 from typing import Type
 
-from django.utils import timezone
-
 from web.models import CommodityGroup, Country, ImportApplicationType, Usage
+
+START_DATE = date(2023, 1, 1)
 
 
 @dataclass
@@ -182,7 +182,6 @@ class CommodityUsageDataLoader:
 
         textiles_pk = self.import_application_type.objects.get(type="TEX").pk
         groups = self.commodity_group.objects.filter(commodity_type__type_code="TEXTILES")
-        now = timezone.now()
 
         for country, group_code_list in group_categories.items():
             country_group_pks = groups.filter(group_code__in=group_code_list).values_list(
@@ -194,7 +193,7 @@ class CommodityUsageDataLoader:
                     application_type_id=textiles_pk,
                     country_id=country.pk,
                     commodity_group_id=group_pk,
-                    start_date=now.date(),
+                    start_date=START_DATE,
                 )
 
     def load_opt_usage(self) -> "Iterable[Usage]":
@@ -203,7 +202,6 @@ class CommodityUsageDataLoader:
         country_pk = self.country.objects.get(name="Belarus").pk
         opt_pk = self.import_application_type.objects.get(type="OPT").pk
         group_codes = ["4", "5", "6", "7", "8", "15", "21", "24", "26", "27", "29", "73"]
-        now = timezone.now()
 
         groups = self.commodity_group.objects.filter(group_code__in=group_codes).values_list(
             "pk", flat=True
@@ -214,7 +212,7 @@ class CommodityUsageDataLoader:
                 application_type_id=opt_pk,
                 country_id=country_pk,
                 commodity_group_id=group_pk,
-                start_date=now.date(),
+                start_date=START_DATE,
             )
 
     def load_derogation_from_sanctions_import_ban(self) -> "Iterable[Usage]":
@@ -229,7 +227,6 @@ class CommodityUsageDataLoader:
 
         derogation_pk = self.import_application_type.objects.get(type="SAN").pk
         groups = self.commodity_group.objects.all()
-        now = timezone.now()
 
         for country, group_code_list in group_categories.items():
             country_group_pks = groups.filter(group_code__in=group_code_list).values_list(
@@ -241,7 +238,7 @@ class CommodityUsageDataLoader:
                     application_type_id=derogation_pk,
                     country_id=country.pk,
                     commodity_group_id=group_pk,
-                    start_date=now.date(),
+                    start_date=START_DATE,
                 )
 
     def load_iron_and_steel_quota(self) -> "Iterable[Usage]":
@@ -255,14 +252,12 @@ class CommodityUsageDataLoader:
             group_code__in=["SA1", "SA3"]
         ).values_list("pk", flat=True)
 
-        start_date = date(2013, 1, 1)
-
         for group_pk in country_group_pks:
             yield self.usage(
                 application_type_id=iron.pk,
                 country_id=country.pk,
                 commodity_group_id=group_pk,
-                start_date=start_date,
+                start_date=START_DATE,
             )
 
     def load_sanctions_and_adhoc_licence_application(self) -> "Iterable[Usage]":
@@ -281,7 +276,6 @@ class CommodityUsageDataLoader:
 
         sanction_and_adhoc_pk = self.import_application_type.objects.get(type="ADHOC").pk
         groups = self.commodity_group.objects.all()
-        now = timezone.now()
 
         for country, group_code_list in group_categories.items():
             country_group_pks = groups.filter(group_code__in=group_code_list).values_list(
@@ -293,7 +287,7 @@ class CommodityUsageDataLoader:
                     application_type_id=sanction_and_adhoc_pk,
                     country_id=country.pk,
                     commodity_group_id=group_pk,
-                    start_date=now.date(),
+                    start_date=START_DATE,
                 )
 
 

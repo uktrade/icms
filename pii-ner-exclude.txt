@@ -1,3 +1,4 @@
+pii-ner-exclude.txt
 kwargs={'mailshot_pk
 class="button
 hadErrors
@@ -3823,3 +3824,27 @@ ir.licence_ref END
 Licence Doc Refs
 ce.email_cc_address_list cc_address_list_str
 playwright install chromium && celery
+ICMS Import Licence Data Extract Report
+f"{licence.licence_start_date.strftime('%d
+Licence Ref
+App Contact Name
+Coc Country Name
+Com Group Name
+Initial Submitted Datetime"
+Initial Case Closed Datetime
+Latest Case Closed Datetime
+Licence Dates
+Jun
+REPORT1
+02/02/2021
+GBAOG0000001B
+Desc
+Application Initially Closed
+Application Submitted/Initially
+Code
+Desc: Test Goods
+Application Initially
+form.date_filter_type %
+{{ fields.field(form.date_filter_type
+f"{start_date.strftime('%d %
+f"{key.replace
