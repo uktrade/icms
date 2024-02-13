@@ -1,7 +1,14 @@
 FROM python:3.11.4
 
 # Install dependencies
-RUN apt-get update && apt-get install swig npm -y
+RUN apt-get update && apt-get install  \
+    # endesive dependency
+    swig  \
+    # psycopg[c] dependencies https://www.psycopg.org/psycopg3/docs/basic/install.html#local-installation
+    python3-dev libpq-dev \
+    # To compile static assets
+    npm  \
+    -y
 
 ENV ICMS_WEB_PORT ${ICMS_WEB_PORT}
 
