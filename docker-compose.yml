@@ -5,7 +5,7 @@
 version: "3.8"
 services:
     db:
-        image: postgres:13.3
+        image: postgres:16.1
         volumes:
             - pgdata:/var/lib/postgresql/data
         environment:
