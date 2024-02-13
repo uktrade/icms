@@ -51,12 +51,10 @@ class CountryGroupAdmin(admin.ModelAdmin):
     form = CountryGroupModelForm
 
 
-class ImporterAdmin(GuardedModelAdmin):
-    ...
+class ImporterAdmin(GuardedModelAdmin): ...  # noqa: E701
 
 
-class ExporterAdmin(GuardedModelAdmin):
-    ...
+class ExporterAdmin(GuardedModelAdmin): ...  # noqa: E701
 
 
 class EmailTemplateForm(forms.ModelForm):

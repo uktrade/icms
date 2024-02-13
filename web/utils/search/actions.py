@@ -54,12 +54,10 @@ def get_export_record_actions(
 
 class ActionProtocol(Protocol):
     @staticmethod
-    def show_action(app: ImpOrExp, uop: UserOrganisationPermissions) -> bool:
-        ...
+    def show_action(app: ImpOrExp, uop: UserOrganisationPermissions) -> bool: ...
 
     @staticmethod
-    def get_action(app: ImpOrExp) -> types.SearchAction:
-        ...
+    def get_action(app: ImpOrExp) -> types.SearchAction: ...
 
 
 _TODAY = timezone.now().date()

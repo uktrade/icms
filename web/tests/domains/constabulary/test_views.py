@@ -79,8 +79,7 @@ class TestConstabularyCreateView(AuthTestCase):
     redirect_url = f"{LOGIN_URL}?next={url}"
 
     @pytest.fixture(autouse=True)
-    def setup(self, _setup, strict_templates):
-        ...
+    def setup(self, _setup, strict_templates): ...
 
     def test_anonymous_access_redirects(self):
         response = self.anonymous_client.get(self.url)

@@ -116,11 +116,9 @@ def _get_import_goods_description(app: ImportApplication) -> str:
 
 
 class TemplateContextProcessor(Protocol):
-    def __init__(self, process: Process, *args, **kwargs):
-        ...
+    def __init__(self, process: Process, *args, **kwargs): ...
 
-    def __getitem__(self, item: str) -> str:
-        ...
+    def __getitem__(self, item: str) -> str: ...
 
 
 class CoverLetterTemplateContext:
