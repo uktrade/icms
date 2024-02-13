@@ -42,8 +42,7 @@ class ChiefSerializer(Protocol):
         application: "CHIEF_APPLICATIONS",
         action: CHIEF_ACTION,
         chief_id: str,
-    ) -> types.LicenceDataPayload:
-        ...
+    ) -> types.LicenceDataPayload: ...
 
 
 def fix_licence_reference(process_type: str, licence_reference: str) -> str:

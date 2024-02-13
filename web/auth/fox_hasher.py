@@ -5,6 +5,7 @@ migrated users.
 Hashing algorith is PBKDF2 with SHA1 digest, but salt generation is altered to
 match legacy applications salt geheration.
 """
+
 import binascii
 import hmac
 import os

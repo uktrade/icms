@@ -24,8 +24,7 @@ class GetWorkbasketRow(Protocol):
 
     def __call__(
         self, app: ImpOrExpOrAccessOrApproval, user: User, is_ilb_admin: bool
-    ) -> WorkbasketRow:
-        ...
+    ) -> WorkbasketRow: ...
 
 
 @functools.cache

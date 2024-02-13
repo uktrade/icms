@@ -118,7 +118,7 @@ class DownloadReportView(BaseReportView, DetailView):
         response = HttpResponse(
             content=file_content, content_type=generated_report.document.content_type
         )
-        response[
-            "Content-Disposition"
-        ] = f'attachment; filename="{generated_report.document.filename}"'
+        response["Content-Disposition"] = (
+            f'attachment; filename="{generated_report.document.filename}"'
+        )
         return response

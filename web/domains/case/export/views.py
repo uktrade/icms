@@ -77,9 +77,11 @@ from .utils import CustomError, generate_product_template_xlsx, process_products
 
 def check_can_edit_application(
     user: User,
-    application: CertificateOfFreeSaleApplication
-    | CertificateOfGoodManufacturingPracticeApplication
-    | CertificateOfManufactureApplication,
+    application: (
+        CertificateOfFreeSaleApplication
+        | CertificateOfGoodManufacturingPracticeApplication
+        | CertificateOfManufactureApplication
+    ),
 ) -> None:
     checker = AppChecker(user, application)
 
