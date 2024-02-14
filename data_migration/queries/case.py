@@ -63,6 +63,7 @@ endorsement = """
 SELECT imad_id, endorsement_text content
 FROM impmgr.xview_ima_endorsements xie
 WHERE xie.status_control = 'C'
+AND endorsement_text IS NOT NULL
 """
 
 

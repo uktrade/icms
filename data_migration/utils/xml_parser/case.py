@@ -287,10 +287,14 @@ class WithdrawalImportParser(BaseXmlParser):
 
         status = get_xml_val(xml, "./WITHDRAW_STATUS")
         reason = get_xml_val(xml, "./WITHDRAW_REASON")
+        created_date = date_or_none(get_xml_val(xml, "./WITHDRAW_REQUESTED_DATE"))
+
+        if not reason or not created_date:
+            return None
+
         request_by_id = int_or_none(get_xml_val(xml, "./WITHDRAW_REQUESTER_WUA"))
         response = get_xml_val(xml, "./WITHDRAW_REJECT_REASON")
         response_by_id = int_or_none(get_xml_val(xml, "./WITHDRAW_RESPONDER_WUA"))
-        created_date = date_or_none(get_xml_val(xml, "./WITHDRAW_REQUESTED_DATE"))
         updated_date = date_or_none(get_xml_val(xml, "./WITHDRAW_RESPONDED_DATE"))
 
         return cls.MODEL(
@@ -342,10 +346,14 @@ class WithdrawalExportParser(BaseXmlParser):
 
         status = get_xml_val(xml, "./STATUS")
         reason = get_xml_val(xml, "./REQUEST/BODY")
+        created_datetime = datetime_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_DATETIME"))
+
+        if not reason or not created_datetime:
+            return None
+
         request_by_id = int_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_BY_WUA_ID"))
         response = get_xml_val(xml, "./RESPONSE/REJECT_REASON")
         response_by_id = int_or_none(get_xml_val(xml, "./RESPONSE/RESPONDED_BY_WUA_ID"))
-        created_datetime = datetime_or_none(get_xml_val(xml, "./REQUEST/REQUESTED_DATETIME"))
         updated_datetime = datetime_or_none(
             get_xml_val(xml, "./DELETE/DELETED_DATETIME")
         ) or datetime_or_none(get_xml_val(xml, "./RESPONSE/RESPONDED_DATETIME"))
