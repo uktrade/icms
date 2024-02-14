@@ -29,20 +29,36 @@ class TestCertificateApplicationTemplate:
         assert template.user_can_edit(bob) is False
         assert template.user_can_edit(alice) is True
 
-    # TODO: ICMSLST-2520 Uncomment this test to fix bug where application hangs.
-    # def test_json_serialization_of_models(self):
-    #     alice = User.objects.create_user("alice")
-    #     data = {
-    #         "alice": alice,
-    #         "objects": User.objects.filter(username="alice"),
-    #     }
-    #     # This line causes the application to hang forever in psycopg 3.
-    #     # I think it relates to evaluating this line when creating the template
-    #     # record: User.objects.filter(username="alice")
-    #     template = CertificateApplicationTemplate.objects.create(
-    #         owner=alice,
-    #         data=data,
-    #     )
-    #     template.refresh_from_db()
-    #
-    #     assert template.form_data() == {"alice": alice.pk, "objects": [alice.pk]}
+    def test_json_serialization_of_models(self):
+        """Test that calling model.objects.create() preserves old logic."""
+
+        alice = User.objects.create_user("alice")
+        data = {
+            "alice": alice,
+            "objects": User.objects.filter(username="alice"),
+        }
+        template = CertificateApplicationTemplate.objects.create(
+            owner=alice,
+            data=data,
+        )
+        template.refresh_from_db()
+
+        assert template.form_data() == {"alice": alice.pk, "objects": [alice.pk]}
+
+    def test_json_serialization_of_models_for_existing_template(self):
+        """Test that calling model.save() preserves old logic."""
+
+        alice = User.objects.create_user("alice")
+        template = CertificateApplicationTemplate.objects.create(owner=alice, data={})
+        assert template.form_data() == {}
+
+        data = {
+            "alice": alice,
+            "objects": User.objects.filter(username="alice"),
+        }
+        template.refresh_from_db()
+        template.data = data
+        template.save()
+        template.refresh_from_db()
+
+        assert template.form_data() == {"alice": alice.pk, "objects": [alice.pk]}
