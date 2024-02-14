@@ -3807,4 +3807,5 @@ bpmmgr.country_group_countries
 " Generate
 byte
 npm  \
-ICMSLST-2520 Uncomment
+Serialize Model and QuerySet
+Psycopg 3

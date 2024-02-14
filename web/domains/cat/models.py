@@ -1,5 +1,5 @@
 import copy
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
@@ -12,18 +12,34 @@ if TYPE_CHECKING:
     from web.models import User
 
 
-class DjangoQuerysetJSONEncoder(DjangoJSONEncoder):
-    def default(self, o):
-        # Django's serializer encodes a query as a list (good) and a model as
-        # a dict/object with fields for pk, model name, etc. (bad). This
-        # version is more like a form POST request with a list of keys.
-        if isinstance(o, models.Model):
+def encode_model_or_queryset(o: models.Model | models.QuerySet | Any) -> Any:
+    match o:
+        case models.Model():
             return o.pk
+        case models.QuerySet():
+            return [encode_model_or_queryset(instance) for instance in o]
+        case _:
+            return o
 
-        if isinstance(o, models.QuerySet):
-            return [self.default(instance) for instance in o]
 
-        return super().default(o)
+def encode_json_field_data(data: dict[str, Any]) -> dict[str, Any]:
+    """Serialize Model and QuerySet instances so that they can be encoded using DjangoJSONEncoder.
+
+    Previously this was done via a custom DjangoQuerysetJSONEncoder but didn't work
+    after upgrading to Psycopg 3.
+    """
+
+    return {key: encode_model_or_queryset(value) for key, value in data.items()}
+
+
+class CertificateApplicationTemplateManager(models.Manager):
+    """Custom manager to preserve behaviour that relied on old custom DjangoQuerysetJSONEncoder."""
+
+    def create(self, **kwargs):
+        data = kwargs.pop("data", {})
+        valid_data = encode_json_field_data(data)
+
+        return super().create(data=valid_data, **kwargs)
 
 
 class CertificateApplicationTemplate(models.Model):
@@ -31,6 +47,9 @@ class CertificateApplicationTemplate(models.Model):
         PRIVATE = ("private", "Private (do not share)")
         VIEW = ("view", "Share (view only)")
         EDIT = ("edit", "Share (allow edit)")
+
+    # Create manager to handle legacy behaviour that relied on old custom DjangoQuerysetJSONEncoder.
+    objects = CertificateApplicationTemplateManager()
 
     name = models.CharField(
         verbose_name="Template Name",
@@ -61,7 +80,7 @@ class CertificateApplicationTemplate(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
-    data = models.JSONField(default=dict, encoder=DjangoQuerysetJSONEncoder)
+    data = models.JSONField(default=dict, encoder=DjangoJSONEncoder)
 
     def form_data(self) -> dict:
         """Data to use as a Django form's data argument."""
@@ -75,3 +94,8 @@ class CertificateApplicationTemplate(models.Model):
     def user_can_edit(self, user: "User") -> bool:
         # Whether the user can edit the template itself.
         return user == self.owner
+
+    def save(self, *args, **kwargs):
+        self.data = encode_json_field_data(self.data)
+
+        return super().save(*args, **kwargs)
