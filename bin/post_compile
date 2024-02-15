@@ -2,8 +2,5 @@
 
 set -e
 
-# Do I need this?
-#/tmp/lifecycle/shell
-
 echo "Installing playwright chromium browser & dependencies"
-playwright install --with-deps chromium
+#playwright install --with-deps chromium
