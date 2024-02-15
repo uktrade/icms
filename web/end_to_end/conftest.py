@@ -6,6 +6,7 @@ from typing import Any, Dict, Generator, List
 
 import pytest
 from playwright.sync_api import Browser, BrowserContext, Page, Request, Response
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from . import types, utils
 
@@ -15,6 +16,17 @@ logger = logging.getLogger(__name__)
 @pytest.fixture(scope="session")
 def browser_context_args(browser_context_args: Dict[str, Any]) -> Dict[str, Any]:
     return {**browser_context_args, "viewport": {"width": 1920, "height": 1080}}
+
+
+class EnvironmentConfig(BaseSettings):
+    model_config = SettingsConfigDict(extra="ignore", validate_default=False, env_prefix="e2e_")
+    caseworker_url: str = "http://caseworker:8080/"
+    exporter_url: str = "http://export-a-certificate:8080/"
+    importer_url: str = "http://import-a-licence:8080/"
+    user_password: str = "admin"
+
+
+env_config = EnvironmentConfig()
 
 
 class UserPages:
@@ -27,7 +39,7 @@ class UserPages:
     @contextmanager
     def imp_page(self) -> Generator[Page, None, None]:
         """Return a page logged in as an importer viewing the workbasket."""
-        page = self._get_page("http://import-a-licence:8080/", "importer_user.json")
+        page = self._get_page(env_config.importer_url, "importer_user.json")
         debug_page(page)
 
         yield page
@@ -37,7 +49,7 @@ class UserPages:
     @contextmanager
     def exp_page(self) -> Generator[Page, None, None]:
         """Return a page logged in as an exporter viewing the workbasket."""
-        page = self._get_page("http://export-a-certificate:8080/", "exporter_user.json")
+        page = self._get_page(env_config.exporter_url, "exporter_user.json")
         debug_page(page)
 
         yield page
@@ -47,7 +59,7 @@ class UserPages:
     @contextmanager
     def ilb_page(self) -> Generator[Page, None, None]:
         """Return a page logged in as an ILB admin viewing the workbasket."""
-        page = self._get_page("http://caseworker:8080/", "ilb_admin.json")
+        page = self._get_page(env_config.caseworker_url, "ilb_admin.json")
         debug_page(page)
 
         yield page
@@ -67,7 +79,7 @@ class UserPages:
         )
 
         # Timeout in ms
-        context.set_default_timeout(10_000)
+        context.set_default_timeout(15_000)
 
         page = context.new_page()
         page.goto("/workbasket/")
@@ -76,7 +88,7 @@ class UserPages:
 
         return page
 
-    def _login_user(self, base_url: str, storage_state: str, user_password: str = "admin") -> None:
+    def _login_user(self, base_url: str, storage_state: str) -> None:
         username = storage_state.replace(".json", "")
 
         logger.info("Logging in the following user: %s", username)
@@ -96,7 +108,7 @@ class UserPages:
         page.get_by_label("Username").fill(username)
 
         page.get_by_label("Password").click()
-        page.get_by_label("Password").fill(user_password)
+        page.get_by_label("Password").fill(env_config.user_password)
 
         page.get_by_role("button", name="Sign in").click()
         utils.assert_page_url(page, "/workbasket/")

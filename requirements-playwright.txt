@@ -6,3 +6,5 @@ pytest-xdist==3.3.1
 # from web.forms.fields import JQUERY_DATE_FORMAT
 django-phonenumber-field==5.0.0
 phonenumbers==8.12.12
+pydantic==2.5.2
+pydantic-settings==2.1.0

@@ -131,6 +131,8 @@ services:
         build:
             context: .
             dockerfile: playwright/Dockerfile
+        env_file:
+            - .env
         networks:
             - backend
         ipc: host
