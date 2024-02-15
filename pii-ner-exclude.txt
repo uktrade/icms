@@ -3810,3 +3810,4 @@ npm  \
 Serialize Model and QuerySet
 Psycopg 3
 the V2 Dev / Staging
+/usr/bin/env bash
