@@ -238,6 +238,7 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert dm.SILSupplementaryReportFirearmSectionLegacy.objects.filter(**sil3_f).count() == 2
 
     call_command("import_v1_data", "--skip_export")
+    call_command("post_migration", "--skip_perms")
 
     importers = web.Importer.objects.order_by("pk")
     assert importers.count() == 3
@@ -441,10 +442,22 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
 
     assert ia1.variation_no == 0
     assert ia1.reference == "IMA/2022/1234"
+    assert ia1.licence_reference.prefix == "ILD"
+    assert ia1.licence_reference.year is None
+    assert ia1.licence_reference.reference == 1234
+    assert web.UniqueReference.objects.get(prefix="IMA", year=2022, reference=1234)
+
     assert ia2.variation_no == 2
     assert ia2.reference == "IMA/2022/2345/2"
+    assert ia2.licence_reference.prefix == "ILD"
+    assert ia2.licence_reference.year is None
+    assert ia2.licence_reference.reference == 1235
+    assert web.UniqueReference.objects.get(prefix="IMA", year=2022, reference=2345)
+
     assert ia3.variation_no == 1
     assert ia3.reference == "IMA/2022/2346/1"
+    assert ia3.licence_reference is None
+    assert web.UniqueReference.objects.get(prefix="IMA", year=2022, reference=2346)
 
     assert ia1.variation_requests.count() == 0
     assert ia2.variation_requests.count() == 2
@@ -609,6 +622,7 @@ def test_import_oil_data(mock_connect, dummy_dm_settings):
     assert oil2.section2 is False
 
     call_command("import_v1_data", "--skip_export")
+    call_command("post_migration", "--skip_perms")
 
     oil1, oil2 = web.OpenIndividualLicenceApplication.objects.order_by("pk")
 

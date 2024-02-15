@@ -167,11 +167,21 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     call_command("export_from_v1")
     call_command("extract_v1_xml")
     call_command("import_v1_data")
+    call_command("post_migration", "--skip_perms")
 
     assert web.CertificateOfGoodManufacturingPracticeApplication.objects.count() == 4
     ea1, ea2, ea3, _ = web.ExportApplication.objects.filter(
         process_ptr__process_type=ProcessTypes.GMP
     ).order_by("pk")
+
+    assert ea1.reference == "GMP/2022/9901"
+    assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=9901)
+
+    assert ea2.reference == "GMP/2022/9902"
+    assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=9902)
+
+    assert ea3.reference == "GMP/2022/9903/1"
+    assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=9903)
 
     assert ea1.countries.count() == 0
     assert ea2.countries.count() == 3
@@ -244,18 +254,22 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert refs[0].reference == "GMP/2022/00001"
     assert refs[0].reference_data.country_id == 1
     assert refs[0].check_code == "12345678"
+    assert web.UniqueReference.objects.get(prefix="ECD", year=2022, reference=1)
 
     assert refs[1].reference == "GMP/2022/00002"
     assert refs[1].reference_data.country_id == 2
     assert refs[1].check_code == "56781234"
+    assert web.UniqueReference.objects.get(prefix="ECD", year=2022, reference=2)
 
     assert refs[2].reference == "GMP/2022/00003"
     assert refs[2].reference_data.country_id == 3
     assert refs[2].check_code == "43215678"
+    assert web.UniqueReference.objects.get(prefix="ECD", year=2022, reference=3)
 
     assert ref2.reference == "GMP/2022/00004"
     assert ref2.reference_data.country_id == 1
     assert ref2.check_code == "87654321"
+    assert web.UniqueReference.objects.get(prefix="ECD", year=2022, reference=4)
 
     gmp1, gmp2, gmp3, _ = web.CertificateOfGoodManufacturingPracticeApplication.objects.order_by(
         "pk"
@@ -289,6 +303,15 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     ea4, ea5, ea6 = web.ExportApplication.objects.filter(
         process_ptr__process_type=ProcessTypes.COM
     ).order_by("pk")
+
+    assert ea4.reference == "CA/2022/9904"
+    assert web.UniqueReference.objects.get(prefix="CA", year=2022, reference=9904)
+
+    assert ea5.reference == "CA/2022/9905"
+    assert web.UniqueReference.objects.get(prefix="CA", year=2022, reference=9905)
+
+    assert ea6.reference == "CA/2022/9906"
+    assert web.UniqueReference.objects.get(prefix="CA", year=2022, reference=9906)
 
     assert ea4.countries.count() == 0
     assert ea5.countries.count() == 1
@@ -343,11 +366,11 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     ref3 = cert4.document_references.first()
     ref4 = cert5.document_references.first()
 
-    assert ref3.reference == "COM/2022/00001"
+    assert ref3.reference == "COM/2022/00005"
     assert ref3.reference_data.country_id == 1
     assert ref3.check_code == "87651432"
 
-    assert ref4.reference == "COM/2022/00002"
+    assert ref4.reference == "COM/2022/00006"
     assert ref4.reference_data.country_id == 1
     assert ref4.check_code == "87651432"
 
@@ -383,14 +406,17 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ea7.variation_no == 0
     assert ea7.reference == "CA/2022/9907"
     assert ea7.variation_requests.count() == 0
+    assert web.UniqueReference.objects.get(prefix="CA", year=2022, reference=9907)
 
     assert ea8.variation_no == 0
     assert ea8.reference == "CA/2022/9908"
     assert ea8.variation_requests.count() == 0
+    assert web.UniqueReference.objects.get(prefix="CA", year=2022, reference=9908)
 
     assert ea9.variation_no == 2
     assert ea9.reference == "CA/2022/9909/2"
     assert ea9.variation_requests.count() == 2
+    assert web.UniqueReference.objects.get(prefix="CA", year=2022, reference=9909)
 
     vr2, vr3 = ea9.variation_requests.order_by("pk")
     assert vr2.what_varied == "Changes 2"
@@ -449,12 +475,12 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert cert9.document_references.count() == 1
 
     ref5 = cert6.document_references.first()
-    assert ref5.reference == "CFS/2022/00001"
+    assert ref5.reference == "CFS/2022/00007"
     assert ref5.reference_data.country_id == 1
     assert ref5.check_code == "32415678"
 
     ref6 = cert9.document_references.first()
-    assert ref6.reference == "CFS/2022/00002"
+    assert ref6.reference == "CFS/2022/00008"
     assert ref6.reference_data.country_id == 1
     assert ref6.check_code == "32415679"
 

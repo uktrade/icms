@@ -9,7 +9,7 @@ FROM impmgr.commodity_types ct
 commodity_group = """
 SELECT
   cg_id id
-  , CASE status WHEN 'ACTIVE' THEN 1 ELSE 0 END is_active
+  , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
   , group_type
   , group_code
   , group_name
