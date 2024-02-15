@@ -2,4 +2,8 @@
 
 set -e
 
-echo "Testing post_compile..."
+# Do I need this?
+/tmp/lifecycle/shell
+
+echo "Installing playwright chromium browser & dependencies"
+playwright install --with-deps chromium
