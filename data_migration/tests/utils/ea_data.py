@@ -103,7 +103,7 @@ ea_query_result = {
                 7,  # ca_id
                 17,  # cad_id
                 "CertificateofGoodManufacturingPractice",  # process_type
-                "CA/2022/9901",  # reference
+                "GMP/2022/9901",  # reference
                 "IN PROGRESS",  # status
                 2,  # created_by_id
                 datetime(2022, 4, 27),  # create_datetime
@@ -128,7 +128,7 @@ ea_query_result = {
                 8,
                 18,
                 "CertificateofGoodManufacturingPractice",
-                "CA/2022/9902",
+                "GMP/2022/9902",
                 "PROCESSING",
                 2,
                 datetime(2022, 4, 28),
@@ -153,7 +153,7 @@ ea_query_result = {
                 9,
                 19,
                 "CertificateofGoodManufacturingPractice",
-                "CA/2022/9903",
+                "GMP/2022/9903",
                 "COMPLETED",
                 2,
                 datetime(2022, 4, 28),
@@ -178,7 +178,7 @@ ea_query_result = {
                 16,  # ca_id
                 26,  # cad_id
                 "CertificateofGoodManufacturingPractice",  # process_type
-                "CA/2022/9910",  # reference
+                "GMP/2022/9910",  # reference
                 "WITHDRAWN",  # status
                 2,  # created_by_id
                 datetime(2022, 4, 28),  # create_datetime
@@ -458,8 +458,24 @@ ea_query_result = {
             ("document_pack_id",),
         ],
         [
-            (8, 18, datetime(2022, 4, 29), "DR", "CA/2022/9902", datetime(2022, 4, 29, 13, 21), 20),
-            (9, 10, datetime(2022, 4, 29), "AR", "CA/2022/9903", datetime(2022, 4, 29, 13, 21), 21),
+            (
+                8,
+                18,
+                datetime(2022, 4, 29),
+                "DR",
+                "GMP/2022/9902",
+                datetime(2022, 4, 29, 13, 21),
+                20,
+            ),
+            (
+                9,
+                10,
+                datetime(2022, 4, 29),
+                "AR",
+                "GMP/2022/9903",
+                datetime(2022, 4, 29, 13, 21),
+                21,
+            ),
             (
                 9,
                 19,
@@ -615,8 +631,8 @@ ea_query_result = {
                 21,  # cad_id
                 5,  # certificate_id
                 105,  # document_legacy_id
-                "COM/2022/00001",  # reference
-                "COM/2022/00001",  # case_document_ref_id
+                "COM/2022/00005",  # reference
+                "COM/2022/00005",  # case_document_ref_id
                 "CERTIFICATE",  # document_type
                 1,  # country_id
                 "com-cert-1.pdf",  # filename
@@ -631,8 +647,8 @@ ea_query_result = {
                 22,  # cad_id
                 6,  # certificate_id
                 106,  # document_legacy_id
-                "COM/2022/00002",  # reference
-                "COM/2022/00002",  # case_document_ref_id
+                "COM/2022/00006",  # reference
+                "COM/2022/00006",  # case_document_ref_id
                 "CERTIFICATE",  # document_type
                 1,  # country_id
                 "com-cert-2.pdf",  # filename
@@ -647,8 +663,8 @@ ea_query_result = {
                 24,  # cad_id
                 7,  # certificate_id
                 107,  # document_legacy_id
-                "CFS/2022/00001",  # reference
-                "CFS/2022/00001",  # case_document_ref_id
+                "CFS/2022/00007",  # reference
+                "CFS/2022/00007",  # case_document_ref_id
                 "CERTIFICATE",  # document_type
                 1,  # country_id
                 "cfs-cert-1.pdf",  # filename
@@ -663,8 +679,8 @@ ea_query_result = {
                 25,  # cad_id
                 8,  # certificate_id
                 108,  # document_legacy_id
-                "CFS/2022/00002",  # reference
-                "CFS/2022/00002",  # case_document_ref_id
+                "CFS/2022/00008",  # reference
+                "CFS/2022/00008",  # case_document_ref_id
                 "CERTIFICATE",  # document_type
                 1,  # country_id
                 "cfs-cert-2.pdf",  # filename

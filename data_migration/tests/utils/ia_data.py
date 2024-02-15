@@ -14,7 +14,6 @@ IA_BASE_COLUMNS = [
     ("create_datetime",),
     ("created",),
     ("variation_no",),
-    ("licence_reference",),
     ("submitted_by_id",),
     ("created_by_id",),
     ("last_updated_by_id",),
@@ -398,7 +397,6 @@ ia_query_result = {
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
-                3456,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
                 2,  # last_updated_by_id
@@ -454,7 +452,6 @@ ia_query_result = {
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
-                3456,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
                 2,  # last_updated_by_id
@@ -521,7 +518,6 @@ ia_query_result = {
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
-                6234,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
                 2,  # last_updated_by_id
@@ -559,7 +555,6 @@ ia_query_result = {
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
-                10234,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
                 2,  # last_updated_by_id
@@ -586,7 +581,6 @@ ia_query_result = {
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
-                10235,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
                 2,  # last_updated_by_id
@@ -618,7 +612,6 @@ ia_query_result = {
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
-                4234,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
                 2,  # last_updated_by_id
@@ -640,7 +633,6 @@ ia_query_result = {
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
-                4235,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
                 2,  # last_updated_by_id
@@ -662,7 +654,6 @@ ia_query_result = {
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
-                4236,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
                 2,  # last_updated_by_id
@@ -698,7 +689,6 @@ ia_query_result = {
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
-                5234,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
                 2,  # last_updated_by_id
@@ -727,7 +717,6 @@ ia_query_result = {
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
-                None,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
                 2,  # last_updated_by_id
@@ -756,7 +745,6 @@ ia_query_result = {
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
-                None,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
                 2,  # last_updated_by_id
@@ -796,7 +784,6 @@ ia_query_result = {
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
-                3234,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
                 2,  # last_updated_by_id
@@ -822,7 +809,6 @@ ia_query_result = {
                 datetime(2022, 4, 22),  # create_datetime
                 datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
-                3235,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
                 2,  # last_updated_by_id
@@ -864,7 +850,6 @@ ia_query_result = {
                 datetime(2022, 4, 22, 9, 23, 22),  # create_datetime
                 datetime(2022, 4, 22, 9, 23, 22),  # created
                 0,  # vartiation_no
-                5678,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
                 2,  # last_updated_by_id
@@ -894,7 +879,6 @@ ia_query_result = {
                 datetime(2022, 4, 22, 8, 44, 44),  # create_datetime
                 datetime(2022, 4, 22, 8, 44, 44),  # created
                 2,  # vartiation_no
-                8901,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
                 None,  # last_updated_by_id
@@ -924,7 +908,6 @@ ia_query_result = {
                 datetime(2022, 4, 22, 7, 52, 4),  # create_datetime
                 datetime(2022, 4, 22, 7, 52, 4),  # created
                 1,  # vartiation_no
-                8901,  # licence_reference
                 2,  # submitted_by_id
                 2,  # created_by_id
                 2,  # last_updated_by_id

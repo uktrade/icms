@@ -19,12 +19,6 @@ from .reference import Country
 from .user import AccessRequest, User
 
 
-class CaseReference(MigrationBase):
-    prefix = models.CharField(max_length=8)
-    year = models.IntegerField(null=True)
-    reference = models.IntegerField()
-
-
 class CaseDocument(MigrationBase):
     licence = models.ForeignKey(
         ImportApplicationLicence, on_delete=models.CASCADE, to_field="imad_id", null=True

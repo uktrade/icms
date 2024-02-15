@@ -102,7 +102,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert web.User.objects.filter(groups__isnull=False).count() == 0
 
     call_command("create_icms_groups")
-    call_command("post_migration")
+    call_command("post_migration", "--skip_ref")
 
     assert web.User.objects.count() == 14
 

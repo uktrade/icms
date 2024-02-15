@@ -83,8 +83,6 @@ class ImportApplication(MigrationBase):
     variations_xml = models.TextField(null=True)
     withdrawal_xml = models.TextField(null=True)
 
-    # TODO ICMSLST-1694: licence_reference is FK to CaseReference
-
     @classmethod
     def get_excludes(cls) -> list[str]:
         return [
