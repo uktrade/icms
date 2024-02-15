@@ -3,4 +3,4 @@
 set -e
 
 echo "Installing playwright chromium browser & dependencies"
-#playwright install --with-deps chromium
+python -m playwright install --with-deps chromium
