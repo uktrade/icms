@@ -1,7 +1,18 @@
 Using Playwright
 ----------------
-Playwright requires ICMS to be running: `make debug`
-Playwright requires the following envrionment variables `STAFF_SSO_ENABLED=False` and `GOV_UK_ONE_LOGIN_ENABLED=False`
+
+Running `make end_to_end_test` will run the tests against the environment defined in the `E2E_XXX` environment variables in `.env`
+
+`.env.local-docker` provides defaults for all required environment variables.
+
+If running against the V2 Dev / Staging environments a VPN connection is required.
+
+The tests can only be run when Staff-SSO and GOV.UK One Login are disabled.
+
+```dotenv
+STAFF_SSO_ENABLED=False
+GOV_UK_ONE_LOGIN_ENABLED=False
+```
 
 The tests can be run locally or in a container.
 ```bash

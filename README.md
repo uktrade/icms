@@ -116,6 +116,12 @@ To run the tests with full coverage run (mainly done as part of CI pipeline):
 
 `make test`
 
+To run the end-to-end tests:
+
+`make end_to_end_test`
+
+See [this document](documentation/playwright.md) for more information relating to the end-to-end tests.
+
 ## Code style
 
 ICMS uses [Black](https://pypi.org/project/black/) for code formatting and
