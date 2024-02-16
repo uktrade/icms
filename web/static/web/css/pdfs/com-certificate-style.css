@@ -27,11 +27,6 @@
     font-size: 12px;
 }
 
-.qr-img {
-    height: 100px;
-    width: 100px;
-}
-
 body {
     font-family: Helvetica;
     counter-reset: li-counter;
