@@ -51,13 +51,13 @@
   <div class="flex-row" id="address-and-logo">
     <div>
       <div class="bordered">
-        <p class="content">{{ importer_name }}</p>
+        <p class="content">{{ importer_name|upper }}</p>
         {% for line in importer_address %}
-          <p class="content">{{ line }}</p>
+          <p class="content">{{ line|upper }}</p>
         {% endfor %}
-        <p class="content">{{ importer_postcode }}</p>
+        <p class="content">{{ importer_postcode|upper }}</p>
         {% for number in eori_numbers %}
-          <p class="content text-right">{{ number }}</p>
+          <p class="content text-right">{{ number|upper }}</p>
         {% endfor %}
       </div>
     </div>
