@@ -9,9 +9,9 @@
         {{ get_css_rules_as_string("web/css/pdfs/licence-and-certificate-common-style.css")|safe }}
         {{ get_css_rules_as_string("web/css/pdfs/cover-letter.css")|safe }}
         {{ get_css_rules_as_string("web/css/components/signature.css")|safe }}
-				{% if preview %}
-					{{ get_css_rules_as_string("web/css/pdfs/preview.css")|safe }}
-				{% endif %}
+        {% if preview %}
+          {{ get_css_rules_as_string("web/css/pdfs/preview.css")|safe }}
+        {% endif %}
     </style>
     <title>{% block page_title %}{{ page_title }}{% endblock %} - ICMS</title>
   </head>
@@ -33,9 +33,11 @@
 
     <div class="address-block page-margin">
       <p class="address-line">{{ process.contact.full_name }}</p>
+      <p class="address-line">{{ process.importer.display_name }}</p>
       {% for address_line in process.importer_office.address.split('\n') %}
         <p class="address-line">{{ address_line }}</p>
       {% endfor %}
+      <p class="address-line">{{ process.importer_office.postcode }}</p>
     </div>
 
     <div class="content-block page-margin">
