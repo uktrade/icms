@@ -3,6 +3,8 @@ from typing import Annotated
 
 import pydantic
 
+from web.models.shared import YesNoChoices
+
 datetime_or_empty = Annotated[
     dt.datetime | None,
     pydantic.PlainSerializer(
@@ -25,6 +27,14 @@ str_or_empty = Annotated[
     str | None,
     pydantic.PlainSerializer(
         lambda _str: _str if _str else "",
+        return_type=str,
+    ),
+]
+
+yes_no = Annotated[
+    bool | None,
+    pydantic.PlainSerializer(
+        lambda _bool: YesNoChoices.yes.title() if _bool else YesNoChoices.no.title(),
         return_type=str,
     ),
 ]
@@ -112,3 +122,47 @@ class ImportLicenceSerializer(pydantic.BaseModel):
     licence_start_date: date_or_empty = pydantic.Field(serialization_alias="Licence Start Date")
     licence_end_date: date_or_empty = pydantic.Field(serialization_alias="Licence End Date")
     importer_printable: bool = pydantic.Field(serialization_alias="Importer Printable")
+
+
+class SupplementaryFirearmsSerializer(pydantic.BaseModel):
+    licence_reference: str_or_empty = pydantic.Field(serialization_alias="Licence Reference")
+    case_reference: str = pydantic.Field(serialization_alias="Case Reference")
+    case_type: str = pydantic.Field(serialization_alias="Case Type")
+    importer_name: str = pydantic.Field(serialization_alias="Importer")
+    eori_number: str = pydantic.Field(serialization_alias="Eori Number")
+    importer_address: str = pydantic.Field(serialization_alias="Importer Address")
+    licence_start_date: date_or_empty | str = pydantic.Field(
+        serialization_alias="Licence Start Date"
+    )
+    licence_end_date: date_or_empty | str = pydantic.Field(
+        serialization_alias="Licence Expiry Date"
+    )
+    coo_country_name: str = pydantic.Field(serialization_alias="Country of Origin")
+    coc_country_name: str = pydantic.Field(serialization_alias="Country of Consignment")
+    endorsements: str = pydantic.Field(serialization_alias="Endorsements")
+    constabularies: str = pydantic.Field(serialization_alias="Constabularies")
+
+    report_date: date_or_empty = pydantic.Field(serialization_alias="Report Date")
+    goods_description: str = pydantic.Field(serialization_alias="Goods Description")
+    goods_quantity: int = pydantic.Field(serialization_alias="Goods Quantity")
+    exceed_quantity: yes_no = pydantic.Field(serialization_alias="Firearms Exceed Quantity")
+    goods_description_with_sub_section: str = pydantic.Field(
+        serialization_alias="Goods Description with Subsection"
+    )
+    bought_from: str = pydantic.Field(serialization_alias="Who Bought From Name")
+    bought_from_reg_no: str_or_empty = pydantic.Field(serialization_alias="Who Bought From Reg No")
+    bought_from_address: str = pydantic.Field(
+        serialization_alias="Who Bought From Address"  # /PS-IGNORE
+    )
+    frame_serial_number: str_or_empty = pydantic.Field(
+        serialization_alias="Frame Serial Number"  # /PS-IGNORE
+    )
+    make_model: str_or_empty = pydantic.Field(serialization_alias="Make/Model")  # /PS-IGNORE
+    calibre: str_or_empty = pydantic.Field(serialization_alias="Calibre")  # /PS-IGNORE
+    proofing: str = pydantic.Field(serialization_alias="Gun Barrel Proofing meets CIP")
+    firearms_document: str = pydantic.Field(serialization_alias="Firearms Document")  # /PS-IGNORE
+    date_firearms_received: date_or_empty = pydantic.Field(
+        serialization_alias="Date Firearms Received"  # /PS-IGNORE
+    )
+    transport: str_or_empty = pydantic.Field(serialization_alias="Means of Transport")  # /PS-IGNORE
+    all_reported: yes_no = pydantic.Field(serialization_alias="Reported all firearms for licence")

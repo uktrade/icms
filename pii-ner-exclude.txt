@@ -4167,3 +4167,28 @@ CFS Schedule
 {{ page_errors.page_name}
 li class="error-message
 "Raise an error
+Override EORI
+Supplementary FA INFO
+Goods Quantity
+Firearms Exceed Quantity
+Goods Description with Subsection
+Gun Barrel Proofing
+Means of Transport'
+1mm
+5mm
+555555555555
+2mm
+5.1mm
+5.2mm
+5555555555552
+Who Bought From Address
+Frame Serial Number
+Make/Model
+Calibre
+Firearms Document
+Date Firearms Received
+Means of Transport
+Avon & Somerset
+4.1mm
+DFL Firearm
+Russian Federation.(including
