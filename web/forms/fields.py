@@ -103,7 +103,7 @@ class PastOnlyJqueryDateField(JqueryDateField):
 
     def validate(self, value: dt.datetime) -> None:
         current_year = dt.date.today().year
-        if value.year > current_year:
+        if value and value.year > current_year:
             raise forms.ValidationError("Date cannot be in the future.")
         return super().validate(value)
 
@@ -118,6 +118,6 @@ class FutureOnlyJqueryDateField(JqueryDateField):
 
     def validate(self, value: dt.datetime) -> None:
         current_year = dt.date.today().year
-        if value.year < current_year:
+        if value and value.year < current_year:
             raise forms.ValidationError("Date cannot be in the past.")
         return super().validate(value)

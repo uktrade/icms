@@ -13,6 +13,7 @@ class ReportType(TypedTextChoices):
     ISSUED_CERTIFICATES = ("ISSUED_CERTIFICATES", "Issued Certificates")
     ACCESS_REQUESTS = ("ACCESS_REQUESTS", "Access Requests")
     IMPORT_LICENCES = ("IMPORT_LICENCES", "Import Licences")
+    SUPPLEMENTARY_FIREARMS = ("SUPPLEMENTARY_FIREARMS", "Supplementary firearms information")
 
 
 class DateFilterType(TypedTextChoices):

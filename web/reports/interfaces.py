@@ -1,10 +1,16 @@
 import datetime as dt
+from itertools import chain
 from typing import Any, ClassVar
 
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import Count, Model, OuterRef, Q, QuerySet, Subquery, Value
 from pydantic import BaseModel, ConfigDict, SerializeAsAny
 
+from web.domains.case._import.fa.types import (
+    FaImportApplication,
+    FaSupplementaryReport,
+    ReportFirearms,
+)
 from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpAccessOrExpAccess
@@ -33,6 +39,7 @@ from .serializers import (
     ImporterAccessRequestReportSerializer,
     ImportLicenceSerializer,
     IssuedCertificateReportSerializer,
+    SupplementaryFirearmsSerializer,
 )
 
 
@@ -90,13 +97,19 @@ class ReportInterface:
         ).model_dump(by_alias=True)
 
     def process_results(self) -> list[BaseModel]:
-        return [self.serialize_row(r) for r in self.get_queryset()]
+        results = []
+        for r in self.get_queryset():
+            results += self.serialize_rows(r)
+        return results
 
     def get_header(self) -> list[str]:
         schema = self.ReportSerializer.model_json_schema(by_alias=True, mode="serialization")
         return schema["required"]
 
-    def serialize_row(self, r: Model) -> BaseModel:
+    def serialize_rows(self, r: Model) -> list:
+        return [self.serialize_row(r)]
+
+    def serialize_row(self, *args, **kwargs) -> BaseModel:
         raise NotImplementedError
 
     def get_queryset(self) -> QuerySet:
@@ -437,3 +450,116 @@ class ImportLicenceInterface(ReportInterface):
         if variation_info:
             return int(variation_info[0])
         return 0
+
+
+class SupplementaryFirearmsInterface(ReportInterface):
+    name = "Supplementary firearms information"
+    ReportSerializer = SupplementaryFirearmsSerializer
+    ReportFilter = BasicReportFilter
+    filters: BasicReportFilter
+
+    def get_queryset(self) -> QuerySet:
+        _filter = Q(
+            licences__case_completion_datetime__date__range=(
+                self.filters.date_from,
+                self.filters.date_to,
+            )
+        )
+        return (
+            ImportApplication.objects.filter(
+                _filter,
+                Q(silapplication__supplementary_info__isnull=False)
+                | Q(openindividuallicenceapplication__supplementary_info__isnull=False)
+                | Q(dflapplication__supplementary_info__isnull=False),
+            )
+            .exclude(status__in=[ImpExpStatus.IN_PROGRESS, ImpExpStatus.DELETED])
+            .order_by("-reference")
+        )
+
+    def serialize_rows(self, import_application: ImportApplication) -> list:
+        results = []
+        ia = import_application.get_specific_model()
+        for report in ia.supplementary_info.reports.all():
+            for report_firearms in chain(
+                report.get_report_firearms(is_manual=True),
+                report.get_report_firearms(is_upload=True),
+                report.get_report_firearms(is_no_firearm=True),
+            ):
+                results.append(self.serialize_row(report_firearms, ia))
+        return results
+
+    def serialize_row(
+        self, s: ReportFirearms, ia: FaImportApplication
+    ) -> SupplementaryFirearmsSerializer:
+        is_dfl = ia.process_type == ProcessTypes.FA_DFL
+        is_sil = ia.process_type == ProcessTypes.FA_SIL
+        is_oil = ia.process_type == ProcessTypes.FA_OIL
+
+        report: FaSupplementaryReport = s.report
+
+        doc_packs = document_pack.pack_licence_history(ia)
+        latest_doc_pack = doc_packs.last()
+        licence = latest_doc_pack.document_references.get(
+            document_type=CaseDocumentReference.Type.LICENCE
+        )
+        licence_ref = licence.reference
+
+        if report.bought_from:
+            bought_from_name = str(report.bought_from)
+            bought_from_reg_no = report.bought_from.registration_number
+            bought_from_address = report.bought_from.address or ""
+        else:
+            bought_from_name = ""
+            bought_from_reg_no = ""
+            bought_from_address = ""
+
+        if is_oil:
+            goods_certificate = None
+        else:
+            goods_certificate = s.goods_certificate
+
+        if is_dfl:
+            constabularies = ia.constabulary.name if ia.constabulary else ""
+            goods_quantity = 1
+        else:
+            constabularies = ", ".join(
+                ia.user_imported_certificates.values_list("constabulary__name", flat=True)
+            )
+            goods_quantity = goods_certificate.quantity or 0 if goods_certificate else 0
+
+        exceed_quantity = is_sil and getattr(goods_certificate, "unlimited_quantity", False)
+
+        importer_address = ia.importer_office.address.replace("\n", ", ")
+        if ia.importer_office.postcode:
+            importer_address = f"{importer_address}, {ia.importer_office.postcode}"
+
+        return self.ReportSerializer(
+            licence_reference=licence_ref,
+            case_reference=ia.get_reference(),
+            case_type=ia.application_type.sub_type,
+            importer_name=ia.importer.name,
+            eori_number=ia.importer.eori_number,
+            importer_address=importer_address,
+            licence_start_date=latest_doc_pack.licence_start_date,
+            licence_end_date=latest_doc_pack.licence_end_date,
+            coo_country_name=getattr(ia.origin_country, "name", ""),
+            coc_country_name=getattr(ia.consignment_country, "name", ""),
+            endorsements="\n".join(ia.endorsements.values_list("content", flat=True)),
+            report_date=report.date_received,
+            constabularies=constabularies,
+            bought_from=bought_from_name,
+            bought_from_reg_no=bought_from_reg_no,
+            bought_from_address=bought_from_address,
+            frame_serial_number=s.serial_number,
+            transport=report.transport,
+            date_firearms_received=report.date_received,
+            calibre=s.calibre,
+            proofing=s.proofing.title() if s.proofing else "",
+            make_model=s.model,
+            firearms_document="See uploaded files on report" if s.document else "",
+            all_reported=report.supplementary_info.is_complete,
+            goods_description=s.get_description(),
+            goods_quantity=goods_quantity,
+            exceed_quantity=exceed_quantity,
+            goods_description_with_sub_section=s.get_description(),
+        )

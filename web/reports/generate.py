@@ -15,6 +15,7 @@ from .interfaces import (
     ImportLicenceInterface,
     IssuedCertificateReportInterface,
     ReportInterface,
+    SupplementaryFirearmsInterface,
 )
 
 
@@ -38,6 +39,13 @@ def _end_processing_report(scheduled_report: ScheduleReport) -> None:
 def generate_issued_certificate_report(scheduled_report: ScheduleReport) -> None:
     scheduled_report = _start_processing_report(scheduled_report)
     report_interface = IssuedCertificateReportInterface(scheduled_report)
+    write_files(scheduled_report, [report_interface])
+    _end_processing_report(scheduled_report)
+
+
+def generate_supplementary_firearms_report(scheduled_report: ScheduleReport) -> None:
+    scheduled_report = _start_processing_report(scheduled_report)
+    report_interface = SupplementaryFirearmsInterface(scheduled_report)
     write_files(scheduled_report, [report_interface])
     _end_processing_report(scheduled_report)
 

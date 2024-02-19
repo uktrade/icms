@@ -531,6 +531,60 @@ class CaseURLS:
 
         return reverse("run-report-view", kwargs=kwargs)
 
+    @staticmethod
+    def fa_sil_report_manual_add(
+        application_pk: int, report_pk: int, section_pk: int, sil_section_type: str
+    ):
+        kwargs = {
+            "application_pk": application_pk,
+            "report_pk": report_pk,
+            "section_pk": section_pk,
+            "sil_section_type": sil_section_type,
+        }
+
+        return reverse("import:fa-sil:report-firearm-manual-add", kwargs=kwargs)
+
+    @staticmethod
+    def fa_sil_report_no_firearm_add(
+        application_pk: int, report_pk: int, section_pk: int, sil_section_type: str
+    ):
+        kwargs = {
+            "application_pk": application_pk,
+            "report_pk": report_pk,
+            "section_pk": section_pk,
+            "sil_section_type": sil_section_type,
+        }
+
+        return reverse("import:fa-sil:report-firearm-no-firearm-add", kwargs=kwargs)
+
+    @staticmethod
+    def fa_oil_report_manual_add(application_pk: int, report_pk: int):
+        kwargs = {"application_pk": application_pk, "report_pk": report_pk}
+
+        return reverse("import:fa-oil:report-firearm-manual-add", kwargs=kwargs)
+
+    @staticmethod
+    def fa_oil_report_upload_add(application_pk: int, report_pk: int):
+        kwargs = {"application_pk": application_pk, "report_pk": report_pk}
+
+        return reverse("import:fa-oil:report-firearm-upload-add", kwargs=kwargs)
+
+    @staticmethod
+    def fa_dfl_report_manual_add(application_pk: int, report_pk: int, goods_pk: int):
+        kwargs = {"application_pk": application_pk, "report_pk": report_pk, "goods_pk": goods_pk}
+
+        return reverse("import:fa-dfl:report-firearm-manual-add", kwargs=kwargs)
+
+    @staticmethod
+    def fa_create_import_contact(application_pk: int, entity: str):
+        kwargs = {"application_pk": application_pk, "entity": entity}
+        return reverse("import:fa:create-import-contact", kwargs=kwargs)
+
+    @staticmethod
+    def fa_create_report(application_pk: int):
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:fa:create-report", kwargs=kwargs)
+
 
 class SearchURLS:
     @staticmethod
