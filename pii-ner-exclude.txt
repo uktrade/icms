@@ -3814,3 +3814,13 @@ Populate the UniqueReference
 Create UniqueReference
 import_application_licences__import_application_id
 GMP/2022/9903/1
+All Import Applications Have Unqiue Reference
+All Import Applications Licence Unqiue References Have FK
+All GMP Applications Have Unqiue Reference
+Max Reference
+NULL ELSE ird.imad_id END
+SELECT MAX(licence_ref
+GA/2022/9910
+reference_no
+SELECT MAX(xseq_value
+ir.licence_ref END

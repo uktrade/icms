@@ -35,6 +35,7 @@ export_data_source_target = {
         (dm.CaseEmail, web.CaseEmail),
         (dm.FurtherInformationRequest, web.FurtherInformationRequest),
         (dm.UpdateRequest, web.UpdateRequest),
+        (dm.UniqueReference, web.UniqueReference),
     ],
     "import_application": [],
     "export_application": [
@@ -174,14 +175,14 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
         process_ptr__process_type=ProcessTypes.GMP
     ).order_by("pk")
 
-    assert ea1.reference == "GMP/2022/9901"
-    assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=9901)
+    assert ea1.reference == "GA/2022/9901"
+    assert web.UniqueReference.objects.get(prefix="GA", year=2022, reference=9901)
 
-    assert ea2.reference == "GMP/2022/9902"
-    assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=9902)
+    assert ea2.reference == "GA/2022/9902"
+    assert web.UniqueReference.objects.get(prefix="GA", year=2022, reference=9902)
 
-    assert ea3.reference == "GMP/2022/9903/1"
-    assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=9903)
+    assert ea3.reference == "GA/2022/9903/1"
+    assert web.UniqueReference.objects.get(prefix="GA", year=2022, reference=9903)
 
     assert ea1.countries.count() == 0
     assert ea2.countries.count() == 3
@@ -254,22 +255,22 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert refs[0].reference == "GMP/2022/00001"
     assert refs[0].reference_data.country_id == 1
     assert refs[0].check_code == "12345678"
-    assert web.UniqueReference.objects.get(prefix="ECD", year=2022, reference=1)
+    assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=1)
 
     assert refs[1].reference == "GMP/2022/00002"
     assert refs[1].reference_data.country_id == 2
     assert refs[1].check_code == "56781234"
-    assert web.UniqueReference.objects.get(prefix="ECD", year=2022, reference=2)
+    assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=2)
 
     assert refs[2].reference == "GMP/2022/00003"
     assert refs[2].reference_data.country_id == 3
     assert refs[2].check_code == "43215678"
-    assert web.UniqueReference.objects.get(prefix="ECD", year=2022, reference=3)
+    assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=3)
 
     assert ref2.reference == "GMP/2022/00004"
     assert ref2.reference_data.country_id == 1
     assert ref2.check_code == "87654321"
-    assert web.UniqueReference.objects.get(prefix="ECD", year=2022, reference=4)
+    assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=4)
 
     gmp1, gmp2, gmp3, _ = web.CertificateOfGoodManufacturingPracticeApplication.objects.order_by(
         "pk"
@@ -366,13 +367,15 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     ref3 = cert4.document_references.first()
     ref4 = cert5.document_references.first()
 
-    assert ref3.reference == "COM/2022/00005"
+    assert ref3.reference == "COM/2022/00001"
     assert ref3.reference_data.country_id == 1
     assert ref3.check_code == "87651432"
+    assert web.UniqueReference.objects.get(prefix="COM", year=2022, reference=1)
 
-    assert ref4.reference == "COM/2022/00006"
+    assert ref4.reference == "COM/2022/00002"
     assert ref4.reference_data.country_id == 1
     assert ref4.check_code == "87651432"
+    assert web.UniqueReference.objects.get(prefix="COM", year=2022, reference=2)
 
     assert com1.is_pesticide_on_free_sale_uk is None
     assert com1.is_manufacturer is None
@@ -475,18 +478,20 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert cert9.document_references.count() == 1
 
     ref5 = cert6.document_references.first()
-    assert ref5.reference == "CFS/2022/00007"
+    assert ref5.reference == "CFS/2022/00001"
     assert ref5.reference_data.country_id == 1
     assert ref5.check_code == "32415678"
 
     ref6 = cert9.document_references.first()
-    assert ref6.reference == "CFS/2022/00008"
+    assert ref6.reference == "CFS/2022/00002"
     assert ref6.reference_data.country_id == 1
     assert ref6.check_code == "32415679"
+    assert web.UniqueReference.objects.get(prefix="CFS", year=2022, reference=1)
 
     assert cfs1.schedules.count() == 0
     assert cfs2.schedules.count() == 1
     assert cfs3.schedules.count() == 2
+    assert web.UniqueReference.objects.get(prefix="CFS", year=2022, reference=2)
 
     sch1 = cfs2.schedules.first()
     sch2, sch3 = cfs3.schedules.order_by("pk")

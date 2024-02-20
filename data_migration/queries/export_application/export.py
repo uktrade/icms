@@ -57,6 +57,9 @@ export_certificate_docs = """
 SELECT
   card.cad_id
   , dd.id document_legacy_id
+  , SUBSTR(cardc.certificate_reference, 1, 3) prefix
+  , SUBSTR(cardc.certificate_reference, 5, 4) year
+  , cardc.xseq_value reference_no
   , cardc.certificate_reference reference
   , cardc.id certificate_id
   , 'CERTIFICATE' document_type
@@ -95,6 +98,14 @@ FROM decmgr.xview_notifications xn
   ) x
 WHERE xn.acknowledgement_status = 'ACKNOWLEDGED'
 """
+
+
+export_certificate_doc_max_ref = """
+SELECT MAX(xseq_value)
+FROM impmgr.cert_app_response_detail_certs
+WHERE certificate_reference LIKE :like_match
+"""
+
 
 export_certificate_timestamp_update = """
 UPDATE web_exportapplicationcertificate SET created_at = data_migration_exportapplicationcertificate.created_at

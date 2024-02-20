@@ -3,8 +3,15 @@ import argparse
 import oracledb
 from django.core.management.base import BaseCommand
 
+from web.models import UniqueReference
+
 from ._types import Anno, ModelT, Params, Val
-from .config.data_counts import CHECK_DATA_COUNTS, CHECK_DATA_QUERIES
+from .config.data_counts import (
+    CHECK_DATA_COUNTS,
+    CHECK_DATA_QUERIES,
+    CHECK_MODELS,
+    UNIQUE_REFERENCES,
+)
 from .utils.db import CONNECTION_CONFIG
 
 
@@ -21,7 +28,9 @@ class Command(BaseCommand):
         self.passes = 0
         self.failures = 0
         self.run_counts()
+        self.run_model_counts()
         self.run_queries()
+        self.check_max_licence_and_cetificate_references()
         self.stdout.write(f"TOTAL PASS: {self.passes} - TOTAL FAIL: {self.failures}")
 
     def get_actual(
@@ -96,6 +105,34 @@ class Command(BaseCommand):
                 values=check.values,
             )
             self._log_result(check.name, check.expected_count, actual)
+
+    def run_model_counts(self) -> None:
+        """Iterates over CHECK_MODELS to compare counts of model queires match"""
+
+        for check in CHECK_MODELS:
+            count_a = self.get_actual(
+                check.model_a,
+                check.filter_params_a,
+                {},
+            )
+            count_b = self.get_actual(
+                check.model_b,
+                check.filter_params_b,
+                {},
+            )
+            self._log_result(check.name, count_a, count_b)
+
+    def check_max_licence_and_cetificate_references(self) -> None:
+        with oracledb.connect(**CONNECTION_CONFIG) as connection:
+            for check in UNIQUE_REFERENCES:
+                ref = (
+                    UniqueReference.objects.filter(**check.filter_params)
+                    .order_by("-year", "-reference")
+                    .first()
+                )
+
+                result = self.run_query(connection, check.query, check.bind_vars)
+                self._log_result(check.name, result, ref.reference)
 
     def _log_result(self, name: str, expected: int, actual: int) -> None:
         """Compares the expected values with the actual values and logs the result

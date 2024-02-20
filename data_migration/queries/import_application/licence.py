@@ -36,11 +36,14 @@ ia_licence_docs = r"""
 SELECT
   ird.imad_id licence_id
   , dd.id document_legacy_id
+  , CASE WHEN ir.response_type LIKE '%_COVER' THEN 'COVER' ELSE 'ILD' END prefix
+  , ir.licence_ref reference_no
+  , CASE WHEN ir.response_type LIKE '%_COVER' THEN NULL ELSE 'ILD' || ir.licence_ref END uref
   , CASE
       WHEN ir.response_type LIKE '%_COVER' THEN ''
       WHEN xiad.print_documents_flag = 'Y' THEN ''
       ELSE iat.chief_licence_prefix
-  END || ir.licence_ref || ir.licence_check_letter reference
+    END || ir.licence_ref || ir.licence_check_letter reference
   , CASE WHEN ir.response_type LIKE '%_COVER' THEN 'COVER_LETTER' ELSE 'LICENCE' END document_type
   , CASE WHEN ir.response_type LIKE '%_COVER' THEN 'cover-letter.pdf' ELSE 'import-licence.pdf' END filename
   , xdd.content_type
@@ -88,6 +91,11 @@ FROM decmgr.xview_notifications xn
   ) x
 WHERE xn.acknowledgement_status = 'ACKNOWLEDGED'
 """
+
+
+ia_licence_max_ref = (
+    "SELECT MAX(licence_ref) FROM impmgr.ima_responses WHERE licence_ref IS NOT NULL"
+)
 
 ia_timestamp_update = """
 UPDATE web_importapplication SET create_datetime = data_migration_importapplication.create_datetime
