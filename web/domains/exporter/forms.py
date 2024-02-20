@@ -85,6 +85,15 @@ class ExporterForm(forms.ModelForm):
         return instance
 
 
+class ExporterNonILBForm(ExporterForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for key in ["name", "registered_number"]:
+            self.fields[key].disabled = True
+            self.fields[key].help_text = "Contact ILB to update this field."
+
+
 class AgentForm(forms.ModelForm):
     main_exporter = forms.ModelChoiceField(
         queryset=Exporter.objects.none(), label="Exporter", disabled=True
@@ -103,6 +112,15 @@ class AgentForm(forms.ModelForm):
         self.fields["main_exporter"].required = True
         self.fields["name"].required = True
         self.fields["registered_number"].required = True
+
+
+class AgentNonILBForm(AgentForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for key in ["name", "registered_number"]:
+            self.fields[key].disabled = True
+            self.fields[key].help_text = "Contact ILB to update this field."
 
 
 # Needed for now because we don't want to show all permissions (everything but the agent)

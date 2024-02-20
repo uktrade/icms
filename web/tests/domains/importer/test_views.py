@@ -284,6 +284,30 @@ class TestImporterEditView(AuthTestCase):
 
         assertInHTML(f"Editing Importer '{self.importer!s}'", resp_html)
 
+    def test_disabled_fields_when_editing_as_non_org_admin(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        for field in ["user", "eori_number"]:
+            assert response.context["form"].fields[field].disabled
+            assert (
+                response.context["form"].fields[field].help_text
+                == "Contact ILB to update this field."
+            )
+
+        # Change org type and test again
+        self.importer.type = self.importer.ORGANISATION
+        self.importer.save()
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        for field in ["registered_number", "name", "eori_number"]:
+            assert response.context["form"].fields[field].disabled
+            assert (
+                response.context["form"].fields[field].help_text
+                == "Contact ILB to update this field."
+            )
+
 
 class TestCreateSection5View(AuthTestCase):
     @pytest.fixture(autouse=True)
@@ -838,10 +862,7 @@ class TestOrganisationAgentCreateView(AuthTestCase):
 class TestAgentEditView(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, _setup):
-        importer = ImporterFactory()
-        self.agent = ImporterFactory(is_active=True, type="ORGANISATION", main_importer=importer)
-
-        self.url = f"/importer/agent/{self.agent.pk}/edit/"
+        self.url = reverse("importer-agent-edit", kwargs={"pk": self.importer_agent.pk})
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
     def test_anonymous_access_redirects(self):
@@ -857,18 +878,42 @@ class TestAgentEditView(AuthTestCase):
         response = self.ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
+    def test_disabled_fields_when_editing_as_non_org_admin(self):
+        response = self.importer_agent_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        for field in ["name", "registered_number"]:
+            assert response.context["form"].fields[field].disabled
+            assert (
+                response.context["form"].fields[field].help_text
+                == "Contact ILB to update this field."
+            )
+
+        # Change org type and test again
+        self.importer_agent.type = self.importer_agent.INDIVIDUAL
+        self.importer_agent.save()
+        response = self.importer_agent_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        for field in ["user"]:
+            assert response.context["form"].fields[field].disabled
+            assert (
+                response.context["form"].fields[field].help_text
+                == "Contact ILB to update this field."
+            )
+
     def test_post(self):
         data = {
             "type": "ORGANISATION",
-            "name": self.agent.name,
+            "name": self.importer_agent.name,
             "registered_number": "quarante-deux",
             "comments": "Alter agent",
         }
         response = self.ilb_admin_client.post(self.url, data)
         assertRedirects(response, self.url)
-        self.agent.refresh_from_db()
-        assert self.agent.comments == "Alter agent"
-        assert self.agent.registered_number == "quarante-deux"
+        self.importer_agent.refresh_from_db()
+        assert self.importer_agent.comments == "Alter agent"
+        assert self.importer_agent.registered_number == "quarante-deux"
 
 
 class TestAgentArchiveView(AuthTestCase):

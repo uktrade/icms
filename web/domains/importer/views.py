@@ -18,11 +18,15 @@ from web.domains.contacts.forms import ContactForm
 from web.domains.file.utils import create_file_model
 from web.domains.importer.forms import (
     AgentIndividualForm,
+    AgentIndividualNonILBForm,
     AgentOrganisationForm,
+    AgentOrganisationNonILBForm,
     ArchiveSection5AuthorityForm,
     ImporterFilter,
     ImporterIndividualForm,
+    ImporterIndividualNonILBForm,
     ImporterOrganisationForm,
+    ImporterOrganisationNonILBForm,
     ImporterUserObjectPermissionsForm,
     get_importer_object_permissions,
 )
@@ -37,6 +41,7 @@ from web.permissions import (
     can_user_edit_section5_authorities,
     can_user_manage_org_contacts,
     can_user_view_org,
+    is_user_org_admin,
     organisation_add_contact,
     organisation_get_contacts,
 )
@@ -237,12 +242,17 @@ def edit_importer(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
     if not can_user_edit_org(request.user, importer):
         raise PermissionDenied
 
-    if importer.type == Importer.ORGANISATION:
-        form_cls = ImporterOrganisationForm
-    elif importer.type == Importer.INDIVIDUAL:
-        form_cls = ImporterIndividualForm
-    else:
-        raise NotImplementedError(f"Unknown importer type {importer.type}")
+    match (importer.type, is_user_org_admin(request.user, importer)):
+        case Importer.ORGANISATION, True:
+            form_cls = ImporterOrganisationForm
+        case Importer.ORGANISATION, False:
+            form_cls = ImporterOrganisationNonILBForm
+        case Importer.INDIVIDUAL, True:
+            form_cls = ImporterIndividualForm
+        case Importer.INDIVIDUAL, False:
+            form_cls = ImporterIndividualNonILBForm
+        case _:
+            raise NotImplementedError(f"Unknown importer type {importer.type}")
 
     form = form_cls(request.POST or None, instance=importer)
 
@@ -685,18 +695,25 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     if not can_user_edit_org(request.user, agent):
         raise PermissionDenied
 
-    if agent.is_organisation():
-        AgentForm = AgentOrganisationForm
-    else:
-        AgentForm = AgentIndividualForm
+    match (agent.type, is_user_org_admin(request.user, agent)):
+        case Importer.ORGANISATION, True:
+            form_cls = AgentOrganisationForm
+        case Importer.ORGANISATION, False:
+            form_cls = AgentOrganisationNonILBForm
+        case Importer.INDIVIDUAL, True:
+            form_cls = AgentIndividualForm
+        case Importer.INDIVIDUAL, False:
+            form_cls = AgentIndividualNonILBForm
+        case _:
+            raise NotImplementedError(f"Unknown importer type {agent.type}")
 
     if request.method == "POST":
-        form = AgentForm(request.POST, instance=agent)
+        form = form_cls(request.POST, instance=agent)
         if form.is_valid():
             agent = form.save()
             return redirect(reverse("importer-agent-edit", kwargs={"pk": agent.pk}))
     else:
-        form = AgentForm(instance=agent)
+        form = form_cls(instance=agent)
 
     contacts = organisation_get_contacts(agent)
     object_permissions = get_importer_object_permissions(agent)

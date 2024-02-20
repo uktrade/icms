@@ -42,6 +42,15 @@ class ImporterIndividualForm(forms.ModelForm):
         raise ValidationError(f"'{eori_number}' doesn't start with {prefix}")
 
 
+class ImporterIndividualNonILBForm(ImporterIndividualForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for key in ["user", "eori_number"]:
+            self.fields[key].disabled = True
+            self.fields[key].help_text = "Contact ILB to update this field."
+
+
 class ImporterOrganisationForm(forms.ModelForm):
     class Meta:
         model = Importer
@@ -113,6 +122,15 @@ class ImporterOrganisationForm(forms.ModelForm):
                 )
 
         return instance
+
+
+class ImporterOrganisationNonILBForm(ImporterOrganisationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for key in ["registered_number", "name", "eori_number"]:
+            self.fields[key].disabled = True
+            self.fields[key].help_text = "Contact ILB to update this field."
 
 
 class ImporterFilter(FilterSet):
@@ -193,6 +211,15 @@ class AgentIndividualForm(forms.ModelForm):
         return super().clean()
 
 
+class AgentIndividualNonILBForm(AgentIndividualForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for key in ["user"]:
+            self.fields[key].disabled = True
+            self.fields[key].help_text = "Contact ILB to update this field."
+
+
 class AgentOrganisationForm(forms.ModelForm):
     main_importer = forms.ModelChoiceField(
         queryset=Importer.objects.none(), label="Importer", disabled=True
@@ -219,6 +246,15 @@ class AgentOrganisationForm(forms.ModelForm):
     def clean(self):
         self.instance.type = Importer.ORGANISATION
         return super().clean()
+
+
+class AgentOrganisationNonILBForm(AgentOrganisationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for key in ["name", "registered_number"]:
+            self.fields[key].disabled = True
+            self.fields[key].help_text = "Contact ILB to update this field."
 
 
 # Needed for now because we don't want to show all permissions (everything but the agent)
