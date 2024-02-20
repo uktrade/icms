@@ -13,8 +13,10 @@ from guardian.shortcuts import get_objects_for_user
 from web.domains.contacts.forms import ContactForm
 from web.domains.exporter.forms import (
     AgentForm,
+    AgentNonILBForm,
     ExporterFilter,
     ExporterForm,
+    ExporterNonILBForm,
     ExporterUserObjectPermissionsForm,
     get_exporter_object_permissions,
 )
@@ -25,6 +27,7 @@ from web.permissions import (
     can_user_edit_org,
     can_user_manage_org_contacts,
     can_user_view_org,
+    is_user_org_admin,
     organisation_get_contacts,
 )
 from web.types import AuthenticatedHttpRequest
@@ -107,7 +110,8 @@ def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
     if not can_user_edit_org(request.user, exporter):
         raise PermissionDenied
 
-    form = ExporterForm(request.POST or None, instance=exporter)
+    form_cls = ExporterForm if is_user_org_admin(request.user, exporter) else ExporterNonILBForm
+    form = form_cls(request.POST or None, instance=exporter)
 
     if request.method == "POST" and form.is_valid():
         form.save()
@@ -282,14 +286,13 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
     if not can_user_edit_org(request.user, exporter):
         raise PermissionDenied
 
-    if request.method == "POST":
-        form = AgentForm(request.POST, instance=exporter)
-        if form.is_valid():
-            exporter = form.save()
+    form_cls = AgentForm if is_user_org_admin(request.user, exporter) else AgentNonILBForm
+    form = form_cls(request.POST or None, instance=exporter)
 
-            return redirect(reverse("exporter-agent-edit", kwargs={"pk": exporter.pk}))
-    else:
-        form = AgentForm(instance=exporter)
+    if request.method == "POST" and form.is_valid():
+        exporter = form.save()
+
+        return redirect(reverse("exporter-agent-edit", kwargs={"pk": exporter.pk}))
 
     contacts = organisation_get_contacts(exporter)
     object_permissions = get_exporter_object_permissions(exporter)

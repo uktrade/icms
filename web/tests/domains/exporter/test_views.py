@@ -130,6 +130,17 @@ class TestEditExporterView(AuthTestCase):
         response = self.ilb_admin_client.get(url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
+    def test_disabled_fields_when_editing_as_non_org_admin(self):
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        for field in ["name", "registered_number"]:
+            assert response.context["form"].fields[field].disabled
+            assert (
+                response.context["form"].fields[field].help_text
+                == "Contact ILB to update this field."
+            )
+
 
 class TestDetailExporterView(AuthTestCase):
     @pytest.fixture(autouse=True)
@@ -377,6 +388,17 @@ class TestEditAgentView(AuthTestCase):
 
         self.exporter_agent.refresh_from_db()
         assert self.exporter_agent.registered_number == "1234567890"
+
+    def test_disabled_fields_when_editing_as_non_org_admin(self):
+        response = self.exporter_agent_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        for field in ["name", "registered_number"]:
+            assert response.context["form"].fields[field].disabled
+            assert (
+                response.context["form"].fields[field].help_text
+                == "Contact ILB to update this field."
+            )
 
 
 class TestArchiveAgentView(AuthTestCase):
