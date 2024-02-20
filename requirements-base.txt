@@ -4,7 +4,7 @@ celery[redis]==5.3.6
 dbt-copilot-python==0.2.0
 dj-database-url==2.1.0
 django-celery-results==2.5.1
-django-chunk-upload-handlers==0.0.13
+django-chunk-upload-handlers==0.0.14
 django-compressor==4.4
 django-filter==23.4
 django-guardian==2.4.0
