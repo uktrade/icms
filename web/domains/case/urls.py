@@ -298,7 +298,7 @@ pdf_urls = [
                 ),
                 path(
                     "pre-sign/",
-                    views_pdf.PreviewLicenceView.as_view(),
+                    views_pdf.PresignLicenceView.as_view(),
                     name="licence-pre-sign",
                     kwargs={"document_type": DocumentTypes.LICENCE_PRE_SIGN},
                 ),
@@ -317,7 +317,7 @@ pdf_urls = [
                 ),
                 path(
                     "pre-sign/",
-                    views_pdf.PreviewCoverLetterView.as_view(),
+                    views_pdf.PresignCoverLetterView.as_view(),
                     name="cover-letter-pre-sign",
                     kwargs={"document_type": DocumentTypes.COVER_LETTER_PRE_SIGN},
                 ),
@@ -336,7 +336,7 @@ pdf_urls = [
                 ),
                 path(
                     "country/<int:country_pk>/pre-sign/",
-                    views_pdf.PreviewCertificateView.as_view(),
+                    views_pdf.PresignCertificateView.as_view(),
                     name="certificate-pre-sign",
                     kwargs={"document_type": DocumentTypes.CERTIFICATE_PRE_SIGN},
                 ),
