@@ -11,6 +11,7 @@ from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import view_application_file
+from web.flow.models import Task
 from web.models import Country, File, Process
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest, DocumentTypes
@@ -64,18 +65,36 @@ class DocumentPreviewBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRe
 
 
 class PreviewLicenceView(DocumentPreviewBase):
-    document_types = [DocumentTypes.LICENCE_PREVIEW, DocumentTypes.LICENCE_PRE_SIGN]
+    document_types = [DocumentTypes.LICENCE_PREVIEW]
     output_filename = "Licence-Preview.pdf"
 
 
+class PresignLicenceView(PreviewLicenceView):
+    document_types = [DocumentTypes.LICENCE_PRE_SIGN]
+    current_status = [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+    current_task_type = Task.TaskType.AUTHORISE
+
+
 class PreviewCoverLetterView(DocumentPreviewBase):
-    document_types = [DocumentTypes.COVER_LETTER_PREVIEW, DocumentTypes.COVER_LETTER_PRE_SIGN]
+    document_types = [DocumentTypes.COVER_LETTER_PREVIEW]
     output_filename = "CoverLetter-Preview.pdf"
 
 
+class PresignCoverLetterView(PreviewCoverLetterView):
+    document_types = [DocumentTypes.COVER_LETTER_PRE_SIGN]
+    current_status = [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+    current_task_type = Task.TaskType.AUTHORISE
+
+
 class PreviewCertificateView(DocumentPreviewBase):
-    document_types = [DocumentTypes.CERTIFICATE_PREVIEW, DocumentTypes.CERTIFICATE_PRE_SIGN]
+    document_types = [DocumentTypes.CERTIFICATE_PREVIEW]
     output_filename = "Certificate-Preview.pdf"
+
+
+class PresignCertificateView(PreviewCertificateView):
+    document_types = [DocumentTypes.CERTIFICATE_PRE_SIGN]
+    current_status = [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+    current_task_type = Task.TaskType.AUTHORISE
 
 
 def return_pdf(pdf_gen: PdfGenerator, filename: str) -> HttpResponse:

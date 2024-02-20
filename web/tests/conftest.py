@@ -17,6 +17,7 @@ from notifications_python_client import NotificationsAPIClient
 from pytest_django.asserts import assertRedirects
 
 from web.auth.fox_hasher import FOXPBKDF2SHA1Hasher
+from web.domains.case._import.fa_oil.models import ChecklistFirearmsOILApplication
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import end_process_task
@@ -79,7 +80,6 @@ def instrumented_render(template_object, *args, **kwargs):
 
 
 Jinja2Template.render = instrumented_render
-
 
 LOGIN_URL = reverse("accounts:login")
 
@@ -502,6 +502,33 @@ def fa_dfl_app_submitted(importer_client, importer, office, importer_one_contact
 
 
 @pytest.fixture()
+def fa_dfl_app_processing(
+    importer_client, importer, office, importer_one_contact, ilb_admin_user, ilb_admin_client
+) -> DFLApplication:
+    app = create_in_progress_fa_dfl_app(importer_client, importer, office, importer_one_contact)
+    submit_app(client=importer_client, view_name=app.get_submit_view_name(), app_pk=app.pk)
+
+    # Taking ownership and begin processing
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    # Set the cover letter, decision, and fill checklist so authorisation can begin
+    app.refresh_from_db()
+    app.cover_letter_text = "Example Cover letter"
+    app.decision = app.APPROVE
+    app.save()
+    _set_valid_licence(app)
+    _add_valid_checklist(app)
+
+    # Start authorisation
+    ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+
+    case_progress.check_expected_status(app, [ImpExpStatus.PROCESSING])
+    case_progress.check_expected_task(app, Task.TaskType.AUTHORISE)
+
+    return app
+
+
+@pytest.fixture()
 def fa_dfl_agent_app_submitted(
     importer_agent_client,
     importer_one_agent_one_contact,
@@ -565,6 +592,33 @@ def fa_oil_app_in_progress(
 
 
 @pytest.fixture()
+def fa_oil_app_processing(
+    importer_client, importer, office, importer_one_contact, ilb_admin_user, ilb_admin_client
+) -> OpenIndividualLicenceApplication:
+    app = create_in_progress_fa_oil_app(importer_client, importer, office, importer_one_contact)
+    submit_app(client=importer_client, view_name=app.get_submit_view_name(), app_pk=app.pk)
+
+    # Taking ownership and begin processing
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    # Set the cover letter, decision, and fill checklist so authorisation can begin
+    app.refresh_from_db()
+    app.cover_letter_text = "Example Cover letter"
+    app.decision = app.APPROVE
+    app.save()
+    _set_valid_licence(app)
+    _add_valid_checklist(app)
+
+    # Start authorisation
+    ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+
+    case_progress.check_expected_status(app, [ImpExpStatus.PROCESSING])
+    case_progress.check_expected_task(app, Task.TaskType.AUTHORISE)
+
+    return app
+
+
+@pytest.fixture()
 def fa_sil_app_in_progress(
     importer_client, importer, office, importer_one_contact
 ) -> SILApplication:
@@ -572,6 +626,33 @@ def fa_sil_app_in_progress(
 
     case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
     case_progress.check_expected_task(app, Task.TaskType.PREPARE)
+
+    return app
+
+
+@pytest.fixture()
+def fa_sil_app_processing(
+    importer_client, importer, office, importer_one_contact, ilb_admin_user, ilb_admin_client
+) -> SILApplication:
+    app = create_in_progress_fa_sil_app(importer_client, importer, office, importer_one_contact)
+    submit_app(client=importer_client, view_name=app.get_submit_view_name(), app_pk=app.pk)
+
+    # Taking ownership and begin processing
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    # Set the cover letter, decision, and fill checklist so authorisation can begin
+    app.refresh_from_db()
+    app.cover_letter_text = "Example Cover letter"
+    app.decision = app.APPROVE
+    app.save()
+    _set_valid_licence(app)
+    _add_valid_checklist(app)
+
+    # Start authorisation
+    ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+
+    case_progress.check_expected_status(app, [ImpExpStatus.PROCESSING])
+    case_progress.check_expected_task(app, Task.TaskType.AUTHORISE)
 
     return app
 
@@ -994,6 +1075,15 @@ def _add_valid_checklist(app):
                 | {
                     "deactivation_certificate_attached": YesNoNAChoices.yes,
                     "deactivation_certificate_issued": YesNoNAChoices.yes,
+                }
+            )
+        case ProcessTypes.FA_OIL:
+            app.checklist = ChecklistFirearmsOILApplication.objects.create(
+                **checklist
+                | {
+                    "authority_required": YesNoNAChoices.yes,
+                    "authority_received": YesNoNAChoices.yes,
+                    "authority_police": YesNoNAChoices.yes,
                 }
             )
         case _:
