@@ -42,6 +42,7 @@ sil_data_source_target = {
         (dm.ObsoleteCalibre, web.ObsoleteCalibre),
         (dm.CommodityType, web.CommodityType),
         (dm.Template, web.Template),
+        (dm.UniqueReference, web.UniqueReference),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -337,20 +338,17 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert l1.document_references.filter(document_type="COVER_LETTER").count() == 1
     assert list(l1.cleared_by.values_list("id", flat=True)) == [2]
 
-    assert list(l2.document_references.values_list("reference", flat=True)) == ["1235B", "1236C"]
-    assert l2.document_references.filter(document_type="LICENCE").count() == 2
+    assert list(l2.document_references.values_list("reference", flat=True)) == ["1235B"]
+    assert l2.document_references.filter(document_type="LICENCE").count() == 1
     assert l2.document_references.filter(document_type="COVER_LETTER").count() == 0
     assert list(l2.cleared_by.values_list("id", flat=True).order_by("id")) == []
 
-    assert l3.document_references.count() == 0
+    assert l3.document_references.count() == 1
     assert list(l3.cleared_by.values_list("id", flat=True)) == [2]
+    assert l3.document_references.first().reference == "1236C"
 
-    assert list(l4.document_references.values_list("reference", flat=True)) == [
-        "1235D",
-        "1236E",
-        None,
-    ]
-    assert l4.document_references.filter(document_type="LICENCE").count() == 2
+    assert list(l4.document_references.values_list("reference", flat=True)) == ["1237E", None]
+    assert l4.document_references.filter(document_type="LICENCE").count() == 1
     assert l4.document_references.filter(document_type="COVER_LETTER").count() == 1
     assert list(l4.cleared_by.values_list("id", flat=True)) == [3, 2]
 
@@ -451,7 +449,7 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert ia2.reference == "IMA/2022/2345/2"
     assert ia2.licence_reference.prefix == "ILD"
     assert ia2.licence_reference.year is None
-    assert ia2.licence_reference.reference == 1235
+    assert ia2.licence_reference.reference == 1237
     assert web.UniqueReference.objects.get(prefix="IMA", year=2022, reference=2345)
 
     assert ia3.variation_no == 1
@@ -528,6 +526,7 @@ oil_data_source_target = {
         (dm.CommodityType, web.CommodityType),
         (dm.Constabulary, web.Constabulary),
         (dm.Template, web.Template),
+        (dm.UniqueReference, web.UniqueReference),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),

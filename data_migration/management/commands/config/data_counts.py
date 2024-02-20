@@ -2,7 +2,7 @@ from django.db.models import Count
 
 import web.models as web
 from data_migration import queries
-from data_migration.management.commands._types import CheckCount, CheckQuery
+from data_migration.management.commands._types import CheckCount, CheckModel, CheckQuery
 from web.flow.models import ProcessTypes
 
 CHECK_DATA_COUNTS: list[CheckCount] = [
@@ -50,6 +50,39 @@ CHECK_DATA_COUNTS: list[CheckCount] = [
         values=["path"],
     ),
 ]
+
+
+CHECK_MODELS = [
+    CheckModel(
+        name="All Import Applications Have Unqiue Reference",
+        model_a=web.ImportApplication,
+        filter_params_a={},
+        model_b=web.UniqueReference,
+        filter_params_b={"prefix": web.UniqueReference.Prefix.IMPORT_APP},
+    ),
+    CheckModel(
+        name="All Import Applications Licence Unqiue References Have FK",
+        model_a=web.ImportApplication,
+        filter_params_a={"licence_reference__isnull": False},
+        model_b=web.UniqueReference,
+        filter_params_b={"prefix": web.UniqueReference.Prefix.IMPORT_LICENCE_DOCUMENT},
+    ),
+    CheckModel(
+        name="All CFS and COM Applications Have Unqiue Reference",
+        model_a=web.ExportApplication,
+        filter_params_a={"process_type__in": (ProcessTypes.CFS, ProcessTypes.COM)},
+        model_b=web.UniqueReference,
+        filter_params_b={"prefix": web.UniqueReference.Prefix.EXPORT_APP_CA},
+    ),
+    CheckModel(
+        name="All GMP Applications Have Unqiue Reference",
+        model_a=web.ExportApplication,
+        filter_params_a={"process_type": ProcessTypes.GMP},
+        model_b=web.UniqueReference,
+        filter_params_b={"prefix": web.UniqueReference.Prefix.EXPORT_APP_GA},
+    ),
+]
+
 
 CHECK_DATA_QUERIES: list[CheckQuery] = [
     CheckQuery(
@@ -465,5 +498,36 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         query=queries.withdrawal_export_application_count,
         model=web.WithdrawApplication,
         filter_params={"export_application__isnull": False},
+    ),
+]
+
+UNIQUE_REFERENCES = [
+    CheckQuery(
+        name="Import Licence Max Reference",
+        model=web.UniqueReference,
+        query=queries.ia_licence_max_ref,
+        filter_params={"prefix": "ILD"},
+        bind_vars={},
+    ),
+    CheckQuery(
+        name="GMP Certificate Max Reference",
+        model=web.UniqueReference,
+        query=queries.export_certificate_doc_max_ref,
+        filter_params={"prefix": "GMP"},
+        bind_vars={"like_match": "GMP/2024/%"},
+    ),
+    CheckQuery(
+        name="COM Certificate Max Reference",
+        model=web.UniqueReference,
+        query=queries.export_certificate_doc_max_ref,
+        filter_params={"prefix": "COM"},
+        bind_vars={"like_match": "COM/2024/%"},
+    ),
+    CheckQuery(
+        name="CFS Certificate Max Reference",
+        model=web.UniqueReference,
+        query=queries.export_certificate_doc_max_ref,
+        filter_params={"prefix": "CFS"},
+        bind_vars={"like_match": "CFS/2024/%"},
     ),
 ]

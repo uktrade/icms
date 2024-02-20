@@ -49,7 +49,7 @@ SELECT
   , xiad.variation_decision
   , xiad.variation_refuse_reason
   , xiad.licence_extended licence_extended_flag
-  , ir.licence_ref licence_reference
+  , 'ILD' || ir.licence_ref licence_uref_id
   , xiad.last_updated_datetime last_update_datetime
   , xiad.submitted_by_wua_id submitted_by_id
   , xiad.created_by_wua_id created_by_id

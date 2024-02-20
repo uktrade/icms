@@ -246,6 +246,9 @@ ia_query_result = {
             ("created_by_id",),
             ("signed_datetime",),
             ("signed_by_id",),
+            ("prefix",),
+            ("reference_no",),
+            ("uref",),
         ],
         [
             (
@@ -261,6 +264,9 @@ ia_query_result = {
                 2,  # created_by_id
                 datetime(2022, 4, 27),  # signed_datetime
                 2,  # signed_by_id
+                "ILD",  # prefix
+                "1234",  # reference_no
+                "ILD1234",  # uref
             ),
             (
                 None,  # reference
@@ -275,6 +281,9 @@ ia_query_result = {
                 2,  # created_by_id
                 datetime(2022, 4, 27),  # signed_datetime
                 2,  # signed_by_id
+                "COVER",  # prefix
+                None,  # reference_no
+                None,  # uref
             ),
             (
                 "1235B",  # reference
@@ -289,10 +298,13 @@ ia_query_result = {
                 2,  # created_by_id
                 datetime(2022, 4, 27),  # signed_datetime
                 2,  # signed_by_id
+                "ILD",  # prefix
+                "1235",  # reference_no
+                "ILD1235",  # uref
             ),
             (
                 "1236C",  # referece
-                9,  # licence_id
+                10,  # licence_id
                 3,  # document_legacy_id
                 "LICENCE",  # document_type
                 "Firearms Licence",  # filename
@@ -303,23 +315,12 @@ ia_query_result = {
                 2,  # created_by_id
                 datetime(2022, 4, 27),  # signed_datetime
                 2,  # signed_by_id
+                "ILD",  # prefix
+                "12346",  # reference_no
+                "ILD12346",  # uref
             ),
             (
-                "1235D",  # referece
-                12,  # licence_id
-                4,  # document_legacy_id
-                "LICENCE",  # document_type
-                "Firearms Licence",  # filename
-                "application/pdf",  # content_type
-                100,  # content_type
-                "firearms-licence-4.pdf",  # path
-                datetime(2022, 4, 30),  # created_datetime
-                2,  # created_by_id
-                datetime(2022, 4, 30),  # signed_datetime
-                2,  # signed_by_id
-            ),
-            (
-                "1236E",  # referece
+                "1237E",  # referece
                 12,  # licence_id
                 5,  # document_legacy_id
                 "LICENCE",  # filename
@@ -331,6 +332,9 @@ ia_query_result = {
                 2,  # created_by_id
                 datetime(2022, 4, 30),  # signed_datetime
                 2,  # signed_by_id
+                "ILD",  # prefix
+                "1237",  # reference_no
+                "ILD1237",  # uref
             ),
             (
                 None,  # reference
@@ -345,6 +349,10 @@ ia_query_result = {
                 2,  # created_by_id
                 datetime(2022, 4, 27),  # signed_datetime
                 2,  # signed_by_id
+                "COVER",  # prefix
+                None,  # reference_no
+                None,  # ur_imad_id
+                None,  # uref
             ),
         ],
     ),
@@ -837,7 +845,7 @@ ia_query_result = {
             ("bought_from_details_xml",),
             ("supplementary_report_xml",),
             ("commodities_xml",),
-            ("last_updated_datetime",),
+            ("licence_uref_id",),
         ],
         [
             (
@@ -868,6 +876,7 @@ ia_query_result = {
                 None,  # bought_from_details_xml
                 xd.sr_manual_xml_5_goods,  # supplementary_report_xml
                 xd.sil_goods,  # commodities_xml
+                "ILD1234",  # licence_uref
             ),
             (
                 2,  # ima_id
@@ -897,6 +906,7 @@ ia_query_result = {
                 xd.import_contact_xml,  # bought_from_details_xml
                 xd.sr_upload_xml,  # supplementary_report_xml
                 xd.sil_goods_sec_1,  # commodities_xml
+                "ILD1237",  # licence_uref
             ),
             (
                 3,  # ima_id
@@ -926,6 +936,7 @@ ia_query_result = {
                 xd.import_contact_xml,  # bought_from_details_xml
                 xd.sr_manual_xml_legacy,  # supplementary_report_xml
                 xd.sil_goods_legacy,  # commodities_xml
+                None,  # licence_uref
             ),
         ],
     ),

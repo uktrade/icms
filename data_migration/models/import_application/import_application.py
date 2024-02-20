@@ -7,7 +7,7 @@ from django.db.models import F
 from data_migration.models.base import MigrationBase
 from data_migration.models.file import FileFolder
 from data_migration.models.flow import Process
-from data_migration.models.reference import CommodityGroup, Country
+from data_migration.models.reference import CommodityGroup, Country, UniqueReference
 from data_migration.models.user import Importer, Office, User
 from data_migration.utils.format import (
     reformat_placeholders,
@@ -82,6 +82,9 @@ class ImportApplication(MigrationBase):
     imi_submit_datetime = models.DateTimeField(null=True)
     variations_xml = models.TextField(null=True)
     withdrawal_xml = models.TextField(null=True)
+    licence_uref = models.ForeignKey(
+        UniqueReference, on_delete=models.PROTECT, null=True, to_field="uref"
+    )
 
     @classmethod
     def get_excludes(cls) -> list[str]:
@@ -93,6 +96,7 @@ class ImportApplication(MigrationBase):
             "agent_office_legacy_id",
             "variations_xml",
             "withdrawal_xml",
+            "licence_uref_id",
         ]
 
     @classmethod
@@ -102,6 +106,9 @@ class ImportApplication(MigrationBase):
             "agent_office_id": F("agent_office_legacy__id"),
             "process_ptr_id": F("id"),
             "last_submit_datetime": F("submit_datetime"),
+            "licence_reference_id": F(
+                "licence_uref__id",
+            ),
         }
 
     @classmethod
@@ -110,9 +117,6 @@ class ImportApplication(MigrationBase):
             if field.endswith("_flag"):
                 value = data[field]
                 data[field] = bool(value) and value.lower() == "true"
-
-        # TODO ICMSLST-1694: Nullify for now
-        data["licence_reference"] = None
 
         cover_letter_text = data["cover_letter_text"]
 

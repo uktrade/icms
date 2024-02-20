@@ -53,6 +53,7 @@ ref_source_target = source_target_list(
         "CaseNote",
         "CaseEmail",
         "UpdateRequest",
+        "UniqueReference",
     ]
 )
 

@@ -151,7 +151,6 @@ def test_import_application_get_data_export():
         "last_updated_by_id",
         "legacy_case_flag",
         "licence_extended_flag",
-        "licence_reference",
         "origin_country_id",
         "reference",
         "refuse_reason",

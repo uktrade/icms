@@ -45,6 +45,15 @@ class CheckCount:
 
 
 @dataclass(frozen=True)
+class CheckModel:
+    name: str
+    model_a: ModelT
+    model_b: ModelT
+    filter_params_a: Params = field(default_factory=dict)
+    filter_params_b: Params = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
 class CheckQuery:
     name: str
     query: str
