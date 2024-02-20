@@ -135,6 +135,7 @@ sil_data_source_target = {
             QueryModel(queries.ia_licence_docs, "ia_licence_docs", dm.CaseDocument),
         ],
         "import_application": [
+            QueryModel(queries.ia_licence_doc_refs, "Licence Doc Refs", dm.UniqueReference),
             QueryModel(queries.ia_type, "ia_type", dm.ImportApplicationType),
             QueryModel(queries.sil_application, "sil_application", dm.SILApplication),
             QueryModel(queries.ia_licence, "ia_licence", dm.ImportApplicationLicence),

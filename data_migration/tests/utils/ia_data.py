@@ -246,9 +246,6 @@ ia_query_result = {
             ("created_by_id",),
             ("signed_datetime",),
             ("signed_by_id",),
-            ("prefix",),
-            ("reference_no",),
-            ("uref",),
         ],
         [
             (
@@ -264,9 +261,6 @@ ia_query_result = {
                 2,  # created_by_id
                 datetime(2022, 4, 27),  # signed_datetime
                 2,  # signed_by_id
-                "ILD",  # prefix
-                "1234",  # reference_no
-                "ILD1234",  # uref
             ),
             (
                 None,  # reference
@@ -281,9 +275,6 @@ ia_query_result = {
                 2,  # created_by_id
                 datetime(2022, 4, 27),  # signed_datetime
                 2,  # signed_by_id
-                "COVER",  # prefix
-                None,  # reference_no
-                None,  # uref
             ),
             (
                 "1235B",  # reference
@@ -298,9 +289,6 @@ ia_query_result = {
                 2,  # created_by_id
                 datetime(2022, 4, 27),  # signed_datetime
                 2,  # signed_by_id
-                "ILD",  # prefix
-                "1235",  # reference_no
-                "ILD1235",  # uref
             ),
             (
                 "1236C",  # referece
@@ -315,9 +303,6 @@ ia_query_result = {
                 2,  # created_by_id
                 datetime(2022, 4, 27),  # signed_datetime
                 2,  # signed_by_id
-                "ILD",  # prefix
-                "12346",  # reference_no
-                "ILD12346",  # uref
             ),
             (
                 "1237E",  # referece
@@ -332,9 +317,6 @@ ia_query_result = {
                 2,  # created_by_id
                 datetime(2022, 4, 30),  # signed_datetime
                 2,  # signed_by_id
-                "ILD",  # prefix
-                "1237",  # reference_no
-                "ILD1237",  # uref
             ),
             (
                 None,  # reference
@@ -350,10 +332,16 @@ ia_query_result = {
                 datetime(2022, 4, 27),  # signed_datetime
                 2,  # signed_by_id
                 "COVER",  # prefix
-                None,  # reference_no
-                None,  # ur_imad_id
-                None,  # uref
             ),
+        ],
+    ),
+    queries.ia_licence_doc_refs: (
+        [("prefix",), ("reference_no",), ("uref",)],
+        [
+            ("ILD", "1234", "ILD1234"),
+            ("ILD", "1235", "ILD1235"),
+            ("ILD", "12346", "ILD12346"),
+            ("ILD", "1237", "ILD1237"),
         ],
     ),
     queries.opt_application: (

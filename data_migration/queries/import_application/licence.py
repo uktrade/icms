@@ -36,9 +36,6 @@ ia_licence_docs = r"""
 SELECT
   ird.imad_id licence_id
   , dd.id document_legacy_id
-  , CASE WHEN ir.response_type LIKE '%_COVER' THEN 'COVER' ELSE 'ILD' END prefix
-  , ir.licence_ref reference_no
-  , CASE WHEN ir.response_type LIKE '%_COVER' THEN NULL ELSE 'ILD' || ir.licence_ref END uref
   , CASE
       WHEN ir.response_type LIKE '%_COVER' THEN ''
       WHEN xiad.print_documents_flag = 'Y' THEN ''
@@ -92,6 +89,14 @@ FROM decmgr.xview_notifications xn
 WHERE xn.acknowledgement_status = 'ACKNOWLEDGED'
 """
 
+ia_licence_doc_refs = """
+SELECT
+  'ILD' prefix
+  , ir.licence_ref reference_no
+  , 'ILD' || ir.licence_ref uref
+FROM impmgr.ima_responses ir
+WHERE ir.response_type LIKE '%_LICENCE'
+"""
 
 ia_licence_max_ref = (
     "SELECT MAX(licence_ref) FROM impmgr.ima_responses WHERE licence_ref IS NOT NULL"

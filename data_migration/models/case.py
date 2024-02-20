@@ -36,7 +36,7 @@ class CaseDocument(MigrationBase):
 
     @classmethod
     def models_to_populate(cls) -> list[str]:
-        return ["File", "UniqueReference", cls.__name__]
+        return ["File", cls.__name__]
 
     @classmethod
     def get_excludes(cls) -> list[str]:
