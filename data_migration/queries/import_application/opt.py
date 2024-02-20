@@ -47,7 +47,7 @@ SELECT
   , xiad.variation_decision
   , xiad.variation_refuse_reason
   , xiad.licence_extended licence_extended_flag
-  , 'ILD' || ir.licence_ref licence_uref_id
+  , CASE WHEN ir.licence_ref IS NULL THEN NULL ELSE 'ILD' || ir.licence_ref END licence_uref_id
   , xiad.last_updated_datetime last_update_datetime
   , xiad.submitted_by_wua_id submitted_by_id
   , xiad.created_by_wua_id created_by_id
