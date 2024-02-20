@@ -1,0 +1,3230 @@
+[
+{
+  "model": "web.country",
+  "pk": 1,
+  "fields": {
+    "name": "Afghanistan",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "660",
+    "hmrc_code": "AF",
+    "overseas_region": 7
+  }
+},
+{
+  "model": "web.country",
+  "pk": 2,
+  "fields": {
+    "name": "Albania",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "70",
+    "hmrc_code": "AL",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 3,
+  "fields": {
+    "name": "Algeria",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "208",
+    "hmrc_code": "DZ",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 4,
+  "fields": {
+    "name": "Angola",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "330",
+    "hmrc_code": "AO",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 5,
+  "fields": {
+    "name": "Any Country",
+    "is_active": true,
+    "type": "SYSTEM",
+    "commission_code": "958",
+    "hmrc_code": "G001",
+    "overseas_region": null
+  }
+},
+{
+  "model": "web.country",
+  "pk": 6,
+  "fields": {
+    "name": "Any Non EU Country",
+    "is_active": true,
+    "type": "SYSTEM",
+    "commission_code": "n/a",
+    "hmrc_code": "G012",
+    "overseas_region": null
+  }
+},
+{
+  "model": "web.country",
+  "pk": 7,
+  "fields": {
+    "name": "Argentina",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "528",
+    "hmrc_code": "AR",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 8,
+  "fields": {
+    "name": "Armenia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "77",
+    "hmrc_code": "AM",
+    "overseas_region": 4
+  }
+},
+{
+  "model": "web.country",
+  "pk": 9,
+  "fields": {
+    "name": "Australia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "800",
+    "hmrc_code": "AU",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 10,
+  "fields": {
+    "name": "Austria",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "38",
+    "hmrc_code": "AT",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 11,
+  "fields": {
+    "name": "Azerbaijan",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "78",
+    "hmrc_code": "AZ",
+    "overseas_region": 4
+  }
+},
+{
+  "model": "web.country",
+  "pk": 12,
+  "fields": {
+    "name": "Bahamas",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "453",
+    "hmrc_code": "BS",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 13,
+  "fields": {
+    "name": "Bahrain",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "640",
+    "hmrc_code": "BH",
+    "overseas_region": 7
+  }
+},
+{
+  "model": "web.country",
+  "pk": 14,
+  "fields": {
+    "name": "Bangladesh",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "666",
+    "hmrc_code": "BD",
+    "overseas_region": 9
+  }
+},
+{
+  "model": "web.country",
+  "pk": 15,
+  "fields": {
+    "name": "Barbados",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "469",
+    "hmrc_code": "BB",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 16,
+  "fields": {
+    "name": "Belarus",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "73",
+    "hmrc_code": "BY",
+    "overseas_region": 4
+  }
+},
+{
+  "model": "web.country",
+  "pk": 17,
+  "fields": {
+    "name": "Belgium",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "17",
+    "hmrc_code": "BE",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 18,
+  "fields": {
+    "name": "Bermuda",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "413",
+    "hmrc_code": "BM",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 19,
+  "fields": {
+    "name": "Bhutan",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "675",
+    "hmrc_code": "BT",
+    "overseas_region": 9
+  }
+},
+{
+  "model": "web.country",
+  "pk": 20,
+  "fields": {
+    "name": "Bosnia and Herzegovina",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "93",
+    "hmrc_code": "BA",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 21,
+  "fields": {
+    "name": "Botswana",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "391",
+    "hmrc_code": "BW",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 22,
+  "fields": {
+    "name": "Brazil",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "508",
+    "hmrc_code": "BR",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 23,
+  "fields": {
+    "name": "British Virgin Islands",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "468",
+    "hmrc_code": "VG",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 24,
+  "fields": {
+    "name": "Brunei",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "703",
+    "hmrc_code": "BN",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 25,
+  "fields": {
+    "name": "Bulgaria",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "68",
+    "hmrc_code": "BG",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 26,
+  "fields": {
+    "name": "Burma",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "676",
+    "hmrc_code": "MM",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 27,
+  "fields": {
+    "name": "Cambodia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "696",
+    "hmrc_code": "KH",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 28,
+  "fields": {
+    "name": "Canada",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "404",
+    "hmrc_code": "CA",
+    "overseas_region": 8
+  }
+},
+{
+  "model": "web.country",
+  "pk": 29,
+  "fields": {
+    "name": "Chile",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "512",
+    "hmrc_code": "CL",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 30,
+  "fields": {
+    "name": "China",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "720",
+    "hmrc_code": "CN",
+    "overseas_region": 3
+  }
+},
+{
+  "model": "web.country",
+  "pk": 31,
+  "fields": {
+    "name": "Colombia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "480",
+    "hmrc_code": "CO",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 32,
+  "fields": {
+    "name": "Any EU Country",
+    "is_active": true,
+    "type": "SYSTEM",
+    "commission_code": "959",
+    "hmrc_code": "G025",
+    "overseas_region": null
+  }
+},
+{
+  "model": "web.country",
+  "pk": 33,
+  "fields": {
+    "name": "Congo",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "318",
+    "hmrc_code": "CG",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 34,
+  "fields": {
+    "name": "Congo (Dem. Republic)",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "322",
+    "hmrc_code": "CD",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 35,
+  "fields": {
+    "name": "Cote d'Ivoire",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "272",
+    "hmrc_code": "CI",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 36,
+  "fields": {
+    "name": "Croatia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "92",
+    "hmrc_code": "HR",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 37,
+  "fields": {
+    "name": "Cuba",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "448",
+    "hmrc_code": "CU",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 38,
+  "fields": {
+    "name": "Cyprus",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "600",
+    "hmrc_code": "CY",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 39,
+  "fields": {
+    "name": "Denmark",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "8",
+    "hmrc_code": "DK",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 40,
+  "fields": {
+    "name": "Dominica",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "460",
+    "hmrc_code": "DM",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 41,
+  "fields": {
+    "name": "Dominican Republic",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "456",
+    "hmrc_code": "DO",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 42,
+  "fields": {
+    "name": "Ecuador",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "500",
+    "hmrc_code": "EC",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 43,
+  "fields": {
+    "name": "Egypt",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "220",
+    "hmrc_code": "EG",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 44,
+  "fields": {
+    "name": "Equatorial Guinea",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "310",
+    "hmrc_code": "GQ",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 45,
+  "fields": {
+    "name": "Estonia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "53",
+    "hmrc_code": "EE",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 46,
+  "fields": {
+    "name": "Ethiopia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "334",
+    "hmrc_code": "ET",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 47,
+  "fields": {
+    "name": "Falkland Islands",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "529",
+    "hmrc_code": "FK",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 48,
+  "fields": {
+    "name": "Faroe Islands",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "41",
+    "hmrc_code": "FO",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 49,
+  "fields": {
+    "name": "Finland",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "32",
+    "hmrc_code": "FI",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 50,
+  "fields": {
+    "name": "France",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "1",
+    "hmrc_code": "FR",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 51,
+  "fields": {
+    "name": "Gabon",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "314",
+    "hmrc_code": "GA",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 52,
+  "fields": {
+    "name": "Georgia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "76",
+    "hmrc_code": "GE",
+    "overseas_region": 4
+  }
+},
+{
+  "model": "web.country",
+  "pk": 53,
+  "fields": {
+    "name": "Germany",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "4",
+    "hmrc_code": "DE",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 54,
+  "fields": {
+    "name": "Ghana",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "276",
+    "hmrc_code": "GH",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 55,
+  "fields": {
+    "name": "Gibraltar",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "44",
+    "hmrc_code": "GI",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 56,
+  "fields": {
+    "name": "Greece",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "9",
+    "hmrc_code": "GR",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 57,
+  "fields": {
+    "name": "Greenland",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "406",
+    "hmrc_code": "GL",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 58,
+  "fields": {
+    "name": "Guatemala",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "416",
+    "hmrc_code": "GT",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 59,
+  "fields": {
+    "name": "Guernsey",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "6",
+    "hmrc_code": "GG",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 60,
+  "fields": {
+    "name": "Guinea",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "260",
+    "hmrc_code": "GN",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 61,
+  "fields": {
+    "name": "Haiti",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "452",
+    "hmrc_code": "HT",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 62,
+  "fields": {
+    "name": "Honduras",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "424",
+    "hmrc_code": "HN",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 63,
+  "fields": {
+    "name": "Hong Kong",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "740",
+    "hmrc_code": "HK",
+    "overseas_region": 3
+  }
+},
+{
+  "model": "web.country",
+  "pk": 64,
+  "fields": {
+    "name": "Hungary",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "64",
+    "hmrc_code": "HU",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 65,
+  "fields": {
+    "name": "Iceland",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "24",
+    "hmrc_code": "IS",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 66,
+  "fields": {
+    "name": "India",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "664",
+    "hmrc_code": "IN",
+    "overseas_region": 9
+  }
+},
+{
+  "model": "web.country",
+  "pk": 67,
+  "fields": {
+    "name": "Indonesia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "700",
+    "hmrc_code": "ID",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 68,
+  "fields": {
+    "name": "Iran",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "616",
+    "hmrc_code": "IR",
+    "overseas_region": 7
+  }
+},
+{
+  "model": "web.country",
+  "pk": 69,
+  "fields": {
+    "name": "Iraq",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "612",
+    "hmrc_code": "IQ",
+    "overseas_region": 7
+  }
+},
+{
+  "model": "web.country",
+  "pk": 70,
+  "fields": {
+    "name": "Irish Republic",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "7",
+    "hmrc_code": "IE",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 71,
+  "fields": {
+    "name": "Israel",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "624",
+    "hmrc_code": "IL",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 72,
+  "fields": {
+    "name": "Italy",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "5",
+    "hmrc_code": "IT",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 73,
+  "fields": {
+    "name": "Jamaica",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "464",
+    "hmrc_code": "JM",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 74,
+  "fields": {
+    "name": "Japan",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "732",
+    "hmrc_code": "JP",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 75,
+  "fields": {
+    "name": "Jersey",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "6",
+    "hmrc_code": "JE",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 76,
+  "fields": {
+    "name": "Jordan",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "628",
+    "hmrc_code": "JO",
+    "overseas_region": 7
+  }
+},
+{
+  "model": "web.country",
+  "pk": 77,
+  "fields": {
+    "name": "Kazakhstan",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "79",
+    "hmrc_code": "KZ",
+    "overseas_region": 4
+  }
+},
+{
+  "model": "web.country",
+  "pk": 78,
+  "fields": {
+    "name": "Kenya",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "346",
+    "hmrc_code": "KE",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 79,
+  "fields": {
+    "name": "Korea (North)",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "724",
+    "hmrc_code": "KP",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 80,
+  "fields": {
+    "name": "Korea (South)",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "728",
+    "hmrc_code": "KR",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 81,
+  "fields": {
+    "name": "Kosovo",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "95",
+    "hmrc_code": "XK",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 82,
+  "fields": {
+    "name": "Kuwait",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "636",
+    "hmrc_code": "KW",
+    "overseas_region": 7
+  }
+},
+{
+  "model": "web.country",
+  "pk": 83,
+  "fields": {
+    "name": "Kyrgyzstan",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "83",
+    "hmrc_code": "KG",
+    "overseas_region": 4
+  }
+},
+{
+  "model": "web.country",
+  "pk": 84,
+  "fields": {
+    "name": "Laos",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "684",
+    "hmrc_code": "LA",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 85,
+  "fields": {
+    "name": "Latvia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "54",
+    "hmrc_code": "LV",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 86,
+  "fields": {
+    "name": "Lebanon",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "604",
+    "hmrc_code": "LB",
+    "overseas_region": 7
+  }
+},
+{
+  "model": "web.country",
+  "pk": 87,
+  "fields": {
+    "name": "Libya",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "216",
+    "hmrc_code": "LY",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 88,
+  "fields": {
+    "name": "Liechtenstein",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "37",
+    "hmrc_code": "LI",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 89,
+  "fields": {
+    "name": "Lithuania",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "55",
+    "hmrc_code": "LT",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 90,
+  "fields": {
+    "name": "Luxembourg",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "18",
+    "hmrc_code": "LU",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 91,
+  "fields": {
+    "name": "Macao",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "743",
+    "hmrc_code": "MO",
+    "overseas_region": 3
+  }
+},
+{
+  "model": "web.country",
+  "pk": 92,
+  "fields": {
+    "name": "Macedonia, Former Yugoslav Republic of",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "96",
+    "hmrc_code": "MK",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 93,
+  "fields": {
+    "name": "Madagascar",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "370",
+    "hmrc_code": "MG",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 94,
+  "fields": {
+    "name": "Malaysia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "701",
+    "hmrc_code": "MY",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 95,
+  "fields": {
+    "name": "Malta",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "46",
+    "hmrc_code": "MT",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 96,
+  "fields": {
+    "name": "Mauritania",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "228",
+    "hmrc_code": "MR",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 97,
+  "fields": {
+    "name": "Mauritius",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "373",
+    "hmrc_code": "MU",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 98,
+  "fields": {
+    "name": "Mexico",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "412",
+    "hmrc_code": "MX",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 99,
+  "fields": {
+    "name": "Micronesia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "823",
+    "hmrc_code": "FM",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 100,
+  "fields": {
+    "name": "Moldova",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "74",
+    "hmrc_code": "MD",
+    "overseas_region": 4
+  }
+},
+{
+  "model": "web.country",
+  "pk": 101,
+  "fields": {
+    "name": "Mongolia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "716",
+    "hmrc_code": "MN",
+    "overseas_region": 4
+  }
+},
+{
+  "model": "web.country",
+  "pk": 102,
+  "fields": {
+    "name": "Montenegro",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "97",
+    "hmrc_code": "ME",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 103,
+  "fields": {
+    "name": "Morocco",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "204",
+    "hmrc_code": "MA",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 104,
+  "fields": {
+    "name": "Mozambique",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "366",
+    "hmrc_code": "MZ",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 105,
+  "fields": {
+    "name": "Namibia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "389",
+    "hmrc_code": "NA",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 106,
+  "fields": {
+    "name": "Nauru",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "803",
+    "hmrc_code": "NR",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 107,
+  "fields": {
+    "name": "Nepal",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "672",
+    "hmrc_code": "NP",
+    "overseas_region": 9
+  }
+},
+{
+  "model": "web.country",
+  "pk": 108,
+  "fields": {
+    "name": "Netherlands",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "3",
+    "hmrc_code": "NL",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 109,
+  "fields": {
+    "name": "New Zealand",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "804",
+    "hmrc_code": "NZ",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 110,
+  "fields": {
+    "name": "Nigeria",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "288",
+    "hmrc_code": "NG",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 111,
+  "fields": {
+    "name": "Norway",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "28",
+    "hmrc_code": "NO",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 112,
+  "fields": {
+    "name": "Oman",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "649",
+    "hmrc_code": "OM",
+    "overseas_region": 7
+  }
+},
+{
+  "model": "web.country",
+  "pk": 113,
+  "fields": {
+    "name": "Pakistan",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "662",
+    "hmrc_code": "PK",
+    "overseas_region": 7
+  }
+},
+{
+  "model": "web.country",
+  "pk": 114,
+  "fields": {
+    "name": "Panama",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "442",
+    "hmrc_code": "PA",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 115,
+  "fields": {
+    "name": "Peru",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "504",
+    "hmrc_code": "PE",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 116,
+  "fields": {
+    "name": "Philippines",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "708",
+    "hmrc_code": "PH",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 117,
+  "fields": {
+    "name": "Poland",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "60",
+    "hmrc_code": "PL",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 118,
+  "fields": {
+    "name": "Portugal",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "10",
+    "hmrc_code": "PT",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 119,
+  "fields": {
+    "name": "Puerto Rico",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "400",
+    "hmrc_code": "PR",
+    "overseas_region": 8
+  }
+},
+{
+  "model": "web.country",
+  "pk": 120,
+  "fields": {
+    "name": "Qatar",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "644",
+    "hmrc_code": "QA",
+    "overseas_region": 7
+  }
+},
+{
+  "model": "web.country",
+  "pk": 121,
+  "fields": {
+    "name": "Romania",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "66",
+    "hmrc_code": "RO",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 122,
+  "fields": {
+    "name": "Russian Federation",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "75",
+    "hmrc_code": "RU",
+    "overseas_region": 4
+  }
+},
+{
+  "model": "web.country",
+  "pk": 123,
+  "fields": {
+    "name": "Saint Helena",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "329",
+    "hmrc_code": "SH",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 124,
+  "fields": {
+    "name": "Saudi Arabia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "632",
+    "hmrc_code": "SA",
+    "overseas_region": 7
+  }
+},
+{
+  "model": "web.country",
+  "pk": 125,
+  "fields": {
+    "name": "Serbia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "98",
+    "hmrc_code": "XS",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 126,
+  "fields": {
+    "name": "Singapore",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "706",
+    "hmrc_code": "SG",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 127,
+  "fields": {
+    "name": "Slovenia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "91",
+    "hmrc_code": "SI",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 128,
+  "fields": {
+    "name": "Solomon Islands",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "806",
+    "hmrc_code": "SB",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 129,
+  "fields": {
+    "name": "Somalia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "342",
+    "hmrc_code": "SO",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 130,
+  "fields": {
+    "name": "South Africa",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "388",
+    "hmrc_code": "ZA",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 131,
+  "fields": {
+    "name": "Spain",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "11",
+    "hmrc_code": "ES",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 132,
+  "fields": {
+    "name": "Sri Lanka",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "669",
+    "hmrc_code": "LK",
+    "overseas_region": 9
+  }
+},
+{
+  "model": "web.country",
+  "pk": 133,
+  "fields": {
+    "name": "Swaziland",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "393",
+    "hmrc_code": "SZ",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 134,
+  "fields": {
+    "name": "Sweden",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "30",
+    "hmrc_code": "SE",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 135,
+  "fields": {
+    "name": "Switzerland",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "39",
+    "hmrc_code": "CH",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 136,
+  "fields": {
+    "name": "Syria",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "608",
+    "hmrc_code": "SY",
+    "overseas_region": 7
+  }
+},
+{
+  "model": "web.country",
+  "pk": 137,
+  "fields": {
+    "name": "Taiwan",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "736",
+    "hmrc_code": "TW",
+    "overseas_region": 3
+  }
+},
+{
+  "model": "web.country",
+  "pk": 138,
+  "fields": {
+    "name": "Tajikistan",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "82",
+    "hmrc_code": "TJ",
+    "overseas_region": 4
+  }
+},
+{
+  "model": "web.country",
+  "pk": 139,
+  "fields": {
+    "name": "Tanzania",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "352",
+    "hmrc_code": "TZ",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 140,
+  "fields": {
+    "name": "Thailand",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "680",
+    "hmrc_code": "TH",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 141,
+  "fields": {
+    "name": "Trinidad & Tobago",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "472",
+    "hmrc_code": "TT",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 142,
+  "fields": {
+    "name": "Tunisia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "212",
+    "hmrc_code": "TN",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 143,
+  "fields": {
+    "name": "Turkey",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "52",
+    "hmrc_code": "TR",
+    "overseas_region": 4
+  }
+},
+{
+  "model": "web.country",
+  "pk": 144,
+  "fields": {
+    "name": "Turkmenistan",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "80",
+    "hmrc_code": "TM",
+    "overseas_region": 4
+  }
+},
+{
+  "model": "web.country",
+  "pk": 145,
+  "fields": {
+    "name": "USA",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "400",
+    "hmrc_code": "US",
+    "overseas_region": 8
+  }
+},
+{
+  "model": "web.country",
+  "pk": 146,
+  "fields": {
+    "name": "Ukraine",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "72",
+    "hmrc_code": "UA",
+    "overseas_region": 4
+  }
+},
+{
+  "model": "web.country",
+  "pk": 147,
+  "fields": {
+    "name": "United Arab Emirates",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "647",
+    "hmrc_code": "AE",
+    "overseas_region": 7
+  }
+},
+{
+  "model": "web.country",
+  "pk": 148,
+  "fields": {
+    "name": "United Kingdom",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "6",
+    "hmrc_code": "GB",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 149,
+  "fields": {
+    "name": "Uruguay",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "524",
+    "hmrc_code": "UY",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 150,
+  "fields": {
+    "name": "Uzbekistan",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "81",
+    "hmrc_code": "UZ",
+    "overseas_region": 4
+  }
+},
+{
+  "model": "web.country",
+  "pk": 151,
+  "fields": {
+    "name": "Venezuela",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "484",
+    "hmrc_code": "VE",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 152,
+  "fields": {
+    "name": "Vietnam",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "690",
+    "hmrc_code": "VN",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 153,
+  "fields": {
+    "name": "Yemen",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "653",
+    "hmrc_code": "YE",
+    "overseas_region": 7
+  }
+},
+{
+  "model": "web.country",
+  "pk": 154,
+  "fields": {
+    "name": "Zimbabwe",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "382",
+    "hmrc_code": "ZW",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 156,
+  "fields": {
+    "name": "the Czech Republic",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "61",
+    "hmrc_code": "CZ",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 157,
+  "fields": {
+    "name": "the Slovak Republic",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "63",
+    "hmrc_code": "SK",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 158,
+  "fields": {
+    "name": "European Union",
+    "is_active": true,
+    "type": "SYSTEM",
+    "commission_code": "N/A",
+    "hmrc_code": "EUNI",
+    "overseas_region": null
+  }
+},
+{
+  "model": "web.country",
+  "pk": 159,
+  "fields": {
+    "name": "Gambia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "252",
+    "hmrc_code": "GM",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 160,
+  "fields": {
+    "name": "Bolivia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "516",
+    "hmrc_code": "BO",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 161,
+  "fields": {
+    "name": "Paraguay",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "520",
+    "hmrc_code": "PY",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 162,
+  "fields": {
+    "name": "Costa Rica",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "436",
+    "hmrc_code": "CR",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 163,
+  "fields": {
+    "name": "El Salvador",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "428",
+    "hmrc_code": "SV",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 164,
+  "fields": {
+    "name": "Nicaragua",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "432",
+    "hmrc_code": "NI",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 165,
+  "fields": {
+    "name": "Occupied Palestinian Territories",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "625",
+    "hmrc_code": "PS",
+    "overseas_region": 7
+  }
+},
+{
+  "model": "web.country",
+  "pk": 166,
+  "fields": {
+    "name": "Sudan",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "224",
+    "hmrc_code": "SD",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 167,
+  "fields": {
+    "name": "Benin",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "284",
+    "hmrc_code": "BJ",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 168,
+  "fields": {
+    "name": "Suriname",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "492",
+    "hmrc_code": "SR",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 169,
+  "fields": {
+    "name": "Belize",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "421",
+    "hmrc_code": "BZ",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 170,
+  "fields": {
+    "name": "Guyana",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "488",
+    "hmrc_code": "GY",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 171,
+  "fields": {
+    "name": "Senegal",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "248",
+    "hmrc_code": "SN",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 172,
+  "fields": {
+    "name": "Seychelles",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "355",
+    "hmrc_code": "SC",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 173,
+  "fields": {
+    "name": "Liberia",
+    "is_active": true,
+    "type": "SYSTEM",
+    "commission_code": "268",
+    "hmrc_code": "LR",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 174,
+  "fields": {
+    "name": "Maldives",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "667",
+    "hmrc_code": "MV",
+    "overseas_region": 9
+  }
+},
+{
+  "model": "web.country",
+  "pk": 175,
+  "fields": {
+    "name": "Zambia",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "378",
+    "hmrc_code": "ZM",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 176,
+  "fields": {
+    "name": "Aruba",
+    "is_active": true,
+    "type": "SYSTEM",
+    "commission_code": "474",
+    "hmrc_code": "AW",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 177,
+  "fields": {
+    "name": "Papua New Guinea",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "801",
+    "hmrc_code": "PG",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 178,
+  "fields": {
+    "name": "Mali",
+    "is_active": true,
+    "type": "SYSTEM",
+    "commission_code": "232",
+    "hmrc_code": "ML",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 179,
+  "fields": {
+    "name": "Rwanda",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "324",
+    "hmrc_code": "RW",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 180,
+  "fields": {
+    "name": "Uganda",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "350",
+    "hmrc_code": "UG",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 181,
+  "fields": {
+    "name": "Continental Shelf (NW European) - UK Sector",
+    "is_active": true,
+    "type": "SYSTEM",
+    "commission_code": "999",
+    "hmrc_code": "ZU",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 182,
+  "fields": {
+    "name": "Monaco",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "001",
+    "hmrc_code": "FR",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 183,
+  "fields": {
+    "name": "Cameroon",
+    "is_active": true,
+    "type": "SYSTEM",
+    "commission_code": "302",
+    "hmrc_code": "CM",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 184,
+  "fields": {
+    "name": "Burkina Faso",
+    "is_active": true,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "236",
+    "hmrc_code": "BF",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 185,
+  "fields": {
+    "name": "American Samoa",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "830",
+    "hmrc_code": "AS",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 186,
+  "fields": {
+    "name": "Andorra",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "043",
+    "hmrc_code": "AD",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 187,
+  "fields": {
+    "name": "Anguilla",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "446",
+    "hmrc_code": "AI",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 188,
+  "fields": {
+    "name": "Antarctica (territory south of 60° south latitude, not AQ Norwegian NOK including the French Southern Territories (TF), Bouvet Krone Islands (BV), South Georgia and South Sandwich Islands (GS))",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "891",
+    "hmrc_code": "AQ",
+    "overseas_region": 10
+  }
+},
+{
+  "model": "web.country",
+  "pk": 189,
+  "fields": {
+    "name": "Antigua and Barbuda",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "459",
+    "hmrc_code": "AG",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 190,
+  "fields": {
+    "name": "Netherlands Antilles",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "478",
+    "hmrc_code": "AN",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 191,
+  "fields": {
+    "name": "Bouvet Island",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "892",
+    "hmrc_code": "BV",
+    "overseas_region": 10
+  }
+},
+{
+  "model": "web.country",
+  "pk": 192,
+  "fields": {
+    "name": "British Antarctic Territory",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "891",
+    "hmrc_code": "AQ",
+    "overseas_region": 10
+  }
+},
+{
+  "model": "web.country",
+  "pk": 193,
+  "fields": {
+    "name": "British Indian Ocean Territory",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "357",
+    "hmrc_code": "IO",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 194,
+  "fields": {
+    "name": "Burundi",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "328",
+    "hmrc_code": "BI",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 195,
+  "fields": {
+    "name": "Canary Islands",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "11",
+    "hmrc_code": "IC",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 196,
+  "fields": {
+    "name": "Cape Verde",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "247",
+    "hmrc_code": "CV",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 197,
+  "fields": {
+    "name": "Cayman Islands",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "463",
+    "hmrc_code": "KY",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 198,
+  "fields": {
+    "name": "Central African Republic",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "306",
+    "hmrc_code": "CF",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 199,
+  "fields": {
+    "name": "Ceuta",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "021",
+    "hmrc_code": "XC",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 200,
+  "fields": {
+    "name": "Chad",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "244",
+    "hmrc_code": "TD",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 201,
+  "fields": {
+    "name": "Christmas Island (Indian Ocean)",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "834",
+    "hmrc_code": "CX",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 202,
+  "fields": {
+    "name": "Cocos (Keeling) Islands",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "833",
+    "hmrc_code": "CC",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 203,
+  "fields": {
+    "name": "Comoros (Great Comoro Anjouan and Moheli)",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "375",
+    "hmrc_code": "KM",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 204,
+  "fields": {
+    "name": "Continental Shelf (NW European) - Belgian Sector",
+    "is_active": false,
+    "type": "SYSTEM",
+    "commission_code": "",
+    "hmrc_code": "ZB",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 205,
+  "fields": {
+    "name": "Continental Shelf (NW European) - Cyprus Sector",
+    "is_active": false,
+    "type": "SYSTEM",
+    "commission_code": "",
+    "hmrc_code": "ZJ",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 206,
+  "fields": {
+    "name": "Continental Shelf (NW European) - Danish Sector",
+    "is_active": false,
+    "type": "SYSTEM",
+    "commission_code": "",
+    "hmrc_code": "ZD",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 207,
+  "fields": {
+    "name": "Continental Shelf (NW European) - Finland Sector",
+    "is_active": false,
+    "type": "SYSTEM",
+    "commission_code": "",
+    "hmrc_code": "ZK",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 208,
+  "fields": {
+    "name": "Continental Shelf (NW European) - French Sector",
+    "is_active": false,
+    "type": "SYSTEM",
+    "commission_code": "",
+    "hmrc_code": "ZF",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 209,
+  "fields": {
+    "name": "Continental Shelf (NW European) - German Sector",
+    "is_active": false,
+    "type": "SYSTEM",
+    "commission_code": "",
+    "hmrc_code": "ZG",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 210,
+  "fields": {
+    "name": "Continental Shelf (NW European) - Greece Sector",
+    "is_active": false,
+    "type": "SYSTEM",
+    "commission_code": "",
+    "hmrc_code": "ZC",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 211,
+  "fields": {
+    "name": "Continental Shelf (NW European) - Irish Sector",
+    "is_active": false,
+    "type": "SYSTEM",
+    "commission_code": "",
+    "hmrc_code": "ZE",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 212,
+  "fields": {
+    "name": "Continental Shelf (NW European) - Italy Sector",
+    "is_active": false,
+    "type": "SYSTEM",
+    "commission_code": "",
+    "hmrc_code": "ZL",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 213,
+  "fields": {
+    "name": "Continental Shelf (NW European) - Netherlands Sector",
+    "is_active": false,
+    "type": "SYSTEM",
+    "commission_code": "",
+    "hmrc_code": "ZH",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 214,
+  "fields": {
+    "name": "Continental Shelf (NW European) - Norwegian Sector",
+    "is_active": false,
+    "type": "SYSTEM",
+    "commission_code": "",
+    "hmrc_code": "ZN",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 215,
+  "fields": {
+    "name": "Continental Shelf (NW European) - Sweden Sector",
+    "is_active": false,
+    "type": "SYSTEM",
+    "commission_code": "",
+    "hmrc_code": "ZS",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 216,
+  "fields": {
+    "name": "Cook Islands",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "837",
+    "hmrc_code": "CK",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 217,
+  "fields": {
+    "name": "Curacao",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "475",
+    "hmrc_code": "CW",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 218,
+  "fields": {
+    "name": "Djibouti",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "338",
+    "hmrc_code": "DJ",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 219,
+  "fields": {
+    "name": "East Timor",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "626",
+    "hmrc_code": "TL",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 220,
+  "fields": {
+    "name": "Eritrea",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "336",
+    "hmrc_code": "ER",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 221,
+  "fields": {
+    "name": "Fiji",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "815",
+    "hmrc_code": "FJ",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 222,
+  "fields": {
+    "name": "French Antarctic Territory",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "891",
+    "hmrc_code": "AQ",
+    "overseas_region": 10
+  }
+},
+{
+  "model": "web.country",
+  "pk": 223,
+  "fields": {
+    "name": "French Guiana",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "1",
+    "hmrc_code": "GF",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 224,
+  "fields": {
+    "name": "French Polynesia",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "822",
+    "hmrc_code": "PF",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 225,
+  "fields": {
+    "name": "French Southern Territory",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "894",
+    "hmrc_code": "TF",
+    "overseas_region": 10
+  }
+},
+{
+  "model": "web.country",
+  "pk": 226,
+  "fields": {
+    "name": "Grenada (including Southern Grenadines)",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "473",
+    "hmrc_code": "GD",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 227,
+  "fields": {
+    "name": "Guadeloupe",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "1",
+    "hmrc_code": "GP",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 228,
+  "fields": {
+    "name": "Guam",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "813",
+    "hmrc_code": "GU",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 229,
+  "fields": {
+    "name": "Guinea-Bissau (formerly Portuguese Guinea)",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "257",
+    "hmrc_code": "GW",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 230,
+  "fields": {
+    "name": "Hawaii",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "452",
+    "hmrc_code": "US",
+    "overseas_region": 8
+  }
+},
+{
+  "model": "web.country",
+  "pk": 231,
+  "fields": {
+    "name": "Heard and McDonald Islands",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "835",
+    "hmrc_code": "HM",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 232,
+  "fields": {
+    "name": "Kiribati",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "812",
+    "hmrc_code": "KI",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 233,
+  "fields": {
+    "name": "Lesotho",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "395",
+    "hmrc_code": "LS",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 234,
+  "fields": {
+    "name": "Malawi",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "386",
+    "hmrc_code": "MW",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 235,
+  "fields": {
+    "name": "Marshall Islands",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "824",
+    "hmrc_code": "MH",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 236,
+  "fields": {
+    "name": "Martinique",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "1",
+    "hmrc_code": "MQ",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 237,
+  "fields": {
+    "name": "Mayotte (Grand Terre and Pamanzi)",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "377",
+    "hmrc_code": "YT",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 238,
+  "fields": {
+    "name": "Melilla (including Penon de Velez de la Gomera, Penon de Alhucemas and the Chafarinas Islands)",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "023",
+    "hmrc_code": "XL",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 239,
+  "fields": {
+    "name": "Montserrat",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "470",
+    "hmrc_code": "MS",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 240,
+  "fields": {
+    "name": "New Caledonia and Dependencies",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "809",
+    "hmrc_code": "NC",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 241,
+  "fields": {
+    "name": "Niger",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "240",
+    "hmrc_code": "NE",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 242,
+  "fields": {
+    "name": "Niue Island",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "838",
+    "hmrc_code": "NU",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 243,
+  "fields": {
+    "name": "Norfolk Island",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "836",
+    "hmrc_code": "NF",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 244,
+  "fields": {
+    "name": "Northern Mariana Islands",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "820",
+    "hmrc_code": "MP",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 245,
+  "fields": {
+    "name": "Palau",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "825",
+    "hmrc_code": "PW",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 246,
+  "fields": {
+    "name": "Pitcairn Island",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "813",
+    "hmrc_code": "PN",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 247,
+  "fields": {
+    "name": "Samoa (formerly Western Samoa)",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "819",
+    "hmrc_code": "WS",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 248,
+  "fields": {
+    "name": "St Berthelemy",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "466",
+    "hmrc_code": "GP",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 249,
+  "fields": {
+    "name": "Bonaire, Sint Eustatius and Saba",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "477",
+    "hmrc_code": "BQ",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 250,
+  "fields": {
+    "name": "St Kitts and Nevis",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "449",
+    "hmrc_code": "KN",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 251,
+  "fields": {
+    "name": "St Lucia",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "465",
+    "hmrc_code": "LC",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 252,
+  "fields": {
+    "name": "St Maarten (Dutch Part)",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "479",
+    "hmrc_code": "SX",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 253,
+  "fields": {
+    "name": "St Pierre and Miquelon",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "408",
+    "hmrc_code": "PM",
+    "overseas_region": 8
+  }
+},
+{
+  "model": "web.country",
+  "pk": 254,
+  "fields": {
+    "name": "St Vincent and the Grenadines",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "467",
+    "hmrc_code": "VC",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 255,
+  "fields": {
+    "name": "San Marino",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "047",
+    "hmrc_code": "SM",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 256,
+  "fields": {
+    "name": "Sao Tome and Principe",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "311",
+    "hmrc_code": "ST",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 257,
+  "fields": {
+    "name": "Sierra Leone",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "264",
+    "hmrc_code": "SL",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 258,
+  "fields": {
+    "name": "South Georgia and South Sandwich Islands",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "893",
+    "hmrc_code": "GS",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 259,
+  "fields": {
+    "name": "South Sudan",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "225",
+    "hmrc_code": "SS",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 260,
+  "fields": {
+    "name": "Togo",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "280",
+    "hmrc_code": "TG",
+    "overseas_region": 1
+  }
+},
+{
+  "model": "web.country",
+  "pk": 261,
+  "fields": {
+    "name": "Tokelau Islands",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "839",
+    "hmrc_code": "TK",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 262,
+  "fields": {
+    "name": "Tonga",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "817",
+    "hmrc_code": "TO",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 263,
+  "fields": {
+    "name": "Turks and Caicos Islands",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "454",
+    "hmrc_code": "TC",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 264,
+  "fields": {
+    "name": "Tuvalu",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "807",
+    "hmrc_code": "TV",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 265,
+  "fields": {
+    "name": "United States minor outlying islands (including Baker Island, Howland Island, Jarvis Island, Johnson Atoll, Kingman Reef, Midway Islands, Navassa Island, Palmyra Atoll and Wake Island)",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "832",
+    "hmrc_code": "UM",
+    "overseas_region": 8
+  }
+},
+{
+  "model": "web.country",
+  "pk": 266,
+  "fields": {
+    "name": "Vanuatu",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "816",
+    "hmrc_code": "VU",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 267,
+  "fields": {
+    "name": "Vatican City",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "045",
+    "hmrc_code": "VA",
+    "overseas_region": 5
+  }
+},
+{
+  "model": "web.country",
+  "pk": 268,
+  "fields": {
+    "name": "Virgin Islands of USA",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "457",
+    "hmrc_code": "VI",
+    "overseas_region": 6
+  }
+},
+{
+  "model": "web.country",
+  "pk": 269,
+  "fields": {
+    "name": "Wallis and Futuna Islands",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "811",
+    "hmrc_code": "WF",
+    "overseas_region": 2
+  }
+},
+{
+  "model": "web.country",
+  "pk": 270,
+  "fields": {
+    "name": "Western Sahara",
+    "is_active": false,
+    "type": "SOVEREIGN_TERRITORY",
+    "commission_code": "229",
+    "hmrc_code": "EH",
+    "overseas_region": 1
+  }
+}
+]

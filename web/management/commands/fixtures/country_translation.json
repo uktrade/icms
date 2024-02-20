@@ -1,0 +1,7832 @@
+[
+{
+  "model": "web.countrytranslation",
+  "pk": 1,
+  "fields": {
+    "translation": "Экваториальная Гвинея",
+    "country": 44,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 2,
+  "fields": {
+    "translation": "Эстония",
+    "country": 45,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 3,
+  "fields": {
+    "translation": "Эфиопия",
+    "country": 46,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 4,
+  "fields": {
+    "translation": "ЮАР",
+    "country": 130,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 5,
+  "fields": {
+    "translation": "Ямайка",
+    "country": 73,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 6,
+  "fields": {
+    "translation": "Япония",
+    "country": 74,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 7,
+  "fields": {
+    "translation": "о-в Св. Елены",
+    "country": 123,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 8,
+  "fields": {
+    "translation": "Afganistán",
+    "country": 1,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 9,
+  "fields": {
+    "translation": "Albania",
+    "country": 2,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 10,
+  "fields": {
+    "translation": "Alemania",
+    "country": 53,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 11,
+  "fields": {
+    "translation": "Angola",
+    "country": 4,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 12,
+  "fields": {
+    "translation": "Arabia Saudí",
+    "country": 124,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 13,
+  "fields": {
+    "translation": "Argelia",
+    "country": 3,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 14,
+  "fields": {
+    "translation": "Argentina",
+    "country": 7,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 15,
+  "fields": {
+    "translation": "Armenia",
+    "country": 8,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 16,
+  "fields": {
+    "translation": "Aruba",
+    "country": 176,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 17,
+  "fields": {
+    "translation": "Australia",
+    "country": 9,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 18,
+  "fields": {
+    "translation": "Austria",
+    "country": 10,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 19,
+  "fields": {
+    "translation": "Azerbaiyán",
+    "country": 11,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 20,
+  "fields": {
+    "translation": "Bahamas",
+    "country": 12,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 21,
+  "fields": {
+    "translation": "Bangladés",
+    "country": 14,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 22,
+  "fields": {
+    "translation": "Barbados",
+    "country": 15,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 23,
+  "fields": {
+    "translation": "Baréin",
+    "country": 13,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 24,
+  "fields": {
+    "translation": "Belice",
+    "country": 169,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 25,
+  "fields": {
+    "translation": "Benín",
+    "country": 167,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 26,
+  "fields": {
+    "translation": "Bermudas",
+    "country": 18,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 27,
+  "fields": {
+    "translation": "Bielorrusia",
+    "country": 16,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 28,
+  "fields": {
+    "translation": "Bolivia",
+    "country": 160,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 29,
+  "fields": {
+    "translation": "Bosnia-Herzegovina",
+    "country": 20,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 30,
+  "fields": {
+    "translation": "Botsuana",
+    "country": 21,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 31,
+  "fields": {
+    "translation": "Brasil",
+    "country": 22,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 32,
+  "fields": {
+    "translation": "Brunéi",
+    "country": 24,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 33,
+  "fields": {
+    "translation": "Bulgaria",
+    "country": 25,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 34,
+  "fields": {
+    "translation": "Bután",
+    "country": 19,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 35,
+  "fields": {
+    "translation": "Bélgica",
+    "country": 17,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 36,
+  "fields": {
+    "translation": "Camboya",
+    "country": 27,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 37,
+  "fields": {
+    "translation": "Canadá",
+    "country": 28,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 38,
+  "fields": {
+    "translation": "Catar",
+    "country": 120,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 39,
+  "fields": {
+    "translation": "Chequia",
+    "country": 156,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 40,
+  "fields": {
+    "translation": "Chile",
+    "country": 29,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 41,
+  "fields": {
+    "translation": "China",
+    "country": 30,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 42,
+  "fields": {
+    "translation": "Chipre",
+    "country": 38,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 43,
+  "fields": {
+    "translation": "Colombia",
+    "country": 31,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 44,
+  "fields": {
+    "translation": "Corea del Norte",
+    "country": 79,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 45,
+  "fields": {
+    "translation": "Corea del Sur",
+    "country": 80,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 46,
+  "fields": {
+    "translation": "Costa Rica",
+    "country": 162,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 47,
+  "fields": {
+    "translation": "Croacia",
+    "country": 36,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 48,
+  "fields": {
+    "translation": "Cuba",
+    "country": 37,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 49,
+  "fields": {
+    "translation": "Côte d’Ivoire",
+    "country": 35,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 50,
+  "fields": {
+    "translation": "Dinamarca",
+    "country": 39,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 51,
+  "fields": {
+    "translation": "Dominica",
+    "country": 40,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 52,
+  "fields": {
+    "translation": "Ecuador",
+    "country": 42,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 53,
+  "fields": {
+    "translation": "Egipto",
+    "country": 43,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 54,
+  "fields": {
+    "translation": "El Salvador",
+    "country": 163,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 55,
+  "fields": {
+    "translation": "Emiratos Árabes Unidos",
+    "country": 147,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 56,
+  "fields": {
+    "translation": "Eslovaquia",
+    "country": 157,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 57,
+  "fields": {
+    "translation": "Eslovenia",
+    "country": 127,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 58,
+  "fields": {
+    "translation": "España",
+    "country": 131,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 59,
+  "fields": {
+    "translation": "Estados Unidos",
+    "country": 145,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 60,
+  "fields": {
+    "translation": "Estonia",
+    "country": 45,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 61,
+  "fields": {
+    "translation": "Etiopía",
+    "country": 46,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 62,
+  "fields": {
+    "translation": "Filipinas",
+    "country": 116,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 63,
+  "fields": {
+    "translation": "Finlandia",
+    "country": 49,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 64,
+  "fields": {
+    "translation": "Francia",
+    "country": 50,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 65,
+  "fields": {
+    "translation": "Gabón",
+    "country": 51,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 66,
+  "fields": {
+    "translation": "Gambia",
+    "country": 159,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 67,
+  "fields": {
+    "translation": "Georgia",
+    "country": 52,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 68,
+  "fields": {
+    "translation": "Ghana",
+    "country": 54,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 69,
+  "fields": {
+    "translation": "Gibraltar",
+    "country": 55,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 70,
+  "fields": {
+    "translation": "Grecia",
+    "country": 56,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 71,
+  "fields": {
+    "translation": "Groenlandia",
+    "country": 57,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 72,
+  "fields": {
+    "translation": "Guatemala",
+    "country": 58,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 73,
+  "fields": {
+    "translation": "Guernesey",
+    "country": 59,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 74,
+  "fields": {
+    "translation": "Guinea",
+    "country": 60,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 75,
+  "fields": {
+    "translation": "Guinea Ecuatorial",
+    "country": 44,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 76,
+  "fields": {
+    "translation": "Guyana",
+    "country": 170,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 77,
+  "fields": {
+    "translation": "Haití",
+    "country": 61,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 78,
+  "fields": {
+    "translation": "Honduras",
+    "country": 62,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 79,
+  "fields": {
+    "translation": "Hungría",
+    "country": 64,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 80,
+  "fields": {
+    "translation": "India",
+    "country": 66,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 81,
+  "fields": {
+    "translation": "Indonesia",
+    "country": 67,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 82,
+  "fields": {
+    "translation": "Irak",
+    "country": 69,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 83,
+  "fields": {
+    "translation": "Irlanda",
+    "country": 70,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 84,
+  "fields": {
+    "translation": "Irán",
+    "country": 68,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 85,
+  "fields": {
+    "translation": "Islandia",
+    "country": 65,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 86,
+  "fields": {
+    "translation": "Islas Feroe",
+    "country": 48,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 87,
+  "fields": {
+    "translation": "Islas Malvinas",
+    "country": 47,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 88,
+  "fields": {
+    "translation": "Islas Salomón",
+    "country": 128,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 89,
+  "fields": {
+    "translation": "Islas Vírgenes Británicas",
+    "country": 23,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 90,
+  "fields": {
+    "translation": "Israel",
+    "country": 71,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 91,
+  "fields": {
+    "translation": "Italia",
+    "country": 72,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 92,
+  "fields": {
+    "translation": "Jamaica",
+    "country": 73,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 93,
+  "fields": {
+    "translation": "Japón",
+    "country": 74,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 94,
+  "fields": {
+    "translation": "Jersey",
+    "country": 75,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 95,
+  "fields": {
+    "translation": "Jordania",
+    "country": 76,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 96,
+  "fields": {
+    "translation": "Kazajistán",
+    "country": 77,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 97,
+  "fields": {
+    "translation": "Kenia",
+    "country": 78,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 98,
+  "fields": {
+    "translation": "Kirguistán",
+    "country": 83,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 99,
+  "fields": {
+    "translation": "Kosovo",
+    "country": 81,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 100,
+  "fields": {
+    "translation": "Kuwait",
+    "country": 82,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 101,
+  "fields": {
+    "translation": "Laos",
+    "country": 84,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 102,
+  "fields": {
+    "translation": "Letonia",
+    "country": 85,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 103,
+  "fields": {
+    "translation": "Liberia",
+    "country": 173,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 104,
+  "fields": {
+    "translation": "Libia",
+    "country": 87,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 105,
+  "fields": {
+    "translation": "Liechtenstein",
+    "country": 88,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 106,
+  "fields": {
+    "translation": "Lituania",
+    "country": 89,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 107,
+  "fields": {
+    "translation": "Luxemburgo",
+    "country": 90,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 108,
+  "fields": {
+    "translation": "Líbano",
+    "country": 86,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 109,
+  "fields": {
+    "translation": "Macedonia",
+    "country": 92,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 110,
+  "fields": {
+    "translation": "Madagascar",
+    "country": 93,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 111,
+  "fields": {
+    "translation": "Malasia",
+    "country": 94,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 112,
+  "fields": {
+    "translation": "Maldivas",
+    "country": 174,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 113,
+  "fields": {
+    "translation": "Mali",
+    "country": 178,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 114,
+  "fields": {
+    "translation": "Malta",
+    "country": 95,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 115,
+  "fields": {
+    "translation": "Marruecos",
+    "country": 103,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 116,
+  "fields": {
+    "translation": "Mauricio",
+    "country": 97,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 117,
+  "fields": {
+    "translation": "Mauritania",
+    "country": 96,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 118,
+  "fields": {
+    "translation": "Micronesia",
+    "country": 99,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 119,
+  "fields": {
+    "translation": "Moldavia",
+    "country": 100,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 120,
+  "fields": {
+    "translation": "Mongolia",
+    "country": 101,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 121,
+  "fields": {
+    "translation": "Montenegro",
+    "country": 102,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 122,
+  "fields": {
+    "translation": "Mozambique",
+    "country": 104,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 123,
+  "fields": {
+    "translation": "Myanmar (Birmania)",
+    "country": 26,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 124,
+  "fields": {
+    "translation": "México",
+    "country": 98,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 125,
+  "fields": {
+    "translation": "Namibia",
+    "country": 105,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 126,
+  "fields": {
+    "translation": "Nauru",
+    "country": 106,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 127,
+  "fields": {
+    "translation": "Nepal",
+    "country": 107,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 128,
+  "fields": {
+    "translation": "Nicaragua",
+    "country": 164,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 129,
+  "fields": {
+    "translation": "Nigeria",
+    "country": 110,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 130,
+  "fields": {
+    "translation": "Noruega",
+    "country": 111,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 131,
+  "fields": {
+    "translation": "Nueva Zelanda",
+    "country": 109,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 132,
+  "fields": {
+    "translation": "Omán",
+    "country": 112,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 133,
+  "fields": {
+    "translation": "Pakistán",
+    "country": 113,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 134,
+  "fields": {
+    "translation": "Panamá",
+    "country": 114,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 135,
+  "fields": {
+    "translation": "Papúa Nueva Guinea",
+    "country": 177,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 136,
+  "fields": {
+    "translation": "Paraguay",
+    "country": 161,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 137,
+  "fields": {
+    "translation": "Países Bajos",
+    "country": 108,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 138,
+  "fields": {
+    "translation": "Perú",
+    "country": 115,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 139,
+  "fields": {
+    "translation": "Polonia",
+    "country": 117,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 140,
+  "fields": {
+    "translation": "Portugal",
+    "country": 118,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 141,
+  "fields": {
+    "translation": "Puerto Rico",
+    "country": 119,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 142,
+  "fields": {
+    "translation": "RAE de Hong Kong (China)",
+    "country": 63,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 143,
+  "fields": {
+    "translation": "RAE de Macao (China)",
+    "country": 91,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 144,
+  "fields": {
+    "translation": "Reino Unido",
+    "country": 148,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 145,
+  "fields": {
+    "translation": "República Democrática del Congo",
+    "country": 34,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 146,
+  "fields": {
+    "translation": "República Dominicana",
+    "country": 41,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 147,
+  "fields": {
+    "translation": "República del Congo",
+    "country": 33,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 148,
+  "fields": {
+    "translation": "Ruanda",
+    "country": 179,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 149,
+  "fields": {
+    "translation": "Rumanía",
+    "country": 121,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 150,
+  "fields": {
+    "translation": "Rusia",
+    "country": 122,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 151,
+  "fields": {
+    "translation": "Santa Elena",
+    "country": 123,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 152,
+  "fields": {
+    "translation": "Senegal",
+    "country": 171,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 153,
+  "fields": {
+    "translation": "Serbia",
+    "country": 125,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 154,
+  "fields": {
+    "translation": "Seychelles",
+    "country": 172,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 155,
+  "fields": {
+    "translation": "Singapur",
+    "country": 126,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 156,
+  "fields": {
+    "translation": "Siria",
+    "country": 136,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 157,
+  "fields": {
+    "translation": "Somalia",
+    "country": 129,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 158,
+  "fields": {
+    "translation": "Sri Lanka",
+    "country": 132,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 159,
+  "fields": {
+    "translation": "Suazilandia",
+    "country": 133,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 160,
+  "fields": {
+    "translation": "Sudáfrica",
+    "country": 130,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 161,
+  "fields": {
+    "translation": "Sudán",
+    "country": 166,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 162,
+  "fields": {
+    "translation": "Suecia",
+    "country": 134,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 163,
+  "fields": {
+    "translation": "Suiza",
+    "country": 135,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 164,
+  "fields": {
+    "translation": "Surinam",
+    "country": 168,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 165,
+  "fields": {
+    "translation": "Tailandia",
+    "country": 140,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 166,
+  "fields": {
+    "translation": "Taiwán",
+    "country": 137,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 167,
+  "fields": {
+    "translation": "Tanzania",
+    "country": 139,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 168,
+  "fields": {
+    "translation": "Tayikistán",
+    "country": 138,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 169,
+  "fields": {
+    "translation": "Territorios Palestinos",
+    "country": 165,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 170,
+  "fields": {
+    "translation": "Trinidad y Tobago",
+    "country": 141,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 171,
+  "fields": {
+    "translation": "Turkmenistán",
+    "country": 144,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 172,
+  "fields": {
+    "translation": "Turquía",
+    "country": 143,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 173,
+  "fields": {
+    "translation": "Túnez",
+    "country": 142,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 174,
+  "fields": {
+    "translation": "Ucrania",
+    "country": 146,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 175,
+  "fields": {
+    "translation": "Uruguay",
+    "country": 149,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 176,
+  "fields": {
+    "translation": "Uzbekistán",
+    "country": 150,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 177,
+  "fields": {
+    "translation": "Venezuela",
+    "country": 151,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 178,
+  "fields": {
+    "translation": "Vietnam",
+    "country": 152,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 179,
+  "fields": {
+    "translation": "Yemen",
+    "country": 153,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 180,
+  "fields": {
+    "translation": "Zambia",
+    "country": 175,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 181,
+  "fields": {
+    "translation": "Zimbabue",
+    "country": 154,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 182,
+  "fields": {
+    "translation": "Afganistan",
+    "country": 1,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 183,
+  "fields": {
+    "translation": "Almanya",
+    "country": 53,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 184,
+  "fields": {
+    "translation": "Amerika Birleşik Devletleri",
+    "country": 145,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 185,
+  "fields": {
+    "translation": "Angola",
+    "country": 4,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 186,
+  "fields": {
+    "translation": "Arjantin",
+    "country": 7,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 187,
+  "fields": {
+    "translation": "Arnavutluk",
+    "country": 2,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 188,
+  "fields": {
+    "translation": "Aruba",
+    "country": 176,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 189,
+  "fields": {
+    "translation": "Avustralya",
+    "country": 9,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 190,
+  "fields": {
+    "translation": "Avusturya",
+    "country": 10,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 191,
+  "fields": {
+    "translation": "Azerbaycan",
+    "country": 11,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 192,
+  "fields": {
+    "translation": "Bahamalar",
+    "country": 12,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 193,
+  "fields": {
+    "translation": "Bahreyn",
+    "country": 13,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 194,
+  "fields": {
+    "translation": "Bangladeş",
+    "country": 14,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 195,
+  "fields": {
+    "translation": "Barbados",
+    "country": 15,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 196,
+  "fields": {
+    "translation": "Belarus",
+    "country": 16,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 197,
+  "fields": {
+    "translation": "Belize",
+    "country": 169,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 198,
+  "fields": {
+    "translation": "Belçika",
+    "country": 17,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 199,
+  "fields": {
+    "translation": "Benin",
+    "country": 167,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 200,
+  "fields": {
+    "translation": "Bermuda",
+    "country": 18,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 201,
+  "fields": {
+    "translation": "Birleşik Arap Emirlikleri",
+    "country": 147,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 202,
+  "fields": {
+    "translation": "Birleşik Krallık",
+    "country": 148,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 203,
+  "fields": {
+    "translation": "Bolivya",
+    "country": 160,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 204,
+  "fields": {
+    "translation": "Bosna-Hersek",
+    "country": 20,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 205,
+  "fields": {
+    "translation": "Botsvana",
+    "country": 21,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 206,
+  "fields": {
+    "translation": "Brezilya",
+    "country": 22,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 207,
+  "fields": {
+    "translation": "Britanya Virjin Adaları",
+    "country": 23,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 208,
+  "fields": {
+    "translation": "Brunei",
+    "country": 24,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 209,
+  "fields": {
+    "translation": "Bulgaristan",
+    "country": 25,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 210,
+  "fields": {
+    "translation": "Butan",
+    "country": 19,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 211,
+  "fields": {
+    "translation": "Cebelitarık",
+    "country": 55,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 212,
+  "fields": {
+    "translation": "Cezayir",
+    "country": 3,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 213,
+  "fields": {
+    "translation": "Danimarka",
+    "country": 39,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 214,
+  "fields": {
+    "translation": "Dominik Cumhuriyeti",
+    "country": 41,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 215,
+  "fields": {
+    "translation": "Dominika",
+    "country": 40,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 216,
+  "fields": {
+    "translation": "Ekvador",
+    "country": 42,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 217,
+  "fields": {
+    "translation": "Ekvator Ginesi",
+    "country": 44,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 218,
+  "fields": {
+    "translation": "El Salvador",
+    "country": 163,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 219,
+  "fields": {
+    "translation": "Endonezya",
+    "country": 67,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 220,
+  "fields": {
+    "translation": "Ermenistan",
+    "country": 8,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 221,
+  "fields": {
+    "translation": "Estonya",
+    "country": 45,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 222,
+  "fields": {
+    "translation": "Etiyopya",
+    "country": 46,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 223,
+  "fields": {
+    "translation": "Falkland Adaları",
+    "country": 47,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 224,
+  "fields": {
+    "translation": "Faroe Adaları",
+    "country": 48,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 225,
+  "fields": {
+    "translation": "Fas",
+    "country": 103,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 226,
+  "fields": {
+    "translation": "Fildişi Sahili",
+    "country": 35,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 227,
+  "fields": {
+    "translation": "Filipinler",
+    "country": 116,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 228,
+  "fields": {
+    "translation": "Filistin Bölgeleri",
+    "country": 165,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 229,
+  "fields": {
+    "translation": "Finlandiya",
+    "country": 49,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 230,
+  "fields": {
+    "translation": "Fransa",
+    "country": 50,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 231,
+  "fields": {
+    "translation": "Gabon",
+    "country": 51,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 232,
+  "fields": {
+    "translation": "Gambiya",
+    "country": 159,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 233,
+  "fields": {
+    "translation": "Gana",
+    "country": 54,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 234,
+  "fields": {
+    "translation": "Gine",
+    "country": 60,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 235,
+  "fields": {
+    "translation": "Grönland",
+    "country": 57,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 236,
+  "fields": {
+    "translation": "Guatemala",
+    "country": 58,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 237,
+  "fields": {
+    "translation": "Guernsey",
+    "country": 59,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 238,
+  "fields": {
+    "translation": "Guyana",
+    "country": 170,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 239,
+  "fields": {
+    "translation": "Güney Afrika",
+    "country": 130,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 240,
+  "fields": {
+    "translation": "Güney Kore",
+    "country": 80,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 241,
+  "fields": {
+    "translation": "Gürcistan",
+    "country": 52,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 242,
+  "fields": {
+    "translation": "Haiti",
+    "country": 61,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 243,
+  "fields": {
+    "translation": "Hindistan",
+    "country": 66,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 244,
+  "fields": {
+    "translation": "Hollanda",
+    "country": 108,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 245,
+  "fields": {
+    "translation": "Honduras",
+    "country": 62,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 246,
+  "fields": {
+    "translation": "Hırvatistan",
+    "country": 36,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 247,
+  "fields": {
+    "translation": "Irak",
+    "country": 69,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 248,
+  "fields": {
+    "translation": "Jamaika",
+    "country": 73,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 249,
+  "fields": {
+    "translation": "Japonya",
+    "country": 74,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 250,
+  "fields": {
+    "translation": "Jersey",
+    "country": 75,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 251,
+  "fields": {
+    "translation": "Kamboçya",
+    "country": 27,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 252,
+  "fields": {
+    "translation": "Kanada",
+    "country": 28,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 253,
+  "fields": {
+    "translation": "Karadağ",
+    "country": 102,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 254,
+  "fields": {
+    "translation": "Katar",
+    "country": 120,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 255,
+  "fields": {
+    "translation": "Kazakistan",
+    "country": 77,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 256,
+  "fields": {
+    "translation": "Kenya",
+    "country": 78,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 257,
+  "fields": {
+    "translation": "Kolombiya",
+    "country": 31,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 258,
+  "fields": {
+    "translation": "Kongo - Brazavil",
+    "country": 33,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 259,
+  "fields": {
+    "translation": "Kongo - Kinşasa",
+    "country": 34,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 260,
+  "fields": {
+    "translation": "Kosova",
+    "country": 81,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 261,
+  "fields": {
+    "translation": "Kosta Rika",
+    "country": 162,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 262,
+  "fields": {
+    "translation": "Kuveyt",
+    "country": 82,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 263,
+  "fields": {
+    "translation": "Kuzey Kore",
+    "country": 79,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 264,
+  "fields": {
+    "translation": "Küba",
+    "country": 37,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 265,
+  "fields": {
+    "translation": "Kıbrıs",
+    "country": 38,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 266,
+  "fields": {
+    "translation": "Kırgızistan",
+    "country": 83,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 267,
+  "fields": {
+    "translation": "Laos",
+    "country": 84,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 268,
+  "fields": {
+    "translation": "Letonya",
+    "country": 85,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 269,
+  "fields": {
+    "translation": "Liberya",
+    "country": 173,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 270,
+  "fields": {
+    "translation": "Libya",
+    "country": 87,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 271,
+  "fields": {
+    "translation": "Liechtenstein",
+    "country": 88,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 272,
+  "fields": {
+    "translation": "Litvanya",
+    "country": 89,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 273,
+  "fields": {
+    "translation": "Lübnan",
+    "country": 86,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 274,
+  "fields": {
+    "translation": "Lüksemburg",
+    "country": 90,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 275,
+  "fields": {
+    "translation": "Macaristan",
+    "country": 64,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 276,
+  "fields": {
+    "translation": "Madagaskar",
+    "country": 93,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 277,
+  "fields": {
+    "translation": "Makedonya",
+    "country": 92,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 278,
+  "fields": {
+    "translation": "Maldivler",
+    "country": 174,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 279,
+  "fields": {
+    "translation": "Malezya",
+    "country": 94,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 280,
+  "fields": {
+    "translation": "Mali",
+    "country": 178,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 281,
+  "fields": {
+    "translation": "Malta",
+    "country": 95,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 282,
+  "fields": {
+    "translation": "Mauritius",
+    "country": 97,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 283,
+  "fields": {
+    "translation": "Meksika",
+    "country": 98,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 284,
+  "fields": {
+    "translation": "Mikronezya",
+    "country": 99,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 285,
+  "fields": {
+    "translation": "Moldova",
+    "country": 100,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 286,
+  "fields": {
+    "translation": "Moritanya",
+    "country": 96,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 287,
+  "fields": {
+    "translation": "Mozambik",
+    "country": 104,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 288,
+  "fields": {
+    "translation": "Moğolistan",
+    "country": 101,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 289,
+  "fields": {
+    "translation": "Myanmar (Burma)",
+    "country": 26,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 290,
+  "fields": {
+    "translation": "Mısır",
+    "country": 43,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 291,
+  "fields": {
+    "translation": "Namibya",
+    "country": 105,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 292,
+  "fields": {
+    "translation": "Nauru",
+    "country": 106,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 293,
+  "fields": {
+    "translation": "Nepal",
+    "country": 107,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 294,
+  "fields": {
+    "translation": "Nijerya",
+    "country": 110,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 295,
+  "fields": {
+    "translation": "Nikaragua",
+    "country": 164,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 296,
+  "fields": {
+    "translation": "Norveç",
+    "country": 111,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 297,
+  "fields": {
+    "translation": "Pakistan",
+    "country": 113,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 298,
+  "fields": {
+    "translation": "Panama",
+    "country": 114,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 299,
+  "fields": {
+    "translation": "Papua Yeni Gine",
+    "country": 177,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 300,
+  "fields": {
+    "translation": "Paraguay",
+    "country": 161,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 301,
+  "fields": {
+    "translation": "Peru",
+    "country": 115,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 302,
+  "fields": {
+    "translation": "Polonya",
+    "country": 117,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 303,
+  "fields": {
+    "translation": "Portekiz",
+    "country": 118,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 304,
+  "fields": {
+    "translation": "Porto Riko",
+    "country": 119,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 305,
+  "fields": {
+    "translation": "Romanya",
+    "country": 121,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 306,
+  "fields": {
+    "translation": "Ruanda",
+    "country": 179,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 307,
+  "fields": {
+    "translation": "Rusya",
+    "country": 122,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 308,
+  "fields": {
+    "translation": "Saint Helena",
+    "country": 123,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 309,
+  "fields": {
+    "translation": "Senegal",
+    "country": 171,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 310,
+  "fields": {
+    "translation": "Seyşeller",
+    "country": 172,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 311,
+  "fields": {
+    "translation": "Singapur",
+    "country": 126,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 312,
+  "fields": {
+    "translation": "Slovakya",
+    "country": 157,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 313,
+  "fields": {
+    "translation": "Slovenya",
+    "country": 127,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 314,
+  "fields": {
+    "translation": "Solomon Adaları",
+    "country": 128,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 315,
+  "fields": {
+    "translation": "Somali",
+    "country": 129,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 316,
+  "fields": {
+    "translation": "Sri Lanka",
+    "country": 132,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 317,
+  "fields": {
+    "translation": "Sudan",
+    "country": 166,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 318,
+  "fields": {
+    "translation": "Surinam",
+    "country": 168,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 319,
+  "fields": {
+    "translation": "Suriye",
+    "country": 136,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 320,
+  "fields": {
+    "translation": "Suudi Arabistan",
+    "country": 124,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 321,
+  "fields": {
+    "translation": "Svaziland",
+    "country": 133,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 322,
+  "fields": {
+    "translation": "Sırbistan",
+    "country": 125,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 323,
+  "fields": {
+    "translation": "Tacikistan",
+    "country": 138,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 324,
+  "fields": {
+    "translation": "Tanzanya",
+    "country": 139,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 325,
+  "fields": {
+    "translation": "Tayland",
+    "country": 140,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 326,
+  "fields": {
+    "translation": "Tayvan",
+    "country": 137,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 327,
+  "fields": {
+    "translation": "Trinidad ve Tobago",
+    "country": 141,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 328,
+  "fields": {
+    "translation": "Tunus",
+    "country": 142,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 329,
+  "fields": {
+    "translation": "Türkiye",
+    "country": 143,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 330,
+  "fields": {
+    "translation": "Türkmenistan",
+    "country": 144,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 331,
+  "fields": {
+    "translation": "Ukrayna",
+    "country": 146,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 332,
+  "fields": {
+    "translation": "Umman",
+    "country": 112,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 333,
+  "fields": {
+    "translation": "Uruguay",
+    "country": 149,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 334,
+  "fields": {
+    "translation": "Venezuela",
+    "country": 151,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 335,
+  "fields": {
+    "translation": "Vietnam",
+    "country": 152,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 336,
+  "fields": {
+    "translation": "Yemen",
+    "country": 153,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 337,
+  "fields": {
+    "translation": "Yeni Zelanda",
+    "country": 109,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 338,
+  "fields": {
+    "translation": "Yunanistan",
+    "country": 56,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 339,
+  "fields": {
+    "translation": "Zambiya",
+    "country": 175,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 340,
+  "fields": {
+    "translation": "Zimbabve",
+    "country": 154,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 341,
+  "fields": {
+    "translation": "Çekya",
+    "country": 156,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 342,
+  "fields": {
+    "translation": "Çin",
+    "country": 30,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 343,
+  "fields": {
+    "translation": "Çin Hong Kong ÖİB",
+    "country": 63,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 344,
+  "fields": {
+    "translation": "Çin Makao ÖİB",
+    "country": 91,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 345,
+  "fields": {
+    "translation": "Özbekistan",
+    "country": 150,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 346,
+  "fields": {
+    "translation": "Ürdün",
+    "country": 76,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 347,
+  "fields": {
+    "translation": "İran",
+    "country": 68,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 348,
+  "fields": {
+    "translation": "İrlanda",
+    "country": 70,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 349,
+  "fields": {
+    "translation": "İspanya",
+    "country": 131,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 350,
+  "fields": {
+    "translation": "İsrail",
+    "country": 71,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 351,
+  "fields": {
+    "translation": "İsveç",
+    "country": 134,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 352,
+  "fields": {
+    "translation": "İsviçre",
+    "country": 135,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 353,
+  "fields": {
+    "translation": "İtalya",
+    "country": 72,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 354,
+  "fields": {
+    "translation": "İzlanda",
+    "country": 65,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 355,
+  "fields": {
+    "translation": "Şili",
+    "country": 29,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 356,
+  "fields": {
+    "translation": "Afghanistan",
+    "country": 1,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 357,
+  "fields": {
+    "translation": "Afrique du Sud",
+    "country": 130,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 358,
+  "fields": {
+    "translation": "Albanie",
+    "country": 2,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 359,
+  "fields": {
+    "translation": "Algérie",
+    "country": 3,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 360,
+  "fields": {
+    "translation": "Allemagne",
+    "country": 53,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 361,
+  "fields": {
+    "translation": "Angola",
+    "country": 4,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 362,
+  "fields": {
+    "translation": "Arabie saoudite",
+    "country": 124,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 363,
+  "fields": {
+    "translation": "Argentine",
+    "country": 7,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 364,
+  "fields": {
+    "translation": "Arménie",
+    "country": 8,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 365,
+  "fields": {
+    "translation": "Aruba",
+    "country": 176,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 366,
+  "fields": {
+    "translation": "Australie",
+    "country": 9,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 367,
+  "fields": {
+    "translation": "Autriche",
+    "country": 10,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 368,
+  "fields": {
+    "translation": "Azerbaïdjan",
+    "country": 11,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 369,
+  "fields": {
+    "translation": "Bahamas",
+    "country": 12,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 370,
+  "fields": {
+    "translation": "Bahreïn",
+    "country": 13,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 371,
+  "fields": {
+    "translation": "Bangladesh",
+    "country": 14,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 372,
+  "fields": {
+    "translation": "Barbade",
+    "country": 15,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 373,
+  "fields": {
+    "translation": "Belgique",
+    "country": 17,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 374,
+  "fields": {
+    "translation": "Belize",
+    "country": 169,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 375,
+  "fields": {
+    "translation": "Bermudes",
+    "country": 18,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 376,
+  "fields": {
+    "translation": "Bhoutan",
+    "country": 19,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 377,
+  "fields": {
+    "translation": "Biélorussie",
+    "country": 16,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 378,
+  "fields": {
+    "translation": "Bolivie",
+    "country": 160,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 379,
+  "fields": {
+    "translation": "Bosnie-Herzégovine",
+    "country": 20,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 380,
+  "fields": {
+    "translation": "Botswana",
+    "country": 21,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 381,
+  "fields": {
+    "translation": "Brunéi Darussalam",
+    "country": 24,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 382,
+  "fields": {
+    "translation": "Brésil",
+    "country": 22,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 383,
+  "fields": {
+    "translation": "Bulgarie",
+    "country": 25,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 384,
+  "fields": {
+    "translation": "Bénin",
+    "country": 167,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 385,
+  "fields": {
+    "translation": "Cambodge",
+    "country": 27,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 386,
+  "fields": {
+    "translation": "Canada",
+    "country": 28,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 387,
+  "fields": {
+    "translation": "Chili",
+    "country": 29,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 388,
+  "fields": {
+    "translation": "Chine",
+    "country": 30,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 389,
+  "fields": {
+    "translation": "Chypre",
+    "country": 38,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 390,
+  "fields": {
+    "translation": "Colombie",
+    "country": 31,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 391,
+  "fields": {
+    "translation": "Congo-Brazzaville",
+    "country": 33,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 392,
+  "fields": {
+    "translation": "Congo-Kinshasa",
+    "country": 34,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 393,
+  "fields": {
+    "translation": "Corée du Nord",
+    "country": 79,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 394,
+  "fields": {
+    "translation": "Corée du Sud",
+    "country": 80,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 395,
+  "fields": {
+    "translation": "Costa Rica",
+    "country": 162,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 396,
+  "fields": {
+    "translation": "Croatie",
+    "country": 36,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 397,
+  "fields": {
+    "translation": "Cuba",
+    "country": 37,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 398,
+  "fields": {
+    "translation": "Côte d’Ivoire",
+    "country": 35,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 399,
+  "fields": {
+    "translation": "Danemark",
+    "country": 39,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 400,
+  "fields": {
+    "translation": "Dominique",
+    "country": 40,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 401,
+  "fields": {
+    "translation": "El Salvador",
+    "country": 163,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 402,
+  "fields": {
+    "translation": "Espagne",
+    "country": 131,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 403,
+  "fields": {
+    "translation": "Estonie",
+    "country": 45,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 404,
+  "fields": {
+    "translation": "Finlande",
+    "country": 49,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 405,
+  "fields": {
+    "translation": "France",
+    "country": 50,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 406,
+  "fields": {
+    "translation": "Gabon",
+    "country": 51,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 407,
+  "fields": {
+    "translation": "Gambie",
+    "country": 159,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 408,
+  "fields": {
+    "translation": "Ghana",
+    "country": 54,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 409,
+  "fields": {
+    "translation": "Gibraltar",
+    "country": 55,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 410,
+  "fields": {
+    "translation": "Groenland",
+    "country": 57,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 411,
+  "fields": {
+    "translation": "Grèce",
+    "country": 56,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 412,
+  "fields": {
+    "translation": "Guatemala",
+    "country": 58,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 413,
+  "fields": {
+    "translation": "Guernesey",
+    "country": 59,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 414,
+  "fields": {
+    "translation": "Guinée",
+    "country": 60,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 415,
+  "fields": {
+    "translation": "Guinée équatoriale",
+    "country": 44,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 416,
+  "fields": {
+    "translation": "Guyana",
+    "country": 170,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 417,
+  "fields": {
+    "translation": "Géorgie",
+    "country": 52,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 418,
+  "fields": {
+    "translation": "Haïti",
+    "country": 61,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 419,
+  "fields": {
+    "translation": "Honduras",
+    "country": 62,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 420,
+  "fields": {
+    "translation": "Hongrie",
+    "country": 64,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 421,
+  "fields": {
+    "translation": "Inde",
+    "country": 66,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 422,
+  "fields": {
+    "translation": "Indonésie",
+    "country": 67,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 423,
+  "fields": {
+    "translation": "Irak",
+    "country": 69,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 424,
+  "fields": {
+    "translation": "Iran",
+    "country": 68,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 425,
+  "fields": {
+    "translation": "Irlande",
+    "country": 70,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 426,
+  "fields": {
+    "translation": "Islande",
+    "country": 65,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 427,
+  "fields": {
+    "translation": "Israël",
+    "country": 71,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 428,
+  "fields": {
+    "translation": "Italie",
+    "country": 72,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 429,
+  "fields": {
+    "translation": "Jamaïque",
+    "country": 73,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 430,
+  "fields": {
+    "translation": "Japon",
+    "country": 74,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 431,
+  "fields": {
+    "translation": "Jersey",
+    "country": 75,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 432,
+  "fields": {
+    "translation": "Jordanie",
+    "country": 76,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 433,
+  "fields": {
+    "translation": "Kazakhstan",
+    "country": 77,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 434,
+  "fields": {
+    "translation": "Kenya",
+    "country": 78,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 435,
+  "fields": {
+    "translation": "Kirghizistan",
+    "country": 83,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 436,
+  "fields": {
+    "translation": "Kosovo",
+    "country": 81,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 437,
+  "fields": {
+    "translation": "Koweït",
+    "country": 82,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 438,
+  "fields": {
+    "translation": "Laos",
+    "country": 84,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 439,
+  "fields": {
+    "translation": "Lettonie",
+    "country": 85,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 440,
+  "fields": {
+    "translation": "Liban",
+    "country": 86,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 441,
+  "fields": {
+    "translation": "Libye",
+    "country": 87,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 442,
+  "fields": {
+    "translation": "Libéria",
+    "country": 173,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 443,
+  "fields": {
+    "translation": "Liechtenstein",
+    "country": 88,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 444,
+  "fields": {
+    "translation": "Lituanie",
+    "country": 89,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 445,
+  "fields": {
+    "translation": "Luxembourg",
+    "country": 90,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 446,
+  "fields": {
+    "translation": "Macédoine",
+    "country": 92,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 447,
+  "fields": {
+    "translation": "Madagascar",
+    "country": 93,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 448,
+  "fields": {
+    "translation": "Malaisie",
+    "country": 94,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 449,
+  "fields": {
+    "translation": "Maldives",
+    "country": 174,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 450,
+  "fields": {
+    "translation": "Mali",
+    "country": 178,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 451,
+  "fields": {
+    "translation": "Malte",
+    "country": 95,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 452,
+  "fields": {
+    "translation": "Maroc",
+    "country": 103,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 453,
+  "fields": {
+    "translation": "Maurice",
+    "country": 97,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 454,
+  "fields": {
+    "translation": "Mauritanie",
+    "country": 96,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 455,
+  "fields": {
+    "translation": "Mexique",
+    "country": 98,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 456,
+  "fields": {
+    "translation": "Moldavie",
+    "country": 100,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 457,
+  "fields": {
+    "translation": "Mongolie",
+    "country": 101,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 458,
+  "fields": {
+    "translation": "Monténégro",
+    "country": 102,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 459,
+  "fields": {
+    "translation": "Mozambique",
+    "country": 104,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 460,
+  "fields": {
+    "translation": "Myanmar (Birmanie)",
+    "country": 26,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 461,
+  "fields": {
+    "translation": "Namibie",
+    "country": 105,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 462,
+  "fields": {
+    "translation": "Nauru",
+    "country": 106,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 463,
+  "fields": {
+    "translation": "Nicaragua",
+    "country": 164,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 464,
+  "fields": {
+    "translation": "Nigéria",
+    "country": 110,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 465,
+  "fields": {
+    "translation": "Norvège",
+    "country": 111,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 466,
+  "fields": {
+    "translation": "Nouvelle-Zélande",
+    "country": 109,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 467,
+  "fields": {
+    "translation": "Népal",
+    "country": 107,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 468,
+  "fields": {
+    "translation": "Oman",
+    "country": 112,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 469,
+  "fields": {
+    "translation": "Ouzbékistan",
+    "country": 150,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 470,
+  "fields": {
+    "translation": "Pakistan",
+    "country": 113,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 471,
+  "fields": {
+    "translation": "Panama",
+    "country": 114,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 472,
+  "fields": {
+    "translation": "Papouasie-Nouvelle-Guinée",
+    "country": 177,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 473,
+  "fields": {
+    "translation": "Paraguay",
+    "country": 161,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 474,
+  "fields": {
+    "translation": "Pays-Bas",
+    "country": 108,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 475,
+  "fields": {
+    "translation": "Philippines",
+    "country": 116,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 476,
+  "fields": {
+    "translation": "Pologne",
+    "country": 117,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 477,
+  "fields": {
+    "translation": "Porto Rico",
+    "country": 119,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 478,
+  "fields": {
+    "translation": "Portugal",
+    "country": 118,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 479,
+  "fields": {
+    "translation": "Pérou",
+    "country": 115,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 480,
+  "fields": {
+    "translation": "Qatar",
+    "country": 120,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 481,
+  "fields": {
+    "translation": "R.A.S. chinoise de Hong Kong",
+    "country": 63,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 482,
+  "fields": {
+    "translation": "R.A.S. chinoise de Macao",
+    "country": 91,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 483,
+  "fields": {
+    "translation": "Roumanie",
+    "country": 121,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 484,
+  "fields": {
+    "translation": "Royaume-Uni",
+    "country": 148,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 485,
+  "fields": {
+    "translation": "Russie",
+    "country": 122,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 486,
+  "fields": {
+    "translation": "Rwanda",
+    "country": 179,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 487,
+  "fields": {
+    "translation": "République dominicaine",
+    "country": 41,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 488,
+  "fields": {
+    "translation": "Sainte-Hélène",
+    "country": 123,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 489,
+  "fields": {
+    "translation": "Serbie",
+    "country": 125,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 490,
+  "fields": {
+    "translation": "Seychelles",
+    "country": 172,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 491,
+  "fields": {
+    "translation": "Singapour",
+    "country": 126,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 492,
+  "fields": {
+    "translation": "Slovaquie",
+    "country": 157,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 493,
+  "fields": {
+    "translation": "Slovénie",
+    "country": 127,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 494,
+  "fields": {
+    "translation": "Somalie",
+    "country": 129,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 495,
+  "fields": {
+    "translation": "Soudan",
+    "country": 166,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 496,
+  "fields": {
+    "translation": "Sri Lanka",
+    "country": 132,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 497,
+  "fields": {
+    "translation": "Suisse",
+    "country": 135,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 498,
+  "fields": {
+    "translation": "Suriname",
+    "country": 168,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 499,
+  "fields": {
+    "translation": "Suède",
+    "country": 134,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 500,
+  "fields": {
+    "translation": "Swaziland",
+    "country": 133,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 501,
+  "fields": {
+    "translation": "Syrie",
+    "country": 136,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 502,
+  "fields": {
+    "translation": "Sénégal",
+    "country": 171,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 503,
+  "fields": {
+    "translation": "Tadjikistan",
+    "country": 138,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 504,
+  "fields": {
+    "translation": "Tanzanie",
+    "country": 139,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 505,
+  "fields": {
+    "translation": "Taïwan",
+    "country": 137,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 506,
+  "fields": {
+    "translation": "Tchéquie",
+    "country": 156,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 507,
+  "fields": {
+    "translation": "Territoires palestiniens",
+    "country": 165,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 508,
+  "fields": {
+    "translation": "Thaïlande",
+    "country": 140,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 509,
+  "fields": {
+    "translation": "Trinité-et-Tobago",
+    "country": 141,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 510,
+  "fields": {
+    "translation": "Tunisie",
+    "country": 142,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 511,
+  "fields": {
+    "translation": "Turkménistan",
+    "country": 144,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 512,
+  "fields": {
+    "translation": "Turquie",
+    "country": 143,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 513,
+  "fields": {
+    "translation": "Ukraine",
+    "country": 146,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 514,
+  "fields": {
+    "translation": "Uruguay",
+    "country": 149,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 515,
+  "fields": {
+    "translation": "Venezuela",
+    "country": 151,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 516,
+  "fields": {
+    "translation": "Vietnam",
+    "country": 152,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 517,
+  "fields": {
+    "translation": "Yémen",
+    "country": 153,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 518,
+  "fields": {
+    "translation": "Zambie",
+    "country": 175,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 519,
+  "fields": {
+    "translation": "Zimbabwe",
+    "country": 154,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 520,
+  "fields": {
+    "translation": "Égypte",
+    "country": 43,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 521,
+  "fields": {
+    "translation": "Émirats arabes unis",
+    "country": 147,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 522,
+  "fields": {
+    "translation": "Équateur",
+    "country": 42,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 523,
+  "fields": {
+    "translation": "États fédérés de Micronésie",
+    "country": 99,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 524,
+  "fields": {
+    "translation": "États-Unis",
+    "country": 145,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 525,
+  "fields": {
+    "translation": "Éthiopie",
+    "country": 46,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 526,
+  "fields": {
+    "translation": "Îles Féroé",
+    "country": 48,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 527,
+  "fields": {
+    "translation": "Îles Malouines",
+    "country": 47,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 528,
+  "fields": {
+    "translation": "Îles Salomon",
+    "country": 128,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 529,
+  "fields": {
+    "translation": "Îles Vierges britanniques",
+    "country": 23,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 530,
+  "fields": {
+    "translation": "Afeganistão",
+    "country": 1,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 531,
+  "fields": {
+    "translation": "Albânia",
+    "country": 2,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 532,
+  "fields": {
+    "translation": "Alemanha",
+    "country": 53,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 533,
+  "fields": {
+    "translation": "Angola",
+    "country": 4,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 534,
+  "fields": {
+    "translation": "Argentina",
+    "country": 7,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 535,
+  "fields": {
+    "translation": "Argélia",
+    "country": 3,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 536,
+  "fields": {
+    "translation": "Armênia",
+    "country": 8,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 537,
+  "fields": {
+    "translation": "Aruba",
+    "country": 176,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 538,
+  "fields": {
+    "translation": "Arábia Saudita",
+    "country": 124,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 539,
+  "fields": {
+    "translation": "Austrália",
+    "country": 9,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 540,
+  "fields": {
+    "translation": "Azerbaijão",
+    "country": 11,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 541,
+  "fields": {
+    "translation": "Bahamas",
+    "country": 12,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 542,
+  "fields": {
+    "translation": "Bahrein",
+    "country": 13,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 543,
+  "fields": {
+    "translation": "Bangladesh",
+    "country": 14,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 544,
+  "fields": {
+    "translation": "Barbados",
+    "country": 15,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 545,
+  "fields": {
+    "translation": "Belize",
+    "country": 169,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 546,
+  "fields": {
+    "translation": "Benin",
+    "country": 167,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 547,
+  "fields": {
+    "translation": "Bermudas",
+    "country": 18,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 548,
+  "fields": {
+    "translation": "Bielorrússia",
+    "country": 16,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 549,
+  "fields": {
+    "translation": "Bolívia",
+    "country": 160,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 550,
+  "fields": {
+    "translation": "Botsuana",
+    "country": 21,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 551,
+  "fields": {
+    "translation": "Brasil",
+    "country": 22,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 552,
+  "fields": {
+    "translation": "Brunei",
+    "country": 24,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 553,
+  "fields": {
+    "translation": "Bulgária",
+    "country": 25,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 554,
+  "fields": {
+    "translation": "Butão",
+    "country": 19,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 555,
+  "fields": {
+    "translation": "Bélgica",
+    "country": 17,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 556,
+  "fields": {
+    "translation": "Bósnia e Herzegovina",
+    "country": 20,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 557,
+  "fields": {
+    "translation": "Camboja",
+    "country": 27,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 558,
+  "fields": {
+    "translation": "Canadá",
+    "country": 28,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 559,
+  "fields": {
+    "translation": "Catar",
+    "country": 120,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 560,
+  "fields": {
+    "translation": "Cazaquistão",
+    "country": 77,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 561,
+  "fields": {
+    "translation": "Chile",
+    "country": 29,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 562,
+  "fields": {
+    "translation": "China",
+    "country": 30,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 563,
+  "fields": {
+    "translation": "Chipre",
+    "country": 38,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 564,
+  "fields": {
+    "translation": "Cingapura",
+    "country": 126,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 565,
+  "fields": {
+    "translation": "Colômbia",
+    "country": 31,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 566,
+  "fields": {
+    "translation": "Congo - Brazzaville",
+    "country": 33,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 567,
+  "fields": {
+    "translation": "Congo - Kinshasa",
+    "country": 34,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 568,
+  "fields": {
+    "translation": "Coreia do Norte",
+    "country": 79,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 569,
+  "fields": {
+    "translation": "Coreia do Sul",
+    "country": 80,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 570,
+  "fields": {
+    "translation": "Costa Rica",
+    "country": 162,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 571,
+  "fields": {
+    "translation": "Costa do Marfim",
+    "country": 35,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 572,
+  "fields": {
+    "translation": "Croácia",
+    "country": 36,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 573,
+  "fields": {
+    "translation": "Cuba",
+    "country": 37,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 574,
+  "fields": {
+    "translation": "Dinamarca",
+    "country": 39,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 575,
+  "fields": {
+    "translation": "Dominica",
+    "country": 40,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 576,
+  "fields": {
+    "translation": "Egito",
+    "country": 43,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 577,
+  "fields": {
+    "translation": "El Salvador",
+    "country": 163,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 578,
+  "fields": {
+    "translation": "Emirados Árabes Unidos",
+    "country": 147,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 579,
+  "fields": {
+    "translation": "Equador",
+    "country": 42,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 580,
+  "fields": {
+    "translation": "Eslováquia",
+    "country": 157,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 581,
+  "fields": {
+    "translation": "Eslovênia",
+    "country": 127,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 582,
+  "fields": {
+    "translation": "Espanha",
+    "country": 131,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 583,
+  "fields": {
+    "translation": "Estados Unidos",
+    "country": 145,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 584,
+  "fields": {
+    "translation": "Estônia",
+    "country": 45,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 585,
+  "fields": {
+    "translation": "Etiópia",
+    "country": 46,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 586,
+  "fields": {
+    "translation": "Filipinas",
+    "country": 116,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 587,
+  "fields": {
+    "translation": "Finlândia",
+    "country": 49,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 588,
+  "fields": {
+    "translation": "França",
+    "country": 50,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 589,
+  "fields": {
+    "translation": "Gabão",
+    "country": 51,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 590,
+  "fields": {
+    "translation": "Gana",
+    "country": 54,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 591,
+  "fields": {
+    "translation": "Geórgia",
+    "country": 52,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 592,
+  "fields": {
+    "translation": "Gibraltar",
+    "country": 55,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 593,
+  "fields": {
+    "translation": "Groenlândia",
+    "country": 57,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 594,
+  "fields": {
+    "translation": "Grécia",
+    "country": 56,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 595,
+  "fields": {
+    "translation": "Guatemala",
+    "country": 58,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 596,
+  "fields": {
+    "translation": "Guernsey",
+    "country": 59,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 597,
+  "fields": {
+    "translation": "Guiana",
+    "country": 170,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 598,
+  "fields": {
+    "translation": "Guiné",
+    "country": 60,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 599,
+  "fields": {
+    "translation": "Guiné Equatorial",
+    "country": 44,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 600,
+  "fields": {
+    "translation": "Gâmbia",
+    "country": 159,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 601,
+  "fields": {
+    "translation": "Haiti",
+    "country": 61,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 602,
+  "fields": {
+    "translation": "Holanda",
+    "country": 108,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 603,
+  "fields": {
+    "translation": "Honduras",
+    "country": 62,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 604,
+  "fields": {
+    "translation": "Hong Kong, RAE da China",
+    "country": 63,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 605,
+  "fields": {
+    "translation": "Hungria",
+    "country": 64,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 606,
+  "fields": {
+    "translation": "Ilhas Faroe",
+    "country": 48,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 607,
+  "fields": {
+    "translation": "Ilhas Malvinas",
+    "country": 47,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 608,
+  "fields": {
+    "translation": "Ilhas Salomão",
+    "country": 128,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 609,
+  "fields": {
+    "translation": "Ilhas Virgens Britânicas",
+    "country": 23,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 610,
+  "fields": {
+    "translation": "Indonésia",
+    "country": 67,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 611,
+  "fields": {
+    "translation": "Iraque",
+    "country": 69,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 612,
+  "fields": {
+    "translation": "Irlanda",
+    "country": 70,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 613,
+  "fields": {
+    "translation": "Irã",
+    "country": 68,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 614,
+  "fields": {
+    "translation": "Islândia",
+    "country": 65,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 615,
+  "fields": {
+    "translation": "Israel",
+    "country": 71,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 616,
+  "fields": {
+    "translation": "Itália",
+    "country": 72,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 617,
+  "fields": {
+    "translation": "Iêmen",
+    "country": 153,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 618,
+  "fields": {
+    "translation": "Jamaica",
+    "country": 73,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 619,
+  "fields": {
+    "translation": "Japão",
+    "country": 74,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 620,
+  "fields": {
+    "translation": "Jersey",
+    "country": 75,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 621,
+  "fields": {
+    "translation": "Jordânia",
+    "country": 76,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 622,
+  "fields": {
+    "translation": "Kosovo",
+    "country": 81,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 623,
+  "fields": {
+    "translation": "Kuwait",
+    "country": 82,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 624,
+  "fields": {
+    "translation": "Laos",
+    "country": 84,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 625,
+  "fields": {
+    "translation": "Letônia",
+    "country": 85,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 626,
+  "fields": {
+    "translation": "Libéria",
+    "country": 173,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 627,
+  "fields": {
+    "translation": "Liechtenstein",
+    "country": 88,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 628,
+  "fields": {
+    "translation": "Lituânia",
+    "country": 89,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 629,
+  "fields": {
+    "translation": "Luxemburgo",
+    "country": 90,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 630,
+  "fields": {
+    "translation": "Líbano",
+    "country": 86,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 631,
+  "fields": {
+    "translation": "Líbia",
+    "country": 87,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 632,
+  "fields": {
+    "translation": "Macau, RAE da China",
+    "country": 91,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 633,
+  "fields": {
+    "translation": "Macedônia",
+    "country": 92,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 634,
+  "fields": {
+    "translation": "Madagascar",
+    "country": 93,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 635,
+  "fields": {
+    "translation": "Maldivas",
+    "country": 174,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 636,
+  "fields": {
+    "translation": "Mali",
+    "country": 178,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 637,
+  "fields": {
+    "translation": "Malta",
+    "country": 95,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 638,
+  "fields": {
+    "translation": "Malásia",
+    "country": 94,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 639,
+  "fields": {
+    "translation": "Marrocos",
+    "country": 103,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 640,
+  "fields": {
+    "translation": "Mauritânia",
+    "country": 96,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 641,
+  "fields": {
+    "translation": "Maurício",
+    "country": 97,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 642,
+  "fields": {
+    "translation": "Mianmar (Birmânia)",
+    "country": 26,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 643,
+  "fields": {
+    "translation": "Micronésia",
+    "country": 99,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 644,
+  "fields": {
+    "translation": "Moldávia",
+    "country": 100,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 645,
+  "fields": {
+    "translation": "Mongólia",
+    "country": 101,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 646,
+  "fields": {
+    "translation": "Montenegro",
+    "country": 102,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 647,
+  "fields": {
+    "translation": "Moçambique",
+    "country": 104,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 648,
+  "fields": {
+    "translation": "México",
+    "country": 98,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 649,
+  "fields": {
+    "translation": "Namíbia",
+    "country": 105,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 650,
+  "fields": {
+    "translation": "Nauru",
+    "country": 106,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 651,
+  "fields": {
+    "translation": "Nepal",
+    "country": 107,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 652,
+  "fields": {
+    "translation": "Nicarágua",
+    "country": 164,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 653,
+  "fields": {
+    "translation": "Nigéria",
+    "country": 110,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 654,
+  "fields": {
+    "translation": "Noruega",
+    "country": 111,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 655,
+  "fields": {
+    "translation": "Nova Zelândia",
+    "country": 109,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 656,
+  "fields": {
+    "translation": "Omã",
+    "country": 112,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 657,
+  "fields": {
+    "translation": "Panamá",
+    "country": 114,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 658,
+  "fields": {
+    "translation": "Papua-Nova Guiné",
+    "country": 177,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 659,
+  "fields": {
+    "translation": "Paquistão",
+    "country": 113,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 660,
+  "fields": {
+    "translation": "Paraguai",
+    "country": 161,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 661,
+  "fields": {
+    "translation": "Peru",
+    "country": 115,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 662,
+  "fields": {
+    "translation": "Polônia",
+    "country": 117,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 663,
+  "fields": {
+    "translation": "Porto Rico",
+    "country": 119,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 664,
+  "fields": {
+    "translation": "Portugal",
+    "country": 118,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 665,
+  "fields": {
+    "translation": "Quirguistão",
+    "country": 83,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 666,
+  "fields": {
+    "translation": "Quênia",
+    "country": 78,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 667,
+  "fields": {
+    "translation": "Reino Unido",
+    "country": 148,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 668,
+  "fields": {
+    "translation": "República Dominicana",
+    "country": 41,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 669,
+  "fields": {
+    "translation": "Romênia",
+    "country": 121,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 670,
+  "fields": {
+    "translation": "Ruanda",
+    "country": 179,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 671,
+  "fields": {
+    "translation": "Rússia",
+    "country": 122,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 672,
+  "fields": {
+    "translation": "Santa Helena",
+    "country": 123,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 673,
+  "fields": {
+    "translation": "Seicheles",
+    "country": 172,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 674,
+  "fields": {
+    "translation": "Senegal",
+    "country": 171,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 675,
+  "fields": {
+    "translation": "Somália",
+    "country": 129,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 676,
+  "fields": {
+    "translation": "Sri Lanka",
+    "country": 132,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 677,
+  "fields": {
+    "translation": "Suazilândia",
+    "country": 133,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 678,
+  "fields": {
+    "translation": "Sudão",
+    "country": 166,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 679,
+  "fields": {
+    "translation": "Suriname",
+    "country": 168,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 680,
+  "fields": {
+    "translation": "Suécia",
+    "country": 134,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 681,
+  "fields": {
+    "translation": "Suíça",
+    "country": 135,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 682,
+  "fields": {
+    "translation": "Sérvia",
+    "country": 125,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 683,
+  "fields": {
+    "translation": "Síria",
+    "country": 136,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 684,
+  "fields": {
+    "translation": "Tailândia",
+    "country": 140,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 685,
+  "fields": {
+    "translation": "Taiwan",
+    "country": 137,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 686,
+  "fields": {
+    "translation": "Tajiquistão",
+    "country": 138,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 687,
+  "fields": {
+    "translation": "Tanzânia",
+    "country": 139,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 688,
+  "fields": {
+    "translation": "Tchéquia",
+    "country": 156,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 689,
+  "fields": {
+    "translation": "Territórios palestinos",
+    "country": 165,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 690,
+  "fields": {
+    "translation": "Trinidad e Tobago",
+    "country": 141,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 691,
+  "fields": {
+    "translation": "Tunísia",
+    "country": 142,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 692,
+  "fields": {
+    "translation": "Turcomenistão",
+    "country": 144,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 693,
+  "fields": {
+    "translation": "Turquia",
+    "country": 143,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 694,
+  "fields": {
+    "translation": "Ucrânia",
+    "country": 146,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 695,
+  "fields": {
+    "translation": "Uruguai",
+    "country": 149,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 696,
+  "fields": {
+    "translation": "Uzbequistão",
+    "country": 150,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 697,
+  "fields": {
+    "translation": "Venezuela",
+    "country": 151,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 698,
+  "fields": {
+    "translation": "Vietnã",
+    "country": 152,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 699,
+  "fields": {
+    "translation": "Zimbábue",
+    "country": 154,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 700,
+  "fields": {
+    "translation": "Zâmbia",
+    "country": 175,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 701,
+  "fields": {
+    "translation": "África do Sul",
+    "country": 130,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 702,
+  "fields": {
+    "translation": "Áustria",
+    "country": 10,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 703,
+  "fields": {
+    "translation": "Índia",
+    "country": 66,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 704,
+  "fields": {
+    "translation": "Австралия",
+    "country": 9,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 705,
+  "fields": {
+    "translation": "Австрия",
+    "country": 10,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 706,
+  "fields": {
+    "translation": "Азербайджан",
+    "country": 11,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 707,
+  "fields": {
+    "translation": "Албания",
+    "country": 2,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 708,
+  "fields": {
+    "translation": "Алжир",
+    "country": 3,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 709,
+  "fields": {
+    "translation": "Ангола",
+    "country": 4,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 710,
+  "fields": {
+    "translation": "Аргентина",
+    "country": 7,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 711,
+  "fields": {
+    "translation": "Армения",
+    "country": 8,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 712,
+  "fields": {
+    "translation": "Аруба",
+    "country": 176,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 713,
+  "fields": {
+    "translation": "Афганистан",
+    "country": 1,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 714,
+  "fields": {
+    "translation": "Багамы",
+    "country": 12,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 715,
+  "fields": {
+    "translation": "Бангладеш",
+    "country": 14,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 716,
+  "fields": {
+    "translation": "Барбадос",
+    "country": 15,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 717,
+  "fields": {
+    "translation": "Бахрейн",
+    "country": 13,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 718,
+  "fields": {
+    "translation": "Беларусь",
+    "country": 16,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 719,
+  "fields": {
+    "translation": "Белиз",
+    "country": 169,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 720,
+  "fields": {
+    "translation": "Бельгия",
+    "country": 17,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 721,
+  "fields": {
+    "translation": "Бенин",
+    "country": 167,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 722,
+  "fields": {
+    "translation": "Бермуды",
+    "country": 18,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 723,
+  "fields": {
+    "translation": "Болгария",
+    "country": 25,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 724,
+  "fields": {
+    "translation": "Боливия",
+    "country": 160,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 725,
+  "fields": {
+    "translation": "Босния и Герцеговина",
+    "country": 20,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 726,
+  "fields": {
+    "translation": "Ботсвана",
+    "country": 21,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 727,
+  "fields": {
+    "translation": "Бразилия",
+    "country": 22,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 728,
+  "fields": {
+    "translation": "Бруней-Даруссалам",
+    "country": 24,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 729,
+  "fields": {
+    "translation": "Бутан",
+    "country": 19,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 730,
+  "fields": {
+    "translation": "Великобритания",
+    "country": 148,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 731,
+  "fields": {
+    "translation": "Венгрия",
+    "country": 64,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 732,
+  "fields": {
+    "translation": "Венесуэла",
+    "country": 151,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 733,
+  "fields": {
+    "translation": "Виргинские о-ва (Британские)",
+    "country": 23,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 734,
+  "fields": {
+    "translation": "Вьетнам",
+    "country": 152,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 735,
+  "fields": {
+    "translation": "Габон",
+    "country": 51,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 736,
+  "fields": {
+    "translation": "Гаити",
+    "country": 61,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 737,
+  "fields": {
+    "translation": "Гайана",
+    "country": 170,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 738,
+  "fields": {
+    "translation": "Гамбия",
+    "country": 159,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 739,
+  "fields": {
+    "translation": "Гана",
+    "country": 54,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 740,
+  "fields": {
+    "translation": "Гватемала",
+    "country": 58,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 741,
+  "fields": {
+    "translation": "Гвинея",
+    "country": 60,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 742,
+  "fields": {
+    "translation": "Германия",
+    "country": 53,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 743,
+  "fields": {
+    "translation": "Гернси",
+    "country": 59,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 744,
+  "fields": {
+    "translation": "Гибралтар",
+    "country": 55,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 745,
+  "fields": {
+    "translation": "Гондурас",
+    "country": 62,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 746,
+  "fields": {
+    "translation": "Гонконг (специальный административный район)",
+    "country": 63,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 747,
+  "fields": {
+    "translation": "Гренландия",
+    "country": 57,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 748,
+  "fields": {
+    "translation": "Греция",
+    "country": 56,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 749,
+  "fields": {
+    "translation": "Грузия",
+    "country": 52,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 750,
+  "fields": {
+    "translation": "Дания",
+    "country": 39,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 751,
+  "fields": {
+    "translation": "Джерси",
+    "country": 75,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 752,
+  "fields": {
+    "translation": "Доминика",
+    "country": 40,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 753,
+  "fields": {
+    "translation": "Доминиканская Республика",
+    "country": 41,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 754,
+  "fields": {
+    "translation": "Египет",
+    "country": 43,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 755,
+  "fields": {
+    "translation": "Замбия",
+    "country": 175,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 756,
+  "fields": {
+    "translation": "Зимбабве",
+    "country": 154,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 757,
+  "fields": {
+    "translation": "Израиль",
+    "country": 71,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 758,
+  "fields": {
+    "translation": "Индия",
+    "country": 66,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 759,
+  "fields": {
+    "translation": "Индонезия",
+    "country": 67,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 760,
+  "fields": {
+    "translation": "Иордания",
+    "country": 76,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 761,
+  "fields": {
+    "translation": "Ирак",
+    "country": 69,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 762,
+  "fields": {
+    "translation": "Иран",
+    "country": 68,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 763,
+  "fields": {
+    "translation": "Ирландия",
+    "country": 70,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 764,
+  "fields": {
+    "translation": "Исландия",
+    "country": 65,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 765,
+  "fields": {
+    "translation": "Испания",
+    "country": 131,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 766,
+  "fields": {
+    "translation": "Италия",
+    "country": 72,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 767,
+  "fields": {
+    "translation": "Йемен",
+    "country": 153,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 768,
+  "fields": {
+    "translation": "КНДР",
+    "country": 79,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 769,
+  "fields": {
+    "translation": "Казахстан",
+    "country": 77,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 770,
+  "fields": {
+    "translation": "Камбоджа",
+    "country": 27,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 771,
+  "fields": {
+    "translation": "Канада",
+    "country": 28,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 772,
+  "fields": {
+    "translation": "Катар",
+    "country": 120,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 773,
+  "fields": {
+    "translation": "Кения",
+    "country": 78,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 774,
+  "fields": {
+    "translation": "Кипр",
+    "country": 38,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 775,
+  "fields": {
+    "translation": "Киргизия",
+    "country": 83,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 776,
+  "fields": {
+    "translation": "Китай",
+    "country": 30,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 777,
+  "fields": {
+    "translation": "Колумбия",
+    "country": 31,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 778,
+  "fields": {
+    "translation": "Конго - Браззавиль",
+    "country": 33,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 779,
+  "fields": {
+    "translation": "Конго - Киншаса",
+    "country": 34,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 780,
+  "fields": {
+    "translation": "Косово",
+    "country": 81,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 781,
+  "fields": {
+    "translation": "Коста-Рика",
+    "country": 162,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 782,
+  "fields": {
+    "translation": "Кот-д’Ивуар",
+    "country": 35,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 783,
+  "fields": {
+    "translation": "Куба",
+    "country": 37,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 784,
+  "fields": {
+    "translation": "Кувейт",
+    "country": 82,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 785,
+  "fields": {
+    "translation": "Лаос",
+    "country": 84,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 786,
+  "fields": {
+    "translation": "Латвия",
+    "country": 85,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 787,
+  "fields": {
+    "translation": "Либерия",
+    "country": 173,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 788,
+  "fields": {
+    "translation": "Ливан",
+    "country": 86,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 789,
+  "fields": {
+    "translation": "Ливия",
+    "country": 87,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 790,
+  "fields": {
+    "translation": "Литва",
+    "country": 89,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 791,
+  "fields": {
+    "translation": "Лихтенштейн",
+    "country": 88,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 792,
+  "fields": {
+    "translation": "Люксембург",
+    "country": 90,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 793,
+  "fields": {
+    "translation": "Маврикий",
+    "country": 97,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 794,
+  "fields": {
+    "translation": "Мавритания",
+    "country": 96,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 795,
+  "fields": {
+    "translation": "Мадагаскар",
+    "country": 93,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 796,
+  "fields": {
+    "translation": "Макао (специальный административный район)",
+    "country": 91,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 797,
+  "fields": {
+    "translation": "Македония",
+    "country": 92,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 798,
+  "fields": {
+    "translation": "Малайзия",
+    "country": 94,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 799,
+  "fields": {
+    "translation": "Мали",
+    "country": 178,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 800,
+  "fields": {
+    "translation": "Мальдивы",
+    "country": 174,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 801,
+  "fields": {
+    "translation": "Мальта",
+    "country": 95,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 802,
+  "fields": {
+    "translation": "Марокко",
+    "country": 103,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 803,
+  "fields": {
+    "translation": "Мексика",
+    "country": 98,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 804,
+  "fields": {
+    "translation": "Мозамбик",
+    "country": 104,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 805,
+  "fields": {
+    "translation": "Молдова",
+    "country": 100,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 806,
+  "fields": {
+    "translation": "Монголия",
+    "country": 101,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 807,
+  "fields": {
+    "translation": "Мьянма (Бирма)",
+    "country": 26,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 808,
+  "fields": {
+    "translation": "Намибия",
+    "country": 105,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 809,
+  "fields": {
+    "translation": "Науру",
+    "country": 106,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 810,
+  "fields": {
+    "translation": "Непал",
+    "country": 107,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 811,
+  "fields": {
+    "translation": "Нигерия",
+    "country": 110,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 812,
+  "fields": {
+    "translation": "Нидерланды",
+    "country": 108,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 813,
+  "fields": {
+    "translation": "Никарагуа",
+    "country": 164,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 814,
+  "fields": {
+    "translation": "Новая Зеландия",
+    "country": 109,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 815,
+  "fields": {
+    "translation": "Норвегия",
+    "country": 111,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 816,
+  "fields": {
+    "translation": "ОАЭ",
+    "country": 147,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 817,
+  "fields": {
+    "translation": "Оман",
+    "country": 112,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 818,
+  "fields": {
+    "translation": "Пакистан",
+    "country": 113,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 819,
+  "fields": {
+    "translation": "Палестинские территории",
+    "country": 165,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 820,
+  "fields": {
+    "translation": "Панама",
+    "country": 114,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 821,
+  "fields": {
+    "translation": "Папуа – Новая Гвинея",
+    "country": 177,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 822,
+  "fields": {
+    "translation": "Парагвай",
+    "country": 161,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 823,
+  "fields": {
+    "translation": "Перу",
+    "country": 115,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 824,
+  "fields": {
+    "translation": "Польша",
+    "country": 117,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 825,
+  "fields": {
+    "translation": "Португалия",
+    "country": 118,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 826,
+  "fields": {
+    "translation": "Пуэрто-Рико",
+    "country": 119,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 827,
+  "fields": {
+    "translation": "Республика Корея",
+    "country": 80,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 828,
+  "fields": {
+    "translation": "Россия",
+    "country": 122,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 829,
+  "fields": {
+    "translation": "Руанда",
+    "country": 179,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 830,
+  "fields": {
+    "translation": "Румыния",
+    "country": 121,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 831,
+  "fields": {
+    "translation": "Сальвадор",
+    "country": 163,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 832,
+  "fields": {
+    "translation": "Саудовская Аравия",
+    "country": 124,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 833,
+  "fields": {
+    "translation": "Свазиленд",
+    "country": 133,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 834,
+  "fields": {
+    "translation": "Сейшельские Острова",
+    "country": 172,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 835,
+  "fields": {
+    "translation": "Сенегал",
+    "country": 171,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 836,
+  "fields": {
+    "translation": "Сербия",
+    "country": 125,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 837,
+  "fields": {
+    "translation": "Сингапур",
+    "country": 126,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 838,
+  "fields": {
+    "translation": "Сирия",
+    "country": 136,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 839,
+  "fields": {
+    "translation": "Словакия",
+    "country": 157,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 840,
+  "fields": {
+    "translation": "Словения",
+    "country": 127,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 841,
+  "fields": {
+    "translation": "Соединенные Штаты",
+    "country": 145,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 842,
+  "fields": {
+    "translation": "Соломоновы Острова",
+    "country": 128,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 843,
+  "fields": {
+    "translation": "Сомали",
+    "country": 129,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 844,
+  "fields": {
+    "translation": "Судан",
+    "country": 166,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 845,
+  "fields": {
+    "translation": "Суринам",
+    "country": 168,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 846,
+  "fields": {
+    "translation": "Таджикистан",
+    "country": 138,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 847,
+  "fields": {
+    "translation": "Таиланд",
+    "country": 140,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 848,
+  "fields": {
+    "translation": "Тайвань",
+    "country": 137,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 849,
+  "fields": {
+    "translation": "Танзания",
+    "country": 139,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 850,
+  "fields": {
+    "translation": "Тринидад и Тобаго",
+    "country": 141,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 851,
+  "fields": {
+    "translation": "Тунис",
+    "country": 142,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 852,
+  "fields": {
+    "translation": "Туркменистан",
+    "country": 144,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 853,
+  "fields": {
+    "translation": "Турция",
+    "country": 143,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 854,
+  "fields": {
+    "translation": "Узбекистан",
+    "country": 150,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 855,
+  "fields": {
+    "translation": "Украина",
+    "country": 146,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 856,
+  "fields": {
+    "translation": "Уругвай",
+    "country": 149,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 857,
+  "fields": {
+    "translation": "Фарерские о-ва",
+    "country": 48,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 858,
+  "fields": {
+    "translation": "Федеративные Штаты Микронезии",
+    "country": 99,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 859,
+  "fields": {
+    "translation": "Филиппины",
+    "country": 116,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 860,
+  "fields": {
+    "translation": "Финляндия",
+    "country": 49,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 861,
+  "fields": {
+    "translation": "Фолклендские о-ва",
+    "country": 47,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 862,
+  "fields": {
+    "translation": "Франция",
+    "country": 50,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 863,
+  "fields": {
+    "translation": "Хорватия",
+    "country": 36,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 864,
+  "fields": {
+    "translation": "Черногория",
+    "country": 102,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 865,
+  "fields": {
+    "translation": "Чехия",
+    "country": 156,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 866,
+  "fields": {
+    "translation": "Чили",
+    "country": 29,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 867,
+  "fields": {
+    "translation": "Швейцария",
+    "country": 135,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 868,
+  "fields": {
+    "translation": "Швеция",
+    "country": 134,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 869,
+  "fields": {
+    "translation": "Шри-Ланка",
+    "country": 132,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 870,
+  "fields": {
+    "translation": "Эквадор",
+    "country": 42,
+    "translation_set": 3
+  }
+}
+]

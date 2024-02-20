@@ -4265,3 +4265,4 @@ Test Brand
 {{ application_field(existing_application.reference
 {{ application_field(existing_application.application_type.get_type_code_display
 {{ application_field(existing_application.submit_datetime.strftime('%d %
+{{ fields.field(form.hmrc_code

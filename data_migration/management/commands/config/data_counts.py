@@ -49,6 +49,23 @@ CHECK_DATA_COUNTS: list[CheckCount] = [
         annotation={"path_count": Count("pk")},
         values=["path"],
     ),
+    CheckCount(
+        name="Countries all have regions",
+        expected_count=0,
+        model=web.Country,
+        filter_params={"overseas_region__isnull": True, "type": web.Country.SOVEREIGN_TERRITORY},
+    ),
+    CheckCount(
+        name="Countries",
+        expected_count=269,
+        model=web.Country,
+    ),
+    CheckCount(
+        name="Countries that are active",
+        expected_count=183,
+        model=web.Country,
+        filter_params={"is_active": True},
+    ),
 ]
 
 

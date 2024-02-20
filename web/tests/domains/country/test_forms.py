@@ -34,52 +34,56 @@ class TestCountryNameFilter(TestCase):
 
     def test_filter_finds_active_only(self):
         results = self.run_filter({"country_name": "o"})
-        assert results.count() == 63
+        assert results.count() == 67
         assert results.first().is_active is True
         assert results.last().is_active is True
 
 
 class TestCountryCreateForm(TestCase):
+    def setUp(self):
+        self.AFGHANISTAN = Country.objects.get(pk=1)
+        self.CHAD = Country.objects.get(pk=200)
+
     def test_form_valid(self):
+
         form = CountryCreateForm(
             data={
-                "name": "Italy",
-                "type": Country.SOVEREIGN_TERRITORY,
-                "commission_code": "TEST",
-                "hmrc_code": "TST",
+                "name": self.CHAD.pk,
             }
         )
         assert form.is_valid() is True
 
     def test_form_invalid(self):
         form = CountryCreateForm(data={})
-        assert form.is_valid() is False
+        assert form.is_valid() is False, form.errors
 
     def test_invalid_form_message(self):
-        form = CountryCreateForm(
-            data={"name": "Japan", "type": Country.SYSTEM, "commission_code": "TEST"}
-        )
+        form = CountryCreateForm(data={"name": self.AFGHANISTAN.pk})
         assert len(form.errors) == 1
-        message = form.errors["hmrc_code"][0]
-        assert message == "You must enter this item"
+        message = form.errors["name"][0]
+        assert message == "Select a valid choice. That choice is not one of the available choices."
 
 
 class TestCountryEditForm(TestCase):
+    def setUp(self):
+        self.AFGHANISTAN = Country.objects.get(pk=1)
+
     def test_form_valid(self):
         form = CountryEditForm(
-            instance=CountryFactory(),
-            data={"name": "Taiwan", "commission_code": "TEST", "hmrc_code": "TST"},
+            instance=self.AFGHANISTAN,
+            data={"name": "A"},
         )
         assert form.is_valid() is True
 
     def test_form_invalid(self):
-        form = CountryEditForm(instance=CountryFactory(), data={})
+
+        form = CountryEditForm(instance=self.AFGHANISTAN, data={})
         assert form.is_valid() is False
 
     def test_invalid_form_message(self):
         form = CountryEditForm(
-            instance=CountryFactory(),
-            data={"name": "", "commission_code": "TEST", "hmrc_code": "TST"},
+            instance=self.AFGHANISTAN,
+            data={"name": ""},
         )
         assert len(form.errors) == 1
         message = form.errors["name"][0]

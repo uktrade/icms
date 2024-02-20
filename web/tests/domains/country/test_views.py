@@ -29,8 +29,6 @@ class TestCountryListView(AuthTestCase):
         assert response.context_data["page_title"] == "Editing All Countries"
 
     def test_page_results(self):
-        for i in range(3):
-            CountryFactory(name=f"Test Country {i}")
         response = self.ilb_admin_client.get(self.url)
         results = response.context_data["object_list"]
         assert len(results) == 183
@@ -80,7 +78,7 @@ class TestCountryCreateView(AuthTestCase):
 
     def test_page_title(self):
         response = self.ilb_admin_client.get(self.url)
-        assert response.context_data["page_title"] == "New Country"
+        assert response.context_data["page_title"] == "Add Country"
 
 
 class TestCountryGroupDefaultView(AuthTestCase):
