@@ -1,0 +1,42 @@
+[
+{
+  "model": "web.countrytranslationset",
+  "pk": 1,
+  "fields": {
+    "name": "French",
+    "is_active": true
+  }
+},
+{
+  "model": "web.countrytranslationset",
+  "pk": 2,
+  "fields": {
+    "name": "Portuguese",
+    "is_active": true
+  }
+},
+{
+  "model": "web.countrytranslationset",
+  "pk": 3,
+  "fields": {
+    "name": "Russian",
+    "is_active": true
+  }
+},
+{
+  "model": "web.countrytranslationset",
+  "pk": 4,
+  "fields": {
+    "name": "Spanish",
+    "is_active": true
+  }
+},
+{
+  "model": "web.countrytranslationset",
+  "pk": 5,
+  "fields": {
+    "name": "Turkish",
+    "is_active": true
+  }
+}
+]

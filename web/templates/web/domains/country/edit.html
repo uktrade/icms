@@ -12,8 +12,11 @@
     {% include "web/domains/country/groups-tooltip.html" %}
   {% endset %}
 
-  {{fields.field(form.name, tooltip=tooltip)}}
-  {{fields.field(form.type)}}
+  {{ fields.field(form.name, tooltip=tooltip) }}
+  {{ fields.field(form.type) }}
+  {{ fields.field(form.overseas_region) }}
+  {{ fields.field(form.is_active) }}
+
 
   <div class="container">
     <div class="row">
@@ -27,8 +30,8 @@
 
   <div class="container setoutForm noBottomMargin">
     <div class="row">
-      {{fields.field(form.commission_code)}}
-      {{fields.field(form.hmrc_code)}}
+      {{ fields.field(form.commission_code) }}
+      {{ fields.field(form.hmrc_code) }}
     </div>
   </div>
 {% endblock %}

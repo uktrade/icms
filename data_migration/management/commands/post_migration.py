@@ -3,11 +3,17 @@ import argparse
 import oracledb
 from django.contrib.auth.models import Group
 from django.contrib.postgres.fields import ArrayField
+from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db.models import F, TextField, Value
 from django.db.models.expressions import Func
 from guardian.shortcuts import remove_perm
 
+from web.management.commands.add_reports_data import add_reports
+from web.management.commands.add_v2_reference_data import (
+    add_inactive_countries,
+    add_region_to_existing_countries,
+)
 from web.models import Constabulary, Exporter, Importer, UniqueReference, User
 from web.permissions import (
     constabulary_add_contact,
@@ -32,10 +38,22 @@ class Command(BaseCommand):
             help="Skip creating permissions",
             action="store_true",
         )
+        parser.add_argument(
+            "--skip_add_data",
+            help="Skip populating new additional models",
+            action="store_true",
+        )
+
+    def add_data_to_v2_additional_models(self):
+        add_reports()
+        call_command("loaddata", "overseas_regions")
+        add_region_to_existing_countries(self.stdout)
+        add_inactive_countries()
 
     def handle(self, *args, **options) -> None:
         skip_refs = options["skip_ref"]
         skip_perms = options["skip_perms"]
+        skip_add_data = options["skip_add_data"]
 
         if not skip_refs:
             self.stdout.write("Running create_unique_references...")
@@ -46,6 +64,9 @@ class Command(BaseCommand):
 
         if not skip_perms:
             self.apply_user_permissions()
+
+        if not skip_add_data:
+            self.add_data_to_v2_additional_models()
 
     def create_unique_references(self, ref_type: Ref) -> None:
         """Create UniqueReference objects from ImportApplication.reference, ExportApplication.reference

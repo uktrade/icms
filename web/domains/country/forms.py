@@ -1,7 +1,7 @@
 from typing import Any
 
-from django.forms import ModelForm
-from django.forms.widgets import Select, Textarea
+from django.forms import Form, ModelChoiceField, ModelForm
+from django.forms.widgets import Textarea
 from django_filters import CharFilter, FilterSet
 
 from .models import Country, CountryGroup, CountryTranslation, CountryTranslationSet
@@ -29,23 +29,22 @@ class CountryGroupNameFilter(FilterSet):
         fields: list[Any] = []
 
 
-class CountryCreateForm(ModelForm):
-    class Meta:
-        model = Country
-        fields = ["name", "type", "commission_code", "hmrc_code"]
-        widgets = {
-            "type": Select(choices=Country.TYPES),
-        }
+class CountryCreateForm(Form):
+    name = ModelChoiceField(
+        queryset=Country.objects.filter(is_active=False),
+    )
 
 
-class CountryEditForm(CountryCreateForm):
+class CountryEditForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["type"].disabled = True
+        self.fields["hmrc_code"].disabled = True
+        self.fields["commission_code"].disabled = True
 
     class Meta:
         model = Country
-        fields = ["name", "type", "commission_code", "hmrc_code"]
+        fields = ["name", "type", "commission_code", "hmrc_code", "overseas_region", "is_active"]
 
 
 class CountryGroupEditForm(ModelForm):

@@ -1,0 +1,19 @@
+{% extends "model/edit.html" %}
+{% import "forms/fields.html" as fields %}
+
+{% block sidebar %}
+  {% include "web/domains/country/sidebar.html" %}
+{% endblock %}
+
+{% block fields %}
+  {% set tooltip %}
+    {% include "web/domains/country/groups-tooltip.html" %}
+  {% endset %}
+  {{ fields.field(form.name, tooltip=tooltip) }}
+{% endblock %}
+
+{% block actions %}
+<li>
+  <button id="btn-submit" type="submit" class="primary-button button">Add Country</button>
+</li>
+{% endblock %}

@@ -1,0 +1,72 @@
+[
+{
+    "model": "web.overseasregion",
+    "pk": 1,
+    "fields": {
+        "name": "Africa"
+    }
+},
+{
+    "model": "web.overseasregion",
+    "pk": 2,
+    "fields": {
+        "name": "Asia Pacific"
+    }
+},
+{
+    "model": "web.overseasregion",
+    "pk": 3,
+    "fields": {
+        "name": "China and Hong Kong"
+    }
+},
+{
+    "model": "web.overseasregion",
+    "pk": 4,
+    "fields": {
+        "name": "Eastern Europe and Central Asia"
+    }
+},
+{
+    "model": "web.overseasregion",
+    "pk": 5,
+    "fields": {
+        "name": "Europe"
+    }
+},
+{
+    "model": "web.overseasregion",
+    "pk": 6,
+    "fields": {
+        "name": "Latin America and Caribbean"
+    }
+},
+{
+    "model": "web.overseasregion",
+    "pk": 7,
+    "fields": {
+        "name": "Middle East, Afghanistan and Pakistan"
+    }
+},
+{
+    "model": "web.overseasregion",
+    "pk": 8,
+    "fields": {
+        "name": "North America"
+    }
+},
+{
+    "model": "web.overseasregion",
+    "pk": 9,
+    "fields": {
+        "name": "South Asia"
+    }
+},
+{
+    "model": "web.overseasregion",
+    "pk": 10,
+    "fields": {
+        "name": "Antarctica"
+    }
+}
+]

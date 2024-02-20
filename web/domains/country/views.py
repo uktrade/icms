@@ -5,11 +5,11 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, FormView, ListView
 
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
@@ -47,7 +47,7 @@ class CountryListView(PermissionRequiredMixin, LoginRequiredMixin, PageTitleMixi
     permission_required = Perms.sys.ilb_admin
 
     def get_queryset(self):
-        return super().get_queryset().prefetch_related("country_groups")
+        return super().get_queryset().filter(is_active=True).prefetch_related("country_groups")
 
 
 class CountryEditView(ModelUpdateView):
@@ -59,14 +59,18 @@ class CountryEditView(ModelUpdateView):
     permission_required = Perms.sys.ilb_admin
 
 
-class CountryCreateView(ModelCreateView):
-    model = Country
-    template_name = "web/domains/country/edit.html"
+class CountryCreateView(PermissionRequiredMixin, LoginRequiredMixin, PageTitleMixin, FormView):
+    template_name = "web/domains/country/add.html"
     form_class = CountryCreateForm
-    success_url = reverse_lazy("country:list")
-    cancel_url = success_url
-    page_title = "New Country"
+    page_title = "Add Country"
     permission_required = Perms.sys.ilb_admin
+    cancel_url = reverse_lazy("country:list")
+
+    def form_valid(self, form) -> HttpResponseRedirect:
+        country = form.cleaned_data["name"]
+        country.is_active = True
+        country.save()
+        return redirect(reverse_lazy("country:edit", kwargs={"pk": country.pk}))
 
 
 def search_countries(request, selected_countries):

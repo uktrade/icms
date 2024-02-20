@@ -33,6 +33,10 @@ WSGI_APPLICATION = "config.wsgi.application"
 APP_ENV = env.app_env
 SECRET_KEY = env.icms_secret_key
 ALLOWED_HOSTS = env.allowed_hosts
+FIXTURE_DIRS = [
+    BASE_DIR / "data_migration/management/commands/fixtures",
+    BASE_DIR / "web/management/commands/fixtures",
+]
 
 INSTALLED_APPS = [
     "web",

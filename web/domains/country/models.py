@@ -10,11 +10,18 @@ class Country(models.Model):
 
     TYPES = ((SOVEREIGN_TERRITORY, "Sovereign Territory"), (SYSTEM, "System"))
 
-    name = models.CharField(max_length=4000, blank=False, null=False)
+    name = models.CharField(max_length=4000, blank=False, null=False, unique=True)
     is_active = models.BooleanField(blank=False, null=False, default=True)
     type = models.CharField(max_length=30, choices=TYPES, blank=False, null=False)
     commission_code = models.CharField(max_length=20, blank=False, null=False)
     hmrc_code = models.CharField(max_length=20, blank=False, null=False)
+    overseas_region = models.ForeignKey(
+        "web.OverseasRegion",
+        blank=True,
+        null=True,
+        related_name="countries",
+        on_delete=models.SET_NULL,
+    )
 
     def __str__(self):
         return self.name
@@ -69,3 +76,13 @@ class CountryTranslation(models.Model):
     translation_set = models.ForeignKey(
         "web.CountryTranslationSet", on_delete=models.CASCADE, blank=False, null=False
     )
+
+
+class OverseasRegion(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ("name",)

@@ -128,6 +128,7 @@ from web.domains.country.models import (
     CountryGroup,
     CountryTranslation,
     CountryTranslationSet,
+    OverseasRegion,
 )
 from web.domains.exporter.models import (
     Exporter,
@@ -254,6 +255,7 @@ __all__ = [
     "OpenIndividualLicenceApplication",
     "OutwardProcessingTradeApplication",
     "OutwardProcessingTradeFile",
+    "OverseasRegion",
     "PhoneNumber",
     "PriorSurveillanceApplication",
     "PriorSurveillanceContractFile",
