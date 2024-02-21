@@ -266,21 +266,9 @@ class DBTPlatformEnvironment(EnvironmentBase):
         """Return s3 bucket config that matches keys used in CF"""
 
         if self.build_step:
-            return {
-                "aws_region": "",
-                "aws_access_key_id": "",
-                "aws_secret_access_key": "",
-                "bucket_name": "",
-            }
+            return {"aws_region": "", "bucket_name": ""}
 
-        return {
-            "aws_region": self.aws_region,
-            # TODO: ICMSLST-2501 Check with Lawrence what these should be
-            "aws_access_key_id": "",
-            # TODO: ICMSLST-2501 Check with Lawrence what these should be
-            "aws_secret_access_key": "",
-            "bucket_name": self.aws_storage_bucket_name,
-        }
+        return {"aws_region": self.aws_region, "bucket_name": self.aws_storage_bucket_name}
 
     @computed_field  # type: ignore[misc]
     @property
