@@ -1,4 +1,11 @@
 {
+  "name": "icms",
+  "scripts": {
+    "build": "echo build"
+  },
+  "engines": {
+    "node": "19.9.0"
+  },
   "dependencies": {
     "html5shiv": "^3.7.3",
     "jodit": "^3.24.4",
