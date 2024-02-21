@@ -3822,3 +3822,4 @@ SELECT MAX(xseq_value
 ir.licence_ref END
 Licence Doc Refs
 ce.email_cc_address_list cc_address_list_str
+playwright install chromium && celery
