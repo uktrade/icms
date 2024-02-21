@@ -2,5 +2,6 @@
 applications:
   - name: icms
     buildpacks:
+      - https://github.com/cloudfoundry/apt-buildpack.git
       - python_buildpack
     stack: cflinuxfs4
