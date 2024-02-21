@@ -1,4 +1,4 @@
-repository: public.ecr.aws/icms
+repository: icms
 builder:
   name: paketobuildpacks/builder-jammy-full
   version: 0.3.294
