@@ -49,19 +49,29 @@ class MigrationBaseCommand(BaseCommand):
             default=".",
             type=str,
         )
+        parser.add_argument(
+            "--force_log",
+            help="Force logs to be written to stdout",
+            action="store_true",
+        )
 
     def handle(self, *args, **options):
-        if not settings.ALLOW_DATA_MIGRATION or not settings.APP_ENV == "production":
+        if not settings.ALLOW_DATA_MIGRATION:
             raise CommandError("Data migration has not been enabled for this environment")
 
         self.batch_size = options["batchsize"]
         self.start_type, self.start_index = options["start"].split(".")
         self.start_time = time.perf_counter()
         self.split_time = time.perf_counter()
+        self.print_log = options["force_log"] or settings.APP_ENV == "production"
+
+    def log(self, message: str, ending: None | str = None) -> None:
+        if self.print_log:
+            self.stdout.write(message, ending=ending)
 
     def _log_time(self) -> None:
         time_taken = time.perf_counter() - self.split_time
-        self.stdout.write(f"\t\t--> {time_taken:.2f} seconds", ending="\n\n")
+        self.log(f"\t\t--> {time_taken:.2f} seconds", "\n\n")
         self.split_time = time.perf_counter()
 
     def _log_script_end(self) -> None:
@@ -69,9 +79,7 @@ class MigrationBaseCommand(BaseCommand):
         mins = time_taken // 60
         secs = time_taken % 60
 
-        self.stdout.write(
-            f"Execuction Time --> {mins:.0f} minutes {secs:.0f} seconds", ending="\n\n"
-        )
+        self.log(f"Execuction Time --> {mins:.0f} minutes {secs:.0f} seconds", "\n\n")
 
     def _get_data_list(self, data_list: list[Any]) -> tuple[int, list[Any]]:
         start = (self.start_index and int(self.start_index)) or 1

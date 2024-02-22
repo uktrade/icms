@@ -20,7 +20,6 @@ from .utils import xml_data
 
 
 @override_settings(ALLOW_DATA_MIGRATION=False)
-@override_settings(APP_ENV="production")
 def test_data_migration_not_enabled():
     with pytest.raises(
         CommandError, match="Data migration has not been enabled for this environment"
@@ -29,16 +28,6 @@ def test_data_migration_not_enabled():
 
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="test")
-def test_data_migration_not_enabled_non_prod():
-    with pytest.raises(
-        CommandError, match="Data migration has not been enabled for this environment"
-    ):
-        call_command("export_from_v1")
-
-
-@override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(
     DATA_TYPE_QUERY_MODEL,
@@ -55,7 +44,6 @@ def test_export_data(mock_connect):
 
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(
     DATA_TYPE_XML,
@@ -170,7 +158,6 @@ def create_dummy_user():
 
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
 @override_settings(ICMS_PROD_USER="test@example.com")  # /PS-IGNORE
 @override_settings(ICMS_PROD_PASSWORD="testpass")
 @pytest.mark.django_db
@@ -191,7 +178,6 @@ def test_export_from_ref_2(mock_connect):
 
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
 @override_settings(ICMS_PROD_USER="test@example.com")  # /PS-IGNORE
 @override_settings(ICMS_PROD_PASSWORD="testpass")
 @pytest.mark.django_db
@@ -212,7 +198,6 @@ def test_export_from_r_3(mock_connect):
 
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
 @override_settings(ICMS_PROD_USER="test@example.com")  # /PS-IGNORE
 @override_settings(ICMS_PROD_PASSWORD="testpass")
 @pytest.mark.django_db
@@ -233,7 +218,6 @@ def test_export_from_import_application(mock_connect):
 
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
 @override_settings(ICMS_PROD_USER="test@example.com")  # /PS-IGNORE
 @override_settings(ICMS_PROD_PASSWORD="testpass")
 @pytest.mark.django_db
@@ -254,7 +238,6 @@ def test_export_from_ia(mock_connect):
 
 
 @override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="production")
 @override_settings(ICMS_PROD_USER="test@example.com")  # /PS-IGNORE
 @override_settings(ICMS_PROD_PASSWORD="testpass")
 @pytest.mark.django_db

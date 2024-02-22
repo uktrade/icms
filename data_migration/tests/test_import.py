@@ -20,17 +20,7 @@ from .utils import xml_data
 
 
 @override_settings(ALLOW_DATA_MIGRATION=False)
-@override_settings(APP_ENV="production")
 def test_data_import_not_enabled():
-    with pytest.raises(
-        CommandError, match="Data migration has not been enabled for this environment"
-    ):
-        call_command("import_v1_data")
-
-
-@override_settings(ALLOW_DATA_MIGRATION=True)
-@override_settings(APP_ENV="test")
-def test_data_import_not_enabled_non_prod():
     with pytest.raises(
         CommandError, match="Data migration has not been enabled for this environment"
     ):
@@ -480,7 +470,6 @@ uic_data_m2m = {
 }
 
 
-@override_settings(APP_ENV="production")
 @pytest.mark.django_db
 @mock.patch.dict(DATA_TYPE_SOURCE_TARGET, uic_data_source_target)
 @mock.patch.dict(DATA_TYPE_M2M, uic_data_m2m)
