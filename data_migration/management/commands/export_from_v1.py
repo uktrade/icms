@@ -70,13 +70,13 @@ class Command(MigrationBaseCommand):
         name = format_name(data_type)
 
         if skip:
-            self.stdout.write(f"Skipping {name} Data Export")
+            self.log(f"Skipping {name} Data Export")
             return
 
-        self.stdout.write(f"Exporting {name} Data...")
+        self.log(f"Exporting {name} Data...")
 
         for idx, query_model in enumerate(query_models, start=start):
-            self.stdout.write(
+            self.log(
                 f"\t{idx} - Exporting {query_model.query_name} to {query_model.model.__name__} model"
             )
 
@@ -95,7 +95,7 @@ class Command(MigrationBaseCommand):
 
             self._log_time()
 
-        self.stdout.write(f"{name} Data Export Complete!")
+        self.log(f"{name} Data Export Complete!")
 
     def _export_model_data(
         self, columns: list[str], rows: list[list[str]], base_model: "Model"
@@ -126,7 +126,7 @@ class Command(MigrationBaseCommand):
         """Data fixes after export"""
 
         if skip:
-            self.stdout.write("Skipping Post Export Tasks")
+            self.log("Skipping Post Export Tasks")
             return
 
         models.ImportApplication.objects.filter(last_updated_by_id__isnull=True).update(
