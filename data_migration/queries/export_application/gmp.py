@@ -139,6 +139,7 @@ SELECT
   , e.response_body response
   , e.start_datetime sent_datetime
   , CASE e.email_status WHEN 'CLOSED' THEN e.last_updated_datetime ELSE NULL END closed_datetime
+  , 'CA_BEIS_EMAIL' template_code
 FROM impmgr.xview_cert_app_beis_emails e
 INNER JOIN impmgr.beis_email_recipients r ON r.status = 'CURRENT'
 WHERE e.status_control = 'C'

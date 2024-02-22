@@ -281,6 +281,7 @@ class CaseEmail(MigrationBase):
     response = models.TextField(max_length=4000, null=True)
     sent_datetime = models.DateTimeField(null=True)
     closed_datetime = models.DateTimeField(null=True)
+    template_code = models.CharField(max_length=30)
 
     # attachments - M2M to file
 
