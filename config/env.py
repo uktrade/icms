@@ -140,8 +140,22 @@ class EnvironmentBase(BaseSettings):
     csp_report_only: bool = True
     csp_report_uri: list[str] | None = None
 
+    # PDF signature certificate stuff
     p12_signature_base_64: str = ""
     p12_signature_password: str = ""
+
+    # Google Analytics
+    gtm_caseworker_auth_key: str = ""
+    gtm_importer_auth_key: str = ""
+    gtm_exporter_auth_key: str = ""
+
+    gtm_caseworker_container_id: str = ""
+    gtm_importer_container_id: str = ""
+    gtm_exporter_container_id: str = ""
+
+    gtm_caseworker_preview_key: str = ""
+    gtm_importer_preview_key: str = ""
+    gtm_exporter_preview_key: str = ""
 
     @computed_field  # type: ignore[misc]
     @property

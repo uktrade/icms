@@ -3822,3 +3822,17 @@ SELECT MAX(xseq_value
 ir.licence_ref END
 Licence Doc Refs
 ce.email_cc_address_list cc_address_list_str
+Google Analytics
+GTM_EXPORTER_CONTAINER_ID=
+get_gtm_container_id
+true;j.src=
+https://www.googletagmanager.com/gtm.js?id='+i+dl+ '
+"Testing that the keys
+GTM
+Google Analytics
+GTM_EXPORTER_CONTAINER_ID=
+get_gtm_container_id
+true;j.src=
+https://www.googletagmanager.com/gtm.js?id='+i+dl+ '
+"Testing that the keys
+GTM

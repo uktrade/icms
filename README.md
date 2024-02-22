@@ -244,11 +244,21 @@ See also `docker-compose.yml` for additional debug environment variables.
 ## PDF generation and signing
 
 ### Generation
-We use [playwright](https://playwright.dev/python/) to generate PDFs from raw HTML, doing so requires installation of chromium which can be done locally and manually 
+We use [playwright](https://playwright.dev/python/) to generate PDFs from raw HTML, doing so requires installation of 
+chromium which can be done locally and manually 
 by running `playright install && playwright install-deps`. This is however taken care of in the Dockerfile.
 
 ### Signing
-We use [endesive](https://github.com/m32/endesive) to sign the generated PDFs, this requires installation of various dependencies which are taken care of in the Dockerfile and the initial-setup.sh script, although you can install them manually by running `brew install swig` and `pip install endesive`.
+We use [endesive](https://github.com/m32/endesive) to sign the generated PDFs, this requires installation of various dependencies which are taken 
+care of in the Dockerfile and the initial-setup.sh script, although you can install them manually by running 
+`brew install swig` and `pip install endesive`.
 
-You will also need to generate a .p12 certificate to sign the PDFs with, this can be done with the openssl CLI or an easier solution is to use the [KeyStone Explorer App](https://keystore-explorer.org/). 
+You will also need to generate a .p12 certificate to sign the PDFs with, this can be done with the openssl CLI or an 
+easier solution is to use the [KeyStone Explorer App](https://keystore-explorer.org/). 
 Alternatively you can use the `P12_SIGNATURE_BASE_64` and `P12_SIGNATURE_PASSWORD` values found in Vault
+
+## Google Analytics
+We use Google Analytics to track user interactions with the application, each of the sites 
+(Caseworker, Importer, and Exporter) have their own Google Analytics tracking ID and the tag scripts are 
+dynamically injected with the correct credentials based on the site the user is on (see jinja2.py>get_gtm_auth_key). 
+The tracking IDs are stored in Vault.

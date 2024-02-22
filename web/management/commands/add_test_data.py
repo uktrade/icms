@@ -30,7 +30,7 @@ from web.permissions import (
 )
 from web.sites import SiteName
 from web.tests.organisations import TEST_EXPORTERS, TEST_IMPORTERS
-from web.tests.types import (
+from web.tests.type_classes import (
     AgentExporter,
     AgentImporter,
     ExporterContact,
