@@ -1250,6 +1250,7 @@ ia_query_result = {
             ("cc_address_list_str",),
             ("subject",),
             ("body",),
+            ("template_code",),
         ],
         [
             (
@@ -1259,6 +1260,7 @@ ia_query_result = {
                 None,  # cc_address_list_str
                 None,  # subject
                 None,  # body
+                "IMA_CONSTAB_EMAIL",  # template_code
             ),
             (
                 1,  # ima_id
@@ -1266,7 +1268,8 @@ ia_query_result = {
                 "a@example.com",  # to /PS-IGNORE
                 "b@example.com;c@example.com",  # cc_address_list_str /PS-IGNORE
                 "test a",  # subject
-                "test a body",  # body
+                "test a body",  # bo
+                "IMA_CONSTAB_EMAIL",  # template_code
             ),
             (
                 1,  # ima_id
@@ -1275,6 +1278,7 @@ ia_query_result = {
                 "b@example.com",  # cc_address_list_str /PS-IGNORE
                 "test b",  # subject
                 "test b body",  # body
+                "IMA_CONSTAB_EMAIL",  # template_code
             ),
         ],
     ),

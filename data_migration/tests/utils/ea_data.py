@@ -730,6 +730,7 @@ ea_query_result = {
             ("response",),
             ("sent_datetime",),
             ("closed_datetime",),
+            ("template_code",),
         ],
         [
             (
@@ -741,6 +742,7 @@ ea_query_result = {
                 "response",  # response
                 datetime.now(),  # sent_datetime
                 datetime.now(),  # closed_datetime
+                "CA_BEIS_EMAIL",  # template_code
             ),
             (
                 9,  # ca_id
@@ -751,6 +753,7 @@ ea_query_result = {
                 None,  # response
                 datetime.now(),  # sent_datetime
                 None,  # closed_datetime
+                "CA_BEIS_EMAIL",  # template_code
             ),
         ],
     ),
@@ -775,6 +778,7 @@ ea_query_result = {
                 "response",  # response
                 datetime.now(),  # sent_datetime
                 datetime.now(),  # closed_datetime
+                "CA_HSE_EMAIL",  # template_code
             ),
             (
                 15,  # ca_id
@@ -785,6 +789,7 @@ ea_query_result = {
                 None,  # response
                 datetime.now(),  # sent_datetime
                 None,  # closed_datetime
+                "CA_HSE_EMAIL",  # template_code
             ),
         ],
     ),
