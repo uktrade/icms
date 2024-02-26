@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 from django.contrib.sites.models import Site
 from django.db.models import QuerySet
@@ -517,7 +517,7 @@ def send_authority_archived_email(authority: Authority) -> None:
 
 
 def send_authority_expiring_section_5_email(
-    importers_details: list[ImporterDetails], expiry_date: datetime.date
+    importers_details: list[ImporterDetails], expiry_date: dt.date
 ) -> None:
     recipients = get_email_addresses_for_section_5_expiring_authorities()
     for recipient in recipients:
@@ -530,7 +530,7 @@ def send_authority_expiring_section_5_email(
 
 
 def send_authority_expiring_firearms_email(
-    importers_details: list[ImporterDetails], expiry_date: datetime.date, constabulary: Constabulary
+    importers_details: list[ImporterDetails], expiry_date: dt.date, constabulary: Constabulary
 ) -> None:
     recipients = get_email_addresses_for_constabulary(constabulary)
     for recipient in recipients:

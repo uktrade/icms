@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 from typing import Any
 
 from django import forms
@@ -68,7 +68,7 @@ class SubmitOptForm(OptFormBase):
     def clean_last_export_day(self):
         day = self.cleaned_data["last_export_day"]
 
-        if day <= datetime.date.today():
+        if day <= dt.date.today():
             raise forms.ValidationError("Date must be in the future.")
 
         return day

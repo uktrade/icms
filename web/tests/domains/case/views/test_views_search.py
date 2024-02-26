@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import io
 from http import HTTPStatus
 
@@ -472,8 +472,8 @@ class TestRequestVariationUpdateView:
         # A completed app must have an active licence
         draft_pack = document_pack.pack_draft_get(self.wood_app)
         draft_pack.issue_paper_licence_only = True
-        draft_pack.licence_start_date = datetime.date(2020, 6, 14)
-        draft_pack.licence_end_date = datetime.date(2023, 9, 15)
+        draft_pack.licence_start_date = dt.date(2020, 6, 14)
+        draft_pack.licence_end_date = dt.date(2023, 9, 15)
         draft_pack.save()
 
         document_pack.pack_draft_set_active(self.wood_app)

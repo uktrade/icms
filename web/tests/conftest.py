@@ -1,5 +1,5 @@
 import binascii
-import datetime
+import datetime as dt
 import os
 from unittest import mock
 
@@ -921,7 +921,7 @@ def completed_sps_app(importer_one_fixture_data, ilb_admin_client, ilb_admin_use
 
 def _set_document_pack_active(app):
     with freeze_time(app.submit_datetime) as frozen_datetime:
-        frozen_datetime.tick(delta=datetime.timedelta(days=1, hours=5, minutes=2))
+        frozen_datetime.tick(delta=dt.timedelta(days=1, hours=5, minutes=2))
         document_pack.pack_draft_set_active(app)
 
 
@@ -1174,9 +1174,9 @@ def mock_gov_notify_client(enable_gov_notify_backend):
 
 def _set_valid_licence(app):
     licence = document_pack.pack_draft_get(app)
-    licence.case_completion_datetime = datetime.datetime(2020, 1, 1, tzinfo=datetime.UTC)
-    licence.licence_start_date = datetime.date(2020, 6, 1)
-    licence.licence_end_date = datetime.date(2024, 12, 31)
+    licence.case_completion_datetime = dt.datetime(2020, 1, 1, tzinfo=dt.UTC)
+    licence.licence_start_date = dt.date(2020, 6, 1)
+    licence.licence_end_date = dt.date(2024, 12, 31)
     licence.issue_paper_licence_only = False
     licence.save()
     return licence

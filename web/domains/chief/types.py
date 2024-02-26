@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 from enum import Enum, IntEnum
 from typing import Literal
 
@@ -41,8 +41,8 @@ class OrganisationData(BaseModel):
     eori_number: str
     name: str
     address: AddressData
-    start_date: datetime.date | None = None
-    end_date: datetime.date | None = None
+    start_date: dt.date | None = None
+    end_date: dt.date | None = None
 
     @field_validator("eori_number")
     @classmethod
@@ -75,8 +75,8 @@ class LicenceDataPayloadBase(BaseModel):
     reference: str  # Case reference (Unique in licenceData file - Used as transactionRef field)
     licence_reference: str  # Used as chief licenceRef field
 
-    start_date: datetime.date
-    end_date: datetime.date
+    start_date: dt.date
+    end_date: dt.date
 
 
 class CancelLicencePayload(LicenceDataPayloadBase):

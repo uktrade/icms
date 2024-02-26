@@ -1,4 +1,4 @@
-from datetime import timedelta
+import datetime as dt
 
 from django import forms
 
@@ -30,7 +30,7 @@ class ReportForm(forms.ModelForm):
         if date_to and date_from:
             if date_to < date_from:
                 self.add_error("date_to", "Date cannot be earlier than date from field")
-            if (date_to - date_from) > timedelta(weeks=105):
+            if (date_to - date_from) > dt.timedelta(weeks=105):
                 self.add_error("date_from", "Date range cannot be greater than 2 years")
                 self.add_error("date_to", "Date range cannot be greater than 2 years")
         return cleaned_data

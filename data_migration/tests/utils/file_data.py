@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime as dt
 
 from data_migration import queries
 
@@ -266,7 +266,7 @@ file_query_result = {
             (
                 1000,  # target_id
                 10000,  # version_id
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 "contract/file/10000",  # path
                 "contract-no-content.pdf",  # filename
@@ -276,7 +276,7 @@ file_query_result = {
             (
                 1001,  # target_id
                 10001,  # version_id
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 "contract/file/10001",  # path
                 "contract-2.pdf",  # filename
@@ -286,7 +286,7 @@ file_query_result = {
             (
                 1002,  # target_id
                 10002,  # version_id
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 "contract/file/10003",  # path
                 "contract.pdf",  # filename
@@ -296,7 +296,7 @@ file_query_result = {
             (
                 1003,  # target_id
                 10003,  # version_id
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 "contract/file/10002",  # path
                 "contract.pdf",  # filename
@@ -306,7 +306,7 @@ file_query_result = {
             (
                 1004,  # target_id
                 10004,  # version_id
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 "contract/file/10004",  # path
                 "contract.pdf",  # filename
@@ -317,7 +317,7 @@ file_query_result = {
             (
                 5000,  # target_id
                 50000,  # version_id
-                datetime.now(),  # created_datetime
+                dt.datetime.now(),  # created_datetime
                 2,  # created_by_id
                 "goods/test_a.pdf",  # path
                 "test_a.pdf",  # filename
@@ -327,7 +327,7 @@ file_query_result = {
             (
                 5001,  # target_id
                 50001,  # version_id
-                datetime.now(),  # created_datetime
+                dt.datetime.now(),  # created_datetime
                 2,  # created_by_id
                 "goods/test_b.pdf",  # path
                 "test_b.pdf",  # filename
@@ -338,7 +338,7 @@ file_query_result = {
             (
                 1100,  # target_id
                 11000,  # version_id
-                datetime(2022, 4, 27, 12, 30),  # created_datetime
+                dt.datetime(2022, 4, 27, 12, 30),  # created_datetime
                 2,  # created_by_id
                 "contract/file/sil/10000",  # path
                 "Test User Sec 5.pdf",  # filename
@@ -348,7 +348,7 @@ file_query_result = {
             (
                 1101,  # target_id
                 11001,  # version_id
-                datetime(2022, 3, 23, 11, 47),  # created_datetime
+                dt.datetime(2022, 3, 23, 11, 47),  # created_datetime
                 2,  # created_by_id
                 "contract/file/sil/100001",  # path
                 "Test User Sec 5 2.pdf",  # filename
@@ -359,7 +359,7 @@ file_query_result = {
             (
                 2000,  # target_id
                 20000,  # version_id
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 "contract/file/20000",  # path
                 "Test OPT supporting doc.pdf",  # filename
@@ -369,7 +369,7 @@ file_query_result = {
             (
                 2001,  # target_id
                 20001,  # version_id
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 "contract/file/20001",  # path
                 "Test OPT supporting doc 2.pdf",  # filename
@@ -460,7 +460,7 @@ file_query_result = {
             (
                 1005,  # target_id
                 10005,  # version_id
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 "fa-auth/file/10005",  # path
                 "fa-auth.pdf",  # filename
@@ -470,7 +470,7 @@ file_query_result = {
             (
                 1006,  # target_id
                 10006,  # version_id
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 "fa-auth/file/10006",  # path
                 "fa-auth.pdf",  # filename
@@ -480,7 +480,7 @@ file_query_result = {
             (
                 1007,  # target_id
                 10007,  # version_id
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 "fa-auth/file/10007",  # path
                 "fa-auth.pdf",  # filename
@@ -490,7 +490,7 @@ file_query_result = {
             (
                 1008,  # target_id
                 10008,  # version_id
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 "section5-auth/file/10008",  # path
                 "section5-auth.pdf",  # filename
@@ -500,7 +500,7 @@ file_query_result = {
             (
                 1009,  # target_id
                 10009,  # version_id
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
                 "section5-auth/file/10009",  # path
                 "section5-auth.pdf",  # filename
@@ -614,7 +614,7 @@ file_query_result = {
             (
                 2100,  # target_id
                 20000,  # version_id
-                datetime(2022, 4, 27),  # created_date
+                dt.datetime(2022, 4, 27),  # created_date
                 2,  # created_by_id
                 "case_note/file1",  # path
                 "Test Case Note 1.pdf",  # filename
@@ -624,7 +624,7 @@ file_query_result = {
             (
                 2101,  # target_id
                 20001,  # version_id
-                datetime(2022, 4, 27),  # created_date
+                dt.datetime(2022, 4, 27),  # created_date
                 2,  # created_by_id
                 "case_note/file2",  # path
                 "Test Case Note 2.pdf",  # filename
@@ -634,7 +634,7 @@ file_query_result = {
             (
                 2103,  # target_id
                 20003,  # version_id
-                datetime(2022, 4, 27),  # created_date
+                dt.datetime(2022, 4, 27),  # created_date
                 2,  # created_by_id
                 "case_note/file3",  # path
                 "Test Case Note 3.pdf",  # filename
@@ -645,7 +645,7 @@ file_query_result = {
             (
                 4001,  # target_id
                 40001,  # version_id
-                datetime(2022, 4, 27),  # created_date
+                dt.datetime(2022, 4, 27),  # created_date
                 2,  # created_by_id
                 "gmp2/ISO17065",  # path
                 "ISO17065.pdf",  # filename
@@ -655,7 +655,7 @@ file_query_result = {
             (
                 4002,  # target_id
                 40002,  # version_id
-                datetime(2022, 4, 27),  # created_date
+                dt.datetime(2022, 4, 27),  # created_date
                 2,  # created_by_id
                 "gmp2/ISO22716",  # path
                 "ISO22716.pdf",  # filename
@@ -665,7 +665,7 @@ file_query_result = {
             (
                 4004,  # target_id
                 40004,  # version_id
-                datetime(2022, 4, 27),  # created_date
+                dt.datetime(2022, 4, 27),  # created_date
                 2,  # created_by_id
                 "gmp3/ISO17021",  # path
                 "ISO17021.pdf",  # filename
@@ -675,7 +675,7 @@ file_query_result = {
             (
                 4005,  # target_id
                 40005,  # version_id
-                datetime(2022, 4, 27),  # created_date
+                dt.datetime(2022, 4, 27),  # created_date
                 2,  # created_by_id
                 "gmp1/BRCGS",  # path
                 "BRCGS.pdf",  # filename
@@ -736,7 +736,7 @@ file_query_result = {
             (
                 3100,  # target_id
                 30000,  # version_id
-                datetime(2022, 4, 27, 12, 23),  # created_date
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
                 2,  # created_by_id
                 "fir/file1",  # path
                 "Test FIR 1.pdf",  # filename
@@ -746,7 +746,7 @@ file_query_result = {
             (
                 3101,  # target_id
                 30001,  # version_id
-                datetime(2022, 4, 27, 12, 23),  # created_date
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
                 2,  # created_by_id
                 "fir/file2",  # path
                 "Test FIR 2.pdf",  # filename
@@ -756,7 +756,7 @@ file_query_result = {
             (
                 3103,  # target_id
                 30003,  # version_id
-                datetime(2022, 4, 27, 12, 23),  # created_date
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
                 2,  # created_by_id
                 "fir/file3",  # path
                 "Test FIR 3.pdf",  # filename
@@ -829,7 +829,7 @@ file_query_result = {
             (
                 1,  # doc_folder_id
                 1,  # version_id
-                datetime.now(),  # created_datetime
+                dt.datetime.now(),  # created_datetime
                 2,  # created_by_id
                 "1-Case Note File.pdf",  # path
                 "Case Note File.pdf",  # filename
@@ -839,7 +839,7 @@ file_query_result = {
             (
                 3,  # doc_folder_id
                 2,  # version_id
-                datetime.now(),  # created_datetime
+                dt.datetime.now(),  # created_datetime
                 2,  # created_by_id
                 "2-Case Note File.pdf",  # path
                 "Case Note 2 File 1.pdf",  # filename
@@ -849,7 +849,7 @@ file_query_result = {
             (
                 3,  # doc_folder_id
                 3,  # version_id
-                datetime.now(),  # created_datetime
+                dt.datetime.now(),  # created_datetime
                 2,  # created_by_id
                 "3-Case Note File.pdf",  # path
                 "Case Note 2 File 2.pdf",  # filename

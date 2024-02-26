@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime as dt
 
 from data_migration import queries
 
@@ -56,8 +56,19 @@ ref_query_result = {
             ("unit_id",),
         ],
         [
-            (1, 1, "AT", "AC", "AN", "AD", datetime(2022, 12, 31, 12, 30), None, "TYPE_A", "KGS"),
-            (2, 1, "BT", "BC", "BN", "BD", datetime.now(), None, "TYPE_B", "KGS"),
+            (
+                1,
+                1,
+                "AT",
+                "AC",
+                "AN",
+                "AD",
+                dt.datetime(2022, 12, 31, 12, 30),
+                None,
+                "TYPE_A",
+                "KGS",
+            ),
+            (2, 1, "BT", "BC", "BN", "BD", dt.datetime.now(), None, "TYPE_B", "KGS"),
         ],
     ),
     queries.commodity: (
@@ -79,17 +90,17 @@ ref_query_result = {
                 1,
                 1000,
                 "TYPE_A",
-                datetime.now(),
+                dt.datetime.now(),
                 None,
                 None,
                 "TEX",
-                datetime(2022, 12, 31, 12, 30),
+                dt.datetime(2022, 12, 31, 12, 30),
                 None,
             ),
-            (2, 1, 1001, "TYPE_A", datetime.now(), None, None, "TEX", datetime.now(), None),
-            (3, 1, 1002, "TYPE_B", datetime.now(), None, None, None, datetime.now(), None),
-            (4, 1, 1003, "TYPE_B", datetime.now(), None, None, None, datetime.now(), None),
-            (5, 1, 1004, "TYPE_C", datetime.now(), None, None, None, datetime.now(), None),
+            (2, 1, 1001, "TYPE_A", dt.datetime.now(), None, None, "TEX", dt.datetime.now(), None),
+            (3, 1, 1002, "TYPE_B", dt.datetime.now(), None, None, None, dt.datetime.now(), None),
+            (4, 1, 1003, "TYPE_B", dt.datetime.now(), None, None, None, dt.datetime.now(), None),
+            (5, 1, 1004, "TYPE_C", dt.datetime.now(), None, None, None, dt.datetime.now(), None),
         ],
     ),
     queries.obsolete_calibre_group: (
@@ -116,7 +127,7 @@ ref_query_result = {
         [
             (
                 1,  # id
-                datetime.now(),  # start_datetime
+                dt.datetime.now(),  # start_datetime
                 None,  # end_datetime
                 1,  # is_active
                 "Endorsement 1",  # template_name
@@ -128,7 +139,7 @@ ref_query_result = {
             ),
             (
                 2,  # id
-                datetime.now(),  # start_datetime
+                dt.datetime.now(),  # start_datetime
                 None,  # end_datetime
                 1,  # is_active
                 "Endorsement 2",  # template_name
@@ -140,7 +151,7 @@ ref_query_result = {
             ),
             (
                 3,  # id
-                datetime.now(),  # start_datetime
+                dt.datetime.now(),  # start_datetime
                 None,  # end_datetime
                 1,  # is_active
                 "Endorsement 3",  # template_name
@@ -152,7 +163,7 @@ ref_query_result = {
             ),
             (
                 4,  # id
-                datetime.now(),  # start_datetime
+                dt.datetime.now(),  # start_datetime
                 None,  # end_datetime
                 1,  # is_active
                 "Letter 1",  # template_name
@@ -164,7 +175,7 @@ ref_query_result = {
             ),
             (
                 5,  # id
-                datetime.now(),  # start_datetime
+                dt.datetime.now(),  # start_datetime
                 None,  # end_datetime
                 1,  # is_active
                 "Email 1",  # template_name
@@ -176,7 +187,7 @@ ref_query_result = {
             ),
             (
                 6,  # id
-                datetime.now(),  # start_datetime
+                dt.datetime.now(),  # start_datetime
                 None,  # end_datetime
                 1,  # is_active
                 "CFS Schedule 1",  # template_name
@@ -188,7 +199,7 @@ ref_query_result = {
             ),
             (
                 7,  # id
-                datetime.now(),  # start_datetime
+                dt.datetime.now(),  # start_datetime
                 None,  # end_datetime
                 1,  # is_active
                 "CFS Declaration Spanish",  # template_name
@@ -200,7 +211,7 @@ ref_query_result = {
             ),
             (
                 8,  # id
-                datetime.now(),  # start_datetime
+                dt.datetime.now(),  # start_datetime
                 None,  # end_datetime
                 1,  # is_active
                 "Wood Affidavit",  # template_name
@@ -212,7 +223,7 @@ ref_query_result = {
             ),
             (
                 9,  # id
-                datetime.now(),  # start_datetime
+                dt.datetime.now(),  # start_datetime
                 None,  # end_datetime
                 1,  # is_active
                 "Prior Surveillance Declaration",  # template_name
@@ -224,7 +235,7 @@ ref_query_result = {
             ),
             (
                 10,  # id
-                datetime.now(),  # start_datetime
+                dt.datetime.now(),  # start_datetime
                 None,  # end_datetime
                 1,  # is_active
                 "General Declaration of Truth",  # template_name
@@ -236,7 +247,7 @@ ref_query_result = {
             ),
             (
                 11,  # id
-                datetime.now(),  # start_datetime
+                dt.datetime.now(),  # start_datetime
                 None,  # end_datetime
                 0,  # is_active
                 "OPT Declaration",  # template_name

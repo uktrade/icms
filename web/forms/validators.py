@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 from django.forms import ValidationError
 
@@ -13,7 +13,7 @@ def validate_email_confirmation(form):
 
 def validate_date_of_birth_not_in_future(form):
     date_of_birth = form.cleaned_data.get("date_of_birth", None)
-    if date_of_birth >= datetime.date.today():
+    if date_of_birth >= dt.date.today():
         raise ValidationError("Date of birth can't be in the future")
 
     return date_of_birth

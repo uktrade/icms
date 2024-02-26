@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import re
 from typing import Any
 
@@ -59,7 +59,7 @@ def create_in_progress_wood_app(
     form_data = {
         "contact": contact.pk,
         "applicant_reference": "Wood App Reference",
-        "shipping_year": datetime.date.today().year,
+        "shipping_year": dt.date.today().year,
         "exporter_name": "Some Exporter",
         "exporter_address": "Some Exporter Address",
         "exporter_vat_nr": "123456789",
@@ -188,8 +188,8 @@ def create_in_progress_fa_oil_app(
         "reference": "Certificate Reference Value",
         "certificate_type": "registered",
         "constabulary": Constabulary.objects.first().pk,
-        "date_issued": datetime.date.today().strftime(JQUERY_DATE_FORMAT),
-        "expiry_date": datetime.date.today().strftime(JQUERY_DATE_FORMAT),
+        "date_issued": dt.date.today().strftime(JQUERY_DATE_FORMAT),
+        "expiry_date": dt.date.today().strftime(JQUERY_DATE_FORMAT),
     }
 
     add_app_file(
@@ -259,8 +259,8 @@ def create_in_progress_fa_sil_app(
         "reference": "Certificate Reference Value",
         "certificate_type": "registered",
         "constabulary": Constabulary.objects.first().pk,
-        "date_issued": datetime.date.today().strftime(JQUERY_DATE_FORMAT),
-        "expiry_date": datetime.date.today().strftime(JQUERY_DATE_FORMAT),
+        "date_issued": dt.date.today().strftime(JQUERY_DATE_FORMAT),
+        "expiry_date": dt.date.today().strftime(JQUERY_DATE_FORMAT),
     }
 
     add_app_file(

@@ -1,4 +1,4 @@
-from datetime import date
+import datetime as dt
 
 import pytest
 from django.urls import reverse
@@ -77,8 +77,8 @@ class TestDegrogationDetailsView(AuthTestCase):
 
     def test_save_application_details(self):
         app_ref = "REF64563343"
-        contract_sign_date = date.today()
-        contract_completion_date = date.today()
+        contract_sign_date = dt.date.today()
+        contract_completion_date = dt.date.today()
         data = {
             "contact": self.importer_user.pk,
             "applicant_reference": app_ref,

@@ -96,9 +96,9 @@ def adjust_icms_v1_datetime(dt_val: dt.datetime) -> dt.datetime:
         2022-10-30 01:30:00+01:00
     >>> print(gmt_val)
         2022-10-30 01:30:00+00:00
-    >>> print(bst_val.astimezone(dt.timezone.utc))
+    >>> print(bst_val.astimezone(dt.UTC))
         2022-10-30 00:30:00+00:00
-    >>> print(gmt_val.astimezone(dt.timezone.utc))
+    >>> print(gmt_val.astimezone(dt.UTC))
         2022-10-30 01:30:00+00:00
     """
 
@@ -111,7 +111,7 @@ def adjust_icms_v1_datetime(dt_val: dt.datetime) -> dt.datetime:
     aware_dt = dt_val.replace(tzinfo=UK_TZ)
 
     # Return a datetime that has been offset to UTC
-    utc_dt = aware_dt.astimezone(dt.timezone.utc)
+    utc_dt = aware_dt.astimezone(dt.UTC)
 
     return utc_dt
 
@@ -122,7 +122,7 @@ def date_to_timezone(date: dt.date | None) -> dt.datetime | None:
     if not date:
         return None
 
-    return dt.datetime.combine(date, dt.time.min, tzinfo=dt.timezone.utc)
+    return dt.datetime.combine(date, dt.time.min, tzinfo=dt.UTC)
 
 
 def decimal_or_none(dec_str: str | None) -> Decimal | None:

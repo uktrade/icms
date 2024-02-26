@@ -1,10 +1,10 @@
-from datetime import date, datetime
+import datetime as dt
 from typing import Annotated
 
 import pydantic
 
 datetime_or_empty = Annotated[
-    datetime | None,
+    dt.datetime | None,
     pydantic.PlainSerializer(
         lambda _datetime: (
             _datetime.strftime("%d/%m/%Y %H:%M:%S") if hasattr(_datetime, "strftime") else ""
@@ -14,7 +14,7 @@ datetime_or_empty = Annotated[
 ]
 
 date_or_empty = Annotated[
-    date | None,
+    dt.date | None,
     pydantic.PlainSerializer(
         lambda _date: _date.strftime("%d/%m/%Y") if hasattr(_date, "strftime") else "",
         return_type=str,

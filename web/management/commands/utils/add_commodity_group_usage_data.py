@@ -1,12 +1,12 @@
+import datetime as dt
 from collections.abc import Iterable
 from dataclasses import dataclass
-from datetime import date
 from itertools import islice
 from typing import Type
 
 from web.models import CommodityGroup, Country, ImportApplicationType, Usage
 
-START_DATE = date(2023, 1, 1)
+START_DATE = dt.date(2023, 1, 1)
 
 
 @dataclass

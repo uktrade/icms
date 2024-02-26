@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 import pytest
 
@@ -20,7 +20,7 @@ from web.utils.commodity import (
 @pytest.fixture
 def next_jan():
     """A future date"""
-    return datetime.datetime(datetime.date.today().year + 1, 1, 1, 12, 0)
+    return dt.datetime(dt.date.today().year + 1, 1, 1, 12, 0)
 
 
 @pytest.fixture
@@ -59,8 +59,8 @@ def test_get_usage_records_correctly_filter_invalid_records(wood_test_data, next
     old_commodity = commodity(
         "9999999999",
         wood_type,
-        datetime.date(2019, 1, 1),
-        validity_end_date=datetime.date(2020, 1, 1),
+        dt.date(2019, 1, 1),
+        validity_end_date=dt.date(2020, 1, 1),
     )
     invalid_group.commodities.add(old_commodity)
     create_usage(app_type, country, invalid_group)
@@ -79,7 +79,7 @@ def test_get_usage_records_correctly_filter_invalid_records(wood_test_data, next
     # Create an expired usage record
     country = Country.objects.get(name="Armenia")
     country_group = commodity_group(wood_type, "group_for_armenia", "123456987", "789654123")
-    create_usage(app_type, country, country_group, end_date=datetime.date(2020, 1, 1))
+    create_usage(app_type, country, country_group, end_date=dt.date(2020, 1, 1))
 
     assert (
         get_usage_records(app_type=ImportApplicationType.Types.WOOD_QUOTA).count() == 3
@@ -108,9 +108,7 @@ def test_get_usage_records_correctly_filter_inactive_records(wood_test_data):
     )
 
     # Add an inactive commodity to the group
-    inactive_commodity = commodity(
-        "9999999999", wood_type, datetime.date(2019, 1, 1), is_active=False
-    )
+    inactive_commodity = commodity("9999999999", wood_type, dt.date(2019, 1, 1), is_active=False)
     valid_group.commodities.add(inactive_commodity)
     create_usage(app_type, country, valid_group)
 
@@ -184,7 +182,7 @@ def commodity(
 def commodity_group(commodity_type, group_code, *commodity_codes, is_active=True):
     """Create a commodity group linked to the supplied commodity codes."""
 
-    valid_from = datetime.date(2020, 1, 1)
+    valid_from = dt.date(2020, 1, 1)
     commodities = [commodity(code, commodity_type, valid_from) for code in commodity_codes]
 
     group = CommodityGroup.objects.create(
@@ -200,7 +198,7 @@ def create_usage(app_type, country, group, *, start_date=None, end_date=None):
     """Create a Usage record"""
 
     if start_date is None:
-        start_date = datetime.date.today()
+        start_date = dt.date.today()
 
     Usage.objects.create(
         application_type=app_type,

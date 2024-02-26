@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 from dataclasses import dataclass, field
 
 
@@ -53,7 +53,7 @@ class WorkbasketRow:
     status: str | None = None
 
     # not sure whether this is create or last-update time
-    timestamp: datetime.datetime | None = None
+    timestamp: dt.datetime | None = None
 
     # not clear to me how this is different to status...
     # information: Optional[str] = None

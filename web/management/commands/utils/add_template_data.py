@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime as dt
 
 import pytz
 from django.conf import settings
@@ -112,7 +112,7 @@ def remove_templates():
 def add_cfs_declaration_templates():
     spanish, _ = Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("01-MAY-2015 16:23:30", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("01-MAY-2015 16:23:30", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Spanish",
@@ -151,7 +151,7 @@ def add_cfs_declaration_templates():
     )
     french, _ = Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("05-MAR-2019 12:27:57", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("05-MAR-2019 12:27:57", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="French",
@@ -168,7 +168,7 @@ def add_cfs_declaration_templates():
 
     portuguese, _ = Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("24-APR-2015 08:59:21", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("24-APR-2015 08:59:21", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Portuguese",
@@ -184,7 +184,7 @@ def add_cfs_declaration_templates():
 
     russian, _ = Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("23-APR-2015 16:25:35", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("23-APR-2015 16:25:35", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Russian",
@@ -200,7 +200,7 @@ def add_cfs_declaration_templates():
 
     turkish, _ = Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("24-APR-2015 09:01:34", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("24-APR-2015 09:01:34", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Turkish",
@@ -218,7 +218,7 @@ def add_cfs_declaration_templates():
 def add_schedule_translation_templates():
     t, _ = Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("13-FEB-2019 18:56:17", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("13-FEB-2019 18:56:17", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Spanish CFS Schedule",
@@ -326,7 +326,7 @@ def add_schedule_translation_templates():
 def add_declaration_templates():
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("13-APR-2018 16:40:06", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("13-APR-2018 16:40:06", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="General Declaration of Truth",
@@ -338,7 +338,7 @@ def add_declaration_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("26-APR-2013 13:25:31", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("26-APR-2013 13:25:31", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="OPT Declaration",
@@ -370,7 +370,7 @@ I request the issue of a prior authorisation for the goods detailed in the appli
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("26-APR-2013 13:25:31", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("26-APR-2013 13:25:31", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Wood Affidavit",
@@ -388,7 +388,7 @@ I, the undersigned, do hereby solemnly verify contents of my above affidavit are
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("19-APR-2018 13:18:14", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("19-APR-2018 13:18:14", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Prior Surveillance Declaration",
@@ -403,7 +403,7 @@ I, the undersigned, do hereby solemnly verify contents of my above affidavit are
 def add_endorsement_templates():
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("22-JAN-2023 13:00:00", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("22-JAN-2023 13:00:00", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Test Endorsement 1",
@@ -413,7 +413,7 @@ def add_endorsement_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("22-JAN-2023 13:00:00", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("22-JAN-2023 13:00:00", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Test Endorsement 2",
@@ -423,7 +423,7 @@ def add_endorsement_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("22-FEB-2019 13:04:04", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("22-FEB-2019 13:04:04", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 1 (must be updated each year)",
@@ -433,7 +433,7 @@ def add_endorsement_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("24-APR-2014 13:26:05", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("24-APR-2014 13:26:05", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 10",
@@ -443,7 +443,7 @@ def add_endorsement_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:34:26", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:34:26", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 11",
@@ -453,7 +453,7 @@ def add_endorsement_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 10:08:18", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 10:08:18", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 13",
@@ -463,7 +463,7 @@ def add_endorsement_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("17-SEP-2018 11:33:41", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("17-SEP-2018 11:33:41", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Open Individual Licence endorsement",
@@ -474,7 +474,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:56:07", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:56:07", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 15",
@@ -484,7 +484,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:57:30", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:57:30", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 16",
@@ -494,7 +494,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:36:26", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:36:26", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 17",
@@ -504,7 +504,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:37:38", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:37:38", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 19",
@@ -514,7 +514,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("22-FEB-2019 13:04:13", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("22-FEB-2019 13:04:13", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 2 (must be updated each year)",
@@ -524,7 +524,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:38:24", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:38:24", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 20",
@@ -534,7 +534,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:38:35", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:38:35", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 21",
@@ -544,7 +544,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:38:45", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:38:45", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 22",
@@ -554,7 +554,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 10:12:18", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 10:12:18", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 25",
@@ -564,7 +564,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:47:32", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:47:32", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 28",
@@ -574,7 +574,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 10:05:48", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 10:05:48", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Replacement licence ensorsement",
@@ -584,7 +584,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 10:07:16", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 10:07:16", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Replacement for revoked licence endorsement",
@@ -594,7 +594,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 10:01:25", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 10:01:25", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 32",
@@ -604,7 +604,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 10:06:30", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 10:06:30", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 34",
@@ -614,7 +614,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 10:00:18", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 10:00:18", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 35",
@@ -624,7 +624,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 10:03:08", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 10:03:08", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 4",
@@ -634,7 +634,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("08-SEP-2016 15:53:50", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("08-SEP-2016 15:53:50", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Firearms EU Transfer within Directive 91/477/EEC",
@@ -644,7 +644,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:32:57", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:32:57", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 45",
@@ -654,7 +654,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:32:46", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:32:46", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 46",
@@ -664,7 +664,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:32:32", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:32:32", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 47",
@@ -674,7 +674,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 10:02:46", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 10:02:46", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 48",
@@ -684,7 +684,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:32:14", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:32:14", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 49",
@@ -694,7 +694,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("22-FEB-2019 13:04:17", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("22-FEB-2019 13:04:17", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 5",
@@ -704,7 +704,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 10:03:42", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 10:03:42", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 50",
@@ -714,7 +714,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:31:33", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:31:33", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 6",
@@ -724,7 +724,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:31:15", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:31:15", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 61",
@@ -734,7 +734,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:59:33", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:59:33", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 62",
@@ -744,7 +744,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:30:47", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:30:47", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 7",
@@ -754,7 +754,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:30:23", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:30:23", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 71",
@@ -764,7 +764,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:30:10", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:30:10", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 72",
@@ -774,7 +774,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 10:02:05", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 10:02:05", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 73",
@@ -784,7 +784,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 10:01:50", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 10:01:50", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 8",
@@ -794,7 +794,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("29-APR-2013 09:29:31", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("29-APR-2013 09:29:31", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Endorsement 9",
@@ -804,7 +804,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("09-AUG-2019 15:14:26", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("09-AUG-2019 15:14:26", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Firearms Sanctions COO (AC or AY)",
@@ -814,7 +814,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("09-AUG-2019 15:13:54", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("09-AUG-2019 15:13:54", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Firearms Sanctions COC (AY)",
@@ -824,7 +824,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("09-AUG-2019 15:14:09", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("09-AUG-2019 15:14:09", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Firearms Sanctions COO & COC (AC & AY)",
@@ -834,7 +834,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("07-MAY-2015 15:40:18", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("07-MAY-2015 15:40:18", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Proof House",
@@ -844,7 +844,7 @@ This licence is only valid if the firearm and its essential component parts (Bar
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("19-FEB-2019 15:04:20", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("19-FEB-2019 15:04:20", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Anti personnel mines (NO DEAL)",
@@ -856,7 +856,7 @@ The Ministry of Defence requested that you include details of your UK mine holdi
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("03-MAY-2016 15:53:27", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("03-MAY-2016 15:53:27", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Steel Prior Surveillance",
@@ -866,7 +866,7 @@ The Ministry of Defence requested that you include details of your UK mine holdi
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("05-MAR-2019 12:25:24", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("05-MAR-2019 12:25:24", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Russian Sanctions",
@@ -876,7 +876,7 @@ The Ministry of Defence requested that you include details of your UK mine holdi
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("19-DEC-2014 08:23:55", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("19-DEC-2014 08:23:55", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Royal Gibraltar Police",
@@ -886,7 +886,7 @@ The Ministry of Defence requested that you include details of your UK mine holdi
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("05-JAN-2016 08:30:16", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("05-JAN-2016 08:30:16", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Section 5 Carrier",
@@ -896,7 +896,7 @@ The Ministry of Defence requested that you include details of your UK mine holdi
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("05-JAN-2016 09:53:22", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("05-JAN-2016 09:53:22", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Section 5 carrier & EU transfer temporary endorsement",
@@ -910,7 +910,7 @@ EU transfers falling within the provisions of Directives 91/477/EEC and 93/15/EE
 def add_email_templates():
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("22-FEB-2019 12:50:10", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("22-FEB-2019 12:50:10", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Stop Case Email",
@@ -922,7 +922,7 @@ def add_email_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("19-MAR-2019 11:01:12", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("19-MAR-2019 11:01:12", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Further Information Request email",
@@ -946,7 +946,7 @@ Yours sincerely,
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("19-MAR-2019 11:00:27", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("19-MAR-2019 11:00:27", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Application Update email",
@@ -974,7 +974,7 @@ Yours sincerely,
     # search IMA_SANCTION_EMAIL to see usage
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("22-FEB-2019 11:06:59", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("22-FEB-2019 11:06:59", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Sanction email",
@@ -1003,7 +1003,7 @@ Thanks and best regards
 
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("22-FEB-2019 11:06:59", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("22-FEB-2019 11:06:59", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Firearms Constabulary email",
@@ -1039,7 +1039,7 @@ Thanks and best regards
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("22-FEB-2019 12:31:29", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("22-FEB-2019 12:31:29", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Case reopening email",
@@ -1051,7 +1051,7 @@ Thanks and best regards
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("05-DEC-2013 17:20:07", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("05-DEC-2013 17:20:07", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Publish Mailshot Email",
@@ -1063,7 +1063,7 @@ Thanks and best regards
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("05-DEC-2013 17:20:07", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("05-DEC-2013 17:20:07", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Retract Mailshot Email",
@@ -1075,7 +1075,7 @@ Thanks and best regards
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("19-MAR-2019 11:01:26", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("19-MAR-2019 11:01:26", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Further Information Request Email",
@@ -1097,7 +1097,7 @@ Yours sincerely,
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("22-AUG-2018 15:47:36", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("22-AUG-2018 15:47:36", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="HSE Enquiry Email",
@@ -1130,7 +1130,7 @@ Thanks and best regards
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("22-AUG-2018 15:47:36", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("22-AUG-2018 15:47:36", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="BEIS OPSS Enquiry Email",
@@ -1173,7 +1173,7 @@ Thanks and best regards
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("19-MAR-2019 11:00:11", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("19-MAR-2019 11:00:11", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Application Update Email",
@@ -1199,7 +1199,7 @@ Yours sincerely,
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("19-MAR-2019 11:01:42", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("19-MAR-2019 11:01:42", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Further Information Request Email",
@@ -1226,7 +1226,7 @@ Yours sincerely,
 def add_letter_templates():
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("17-DEC-2013 17:10:00", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("17-DEC-2013 17:10:00", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Firearms Section 5 EC Schedule",
@@ -1237,7 +1237,7 @@ def add_letter_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("05-JAN-2016 09:57:40", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("05-JAN-2016 09:57:40", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Shipped from EU Member State to UK under Directive 91/477/EEC (Section 5)",
@@ -1248,7 +1248,7 @@ def add_letter_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("17-SEP-2018 12:22:06", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("17-SEP-2018 12:22:06", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Shipped from EU Member State to UK",
@@ -1259,7 +1259,7 @@ def add_letter_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("17-SEP-2018 12:23:15", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("17-SEP-2018 12:23:15", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Shipped from outside the EU to UK",
@@ -1270,7 +1270,7 @@ def add_letter_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("05-JAN-2016 09:56:09", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("05-JAN-2016 09:56:09", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Imported into Northern Ireland (Section 5)",
@@ -1281,7 +1281,7 @@ def add_letter_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("08-NOV-2019 10:30:57", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("08-NOV-2019 10:30:57", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Firearms OIL Cover Letter",
@@ -1292,7 +1292,7 @@ def add_letter_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("14-APR-2015 12:09:48", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("14-APR-2015 12:09:48", DATETIME_FORMAT), is_dst=None
         ),
         is_active=False,
         template_name="Shipped from outside EU to UK (not Section 5)",
@@ -1303,7 +1303,7 @@ def add_letter_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("05-JAN-2016 09:56:34", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("05-JAN-2016 09:56:34", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Proof House",
@@ -1314,7 +1314,7 @@ def add_letter_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("13-FEB-2014 13:40:13", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("13-FEB-2014 13:40:13", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Anti-personnel Mines",
@@ -1325,7 +1325,7 @@ def add_letter_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("13-APR-2016 14:39:08", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("13-APR-2016 14:39:08", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Deactivated Firearms",
@@ -1339,7 +1339,7 @@ def add_letter_templates():
 def add_letter_fragment_templates():
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("18-JUL-2019 18:50:23", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("18-JUL-2019 18:50:23", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Firearms Markings Standard",
@@ -1350,7 +1350,7 @@ def add_letter_fragment_templates():
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
-            datetime.strptime("18-JUL-2019 18:50:23", DATETIME_FORMAT), is_dst=None
+            dt.datetime.strptime("18-JUL-2019 18:50:23", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Firearms Markings Non-Standard",

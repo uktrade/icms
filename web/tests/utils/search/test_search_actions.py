@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 import pytest
 from dateutil.relativedelta import relativedelta
@@ -18,8 +18,8 @@ from web.utils.search.actions import (
 )
 
 _st = ImpExpStatus
-_future_date = datetime.date(datetime.date.today().year + 1, 1, 1)
-_past_date = datetime.date(datetime.date.today().year - 1, 1, 1)
+_future_date = dt.date(dt.date.today().year + 1, 1, 1)
+_past_date = dt.date(dt.date.today().year - 1, 1, 1)
 
 
 test_import_arg_values = [
@@ -94,7 +94,7 @@ test_export_arg_values = [
         CertificateOfManufactureApplication(
             status=_st.COMPLETED, decision=CertificateOfManufactureApplication.APPROVE
         ),
-        datetime.date.today() - relativedelta(years=2),
+        dt.date.today() - relativedelta(years=2),
         "admin",
         ["Open Variation", "Revoke Certificates"],
     ),
@@ -102,7 +102,7 @@ test_export_arg_values = [
         CertificateOfGoodManufacturingPracticeApplication(
             status=_st.COMPLETED, decision=CertificateOfManufactureApplication.APPROVE
         ),
-        datetime.date.today() - relativedelta(years=2),
+        dt.date.today() - relativedelta(years=2),
         "admin",
         ["Open Variation", "Revoke Certificates"],
     ),
@@ -111,7 +111,7 @@ test_export_arg_values = [
         CertificateOfGoodManufacturingPracticeApplication(
             status=_st.COMPLETED, decision=CertificateOfManufactureApplication.APPROVE
         ),
-        datetime.date.today() - relativedelta(years=3, days=1),
+        dt.date.today() - relativedelta(years=3, days=1),
         "admin",
         [],
     ),
@@ -145,8 +145,8 @@ def test_get_export_application_search_actions(
 
     # Add a fake annotation to the application record.
     if issue_date:
-        application.latest_certificate_issue_datetime = datetime.datetime.combine(
-            issue_date, datetime.time.min, tzinfo=datetime.UTC
+        application.latest_certificate_issue_datetime = dt.datetime.combine(
+            issue_date, dt.time.min, tzinfo=dt.UTC
         )
     else:
         application.latest_certificate_issue_datetime = issue_date
