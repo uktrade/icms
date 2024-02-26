@@ -19,7 +19,8 @@ div[name="signature-widget"] > span {
 }
 
 #signature-widget-image {
-    max-width: 175px;
+    width: 175px;
+    max-height: 100px;
 }
 
 @media print {
