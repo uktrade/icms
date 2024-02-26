@@ -461,6 +461,7 @@ CSP_SCRIPT_SRC = (
     "'self'",
     "https://sentry.ci.uktrade.digital/",
     "https://cdnjs.cloudflare.com",
+    "https://www.googletagmanager.com",
 )
 
 # JS scripts can import other scripts, following the same rules as above
@@ -500,18 +501,18 @@ P12_SIGNATURE_PASSWORD = env.p12_signature_password
 # Google Analytics stuff
 GTM_AUTH_KEYS = {
     "Caseworker": env.gtm_caseworker_auth_key,
-    "Export A Certificate": env.gtm_importer_auth_key,
-    "Import A Licence": env.gtm_exporter_auth_key,
+    "Export A Certificate": env.gtm_exporter_auth_key,
+    "Import A Licence": env.gtm_importer_auth_key,
 }
 
 GTM_CONTAINER_IDS = {
     "Caseworker": env.gtm_caseworker_container_id,
-    "Export A Certificate": env.gtm_importer_container_id,
-    "Import A Licence": env.gtm_exporter_container_id,
+    "Export A Certificate": env.gtm_exporter_container_id,
+    "Import A Licence": env.gtm_importer_container_id,
 }
 
 GTM_PREVIEW_KEYS = {
     "Caseworker": env.gtm_caseworker_preview_key,
-    "Export A Certificate": env.gtm_importer_preview_key,
-    "Import A Licence": env.gtm_exporter_preview_key,
+    "Export A Certificate": env.gtm_exporter_preview_key,
+    "Import A Licence": env.gtm_importer_preview_key,
 }

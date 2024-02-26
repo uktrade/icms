@@ -8,7 +8,6 @@ from compressor.contrib.jinja2ext import CompressorExtension
 from django import forms
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.db.models import Model
 from django.http import HttpRequest
@@ -220,16 +219,16 @@ def get_file_base64(path: str) -> str:
     return base64.b64encode(file_path.read_bytes()).decode("utf-8")  # /PS-IGNORE
 
 
-def get_gtm_auth_key(request) -> str:
-    current_site = get_current_site(request)
+def get_gtm_auth_key(request: AuthenticatedHttpRequest) -> str:
+    current_site = request.site
     return settings.GTM_AUTH_KEYS[current_site.name]
 
 
-def get_gtm_container_id(request) -> str:
-    current_site = get_current_site(request)
+def get_gtm_container_id(request: AuthenticatedHttpRequest) -> str:
+    current_site = request.site
     return settings.GTM_CONTAINER_IDS[current_site.name]
 
 
-def get_gtm_preview_key(request) -> str:
-    current_site = get_current_site(request)
+def get_gtm_preview_key(request: AuthenticatedHttpRequest) -> str:
+    current_site = request.site
     return settings.GTM_PREVIEW_KEYS[current_site.name]

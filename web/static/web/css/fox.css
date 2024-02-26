@@ -4999,3 +4999,39 @@ input.radio-input, input.radio-input-inline {
 .select2-results__option[aria-selected=true] {
     display: none;
 }
+
+.cookie-banner{
+    margin-bottom: 20px;
+    margin-left: 34px;
+    margin-right: 34px;
+}
+
+.h3_header {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-bottom: 0.5em;
+}
+
+.mt-1 {
+    margin-top: 1em;
+}
+
+.mt-2 {
+    margin-top: 2em;
+}
+
+.mt-3 {
+    margin-top: 3em;
+}
+
+.ml-1 {
+    margin-left: 1em;
+}
+
+.ml-2 {
+    margin-left: 2em;
+}
+
+.ml-3 {
+    margin-left: 3em;
+}

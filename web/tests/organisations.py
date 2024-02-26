@@ -1,7 +1,7 @@
 from web.permissions import ExporterObjectPermissions as ExpOP
 from web.permissions import ImporterObjectPermissions as ImpOP
 
-from .type_classes import (
+from .types import (
     AgentExporter,
     AgentImporter,
     ExporterContact,
