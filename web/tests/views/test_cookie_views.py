@@ -59,7 +59,7 @@ class TestCookieConsentPage:
         context = response.context[0]
         assert isinstance(context["form"], CookieConsentForm)
         assert not context["form"].initial
-        assert "Cookies on ICMS" in response.content.decode("utf-8")
+        assert "Cookies are files saved on your phone" in response.content.decode("utf-8")
 
     def test_cookie_consent_initial(self, importer_client):
         """Test that the cookie consent page renders with the correct initial values."""
