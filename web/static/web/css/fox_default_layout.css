@@ -565,7 +565,6 @@ body.contains-popup {
   overflow: hidden;
 }
 
-/*noinspection CssUnknownTarget*/
 #modal-popup-container {
   position: fixed;
   top: 0;
