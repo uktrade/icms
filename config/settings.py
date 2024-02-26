@@ -65,7 +65,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django.contrib.sites.middleware.CurrentSiteMiddleware",
+    "web.middleware.common.ICMSCurrentSiteMiddleware",
     "htmlmin.middleware.HtmlMinifyMiddleware",
     "htmlmin.middleware.MarkRequestMiddleware",
     "web.middleware.common.ICMSMiddleware",
@@ -203,9 +203,12 @@ ICMS_GMP_BEIS_EMAIL = env.icms_gmp_beis_email
 
 app_bucket_creds = env.s3_bucket_config
 AWS_REGION = app_bucket_creds.get("aws_region")
-AWS_ACCESS_KEY_ID = app_bucket_creds.get("aws_access_key_id")
-AWS_SECRET_ACCESS_KEY = app_bucket_creds.get("aws_secret_access_key")
 AWS_STORAGE_BUCKET_NAME = app_bucket_creds.get("bucket_name")
+
+if not is_copilot():
+    # Only required in Cloud Foundry.
+    AWS_ACCESS_KEY_ID = app_bucket_creds.get("aws_access_key_id")
+    AWS_SECRET_ACCESS_KEY = app_bucket_creds.get("aws_secret_access_key")
 
 # Phone number format
 PHONENUMBER_DB_FORMAT = "INTERNATIONAL"

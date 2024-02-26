@@ -33,13 +33,13 @@ class Command(MigrationBaseCommand):
         name = format_name(data_type)
 
         if skip:
-            self.stdout.write(f"Skipping {name} XML Parsing")
+            self.log(f"Skipping {name} XML Parsing")
             return
 
-        self.stdout.write(f"Extracting xml data for {name}")
+        self.log(f"Extracting xml data for {name}")
 
         for idx, parser in enumerate(parser_list, start=start):
-            self.stdout.write("\t" + parser.log_message(idx))
+            self.log("\t" + parser.log_message(idx))
             objs = parser.get_queryset()
 
             while True:
@@ -53,4 +53,4 @@ class Command(MigrationBaseCommand):
 
             self._log_time()
 
-        self.stdout.write("XML extraction complete")
+        self.log("XML extraction complete")

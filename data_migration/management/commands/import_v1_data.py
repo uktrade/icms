@@ -61,7 +61,7 @@ class Command(MigrationBaseCommand):
         name = format_name(data_type)
 
         if skip:
-            self.stdout.write(f"Skipping {name} Data Import")
+            self.log(f"Skipping {name} Data Import")
             return
 
         if not start_m2m:
@@ -69,15 +69,15 @@ class Command(MigrationBaseCommand):
 
         self._import_m2m(data_type)
 
-        self.stdout.write(f"{name} Data Imported!")
+        self.log(f"{name} Data Imported!")
 
     def _import_model(self, data_type: DATA_TYPE) -> None:
         start, source_target_list = self._get_data_list(DATA_TYPE_SOURCE_TARGET[data_type])
         name = format_name(data_type)
-        self.stdout.write(f"Importing {name} Data")
+        self.log(f"Importing {name} Data")
 
         for idx, (source, target) in enumerate(source_target_list, start=start):
-            self.stdout.write(f"\t{idx} - Importing {target.__name__} from {source.__name__}")
+            self.log(f"\t{idx} - Importing {target.__name__} from {source.__name__}")
 
             objs = source.get_source_data()
 
@@ -93,12 +93,10 @@ class Command(MigrationBaseCommand):
     def _import_m2m(self, data_type: DATA_TYPE) -> None:
         start, m2m_list = self._get_data_list(DATA_TYPE_M2M[data_type])
         name = format_name(data_type)
-        self.stdout.write(f"Importing {name} M2M relationships")
+        self.log(f"Importing {name} M2M relationships")
 
         for idx, (source, target, field) in enumerate(m2m_list, start=start):
-            self.stdout.write(
-                f"\t{idx} - Importing {target.__name__}_{field} from {source.__name__}"
-            )
+            self.log(f"\t{idx} - Importing {target.__name__}_{field} from {source.__name__}")
 
             through_table = getattr(target, field).through
             objs = source.get_m2m_data(target)
@@ -116,18 +114,18 @@ class Command(MigrationBaseCommand):
 
     def _create_tasks(self, skip: bool) -> None:
         if skip:
-            self.stdout.write("Skipping Task Data Import")
+            self.log("Skipping Task Data Import")
             return
 
-        self.stdout.write("Creating Task Data")
+        self.log("Creating Task Data")
 
         for task in TASK_LIST:
-            self.stdout.write(f"\tCreating {task.TASK_TYPE} tasks")
+            self.log(f"\tCreating {task.TASK_TYPE} tasks")
 
             web.Task.objects.bulk_create(task.task_batch(), batch_size=self.batch_size)
             self._log_time()
 
-        self.stdout.write("Task Data Created!")
+        self.log("Task Data Created!")
 
     def _create_missing_packs(
         self,
@@ -152,7 +150,7 @@ class Command(MigrationBaseCommand):
                 raise ValueError("app_model must be ImportApplication or ExportApplication")
 
         for name, app_status, pack_status in statuses:
-            self.stdout.write(f"Creating {name} {pack_model.__name__}")
+            self.log(f"Creating {name} {pack_model.__name__}")
 
             pks = (
                 app_model.objects.filter(
@@ -175,25 +173,25 @@ class Command(MigrationBaseCommand):
 
     def _create_missing_ia_licences(self, skip: bool) -> None:
         if skip:
-            self.stdout.write("Skipping Creating Missing Import Application Licences")
+            self.log("Skipping Creating Missing Import Application Licences")
             return
 
         app_model = dm.ImportApplication
         pack_model = web.ImportApplicationLicence
 
         self._create_missing_packs(app_model, pack_model, {"ima__licences__isnull": True})
-        self.stdout.write("Missing Import Application Licence Data Created!")
+        self.log("Missing Import Application Licence Data Created!")
 
     def _create_missing_export_certificates(self, skip: bool) -> None:
         if skip:
-            self.stdout.write("Skipping Creating Missing Export Application Certificates")
+            self.log("Skipping Creating Missing Export Application Certificates")
             return
 
         app_model = dm.ExportApplication
         pack_model = web.ExportApplicationCertificate
 
         self._create_missing_packs(app_model, pack_model, {"ca__certificates__isnull": True})
-        self.stdout.write("Missing Export Application Certificate Data Created!")
+        self.log("Missing Export Application Certificate Data Created!")
 
     def _update_auto_timestamps(self):
         """Updates the auto_now_add timestamp fields to match the source data"""

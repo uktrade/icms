@@ -44,13 +44,11 @@ showmigrations: ## make db migrations
 
 migrations: ## make db migrations
 	unset UID && \
-	docker-compose run --rm web python ./manage.py makemigrations web && \
-	docker-compose run --rm web chown "${UID}" web/migrations/*.py
+	docker-compose run --rm web python ./manage.py makemigrations web && chown "${UID}" web/migrations/*.py
 
 data_migrations: ## make data_migration migrations
 	unset UID && \
-	docker-compose run --rm web python ./manage.py makemigrations data_migration && \
-	docker-compose run --rm web chown "${UID}" data_migration/migrations/*.py
+	docker-compose run --rm web python ./manage.py makemigrations data_migration && chown "${UID}" data_migration/migrations/*.py
 
 check_migrations: ## Check for missing migrations:
 	unset UID && \

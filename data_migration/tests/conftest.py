@@ -6,7 +6,6 @@ from django.test import override_settings
 def dummy_dm_settings():
     with override_settings(
         ALLOW_DATA_MIGRATION=True,
-        APP_ENV="production",
         ICMS_PROD_USER="TestUser",
         ICMS_PROD_PASSWORD="1234",
     ):
