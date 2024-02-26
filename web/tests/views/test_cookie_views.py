@@ -93,9 +93,10 @@ class TestCookieConsentPage:
         assert cookies_policy["essential"] == "true"
         assert cookies_policy["usage"] == "false"
 
-    def test_cookie_consent_redirect(self, importer_client):
+    def test_cookie_consent_redirect_forbidden(self, importer_client):
+        """Test that the cookie consent page redirects to the home page if referrer_url supplied is not ours."""
         response = importer_client.post(
-            "/cookie-consent/?referrer_url=/foo/bar", {"accept_cookies": "True"}
+            "/cookie-consent/?referrer_url=https://google.com", {"accept_cookies": "True"}
         )
         assert response.status_code == 302
-        assert response.url == "/foo/bar"
+        assert response.url == "/"

@@ -63,7 +63,7 @@
     <!-- UAT -->
     <!-- </div> -->
     {% block cookie_banner %}
-      {% if request.resolver_match.url_name != "cookie-consent" and request.COOKIES.cookie_preferences_set != "true" %}
+      {% if request.resolver_match.url_name != "cookie-consent" and request.COOKIES.get("cookie_preferences_set") != "true" %}
         {# we don't want to show the cookie banner on the cookie consent management page OR if the user has already made their choice #}
         <div class="cookie-banner" data-nosnippet role="region" aria-label="Cookies on ICMS">
           <div class="row">

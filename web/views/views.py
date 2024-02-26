@@ -13,6 +13,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 from django.views.generic import RedirectView
 from django.views.generic.detail import DetailView
@@ -157,7 +158,11 @@ def cookie_consent_view(request):
             # cookie consent stuff lasts for 1 year
             cookie_max_age = 365 * 24 * 60 * 60
 
-            response = redirect(request.GET.get("referrer_url", "/"))
+            referrer_url = request.GET.get("referrer_url", "/")
+            if not url_has_allowed_host_and_scheme(referrer_url, settings.ALLOWED_HOSTS):
+                # if the referrer URL is not allowed, redirect to the home page
+                referrer_url = "/"
+            response = redirect(referrer_url)
 
             # regardless of their choice, we set a cookie to say they've made a choice
             response.set_cookie("cookie_preferences_set", "true", max_age=cookie_max_age)
