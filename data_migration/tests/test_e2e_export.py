@@ -194,8 +194,8 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     vr1: web.VariationRequest = ea3.variation_requests.first()
     assert vr1.what_varied == "Changes 1"
-    assert vr1.requested_datetime == dt.datetime(2022, 10, 13, 10, 1, 5, tzinfo=dt.timezone.utc)
-    assert vr1.closed_datetime == dt.datetime(2022, 10, 14, 11, 1, 5, tzinfo=dt.timezone.utc)
+    assert vr1.requested_datetime == dt.datetime(2022, 10, 13, 10, 1, 5, tzinfo=dt.UTC)
+    assert vr1.closed_datetime == dt.datetime(2022, 10, 14, 11, 1, 5, tzinfo=dt.UTC)
 
     assert ea1.update_requests.count() == 0
     assert ea2.update_requests.count() == 1
@@ -217,9 +217,9 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     case_note1 = ea2.case_notes.filter(is_active=True).first()
     assert case_note1.note == "This is a case note"
-    assert case_note1.create_datetime == dt.datetime(2022, 9, 20, 7, 31, 34, tzinfo=dt.timezone.utc)
+    assert case_note1.create_datetime == dt.datetime(2022, 9, 20, 7, 31, 34, tzinfo=dt.UTC)
     assert case_note1.created_by_id == 2
-    assert case_note1.updated_at == dt.datetime(2022, 9, 20, 7, 31, 34, tzinfo=dt.timezone.utc)
+    assert case_note1.updated_at == dt.datetime(2022, 9, 20, 7, 31, 34, tzinfo=dt.UTC)
     assert case_note1.updated_by_id == 2
     assert case_note1.files.count() == 1
 
@@ -242,7 +242,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert list(cert3.cleared_by.values_list("id", flat=True)) == []
 
     assert cert1.status == "DR"
-    assert cert1.created_at == dt.datetime(2022, 4, 29, 12, 21, tzinfo=dt.timezone.utc)
+    assert cert1.created_at == dt.datetime(2022, 4, 29, 12, 21, tzinfo=dt.UTC)
     assert cert2.status == "AR"
     assert cert2.document_references.count() == 0
     assert cert3.status == "AC"
@@ -423,11 +423,11 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     vr2, vr3 = ea9.variation_requests.order_by("pk")
     assert vr2.what_varied == "Changes 2"
-    assert vr2.requested_datetime == dt.datetime(2022, 10, 13, 10, 1, 5, tzinfo=dt.timezone.utc)
-    assert vr2.closed_datetime == dt.datetime(2022, 10, 14, 11, 1, 5, tzinfo=dt.timezone.utc)
+    assert vr2.requested_datetime == dt.datetime(2022, 10, 13, 10, 1, 5, tzinfo=dt.UTC)
+    assert vr2.closed_datetime == dt.datetime(2022, 10, 14, 11, 1, 5, tzinfo=dt.UTC)
     assert vr3.what_varied == "Changes 3"
-    assert vr3.requested_datetime == dt.datetime(2022, 10, 15, 10, 1, 5, tzinfo=dt.timezone.utc)
-    assert vr3.closed_datetime == dt.datetime(2022, 10, 16, 11, 1, 5, tzinfo=dt.timezone.utc)
+    assert vr3.requested_datetime == dt.datetime(2022, 10, 15, 10, 1, 5, tzinfo=dt.UTC)
+    assert vr3.closed_datetime == dt.datetime(2022, 10, 16, 11, 1, 5, tzinfo=dt.UTC)
 
     assert ea7.update_requests.count() == 0
     assert ea8.update_requests.count() == 0
@@ -497,7 +497,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     sch2, sch3 = cfs3.schedules.order_by("pk")
 
     assert sch1.legislations.count() == 0
-    assert sch1.created_at == dt.datetime(2022, 11, 1, 12, 30, tzinfo=dt.timezone.utc)
+    assert sch1.created_at == dt.datetime(2022, 11, 1, 12, 30, tzinfo=dt.UTC)
     assert sch1.is_biocidal() is False
     assert sch2.legislations.count() == 2
     assert sch2.is_biocidal() is False

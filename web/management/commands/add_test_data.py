@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -206,7 +206,7 @@ class Command(BaseCommand):
             email=f"{username}@example.com",  # /PS-IGNORE
             first_name=f"{username}_first_name",
             last_name=f"{username}_last_name",
-            date_of_birth=datetime.date(2000, 1, 1),
+            date_of_birth=dt.date(2000, 1, 1),
             job_title=f"{username}_job_title",
             organisation=f"{username}_org",
             department=f"{username}_dep",

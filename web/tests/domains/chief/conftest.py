@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 import pytest
 from django.utils import timezone
@@ -34,8 +34,8 @@ def _fa_sil(db, importer_one_contact, importer, office):
 
     # Current draft licence
     doc_pack = document_pack.pack_draft_create(app)
-    doc_pack.licence_start_date = datetime.date.today()
-    doc_pack.licence_end_date = datetime.date(datetime.date.today().year + 1, 12, 1)
+    doc_pack.licence_start_date = dt.date.today()
+    doc_pack.licence_end_date = dt.date(dt.date.today().year + 1, 12, 1)
     doc_pack.save()
 
     document_pack.doc_ref_licence_create(doc_pack, doc_reference="0000010K")

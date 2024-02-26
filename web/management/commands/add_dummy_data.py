@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 from collections.abc import Collection
 from typing import Any
 
@@ -364,7 +364,7 @@ class Command(BaseCommand):
             email=f"{username}@example.com",  # /PS-IGNORE
             first_name=first_name,
             last_name=last_name,
-            date_of_birth=datetime.date(2000, 1, 1),
+            date_of_birth=dt.date(2000, 1, 1),
             icms_v1_user=icms_v1_user,
         )
 
@@ -407,7 +407,7 @@ class Command(BaseCommand):
             password=password,
             first_name=username,
             last_name=username,
-            date_of_birth=datetime.date(2000, 1, 1),
+            date_of_birth=dt.date(2000, 1, 1),
         )
 
 
@@ -456,7 +456,7 @@ def create_dummy_signature(user: User) -> None:
     Signature.objects.create(
         name="Active Dummy Signature",
         signatory="Import Licencing Branch",
-        history=f"Created by add_dummy_data command on {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+        history=f"Created by add_dummy_data command on {dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         filename=filename,
         path=key,
         content_type="image/png",

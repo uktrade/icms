@@ -1,6 +1,6 @@
 import base64
+import datetime as dt
 import re
-from datetime import datetime
 from typing import TYPE_CHECKING
 
 import pytz
@@ -58,13 +58,13 @@ def input_datetime(value):
     input_formats = formats.get_format("DATETIME_INPUT_FORMATS")
     for format in input_formats:
         try:
-            datetime.strptime(value, format)
+            dt.datetime.strptime(value, format)
             return value
         except ValueError:
             continue
 
     local_timezone = pytz.timezone(settings.TIME_ZONE)
-    naive_datetime = datetime.strptime(value, "%Y-%m-%d %H:%M:%S.%f")
+    naive_datetime = dt.datetime.strptime(value, "%Y-%m-%d %H:%M:%S.%f")
     local_datetime = local_timezone.localize(naive_datetime, is_dst=None)
     utc_datetime = local_datetime.astimezone(pytz.utc)
     for format in formats.get_format("DATETIME_INPUT_FORMATS"):

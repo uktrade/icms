@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, NamedTuple, Optional, Union
 
@@ -20,8 +20,8 @@ class SearchTerms:
     case_ref: str | None = None
     licence_ref: str | None = None
     response_decision: str | None = None
-    submitted_date_start: datetime.date | None = None
-    submitted_date_end: datetime.date | None = None
+    submitted_date_start: dt.date | None = None
+    submitted_date_end: dt.date | None = None
     reassignment_search: bool | None = False
     reassignment_user: Optional["User"] = None
     application_contact: str | None = None
@@ -40,10 +40,10 @@ class SearchTerms:
     shipping_year: str | None = None
     goods_category: Optional["CommodityGroup"] = None
     commodity_code: str | None = None
-    licence_date_start: datetime.date | None = None
-    licence_date_end: datetime.date | None = None
-    issue_date_start: datetime.date | None = None
-    issue_date_end: datetime.date | None = None
+    licence_date_start: dt.date | None = None
+    licence_date_end: dt.date | None = None
+    issue_date_start: dt.date | None = None
+    issue_date_end: dt.date | None = None
 
     # ---- Export application fields ----
     exporter_agent_name: str | None = None
@@ -115,7 +115,7 @@ class ImportResultRow:
     commodity_details: CommodityDetails
     assignee_details: AssigneeDetails
     # Used to order records
-    order_by_datetime: datetime.datetime
+    order_by_datetime: dt.datetime
 
 
 @dataclass
@@ -133,7 +133,7 @@ class ExportResultRow:
 
     submitted_at: str
     # Used to order records
-    order_by_datetime: datetime.datetime
+    order_by_datetime: dt.datetime
 
     # Certificate details
     origin_countries: list[str]

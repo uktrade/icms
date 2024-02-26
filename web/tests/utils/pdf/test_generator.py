@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import io
 from unittest.mock import MagicMock, create_autospec, patch
 
@@ -309,9 +309,9 @@ def test_get_sanctions_pre_sign_licence_context(
     app.save()
 
     licence = app.licences.first()
-    licence.case_completion_datetime = datetime.datetime(2023, 9, 1, tzinfo=datetime.UTC)
-    licence.licence_start_date = datetime.date(2023, 9, 1)
-    licence.licence_end_date = datetime.date(2024, 3, 1)
+    licence.case_completion_datetime = dt.datetime(2023, 9, 1, tzinfo=dt.UTC)
+    licence.licence_start_date = dt.date(2023, 9, 1)
+    licence.licence_end_date = dt.date(2024, 3, 1)
     licence.issue_paper_licence_only = False
     licence.save()
 
@@ -358,9 +358,9 @@ def test_get_wood_pre_sign_licence_context(
     app.save()
 
     licence = app.licences.first()
-    licence.case_completion_datetime = datetime.datetime(2023, 9, 1, tzinfo=datetime.UTC)
-    licence.licence_start_date = datetime.date(2023, 9, 1)
-    licence.licence_end_date = datetime.date(2024, 3, 1)
+    licence.case_completion_datetime = dt.datetime(2023, 9, 1, tzinfo=dt.UTC)
+    licence.licence_start_date = dt.date(2023, 9, 1)
+    licence.licence_end_date = dt.date(2024, 3, 1)
     licence.issue_paper_licence_only = True
     licence.save()
 
@@ -407,7 +407,7 @@ def test_get_preview_cover_letter_context(patched_get_active_signature_file, lic
         "process": app,
         "content": "ABC",
         "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
-        "issue_date": datetime.date.today().strftime("%d %B %Y"),
+        "issue_date": dt.date.today().strftime("%d %B %Y"),
         "page_title": "Cover Letter Preview",
         "preview": True,
         "ilb_contact_address_split": [
@@ -439,7 +439,7 @@ def test_get_pre_sign_cover_letter_context(patched_get_active_signature_file, li
         "process": app,
         "content": "ABC",
         "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
-        "issue_date": datetime.date.today().strftime("%d %B %Y"),
+        "issue_date": dt.date.today().strftime("%d %B %Y"),
         "page_title": "Cover Letter Preview",
         "preview": False,
         "ilb_contact_address_split": [

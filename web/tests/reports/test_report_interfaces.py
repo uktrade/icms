@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime as dt
 
 import pytest
 from django.utils.timezone import make_aware
@@ -199,10 +199,10 @@ class TestIssuedCertificateReportInterface:
         )
 
     def _setup_app_update_submitted_and_completed_dates(self, app):
-        app.submit_datetime = make_aware(datetime(2024, 1, 1, 12, 0, 0))
+        app.submit_datetime = make_aware(dt.datetime(2024, 1, 1, 12, 0, 0))
         app.save()
         for cert in app.certificates.all():
-            cert.case_completion_datetime = make_aware(datetime(2024, 1, 9, 13, 7, 0))
+            cert.case_completion_datetime = make_aware(dt.datetime(2024, 1, 9, 13, 7, 0))
             cert.save()
 
     def test_issued_certificate_report_interface_get_data_header(self):

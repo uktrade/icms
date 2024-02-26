@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 import pytest
 
@@ -45,7 +45,7 @@ class TestChiefUtils:
             status=VariationRequest.Statuses.OPEN,
             what_varied="Dummy what_varied",
             why_varied="Dummy why_varied",
-            when_varied=datetime.date.today(),
+            when_varied=dt.date.today(),
             requested_by=self.user,
         )
 

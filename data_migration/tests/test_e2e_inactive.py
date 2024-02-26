@@ -426,9 +426,9 @@ def test_import_textiles_data(mock_connect, dummy_dm_settings):
 
     assert web.CommodityGroup.objects.count() == 2
     assert web.CommodityGroup.objects.first().start_datetime == dt.datetime(
-        2022, 12, 31, 12, 30, tzinfo=dt.timezone.utc
+        2022, 12, 31, 12, 30, tzinfo=dt.UTC
     )
     assert web.Commodity.objects.count() == 5
     assert web.Commodity.objects.first().start_datetime == dt.datetime(
-        2022, 12, 31, 12, 30, tzinfo=dt.timezone.utc
+        2022, 12, 31, 12, 30, tzinfo=dt.UTC
     )

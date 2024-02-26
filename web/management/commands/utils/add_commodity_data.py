@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime as dt
 
 import pytz
 
@@ -9,12 +9,12 @@ DATE_FORMAT = "%d-%b-%Y"
 
 
 def format_date(date_str):
-    return pytz.timezone("UTC").localize(datetime.strptime(date_str, DATE_FORMAT), is_dst=None)
+    return pytz.timezone("UTC").localize(dt.datetime.strptime(date_str, DATE_FORMAT), is_dst=None)
 
 
 def format_dt(datetime_str):
     return pytz.timezone("UTC").localize(
-        datetime.strptime(datetime_str, DATETIME_FORMAT), is_dst=None
+        dt.datetime.strptime(datetime_str, DATETIME_FORMAT), is_dst=None
     )
 
 

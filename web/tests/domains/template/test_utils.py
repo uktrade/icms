@@ -69,7 +69,7 @@ def _create_sil_app(importer_one_contact, importer, office, extra=None):
         "process_type": SILApplication.PROCESS_TYPE,
         "application_type": application_type,
         "contact": importer_one_contact,
-        "submit_datetime": dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.timezone.utc),
+        "submit_datetime": dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.UTC),
     } | extra
 
     app = SILApplication.objects.create(**sil_data)
@@ -93,7 +93,7 @@ def _create_dfl_app(importer_one_contact, importer, office, extra=None):
         "process_type": DFLApplication.PROCESS_TYPE,
         "application_type": application_type,
         "contact": importer_one_contact,
-        "submit_datetime": dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.timezone.utc),
+        "submit_datetime": dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.UTC),
         "status": "IN_PROGRESS",
         "consignment_country": Country.objects.get(name="Germany"),
         "origin_country": Country.objects.get(name="Albania"),
@@ -122,7 +122,7 @@ def _create_com_app(exporter_one_contact, exporter, office, extra=None):
         "process_type": CertificateOfManufactureApplication.PROCESS_TYPE,
         "application_type": application_type,
         "contact": exporter_one_contact,
-        "submit_datetime": dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.timezone.utc),
+        "submit_datetime": dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.UTC),
         "status": "SUBMITTED",
     } | extra
 
@@ -215,7 +215,7 @@ def test_get_cover_letter_context(importer_one_contact, importer, office):
         importer_one_contact,
         importer,
         office,
-        extra={"submit_datetime": dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.timezone.utc)},
+        extra={"submit_datetime": dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.UTC)},
     )
 
     template_text = """
@@ -305,7 +305,7 @@ def test_oil_add_application_default_cover_letter(importer_one_contact, importer
         process_type=OpenIndividualLicenceApplication.PROCESS_TYPE,
         application_type=application_type,
         contact=importer_one_contact,
-        submit_datetime=dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.timezone.utc),
+        submit_datetime=dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.UTC),
     )
     template = Template.objects.get(template_code="COVER_FIREARMS_OIL")
 
@@ -333,7 +333,7 @@ def test_sanctions_application_default_cover_letter(importer_one_contact, import
         process_type=SanctionsAndAdhocApplication.PROCESS_TYPE,
         application_type=application_type,
         contact=importer_one_contact,
-        submit_datetime=dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.timezone.utc),
+        submit_datetime=dt.datetime(2022, 12, 25, 12, 30, tzinfo=dt.UTC),
     )
 
     with pytest.raises(

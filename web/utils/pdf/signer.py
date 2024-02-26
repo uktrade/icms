@@ -1,5 +1,5 @@
 import base64
-import datetime
+import datetime as dt
 import io
 import logging
 
@@ -105,7 +105,7 @@ def sign_pdf(target: io.BytesIO) -> io.BytesIO:
         "signature_img": active_signature_image,
         "contact": "contact:enquiries.ilb@trade.gov.uk",  # /PS-IGNORE
         "location": "Department for Business and Trade",
-        "signingdate": datetime.datetime.utcnow().strftime("D:%Y%m%d%H%M%S+00'00'"),
+        "signingdate": dt.datetime.utcnow().strftime("D:%Y%m%d%H%M%S+00'00'"),
         "reason": "On behalf of the Secretary of State",
     }
 

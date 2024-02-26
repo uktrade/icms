@@ -1,5 +1,4 @@
-import datetime
-from datetime import date
+import datetime as dt
 
 from django.test import TestCase
 from django.utils.timezone import now
@@ -13,8 +12,8 @@ class TestCommodity(TestCase):
         self,
         is_active=True,
         commodity_code="1234567890",
-        validity_start_date=date.today(),
-        validity_end_date=date.today() + datetime.timedelta(days=10),
+        validity_start_date=dt.date.today(),
+        validity_end_date=dt.date.today() + dt.timedelta(days=10),
         quantity_threshold=8,
         sigl_product_type="xyz",
     ):
@@ -52,7 +51,7 @@ class TestCommodityGroup(TestCase):
         group_code="12",
         group_description="Test group description",
         start_datetime=now(),
-        end_datetime=now() + datetime.timedelta(days=20),
+        end_datetime=now() + dt.timedelta(days=20),
     ):
         return CommodityGroupFactory.create(
             is_active=is_active,

@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import re
 
 import pytest
@@ -175,7 +175,7 @@ def test_get_application_case_and_licence_references(
     )
     gmp_app.certificates.create()
 
-    year = datetime.date.today().year
+    year = dt.date.today().year
 
     derogation_app.reference = reference.get_application_case_reference(
         lock_manager, derogation_app
@@ -285,7 +285,7 @@ def test_get_application_case_and_licence_references(
         ref = reference.get_export_certificate_reference(lock_manager, app)
         document_pack.doc_ref_certificate_create(certificate, ref, country=cert_country)
 
-    today = datetime.date.today()
+    today = dt.date.today()
 
     doc = _get_certificate_document(com_app, cert_country)
     doc.reference = f"COM/{today.year}/00001"
@@ -515,9 +515,9 @@ def test_get_import_application_licence_reference(
 @pytest.mark.parametrize(
     "process_type, next_sequence_value, expected_reference",
     [
-        (ProcessTypes.COM, 1, f"COM/{datetime.date.today().year}/00001"),
-        (ProcessTypes.CFS, 2, f"CFS/{datetime.date.today().year}/00002"),
-        (ProcessTypes.GMP, 3, f"GMP/{datetime.date.today().year}/00003"),
+        (ProcessTypes.COM, 1, f"COM/{dt.date.today().year}/00001"),
+        (ProcessTypes.CFS, 2, f"CFS/{dt.date.today().year}/00002"),
+        (ProcessTypes.GMP, 3, f"GMP/{dt.date.today().year}/00003"),
     ],
 )
 def test_get_export_application_licence_reference(

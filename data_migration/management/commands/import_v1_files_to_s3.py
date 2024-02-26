@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import json
 from typing import Any
 
@@ -80,7 +80,7 @@ class Command(BaseCommand):
             "number_of_files_to_be_processed": number_of_files_to_be_processed,
             "number_of_files_processed": 0,
             "query_name": query_model.query_name,
-            "started_at": datetime.datetime.now().strftime(self.DATETIME_FORMAT),
+            "started_at": dt.datetime.now().strftime(self.DATETIME_FORMAT),
         } | query_parameters
 
     def process_query_and_upload(
@@ -144,7 +144,7 @@ class Command(BaseCommand):
             data_dict["created_datetime"] = last_file_processed["CREATED_DATETIME"].strftime(
                 self.DATETIME_FORMAT
             )
-            data_dict["finished_at"] = datetime.datetime.now().strftime(self.DATETIME_FORMAT)
+            data_dict["finished_at"] = dt.datetime.now().strftime(self.DATETIME_FORMAT)
             data_dict["secure_lob_ref_id"] = last_file_processed["SECURE_LOB_REF_ID"]
             self.write_run_data_to_s3(data_dict)
 

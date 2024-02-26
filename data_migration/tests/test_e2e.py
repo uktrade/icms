@@ -333,7 +333,7 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     sil2_licences: QuerySet[web.ImportApplicationLicence] = sil2.licences.order_by("id")
     l2, l3, l4 = sil2_licences
 
-    assert l1.created_at == dt.datetime(2022, 4, 27, 9, 43, tzinfo=dt.timezone.utc)
+    assert l1.created_at == dt.datetime(2022, 4, 27, 9, 43, tzinfo=dt.UTC)
     assert list(l1.document_references.values_list("reference", flat=True)) == ["1234A", None]
     assert l1.document_references.filter(document_type="LICENCE").count() == 1
     assert l1.document_references.filter(document_type="COVER_LETTER").count() == 1
@@ -368,20 +368,20 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert sil2.user_section5.count() == 0
 
     u_sec5_1, u_sec5_2 = sil1.user_section5.order_by("id")
-    assert u_sec5_1.created_datetime == dt.datetime(2022, 4, 27, 11, 30, tzinfo=dt.timezone.utc)
-    assert u_sec5_2.created_datetime == dt.datetime(2022, 3, 23, 11, 47, tzinfo=dt.timezone.utc)
+    assert u_sec5_1.created_datetime == dt.datetime(2022, 4, 27, 11, 30, tzinfo=dt.UTC)
+    assert u_sec5_2.created_datetime == dt.datetime(2022, 3, 23, 11, 47, tzinfo=dt.UTC)
 
     ia1 = sil1.importapplication_ptr
     ia2 = sil2.importapplication_ptr
     ia3 = sil3.importapplication_ptr
 
     assert ia1.last_updated_by_id == 2
-    assert ia1.created == dt.datetime(2022, 4, 22, 8, 23, 22, tzinfo=dt.timezone.utc)
+    assert ia1.created == dt.datetime(2022, 4, 22, 8, 23, 22, tzinfo=dt.UTC)
     assert ia1.importcontact_set.count() == 0
 
     assert ia2.last_updated_by_id == 0
     assert ia2.importcontact_set.count() == 2
-    assert ia2.created == dt.datetime(2022, 4, 22, 7, 44, 44, tzinfo=dt.timezone.utc)
+    assert ia2.created == dt.datetime(2022, 4, 22, 7, 44, 44, tzinfo=dt.UTC)
     ic = ia2.importcontact_set.first()
 
     assert ic.entity == "legal"
@@ -469,9 +469,9 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
 
     cn1, cn2, cn3 = web.CaseNote.objects.order_by("pk")
     assert cn1.files.count() == 2
-    assert cn1.create_datetime == dt.datetime(2020, 1, 1, 11, 12, 13, tzinfo=dt.timezone.utc)
+    assert cn1.create_datetime == dt.datetime(2020, 1, 1, 11, 12, 13, tzinfo=dt.UTC)
     assert cn1.created_by_id == 2
-    assert cn1.updated_at == dt.datetime(2020, 1, 1, 11, 12, 13, tzinfo=dt.timezone.utc)
+    assert cn1.updated_at == dt.datetime(2020, 1, 1, 11, 12, 13, tzinfo=dt.UTC)
     assert cn1.updated_by_id == 2
     assert cn1.is_active is True
 
@@ -486,7 +486,7 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
 
     fir1, fir2, fir3 = ia1.further_information_requests.order_by("pk")
 
-    assert fir1.requested_datetime == dt.datetime(2021, 1, 2, 12, 23, tzinfo=dt.timezone.utc)
+    assert fir1.requested_datetime == dt.datetime(2021, 1, 2, 12, 23, tzinfo=dt.UTC)
 
     assert fir1.files.count() == 2
     assert fir2.files.count() == 1
@@ -497,11 +497,11 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
 
     p1, p2 = ia1.process_ptr, ia2.process_ptr
 
-    assert p1.created == dt.datetime(2022, 4, 22, 8, 23, 22, tzinfo=dt.timezone.utc)
+    assert p1.created == dt.datetime(2022, 4, 22, 8, 23, 22, tzinfo=dt.UTC)
     assert p1.tasks.count() == 1
     assert p1.tasks.first().task_type == web.Task.TaskType.PROCESS
 
-    assert p2.created == dt.datetime(2022, 4, 22, 7, 44, 44, tzinfo=dt.timezone.utc)
+    assert p2.created == dt.datetime(2022, 4, 22, 7, 44, 44, tzinfo=dt.UTC)
     assert p2.tasks.count() == 0
 
 

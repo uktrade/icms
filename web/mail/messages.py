@@ -1,5 +1,5 @@
 import copy
-import datetime
+import datetime as dt
 from typing import ClassVar, final
 from uuid import UUID
 
@@ -580,7 +580,7 @@ class BaseAuthorityExpiringEmail(GOVNotifyEmailMessage):
         *args,
         importers_details: list[ImporterDetails],
         authority_type: str,
-        expiry_date: datetime.date,
+        expiry_date: dt.date,
         **kwargs,
     ) -> None:
         super().__init__(*args, **kwargs)

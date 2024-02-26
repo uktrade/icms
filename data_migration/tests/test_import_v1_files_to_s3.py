@@ -1,6 +1,6 @@
+import datetime as dt
 import io
 import json
-from datetime import datetime
 from unittest import mock
 
 import freezegun
@@ -22,19 +22,19 @@ FAKE_DB_RESPONSE = [
     {
         "BLOB_DATA": "blob",
         "PATH": "testfile.txt",
-        "CREATED_DATETIME": datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
+        "CREATED_DATETIME": dt.datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
         "SECURE_LOB_REF_ID": 1,
     },
     {
         "BLOB_DATA": "blob2",
         "PATH": "testfile2.txt",
-        "CREATED_DATETIME": datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
+        "CREATED_DATETIME": dt.datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
         "SECURE_LOB_REF_ID": 2,
     },
     {
         "BLOB_DATA": "blob2",
         "PATH": "testfile3.txt",
-        "CREATED_DATETIME": datetime.strptime(CREATED_DATETIME_ALT_2, "%Y-%m-%d %H:%M:%S"),
+        "CREATED_DATETIME": dt.datetime.strptime(CREATED_DATETIME_ALT_2, "%Y-%m-%d %H:%M:%S"),
         "SECURE_LOB_REF_ID": 3,
     },
 ]
