@@ -1,3 +1,6 @@
+from django.contrib.sites.middleware import CurrentSiteMiddleware
+from django.urls import resolve
+
 from web.utils.lock_manager import LockManager
 
 
@@ -48,3 +51,17 @@ class SetPermittedCrossDomainPolicyHeaderMiddleware:
         response = self.get_response(request)
         response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
         return response
+
+
+class ICMSCurrentSiteMiddleware(CurrentSiteMiddleware):
+    """Middleware that sets `site` attribute to request object."""
+
+    # List of views that do not add the site to the current request object.
+    site_exempt_views = [
+        "dbt-platform-health-check",
+    ]
+
+    def process_request(self, request):
+        """Middleware that sets `site` attribute to request object."""
+        if resolve(request.path).view_name not in self.site_exempt_views:
+            super().process_request(request)
