@@ -1,3 +1,5 @@
+from web.management.commands.add_reports_data import add_reports
+
 from .add_application_type_data import (
     add_export_application_type_data,
     add_import_application_type_data,
@@ -20,7 +22,6 @@ from .add_country_data import (
 )
 from .add_email_template_data import add_email_gov_notify_templates
 from .add_product_legislation_data import add_product_legislation_data
-from .add_reports_data import add_reports
 from .add_sanction_data import add_sanction_data
 from .add_template_data import (
     add_cfs_declaration_templates,
