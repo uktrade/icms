@@ -102,11 +102,19 @@
             </tr>
           </tbody>
         </table>
-        {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-          {{ fields.field(form.accept_cookies, show_optional_indicator=False) }}
-          <button class="button primary-button" type="submit" data-confirm="Are you sure you want to save your cookie preferences?">Save cookie settings</button>
-        {% endcall %}
       </div>
+    </div>
+    <div class="row">
+      <form action="" method="post" class="column six">
+        {{ csrf_input }}
+        {{ form.as_p() }}
+        <input
+          type="submit"
+          class="primary-button button"
+          value="Save cookie settings"
+          data-confirm="Are you sure you want to save your cookie preferences?"
+        >
+      </form>
     </div>
   </div>
 {% endblock main_content %}

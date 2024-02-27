@@ -8,4 +8,5 @@ class CookieConsentForm(forms.Form):
         label="Do you want to accept analytics cookies?",
         required=False,
         widget=YesNoRadioSelectInline,
+        initial=False,
     )
