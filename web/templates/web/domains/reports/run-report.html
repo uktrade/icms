@@ -2,6 +2,11 @@
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
+
+{% block css %}
+  {{ form.media.css }}
+{% endblock %}
+
 {% block content_actions %}
   <div class="content-actions">
     <ul class="menu-out flow-across">
@@ -26,7 +31,15 @@
     {% endif %}
     {{ fields.field(form.date_from) }}
     {{ fields.field(form.date_to) }}
+    {% if form.legislation %}
+      {{ fields.field(form.legislation) }}
+    {% endif %}
     <input type="submit" class="primary-button button" value="Run Now" />
   {% endcall %}
   </div>
+{% endblock %}
+
+
+{% block page_js %}
+  {{ form.media.js }}
 {% endblock %}

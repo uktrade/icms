@@ -40,6 +40,7 @@ def test_run_history_view(report_user_client):
                 "date_to": "1-Jan-2022",
                 "notes": "",
                 "application_type": "CFS",
+                "legislation": ["20"],
             },
         ),
         (
@@ -162,6 +163,18 @@ def test_run_report_view(mock_generate_report, report_user_client, report_type, 
                     "Select a valid choice. CFS is not one of the available choices."
                 ]
             },
+        ),
+        (
+            ReportType.ISSUED_CERTIFICATES,
+            {
+                "title": "test report",
+                "date_from": "1-Jan-2022",
+                "date_to": "1-Jan-2022",
+                "notes": "",
+                "application_type": "CFS",
+                "legislation": ["0"],
+            },
+            {"legislation": ["Select a valid choice. 0 is not one of the available choices."]},
         ),
     ),
 )

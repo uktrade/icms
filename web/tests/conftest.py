@@ -1288,5 +1288,6 @@ def report_schedule(report_user):
             "date_to": "2024-01-12",
             "date_filter_type": DateFilterType.SUBMITTED,
             "application_type": "",
+            "legislation": [],
         },
     )

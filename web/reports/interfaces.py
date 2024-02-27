@@ -50,6 +50,7 @@ class IssuedCertificateReportFilter(BaseModel):
     application_type: str
     date_from: str
     date_to: str
+    legislation: list[int]
 
 
 class ImportLicenceFilter(BaseModel):
@@ -110,6 +111,10 @@ class IssuedCertificateReportInterface(ReportInterface):
     # Added to fix typing
     filters: IssuedCertificateReportFilter
 
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.legislations = dict(ProductLegislation.objects.values_list("pk", "name"))
+
     def get_queryset(self) -> QuerySet:
         queryset = CaseDocumentReference.objects.filter(
             document_type=CaseDocumentReference.Type.CERTIFICATE,
@@ -145,7 +150,7 @@ class IssuedCertificateReportInterface(ReportInterface):
             )
             .order_by()
             .values("cfsschedule__application_id")
-            .annotate(legislation_array=ArrayAgg("name", distinct=True, default=Value([])))
+            .annotate(legislation_array=ArrayAgg("pk", distinct=True, default=Value([])))
             .values("legislation_array")
         )
 
@@ -153,6 +158,9 @@ class IssuedCertificateReportInterface(ReportInterface):
             manufacturer_countries=Subquery(manufacturer_countries_sub_query),
             legislations=Subquery(legislation_sub_query),
         )
+
+        if self.filters.legislation:
+            queryset = queryset.filter(legislations__contains=self.filters.legislation)
         return queryset.order_by("-reference")
 
     def serialize_row(self, cdr: CaseDocumentReference) -> IssuedCertificateReportSerializer:
@@ -190,7 +198,9 @@ class IssuedCertificateReportInterface(ReportInterface):
                 status__in=[UpdateRequest.Status.CLOSED, UpdateRequest.Status.RESPONDED]
             ).count(),
             fir_count=export_application.further_information_requests.completed().count(),
-            product_legislation="" if not is_cfs else ",".join(cdr.legislations),
+            product_legislation=(
+                "" if not is_cfs else ", ".join([self.legislations[pk] for pk in cdr.legislations])
+            ),
             case_processing_time=self.get_total_processing_time(cdr, export_application),
             total_processing_time=self.get_total_processing_time(cdr, export_application),
             business_days_to_process=self.get_business_days_to_process(cdr, export_application),

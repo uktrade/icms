@@ -1,9 +1,15 @@
 import datetime as dt
 
 from django import forms
+from django_select2.forms import Select2MultipleWidget
 
 from web.forms.fields import JqueryDateField
-from web.models import ExportApplicationType, ImportApplicationType, ScheduleReport
+from web.models import (
+    ExportApplicationType,
+    ImportApplicationType,
+    ProductLegislation,
+    ScheduleReport,
+)
 
 from .constants import DateFilterType
 
@@ -38,12 +44,27 @@ class ReportForm(forms.ModelForm):
 
 class IssuedCertificatesForm(ReportForm):
     application_type = forms.ChoiceField(
-        choices=[(None, "All")] + ExportApplicationType.Types.choices, required=False
+        choices=[(None, "All")] + ExportApplicationType.Types.choices,
+        required=False,
     )
+
+    legislation = forms.ModelMultipleChoiceField(
+        queryset=ProductLegislation.objects.filter(is_active=True),
+        widget=Select2MultipleWidget(
+            attrs={"data-minimum-input-length": 0, "data-placeholder": "Select Legislation"},
+        ),
+        required=False,
+    )
+
+    def clean_legislation(self) -> list:
+        legislation = self.cleaned_data.get("legislation")
+        if legislation:
+            return list(legislation.values_list("pk", flat=True))
+        return []
 
     class Meta:
         model = ReportForm.Meta.model
-        fields = ["application_type"] + ReportForm.Meta.fields
+        fields = ["application_type", "legislation"] + ReportForm.Meta.fields
         help_texts = {
             "date_from": "Application Submitted date (inclusive of this day ie 1-Jan-24 00:00:01)",
             "date_to": "Application Completed date (inclusive of this day ie 31-Jan-24 23:59:59)",

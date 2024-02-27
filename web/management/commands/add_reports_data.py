@@ -1,3 +1,5 @@
+from django.core.management.base import BaseCommand
+
 from web.models import Report
 from web.reports.constants import ReportType
 
@@ -29,3 +31,10 @@ def add_reports():
                 "description": description,
             },
         )
+
+
+class Command(BaseCommand):
+    help = """Create Reports Data"""
+
+    def handle(self, *args, **options):
+        add_reports()

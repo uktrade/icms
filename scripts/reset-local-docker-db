@@ -6,7 +6,7 @@ make down
 docker volume rm icms_pgdata
 make migrate
 make localstack
-make manage args="create_icms_groups"
+make manage args="create_icms_groups add_reports_data"
 make add_dummy_data
 make manage args="set_icms_sites http://caseworker:8080 http://export-a-certificate:8080 http://import-a-licence:8080"
 

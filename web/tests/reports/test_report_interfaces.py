@@ -213,10 +213,23 @@ class TestIssuedCertificateReportInterface:
             "results": [],
         }
 
+    def test_issued_certificate_report_interface_get_data_cfs_filter_by_legislation(
+        self, completed_cfs_app
+    ):
+        self._setup_app_update_submitted_and_completed_dates(completed_cfs_app)
+        self._setup_app_with_case_email(completed_cfs_app, EmailTypes.HSE_CASE_EMAIL, True)
+        self.report_schedule.parameters["legislation"] = ["1"]
+        self.report_schedule.save()
+        interface = IssuedCertificateReportInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == []
+
     def test_issued_certificate_report_interface_get_data_cfs(self, completed_cfs_app):
         self._setup_app_with_variation_request(completed_cfs_app)
         self._setup_app_update_submitted_and_completed_dates(completed_cfs_app)
         self._setup_app_with_case_email(completed_cfs_app, EmailTypes.HSE_CASE_EMAIL, True)
+        self.report_schedule.parameters["legislation"] = ["3"]
+        self.report_schedule.save()
         interface = IssuedCertificateReportInterface(self.report_schedule)
         data = interface.get_data()
         assert data["results"] == [
