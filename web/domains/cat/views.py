@@ -13,12 +13,25 @@ from django.views.generic import FormView, View
 from django_filters import FilterSet
 from django_filters.views import FilterView
 
-from web.domains.case.export.forms import form_class_for_application_type
-from web.models import CertificateApplicationTemplate, User
+from web.models import (
+    CertificateApplicationTemplate,
+    CertificateOfManufactureApplicationTemplate,
+    ExportApplicationType,
+    User,
+)
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 
-from .forms import CATFilter, CreateCATForm, EditCATForm
+from .forms import (
+    CATFilter,
+    CertificateOfManufactureTemplateForm,
+    CreateCATForm,
+    EditCATForm,
+)
+
+# TODO: Use these
+# from web.models import CertificateOfFreeSaleApplicationTemplate, CertificateOfGoodManufacturingPracticeApplicationTemplate,
+
 
 if TYPE_CHECKING:
     from django.db import QuerySet
@@ -64,6 +77,21 @@ def create(request: AuthenticatedHttpRequest) -> HttpResponse:
                 cat.owner = request.user
                 cat.save()
 
+                match cat.application_type:
+                    case ExportApplicationType.Types.FREE_SALE:
+                        # TODO: Add real template
+                        # TemplateCls = CertificateOfFreeSaleApplicationTemplate
+                        template_cls = CertificateOfManufactureApplicationTemplate
+
+                    case ExportApplicationType.Types.MANUFACTURE:
+                        template_cls = CertificateOfManufactureApplicationTemplate
+
+                    case ExportApplicationType.Types.GMP:
+                        # TODO: Add real template
+                        # TemplateCls = CertificateOfGoodManufacturingPracticeApplicationTemplate
+                        template_cls = CertificateOfManufactureApplicationTemplate
+
+                template_cls.objects.create(template=cat)
                 messages.success(request, f"Template '{cat.name}' created.")
 
                 return redirect(reverse("cat:list"))
@@ -104,15 +132,15 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, FormView):
     def has_permission(self) -> bool:
         return _has_permission(self.request.user)
 
-    def get_form_class(self) -> ModelForm:
+    def get_form_class(self) -> type[ModelForm]:
         if "step" in self.kwargs:
             return form_class_for_application_type(self.object.application_type)
         else:
             # This is the template's metadata form.
             return EditCATForm
 
-    def get_form(self) -> ModelForm:
-        form = super().get_form()
+    def get_form(self, form_class=None) -> ModelForm:
+        form = super().get_form(form_class)
 
         if self.read_only:
             for fname in form.fields:
@@ -123,29 +151,43 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, FormView):
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
 
-        if "step" not in self.kwargs:
+        if "step" in self.kwargs:
+            # TODO: Set correct instance based on step.
+            # The step will change the template / related table.
+            kwargs["instance"] = self.object.com_template
+        else:
             kwargs["instance"] = self.object
 
         return kwargs
 
-    def get_initial(self) -> dict[str, Any]:
-        if "step" in self.kwargs:
-            return self.object.form_data()
-        else:
-            return super().get_initial()
-
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        kwargs = {
+            "page_title": self.get_page_title(),
+            "application_type": self.object.get_application_type_display(),
+            "sidebar_links": self.get_sidebar_links(),
+            "read_only": self.read_only,
+        }
+
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form: ModelForm) -> HttpResponse:
+        form.save()
+        messages.success(self.request, f"Template '{self.object.name}' updated.")
+
+        return super().form_valid(form)
+
+    def get_page_title(self):
+        action = "View" if self.read_only else "Edit"
+        page_title = f"{action} Certificate Application Template"
+
+        return page_title
+
+    def get_sidebar_links(self):
         type_ = self.object.application_type
+        url_name = "view" if self.read_only else "edit"
         type_display = self.object.get_application_type_display()
 
-        if self.read_only:
-            url_name = "view"
-            page_title = "View Certificate Application Template"
-        else:
-            url_name = "edit"
-            page_title = "Edit Certifcate Application Template"
-
-        sidebar_links = [
+        common_steps: list[tuple[str, str]] = [
             (reverse(f"cat:{url_name}", kwargs={"cat_pk": self.object.pk}), "Template"),
             (
                 reverse(
@@ -154,28 +196,33 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, FormView):
                 f"{type_display} Application",
             ),
         ]
-        kwargs = {
-            "page_title": page_title,
-            "application_type": type_display,
-            "sidebar_links": sidebar_links,
-            "read_only": self.read_only,
-        }
-        return super().get_context_data(**kwargs)
 
-    def form_valid(self, form: ModelForm) -> HttpResponse:
-        result = super().form_valid(form)
+        match self.object.application_type:
+            case ExportApplicationType.Types.FREE_SALE:
+                app_specific: list[tuple[str, str]] = []
+            case ExportApplicationType.Types.MANUFACTURE:
+                app_specific = []
+            case ExportApplicationType.Types.GMP:
+                app_specific = []
+            case _:
+                app_specific = []
 
-        if "step" in self.kwargs:
-            # The JSON field encoder handles querysets as a list of PKs.
-            self.object.data = form.cleaned_data
-            self.object.save()
-        else:
-            # This is the metadata form for the template itself.
-            form.save()
+        return common_steps + app_specific
 
-        messages.success(self.request, f"Template '{self.object.name}' updated.")
 
-        return result
+def form_class_for_application_type(type_code: str) -> type[ModelForm]:
+    types_forms: dict[Any, type[ModelForm]] = {
+        # TODO: Use correct form
+        ExportApplicationType.Types.FREE_SALE: CertificateOfManufactureTemplateForm,
+        # TODO: Use correct form
+        ExportApplicationType.Types.GMP: CertificateOfManufactureTemplateForm,
+        ExportApplicationType.Types.MANUFACTURE: CertificateOfManufactureTemplateForm,
+    }
+
+    try:
+        return types_forms[type_code]
+    except KeyError:
+        raise NotImplementedError(f"Type not supported: {type_code}")
 
 
 class CATReadOnlyView(CATEditView):

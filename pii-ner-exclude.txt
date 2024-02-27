@@ -3890,3 +3890,6 @@ cookie settings</button
 GA
 View for the cookie consent page
 README
+CertificateOfGoodManufacturingPracticeApplicationTemplate
+TemplateCls
+Application Type"

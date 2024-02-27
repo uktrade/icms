@@ -1,7 +1,13 @@
 import django_filters
 from django import forms
 
-from web.models import CertificateApplicationTemplate, ExportApplicationType
+from web.domains.case.export.forms import PrepareCertManufactureFormBase
+from web.forms.mixins import OptionalFormMixin
+from web.models import (
+    CertificateApplicationTemplate,
+    CertificateOfManufactureApplicationTemplate,
+    ExportApplicationType,
+)
 
 
 class CATFilter(django_filters.FilterSet):
@@ -34,3 +40,13 @@ class EditCATForm(forms.ModelForm):
         model = CertificateApplicationTemplate
         fields = ("name", "description", "sharing")
         widgets = {"description": forms.Textarea({"rows": 4})}
+
+
+class CertificateOfManufactureTemplateForm(OptionalFormMixin, PrepareCertManufactureFormBase):
+    class Meta:
+        fields = [f for f in PrepareCertManufactureFormBase.Meta.fields if f != "contact"]
+        help_texts = PrepareCertManufactureFormBase.Meta.help_texts
+        labels = PrepareCertManufactureFormBase.Meta.labels
+        widgets = PrepareCertManufactureFormBase.Meta.widgets
+
+        model = CertificateOfManufactureApplicationTemplate

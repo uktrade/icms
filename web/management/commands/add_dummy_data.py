@@ -414,32 +414,8 @@ class Command(BaseCommand):
 def create_certificate_application_templates(
     owner: User,
 ) -> list[CertificateApplicationTemplate]:
-    data = {
-        "GMP": {
-            "is_responsible_person": "yes",
-            "responsible_person_name": f"{owner.first_name}",
-            "responsible_person_address": "Old Admiralty Building\nLondon\n",
-        },
-        "COM": {
-            "product_name": "Acme Wonder Product",
-            "is_manufacturer": True,
-        },
-    }
-    objs = []
-
-    for type_code, label in ExportApplicationType.Types.choices:
-        objs.append(
-            CertificateApplicationTemplate(
-                name=f"{label} template ({type_code})",
-                description=f"Description of {label} template",
-                application_type=type_code,
-                sharing=CertificateApplicationTemplate.SharingStatuses.PRIVATE,
-                data=data.get(type_code, {}),
-                owner=owner,
-            )
-        )
-
-    return CertificateApplicationTemplate.objects.bulk_create(objs)
+    # TODO ICMSLST-2542: Add Test templates after full refactor.
+    return []
 
 
 def create_dummy_signature(user: User) -> None:

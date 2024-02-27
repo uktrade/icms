@@ -207,19 +207,6 @@ class PrepareCertManufactureFormBase(forms.ModelForm):
             type_code=ExportApplicationType.Types.MANUFACTURE
         ).country_group.countries.filter(is_active=True)
 
-
-class EditCOMForm(OptionalFormMixin, PrepareCertManufactureFormBase):
-    """Form used when editing the application.
-
-    All fields are optional to allow partial record saving.
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Moved from PrepareCertManufactureFormBase to EditCOMForm as it shouldn't
-        # be set when creating a COM template.
-        self.fields["contact"].queryset = application_contacts(self.instance)
-
     def clean_is_pesticide_on_free_sale_uk(self):
         """Perform extra logic even thought this is the edit form where every field is optional"""
 
@@ -239,6 +226,19 @@ class EditCOMForm(OptionalFormMixin, PrepareCertManufactureFormBase):
             raise forms.ValidationError(self.is_manufacturer_error_msg)
 
         return val
+
+
+class EditCOMForm(OptionalFormMixin, PrepareCertManufactureFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Moved from PrepareCertManufactureFormBase to EditCOMForm as it shouldn't
+        # be set when creating a COM template.
+        self.fields["contact"].queryset = application_contacts(self.instance)
 
 
 class SubmitCOMForm(EditCOMForm):

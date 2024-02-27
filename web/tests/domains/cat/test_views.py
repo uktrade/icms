@@ -3,7 +3,11 @@ from django.urls import reverse, reverse_lazy
 from pytest_django.asserts import assertTemplateUsed
 
 from web.domains.cat.forms import CATFilter
-from web.models import CertificateApplicationTemplate, ExportApplicationType
+from web.models import (
+    CertificateApplicationTemplate,
+    CertificateOfManufactureApplicationTemplate,
+    ExportApplicationType,
+)
 from web.tests.auth import AuthTestCase
 
 
@@ -81,6 +85,7 @@ class TestCATEditView(AuthTestCase):
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
         )
+        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
         url = reverse("cat:edit", kwargs={"cat_pk": cat.pk})
 
         response = self.exporter_client.get(url)
@@ -94,6 +99,7 @@ class TestCATEditView(AuthTestCase):
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
         )
+        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
         url = reverse("cat:edit", kwargs={"cat_pk": cat.pk})
 
         response = self.importer_client.get(url)
@@ -108,65 +114,14 @@ class TestCATEditStepView(AuthTestCase):
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
         )
+        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
+
         url = reverse("cat:edit-step", kwargs={"cat_pk": cat.pk, "step": "cfs"})
 
         response = self.exporter_client.get(url)
 
         assert response.status_code == 200
         assertTemplateUsed(response, "web/domains/cat/edit.html")
-
-    def test_step_form_initial_data(self):
-        # Does the form for 1 step in a template display the choices from
-        # my saved application template?
-        initial_data = {"foo": "bar"}
-
-        cat = CertificateApplicationTemplate.objects.create(
-            owner=self.exporter_user,
-            name="CFS template",
-            application_type=ExportApplicationType.Types.FREE_SALE,
-            data=initial_data,
-        )
-        url = reverse("cat:edit-step", kwargs={"cat_pk": cat.pk, "step": "cfs"})
-
-        response = self.exporter_client.get(url)
-
-        assert response.status_code == 200
-        assert response.context["form"].initial == initial_data
-
-    def test_submit_step_form_saves_data_in_application_template(self):
-        cat = CertificateApplicationTemplate.objects.create(
-            owner=self.exporter_user,
-            name="GMP template",
-            application_type=ExportApplicationType.Types.GMP,
-            data={},
-        )
-        url = reverse("cat:edit-step", kwargs={"cat_pk": cat.pk, "step": "gmp"})
-
-        response = self.exporter_client.post(url, {})
-
-        assert response.status_code == 302
-        cat.refresh_from_db()
-
-        expected = {
-            "brand_name": None,
-            "auditor_accredited": None,
-            "auditor_certified": None,
-            "contact": None,
-            "gmp_certificate_issued": None,
-            "is_manufacturer": None,
-            "is_responsible_person": None,
-            "manufacturer_address": None,
-            "manufacturer_address_entry_type": "",
-            "manufacturer_country": None,
-            "manufacturer_name": None,
-            "manufacturer_postcode": None,
-            "responsible_person_address": None,
-            "responsible_person_address_entry_type": "",
-            "responsible_person_country": None,
-            "responsible_person_name": None,
-            "responsible_person_postcode": None,
-        }
-        assert cat.data == expected
 
 
 class TestCATArchiveView(AuthTestCase):
@@ -176,6 +131,7 @@ class TestCATArchiveView(AuthTestCase):
             name="GMP template",
             application_type=ExportApplicationType.Types.GMP,
         )
+        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
         assert cat.is_active is True
 
         url = reverse("cat:archive", kwargs={"cat_pk": cat.pk})
@@ -194,6 +150,7 @@ class TestCATArchiveView(AuthTestCase):
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
         )
+        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
         url = reverse("cat:archive", kwargs={"cat_pk": cat.pk})
 
         response = self.importer_client.get(url)
@@ -209,6 +166,7 @@ class TestCATRestoreView(AuthTestCase):
             application_type=ExportApplicationType.Types.GMP,
             is_active=False,
         )
+        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
         assert cat.is_active is False
 
         url = reverse("cat:restore", kwargs={"cat_pk": cat.pk})
@@ -228,6 +186,7 @@ class TestCATRestoreView(AuthTestCase):
             application_type=ExportApplicationType.Types.FREE_SALE,
             is_active=False,
         )
+        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
         url = reverse("cat:restore", kwargs={"cat_pk": cat.pk})
 
         response = self.importer_client.get(url)
@@ -242,6 +201,7 @@ class TestCATReadOnlyView(AuthTestCase):
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
         )
+        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
         url = reverse("cat:view", kwargs={"cat_pk": cat.pk})
 
         response = self.exporter_client.get(url)
@@ -255,6 +215,7 @@ class TestCATReadOnlyView(AuthTestCase):
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
         )
+        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
         url = reverse("cat:view-step", kwargs={"cat_pk": cat.pk, "step": "cfs"})
 
         response = self.exporter_client.get(url)
