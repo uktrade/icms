@@ -1,4 +1,3 @@
-import ast
 import logging
 from typing import Any
 from urllib import parse
@@ -20,6 +19,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from django_filters import FilterSet
+from pydantic import BaseModel, ConfigDict
 
 from web.one_login.utils import OneLoginConfig
 from web.sites import is_caseworker_site, is_exporter_site, is_importer_site
@@ -134,19 +134,21 @@ def home(request):
     return render(request, "web/home.html")
 
 
+class GACookiePolicy(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    essential: bool = True
+    usage: bool = False
+
+
 def cookie_consent_view(request):
     if request.method == "GET":
         initial_dict = {}
+
         if current_cookies_policy := request.COOKIES.get("cookies_policy"):
-            # if they've already set their preferences, pre-fill the form
-            current_cookies_policy = ast.literal_eval(current_cookies_policy)
-            ga_cookies_accepted = current_cookies_policy.get("usage")
-            if ga_cookies_accepted == "true":
-                # the user has already accepted GA cookies
-                initial_dict["accept_cookies"] = True
-            elif ga_cookies_accepted == "false":
-                # the user has already rejected GA cookies
-                initial_dict["accept_cookies"] = False
+            current_cookies_policy = GACookiePolicy.model_validate_json(current_cookies_policy)
+
+            initial_dict["accept_cookies"] = current_cookies_policy.usage
+
         return render(
             request,
             "web/cookie-consent.html",
@@ -166,18 +168,12 @@ def cookie_consent_view(request):
 
             # regardless of their choice, we set a cookie to say they've made a choice
             response.set_cookie("cookie_preferences_set", "true", max_age=cookie_max_age)
-            cookies_policy = {
-                # we always need the essential cookies
-                "essential": "true"
-            }
-            if form.cleaned_data["accept_cookies"]:
-                # they want the GA cookies :)
-                cookies_policy["usage"] = "true"
-            else:
-                # they don't want the GA cookies :(
-                cookies_policy["usage"] = "false"
 
-            response.set_cookie("cookies_policy", cookies_policy, max_age=cookie_max_age)
+            ga_cookies = GACookiePolicy(essential=True, usage=form.cleaned_data["accept_cookies"])
+            response.set_cookie(
+                "cookies_policy", ga_cookies.model_dump_json(), max_age=cookie_max_age
+            )
+
             return response
         else:
             return render(request, "web/cookie-consent.html", context={"form": form})
