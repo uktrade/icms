@@ -65,11 +65,11 @@
     {% block cookie_banner %}
       {% if request.resolver_match.url_name != "cookie-consent" and request.COOKIES.get("cookie_preferences_set") != "true" %}
         {# we don't want to show the cookie banner on the cookie consent management page OR if the user has already made their choice #}
-        <div class="cookie-banner" data-nosnippet role="region" aria-label="Cookies on ICMS">
+        <div class="cookie-banner" data-nosnippet role="region" aria-label="Cookies on {{ request.site.name }}">
           <div class="row">
             <div class="">
               <h2 class="govuk-cookie-banner__heading govuk-heading-m">
-                Cookies on ICMS
+                Cookies on {{ request.site.name }}
               </h2>
               <div class="govuk-cookie-banner__content">
                 <p class="govuk-body">We use some essential cookies to make this service work.</p>
