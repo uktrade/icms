@@ -62,17 +62,11 @@ class ExportApplicationType(models.Model):
                 raise ValueError(f"Unknown Application Type: {self.type_code}")  # /PS-IGNORE
 
 
-class ExportApplication(ApplicationBase):
+class ExportApplicationABC(models.Model):
+    """Base class for ExportApplication and the templates."""
+
     class Meta:
-        indexes = [
-            models.Index(fields=["status"], name="EA_status_idx"),
-            BTreeIndex(
-                fields=["reference"],
-                name="EA_search_case_reference_idx",
-                opclasses=["text_pattern_ops"],
-            ),
-            models.Index(fields=["-submit_datetime"], name="EA_submit_datetime_idx"),
-        ]
+        abstract = True
 
     application_type = models.ForeignKey(
         "web.ExportApplicationType", on_delete=models.PROTECT, blank=False, null=False
@@ -152,6 +146,19 @@ class ExportApplication(ApplicationBase):
     def is_import_application(self) -> bool:
         return False
 
+
+class ExportApplication(ExportApplicationABC, ApplicationBase):
+    class Meta:
+        indexes = [
+            models.Index(fields=["status"], name="EA_status_idx"),
+            BTreeIndex(
+                fields=["reference"],
+                name="EA_search_case_reference_idx",
+                opclasses=["text_pattern_ops"],
+            ),
+            models.Index(fields=["-submit_datetime"], name="EA_submit_datetime_idx"),
+        ]
+
     def get_edit_view_name(self) -> str:
         if self.process_type == ProcessTypes.COM:
             return "export:com-edit"
@@ -189,10 +196,9 @@ class ExportApplication(ApplicationBase):
         return self.decision == self.APPROVE
 
 
-@final
-class CertificateOfManufactureApplication(ExportApplication):
-    PROCESS_TYPE = ProcessTypes.COM
-    IS_FINAL = True
+class CertificateOfManufactureApplicationABC(models.Model):
+    class Meta:
+        abstract = True
 
     is_pesticide_on_free_sale_uk = models.BooleanField(null=True)
     is_manufacturer = models.BooleanField(null=True)
@@ -200,6 +206,14 @@ class CertificateOfManufactureApplication(ExportApplication):
     product_name = models.CharField(max_length=1000, blank=False, null=True)
     chemical_name = models.CharField(max_length=500, blank=False, null=True)
     manufacturing_process = models.TextField(max_length=4000, blank=False, null=True)
+
+
+@final
+class CertificateOfManufactureApplication(  # type: ignore[misc]
+    CertificateOfManufactureApplicationABC, ExportApplication
+):
+    PROCESS_TYPE = ProcessTypes.COM
+    IS_FINAL = True
 
 
 @final

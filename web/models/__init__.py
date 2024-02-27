@@ -105,7 +105,12 @@ from web.domains.case.models import (
     VariationRequest,
     WithdrawApplication,
 )
-from web.domains.cat.models import CertificateApplicationTemplate
+from web.domains.cat.models import (
+    CertificateApplicationTemplate,
+    CertificateOfFreeSaleApplicationTemplate,
+    CertificateOfGoodManufacturingPracticeApplicationTemplate,
+    CertificateOfManufactureApplicationTemplate,
+)
 from web.domains.commodity.models import (
     Commodity,
     CommodityGroup,
@@ -172,8 +177,11 @@ __all__ = [
     "CaseNote",
     "CertificateApplicationTemplate",
     "CertificateOfFreeSaleApplication",
+    "CertificateOfFreeSaleApplicationTemplate",
     "CertificateOfGoodManufacturingPracticeApplication",
+    "CertificateOfGoodManufacturingPracticeApplicationTemplate",
     "CertificateOfManufactureApplication",
+    "CertificateOfManufactureApplicationTemplate",
     "ChecklistFirearmsOILApplication",
     "ChiefRequestResponseErrors",
     "ClauseQuantity",

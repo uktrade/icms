@@ -2,9 +2,13 @@
 {% from "display/fields.html" import application_field %}
 
 {% block main_content_intro %}
-  <div class="info-box info-box-info">
-    TODO: ICMLST-1050 ICMSLST-1051 ICMSLST-1052 - Add div info box referenced in ICMLST-1030
-  </div>
+  {% if application_type|lower == "certificate of manufacture" %}
+    <div class="info-box info-box-info">
+      This form is in respect of the Exporting Company. Please provide all the information
+      requested. The information will be used to create a Certificate of Manufacture and a legal
+      declaration in the form of a Schedule.
+    </div>
+  {% endif %}
 {% endblock %}
 
 {% block extra_main_content_form %}

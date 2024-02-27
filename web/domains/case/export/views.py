@@ -239,8 +239,11 @@ def set_template_data(
     :param template: Application Template
     :param type_code: App type.
     """
+
+    # Get data that we can save in the real application
+    data = model_to_dict(template.com_template, exclude=["id", "template"])
     form_class = form_class_for_application_type(type_code)
-    form = form_class(instance=application, data=template.form_data())
+    form = form_class(instance=application, data=data)
 
     if form.is_valid():
         form.save()
