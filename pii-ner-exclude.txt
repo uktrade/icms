@@ -3853,3 +3853,7 @@ Department for International Trade<
 Foo Bar
 f"COM/{today.year}/00002
 Create Reports Data
+{{ report.str_title
+the Supplementary Report
+{{ application_field(report.transport |
+Add New Supplementary Report
