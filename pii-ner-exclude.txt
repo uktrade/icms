@@ -3866,3 +3866,4 @@ Published Subject
 Retraction Subject
 MAILSHOT_DOCUMENT
 Test Mailshot 3.pdf
+args="add_reports_data
