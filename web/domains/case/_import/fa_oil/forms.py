@@ -5,7 +5,7 @@ from django import forms
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
 from web.domains.file.utils import ICMSFileField
-from web.forms.fields import JqueryDateField
+from web.forms.fields import PastOnlyJqueryDateField
 from web.forms.mixins import OptionalFormMixin
 from web.models import Country
 
@@ -123,7 +123,9 @@ class OILSupplementaryInfoForm(forms.ModelForm):
 
 
 class OILSupplementaryReportForm(forms.ModelForm):
-    date_received = JqueryDateField(required=True, label="Date Received")
+    date_received = PastOnlyJqueryDateField(
+        required=True, label="Date Received", year_select_range=6
+    )
 
     class Meta:
         model = models.OILSupplementaryReport

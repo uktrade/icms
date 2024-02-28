@@ -7,7 +7,7 @@ from django_select2 import forms as s2forms
 
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
-from web.forms.fields import JqueryDateField
+from web.forms.fields import PastOnlyJqueryDateField
 from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import YesNoRadioSelectInline
 from web.models import Country, ObsoleteCalibre, Template
@@ -574,7 +574,9 @@ class SILSupplementaryInfoForm(forms.ModelForm):
 
 
 class SILSupplementaryReportForm(forms.ModelForm):
-    date_received = JqueryDateField(required=True, label="Date Received")
+    date_received = PastOnlyJqueryDateField(
+        required=True, label="Date Received", year_select_range=6
+    )
 
     class Meta:
         model = models.SILSupplementaryReport
