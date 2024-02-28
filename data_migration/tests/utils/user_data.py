@@ -586,6 +586,94 @@ user_query_result = {
             ),
         ],
     ),
+    queries.mailshots: (
+        [
+            ("folder_id",),
+            ("reference",),
+            ("status",),
+            ("title",),
+            ("description",),
+            ("email_subject",),
+            ("email_body",),
+            ("is_retraction_email",),
+            ("retract_email_subject",),
+            ("retract_email_body",),
+            ("created_by_id",),
+            ("create_datetime",),
+            ("published_by_id",),
+            ("published_datetime",),
+            ("retracted_by_id",),
+            ("retracted_datetime",),
+            ("version",),
+            ("is_to_importers",),
+            ("is_to_exporters",),
+        ],
+        [
+            (
+                2000,  # folder_id
+                "MAIL/1",  # reference
+                "PUBLISHED",  # status
+                "Published Title",  # title
+                "Published Description",  # description
+                "Published Subject",  # email_subject
+                "Published Body",  # email_body
+                0,  # is_retraction_email
+                None,  # retract_email_subject
+                None,  # retract_email_body
+                2,  # created_by_id
+                dt.datetime(2022, 11, 14, 8, 47),  # create_datetime
+                2,  # published_by_id
+                dt.datetime(2022, 11, 14, 9, 47),  # published_datetime
+                None,  # retracted_by_id
+                None,  # retracted_datetime
+                1,  # version
+                1,  # is_to_importers
+                1,  # is_to_exporters
+            ),
+            (
+                2001,  # folder_id
+                None,  # reference
+                "DRAFT",  # status
+                None,  # title
+                None,  # description
+                "Draft Subject",  # email_subject
+                "Draft Body",  # email_body
+                0,  # is_retraction_email
+                None,  # retract_email_subject
+                None,  # retract_email_body
+                2,  # created_by_id
+                dt.datetime(2022, 11, 14, 8, 47),  # create_datetime
+                None,  # published_by_id
+                None,  # published_datetime
+                None,  # retracted_by_id
+                None,  # retracted_datetime
+                1,  # version
+                0,  # is_to_importers
+                1,  # is_to_exporters
+            ),
+            (
+                2003,  # folder_id
+                "MAIL/2",  # reference
+                "RETRACTED",  # status
+                "Retraction Title",  # title
+                "Retraction Description",  # description
+                "Email Subject",  # email_subject
+                "Email Body",  # email_body
+                1,  # is_retraction_email
+                "Retraction Subject",  # retract_email_subject
+                "Retraction Body",  # retract_email_body
+                2,  # created_by_id
+                dt.datetime(2022, 11, 14, 8, 47),  # create_datetime
+                2,  # published_by_id
+                dt.datetime(2022, 11, 14, 9, 47),  # published_datetime
+                None,  # retracted_by_id
+                None,  # retracted_datetime
+                1,  # version
+                1,  # is_to_importers
+                0,  # is_to_exporters
+            ),
+        ],
+    ),
     queries.ilb_user_roles: (
         [("username",), ("roles",)],
         [

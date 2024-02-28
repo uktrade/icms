@@ -858,4 +858,99 @@ file_query_result = {
             ),
         ],
     ),
+    queries.mailshot_file_folders: (
+        FOLDER_COLUMNS,
+        [
+            (2000, "MAILSHOT_DOCUMENTS"),
+            (2001, "MAILSHOT_DOCUMENTS"),
+            (2002, "MAILSHOT_DOCUMENTS"),
+            (2003, "MAILSHOT_DOCUMENTS"),
+        ],
+    ),
+    queries.mailshot_file_targets: (
+        TARGET_COLUMNS,
+        [
+            (
+                2000,  # folder_id
+                "MAILSHOT_DOCUMENT",  # target_type
+                "RECEIVED",  # status
+                20000,  # target_id
+            ),
+            (
+                2000,  # folder_id
+                "MAILSHOT_DOCUMENT",  # target_type
+                "RECEIVED",  # status
+                20001,  # target_id
+            ),
+            (
+                2000,  # folder_id
+                "MAILSHOT_DOCUMENT",  # target_type
+                "RECEIVED",  # status
+                20002,  # target_id
+            ),
+            (
+                2001,  # folder_id
+                "MAILSHOT_DOCUMENT",  # target_type
+                "EMPTY",  # status
+                20003,  # target_id
+            ),
+            (
+                2002,  # folder_id
+                "MAILSHOT_DOCUMENT",  # target_type
+                "DELETED",  # status
+                20004,  # target_id
+            ),
+            (
+                2003,  # folder_id
+                "MAILSHOT_DOCUMENT",  # target_type
+                "RECEIVED",  # status
+                20005,  # target_id
+            ),
+        ],
+    ),
+    queries.mailshot_files: (
+        FILES_COLUMNS,
+        [
+            (
+                20000,  # target_id
+                21000,  # version_id
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
+                2,  # created_by_id
+                "mailshot/file1",  # path
+                "Test Mailshot 1.pdf",  # filename
+                "pdf",  # content_type
+                12345,  # file_size
+            ),
+            (
+                20001,  # target_id
+                21001,  # version_id
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
+                2,  # created_by_id
+                "mailshot/file2",  # path
+                "Test Mailshot 2.pdf",  # filename
+                "pdf",  # content_type
+                12345,  # file_size
+            ),
+            (
+                20002,  # target_id
+                21002,  # version_id
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
+                2,  # created_by_id
+                "mailshot/file3",  # path
+                "Test Mailshot 3.pdf",  # filename
+                "pdf",  # content_type
+                12345,  # file_size
+            ),
+            (
+                20005,  # target_id
+                21005,  # version_id
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
+                2,  # created_by_id
+                "mailshot/file4",  # path
+                "Test Mailshot 4.pdf",  # filename
+                "pdf",  # content_type
+                12345,  # file_size
+            ),
+        ],
+    ),
 }

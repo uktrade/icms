@@ -3859,3 +3859,10 @@ the Supplementary Report
 Add New Supplementary Report
 jQuery
 "Check if the date
+Draft Subject
+Published Title
+Published Description
+Published Subject
+Retraction Subject
+MAILSHOT_DOCUMENT
+Test Mailshot 3.pdf
