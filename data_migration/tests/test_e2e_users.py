@@ -42,7 +42,9 @@ user_data_source_target = {
         (dm.ApprovalRequest, web.ApprovalRequest),
         (dm.ImporterApprovalRequest, web.ImporterApprovalRequest),
         (dm.ExporterApprovalRequest, web.ExporterApprovalRequest),
+        (dm.Mailshot, web.Mailshot),
     ],
+    "file": [(dm.File, web.File)],
 }
 
 
@@ -59,6 +61,14 @@ user_data_source_target = {
             QueryModel(queries.exporters, "exporters", dm.Exporter),
             QueryModel(queries.exporter_offices, "exporter_offices", dm.Office),
             QueryModel(queries.access_requests, "access_requests", dm.AccessRequest),
+            QueryModel(queries.mailshots, "mailshot", dm.Mailshot),
+        ],
+        "file_folder": [
+            QueryModel(queries.mailshot_file_folders, "mailshot folders", dm.FileFolder),
+            QueryModel(queries.mailshot_file_targets, "mailshot targets", dm.FileTarget),
+        ],
+        "file": [
+            QueryModel(queries.mailshot_files, "mailshot files", dm.File),
         ],
     },
 )
@@ -71,6 +81,7 @@ user_data_source_target = {
             (dm.Office, web.Exporter, "offices"),
             (dm.FurtherInformationRequest, web.AccessRequest, "further_information_requests"),
         ],
+        "file": [(dm.MailshotDoc, web.Mailshot, "documents")],
     },
 )
 @mock.patch.dict(
@@ -95,9 +106,9 @@ user_data_source_target = {
 def test_import_user_data(mock_connect, dummy_dm_settings):
     mock_connect.return_value = utils.MockConnect()
 
-    call_command("export_from_v1", "--skip_ia", "--skip_export", "--skip_ref", "--skip_file")
-    call_command("extract_v1_xml", "--skip_ia", "--skip_export", "--skip_ref", "--skip_file")
-    call_command("import_v1_data", "--skip_ia", "--skip_export", "--skip_ref", "--skip_file")
+    call_command("export_from_v1", "--skip_ia", "--skip_export", "--skip_ref")
+    call_command("extract_v1_xml", "--skip_ia", "--skip_export", "--skip_ref")
+    call_command("import_v1_data", "--skip_ia", "--skip_export", "--skip_ref")
 
     assert web.User.objects.filter(groups__isnull=False).count() == 0
 
@@ -363,3 +374,73 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
 
     assert dm.Importer.objects.filter(pk=4).exists()
     assert not web.Importer.objects.filter(pk=4).exists()
+
+    # Check mailshots
+
+    assert web.Mailshot.objects.count() == 3
+
+    assert web.UniqueReference.objects.get(prefix="MAIL", year=None, reference=1)
+    assert web.UniqueReference.objects.get(prefix="MAIL", year=None, reference=2)
+
+    draft_ms = web.Mailshot.objects.get(status="DRAFT")
+    assert draft_ms.is_active is True
+    assert draft_ms.reference is None
+    assert draft_ms.status == "DRAFT"
+    assert draft_ms.title is None
+    assert draft_ms.description is None
+    assert draft_ms.email_subject == "Draft Subject"
+    assert draft_ms.email_body == "Draft Body"
+    assert draft_ms.is_retraction_email is False
+    assert draft_ms.retract_email_subject is None
+    assert draft_ms.retract_email_body is None
+    assert draft_ms.create_datetime == dt.datetime(2022, 11, 14, 8, 47, tzinfo=dt.UTC)
+    assert draft_ms.created_by_id == 2
+    assert draft_ms.published_datetime is None
+    assert draft_ms.published_by_id is None
+    assert draft_ms.retracted_datetime is None
+    assert draft_ms.retracted_by_id is None
+    assert draft_ms.is_to_importers is False
+    assert draft_ms.is_to_exporters is True
+    assert draft_ms.documents.count() == 0
+
+    published_ms = web.Mailshot.objects.get(status="PUBLISHED")
+    assert published_ms.is_active is True
+    assert published_ms.reference == "MAIL/1"
+    assert published_ms.status == "PUBLISHED"
+    assert published_ms.title == "Published Title"
+    assert published_ms.description == "Published Description"
+    assert published_ms.email_subject == "Published Subject"
+    assert published_ms.email_body == "Published Body"
+    assert published_ms.is_retraction_email is False
+    assert published_ms.retract_email_subject is None
+    assert published_ms.retract_email_body is None
+    assert published_ms.create_datetime == dt.datetime(2022, 11, 14, 8, 47, tzinfo=dt.UTC)
+    assert published_ms.created_by_id == 2
+    assert published_ms.published_datetime == dt.datetime(2022, 11, 14, 9, 47, tzinfo=dt.UTC)
+    assert published_ms.published_by_id == 2
+    assert published_ms.retracted_datetime is None
+    assert published_ms.retracted_by_id is None
+    assert published_ms.is_to_importers is True
+    assert published_ms.is_to_exporters is True
+    assert published_ms.documents.count() == 3
+
+    retracted_ms = web.Mailshot.objects.get(status="RETRACTED")
+    assert retracted_ms.is_active is True
+    assert retracted_ms.reference == "MAIL/2"
+    assert retracted_ms.status == "RETRACTED"
+    assert retracted_ms.title == "Retraction Title"
+    assert retracted_ms.description == "Retraction Description"
+    assert retracted_ms.email_subject == "Email Subject"
+    assert retracted_ms.email_body == "Email Body"
+    assert retracted_ms.is_retraction_email is True
+    assert retracted_ms.retract_email_subject == "Retraction Subject"
+    assert retracted_ms.retract_email_body == "Retraction Body"
+    assert retracted_ms.create_datetime == dt.datetime(2022, 11, 14, 8, 47, tzinfo=dt.UTC)
+    assert retracted_ms.created_by_id == 2
+    assert retracted_ms.published_datetime == dt.datetime(2022, 11, 14, 9, 47, tzinfo=dt.UTC)
+    assert retracted_ms.published_by_id == 2
+    assert retracted_ms.retracted_datetime is None
+    assert retracted_ms.retracted_by_id is None
+    assert retracted_ms.is_to_importers is True
+    assert retracted_ms.is_to_exporters is False
+    assert retracted_ms.documents.count() == 1
