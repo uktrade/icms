@@ -1,5 +1,4 @@
 import argparse
-from typing import Literal
 
 import oracledb
 from django.contrib.auth.models import Group
@@ -9,22 +8,15 @@ from django.db.models import F, TextField, Value
 from django.db.models.expressions import Func
 from guardian.shortcuts import remove_perm
 
-from web.models import (
-    Constabulary,
-    ExportApplication,
-    Exporter,
-    ImportApplication,
-    Importer,
-    UniqueReference,
-    User,
-)
+from web.models import Constabulary, Exporter, Importer, UniqueReference, User
 from web.permissions import (
     constabulary_add_contact,
     get_org_obj_permissions,
     organisation_add_contact,
 )
 
-from .config.post_migrate import GROUPS_TO_ROLES
+from ._types import Ref
+from .config.post_migrate import GROUPS_TO_ROLES, MODEL_REFERENCES
 from .utils.db import CONNECTION_CONFIG
 
 
@@ -49,11 +41,13 @@ class Command(BaseCommand):
             self.stdout.write("Running create_unique_references...")
             self.create_unique_references("import")
             self.create_unique_references("export")
+            self.create_unique_references("mailshot")
+            self.create_unique_references("access")
 
         if not skip_perms:
             self.apply_user_permissions()
 
-    def create_unique_references(self, ref_type: Literal["import", "export"]) -> None:
+    def create_unique_references(self, ref_type: Ref) -> None:
         """Create UniqueReference objects from ImportApplication.reference, ExportApplication.reference
 
         'IMA/2010/00001' -> ['IMA', '2010', '00001'] -> UniqueReference(prefix='IMA', year=2010, reference=1)
@@ -67,12 +61,10 @@ class Command(BaseCommand):
             output=ArrayField(TextField()),
         )
 
-        if ref_type == "import":
-            model = ImportApplication
-            filter_params = {"reference__isnull": False, "legacy_case_flag": False}
-        else:
-            model = ExportApplication
-            filter_params = {"reference__isnull": False}
+        model_reference = MODEL_REFERENCES[ref_type]
+        model = model_reference.model
+        filter_params = model_reference.filter_params
+        year = model_reference.year
 
         references = (
             model.objects.filter(**filter_params)
@@ -82,7 +74,11 @@ class Command(BaseCommand):
 
         UniqueReference.objects.bulk_create(
             [
-                UniqueReference(prefix=ref[0], year=int(ref[1]), reference=int(ref[2]))
+                (
+                    UniqueReference(prefix=ref[0], year=int(ref[1]), reference=int(ref[2]))
+                    if year
+                    else UniqueReference(prefix=ref[0], reference=int(ref[1]))
+                )
                 for ref in references
             ],
             batch_size=2000,

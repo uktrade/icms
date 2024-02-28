@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, NamedTuple
+from typing import Any, Literal, NamedTuple
 from typing import Type as T
 from typing import Union
 
@@ -12,6 +12,7 @@ ModelT = Union[T[Model], list[T[Model]]]
 Anno = dict[str, Any] | None
 Val = list[str] | None
 Params = dict[str, int | str | bool | tuple]
+Ref = Literal["access", "export", "import", "mailshot"]
 
 
 @dataclass(frozen=True)
@@ -63,6 +64,13 @@ class CheckQuery:
     bind_vars: Params = field(default_factory=dict)
     adjustment: int = 0
     note: str = ""
+
+
+@dataclass
+class ModelReference:
+    model: Model
+    filter_params: Params = field(default_factory=dict)
+    year: bool = True
 
 
 def source_target_list(lst: list[str]):
