@@ -1,6 +1,6 @@
 from data_migration import models as dm
 from data_migration import queries
-from data_migration.management.commands._types import M2M, QueryModel, SourceTarget
+from data_migration.management.commands.types import M2M, QueryModel, SourceTarget
 from data_migration.utils import xml_parser
 from web import models as web
 

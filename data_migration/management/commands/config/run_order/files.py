@@ -1,6 +1,6 @@
 from data_migration import models as dm
 from data_migration import queries
-from data_migration.management.commands._types import M2M, QueryModel, SourceTarget
+from data_migration.management.commands.types import M2M, QueryModel, SourceTarget
 from web import models as web
 
 DEFAULT_FILE_CREATED_DATETIME = "2013-01-01 01:00:00"

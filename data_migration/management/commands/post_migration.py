@@ -15,8 +15,8 @@ from web.permissions import (
     organisation_add_contact,
 )
 
-from ._types import Ref
 from .config.post_migrate import GROUPS_TO_ROLES, MODEL_REFERENCES
+from .types import Ref
 from .utils.db import CONNECTION_CONFIG
 
 
