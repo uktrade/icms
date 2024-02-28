@@ -1,5 +1,5 @@
 from data_migration import queries
-from data_migration.management.commands._types import ModelReference
+from data_migration.management.commands.types import ModelReference
 from web.models import AccessRequest, ExportApplication, ImportApplication, Mailshot
 
 GROUPS_TO_ROLES = {

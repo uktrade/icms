@@ -8,13 +8,13 @@ from django.db.models import QuerySet
 
 from data_migration import models as dm
 from data_migration import queries
-from data_migration.management.commands._types import QueryModel
 from data_migration.management.commands.config.run_order import (
     DATA_TYPE_M2M,
     DATA_TYPE_QUERY_MODEL,
     DATA_TYPE_SOURCE_TARGET,
     DATA_TYPE_XML,
 )
+from data_migration.management.commands.types import QueryModel
 from data_migration.utils import xml_parser
 from web import models as web
 

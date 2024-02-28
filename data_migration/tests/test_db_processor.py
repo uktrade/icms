@@ -1,6 +1,6 @@
 import pytest
 
-from data_migration.management.commands._types import QueryModel
+from data_migration.management.commands.types import QueryModel
 from data_migration.management.commands.utils.db_processor import (
     AVAILABLE_QUERIES,
     LARGE_QUERIES,
