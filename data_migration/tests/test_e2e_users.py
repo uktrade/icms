@@ -102,7 +102,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert web.User.objects.filter(groups__isnull=False).count() == 0
 
     call_command("create_icms_groups")
-    call_command("post_migration", "--skip_ref")
+    call_command("post_migration")
 
     assert web.User.objects.count() == 14
 
@@ -179,6 +179,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
 
     ar1, ar2, ar3, ar4 = web.AccessRequest.objects.order_by("pk")
 
+    assert web.UniqueReference.objects.get(prefix="IAR", year=None, reference=1)
     assert ar1.process_ptr.process_type == "ImporterAccessRequest"
     assert ar1.process_ptr.tasks.count() == 1
     assert ar1.reference == "IAR/0001"
@@ -198,6 +199,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert ar1.last_update_datetime == dt.datetime(2022, 10, 14, 7, 24, tzinfo=dt.UTC)
     assert ar1.closed_datetime is None
 
+    assert web.UniqueReference.objects.get(prefix="IAR", year=None, reference=2)
     assert ar2.process_ptr.process_type == "ImporterAccessRequest"
     assert ar2.process_ptr.tasks.count() == 0
     assert ar2.reference == "IAR/0002"
@@ -224,6 +226,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert ar2_ar.importerapprovalrequest.pk == ar2_ar.pk
     assert ar2_ar.request_date == dt.datetime(2022, 11, 14, 14, 55, 14, tzinfo=dt.UTC)
 
+    assert web.UniqueReference.objects.get(prefix="EAR", year=None, reference=3)
     assert ar3.process_ptr.process_type == "ExporterAccessRequest"
     assert ar3.process_ptr.tasks.count() == 0
     assert ar3.reference == "EAR/0003"
@@ -233,6 +236,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert ar3.approval_requests.count() == 0
     assert ar3.created == dt.datetime(2022, 11, 14, 10, 52, tzinfo=dt.UTC)
 
+    assert web.UniqueReference.objects.get(prefix="EAR", year=None, reference=4)
     assert ar4.process_ptr.process_type == "ExporterAccessRequest"
     assert ar4.process_ptr.tasks.count() == 0
     assert ar4.reference == "EAR/0004"
