@@ -806,7 +806,7 @@ ul.modal-popup-actions li {
 
 .environment-uat {
   background: #FECE00;
-  border-top: 3px dotted rgba(0,0,0,0.);
+  border-top: 3px dotted rgba(0,0,0,0);
   text-shadow: 0 0 6px rgba(255,0,0,0.2);
 }
 
@@ -1025,7 +1025,6 @@ ul.modal-popup-actions li {
   }
 
   ul#top-menu>li>ul>li {
-    line-height: auto;
     border-color: rgba(255,255,255,0.05);
   }
 
