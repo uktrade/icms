@@ -13,4 +13,4 @@ python manage.py collectstatic --noinput --traceback
 # python manage.py compress --force --engine jinja2
 
 # TODO: Needs sorting for PDF generation
-# su -c "python -m playwright install --with-deps chromium"
+#PLAYWRIGHT_BROWSERS_PATH="/workspace/playwright-deps" python -m playwright install --with-deps chromium
