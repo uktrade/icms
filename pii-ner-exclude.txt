@@ -3868,3 +3868,25 @@ MAILSHOT_DOCUMENT
 Test Mailshot 3.pdf
 args="add_reports_data
 ON cad.ca_id
+Google Analytics
+GTM_EXPORTER_CONTAINER_ID=
+get_gtm_container_id
+true;j.src=
+https://www.googletagmanager.com/gtm.js?id='+i+dl+ '
+"Testing that the keys
+GTM
+Google Analytics
+GTM_EXPORTER_CONTAINER_ID=
+get_gtm_container_id
+true;j.src=
+https://www.googletagmanager.com/gtm.js?id='+i+dl+ '
+"Testing that the keys
+GTM
+w[l].push
+Date().getTime
+dataLayer
+Google
+cookie settings</button
+GA
+View for the cookie consent page
+README

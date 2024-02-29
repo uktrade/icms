@@ -193,6 +193,9 @@ def environment(**options):
             "page_title": "Import Case Management System",
             "get_css_rules_as_string": get_css_rules_as_string,
             "get_file_base64": get_file_base64,
+            "get_gtm_auth_key": get_gtm_auth_key,
+            "get_gtm_container_id": get_gtm_container_id,
+            "get_gtm_preview_key": get_gtm_preview_key,
         }
     )
     env.filters["show_all_attrs"] = show_all_attrs
@@ -214,3 +217,18 @@ def get_file_base64(path: str) -> str:
     """Get the file as a base64 string from the supplied path."""
     file_path = settings.STATIC_ROOT / path
     return base64.b64encode(file_path.read_bytes()).decode("utf-8")  # /PS-IGNORE
+
+
+def get_gtm_auth_key(request: AuthenticatedHttpRequest) -> str:
+    current_site = request.site
+    return settings.GTM_AUTH_KEYS[current_site.name]
+
+
+def get_gtm_container_id(request: AuthenticatedHttpRequest) -> str:
+    current_site = request.site
+    return settings.GTM_CONTAINER_IDS[current_site.name]
+
+
+def get_gtm_preview_key(request: AuthenticatedHttpRequest) -> str:
+    current_site = request.site
+    return settings.GTM_PREVIEW_KEYS[current_site.name]

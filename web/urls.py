@@ -5,6 +5,7 @@ from web import converters
 from web.registration.views import LegacyAccountRecoveryView
 from web.views import (
     RedirectBaseDomainView,
+    cookie_consent_view,
     health_check,
     home,
     login_start_view,
@@ -69,6 +70,8 @@ urlpatterns = [
     #
     # Django select2 urls
     path("select2/", include("django_select2.urls")),
+    # Cookie consent URLs
+    path("cookie-consent/", cookie_consent_view, name="cookie-consent"),
 ]
 
 if settings.DEBUG:

@@ -4,6 +4,7 @@ from .views import (
     ModelFilterView,
     ModelUpdateView,
     RedirectBaseDomainView,
+    cookie_consent_view,
     home,
     login_start_view,
     logout_view,
@@ -20,4 +21,5 @@ __all__ = [
     "login_start_view",
     "logout_view",
     "health_check",
+    "cookie_consent_view",
 ]
