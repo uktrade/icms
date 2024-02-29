@@ -5,8 +5,6 @@ python manage.py migrate
 
 if [ -n "${COPILOT_ENVIRONMENT_NAME}" ]; then
     echo "Running in DBT Platform"
-    # TODO: Fix CommandError: An error occurred during rendering /workspace/web/templates/base.html: Missing connections string
-    python manage.py compress --engine jinja2
     opentelemetry-instrument gunicorn config.wsgi --config config/gunicorn.py
 else
     echo "Running in Cloud Foundry"
