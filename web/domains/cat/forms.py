@@ -1,10 +1,12 @@
+from collections.abc import Iterable
+
 import django_filters
 from django import forms
 
-from web.domains.case.export.forms import PrepareCertManufactureFormBase
-from web.forms.mixins import OptionalFormMixin
+from web.domains.case.export.forms import EditCOMForm, EditGMPForm
 from web.models import (
     CertificateApplicationTemplate,
+    CertificateOfGoodManufacturingPracticeApplicationTemplate,
     CertificateOfManufactureApplicationTemplate,
     ExportApplicationType,
 )
@@ -42,11 +44,23 @@ class EditCATForm(forms.ModelForm):
         widgets = {"description": forms.Textarea({"rows": 4})}
 
 
-class CertificateOfManufactureTemplateForm(OptionalFormMixin, PrepareCertManufactureFormBase):
-    class Meta:
-        fields = [f for f in PrepareCertManufactureFormBase.Meta.fields if f != "contact"]
-        help_texts = PrepareCertManufactureFormBase.Meta.help_texts
-        labels = PrepareCertManufactureFormBase.Meta.labels
-        widgets = PrepareCertManufactureFormBase.Meta.widgets
+def copy_form_fields(form_fields: Iterable[str], *exclude: str) -> list[str]:
+    """Return a copy of the supplied form fields excluding values in exclude"""
 
+    return [f for f in form_fields if f not in exclude]
+
+
+class CertificateOfManufactureTemplateForm(EditCOMForm):
+    class Meta:
+        fields = copy_form_fields(EditCOMForm.Meta.fields, "contact")
+        help_texts = EditCOMForm.Meta.help_texts
+        labels = EditCOMForm.Meta.labels
+        widgets = EditCOMForm.Meta.widgets
         model = CertificateOfManufactureApplicationTemplate
+
+
+class CertificateOfGoodManufacturingPracticeTemplateForm(EditGMPForm):
+    class Meta:
+        model = CertificateOfGoodManufacturingPracticeApplicationTemplate
+        fields = copy_form_fields(EditGMPForm.Meta.fields, "contact")
+        widgets = EditGMPForm.Meta.widgets

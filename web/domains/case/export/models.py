@@ -68,12 +68,37 @@ class ExportApplicationABC(models.Model):
     class Meta:
         abstract = True
 
+    last_update_datetime = models.DateTimeField(blank=False, null=False, auto_now=True)
+    variation_no = models.IntegerField(blank=False, null=False, default=0)
+
+    countries = models.ManyToManyField(
+        "web.Country",
+        help_text=(
+            "A certificate will be created for each country selected. You may"
+            " select up to 40 countries. You cannot select the same country"
+            " twice, you must submit a new application."
+        ),
+    )
+
+    def is_import_application(self) -> bool:
+        return False
+
+
+class ExportApplication(ExportApplicationABC, ApplicationBase):
+    class Meta:
+        indexes = [
+            models.Index(fields=["status"], name="EA_status_idx"),
+            BTreeIndex(
+                fields=["reference"],
+                name="EA_search_case_reference_idx",
+                opclasses=["text_pattern_ops"],
+            ),
+            models.Index(fields=["-submit_datetime"], name="EA_submit_datetime_idx"),
+        ]
+
     application_type = models.ForeignKey(
         "web.ExportApplicationType", on_delete=models.PROTECT, blank=False, null=False
     )
-
-    last_update_datetime = models.DateTimeField(blank=False, null=False, auto_now=True)
-
     last_updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
@@ -83,7 +108,6 @@ class ExportApplicationABC(models.Model):
     )
 
     variation_requests = models.ManyToManyField("web.VariationRequest")
-    variation_no = models.IntegerField(blank=False, null=False, default=0)
     case_notes = models.ManyToManyField("web.CaseNote")
     further_information_requests = models.ManyToManyField("web.FurtherInformationRequest")
     update_requests = models.ManyToManyField("web.UpdateRequest")
@@ -122,15 +146,6 @@ class ExportApplicationABC(models.Model):
         ),
     )
 
-    countries = models.ManyToManyField(
-        "web.Country",
-        help_text=(
-            "A certificate will be created for each country selected. You may"
-            " select up to 40 countries. You cannot select the same country"
-            " twice, you must submit a new application."
-        ),
-    )
-
     agent = models.ForeignKey("web.Exporter", on_delete=models.PROTECT, null=True, related_name="+")
     agent_office = models.ForeignKey(
         "web.Office", on_delete=models.PROTECT, null=True, related_name="+"
@@ -142,22 +157,6 @@ class ExportApplicationABC(models.Model):
 
     # Used in workbasket to clear applications
     cleared_by = models.ManyToManyField("web.User")
-
-    def is_import_application(self) -> bool:
-        return False
-
-
-class ExportApplication(ExportApplicationABC, ApplicationBase):
-    class Meta:
-        indexes = [
-            models.Index(fields=["status"], name="EA_status_idx"),
-            BTreeIndex(
-                fields=["reference"],
-                name="EA_search_case_reference_idx",
-                opclasses=["text_pattern_ops"],
-            ),
-            models.Index(fields=["-submit_datetime"], name="EA_submit_datetime_idx"),
-        ]
 
     def get_edit_view_name(self) -> str:
         if self.process_type == ProcessTypes.COM:
@@ -210,7 +209,7 @@ class CertificateOfManufactureApplicationABC(models.Model):
 
 @final
 class CertificateOfManufactureApplication(  # type: ignore[misc]
-    CertificateOfManufactureApplicationABC, ExportApplication
+    ExportApplication, CertificateOfManufactureApplicationABC
 ):
     PROCESS_TYPE = ProcessTypes.COM
     IS_FINAL = True
@@ -382,10 +381,9 @@ class CFSProductActiveIngredient(models.Model):
     )
 
 
-@final
-class CertificateOfGoodManufacturingPracticeApplication(ExportApplication):
-    PROCESS_TYPE = ProcessTypes.GMP
-    IS_FINAL = True
+class CertificateOfGoodManufacturingPracticeApplicationABC(models.Model):
+    class Meta:
+        abstract = True
 
     class CertificateTypes(TypedTextChoices):
         ISO_22716 = ("ISO_22716", "ISO 22716")
@@ -517,6 +515,14 @@ class CertificateOfGoodManufacturingPracticeApplication(ExportApplication):
     )
 
     supporting_documents = models.ManyToManyField("GMPFile")
+
+
+@final
+class CertificateOfGoodManufacturingPracticeApplication(  # type: ignore[misc]
+    ExportApplication, CertificateOfGoodManufacturingPracticeApplicationABC
+):
+    PROCESS_TYPE = ProcessTypes.GMP
+    IS_FINAL = True
 
 
 class GMPFile(File):
