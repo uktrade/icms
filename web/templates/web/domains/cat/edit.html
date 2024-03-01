@@ -2,12 +2,18 @@
 {% from "display/fields.html" import application_field %}
 
 {% block main_content_intro %}
-  {% if application_type|lower == "certificate of manufacture" %}
+  {% if application_type == "Certificate of Manufacture" %}
     <div class="info-box info-box-info">
       This form is in respect of the Exporting Company. Please provide all the information
       requested. The information will be used to create a Certificate of Manufacture and a legal
       declaration in the form of a Schedule.
     </div>
+  {% elif application_type == "Certificate of Good Manufacturing Practice" %}
+      <div class="info-box info-box-info">
+        This form is in respect of the Exporting Company. Please provide all the information
+        requested. The information will be used to create a Certificate of Good Manufacturing
+        Practice.
+      </div>
   {% endif %}
 {% endblock %}
 

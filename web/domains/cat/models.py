@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db import models
 
 from web.domains.case.export.models import (
+    CertificateOfGoodManufacturingPracticeApplicationABC,
     CertificateOfManufactureApplicationABC,
     ExportApplicationABC,
 )
@@ -62,24 +63,6 @@ class CertificateApplicationTemplate(models.Model):
 class CertificateOfManufactureApplicationTemplate(  # type: ignore[misc]
     ExportApplicationABC, CertificateOfManufactureApplicationABC
 ):
-    # Relationships to ignore from ExportApplicationABC
-    application_type = None
-    last_updated_by = None
-    variation_requests = None
-    case_notes = None
-    further_information_requests = None
-    update_requests = None
-    case_emails = None
-    submitted_by = None
-    created_by = None
-    exporter = None
-    exporter_office = None
-    contact = None
-    agent = None
-    agent_office = None
-    case_owner = None
-    cleared_by = None
-
     template = models.OneToOneField(
         "web.CertificateApplicationTemplate", on_delete=models.CASCADE, related_name="com_template"
     )
@@ -88,4 +71,9 @@ class CertificateOfManufactureApplicationTemplate(  # type: ignore[misc]
 class CertificateOfFreeSaleApplicationTemplate: ...  # noqa: E701
 
 
-class CertificateOfGoodManufacturingPracticeApplicationTemplate: ...  # noqa: E701
+class CertificateOfGoodManufacturingPracticeApplicationTemplate(  # type: ignore[misc]
+    ExportApplicationABC, CertificateOfGoodManufacturingPracticeApplicationABC
+):
+    template = models.OneToOneField(
+        "web.CertificateApplicationTemplate", on_delete=models.CASCADE, related_name="gmp_template"
+    )

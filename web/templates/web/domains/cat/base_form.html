@@ -2,6 +2,7 @@
 
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
+{% import "display/fields.html" as display %}
 
 {% block css %}
   {{ form.media.css }}
@@ -33,10 +34,23 @@
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
     {% block extra_main_content_form %}{% endblock %}
-    {% for field in form %}
-      {{ fields.field(field) }}
-    {% endfor %}
-
+    {% if step != "initial" %}
+      {% if application_type == "Certificate of Good Manufacturing Practice" %}
+        {% with include_contact = False, process = form.instance, country = "China" %}
+          {% include "partial/case/export/gmp-form-content.html" %}
+        {% endwith %}
+      {% else %}
+        {# Default form render #}
+        {% for field in form %}
+          {{ fields.field(field) }}
+        {% endfor %}
+      {% endif %}
+    {% else %}
+      {# Default form render #}
+      {% for field in form %}
+        {{ fields.field(field) }}
+      {% endfor %}
+    {% endif %}
     <div class="section-break"></div>
 
     <div class="container">
@@ -87,5 +101,10 @@
 
 {% block page_js %}
   {{ form.media.js }}
+  {% if step != "initial" and application_type == "Certificate of Good Manufacturing Practice" %}
+    <script src="{{ static('web/js/api/postcode-lookup.js') }}" type="text/javascript"></script>
+    <script src="{{ static('web/js/components/address-input.js') }}" type="text/javascript"></script>
+    <script src="{{ static('web/js/pages/gmp-edit.js') }}" type="text/javascript"></script>
+  {% endif %}
   {{ super() }}
 {% endblock %}

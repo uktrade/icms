@@ -2,7 +2,11 @@ from typing import TYPE_CHECKING, Any
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    UserPassesTestMixin,
+)
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.forms.models import ModelForm
@@ -15,6 +19,7 @@ from django_filters.views import FilterView
 
 from web.models import (
     CertificateApplicationTemplate,
+    CertificateOfGoodManufacturingPracticeApplicationTemplate,
     CertificateOfManufactureApplicationTemplate,
     ExportApplicationType,
     User,
@@ -24,13 +29,13 @@ from web.types import AuthenticatedHttpRequest
 
 from .forms import (
     CATFilter,
+    CertificateOfGoodManufacturingPracticeTemplateForm,
     CertificateOfManufactureTemplateForm,
     CreateCATForm,
     EditCATForm,
 )
 
-# TODO: Use these
-# from web.models import CertificateOfFreeSaleApplicationTemplate, CertificateOfGoodManufacturingPracticeApplicationTemplate,
+# from web.models import CertificateOfFreeSaleApplicationTemplate
 
 
 if TYPE_CHECKING:
@@ -87,9 +92,7 @@ def create(request: AuthenticatedHttpRequest) -> HttpResponse:
                         template_cls = CertificateOfManufactureApplicationTemplate
 
                     case ExportApplicationType.Types.GMP:
-                        # TODO: Add real template
-                        # TemplateCls = CertificateOfGoodManufacturingPracticeApplicationTemplate
-                        template_cls = CertificateOfManufactureApplicationTemplate
+                        template_cls = CertificateOfGoodManufacturingPracticeApplicationTemplate
 
                 template_cls.objects.create(template=cat)
                 messages.success(request, f"Template '{cat.name}' created.")
@@ -114,20 +117,20 @@ def _has_permission(user: User) -> bool:
     return exporter_admin or exporter_user
 
 
-class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, FormView):
+class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMixin, FormView):
     template_name = "web/domains/cat/edit.html"
     success_url = reverse_lazy("cat:list")
     read_only = False  # Determines editing or read-only behaviour.
 
-    def dispatch(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
-        self.object = get_object_or_404(CertificateApplicationTemplate, pk=kwargs["cat_pk"])
+    def test_func(self):
+        """Runs before dispatch - Test template permission."""
 
-        # Different permissions if this is editing / viewing a template.
-        predicate = self.object.user_can_view if self.read_only else self.object.user_can_edit
-        if not predicate(self.request.user):
-            raise PermissionDenied
+        self.object = get_object_or_404(CertificateApplicationTemplate, pk=self.kwargs["cat_pk"])
 
-        return super().dispatch(request, *args, **kwargs)
+        if self.read_only:
+            return self.object.user_can_view(self.request.user)
+        else:
+            return self.object.user_can_edit(self.request.user)
 
     def has_permission(self) -> bool:
         return _has_permission(self.request.user)
@@ -152,9 +155,14 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, FormView):
         kwargs = super().get_form_kwargs()
 
         if "step" in self.kwargs:
-            # TODO: Set correct instance based on step.
-            # The step will change the template / related table.
-            kwargs["instance"] = self.object.com_template
+            match (self.object.application_type, self.kwargs["step"]):
+                case ExportApplicationType.Types.MANUFACTURE, _:
+                    kwargs["instance"] = self.object.com_template
+                case ExportApplicationType.Types.GMP, _:
+                    kwargs["instance"] = self.object.gmp_template
+                case ExportApplicationType.Types.FREE_SALE, _:
+                    # TODO ICMSLST-1050: Use correct instance.
+                    kwargs["instance"] = self.object.com_template
         else:
             kwargs["instance"] = self.object
 
@@ -166,6 +174,7 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, FormView):
             "application_type": self.object.get_application_type_display(),
             "sidebar_links": self.get_sidebar_links(),
             "read_only": self.read_only,
+            "step": self.kwargs.get("step", "initial"),
         }
 
         return super().get_context_data(**kwargs)
@@ -214,8 +223,7 @@ def form_class_for_application_type(type_code: str) -> type[ModelForm]:
     types_forms: dict[Any, type[ModelForm]] = {
         # TODO: Use correct form
         ExportApplicationType.Types.FREE_SALE: CertificateOfManufactureTemplateForm,
-        # TODO: Use correct form
-        ExportApplicationType.Types.GMP: CertificateOfManufactureTemplateForm,
+        ExportApplicationType.Types.GMP: CertificateOfGoodManufacturingPracticeTemplateForm,
         ExportApplicationType.Types.MANUFACTURE: CertificateOfManufactureTemplateForm,
     }
 
