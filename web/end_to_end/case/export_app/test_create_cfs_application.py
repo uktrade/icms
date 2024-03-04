@@ -142,7 +142,7 @@ def cfs_manage_and_complete_case(page: Page, cfs_id: int) -> None:
     workbasket_row = utils.get_wb_row(page, cfs_id)
     workbasket_row.get_by_role("link", name="Authorise Documents").click()
     page.get_by_role("button", name="Sign and Authorise").click()
-    page.get_by_role("button", name="OK").click()
+    page.get_by_role("button", name="OK", exact=True).click()
 
     #
     # Close the popup: "Authorise Success: Application xxx/xxxx/xxxxx has been queued for document signing"
