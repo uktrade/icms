@@ -182,7 +182,7 @@ def fa_dfl_manage_and_complete_case(page: Page, dfl_id: int) -> None:
     utils.assert_page_url(page, f"/case/import/{dfl_id}/authorisation/authorise-documents/")
 
     page.get_by_role("button", name="Sign and Authorise").click()
-    page.get_by_role("button", name="OK").click()
+    page.get_by_role("button", name="OK", exact=True).click()
     utils.assert_page_url(page, "/workbasket/")
 
     # Close the popup: "Authorise Success: Application xxx/xxxx/xxxxx has been queued for document signing"
