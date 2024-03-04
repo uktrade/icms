@@ -499,6 +499,7 @@ P12_SIGNATURE_BASE_64 = env.p12_signature_base_64
 P12_SIGNATURE_PASSWORD = env.p12_signature_password
 
 # Google Analytics stuff
+GTM_ENABLED = env.gtm_enabled
 GTM_AUTH_KEYS = {
     "Caseworker": env.gtm_caseworker_auth_key,
     "Export A Certificate": env.gtm_exporter_auth_key,
