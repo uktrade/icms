@@ -3897,3 +3897,6 @@ Django 4.2.10
 the International Accreditation Forum
 Edit GMP Template
 loop.previtem.0
+CertificateOfManufactureApplicationABC
+gmp_models
+CertificateOfGoodManufacturingPracticeApplicationABC
