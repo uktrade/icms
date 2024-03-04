@@ -24,6 +24,7 @@ pip install -U pip
 pip install -r requirements-dev.txt
 
 echo "Installing playwright chromium browser & dependencies"
+pip install pytest-playwright
 playwright install --with-deps chromium
 
 echo "Installing pre-commit hooks"
