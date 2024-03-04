@@ -145,6 +145,7 @@ class EnvironmentBase(BaseSettings):
     p12_signature_password: str = ""
 
     # Google Analytics
+    gtm_enabled: bool = True
     gtm_caseworker_auth_key: str = ""
     gtm_importer_auth_key: str = ""
     gtm_exporter_auth_key: str = ""

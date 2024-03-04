@@ -193,6 +193,7 @@ def environment(**options):
             "page_title": "Import Case Management System",
             "get_css_rules_as_string": get_css_rules_as_string,
             "get_file_base64": get_file_base64,
+            "gtm_enabled": settings.GTM_ENABLED,
             "get_gtm_auth_key": get_gtm_auth_key,
             "get_gtm_container_id": get_gtm_container_id,
             "get_gtm_preview_key": get_gtm_preview_key,
