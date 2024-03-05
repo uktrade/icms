@@ -5,11 +5,7 @@
     {% if read_only %}
       There are no firearm details in this report.
     {% else %}
-      {% if report_type == 'sil' %}
-        There are no firearm details in this goods line.
-      {% else %}
         How do you want to report the imported firearms?
-      {% endif %}
     {% endif %}
   </div>
   {% if not read_only %}

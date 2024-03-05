@@ -3900,3 +3900,6 @@ loop.previtem.0
 CertificateOfManufactureApplicationABC
 gmp_models
 CertificateOfGoodManufacturingPracticeApplicationABC
+{{ buttons.manual_add_button(report
+{{ buttons.upload_document_button(report
+{{ buttons.no_firearm_button(report
