@@ -136,6 +136,9 @@ collectstatic: ## copies static files to STATIC_ROOT
 fake_dbt_built: ## Fake build command (builds static files without connection details to backing services)
 	docker-compose run -e BUILD_STEP=True -e COPILOT_ENVIRONMENT_NAME=DUMMY --rm web python ./manage.py collectstatic --noinput --traceback
 
+fake_dbt_built_compress: ## Fake build command (Runs django compressor without connection details to backing services)
+	docker-compose run -e BUILD_STEP=True -e COPILOT_ENVIRONMENT_NAME=DUMMY --rm web python manage.py compress --force --engine jinja2
+
 build: ## build docker containers
 	docker-compose pull
 	docker-compose build

@@ -279,7 +279,8 @@ CACHES = {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": REDIS_URL,
         "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
-    }
+    },
+    "django_compressor_cache": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
 }
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
@@ -334,6 +335,10 @@ HTML_MINIFY = True
 
 # Django Compressor
 COMPRESS_OFFLINE = True
+# COMPRESS_CACHE_BACKEND default value is "default" which for ICMS is a redis cache
+# There is no redis connection at build time in DBT Platform so have a specific cache for
+# django-compressor to use.
+COMPRESS_CACHE_BACKEND = "django_compressor_cache"
 
 # ICMS-HMRC settings
 SEND_LICENCE_TO_CHIEF = env.send_licence_to_chief
