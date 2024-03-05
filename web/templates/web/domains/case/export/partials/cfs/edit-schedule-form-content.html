@@ -1,0 +1,26 @@
+{{ fields.field(form.exporter_status) }}
+{{ fields.field(form.brand_name_holder) }}
+{{ fields.field(form.legislations) }}
+<div id="biocidal-claim-question-wrapper" {% if not is_biocidal %} style="display: none;"{% endif %}>
+  {{ fields.field(form.biocidal_claim, mark_safe=True, show_optional_indicator=False) }}
+</div>
+{{ fields.field(form.product_eligibility) }}
+{{ fields.field(form.goods_placed_on_uk_market) }}
+{{ fields.field(form.goods_export_only) }}
+{{ fields.field(form.any_raw_materials) }}
+
+<div id="final-product-end-use-wrapper">
+  {{ fields.field(form.final_product_end_use, show_optional_indicator=False) }}
+</div>
+
+{{ fields.field(form.country_of_manufacture) }}
+{{ fields.field(form.schedule_statements_accordance_with_standards, checkbox_label="These products are manufactured in accordance with the Good Manufacturing Practice standards set out in UK law") }}
+
+<div id="schedule-statements-is-responsible-person-wrapper" {% if not show_schedule_statements_is_responsible_person %} style="display: none"{% endif %}>
+  {{ fields.field(
+        form.schedule_statements_is_responsible_person,
+        show_optional_indicator=False,
+        checkbox_label="I am the responsible person as defined by Cosmetic Regulation No 1223/2009 as applicable in GB. I am the person responsible for ensuring that the products listed in this schedule meet the safety requirements set out in that Regulation."
+     )
+  }}
+</div>

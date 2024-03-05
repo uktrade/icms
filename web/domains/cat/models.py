@@ -4,8 +4,13 @@ from django.conf import settings
 from django.db import models
 
 from web.domains.case.export.models import (
+    CertificateOfFreeSaleApplicationABC,
     CertificateOfGoodManufacturingPracticeApplicationABC,
     CertificateOfManufactureApplicationABC,
+    CFSProductABC,
+    CFSProductActiveIngredientABC,
+    CFSProductTypeABC,
+    CFSScheduleABC,
     ExportApplicationABC,
 )
 from web.models import ExportApplicationType
@@ -68,7 +73,38 @@ class CertificateOfManufactureApplicationTemplate(  # type: ignore[misc]
     )
 
 
-class CertificateOfFreeSaleApplicationTemplate: ...  # noqa: E701
+class CertificateOfFreeSaleApplicationTemplate(  # type: ignore[misc]
+    ExportApplicationABC, CertificateOfFreeSaleApplicationABC
+):
+    template = models.OneToOneField(
+        "web.CertificateApplicationTemplate", on_delete=models.CASCADE, related_name="cfs_template"
+    )
+
+
+class CFSScheduleTemplate(CFSScheduleABC):
+    application = models.ForeignKey(
+        "web.CertificateOfFreeSaleApplicationTemplate",
+        related_name="schedules",
+        on_delete=models.CASCADE,
+    )
+
+
+class CFSProductTemplate(CFSProductABC):
+    schedule = models.ForeignKey(
+        "web.CFSScheduleTemplate", related_name="products", on_delete=models.CASCADE
+    )
+
+
+class CFSProductTypeTemplate(CFSProductTypeABC):
+    product = models.ForeignKey(
+        "web.CFSProductTemplate", related_name="product_type_numbers", on_delete=models.CASCADE
+    )
+
+
+class CFSProductActiveIngredientTemplate(CFSProductActiveIngredientABC):
+    product = models.ForeignKey(
+        "web.CFSProductTemplate", related_name="active_ingredients", on_delete=models.CASCADE
+    )
 
 
 class CertificateOfGoodManufacturingPracticeApplicationTemplate(  # type: ignore[misc]

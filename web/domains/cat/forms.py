@@ -3,11 +3,19 @@ from collections.abc import Iterable
 import django_filters
 from django import forms
 
-from web.domains.case.export.forms import EditCOMForm, EditGMPForm
+from web.domains.case.export.forms import (
+    CFSManufacturerDetailsForm,
+    EditCFScheduleForm,
+    EditCFSForm,
+    EditCOMForm,
+    EditGMPForm,
+)
 from web.models import (
     CertificateApplicationTemplate,
+    CertificateOfFreeSaleApplicationTemplate,
     CertificateOfGoodManufacturingPracticeApplicationTemplate,
     CertificateOfManufactureApplicationTemplate,
+    CFSScheduleTemplate,
     ExportApplicationType,
 )
 
@@ -50,7 +58,7 @@ def copy_form_fields(form_fields: Iterable[str], *exclude: str) -> list[str]:
     return [f for f in form_fields if f not in exclude]
 
 
-class CertificateOfManufactureTemplateForm(EditCOMForm):
+class CertificateOfManufactureApplicationTemplateForm(EditCOMForm):
     class Meta:
         fields = copy_form_fields(EditCOMForm.Meta.fields, "contact")
         help_texts = EditCOMForm.Meta.help_texts
@@ -59,8 +67,29 @@ class CertificateOfManufactureTemplateForm(EditCOMForm):
         model = CertificateOfManufactureApplicationTemplate
 
 
-class CertificateOfGoodManufacturingPracticeTemplateForm(EditGMPForm):
+class CertificateOfGoodManufacturingPracticeApplicationTemplateForm(EditGMPForm):
     class Meta:
         model = CertificateOfGoodManufacturingPracticeApplicationTemplate
         fields = copy_form_fields(EditGMPForm.Meta.fields, "contact")
         widgets = EditGMPForm.Meta.widgets
+
+
+class CertificateOfFreeSaleApplicationTemplateForm(EditCFSForm):
+    class Meta:
+        model = CertificateOfFreeSaleApplicationTemplate
+        fields = copy_form_fields(EditCFSForm.Meta.fields, "contact")
+        widgets = EditCFSForm.Meta.widgets
+
+
+class CFSScheduleTemplateForm(EditCFScheduleForm):
+    class Meta:
+        model = CFSScheduleTemplate
+        fields = copy_form_fields(EditCFScheduleForm.Meta.fields)
+        widgets = EditCFScheduleForm.Meta.widgets
+
+
+class CFSManufacturerDetailsTemplateForm(CFSManufacturerDetailsForm):
+    class Meta:
+        model = CFSScheduleTemplate
+        fields = copy_form_fields(CFSManufacturerDetailsForm.Meta.fields)
+        widgets = CFSManufacturerDetailsForm.Meta.widgets

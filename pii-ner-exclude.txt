@@ -4236,3 +4236,11 @@ ON cad_c.ca_id
 Open Update
 make end_to_end_clear_session && \
 Max 13
+a Certificate of Free Sale
+p for p
+CFS Specific Views
+the CFS Application
+cat_pk>/add-schedule/
+aria-label="Copy
+ICMSLST-2564 Add
+CertificateApplicationTemplate(id={cat_pk

@@ -5,7 +5,8 @@ from pytest_django.asserts import assertTemplateUsed
 from web.domains.cat.forms import CATFilter
 from web.models import (
     CertificateApplicationTemplate,
-    CertificateOfManufactureApplicationTemplate,
+    CertificateOfFreeSaleApplicationTemplate,
+    CertificateOfGoodManufacturingPracticeApplicationTemplate,
     ExportApplicationType,
 )
 from web.tests.auth import AuthTestCase
@@ -85,7 +86,7 @@ class TestCATEditView(AuthTestCase):
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
         )
-        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
+        CertificateOfFreeSaleApplicationTemplate.objects.create(template=cat)
         url = reverse("cat:edit", kwargs={"cat_pk": cat.pk})
 
         response = self.exporter_client.get(url)
@@ -99,7 +100,7 @@ class TestCATEditView(AuthTestCase):
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
         )
-        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
+        CertificateOfFreeSaleApplicationTemplate.objects.create(template=cat)
         url = reverse("cat:edit", kwargs={"cat_pk": cat.pk})
 
         response = self.importer_client.get(url)
@@ -114,14 +115,14 @@ class TestCATEditStepView(AuthTestCase):
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
         )
-        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
+        CertificateOfFreeSaleApplicationTemplate.objects.create(template=cat)
 
         url = reverse("cat:edit-step", kwargs={"cat_pk": cat.pk, "step": "cfs"})
 
         response = self.exporter_client.get(url)
 
         assert response.status_code == 200
-        assertTemplateUsed(response, "web/domains/cat/edit.html")
+        assertTemplateUsed(response, "web/domains/cat/cfs/edit.html")
 
 
 class TestCATArchiveView(AuthTestCase):
@@ -131,7 +132,7 @@ class TestCATArchiveView(AuthTestCase):
             name="GMP template",
             application_type=ExportApplicationType.Types.GMP,
         )
-        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
+        CertificateOfGoodManufacturingPracticeApplicationTemplate.objects.create(template=cat)
         assert cat.is_active is True
 
         url = reverse("cat:archive", kwargs={"cat_pk": cat.pk})
@@ -150,7 +151,7 @@ class TestCATArchiveView(AuthTestCase):
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
         )
-        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
+        CertificateOfFreeSaleApplicationTemplate.objects.create(template=cat)
         url = reverse("cat:archive", kwargs={"cat_pk": cat.pk})
 
         response = self.importer_client.get(url)
@@ -166,7 +167,7 @@ class TestCATRestoreView(AuthTestCase):
             application_type=ExportApplicationType.Types.GMP,
             is_active=False,
         )
-        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
+        CertificateOfGoodManufacturingPracticeApplicationTemplate.objects.create(template=cat)
         assert cat.is_active is False
 
         url = reverse("cat:restore", kwargs={"cat_pk": cat.pk})
@@ -186,7 +187,7 @@ class TestCATRestoreView(AuthTestCase):
             application_type=ExportApplicationType.Types.FREE_SALE,
             is_active=False,
         )
-        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
+        CertificateOfFreeSaleApplicationTemplate.objects.create(template=cat)
         url = reverse("cat:restore", kwargs={"cat_pk": cat.pk})
 
         response = self.importer_client.get(url)
@@ -201,7 +202,7 @@ class TestCATReadOnlyView(AuthTestCase):
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
         )
-        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
+        CertificateOfFreeSaleApplicationTemplate.objects.create(template=cat)
         url = reverse("cat:view", kwargs={"cat_pk": cat.pk})
 
         response = self.exporter_client.get(url)
@@ -215,7 +216,7 @@ class TestCATReadOnlyView(AuthTestCase):
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
         )
-        CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
+        CertificateOfFreeSaleApplicationTemplate.objects.create(template=cat)
         url = reverse("cat:view-step", kwargs={"cat_pk": cat.pk, "step": "cfs"})
 
         response = self.exporter_client.get(url)

@@ -3,7 +3,6 @@ from typing import Any
 
 from django import forms
 from django.db.models.query import QuerySet
-from django.forms.models import ModelForm
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django_select2.forms import ModelSelect2Widget, Select2MultipleWidget
@@ -285,19 +284,16 @@ class EditCFSFormBase(forms.ModelForm):
         }
 
 
-class EditCFSForm(EditCFSFormBase):
+class EditCFSForm(OptionalFormMixin, EditCFSFormBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["contact"].queryset = application_contacts(self.instance)
+        # Contact isn't a field in the template.
+        if "contact" in self.fields:
+            self.fields["contact"].queryset = application_contacts(self.instance)
 
-        application_countries = self.instance.application_type.country_group.countries.filter(
-            is_active=True
-        )
-        self.fields["countries"].queryset = application_countries
-
-
-class EditCFSTemplateForm(OptionalFormMixin, EditCFSFormBase):
-    """CFS Template form."""
+        self.fields["countries"].queryset = ExportApplicationType.objects.get(
+            type_code=ExportApplicationType.Types.FREE_SALE
+        ).country_group.countries.filter(is_active=True)
 
 
 class CFSScheduleFormBase(forms.ModelForm):
@@ -336,12 +332,14 @@ class CFSScheduleFormBase(forms.ModelForm):
 
         legislation_qs = ProductLegislation.objects.filter(is_active=True)
 
-        postcode = self.instance.application.exporter_office.postcode
+        # Templates don't have an office so we're not able to filter legislation_qs.
+        if hasattr(self.instance.application, "exporter_office"):
+            postcode = self.instance.application.exporter_office.postcode
 
-        if postcode and postcode.upper().startswith("BT"):
-            legislation_qs = legislation_qs.filter(ni_legislation=True)
-        else:
-            legislation_qs = legislation_qs.filter(gb_legislation=True)
+            if postcode and postcode.upper().startswith("BT"):
+                legislation_qs = legislation_qs.filter(ni_legislation=True)
+            else:
+                legislation_qs = legislation_qs.filter(gb_legislation=True)
 
         self.fields["legislations"].queryset = legislation_qs.order_by("name")
 
@@ -694,17 +692,3 @@ class SubmitGMPForm(EditGMPFormBase):
                 )
 
         return cleaned_data
-
-
-def form_class_for_application_type(type_code: str) -> type[ModelForm]:
-    types_forms: dict[Any, type[ModelForm]] = {
-        # These form classes have no required fields, no data cleaning methods.
-        ExportApplicationType.Types.FREE_SALE: EditCFSTemplateForm,
-        ExportApplicationType.Types.GMP: EditGMPForm,
-        ExportApplicationType.Types.MANUFACTURE: EditCOMForm,
-    }
-
-    try:
-        return types_forms[type_code]
-    except KeyError:
-        raise NotImplementedError(f"Type not supported: {type_code}")

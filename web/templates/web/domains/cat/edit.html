@@ -1,22 +1,28 @@
 {% extends "web/domains/cat/base_form.html" %}
-{% from "display/fields.html" import application_field %}
+{% from "display/fields.html" import application_field, application_section %}
 
 {% block main_content_intro %}
-  {% if application_type == "Certificate of Manufacture" %}
+  {% if application_type == "COM" %}
     <div class="info-box info-box-info">
       This form is in respect of the Exporting Company. Please provide all the information
       requested. The information will be used to create a Certificate of Manufacture and a legal
       declaration in the form of a Schedule.
     </div>
-  {% elif application_type == "Certificate of Good Manufacturing Practice" %}
+  {% elif application_type == "GMP" %}
       <div class="info-box info-box-info">
         This form is in respect of the Exporting Company. Please provide all the information
         requested. The information will be used to create a Certificate of Good Manufacturing
         Practice.
       </div>
+  {% elif application_type == "CFS" %}
+    <div class="info-box info-box-info">
+      This form is in respect of the Exporting Company. Please provide all the information
+      requested. The information will be used to create a Certificate of Free Sale and a
+      legal declaration in the form of a Schedule.
+    </div>
   {% endif %}
 {% endblock %}
 
 {% block extra_main_content_form %}
-  {{ application_field(application_type, "Application Type") }}
+  {{ application_field(application_type_display, "Application Type") }}
 {% endblock %}
