@@ -3903,3 +3903,4 @@ CertificateOfGoodManufacturingPracticeApplicationABC
 {{ buttons.manual_add_button(report
 {{ buttons.upload_document_button(report
 {{ buttons.no_firearm_button(report
+{{ buttons.manual_add_button(report

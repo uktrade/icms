@@ -25,7 +25,7 @@
         <td>{{ firearm.serial_number }}</td>
         <td>{{ firearm.calibre }}</td>
         <td>{{ firearm.model }}</td>
-        <td>{{ firearm.proofing }}</td>
+        <td>{{ firearm.get_proofing_display() }}</td>
         {% if not read_only %}
           <td>
             <ul class="menu-out">
