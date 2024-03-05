@@ -83,9 +83,6 @@
         </div>
       </div>
       {% if not process.supplementary_info.reports.exists() and not contacts %}
-        <div class="info-box info-box-info">
-          If you are not importing any firearms against this import licence then please specify why in the text box and then confirm reporting complete.
-        </div>
         {{ fields.field(form.no_report_reason) }}
       {% endif %}
     {%- endcall %}

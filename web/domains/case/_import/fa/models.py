@@ -83,8 +83,8 @@ class SupplementaryInfoBase(models.Model):
         null=True,
         blank=True,
         verbose_name=(
-            "You haven't provided any reports on imported firearms. You must provide a reason"
-            " why no reporting is required before you confirm reporting complete."
+            "If you are not importing any firearms against this import licence then please specify "
+            "why in the text box and then confirm reporting complete."
         ),
     )
 
