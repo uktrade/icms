@@ -3908,3 +3908,262 @@ Enter Manually
 No Firearms to Report
 Supplementary Report</h3
 Supplementary Report</h3
+Prepare Task
+AI
+AI 4</NAME
+Licence</SUBJECT
+CLOSED_DATE>2022-04-09</CLOSED_DATE
+CLOSED_DATETIME>2022-10-14T12:01:05</CLOSED_DATETIME
+CLOSED_DATETIME>2022-10-16T12:01:05</CLOSED_DATETIME
+V2                |
+ICMS V2 Status
+Request Importer/Exporter
+Importer Details
+Verified Firearms Authorities
+New Mailshot
+Country Translation Sets
+ICMS V2
+Request Importer/Exporter Access
+Screen
+W504,E24,E121,W503,E226,E123,E704,E126,E231,C901
+max-line
+max-complexity
+Ammunition - Management
+Past Beneficiary
+usage_pk>/edit/
+job_title__icontains
+NI Legislation
+Retract
+Override EORI
+dev_error_msg={self.dev_error_msg!r
+JS Dependencies
+Installing JS Dependencies
+document.querySelector(downloadId
+document.querySelector(warningId
+response.blob
+function downloadFile(file
+createObjectURL`
+DOM
+data['method
+data['confirm
+key.substring(6
+addressEntries.forEach((node
+node.querySelector("div[name='address_field
+clearErrors(postcodeInputDiv
+processError(postcodeInputDiv
+idx
+Option(text
+visible').length
+body.append(this.d
+setsAreEqual(a
+Form.method
+document.querySelector("#id_refuse_reason
+events.productRawMaterialRadiosOnChange(e
+document.querySelectorAll(`input[type
+isEUCosmeticsRegulation && notExportOnly
+|| dropdown.value === "AUTO
+document.querySelector("#civilian
+newCountry = e.target.value
+= JSON.parse
+setIsoDisplay(isoFieldsWrapper, e.target.value
+JSON.parse
+newLabel
+document.querySelector("#id_cp_category
+function makeChangeCommodityLabel
+show_agent_inputs
+newCommodity
+function submitSearchForm(searchForm
+checked.value
+ICMSLST-1182 Revisit
+const apps
+setupReopenCaseFormHandlers
+null && quantity
+function workbasketActionOnClickHandler(event
+} - Press
+location.reload
+cookie.substring(0
++ 1
+UTILS
+{{fields.inline_field(form.email
+{{fields.inline_field(form.comment
+{{ caller
+page_no
+aria-disabled="{%if not active
+{{ verified.get_certificate_type_display
+{{ dfl_certificate.dfl_application.first().constabulary.name }
+div id="sidebar-substitute"></div
+div id="sidebar-background"></div
+aria-label="{{label
+Contact</h4
+{{ display.application_field(number.phone
+Deactivated Certificate
+certificate.start_date.strftime('%d-%b-%Y
+certificate.date_issued.strftime('%d-%b-%Y
+certificate.expiry_date.strftime('%d-%b-%Y
+{{ certificate.filename }
+Commodity</h4
+Exporter</h4
+Exporter</a
+Exporter Access Requests</a
+div aria-labelledby="authorities-current
+Importer Access Requests</a
+Organisation
+Main Organisation Importer
+div aria-labelledby="offices-current
+div aria-describedby="eori-hint
+has_next
+Section 5 Clauses</h4
+{{ fields.label(field
+New CFS Declaration Translation
+withdrawal.updated_datetime.strftime('%d-%b-%Y
+{{config.header}
+{{config.tooltip}
+{{ _
+{{_field_value(object[field]
+field(object
+west">Sent By</label
+{{activation.management_form}}
+Access Requested
+{{ process.submit_datetime.strftime('%d-%b-%Y %
+Organisation Address</label
+Address</label
+=
+value="Start Authorisation
+Document Set
+{{ application_field(process.product_name
+Chemical Name
+{{ application_field(process.manufacturing_process|nl2br
+Truth</h3
+west">Case Reference</label
+west">Case Owner</label
+west">Case Status</label
+{{ fields.field(form.is_pesticide_on_free_sale_uk
+the Department for International Trade or the Office
+Respond FIR
+west">Response
+{{ application_field(process.contract_sign_date.strftime('%d-%b-%Y'
+{{ application_field(process.explanation
+the Syrian National Coalition for Opposition and Revolutionary Forces
+{{ application_field(process.activity_benefit_anyone
+EU Regulation 36/2012
+Goods Descriptions
+{{ fields.field(form.deactivated_firearm
+west">Proof
+{{ application_field(process.constabulary
+{{ process.goods_description
+process.section58_obsolete %
+Section 5 - {{ section.description }}<
+5</span
+section 1 and
+west">Obsolete Calibre</label
+{{ fields.field(form.original_chambering
+{{ fields.field(form.obsolete_calibre
+{{ fields.field(form.ignition
+{{ fields.field(form.chamber
+{{ fields.field(form.bore
+process.goods_legacy.filter(is_active=True) %}
+{{ section5.address|nl2br }
+west">Start Date</label
+west">End Date</label>
+Section 5 Authorities</h3
+class="bold">End
+{{ object.email_body|nl2br }
+object.email_sent_datetime.strftime("%d-%b-%Y
+{{ object.email_closed_datetime.strftime("%d-%b-%Y
+{{ certificate.issuing_constabulary }
+{{ certificate.address }
+{{ certificate.postcode }
+{{ certificate.start_date.strftime('%d-%b-%Y
+constabulary_email.email_closed_datetime.strftime("%d-%b-%Y
+{{ buttons.manual_add_button(report
+{{ buttons.upload_document_button(report
+{{ buttons.no_firearm_button(report
+Firearm Supplementary Report
+No Firearms to Report
+{{ fields.field(form.transport
+{{ fields.field(form.serial_number
+{{ fields.field(form.calibre
+{{ fields.field(form.model
+Application Reference"
+{{ application_field(process.category_commodity_group.group_code
+{{ application_field(process.category_commodity_group.group_description
+{{ process.goods_description }}
+{{ process.value
+{{ process.commodity_code }
+Temporary Exported Goods</h5
+{{ goods_item.goods_description }}
+{{ process.goods_qty }}
+{{ application_field(process.category_commodity_group_id
+{{ fields.field(form.category_licence_description
+{{ application_field(process.commodity.commodity_code
+{{ fields.field(form.fq_similar_to_own_factory
+{{ fields.field(form.fq_manufacturing_within_eu
+Temporary Exported Goods</h4
+{{ fields.field(form.teg_origin_country
+Outward Processing
+{{ fields.field(form.customs_office_address
+{{ fields.field(form.rate_of_yield
+{{ fields.field(form.rate_of_yield_calc_method
+{{ fields.field(form.suggested_id
+{{ section.created_by.full_name
+{{ section.created_datetime.strftime('%d-%b-%Y'
+{{ doc.created_datetime.strftime('%d-%b-%Y %
+{{ doc.filename
+doc.human_readable_file_size
+{{ process.application_type.get_type_display
+{{ process.contract_file.created_datetime.strftime('%d-%b-%Y %
+{{ application_field(process.exporter_address
+{{ fields.field(form.customs_cleared_to_uk
+process.customs_cleared_to_uk
+{{ application_field("Kilos"
+{{ application_field(process.value_gbp
+{{ application_field(process.value_eur
+Pre-Contract</h4
+{{ attachment.human_readable_file_size
+{{ object.body|nl2br }
+{{ object.sent_datetime.strftime("%d-%b-%Y
+{{ object.response|nl2br }
+{{ object.closed_datetime.strftime("%d-%b-%Y
+Response Documents
+Revoke Licence'
+document.created_by
+north">Country of Origin</label></div
+north">Country
+columns"><label class="prompt north">Goods
+Code(s)</label></div
+Reopen case.</p></div
+Start Application Update</h4
+{{ application_field(vr.requested_datetime.strftime('%d-%b-%Y'
+{{ application_field(vr.reject_cancellation_reason
+Request</button
+Request Update
+{{ application_field(vr.requested_datetime.strftime('%d-%b-%Y %
+{{ application_field(vr.closed_by
+loop.previtem.0
+Global Trade Tariff
+Edit Usage for Commodity Group
+usage.start_date.strftime('%d-%b-%Y
+kwargs={"commodity_group_pk
+exclude=
+{{fields.field(form.hmrc_code
+Country Groups
+Manage Country Translation Sets
+{{csrf_input}
+New Country Translation
+Create Office for Agent '
+Create Obsolete Calibre
+Obsolete Calibres</h3
+Create Office for Importer
+Create Importer
+Edit Office for Importer Agent '
+Edit Office for Importer
+{{fields.field(form.is_eu_cosmetics_regulation
+{{fields.field(form.ni_legislation
+Mailshot</a
+{{ application_field(object.description
+Translation Name</dt
+name</label></td
+CFS Schedule
+{{ page_errors.page_name}
+li class="error-message
+"Raise an error
