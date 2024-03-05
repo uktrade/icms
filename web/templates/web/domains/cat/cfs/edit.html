@@ -1,0 +1,69 @@
+{% extends "web/domains/cat/edit.html" %}
+
+{% block subtasks %}
+  <h4>Schedules</h4>
+  <table class="setoutList">
+    <thead>
+    <tr>
+      <th>Schedule</th>
+      {% if not read_only %}
+        <th>Actions</th>
+      {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% for schedule in schedules %}
+      <tr data-test-id="schedule-row-{{ schedule.id }}">
+        <td>Schedule ({{ loop.index }}/{{ loop.length }})</td>
+        {% if not read_only %}
+          <td>
+            <a
+              class="link-button button icon-pencil"
+              href="{{ icms_url("cat:edit-step-related", kwargs={"cat_pk": cat_pk, "step": "cfs-schedule", "step_pk": schedule.pk}) }}"
+            >Edit</a>
+            <form
+              method="post"
+              action="{{ icms_url('cat:cfs-schedule-copy', kwargs={'cat_pk': cat_pk, 'schedule_template_pk': schedule.pk}) }}"
+              action="#"
+              class="form-inline">
+              {{ csrf_input }}
+              <button
+                type="submit"
+                class="link-button button icon-copy"
+                aria-label="Copy"
+                data-confirm="Are you sure you want to copy this schedule?">Copy
+              </button>
+            </form>
+            <form
+              method="post"
+              action="{{ icms_url('cat:cfs-schedule-delete', kwargs={'cat_pk': cat_pk, 'schedule_template_pk': schedule.pk}) }}"
+              action="#"
+              class="form-inline">
+              {{ csrf_input }}
+              <button
+                type="submit"
+                class="link-button icon-bin button"
+                aria-label="Delete"
+                data-confirm="Are you sure you want to delete this schedule?">Delete
+              </button>
+            </form>
+          </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <hr>
+  {% if not read_only %}
+    <form method="post" action="{{ icms_url('cat:cfs-schedule-add', kwargs={'cat_pk': cat_pk}) }}" class="form-inline">
+      {{ csrf_input }}
+      <button
+        type="submit"
+        class="button small-button icon-plus"
+      >Add Schedule
+      </button>
+    </form>
+  {% endif %}
+{% endblock %}
+
+

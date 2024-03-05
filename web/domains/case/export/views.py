@@ -25,6 +25,7 @@ from web.domains.case.utils import (
     submit_application,
     view_application_file,
 )
+from web.domains.cat.utils import InvalidTemplateException, set_template_data
 from web.domains.file.utils import create_file_model
 from web.flow.models import ProcessTypes
 from web.models import (
@@ -36,7 +37,6 @@ from web.models import (
     CFSProductActiveIngredient,
     CFSProductType,
     CFSSchedule,
-    ExportApplication,
     ExportApplicationType,
     Exporter,
     GMPFile,
@@ -70,7 +70,6 @@ from .forms import (
     SubmitCFSScheduleForm,
     SubmitCOMForm,
     SubmitGMPForm,
-    form_class_for_application_type,
 )
 from .utils import CustomError, generate_product_template_xlsx, process_products_file
 
@@ -108,7 +107,11 @@ class ExportApplicationChoiceView(PermissionRequiredMixin, TemplateView):
 
 
 class CreateExportApplicationConfig(NamedTuple):
-    model_class: type[ExportApplication]
+    model_class: type[
+        CertificateOfFreeSaleApplication
+        | CertificateOfManufactureApplication
+        | CertificateOfGoodManufacturingPracticeApplication
+    ]
     form_class: type[CreateExportApplicationForm]
     certificate_message: str
 
@@ -166,8 +169,10 @@ def create_export_application(
                 application.save()
 
                 if app_template:
-                    # Set template data and save
-                    set_template_data(application, app_template, type_code)
+                    try:
+                        set_template_data(application, app_template, request.user)
+                    except InvalidTemplateException:
+                        messages.warning(request, "Unable to set all template data.")
 
                     # Refresh in case any template data has been saved.
                     application.refresh_from_db()
@@ -183,7 +188,11 @@ def create_export_application(
                     ).first()
                     application.countries.add(country)
 
-                elif application_type.type_code == ExportApplicationType.Types.FREE_SALE:
+                elif (
+                    application_type.type_code == ExportApplicationType.Types.FREE_SALE
+                    and not app_template
+                ):
+                    # A template will have already created the schedules in set_template_data
                     application.schedules.create(created_by=request.user)
 
                 # Add a draft certificate when creating an application
@@ -226,34 +235,6 @@ def get_application_template(user: User, template_pk: int) -> CertificateApplica
         return template
     else:
         raise PermissionDenied
-
-
-def set_template_data(
-    application: ExportApplication,
-    template: CertificateApplicationTemplate,
-    type_code: str,
-) -> None:
-    """Update the supplied application with the template data provided.
-
-    :param application: Export Application
-    :param template: Application Template
-    :param type_code: App type.
-    """
-
-    if template.application_type == ExportApplicationType.Types.MANUFACTURE:
-        template_data = template.com_template
-    elif template.application_type == ExportApplicationType.Types.GMP:
-        template_data = template.gmp_template
-    else:
-        raise ValueError(f"Unable to create template for app type: {template.application_type}")
-
-    # Get data that we can save in the real application
-    data = model_to_dict(template_data, exclude=["id", "template"])
-    form_class = form_class_for_application_type(type_code)
-    form = form_class(instance=application, data=data)
-
-    if form.is_valid():
-        form.save()
 
 
 def _get_export_app_config(type_code: str) -> CreateExportApplicationConfig:
@@ -461,17 +442,11 @@ def cfs_edit_schedule(
 
         schedule_legislations = schedule.legislations.filter(is_active=True)
 
-        has_cosmetics = schedule_legislations.filter(is_eu_cosmetics_regulation=True).exists()
-        not_export_only = schedule.goods_export_only == YesNoChoices.no
-        show_schedule_statements_is_responsible_person = has_cosmetics and not_export_only
+        show_schedule_statements_is_responsible_person = (
+            get_show_schedule_statements_is_responsible_person(schedule)
+        )
 
-        legislation_config = {
-            legislation.pk: {
-                "isEUCosmeticsRegulation": legislation.is_eu_cosmetics_regulation,
-                "isBiocidalClaim": legislation.is_biocidal_claim,
-            }
-            for legislation in ProductLegislation.objects.filter(is_active=True)
-        }
+        legislation_config = get_csf_schedule_legislation_config()
 
         context = {
             "process": application,
@@ -488,6 +463,24 @@ def cfs_edit_schedule(
         }
 
         return render(request, "web/domains/case/export/cfs-edit-schedule.html", context)
+
+
+def get_csf_schedule_legislation_config() -> dict[int, dict[str, bool]]:
+    return {
+        legislation.pk: {
+            "isEUCosmeticsRegulation": legislation.is_eu_cosmetics_regulation,
+            "isBiocidalClaim": legislation.is_biocidal_claim,
+        }
+        for legislation in ProductLegislation.objects.filter(is_active=True)
+    }
+
+
+def get_show_schedule_statements_is_responsible_person(schedule) -> bool:
+    schedule_legislations = schedule.legislations.filter(is_active=True)
+
+    has_cosmetics = schedule_legislations.filter(is_eu_cosmetics_regulation=True).exists()
+    not_export_only = schedule.goods_export_only == YesNoChoices.no
+    return has_cosmetics and not_export_only
 
 
 @require_POST

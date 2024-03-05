@@ -10,13 +10,23 @@ from web.types import TypedTextChoices
 from .common_models import ExportApplication
 
 
+class CertificateOfFreeSaleApplicationABC(models.Model):
+    class Meta:
+        abstract = True
+
+
 @final
-class CertificateOfFreeSaleApplication(ExportApplication):
+class CertificateOfFreeSaleApplication(  # type: ignore[misc]
+    ExportApplication, CertificateOfFreeSaleApplicationABC
+):
     PROCESS_TYPE = ProcessTypes.CFS
     IS_FINAL = True
 
 
-class CFSSchedule(models.Model):
+class CFSScheduleABC(models.Model):
+    class Meta:
+        abstract = True
+
     class ExporterStatus(TypedTextChoices):
         IS_MANUFACTURER = ("MANUFACTURER", "I am the manufacturer")
         IS_NOT_MANUFACTURER = ("NOT_MANUFACTURER", "I am not the manufacturer")
@@ -30,12 +40,6 @@ class CFSSchedule(models.Model):
             "MEET_UK_PRODUCT_SAFETY",
             "The products meet the product safety requirements to be sold on the UK market",
         )
-
-    application = models.ForeignKey(
-        "web.CertificateOfFreeSaleApplication",
-        related_name="schedules",
-        on_delete=models.CASCADE,
-    )
 
     exporter_status = models.CharField(
         null=True,
@@ -148,6 +152,20 @@ class CFSSchedule(models.Model):
         max_length=4000, verbose_name="Address", null=True, blank=True
     )
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def is_biocidal(self) -> bool:
+        return self.legislations.filter(is_biocidal=True).exists()
+
+
+class CFSSchedule(CFSScheduleABC):
+    application = models.ForeignKey(
+        "web.CertificateOfFreeSaleApplication",
+        related_name="schedules",
+        on_delete=models.CASCADE,
+    )
+
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
@@ -156,30 +174,42 @@ class CFSSchedule(models.Model):
         related_name="+",
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
-    def is_biocidal(self) -> bool:
-        return self.legislations.filter(is_biocidal=True).exists()
+class CFSProductABC(models.Model):
+    class Meta:
+        abstract = True
 
-
-class CFSProduct(models.Model):
     product_name = models.CharField(max_length=1000)
+
+
+class CFSProduct(CFSProductABC):
     schedule = models.ForeignKey(
         "web.CFSSchedule", related_name="products", on_delete=models.CASCADE
     )
 
 
-class CFSProductType(models.Model):
+class CFSProductTypeABC(models.Model):
+    class Meta:
+        abstract = True
+
     product_type_number = models.IntegerField(choices=[(i, i) for i in range(1, 23)])
+
+
+class CFSProductType(CFSProductTypeABC):
     product = models.ForeignKey(
         "web.CFSProduct", related_name="product_type_numbers", on_delete=models.CASCADE
     )
 
 
-class CFSProductActiveIngredient(models.Model):
+class CFSProductActiveIngredientABC(models.Model):
+    class Meta:
+        abstract = True
+
     name = models.CharField(max_length=500)
     cas_number = models.CharField(max_length=50, verbose_name="CAS Number")
+
+
+class CFSProductActiveIngredient(CFSProductActiveIngredientABC):
     product = models.ForeignKey(
         "web.CFSProduct", related_name="active_ingredients", on_delete=models.CASCADE
     )

@@ -1,9 +1,14 @@
 from .cfs_models import (
     CertificateOfFreeSaleApplication,
+    CertificateOfFreeSaleApplicationABC,
     CFSProduct,
+    CFSProductABC,
     CFSProductActiveIngredient,
+    CFSProductActiveIngredientABC,
     CFSProductType,
+    CFSProductTypeABC,
     CFSSchedule,
+    CFSScheduleABC,
 )
 from .com_models import (
     CertificateOfManufactureApplication,
@@ -25,10 +30,15 @@ from .gmp_models import (
 __all__ = (
     # cfs_models
     "CertificateOfFreeSaleApplication",
+    "CertificateOfFreeSaleApplicationABC",
     "CFSProduct",
+    "CFSProductABC",
     "CFSProductActiveIngredient",
+    "CFSProductActiveIngredientABC",
     "CFSProductType",
+    "CFSProductTypeABC",
     "CFSSchedule",
+    "CFSScheduleABC",
     # com_models
     "CertificateOfManufactureApplication",
     "CertificateOfManufactureApplicationABC",

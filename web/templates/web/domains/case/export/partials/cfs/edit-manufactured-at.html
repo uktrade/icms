@@ -1,0 +1,38 @@
+{# Required template variables for this partial template #}
+{# process: CertificateOfFreeSaleApplication | CertificateOfFreeSaleApplicationTemplate instance #}
+{# schedule: CFSSchedule | CFSScheduleTemplate instance #}
+{# csrf_input #}
+
+<h4>Manufactured At</h4>
+<div class="info-box info-box-info">
+  If you have chosen the 'Exporter Status' 'I am the manufacturer' then you should not complete this information
+  unless you wish to include details of your contract manufacturer. Applicants who have chosen
+  'I am not the manufacturer' may enter details of the manufacturer in this section.
+</div>
+
+{# The defaults are the values used in the Edit CFS Schedule form #}
+{# The CFS Schedule Template overrides them #}
+{% set _edit_man_url = edit_manufacturer_url|default(icms_url("export:cfs-schedule-set-manufacturer", kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk})) %}
+{% set _delete_man_url = delete_manufacturer_url|default(icms_url("export:cfs-schedule-delete-manufacturer", kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk})) %}
+
+{% if not schedule.manufacturer_name %}
+  {% if not read_only|default(False) %}
+    <p>Include Manufacturer Information?</p>
+    <a class="button small-button icon-plus" href="{{ _edit_man_url }}">Add Manufacturer</a>
+  {% endif %}
+{% else %}
+  {% call application_section("Manufacturer Address") %}
+    {{ application_field(schedule.manufacturer_name, "Name") }}
+    {{ application_field(schedule.manufacturer_postcode or "" , "Postcode") }}
+    {{ application_field(schedule.manufacturer_address or "", "Address") }}
+  {% endcall %}
+  {% if not read_only|default(False) %}
+    <a class="button small-button icon-pencil" href="{{ _edit_man_url }}">Edit Manufacturer</a>
+    <form method="post" action="{{ _delete_man_url }}" class="form-inline">
+      {{ csrf_input }}
+      <button type="submit" class="button small-button icon-bin" >
+        Remove Manufacturer
+      </button>
+    </form>
+  {% endif %}
+{% endif %}
