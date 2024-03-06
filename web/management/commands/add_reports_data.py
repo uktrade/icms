@@ -24,6 +24,11 @@ templates = [
         "Data extract of import licences filtering on licence type, submitted date and issued date",
         ReportType.SUPPLEMENTARY_FIREARMS,
     ),
+    (
+        "ICMS - Firearms Licences",
+        "Reports relating to ICMS Firearms licences",
+        ReportType.FIREARMS_LICENCES,
+    ),
 ]
 
 

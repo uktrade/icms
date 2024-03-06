@@ -4,6 +4,7 @@ from web.models import ScheduleReport
 from .constants import ReportType
 from .generate import (
     generate_access_request_report,
+    generate_firearms_licences_report,
     generate_import_licence_report,
     generate_issued_certificate_report,
     generate_supplementary_firearms_report,
@@ -22,5 +23,7 @@ def generate_report_task(scheduled_report_pk) -> None:
             generate_import_licence_report(scheduled_report)
         case ReportType.SUPPLEMENTARY_FIREARMS:
             generate_supplementary_firearms_report(scheduled_report)
+        case ReportType.FIREARMS_LICENCES:
+            generate_firearms_licences_report(scheduled_report)
         case _:
             raise ValueError("Unsupported Report Type")

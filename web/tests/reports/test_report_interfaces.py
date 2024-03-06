@@ -10,6 +10,7 @@ from web.domains.case.types import ImpOrExp
 from web.mail.constants import EmailTypes
 from web.mail.emails import create_case_email, send_case_email
 from web.models import (
+    CaseEmail,
     ExporterAccessRequest,
     FurtherInformationRequest,
     ImporterAccessRequest,
@@ -19,10 +20,13 @@ from web.models import (
 )
 from web.reports.interfaces import (
     AccessRequestTotalsInterface,
+    DFLFirearmsLicenceInterface,
     ExporterAccessRequestInterface,
     ImporterAccessRequestInterface,
     ImportLicenceInterface,
     IssuedCertificateReportInterface,
+    OILFirearmsLicenceInterface,
+    SILFirearmsLicenceInterface,
     SupplementaryFirearmsInterface,
 )
 from web.tests.helpers import add_variation_request_to_app
@@ -136,6 +140,24 @@ EXPECTED_SUPPLEMENTARY_FIREARMS_HEADER = [
     "Date Firearms Received",
     "Means of Transport",
     "Reported all firearms for licence",
+]
+
+EXPECTED_FIREARMS_LICENCES_HEADER = [
+    "Licence Reference",
+    "Licence Variation Number",
+    "Case Reference",
+    "Importer",
+    "TURN Number",
+    "Importer Address",
+    "First Submitted Date",
+    "Final Submitted Date",
+    "Licence Start Date",
+    "Licence Expiry Date",
+    "Country of Origin",
+    "Country of Consignment",
+    "Endorsements",
+    "Revoked",
+    "Goods Description",
 ]
 
 
@@ -969,4 +991,128 @@ class TestSupplementaryFirearmsInterface:
                 "Means of Transport": "air",
                 "Reported all firearms for licence": "No",
             },
+        ]
+
+
+class TestFirearmsLicencesInterface:
+    @pytest.fixture(autouse=True)
+    def _setup(self, report_schedule, ilb_admin_user, importer_client):
+        self.report_schedule = report_schedule
+        self.ilb_admin_user = ilb_admin_user
+        self.client = importer_client
+
+    def test_get_data_header(self):
+        interface = DFLFirearmsLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data == {
+            "header": EXPECTED_FIREARMS_LICENCES_HEADER,
+            "results": [],
+        }
+
+    def test_get_dfl_data(self, completed_dfl_app):
+        interface = DFLFirearmsLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Licence Reference": "GBSIL0000001B",
+                "Licence Variation Number": 0,
+                "Case Reference": "IMA/2024/00001",
+                "Importer": "Test Importer 1",
+                "TURN Number": "GB1111111111ABCDE",
+                "Importer Address": "I1 address line 1, I1 address line 2, BT180LZ",  # /PS-IGNORE
+                "First Submitted Date": "01/01/2024",
+                "Final Submitted Date": "01/01/2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence Expiry Date": "31/12/2024",
+                "Country of Origin": "Afghanistan",
+                "Country of Consignment": "Albania",
+                "Goods Description": "goods_description value",
+                "Endorsements": "",
+                "Revoked": "No",
+            }
+        ]
+
+    def test_get_oil_data(self, completed_oil_app):
+        interface = OILFirearmsLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Licence Reference": "GBOIL0000001B",
+                "Licence Variation Number": 0,
+                "Case Reference": "IMA/2024/00001",
+                "Importer": "Test Importer 1",
+                "TURN Number": "GB1111111111ABCDE",
+                "Importer Address": "I1 address line 1, I1 address line 2, BT180LZ",  # /PS-IGNORE
+                "First Submitted Date": "01/01/2024",
+                "Final Submitted Date": "01/01/2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence Expiry Date": "31/12/2024",
+                "Country of Origin": "Any Country",
+                "Country of Consignment": "Any Country",
+                "Endorsements": (
+                    "OPEN INDIVIDUAL LICENCE Not valid for goods originating in "
+                    "or consigned from Iran, North Korea, Libya, Syria or the "
+                    "Russian Federation.(including any previous name by which "
+                    "these territories have been known).\n"
+                    "This licence is only valid if the firearm and its essential "
+                    "component parts (Barrel, frame, receiver (including both "
+                    "upper or lower receiver), slide, cylinder, bolt or breech "
+                    "block) are marked with name of manufacturer or brand, "
+                    "country or place of manufacturer, serial number, year of "
+                    "manufacture and model (if an essential component is too "
+                    "small to be fully marked it must at least be marked with a "
+                    "serial number or alpha-numeric or digital code)."
+                ),
+                "Revoked": "No",
+                "Constabularies": "Avon & Somerset",
+                "First Constabulary Email Sent Date": "",
+                "Last Constabulary Email Closed Date": "",
+            }
+        ]
+
+    def test_get_sil_data(self, completed_sil_app, mock_gov_notify_client):
+        interface = SILFirearmsLicenceInterface(self.report_schedule)
+
+        with freeze_time("2024-03-09 11:00:00"):
+            case_email = create_case_email(
+                completed_sil_app,
+                EmailTypes.CONSTABULARY_CASE_EMAIL,
+                cc=["cc_address@example.com"],  # /PS-IGNORE
+            )
+            completed_sil_app.case_emails.add(case_email)
+            send_case_email(case_email)
+            case_email.status = CaseEmail.Status.CLOSED
+            case_email.closed_datetime = make_aware(dt.datetime(2024, 3, 10, 9, 0, 0))
+            case_email.save()
+
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Licence Reference": "GBSIL0000001B",
+                "Licence Variation Number": 0,
+                "Case Reference": "IMA/2024/00001",
+                "Importer": "Test Importer 1",
+                "TURN Number": "GB1111111111ABCDE",
+                "Importer Address": "I1 address line 1, I1 address line 2, BT180LZ",  # /PS-IGNORE
+                "First Submitted Date": "01/01/2024",
+                "Final Submitted Date": "01/01/2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence Expiry Date": "31/12/2024",
+                "Country of Origin": "Afghanistan",
+                "Country of Consignment": "Afghanistan",
+                "Goods Description": (
+                    "111 x Section 1 goods to which Section 1 of the Firearms Act 1968, as amended, applies.\n"
+                    "222 x Section 2 goods to which Section 2 of the Firearms Act 1968, as amended, applies.\n"
+                    "333 x Section 5 goods to which Section 5(1)(ac) of the Firearms Act 1968, as amended, applies.\n"
+                    "555 x Section 58 other goods to which Section 58(2) of the Firearms Act 1968, as amended, applies.\n"
+                    "444 x Section 58 obsoletes goods chambered in the obsolete calibre Obsolete calibre value to which Section 58(2)"
+                    " of the Firearms Act 1968, as amended, applies."
+                ),
+                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria or the Russian Federation."
+                "(including any previous name by which these territories have been known).",
+                "Revoked": "No",
+                "Constabularies": "Avon & Somerset",
+                "First Constabulary Email Sent Date": "09/03/2024 11:00:00",
+                "Last Constabulary Email Closed Date": "10/03/2024 09:00:00",
+            }
         ]

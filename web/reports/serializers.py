@@ -31,6 +31,7 @@ str_or_empty = Annotated[
     ),
 ]
 
+
 yes_no = Annotated[
     bool | None,
     pydantic.PlainSerializer(
@@ -129,7 +130,7 @@ class SupplementaryFirearmsSerializer(pydantic.BaseModel):
     case_reference: str = pydantic.Field(serialization_alias="Case Reference")
     case_type: str = pydantic.Field(serialization_alias="Case Type")
     importer_name: str = pydantic.Field(serialization_alias="Importer")
-    eori_number: str = pydantic.Field(serialization_alias="Eori Number")
+    eori_number: str_or_empty = pydantic.Field(serialization_alias="Eori Number")
     importer_address: str = pydantic.Field(serialization_alias="Importer Address")
     licence_start_date: date_or_empty | str = pydantic.Field(
         serialization_alias="Licence Start Date"
@@ -166,3 +167,68 @@ class SupplementaryFirearmsSerializer(pydantic.BaseModel):
     )
     transport: str_or_empty = pydantic.Field(serialization_alias="Means of Transport")  # /PS-IGNORE
     all_reported: yes_no = pydantic.Field(serialization_alias="Reported all firearms for licence")
+
+
+class BaseFirearmsLicenceSerializer(pydantic.BaseModel):
+    licence_reference: str_or_empty = pydantic.Field(serialization_alias="Licence Reference")
+    variation_number: int = pydantic.Field(serialization_alias="Licence Variation Number")
+    case_reference: str = pydantic.Field(serialization_alias="Case Reference")
+    importer_name: str = pydantic.Field(serialization_alias="Importer")
+    eori_number: str_or_empty = pydantic.Field(serialization_alias="TURN Number")
+    importer_address: str = pydantic.Field(serialization_alias="Importer Address")
+    submitted_datetime: date_or_empty = pydantic.Field(serialization_alias="First Submitted Date")
+    last_submitted_datetime: date_or_empty = pydantic.Field(
+        serialization_alias="Final Submitted Date"
+    )
+    licence_start_date: date_or_empty = pydantic.Field(serialization_alias="Licence Start Date")
+    licence_end_date: date_or_empty = pydantic.Field(serialization_alias="Licence Expiry Date")
+    coo_country_name: str = pydantic.Field(serialization_alias="Country of Origin")
+    coc_country_name: str = pydantic.Field(serialization_alias="Country of Consignment")
+
+    endorsements: str = pydantic.Field(serialization_alias="Endorsements")
+    revoked: yes_no = pydantic.Field(serialization_alias="Revoked")
+
+
+class DFLFirearmsLicenceSerializer(BaseFirearmsLicenceSerializer):
+    goods_description: str = pydantic.Field(serialization_alias="Goods Description")
+
+
+class OILFirearmsLicenceSerializer(BaseFirearmsLicenceSerializer):
+    constabularies: str = pydantic.Field(serialization_alias="Constabularies")
+    first_constabulary_email_sent: datetime_or_empty = pydantic.Field(
+        serialization_alias="First Constabulary Email Sent Date"
+    )
+    last_constabulary_email_closed: datetime_or_empty = pydantic.Field(
+        serialization_alias="Last Constabulary Email Closed Date"
+    )
+
+
+class SILFirearmsLicenceSerializer(BaseFirearmsLicenceSerializer):
+    goods_description: str = pydantic.Field(serialization_alias="Goods Description")
+    constabularies: str = pydantic.Field(serialization_alias="Constabularies")
+    first_constabulary_email_sent: datetime_or_empty = pydantic.Field(
+        serialization_alias="First Constabulary Email Sent Date"
+    )
+    last_constabulary_email_closed: datetime_or_empty = pydantic.Field(
+        serialization_alias="Last Constabulary Email Closed Date"
+    )
+
+
+class LicenceSerializer(pydantic.BaseModel):
+    reference: str_or_empty = pydantic.Field(serialization_alias="Licence Reference")
+    start_date: dt.date | None = pydantic.Field(serialization_alias="Licence Start Date")
+    end_date: dt.date | None = pydantic.Field(serialization_alias="Licence Expiry Date")
+    status: str_or_empty = pydantic.Field(serialization_alias="Status")
+    licence_type: str = pydantic.Field(serialization_alias="Licence Type")
+    initial_case_closed_datetime: dt.datetime | None = pydantic.Field(
+        serialization_alias="Initial Case Closed Datetime"
+    )
+    latest_case_closed_datetime: dt.datetime | None = pydantic.Field(
+        serialization_alias="Latest Case Closed Datetime"
+    )
+    time_to_initial_close: str = pydantic.Field(serialization_alias="Time to Initial Close")
+
+
+class ConstabularyEmailTimesSerializer(pydantic.BaseModel):
+    first_email_sent: datetime_or_empty
+    last_email_closed: datetime_or_empty

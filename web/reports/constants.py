@@ -14,6 +14,7 @@ class ReportType(TypedTextChoices):
     ACCESS_REQUESTS = ("ACCESS_REQUESTS", "Access Requests")
     IMPORT_LICENCES = ("IMPORT_LICENCES", "Import Licences")
     SUPPLEMENTARY_FIREARMS = ("SUPPLEMENTARY_FIREARMS", "Supplementary firearms information")
+    FIREARMS_LICENCES = ("FIREARMS_LICENCES", "Firearms Licences")
 
 
 class DateFilterType(TypedTextChoices):

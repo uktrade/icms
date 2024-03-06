@@ -4201,3 +4201,13 @@ ON cad_c.ca_id
 {{ object.closed_datetime.strftime("%d-%b-%Y %
 =Import Ltd
 f"{self.url}?exporter_name=Export Ltd
+Deactivated Firearms Licences
+Open Firearms Licences
+Specific Firearms Licences
+Licence Variation Number
+TURN Number
+First Submitted Date
+Final Submitted Date
+First Constabulary
+Last Constabulary Email Closed Date
+Section 1 goods\nSection 2 goods\nSection 5 goods\nSection

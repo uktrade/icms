@@ -38,6 +38,18 @@ def test_access_request_report(mock_write_files, report_schedule):
 
 @freeze_time("2024-01-01 12:00:00")
 @mock.patch("web.reports.generate.write_files")
+def test_generate_firearms_licences_report(mock_write_files, report_schedule):
+    mock_write_files.return_value = None
+    generate.generate_firearms_licences_report(report_schedule)
+    assert mock_write_files.called is True
+    report_schedule.refresh_from_db()
+    assert report_schedule.status == ReportStatus.COMPLETED
+    assert report_schedule.started_at == dt.datetime(2024, 1, 1, 12, 0, 0, tzinfo=dt.UTC)
+    assert report_schedule.finished_at == dt.datetime(2024, 1, 1, 12, 0, 0, tzinfo=dt.UTC)
+
+
+@freeze_time("2024-01-01 12:00:00")
+@mock.patch("web.reports.generate.write_files")
 def test_import_licence_report(mock_write_files, report_schedule):
     mock_write_files.return_value = None
     generate.generate_import_licence_report(report_schedule)

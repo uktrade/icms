@@ -10,11 +10,14 @@ from web.utils.spreadsheet import MIMETYPE, XlsxSheetConfig, generate_xlsx_file
 from .constants import ReportStatus
 from .interfaces import (
     AccessRequestTotalsInterface,
+    DFLFirearmsLicenceInterface,
     ExporterAccessRequestInterface,
     ImporterAccessRequestInterface,
     ImportLicenceInterface,
     IssuedCertificateReportInterface,
+    OILFirearmsLicenceInterface,
     ReportInterface,
+    SILFirearmsLicenceInterface,
     SupplementaryFirearmsInterface,
 )
 
@@ -65,6 +68,15 @@ def generate_import_licence_report(scheduled_report: ScheduleReport) -> None:
     scheduled_report = _start_processing_report(scheduled_report)
     report_interface = ImportLicenceInterface(scheduled_report)
     write_files(scheduled_report, [report_interface])
+    _end_processing_report(scheduled_report)
+
+
+def generate_firearms_licences_report(scheduled_report: ScheduleReport) -> None:
+    scheduled_report = _start_processing_report(scheduled_report)
+    dfl_interface = DFLFirearmsLicenceInterface(scheduled_report)
+    sil_interface = SILFirearmsLicenceInterface(scheduled_report)
+    oil_interface = OILFirearmsLicenceInterface(scheduled_report)
+    write_files(scheduled_report, [dfl_interface, sil_interface, oil_interface])
     _end_processing_report(scheduled_report)
 
 
