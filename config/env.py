@@ -146,17 +146,9 @@ class EnvironmentBase(BaseSettings):
 
     # Google Analytics
     gtm_enabled: bool = True
-    gtm_caseworker_auth_key: str = ""
-    gtm_importer_auth_key: str = ""
-    gtm_exporter_auth_key: str = ""
-
     gtm_caseworker_container_id: str = ""
     gtm_importer_container_id: str = ""
     gtm_exporter_container_id: str = ""
-
-    gtm_caseworker_preview_key: str = ""
-    gtm_importer_preview_key: str = ""
-    gtm_exporter_preview_key: str = ""
 
     @computed_field  # type: ignore[misc]
     @property

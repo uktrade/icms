@@ -58,3 +58,5 @@ LOGOUT_REDIRECT_URL = "accounts:login"  # type: ignore[assignment]
 MAIL_TASK_RATE_LIMIT = "1/m"
 MAIL_TASK_RETRY_JITTER = True
 MAIL_TASK_MAX_RETRIES = 5
+
+GTM_ENABLED = True
