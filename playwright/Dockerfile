@@ -1,6 +1,6 @@
-FROM mcr.microsoft.com/playwright/python:v1.41.1-jammy
+FROM mcr.microsoft.com/playwright/python:latest
 # Available playwright tags:
-#https://mcr.microsoft.com/en-us/product/playwright/tags
+# https://mcr.microsoft.com/en-us/product/playwright/tags
 
 WORKDIR /code
 COPY requirements-playwright.txt /code/
