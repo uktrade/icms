@@ -11,7 +11,7 @@ SELECT
   , CASE wuah.account_status WHEN 'ACTIVE' THEN 1 ELSE 0 END is_active
   , RAWTOHEX(wuah.encrypt_salt) salt
   , wuah.encrypted_password
-  , wuam.last_login_date_time last_login
+  , wuam.last_login_date_time last_login_datetime
   , CASE WHEN wuam.wua_id = 0 THEN 'ARCHIVED' ELSE wuah.account_status END account_status
   , wuah.account_status_by account_status_by_id
   , wuah.account_status_date

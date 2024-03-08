@@ -140,12 +140,21 @@ class Command(BaseCommand):
         :param rows: each row of data should contain (username, roles, object_id)
         """
         for username, roles, org_id in rows:
-            user = User.objects.get(username=username)
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                raise User.DoesNotExist(f"User matching {username} does not exist")
 
             if group_name == "Importer User":
-                org = Importer.objects.get(pk=org_id)
+                try:
+                    org = Importer.objects.get(pk=org_id)
+                except Importer.DoesNotExist:
+                    raise Importer.DoesNotExist(f"Importer with pk {org_id} does not exist")
             else:
-                org = Exporter.objects.get(pk=org_id)
+                try:
+                    org = Exporter.objects.get(pk=org_id)
+                except Exporter.DoesNotExist:
+                    raise Exporter.DoesNotExist(f"Exporter with pk {org_id} does not exist")
 
             assign_manage = ":AGENT_APPROVER" in roles
 

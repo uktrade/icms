@@ -32,7 +32,7 @@ SELECT
   , card.issue_datetime case_completion_datetime
   , CASE
     WHEN card.status = 'DRAFT' THEN 'DR'
-    WHEN cad.status = 'REVOKED' THEN 'RE'
+    WHEN cad_c.status = 'REVOKED' THEN 'RE'
     WHEN card.is_last_issued = 'false' THEN 'AR'
     ELSE 'AC'
     END status
@@ -47,7 +47,8 @@ SELECT
 FROM impmgr.certificate_app_responses car
   INNER JOIN impmgr.cert_app_response_details card ON card.car_id = car.id
   INNER JOIN impmgr.certificate_applications ca ON ca.id = car.ca_id
-  INNER JOIN impmgr.certificate_app_details cad ON cad.ca_id = car.ca_id AND cad.status_control = 'C'
+  INNER JOIN impmgr.certificate_app_details cad ON cad.id = card.cad_id
+  INNER JOIN impmgr.certificate_app_details cad_c ON cad_c.ca_id = car.ca_id AND cad_c.status_control = 'C'
   LEFT JOIN decmgr.xview_document_packs dp ON dp.ds_id = card.document_set_id
 WHERE card.status <> 'DELETED'
 ORDER BY card.id
