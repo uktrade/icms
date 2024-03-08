@@ -311,11 +311,6 @@ GUARDIAN_RENDER_403 = True
 # https://django-guardian.readthedocs.io/en/stable/userguide/custom-user-model.html#anonymous-user-creation
 GUARDIAN_GET_INIT_ANONYMOUS_USER = "web.auth.backends.get_anonymous_user_instance"
 
-# Used to add dummy test in non prod environments
-ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD = (
-    env.allow_disastrous_data_drops_never_enable_in_prod
-)
-
 # Used to bypass chief in non prod environments
 ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD = env.allow_bypass_chief_never_enable_in_prod
 
