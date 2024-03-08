@@ -439,21 +439,18 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     closed_email = ia1.case_emails.get(status="CLOSED")
     assert len(closed_email.cc_address_list) == 1
 
-    assert ia1.variation_no == 0
     assert ia1.reference == "IMA/2022/1234"
     assert ia1.licence_reference.prefix == "ILD"
     assert ia1.licence_reference.year is None
     assert ia1.licence_reference.reference == 1234
     assert web.UniqueReference.objects.get(prefix="IMA", year=2022, reference=1234)
 
-    assert ia2.variation_no == 2
     assert ia2.reference == "IMA/2022/2345/2"
     assert ia2.licence_reference.prefix == "ILD"
     assert ia2.licence_reference.year is None
     assert ia2.licence_reference.reference == 1237
     assert web.UniqueReference.objects.get(prefix="IMA", year=2022, reference=2345)
 
-    assert ia3.variation_no == 1
     assert ia3.reference == "IMA/2022/2346/1"
     assert ia3.licence_reference is None
     assert web.UniqueReference.objects.get(prefix="IMA", year=2022, reference=2346)

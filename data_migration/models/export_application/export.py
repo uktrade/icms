@@ -79,7 +79,7 @@ class ExportApplication(MigrationBase):
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
-        variation_no = data["variation_no"]
+        variation_no = data.pop("variation_no", 0)
 
         if variation_no > 0:
             reference = data["reference"]
