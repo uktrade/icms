@@ -1,4 +1,3 @@
-import datetime as dt
 from typing import Any
 
 from django.utils import timezone
@@ -35,8 +34,6 @@ def format_row(
 
             if timezone.is_naive(value):
                 value = adjust_icms_v1_datetime(value)
-            else:
-                value = value.astimezone(dt.UTC)
 
         elif value and column.endswith("_date"):
             value = date_or_none(value)

@@ -287,7 +287,7 @@ class WithdrawalImportParser(BaseXmlParser):
 
         status = get_xml_val(xml, "./WITHDRAW_STATUS")
         reason = get_xml_val(xml, "./WITHDRAW_REASON")
-        created_date = date_or_none(get_xml_val(xml, "./WITHDRAW_REQUESTED_DATE"))
+        created_date = datetime_or_none(get_xml_val(xml, "./WITHDRAW_REQUESTED_DATE"), True)
 
         if not reason or not created_date:
             return None
@@ -295,7 +295,7 @@ class WithdrawalImportParser(BaseXmlParser):
         request_by_id = int_or_none(get_xml_val(xml, "./WITHDRAW_REQUESTER_WUA"))
         response = get_xml_val(xml, "./WITHDRAW_REJECT_REASON")
         response_by_id = int_or_none(get_xml_val(xml, "./WITHDRAW_RESPONDER_WUA"))
-        updated_date = date_or_none(get_xml_val(xml, "./WITHDRAW_RESPONDED_DATE"))
+        updated_date = datetime_or_none(get_xml_val(xml, "./WITHDRAW_RESPONDED_DATE"), True)
 
         return cls.MODEL(
             **{

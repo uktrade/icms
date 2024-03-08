@@ -205,9 +205,9 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert ar1.importeraccessrequest.link_id == 2
     assert ar1.further_information_requests.count() == 0
     assert ar1.approval_requests.count() == 0
-    assert ar1.created == dt.datetime(2022, 10, 14, 7, 24, tzinfo=dt.UTC)
-    assert ar1.submit_datetime == dt.datetime(2022, 10, 14, 7, 24, tzinfo=dt.UTC)
-    assert ar1.last_update_datetime == dt.datetime(2022, 10, 14, 7, 24, tzinfo=dt.UTC)
+    assert ar1.created == dt.datetime(2022, 10, 14, 8, 24, tzinfo=dt.UTC)
+    assert ar1.submit_datetime == dt.datetime(2022, 10, 14, 8, 24, tzinfo=dt.UTC)
+    assert ar1.last_update_datetime == dt.datetime(2022, 10, 14, 8, 24, tzinfo=dt.UTC)
     assert ar1.closed_datetime is None
 
     assert web.UniqueReference.objects.get(prefix="IAR", year=None, reference=2)

@@ -12,7 +12,7 @@ SELECT
   , CASE xiad.print_documents_flag WHEN 'Y' THEN 1 ELSE 0 END issue_paper_licence_only
   , ird.id legacy_id
   , CASE
-    WHEN ixad.status = 'REVOKED' THEN 'RE'
+    WHEN xiad.status = 'REVOKED' THEN 'RE'
     WHEN xiad.status IN ('WITHDRAWN', 'STOPPED') THEN 'AR'
     WHEN ird.variation_no < xiad.variation_no THEN 'AR'
     WHEN xiad.status IN ('PROCESSING', 'VARIATION_REQUESTED', 'SUBMITTED') THEN 'DR'

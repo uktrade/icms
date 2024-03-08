@@ -4194,3 +4194,9 @@ DFL Firearm
 Russian Federation.(including
 LocMemCache
 DBT Platform
+ON cad_c.ca_id
+{{ attachment.human_readable_file_size
+{{ object.body|nl2br }
+{{ object.sent_datetime.strftime("%d-%b-%Y %
+{{ object.response|nl2br }
+{{ object.closed_datetime.strftime("%d-%b-%Y %
