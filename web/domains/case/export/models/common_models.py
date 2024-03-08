@@ -65,7 +65,6 @@ class ExportApplicationABC(models.Model):
         abstract = True
 
     last_update_datetime = models.DateTimeField(blank=False, null=False, auto_now=True)
-    variation_no = models.IntegerField(blank=False, null=False, default=0)
 
     countries = models.ManyToManyField(
         "web.Country",
