@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 from django.urls import reverse
 from guardian.shortcuts import remove_perm
-from pytest_django.asserts import assertInHTML, assertRedirects
+from pytest_django.asserts import assertRedirects
 
 from web.models import Exporter
 from web.permissions import Perms
@@ -145,9 +145,7 @@ class TestEditExporterView(AuthTestCase):
         """Tests that the URL to search Importer Access Requests is prefilled with the importer name."""
         response = self.ilb_admin_client.get(self.url)
         resp_html = response.content.decode("utf-8")
-        assertInHTML(
-            f"{reverse('access:exporter-list')}?exporter_name={self.exporter.name}", resp_html
-        )
+        assert f"{reverse('access:exporter-list')}?exporter_name={self.exporter.name}" in resp_html
 
 
 class TestDetailExporterView(AuthTestCase):
