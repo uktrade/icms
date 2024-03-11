@@ -308,6 +308,14 @@ class TestImporterEditView(AuthTestCase):
                 == "Contact ILB to update this field."
             )
 
+    def test_prefilled_search_url(self):
+        """Tests that the URL to search Importer Access Requests is prefilled with the importer name."""
+        response = self.ilb_admin_client.get(self.url)
+        resp_html = response.content.decode("utf-8")
+        assertInHTML(
+            f"{reverse('access:importer-list')}?importer_name={self.importer.name}", resp_html
+        )
+
 
 class TestCreateSection5View(AuthTestCase):
     @pytest.fixture(autouse=True)

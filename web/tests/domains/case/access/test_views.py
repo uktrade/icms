@@ -17,35 +17,61 @@ from web.tests.conftest import LOGIN_URL
 from web.tests.helpers import check_gov_notify_email_was_sent, get_test_client
 
 
-def test_list_importer_access_request_ok(
-    importer_client, ilb_admin_client, importer_access_request
-):
-    url = reverse("access:importer-list")
+class TestAccessRequestListView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(
+        self,
+        _setup,
+    ):
+        self.url = reverse("access:importer-list")
 
-    response = importer_client.get(url)
-    assert response.status_code == 403
+    def test_list_importer_access_request_ok(self, importer_access_request):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
 
-    response = ilb_admin_client.get(url)
+        response = self.ilb_admin_client.get(self.url)
 
-    assert response.status_code == 200
-    assert "Search Importer Access Requests" in response.content.decode()
-    assert response.context["object_list"].count() == 1
+        assert response.status_code == 200
+        assert "Search Importer Access Requests" in response.content.decode()
+        assert response.context["object_list"].count() == 1
+
+    def test_prefilled_importer_name(self):
+        """Tests that the importer_name query parameter is used to prefill the search form."""
+        prefilled_url = f"{self.url}?importer_name=Import Ltd"
+        response = self.ilb_admin_client.get(prefilled_url)
+        assert response.status_code == HTTPStatus.OK
+        context = response.context
+        # access_request_user is linked to an existing importer access request
+        assert context["filter"].form.fields["q"].initial == "Import Ltd"
 
 
-def test_list_exporter_access_request_ok(
-    exporter_client, ilb_admin_client, exporter_access_request
-):
-    url = reverse("access:exporter-list")
+class TestExporterAccessRequestListView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(
+        self,
+        _setup,
+    ):
+        self.url = reverse("access:exporter-list")
 
-    response = exporter_client.get(url)
+    def test_list_exporter_access_request_ok(self):
+        response = self.exporter_client.get(self.url)
 
-    assert response.status_code == 403
+        assert response.status_code == 403
 
-    response = ilb_admin_client.get(url)
+        response = self.ilb_admin_client.get(self.url)
 
-    assert response.status_code == 200
-    assert "Search Exporter Access Requests" in response.content.decode()
-    assert response.context["object_list"].count() == 1
+        assert response.status_code == 200
+        assert "Search Exporter Access Requests" in response.content.decode()
+        assert response.context["object_list"].count() == 1
+
+    def test_prefilled_exporter_name(self):
+        """Tests that the exporter_name query parameter is used to prefill the search form."""
+        prefilled_url = f"{self.url}?exporter_name=Export Ltd"
+        response = self.ilb_admin_client.get(prefilled_url)
+        assert response.status_code == HTTPStatus.OK
+        context = response.context
+        # access_request_user is linked to an existing importer access request
+        assert context["filter"].form.fields["q"].initial == "Export Ltd"
 
 
 class TestImporterAccessRequestView(AuthTestCase):

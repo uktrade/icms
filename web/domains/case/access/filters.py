@@ -36,6 +36,13 @@ class ImporterAccessRequestFilter(FilterSet):
             | Q(submitted_by__last_name__icontains=value)
         )
 
+    @property
+    def form(self):
+        form = super().form
+        if importer_name := self.request.GET.get("importer_name"):
+            form.fields["q"].initial = importer_name
+        return form
+
 
 class ExporterAccessRequestFilter(FilterSet):
     q = CharFilter(
@@ -66,3 +73,10 @@ class ExporterAccessRequestFilter(FilterSet):
             | Q(submitted_by__first_name__icontains=value)
             | Q(submitted_by__last_name__icontains=value)
         )
+
+    @property
+    def form(self):
+        form = super().form
+        if exporter_name := self.request.GET.get("exporter_name"):
+            form.fields["q"].initial = exporter_name
+        return form
