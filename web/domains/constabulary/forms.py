@@ -1,6 +1,6 @@
 from typing import Any
 
-from django.forms import ModelChoiceField, ModelForm
+from django.forms import ModelChoiceField, ModelForm, ValidationError
 from django.forms.widgets import CheckboxInput, Select
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter, FilterSet
 from django_select2.forms import ModelSelect2Widget
@@ -19,6 +19,10 @@ class ConstabulariesFilter(FilterSet):
     )
 
     email = CharFilter(field_name="email", lookup_expr="icontains", label="Email Address")
+
+    telephone_number = CharFilter(
+        field_name="telephone_number", lookup_expr="icontains", label="Telephone Number"
+    )
 
     archived = BooleanFilter(
         field_name="is_active",
@@ -45,6 +49,7 @@ class ConstabulariesFilter(FilterSet):
                 },
                 search_fields=("name__icontains",),
             ),
+            required=False,
         )
 
         return form
@@ -53,5 +58,16 @@ class ConstabulariesFilter(FilterSet):
 class ConstabularyForm(ModelForm):
     class Meta:
         model = Constabulary
-        fields = ["name", "region", "email"]
+        fields = ["name", "region", "email", "telephone_number"]
         widgets = {"region": Select(choices=Constabulary.REGIONS)}
+
+    def clean_telephone_number(self):
+        telephone_number = self.cleaned_data["telephone_number"]
+        telephone_number = telephone_number.replace(" ", "")
+        if not telephone_number.isdigit():
+            raise ValidationError("Telephone number must contain only digits.")
+        if not telephone_number.startswith("0"):
+            raise ValidationError("Telephone number must start with 0.")
+        if len(telephone_number) < 10:
+            raise ValidationError("Telephone number must contain at least 10 digits.")
+        return telephone_number

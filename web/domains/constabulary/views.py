@@ -32,11 +32,12 @@ class ConstabularyListView(ModelFilterView):
     page_title = "Maintain Constabularies"
 
     class Display:
-        fields = ["name", "region_verbose", "email"]
+        fields = ["name", "region_verbose", "email", "telephone_number"]
         fields_config = {
             "name": {"header": "Constabulary Name", "link": True},
             "region_verbose": {"header": "Constabulary Region"},
             "email": {"header": "Email Address"},
+            "telephone_number": {"header": "Telephone Number"},
         }
         actions = [Archive(), Unarchive(), Edit()]
 
