@@ -41,7 +41,6 @@ class TestAccessRequestListView(AuthTestCase):
         response = self.ilb_admin_client.get(prefilled_url)
         assert response.status_code == HTTPStatus.OK
         context = response.context
-        # access_request_user is linked to an existing importer access request
         assert context["filter"].form.fields["q"].initial == "Import Ltd"
 
 
@@ -70,7 +69,6 @@ class TestExporterAccessRequestListView(AuthTestCase):
         response = self.ilb_admin_client.get(prefilled_url)
         assert response.status_code == HTTPStatus.OK
         context = response.context
-        # access_request_user is linked to an existing importer access request
         assert context["filter"].form.fields["q"].initial == "Export Ltd"
 
 
