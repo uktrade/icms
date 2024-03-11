@@ -312,9 +312,7 @@ class TestImporterEditView(AuthTestCase):
         """Tests that the URL to search Importer Access Requests is prefilled with the importer name."""
         response = self.ilb_admin_client.get(self.url)
         resp_html = response.content.decode("utf-8")
-        assertInHTML(
-            f"{reverse('access:importer-list')}?importer_name={self.importer.name}", resp_html
-        )
+        assert f"{reverse('access:importer-list')}?importer_name={self.importer.name}" in resp_html
 
 
 class TestCreateSection5View(AuthTestCase):
