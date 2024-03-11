@@ -61,6 +61,7 @@ class Constabulary(Archivable, models.Model):
     region = models.CharField(max_length=3, choices=REGIONS, blank=False, null=False)
     email = models.EmailField(max_length=254, blank=False, null=False)
     is_active = models.BooleanField(blank=False, null=False, default=True)
+    telephone_number = models.CharField(max_length=20, blank=True, null=True)
 
     @property
     def region_verbose(self):
