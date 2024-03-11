@@ -146,7 +146,7 @@ class TestEditExporterView(AuthTestCase):
         response = self.ilb_admin_client.get(self.url)
         resp_html = response.content.decode("utf-8")
         assertInHTML(
-            f"{reverse('access:importer-list')}?importer_name={self.exporter.name}", resp_html
+            f"{reverse('access:exporter-list')}?exporter_name={self.exporter.name}", resp_html
         )
 
 
