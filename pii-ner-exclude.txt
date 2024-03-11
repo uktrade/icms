@@ -4199,3 +4199,5 @@ ON cad_c.ca_id
 {{ object.sent_datetime.strftime("%d-%b-%Y %
 {{ object.response|nl2br }
 {{ object.closed_datetime.strftime("%d-%b-%Y %
+=Import Ltd
+f"{self.url}?exporter_name=Export Ltd

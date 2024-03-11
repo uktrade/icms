@@ -226,7 +226,9 @@ class ModelFilterView(
         else:
             filterset_data = self.request.GET
 
-        return self.filterset_class(filterset_data, queryset=queryset, **kwargs)
+        return self.filterset_class(
+            filterset_data, queryset=queryset, request=self.request, **kwargs
+        )
 
     def is_initial_page_load(self):
         """Work out if this view has been loaded for the first time.
