@@ -84,6 +84,7 @@ def create_import_application_document(
 
         # Add digital signature to the licence pdf
         file_obj = signer.sign_pdf(file_obj)
+        file_obj.seek(0)
 
         upload_case_document_file(file_obj, document_reference, filename, user)
 
@@ -122,6 +123,7 @@ def create_export_application_document(
 
         # Add digital signature to the pdf
         file_obj = signer.sign_pdf(file_obj)
+        file_obj.seek(0)
 
         upload_case_document_file(file_obj, document_reference, filename, user)
 

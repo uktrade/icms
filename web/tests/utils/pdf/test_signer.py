@@ -77,6 +77,7 @@ def test_sign_pdf_no_key(caplog, dummy_pdf):
 
     assert "P12_SIGNATURE_BASE_64 environment variable not set for this environment." in caplog.text
 
+    pdf.seek(0)
     pdf_bytes = pdf.getvalue()
     assert b"ByteRange" not in pdf_bytes
     assert b"Type /Sig" not in pdf_bytes
@@ -93,6 +94,7 @@ def test_sign_pdf_no_password(caplog, pkc12_base64, dummy_pdf):
         "P12_SIGNATURE_PASSWORD environment variable not set for this environment." in caplog.text
     )
 
+    pdf.seek(0)
     pdf_bytes = pdf.getvalue()
     assert b"ByteRange" not in pdf_bytes
     assert b"Type /Sig" not in pdf_bytes
@@ -109,6 +111,7 @@ def test_sign_pdf(
     mock_get_active_signature_image.return_value = dummy_signature_image
     settings.P12_SIGNATURE_BASE_64 = pkc12_base64
     signed_pdf = sign_pdf(dummy_pdf)
+    signed_pdf.seek(0)
     pdf_bytes = signed_pdf.getvalue()
     verification = verify(pdf_bytes)
 
