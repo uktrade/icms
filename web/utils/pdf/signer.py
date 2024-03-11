@@ -123,5 +123,4 @@ def sign_pdf(target: io.BytesIO) -> io.BytesIO:
     signed_pdf = io.BytesIO()
     signed_pdf.write(pdf_bytes)
     signed_pdf.write(pdf_signature)
-    signed_pdf.seek(0)
     return signed_pdf
