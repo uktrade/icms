@@ -7,10 +7,11 @@ set -e
 export BUILD_STEP='True'
 export COPILOT_ENVIRONMENT_NAME='build'
 
+echo "Running python manage.py collectstatic --noinput --traceback"
 python manage.py collectstatic --noinput --traceback
 
-# TODO: Fix CommandError: An error occurred during rendering /workspace/web/templates/base.html: Missing connections string
-# python manage.py compress --force --engine jinja2
+echo "Running compress python manage.py compress --force --engine jinja2"
+python manage.py compress --force --engine jinja2
 
-# TODO: Needs sorting for PDF generation
-#PLAYWRIGHT_BROWSERS_PATH="/workspace/playwright-deps" python -m playwright install --with-deps chromium
+echo "Running PLAYWRIGHT_BROWSERS_PATH="/workspace/playwright-deps" python -m playwright install"
+PLAYWRIGHT_BROWSERS_PATH="/workspace/playwright-deps" python -m playwright install

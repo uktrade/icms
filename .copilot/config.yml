@@ -1,9 +1,4 @@
-repository: icms
+repository: public.ecr.aws/icms
 builder:
   name: paketobuildpacks/builder-jammy-full
-  version: 0.3.294
-packages:
-  - vim
-  - chromium-browser
-  - emacs
-
+  version: 0.3.338
