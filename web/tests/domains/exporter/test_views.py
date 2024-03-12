@@ -142,7 +142,7 @@ class TestEditExporterView(AuthTestCase):
             )
 
     def test_prefilled_search_url(self):
-        """Tests that the URL to search Importer Access Requests is prefilled with the importer name."""
+        """Tests that the URL to search Exporter Access Requests is prefilled with the exporter name."""
         response = self.ilb_admin_client.get(self.url)
         resp_html = response.content.decode("utf-8")
         assert f"{reverse('access:exporter-list')}?exporter_name={self.exporter.name}" in resp_html
