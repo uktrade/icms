@@ -4,6 +4,7 @@ from typing import Any
 from django import forms
 from django.db.models.query import QuerySet
 from django.forms.models import ModelForm
+from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from django_select2.forms import ModelSelect2Widget, Select2MultipleWidget
 from guardian.shortcuts import get_objects_for_user
@@ -306,6 +307,7 @@ class CFSScheduleFormBase(forms.ModelForm):
             "exporter_status",
             "brand_name_holder",
             "legislations",
+            "biocidal_claim",
             "product_eligibility",
             "goods_placed_on_uk_market",
             "goods_export_only",
@@ -326,6 +328,7 @@ class CFSScheduleFormBase(forms.ModelForm):
             "legislations": Select2MultipleWidget(
                 attrs={"data-minimum-input-length": 0, "data-placeholder": "Select Legislation"},
             ),
+            "biocidal_claim": icms_widgets.RadioSelectInline,
         }
 
     def __init__(self, *args, **kwargs):
@@ -341,6 +344,25 @@ class CFSScheduleFormBase(forms.ModelForm):
             legislation_qs = legislation_qs.filter(gb_legislation=True)
 
         self.fields["legislations"].queryset = legislation_qs.order_by("name")
+
+        # the help-text for this field contains HTML markup, and it's nicer to render an HTML file than add raw HTML
+        # in Python
+        self.fields["biocidal_claim"].help_text = render_to_string(
+            "web/domains/case/export/partials/cfs/biocidal_claim_help_text.html"
+        )
+        # The biocidal_claim field has an empty choice of "----" as it's not a fundamentally
+        # required field (it's conditional) so we can't have blank=False on the model
+        # to stop it from ever appearing, so we remove it manually now.
+        self.fields["biocidal_claim"].empty_label = None
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        biocidal_claim = cleaned_data.get("biocidal_claim", False)
+        legislations = cleaned_data.get("legislations", ProductLegislation.objects.none())
+        if not biocidal_claim and legislations.filter(is_biocidal_claim=True).exists():
+            self.add_error("biocidal_claim", "This field is required.")
+
+        return cleaned_data
 
 
 class EditCFScheduleForm(OptionalFormMixin, CFSScheduleFormBase):

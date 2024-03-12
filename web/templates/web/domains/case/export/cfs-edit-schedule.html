@@ -25,6 +25,10 @@
   {{ fields.field(form.exporter_status) }}
   {{ fields.field(form.brand_name_holder) }}
   {{ fields.field(form.legislations) }}
+
+  <div id="biocidal-claim-question-wrapper" {% if not is_biocidal %} style="display: none;"{% endif %}>
+    {{ fields.field(form.biocidal_claim, mark_safe=True, show_optional_indicator=False) }}
+  </div>
   {{ fields.field(form.product_eligibility) }}
   {{ fields.field(form.goods_placed_on_uk_market) }}
   {{ fields.field(form.goods_export_only) }}

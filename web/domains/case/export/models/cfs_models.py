@@ -64,6 +64,15 @@ class CFSSchedule(models.Model):
         ),
     )
 
+    biocidal_claim = models.CharField(
+        max_length=3,
+        choices=YesNoChoices.choices,
+        null=True,
+        blank=True,
+        default=None,
+        verbose_name="Do you products make any biocidal claims?",
+    )
+
     product_eligibility = models.CharField(
         null=True,
         default=None,

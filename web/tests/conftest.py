@@ -827,6 +827,19 @@ def cfs_app_submitted(
     return app
 
 
+@pytest.fixture()
+def cfs_app_in_progress(
+    exporter_client, exporter, exporter_office, exporter_one_contact
+) -> CertificateOfFreeSaleApplication:
+    app = create_in_progress_cfs_app(
+        exporter_client, exporter, exporter_office, exporter_one_contact
+    )
+    case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
+    case_progress.check_expected_task(app, Task.TaskType.PREPARE)
+
+    return app
+
+
 @pytest.fixture
 def completed_sil_app(fa_sil_app_submitted, ilb_admin_client, ilb_admin_user):
     """A completed firearms sil application."""
