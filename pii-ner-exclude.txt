@@ -4211,3 +4211,9 @@ Final Submitted Date
 First Constabulary
 Last Constabulary Email Closed Date
 Section 1 goods\nSection 2 goods\nSection 5 goods\nSection
+Django 4.2.11
+{{ fields.field(form.biocidal_claim
+HTML markup
+href="https://www.hse.gov.uk
+noreferrer">this</a
+"Testing that the legislation config

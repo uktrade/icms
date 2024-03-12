@@ -219,3 +219,43 @@ def test_create_csf_app_has_a_schedule(exporter_client, exporter, exporter_offic
 
     cfs_app = CertificateOfFreeSaleApplication.objects.get(pk=application_pk)
     assert cfs_app.schedules.count() == 1
+
+
+def test_edit_cfs_schedule_legislation_config(exporter_client, cfs_app_in_progress):
+    """Checks that the legislation_config is in the context and contains the correct keys."""
+    url = reverse(
+        "export:cfs-schedule-edit",
+        kwargs={
+            "application_pk": cfs_app_in_progress.pk,
+            "schedule_pk": cfs_app_in_progress.schedules.first().pk,
+        },
+    )
+    response = exporter_client.get(url)
+    assert "legislation_config" in response.context
+    legislation_config = response.context["legislation_config"]
+    assert all(
+        [
+            True
+            for _, value in legislation_config.items()
+            if "isBiocidalClaim" in value and "isEUCosmeticsRegulation" in value
+        ]
+    )
+
+
+def test_edit_cfs_schedule_biocidal_claim_legislation_config(exporter_client, cfs_app_in_progress):
+    """Testing that the legislation config is accurate and gets the correct is_biocidal_claim from the DB.""" ""
+    chosen_legislation = cfs_app_in_progress.schedules.get().legislations.get()
+    chosen_legislation.is_biocidal_claim = True
+    chosen_legislation.save()
+
+    url = reverse(
+        "export:cfs-schedule-edit",
+        kwargs={
+            "application_pk": cfs_app_in_progress.pk,
+            "schedule_pk": cfs_app_in_progress.schedules.first().pk,
+        },
+    )
+    response = exporter_client.get(url)
+    assert "legislation_config" in response.context
+    legislation_config = response.context["legislation_config"]
+    assert legislation_config[chosen_legislation.pk]["isBiocidalClaim"] is True

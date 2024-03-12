@@ -466,7 +466,10 @@ def cfs_edit_schedule(
         show_schedule_statements_is_responsible_person = has_cosmetics and not_export_only
 
         legislation_config = {
-            legislation.pk: {"isEUCosmeticsRegulation": legislation.is_eu_cosmetics_regulation}
+            legislation.pk: {
+                "isEUCosmeticsRegulation": legislation.is_eu_cosmetics_regulation,
+                "isBiocidalClaim": legislation.is_biocidal_claim,
+            }
             for legislation in ProductLegislation.objects.filter(is_active=True)
         }
 
