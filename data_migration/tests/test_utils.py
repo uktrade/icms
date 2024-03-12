@@ -113,21 +113,20 @@ def test_date_or_none_exception():
 @pytest.mark.parametrize(
     "test_input,expected",
     [
-        (None, None),
-        ("", None),
-        # datetime strings that were created in BST (UTC +1)
-        ("2014-10-01T01:02:03", dt.datetime(2014, 10, 1, 0, 2, 3, tzinfo=dt.timezone.utc)),
-        ("2022-10-12T12:22:21", dt.datetime(2022, 10, 12, 11, 22, 21, tzinfo=dt.timezone.utc)),
-        ("2008-06-28T18:00:51", dt.datetime(2008, 6, 28, 17, 0, 51, tzinfo=dt.timezone.utc)),
-        ("2022-10-30T01:30:00", dt.datetime(2022, 10, 30, 0, 30, 0, tzinfo=dt.timezone.utc)),
-        # datetime strings that were created in GMT (Same as UTC)
-        ("2022-11-02T08:33:11", dt.datetime(2022, 11, 2, 8, 33, 11, tzinfo=dt.timezone.utc)),
-        ("2006-12-15T17:44:11", dt.datetime(2006, 12, 15, 17, 44, 11, tzinfo=dt.timezone.utc)),
-        ("2015-02-28T14:56:11", dt.datetime(2015, 2, 28, 14, 56, 11, tzinfo=dt.timezone.utc)),
+        ((None,), None),
+        (("",), None),
+        (("2014-10-01T01:02:03",), dt.datetime(2014, 10, 1, 1, 2, 3, tzinfo=dt.UTC)),
+        (("2022-10-12T12:22:21",), dt.datetime(2022, 10, 12, 12, 22, 21, tzinfo=dt.UTC)),
+        (("2008-06-28T18:00:51",), dt.datetime(2008, 6, 28, 18, 0, 51, tzinfo=dt.UTC)),
+        (("2022-10-30T01:30:00",), dt.datetime(2022, 10, 30, 1, 30, 0, tzinfo=dt.UTC)),
+        (("2022-11-02T08:33:11",), dt.datetime(2022, 11, 2, 8, 33, 11, tzinfo=dt.UTC)),
+        (("2006-12-15T17:44:11",), dt.datetime(2006, 12, 15, 17, 44, 11, tzinfo=dt.UTC)),
+        (("2015-02-28T14:56:11",), dt.datetime(2015, 2, 28, 14, 56, 11, tzinfo=dt.UTC)),
+        (("2015-02-28", True), dt.datetime(2015, 2, 28, 0, 0, 0, tzinfo=dt.UTC)),
     ],
 )
 def test_datetime_or_none(test_input, expected):
-    assert datetime_or_none(test_input) == expected
+    assert datetime_or_none(*test_input) == expected
 
 
 @pytest.mark.parametrize(

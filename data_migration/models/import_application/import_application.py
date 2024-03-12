@@ -120,7 +120,7 @@ class ImportApplication(MigrationBase):
 
         cover_letter_text = data["cover_letter_text"]
 
-        variation_no = data["variation_no"]
+        variation_no = data.pop("variation_no", 0)
 
         if variation_no > 0:
             reference = data["reference"]

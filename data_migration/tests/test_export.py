@@ -8,11 +8,11 @@ from django.test import override_settings
 from django.utils import timezone
 
 from data_migration import models, queries
-from data_migration.management.commands._types import QueryModel
 from data_migration.management.commands.config.run_order import (
     DATA_TYPE_QUERY_MODEL,
     DATA_TYPE_XML,
 )
+from data_migration.management.commands.types import QueryModel
 from data_migration.utils import xml_parser
 
 from . import factory, utils

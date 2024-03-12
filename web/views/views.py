@@ -12,17 +12,20 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 from django.views.generic import RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from django_filters import FilterSet
+from pydantic import BaseModel, ConfigDict
 
 from web.one_login.utils import OneLoginConfig
 from web.sites import is_caseworker_site, is_exporter_site, is_importer_site
 
 from .actions import PostAction
+from .forms import CookieConsentForm
 from .mixins import DataDisplayConfigMixin, PageTitleMixin
 
 logger = logging.getLogger(__name__)
@@ -129,6 +132,54 @@ def logout_view(request: HttpRequest) -> HttpResponse:
 @login_required
 def home(request):
     return render(request, "web/home.html")
+
+
+class GACookiePolicy(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    essential: bool = True
+    usage: bool = False
+
+
+def cookie_consent_view(request: HttpRequest) -> HttpResponse:
+    """View for the cookie consent page. More info can be found in the README under Google Analytics."""
+    if request.method == "GET":
+        initial_dict = {}
+
+        if current_cookies_policy := request.COOKIES.get("cookies_policy"):
+            current_cookies_policy = GACookiePolicy.model_validate_json(current_cookies_policy)
+
+            initial_dict["accept_cookies"] = current_cookies_policy.usage
+
+        return render(
+            request,
+            "web/cookie-consent.html",
+            context={"form": CookieConsentForm(initial=initial_dict)},
+        )
+    else:
+        form = CookieConsentForm(request.POST)
+        if form.is_valid():
+            # cookie consent stuff lasts for 1 year
+            cookie_max_age = 365 * 24 * 60 * 60
+
+            referrer_url = request.GET.get("referrer_url", "/")
+            if not url_has_allowed_host_and_scheme(
+                referrer_url, settings.ALLOWED_HOSTS, require_https=request.is_secure()
+            ):
+                # if the referrer URL is not allowed, redirect to the home page
+                referrer_url = "/"
+            response = redirect(referrer_url)
+
+            # regardless of their choice, we set a cookie to say they've made a choice
+            response.set_cookie("cookie_preferences_set", "true", max_age=cookie_max_age)
+
+            ga_cookies = GACookiePolicy(essential=True, usage=form.cleaned_data["accept_cookies"])
+            response.set_cookie(
+                "cookies_policy", ga_cookies.model_dump_json(), max_age=cookie_max_age
+            )
+
+            return response
+        else:
+            return render(request, "web/cookie-consent.html", context={"form": form})
 
 
 class ModelFilterView(

@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 import pytest
 
@@ -26,8 +26,8 @@ def test_get_app_errors_application_approved_no_errors(wood_application: WoodQuo
 
     # Set licence details
     licence = document_pack.pack_draft_get(wood_application)
-    licence.licence_start_date = datetime.date.today()
-    licence.licence_end_date = datetime.date(datetime.date.today().year + 1, 12, 1)
+    licence.licence_start_date = dt.date.today()
+    licence.licence_end_date = dt.date(dt.date.today().year + 1, 12, 1)
     licence.save()
 
     # Create the checklist (fully valid)
@@ -150,8 +150,8 @@ def test_get_app_errors_application_approved_variation_requested(
 
     # Set licence details
     licence = document_pack.pack_draft_get(wood_application)
-    licence.licence_start_date = datetime.date.today()
-    licence.licence_end_date = datetime.date(datetime.date.today().year + 1, 12, 1)
+    licence.licence_start_date = dt.date.today()
+    licence.licence_end_date = dt.date(dt.date.today().year + 1, 12, 1)
     licence.save()
 
     # Create the checklist (fully valid)

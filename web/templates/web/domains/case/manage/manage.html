@@ -37,11 +37,6 @@
   {% endif %}
 
   {% if case_type == "import" %}
-    <h4>SIGL</h4>
-    {# TODO: check what is displayed when `process.application_type.sigl_flag` is True.
-      Currently application_type where sigl_flag is True doesn't display anything else
-      in ICMSv1 #}
-
     {% if process.process_type == "WoodQuotaApplication" %}
       <h4>SIGL</h4>
       <div class="info-box info-box-info">

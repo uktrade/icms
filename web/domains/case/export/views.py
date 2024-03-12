@@ -239,8 +239,18 @@ def set_template_data(
     :param template: Application Template
     :param type_code: App type.
     """
+
+    if template.application_type == ExportApplicationType.Types.MANUFACTURE:
+        template_data = template.com_template
+    elif template.application_type == ExportApplicationType.Types.GMP:
+        template_data = template.gmp_template
+    else:
+        raise ValueError(f"Unable to create template for app type: {template.application_type}")
+
+    # Get data that we can save in the real application
+    data = model_to_dict(template_data, exclude=["id", "template"])
     form_class = form_class_for_application_type(type_code)
-    form = form_class(instance=application, data=template.form_data())
+    form = form_class(instance=application, data=data)
 
     if form.is_valid():
         form.save()

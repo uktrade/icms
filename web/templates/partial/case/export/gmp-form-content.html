@@ -1,0 +1,41 @@
+{# Main GMP form used in edit GMP view and Edit GMP Template view #}
+<h4>Countries</h4>
+{{ display.application_field(country, "Country") }}
+{{ fields.field(form.brand_name) }}
+
+{% if include_contact %}
+  {% include "partial/case/application-contact-details.html" %}
+{% endif %}
+
+<h4>Responsible Person</h4>
+{{ fields.field(form.is_responsible_person) }}
+{{ fields.address_fields(
+    form,
+    'responsible_person_name',
+    'responsible_person_address_entry_type',
+    'responsible_person_postcode',
+    'responsible_person_address',
+    'responsible_person'
+  ) }}
+{{ fields.field(form.responsible_person_country) }}
+
+<h4>Manufacturer</h4>
+{{ fields.field(form.is_manufacturer) }}
+{{ fields.address_fields(
+    form,
+    'manufacturer_name',
+    'manufacturer_address_entry_type',
+    'manufacturer_postcode',
+    'manufacturer_address',
+    'manufacturer'
+  ) }}
+{{ fields.field(form.manufacturer_country) }}
+
+<h4>Manufacturing certificates</h4>
+{{ fields.field(form.gmp_certificate_issued) }}
+<div id="iso-fields-wrapper"
+        {% if not process.gmp_certificate_issued == process.CertificateTypes.ISO_22716 %}
+     style="display: none"{% endif %}>
+  {{ fields.field(form.auditor_accredited, show_optional_indicator=False) }}
+  {{ fields.field(form.auditor_certified, show_optional_indicator=False) }}
+</div>

@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime as dt
 
 from data_migration import queries
 
@@ -44,7 +44,7 @@ ia_query_result = {
                 "A",
                 "Aa",
                 1,
-                datetime(2020, 6, 29),
+                dt.datetime(2020, 6, 29),
                 2,
                 None,
                 None,
@@ -54,12 +54,21 @@ ia_query_result = {
                 "B",
                 "Bb",
                 1,
-                datetime(2021, 5, 28),
+                dt.datetime(2021, 5, 28),
                 2,
                 None,
                 None,
             ),
-            ("Test Clause", "5_1_ABA", "Test Description", 1, datetime.now(), 2, datetime.now(), 2),
+            (
+                "Test Clause",
+                "5_1_ABA",
+                "Test Description",
+                1,
+                dt.datetime.now(),
+                2,
+                dt.datetime.now(),
+                2,
+            ),
         ],
     ),
     queries.textiles_checklist: (
@@ -181,49 +190,49 @@ ia_query_result = {
             (
                 1,  # ima_id
                 11,  # imad_id
-                datetime(2022, 4, 27).date(),  # licence_start_date
-                datetime(2023, 4, 27).date(),  # licence_end_date
+                dt.datetime(2022, 4, 27).date(),  # licence_start_date
+                dt.datetime(2023, 4, 27).date(),  # licence_end_date
                 "IMA/2022/1234",  # case_reference
                 0,  # is_paper_only
                 "AC",  # status
                 0,  # variation_number
-                datetime(2022, 4, 27, 10, 43),  # created_at
+                dt.datetime(2022, 4, 27, 10, 43),  # created_at
                 1,  # document_pack_id
             ),
             (
                 2,  # ima_id
                 9,  # imad_id
-                datetime(2022, 4, 27).date(),  # licence_start_date
-                datetime(2023, 4, 30).date(),  # licence_end_date
+                dt.datetime(2022, 4, 27).date(),  # licence_start_date
+                dt.datetime(2023, 4, 30).date(),  # licence_end_date
                 "IMA/2022/2345",  # case_reference
                 0,  # is_paper_only
                 "AR",  # status
                 0,  # variation_number
-                datetime(2022, 4, 27, 10, 43),  # created_at
+                dt.datetime(2022, 4, 27, 10, 43),  # created_at
                 2,  # document_pack_id
             ),
             (
                 2,  # ima_id
                 10,  # imad_id
-                datetime(2022, 4, 27).date(),  # licence_start_date
-                datetime(2023, 5, 30).date(),  # licence_end_date
+                dt.datetime(2022, 4, 27).date(),  # licence_start_date
+                dt.datetime(2023, 5, 30).date(),  # licence_end_date
                 "IMA/2022/2345/1",  # case_reference
                 0,  # is_papaer_only
                 "AR",  # status
                 1,  # variation_number
-                datetime(2022, 4, 27, 10, 43),  # created_at
+                dt.datetime(2022, 4, 27, 10, 43),  # created_at
                 3,  # document_pack_id
             ),
             (
                 2,  # ima_id
                 12,  # imad_id
-                datetime(2022, 4, 27).date(),  # licence_start_date
-                datetime(2023, 6, 30).date(),  # licence_end_date
+                dt.datetime(2022, 4, 27).date(),  # licence_start_date
+                dt.datetime(2023, 6, 30).date(),  # licence_end_date
                 "IMA/2022/2345/2",  # case_reference
                 0,  # is_paper_only
                 "AC",  # status
                 2,  # variation_number
-                datetime(2022, 4, 27, 10, 43),  # created_at
+                dt.datetime(2022, 4, 27, 10, 43),  # created_at
                 4,  # document_pack_id
             ),
         ],
@@ -257,9 +266,9 @@ ia_query_result = {
                 "application/pdf",  # content_type
                 100,  # file_size
                 "firearms-licence-1.pdf",  # path
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
-                datetime(2022, 4, 27),  # signed_datetime
+                dt.datetime(2022, 4, 27),  # signed_datetime
                 2,  # signed_by_id
             ),
             (
@@ -271,9 +280,9 @@ ia_query_result = {
                 "application/pdf",  # content_type
                 100,  # file_size
                 "firearms-cover-1.pdf",  # path
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
-                datetime(2022, 4, 27),  # signed_datetime
+                dt.datetime(2022, 4, 27),  # signed_datetime
                 2,  # signed_by_id
             ),
             (
@@ -285,9 +294,9 @@ ia_query_result = {
                 "application/pdf",  # content_type
                 100,  # file_size
                 "firearms-licence-2.pdf",  # path
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
-                datetime(2022, 4, 27),  # signed_datetime
+                dt.datetime(2022, 4, 27),  # signed_datetime
                 2,  # signed_by_id
             ),
             (
@@ -299,9 +308,9 @@ ia_query_result = {
                 "application/pdf",  # content_type
                 100,  # file_size
                 "firearms-licence-3.pdf",  # path
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
-                datetime(2022, 4, 27),  # signed_datetime
+                dt.datetime(2022, 4, 27),  # signed_datetime
                 2,  # signed_by_id
             ),
             (
@@ -313,9 +322,9 @@ ia_query_result = {
                 "application/pdf",  # content_type
                 100,  # path
                 "firearms-licence-5.pdf",  # path
-                datetime(2022, 4, 30),  # created_datetime
+                dt.datetime(2022, 4, 30),  # created_datetime
                 2,  # created_by_id
-                datetime(2022, 4, 30),  # signed_datetime
+                dt.datetime(2022, 4, 30),  # signed_datetime
                 2,  # signed_by_id
             ),
             (
@@ -327,9 +336,9 @@ ia_query_result = {
                 "application/pdf",  # content_type
                 100,  # file_size
                 "firearms-cover-2.pdf",  # path
-                datetime(2022, 4, 27),  # created_datetime
+                dt.datetime(2022, 4, 27),  # created_datetime
                 2,  # created_by_id
-                datetime(2022, 4, 27),  # signed_datetime
+                dt.datetime(2022, 4, 27),  # signed_datetime
                 2,  # signed_by_id
                 "COVER",  # prefix
             ),
@@ -389,9 +398,9 @@ ia_query_result = {
                 10,  # file_folder_id
                 "IMA/2022/2234",  # reference
                 "COMPLETED",  # status
-                datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22),  # create_datetime
-                datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 22),  # create_datetime
+                dt.datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -407,7 +416,7 @@ ia_query_result = {
                 "Test Address",  # customs_office_address
                 0.5,  # rate_of_yield
                 "abc",  # rate_of_yield_calc_method
-                datetime(2023, 4, 23).date(),  # last_export_day
+                dt.datetime(2023, 4, 23).date(),  # last_export_day
                 12,  # reimport_period
                 "test",  # nature_process_ops
                 "test",  # suggested_id
@@ -444,9 +453,9 @@ ia_query_result = {
                 11,  # file_folder_id
                 "IMA/2022/2235",  # reference
                 "COMPLETED",  # status
-                datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22),  # create_datetime
-                datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 22),  # create_datetime
+                dt.datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -462,7 +471,7 @@ ia_query_result = {
                 "Test Address",  # customs_office_address
                 0.5,  # rate_of_yield
                 "abc",  # rate_of_yield_calc_method
-                datetime(2023, 4, 23).date(),  # last_export_day
+                dt.datetime(2023, 4, 23).date(),  # last_export_day
                 12,  # reimport_period
                 "test",  # nature_process_ops
                 "test",  # suggested_id
@@ -510,9 +519,9 @@ ia_query_result = {
                 60,  # file_folder_id
                 "IMA/2022/6234",  # reference
                 "COMPLETED",  # status
-                datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22),  # create_datetime
-                datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 22),  # create_datetime
+                dt.datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -547,9 +556,9 @@ ia_query_result = {
                 100,  # file_folder_id
                 "IMA/2022/10234",  # reference
                 "COMPLETED",  # status
-                datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22),  # create_datetime
-                datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 22),  # create_datetime
+                dt.datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -573,9 +582,9 @@ ia_query_result = {
                 101,  # file_folder_id
                 "IMA/2022/10235",  # reference
                 "COMPLETED",  # status
-                datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22),  # create_datetime
-                datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 22),  # create_datetime
+                dt.datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -604,9 +613,9 @@ ia_query_result = {
                 41,  # file_folder_id
                 "IMA/2022/4234",  # reference
                 "COMPLETED",  # status
-                datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22),  # create_datetime
-                datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 22),  # create_datetime
+                dt.datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -625,9 +634,9 @@ ia_query_result = {
                 42,  # file_folder_id
                 "IMA/2022/4235",  # reference
                 "COMPLETED",  # status
-                datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22),  # create_datetime
-                datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 22),  # create_datetime
+                dt.datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -646,9 +655,9 @@ ia_query_result = {
                 43,  # file_folder_id
                 "IMA/2022/4236",  # reference
                 "COMPLETED",  # status
-                datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22),  # create_datetime
-                datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 22),  # create_datetime
+                dt.datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -681,9 +690,9 @@ ia_query_result = {
                 51,  # file_folder_id
                 "IMA/2022/5234",  # reference
                 "COMPLETED",  # status
-                datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22),  # create_datetime
-                datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 22),  # create_datetime
+                dt.datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -709,9 +718,9 @@ ia_query_result = {
                 52,  # file_folder_id
                 "IMA/2022/5235",  # reference
                 "REVOKED",  # status
-                datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22),  # create_datetime
-                datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 22),  # create_datetime
+                dt.datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -737,9 +746,9 @@ ia_query_result = {
                 53,  # file_folder_id
                 "IMA/2022/5236",  # reference
                 "WITHDRAWN",  # status
-                datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22),  # create_datetime
-                datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 22),  # create_datetime
+                dt.datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -776,9 +785,9 @@ ia_query_result = {
                 21,  # file_folder_id
                 "IMA/2022/3234",  # reference
                 "COMPLETED",  # status
-                datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22),  # create_datetime
-                datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 22),  # create_datetime
+                dt.datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -801,9 +810,9 @@ ia_query_result = {
                 22,  # file_folder_id
                 "IMA/2022/3235",  # reference
                 "COMPLETED",  # status
-                datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22),  # create_datetime
-                datetime(2022, 4, 22),  # created
+                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 22),  # create_datetime
+                dt.datetime(2022, 4, 22),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -842,9 +851,9 @@ ia_query_result = {
                 1,  # file_folder_id
                 "IMA/2022/1234",  # reference
                 "PROCESSING",  # status
-                datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22, 9, 23, 22),  # create_datetime
-                datetime(2022, 4, 22, 9, 23, 22),  # created
+                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 22, 9, 23, 22),  # create_datetime
+                dt.datetime(2022, 4, 22, 9, 23, 22),  # created
                 0,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -872,9 +881,9 @@ ia_query_result = {
                 2,  # file_folder_id
                 "IMA/2022/2345",  # reference
                 "COMPLETED",  # status
-                datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22, 8, 44, 44),  # create_datetime
-                datetime(2022, 4, 22, 8, 44, 44),  # created
+                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 22, 8, 44, 44),  # create_datetime
+                dt.datetime(2022, 4, 22, 8, 44, 44),  # created
                 2,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -902,9 +911,9 @@ ia_query_result = {
                 3,  # file_folder_id
                 "IMA/2022/2346",  # reference
                 "COMPLETED",  # status
-                datetime(2022, 4, 23),  # submit_datetime
-                datetime(2022, 4, 22, 7, 52, 4),  # create_datetime
-                datetime(2022, 4, 22, 7, 52, 4),  # created
+                dt.datetime(2022, 4, 23),  # submit_datetime
+                dt.datetime(2022, 4, 22, 7, 52, 4),  # create_datetime
+                dt.datetime(2022, 4, 22, 7, 52, 4),  # created
                 1,  # vartiation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
@@ -1318,11 +1327,11 @@ ia_query_result = {
                 "Test Closed",  # request_subject
                 "Closed Details",  # request_detail
                 "AA",  # response_detail
-                datetime(2021, 1, 2),  # request_datetime
+                dt.datetime(2021, 1, 2),  # request_datetime
                 2,  # request_by_id
-                datetime(2021, 1, 3),  # response_datetime
+                dt.datetime(2021, 1, 3),  # response_datetime
                 2,  # response_by_id
-                datetime(2021, 1, 4),  # closed_datetime
+                dt.datetime(2021, 1, 4),  # closed_datetime
                 2,  # closed_by_id
             ),
             (
@@ -1331,7 +1340,7 @@ ia_query_result = {
                 "Test Open",  # request_subject
                 "Open Details",  # request_detail
                 None,  # response_detail
-                datetime(2021, 2, 2),  # request_datetime
+                dt.datetime(2021, 2, 2),  # request_datetime
                 2,  # request_by_id
                 None,  # response_datetime
                 None,  # response_by_id
@@ -1378,16 +1387,16 @@ ia_query_result = {
                 "Test Closed",  # request_subject
                 "Closed Details",  # request_detail
                 "AA",  # response_detail
-                datetime(2021, 1, 2, 12, 23),  # requested_datetime
+                dt.datetime(2021, 1, 2, 12, 23),  # requested_datetime
                 2,  # request_by_id
-                datetime(2021, 1, 3, 13, 23),  # response_datetime
+                dt.datetime(2021, 1, 3, 13, 23),  # response_datetime
                 2,  # response_by_id
-                datetime(2021, 1, 4, 13, 23),  # closed_datetime
+                dt.datetime(2021, 1, 4, 13, 23),  # closed_datetime
                 2,  # closed_by_id
                 200,  # folder_id
                 "b@example.com;c@example.com",  # email_cc_address_list_str /PS-IGNORE
                 "FurtherInformationRequest",  # process_type
-                datetime(2021, 1, 2, 12, 23),  # created
+                dt.datetime(2021, 1, 2, 12, 23),  # created
             ),
             (
                 1,  # ia_ima_id
@@ -1395,16 +1404,16 @@ ia_query_result = {
                 "Test Responded",  # request_subject
                 "Responded Details",  # request_detail
                 "BB",  # response_detail
-                datetime(2021, 1, 2, 12, 23),  # requested_datetime
+                dt.datetime(2021, 1, 2, 12, 23),  # requested_datetime
                 2,  # request_by_id
-                datetime(2021, 1, 3, 13, 23),  # response_datetime
+                dt.datetime(2021, 1, 3, 13, 23),  # response_datetime
                 2,  # response_by_id
                 None,  # closed_datetime
                 None,  # closed_by_id
                 201,  # folder_id
                 "b@example.com",  # email_cc_address_list_str /PS-IGNORE
                 "FurtherInformationRequest",  # process_type
-                datetime(2021, 1, 2, 12, 23),  # created
+                dt.datetime(2021, 1, 2, 12, 23),  # created
             ),
             (
                 1,  # ia_ima_id
@@ -1412,7 +1421,7 @@ ia_query_result = {
                 "Test Open",  # request_subject
                 "Open Details",  # request_detail
                 None,  # response_detail
-                datetime(2021, 2, 2, 12, 23),  # requested_datetime
+                dt.datetime(2021, 2, 2, 12, 23),  # requested_datetime
                 2,  # request_by_id
                 None,  # response_datetime
                 None,  # response_by_id
@@ -1421,7 +1430,7 @@ ia_query_result = {
                 202,  # folder_id
                 None,  # email_cc_address_list_str
                 "FurtherInformationRequest",  # process_type
-                datetime(2021, 1, 2, 12, 23),  # created
+                dt.datetime(2021, 1, 2, 12, 23),  # created
             ),
         ],
     ),
@@ -1432,8 +1441,8 @@ ia_query_result = {
             ("created_datetime",),
         ],
         [
-            (11, "Content A", datetime(2022, 4, 27, 12, 23)),
-            (11, "Content B", datetime(2022, 4, 27, 12, 23)),
+            (11, "Content A", dt.datetime(2022, 4, 27, 12, 23)),
+            (11, "Content B", dt.datetime(2022, 4, 27, 12, 23)),
         ],
     ),
     queries.sigl_transmission: (
@@ -1454,9 +1463,9 @@ ia_query_result = {
                 "ACCEPTED",  # status
                 "WEB_SERVICE",  # transmission_type
                 "INSERT",  # request_type
-                datetime.now(),  # sent_datetime
+                dt.datetime.now(),  # sent_datetime
                 2,  # sent_by_id
-                datetime.now(),  # response_datetime
+                dt.datetime.now(),  # response_datetime
                 "Successful processing",  # response_message
                 0,  # response_code
             ),
@@ -1465,9 +1474,9 @@ ia_query_result = {
                 "ACCEPTED",  # status
                 "WEB_SERVICE",  # transmission_type
                 "CONFIRM",  # request_type
-                datetime.now(),  # sent_datetime
+                dt.datetime.now(),  # sent_datetime
                 2,  # sent_by_id
-                datetime.now(),  # response_datetime
+                dt.datetime.now(),  # response_datetime
                 "Successful processing",  # response_message
                 0,  # response_code
             ),
@@ -1476,9 +1485,9 @@ ia_query_result = {
                 "ACCEPTED",  # status
                 "WEB_SERVICE",  # transmission_type
                 "DELETE",  # request_type
-                datetime.now(),  # sent_datetime
+                dt.datetime.now(),  # sent_datetime
                 2,  # sent_by_id
-                datetime.now(),  # response_datetime
+                dt.datetime.now(),  # response_datetime
                 "Successful processing",  # response_message
                 0,  # response_code
             ),
@@ -1487,9 +1496,9 @@ ia_query_result = {
                 "REJECTED",  # status
                 "MANUAL",  # transmission_type
                 "INSERT",  # request_type
-                datetime.now(),  # sent_datetime
+                dt.datetime.now(),  # sent_datetime
                 2,  # sent_by_id
-                datetime.now(),  # response_datetime
+                dt.datetime.now(),  # response_datetime
                 "Something missing",  # response_message
                 500,  # response_code
             ),
@@ -1498,7 +1507,7 @@ ia_query_result = {
                 "ACCEPTED",  # status
                 "MANUAL",  # transmission_type
                 "INSERT",  # request_type
-                datetime.now(),  # sent_datetime
+                dt.datetime.now(),  # sent_datetime
                 2,  # sent_by_id
                 None,  # response_datetime
                 None,  # response_message

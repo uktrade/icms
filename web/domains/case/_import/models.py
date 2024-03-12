@@ -172,7 +172,6 @@ class ImportApplication(ApplicationBase):
     )
 
     create_datetime = models.DateTimeField(blank=False, null=False, auto_now_add=True)
-    variation_no = models.IntegerField(blank=False, null=False, default=0)
     legacy_case_flag = models.BooleanField(blank=False, null=False, default=False)
 
     chief_usage_status = models.CharField(max_length=1, choices=ChiefUsageStatus.choices, null=True)

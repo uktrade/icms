@@ -158,7 +158,6 @@ def test_import_application_get_data_export():
         "submit_datetime",
         "submitted_by_id",
         "variation_decision",
-        "variation_no",
         "variation_refuse_reason",
     ]
     assert sorted(result.keys()) == expected

@@ -2,7 +2,18 @@
 
 <html lang="en">
 
-<head>
+  <head>
+    <!-- Google Tag Manager -->
+    {% if gtm_enabled %}
+      <script nonce="{{ request.csp_nonce }}">
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','{{ get_gtm_container_id(request) }}');
+      </script>
+    {% endif %}
+    <!-- End Google Tag Manager -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -13,72 +24,110 @@
     {% else %}
       {% set title='Import Case Management System' %}
     {% endif -%}
-    <title>{% block page_title %}{{title}}{% endblock %} - ICMS</title>
+    <title>{% block page_title %}{{ title }}{% endblock %} - ICMS</title>
 
-{# TODO: removed due to CommandError: Missing connections string #}
-{#    {% compress css file main%}#}
-        <link rel="stylesheet" type="text/css" href="{{ static('web/css/OpenSans/OpenSans.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ static('web/css/icomoon/icomoon.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ static('web/css/icomoon/icomoon-png.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ static('web/css/fox.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ static('web/css/fox_default_layout.css') }}">
-        <link rel="stylesheet" type="text/css" href="{{ static('3rdparty/jodit/jodit.min.css') }}">
-{#    {% endcompress %}#}
+    {% compress css file main %}
+      <link rel="stylesheet" type="text/css" href="{{ static('web/css/OpenSans/OpenSans.css') }}">
+      <link rel="stylesheet" type="text/css" href="{{ static('web/css/icomoon/icomoon.css') }}">
+      <link rel="stylesheet" type="text/css" href="{{ static('web/css/icomoon/icomoon-png.css') }}">
+      <link rel="stylesheet" type="text/css" href="{{ static('web/css/fox.css') }}">
+      <link rel="stylesheet" type="text/css" href="{{ static('web/css/fox_default_layout.css') }}">
+      <link rel="stylesheet" type="text/css" href="{{ static('3rdparty/jodit/jodit.min.css') }}">
+    {% endcompress %}
 
     {% block css %}{% endblock %}
-</head>
+  </head>
 
-<body>
+  <body>
+    <!-- Google Tag Manager (noscript) -->
+    {% if gtm_enabled %}
+      <noscript>
+        <iframe src=https://www.googletagmanager.com/ns.html?id={{ get_gtm_container_id(request) }}
+        height="0" width="0" style="display:none;visibility:hidden"></iframe>
+      </noscript>
+    {% endif %}
+    <!-- End Google Tag Manager (noscript) -->
     {% include 'partial/flash-messages.html' %}
 
     <div id="skiplinks">
-        <p>Skip To:</p>
-        <ul>
-            <li><a href="#main">Main content</a></li>
-        </ul>
+      <p>Skip To:</p>
+      <ul>
+        <li><a href="#main">Main content</a></li>
+      </ul>
     </div>
 
     <!-- <div class="environment-uat" id="environment-indicator"> -->
     <!-- UAT -->
     <!-- </div> -->
-
-    <div id="wrapper">
-        {% block header %}{% endblock %}
-        <main class="clearfix">
-            {% block content %}{% endblock %}
-        </main>
-    </div>
+    {% block cookie_banner %}
+      {% if request.resolver_match.url_name != "cookie-consent" and request.COOKIES.get("cookie_preferences_set") != "true" %}
+        {# we don't want to show the cookie banner on the cookie consent management page OR if the user has already made their choice #}
+        <div class="cookie-banner" data-nosnippet role="region" aria-label="Cookies on {{ request.site.name }}">
+          <div class="row">
+            <div class="">
+              <h2 class="govuk-cookie-banner__heading govuk-heading-m">
+                Cookies on {{ request.site.name }}
+              </h2>
+              <div class="govuk-cookie-banner__content">
+                <p class="govuk-body">We use some essential cookies to make this service work.</p>
+                <p class="govuk-body">We’d also like to use analytics cookies so we can understand how you use the
+                  service and make improvements.</p>
+              </div>
+            </div>
+          </div>
+          <div class="govuk-button-group mt-1">
+            <form method="post" action="{{ icms_url('cookie-consent') }}?referrer_url={{ request.path }}">
+              {{ csrf_input }}
+              <button type="submit" class="small-button" data-module="govuk-button" name="accept_cookies"
+                      value="True">
+                Accept analytics cookies
+              </button>
+              <button type="submit" class="small-button ml-1" data-module="govuk-button" name="accept_cookies"
+                      value="False">
+                Reject analytics cookies
+              </button>
+              <a href="{{ icms_url('cookie-consent') }}?referrer_url={{ request.path }}" class="ml-1">View cookies</a>
+            </form>
+          </div>
+        </div>
+      {% endif %}
+    {% endblock cookie_banner %}
+    {% block header %}{% endblock %}
+    <main class="clearfix">
+      <div id="wrapper">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
 
     <footer>
-        {% block footer %}{% endblock %}
+      {% block footer %}{% endblock %}
     </footer>
 
 
     {% block js %}
-{# TODO: removed due to CommandError: Missing connections string #}
-{#        {% compress js file main %}#}
-            <script src="{{ static('3rdparty/jquery/jquery.min.js') }}" type="text/javascript"></script>
-            <script src="{{ static('3rdparty/jquery-ui-dist/jquery-ui.min.js') }}" type="text/javascript"></script>
-            <script src="{{ static('3rdparty/html5shiv/html5shiv.min.js') }}" type="text/javascript"></script>
-            <script src="{{ static('3rdparty/jquery-fontspy/jQuery-FontSpy.js') }}" type="text/javascript"></script>
-            <script src="{{ static('3rdparty/sticky-kit/sticky-kit.min.js') }}" type="text/javascript"></script>
-            <script src="{{ static('3rdparty/jodit/jodit.min.js') }}" type="text/javascript"></script>
-            <script src="{{ static('web/js/fox/fox_default_layout.js') }}" type="text/javascript"></script>
-            <script src="{{ static('web/js/fox/core-footer.js') }}" type="text/javascript"></script>
-            <script src="{{ static('web/js/components/dialogues.js') }}" type="text/javascript"></script>
-            <script src="{{ static('web/js/components/messages.js') }}" type="text/javascript"></script>
-            <script src="{{ static('web/js/components/action-buttons.js') }}" type="text/javascript"></script>
-            <script src="{{ static('web/js/utils.js') }}" type="text/javascript"></script>
-            <script src="{{ static('web/js/main.js') }}" type="text/javascript"></script>
-            <script src="{{ static('web/js/components/form-double-submit.js') }}" type="text/javascript"></script>
-            <script src="{{ static('web/js/components/form-data-checker.js') }}" type="text/javascript"></script>
-{#        {% endcompress %}#}
+      {% compress js file main %}
+        <script src="{{ static('3rdparty/jquery/jquery.min.js') }}" type="text/javascript"></script>
+        <script src="{{ static('3rdparty/jquery-ui-dist/jquery-ui.min.js') }}" type="text/javascript"></script>
+        <script src="{{ static('3rdparty/html5shiv/html5shiv.min.js') }}" type="text/javascript"></script>
+        <script src="{{ static('3rdparty/jquery-fontspy/jQuery-FontSpy.js') }}" type="text/javascript"></script>
+        <script src="{{ static('3rdparty/sticky-kit/sticky-kit.min.js') }}" type="text/javascript"></script>
+        <script src="{{ static('3rdparty/jodit/jodit.min.js') }}" type="text/javascript"></script>
+        <script src="{{ static('web/js/fox/fox_default_layout.js') }}" type="text/javascript"></script>
+        <script src="{{ static('web/js/fox/core-footer.js') }}" type="text/javascript"></script>
+        <script src="{{ static('web/js/components/dialogues.js') }}" type="text/javascript"></script>
+        <script src="{{ static('web/js/components/messages.js') }}" type="text/javascript"></script>
+        <script src="{{ static('web/js/components/action-buttons.js') }}" type="text/javascript"></script>
+        <script src="{{ static('web/js/utils.js') }}" type="text/javascript"></script>
+        <script src="{{ static('web/js/main.js') }}" type="text/javascript"></script>
+        <script src="{{ static('web/js/components/form-double-submit.js') }}" type="text/javascript"></script>
+        <script src="{{ static('web/js/components/form-data-checker.js') }}" type="text/javascript"></script>
+      {% endcompress %}
     {% endblock %}
 
     {% include "partial/js_constants.html" %}
 
     {% block page_js %}{% endblock %}
 
-</body>
+  </body>
 
 </html>

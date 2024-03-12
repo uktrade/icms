@@ -97,13 +97,33 @@ var FOXjs = {
     }
 
     // Initialise the date pickers for fields that need them
-    $( ".date-input").not("[readonly='readonly']").datepicker({
-      changeMonth: true,
-      changeYear: true,
-      dateFormat: "dd'-'M'-'yy",
-      showButtonPanel: true,
-      yearRange: "c-100:c+100"
-    });
+    $( ".date-input").not("[readonly='readonly']").each(function(){
+      let el = $(this);
+      // Set the year range for the date picker, this can be customised by adding a data-year-select-range attribute
+      let yearSelectRange = el.attr("data-year-select-range") || 100;
+
+      // The default year range is 100 years either side of the current year
+      let yearRange = `c-${yearSelectRange}:c+${yearSelectRange}`;
+
+      // If the date picker should only allow past or future dates, set the year range accordingly
+      let pastOnly = el.attr("data-past-only") || false;
+      let futureOnly = el.attr("data-future-only") || false;
+      if (pastOnly) {
+        yearRange = `c-${yearSelectRange}:c`;
+      }
+      if (futureOnly) {
+        yearRange = `c:c+${yearSelectRange}`;
+      }
+
+      // Finally, initialise the date picker
+      el.datepicker({
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "dd'-'M'-'yy",
+        showButtonPanel: true,
+        yearRange: yearRange
+      })
+    })
 
     $( ".date-icon").click(function(){
       var inputId = '#' + $(this).attr("id").replace("icon","");

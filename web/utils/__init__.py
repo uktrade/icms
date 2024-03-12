@@ -1,6 +1,6 @@
 import datetime as dt
 import re
-import time
+import time as tm
 from collections.abc import Generator
 from contextlib import contextmanager
 
@@ -8,11 +8,11 @@ from contextlib import contextmanager
 @contextmanager
 def time_snippet(msg: str) -> Generator[None, None, None]:
     print(f"Timing this: {msg}")
-    start = time.perf_counter()
+    start = tm.perf_counter()
 
     yield
 
-    end = time.perf_counter()
+    end = tm.perf_counter()
     duration = end - start
 
     print(f"Time taken: {duration} seconds")

@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import re
 
 import pytest
@@ -175,7 +175,7 @@ def test_get_application_case_and_licence_references(
     )
     gmp_app.certificates.create()
 
-    year = datetime.date.today().year
+    year = dt.date.today().year
 
     derogation_app.reference = reference.get_application_case_reference(
         lock_manager, derogation_app
@@ -279,22 +279,35 @@ def test_get_application_case_and_licence_references(
     doc = _get_licence_document(wood_app)
     assert doc.reference == "0000010K"
 
-    cert_country = Country.objects.first()
-    for app in [com_app, cfs_app, gmp_app]:
-        certificate = document_pack.pack_draft_get(app)
-        ref = reference.get_export_certificate_reference(lock_manager, app)
-        document_pack.doc_ref_certificate_create(certificate, ref, country=cert_country)
+    cert_country_1 = Country.objects.first()
+    cert_country_2 = Country.objects.last()
+    assert cert_country_1 != cert_country_2
 
-    today = datetime.date.today()
+    for cert_country in [cert_country_1, cert_country_2]:
+        for app in [com_app, cfs_app, gmp_app]:
+            certificate = document_pack.pack_draft_get(app)
+            ref = reference.get_export_certificate_reference(lock_manager, app)
+            document_pack.doc_ref_certificate_create(certificate, ref, country=cert_country)
 
-    doc = _get_certificate_document(com_app, cert_country)
+    today = dt.date.today()
+
+    doc = _get_certificate_document(com_app, cert_country_1)
     doc.reference = f"COM/{today.year}/00001"
 
-    doc = _get_certificate_document(cfs_app, cert_country)
+    doc = _get_certificate_document(com_app, cert_country_2)
+    doc.reference = f"COM/{today.year}/00002"
+
+    doc = _get_certificate_document(cfs_app, cert_country_1)
+    doc.reference = f"CFS/{today.year}/00001"
+
+    doc = _get_certificate_document(cfs_app, cert_country_2)
     doc.reference = f"CFS/{today.year}/00002"
 
-    doc = _get_certificate_document(gmp_app, cert_country)
-    doc.reference = f"GMP/{today.year}/00003"
+    doc = _get_certificate_document(gmp_app, cert_country_1)
+    doc.reference = f"GMP/{today.year}/00001"
+
+    doc = _get_certificate_document(gmp_app, cert_country_2)
+    doc.reference = f"GMP/{today.year}/00002"
 
 
 def test_import_application_licence_reference_is_reused(
@@ -327,6 +340,26 @@ def test_import_application_licence_reference_is_reused(
     assert ref == "GBSIL0000001B"
     assert app.licence_reference.prefix == UniqueReference.Prefix.IMPORT_LICENCE_DOCUMENT
     assert app.licence_reference.reference == 1
+
+
+def test_get_export_certificate_reference_invalid_process_type(
+    db, importer, office, importer_one_contact, lock_manager
+):
+    app = DFLApplication.objects.create(
+        created_by=importer_one_contact,
+        last_updated_by=importer_one_contact,
+        importer=importer,
+        importer_office=office,
+        process_type=DFLApplication.PROCESS_TYPE,
+        application_type=ImportApplicationType.objects.get(
+            type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.DFL
+        ),
+    )
+    with pytest.raises(
+        ValueError,
+        match=f"Invalid process_type {app.process_type}: ExportApplication process_type is required.",
+    ):
+        reference.get_export_certificate_reference(lock_manager, app)
 
 
 def _get_licence_document(app):
@@ -509,20 +542,4 @@ def test_get_import_application_licence_reference(
     actual_reference = reference._get_licence_reference(
         licence_type, process_type, next_sequence_value
     )
-    assert expected_reference == actual_reference, f"Expected failed {expected_reference}"
-
-
-@pytest.mark.parametrize(
-    "process_type, next_sequence_value, expected_reference",
-    [
-        (ProcessTypes.COM, 1, f"COM/{datetime.date.today().year}/00001"),
-        (ProcessTypes.CFS, 2, f"CFS/{datetime.date.today().year}/00002"),
-        (ProcessTypes.GMP, 3, f"GMP/{datetime.date.today().year}/00003"),
-    ],
-)
-def test_get_export_application_licence_reference(
-    process_type, next_sequence_value, expected_reference
-):
-    actual_reference = reference._get_certificate_reference(process_type, next_sequence_value)
-
     assert expected_reference == actual_reference, f"Expected failed {expected_reference}"

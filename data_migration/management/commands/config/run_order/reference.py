@@ -1,10 +1,6 @@
 from data_migration import models as dm
 from data_migration import queries
-from data_migration.management.commands._types import (
-    M2M,
-    QueryModel,
-    source_target_list,
-)
+from data_migration.management.commands.types import M2M, QueryModel, source_target_list
 from web import models as web
 
 ref_query_model = [

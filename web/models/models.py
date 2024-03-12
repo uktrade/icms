@@ -9,11 +9,13 @@ class UniqueReference(models.Model):
         # Import application case reference
         IMPORT_APP = "IMA"
 
-        # Import application licence document reference.
+        # Import application licence document reference
         IMPORT_LICENCE_DOCUMENT = "ILD"
 
-        # Export application document reference (all document types).
-        EXPORT_CERTIFICATE_DOCUMENT = "ECD"
+        # Export certificate document reference
+        EXPORT_CERTIFICATE_DOCUMENT_CFS = "CFS"
+        EXPORT_CERTIFICATE_DOCUMENT_COM = "COM"
+        EXPORT_CERTIFICATE_DOCUMENT_GMP = "GMP"
 
         # Export application case reference
         EXPORT_APP_GA = "GA"

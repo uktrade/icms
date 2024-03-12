@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 from django.contrib.postgres.aggregates import StringAgg
 from django.utils import timezone
@@ -43,7 +43,7 @@ def send_retract_mailshot_email_task(mailshot_pk: int):
 
 @app.task(name=SEND_AUTHORITY_EXPIRING_SECTION_5_TASK_NAME, queue=CELERY_MAIL_QUEUE_NAME)
 def send_authority_expiring_section_5_email_task():
-    expiry_date = timezone.now().date() + datetime.timedelta(days=30)
+    expiry_date = timezone.now().date() + dt.timedelta(days=30)
     importers = get_expiring_importers_details(Section5Authority, expiry_date, None)
     if importers:
         send_authority_expiring_section_5_email(importers, expiry_date)
@@ -51,7 +51,7 @@ def send_authority_expiring_section_5_email_task():
 
 @app.task(name=SEND_AUTHORITY_EXPIRING_FIREARMS_TASK_NAME, queue=CELERY_MAIL_QUEUE_NAME)
 def send_authority_expiring_firearms_email_task():
-    expiry_date = timezone.now().date() + datetime.timedelta(days=30)
+    expiry_date = timezone.now().date() + dt.timedelta(days=30)
     constabularies = Constabulary.objects.filter(
         firearmsauthority__end_date=expiry_date, is_active=True
     ).distinct()
@@ -62,7 +62,7 @@ def send_authority_expiring_firearms_email_task():
 
 
 def get_expiring_importers_details(
-    authority_class: type[Authority], expiry_date: datetime.date, constabulary: Constabulary | None
+    authority_class: type[Authority], expiry_date: dt.date, constabulary: Constabulary | None
 ) -> list[ImporterDetails]:
     authority_type = authority_class.AUTHORITY_TYPE.replace(" ", "").lower()
     importer_filter = {

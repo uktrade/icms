@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import re
 
 from django import forms
@@ -18,7 +18,7 @@ from . import models
 
 def _get_shipping_year_selection():
     """Get year selection for Iron and Steel (Quota) applications."""
-    current_year = datetime.date.today().year
+    current_year = dt.date.today().year
 
     return range(current_year, current_year + 11)
 

@@ -1,6 +1,6 @@
+import datetime as dt
 import io
 import json
-from datetime import datetime
 from unittest import mock
 
 import freezegun
@@ -8,11 +8,11 @@ import pytest
 from botocore.exceptions import ClientError
 
 from data_migration.management.commands import import_v1_files_to_s3
-from data_migration.management.commands._types import QueryModel
 from data_migration.management.commands.config.run_order.files import (
     DEFAULT_FILE_CREATED_DATETIME,
     DEFAULT_SECURE_LOB_REF_ID,
 )
+from data_migration.management.commands.types import QueryModel
 from data_migration.management.commands.utils.db_processor import OracleDBProcessor
 
 CREATED_DATETIME_ALT = "2023-01-01 01:00:00"
@@ -22,19 +22,19 @@ FAKE_DB_RESPONSE = [
     {
         "BLOB_DATA": "blob",
         "PATH": "testfile.txt",
-        "CREATED_DATETIME": datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
+        "CREATED_DATETIME": dt.datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
         "SECURE_LOB_REF_ID": 1,
     },
     {
         "BLOB_DATA": "blob2",
         "PATH": "testfile2.txt",
-        "CREATED_DATETIME": datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
+        "CREATED_DATETIME": dt.datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
         "SECURE_LOB_REF_ID": 2,
     },
     {
         "BLOB_DATA": "blob2",
         "PATH": "testfile3.txt",
-        "CREATED_DATETIME": datetime.strptime(CREATED_DATETIME_ALT_2, "%Y-%m-%d %H:%M:%S"),
+        "CREATED_DATETIME": dt.datetime.strptime(CREATED_DATETIME_ALT_2, "%Y-%m-%d %H:%M:%S"),
         "SECURE_LOB_REF_ID": 3,
     },
 ]

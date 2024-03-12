@@ -1,10 +1,11 @@
-import datetime
+import datetime as dt
 import re
 from typing import Any
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test.client import Client
 from django.urls import reverse
+from freezegun import freeze_time
 from pytest_django.asserts import assertRedirects
 
 from web.forms.fields import JQUERY_DATE_FORMAT
@@ -58,7 +59,7 @@ def create_in_progress_wood_app(
     form_data = {
         "contact": contact.pk,
         "applicant_reference": "Wood App Reference",
-        "shipping_year": datetime.date.today().year,
+        "shipping_year": dt.date.today().year,
         "exporter_name": "Some Exporter",
         "exporter_address": "Some Exporter Address",
         "exporter_vat_nr": "123456789",
@@ -187,8 +188,8 @@ def create_in_progress_fa_oil_app(
         "reference": "Certificate Reference Value",
         "certificate_type": "registered",
         "constabulary": Constabulary.objects.first().pk,
-        "date_issued": datetime.date.today().strftime(JQUERY_DATE_FORMAT),
-        "expiry_date": datetime.date.today().strftime(JQUERY_DATE_FORMAT),
+        "date_issued": dt.date.today().strftime(JQUERY_DATE_FORMAT),
+        "expiry_date": dt.date.today().strftime(JQUERY_DATE_FORMAT),
     }
 
     add_app_file(
@@ -258,8 +259,8 @@ def create_in_progress_fa_sil_app(
         "reference": "Certificate Reference Value",
         "certificate_type": "registered",
         "constabulary": Constabulary.objects.first().pk,
-        "date_issued": datetime.date.today().strftime(JQUERY_DATE_FORMAT),
-        "expiry_date": datetime.date.today().strftime(JQUERY_DATE_FORMAT),
+        "date_issued": dt.date.today().strftime(JQUERY_DATE_FORMAT),
+        "expiry_date": dt.date.today().strftime(JQUERY_DATE_FORMAT),
     }
 
     add_app_file(
@@ -661,13 +662,22 @@ def add_app_file(
     assert response.status_code == 302
 
 
-def submit_app(*, client: Client, view_name: str, app_pk: int) -> None:
+def submit_app(client: Client, view_name: str, app_pk: int) -> None:
+    with freeze_time("2024-01-01 12:00:00"):
+        _submit_app(client=client, view_name=view_name, app_pk=app_pk)
+
+
+def resubmit_app(client: Client, view_name: str, app_pk: int) -> None:
+    _submit_app(client=client, view_name=view_name, app_pk=app_pk)
+
+
+def _submit_app(client: Client, view_name: str, app_pk: int) -> None:
     """Submits an application."""
 
     view_kwargs = {"application_pk": app_pk}
     submit_url = reverse(view_name, kwargs=view_kwargs)
-
     form_data = {"confirmation": "I AGREE"}
+
     response = client.post(submit_url, form_data)
 
     if response.status_code == 200:

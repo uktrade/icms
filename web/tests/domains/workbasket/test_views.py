@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 from typing import Any
 from unittest.mock import patch
 
@@ -843,8 +843,8 @@ class TestAuthorisedCaseWorkbasket(AuthTestCase):
 
         #
         # Set licence details (import only)
-        start_date = datetime.date.today()
-        end_date = datetime.date(start_date.year + 3, 1, 1)
+        start_date = dt.date.today()
+        end_date = dt.date(start_date.year + 3, 1, 1)
         form_data = {
             "licence_start_date": start_date.strftime(JQUERY_DATE_FORMAT),
             "licence_end_date": end_date.strftime(JQUERY_DATE_FORMAT),
@@ -1012,8 +1012,8 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
 
         #
         # Set licence details (import only)
-        start_date = datetime.date.today()
-        end_date = datetime.date(start_date.year + 3, 1, 1)
+        start_date = dt.date.today()
+        end_date = dt.date(start_date.year + 3, 1, 1)
         form_data = {
             "licence_start_date": start_date.strftime(JQUERY_DATE_FORMAT),
             "licence_end_date": end_date.strftime(JQUERY_DATE_FORMAT),
@@ -1234,8 +1234,8 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
 
         #
         # Set licence details (import only)
-        start_date = datetime.date.today()
-        end_date = datetime.date(start_date.year + 3, 1, 1)
+        start_date = dt.date.today()
+        end_date = dt.date(start_date.year + 3, 1, 1)
         form_data = {
             "licence_start_date": start_date.strftime(JQUERY_DATE_FORMAT),
             "licence_end_date": end_date.strftime(JQUERY_DATE_FORMAT),
@@ -1454,8 +1454,8 @@ class TestCompleteCaseCHIEFFailWorkbasket(AuthTestCase):
 
         #
         # Set licence details (import only)
-        start_date = datetime.date.today()
-        end_date = datetime.date(start_date.year + 3, 1, 1)
+        start_date = dt.date.today()
+        end_date = dt.date(start_date.year + 3, 1, 1)
         form_data = {
             "licence_start_date": start_date.strftime(JQUERY_DATE_FORMAT),
             "licence_end_date": end_date.strftime(JQUERY_DATE_FORMAT),

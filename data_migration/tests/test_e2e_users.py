@@ -8,13 +8,13 @@ from django.test import override_settings
 
 from data_migration import models as dm
 from data_migration import queries
-from data_migration.management.commands._types import QueryModel
 from data_migration.management.commands.config.run_order import (
     DATA_TYPE_M2M,
     DATA_TYPE_QUERY_MODEL,
     DATA_TYPE_SOURCE_TARGET,
     DATA_TYPE_XML,
 )
+from data_migration.management.commands.types import QueryModel
 from data_migration.utils import xml_parser
 from web import models as web
 from web.permissions import (
@@ -42,7 +42,9 @@ user_data_source_target = {
         (dm.ApprovalRequest, web.ApprovalRequest),
         (dm.ImporterApprovalRequest, web.ImporterApprovalRequest),
         (dm.ExporterApprovalRequest, web.ExporterApprovalRequest),
+        (dm.Mailshot, web.Mailshot),
     ],
+    "file": [(dm.File, web.File)],
 }
 
 
@@ -59,6 +61,14 @@ user_data_source_target = {
             QueryModel(queries.exporters, "exporters", dm.Exporter),
             QueryModel(queries.exporter_offices, "exporter_offices", dm.Office),
             QueryModel(queries.access_requests, "access_requests", dm.AccessRequest),
+            QueryModel(queries.mailshots, "mailshot", dm.Mailshot),
+        ],
+        "file_folder": [
+            QueryModel(queries.mailshot_file_folders, "mailshot folders", dm.FileFolder),
+            QueryModel(queries.mailshot_file_targets, "mailshot targets", dm.FileTarget),
+        ],
+        "file": [
+            QueryModel(queries.mailshot_files, "mailshot files", dm.File),
         ],
     },
 )
@@ -71,6 +81,7 @@ user_data_source_target = {
             (dm.Office, web.Exporter, "offices"),
             (dm.FurtherInformationRequest, web.AccessRequest, "further_information_requests"),
         ],
+        "file": [(dm.MailshotDoc, web.Mailshot, "documents")],
     },
 )
 @mock.patch.dict(
@@ -95,14 +106,14 @@ user_data_source_target = {
 def test_import_user_data(mock_connect, dummy_dm_settings):
     mock_connect.return_value = utils.MockConnect()
 
-    call_command("export_from_v1", "--skip_ia", "--skip_export", "--skip_ref", "--skip_file")
-    call_command("extract_v1_xml", "--skip_ia", "--skip_export", "--skip_ref", "--skip_file")
-    call_command("import_v1_data", "--skip_ia", "--skip_export", "--skip_ref", "--skip_file")
+    call_command("export_from_v1", "--skip_ia", "--skip_export", "--skip_ref")
+    call_command("extract_v1_xml", "--skip_ia", "--skip_export", "--skip_ref")
+    call_command("import_v1_data", "--skip_ia", "--skip_export", "--skip_ref")
 
     assert web.User.objects.filter(groups__isnull=False).count() == 0
 
     call_command("create_icms_groups")
-    call_command("post_migration", "--skip_ref")
+    call_command("post_migration")
 
     assert web.User.objects.count() == 14
 
@@ -121,7 +132,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert u1.organisation == "Org"
     assert u1.department == "Dept"
     assert u1.job_title == "IT"
-    assert u1.last_login == dt.datetime(2022, 11, 1, 12, 32, tzinfo=dt.timezone.utc)
+    assert u1.last_login == dt.datetime(2022, 11, 1, 12, 32, tzinfo=dt.UTC)
     assert u1.icms_v1_user
     assert u1.phone_numbers.count() == 2
 
@@ -172,13 +183,14 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert u2.check_password("password123") is True
     assert u2.phone_numbers.count() == 0
     assert u2.emails.count() == 0
-    assert u2.last_login == dt.datetime(2022, 11, 1, 12, 32, tzinfo=dt.timezone.utc)
+    assert u2.last_login == dt.datetime(2022, 11, 1, 12, 32, tzinfo=dt.UTC)
     assert u2.icms_v1_user
 
     # Check Access Request / Approval Request
 
     ar1, ar2, ar3, ar4 = web.AccessRequest.objects.order_by("pk")
 
+    assert web.UniqueReference.objects.get(prefix="IAR", year=None, reference=1)
     assert ar1.process_ptr.process_type == "ImporterAccessRequest"
     assert ar1.process_ptr.tasks.count() == 1
     assert ar1.reference == "IAR/0001"
@@ -193,11 +205,12 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert ar1.importeraccessrequest.link_id == 2
     assert ar1.further_information_requests.count() == 0
     assert ar1.approval_requests.count() == 0
-    assert ar1.created == dt.datetime(2022, 10, 14, 7, 24, tzinfo=dt.timezone.utc)
-    assert ar1.submit_datetime == dt.datetime(2022, 10, 14, 7, 24, tzinfo=dt.timezone.utc)
-    assert ar1.last_update_datetime == dt.datetime(2022, 10, 14, 7, 24, tzinfo=dt.timezone.utc)
+    assert ar1.created == dt.datetime(2022, 10, 14, 8, 24, tzinfo=dt.UTC)
+    assert ar1.submit_datetime == dt.datetime(2022, 10, 14, 8, 24, tzinfo=dt.UTC)
+    assert ar1.last_update_datetime == dt.datetime(2022, 10, 14, 8, 24, tzinfo=dt.UTC)
     assert ar1.closed_datetime is None
 
+    assert web.UniqueReference.objects.get(prefix="IAR", year=None, reference=2)
     assert ar2.process_ptr.process_type == "ImporterAccessRequest"
     assert ar2.process_ptr.tasks.count() == 0
     assert ar2.reference == "IAR/0002"
@@ -211,10 +224,10 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert ar2.importeraccessrequest.link_id == 3
     assert ar2.further_information_requests.count() == 0
     assert ar2.approval_requests.count() == 1
-    assert ar2.created == dt.datetime(2022, 11, 14, 8, 47, tzinfo=dt.timezone.utc)
-    assert ar2.submit_datetime == dt.datetime(2022, 11, 14, 8, 47, tzinfo=dt.timezone.utc)
-    assert ar2.last_update_datetime == dt.datetime(2022, 11, 14, 8, 48, tzinfo=dt.timezone.utc)
-    assert ar2.closed_datetime == dt.datetime(2022, 11, 14, 8, 48, tzinfo=dt.timezone.utc)
+    assert ar2.created == dt.datetime(2022, 11, 14, 8, 47, tzinfo=dt.UTC)
+    assert ar2.submit_datetime == dt.datetime(2022, 11, 14, 8, 47, tzinfo=dt.UTC)
+    assert ar2.last_update_datetime == dt.datetime(2022, 11, 14, 8, 48, tzinfo=dt.UTC)
+    assert ar2.closed_datetime == dt.datetime(2022, 11, 14, 8, 48, tzinfo=dt.UTC)
 
     ar2_ar = ar2.approval_requests.first()
     assert ar2_ar.process_ptr.process_type == "ImporterApprovalRequest"
@@ -222,8 +235,9 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert ar2_ar.response == "APPROVE"
     assert ar2_ar.response_reason == "Test Reason"
     assert ar2_ar.importerapprovalrequest.pk == ar2_ar.pk
-    assert ar2_ar.request_date == dt.datetime(2022, 11, 14, 14, 55, 14, tzinfo=dt.timezone.utc)
+    assert ar2_ar.request_date == dt.datetime(2022, 11, 14, 14, 55, 14, tzinfo=dt.UTC)
 
+    assert web.UniqueReference.objects.get(prefix="EAR", year=None, reference=3)
     assert ar3.process_ptr.process_type == "ExporterAccessRequest"
     assert ar3.process_ptr.tasks.count() == 0
     assert ar3.reference == "EAR/0003"
@@ -231,8 +245,9 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert ar3.exporteraccessrequest.link_id == 2
     assert ar3.further_information_requests.count() == 1
     assert ar3.approval_requests.count() == 0
-    assert ar3.created == dt.datetime(2022, 11, 14, 10, 52, tzinfo=dt.timezone.utc)
+    assert ar3.created == dt.datetime(2022, 11, 14, 10, 52, tzinfo=dt.UTC)
 
+    assert web.UniqueReference.objects.get(prefix="EAR", year=None, reference=4)
     assert ar4.process_ptr.process_type == "ExporterAccessRequest"
     assert ar4.process_ptr.tasks.count() == 0
     assert ar4.reference == "EAR/0004"
@@ -240,7 +255,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert ar4.exporteraccessrequest.link_id == 3
     assert ar4.further_information_requests.count() == 0
     assert ar4.approval_requests.count() == 1
-    assert ar4.created == dt.datetime(2022, 11, 14, 10, 52, tzinfo=dt.timezone.utc)
+    assert ar4.created == dt.datetime(2022, 11, 14, 10, 52, tzinfo=dt.UTC)
 
     ar4_ar = ar4.approval_requests.first()
     assert ar4_ar.process_ptr.process_type == "ExporterApprovalRequest"
@@ -359,3 +374,73 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
 
     assert dm.Importer.objects.filter(pk=4).exists()
     assert not web.Importer.objects.filter(pk=4).exists()
+
+    # Check mailshots
+
+    assert web.Mailshot.objects.count() == 3
+
+    assert web.UniqueReference.objects.get(prefix="MAIL", year=None, reference=1)
+    assert web.UniqueReference.objects.get(prefix="MAIL", year=None, reference=2)
+
+    draft_ms = web.Mailshot.objects.get(status="DRAFT")
+    assert draft_ms.is_active is True
+    assert draft_ms.reference is None
+    assert draft_ms.status == "DRAFT"
+    assert draft_ms.title is None
+    assert draft_ms.description is None
+    assert draft_ms.email_subject == "Draft Subject"
+    assert draft_ms.email_body == "Draft Body"
+    assert draft_ms.is_retraction_email is False
+    assert draft_ms.retract_email_subject is None
+    assert draft_ms.retract_email_body is None
+    assert draft_ms.create_datetime == dt.datetime(2022, 11, 14, 8, 47, tzinfo=dt.UTC)
+    assert draft_ms.created_by_id == 2
+    assert draft_ms.published_datetime is None
+    assert draft_ms.published_by_id is None
+    assert draft_ms.retracted_datetime is None
+    assert draft_ms.retracted_by_id is None
+    assert draft_ms.is_to_importers is False
+    assert draft_ms.is_to_exporters is True
+    assert draft_ms.documents.count() == 0
+
+    published_ms = web.Mailshot.objects.get(status="PUBLISHED")
+    assert published_ms.is_active is True
+    assert published_ms.reference == "MAIL/1"
+    assert published_ms.status == "PUBLISHED"
+    assert published_ms.title == "Published Title"
+    assert published_ms.description == "Published Description"
+    assert published_ms.email_subject == "Published Subject"
+    assert published_ms.email_body == "Published Body"
+    assert published_ms.is_retraction_email is False
+    assert published_ms.retract_email_subject is None
+    assert published_ms.retract_email_body is None
+    assert published_ms.create_datetime == dt.datetime(2022, 11, 14, 8, 47, tzinfo=dt.UTC)
+    assert published_ms.created_by_id == 2
+    assert published_ms.published_datetime == dt.datetime(2022, 11, 14, 9, 47, tzinfo=dt.UTC)
+    assert published_ms.published_by_id == 2
+    assert published_ms.retracted_datetime is None
+    assert published_ms.retracted_by_id is None
+    assert published_ms.is_to_importers is True
+    assert published_ms.is_to_exporters is True
+    assert published_ms.documents.count() == 3
+
+    retracted_ms = web.Mailshot.objects.get(status="RETRACTED")
+    assert retracted_ms.is_active is True
+    assert retracted_ms.reference == "MAIL/2"
+    assert retracted_ms.status == "RETRACTED"
+    assert retracted_ms.title == "Retraction Title"
+    assert retracted_ms.description == "Retraction Description"
+    assert retracted_ms.email_subject == "Email Subject"
+    assert retracted_ms.email_body == "Email Body"
+    assert retracted_ms.is_retraction_email is True
+    assert retracted_ms.retract_email_subject == "Retraction Subject"
+    assert retracted_ms.retract_email_body == "Retraction Body"
+    assert retracted_ms.create_datetime == dt.datetime(2022, 11, 14, 8, 47, tzinfo=dt.UTC)
+    assert retracted_ms.created_by_id == 2
+    assert retracted_ms.published_datetime == dt.datetime(2022, 11, 14, 9, 47, tzinfo=dt.UTC)
+    assert retracted_ms.published_by_id == 2
+    assert retracted_ms.retracted_datetime is None
+    assert retracted_ms.retracted_by_id is None
+    assert retracted_ms.is_to_importers is True
+    assert retracted_ms.is_to_exporters is False
+    assert retracted_ms.documents.count() == 1

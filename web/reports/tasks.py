@@ -2,16 +2,25 @@ from config.celery import app
 from web.models import ScheduleReport
 
 from .constants import ReportType
-from .generate import generate_access_request_report, generate_issued_certificate_report
+from .generate import (
+    generate_access_request_report,
+    generate_import_licence_report,
+    generate_issued_certificate_report,
+    generate_supplementary_firearms_report,
+)
 
 
 @app.task
-def generate_report_task(scheduled_report_pk):
+def generate_report_task(scheduled_report_pk) -> None:
     scheduled_report = ScheduleReport.objects.get(pk=scheduled_report_pk)
     match scheduled_report.report.report_type:
         case ReportType.ISSUED_CERTIFICATES:
             generate_issued_certificate_report(scheduled_report)
         case ReportType.ACCESS_REQUESTS:
             generate_access_request_report(scheduled_report)
+        case ReportType.IMPORT_LICENCES:
+            generate_import_licence_report(scheduled_report)
+        case ReportType.SUPPLEMENTARY_FIREARMS:
+            generate_supplementary_firearms_report(scheduled_report)
         case _:
             raise ValueError("Unsupported Report Type")

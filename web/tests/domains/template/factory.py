@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 import random
 
 import factory.fuzzy
@@ -13,11 +13,9 @@ class TemplateFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Template
 
-    start_datetime = fake.date_time_between(start_date="-1y", end_date="+1y", tzinfo=datetime.UTC)
+    start_datetime = fake.date_time_between(start_date="-1y", end_date="+1y", tzinfo=dt.UTC)
     end_datetime = factory.LazyAttribute(
-        lambda t: fake.date_time_between(
-            start_date=t.start_datetime, end_date="+2y", tzinfo=datetime.UTC
-        )
+        lambda t: fake.date_time_between(start_date=t.start_datetime, end_date="+2y", tzinfo=dt.UTC)
     )
     is_active = random.choice([True, False])
     template_name = factory.Faker("sentence", nb_words=4)

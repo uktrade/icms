@@ -1,10 +1,9 @@
-from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connection
 
 
 class Command(BaseCommand):
-    help = """Drop all tables. ONLY FOR USE IN LOCAL/DEV/STAGING ENVIRONMENTS!"""
+    help = """Drop all tables. Only for use before go live."""
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -14,14 +13,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        if settings.APP_ENV not in ("local", "dev", "staging"):
-            raise CommandError("Can only drop tables in 'staging', 'dev' and 'local' environments!")
-
-        if not settings.ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD:
-            raise CommandError(
-                "You have not enabled danger zone! (https://www.youtube.com/watch?v=siwpn14IE7E)"  # /PS-IGNORE
-            )
-
         if not options["confirm_drop_all_tables"]:
             raise CommandError("Command line parameter not set!")
 

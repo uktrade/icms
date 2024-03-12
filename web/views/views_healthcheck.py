@@ -1,4 +1,4 @@
-import time
+import time as tm
 from collections.abc import Callable
 
 from botocore.client import ClientError
@@ -58,11 +58,11 @@ COMMENT_TEMPLATE = "<!--{comment}-->\n"
 
 
 def health_check(request: HttpRequest) -> HttpResponse:
-    t = time.time()
+    t = tm.time()
 
     failed = [check_func.__name__ for check_func in get_services_to_check() if not check_func()]
 
-    t = time.time() - t
+    t = tm.time() - t
 
     # pingdom can only accept 3 fractional digits
     t_str = "%.3f" % t

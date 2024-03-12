@@ -140,8 +140,15 @@ class EnvironmentBase(BaseSettings):
     csp_report_only: bool = True
     csp_report_uri: list[str] | None = None
 
+    # PDF signature certificate stuff
     p12_signature_base_64: str = ""
     p12_signature_password: str = ""
+
+    # Google Analytics
+    gtm_enabled: bool = True
+    gtm_caseworker_container_id: str = ""
+    gtm_importer_container_id: str = ""
+    gtm_exporter_container_id: str = ""
 
     @computed_field  # type: ignore[misc]
     @property

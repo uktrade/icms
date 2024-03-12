@@ -68,52 +68,30 @@ def date_or_none(date_str: str | None | dt.date | dt.datetime) -> dt.date | None
     return dt.datetime.strptime(p_date_str, date_format).date()
 
 
-def datetime_or_none(dt_str: str | None) -> dt.datetime | None:
+def datetime_or_none(dt_str: str | None, no_t: bool = False) -> dt.datetime | None:
     """Convert a datetime string to datetime
 
     :param dt_str: A string of the datetime. Example: 2022-07-25T11:05:59
+    :param no_t: True if creating a datetime from a date string (no time provided)
     """
 
     if not dt_str:
         return None
 
-    str_format = "%Y-%m-%dT%H:%M:%S"
+    str_format = "%Y-%m-%d" if no_t else "%Y-%m-%dT%H:%M:%S"
     dt_val = dt.datetime.strptime(dt_str, str_format)
 
     return adjust_icms_v1_datetime(dt_val)
 
 
 def adjust_icms_v1_datetime(dt_val: dt.datetime) -> dt.datetime:
-    """Adjust an ICMS V1 naive datetime to an aware UTC datetime.
-
-    Assumption: For ambiguous datetime values we are using the default fold of 0.
-    E.g. We have no way of knowing if this `naive_dt` is GMT or BST
-    >>> naive_dt = dt.datetime(2022, 10, 30, 1, 30, 0)
-    >>> london = zoneinfo.ZoneInfo("Europe/London")
-    >>> bst_val = naive_dt.replace(tzinfo=london, fold=0)
-    >>> gmt_val = naive_dt.replace(tzinfo=london, fold=1)
-    >>> print(bst_val)
-        2022-10-30 01:30:00+01:00
-    >>> print(gmt_val)
-        2022-10-30 01:30:00+00:00
-    >>> print(bst_val.astimezone(dt.timezone.utc))
-        2022-10-30 00:30:00+00:00
-    >>> print(gmt_val.astimezone(dt.timezone.utc))
-        2022-10-30 01:30:00+00:00
-    """
+    """Adjust an ICMS V1 naive datetime to an aware UTC datetime."""
 
     if timezone.is_aware(dt_val):
         raise ValueError(f"Unable to adjust an aware datetime value: {dt_val}")
 
-    # ICMS V1 datetime values are created using this:
-    # https://docs.oracle.com/database/121/SQLRF/functions207.htm#SQLRF06124
-    # Therefore replace the naive datetime with the correct timezone
-    aware_dt = dt_val.replace(tzinfo=UK_TZ)
-
-    # Return a datetime that has been offset to UTC
-    utc_dt = aware_dt.astimezone(dt.timezone.utc)
-
-    return utc_dt
+    aware_dt = dt_val.replace(tzinfo=dt.UTC)
+    return aware_dt
 
 
 def date_to_timezone(date: dt.date | None) -> dt.datetime | None:
@@ -122,7 +100,7 @@ def date_to_timezone(date: dt.date | None) -> dt.datetime | None:
     if not date:
         return None
 
-    return dt.datetime.combine(date, dt.time.min, tzinfo=dt.timezone.utc)
+    return dt.datetime.combine(date, dt.time.min, tzinfo=dt.UTC)
 
 
 def decimal_or_none(dec_str: str | None) -> Decimal | None:

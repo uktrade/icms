@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime as dt
 
 from data_migration import queries
 
@@ -106,11 +106,11 @@ ea_query_result = {
                 "GA/2022/9901",  # reference
                 "IN PROGRESS",  # status
                 2,  # created_by_id
-                datetime(2022, 4, 27),  # create_datetime
-                datetime(2022, 4, 27),  # created
+                dt.datetime(2022, 4, 27),  # create_datetime
+                dt.datetime(2022, 4, 27),  # created
                 None,  # submit_datetime
                 2,  # last_updated_by_id
-                datetime(2022, 4, 27),  # last_updated_datetime
+                dt.datetime(2022, 4, 27),  # last_updated_datetime
                 0,  # variation_no
                 21,  # application_type_id
                 2,  # exporter_id
@@ -131,11 +131,11 @@ ea_query_result = {
                 "GA/2022/9902",
                 "PROCESSING",
                 2,
-                datetime(2022, 4, 28),
-                datetime(2022, 4, 28),
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 28),
+                dt.datetime(2022, 4, 28),
+                dt.datetime(2022, 4, 29),
                 2,
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29),
                 0,
                 21,
                 3,
@@ -156,11 +156,11 @@ ea_query_result = {
                 "GA/2022/9903",
                 "COMPLETED",
                 2,
-                datetime(2022, 4, 28),
-                datetime(2022, 4, 28),
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 28),
+                dt.datetime(2022, 4, 28),
+                dt.datetime(2022, 4, 29),
                 2,
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29),
                 1,
                 21,
                 2,
@@ -181,11 +181,11 @@ ea_query_result = {
                 "GA/2022/9910",  # reference
                 "WITHDRAWN",  # status
                 2,  # created_by_id
-                datetime(2022, 4, 28),  # create_datetime
-                datetime(2022, 4, 28),  # created
-                datetime(2022, 4, 29),  # submit_datetime
+                dt.datetime(2022, 4, 28),  # create_datetime
+                dt.datetime(2022, 4, 28),  # created
+                dt.datetime(2022, 4, 29),  # submit_datetime
                 2,  # last_updated_by_id
-                datetime(2022, 4, 29),  # last_updated_datetime
+                dt.datetime(2022, 4, 29),  # last_updated_datetime
                 0,  # variation_id
                 21,  # application_type_id
                 2,  # exporter_id
@@ -222,11 +222,11 @@ ea_query_result = {
                 "CA/2022/9904",  # reference
                 "IN PROGRESS",  # status
                 2,  # created_by_id
-                datetime(2022, 4, 27),  # create_datetime
-                datetime(2022, 4, 27),  # created
+                dt.datetime(2022, 4, 27),  # create_datetime
+                dt.datetime(2022, 4, 27),  # created
                 None,  # submit_datetime
                 2,  # last_updated_by_id
-                datetime(2022, 4, 27),  # last_updated_datetime
+                dt.datetime(2022, 4, 27),  # last_updated_datetime
                 0,  # variation_no
                 2,  # application_type_id
                 2,  # exporter_id
@@ -248,11 +248,11 @@ ea_query_result = {
                 "CA/2022/9905",
                 "PROCESSING",
                 2,
-                datetime(2022, 4, 28),
-                datetime(2022, 4, 28),
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 28),
+                dt.datetime(2022, 4, 28),
+                dt.datetime(2022, 4, 29),
                 2,
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29),
                 0,
                 2,
                 3,
@@ -274,11 +274,11 @@ ea_query_result = {
                 "CA/2022/9906",
                 "COMPLETED",
                 2,
-                datetime(2022, 4, 28),
-                datetime(2022, 4, 28),
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 28),
+                dt.datetime(2022, 4, 28),
+                dt.datetime(2022, 4, 29),
                 2,
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29),
                 0,
                 2,
                 2,
@@ -305,11 +305,11 @@ ea_query_result = {
                 "CA/2022/9907",  # reference
                 "IN PROGRESS",  # status
                 2,  # created_by_id
-                datetime(2022, 4, 27),  # create_datetime
-                datetime(2022, 4, 27),  # created
+                dt.datetime(2022, 4, 27),  # create_datetime
+                dt.datetime(2022, 4, 27),  # created
                 None,  # submit_datetime
                 2,  # last_updated_by_id
-                datetime(2022, 4, 27),  # last_updated_datetime
+                dt.datetime(2022, 4, 27),  # last_updated_datetime
                 0,  # variation_no
                 2,  # application_type_id
                 2,  # exporter_id
@@ -326,11 +326,11 @@ ea_query_result = {
                 "CA/2022/9908",  # reference
                 "PROCESSING",  # status
                 2,  # created_by_id
-                datetime(2022, 4, 28),  # create_datetime
-                datetime(2022, 4, 28),  # created
-                datetime(2022, 4, 29),  # submit_datetime
+                dt.datetime(2022, 4, 28),  # create_datetime
+                dt.datetime(2022, 4, 28),  # created
+                dt.datetime(2022, 4, 29),  # submit_datetime
                 2,  # last_updated_by_id
-                datetime(2022, 4, 29),  # last_updated_datetime
+                dt.datetime(2022, 4, 29),  # last_updated_datetime
                 0,  # variation_no
                 2,  # application_type_id
                 3,  # exporter_id
@@ -347,11 +347,11 @@ ea_query_result = {
                 "CA/2022/9909",  # reference
                 "COMPLETED",  # status
                 2,  # created_by_id
-                datetime(2022, 4, 28),  # create_datetime
-                datetime(2022, 4, 28),  # created
-                datetime(2022, 4, 29),  # submit_datetime
+                dt.datetime(2022, 4, 28),  # create_datetime
+                dt.datetime(2022, 4, 28),  # created
+                dt.datetime(2022, 4, 29),  # submit_datetime
                 2,  # last_updated_by_id
-                datetime(2022, 4, 29),  # last_updated_datetime
+                dt.datetime(2022, 4, 29),  # last_updated_datetime
                 2,  # variation_no
                 2,  # application_type_id
                 2,  # exporter_id
@@ -401,7 +401,7 @@ ea_query_result = {
                 "Manufacturer",  # manufacturer_name
                 "MANUAL",  # manufacturer_address_type
                 2,  # created_by_id
-                datetime(2022, 11, 1, 12, 30),  # created_at
+                dt.datetime(2022, 11, 1, 12, 30),  # created_at
                 xd.cfs_product,  # product_xml
                 None,  # legislation_xml
             ),
@@ -421,7 +421,7 @@ ea_query_result = {
                 None,  # manufacturer_name
                 "MANUAL",  # manufacturer_address_type
                 2,  # created_by_id
-                datetime(2022, 11, 1, 12, 30),  # created_at
+                dt.datetime(2022, 11, 1, 12, 30),  # created_at
                 None,  # product_xml
                 xd.cfs_legislation,  # legislation_xml
             ),
@@ -441,7 +441,7 @@ ea_query_result = {
                 "Manufacturer",  # manufacturer_name
                 "MANUAL",  # manufacturer_address_type
                 2,  # created_by_id
-                datetime(2022, 11, 1, 12, 30),  # created_at
+                dt.datetime(2022, 11, 1, 12, 30),  # created_at
                 xd.cfs_product_biocide,  # product_xml
                 xd.cfs_legislation_biocide,  # legislation_xml
             ),
@@ -461,82 +461,82 @@ ea_query_result = {
             (
                 8,
                 18,
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29),
                 "DR",
                 "GA/2022/9902",
-                datetime(2022, 4, 29, 13, 21),
+                dt.datetime(2022, 4, 29, 13, 21),
                 20,
             ),
             (
                 9,
                 10,
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29),
                 "AR",
                 "GA/2022/9903",
-                datetime(2022, 4, 29, 13, 21),
+                dt.datetime(2022, 4, 29, 13, 21),
                 21,
             ),
             (
                 9,
                 19,
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29),
                 "AC",
                 "CA/2022/9903/1",
-                datetime(2022, 4, 29, 13, 21),
+                dt.datetime(2022, 4, 29, 13, 21),
                 22,
             ),
             (
                 11,
                 21,
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29),
                 "DR",
                 "CA/2022/9905",
-                datetime(2022, 4, 29, 13, 21),
+                dt.datetime(2022, 4, 29, 13, 21),
                 23,
             ),
             (
                 12,
                 22,
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29),
                 "AC",
                 "CA/2022/9906",
-                datetime(2022, 4, 29, 13, 21),
+                dt.datetime(2022, 4, 29, 13, 21),
                 24,
             ),
             (
                 14,
                 24,
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29),
                 "DR",
                 "CA/2022/9908",
-                datetime(2022, 4, 29, 13, 21),
+                dt.datetime(2022, 4, 29, 13, 21),
                 25,
             ),
             (
                 15,
                 11,
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29),
                 "AR",
                 "CA/2022/9909",
-                datetime(2022, 4, 29, 13, 21),
+                dt.datetime(2022, 4, 29, 13, 21),
                 26,
             ),
             (
                 15,
                 12,
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29),
                 "AR",
                 "CA/2022/9909/1",
-                datetime(2022, 4, 29, 13, 21),
+                dt.datetime(2022, 4, 29, 13, 21),
                 27,
             ),
             (
                 15,
                 25,
-                datetime(2022, 4, 29),
+                dt.datetime(2022, 4, 29),
                 "AC",
                 "CA/2022/9909/2",
-                datetime(2022, 4, 29, 13, 21),
+                dt.datetime(2022, 4, 29, 13, 21),
                 28,
             ),
         ],
@@ -578,7 +578,7 @@ ea_query_result = {
                 "pdf",  # content_type
                 100,  # file_size
                 "path/to/gmp-cert-1.pdf",  # path
-                datetime.now(),  # created_datetime
+                dt.datetime.now(),  # created_datetime
                 2,  # created_by_id
                 12345678,  # check_code
                 "GMP",  # prefix
@@ -597,7 +597,7 @@ ea_query_result = {
                 "pdf",  # content_type
                 100,  # file_size
                 "path/to/gmp-cert-2.pdf",  # path
-                datetime.now(),  # created_datetime
+                dt.datetime.now(),  # created_datetime
                 2,  # created_by_id
                 56781234,  # check_code
                 "GMP",  # prefix
@@ -616,7 +616,7 @@ ea_query_result = {
                 "pdf",  # content_type
                 100,  # file_size
                 "path/to/gmp-cert-3.pdf",  # path
-                datetime.now(),  # created_datetime
+                dt.datetime.now(),  # created_datetime
                 2,  # created_by_id
                 43215678,  # check_code
                 "GMP",  # prefix
@@ -635,7 +635,7 @@ ea_query_result = {
                 "pdf",  # content_type
                 100,  # file_size
                 "path/to/gmp-cert-4.pdf",  # path
-                datetime.now(),  # created_datetime
+                dt.datetime.now(),  # created_datetime
                 2,  # created_by_id
                 87654321,  # check_code
                 "GMP",  # prefix
@@ -654,7 +654,7 @@ ea_query_result = {
                 "pdf",  # content_type
                 100,  # file_size
                 "path/to/com-cert-1.pdf",  # path
-                datetime.now(),  # created_datetime
+                dt.datetime.now(),  # created_datetime
                 2,  # created_by_id
                 87651432,  # check_code
                 "COM",  # prefix
@@ -673,7 +673,7 @@ ea_query_result = {
                 "pdf",  # content_type
                 100,  # file_size
                 "path/to/com-cert-2.pdf",  # path
-                datetime.now(),  # created_datetime
+                dt.datetime.now(),  # created_datetime
                 2,  # created_by_id
                 87651432,  # check_code
                 "COM",  # prefix
@@ -692,7 +692,7 @@ ea_query_result = {
                 "pdf",  # content_type
                 100,  # file_size
                 "path/to/cfs-cert-1.pdf",  # path
-                datetime.now(),  # created_datetime
+                dt.datetime.now(),  # created_datetime
                 2,  # created_by_id
                 32415678,  # check_code
                 "CFS",  # prefix
@@ -711,7 +711,7 @@ ea_query_result = {
                 "pdf",  # content_type
                 100,  # file_size
                 "path/to/cfs-cert-2.pdf",  # path
-                datetime.now(),  # created_datetime
+                dt.datetime.now(),  # created_datetime
                 2,  # created_by_id
                 32415679,  # check_code
                 "CFS",  # prefix
@@ -740,8 +740,8 @@ ea_query_result = {
                 "subject",  # subject
                 "body",  # body
                 "response",  # response
-                datetime.now(),  # sent_datetime
-                datetime.now(),  # closed_datetime
+                dt.datetime.now(),  # sent_datetime
+                dt.datetime.now(),  # closed_datetime
                 "CA_BEIS_EMAIL",  # template_code
             ),
             (
@@ -751,7 +751,7 @@ ea_query_result = {
                 "subject",  # subject
                 "body",  # body
                 None,  # response
-                datetime.now(),  # sent_datetime
+                dt.datetime.now(),  # sent_datetime
                 None,  # closed_datetime
                 "CA_BEIS_EMAIL",  # template_code
             ),
@@ -776,8 +776,8 @@ ea_query_result = {
                 "subject",  # subject
                 "body",  # body
                 "response",  # response
-                datetime.now(),  # sent_datetime
-                datetime.now(),  # closed_datetime
+                dt.datetime.now(),  # sent_datetime
+                dt.datetime.now(),  # closed_datetime
                 "CA_HSE_EMAIL",  # template_code
             ),
             (
@@ -787,7 +787,7 @@ ea_query_result = {
                 "subject",  # subject
                 "body",  # body
                 None,  # response
-                datetime.now(),  # sent_datetime
+                dt.datetime.now(),  # sent_datetime
                 None,  # closed_datetime
                 "CA_HSE_EMAIL",  # template_code
             ),

@@ -60,6 +60,13 @@ class ImportContact(models.Model):
     created_datetime = models.DateTimeField(auto_now_add=True)
     updated_datetime = models.DateTimeField(auto_now=True)
 
+    @property
+    def address(self) -> str:
+        address_list = [self.street, self.city, self.postcode, self.region]
+        if self.country:
+            address_list.append(self.country.name)
+        return ", ".join(filter(None, address_list))
+
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}" if self.last_name else self.first_name
 
@@ -83,8 +90,8 @@ class SupplementaryInfoBase(models.Model):
         null=True,
         blank=True,
         verbose_name=(
-            "You haven't provided any reports on imported firearms. You must provide a reason"
-            " why no reporting is required before you confirm reporting complete."
+            "If you are not importing any firearms against this import licence then please specify "
+            "why in the text box and then confirm reporting complete."
         ),
     )
 

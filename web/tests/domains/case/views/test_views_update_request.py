@@ -7,7 +7,7 @@ from web.mail.constants import EmailTypes
 from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import ImportApplication, UpdateRequest
 from web.sites import get_importer_site_domain
-from web.tests.application_utils import submit_app
+from web.tests.application_utils import resubmit_app
 from web.tests.helpers import CaseURLS, check_gov_notify_email_was_sent
 
 
@@ -142,7 +142,7 @@ def test_close_update_request(
     assert original_date_time_submitted is not None
     assert original_date_time_submitted == original_last_date_time_submitted
 
-    submit_app(
+    resubmit_app(
         client=importer_client, view_name="import:wood:submit-quota", app_pk=wood_app_submitted.pk
     )
 

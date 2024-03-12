@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 from django import forms
 from django_select2.forms import Select2MultipleWidget
@@ -75,7 +75,7 @@ class SearchFormBase(forms.Form):
         self.fields["reassignment_user"].queryset = get_all_case_officers()
 
     @staticmethod
-    def dates_are_reversed(date_from: datetime.date | None, date_to: datetime.date | None) -> bool:
+    def dates_are_reversed(date_from: dt.date | None, date_to: dt.date | None) -> bool:
         """Check if two dates are in reversed (wrong) order."""
         if (date_from and date_to) and (date_from > date_to):
             return True
@@ -185,8 +185,7 @@ class ImportSearchAdvancedForm(ImportSearchForm):
     shipping_year = forms.ChoiceField(
         label="Shipping Year",
         required=False,
-        choices=[(None, "Any")]
-        + list((x, x) for x in range(2007, datetime.date.today().year + 10)),
+        choices=[(None, "Any")] + list((x, x) for x in range(2007, dt.date.today().year + 10)),
     )
 
     goods_category = forms.ModelChoiceField(

@@ -5,13 +5,13 @@ from django.core.management.base import BaseCommand
 
 from web.models import UniqueReference
 
-from ._types import Anno, ModelT, Params, Val
 from .config.data_counts import (
     CHECK_DATA_COUNTS,
     CHECK_DATA_QUERIES,
     CHECK_MODELS,
     UNIQUE_REFERENCES,
 )
+from .types import Anno, ModelT, Params, Val
 from .utils.db import CONNECTION_CONFIG
 
 

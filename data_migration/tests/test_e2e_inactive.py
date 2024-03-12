@@ -7,13 +7,13 @@ from django.core.management import call_command
 
 from data_migration import models as dm
 from data_migration import queries
-from data_migration.management.commands._types import QueryModel
 from data_migration.management.commands.config.run_order import (
     DATA_TYPE_M2M,
     DATA_TYPE_QUERY_MODEL,
     DATA_TYPE_SOURCE_TARGET,
     DATA_TYPE_XML,
 )
+from data_migration.management.commands.types import QueryModel
 from data_migration.utils import xml_parser
 from web import models as web
 
@@ -426,9 +426,9 @@ def test_import_textiles_data(mock_connect, dummy_dm_settings):
 
     assert web.CommodityGroup.objects.count() == 2
     assert web.CommodityGroup.objects.first().start_datetime == dt.datetime(
-        2022, 12, 31, 12, 30, tzinfo=dt.timezone.utc
+        2022, 12, 31, 12, 30, tzinfo=dt.UTC
     )
     assert web.Commodity.objects.count() == 5
     assert web.Commodity.objects.first().start_datetime == dt.datetime(
-        2022, 12, 31, 12, 30, tzinfo=dt.timezone.utc
+        2022, 12, 31, 12, 30, tzinfo=dt.UTC
     )

@@ -23,6 +23,8 @@ class User(MigrationBase):
     is_active = models.BooleanField(default=True)
     salt = models.CharField(max_length=16, null=True)
     encrypted_password = models.CharField(max_length=32, null=True)
+
+    # Datetime TZ formatting looks for fields named _datetime
     last_login_datetime = models.DateTimeField(null=True)
     date_joined_datetime = models.DateTimeField(default=timezone.now)
     title = models.CharField(max_length=20, null=True)
@@ -51,8 +53,8 @@ class User(MigrationBase):
         return super().get_excludes() + [
             "salt",
             "encrypted_password",
-            "last_login_datetime",
             "date_joined_datetime",
+            "last_login_datetime",
             #
             # User fields removed in V2 model
             #
@@ -77,8 +79,8 @@ class User(MigrationBase):
     @classmethod
     def get_values_kwargs(cls) -> dict[str, Any]:
         return {
-            "last_login": F("last_login_datetime"),
             "date_joined": F("date_joined_datetime"),
+            "last_login": F("last_login_datetime"),
             "password": Concat(
                 Value("fox_pbkdf2_sha1$10000$"),
                 "id",

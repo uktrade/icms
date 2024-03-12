@@ -1,5 +1,5 @@
 import argparse
-import time
+import time as tm
 from typing import Any
 
 from django.conf import settings
@@ -61,8 +61,8 @@ class MigrationBaseCommand(BaseCommand):
 
         self.batch_size = options["batchsize"]
         self.start_type, self.start_index = options["start"].split(".")
-        self.start_time = time.perf_counter()
-        self.split_time = time.perf_counter()
+        self.start_time = tm.perf_counter()
+        self.split_time = tm.perf_counter()
         self.print_log = options["force_log"] or settings.APP_ENV == "production"
 
     def log(self, message: str, ending: None | str = None) -> None:
@@ -70,12 +70,12 @@ class MigrationBaseCommand(BaseCommand):
             self.stdout.write(message, ending=ending)
 
     def _log_time(self) -> None:
-        time_taken = time.perf_counter() - self.split_time
+        time_taken = tm.perf_counter() - self.split_time
         self.log(f"\t\t--> {time_taken:.2f} seconds", "\n\n")
-        self.split_time = time.perf_counter()
+        self.split_time = tm.perf_counter()
 
     def _log_script_end(self) -> None:
-        time_taken = time.perf_counter() - self.start_time
+        time_taken = tm.perf_counter() - self.start_time
         mins = time_taken // 60
         secs = time_taken % 60
 

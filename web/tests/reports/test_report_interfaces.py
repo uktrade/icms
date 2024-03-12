@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime as dt
 
 import pytest
 from django.utils.timezone import make_aware
@@ -21,7 +21,9 @@ from web.reports.interfaces import (
     AccessRequestTotalsInterface,
     ExporterAccessRequestInterface,
     ImporterAccessRequestInterface,
+    ImportLicenceInterface,
     IssuedCertificateReportInterface,
+    SupplementaryFirearmsInterface,
 )
 from web.tests.helpers import add_variation_request_to_app
 
@@ -74,6 +76,66 @@ EXPECTED_HEADER = [
     "Application Update Count",
     "FIR Count",
     "Business Days to Process",
+]
+
+EXPECTED_IMPORT_LICENCE_HEADER = [
+    "Case Ref",
+    "Licence Ref",
+    "Licence Type",
+    "Under Appeal",
+    "Ima Type",
+    "Ima Type Title",
+    "Ima Sub Type",
+    "Variation No",
+    "Status",
+    "Ima Sub Type Title",
+    "Importer Name",
+    "Agent Name",
+    "App Contact Name",
+    "Coo Country Name",
+    "Coc Country Name",
+    "Shipping Year",
+    "Com Group Name",
+    "Commodity Codes",
+    "Initial Submitted Datetime",
+    "Initial Case Closed Datetime",
+    "Time to Initial Close",
+    "Latest Case Closed Datetime",
+    "Licence Dates",
+    "Licence Start Date",
+    "Licence End Date",
+    "Importer Printable",
+]
+
+EXPECTED_SUPPLEMENTARY_FIREARMS_HEADER = [
+    "Licence Reference",
+    "Case Reference",
+    "Case Type",
+    "Importer",
+    "Eori Number",
+    "Importer Address",
+    "Licence Start Date",
+    "Licence Expiry Date",
+    "Country of Origin",
+    "Country of Consignment",
+    "Endorsements",
+    "Constabularies",
+    "Report Date",
+    "Goods Description",
+    "Goods Quantity",
+    "Firearms Exceed Quantity",
+    "Goods Description with Subsection",
+    "Who Bought From Name",
+    "Who Bought From Reg No",
+    "Who Bought From Address",
+    "Frame Serial Number",
+    "Make/Model",
+    "Calibre",
+    "Gun Barrel Proofing meets CIP",
+    "Firearms Document",
+    "Date Firearms Received",
+    "Means of Transport",
+    "Reported all firearms for licence",
 ]
 
 
@@ -169,10 +231,10 @@ class TestIssuedCertificateReportInterface:
         )
 
     def _setup_app_update_submitted_and_completed_dates(self, app):
-        app.submit_datetime = make_aware(datetime(2024, 1, 1, 12, 0, 0))
+        app.submit_datetime = make_aware(dt.datetime(2024, 1, 1, 12, 0, 0))
         app.save()
         for cert in app.certificates.all():
-            cert.case_completion_datetime = make_aware(datetime(2024, 1, 9, 13, 7, 0))
+            cert.case_completion_datetime = make_aware(dt.datetime(2024, 1, 9, 13, 7, 0))
             cert.save()
 
     def test_issued_certificate_report_interface_get_data_header(self):
@@ -183,10 +245,23 @@ class TestIssuedCertificateReportInterface:
             "results": [],
         }
 
+    def test_issued_certificate_report_interface_get_data_cfs_filter_by_legislation(
+        self, completed_cfs_app
+    ):
+        self._setup_app_update_submitted_and_completed_dates(completed_cfs_app)
+        self._setup_app_with_case_email(completed_cfs_app, EmailTypes.HSE_CASE_EMAIL, True)
+        self.report_schedule.parameters["legislation"] = ["1"]
+        self.report_schedule.save()
+        interface = IssuedCertificateReportInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == []
+
     def test_issued_certificate_report_interface_get_data_cfs(self, completed_cfs_app):
         self._setup_app_with_variation_request(completed_cfs_app)
         self._setup_app_update_submitted_and_completed_dates(completed_cfs_app)
         self._setup_app_with_case_email(completed_cfs_app, EmailTypes.HSE_CASE_EMAIL, True)
+        self.report_schedule.parameters["legislation"] = ["3"]
+        self.report_schedule.save()
         interface = IssuedCertificateReportInterface(self.report_schedule)
         data = interface.get_data()
         assert data["results"] == [
@@ -408,3 +483,490 @@ class TestAccessRequestTotalsInterface:
             "header": EXPECTED_ACCESS_REQUEST_TOTALS_HEADER,
             "results": [{"Approved Requests": 2, "Refused Requests": 2, "Total Requests": 4}],
         }
+
+
+class TestImportLicenceInterface:
+    @pytest.fixture(autouse=True)
+    def _setup(self, report_schedule, ilb_admin_user):
+        self.report_schedule = report_schedule
+        self.ilb_admin_user = ilb_admin_user
+
+    def test_get_data_header(self):
+        interface = ImportLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data == {
+            "header": EXPECTED_IMPORT_LICENCE_HEADER,
+            "results": [],
+        }
+
+    def test_get_data_dfl(self, completed_dfl_app):
+        interface = ImportLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Case Ref": "IMA/2024/00001",
+                "Licence Ref": "GBSIL0000001B",
+                "Licence Type": "Electronic",
+                "Under Appeal": "",
+                "Ima Type": "FA",
+                "Ima Type Title": "Firearms and Ammunition",
+                "Ima Sub Type": "DEACTIVATED",
+                "Variation No": 0,
+                "Status": "COMPLETED",
+                "Ima Sub Type Title": "Deactivated Firearms Import Licence",
+                "Importer Name": "Test Importer 1",
+                "Agent Name": "",
+                "App Contact Name": "I1_main_contact_first_name I1_main_contact_last_name",
+                "Coo Country Name": "Afghanistan",
+                "Coc Country Name": "Albania",
+                "Shipping Year": "",
+                "Com Group Name": "",
+                "Commodity Codes": "",
+                "Initial Submitted Datetime": "01/01/2024 12:00:00",
+                "Initial Case Closed Datetime": "02/01/2024 17:02:00",
+                "Time to Initial Close": "1d 5h 2m",
+                "Latest Case Closed Datetime": "02/01/2024 17:02:00",
+                "Licence Dates": "01 Jun 2020 - 31 Dec 2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence End Date": "31/12/2024",
+                "Importer Printable": False,
+            }
+        ]
+
+    def test_get_data_sil(self, completed_sil_app):
+        interface = ImportLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Case Ref": "IMA/2024/00001",
+                "Licence Ref": "GBSIL0000001B",
+                "Licence Type": "Electronic",
+                "Under Appeal": "",
+                "Ima Type": "FA",
+                "Ima Type Title": "Firearms and Ammunition",
+                "Ima Sub Type": "SIL",
+                "Variation No": 0,
+                "Status": "COMPLETED",
+                "Ima Sub Type Title": "Specific Individual Import Licence",
+                "Importer Name": "Test Importer 1",
+                "Agent Name": "",
+                "App Contact Name": "I1_main_contact_first_name I1_main_contact_last_name",
+                "Coo Country Name": "Afghanistan",
+                "Coc Country Name": "Afghanistan",
+                "Shipping Year": "",
+                "Com Group Name": "",
+                "Commodity Codes": "",
+                "Initial Submitted Datetime": "01/01/2024 12:00:00",
+                "Initial Case Closed Datetime": "02/01/2024 17:02:00",
+                "Time to Initial Close": "1d 5h 2m",
+                "Latest Case Closed Datetime": "02/01/2024 17:02:00",
+                "Licence Dates": "01 Jun 2020 - 31 Dec 2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence End Date": "31/12/2024",
+                "Importer Printable": False,
+            }
+        ]
+
+    def test_get_data_oil(self, completed_oil_app):
+        interface = ImportLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Case Ref": "IMA/2024/00001",
+                "Licence Ref": "GBOIL0000001B",
+                "Licence Type": "Electronic",
+                "Under Appeal": "",
+                "Ima Type": "FA",
+                "Ima Type Title": "Firearms and Ammunition",
+                "Ima Sub Type": "OIL",
+                "Variation No": 0,
+                "Status": "COMPLETED",
+                "Ima Sub Type Title": "Open Individual Import Licence",
+                "Importer Name": "Test Importer 1",
+                "Agent Name": "",
+                "App Contact Name": "I1_main_contact_first_name I1_main_contact_last_name",
+                "Coo Country Name": "Any Country",
+                "Coc Country Name": "Any Country",
+                "Shipping Year": "",
+                "Com Group Name": "",
+                "Commodity Codes": "",
+                "Initial Submitted Datetime": "01/01/2024 12:00:00",
+                "Initial Case Closed Datetime": "02/01/2024 17:02:00",
+                "Time to Initial Close": "1d 5h 2m",
+                "Latest Case Closed Datetime": "02/01/2024 17:02:00",
+                "Licence Dates": "01 Jun 2020 - 31 Dec 2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence End Date": "31/12/2024",
+                "Importer Printable": False,
+            }
+        ]
+
+    def test_get_data_wood(self, completed_wood_app):
+        interface = ImportLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Case Ref": "IMA/2024/00001",
+                "Licence Ref": "0000001B",
+                "Licence Type": "Paper",
+                "Under Appeal": "",
+                "Ima Type": "WD",
+                "Ima Type Title": "Wood (Quota)",
+                "Ima Sub Type": "QUOTA",
+                "Variation No": 0,
+                "Status": "COMPLETED",
+                "Ima Sub Type Title": "QUOTA",
+                "Importer Name": "Test Importer 1",
+                "Agent Name": "",
+                "App Contact Name": "I1_main_contact_first_name I1_main_contact_last_name",
+                "Coo Country Name": "",
+                "Coc Country Name": "",
+                "Shipping Year": 2024,
+                "Com Group Name": "",
+                "Commodity Codes": "",
+                "Initial Submitted Datetime": "01/01/2024 12:00:00",
+                "Initial Case Closed Datetime": "02/01/2024 17:02:00",
+                "Time to Initial Close": "1d 5h 2m",
+                "Latest Case Closed Datetime": "02/01/2024 17:02:00",
+                "Licence Dates": "01 Jun 2020 - 31 Dec 2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence End Date": "31/12/2024",
+                "Importer Printable": False,
+            }
+        ]
+
+    def test_get_data_sps(self, completed_sps_app):
+        interface = ImportLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Case Ref": "IMA/2024/00001",
+                "Licence Ref": "GBAOG0000001B",
+                "Licence Type": "Electronic",
+                "Under Appeal": "",
+                "Ima Type": "SPS",
+                "Ima Type Title": "Prior Surveillance",
+                "Ima Sub Type": "SPS1",
+                "Variation No": 0,
+                "Status": "COMPLETED",
+                "Ima Sub Type Title": "SPS1",
+                "Importer Name": "Test Importer 1",
+                "Agent Name": "",
+                "App Contact Name": "I1_main_contact_first_name I1_main_contact_last_name",
+                "Coo Country Name": "Afghanistan",
+                "Coc Country Name": "Armenia",
+                "Shipping Year": "",
+                "Com Group Name": "",
+                "Commodity Codes": "Code: 111111",
+                "Initial Submitted Datetime": "01/01/2024 12:00:00",
+                "Initial Case Closed Datetime": "02/01/2024 17:02:00",
+                "Time to Initial Close": "1d 5h 2m",
+                "Latest Case Closed Datetime": "02/01/2024 17:02:00",
+                "Licence Dates": "01 Jun 2020 - 31 Dec 2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence End Date": "31/12/2024",
+                "Importer Printable": True,
+            }
+        ]
+
+    def test_get_data_sanctions(self, completed_sanctions_app):
+        interface = ImportLicenceInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Case Ref": "IMA/2024/00001",
+                "Licence Ref": "GBSAN0000001B",
+                "Licence Type": "Electronic",
+                "Under Appeal": "",
+                "Ima Type": "ADHOC",
+                "Ima Type Title": "Sanctions and Adhoc Licence Application",
+                "Ima Sub Type": "ADHOC1",
+                "Variation No": 0,
+                "Status": "COMPLETED",
+                "Ima Sub Type Title": "ADHOC1",
+                "Importer Name": "Test Importer 1",
+                "Agent Name": "",
+                "App Contact Name": "I1_main_contact_first_name I1_main_contact_last_name",
+                "Coo Country Name": "Iran",
+                "Coc Country Name": "Afghanistan",
+                "Shipping Year": "",
+                "Com Group Name": "",
+                "Commodity Codes": "Code: 7112990090; Desc: More Commoditites, Code: 2707100010; Desc: Test Goods",
+                "Initial Submitted Datetime": "01/01/2024 12:00:00",
+                "Initial Case Closed Datetime": "02/01/2024 17:02:00",
+                "Time to Initial Close": "1d 5h 2m",
+                "Latest Case Closed Datetime": "02/01/2024 17:02:00",
+                "Licence Dates": "01 Jun 2020 - 31 Dec 2024",
+                "Licence Start Date": "01/06/2020",
+                "Licence End Date": "31/12/2024",
+                "Importer Printable": False,
+            }
+        ]
+
+
+class TestSupplementaryFirearmsInterface:
+    @pytest.fixture(autouse=True)
+    def _setup(self, report_schedule, ilb_admin_user, importer_client):
+        self.report_schedule = report_schedule
+        self.ilb_admin_user = ilb_admin_user
+        self.client = importer_client
+
+    def test_get_data_header(self):
+        interface = SupplementaryFirearmsInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data == {
+            "header": EXPECTED_SUPPLEMENTARY_FIREARMS_HEADER,
+            "results": [],
+        }
+
+    def test_get_sil_data(self, completed_sil_app_with_supplementary_report):
+        interface = SupplementaryFirearmsInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Licence Reference": "GBSIL0000001B",
+                "Case Reference": "IMA/2024/00001",
+                "Case Type": "SIL",
+                "Importer": "Test Importer 1",
+                "Eori Number": "GB1111111111ABCDE",
+                "Importer Address": "I1 address line 1, I1 address line 2, BT180LZ",  # /PS-IGNORE
+                "Licence Start Date": "01/06/2020",
+                "Licence Expiry Date": "31/12/2024",
+                "Country of Origin": "Afghanistan",
+                "Country of Consignment": "Afghanistan",
+                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria or the Russian Federation."
+                "(including any previous name by which these territories have been known).",
+                "Constabularies": "Avon & Somerset",
+                "Report Date": "13/02/2024",
+                "Goods Description": "Section 1 goods",
+                "Goods Quantity": 111,
+                "Firearms Exceed Quantity": "No",
+                "Goods Description with Subsection": "Section 1 goods",
+                "Who Bought From Name": "first_name value",
+                "Who Bought From Reg No": "registration_number value",
+                "Who Bought From Address": "street value, city value, postcode value, region value, Afghanistan",
+                "Frame Serial Number": "11111111111",
+                "Make/Model": "Test-Section1",
+                "Calibre": "1mm",
+                "Gun Barrel Proofing meets CIP": "Yes",
+                "Firearms Document": "",
+                "Date Firearms Received": "13/02/2024",
+                "Means of Transport": "air",
+                "Reported all firearms for licence": "No",
+            },
+            {
+                "Licence Reference": "GBSIL0000001B",
+                "Case Reference": "IMA/2024/00001",
+                "Case Type": "SIL",
+                "Importer": "Test Importer 1",
+                "Eori Number": "GB1111111111ABCDE",
+                "Importer Address": "I1 address line 1, I1 address line 2, BT180LZ",  # /PS-IGNORE
+                "Licence Start Date": "01/06/2020",
+                "Licence Expiry Date": "31/12/2024",
+                "Country of Origin": "Afghanistan",
+                "Country of Consignment": "Afghanistan",
+                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria or the Russian Federation."
+                "(including any previous name by which these territories have been known).",
+                "Constabularies": "Avon & Somerset",
+                "Report Date": "13/02/2024",
+                "Goods Description": "Section 2 goods",
+                "Goods Quantity": 222,
+                "Firearms Exceed Quantity": "No",
+                "Goods Description with Subsection": "Section 2 goods",
+                "Who Bought From Name": "first_name value",
+                "Who Bought From Reg No": "registration_number value",
+                "Who Bought From Address": "street value, city value, postcode value, region value, Afghanistan",
+                "Frame Serial Number": "22222222222",
+                "Make/Model": "Test-Section2",
+                "Calibre": "2mm",
+                "Gun Barrel Proofing meets CIP": "No",
+                "Firearms Document": "",
+                "Date Firearms Received": "13/02/2024",
+                "Means of Transport": "air",
+                "Reported all firearms for licence": "No",
+            },
+            {
+                "Licence Reference": "GBSIL0000001B",
+                "Case Reference": "IMA/2024/00001",
+                "Case Type": "SIL",
+                "Importer": "Test Importer 1",
+                "Eori Number": "GB1111111111ABCDE",
+                "Importer Address": "I1 address line 1, I1 address line 2, BT180LZ",  # /PS-IGNORE
+                "Licence Start Date": "01/06/2020",
+                "Licence Expiry Date": "31/12/2024",
+                "Country of Origin": "Afghanistan",
+                "Country of Consignment": "Afghanistan",
+                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria or the Russian Federation."
+                "(including any previous name by which these territories have been known).",
+                "Constabularies": "Avon & Somerset",
+                "Report Date": "13/02/2024",
+                "Goods Description": "Section 5 goods",
+                "Goods Quantity": 333,
+                "Firearms Exceed Quantity": "No",
+                "Goods Description with Subsection": "Section 5 goods",
+                "Who Bought From Name": "first_name value",
+                "Who Bought From Reg No": "registration_number value",
+                "Who Bought From Address": "street value, city value, postcode value, region value, Afghanistan",
+                "Frame Serial Number": "555555555555",
+                "Make/Model": "Test-Section5",
+                "Calibre": "5mm",
+                "Gun Barrel Proofing meets CIP": "No",
+                "Firearms Document": "",
+                "Date Firearms Received": "13/02/2024",
+                "Means of Transport": "air",
+                "Reported all firearms for licence": "No",
+            },
+            {
+                "Licence Reference": "GBSIL0000001B",
+                "Case Reference": "IMA/2024/00001",
+                "Case Type": "SIL",
+                "Importer": "Test Importer 1",
+                "Eori Number": "GB1111111111ABCDE",
+                "Importer Address": "I1 address line 1, I1 address line 2, BT180LZ",  # /PS-IGNORE
+                "Licence Start Date": "01/06/2020",
+                "Licence Expiry Date": "31/12/2024",
+                "Country of Origin": "Afghanistan",
+                "Country of Consignment": "Afghanistan",
+                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria or the Russian Federation."
+                "(including any previous name by which these territories have been known).",
+                "Constabularies": "Avon & Somerset",
+                "Report Date": "13/02/2024",
+                "Goods Description": "Section 58 obsoletes goods",
+                "Goods Quantity": 444,
+                "Firearms Exceed Quantity": "No",
+                "Goods Description with Subsection": "Section 58 obsoletes goods",
+                "Who Bought From Name": "first_name value",
+                "Who Bought From Reg No": "registration_number value",
+                "Who Bought From Address": "street value, city value, postcode value, region value, Afghanistan",
+                "Frame Serial Number": "5555555555551",
+                "Make/Model": "Test-Section5-Obsolete",
+                "Calibre": "5.1mm",
+                "Gun Barrel Proofing meets CIP": "No",
+                "Firearms Document": "",
+                "Date Firearms Received": "13/02/2024",
+                "Means of Transport": "air",
+                "Reported all firearms for licence": "No",
+            },
+            {
+                "Licence Reference": "GBSIL0000001B",
+                "Case Reference": "IMA/2024/00001",
+                "Case Type": "SIL",
+                "Importer": "Test Importer 1",
+                "Eori Number": "GB1111111111ABCDE",
+                "Importer Address": "I1 address line 1, I1 address line 2, BT180LZ",  # /PS-IGNORE
+                "Licence Start Date": "01/06/2020",
+                "Licence Expiry Date": "31/12/2024",
+                "Country of Origin": "Afghanistan",
+                "Country of Consignment": "Afghanistan",
+                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria or the Russian Federation."
+                "(including any previous name by which these territories have been known).",
+                "Constabularies": "Avon & Somerset",
+                "Report Date": "13/02/2024",
+                "Goods Description": "Section 58 other goods",
+                "Goods Quantity": 555,
+                "Firearms Exceed Quantity": "No",
+                "Goods Description with Subsection": "Section 58 other goods",
+                "Who Bought From Name": "first_name value",
+                "Who Bought From Reg No": "registration_number value",
+                "Who Bought From Address": "street value, city value, postcode value, region value, Afghanistan",
+                "Frame Serial Number": "5555555555552",
+                "Make/Model": "Test-Section5Others",
+                "Calibre": "5.2mm",
+                "Gun Barrel Proofing meets CIP": "No",
+                "Firearms Document": "",
+                "Date Firearms Received": "13/02/2024",
+                "Means of Transport": "air",
+                "Reported all firearms for licence": "No",
+            },
+        ]
+
+    def test_get_oil_data(self, completed_oil_app_with_supplementary_report):
+        interface = SupplementaryFirearmsInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Licence Reference": "GBOIL0000001B",
+                "Case Reference": "IMA/2024/00001",
+                "Case Type": "OIL",
+                "Importer": "Test Importer 1",
+                "Eori Number": "GB1111111111ABCDE",
+                "Importer Address": "I1 address line 1, I1 address line 2, BT180LZ",  # /PS-IGNORE
+                "Licence Start Date": "01/06/2020",
+                "Licence Expiry Date": "31/12/2024",
+                "Country of Origin": "Any Country",
+                "Country of Consignment": "Any Country",
+                "Endorsements": (
+                    "OPEN INDIVIDUAL LICENCE Not valid for goods originating in "
+                    "or consigned from Iran, North Korea, Libya, Syria or the "
+                    "Russian Federation.(including any previous name by which "
+                    "these territories have been known).\n"
+                    "This licence is only valid if the firearm and its essential "
+                    "component parts (Barrel, frame, receiver (including both "
+                    "upper or lower receiver), slide, cylinder, bolt or breech "
+                    "block) are marked with name of manufacturer or brand, "
+                    "country or place of manufacturer, serial number, year of "
+                    "manufacture and model (if an essential component is too "
+                    "small to be fully marked it must at least be marked with a "
+                    "serial number or alpha-numeric or digital code)."
+                ),
+                "Constabularies": "Avon & Somerset",
+                "Report Date": "13/02/2024",
+                "Goods Description": (
+                    "Firearms, component parts thereof, or ammunition of any applicable commodity code, "
+                    "other than those falling under Section 5 of the Firearms Act 1968 as amended."
+                ),
+                "Goods Description with Subsection": (
+                    "Firearms, component parts thereof, or ammunition of any applicable commodity code, "
+                    "other than those falling under Section 5 of the Firearms Act 1968 as amended."
+                ),
+                "Goods Quantity": 0,
+                "Firearms Exceed Quantity": "No",
+                "Who Bought From Name": "first_name value",
+                "Who Bought From Reg No": "registration_number value",
+                "Who Bought From Address": "street value, city value, postcode value, region value, Afghanistan",
+                "Frame Serial Number": "",
+                "Make/Model": "",
+                "Calibre": "",
+                "Gun Barrel Proofing meets CIP": "",
+                "Firearms Document": "See uploaded files on report",
+                "Date Firearms Received": "13/02/2024",
+                "Means of Transport": "air",
+                "Reported all firearms for licence": "No",
+            },
+        ]
+
+    def test_get_dfl_data(self, completed_dfl_app_with_supplementary_report):
+        interface = SupplementaryFirearmsInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Licence Reference": "GBSIL0000001B",
+                "Case Reference": "IMA/2024/00001",
+                "Case Type": "DEACTIVATED",
+                "Importer": "Test Importer 1",
+                "Eori Number": "GB1111111111ABCDE",
+                "Importer Address": "I1 address line 1, I1 address line 2, BT180LZ",  # /PS-IGNORE
+                "Licence Start Date": "01/06/2020",
+                "Licence Expiry Date": "31/12/2024",
+                "Country of Origin": "Afghanistan",
+                "Country of Consignment": "Albania",
+                "Endorsements": "",
+                "Constabularies": "Derbyshire",
+                "Report Date": "13/02/2024",
+                "Goods Description": "goods_description value",
+                "Goods Description with Subsection": "goods_description value",
+                "Goods Quantity": 1,
+                "Firearms Exceed Quantity": "No",
+                "Who Bought From Name": "first_name value",
+                "Who Bought From Reg No": "registration_number value",
+                "Who Bought From Address": "street value, city value, postcode value, region value, Afghanistan",
+                "Frame Serial Number": "5555555555552",
+                "Make/Model": "DFL Firearm",
+                "Calibre": "4.1mm",
+                "Gun Barrel Proofing meets CIP": "Yes",
+                "Firearms Document": "",
+                "Date Firearms Received": "13/02/2024",
+                "Means of Transport": "air",
+                "Reported all firearms for licence": "No",
+            },
+        ]

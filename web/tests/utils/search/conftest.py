@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 from typing import Any, NamedTuple
 
 import pytest
@@ -657,7 +657,7 @@ def _submit_application(application, importer_exporter_conf: FixtureData | Expor
 def create_test_commodity(commodity_code):
     com_type = CommodityType.objects.get(type_code="TEXTILES")
     commodity, created = Commodity.objects.get_or_create(
-        defaults={"commodity_type": com_type, "validity_start_date": datetime.date.today()},
+        defaults={"commodity_type": com_type, "validity_start_date": dt.date.today()},
         commodity_code=commodity_code,
     )
     return commodity

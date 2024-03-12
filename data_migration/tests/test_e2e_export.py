@@ -7,13 +7,13 @@ from django.core.management import call_command
 
 from data_migration import models as dm
 from data_migration import queries
-from data_migration.management.commands._types import QueryModel
 from data_migration.management.commands.config.run_order import (
     DATA_TYPE_M2M,
     DATA_TYPE_QUERY_MODEL,
     DATA_TYPE_SOURCE_TARGET,
     DATA_TYPE_XML,
 )
+from data_migration.management.commands.types import QueryModel
 from data_migration.utils import xml_parser
 from web import models as web
 from web.flow.models import ProcessTypes
@@ -194,8 +194,8 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     vr1: web.VariationRequest = ea3.variation_requests.first()
     assert vr1.what_varied == "Changes 1"
-    assert vr1.requested_datetime == dt.datetime(2022, 10, 13, 10, 1, 5, tzinfo=dt.timezone.utc)
-    assert vr1.closed_datetime == dt.datetime(2022, 10, 14, 11, 1, 5, tzinfo=dt.timezone.utc)
+    assert vr1.requested_datetime == dt.datetime(2022, 10, 13, 11, 1, 5, tzinfo=dt.UTC)
+    assert vr1.closed_datetime == dt.datetime(2022, 10, 14, 12, 1, 5, tzinfo=dt.UTC)
 
     assert ea1.update_requests.count() == 0
     assert ea2.update_requests.count() == 1
@@ -217,9 +217,9 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     case_note1 = ea2.case_notes.filter(is_active=True).first()
     assert case_note1.note == "This is a case note"
-    assert case_note1.create_datetime == dt.datetime(2022, 9, 20, 7, 31, 34, tzinfo=dt.timezone.utc)
+    assert case_note1.create_datetime == dt.datetime(2022, 9, 20, 8, 31, 34, tzinfo=dt.UTC)
     assert case_note1.created_by_id == 2
-    assert case_note1.updated_at == dt.datetime(2022, 9, 20, 7, 31, 34, tzinfo=dt.timezone.utc)
+    assert case_note1.updated_at == dt.datetime(2022, 9, 20, 8, 31, 34, tzinfo=dt.UTC)
     assert case_note1.updated_by_id == 2
     assert case_note1.files.count() == 1
 
@@ -242,7 +242,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert list(cert3.cleared_by.values_list("id", flat=True)) == []
 
     assert cert1.status == "DR"
-    assert cert1.created_at == dt.datetime(2022, 4, 29, 12, 21, tzinfo=dt.timezone.utc)
+    assert cert1.created_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
     assert cert2.status == "AR"
     assert cert2.document_references.count() == 0
     assert cert3.status == "AC"
@@ -406,28 +406,25 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ea8.countries.count() == 1
     assert ea9.countries.count() == 1
 
-    assert ea7.variation_no == 0
     assert ea7.reference == "CA/2022/9907"
     assert ea7.variation_requests.count() == 0
     assert web.UniqueReference.objects.get(prefix="CA", year=2022, reference=9907)
 
-    assert ea8.variation_no == 0
     assert ea8.reference == "CA/2022/9908"
     assert ea8.variation_requests.count() == 0
     assert web.UniqueReference.objects.get(prefix="CA", year=2022, reference=9908)
 
-    assert ea9.variation_no == 2
     assert ea9.reference == "CA/2022/9909/2"
     assert ea9.variation_requests.count() == 2
     assert web.UniqueReference.objects.get(prefix="CA", year=2022, reference=9909)
 
     vr2, vr3 = ea9.variation_requests.order_by("pk")
     assert vr2.what_varied == "Changes 2"
-    assert vr2.requested_datetime == dt.datetime(2022, 10, 13, 10, 1, 5, tzinfo=dt.timezone.utc)
-    assert vr2.closed_datetime == dt.datetime(2022, 10, 14, 11, 1, 5, tzinfo=dt.timezone.utc)
+    assert vr2.requested_datetime == dt.datetime(2022, 10, 13, 11, 1, 5, tzinfo=dt.UTC)
+    assert vr2.closed_datetime == dt.datetime(2022, 10, 14, 12, 1, 5, tzinfo=dt.UTC)
     assert vr3.what_varied == "Changes 3"
-    assert vr3.requested_datetime == dt.datetime(2022, 10, 15, 10, 1, 5, tzinfo=dt.timezone.utc)
-    assert vr3.closed_datetime == dt.datetime(2022, 10, 16, 11, 1, 5, tzinfo=dt.timezone.utc)
+    assert vr3.requested_datetime == dt.datetime(2022, 10, 15, 11, 1, 5, tzinfo=dt.UTC)
+    assert vr3.closed_datetime == dt.datetime(2022, 10, 16, 12, 1, 5, tzinfo=dt.UTC)
 
     assert ea7.update_requests.count() == 0
     assert ea8.update_requests.count() == 0
@@ -497,7 +494,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     sch2, sch3 = cfs3.schedules.order_by("pk")
 
     assert sch1.legislations.count() == 0
-    assert sch1.created_at == dt.datetime(2022, 11, 1, 12, 30, tzinfo=dt.timezone.utc)
+    assert sch1.created_at == dt.datetime(2022, 11, 1, 12, 30, tzinfo=dt.UTC)
     assert sch1.is_biocidal() is False
     assert sch2.legislations.count() == 2
     assert sch2.is_biocidal() is False

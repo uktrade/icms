@@ -4,13 +4,13 @@ import pytest
 from pytest_django.asserts import assertContains, assertTemplateUsed
 
 from web.models import File, GeneratedReport
-from web.reports.constants import ReportStatus, ReportType
+from web.reports.constants import DateFilterType, ReportStatus, ReportType
 from web.reports.models import Report
 from web.tests.helpers import CaseURLS
 
 
-def get_issued_certificates_report_model():
-    return Report.objects.get(report_type=ReportType.ISSUED_CERTIFICATES)
+def get_report_model(report_type):
+    return Report.objects.get(report_type=report_type)
 
 
 def test_report_list_view(report_user_client):
@@ -21,7 +21,7 @@ def test_report_list_view(report_user_client):
 
 
 def test_run_history_view(report_user_client):
-    report = get_issued_certificates_report_model()
+    report = get_report_model(ReportType.ISSUED_CERTIFICATES)
     response = report_user_client.get(CaseURLS.run_history_view(report.pk))
     assert response.status_code == 200
     assertContains(response, "Run History")
@@ -29,28 +29,60 @@ def test_run_history_view(report_user_client):
     assertTemplateUsed(response, "web/domains/reports/run-history-view.html")
 
 
+@pytest.mark.parametrize(
+    "report_type,post_data",
+    (
+        (
+            ReportType.ISSUED_CERTIFICATES,
+            {
+                "title": "test report",
+                "date_from": "1-Jan-2022",
+                "date_to": "1-Jan-2022",
+                "notes": "",
+                "application_type": "CFS",
+                "legislation": ["20"],
+            },
+        ),
+        (
+            ReportType.ACCESS_REQUESTS,
+            {
+                "title": "test report",
+                "date_from": "1-Jan-2022",
+                "date_to": "1-Jan-2022",
+                "notes": "",
+            },
+        ),
+        (
+            ReportType.IMPORT_LICENCES,
+            {
+                "title": "test report",
+                "date_from": "1-Jan-2022",
+                "date_to": "1-Jan-2022",
+                "notes": "",
+                "application_type": "SPS",
+                "date_filter_type": DateFilterType.CLOSED,
+            },
+        ),
+    ),
+)
 @mock.patch("web.reports.tasks.generate_report_task.delay")
-def test_run_report_view(mock_generate_report, report_user_client):
+def test_run_report_view(mock_generate_report, report_user_client, report_type, post_data):
     mock_generate_report.return_value = None
-    report = get_issued_certificates_report_model()
+    report = get_report_model(report_type)
     response = report_user_client.post(
         CaseURLS.run_report_view(report.pk),
-        data={
-            "title": "test report",
-            "date_from": "1-Jan-2022",
-            "date_to": "1-Jan-2022",
-            "notes": "",
-        },
+        data=post_data,
     )
-    assert response.status_code == 302
+    assert response.status_code == 302, response.context["form"].errors
     assert mock_generate_report.called is True
     assert response.headers["location"] == CaseURLS.run_history_view(report.pk)
 
 
 @pytest.mark.parametrize(
-    "post_data,expected_errors",
+    "report_type,post_data,expected_errors",
     (
         (
+            ReportType.ACCESS_REQUESTS,
             {
                 "title": "test report",
                 "date_from": "1-Jan-2022",
@@ -61,6 +93,7 @@ def test_run_report_view(mock_generate_report, report_user_client):
             {"date_to": ["You must enter this item"]},
         ),
         (
+            ReportType.ISSUED_CERTIFICATES,
             {
                 "title": "test report",
                 "date_from": "1-Jan-2022",
@@ -74,6 +107,7 @@ def test_run_report_view(mock_generate_report, report_user_client):
             },
         ),
         (
+            ReportType.ISSUED_CERTIFICATES,
             {
                 "title": "test report",
                 "date_from": "1-Jan-2022",
@@ -86,27 +120,70 @@ def test_run_report_view(mock_generate_report, report_user_client):
             },
         ),
         (
+            ReportType.ISSUED_CERTIFICATES,
             {
                 "title": "test report",
                 "date_from": "1-Jan-2022",
                 "date_to": "1-Feb-2022",
                 "notes": "",
-                "application_type": "TEST",
+                "application_type": "SPS",
             },
             {
                 "application_type": [
-                    "Select a valid choice. TEST is not one of the available choices."
+                    "Select a valid choice. SPS is not one of the available choices."
                 ]
             },
+        ),
+        (
+            ReportType.IMPORT_LICENCES,
+            {
+                "title": "test report",
+                "date_from": "1-Jan-2022",
+                "date_to": "1-Feb-2022",
+                "notes": "",
+                "application_type": "SPS",
+                "date_filter_type": "",
+            },
+            {
+                "date_filter_type": ["You must enter this item"],
+            },
+        ),
+        (
+            ReportType.IMPORT_LICENCES,
+            {
+                "title": "test report",
+                "date_from": "1-Jan-2022",
+                "date_to": "1-Feb-2022",
+                "notes": "",
+                "application_type": "CFS",
+                "date_filter_type": DateFilterType.SUBMITTED,
+            },
+            {
+                "application_type": [
+                    "Select a valid choice. CFS is not one of the available choices."
+                ]
+            },
+        ),
+        (
+            ReportType.ISSUED_CERTIFICATES,
+            {
+                "title": "test report",
+                "date_from": "1-Jan-2022",
+                "date_to": "1-Jan-2022",
+                "notes": "",
+                "application_type": "CFS",
+                "legislation": ["0"],
+            },
+            {"legislation": ["Select a valid choice. 0 is not one of the available choices."]},
         ),
     ),
 )
 @mock.patch("web.reports.tasks.generate_report_task.delay")
 def test_run_report_view_form_errors(
-    mock_generate_report, report_user_client, post_data, expected_errors
+    mock_generate_report, report_user_client, report_type, post_data, expected_errors
 ):
     mock_generate_report.return_value = None
-    report = get_issued_certificates_report_model()
+    report = get_report_model(report_type)
     response = report_user_client.get(CaseURLS.run_report_view(report.pk))
     assert response.status_code == 200
     response = report_user_client.post(

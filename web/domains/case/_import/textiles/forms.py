@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 from django import forms
 
@@ -13,7 +13,7 @@ from .widgets import TextilesCategoryCommodityGroupWidget, TextilesCommodityWidg
 
 def _get_shipping_year_selection():
     """Get year selection for Textiles (Quota) applications."""
-    current_year = datetime.date.today().year
+    current_year = dt.date.today().year
 
     return range(current_year, current_year + 11)
 

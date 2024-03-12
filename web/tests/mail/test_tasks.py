@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 from unittest import mock
 
 import freezegun
@@ -38,14 +38,14 @@ class TestMailTasks(AuthTestCase):
         Section5Authority.objects.create(
             importer=self.importer_two,
             start_date=self.start_date,
-            end_date=self.end_date + datetime.timedelta(days=1),
+            end_date=self.end_date + dt.timedelta(days=1),
             is_active=True,
             reference="13/A/D/0001",
         )
         Section5Authority.objects.create(
             importer=self.importer,
             start_date=self.start_date,
-            end_date=self.end_date - datetime.timedelta(days=1),
+            end_date=self.end_date - dt.timedelta(days=1),
             is_active=True,
             reference="14/A/D/0001",
         )
@@ -86,7 +86,7 @@ class TestMailTasks(AuthTestCase):
             importer=self.importer_two,
             issuing_constabulary=self.derbyshire,
             start_date=self.start_date,
-            end_date=self.end_date + datetime.timedelta(days=1),
+            end_date=self.end_date + dt.timedelta(days=1),
             is_active=True,
             reference="13/A/D/0001",
         )
@@ -94,7 +94,7 @@ class TestMailTasks(AuthTestCase):
             importer=self.importer,
             issuing_constabulary=self.derbyshire,
             start_date=self.start_date,
-            end_date=self.end_date - datetime.timedelta(days=1),
+            end_date=self.end_date - dt.timedelta(days=1),
             is_active=True,
             reference="14/A/D/0001",
         )
@@ -119,8 +119,8 @@ class TestMailTasks(AuthTestCase):
     def setup(self, _setup):
         self.derbyshire = Constabulary.objects.get(name="Derbyshire")
         self.cheshire = Constabulary.objects.get(name="Cheshire")
-        self.start_date = datetime.date(2020, 2, 16) - datetime.timedelta(days=10)
-        self.end_date = datetime.date(2020, 2, 16) + datetime.timedelta(days=30)
+        self.start_date = dt.date(2020, 2, 16) - dt.timedelta(days=10)
+        self.end_date = dt.date(2020, 2, 16) + dt.timedelta(days=30)
 
     @mock.patch("web.mail.tasks.send_retract_mailshot_email")
     def test_send_retract_mailshot_email_task(self, mock_send_email, draft_mailshot):
@@ -167,9 +167,7 @@ class TestMailTasks(AuthTestCase):
         send_authority_expiring_section_5_email_task.delay()
         assert mock_get_importer_details.called is True
         assert mock_send_email.called is False
-        mock_get_importer_details.assert_any_call(
-            Section5Authority, datetime.date(2020, 3, 17), None
-        )
+        mock_get_importer_details.assert_any_call(Section5Authority, dt.date(2020, 3, 17), None)
 
     @freezegun.freeze_time("2020-02-16 12:00:00")
     @mock.patch("web.mail.tasks.send_authority_expiring_section_5_email")
@@ -183,7 +181,7 @@ class TestMailTasks(AuthTestCase):
         send_authority_expiring_section_5_email_task.delay()
         assert mock_get_importer_details.called is True
         assert mock_send_email.called is True
-        mock_send_email.assert_any_call(importers, datetime.date(2020, 3, 17))
+        mock_send_email.assert_any_call(importers, dt.date(2020, 3, 17))
 
     @mock.patch("web.mail.tasks.send_authority_expiring_firearms_email")
     @mock.patch("web.mail.tasks.get_expiring_importers_details")
@@ -200,8 +198,8 @@ class TestMailTasks(AuthTestCase):
     def test_send_authority_expiring_firearms_email_task_no_importers(
         self, mock_get_importer_details, mock_send_email
     ):
-        start_date = timezone.now().date() - datetime.timedelta(days=10)
-        end_date = timezone.now().date() + datetime.timedelta(days=30)
+        start_date = timezone.now().date() - dt.timedelta(days=10)
+        end_date = timezone.now().date() + dt.timedelta(days=30)
         FirearmsAuthority.objects.create(
             importer=self.importer,
             issuing_constabulary=self.cheshire,
@@ -242,5 +240,5 @@ class TestMailTasks(AuthTestCase):
         send_authority_expiring_firearms_email_task.delay()
         assert mock_get_importer_details.called is True
         assert mock_send_email.call_count == 2
-        mock_send_email.assert_any_call(importers, datetime.date(2020, 3, 17), self.cheshire)
-        mock_send_email.assert_any_call(importers, datetime.date(2020, 3, 17), self.derbyshire)
+        mock_send_email.assert_any_call(importers, dt.date(2020, 3, 17), self.cheshire)
+        mock_send_email.assert_any_call(importers, dt.date(2020, 3, 17), self.derbyshire)

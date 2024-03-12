@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime as dt
 
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
@@ -13,11 +13,14 @@ class Report(models.Model):
     report_type = models.CharField(max_length=120, choices=ReportType.choices, unique=True)
 
     @property
-    def last_run_completed_at(self) -> datetime | None:
+    def last_run_completed_at(self) -> dt.datetime | None:
         last_run = self.schedules.order_by("-finished_at").first()
         if last_run and last_run.finished_at:
             return last_run.finished_at
         return None
+
+    def __str__(self):
+        return self.get_report_type_display()
 
 
 class ScheduleReport(models.Model):
@@ -37,6 +40,9 @@ class ScheduleReport(models.Model):
         choices=ReportStatus.choices,
         default=ReportStatus.SUBMITTED,
     )
+
+    def __str__(self):
+        return f"{self.report.get_report_type_display()} - Schedule:{self.pk}"
 
 
 class GeneratedReport(models.Model):

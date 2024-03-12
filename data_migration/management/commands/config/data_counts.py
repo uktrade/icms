@@ -2,7 +2,7 @@ from django.db.models import Count
 
 import web.models as web
 from data_migration import queries
-from data_migration.management.commands._types import CheckCount, CheckModel, CheckQuery
+from data_migration.management.commands.types import CheckCount, CheckModel, CheckQuery
 from web.flow.models import ProcessTypes
 
 CHECK_DATA_COUNTS: list[CheckCount] = [

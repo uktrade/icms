@@ -279,7 +279,8 @@ CACHES = {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": REDIS_URL,
         "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
-    }
+    },
+    "django_compressor_cache": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"},
 }
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
@@ -310,11 +311,6 @@ GUARDIAN_RENDER_403 = True
 # https://django-guardian.readthedocs.io/en/stable/userguide/custom-user-model.html#anonymous-user-creation
 GUARDIAN_GET_INIT_ANONYMOUS_USER = "web.auth.backends.get_anonymous_user_instance"
 
-# Used to add dummy test in non prod environments
-ALLOW_DISASTROUS_DATA_DROPS_NEVER_ENABLE_IN_PROD = (
-    env.allow_disastrous_data_drops_never_enable_in_prod
-)
-
 # Used to bypass chief in non prod environments
 ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD = env.allow_bypass_chief_never_enable_in_prod
 
@@ -334,6 +330,10 @@ HTML_MINIFY = True
 
 # Django Compressor
 COMPRESS_OFFLINE = True
+# COMPRESS_CACHE_BACKEND default value is "default" which for ICMS is a redis cache
+# There is no redis connection at build time in DBT Platform so have a specific cache for
+# django-compressor to use.
+COMPRESS_CACHE_BACKEND = "django_compressor_cache"
 
 # ICMS-HMRC settings
 SEND_LICENCE_TO_CHIEF = env.send_licence_to_chief
@@ -461,6 +461,7 @@ CSP_SCRIPT_SRC = (
     "'self'",
     "https://sentry.ci.uktrade.digital/",
     "https://cdnjs.cloudflare.com",
+    "https://www.googletagmanager.com",
 )
 
 # JS scripts can import other scripts, following the same rules as above
@@ -496,3 +497,12 @@ CSP_REPORT_URI = env.csp_report_uri
 # PDF signature certificate stuff
 P12_SIGNATURE_BASE_64 = env.p12_signature_base_64
 P12_SIGNATURE_PASSWORD = env.p12_signature_password
+
+# Google Analytics stuff
+GTM_ENABLED = env.gtm_enabled
+
+GTM_CONTAINER_IDS = {
+    "Caseworker": env.gtm_caseworker_container_id,
+    "Export A Certificate": env.gtm_exporter_container_id,
+    "Import A Licence": env.gtm_importer_container_id,
+}

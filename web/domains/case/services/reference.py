@@ -83,11 +83,32 @@ def get_import_licence_reference(
 def get_export_certificate_reference(
     lock_manager: "LockManager", application: "ExportApplication"
 ) -> str:
-    case_reference = _get_next_reference(
-        lock_manager, prefix=Prefix.EXPORT_CERTIFICATE_DOCUMENT, use_year=True
-    )
+    """Creates an export application certificate reference.
 
-    return _get_certificate_reference(application.process_type, case_reference.reference)
+    Reference formats:
+        - XXX/YYYY/NNNNN
+
+    Reference breakdown:
+        - XXX: certificate category
+        - YYYY: year certificate issued
+        - NNNNN: Next sequence value (padded to 5 digits)
+    """
+
+    match application.process_type:
+        case ProcessTypes.CFS:
+            prefix = Prefix.EXPORT_CERTIFICATE_DOCUMENT_CFS
+        case ProcessTypes.COM:
+            prefix = Prefix.EXPORT_CERTIFICATE_DOCUMENT_COM
+        case ProcessTypes.GMP:
+            prefix = Prefix.EXPORT_CERTIFICATE_DOCUMENT_GMP
+        case _:
+            raise ValueError(
+                f"Invalid process_type {application.process_type}: ExportApplication process_type is required."
+            )
+
+    case_reference = _get_next_reference(lock_manager, prefix=prefix, use_year=True)
+
+    return _get_reference_string(case_reference, use_year=True, min_digits=5)
 
 
 def get_mailshot_reference(lock_manager: "LockManager") -> str:
@@ -197,20 +218,3 @@ def _get_licence_reference(
 def _get_check_digit(val: int) -> str:
     idx = val % 13
     return "ABCDEFGHXJKLM"[idx]
-
-
-def _get_certificate_reference(process_type: str, next_sequence_value: int) -> str:
-    """Creates an export application certificate reference.
-
-    Reference formats:
-        - XXX/YYYY/NNNNN
-
-    Reference breakdown:
-        - XXX: licence category
-        - YYYY: year certificate issued
-        - NNNNN: Next sequence value (padded to 5 digits)
-    """
-    prefix = {ProcessTypes.CFS: "CFS", ProcessTypes.COM: "COM", ProcessTypes.GMP: "GMP"}
-    xxx = prefix[process_type]  # type: ignore[index]
-
-    return f"{xxx}/{timezone.now().year}/{next_sequence_value:05}"

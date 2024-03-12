@@ -1,5 +1,5 @@
 import binascii
-import datetime
+import datetime as dt
 import os
 from unittest import mock
 
@@ -12,12 +12,12 @@ from django.core.management import call_command
 from django.test import override_settings, signals
 from django.test.client import Client
 from django.urls import reverse
+from freezegun import freeze_time
 from jinja2 import Template as Jinja2Template
 from notifications_python_client import NotificationsAPIClient
 from pytest_django.asserts import assertRedirects
 
 from web.auth.fox_hasher import FOXPBKDF2SHA1Hasher
-from web.domains.case._import.fa_oil.models import ChecklistFirearmsOILApplication
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import end_process_task
@@ -27,11 +27,14 @@ from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
+    ChecklistFirearmsOILApplication,
+    Country,
     DFLApplication,
     DFLChecklist,
     Exporter,
     ExporterAccessRequest,
     File,
+    ImportContact,
     Importer,
     ImporterAccessRequest,
     Mailshot,
@@ -46,11 +49,13 @@ from web.models import (
     Task,
     User,
     WoodQuotaApplication,
+    WoodQuotaChecklist,
 )
 from web.models.shared import YesNoNAChoices
-from web.reports.constants import ReportType
+from web.reports.constants import DateFilterType, ReportType
 from web.sites import SiteName
 from web.tests.helpers import CaseURLS, get_test_client
+from web.tests.utils.search.conftest import Build, importer_one_fixture_data  # NOQA
 
 from .application_utils import (
     create_in_progress_cfs_app,
@@ -847,7 +852,243 @@ def completed_sil_app(fa_sil_app_submitted, ilb_admin_client, ilb_admin_user):
 
     task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
     end_process_task(task)
-    document_pack.pack_draft_set_active(app)
+    _set_document_pack_active(app)
+    _add_files_to_active_document_pack(app, ilb_admin_user)
+    return app
+
+
+@pytest.fixture
+def completed_sil_app_with_supplementary_report(completed_sil_app, importer_client):
+    app = completed_sil_app
+    report = _add_supplementary_report_to_app(app, importer_client)
+    add_section_1_firearm_url = CaseURLS.fa_sil_report_manual_add(
+        app.pk, report.pk, app.goods_section1.first().pk, "section1"
+    )
+    importer_client.post(
+        add_section_1_firearm_url,
+        data={
+            "calibre": "1mm",
+            "model": "Test-Section1",
+            "proofing": "yes",
+            "serial_number": "11111111111",
+        },
+    )
+
+    add_section_5_firearm_url = CaseURLS.fa_sil_report_manual_add(
+        app.pk, report.pk, app.goods_section5.first().pk, "section5"
+    )
+    importer_client.post(
+        add_section_5_firearm_url,
+        data={
+            "calibre": "5mm",
+            "model": "Test-Section5",
+            "proofing": "no",
+            "serial_number": "555555555555",
+        },
+    )
+    add_section_2_firearm_url = CaseURLS.fa_sil_report_manual_add(
+        app.pk, report.pk, app.goods_section2.first().pk, "section2"
+    )
+    importer_client.post(
+        add_section_2_firearm_url,
+        data={
+            "calibre": "2mm",
+            "model": "Test-Section2",
+            "proofing": "no",
+            "serial_number": "22222222222",
+        },
+    )
+    add_section_5_ob_firearm_url = CaseURLS.fa_sil_report_manual_add(
+        app.pk, report.pk, app.goods_section582_obsoletes.first().pk, "section582-obsolete"
+    )
+    importer_client.post(
+        add_section_5_ob_firearm_url,
+        data={
+            "calibre": "5.1mm",
+            "model": "Test-Section5-Obsolete",
+            "proofing": "no",
+            "serial_number": "5555555555551",
+        },
+    )
+    add_section_5_other_firearm_url = CaseURLS.fa_sil_report_manual_add(
+        app.pk, report.pk, app.goods_section582_others.first().pk, "section582-other"
+    )
+    importer_client.post(
+        add_section_5_other_firearm_url,
+        data={
+            "calibre": "5.2mm",
+            "model": "Test-Section5Others",
+            "proofing": "no",
+            "serial_number": "5555555555552",
+        },
+    )
+    app.refresh_from_db()
+    return app
+
+
+@pytest.fixture
+def completed_oil_app_with_supplementary_report(completed_oil_app, importer_client):
+    app = completed_oil_app
+    report = _add_supplementary_report_to_app(app, importer_client)
+    add_report_url = CaseURLS.fa_oil_report_upload_add(app.pk, report.pk)
+    importer_client.post(
+        add_report_url,
+        data={"file": SimpleUploadedFile("myimage.png", b"file_content")},
+    )
+    app.refresh_from_db()
+    return app
+
+
+@pytest.fixture
+def completed_dfl_app_with_supplementary_report(completed_dfl_app, importer_client):
+    app = completed_dfl_app
+    report = _add_supplementary_report_to_app(app, importer_client)
+    add_report_url = CaseURLS.fa_dfl_report_manual_add(
+        app.pk, report.pk, app.goods_certificates.first().pk
+    )
+    importer_client.post(
+        add_report_url,
+        data={
+            "calibre": "4.1mm",
+            "model": "DFL Firearm",
+            "proofing": "yes",
+            "serial_number": "5555555555552",
+        },
+    )
+    app.refresh_from_db()
+    return app
+
+
+def _add_supplementary_report_to_app(app, client):
+    # Add import contact
+    create_import_contact_url = CaseURLS.fa_create_import_contact(app.pk, ImportContact.LEGAL)
+    add_contact_data = {
+        "first_name": "first_name value",
+        "registration_number": "registration_number value",
+        "street": "street value",
+        "city": "city value",
+        "postcode": "postcode value",
+        "region": "region value",
+        "country": Country.objects.first().pk,
+        "dealer": "yes",
+    }
+
+    client.post(create_import_contact_url, data=add_contact_data)
+    create_report_url = CaseURLS.fa_create_report(app.pk)
+    response = client.get(create_report_url)
+    contact_pk = response.context["form"].fields["bought_from"].queryset.first().pk
+
+    # Add Report
+    client.post(
+        create_report_url,
+        data={
+            "bought_from": contact_pk,
+            "date_received": "13-Feb-2024",
+            "transport": "air",
+        },
+    )
+    return app.supplementary_info.reports.first()
+
+
+@pytest.fixture
+def completed_oil_app(fa_oil_app_submitted, ilb_admin_client, ilb_admin_user):
+    """A completed firearms oil application."""
+    app = fa_oil_app_submitted
+
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    app.refresh_from_db()
+    app.cover_letter_text = "Example Cover letter"
+    app.decision = app.APPROVE
+    app.save()
+
+    _set_valid_licence(app)
+    _add_valid_checklist(app)
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    # Now fake complete the app
+    app.status = ImpExpStatus.COMPLETED
+    app.save()
+
+    task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
+    end_process_task(task)
+    _set_document_pack_active(app)
+    _add_files_to_active_document_pack(app, ilb_admin_user)
+    return app
+
+
+@pytest.fixture
+def completed_sps_app(importer_one_fixture_data, ilb_admin_client, ilb_admin_user):  # NOQA
+    with freeze_time("2024-01-01 12:00:00"):
+        app = Build.sps_application(
+            "sps app 1",
+            importer_one_fixture_data,
+            origin_country="Afghanistan",
+            consignment_country="Armenia",
+            commodity_code="111111",
+        )
+        ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    app.refresh_from_db()
+    app.cover_letter_text = "Example Cover letter"
+    app.decision = app.APPROVE
+    app.save()
+
+    _set_valid_licence(app)
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    # Now fake complete the app
+    app.status = ImpExpStatus.COMPLETED
+    app.save()
+
+    task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
+    end_process_task(task)
+    _set_document_pack_active(app)
+    _add_files_to_active_document_pack(app, ilb_admin_user)
+    return app
+
+
+def _set_document_pack_active(app):
+    with freeze_time(app.submit_datetime) as frozen_datetime:
+        frozen_datetime.tick(delta=dt.timedelta(days=1, hours=5, minutes=2))
+        document_pack.pack_draft_set_active(app)
+
+
+@pytest.fixture
+def completed_wood_app(wood_app_submitted, ilb_admin_client, ilb_admin_user):
+    """A completed wood application."""
+    app = wood_app_submitted
+
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    app.refresh_from_db()
+    app.cover_letter_text = "Example Cover letter"
+    app.decision = app.APPROVE
+    app.save()
+
+    licence = _set_valid_licence(app)
+    licence.issue_paper_licence_only = True
+    licence.save()
+
+    _add_valid_checklist(app)
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    # Now fake complete the app
+    app.status = ImpExpStatus.COMPLETED
+    app.save()
+
+    task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
+    end_process_task(task)
+    _set_document_pack_active(app)
     _add_files_to_active_document_pack(app, ilb_admin_user)
     return app
 
@@ -877,7 +1118,35 @@ def completed_dfl_app(fa_dfl_app_submitted, ilb_admin_client, ilb_admin_user):
 
     task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
     end_process_task(task)
-    document_pack.pack_draft_set_active(app)
+    _set_document_pack_active(app)
+    _add_files_to_active_document_pack(app, ilb_admin_user)
+    return app
+
+
+@pytest.fixture
+def completed_sanctions_app(sanctions_app_submitted, ilb_admin_client, ilb_admin_user):
+    app = sanctions_app_submitted
+
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk))
+
+    app.refresh_from_db()
+    app.cover_letter_text = "Example Cover letter"
+    app.decision = app.APPROVE
+    app.save()
+
+    _set_valid_licence(app)
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk))
+    assertRedirects(response, reverse("workbasket"), 302)
+
+    # Now fake complete the app
+    app.status = ImpExpStatus.COMPLETED
+    app.save()
+
+    task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
+    end_process_task(task)
+    _set_document_pack_active(app)
     _add_files_to_active_document_pack(app, ilb_admin_user)
     return app
 
@@ -903,7 +1172,7 @@ def completed_cfs_app(cfs_app_submitted, ilb_admin_client, ilb_admin_user):
     task = case_progress.get_expected_task(app, Task.TaskType.AUTHORISE)
     end_process_task(task)
 
-    document_pack.pack_draft_set_active(app)
+    _set_document_pack_active(app)
     _add_files_to_active_document_pack(app, ilb_admin_user)
     return app
 
@@ -1040,11 +1309,12 @@ def mock_gov_notify_client(enable_gov_notify_backend):
 
 def _set_valid_licence(app):
     licence = document_pack.pack_draft_get(app)
-    licence.case_completion_datetime = datetime.datetime(2020, 1, 1, tzinfo=datetime.UTC)
-    licence.licence_start_date = datetime.date(2020, 6, 1)
-    licence.licence_end_date = datetime.date(2024, 12, 31)
+    licence.case_completion_datetime = dt.datetime(2020, 1, 1, tzinfo=dt.UTC)
+    licence.licence_start_date = dt.date(2020, 6, 1)
+    licence.licence_end_date = dt.date(2024, 12, 31)
     licence.issue_paper_licence_only = False
     licence.save()
+    return licence
 
 
 def _add_valid_checklist(app):
@@ -1084,6 +1354,13 @@ def _add_valid_checklist(app):
                     "authority_required": YesNoNAChoices.yes,
                     "authority_received": YesNoNAChoices.yes,
                     "authority_police": YesNoNAChoices.yes,
+                }
+            )
+        case ProcessTypes.WOOD:
+            app.checklist = WoodQuotaChecklist.objects.create(
+                **checklist
+                | {
+                    "sigl_wood_application_logged": True,
                 }
             )
         case _:
@@ -1143,7 +1420,9 @@ def report_schedule(report_user):
         notes="",
         parameters={
             "date_from": "2010-02-01",
-            "date_to": "2030-01-01",
+            "date_to": "2024-01-12",
+            "date_filter_type": DateFilterType.SUBMITTED,
             "application_type": "",
+            "legislation": [],
         },
     )

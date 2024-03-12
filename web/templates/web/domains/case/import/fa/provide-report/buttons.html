@@ -3,19 +3,19 @@
     <a
       href="{{ report.get_add_firearm_url(goods.pk, 'manual') }}"
       class="button small-button icon-plus">
-      Manual Add Firearm
+      Enter Manually
     </a>
   {% elif report_type == "oil" %}
     <a
       href="{{ report.get_add_firearm_url('manual') }}"
       class="button small-button icon-plus">
-      Manual Add Firearm
+      Enter Manually
     </a>
   {% elif report_type == "sil" %}
     <a
       href="{{ report.get_add_firearm_url(section_type, section.pk, 'manual') }}"
       class="button small-button icon-plus">
-      Manual Add Firearm
+      Enter Manually
     </a>
   {% endif %}
 {%- endmacro -%}

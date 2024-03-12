@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime as dt
 from decimal import Decimal
 
 import pytest
@@ -18,10 +18,10 @@ def test_oil_application_parse_xml():
     assert len(reports) == 3
     sr1, sr2, sr3 = reports
     assert sr1.transport == "AIR"
-    assert sr1.date_received == datetime.strptime("2021-10-14", "%Y-%m-%d").date()
+    assert sr1.date_received == dt.datetime.strptime("2021-10-14", "%Y-%m-%d").date()
     assert sr1.supplementary_info_id == 1
     assert sr2.transport == "RAIL"
-    assert sr2.date_received == datetime.strptime("2021-11-03", "%Y-%m-%d").date()
+    assert sr2.date_received == dt.datetime.strptime("2021-11-03", "%Y-%m-%d").date()
     assert sr2.supplementary_info_id == 2
     assert sr3.transport is None
     assert sr3.date_received is None

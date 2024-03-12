@@ -1,6 +1,6 @@
 import base64
+import datetime as dt
 import re
-from datetime import datetime
 from typing import TYPE_CHECKING
 
 import pytz
@@ -58,13 +58,13 @@ def input_datetime(value):
     input_formats = formats.get_format("DATETIME_INPUT_FORMATS")
     for format in input_formats:
         try:
-            datetime.strptime(value, format)
+            dt.datetime.strptime(value, format)
             return value
         except ValueError:
             continue
 
     local_timezone = pytz.timezone(settings.TIME_ZONE)
-    naive_datetime = datetime.strptime(value, "%Y-%m-%d %H:%M:%S.%f")
+    naive_datetime = dt.datetime.strptime(value, "%Y-%m-%d %H:%M:%S.%f")
     local_datetime = local_timezone.localize(naive_datetime, is_dst=None)
     utc_datetime = local_datetime.astimezone(pytz.utc)
     for format in formats.get_format("DATETIME_INPUT_FORMATS"):
@@ -193,6 +193,8 @@ def environment(**options):
             "page_title": "Import Case Management System",
             "get_css_rules_as_string": get_css_rules_as_string,
             "get_file_base64": get_file_base64,
+            "gtm_enabled": settings.GTM_ENABLED,
+            "get_gtm_container_id": get_gtm_container_id,
         }
     )
     env.filters["show_all_attrs"] = show_all_attrs
@@ -214,3 +216,8 @@ def get_file_base64(path: str) -> str:
     """Get the file as a base64 string from the supplied path."""
     file_path = settings.STATIC_ROOT / path
     return base64.b64encode(file_path.read_bytes()).decode("utf-8")  # /PS-IGNORE
+
+
+def get_gtm_container_id(request: AuthenticatedHttpRequest) -> str:
+    current_site = request.site
+    return settings.GTM_CONTAINER_IDS[current_site.name]

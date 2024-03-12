@@ -207,18 +207,9 @@ class PrepareCertManufactureFormBase(forms.ModelForm):
             type_code=ExportApplicationType.Types.MANUFACTURE
         ).country_group.countries.filter(is_active=True)
 
-
-class EditCOMForm(OptionalFormMixin, PrepareCertManufactureFormBase):
-    """Form used when editing the application.
-
-    All fields are optional to allow partial record saving.
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Moved from PrepareCertManufactureFormBase to EditCOMForm as it shouldn't
-        # be set when creating a COM template.
-        self.fields["contact"].queryset = application_contacts(self.instance)
+        # Contact isn't a field in the template.
+        if "contact" in self.fields:
+            self.fields["contact"].queryset = application_contacts(self.instance)
 
     def clean_is_pesticide_on_free_sale_uk(self):
         """Perform extra logic even thought this is the edit form where every field is optional"""
@@ -239,6 +230,13 @@ class EditCOMForm(OptionalFormMixin, PrepareCertManufactureFormBase):
             raise forms.ValidationError(self.is_manufacturer_error_msg)
 
         return val
+
+
+class EditCOMForm(OptionalFormMixin, PrepareCertManufactureFormBase):
+    """Form used when editing the application.
+
+    All fields are optional to allow partial record saving.
+    """
 
 
 class SubmitCOMForm(EditCOMForm):
@@ -268,10 +266,6 @@ class SubmitCOMForm(EditCOMForm):
             raise forms.ValidationError(self.is_manufacturer_error_msg)
 
         return val
-
-
-class EditCOMTemplateForm(OptionalFormMixin, PrepareCertManufactureFormBase):
-    """COM Template form."""
 
 
 class EditCFSFormBase(forms.ModelForm):
@@ -601,7 +595,9 @@ class EditGMPFormBase(forms.ModelForm):
             if self.instance.responsible_person_address_entry_type == AddressEntryType.SEARCH:
                 self.fields["responsible_person_address"].widget.attrs["readonly"] = True
 
-            self.fields["contact"].queryset = application_contacts(self.instance)
+            # Contact isn't a field in the template.
+            if "contact" in self.fields:
+                self.fields["contact"].queryset = application_contacts(self.instance)
 
         # These are only sometimes required and will be checked in the clean method
         self.fields["auditor_accredited"].required = False
@@ -678,16 +674,12 @@ class SubmitGMPForm(EditGMPFormBase):
         return cleaned_data
 
 
-class EditGMPTemplateForm(OptionalFormMixin, EditGMPFormBase):
-    """GMP Template form."""
-
-
 def form_class_for_application_type(type_code: str) -> type[ModelForm]:
     types_forms: dict[Any, type[ModelForm]] = {
         # These form classes have no required fields, no data cleaning methods.
         ExportApplicationType.Types.FREE_SALE: EditCFSTemplateForm,
-        ExportApplicationType.Types.GMP: EditGMPTemplateForm,
-        ExportApplicationType.Types.MANUFACTURE: EditCOMTemplateForm,
+        ExportApplicationType.Types.GMP: EditGMPForm,
+        ExportApplicationType.Types.MANUFACTURE: EditCOMForm,
     }
 
     try:

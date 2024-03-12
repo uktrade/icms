@@ -1,3 +1,4 @@
+<h3>Supplementary Report</h3>
 {% if not reports %}
   <div class="info-box info-box-info">
     There are no supplementary reports provided.
@@ -37,13 +38,6 @@
         {% endif %}
       </h3>
 
-      <div class="section-break"></div>
-      <div class="container setOutForm">
-        {{ application_field(report.transport | capitalize, 'Transport')}}
-        {{ application_field(report.str_date_received(), 'Date Received')}}
-        {{ application_field(report.bought_from, 'Bought From')}}
-      </div>
-
       {% with
         manual_firearms = report.get_report_firearms(is_manual=True),
         upload_firearms = report.get_report_firearms(is_upload=True),
@@ -52,6 +46,12 @@
       %}
         {% include "web/domains/case/import/fa/partials/report-firearm-list.html" %}
       {% endwith %}
+      <div class="section-break"></div>
+      <div class="container setOutForm">
+        {{ application_field(report.transport | capitalize, 'Transport')}}
+        {{ application_field(report.str_date_received(), 'Date Received')}}
+        {{ application_field(report.bought_from, 'Bought From')}}
+      </div>
     </fieldset>
   {% endfor %}
 {% endif %}

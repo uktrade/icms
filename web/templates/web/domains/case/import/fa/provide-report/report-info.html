@@ -57,14 +57,7 @@
 
     {{ application_field(process.supplementary_info.completed_by, "Report Completed By") }}
     {{ application_field(process.supplementary_info.completed_datetime.strftime('%d-%b-%Y'), "Date Reporting Completed") }}
-  {% else %}
-    <div class="info-box info-box-info">
-      You must provide the details of who you bought the items from and one or more firearms
-      reports before you can complete reporting. Each report must include the means of transport,
-      the date the firearms were received and the details of who you bought the items from.
-      Once reporting has been completed you will still be able to access and update the reports from your application.
-    </div>
-
+  {% endif %}
     {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
       <div class="modal-popover-container hidden">
         <div class="modal-popover regular-popover" tabindex="0">
@@ -89,8 +82,7 @@
           </div>
         </div>
       </div>
-
-      {% if not process.supplementary_info.reports.exists() %}
+      {% if not process.supplementary_info.reports.exists() and not contacts %}
         {{ fields.field(form.no_report_reason) }}
       {% endif %}
     {%- endcall %}
@@ -98,6 +90,4 @@
     <button type="button" onclick="$('.modal-popover-container').show()" class="button primary-button">
       Confirm Reporting Complete
     </button>
-
-  {% endif %}
 {% endblock %}
