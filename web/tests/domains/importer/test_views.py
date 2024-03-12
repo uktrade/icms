@@ -4,6 +4,7 @@ from urllib.parse import urljoin
 
 import freezegun
 import pytest
+from django.contrib.messages import get_messages
 from django.urls import reverse
 from django.utils import timezone
 from guardian.shortcuts import remove_perm
@@ -307,6 +308,38 @@ class TestImporterEditView(AuthTestCase):
                 response.context["form"].fields[field].help_text
                 == "Contact ILB to update this field."
             )
+
+    @patch("web.domains.importer.forms.api_get_company")
+    def test_warning_message_displayed_admin_missing_eori_number(self, api_get_company):
+        """Tests that a warning message is displayed when the admin user doesn't provide an EORI number."""
+        api_get_company.return_value = {
+            "registered_office_address": {
+                "address_line_1": "60 rue Wiertz",
+                "postcode": "B-1047",
+                "locality": "Bruxelles",
+            }
+        }
+        self.importer.eori_number = None
+        self.importer.save()
+
+        response = self.ilb_admin_client.post(
+            self.url,
+            data={
+                "name": self.importer.name,
+                "registered_number": "",
+                "eori_number": "",
+                "user": self.importer_user.pk,
+            },
+            follow=True,
+        )
+
+        assert response.status_code == HTTPStatus.OK
+        messages = list(get_messages(response.wsgi_request))
+        message = str(messages[0])
+        assert (
+            "An EORI number is required to progress an application from this importer, please provide one as soon as possible."
+            in message
+        )
 
     def test_prefilled_search_url(self):
         """Tests that the URL to search Importer Access Requests is prefilled with the importer name."""

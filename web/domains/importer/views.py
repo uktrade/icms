@@ -1,6 +1,7 @@
 import logging
 from typing import Any
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -258,7 +259,18 @@ def edit_importer(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
 
     if request.method == "POST" and form.is_valid():
         form.save()
-
+        if (
+            not form.cleaned_data.get("eori_number")
+            and not form.instance.eori_number
+            and is_user_org_admin(request.user, importer)
+        ):
+            # If the user is an admin and the importer does not have an EORI number, show a warning message asking
+            # them to provide one ASAP
+            messages.warning(
+                request,
+                "An EORI number is required to progress an application from this importer, "
+                "please provide one as soon as possible.",
+            )
         return redirect(reverse("importer-edit", kwargs={"pk": pk}))
 
     contacts = organisation_get_contacts(importer)
