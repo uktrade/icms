@@ -241,6 +241,10 @@ def _get_fa_sil_goods(application: "sil_models.SILApplication") -> list[tuple[st
             "goods_section582_obsoletes",
             "to which Section 58(2) of the Firearms Act 1968, as amended, applies.",
         ),
+        (
+            "goods_legacy",
+            "",
+        ),
     )
 
     fa_sil_goods = []
@@ -256,7 +260,7 @@ def _get_fa_sil_goods(application: "sil_models.SILApplication") -> list[tuple[st
 def get_fa_sil_goods_item(
     goods_section: str, active_goods: "QuerySet[SILGoods]", label_suffix: str
 ) -> list[tuple[str, int]]:
-    if goods_section in ["goods_section1", "goods_section2", "goods_section5"]:
+    if goods_section in ["goods_section1", "goods_section2", "goods_section5", "goods_legacy"]:
         goods = []
         for g in active_goods:
             quantity = "Unlimited" if g.unlimited_quantity else g.quantity

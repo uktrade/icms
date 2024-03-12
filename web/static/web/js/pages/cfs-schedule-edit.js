@@ -9,6 +9,9 @@ window.addEventListener('load', (event) => {
 
   const events = new EditScheduleEventHandler(legislationSelect2);
 
+  // Show-hiding the is-biocidal-claim question on page load
+  showIsBiocidalClaim(events.legislationSelect2.val(), events.legislationConfig);
+
   // Setup listeners
   productRawMaterialRadios.forEach(
     (radio) => radio.addEventListener('change', (e) => {
@@ -59,6 +62,7 @@ class EditScheduleEventHandler {
     const isExportOnly = getIsExportOnlyValue();
 
     updateIsResponsiblePerson(selectedLegislations, isExportOnly, this.legislationConfig);
+    showIsBiocidalClaim(selectedLegislations, this.legislationConfig);
   }
 
   goodsOnUKMarketRadiosOnChange(e) {
@@ -128,7 +132,7 @@ function updateIsResponsiblePerson(legislations, exportOnly, config) {
 
 
 /**
- * Return true iof responsible person statement should be shown.
+ * Return true if responsible person statement should be shown.
  *
  * @param {Array.<string>} legislations List of selected legislations
  * @param {string} exportOnly value of export only field
@@ -152,4 +156,30 @@ function showResponsiblePersonStatement(legislations, exportOnly, config) {
   const notExportOnly = exportOnly === "no";
 
   return isEUCosmeticsRegulation && notExportOnly;
+}
+
+
+/**
+ * Return true if responsible person statement should be shown.
+ *
+ * @param {Array.<string>} legislations List of selected legislations
+ * @param {Object.<string, {isBiocidalClaim: boolean}>} config
+ */
+function showIsBiocidalClaim(legislations, config) {
+  let isBiocidalClaim = false;
+
+  for (const legislation of legislations) {
+
+    if (config.hasOwnProperty(legislation)) {
+      let legislationConfig = config[legislation];
+
+      if (legislationConfig.isBiocidalClaim) {
+        isBiocidalClaim = true;
+        break;
+      }
+    }
+  }
+
+  const isBiocidalClaimQuestion = document.querySelector("#biocidal-claim-question-wrapper");
+  isBiocidalClaimQuestion.style.display = isBiocidalClaim ? "block" : "none";
 }

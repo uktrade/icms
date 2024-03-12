@@ -35,11 +35,9 @@ def test_required_fields_importer_individual_form():
     form = ImporterIndividualForm({})
     assert form.is_valid() is False
     assert "user" in form.errors
-    assert "eori_number" in form.errors
 
     expected = "You must enter this item"
     assert expected in form.errors["user"]
-    assert expected in form.errors["eori_number"]
 
 
 def test_invalid_eori_number_importer_individual_form():
@@ -70,11 +68,9 @@ def test_required_fields_importer_organisation_form():
     form = ImporterOrganisationForm({})
     assert form.is_valid() is False
     assert "name" in form.errors
-    assert "eori_number" in form.errors
 
     expected = "You must enter this item"
     assert expected in form.errors["name"]
-    assert expected in form.errors["eori_number"]
 
 
 def test_invalid_eori_number_importer_organisation_form():
@@ -106,3 +102,102 @@ def test_type_importer_organisation_form(api_get_company):
     importer = form.save()
 
     assert importer.type == "ORGANISATION"
+
+
+@pytest.mark.django_db()
+def test_eori_number_required_importer_individual_form(importer):
+    """Assert the EORI number field is required when they already have one."""
+    importer.eori_number = "GBPR234234"
+    importer.save()
+    form = ImporterIndividualForm(instance=importer, data={"eori_number": ""})
+
+    assert not form.is_valid()
+    assert "eori_number" in form.errors
+    error = "You must enter this item"
+    assert error in form.errors["eori_number"]
+
+
+@pytest.mark.django_db()
+def test_eori_number_not_required_importer_individual_form(importer, importer_one_contact):
+    """Assert the EORI number field is not required when they don't already have one."""
+    importer.eori_number = None
+    importer.save()
+    form = ImporterIndividualForm(
+        instance=importer, data={"eori_number": "", "user": importer_one_contact.pk}
+    )
+
+    assert form.is_valid()
+
+
+@pytest.mark.django_db()
+@patch("web.domains.importer.forms.api_get_company")
+def test_eori_numer_required_importer_organisation_form(api_get_company, importer):
+    """Assert the EORI number field is required when they already have one."""
+    api_get_company.return_value = {
+        "registered_office_address": {
+            "address_line_1": "60 rue Wiertz",
+            "postcode": "B-1047",
+            "locality": "Bruxelles",
+        }
+    }
+
+    data = {"name": "hello", "eori_number": "", "registered_number": "42"}
+    form = ImporterOrganisationForm(instance=importer, data=data)
+
+    assert not form.is_valid()
+    assert "eori_number" in form.errors
+    error = "You must enter this item"
+    assert error in form.errors["eori_number"]
+
+
+@pytest.mark.django_db()
+@patch("web.domains.importer.forms.api_get_company")
+def test_eori_numer_not_required_importer_organisation_form(api_get_company, importer):
+    """Assert the EORI number field is not required when they don't already have one."""
+    api_get_company.return_value = {
+        "registered_office_address": {
+            "address_line_1": "60 rue Wiertz",
+            "postcode": "B-1047",
+            "locality": "Bruxelles",
+        }
+    }
+
+    importer.eori_number = None
+    importer.save()
+    data = {"name": "hello", "eori_number": "", "registered_number": "42"}
+    form = ImporterOrganisationForm(instance=importer, data=data)
+
+    assert form.is_valid()
+
+
+@pytest.mark.django_db()
+@patch("web.domains.importer.forms.api_get_company")
+def test_eori_numer_required_new_importer_organisation_form(api_get_company):
+    """Assert the EORI number field required when it's a newly created Importer."""
+    api_get_company.return_value = {
+        "registered_office_address": {
+            "address_line_1": "60 rue Wiertz",
+            "postcode": "B-1047",
+            "locality": "Bruxelles",
+        }
+    }
+
+    data = {"name": "hello", "eori_number": "", "registered_number": "42"}
+    form = ImporterOrganisationForm(data=data)
+
+    assert not form.is_valid()
+    assert "eori_number" in form.errors
+    error = "You must enter this item"
+    assert error in form.errors["eori_number"]
+
+
+@pytest.mark.django_db()
+def test_eori_number_required_new_importer_individual_form(importer_one_contact):
+    """Assert the EORI number field required when it's a newly created Importer."""
+    data = {"user": importer_one_contact.pk, "eori_number": ""}
+    form = ImporterIndividualForm(data)
+
+    assert not form.is_valid()
+    assert "eori_number" in form.errors
+    error = "You must enter this item"
+    assert error in form.errors["eori_number"]

@@ -25,8 +25,9 @@ class ImporterIndividualForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        self.fields["eori_number"].required = True
+        # EORI number is required if it's already in the DB, or if it's a new importer
+        if self.instance.eori_number or not self.instance.pk:
+            self.fields["eori_number"].required = True
 
     def clean(self):
         """Set type as individual as Importer can be an organisation too."""
@@ -35,11 +36,11 @@ class ImporterIndividualForm(forms.ModelForm):
 
     def clean_eori_number(self):
         """Make sure eori number starts with GBPR."""
-        eori_number = self.cleaned_data["eori_number"]
-        prefix = "GBPR"
-        if eori_number.startswith(prefix):
+        if eori_number := self.cleaned_data.get("eori_number"):
+            prefix = "GBPR"
+            if not eori_number.lower().startswith(prefix.lower()):
+                raise ValidationError(f"'{eori_number}' doesn't start with {prefix}")
             return eori_number
-        raise ValidationError(f"'{eori_number}' doesn't start with {prefix}")
 
 
 class ImporterIndividualNonILBForm(ImporterIndividualForm):
@@ -67,7 +68,10 @@ class ImporterOrganisationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["name"].required = True
         self.fields["registered_number"].required = True
-        self.fields["eori_number"].required = True
+
+        # EORI number is required if it's already in the DB, or if it's a new importer
+        if self.instance.eori_number or not self.instance.pk:
+            self.fields["eori_number"].required = True
 
     def clean(self):
         """Set type as organisation as Importer can be an individual too."""
@@ -90,13 +94,13 @@ class ImporterOrganisationForm(forms.ModelForm):
 
     def clean_eori_number(self):
         """Make sure eori number starts with GB."""
-        eori_number = self.cleaned_data["eori_number"]
-        prefix = "GB"
+        if eori_number := self.cleaned_data.get("eori_number"):
+            prefix = "GB"
 
-        if eori_number.startswith(prefix):
+            if not eori_number.lower().startswith(prefix.lower()):
+                raise ValidationError(f"'{eori_number}' doesn't start with {prefix}")
+
             return eori_number
-
-        raise ValidationError(f"'{eori_number}' doesn't start with {prefix}")
 
     def save(self, commit=True):
         instance = super().save(commit)

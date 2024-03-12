@@ -6,7 +6,12 @@
       <a href="{{ icms_url('importer-list') }}">Importer</a>
     </li>
     <li>
-      <a href="{{ icms_url('access:importer-list') }}">Importer Access Requests</a>
+      {% if request.resolver_match.url_name == "importer-edit" %}
+        {# we want to pass the current exporter ID into the URL so it can be prefilled in the importer-list view #}
+        <a href="{{ icms_url('access:importer-list') }}?importer_name={{ form.instance.name }}">Importer Access Requests</a>
+      {% else %}
+        <a href="{{ icms_url('access:importer-list') }}">Importer Access Requests</a>
+      {% endif %}
     </li>
   </ul>
   {% if page_title == "Agent" %}

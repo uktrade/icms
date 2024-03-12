@@ -1,6 +1,5 @@
-import datetime as dt
 from itertools import chain
-from typing import Any, ClassVar
+from typing import Any, ClassVar, final
 
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import Count, Model, OuterRef, Q, QuerySet, Subquery, Value
@@ -11,7 +10,6 @@ from web.domains.case._import.fa.types import (
     FaSupplementaryReport,
     ReportFirearms,
 )
-from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpAccessOrExpAccess
 from web.flow.models import ProcessTypes
@@ -31,25 +29,21 @@ from web.models import (
     UpdateRequest,
 )
 from web.models.shared import YesNoChoices
+from web.utils.pdf.utils import _get_fa_dfl_goods, _get_fa_sil_goods
 
+from . import utils
 from .constants import DateFilterType
 from .serializers import (
     AccessRequestTotalsReportSerializer,
+    DFLFirearmsLicenceSerializer,
     ExporterAccessRequestReportSerializer,
     ImporterAccessRequestReportSerializer,
     ImportLicenceSerializer,
     IssuedCertificateReportSerializer,
+    OILFirearmsLicenceSerializer,
+    SILFirearmsLicenceSerializer,
     SupplementaryFirearmsSerializer,
 )
-
-
-def format_time_delta(from_datetime: dt.datetime, to_datetime: dt.datetime) -> str:
-    if not from_datetime or not to_datetime:
-        return ""
-    time_delta = from_datetime - to_datetime
-    hours = time_delta.seconds // 3600
-    minutes = (time_delta.seconds % 3600) // 60
-    return f"{time_delta.days}d {hours}h {minutes}m"
 
 
 class IssuedCertificateReportFilter(BaseModel):
@@ -116,6 +110,54 @@ class ReportInterface:
         raise NotImplementedError
 
 
+class BaseFirearmsLicenceInterface(ReportInterface):
+    ReportFilter = BasicReportFilter
+    filters: BasicReportFilter
+
+    def get_application_filter(self) -> Q:
+        raise NotImplementedError
+
+    def get_queryset(self) -> QuerySet:
+        _filter = Q(
+            licences__case_completion_datetime__date__range=(
+                self.filters.date_from,
+                self.filters.date_to,
+            )
+        )
+        return ImportApplication.objects.filter(
+            _filter,
+            self.get_application_filter(),
+            decision=ImportApplication.APPROVE,
+            status__in=[ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED],
+            licences__document_references__reference__isnull=False,
+        ).order_by("reference")
+
+    def serialize_row(self, import_application: ImportApplication):
+        ia = import_application.get_specific_model()
+        licence = utils.get_licence_details(ia)
+        return self.ReportSerializer(
+            licence_reference=licence.reference,
+            variation_number=utils.get_variation_number(ia),
+            case_reference=ia.get_reference(),
+            importer_name=ia.importer.display_name,
+            eori_number=ia.importer.eori_number,
+            importer_address=utils.get_importer_address(ia),
+            submitted_datetime=ia.submit_datetime.date(),
+            last_submitted_datetime=ia.last_submit_datetime.date(),
+            licence_start_date=licence.start_date,
+            licence_end_date=licence.end_date,
+            coo_country_name=getattr(ia.origin_country, "name", ""),
+            coc_country_name=getattr(ia.consignment_country, "name", ""),
+            endorsements="\n".join(ia.endorsements.values_list("content", flat=True)),
+            revoked=ia.status == ImportApplication.Statuses.REVOKED,
+            **self.extra_fields(ia),
+        )
+
+    def extra_fields(self, ia: FaImportApplication) -> dict[str, Any]:
+        raise NotImplementedError
+
+
+@final
 class IssuedCertificateReportInterface(ReportInterface):
     ReportSerializer = IssuedCertificateReportSerializer
     ReportFilter = IssuedCertificateReportFilter
@@ -236,24 +278,16 @@ class IssuedCertificateReportInterface(ReportInterface):
     def get_total_processing_time(
         self, cdr: CaseDocumentReference, export_application: ExportApplication
     ) -> str:
-        return format_time_delta(
+        return utils.format_time_delta(
             cdr.content_object.case_completion_datetime, export_application.submit_datetime
         )
 
     def get_business_days_to_process(
         self, cdr: CaseDocumentReference, export_application: ExportApplication
     ) -> int:
-        start = export_application.submit_datetime.date()
-        end = cdr.content_object.case_completion_datetime.date()
-        date_diff = end - start
-        business_days = 0
-
-        for i in range(date_diff.days + 1):
-            day = start + dt.timedelta(days=i)
-            if day.weekday() < 5:
-                business_days += 1
-
-        return business_days
+        start_date = export_application.submit_datetime.date()
+        end_date = cdr.content_object.case_completion_datetime.date()
+        return utils.get_business_days(start_date, end_date)
 
 
 class ImporterAccessRequestInterface(ReportInterface):
@@ -284,12 +318,14 @@ class ImporterAccessRequestInterface(ReportInterface):
         )
 
 
+@final
 class ExporterAccessRequestInterface(ImporterAccessRequestInterface):
     ReportSerializer = ExporterAccessRequestReportSerializer
     model: Model = ExporterAccessRequest
     name = "Exporter Access Requests"
 
 
+@final
 class AccessRequestTotalsInterface(ReportInterface):
     name = "Access Requests Totals"
     ReportFilter = BasicReportFilter
@@ -322,6 +358,7 @@ class AccessRequestTotalsInterface(ReportInterface):
         ]
 
 
+@final
 class ImportLicenceInterface(ReportInterface):
     name = "Import Licence Data Extract"
     ReportSerializer = ImportLicenceSerializer
@@ -351,60 +388,24 @@ class ImportLicenceInterface(ReportInterface):
             queryset = queryset.filter(application_type__type=self.filters.application_type)
         return queryset
 
-    def get_licence_dates(self, start_date: dt.date | None, end_date: dt.date | None) -> str:
-        if not start_date or not end_date:
-            return ""
-        return f"{start_date.strftime('%d %b %Y')} - {end_date.strftime('%d %b %Y')}"
-
     def serialize_row(self, import_application: ImportApplication) -> ImportLicenceSerializer:
         ia = import_application.get_specific_model()
         is_adhoc = import_application.process_type == ProcessTypes.SANCTIONS
         is_sps = import_application.process_type == ProcessTypes.SPS
-
-        licences = document_pack.pack_licence_history(ia)
-
-        # Refused applications don't have licences associated with them
-        if not licences:
-            licence_start_date = None
-            licence_end_date = None
-            case_completion_datetime = None
-            latest_case_completion_datetime = None
-            time_to_initial_close = ""
-            licence_type = ""
-            licence_ref = ""
-        else:
-            first_licence = licences.first()
-            latest_licence = licences.last()
-
-            licence_type = "Paper" if latest_licence.issue_paper_licence_only else "Electronic"
-            case_completion_datetime = first_licence.case_completion_datetime
-            latest_case_completion_datetime = latest_licence.case_completion_datetime
-            licence_start_date = latest_licence.licence_start_date
-            licence_end_date = latest_licence.licence_end_date
-            time_to_initial_close = format_time_delta(case_completion_datetime, ia.submit_datetime)
-
-            # Legacy applications don't have documents associated to them in V1
-            if ia.legacy_case_flag or ia.status == ImportApplication.Statuses.WITHDRAWN:
-                licence_ref = ""
-            else:
-                # OPT applications have multiple licences so this is a filter rather than a get
-                doc_pack = latest_licence.document_references.filter(
-                    document_type=CaseDocumentReference.Type.LICENCE
-                ).first()
-                licence_ref = doc_pack.reference
+        licence = utils.get_licence_details(ia)
 
         return self.ReportSerializer(
             case_reference=ia.get_reference(),
-            licence_reference=licence_ref,
-            licence_type=licence_type,
+            licence_reference=licence.reference,
+            licence_type=licence.licence_type,
             under_appeal="",  # Unused field in V1
             ima_type=ia.application_type.type,
             ima_type_title=ia.application_type.get_type_display(),
             ima_sub_type=ia.application_type.sub_type,
             ima_sub_type_title=ia.application_type.get_sub_type_display(),
-            variation_number=self.get_variation_number(ia),
+            variation_number=utils.get_variation_number(ia),
             status=ia.status,
-            importer_name=ia.importer.name,
+            importer_name=ia.importer.display_name,
             agent_name=ia.agent.name if ia.agent else None,
             app_contact_name=getattr(ia.contact, "full_name", ""),
             coo_country_name=getattr(ia.origin_country, "name", ""),
@@ -413,12 +414,12 @@ class ImportLicenceInterface(ReportInterface):
             com_group_name=self.get_com_group_name(import_application),
             commodity_codes=self.get_commodity_codes(import_application, is_adhoc, is_sps),
             initial_submitted_datetime=ia.submit_datetime,
-            initial_case_closed_datetime=case_completion_datetime,
-            time_to_initial_close=time_to_initial_close,
-            latest_case_closed_datetime=latest_case_completion_datetime,
-            licence_dates=self.get_licence_dates(licence_start_date, licence_end_date),
-            licence_start_date=licence_start_date,
-            licence_end_date=licence_end_date,
+            initial_case_closed_datetime=licence.initial_case_closed_datetime,
+            time_to_initial_close=licence.time_to_initial_close,
+            latest_case_closed_datetime=licence.latest_case_closed_datetime,
+            licence_dates=utils.get_licence_dates(licence),
+            licence_start_date=licence.start_date,
+            licence_end_date=licence.end_date,
             importer_printable=ia.application_type.importer_printable,
         )
 
@@ -444,16 +445,10 @@ class ImportLicenceInterface(ReportInterface):
                 details.append(f"Code: {goods.commodity}; Desc: {goods.goods_description}")
         return ", ".join(details)
 
-    def get_variation_number(self, import_application: ImportApplication) -> int:
-        reference = import_application.reference or ""
-        variation_info = reference.split("/")[3:]
-        if variation_info:
-            return int(variation_info[0])
-        return 0
 
-
+@final
 class SupplementaryFirearmsInterface(ReportInterface):
-    name = "Supplementary firearms information"
+    name = "Supplementary firearms report"
     ReportSerializer = SupplementaryFirearmsSerializer
     ReportFilter = BasicReportFilter
     filters: BasicReportFilter
@@ -497,12 +492,7 @@ class SupplementaryFirearmsInterface(ReportInterface):
 
         report: FaSupplementaryReport = s.report
 
-        doc_packs = document_pack.pack_licence_history(ia)
-        latest_doc_pack = doc_packs.last()
-        licence = latest_doc_pack.document_references.get(
-            document_type=CaseDocumentReference.Type.LICENCE
-        )
-        licence_ref = licence.reference
+        licence = utils.get_licence_details(ia)
 
         if report.bought_from:
             bought_from_name = str(report.bought_from)
@@ -519,34 +509,26 @@ class SupplementaryFirearmsInterface(ReportInterface):
             goods_certificate = s.goods_certificate
 
         if is_dfl:
-            constabularies = ia.constabulary.name if ia.constabulary else ""
             goods_quantity = 1
         else:
-            constabularies = ", ".join(
-                ia.user_imported_certificates.values_list("constabulary__name", flat=True)
-            )
             goods_quantity = goods_certificate.quantity or 0 if goods_certificate else 0
 
         exceed_quantity = is_sil and getattr(goods_certificate, "unlimited_quantity", False)
 
-        importer_address = ia.importer_office.address.replace("\n", ", ")
-        if ia.importer_office.postcode:
-            importer_address = f"{importer_address}, {ia.importer_office.postcode}"
-
         return self.ReportSerializer(
-            licence_reference=licence_ref,
+            licence_reference=licence.reference,
             case_reference=ia.get_reference(),
             case_type=ia.application_type.sub_type,
-            importer_name=ia.importer.name,
+            importer_name=ia.importer.display_name,
             eori_number=ia.importer.eori_number,
-            importer_address=importer_address,
-            licence_start_date=latest_doc_pack.licence_start_date,
-            licence_end_date=latest_doc_pack.licence_end_date,
+            importer_address=utils.get_importer_address(ia),
+            licence_start_date=licence.start_date,
+            licence_end_date=licence.end_date,
             coo_country_name=getattr(ia.origin_country, "name", ""),
             coc_country_name=getattr(ia.consignment_country, "name", ""),
             endorsements="\n".join(ia.endorsements.values_list("content", flat=True)),
             report_date=report.date_received,
-            constabularies=constabularies,
+            constabularies=utils.get_constabularies(ia),
             bought_from=bought_from_name,
             bought_from_reg_no=bought_from_reg_no,
             bought_from_address=bought_from_address,
@@ -563,3 +545,56 @@ class SupplementaryFirearmsInterface(ReportInterface):
             exceed_quantity=exceed_quantity,
             goods_description_with_sub_section=s.get_description(),
         )
+
+
+@final
+class DFLFirearmsLicenceInterface(BaseFirearmsLicenceInterface):
+    name = "Deactivated Firearms Licences"
+    ReportSerializer = DFLFirearmsLicenceSerializer
+
+    def get_application_filter(self) -> Q:
+        return Q(dflapplication__isnull=False)
+
+    def extra_fields(self, ia: FaImportApplication) -> dict[str, Any]:
+        return {
+            "goods_description": "\n".join(_get_fa_dfl_goods(ia)),
+        }
+
+
+@final
+class OILFirearmsLicenceInterface(BaseFirearmsLicenceInterface):
+    name = "Open Firearms Licences"
+    ReportSerializer = OILFirearmsLicenceSerializer
+
+    def get_application_filter(self) -> Q:
+        return Q(openindividuallicenceapplication__isnull=False)
+
+    def extra_fields(self, ia: FaImportApplication) -> dict[str, Any]:
+        constabulary_email_times = utils.get_constabulary_email_times(ia)
+        return {
+            "constabularies": utils.get_constabularies(ia),
+            "first_constabulary_email_sent": constabulary_email_times.first_email_sent,
+            "last_constabulary_email_closed": constabulary_email_times.last_email_closed,
+        }
+
+
+@final
+class SILFirearmsLicenceInterface(BaseFirearmsLicenceInterface):
+    name = "Specific Firearms Licences"
+    ReportSerializer = SILFirearmsLicenceSerializer
+
+    def get_application_filter(self) -> Q:
+        return Q(silapplication__isnull=False)
+
+    def extra_fields(self, ia: FaImportApplication) -> dict[str, Any]:
+        constabulary_email_times = utils.get_constabulary_email_times(ia)
+        descriptions = []
+        for desc, quantity in _get_fa_sil_goods(ia):
+            descriptions.append(f"{quantity} x {desc}")
+
+        return {
+            "constabularies": utils.get_constabularies(ia),
+            "goods_description": "\n".join(descriptions),
+            "first_constabulary_email_sent": constabulary_email_times.first_email_sent,
+            "last_constabulary_email_closed": constabulary_email_times.last_email_closed,
+        }
