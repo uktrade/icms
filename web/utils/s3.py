@@ -20,7 +20,7 @@ def get_s3_client() -> "S3Client":
     if settings.AWS_S3_ENDPOINT_URL:
         extra_kwargs["endpoint_url"] = settings.AWS_S3_ENDPOINT_URL
 
-    if hasattr(settings, 'AWS_ACCESS_KEY_ID') and hasattr(settings, 'AWS_SECRET_ACCESS_KEY'):
+    if hasattr(settings, "AWS_ACCESS_KEY_ID") and hasattr(settings, "AWS_SECRET_ACCESS_KEY"):
         extra_kwargs["aws_access_key_id"] = settings.AWS_ACCESS_KEY_ID
         extra_kwargs["aws_secret_access_key"] = settings.AWS_SECRET_ACCESS_KEY
 
