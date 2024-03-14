@@ -5,6 +5,7 @@ python manage.py migrate
 
 if [ -n "${COPILOT_ENVIRONMENT_NAME}" ]; then
     echo "Running in DBT Platform"
+    export PLAYWRIGHT_BROWSERS_PATH="/workspace/playwright-deps"
     opentelemetry-instrument gunicorn config.wsgi --config config/gunicorn.py
 else
     echo "Running in Cloud Foundry"

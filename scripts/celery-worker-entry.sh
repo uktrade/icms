@@ -2,8 +2,9 @@
 
 if [ -n "${COPILOT_ENVIRONMENT_NAME}" ]; then
     echo "Running in DBT Platform"
-    celery --app=config.celery:app worker --loglevel=INFO -Q celery,mail
+    export PLAYWRIGHT_BROWSERS_PATH="/workspace/playwright-deps"
 
+    celery --app=config.celery:app worker --loglevel=INFO -Q celery,mail
 else
     echo "Running in Cloud Foundry"
     # In DBT platform the following will be done at the build stage
