@@ -25,7 +25,11 @@ from web.domains.case.utils import (
     submit_application,
     view_application_file,
 )
-from web.domains.cat.utils import InvalidTemplateException, set_template_data
+from web.domains.cat.utils import (
+    InvalidTemplateException,
+    set_template_data,
+    template_in_user_templates,
+)
 from web.domains.file.utils import create_file_model
 from web.flow.models import ProcessTypes
 from web.models import (
@@ -231,7 +235,7 @@ def get_application_template(user: User, template_pk: int) -> CertificateApplica
     """
     template = get_object_or_404(CertificateApplicationTemplate, pk=template_pk)
 
-    if template.user_can_view(user):
+    if template_in_user_templates(user, template):
         return template
     else:
         raise PermissionDenied

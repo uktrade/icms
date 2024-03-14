@@ -23,24 +23,26 @@
       <td>{{ template.last_updated.strftime('%d-%b-%Y %H:%M') }}</td>
       <td>
         {% if template.is_active %}
-        <a
-          href="{{ icms_url('export:create-application-from-template', kwargs={'type_code': template.application_type|lower, "template_pk": template.pk }) }}"
-          class="link-button button icon-magic-wand" title="Create Application">
-          Create Application
-        </a>
-        <a href="{{ icms_url('cat:edit', kwargs={'cat_pk': template.pk}) }}" class="link-button button icon-pencil" title="Edit Template">Edit</a>
-
-          <form method="POST" action="{{ icms_url('cat:archive', kwargs={'cat_pk': template.pk}) }}">
-            {{ csrf_input }}
-            <button type="submit" class="link-button button icon-bin" title="Archive Template">Archive</button>
-          </form>
+          <a
+            href="{{ icms_url('export:create-application-from-template', kwargs={'type_code': template.application_type|lower, "template_pk": template.pk }) }}"
+            class="link-button button icon-magic-wand" title="Create Application">
+            Create Application
+          </a>
+          {% if template.owner == request.user or template.sharing == "edit" %}
+            <a href="{{ icms_url('cat:edit', kwargs={'cat_pk': template.pk}) }}" class="link-button button icon-pencil" title="Edit Template">Edit</a>
+            <form method="POST" action="{{ icms_url('cat:archive', kwargs={'cat_pk': template.pk}) }}">
+              {{ csrf_input }}
+              <button type="submit" class="link-button button icon-bin" title="Archive Template">Archive</button>
+            </form>
+          {% endif %}
         {% else %}
-          <form method="POST" action="{{ icms_url('cat:restore', kwargs={'cat_pk': template.pk}) }}">
-            {{ csrf_input }}
-            <button type="submit" class="link-button button icon-undo2" title="Restore Template">Restore</button>
-          </form>
+          {% if template.owner == request.user or template.sharing == "edit" %}
+            <form method="POST" action="{{ icms_url('cat:restore', kwargs={'cat_pk': template.pk}) }}">
+              {{ csrf_input }}
+              <button type="submit" class="link-button button icon-undo2" title="Restore Template">Restore</button>
+            </form>
+          {% endif %}
         {% endif %}
-
       </td>
     </tr>
   {% endfor %}
