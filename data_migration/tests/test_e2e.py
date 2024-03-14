@@ -458,6 +458,29 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert ia1.variation_requests.count() == 0
     assert ia2.variation_requests.count() == 2
 
+    vr1, vr2 = ia2.variation_requests.order_by("pk")
+    assert vr1.extension_flag is False
+    assert vr1.status == web.VariationRequest.Statuses.REJECTED
+    assert vr1.requested_datetime == dt.datetime(2022, 4, 9, tzinfo=dt.UTC)
+    assert vr1.requested_by_id == 2
+    assert vr1.what_varied == "Licence extended"
+    assert vr1.why_varied == "Extension"
+    assert vr1.reject_cancellation_reason == "Wrong"
+    assert vr1.closed_datetime == dt.datetime(2022, 4, 9, tzinfo=dt.UTC)
+    assert vr1.closed_by_id == 2
+    assert vr1.update_request_reason is None
+
+    assert vr2.extension_flag is True
+    assert vr2.status == web.VariationRequest.Statuses.OPEN
+    assert vr2.requested_datetime == dt.datetime(2022, 4, 10, tzinfo=dt.UTC)
+    assert vr2.requested_by_id == 2
+    assert vr2.what_varied == "Licence extended by 4 months"
+    assert vr2.why_varied == "Extension request"
+    assert vr2.reject_cancellation_reason is None
+    assert vr2.closed_datetime is None
+    assert vr2.closed_by_id is None
+    assert vr2.update_request_reason == "Open Update"
+
     assert ia1.case_notes.count() == 1
     assert ia2.case_notes.count() == 2
 
