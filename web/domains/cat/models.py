@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 from django.conf import settings
 from django.db import models
 
@@ -15,9 +13,6 @@ from web.domains.case.export.models import (
 )
 from web.models import ExportApplicationType
 from web.types import TypedTextChoices
-
-if TYPE_CHECKING:
-    from web.models import User
 
 
 class CertificateApplicationTemplate(models.Model):
@@ -54,15 +49,6 @@ class CertificateApplicationTemplate(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
-
-    def user_can_view(self, user: "User") -> bool:
-        # A template may have sensitive information so we check if the user
-        # should be allowed to view it (use it to create an application).
-        return user == self.owner
-
-    def user_can_edit(self, user: "User") -> bool:
-        # Whether the user can edit the template itself.
-        return user == self.owner
 
 
 class CertificateOfManufactureApplicationTemplate(  # type: ignore[misc]

@@ -46,6 +46,11 @@ from .forms import (
     CreateCATForm,
     EditCATForm,
 )
+from .utils import (
+    get_user_templates,
+    template_in_user_templates,
+    user_can_edit_template,
+)
 
 if TYPE_CHECKING:
     from django.db import QuerySet
@@ -60,7 +65,10 @@ class CATListView(PermissionRequiredMixin, LoginRequiredMixin, FilterView):
         return _has_permission(self.request.user)
 
     def get_queryset(self) -> "QuerySet[CertificateApplicationTemplate]":
-        return CertificateApplicationTemplate.objects.filter(owner=self.request.user)
+        if self.request.GET.get("is_active") == "True":
+            return get_user_templates(self.request.user)
+        else:
+            return get_user_templates(self.request.user, include_inactive=True)
 
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -144,13 +152,17 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMix
 
     def test_func(self):
         """Runs before dispatch - Test template permission."""
-
         self.object = get_object_or_404(CertificateApplicationTemplate, pk=self.kwargs["cat_pk"])
 
+        if not template_in_user_templates(self.request.user, self.object):
+            return False
+
+        # If read_only is true then we should be able to view the template as we've already
+        # checked if the template is in the user templates.
         if self.read_only:
-            return self.object.user_can_view(self.request.user)
-        else:
-            return self.object.user_can_edit(self.request.user)
+            return True
+
+        return user_can_edit_template(self.request.user, self.object)
 
     def get_page_title(self):
         action = "View" if self.read_only else "Edit"
@@ -364,10 +376,14 @@ class CATReadOnlyView(CATEditView):
 
 
 class CATArchiveView(PermissionRequiredMixin, LoginRequiredMixin, View):
+    def has_permission(self) -> bool:
+        return _has_permission(self.request.user)
+
     def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         cat = get_object_or_404(CertificateApplicationTemplate, pk=kwargs["cat_pk"])
 
-        if not cat.user_can_edit(self.request.user):
+        user = self.request.user
+        if not template_in_user_templates(user, cat) or not user_can_edit_template(user, cat):
             raise PermissionDenied
 
         cat.is_active = False
@@ -376,15 +392,17 @@ class CATArchiveView(PermissionRequiredMixin, LoginRequiredMixin, View):
 
         return redirect("cat:list")
 
+
+class CATRestoreView(PermissionRequiredMixin, LoginRequiredMixin, View):
     def has_permission(self) -> bool:
         return _has_permission(self.request.user)
 
-
-class CATRestoreView(PermissionRequiredMixin, LoginRequiredMixin, View):
     def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         cat = get_object_or_404(CertificateApplicationTemplate, pk=kwargs["cat_pk"])
-
-        if not cat.user_can_edit(self.request.user):
+        user = self.request.user
+        if not template_in_user_templates(
+            user, cat, include_inactive=True
+        ) or not user_can_edit_template(user, cat):
             raise PermissionDenied
 
         cat.is_active = True
@@ -393,22 +411,29 @@ class CATRestoreView(PermissionRequiredMixin, LoginRequiredMixin, View):
 
         return redirect("cat:list")
 
-    def has_permission(self) -> bool:
-        return _has_permission(self.request.user)
-
 
 # Extra template views relating to the CFS Application.
-class CFSManufacturerUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+class CFSTemplatePermissionRequiredMixin(PermissionRequiredMixin):
+    """Permission required mixin common to all Edit CFS Template views."""
+
+    def has_permission(self):
+        if not _has_permission(self.request.user):
+            return False
+
+        cat = get_object_or_404(CertificateApplicationTemplate, pk=self.kwargs["cat_pk"])
+
+        user = self.request.user
+        if not template_in_user_templates(user, cat) or not user_can_edit_template(user, cat):
+            return False
+
+        return True
+
+
+class CFSManufacturerUpdateView(LoginRequiredMixin, CFSTemplatePermissionRequiredMixin, UpdateView):
     pk_url_kwarg: str = "schedule_template_pk"
     form_class = CFSManufacturerDetailsTemplateForm
     template_name = "web/domains/cat/cfs/manufacturer-update.html"
     model = CFSScheduleTemplate
-
-    def has_permission(self):
-        _has_permission(self.request.user)
-        cfs_template = get_object_or_404(CertificateApplicationTemplate, pk=self.kwargs["cat_pk"])
-
-        return cfs_template.user_can_edit(self.request.user)
 
     def get_success_url(self):
         return reverse(
@@ -430,7 +455,7 @@ class CFSManufacturerUpdateView(LoginRequiredMixin, PermissionRequiredMixin, Upd
 
 
 class CFSManufacturerDeleteView(
-    SingleObjectMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+    SingleObjectMixin, CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, View
 ):
     # SingleObjectMixin
     model = CFSScheduleTemplate
@@ -438,12 +463,6 @@ class CFSManufacturerDeleteView(
 
     # View
     http_method_names = ["post"]
-
-    def has_permission(self):
-        _has_permission(self.request.user)
-        cfs_template = get_object_or_404(CertificateApplicationTemplate, pk=self.kwargs["cat_pk"])
-
-        return cfs_template.user_can_edit(self.request.user)
 
     def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         schedule = self.get_object()
@@ -467,7 +486,7 @@ class CFSManufacturerDeleteView(
 
 
 class CFSScheduleTemplateAddView(
-    SingleObjectMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+    SingleObjectMixin, CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, View
 ):
     # SingleObjectMixin
     model = CertificateApplicationTemplate
@@ -475,12 +494,6 @@ class CFSScheduleTemplateAddView(
 
     # View
     http_method_names = ["post"]
-
-    def has_permission(self):
-        _has_permission(self.request.user)
-        cfs_template = get_object_or_404(CertificateApplicationTemplate, pk=self.kwargs["cat_pk"])
-
-        return cfs_template.user_can_edit(self.request.user)
 
     def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         self.get_object().cfs_template.schedules.create()
@@ -491,19 +504,13 @@ class CFSScheduleTemplateAddView(
 
 
 class CFSScheduleTemplateCopyView(
-    SingleObjectMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+    SingleObjectMixin, CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, View
 ):
     pk_url_kwarg: str = "schedule_template_pk"
     model = CFSScheduleTemplate
 
     # View
     http_method_names = ["post"]
-
-    def has_permission(self):
-        _has_permission(self.request.user)
-        cfs_template = get_object_or_404(CertificateApplicationTemplate, pk=self.kwargs["cat_pk"])
-
-        return cfs_template.user_can_edit(self.request.user)
 
     def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         schedule_template = self.get_object()
@@ -559,19 +566,13 @@ def copy_schedule(schedule: CFSScheduleTemplate, user: User) -> None:
 
 
 class CFSScheduleTemplateDeleteView(
-    SingleObjectMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+    SingleObjectMixin, CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, View
 ):
     pk_url_kwarg: str = "schedule_template_pk"
     model = CFSScheduleTemplate
 
     # View
     http_method_names = ["post"]
-
-    def has_permission(self):
-        _has_permission(self.request.user)
-        cfs_template = get_object_or_404(CertificateApplicationTemplate, pk=self.kwargs["cat_pk"])
-
-        return cfs_template.user_can_edit(self.request.user)
 
     def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
         schedule_template = self.get_object()
