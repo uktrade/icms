@@ -37,9 +37,19 @@ class VariationImportParser(BaseXmlParser):
           <CLOSED_DATE />
           <CLOSED_BY_NAME />
           <CLOSED_BY_WUA_ID />
-          <UPDATE_REQUEST_LIST />
           <REJECT_PENDING_FLAG />
-          <UPDATE_REQUEST_LIST />
+          <UPDATE_REQUEST_LIST>
+            <UPDATE_REQUEST>
+              <STATUS />
+              <REQUEST_DATETIME />
+              <REQUEST_BY_NAME />
+              <REQUEST_BY_WUA_ID />
+              <RESPONSE_DATETIME />
+              <RESPONSE_BY_NAME />
+              <RESPONSE_BY_WUA_ID />
+              <REQUEST_TEXT />
+            </UPDATE_REQUEST>
+          </UPDATE_REQUEST_LIST>
         </VARIATION_REQUEST>
         """
 
@@ -61,6 +71,11 @@ class VariationImportParser(BaseXmlParser):
         closed_datetime = date_to_timezone(closed_date)
         closed_by_id = int_or_none(get_xml_val(xml, "./CLOSED_BY_WUA_ID"))
 
+        # populate this field if there is an open variation update request, else None
+        update_request_reason = get_xml_val(
+            xml, './UPDATE_REQUEST_LIST/UPDATE_REQUEST[STATUS/text()="OPEN"]/REQUEST_TEXT/text()'
+        )
+
         return cls.MODEL(
             **{
                 "import_application_id": parent_pk,
@@ -75,6 +90,7 @@ class VariationImportParser(BaseXmlParser):
                 "reject_cancellation_reason": reject_cancellation_reason,
                 "closed_datetime": closed_datetime,
                 "closed_by_id": closed_by_id,
+                "update_request_reason": update_request_reason,
             }
         )
 
