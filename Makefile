@@ -177,25 +177,22 @@ test: ## run tests (circleci; don't use locally as it produces a coverage report
 migration_test: ## Run data migration tests
 	./run-tests.sh data_migration --create-db --numprocesses 2 ${args}
 
-
 end_to_end_clear_session: ## Clears the session cookies stored after running end to end tests
 	rm -f importer_user.json && \
 	rm -f exporter_user.json && \
 	rm -f ilb_admin.json
 
 end_to_end_test: ## Run end to end tests in a container
-	docker-compose run -it --rm playwright-runner pytest -c playwright/pytest.ini web/end_to_end/ --numprocesses=auto ${args} && \
-	make end_to_end_clear_session
-
+	make end_to_end_clear_session && \
+	docker-compose run -it --rm playwright-runner pytest -c playwright/pytest.ini  web/end_to_end/ --numprocesses=auto ${args}
 
 end_to_end_test_firearm_chief: ## Ran to send applications to icms-hmrc
-	docker-compose run -it --rm -e CHIEF_END_TO_END_TEST=1 playwright-runner pytest -c playwright/pytest.ini web/end_to_end/ -k test_can_create_fa_ --numprocesses 3 ${args} && \
-	make end_to_end_clear_session
-
+	make end_to_end_clear_session && \
+	docker-compose run -it --rm -e CHIEF_END_TO_END_TEST=1 playwright-runner pytest -c playwright/pytest.ini web/end_to_end/ -k test_can_create_fa_ --numprocesses 3 ${args}
 
 end_to_end_test_local: ## Run end to end tests locally
-	.venv/bin/python -m pytest -c playwright/pytest.ini web/end_to_end/ ${args} && \
-	make end_to_end_clear_session
+	make end_to_end_clear_session && \
+	.venv/bin/python -m pytest -c playwright/pytest.ini web/end_to_end/ ${args}
 
 create_end_to_end_caseworker: ## Create an end to end test using codegen for the caseworker site
 	.venv/bin/python -m playwright codegen http://caseworker:8080/ --target python-pytest --viewport-size "1920, 1080" ${args}

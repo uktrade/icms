@@ -81,7 +81,7 @@ def cfs_create(page: Page) -> int:
     # Add a product to schedule 2
     page.get_by_role("link", name="Add Product").click()
     page.get_by_label("Product name").click()
-    page.get_by_label("Product name").fill("Product value")
+    page.get_by_label("Product name").fill("Biocide Product")
     page.get_by_role("button", name="Save").click()
 
     page.get_by_role("link", name="Add PT Number").click()

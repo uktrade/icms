@@ -59,6 +59,7 @@ def gmp_create(page: Page, sample_upload_file: types.FilePayload) -> int:
 
     page.get_by_role("link", name="Add ISO 17021 File").click()
     page.get_by_label("Document").set_input_files(sample_upload_file)
+    page.wait_for_timeout(100)
     page.get_by_role("button", name="Save").click()
 
     page.get_by_role("link", name="Add ISO 17065 File").click()

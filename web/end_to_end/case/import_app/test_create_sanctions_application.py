@@ -1,3 +1,4 @@
+import os
 import re
 
 from playwright.sync_api import Page
@@ -158,6 +159,9 @@ def sanctions_manage_and_complete_case(page: Page, app_id) -> None:
 
     utils.assert_page_url(page, "/workbasket/")
 
+    # Supplied when running end-to-end tests for CHIEF.
+    if "CHIEF_END_TO_END_TEST" in os.environ:
+        return
     #
     # Bypass CHIEF and check application complete
     #
