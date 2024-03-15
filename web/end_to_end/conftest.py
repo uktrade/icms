@@ -101,6 +101,13 @@ class UserPages:
 
         # Go to base url (Will redirect to login-start/)
         page.goto("")
+
+        # Check for cookie consent banner and click reject if exists
+        reject_button = page.locator('button[name="accept_cookies"][value=False]')
+
+        if reject_button.is_visible():
+            reject_button.click()
+
         # Click button common to all login journeys
         page.get_by_role("button", name="Start Now").click()
 

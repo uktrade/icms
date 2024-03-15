@@ -49,6 +49,7 @@ def fa_oil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     #
     page.get_by_label("Applicant's Reference").click()
     page.get_by_label("Applicant's Reference").fill("Applicant's reference value")
+    page.wait_for_timeout(100)
     page.get_by_role("button", name="Save").click()
 
     #

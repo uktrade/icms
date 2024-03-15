@@ -1,4 +1,4 @@
-from playwright.sync_api import Page
+from playwright.sync_api import Page, TimeoutError
 
 from web.end_to_end import conftest, types, utils
 from web.end_to_end.case.import_app.test_create_fa_dfl_application import (
@@ -21,6 +21,7 @@ def test_can_revoke_fa_dfl_application(
 
     with pages.ilb_page() as ilb_page:
         fa_dfl_manage_and_complete_case(ilb_page, dfl_id)
+
         revoke_fa_dfl_application(ilb_page, dfl_id)
 
 
@@ -43,8 +44,17 @@ def revoke_fa_dfl_application(page: Page, dfl_id: int) -> None:
     #
     # Click revoke licence
     #
-    search_row = utils.get_search_row(page, dfl_id)
-    search_row.get_by_role("link", name="Revoke Licence").click()
+    # Licence can take up to 60s to be generated. If link not on page wait 5 seconds and reload. Max 13 attempts.
+    for _ in range(13):
+        search_row = utils.get_search_row(page, dfl_id)
+        if search_row.get_by_role("link", name="Revoke Licence").is_visible():
+            search_row.get_by_role("link", name="Revoke Licence").click()
+            break
+
+        page.wait_for_timeout(5000)
+        page.reload()
+    else:
+        raise TimeoutError("Max retries waiting for Revoke Licence link exceeded")
 
     #
     # Submit revoke licence form
