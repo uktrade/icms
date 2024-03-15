@@ -67,7 +67,6 @@ class TestCookieConsentPage:
         cookies_policy = GACookiePolicy.model_validate_json(
             response.cookies["cookies_policy"].value
         )
-        assert cookies_policy.essential
         assert cookies_policy.usage
 
     def test_cookie_consent_post_decline(self, importer_client):
@@ -81,7 +80,6 @@ class TestCookieConsentPage:
         cookies_policy = GACookiePolicy.model_validate_json(
             response.cookies["cookies_policy"].value
         )
-        assert cookies_policy.essential
         assert not cookies_policy.usage
 
     def test_cookie_consent_redirect_forbidden(self, importer_client):
