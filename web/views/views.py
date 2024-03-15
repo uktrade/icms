@@ -136,7 +136,6 @@ def home(request):
 
 class GACookiePolicy(BaseModel):
     model_config = ConfigDict(extra="ignore")
-    essential: bool = True
     usage: bool = False
 
 
@@ -172,7 +171,7 @@ def cookie_consent_view(request: HttpRequest) -> HttpResponse:
             # regardless of their choice, we set a cookie to say they've made a choice
             response.set_cookie("cookie_preferences_set", "true", max_age=cookie_max_age)
 
-            ga_cookies = GACookiePolicy(essential=True, usage=form.cleaned_data["accept_cookies"])
+            ga_cookies = GACookiePolicy(usage=form.cleaned_data["accept_cookies"])
             response.set_cookie(
                 "cookies_policy", ga_cookies.model_dump_json(), max_age=cookie_max_age
             )
