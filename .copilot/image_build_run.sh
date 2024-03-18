@@ -12,6 +12,3 @@ python manage.py collectstatic --noinput --traceback
 
 echo "Running compress python manage.py compress --force --engine jinja2"
 python manage.py compress --force --engine jinja2
-
-echo 'Running PLAYWRIGHT_BROWSERS_PATH="/workspace/playwright-deps" python -m playwright install'
-PLAYWRIGHT_BROWSERS_PATH="/workspace/playwright-deps" python -m playwright install
