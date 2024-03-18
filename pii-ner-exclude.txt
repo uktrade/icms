@@ -2684,7 +2684,6 @@ Test Exporter 2
 "Returns Export Applications
 ICMSLST-1956
 New Template
-ICMSLST-1002 Implement
 ICMSLST-1241 Implement
 "Check if the initialised
 {{ fields.field(form.licence_ref
@@ -4263,3 +4262,6 @@ Test COM Template
 Test CFS Template
 Test GMP Template
 Test Brand
+{{ application_field(existing_application.reference
+{{ application_field(existing_application.application_type.get_type_code_display
+{{ application_field(existing_application.submit_datetime.strftime('%d %

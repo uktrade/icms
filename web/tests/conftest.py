@@ -375,6 +375,11 @@ def exporter_office(db):
 
 
 @pytest.fixture
+def exporter_two_office(db):
+    return Office.objects.get(address_1="E2 address line 1")
+
+
+@pytest.fixture
 def exporter_one_agent_one_office(db):
     """Fixture to get an office model instance (linked to Test Exporter 1 Agent 1)."""
 

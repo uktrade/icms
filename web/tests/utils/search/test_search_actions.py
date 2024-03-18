@@ -86,7 +86,7 @@ test_export_arg_values = [
         CertificateOfManufactureApplication(status=_st.IN_PROGRESS),
         None,
         "exporter",
-        ["Copy Application", "Create Template"],
+        [],
     ),
     (CertificateOfManufactureApplication(status=_st.STOPPED), None, "admin", ["Reopen Case"]),
     (CertificateOfManufactureApplication(status=_st.WITHDRAWN), None, "admin", ["Reopen Case"]),

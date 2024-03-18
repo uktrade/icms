@@ -5,6 +5,7 @@ from http import HTTPStatus
 import pytest
 from django.core import mail
 from django.test.client import Client
+from django.urls import resolve
 from django.utils import timezone
 from guardian.shortcuts import remove_perm
 from openpyxl import load_workbook
@@ -16,6 +17,8 @@ from web.flow import errors
 from web.mail.constants import EmailTypes
 from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import (
+    CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     ImportApplicationLicence,
     SILApplication,
@@ -774,3 +777,82 @@ class TestRevokeCaseView:
         assert pack.revoke_reason == "test reason"
         assert pack.revoke_email_sent is False
         assert len(mail.outbox) == 0
+
+
+class TestCopyExportApplicationView:
+    def test_permission(
+        self, completed_cfs_app, ilb_admin_client, importer_client, exporter_client
+    ):
+        url = SearchURLS.copy_export_application(completed_cfs_app.pk)
+
+        response = ilb_admin_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = importer_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = exporter_client.get(url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_can_copy_cfs_application(
+        self, completed_cfs_app, exporter_client, exporter, exporter_office
+    ):
+        url = SearchURLS.copy_export_application(completed_cfs_app.pk)
+
+        form_data = {
+            "exporter": exporter.pk,
+            "exporter_office": exporter_office.pk,
+        }
+        resp = exporter_client.post(url, data=form_data)
+        # Check submitting the form resolves to the edit page of the new application
+        assert resp.status_code == HTTPStatus.FOUND
+        resolver = resolve(resp.url)
+        assert resolver.view_name == "export:cfs-edit"
+
+        new_app = CertificateOfFreeSaleApplication.objects.get(pk=resolver.kwargs["application_pk"])
+        case_progress.check_expected_status(new_app, [ImpExpStatus.IN_PROGRESS])
+        case_progress.check_expected_task(new_app, Task.TaskType.PREPARE)
+
+    def test_can_copy_com_application(
+        self, completed_com_app, exporter_client, exporter, exporter_office
+    ):
+        url = SearchURLS.copy_export_application(completed_com_app.pk)
+
+        form_data = {
+            "exporter": exporter.pk,
+            "exporter_office": exporter_office.pk,
+        }
+        resp = exporter_client.post(url, data=form_data)
+        # Check submitting the form resolves to the edit page of the new application
+        assert resp.status_code == HTTPStatus.FOUND
+
+        resolver = resolve(resp.url)
+        assert resolver.view_name == "export:com-edit"
+
+        new_app = CertificateOfManufactureApplication.objects.get(
+            pk=resolver.kwargs["application_pk"]
+        )
+        case_progress.check_expected_status(new_app, [ImpExpStatus.IN_PROGRESS])
+        case_progress.check_expected_task(new_app, Task.TaskType.PREPARE)
+
+    def test_can_copy_gmp_application(
+        self, completed_gmp_app, exporter_client, exporter, exporter_office
+    ):
+        url = SearchURLS.copy_export_application(completed_gmp_app.pk)
+
+        form_data = {
+            "exporter": exporter.pk,
+            "exporter_office": exporter_office.pk,
+        }
+        resp = exporter_client.post(url, data=form_data)
+        # Check submitting the form resolves to the edit page of the new application
+        assert resp.status_code == HTTPStatus.FOUND
+
+        resolver = resolve(resp.url)
+        assert resolver.view_name == "export:gmp-edit"
+
+        new_app = CertificateOfGoodManufacturingPracticeApplication.objects.get(
+            pk=resolver.kwargs["application_pk"]
+        )
+        case_progress.check_expected_status(new_app, [ImpExpStatus.IN_PROGRESS])
+        case_progress.check_expected_task(new_app, Task.TaskType.PREPARE)

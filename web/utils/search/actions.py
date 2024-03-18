@@ -153,17 +153,21 @@ class CopyExportApplicationAction(ActionProtocol):
     def show_action(app: ExportApplication, uop: UserOrganisationPermissions) -> bool:
         can_edit_org = _can_edit_org_or_agent(app, uop)
 
-        return can_edit_org and not uop.has_ilb_admin_perm
+        return (
+            can_edit_org and not uop.has_ilb_admin_perm and app.status != ImpExpStatus.IN_PROGRESS
+        )
 
     @staticmethod
     def get_action(app: ImpOrExp) -> types.SearchAction:
-        # TODO: ICMSLST-1002 Implement action
         return types.SearchAction(
-            url="#",
+            url=reverse(
+                "case:search-copy-export-application",
+                kwargs={"application_pk": app.pk, "case_type": "export"},
+            ),
             name="copy-application",
             label="Copy Application",
             icon="icon-copy",
-            is_post=True,
+            is_post=False,
         )
 
 
@@ -175,7 +179,9 @@ class CreateTemplateAction(ActionProtocol):
     def show_action(app: ExportApplication, uop: UserOrganisationPermissions) -> bool:
         can_edit_org = _can_edit_org_or_agent(app, uop)
 
-        return can_edit_org and not uop.has_ilb_admin_perm
+        return (
+            can_edit_org and not uop.has_ilb_admin_perm and app.status != ImpExpStatus.IN_PROGRESS
+        )
 
     @staticmethod
     def get_action(app: ImpOrExp) -> types.SearchAction:

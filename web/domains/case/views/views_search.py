@@ -9,13 +9,20 @@ from django.db import transaction
 from django.db.models import QuerySet, Window
 from django.db.models.functions import RowNumber
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import FormView, View
+from guardian.shortcuts import get_objects_for_user
 
+from web.domains.case.export.forms import CreateExportApplicationForm
+from web.domains.case.export.utils import copy_export_application
+from web.domains.case.export.views import (
+    CreateExportApplicationConfig,
+    get_create_export_app_config,
+)
 from web.domains.case.forms import (
     RevokeApplicationForm,
     VariationRequestExportAppForm,
@@ -31,13 +38,18 @@ from web.domains.case.forms_search import (
 from web.domains.case.services import case_progress, document_pack, reference
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import client
+from web.flow.models import ProcessTypes
 from web.mail.emails import (
     send_application_reopened_email,
     send_certificate_revoked_email,
     send_licence_revoked_email,
 )
 from web.models import (
+    CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
+    CertificateOfManufactureApplication,
     ExportApplication,
+    Exporter,
     ImportApplication,
     ImportApplicationType,
     Process,
@@ -45,13 +57,19 @@ from web.models import (
     User,
     VariationRequest,
 )
-from web.permissions import AppChecker, Perms, can_user_view_search_cases
+from web.permissions import (
+    AppChecker,
+    Perms,
+    can_user_view_search_cases,
+    get_org_obj_permissions,
+)
 from web.types import AuthenticatedHttpRequest
 from web.utils.search import (
     SearchTerms,
     get_search_results_spreadsheet,
     search_applications,
 )
+from web.utils.sentry import capture_exception
 
 from .mixins import ApplicationTaskMixin
 
@@ -186,6 +204,7 @@ def download_spreadsheet(
 class ReopenApplicationView(
     ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View
 ):
+    http_method_names = ["post"]
     permission_required = [Perms.sys.ilb_admin]
 
     # ApplicationTaskMixin Config
@@ -496,6 +515,96 @@ class RevokeCaseView(SearchActionFormBase):
         query_params = {"case_ref": self.application.reference}
 
         return "".join((search_url, "?", parse.urlencode(query_params)))
+
+
+@method_decorator(transaction.atomic, name="post")
+class CopyExportApplicationView(PermissionRequiredMixin, LoginRequiredMixin, FormView):
+    form_class = CreateExportApplicationForm
+    template_name = "web/domains/case/export/copy-application.html"
+
+    # Extra type hints for clarity
+    create_app_config: CreateExportApplicationConfig
+    existing_app: ExportApplication
+    new_app: (
+        CertificateOfFreeSaleApplication
+        | CertificateOfManufactureApplication
+        | CertificateOfGoodManufacturingPracticeApplication
+    )
+
+    def has_permission(self) -> bool:
+        if not self.request.user.has_perm(Perms.sys.exporter_access):
+            return False
+
+        self.existing_app = get_object_or_404(ExportApplication, pk=self.kwargs["application_pk"])
+        self.create_app_config = get_create_export_app_config(
+            self.existing_app.application_type.type_code
+        )
+
+        org = self.existing_app.exporter
+        agent_org = self.existing_app.agent
+        obj_perms = get_org_obj_permissions(org)
+
+        return self.request.user.has_perm(obj_perms.edit, org) or (
+            agent_org and self.request.user.has_perm(obj_perms.edit, agent_org)
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        application = self.existing_app.get_specific_model()
+        exporters_with_agents = get_objects_for_user(
+            self.request.user, [Perms.obj.exporter.is_agent], Exporter
+        ).values_list("pk", flat=True)
+
+        return context | {
+            "application_title": ProcessTypes(application.process_type).label,
+            "existing_application": self.existing_app,
+            "exporters_with_agents": list(exporters_with_agents),
+            "certificate_message": self.create_app_config.certificate_message,
+        }
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+
+        return kwargs | {"user": self.request.user}
+
+    def form_valid(self, form: CreateExportApplicationForm) -> HttpResponseRedirect:
+        """Copy the existing application data to the new application.
+
+        This can only happen for applications that are valid.
+        """
+
+        # Create the Export application
+        try:
+            self.new_app = copy_export_application(
+                self.existing_app.get_specific_model(),
+                form.cleaned_data["exporter"],
+                form.cleaned_data["exporter_office"],
+                form.cleaned_data["agent"],
+                form.cleaned_data["agent_office"],
+                self.request.user,
+            )
+
+        except Exception:
+            capture_exception()
+            messages.error(
+                self.request,
+                f"Unable to create new application using application {self.existing_app.reference}.",
+            )
+            return super().form_invalid(form)
+
+        # Configure it as a new app
+        Task.objects.create(
+            process=self.new_app, task_type=Task.TaskType.PREPARE, owner=self.request.user
+        )
+        document_pack.pack_draft_create(self.new_app)
+
+        return super().form_valid(form)
+
+    def get_success_url(self) -> str:
+        return reverse(
+            self.new_app.get_edit_view_name(), kwargs={"application_pk": self.new_app.pk}
+        )
 
 
 def _get_search_terms_from_form(

@@ -77,6 +77,7 @@ def pack_draft_create(application: ImpOrExp, *, variation_request: bool = False)
         - A variation request is submitted for an export application.
         - A case is reopened after being withdrawn.
         - A case is reopened after being stopped.
+        - Copying an existing export application.
     """
 
     if application.is_import_application():

@@ -61,6 +61,11 @@ search_urls = [
                     views_search.RevokeCaseView.as_view(),
                     name="search-revoke-case",
                 ),
+                path(
+                    "copy-export-application",
+                    views_search.CopyExportApplicationView.as_view(),
+                    name="search-copy-export-application",
+                ),
             ]
         ),
     ),
