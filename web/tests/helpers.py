@@ -637,3 +637,10 @@ class SearchURLS:
     @staticmethod
     def reassign_case_owner(case_type: str = "import") -> str:
         return reverse("case:search-reassign-case-owner", kwargs={"case_type": case_type})
+
+    @staticmethod
+    def copy_export_application(application_pk: int) -> str:
+        return reverse(
+            "case:search-copy-export-application",
+            kwargs={"application_pk": application_pk, "case_type": "export"},
+        )

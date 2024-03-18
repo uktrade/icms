@@ -3,7 +3,12 @@ import io
 import pytest
 from django.core.files.base import File
 
-from web.domains.case.export.utils import CustomError, process_products_file
+from web.domains.case.export.utils import (
+    CustomError,
+    copy_export_application,
+    process_products_file,
+)
+from web.domains.case.shared import ImpExpStatus
 from web.models import CFSSchedule
 from web.tests.domains.legislation.factory import ProductLegislationFactory
 from web.utils.spreadsheet import XlsxSheetConfig, generate_xlsx_file
@@ -210,3 +215,129 @@ def test_duplicate_cas_number(cfs_app_submitted):
         process_products_file(xlsx_file, schedule)
 
     assert "CAS number '111-11-1' duplicated for product 'Product 1' - line 3" in str(e.value)
+
+
+def test_copy_cfs_application(
+    cfs_app_submitted, exporter_two, exporter_two_office, exporter_two_contact
+):
+    new_app = copy_export_application(
+        cfs_app_submitted,
+        exporter=exporter_two,
+        exporter_office=exporter_two_office,
+        agent=None,
+        agent_office=None,
+        created_by=exporter_two_contact,
+    )
+
+    assert not new_app.reference
+    assert new_app.status == ImpExpStatus.IN_PROGRESS
+    _assert_many_to_many_equal(cfs_app_submitted.countries, new_app.countries)
+
+    assert cfs_app_submitted.schedules.count() == new_app.schedules.count()
+
+    for existing, new in zip(cfs_app_submitted.schedules.all(), new_app.schedules.all()):
+        _assert_many_to_many_equal(existing.legislations, new.legislations)
+
+        for field in [
+            "exporter_status",
+            "brand_name_holder",
+            "biocidal_claim",
+            "product_eligibility",
+            "goods_placed_on_uk_market",
+            "goods_export_only",
+            "any_raw_materials",
+            "final_product_end_use",
+            "country_of_manufacture",
+            "schedule_statements_accordance_with_standards",
+            "schedule_statements_is_responsible_person",
+            "manufacturer_name",
+            "manufacturer_address_entry_type",
+            "manufacturer_postcode",
+            "manufacturer_address",
+        ]:
+            _assert_field_equal(existing, new, field)
+
+        for existing_product, new_product in zip(existing.products.all(), new.products.all()):
+            _assert_field_equal(existing_product, new_product, "product_name")
+            assert (
+                existing_product.product_type_numbers.count()
+                == new_product.product_type_numbers.count()
+            )
+            assert (
+                existing_product.active_ingredients.count()
+                == new_product.active_ingredients.count()
+            )
+
+
+def test_copy_com_application(
+    com_app_submitted, exporter_two, exporter_two_office, exporter_two_contact
+):
+    new_app = copy_export_application(
+        com_app_submitted,
+        exporter=exporter_two,
+        exporter_office=exporter_two_office,
+        agent=None,
+        agent_office=None,
+        created_by=exporter_two_contact,
+    )
+
+    assert not new_app.reference
+    assert new_app.status == ImpExpStatus.IN_PROGRESS
+    _assert_many_to_many_equal(com_app_submitted.countries, new_app.countries)
+
+    for field in [
+        "is_pesticide_on_free_sale_uk",
+        "is_manufacturer",
+        "product_name",
+        "chemical_name",
+        "manufacturing_process",
+    ]:
+        _assert_field_equal(com_app_submitted, new_app, field)
+
+
+def test_copy_gmp_application(
+    gmp_app_submitted, exporter_two, exporter_two_office, exporter_two_contact
+):
+    new_app = copy_export_application(
+        gmp_app_submitted,
+        exporter=exporter_two,
+        exporter_office=exporter_two_office,
+        agent=None,
+        agent_office=None,
+        created_by=exporter_two_contact,
+    )
+
+    assert not new_app.reference
+    assert new_app.status == ImpExpStatus.IN_PROGRESS
+    _assert_many_to_many_equal(gmp_app_submitted.countries, new_app.countries)
+
+    for field in [
+        "brand_name",
+        "is_responsible_person",
+        "responsible_person_name",
+        "responsible_person_address_entry_type",
+        "responsible_person_postcode",
+        "responsible_person_address",
+        "responsible_person_country",
+        "is_manufacturer",
+        "manufacturer_name",
+        "manufacturer_address_entry_type",
+        "manufacturer_postcode",
+        "manufacturer_address",
+        "manufacturer_country",
+        "gmp_certificate_issued",
+        "auditor_accredited",
+        "auditor_certified",
+    ]:
+        _assert_field_equal(gmp_app_submitted, new_app, field)
+
+
+def _assert_field_equal(existing, new, field_name):
+    assert getattr(existing, field_name) == getattr(new, field_name)
+
+
+def _assert_many_to_many_equal(existing_m2m, new_m2m):
+    existing_pks = existing_m2m.values_list("pk", flat=True)
+    new_pks = new_m2m.values_list("pk", flat=True)
+
+    assert list(existing_pks) == list(new_pks)

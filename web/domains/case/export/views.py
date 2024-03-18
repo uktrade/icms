@@ -75,7 +75,12 @@ from .forms import (
     SubmitCOMForm,
     SubmitGMPForm,
 )
-from .utils import CustomError, generate_product_template_xlsx, process_products_file
+from .utils import (
+    CustomError,
+    add_gmp_country,
+    generate_product_template_xlsx,
+    process_products_file,
+)
 
 
 def check_can_edit_application(
@@ -140,7 +145,7 @@ def create_export_application(
     if not application_type.is_active:
         raise ValueError(f"Export application of type {application_type.type_code} is not active")
 
-    config = _get_export_app_config(type_code)
+    config = get_create_export_app_config(type_code)
 
     if template_pk:
         try:
@@ -186,12 +191,8 @@ def create_export_application(
                 )
 
                 # GMP applications are for China only
-                if application_type.type_code == ExportApplicationType.Types.GMP:
-                    country = application_type.country_group.countries.filter(
-                        is_active=True
-                    ).first()
-                    application.countries.add(country)
-
+                if application.application_type.type_code == ExportApplicationType.Types.GMP:
+                    add_gmp_country(application)
                 elif (
                     application_type.type_code == ExportApplicationType.Types.FREE_SALE
                     and not app_template
@@ -241,7 +242,7 @@ def get_application_template(user: User, template_pk: int) -> CertificateApplica
         raise PermissionDenied
 
 
-def _get_export_app_config(type_code: str) -> CreateExportApplicationConfig:
+def get_create_export_app_config(type_code: str) -> CreateExportApplicationConfig:
     if type_code == ExportApplicationType.Types.MANUFACTURE:
         return CreateExportApplicationConfig(
             model_class=CertificateOfManufactureApplication,
