@@ -317,6 +317,7 @@ def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
                 clause_quantity.save()
 
             redirect_to = _get_section_5_redirect_url(request.user, importer)
+            messages.success(request, "Section 5 Authority created successfully.")
             return redirect(redirect_to)
     else:
         form = Section5AuthorityForm(importer)

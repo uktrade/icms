@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -46,6 +47,7 @@ def create_section5(request):
             clause = form.save(commit=False)
             clause.created_by = request.user
             clause.save()
+            messages.success(request, "Section 5 clause created successfully.")
             return redirect(reverse("section5:edit", kwargs={"pk": clause.pk}))
     else:
         form = Section5ClauseForm()
