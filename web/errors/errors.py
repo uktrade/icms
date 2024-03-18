@@ -18,3 +18,7 @@ class APIError(Exception):
 
     def __str__(self):
         return f"APIError(error_msg={self.error_msg!r}, dev_error_msg={self.dev_error_msg!r}, status_code={self.status_code!r})"
+
+
+class CompanyNotFound(Exception):
+    pass

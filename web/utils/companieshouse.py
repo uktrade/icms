@@ -5,7 +5,7 @@ from typing import Any
 import requests
 from django.conf import settings
 
-from web.errors import APIError
+from web.errors import APIError, CompanyNotFound
 
 logger = logging.getLogger(__name__)
 
@@ -23,13 +23,13 @@ def api_get_companies(query_string: str) -> dict[str, Any]:
     return response.json()
 
 
-def api_get_company(company_number: str) -> dict[str, Any]:
+def api_get_company(company_number: str) -> dict[str, Any] | None:
     url = _get_company_profile_url(company_number)
     response = requests.get(url, headers=_get_auth_header())
 
     if response.status_code != 200:
         if response.status_code == 404:
-            error_msg = f"No company found for company number {company_number!r}"
+            raise CompanyNotFound()
         else:
             error_msg = "Unable to lookup company"
             logger.error(

@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django_filters import CharFilter, ChoiceFilter, FilterSet
 from guardian.forms import UserObjectPermissionsForm
 
-from web.errors import APIError
+from web.errors import APIError, CompanyNotFound
 from web.forms.utils import clean_postcode
 from web.permissions import ExporterObjectPermissions, Perms
 from web.utils.companieshouse import api_get_company
@@ -40,6 +40,9 @@ class ExporterForm(forms.ModelForm):
         fields = ["name", "registered_number", "comments"]
         widgets = {"name": forms.Textarea(attrs={"rows": 1})}
 
+    class Media:
+        js = ("web/js/api/check_company_number.js", "web/js/pages/edit-organisation.js")
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["name"].required = True
@@ -53,16 +56,15 @@ class ExporterForm(forms.ModelForm):
             self.company = api_get_company(registered_number)
         except APIError as e:
             raise ValidationError(e.error_msg)
-
-        if not self.company:
-            raise ValidationError("Company is not present in Companies House records")
+        except CompanyNotFound:
+            self.company = None
 
         return registered_number
 
     def save(self, commit=True):
         instance = super().save(commit)
 
-        if commit:
+        if commit and self.company:
             office_address = self.company.get("registered_office_address", {})
             address_line_1 = office_address.get("address_line_1")
             address_line_2 = office_address.get("address_line_2")

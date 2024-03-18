@@ -7,6 +7,7 @@ from web.domains.importer.forms import (
     ImporterIndividualForm,
     ImporterOrganisationForm,
 )
+from web.errors import CompanyNotFound
 from web.models import Importer
 
 
@@ -130,16 +131,8 @@ def test_eori_number_not_required_importer_individual_form(importer, importer_on
 
 
 @pytest.mark.django_db()
-@patch("web.domains.importer.forms.api_get_company")
-def test_eori_numer_required_importer_organisation_form(api_get_company, importer):
+def test_eori_numer_required_importer_organisation_form(importer):
     """Assert the EORI number field is required when they already have one."""
-    api_get_company.return_value = {
-        "registered_office_address": {
-            "address_line_1": "60 rue Wiertz",
-            "postcode": "B-1047",
-            "locality": "Bruxelles",
-        }
-    }
 
     data = {"name": "hello", "eori_number": "", "registered_number": "42"}
     form = ImporterOrganisationForm(instance=importer, data=data)
@@ -171,17 +164,8 @@ def test_eori_numer_not_required_importer_organisation_form(api_get_company, imp
 
 
 @pytest.mark.django_db()
-@patch("web.domains.importer.forms.api_get_company")
-def test_eori_numer_required_new_importer_organisation_form(api_get_company):
+def test_eori_numer_required_new_importer_organisation_form():
     """Assert the EORI number field required when it's a newly created Importer."""
-    api_get_company.return_value = {
-        "registered_office_address": {
-            "address_line_1": "60 rue Wiertz",
-            "postcode": "B-1047",
-            "locality": "Bruxelles",
-        }
-    }
-
     data = {"name": "hello", "eori_number": "", "registered_number": "42"}
     form = ImporterOrganisationForm(data=data)
 
@@ -201,3 +185,34 @@ def test_eori_number_required_new_importer_individual_form(importer_one_contact)
     assert "eori_number" in form.errors
     error = "You must enter this item"
     assert error in form.errors["eori_number"]
+
+
+@pytest.mark.django_db()
+@patch("web.domains.importer.forms.api_get_company")
+def test_invalid_company_number_okay(api_get_company, importer):
+    """Assert that an invalid company number can be saved."""
+    api_get_company.side_effect = CompanyNotFound()
+
+    data = {"name": importer.name, "eori_number": importer.eori_number, "registered_number": "42"}
+    form = ImporterOrganisationForm(instance=importer, data=data)
+    assert form.is_valid()
+    assert not form.company
+
+
+@pytest.mark.django_db()
+@patch("web.domains.importer.forms.api_get_company")
+def test_valid_company_number_okay(api_get_company):
+    """Assert that if the company number is perceived to be valid, the dict is assigned to form.company."""
+    api_get_company.return_value = {
+        "registered_office_address": {
+            "address_line_1": "60 rue Wiertz",
+            "postcode": "B-1047",
+            "locality": "Bruxelles",
+        }
+    }
+
+    data = {"name": "hello", "eori_number": "GB", "registered_number": "42"}
+    form = ImporterOrganisationForm(data)
+
+    assert form.is_valid()
+    assert form.company == api_get_company.return_value

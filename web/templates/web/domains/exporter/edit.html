@@ -26,7 +26,7 @@
 {% block main_content %}
   {% include "web/company_list.html" %}
 
-  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, id='edit-form') -%}
     {% block fields %}
       {% for field in form %}
       {% with lookup = field.name in ['name', 'registered_number'] %}
@@ -41,7 +41,7 @@
         <div class="eight columns">
           <ul class="menu-out flow-across">
             <li>
-              <button type="submit" name="action" value="save" class="primary-button button">
+              <button type="submit" name="action" value="save" class="primary-button button" id="save-button">
                 Save
               </button>
             </li>
@@ -82,5 +82,6 @@
   {% include "web/search-companies.html" %}
 
   {{ contact_form.media.js }}
+  {{ form.media.js }}
   {{ super() }}
 {% endblock %}
