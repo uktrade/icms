@@ -4248,3 +4248,7 @@ user_can_view
 Get CertificateApplicationTemplate
 Filter Templates
 Add Templates
+CompaniesHouse
+submitEditForm
+Firearm Authority
+CFS Declaration Translation

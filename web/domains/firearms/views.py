@@ -1,6 +1,7 @@
 import logging
 from typing import Any
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
@@ -76,6 +77,7 @@ def create_obsolete_calibre_group(request):
             group.order = order
             group.save()
 
+            messages.success(request, "Obsolete Calibre Group created successfully.")
             return redirect(reverse("obsolete-calibre-group-edit", kwargs={"pk": group.pk}))
     else:
         form = ObsoleteCalibreGroupForm()
@@ -159,6 +161,7 @@ def create_obsolete_calibre(request, calibre_group_pk):
             calibre.order = order
             calibre.save()
 
+            messages.success(request, "Obsolete Calibre created successfully.")
             return redirect(
                 reverse(
                     "obsolete-calibre-edit",
@@ -271,6 +274,7 @@ def create_firearms(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
                 clause_quantity.save()
 
             redirect_to = _get_firearms_redirect_url(request.user, importer)
+            messages.success(request, "Firearm Authority created successfully.")
             return redirect(redirect_to)
     else:
         form = FirearmsAuthorityForm(user=request.user, importer=importer)

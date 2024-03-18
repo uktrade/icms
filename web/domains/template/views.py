@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
@@ -209,6 +210,7 @@ def create_cfs_declaration_translation(request):
         form = CFSDeclarationTranslationForm(request.POST)
         if form.is_valid():
             template = form.save()
+            messages.success(request, "CFS Declaration Translation created successfully.")
             return redirect(
                 reverse("template-cfs-declaration-translation-edit", kwargs={"pk": template.pk})
             )
@@ -246,7 +248,7 @@ def create_cfs_schedule_translation(request):
 
         if form.is_valid():
             template = form.save()
-
+            messages.success(request, "CFS Schedule Translation created successfully.")
             return redirect(
                 reverse("template-cfs-schedule-translation-edit", kwargs={"pk": template.pk})
             )
