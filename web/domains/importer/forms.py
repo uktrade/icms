@@ -7,7 +7,7 @@ from django_filters import CharFilter, ChoiceFilter, FilterSet
 from guardian.forms import UserObjectPermissionsForm
 
 from web.domains.importer.fields import PersonWidget
-from web.errors import APIError
+from web.errors import APIError, CompanyNotFound
 from web.forms.utils import clean_postcode
 from web.forms.widgets import CheckboxSelectMultiple
 from web.models import Importer, Section5Authority
@@ -64,6 +64,9 @@ class ImporterOrganisationForm(forms.ModelForm):
         ]
         widgets = {"name": forms.Textarea(attrs={"rows": 1})}
 
+    class Media:
+        js = ("web/js/api/check_company_number.js", "web/js/pages/edit-organisation.js")
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["name"].required = True
@@ -86,9 +89,8 @@ class ImporterOrganisationForm(forms.ModelForm):
             self.company = api_get_company(registered_number)
         except APIError as e:
             raise ValidationError(e.error_msg)
-
-        if not self.company:
-            raise ValidationError("Company is not present in Companies House records")
+        except CompanyNotFound:
+            self.company = None
 
         return registered_number
 
@@ -105,7 +107,7 @@ class ImporterOrganisationForm(forms.ModelForm):
     def save(self, commit=True):
         instance = super().save(commit)
 
-        if commit:
+        if commit and self.company:
             office_address = self.company.get("registered_office_address", {})
             address_line_1 = office_address.get("address_line_1")
             address_line_2 = office_address.get("address_line_2")

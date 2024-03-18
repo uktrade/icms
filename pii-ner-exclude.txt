@@ -4252,3 +4252,6 @@ CompaniesHouse
 submitEditForm
 Firearm Authority
 CFS Declaration Translation
+CompaniesHouse
+submitEditForm
+document.getElementById('id_registered_number').value
