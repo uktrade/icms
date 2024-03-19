@@ -4259,3 +4259,7 @@ li class="mt-1">When
 WITH rp_login AS
 ON rp_login.resource_person_id
 SELECT REPLACE(xa.assignee_uref
+Test COM Template
+Test CFS Template
+Test GMP Template
+Test Brand

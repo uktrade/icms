@@ -6,9 +6,14 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand, CommandError
 
+from web.domains.country.models import Country
 from web.management.commands.utils.load_data import load_app_test_data
 from web.models import (
     CertificateApplicationTemplate,
+    CertificateOfFreeSaleApplicationTemplate,
+    CertificateOfGoodManufacturingPracticeApplicationTemplate,
+    CertificateOfManufactureApplicationTemplate,
+    CFSScheduleTemplate,
     Constabulary,
     Email,
     ExportApplicationType,
@@ -19,10 +24,12 @@ from web.models import (
     ObsoleteCalibre,
     ObsoleteCalibreGroup,
     Office,
+    ProductLegislation,
     Section5Clause,
     Signature,
     User,
 )
+from web.models.shared import YesNoChoices
 from web.permissions import constabulary_add_contact, organisation_add_contact
 from web.utils.s3 import upload_file_obj_to_s3
 
@@ -303,7 +310,6 @@ class Command(BaseCommand):
         )
         self.stdout.write("Created following superusers: 'admin'")
 
-        create_certificate_application_templates(ilb_admin_user)
         create_certificate_application_templates(exporter_user)
 
         group = ObsoleteCalibreGroup.objects.create(name="Group 1", order=1)
@@ -414,8 +420,59 @@ class Command(BaseCommand):
 def create_certificate_application_templates(
     owner: User,
 ) -> list[CertificateApplicationTemplate]:
-    # TODO ICMSLST-2542: Add Test templates after full refactor.
-    return []
+    #
+    # Add a COM template.
+    com_cat = CertificateApplicationTemplate.objects.create(
+        name="Test COM Template",
+        description="description",
+        application_type=ExportApplicationType.Types.MANUFACTURE,
+        sharing=CertificateApplicationTemplate.SharingStatuses.EDIT,
+        owner=owner,
+    )
+    CertificateOfManufactureApplicationTemplate.objects.create(
+        template=com_cat,
+        is_pesticide_on_free_sale_uk=True,
+        is_manufacturer=True,
+        product_name="Test product_name",
+        chemical_name="Test chemical_name",
+        manufacturing_process="Test manufacturing_process",
+    )
+
+    #
+    # Add a CFS template.
+    cfs_cat = CertificateApplicationTemplate.objects.create(
+        name="Test CFS Template",
+        description="description",
+        application_type=ExportApplicationType.Types.FREE_SALE,
+        sharing=CertificateApplicationTemplate.SharingStatuses.EDIT,
+        owner=owner,
+    )
+    cfs_template = CertificateOfFreeSaleApplicationTemplate.objects.create(template=cfs_cat)
+    cfs_schedule_template = CFSScheduleTemplate.objects.create(
+        application=cfs_template,
+        exporter_status=CFSScheduleTemplate.ExporterStatus.IS_MANUFACTURER,
+        brand_name_holder=YesNoChoices.yes,
+    )
+    cfs_schedule_template.legislations.add(ProductLegislation.objects.first())
+
+    #
+    # Add a GMP template
+    gmp_cat = CertificateApplicationTemplate.objects.create(
+        name="Test GMP Template",
+        description="description",
+        application_type=ExportApplicationType.Types.GMP,
+        sharing=CertificateApplicationTemplate.SharingStatuses.EDIT,
+        owner=owner,
+    )
+    gmp_template = CertificateOfGoodManufacturingPracticeApplicationTemplate.objects.create(
+        template=gmp_cat,
+        brand_name="Test Brand name",
+        is_responsible_person=YesNoChoices.yes,
+        responsible_person_name="Test responsible person name",
+    )
+    gmp_template.countries.add(Country.objects.get(name="China"))
+
+    return [com_cat, cfs_cat, gmp_cat]
 
 
 def create_dummy_signature(user: User) -> None:
