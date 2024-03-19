@@ -1,14 +1,11 @@
 """Test the cookies/google analytics views."""
 
-import json
-
 from django.conf import settings
 from django.http import SimpleCookie
 from django.test import override_settings
 
 from web.sites import SiteName
 from web.views.forms import CookieConsentForm
-from web.views.views import GACookiePolicy
 
 
 class TestGtmTags:
@@ -50,7 +47,7 @@ class TestCookieConsentPage:
 
     def test_cookie_consent_initial(self, importer_client):
         """Test that the cookie consent page renders with the correct initial values."""
-        importer_client.cookies = SimpleCookie({"cookies_policy": json.dumps({"usage": "true"})})
+        importer_client.cookies = SimpleCookie({"accepted_ga_cookies": "true"})
         response = importer_client.get("/cookie-consent/")
         assert response.status_code == 200
         context = response.context[0]
@@ -64,10 +61,7 @@ class TestCookieConsentPage:
         assert response.cookies["cookie_preferences_set"].value == "true"
         assert response.cookies["cookie_preferences_set"]["max-age"] == 31536000
 
-        cookies_policy = GACookiePolicy.model_validate_json(
-            response.cookies["cookies_policy"].value
-        )
-        assert cookies_policy.usage
+        assert response.cookies["accepted_ga_cookies"].value == "true"
 
     def test_cookie_consent_post_decline(self, importer_client):
         response = importer_client.post("/cookie-consent/", {"accept_cookies": "False"})
@@ -77,10 +71,7 @@ class TestCookieConsentPage:
         assert response.cookies["cookie_preferences_set"].value == "true"
         assert response.cookies["cookie_preferences_set"]["max-age"] == 31536000
 
-        cookies_policy = GACookiePolicy.model_validate_json(
-            response.cookies["cookies_policy"].value
-        )
-        assert not cookies_policy.usage
+        assert response.cookies["accepted_ga_cookies"].value == "false"
 
     def test_cookie_consent_redirect_forbidden(self, importer_client):
         """Test that the cookie consent page redirects to the home page if referrer_url supplied is not ours."""

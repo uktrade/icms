@@ -19,7 +19,6 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from django_filters import FilterSet
-from pydantic import BaseModel, ConfigDict
 
 from web.one_login.utils import OneLoginConfig
 from web.sites import is_caseworker_site, is_exporter_site, is_importer_site
@@ -134,20 +133,13 @@ def home(request):
     return render(request, "web/home.html")
 
 
-class GACookiePolicy(BaseModel):
-    model_config = ConfigDict(extra="ignore")
-    usage: bool = False
-
-
 def cookie_consent_view(request: HttpRequest) -> HttpResponse:
     """View for the cookie consent page. More info can be found in the README under Google Analytics."""
     if request.method == "GET":
         initial_dict = {}
 
-        if current_cookies_policy := request.COOKIES.get("cookies_policy"):
-            current_cookies_policy = GACookiePolicy.model_validate_json(current_cookies_policy)
-
-            initial_dict["accept_cookies"] = current_cookies_policy.usage
+        if current_cookies_policy := request.COOKIES.get("accepted_ga_cookies"):
+            initial_dict["accept_cookies"] = current_cookies_policy == "true"
 
         return render(
             request,
@@ -171,9 +163,10 @@ def cookie_consent_view(request: HttpRequest) -> HttpResponse:
             # regardless of their choice, we set a cookie to say they've made a choice
             response.set_cookie("cookie_preferences_set", "true", max_age=cookie_max_age)
 
-            ga_cookies = GACookiePolicy(usage=form.cleaned_data["accept_cookies"])
             response.set_cookie(
-                "cookies_policy", ga_cookies.model_dump_json(), max_age=cookie_max_age
+                "accepted_ga_cookies",
+                "true" if form.cleaned_data["accept_cookies"] else "false",
+                max_age=cookie_max_age,
             )
 
             return response
