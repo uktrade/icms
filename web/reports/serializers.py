@@ -66,6 +66,7 @@ class IssuedCertificateReportSerializer(pydantic.BaseModel):
     application_update_count: int = pydantic.Field(serialization_alias="Application Update Count")
     fir_count: int = pydantic.Field(serialization_alias="FIR Count")
     business_days_to_process: int = pydantic.Field(serialization_alias="Business Days to Process")
+    overseas_region: str = pydantic.Field(serialization_alias="Continent")
 
 
 class ImporterAccessRequestReportSerializer(pydantic.BaseModel):

@@ -59,7 +59,7 @@ EXPECTED_ACCESS_REQUEST_TOTALS_HEADER = [
     "Refused Requests",
 ]
 
-EXPECTED_HEADER = [
+EXPECTED_ISSUED_CERTIFICATE_HEADER = [
     "Certificate Reference",
     "Case Reference",
     "Application Type",
@@ -80,6 +80,7 @@ EXPECTED_HEADER = [
     "Application Update Count",
     "FIR Count",
     "Business Days to Process",
+    "Continent",
 ]
 
 EXPECTED_IMPORT_LICENCE_HEADER = [
@@ -263,7 +264,7 @@ class TestIssuedCertificateReportInterface:
         interface = IssuedCertificateReportInterface(self.report_schedule)
         data = interface.get_data()
         assert data == {
-            "header": EXPECTED_HEADER,
+            "header": EXPECTED_ISSUED_CERTIFICATE_HEADER,
             "results": [],
         }
 
@@ -299,6 +300,7 @@ class TestIssuedCertificateReportInterface:
                 "Contact Full Name": "E1_main_contact_first_name E1_main_contact_last_name",
                 "Countries of Manufacture": "Afghanistan",
                 "Country": "Zimbabwe",
+                "Continent": "Africa",
                 "Exporter": "Test Exporter 1",
                 "FIR Count": 0,
                 "HSE Email Count": 1,
@@ -321,6 +323,7 @@ class TestIssuedCertificateReportInterface:
                 "Contact Full Name": "E1_main_contact_first_name E1_main_contact_last_name",
                 "Countries of Manufacture": "Afghanistan",
                 "Country": "Afghanistan",
+                "Continent": "Middle East, Afghanistan and Pakistan",
                 "Exporter": "Test Exporter 1",
                 "FIR Count": 0,
                 "HSE Email Count": 1,
@@ -353,6 +356,7 @@ class TestIssuedCertificateReportInterface:
                 "Contact Full Name": "E1_main_contact_first_name E1_main_contact_last_name",
                 "Countries of Manufacture": "",
                 "Country": "China",
+                "Continent": "China and Hong Kong",
                 "Exporter": "Test Exporter 1",
                 "FIR Count": 0,
                 "HSE Email Count": 0,
@@ -387,6 +391,7 @@ class TestIssuedCertificateReportInterface:
                 "Contact Full Name": "E1_main_contact_first_name E1_main_contact_last_name",
                 "Countries of Manufacture": "",
                 "Country": "Afghanistan",
+                "Continent": "Middle East, Afghanistan and Pakistan",
                 "Exporter": "Test Exporter 1",
                 "FIR Count": 1,
                 "HSE Email Count": 0,

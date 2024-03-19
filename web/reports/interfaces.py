@@ -259,6 +259,7 @@ class IssuedCertificateReportInterface(ReportInterface):
             case_processing_time=self.get_total_processing_time(cdr, export_application),
             total_processing_time=self.get_total_processing_time(cdr, export_application),
             business_days_to_process=self.get_business_days_to_process(cdr, export_application),
+            overseas_region=cdr.reference_data.country.overseas_region.name,
         )
 
     def get_is_responsible_person(self, export_application: ExportApplication) -> YesNoChoices:
