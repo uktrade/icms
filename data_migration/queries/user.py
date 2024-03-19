@@ -1,3 +1,5 @@
+from .utils import rp_wua
+
 users = """
 WITH login_id_dupes AS (
   SELECT login_id
@@ -53,26 +55,8 @@ ORDER BY wuam.wua_id
 """
 
 
-importers = """
-WITH rp_wua AS (
-  SELECT uah.resource_person_id
-  , CASE
-    WHEN COUNT(wua_id) > 1
-    THEN (
-      SELECT sub.wua_id
-      FROM securemgr.web_user_account_histories sub
-      WHERE sub.person_id_current IS NOT NULL
-        AND sub.resource_person_primary_flag = 'Y'
-        AND sub.resource_person_id = uah.resource_person_id
-        AND sub.account_status = 'ACTIVE'
-    )
-    ELSE MAX(wua_id)
-  END wua_id
-  FROM securemgr.web_user_account_histories uah
-  WHERE uah.person_id_current IS NOT NULL
-    AND uah.resource_person_primary_flag = 'Y'
-  GROUP BY uah.resource_person_id
-)
+importers = f"""
+WITH rp_wua AS ({rp_wua})
 SELECT
   imp_id id
   , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
