@@ -1,6 +1,8 @@
+
 #quantity-section {
     display: flex;
     flex-direction: column;
+    page-break-before: always;
 }
 
 #quantity-section > main {
@@ -13,7 +15,8 @@
 
 #quantity-table {
     width: 100%;
-    height: 100%;
+    height: 750px;
+
 }
 
 #quantity-table tr:first-child {
@@ -33,3 +36,9 @@ table, th, td {
     border: 1px solid black;
     border-collapse: collapse;
 }
+
+td[rowspan] {
+  vertical-align: top;
+  text-align: left;
+}
+
