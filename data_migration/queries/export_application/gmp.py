@@ -1,48 +1,7 @@
-gmp_application = """
-WITH rp_wua AS (
-  SELECT uah.resource_person_id
-  , CASE
-    WHEN COUNT(wua_id) > 1
-    THEN (
-      SELECT sub.wua_id
-      FROM securemgr.web_user_account_histories sub
-      WHERE sub.person_id_current IS NOT NULL
-        AND sub.resource_person_primary_flag = 'Y'
-        AND sub.resource_person_id = uah.resource_person_id
-        AND sub.account_statuS = 'ACTIVE'
-    )
-    ELSE MAX(wua_id)
-  END wua_id
-  FROM SECUREMGR.WEB_USER_ACCOUNT_HISTORIES uah
-  WHERE uah.person_id_current IS NOT NULL
-    AND uah.resource_person_primary_flag = 'Y'
-  GROUP BY uah.resource_person_id
-), case_owner AS (
-  SELECT
-    REPLACE(xa.assignee_uref, 'WUA') wua_id
-    , bad.ca_id
-  FROM (
-    SELECT
-      MAX(bad.id) bad_id
-      , bas.ca_id
-    FROM bpmmgr.business_assignment_details bad
-    INNER JOIN (
-      SELECT bra.bas_id, REPLACE(xbc.primary_data_uref, 'CA') ca_id
-      FROM bpmmgr.xview_business_contexts xbc
-      INNER JOIN bpmmgr.business_routine_contexts brc ON xbc.bc_id = brc.bc_id
-      INNER JOIN bpmmgr.business_stages bs ON bs.brc_id = brc.id AND bs.end_datetime IS NULL
-      INNER JOIN bpmmgr.business_routine_assignments bra ON bra.brc_id = brc.id
-      INNER JOIN bpmmgr.xview_bpd_action_set_assigns xbasa ON xbasa.bpd_id = bs.bp_id
-        AND xbasa.stage_label = bs.stage_label
-        AND xbasa.assignment = bra.assignment
-        AND xbasa.workbasket = 'WORK'
-      WHERE  bs.stage_label LIKE 'CA%'
-        AND bra.assignment = 'CASE_OFFICER'
-      ) bas on bas.bas_id = bad.bas_id
-    GROUP BY bas.ca_id
-    ) bad
-  INNER JOIN bpmmgr.xview_assignees xa ON xa.bad_id = bad.bad_id
-)
+from data_migration.queries.utils import case_owner_ca, rp_wua
+
+gmp_application = f"""
+WITH rp_wua AS ({rp_wua}), case_owner AS ({case_owner_ca})
 SELECT
   xcad.ca_id
   , xcad.status

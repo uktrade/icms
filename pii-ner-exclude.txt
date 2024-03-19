@@ -4256,3 +4256,6 @@ CompaniesHouse
 submitEditForm
 document.getElementById('id_registered_number').value
 li class="mt-1">When
+WITH rp_login AS
+ON rp_login.resource_person_id
+SELECT REPLACE(xa.assignee_uref

@@ -1,36 +1,20 @@
 from django.conf import settings
 
+from data_migration.queries.utils import rp_login
+
 EXCLUDE_DOMAIN = settings.DATA_MIGRATION_EMAIL_DOMAIN_EXCLUDE
 
 
-user_roles_statement = """
+user_roles_statement = f"""
 FROM (
-WITH rp_wua AS (
-  SELECT uah.resource_person_id
-  , CASE
-    WHEN COUNT(login_id) > 1
-    THEN (
-      SELECT sub.login_id
-      FROM securemgr.web_user_account_histories sub
-      WHERE sub.person_id_current IS NOT NULL
-        AND sub.resource_person_primary_flag = 'Y'
-        AND sub.resource_person_id = uah.resource_person_id
-        AND sub.account_status = 'ACTIVE'
-    )
-    ELSE MAX(login_id)
-  END login_id
-  FROM securemgr.web_user_account_histories uah
-  WHERE uah.person_id_current IS NOT NULL
-    AND uah.resource_person_primary_flag = 'Y'
-  GROUP BY uah.resource_person_id
-)
+WITH rp_login AS ({rp_login})
 SELECT
   login_id username
   , LISTAGG(DISTINCT xr.res_type || ':' || rmc.role_name, '    ') WITHIN GROUP (ORDER BY xr.res_type, rmc.role_name) roles
 FROM appenv.xview_resources xr
 INNER JOIN decmgr.resource_members_current rmc ON rmc.res_id = xr.res_id
 INNER JOIN decmgr.xview_resource_type_roles xrtr ON xrtr.role_name = rmc.role_name AND xrtr.res_type = xr.res_type
-INNER JOIN rp_wua ON rp_wua.resource_person_id = rmc.person_id
+INNER JOIN rp_login ON rp_login.resource_person_id = rmc.person_id
 WHERE xr.res_type IN ('IMP_ADMIN', 'IMP_ADMIN_SEARCH', 'IMP_CASE_OFFICERS', 'IMP_EXTERNAL',
   'REPORTING_CATEGORY_MANAGEMENT', 'REPORTING_SUPER_TEAM', 'REPORTING_TEAM', 'IMP_CONSTABULARY_CONTACTS',
   'IMP_EXPORTER_AGENT_CONTACTS', 'IMP_EXPORTER_CONTACTS', 'IMP_IMPORTER_AGENT_CONTACTS', 'IMP_IMPORTER_CONTACTS')
@@ -46,7 +30,7 @@ all_user_roles_count = "SELECT COUNT(*)" + user_roles_statement
 # Importer Group Permissions
 
 importer_user_roles = f"""
-WITH rp_wua AS (
+WITH rp_login AS (
   SELECT uah.resource_person_id
   , CASE
     WHEN COUNT(login_id) > 1
@@ -68,18 +52,18 @@ WITH rp_wua AS (
   GROUP BY uah.resource_person_id
 )
 SELECT
-  rp_wua.login_id username
+  rp_login.login_id username
   , LISTAGG(DISTINCT xr.res_type || ':' || rmc.role_name, '    ') WITHIN GROUP (ORDER BY xr.res_type, rmc.role_name) roles
   , ur.imp_id importer_id
 FROM appenv.xview_resources xr
 INNER JOIN decmgr.resource_members_current rmc ON rmc.res_id = xr.res_id
 INNER JOIN decmgr.xview_resource_type_roles xrtr ON xrtr.role_name = rmc.role_name AND xrtr.res_type = xr.res_type
-INNER JOIN rp_wua ON rp_wua.resource_person_id = rmc.person_id
+INNER JOIN rp_login ON rp_login.resource_person_id = rmc.person_id
 LEFT JOIN decmgr.resource_usages_current ru ON ru.res_id = rmc.res_id
 LEFT JOIN bpmmgr.urefs ur ON ur.uref = ru.uref
 WHERE xr.res_type IN ('IMP_IMPORTER_AGENT_CONTACTS', 'IMP_IMPORTER_CONTACTS')
-GROUP BY rp_wua.login_id, ur.imp_id
-ORDER BY rp_wua.login_id
+GROUP BY rp_login.login_id, ur.imp_id
+ORDER BY rp_login.login_id
 """
 
 importer_where = """WHERE (
@@ -97,39 +81,21 @@ importer_user_roles_count = all_user_roles_count + importer_where
 
 # Exporter Group Permissions
 
-exporter_user_roles = """
-WITH rp_wua AS (
-  SELECT uah.resource_person_id
-  , CASE
-    WHEN COUNT(login_id) > 1
-    THEN (
-      SELECT sub.login_id
-      FROM securemgr.web_user_account_histories sub
-      WHERE sub.person_id_current IS NOT NULL
-        AND sub.resource_person_primary_flag = 'Y'
-        AND sub.resource_person_id = uah.resource_person_id
-        AND sub.account_status = 'ACTIVE'
-    )
-    ELSE MAX(login_id)
-  END login_id
-  FROM securemgr.web_user_account_histories uah
-  WHERE uah.person_id_current IS NOT NULL
-    AND uah.resource_person_primary_flag = 'Y'
-  GROUP BY uah.resource_person_id
-)
+exporter_user_roles = f"""
+WITH rp_login AS ({rp_login})
 SELECT
-  rp_wua.login_id username
+  rp_login.login_id username
   , LISTAGG(DISTINCT xr.res_type || ':' || rmc.role_name, '    ') WITHIN GROUP (ORDER BY xr.res_type, rmc.role_name) roles
   , ur.e_id exporter_id
 FROM appenv.xview_resources xr
 INNER JOIN decmgr.resource_members_current rmc ON rmc.res_id = xr.res_id
 INNER JOIN decmgr.xview_resource_type_roles xrtr ON xrtr.role_name = rmc.role_name AND xrtr.res_type = xr.res_type
-INNER JOIN rp_wua ON rp_wua.resource_person_id = rmc.person_id
+INNER JOIN rp_login ON rp_login.resource_person_id = rmc.person_id
 LEFT JOIN decmgr.resource_usages_current ru ON ru.res_id = rmc.res_id
 LEFT JOIN bpmmgr.urefs ur ON ur.uref = ru.uref
 WHERE xr.res_type IN ('IMP_EXPORTER_AGENT_CONTACTS', 'IMP_EXPORTER_CONTACTS')
-GROUP BY rp_wua.login_id, ur.e_id
-ORDER BY rp_wua.login_id
+GROUP BY rp_login.login_id, ur.e_id
+ORDER BY rp_login.login_id
 """
 
 exporter_where = """WHERE (
@@ -191,26 +157,8 @@ import_search_user_roles_count = all_user_roles_count + import_search_where
 
 # Constabulary Contacts
 
-constabulary_user_roles = """
-WITH rp_wua AS (
-  SELECT uah.resource_person_id
-  , CASE
-    WHEN COUNT(login_id) > 1
-    THEN (
-      SELECT sub.login_id
-      FROM securemgr.web_user_account_histories sub
-      WHERE sub.person_id_current IS NOT NULL
-        AND sub.resource_person_primary_flag = 'Y'
-        AND sub.resource_person_id = uah.resource_person_id
-        AND sub.account_status = 'ACTIVE'
-    )
-    ELSE MAX(login_id)
-  END login_id
-  FROM securemgr.web_user_account_histories uah
-  WHERE uah.person_id_current IS NOT NULL
-    AND uah.resource_person_primary_flag = 'Y'
-  GROUP BY uah.resource_person_id
-)
+constabulary_user_roles = f"""
+WITH rp_login AS ({rp_login})
 SELECT
   login_id username
   , LISTAGG(DISTINCT xr.res_type || ':' || rmc.role_name, '    ') WITHIN GROUP (ORDER BY xr.res_type, rmc.role_name) roles
@@ -218,7 +166,7 @@ SELECT
 FROM appenv.xview_resources xr
 INNER JOIN decmgr.resource_members_current rmc ON rmc.res_id = xr.res_id
 INNER JOIN decmgr.xview_resource_type_roles xrtr ON xrtr.role_name = rmc.role_name AND xrtr.res_type = xr.res_type
-INNER JOIN rp_wua ON rp_wua.resource_person_id = rmc.person_id
+INNER JOIN rp_login ON rp_login.resource_person_id = rmc.person_id
 INNER JOIN decmgr.resource_usages_current ru ON ru.res_id = rmc.res_id
 INNER JOIN impmgr.constabularies c ON c.uref_value = ru.uref
 WHERE xr.res_type IN ('IMP_CONSTABULARY_CONTACTS')
@@ -232,32 +180,14 @@ constabulary_user_roles_count = (
 )
 
 
-users_without_roles_count = """
+users_without_roles_count = f"""
 SELECT COUNT(*) FROM (
-WITH rp_wua AS (
-  SELECT uah.resource_person_id
-  , CASE
-    WHEN COUNT(login_id) > 1
-    THEN (
-      SELECT sub.login_id
-      FROM securemgr.web_user_account_histories sub
-      WHERE sub.person_id_current IS NOT NULL
-        AND sub.resource_person_primary_flag = 'Y'
-        AND sub.resource_person_id = uah.resource_person_id
-        AND sub.account_status = 'ACTIVE'
-    )
-    ELSE MAX(login_id)
-  END login_id
-  FROM securemgr.web_user_account_histories uah
-  WHERE uah.person_id_current IS NOT NULL
-    AND uah.resource_person_primary_flag = 'Y'
-  GROUP BY uah.resource_person_id
-)
+WITH rp_login AS ({rp_login})
 SELECT
   login_id username
   , LISTAGG(DISTINCT xr.res_type || ':' || rmc.role_name, '    ') WITHIN GROUP (ORDER BY xr.res_type, rmc.role_name) roles
-FROM rp_wua
-LEFT JOIN decmgr.resource_members_current rmc ON rp_wua.resource_person_id = rmc.person_id
+FROM rp_login
+LEFT JOIN decmgr.resource_members_current rmc ON rp_login.resource_person_id = rmc.person_id
 LEFT JOIN appenv.xview_resources xr ON rmc.res_id = xr.res_id
 LEFT JOIN decmgr.xview_resource_type_roles xrtr ON xrtr.role_name = rmc.role_name AND xrtr.res_type = xr.res_type
 GROUP BY login_id
@@ -265,33 +195,15 @@ ORDER BY login_id
 ) WHERE roles = ':'
 """
 
-roles_summary = """
-WITH rp_wua AS (
-  SELECT uah.resource_person_id
-  , CASE
-    WHEN COUNT(login_id) > 1
-    THEN (
-      SELECT sub.login_id
-      FROM securemgr.web_user_account_histories sub
-      WHERE sub.person_id_current IS NOT NULL
-        AND sub.resource_person_primary_flag = 'Y'
-        AND sub.resource_person_id = uah.resource_person_id
-        AND sub.account_status = 'ACTIVE'
-    )
-    ELSE MAX(login_id)
-  END login_id
-  FROM securemgr.web_user_account_histories uah
-  WHERE uah.person_id_current IS NOT NULL
-    AND uah.resource_person_primary_flag = 'Y'
-  GROUP BY uah.resource_person_id
-)
+roles_summary = f"""
+WITH rp_login AS ({rp_login})
 SELECT
   xr.res_type || ':' || rmc.role_name roles
   , COUNT(DISTINCT login_id) user_count
 FROM appenv.xview_resources xr
 INNER JOIN decmgr.resource_members_current rmc ON rmc.res_id = xr.res_id
 INNER JOIN decmgr.xview_resource_type_roles xrtr ON xrtr.role_name = rmc.role_name AND xrtr.res_type = xr.res_type
-INNER JOIN rp_wua ON rp_wua.resource_person_id = rmc.person_id
+INNER JOIN rp_login ON rp_login.resource_person_id = rmc.person_id
 WHERE xr.res_type IN ('IMP_ADMIN', 'IMP_ADMIN_SEARCH', 'IMP_CASE_OFFICERS', 'IMP_EXTERNAL',
   'REPORTING_CATEGORY_MANAGEMENT', 'REPORTING_SUPER_TEAM', 'REPORTING_TEAM', 'IMP_CONSTABULARY_CONTACTS',
   'IMP_EXPORTER_AGENT_CONTACTS', 'IMP_EXPORTER_CONTACTS', 'IMP_IMPORTER_AGENT_CONTACTS', 'IMP_IMPORTER_CONTACTS')
