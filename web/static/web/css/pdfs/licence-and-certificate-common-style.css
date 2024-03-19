@@ -86,7 +86,7 @@
     -webkit-print-color-adjust: exact;
 }
 
-p.content, ul li, .post_endorsement_statement p {
+.small-text{
     font-size: 10px;
 }
 
