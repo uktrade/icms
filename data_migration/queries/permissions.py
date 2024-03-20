@@ -14,7 +14,7 @@ SELECT
 FROM appenv.xview_resources xr
 INNER JOIN decmgr.resource_members_current rmc ON rmc.res_id = xr.res_id
 INNER JOIN decmgr.xview_resource_type_roles xrtr ON xrtr.role_name = rmc.role_name AND xrtr.res_type = xr.res_type
-INNER JOIN rp_login ON rp_login.resource_person_id = rmc.person_id
+INNER JOIN rp_login ON rp_login.resource_person_id = rmc.person_id AND rp_login.account_status IN ('ACTIVE', 'SUSPENDED')
 WHERE xr.res_type IN ('IMP_ADMIN', 'IMP_ADMIN_SEARCH', 'IMP_CASE_OFFICERS', 'IMP_EXTERNAL',
   'REPORTING_CATEGORY_MANAGEMENT', 'REPORTING_SUPER_TEAM', 'REPORTING_TEAM', 'IMP_CONSTABULARY_CONTACTS',
   'IMP_EXPORTER_AGENT_CONTACTS', 'IMP_EXPORTER_CONTACTS', 'IMP_IMPORTER_AGENT_CONTACTS', 'IMP_IMPORTER_CONTACTS')
@@ -30,27 +30,7 @@ all_user_roles_count = "SELECT COUNT(*)" + user_roles_statement
 # Importer Group Permissions
 
 importer_user_roles = f"""
-WITH rp_login AS (
-  SELECT uah.resource_person_id
-  , CASE
-    WHEN COUNT(login_id) > 1
-    THEN (
-      SELECT sub.login_id
-      FROM securemgr.web_user_account_histories sub
-      WHERE sub.person_id_current IS NOT NULL
-        AND sub.resource_person_primary_flag = 'Y'
-        AND sub.resource_person_id = uah.resource_person_id
-        AND sub.account_status = 'ACTIVE'
-    )
-    ELSE MAX(login_id)
-  END login_id
-  FROM securemgr.web_user_account_histories uah
-  WHERE uah.person_id_current IS NOT NULL
-    AND login_id LIKE '%@%'
-    AND login_id NOT LIKE '%{EXCLUDE_DOMAIN}' COLLATE BINARY_CI
-    AND uah.resource_person_primary_flag = 'Y'
-  GROUP BY uah.resource_person_id
-)
+WITH rp_login AS ({rp_login})
 SELECT
   rp_login.login_id username
   , LISTAGG(DISTINCT xr.res_type || ':' || rmc.role_name, '    ') WITHIN GROUP (ORDER BY xr.res_type, rmc.role_name) roles
@@ -58,7 +38,7 @@ SELECT
 FROM appenv.xview_resources xr
 INNER JOIN decmgr.resource_members_current rmc ON rmc.res_id = xr.res_id
 INNER JOIN decmgr.xview_resource_type_roles xrtr ON xrtr.role_name = rmc.role_name AND xrtr.res_type = xr.res_type
-INNER JOIN rp_login ON rp_login.resource_person_id = rmc.person_id
+INNER JOIN rp_login ON rp_login.resource_person_id = rmc.person_id AND rp_login.account_status IN ('ACTIVE', 'SUSPENDED')
 LEFT JOIN decmgr.resource_usages_current ru ON ru.res_id = rmc.res_id
 LEFT JOIN bpmmgr.urefs ur ON ur.uref = ru.uref
 WHERE xr.res_type IN ('IMP_IMPORTER_AGENT_CONTACTS', 'IMP_IMPORTER_CONTACTS')
@@ -90,7 +70,7 @@ SELECT
 FROM appenv.xview_resources xr
 INNER JOIN decmgr.resource_members_current rmc ON rmc.res_id = xr.res_id
 INNER JOIN decmgr.xview_resource_type_roles xrtr ON xrtr.role_name = rmc.role_name AND xrtr.res_type = xr.res_type
-INNER JOIN rp_login ON rp_login.resource_person_id = rmc.person_id
+INNER JOIN rp_login ON rp_login.resource_person_id = rmc.person_id AND rp_login.account_status IN ('ACTIVE', 'SUSPENDED')
 LEFT JOIN decmgr.resource_usages_current ru ON ru.res_id = rmc.res_id
 LEFT JOIN bpmmgr.urefs ur ON ur.uref = ru.uref
 WHERE xr.res_type IN ('IMP_EXPORTER_AGENT_CONTACTS', 'IMP_EXPORTER_CONTACTS')
@@ -166,7 +146,7 @@ SELECT
 FROM appenv.xview_resources xr
 INNER JOIN decmgr.resource_members_current rmc ON rmc.res_id = xr.res_id
 INNER JOIN decmgr.xview_resource_type_roles xrtr ON xrtr.role_name = rmc.role_name AND xrtr.res_type = xr.res_type
-INNER JOIN rp_login ON rp_login.resource_person_id = rmc.person_id
+INNER JOIN rp_login ON rp_login.resource_person_id = rmc.person_id AND rp_login.account_status IN ('ACTIVE', 'SUSPENDED')
 INNER JOIN decmgr.resource_usages_current ru ON ru.res_id = rmc.res_id
 INNER JOIN impmgr.constabularies c ON c.uref_value = ru.uref
 WHERE xr.res_type IN ('IMP_CONSTABULARY_CONTACTS')
@@ -187,7 +167,7 @@ SELECT
   login_id username
   , LISTAGG(DISTINCT xr.res_type || ':' || rmc.role_name, '    ') WITHIN GROUP (ORDER BY xr.res_type, rmc.role_name) roles
 FROM rp_login
-LEFT JOIN decmgr.resource_members_current rmc ON rp_login.resource_person_id = rmc.person_id
+LEFT JOIN decmgr.resource_members_current rmc ON rp_login.resource_person_id = rmc.person_id AND rp_login.account_status IN ('ACTIVE', 'SUSPENDED')
 LEFT JOIN appenv.xview_resources xr ON rmc.res_id = xr.res_id
 LEFT JOIN decmgr.xview_resource_type_roles xrtr ON xrtr.role_name = rmc.role_name AND xrtr.res_type = xr.res_type
 GROUP BY login_id
