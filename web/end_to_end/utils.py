@@ -36,9 +36,31 @@ def get_future_datetime() -> dt.datetime:
     return dt.datetime(year=now.year + 1, month=1, day=1, hour=15, minute=30)
 
 
+def bypass_chief(page: Page, app_id: int) -> None:
+    """Waiting for the Bypass CHIEF link is flaky as it's waiting for a task to complete."""
+
+    for _ in range(5):
+        bypass_chief_btn = get_wb_row(page, app_id).get_by_role(
+            "button", name="(TEST) Bypass CHIEF", exact=True
+        )
+        if bypass_chief_btn.is_visible():
+            bypass_chief_btn.click()
+            return
+
+        else:
+            page.wait_for_timeout(5_000)
+            page.reload()
+
+    raise TimeoutError("Max retries waiting for Bypass CHIEF link.")
+
+
 def get_wb_row(page: Page, app_id: int) -> Locator:
     return page.locator(f'[data-test-id="workbasket-row-{app_id}"]')
 
 
 def get_search_row(page: Page, app_id: int) -> Locator:
     return page.locator(f'[data-test-id="search-results-row-{app_id}"]')
+
+
+def get_cat_list_row(page: Page, cat_pk: int) -> Locator:
+    return page.locator(f'[data-test-id="cat-results-row-{cat_pk}"]')

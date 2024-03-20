@@ -316,8 +316,8 @@ def fa_sil_manage_and_complete_case(page: Page, app_id) -> None:
     #
     # Bypass CHIEF and check application complete
     #
-    workbasket_row = utils.get_wb_row(page, app_id)
-    workbasket_row.get_by_role("button", name="(TEST) Bypass CHIEF", exact=True).click()
+    utils.bypass_chief(page, app_id)
+    utils.assert_page_url(page, "/workbasket/")
 
     workbasket_row = utils.get_wb_row(page, app_id)
     workbasket_row.get_by_role("cell", name="Completed ").is_visible()

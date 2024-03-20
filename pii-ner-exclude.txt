@@ -4267,3 +4267,13 @@ Test Brand
 {{ application_field(existing_application.submit_datetime.strftime('%d %
 {{ fields.field(form.hmrc_code
 ON rp_login.resource_person_id = rmc.person_id
+Test End Use or Final Product
+Add Manufacturer
+Test Manufacturer
+name="OK").click
+Restore
+Test GMP
+Certificate of Good
+the GMP Application Edit
+the COM Application Edit
+"Waiting for the Bypass CHIEF
