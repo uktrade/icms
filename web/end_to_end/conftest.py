@@ -181,7 +181,7 @@ def on_request(r: Request) -> None:
 
     current_test = _get_test_name()
 
-    logger.info("- %s >> %s - %s - %s", current_test, r.method, r.url, r.post_data_json)
+    logger.debug("- %s >> %s - %s - %s", current_test, r.method, r.url, r.post_data_json)
 
 
 def on_response(r: Response) -> None:
@@ -191,7 +191,7 @@ def on_response(r: Response) -> None:
 
     current_test = _get_test_name()
 
-    logger.info("- %s << %s - %s", current_test, r.status, r.url)
+    logger.debug("- %s << %s - %s", current_test, r.status, r.url)
 
 
 def _get_test_name() -> str:

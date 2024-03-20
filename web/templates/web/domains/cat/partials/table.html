@@ -13,7 +13,7 @@
   </thead>
   <tbody>
   {% for template in templates %}
-    <tr>
+    <tr data-test-id="cat-results-row-{{ template.pk }}">
       <td><a href="{{ icms_url('cat:view', kwargs={'cat_pk': template.pk}) }}">{{ template.name }}</a></td>
       <td>{{ template.description|nl2br }}</td>
       <td>{{ template.application_type }}</td>

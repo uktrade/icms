@@ -51,7 +51,7 @@ def revoke_fa_dfl_application(page: Page, dfl_id: int) -> None:
             search_row.get_by_role("link", name="Revoke Licence").click()
             break
 
-        page.wait_for_timeout(5000)
+        page.wait_for_timeout(5_000)
         page.reload()
     else:
         raise TimeoutError("Max retries waiting for Revoke Licence link exceeded")

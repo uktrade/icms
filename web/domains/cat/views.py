@@ -116,7 +116,7 @@ def create(request: AuthenticatedHttpRequest) -> HttpResponse:
                     cat.refresh_from_db()
                     cat.cfs_template.schedules.create()
 
-                return redirect(reverse("cat:list"))
+                return redirect(reverse("cat:edit", kwargs={"cat_pk": cat.pk}))
         else:
             form = CreateCATForm()
 

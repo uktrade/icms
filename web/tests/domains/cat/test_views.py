@@ -73,7 +73,7 @@ class TestCATCreateView(AuthTestCase):
         response = self.exporter_client.post(url, data)
 
         assert response.status_code == 302
-        assert response["Location"] == "/cat/"
+        assert response["Location"].startswith("/cat/edit/")
 
         template = CertificateApplicationTemplate.objects.get()
         assert template.name == "Foo name"
