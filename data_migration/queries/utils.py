@@ -1,3 +1,7 @@
+from django.conf import settings
+
+EXCLUDE_DOMAIN = settings.DATA_MIGRATION_EMAIL_DOMAIN_EXCLUDE
+
 # Used as a with statement to connect wua_id to resource_person_id.
 # Instances where there are two web user accounts are associated with a resource person account, take the active web user account
 # In the instances with two web user accounts, the log in id is the same on both accounts but one has account status cancelled
@@ -22,9 +26,12 @@ rp_wua = """
   GROUP BY uah.resource_person_id
 """
 
+# Used as a with statement to create a temporary table that connects resource_person_id with login_id
+# When multiple login_ids, take the login_id of the active account
+# Exclude login ids with the excluded domain in the email address
 
-rp_login = """
-  SELECT uah
+rp_login = f"""
+  SELECT uah.resource_person_id
   , CASE
     WHEN COUNT(login_id) > 1
     THEN (
@@ -37,12 +44,25 @@ rp_login = """
     )
     ELSE MAX(login_id)
   END login_id
+  , CASE
+    WHEN COUNT(login_id) > 1
+    THEN (
+      SELECT sub.account_status
+      FROM securemgr.web_user_account_histories sub
+      WHERE sub.person_id_current IS NOT NULL
+        AND sub.resource_person_primary_flag = 'Y'
+        AND sub.resource_person_id = uah.resource_person_id
+        AND sub.account_status = 'ACTIVE'
+    )
+    ELSE MAX(account_status)
+  END account_status
   FROM securemgr.web_user_account_histories uah
   WHERE uah.person_id_current IS NOT NULL
+    AND login_id LIKE '%@%'
+    AND login_id NOT LIKE '%{EXCLUDE_DOMAIN}' COLLATE BINARY_CI
     AND uah.resource_person_primary_flag = 'Y'
   GROUP BY uah.resource_person_id
 """
-
 
 case_owner_ima = """
   SELECT

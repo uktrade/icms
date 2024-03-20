@@ -36,7 +36,7 @@ CHECK_DATA_COUNTS: list[CheckCount] = [
     ),
     CheckCount(
         name="Users With Multiple Groups",
-        expected_count=17,
+        expected_count=16,
         model=web.User,
         filter_params={"group_count__gt": 1},
         annotation={"group_count": Count("groups")},
