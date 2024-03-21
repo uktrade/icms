@@ -4277,3 +4277,4 @@ Certificate of Good
 the GMP Application Edit
 the COM Application Edit
 "Waiting for the Bypass CHIEF
+f"{app_type} Template
