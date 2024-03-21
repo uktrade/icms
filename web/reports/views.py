@@ -1,14 +1,18 @@
-from typing import Any
+from typing import Any, Union
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.db import transaction
 from django.db.models import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.views.generic import CreateView, DetailView, ListView
+from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views.generic import CreateView, DetailView, ListView, RedirectView
 
 from web.models import GeneratedReport, Report, ScheduleReport
 from web.permissions import Perms
+from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 from web.utils.spreadsheet import MIMETYPE
 
@@ -16,6 +20,9 @@ from .constants import ReportStatus, ReportType
 from .forms import ImportLicenceForm, IssuedCertificatesForm, ReportForm
 from .tasks import generate_report_task
 from .utils import format_parameters_used
+
+ReportForms = Union[ImportLicenceForm, IssuedCertificatesForm, ReportForm]
+ReportFormType = type[ReportForms]
 
 
 class BaseReportView(LoginRequiredMixin, PermissionRequiredMixin):
@@ -29,7 +36,7 @@ class ReportListView(BaseReportView, ListView):
     template_name = "web/domains/reports/list-view.html"
     model = Report
 
-    def get_context_data(self, *args, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(*args, **kwargs)
         context["page_title"] = "Reports"
         return context
@@ -40,13 +47,17 @@ class RunHistoryListView(BaseReportView, ListView):
     paginate_by = 20
 
     def get_queryset(self) -> QuerySet:
-        return ScheduleReport.objects.filter(report=self.get_report()).order_by("-finished_at")
+        queryset = ScheduleReport.objects.filter(report=self.get_report())
+        if not self.request.GET.get("deleted"):
+            queryset = queryset.exclude(status=ReportStatus.DELETED)
+        return queryset.order_by("-finished_at")
 
-    def get_context_data(self, *args, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(*args, **kwargs)
         report = self.get_report()
         context["report"] = report
         context["page_title"] = report.name
+        context["showing_deleted"] = True if self.request.GET.get("deleted") else False
         return context
 
 
@@ -55,7 +66,7 @@ class RunOutputView(BaseReportView, DetailView):
     pk_url_kwarg = "schedule_pk"
     model = ScheduleReport
 
-    def get_context_data(self, *args, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(*args, **kwargs)
         report = self.get_report()
         context["page_title"] = report.name
@@ -69,25 +80,26 @@ class RunOutputView(BaseReportView, DetailView):
         return context
 
 
+@method_decorator(transaction.atomic, name="post")
 class RunReportView(BaseReportView, CreateView):
     permission_required = [Perms.page.view_reports, Perms.sys.generate_reports]  # type: ignore[list-item]
     template_name = "web/domains/reports/run-report.html"
 
-    def get_context_data(self, *args, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(*args, **kwargs)
         context["report"] = self.report
         context["page_title"] = f"{self.report.name} - Run Report"
         return context
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.report = self.get_report()
         return super().get(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.report = self.get_report()
         return super().post(request, *args, **kwargs)
 
-    def form_valid(self, form) -> HttpResponseRedirect:
+    def form_valid(self, form: ReportFormType) -> HttpResponseRedirect:
         scheduled_report = form.save(commit=False)
         scheduled_report.report = self.report
         scheduled_report.scheduled_by = self.request.user
@@ -100,9 +112,9 @@ class RunReportView(BaseReportView, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self) -> str:
-        return reverse("run-history-view", kwargs={"report_pk": self.report.pk})
+        return reverse("report:run-history-view", kwargs={"report_pk": self.report.pk})
 
-    def get_form_class(self):
+    def get_form_class(self) -> ReportFormType:
         match self.report.report_type:
             case ReportType.ISSUED_CERTIFICATES:
                 return IssuedCertificatesForm
@@ -116,7 +128,7 @@ class DownloadReportView(BaseReportView, DetailView):
     model = GeneratedReport
     pk_url_kwarg = "pk"
 
-    def get(self, *args, **kwargs) -> HttpResponse:
+    def get(self, *args: Any, **kwargs: Any) -> HttpResponse:
         generated_report = GeneratedReport.objects.get(
             schedule__report=self.get_report(), pk=kwargs["pk"]
         )
@@ -128,3 +140,23 @@ class DownloadReportView(BaseReportView, DetailView):
             f'attachment; filename="{generated_report.document.filename}"'
         )
         return response
+
+
+@method_decorator(transaction.atomic, name="post")
+class DeleteReportView(BaseReportView, RedirectView):
+    http_method_names = ["post"]
+
+    def get_schedule_report(self) -> ScheduleReport:
+        return get_object_or_404(ScheduleReport, pk=self.kwargs["schedule_pk"])
+
+    def post(
+        self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any
+    ) -> HttpResponseRedirect:
+        schedule_report = self.get_schedule_report()
+        schedule_report.status = ReportStatus.DELETED
+        schedule_report.deleted_by = request.user
+        schedule_report.deleted_at = timezone.now()
+        schedule_report.save(update_fields=["status", "deleted_by", "deleted_at"])
+        return HttpResponseRedirect(
+            reverse("report:run-history-view", kwargs={"report_pk": schedule_report.report.pk})
+        )

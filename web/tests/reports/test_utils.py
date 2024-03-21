@@ -1,7 +1,11 @@
 import pytest
 
 from web.reports.constants import ReportType
-from web.reports.utils import format_parameters_used
+from web.reports.utils import (
+    format_parameters_used,
+    get_error_serializer_header,
+    get_variation_number,
+)
 
 
 @pytest.mark.parametrize(
@@ -45,3 +49,26 @@ def test_format_parameters_used(report_schedule, report_type, parameters, exp_fo
     report_schedule.report.report_type = report_type
     report_schedule.parameters = parameters
     assert format_parameters_used(report_schedule) == exp_formatted_parameters
+
+
+def test_get_error_serializer_header():
+    assert get_error_serializer_header() == [
+        "Report Name",
+        "Identifier",
+        "Error Type",
+        "Error Message",
+        "Column",
+        "Value",
+    ]
+
+
+@pytest.mark.parametrize(
+    "reference,expected_variation_number",
+    (
+        ("hello", 0),
+        ("IMA/2020/0002/1", 1),
+        (None, 0),
+    ),
+)
+def test_get_variation_number(reference, expected_variation_number):
+    assert get_variation_number(reference) == expected_variation_number

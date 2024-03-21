@@ -3,6 +3,10 @@ from web.types import TypedTextChoices
 YES = "Yes"
 NO = "No"
 
+CELERY_REPORTS_QUEUE_NAME = "reports"
+
+GENERATE_REPORT_TASK_NAME = "web.reports.generate_report"
+
 
 class ReportStatus(TypedTextChoices):
     COMPLETED = ("COMPLETED", "Completed")

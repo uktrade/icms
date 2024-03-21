@@ -1,7 +1,7 @@
 from config.celery import app
 from web.models import ScheduleReport
 
-from .constants import ReportType
+from .constants import CELERY_REPORTS_QUEUE_NAME, GENERATE_REPORT_TASK_NAME, ReportType
 from .generate import (
     generate_access_request_report,
     generate_firearms_licences_report,
@@ -11,7 +11,7 @@ from .generate import (
 )
 
 
-@app.task
+@app.task(name=GENERATE_REPORT_TASK_NAME, queue=CELERY_REPORTS_QUEUE_NAME)
 def generate_report_task(scheduled_report_pk) -> None:
     scheduled_report = ScheduleReport.objects.get(pk=scheduled_report_pk)
     match scheduled_report.report.report_type:

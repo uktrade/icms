@@ -73,7 +73,7 @@ services:
         build:
             context: .
             dockerfile: local_deployment/Dockerfile
-        command: celery --app=config.celery:app worker --loglevel=INFO -Q celery,mail
+        command: celery --app=config.celery:app worker --loglevel=INFO -Q celery,mail,reports
         environment:
             - DJANGO_SETTINGS_MODULE
         env_file:

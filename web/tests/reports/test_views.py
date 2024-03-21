@@ -1,12 +1,30 @@
 from unittest import mock
 
 import pytest
-from pytest_django.asserts import assertContains, assertTemplateUsed
+from pytest_django.asserts import assertContains, assertNotContains, assertTemplateUsed
 
 from web.models import File, GeneratedReport
 from web.reports.constants import DateFilterType, ReportStatus, ReportType
-from web.reports.models import Report
+from web.reports.models import Report, ScheduleReport
 from web.tests.helpers import CaseURLS
+
+
+@pytest.fixture
+def deleted_report_schedule(ilb_admin_user):
+    return ScheduleReport.objects.create(
+        report=Report.objects.get(report_type=ReportType.ISSUED_CERTIFICATES),
+        title="DELETED report",
+        status=ReportStatus.DELETED,
+        scheduled_by=ilb_admin_user,
+        notes="",
+        parameters={
+            "date_from": "2010-02-01",
+            "date_to": "2024-01-12",
+            "date_filter_type": DateFilterType.SUBMITTED,
+            "application_type": "",
+            "legislation": [],
+        },
+    )
 
 
 def get_report_model(report_type):
@@ -20,12 +38,24 @@ def test_report_list_view(report_user_client):
     assertTemplateUsed(response, "web/domains/reports/list-view.html")
 
 
-def test_run_history_view(report_user_client):
+@pytest.mark.parametrize("show_deleted", (True, False))
+def test_run_history_view(
+    report_user_client, report_schedule, deleted_report_schedule, show_deleted
+):
     report = get_report_model(ReportType.ISSUED_CERTIFICATES)
-    response = report_user_client.get(CaseURLS.run_history_view(report.pk))
+    url = CaseURLS.run_history_view(report.pk)
+    if show_deleted:
+        url = url + "?deleted=1"
+    response = report_user_client.get(url)
     assert response.status_code == 200
     assertContains(response, "Run History")
     assertContains(response, "Run Report")
+    assertContains(response, "test report")
+    if show_deleted:
+        assertContains(response, "DELETED report")
+    else:
+        assertNotContains(response, "DELETED report")
+
     assertTemplateUsed(response, "web/domains/reports/run-history-view.html")
 
 
@@ -207,6 +237,15 @@ def test_report_output_view(report_user_client, report_schedule):
     assertContains(response, "01 Feb 2010")
     assertContains(response, "Date Filter Type")
     assertContains(response, "Application Submitted date")
+
+
+def test_report_delete_view(report_user_client, report_schedule):
+    response = report_user_client.post(
+        CaseURLS.delete_report_view(report_schedule.report.pk, report_schedule.pk), follow=True
+    )
+    assert response.status_code == 200
+    report_schedule.refresh_from_db()
+    assert report_schedule.status == ReportStatus.DELETED
 
 
 @mock.patch("web.reports.views.get_file_from_s3")

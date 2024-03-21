@@ -1,5 +1,6 @@
 import datetime as dt
 
+import pydantic
 import pytest
 from django.utils.timezone import make_aware
 from freezegun import freeze_time
@@ -28,6 +29,13 @@ from web.reports.interfaces import (
     OILFirearmsLicenceInterface,
     SILFirearmsLicenceInterface,
     SupplementaryFirearmsInterface,
+)
+from web.reports.serializers import (
+    AccessRequestTotalsReportSerializer,
+    DFLFirearmsLicenceSerializer,
+    ImporterAccessRequestReportSerializer,
+    ImportLicenceSerializer,
+    SupplementaryFirearmsSerializer,
 )
 from web.tests.helpers import add_variation_request_to_app
 
@@ -216,6 +224,27 @@ def refused_exporter_access_request(report_user):
     ear.tasks.create(is_active=True, task_type=Task.TaskType.PROCESS)
 
 
+class IncorrectTypeDFLFirearmsLicenceSerializer(DFLFirearmsLicenceSerializer):
+    importer: int
+    country_of_origin: int
+
+
+class IncorrectTypeSupplementaryFirearmsSerializer(SupplementaryFirearmsSerializer):
+    importer: int
+
+
+class IncorrectTypeImportLicenceSerializer(ImportLicenceSerializer):
+    importer: int = pydantic.Field(serialization_alias="Importer Name")
+
+
+class IncorrectTypeImporterAccessRequestReportSerializer(ImporterAccessRequestReportSerializer):
+    request_type: int
+
+
+class IncorrectTypeAccessRequestTotalsReportSerializer(AccessRequestTotalsReportSerializer):
+    approved_requests: str
+
+
 class TestIssuedCertificateReportInterface:
     @pytest.fixture(autouse=True)
     def _setup(self, report_schedule, ilb_admin_user):
@@ -266,6 +295,7 @@ class TestIssuedCertificateReportInterface:
         assert data == {
             "header": EXPECTED_ISSUED_CERTIFICATE_HEADER,
             "results": [],
+            "errors": [],
         }
 
     def test_issued_certificate_report_interface_get_data_cfs_filter_by_legislation(
@@ -417,6 +447,26 @@ class TestImporterAccessRequestInterface:
         assert data == {
             "header": EXPECTED_IMPORT_ACCESS_REQUEST_HEADER,
             "results": [],
+            "errors": [],
+        }
+
+    def test_get_errors(self, approved_importer_access_request):
+        interface = ImporterAccessRequestInterface(self.report_schedule)
+        interface.ReportSerializer = IncorrectTypeImporterAccessRequestReportSerializer
+        data = interface.get_data()
+        assert data == {
+            "header": EXPECTED_IMPORT_ACCESS_REQUEST_HEADER,
+            "results": [],
+            "errors": [
+                {
+                    "Error Message": "Input should be a valid integer, unable to parse string as an integer",
+                    "Error Type": "Validation Error",
+                    "Identifier": "iar/1",
+                    "Column": "request_type",
+                    "Value": "Importer Access Request",
+                    "Report Name": "Importer Access Requests",
+                }
+            ],
         }
 
     def test_get_data_results(
@@ -460,6 +510,7 @@ class TestExporterAccessRequestInterface:
         assert data == {
             "header": EXPECTED_EXPORT_ACCESS_REQUEST_HEADER,
             "results": [],
+            "errors": [],
         }
 
     def test_get_data_results(
@@ -509,6 +560,26 @@ class TestAccessRequestTotalsInterface:
         assert data == {
             "header": EXPECTED_ACCESS_REQUEST_TOTALS_HEADER,
             "results": [{"Approved Requests": 2, "Refused Requests": 2, "Total Requests": 4}],
+            "errors": [],
+        }
+
+    def test_get_errors(self, approved_importer_access_request):
+        interface = AccessRequestTotalsInterface(self.report_schedule)
+        interface.ReportSerializer = IncorrectTypeAccessRequestTotalsReportSerializer
+        data = interface.get_data()
+        assert data == {
+            "header": EXPECTED_ACCESS_REQUEST_TOTALS_HEADER,
+            "results": [],
+            "errors": [
+                {
+                    "Column": "approved_requests",
+                    "Error Message": "Input should be a valid string",
+                    "Error Type": "Validation Error",
+                    "Identifier": "Totals",
+                    "Value": 1,
+                    "Report Name": "Access Requests Totals",
+                }
+            ],
         }
 
 
@@ -524,6 +595,26 @@ class TestImportLicenceInterface:
         assert data == {
             "header": EXPECTED_IMPORT_LICENCE_HEADER,
             "results": [],
+            "errors": [],
+        }
+
+    def test_get_errors(self, completed_dfl_app):
+        interface = ImportLicenceInterface(self.report_schedule)
+        interface.ReportSerializer = IncorrectTypeImportLicenceSerializer
+        data = interface.get_data()
+        assert data == {
+            "header": EXPECTED_IMPORT_LICENCE_HEADER,
+            "results": [],
+            "errors": [
+                {
+                    "Identifier": "IMA/2024/00001",
+                    "Error Type": "Validation Error",
+                    "Error Message": "Input should be a valid integer, unable to parse string as an integer",
+                    "Column": "importer",
+                    "Value": "Test Importer 1",
+                    "Report Name": "Import Licence Data Extract",
+                }
+            ],
         }
 
     def test_get_data_dfl(self, completed_dfl_app):
@@ -744,6 +835,26 @@ class TestSupplementaryFirearmsInterface:
         assert data == {
             "header": EXPECTED_SUPPLEMENTARY_FIREARMS_HEADER,
             "results": [],
+            "errors": [],
+        }
+
+    def test_get_errors(self, completed_dfl_app_with_supplementary_report):
+        interface = SupplementaryFirearmsInterface(self.report_schedule)
+        interface.ReportSerializer = IncorrectTypeSupplementaryFirearmsSerializer
+        data = interface.get_data()
+        assert data == {
+            "header": EXPECTED_SUPPLEMENTARY_FIREARMS_HEADER,
+            "results": [],
+            "errors": [
+                {
+                    "Identifier": "IMA/2024/00001",
+                    "Error Type": "Validation Error",
+                    "Error Message": "Input should be a valid integer, unable to parse string as an integer",
+                    "Column": "importer",
+                    "Value": "Test Importer 1",
+                    "Report Name": "Supplementary firearms report",
+                }
+            ],
         }
 
     def test_get_sil_data(self, completed_sil_app_with_supplementary_report):
@@ -1012,6 +1123,34 @@ class TestFirearmsLicencesInterface:
         assert data == {
             "header": EXPECTED_FIREARMS_LICENCES_HEADER,
             "results": [],
+            "errors": [],
+        }
+
+    def test_get_errors(self, completed_dfl_app):
+        interface = DFLFirearmsLicenceInterface(self.report_schedule)
+        interface.ReportSerializer = IncorrectTypeDFLFirearmsLicenceSerializer
+        data = interface.get_data()
+        assert data == {
+            "header": EXPECTED_FIREARMS_LICENCES_HEADER,
+            "results": [],
+            "errors": [
+                {
+                    "Identifier": "IMA/2024/00001",
+                    "Error Type": "Validation Error",
+                    "Error Message": "Input should be a valid integer, unable to parse string as an integer",
+                    "Column": "importer",
+                    "Value": "Test Importer 1",
+                    "Report Name": "Deactivated Firearms Licences",
+                },
+                {
+                    "Column": "country_of_origin",
+                    "Error Message": "Input should be a valid integer, unable to parse string as an integer",
+                    "Error Type": "Validation Error",
+                    "Identifier": "IMA/2024/00001",
+                    "Report Name": "Deactivated Firearms Licences",
+                    "Value": "Afghanistan",
+                },
+            ],
         }
 
     def test_get_dfl_data(self, completed_dfl_app):
