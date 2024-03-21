@@ -193,6 +193,11 @@ def exporter_client(exporter_one_contact, exporter_site) -> Client:
 
 
 @pytest.fixture()
+def exporter_two_client(exporter_two_contact, exporter_site) -> Client:
+    return get_test_client(exporter_site.domain, exporter_two_contact)
+
+
+@pytest.fixture()
 def exporter_agent_client(exporter_one_agent_one_contact, exporter_site) -> Client:
     return get_test_client(exporter_site.domain, exporter_one_agent_one_contact)
 
