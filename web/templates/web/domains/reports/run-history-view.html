@@ -6,7 +6,7 @@
   <div class="content-actions">
     <ul class="menu-out flow-across">
       <li>
-        <a href="{{ icms_url('report-list-view') }}" class="prev-link">Reports</a>
+        <a href="{{ icms_url('report:report-list-view') }}" class="prev-link">Reports</a>
       </li>
     </ul>
   </div>
@@ -17,9 +17,15 @@
 
   <h3>Run History</h3>
     {% if "web.generate_reports" in perms %}
-      <a href="{{ icms_url('run-report-view', kwargs={'report_pk': report.pk}) }}" class="primary-button button">Run Report</a>
+      <a href="{{ icms_url('report:run-report-view', kwargs={'report_pk': report.pk}) }}" class="primary-button button">Run Report</a>
     {% endif %}
-
+  <div class="prompt">
+    {% if showing_deleted %}
+      <a href="{{ icms_url('report:run-history-view', kwargs={'report_pk': report.pk}) }}">Hide Deleted Runs</a>
+    {% else %}
+      <a href="{{ icms_url('report:run-history-view', kwargs={'report_pk': report.pk}) }}?deleted=1">Show Deleted Runs</a>
+    {% endif  %}
+  </div>
 
   {% if object_list %}
     <table responsiveList id="signatures-table" class="setoutList">
@@ -34,7 +40,7 @@
       <tbody>
         {% for obj in object_list %}
         <tr>
-          <td><a href="{{ icms_url('run-output-view', kwargs={'report_pk': obj.report.pk, 'schedule_pk': obj.pk }) }}">{{ obj.title }}</a></td>
+          <td><a href="{{ icms_url('report:run-output-view', kwargs={'report_pk': obj.report.pk, 'schedule_pk': obj.pk }) }}">{{ obj.title }}</a></td>
           <td>{{ obj.get_status_display() }}</td>
           <td>{% if obj.started_at %}{{ obj.started_at.strftime('%d %b %Y %H:%M:%S') }}{% else %}{% endif %}</td>
           <td>{% if obj.finished_at %}{{ obj.finished_at.strftime('%d %b %Y %H:%M:%S') }}{% else %}{% endif %}</td>

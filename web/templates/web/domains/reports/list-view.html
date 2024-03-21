@@ -15,7 +15,7 @@
     <tbody>
       {% for obj in object_list %}
         <tr>
-          <td><a href="{{ icms_url('run-history-view', kwargs={'report_pk': obj.pk}) }}">{{ obj.name }}</a><p class="helptext">{{ obj.description }}</p></td>
+          <td><a href="{{ icms_url('report:run-history-view', kwargs={'report_pk': obj.pk}) }}">{{ obj.name }}</a><p class="helptext">{{ obj.description }}</p></td>
           <td>{% if obj.last_run_completed_at %}{{ obj.last_run_completed_at.strftime('%d %b %Y %H:%M:%S') }}{% endif %}</td>
         </tr>
       {% endfor %}

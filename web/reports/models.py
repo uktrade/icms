@@ -33,6 +33,10 @@ class ScheduleReport(models.Model):
     )
     started_at = models.DateTimeField(null=True)
     finished_at = models.DateTimeField(null=True)
+    deleted_at = models.DateTimeField(null=True)
+    deleted_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+", null=True
+    )
     status = models.CharField(
         max_length=255,
         blank=False,
@@ -40,6 +44,11 @@ class ScheduleReport(models.Model):
         choices=ReportStatus.choices,
         default=ReportStatus.SUBMITTED,
     )
+    errors = models.BooleanField(null=True)
+
+    @property
+    def is_deleted(self) -> bool:
+        return self.status == ReportStatus.DELETED
 
     def __str__(self):
         return f"{self.report.get_report_type_display()} - Schedule:{self.pk}"

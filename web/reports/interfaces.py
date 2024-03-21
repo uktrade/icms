@@ -1,4 +1,7 @@
 import datetime as dt
+import json
+from collections.abc import Callable
+from functools import wraps
 from itertools import chain
 from typing import Any, ClassVar, final
 
@@ -18,7 +21,7 @@ from django.db.models import (
     Value,
 )
 from django.db.models.functions import JSONObject
-from pydantic import BaseModel, ConfigDict, SerializeAsAny
+from pydantic import BaseModel, ConfigDict, SerializeAsAny, ValidationError
 
 from web.domains.case._import.fa.types import FaImportApplication, ReportFirearms
 from web.domains.case._import.fa_sil.types import GoodsModel
@@ -62,12 +65,14 @@ from web.models import (
 )
 from web.utils.pdf.utils import _get_sil_section_labels, get_fa_sil_goods_item
 from web.utils.search.app_data import _add_import_licence_data
+from web.utils.sentry import capture_exception
 
 from . import utils
 from .constants import NO, YES, DateFilterType
 from .serializers import (
     AccessRequestTotalsReportSerializer,
     DFLFirearmsLicenceSerializer,
+    ErrorSerializer,
     ExporterAccessRequestReportSerializer,
     GoodsSectionSerializer,
     ImporterAccessRequestReportSerializer,
@@ -77,6 +82,40 @@ from .serializers import (
     SILFirearmsLicenceSerializer,
     SupplementaryFirearmsSerializer,
 )
+
+
+def handle_error(f: Callable) -> Callable:
+    @wraps(f)
+    def wrapper(self: Any, *args: Any, **kwargs: Any) -> list:
+        try:
+            return f(self, *args, **kwargs)
+        except ValidationError as e:
+            for error_dict in json.loads(e.json()):
+                self.errors.append(
+                    ErrorSerializer(
+                        report_name=self.name,
+                        identifier=self.get_row_identifier(*args, **kwargs),
+                        error_type="Validation Error",
+                        error_message=error_dict["msg"],
+                        column=", ".join(error_dict["loc"]),
+                        value=error_dict["input"],
+                    )
+                )
+        except Exception as e:
+            capture_exception()
+            self.errors.append(
+                ErrorSerializer(
+                    report_name=self.name,
+                    identifier=self.get_row_identifier(*args, **kwargs),
+                    error_type=type(e).__name__,
+                    error_message="",
+                    column="",
+                    value="",
+                )
+            )
+        return []
+
+    return wrapper
 
 
 class IssuedCertificateReportFilter(BaseModel):
@@ -104,6 +143,7 @@ class BasicReportFilter(BaseModel):
 class ReportResults(BaseModel):
     results: list[SerializeAsAny[BaseModel]]
     header: list[str]
+    errors: list[ErrorSerializer]
 
 
 class ReportInterface:
@@ -116,23 +156,26 @@ class ReportInterface:
     def __init__(self, scheduled_report: ScheduleReport) -> None:
         self.scheduled_report = scheduled_report
         self.filters = self.ReportFilter(**self.scheduled_report.parameters)
+        self.errors: list[ErrorSerializer] = []
 
     def get_data(self) -> dict[str, Any]:
         return ReportResults(
             results=self.process_results(),
             header=self.get_header(),
+            errors=self.errors,
         ).model_dump(by_alias=True)
 
     def process_results(self) -> list[BaseModel]:
         results = []
         for r in self.get_queryset().iterator(500):
             results += self.serialize_rows(r)
-        return results
+        return list(filter(None, results))
 
     def get_header(self) -> list[str]:
         schema = self.ReportSerializer.model_json_schema(by_alias=True, mode="serialization")
         return schema["required"]
 
+    @handle_error
     def serialize_rows(self, r: Model) -> list:
         return [self.serialize_row(r)]
 
@@ -210,6 +253,9 @@ class ReportInterface:
                 )
             )
         )
+
+    def get_row_identifier(self, *args, **kwargs) -> str:
+        raise NotImplementedError
 
 
 class BaseFirearmsLicenceInterface(ReportInterface):
@@ -373,6 +419,9 @@ class BaseFirearmsLicenceInterface(ReportInterface):
             **self.extra_fields(ia),
             **ia,
         )
+
+    def get_row_identifier(self, ia: ImportApplication) -> str:
+        return ia["reference"]
 
     def extra_fields(self, ia: FaImportApplication) -> dict[str, Any]:
         raise NotImplementedError
@@ -558,6 +607,9 @@ class IssuedCertificateReportInterface(ReportInterface):
             **export_application,
         )
 
+    def get_row_identifier(self, cdr: CaseDocumentReference) -> str:
+        return cdr["case_reference"]
+
     def get_total_processing_time(
         self, issue_datetime: dt.datetime, submit_datetime: dt.datetime
     ) -> str:
@@ -598,6 +650,9 @@ class ImporterAccessRequestInterface(ReportInterface):
             response_reason=ar.response_reason,
         )
 
+    def get_row_identifier(self, ar: ImpAccessOrExpAccess) -> str:
+        return ar.reference
+
 
 @final
 class ExporterAccessRequestInterface(ImporterAccessRequestInterface):
@@ -624,6 +679,7 @@ class AccessRequestTotalsInterface(ReportInterface):
             .order_by()
         )
 
+    @handle_error
     def process_results(self) -> list[BaseModel]:
         data = {}
         for r in self.get_queryset():
@@ -637,6 +693,9 @@ class AccessRequestTotalsInterface(ReportInterface):
                 refused_requests=refused,
             )
         ]
+
+    def get_row_identifier(self, **kwargs) -> str:
+        return "Totals"
 
 
 @final
@@ -731,6 +790,9 @@ class ImportLicenceInterface(ReportInterface):
             "sanctions_commodities",
             "commodity_code",
         )
+
+    def get_row_identifier(self, ia: ImportApplication) -> str:
+        return ia["reference"]
 
     def serialize_row(self, ia: ImportApplication) -> ImportLicenceSerializer:
         licence = utils.get_licence_details(ia)
@@ -948,6 +1010,10 @@ class SupplementaryFirearmsInterface(ReportInterface):
             results.append(self.serialize_row(report_firearms, ia))
         return results
 
+    def get_row_identifier(self, s: ReportFirearms, ia: FaImportApplication) -> str:
+        return ia["reference"]
+
+    @handle_error
     def serialize_row(
         self, s: ReportFirearms, ia: ImportApplication
     ) -> SupplementaryFirearmsSerializer:

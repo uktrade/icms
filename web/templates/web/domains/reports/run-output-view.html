@@ -6,7 +6,7 @@
   <div class="content-actions">
     <ul class="menu-out flow-across">
       <li>
-        <a href="{{ icms_url('run-history-view', kwargs={'report_pk': object.report.pk}) }}" class="prev-link">{{ object.report.name }} - Run History</a>
+        <a href="{{ icms_url('report:run-history-view', kwargs={'report_pk': object.report.pk}) }}" class="prev-link">{{ object.report.name }} - Run History</a>
       </li>
     </ul>
   </div>
@@ -16,6 +16,9 @@
 {% block main_content %}
 
   <h3>Report Output</h3>
+  {% if object.errors %}
+    <div class="info-box info-box-error ">This run completed with errors. Please check the error csv/tab for further details.</div>
+  {% endif %}
   <table responsiveList id="signatures-table" class="setoutList">
     <thead>
       <tr>
@@ -32,7 +35,7 @@
           <ul class="menu-out">
             {% for obj in csv_files %}
               <li>
-                <a class="" href="{{ icms_url('download-report-view', kwargs={'report_pk': object.report.pk, 'pk': obj.pk }) }}">{{ obj.document.filename }}</a>
+                <a class="" href="{{ icms_url('report:download-report-view', kwargs={'report_pk': object.report.pk, 'pk': obj.pk }) }}">{{ obj.document.filename }}</a>
               </li>
             {% endfor %}
           </ul>
@@ -45,7 +48,7 @@
           <ul class="menu-out">
             {% for obj in xlsx_files %}
               <li>
-                <a class="" href="{{ icms_url('download-report-view', kwargs={'report_pk': object.report.pk, 'pk': obj.pk }) }}">{{ obj.document.filename }}</a>
+                <a class="" href="{{ icms_url('report:download-report-view', kwargs={'report_pk': object.report.pk, 'pk': obj.pk }) }}">{{ obj.document.filename }}</a>
               </li>
             {% endfor %}
           </ul>
@@ -65,14 +68,28 @@
     <dd>{% if object.started_at %}{{ object.started_at.strftime('%d %b %Y %H:%M:%S') }}{% else %}&nbsp;{% endif %}</dd>
     <dt class="bold">Completed Date</dt>
     <dd>{% if object.finished_at %}{{ object.finished_at.strftime('%d %b %Y %H:%M:%S') }}{% else %}&nbsp;{% endif %}</dd>
+    {% if object.is_deleted %}
+      <dt class="bold">Deleted by</dt>
+      <dd>{{ object.deleted_by }}</dd>
+      <dt class="bold">Deleted Date</dt>
+      <dd>{% if object.deleted_at %}{{ object.deleted_at.strftime('%d %b %Y %H:%M:%S') }}{% else %}&nbsp;{% endif %}</dd>
+    {% endif %}
     <dt class="bold">Notes</dt>
     <dd>{{ object.notes }}</dd>
   </dl>
   <h4>Parameters</h4>
   <dl>
     {% for desc, value in parameters.items() %}
-        <dt class="bold">{{ desc }}</dt>
-        <dd>{{ value|safe }}</dd>
+      <dt class="bold">{{ desc }}</dt>
+      <dd>{{ value|safe }}</dd>
     {% endfor %}
   </dl>
+  {% if not object.is_deleted %}
+    <h4>Delete Run</h4>
+    <div class="info-box info-box-info">You can delete this run if you don't want it to appear in the run history any more. You'll still be able to view this run by turning on 'Show Deleted Runs' in the run history.</div>
+    <form method="post" action={{ icms_url('report:delete-report-view', kwargs={'report_pk': object.report.pk, 'schedule_pk': object.pk }) }}>
+      {{ csrf_input }}
+      <button type="submit" class="icon-bin button">Delete</button>
+    </form>
+  {% endif %}
 {% endblock %}

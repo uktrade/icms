@@ -14,16 +14,10 @@ from web.models import (
 from .constants import DateFilterType, ReportType
 from .serializers import (
     ConstabularyEmailTimesSerializer,
+    ErrorSerializer,
     LicenceSerializer,
     format_label,
 )
-
-
-def get_importer_address(ia: ImportApplication) -> str:
-    importer_address = ia.importer_office.address.replace("\n", ", ")
-    if ia.importer_office.postcode:
-        importer_address = f"{importer_address}, {ia.importer_office.postcode}"
-    return importer_address
 
 
 def get_licence_details(ia: ImportApplication) -> LicenceSerializer:
@@ -138,3 +132,8 @@ def format_importer_address(ia: QuerySet) -> str:
         ia["importer_postcode"],
     ]
     return ", ".join(f for f in address if f)
+
+
+def get_error_serializer_header() -> list[str]:
+    schema = ErrorSerializer.model_json_schema(by_alias=True, mode="serialization")
+    return schema["required"]

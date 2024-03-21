@@ -1,5 +1,5 @@
 import datetime as dt
-from typing import Annotated
+from typing import Annotated, Any
 
 import pydantic
 
@@ -222,3 +222,12 @@ class GoodsSectionSerializer(pydantic.BaseModel):
     quantity: int | None
     unlimited_quantity: bool = False
     obsolete_calibre: str | None = None
+
+
+class ErrorSerializer(BaseSerializer):
+    report_name: str
+    identifier: str
+    error_type: str
+    error_message: str
+    column: str
+    value: Any

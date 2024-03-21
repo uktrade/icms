@@ -194,7 +194,7 @@ class Menu:
         MenuLink(label="Workbasket", view="workbasket"),
         MenuLink(label="Importer Details", view="user-importer-list"),
         MenuLink(label="Exporter Details", view="user-exporter-list"),
-        MenuLink(label="Reports", view="report-list-view"),
+        MenuLink(label="Reports", view="report:report-list-view"),
         MenuLink(label="Importers", view="regulator-importer-list"),
         MenuDropDown(
             label="Search",
