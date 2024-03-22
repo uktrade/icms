@@ -35,6 +35,12 @@ CHECK_DATA_COUNTS: list[CheckCount] = [
         filter_params={"type": web.Importer.INDIVIDUAL, "user__isnull": True},
     ),
     CheckCount(
+        name="Organisation Importers With User",
+        expected_count=0,
+        model=web.Importer,
+        filter_params={"type": web.Importer.ORGANISATION, "user__isnull": False},
+    ),
+    CheckCount(
         name="Users With Multiple Groups",
         expected_count=16,
         model=web.User,
@@ -97,6 +103,13 @@ CHECK_MODELS = [
         filter_params_a={"process_type": ProcessTypes.GMP},
         model_b=web.UniqueReference,
         filter_params_b={"prefix": web.UniqueReference.Prefix.EXPORT_APP_GA},
+    ),
+    CheckModel(
+        name="All Migrated Users Have Email Field",
+        model_a=web.User,
+        filter_params_a={"email__contains": "@"},
+        model_b=web.User,
+        filter_params_b={"pk__gt": 0},
     ),
 ]
 

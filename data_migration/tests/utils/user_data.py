@@ -11,7 +11,6 @@ user_query_result = {
             ("username",),
             ("first_name",),
             ("last_name",),
-            ("email",),
             ("is_active",),
             ("salt",),
             ("encrypted_password",),
@@ -35,7 +34,6 @@ user_query_result = {
                 "GUEST",  # username
                 "Guest",  # first_name
                 "User",  # last_name
-                "",  # email
                 0,  # is_active
                 None,  # salt 1234
                 None,  # encrypted_password /PS-IGNORE
@@ -58,7 +56,6 @@ user_query_result = {
                 "ilb_case_officer@example.com",  # username /PS-IGNORE
                 "ILB",  # first_name
                 "Case-Officer",  # last_name
-                "ilb_case_officer@example.com",  # email /PS-IGNORE
                 1,  # is_active
                 "31323334",  # salt 1234
                 "FB8C301A3EBDA623029E0AACC9D3B21B",  # encrypted_password /PS-IGNORE
@@ -81,7 +78,6 @@ user_query_result = {
                 "home_office@example.com",  # username /PS-IGNORE
                 "Home",  # first_name
                 "Office",  # last_name
-                "home_office@example.com",  # email  /PS-IGNORE
                 1,  # is_active
                 "35363738",  # salt 5678
                 "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
@@ -104,7 +100,6 @@ user_query_result = {
                 "nca@example.com",  # username /PS-IGNORE
                 "NCA",  # first_name
                 "User",  # last_name
-                "nca@example.com",  # email  /PS-IGNORE
                 1,  # is_active
                 "35363738",  # salt 5678
                 "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
@@ -127,7 +122,6 @@ user_query_result = {
                 "importer_editor@example.com",  # username /PS-IGNORE
                 "Importer",  # first_name
                 "Editor",  # last_name
-                "importer_editor@example.com",  # email  /PS-IGNORE
                 1,  # is_active
                 "35363738",  # salt 5678
                 "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
@@ -150,7 +144,6 @@ user_query_result = {
                 "importer_viewer@example.com",  # username /PS-IGNORE
                 "Importer",  # first_name
                 "Viewer",  # last_name
-                "importer_viwer@example.com",  # email  /PS-IGNORE
                 1,  # is_active
                 "35363738",  # salt 5678
                 "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
@@ -173,7 +166,6 @@ user_query_result = {
                 "importer_agent_editor@example.com",  # username /PS-IGNORE
                 "Importer Agent",  # first_name
                 "Editor",  # last_name
-                "importer_agent_editor@example.com",  # email  /PS-IGNORE
                 1,  # is_active
                 "35363738",  # salt 5678
                 "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
@@ -196,7 +188,6 @@ user_query_result = {
                 "importer_agent_viewer@example.com",  # username /PS-IGNORE
                 "Importer Agent",  # first_name
                 "Viewer",  # last_name
-                "importer_agent_viwer@example.com",  # email  /PS-IGNORE
                 1,  # is_active
                 "35363738",  # salt 5678
                 "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
@@ -219,7 +210,6 @@ user_query_result = {
                 "exporter_editor@example.com",  # username /PS-IGNORE
                 "Exporter",  # first_name
                 "Editor",  # last_name
-                "Exporter_editor@example.com",  # email  /PS-IGNORE
                 1,  # is_active
                 "35363738",  # salt 5678
                 "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
@@ -242,7 +232,6 @@ user_query_result = {
                 "exporter_viewer@example.com",  # username /PS-IGNORE
                 "Exporter",  # first_name
                 "Viewer",  # last_name
-                "exporter_viwer@example.com",  # email  /PS-IGNORE
                 1,  # is_active
                 "35363738",  # salt 5678
                 "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
@@ -265,7 +254,6 @@ user_query_result = {
                 "exporter_agent_editor@example.com",  # username /PS-IGNORE
                 "Exporter Agent",  # first_name
                 "Editor",  # last_name
-                "exporter_agent_editor@example.com",  # email  /PS-IGNORE
                 1,  # is_active
                 "35363738",  # salt 5678
                 "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
@@ -288,7 +276,6 @@ user_query_result = {
                 "exporter_agent_viewer@example.com",  # username /PS-IGNORE
                 "Exporter Agent",  # first_name
                 "Viewer",  # last_name
-                "exporter_agent_viwer@example.com",  # email  /PS-IGNORE
                 1,  # is_active
                 "35363738",  # salt 5678
                 "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
@@ -311,7 +298,6 @@ user_query_result = {
                 "constabulary_contact@example.com",  # username /PS-IGNORE
                 "Constabulary",  # first_name
                 "Contact",  # last_name
-                "constabulary_contact@example.com",  # email  /PS-IGNORE
                 1,  # is_active
                 "35363738",  # salt 5678
                 "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
@@ -334,7 +320,6 @@ user_query_result = {
                 "import_search_user@example.com",  # username /PS-IGNORE
                 "Import",  # first_name
                 "Search",  # last_name
-                "import_search_user@example.com",  # email  /PS-IGNORE
                 1,  # is_active
                 "35363738",  # salt 5678
                 "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
@@ -357,7 +342,6 @@ user_query_result = {
                 "test@example.org",  # username /PS-IGNORE
                 "Test",  # first_name
                 "User",  # last_name
-                "test@example.org",  # email  /PS-IGNORE
                 1,  # is_active
                 "35363738",  # salt 5678
                 "9E764661E6C292D49006E4AF99FB1793",  # encrypted_password /PS-IGNORE
@@ -388,12 +372,24 @@ user_query_result = {
             ("user_id",),
             ("main_importer_id",),
             ("region_origin",),
+            ("comments",),
         ],
         [
-            (1, 1, "INDIVIDUAL", None, 123, "GB123456789012", 2, None, "O"),
-            (2, 1, "ORGANISATION", "Test Org", 124, "GB123456789013", 2, None, None),
-            (3, 1, "INDIVIDUAL", "Test Agent", 125, "GB123456789014", 2, 2, None),
-            (4, 1, "INDIVIDUAL", "Test Excluded", 126, "GB123456789015", 15, 2, None),
+            (1, 1, "INDIVIDUAL", None, 123, "GB123456789012", 2, None, "O", None),
+            (
+                2,
+                1,
+                "ORGANISATION",
+                "Test Org",
+                124,
+                "GB123456789013",
+                None,
+                None,
+                None,
+                "Test Comment",
+            ),
+            (3, 1, "INDIVIDUAL", "Test Agent", 125, "GB123456789014", 2, 2, None, None),
+            (4, 1, "INDIVIDUAL", "Test Excluded", 126, "GB123456789015", 15, 2, None, None),
         ],
     ),
     queries.importer_offices: (

@@ -18,7 +18,6 @@ class User(MigrationBase):
     username = models.CharField(max_length=150, unique=True)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
-    email = models.EmailField()
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     salt = models.CharField(max_length=16, null=True)
@@ -94,7 +93,9 @@ class User(MigrationBase):
 
     @classmethod
     def get_source_data(cls) -> Generator:
-        """Queries the model to get the queryset of data for the V2 import"""
+        """Queries the model to get the queryset of data for the V2 import
+        Filter out users whose username is not an email address
+        """
 
         values = cls.get_values()
         values_kwargs = cls.get_values_kwargs()
@@ -106,7 +107,7 @@ class User(MigrationBase):
             .filter(username__contains="@")
             .order_by("pk")
             .annotate(icms_v1_user=Value(True))
-            .values("icms_v1_user", *values, **values_kwargs)
+            .values("icms_v1_user", *values, email=F("username"), **values_kwargs)
             .iterator(chunk_size=2000)
         )
 
