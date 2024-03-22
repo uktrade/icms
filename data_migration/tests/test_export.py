@@ -148,7 +148,6 @@ def create_dummy_user():
         username="user",
         first_name="Prod",
         last_name="User",
-        email="test.user",
         is_active=True,
         title="Mr",
         password_disposition="FULL",

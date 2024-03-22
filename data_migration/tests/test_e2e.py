@@ -248,52 +248,6 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert importers[1].offices.count() == 2
     assert importers[2].offices.count() == 1
 
-    assert web.Office.objects.count() == 6
-    office1, office2, office3 = web.Office.objects.filter(importer__isnull=False).order_by("pk")
-
-    assert office1.address_1 == "123 Test"
-    assert office1.address_2 == "Test City"
-    assert office1.address_3 is None
-    assert office1.address_4 is None
-    assert office1.address_5 is None
-    assert office1.postcode == "ABC"
-
-    assert office2.address_1 == "456 Test"
-    assert office2.address_2 is None
-    assert office2.address_3 is None
-    assert office2.address_4 is None
-    assert office2.address_5 is None
-    assert office2.postcode == "DEF"
-
-    assert office3.address_1 == "ABC Test"
-    assert office3.address_2 == "Test Town"
-    assert office3.address_3 == "Test City"
-    assert office3.address_4 is None
-    assert office3.address_5 is None
-    assert office3.postcode == "TESTLONG"
-
-    office4, office5, office6 = web.Office.objects.filter(exporter__isnull=False).order_by("pk")
-    assert office4.address_1 == "123 Test"
-    assert office4.address_2 == "Test City"
-    assert office4.address_3 is None
-    assert office4.address_4 is None
-    assert office4.address_5 is None
-    assert office4.postcode == "Exp A"
-
-    assert office5.address_1 == "456 Test"
-    assert office5.address_2 == "Very Long Postcode"
-    assert office5.address_3 is None
-    assert office5.address_4 is None
-    assert office5.address_5 is None
-    assert office5.postcode is None
-
-    assert office6.address_1 == "ABC Test"
-    assert office6.address_2 == "Test Town"
-    assert office6.address_3 == "Test City"
-    assert office6.address_4 is None
-    assert office6.address_5 is None
-    assert office6.postcode == "TEST"
-
     fa_auth1: web.FirearmsAuthority
     fa_auth2: web.FirearmsAuthority
     fa_auth1, fa_auth2 = web.FirearmsAuthority.objects.filter(is_active=True).order_by("pk")

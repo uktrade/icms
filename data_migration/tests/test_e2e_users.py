@@ -113,7 +113,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert web.User.objects.filter(groups__isnull=False).count() == 0
 
     call_command("create_icms_groups")
-    call_command("post_migration")
+    call_command("post_migration", "--skip_add_data")
 
     assert web.User.objects.count() == 14
 
@@ -185,6 +185,125 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert u2.emails.count() == 0
     assert u2.last_login == dt.datetime(2022, 11, 1, 12, 32, tzinfo=dt.UTC)
     assert u2.icms_v1_user
+
+    # Importers
+
+    assert web.Importer.objects.count() == 3
+    assert web.Office.objects.count() == 6
+    assert web.Office.objects.filter(importer__isnull=False).count() == 3
+
+    imp1, imp2, imp3 = web.Importer.objects.order_by("pk")
+
+    assert imp1.type == web.Importer.INDIVIDUAL
+    assert imp1.name == ""
+    assert imp1.registered_number == "123"
+    assert imp1.eori_number == "GB123456789012"
+    assert imp1.user_id == 2
+    assert imp1.main_importer_id is None
+    assert imp1.region_origin == "O"
+    assert imp1.comments is None
+    assert imp1.offices.count() == 0
+
+    assert imp2.type == web.Importer.ORGANISATION
+    assert imp2.name == "Test Org"
+    assert imp2.registered_number == "124"
+    assert imp2.eori_number == "GB123456789013"
+    assert imp2.user_id is None
+    assert imp2.main_importer_id is None
+    assert imp2.region_origin is None
+    assert imp2.comments == "Test Comment"
+    assert imp2.offices.count() == 2
+
+    office1, office2 = imp2.offices.order_by("pk")
+
+    assert office1.address_1 == "123 Test"
+    assert office1.address_2 == "Test City"
+    assert office1.address_3 is None
+    assert office1.address_4 is None
+    assert office1.address_5 is None
+    assert office1.postcode == "ABC"
+    assert office1.eori_number == "GB123456789015"
+
+    assert office2.address_1 == "456 Test"
+    assert office2.address_2 is None
+    assert office2.address_3 is None
+    assert office2.address_4 is None
+    assert office2.address_5 is None
+    assert office2.postcode == "DEF"
+    assert office2.eori_number == "GB123456789016"
+
+    assert imp3.type == web.Importer.INDIVIDUAL
+    assert imp3.name == "Test Agent"
+    assert imp3.registered_number == "125"
+    assert imp3.eori_number == "GB123456789014"
+    assert imp3.user_id == 2
+    assert imp3.main_importer_id == 2
+    assert imp3.region_origin is None
+    assert imp3.comments is None
+    assert imp3.offices.count() == 1
+
+    office3 = imp3.offices.first()
+
+    assert office3.address_1 == "ABC Test"
+    assert office3.address_2 == "Test Town"
+    assert office3.address_3 == "Test City"
+    assert office3.address_4 is None
+    assert office3.address_5 is None
+    assert office3.postcode == "TESTLONG"
+    assert office3.eori_number == "GB123456789017"
+
+    # Exporters
+
+    assert web.Exporter.objects.count() == 3
+    assert web.Office.objects.filter(exporter__isnull=False).count() == 3
+
+    exp1, exp2, exp3 = web.Exporter.objects.order_by("pk")
+
+    assert exp1.pk == 1
+    assert exp1.is_active is True
+    assert exp1.name == "Test Org"
+    assert exp1.registered_number == "123"
+    assert exp1.main_exporter_id is None
+    assert exp1.offices.count() == 0
+
+    assert exp2.pk == 2
+    assert exp2.is_active is True
+    assert exp2.name == "Test Agent"
+    assert exp2.registered_number == "124"
+    assert exp2.main_exporter_id == 1
+    assert exp2.offices.count() == 2
+
+    office4, office5 = exp2.offices.order_by("pk")
+
+    assert office4.address_1 == "123 Test"
+    assert office4.address_2 == "Test City"
+    assert office4.address_3 is None
+    assert office4.address_4 is None
+    assert office4.address_5 is None
+    assert office4.postcode == "Exp A"
+
+    assert office5.address_1 == "456 Test"
+    assert office5.address_2 == "Very Long Postcode"
+    assert office5.address_3 is None
+    assert office5.address_4 is None
+    assert office5.address_5 is None
+    assert office5.postcode is None
+
+    assert exp3.pk == 3
+    assert exp3.is_active is False
+    assert exp3.name == "Test Inactive"
+    assert exp3.registered_number == "125"
+    assert exp3.main_exporter_id is None
+    assert exp3.offices.count() == 1
+
+    office6 = exp3.offices.first()
+
+    assert office6.address_1 == "ABC Test"
+    assert office6.address_2 == "Test Town"
+    assert office6.address_3 == "Test City"
+    assert office6.address_4 is None
+    assert office6.address_5 is None
+    assert office6.postcode == "TEST"
 
     # Check Access Request / Approval Request
 

@@ -67,6 +67,7 @@ SELECT
   , rp_wua.wua_id user_id
   , main_imp_id main_importer_id
   , other_coo_code region_origin
+  , comments
 FROM impmgr.xview_importer_details xid
 LEFT JOIN rp_wua ON rp_wua.resource_person_id = xid.rp_id
 WHERE status_control = 'C'
