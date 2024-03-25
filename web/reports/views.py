@@ -15,6 +15,7 @@ from web.utils.spreadsheet import MIMETYPE
 from .constants import ReportStatus, ReportType
 from .forms import ImportLicenceForm, IssuedCertificatesForm, ReportForm
 from .tasks import generate_report_task
+from .utils import format_parameters_used
 
 
 class BaseReportView(LoginRequiredMixin, PermissionRequiredMixin):
@@ -64,6 +65,7 @@ class RunOutputView(BaseReportView, DetailView):
         context["xlsx_files"] = self.object.generated_files.filter(
             document__content_type=MIMETYPE.XLSX
         )
+        context["parameters"] = format_parameters_used(self.object)
         return context
 
 
