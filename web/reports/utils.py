@@ -4,9 +4,21 @@ from web.domains.case._import.fa.types import FaImportApplication
 from web.domains.case.services import document_pack
 from web.flow.models import ProcessTypes
 from web.mail.constants import EmailTypes
-from web.models import CaseDocumentReference, ImportApplication
+from web.models import (
+    CaseDocumentReference,
+    ExportApplicationType,
+    ImportApplication,
+    ImportApplicationType,
+    ProductLegislation,
+    ScheduleReport,
+)
 
-from .serializers import ConstabularyEmailTimesSerializer, LicenceSerializer
+from .constants import DateFilterType, ReportType
+from .serializers import (
+    ConstabularyEmailTimesSerializer,
+    LicenceSerializer,
+    format_label,
+)
 
 
 def get_importer_address(ia: ImportApplication) -> str:
@@ -112,3 +124,27 @@ def get_constabulary_email_times(ia: FaImportApplication) -> ConstabularyEmailTi
     return ConstabularyEmailTimesSerializer(
         first_email_sent=first_email_sent, last_email_closed=last_email_closed
     )
+
+
+def format_parameters_used(schedule_report: ScheduleReport) -> dict[str, str]:
+    parameters = {}
+    for desc, value in schedule_report.parameters.items():
+        if desc in ["date_from", "date_to"]:
+            value = dt.datetime.strptime(value, "%Y-%m-%d").strftime("%d %b %Y") if value else ""
+        elif desc == "application_type":
+            if schedule_report.report.report_type == ReportType.IMPORT_LICENCES:
+                value = ImportApplicationType.Types(value).label if value else "All"
+            else:
+                value = ExportApplicationType.Types(value).label if value else "All"
+        elif desc == "date_filter_type":
+            value = DateFilterType(value).label
+        elif desc == "legislation":
+            value = (
+                "<br>".join(
+                    ProductLegislation.objects.filter(pk__in=value).values_list("name", flat=True)
+                )
+                if value
+                else "All"
+            )
+        parameters[format_label(desc)] = value
+    return parameters

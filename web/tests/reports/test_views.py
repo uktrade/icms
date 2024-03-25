@@ -203,6 +203,10 @@ def test_report_output_view(report_user_client, report_schedule):
     assertTemplateUsed(response, "web/domains/reports/run-output-view.html")
     assertContains(response, "Report Output")
     assertContains(response, "Submitted")
+    assertContains(response, "Date From")
+    assertContains(response, "01 Feb 2010")
+    assertContains(response, "Date Filter Type")
+    assertContains(response, "Application Submitted date")
 
 
 @mock.patch("web.reports.views.get_file_from_s3")

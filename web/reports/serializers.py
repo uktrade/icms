@@ -41,7 +41,7 @@ yes_no = Annotated[
 ]
 
 
-def to_label(string: str) -> str:
+def format_label(string: str) -> str:
     words = []
     for word in string.split("_"):
         if word in ["hse", "beis", "fir"]:
@@ -56,7 +56,7 @@ def to_label(string: str) -> str:
 class BaseSerializer(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(
         alias_generator=pydantic.AliasGenerator(
-            serialization_alias=to_label,
+            serialization_alias=format_label,
         )
     )
 
@@ -149,7 +149,6 @@ class SupplementaryFirearmsSerializer(BaseSerializer):
     country_of_consignment: str
     endorsements: str
     constabularies: str
-
     report_date: date_or_empty
     goods_description: str
     goods_quantity: int
@@ -181,7 +180,6 @@ class BaseFirearmsLicenceSerializer(BaseSerializer):
     licence_expiry_date: date_or_empty
     country_of_origin: str
     country_of_consignment: str
-
     endorsements: str
     revoked: yes_no
 
