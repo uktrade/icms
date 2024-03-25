@@ -139,15 +139,15 @@ class BaseFirearmsLicenceInterface(ReportInterface):
             licence_reference=licence.reference,
             variation_number=utils.get_variation_number(ia),
             case_reference=ia.get_reference(),
-            importer_name=ia.importer.display_name,
+            importer=ia.importer.display_name,
             eori_number=ia.importer.eori_number,
             importer_address=utils.get_importer_address(ia),
-            submitted_datetime=ia.submit_datetime.date(),
-            last_submitted_datetime=ia.last_submit_datetime.date(),
+            first_submitted_date=ia.submit_datetime.date(),
+            final_submitted_date=ia.last_submit_datetime.date(),
             licence_start_date=licence.start_date,
-            licence_end_date=licence.end_date,
-            coo_country_name=getattr(ia.origin_country, "name", ""),
-            coc_country_name=getattr(ia.consignment_country, "name", ""),
+            licence_expiry_date=licence.end_date,
+            country_of_origin=getattr(ia.origin_country, "name", ""),
+            country_of_consignment=getattr(ia.consignment_country, "name", ""),
             endorsements="\n".join(ia.endorsements.values_list("content", flat=True)),
             revoked=ia.status == ImportApplication.Statuses.REVOKED,
             **self.extra_fields(ia),
@@ -229,7 +229,7 @@ class IssuedCertificateReportInterface(ReportInterface):
             submitted_datetime=export_application.submit_datetime,
             issue_datetime=cdr.content_object.case_completion_datetime,
             exporter=export_application.exporter.name,
-            contact=export_application.contact.full_name,
+            contact_full_name=export_application.contact.full_name,
             agent=export_application.agent.name if export_application.agent else "",
             country=cdr.reference_data.country.name,
             is_manufacturer=(
@@ -259,7 +259,7 @@ class IssuedCertificateReportInterface(ReportInterface):
             case_processing_time=self.get_total_processing_time(cdr, export_application),
             total_processing_time=self.get_total_processing_time(cdr, export_application),
             business_days_to_process=self.get_business_days_to_process(cdr, export_application),
-            overseas_region=cdr.reference_data.country.overseas_region.name,
+            continent=cdr.reference_data.country.overseas_region.name,
         )
 
     def get_is_responsible_person(self, export_application: ExportApplication) -> YesNoChoices:
@@ -406,11 +406,11 @@ class ImportLicenceInterface(ReportInterface):
             ima_sub_type_title=ia.application_type.get_sub_type_display(),
             variation_number=utils.get_variation_number(ia),
             status=ia.status,
-            importer_name=ia.importer.display_name,
+            importer=ia.importer.display_name,
             agent_name=ia.agent.name if ia.agent else None,
             app_contact_name=getattr(ia.contact, "full_name", ""),
-            coo_country_name=getattr(ia.origin_country, "name", ""),
-            coc_country_name=getattr(ia.consignment_country, "name", ""),
+            country_of_origin=getattr(ia.origin_country, "name", ""),
+            country_of_consignment=getattr(ia.consignment_country, "name", ""),
             shipping_year=getattr(ia, "shipping_year", ""),
             com_group_name=self.get_com_group_name(import_application),
             commodity_codes=self.get_commodity_codes(import_application, is_adhoc, is_sps),
@@ -420,7 +420,7 @@ class ImportLicenceInterface(ReportInterface):
             latest_case_closed_datetime=licence.latest_case_closed_datetime,
             licence_dates=utils.get_licence_dates(licence),
             licence_start_date=licence.start_date,
-            licence_end_date=licence.end_date,
+            licence_expiry_date=licence.end_date,
             importer_printable=ia.application_type.importer_printable,
         )
 
@@ -520,21 +520,21 @@ class SupplementaryFirearmsInterface(ReportInterface):
             licence_reference=licence.reference,
             case_reference=ia.get_reference(),
             case_type=ia.application_type.sub_type,
-            importer_name=ia.importer.display_name,
+            importer=ia.importer.display_name,
             eori_number=ia.importer.eori_number,
             importer_address=utils.get_importer_address(ia),
             licence_start_date=licence.start_date,
-            licence_end_date=licence.end_date,
-            coo_country_name=getattr(ia.origin_country, "name", ""),
-            coc_country_name=getattr(ia.consignment_country, "name", ""),
+            licence_expiry_date=licence.end_date,
+            country_of_origin=getattr(ia.origin_country, "name", ""),
+            country_of_consignment=getattr(ia.consignment_country, "name", ""),
             endorsements="\n".join(ia.endorsements.values_list("content", flat=True)),
             report_date=report.date_received,
             constabularies=utils.get_constabularies(ia),
-            bought_from=bought_from_name,
-            bought_from_reg_no=bought_from_reg_no,
-            bought_from_address=bought_from_address,
+            who_bought_from_name=bought_from_name,
+            who_bought_from_reg_no=bought_from_reg_no,
+            who_bought_from_address=bought_from_address,
             frame_serial_number=s.serial_number,
-            transport=report.transport,
+            means_of_transport=report.transport,
             date_firearms_received=report.date_received,
             calibre=s.calibre,
             proofing=s.proofing.title() if s.proofing else "",
@@ -543,8 +543,8 @@ class SupplementaryFirearmsInterface(ReportInterface):
             all_reported=report.supplementary_info.is_complete,
             goods_description=s.get_description(),
             goods_quantity=goods_quantity,
-            exceed_quantity=exceed_quantity,
-            goods_description_with_sub_section=s.get_description(),
+            firearms_exceed_quantity=exceed_quantity,
+            goods_description_with_subsection=s.get_description(),
         )
 
 
@@ -574,8 +574,8 @@ class OILFirearmsLicenceInterface(BaseFirearmsLicenceInterface):
         constabulary_email_times = utils.get_constabulary_email_times(ia)
         return {
             "constabularies": utils.get_constabularies(ia),
-            "first_constabulary_email_sent": constabulary_email_times.first_email_sent,
-            "last_constabulary_email_closed": constabulary_email_times.last_email_closed,
+            "first_constabulary_email_sent_date": constabulary_email_times.first_email_sent,
+            "last_constabulary_email_closed_date": constabulary_email_times.last_email_closed,
         }
 
 
@@ -596,6 +596,6 @@ class SILFirearmsLicenceInterface(BaseFirearmsLicenceInterface):
         return {
             "constabularies": utils.get_constabularies(ia),
             "goods_description": "\n".join(descriptions),
-            "first_constabulary_email_sent": constabulary_email_times.first_email_sent,
-            "last_constabulary_email_closed": constabulary_email_times.last_email_closed,
+            "first_constabulary_email_sent_date": constabulary_email_times.first_email_sent,
+            "last_constabulary_email_closed_date": constabulary_email_times.last_email_closed,
         }
