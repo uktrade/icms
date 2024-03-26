@@ -482,7 +482,7 @@ CSP_FONT_SRC = (
     "data:",
 )
 # Images can only be loaded from ICMS itself or data URIs
-CSP_IMAGE_SRC = (
+CSP_IMG_SRC = (
     "'self'",
     "data:",
 )
