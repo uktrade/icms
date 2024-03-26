@@ -40,7 +40,7 @@ whitenoise==6.6.0
 xlsxwriter==3.0.1
 django-csp~=3.7
 PyMuPDF~=1.23.16
-playwright~=1.14
+playwright==1.42
 pyOpenSSL==24.0.0
 # Pin endesive sub-dependencies as they aren't pinned in endesive repo
 # Periodically review these to see if we can install newer versions
