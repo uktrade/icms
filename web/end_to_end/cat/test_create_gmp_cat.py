@@ -78,5 +78,5 @@ def test_can_create_gmp_cat(pages: conftest.UserPages) -> None:
         # Restore the template
         page.get_by_label("Status").select_option("False")
         page.get_by_role("button", name="Apply filter").click()
-        page.get_by_role("button", name="Restore").click()
+        utils.get_cat_list_row(page, cat_pk).get_by_role("button", name="Restore").click()
         page.get_by_label("Close this message").click()
