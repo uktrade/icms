@@ -223,10 +223,8 @@ def _get_fa_dfl_goods(application: "DFLApplication") -> list[str]:
     ]
 
 
-def _get_fa_sil_goods(application: "sil_models.SILApplication") -> list[tuple[str, int]]:
-    """Return all related goods."""
-
-    section_label_pairs = (
+def _get_sil_section_labels() -> list[tuple[str, str]]:
+    return [
         ("goods_section1", "to which Section 1 of the Firearms Act 1968, as amended, applies."),
         ("goods_section2", "to which Section 2 of the Firearms Act 1968, as amended, applies."),
         (
@@ -245,11 +243,15 @@ def _get_fa_sil_goods(application: "sil_models.SILApplication") -> list[tuple[st
             "goods_legacy",
             "",
         ),
-    )
+    ]
+
+
+def _get_fa_sil_goods(application: "sil_models.SILApplication") -> list[tuple[str, int]]:
+    """Return all related goods."""
 
     fa_sil_goods = []
 
-    for goods_section, label_suffix in section_label_pairs:
+    for goods_section, label_suffix in _get_sil_section_labels():
         related_manager = getattr(application, goods_section)
         active_goods = related_manager.filter(is_active=True)
         fa_sil_goods.extend(get_fa_sil_goods_item(goods_section, active_goods, label_suffix))
@@ -258,7 +260,9 @@ def _get_fa_sil_goods(application: "sil_models.SILApplication") -> list[tuple[st
 
 
 def get_fa_sil_goods_item(
-    goods_section: str, active_goods: "QuerySet[SILGoods]", label_suffix: str
+    goods_section: str,
+    active_goods: "QuerySet[SILGoods]",
+    label_suffix: str,
 ) -> list[tuple[str, int]]:
     if goods_section in ["goods_section1", "goods_section2", "goods_section5", "goods_legacy"]:
         goods = []

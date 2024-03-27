@@ -4287,3 +4287,7 @@ Organisation Importers With User
 Test Comment
 All Migrated Users Have Email
 English
+report__bought_from__registration_number
+dflapplication__goods_certificates__goods_description
+importer_first_name
+importer_address_1

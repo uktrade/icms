@@ -29,14 +29,14 @@ def get_report_file_name(scheduled_report: ScheduleReport) -> str:
 def _start_processing_report(scheduled_report: ScheduleReport) -> ScheduleReport:
     scheduled_report.status = ReportStatus.IN_PROGRESS
     scheduled_report.started_at = timezone.now()
-    scheduled_report.save()
+    scheduled_report.save(update_fields=["status", "started_at"])
     return scheduled_report
 
 
 def _end_processing_report(scheduled_report: ScheduleReport) -> None:
     scheduled_report.status = ReportStatus.COMPLETED
     scheduled_report.finished_at = timezone.now()
-    scheduled_report.save()
+    scheduled_report.save(update_fields=["status", "finished_at"])
 
 
 def generate_issued_certificate_report(scheduled_report: ScheduleReport) -> None:

@@ -376,7 +376,7 @@ def _apply_export_optimisation(model: "QuerySet[Model]") -> "QuerySet[Model]":
     return model
 
 
-def _add_import_licence_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
+def _add_import_licence_data(model: "QuerySet[Model]", distinct: bool = True) -> "QuerySet[Model]":
     content_type_pk = get_content_type_pk("import")
 
     # This join will be used for all licence annotations
@@ -414,13 +414,16 @@ def _add_import_licence_data(model: "QuerySet[Model]") -> "QuerySet[Model]":
             latest_licence_cdr_data=Subquery(sub_query.values("licence_cdr_data")),
             latest_licence_start_date=F("valid_licences__licence_start_date"),
             latest_licence_end_date=F("valid_licences__licence_end_date"),
+            latest_licence_status=F("valid_licences__status"),
             latest_licence_issue_paper_licence_only=F("valid_licences__issue_paper_licence_only"),
+            latest_licence_case_completion_datetime=F("valid_licences__case_completion_datetime"),
         )
         # The query generated uses `DISTINCT ON`
         # It ensures a 1 to 1 for the application and latest licence
-        .order_by("id", "-valid_licences__created_at").distinct("id")
+        .order_by("id", "-valid_licences__created_at")
     )
-
+    if distinct:
+        model = model.distinct("id")
     return model
 
 
