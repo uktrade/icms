@@ -3,4 +3,9 @@
 {% block subtasks %}
   {# Manufactured At Section #}
   {% include "web/domains/case/export/partials/cfs/edit-manufactured-at.html" %}
+
+  {# Products Section #}
+  {% if has_legislation %}
+    {% include "web/domains/case/export/partials/cfs/schedule-products.html" %}
+  {% endif %}
 {% endblock %}
