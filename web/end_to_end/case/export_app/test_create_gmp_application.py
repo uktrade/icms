@@ -28,6 +28,7 @@ def gmp_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_role("button", name="Create").click()
 
     gmp_id = utils.get_application_id(page.url, r"export/gmp/(?P<app_pk>\d+)/edit/")
+    page.wait_for_load_state(state="domcontentloaded")
 
     page.get_by_label("Name of the brand").click()
     page.get_by_label("Name of the brand").fill("A brand")
@@ -50,6 +51,7 @@ def gmp_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.locator("#id_manufacturer_country_0").check()
 
     page.get_by_label("ISO 22716").check()
+    page.locator("#id_auditor_accredited").wait_for()
     page.locator("#id_auditor_accredited").get_by_text("Yes").click()
     page.locator("#id_auditor_certified").get_by_text("Yes").click()
     page.get_by_role("button", name="Save").click()
@@ -59,7 +61,7 @@ def gmp_create(page: Page, sample_upload_file: types.FilePayload) -> int:
 
     page.get_by_role("link", name="Add ISO 17021 File").click()
     page.get_by_label("Document").set_input_files(sample_upload_file)
-    page.wait_for_timeout(100)
+    page.wait_for_load_state(state="domcontentloaded")
     page.get_by_role("button", name="Save").click()
 
     page.get_by_role("link", name="Add ISO 17065 File").click()

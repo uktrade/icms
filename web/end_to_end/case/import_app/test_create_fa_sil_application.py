@@ -47,6 +47,7 @@ def fa_sil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     #
     # Fill in main application page
     #
+    page.wait_for_load_state(state="domcontentloaded")
     page.get_by_label("Applicant's Reference").click()
     page.get_by_label("Applicant's Reference").fill("Applicant reference value")
     page.get_by_label("Section 1").check()
@@ -266,11 +267,8 @@ def fa_sil_manage_and_complete_case(page: Page, app_id) -> None:
     # Complete Response Preparation (Licence Details)
     #
     page.locator('[data-test-id="edit-licence"]').click()
+    utils.set_licence_end_date(page)
 
-    future_date = utils.get_future_datetime().date().strftime(JQUERY_DATE_FORMAT)
-    page.get_by_label("Licence End Date").click()
-    page.get_by_label("Licence End Date").fill(future_date)
-    page.get_by_role("button", name="Done").click()
     page.get_by_role("combobox", name="Issue paper licence only?").select_option("false")
     page.get_by_role("button", name="Save").click()
 

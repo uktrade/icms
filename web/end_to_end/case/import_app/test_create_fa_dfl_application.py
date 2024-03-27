@@ -3,7 +3,6 @@ import os
 from playwright.sync_api import Page
 
 from web.end_to_end import conftest, types, utils
-from web.forms.fields import JQUERY_DATE_FORMAT
 
 
 def test_can_create_fa_dfl(
@@ -155,11 +154,7 @@ def fa_dfl_manage_and_complete_case(page: Page, dfl_id: int) -> None:
     #
     page.locator('[data-test-id="edit-licence"]').click()
     utils.assert_page_url(page, f"/import/case/{dfl_id}/licence/edit")
-
-    future_date = utils.get_future_datetime().date().strftime(JQUERY_DATE_FORMAT)
-    page.get_by_label("Licence End Date").click()
-    page.get_by_label("Licence End Date").fill(future_date)
-    page.get_by_role("button", name="Done").click()
+    utils.set_licence_end_date(page)
 
     page.get_by_role("combobox", name="Issue paper licence only?").select_option("true")
     page.get_by_role("button", name="Save").click()

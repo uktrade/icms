@@ -31,6 +31,7 @@ def test_can_create_gmp_cat(pages: conftest.UserPages) -> None:
 
         # Fill out the GMP form
         page.get_by_role("link", name="Certificate of Good").click()
+        page.wait_for_load_state(state="domcontentloaded")
         page.get_by_label("Name of the brand").click()
         page.get_by_label("Name of the brand").fill("Brand name")
         page.locator("#id_is_responsible_person_0").check()

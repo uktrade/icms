@@ -4,7 +4,6 @@ import re
 from playwright.sync_api import Page
 
 from web.end_to_end import conftest, types, utils
-from web.forms.fields import JQUERY_DATE_FORMAT
 
 
 def test_can_create_sanctions(
@@ -48,7 +47,7 @@ def sanctions_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     #
     page.get_by_label("Applicant's Reference").click()
     page.get_by_label("Applicant's Reference").fill("Applicant's reference value")
-    page.get_by_role("combobox", name="Country Of Origin").select_option("76")
+    page.get_by_role("combobox", name="Country Of Origin").select_option("122")
     page.get_by_role("combobox", name="Country Of Consignment").select_option("1")
     page.get_by_label("Exporter Name").click()
     page.get_by_label("Exporter Name").fill("Exporter name")
@@ -60,7 +59,7 @@ def sanctions_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     # Add a goods line
     #
     page.get_by_role("link", name="Add Goods").click()
-    page.get_by_role("combobox", name="Commodity Code").select_option("2267")
+    page.get_by_role("combobox", name="Commodity Code").select_option("3288")
     page.get_by_label("Goods Description").click()
     page.get_by_label("Goods Description").fill("Goods description value")
     page.get_by_label("Quantity").click()
@@ -113,12 +112,7 @@ def sanctions_manage_and_complete_case(page: Page, app_id) -> None:
     # Complete Response Preparation (Licence Details)
     #
     page.locator('[data-test-id="edit-licence"]').click()
-
-    future_date = utils.get_future_datetime().date().strftime(JQUERY_DATE_FORMAT)
-    page.get_by_label("Licence End Date").click()
-    page.get_by_label("Licence End Date").fill(future_date)
-    page.get_by_role("button", name="Done").click()
-    page.get_by_role("button", name="Save").click()
+    utils.set_licence_end_date(page)
 
     #
     # Add an Endorsement
