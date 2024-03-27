@@ -187,12 +187,7 @@ def fa_oil_manage_and_complete_case(page: Page, app_id) -> None:
     # Complete Response Preparation (Licence Details)
     #
     page.locator('[data-test-id="edit-licence"]').click()
-
-    future_date = utils.get_future_datetime().date().strftime(JQUERY_DATE_FORMAT)
-    page.get_by_label("Licence End Date").click()
-    page.get_by_label("Licence End Date").fill(future_date)
-    page.get_by_role("button", name="Done").click()
-    page.get_by_role("button", name="Save").click()
+    utils.set_licence_end_date(page)
 
     #
     # Add an Endorsement

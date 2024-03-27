@@ -1,8 +1,10 @@
 import datetime as dt
 import re
-from typing import Optional
+from typing import Any, Optional
 
 from playwright.sync_api import Locator, Page, expect
+
+from web.forms.fields import JQUERY_DATE_FORMAT
 
 
 def get_application_id(url: str, pattern: str, group_name: str = "app_pk") -> int:
@@ -36,22 +38,48 @@ def get_future_datetime() -> dt.datetime:
     return dt.datetime(year=now.year + 1, month=1, day=1, hour=15, minute=30)
 
 
+def set_licence_end_date(page: Page) -> None:
+    page.wait_for_load_state(state="domcontentloaded")
+    future_date = get_future_datetime().date().strftime(JQUERY_DATE_FORMAT)
+    page.get_by_label("Licence End Date").click()
+    page.wait_for_load_state(state="domcontentloaded")
+    page.get_by_label("Licence End Date").fill(future_date)
+    page.get_by_role("button", name="Done").click()
+
+
 def bypass_chief(page: Page, app_id: int) -> None:
     """Waiting for the Bypass CHIEF link is flaky as it's waiting for a task to complete."""
 
-    for _ in range(5):
-        bypass_chief_btn = get_wb_row(page, app_id).get_by_role(
-            "button", name="(TEST) Bypass CHIEF", exact=True
-        )
-        if bypass_chief_btn.is_visible():
-            bypass_chief_btn.click()
+    click_or_wait_and_reload(
+        page,
+        locator_str=f'[data-test-id="workbasket-row-{app_id}"]',
+        role_data={"role": "button", "name": "(TEST) Bypass CHIEF", "exact": True},
+    )
+
+
+def click_or_wait_and_reload(
+    page: Page,
+    locator_str: str,
+    role_data: dict[str, Any] | None = None,
+    timeout: int = 5000,
+    attempts=5,
+) -> None:
+    """If an element is not on the page, wait and reload.
+    Used for waiting for links that appear after asynchronous tasks"""
+    if not role_data:
+        return
+
+    for _ in range(attempts):
+        el = page.locator(locator_str).get_by_role(**role_data)
+        if el.is_visible():
+            el.click()
             return
 
-        else:
-            page.wait_for_timeout(5_000)
-            page.reload()
+        page.wait_for_timeout(timeout)
+        page.reload()
 
-    raise TimeoutError("Max retries waiting for Bypass CHIEF link.")
+    el = page.locator(locator_str).get_by_role(**role_data)
+    el.click()
 
 
 def get_wb_row(page: Page, app_id: int) -> Locator:
