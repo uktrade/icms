@@ -71,7 +71,7 @@ class IssuedCertificateReportSerializer(BaseSerializer):
     total_processing_time: str
     exporter: str
     contact_full_name: str
-    agent: str
+    agent: str_or_empty
     country: str
     is_manufacturer: str
     responsible_person_statement: str
@@ -82,7 +82,7 @@ class IssuedCertificateReportSerializer(BaseSerializer):
     application_update_count: int
     fir_count: int
     business_days_to_process: int
-    continent: str
+    continent: str_or_empty
 
 
 class ImporterAccessRequestReportSerializer(BaseSerializer):
@@ -120,11 +120,11 @@ class ImportLicenceSerializer(BaseSerializer):
     ima_sub_type_title: str_or_empty
     importer: str = pydantic.Field(serialization_alias="Importer Name")
     agent_name: str_or_empty
-    app_contact_name: str
-    country_of_origin: str = pydantic.Field(serialization_alias="Coo Country Name")
-    country_of_consignment: str = pydantic.Field(serialization_alias="Coc Country Name")
+    app_contact_name: str_or_empty
+    country_of_origin: str_or_empty = pydantic.Field(serialization_alias="Coo Country Name")
+    country_of_consignment: str_or_empty = pydantic.Field(serialization_alias="Coc Country Name")
     shipping_year: str | int
-    com_group_name: str
+    com_group_name: str_or_empty
     commodity_codes: str
     initial_submitted_datetime: datetime_or_empty
     initial_case_closed_datetime: datetime_or_empty
@@ -148,7 +148,7 @@ class SupplementaryFirearmsSerializer(BaseSerializer):
     country_of_origin: str
     country_of_consignment: str
     endorsements: str
-    constabularies: str
+    constabularies: str_or_empty
     report_date: date_or_empty
     goods_description: str
     goods_quantity: int
@@ -215,3 +215,10 @@ class LicenceSerializer(pydantic.BaseModel):
 class ConstabularyEmailTimesSerializer(pydantic.BaseModel):
     first_email_sent: datetime_or_empty
     last_email_closed: datetime_or_empty
+
+
+class GoodsSectionSerializer(pydantic.BaseModel):
+    description: str
+    quantity: int | None
+    unlimited_quantity: bool = False
+    obsolete_calibre: str | None = None

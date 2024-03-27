@@ -1,5 +1,8 @@
 from web.types import TypedTextChoices
 
+YES = "Yes"
+NO = "No"
+
 
 class ReportStatus(TypedTextChoices):
     COMPLETED = ("COMPLETED", "Completed")

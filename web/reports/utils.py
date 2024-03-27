@@ -1,11 +1,9 @@
 import datetime as dt
 
+from django.db.models import QuerySet
+
 from web.domains.case._import.fa.types import FaImportApplication
-from web.domains.case.services import document_pack
-from web.flow.models import ProcessTypes
-from web.mail.constants import EmailTypes
 from web.models import (
-    CaseDocumentReference,
     ExportApplicationType,
     ImportApplication,
     ImportApplicationType,
@@ -29,10 +27,23 @@ def get_importer_address(ia: ImportApplication) -> str:
 
 
 def get_licence_details(ia: ImportApplication) -> LicenceSerializer:
-    packs = document_pack.pack_licence_history(ia)
-    latest_pack = packs.last()
-    if not latest_pack:
-        return LicenceSerializer(
+    if ia["latest_licence_cdr_data"]:
+        licence = LicenceSerializer(
+            start_date=ia["latest_licence_start_date"],
+            end_date=ia["latest_licence_end_date"],
+            licence_type=(
+                "Paper" if ia["latest_licence_issue_paper_licence_only"] else "Electronic"
+            ),
+            status=ia["latest_licence_status"],
+            reference=ia["latest_licence_cdr_data"][0][1],
+            latest_case_closed_datetime=ia["latest_licence_case_completion_datetime"],
+            initial_case_closed_datetime=ia["initial_case_closed_datetime"],
+            time_to_initial_close=format_time_delta(
+                ia["latest_licence_case_completion_datetime"], ia["submit_datetime"]
+            ),
+        )
+    else:
+        licence = LicenceSerializer(
             reference="",
             start_date=None,
             end_date=None,
@@ -42,38 +53,11 @@ def get_licence_details(ia: ImportApplication) -> LicenceSerializer:
             initial_case_closed_datetime=None,
             time_to_initial_close="",
         )
-    if packs.count() == 1:
-        initial_case_completion_datetime = latest_pack.case_completion_datetime
-    else:
-        first_pack = packs.first()
-        initial_case_completion_datetime = first_pack.case_completion_datetime
-
-    if ia.legacy_case_flag or ia.status == ImportApplication.Statuses.WITHDRAWN:
-        licence_ref = ""
-    else:
-        licence = latest_pack.document_references.filter(
-            document_type=CaseDocumentReference.Type.LICENCE
-        ).first()
-        licence_ref = licence.reference
-
-    time_to_initial_close = format_time_delta(
-        latest_pack.case_completion_datetime, ia.submit_datetime
-    )
-
-    return LicenceSerializer(
-        reference=licence_ref,
-        start_date=latest_pack.licence_start_date,
-        end_date=latest_pack.licence_end_date,
-        status=latest_pack.status,
-        licence_type="Paper" if latest_pack.issue_paper_licence_only else "Electronic",
-        latest_case_closed_datetime=latest_pack.case_completion_datetime,
-        initial_case_closed_datetime=initial_case_completion_datetime,
-        time_to_initial_close=time_to_initial_close,
-    )
+    return licence
 
 
-def get_variation_number(ia: ImportApplication) -> int:
-    reference = ia.reference or ""
+def get_variation_number(reference: str) -> int:
+    reference = reference or ""
     variation_info = reference.split("/")[3:]
     if variation_info:
         return int(variation_info[0])
@@ -105,25 +89,16 @@ def format_time_delta(from_datetime: dt.datetime, to_datetime: dt.datetime) -> s
     return f"{time_delta.days}d {hours}h {minutes}m"
 
 
-def get_constabularies(ia: FaImportApplication) -> str:
-    if ia.process_type == ProcessTypes.FA_DFL:
-        return ia.constabulary.name if ia.constabulary else ""
-    return ", ".join(ia.user_imported_certificates.values_list("constabulary__name", flat=True))
-
-
 def get_constabulary_email_times(ia: FaImportApplication) -> ConstabularyEmailTimesSerializer:
-    constabulary_emails = ia.case_emails.filter(
-        template_code=EmailTypes.CONSTABULARY_CASE_EMAIL,
-    )
-    if constabulary_emails:
-        first_email_sent = constabulary_emails.first().sent_datetime
-        last_email_closed = constabulary_emails.last().closed_datetime
-    else:
-        first_email_sent = None
-        last_email_closed = None
     return ConstabularyEmailTimesSerializer(
-        first_email_sent=first_email_sent, last_email_closed=last_email_closed
+        first_email_sent=ia["constabulary_email_first_email_sent"],
+        last_email_closed=ia["constabulary_email_last_email_closed"],
     )
+
+
+def format_contact_name(title: str | None, first_name: str | None, last_name: str | None) -> str:
+    name_parts = [title, first_name, last_name]
+    return " ".join(filter(None, name_parts))
 
 
 def format_parameters_used(schedule_report: ScheduleReport) -> dict[str, str]:
@@ -148,3 +123,18 @@ def format_parameters_used(schedule_report: ScheduleReport) -> dict[str, str]:
             )
         parameters[format_label(desc)] = value
     return parameters
+
+
+def format_importer_address(ia: QuerySet) -> str:
+    address = [
+        ia["importer_address_1"],
+        ia["importer_address_2"],
+        ia["importer_address_3"],
+        ia["importer_address_4"],
+        ia["importer_address_5"],
+        ia["importer_address_6"],
+        ia["importer_address_7"],
+        ia["importer_address_8"],
+        ia["importer_postcode"],
+    ]
+    return ", ".join(f for f in address if f)
