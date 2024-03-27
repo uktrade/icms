@@ -72,8 +72,8 @@ def get_licence_details(ia: ImportApplication) -> LicenceSerializer:
     )
 
 
-def get_variation_number(ia: ImportApplication) -> int:
-    reference = ia.reference or ""
+def get_variation_number(reference: str) -> int:
+    reference = reference or ""
     variation_info = reference.split("/")[3:]
     if variation_info:
         return int(variation_info[0])
@@ -105,7 +105,8 @@ def format_time_delta(from_datetime: dt.datetime, to_datetime: dt.datetime) -> s
     return f"{time_delta.days}d {hours}h {minutes}m"
 
 
-def get_constabularies(ia: FaImportApplication) -> str:
+def get_constabularies(import_application: ImportApplication) -> str:
+    ia = import_application.get_specific_model()
     if ia.process_type == ProcessTypes.FA_DFL:
         return ia.constabulary.name if ia.constabulary else ""
     return ", ".join(ia.user_imported_certificates.values_list("constabulary__name", flat=True))
@@ -123,6 +124,19 @@ def get_constabulary_email_times(ia: FaImportApplication) -> ConstabularyEmailTi
         last_email_closed = None
     return ConstabularyEmailTimesSerializer(
         first_email_sent=first_email_sent, last_email_closed=last_email_closed
+    )
+
+
+def format_contact_name(title: str | None, first_name: str | None, last_name: str | None) -> str:
+    return " ".join(
+        filter(
+            None,
+            (
+                title,
+                first_name,
+                last_name,
+            ),
+        )
     )
 
 

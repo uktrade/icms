@@ -1,8 +1,11 @@
+import datetime as dt
 from itertools import chain
 from typing import Any, ClassVar, final
 
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import Count, Model, OuterRef, Q, QuerySet, Subquery, Value
+from django.contrib.postgres.expressions import ArraySubquery
+from django.db.models import Count, F, Model, OuterRef, Q, QuerySet, Subquery, Value
+from django.db.models.functions import JSONObject
 from pydantic import BaseModel, ConfigDict, SerializeAsAny
 
 from web.domains.case._import.fa.types import (
@@ -22,7 +25,9 @@ from web.models import (
     ExportApplication,
     ExportApplicationCertificate,
     ExporterAccessRequest,
+    FurtherInformationRequest,
     ImportApplication,
+    ImportApplicationType,
     ImporterAccessRequest,
     ProductLegislation,
     ScheduleReport,
@@ -92,7 +97,7 @@ class ReportInterface:
 
     def process_results(self) -> list[BaseModel]:
         results = []
-        for r in self.get_queryset():
+        for r in self.get_queryset().iterator(500):
             results += self.serialize_rows(r)
         return results
 
@@ -124,20 +129,36 @@ class BaseFirearmsLicenceInterface(ReportInterface):
                 self.filters.date_to,
             )
         )
-        return ImportApplication.objects.filter(
-            _filter,
-            self.get_application_filter(),
-            decision=ImportApplication.APPROVE,
-            status__in=[ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED],
-            licences__document_references__reference__isnull=False,
-        ).order_by("reference")
+        return (
+            ImportApplication.objects.filter(
+                _filter,
+                self.get_application_filter(),
+                decision=ImportApplication.APPROVE,
+                status__in=[ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED],
+                licences__document_references__reference__isnull=False,
+            )
+            .annotate(
+                country_of_origin=F("origin_country__name"),
+                country_of_consignment=F("consignment_country__name"),
+                application_sub_type=F("application_type__sub_type"),
+                endorsement_list=ArrayAgg(
+                    "endorsements__content",
+                    distinct=True,
+                    filter=Q(endorsements__isnull=False),
+                    default=Value([]),
+                ),
+            )
+            .select_related("importer", "importer_office")
+            .prefetch_related("licences")
+            .order_by("reference")
+        )
 
     def serialize_row(self, import_application: ImportApplication):
         ia = import_application.get_specific_model()
         licence = utils.get_licence_details(ia)
         return self.ReportSerializer(
             licence_reference=licence.reference,
-            variation_number=utils.get_variation_number(ia),
+            variation_number=utils.get_variation_number(ia.reference),
             case_reference=ia.get_reference(),
             importer=ia.importer.display_name,
             eori_number=ia.importer.eori_number,
@@ -146,9 +167,9 @@ class BaseFirearmsLicenceInterface(ReportInterface):
             final_submitted_date=ia.last_submit_datetime.date(),
             licence_start_date=licence.start_date,
             licence_expiry_date=licence.end_date,
-            country_of_origin=getattr(ia.origin_country, "name", ""),
-            country_of_consignment=getattr(ia.consignment_country, "name", ""),
-            endorsements="\n".join(ia.endorsements.values_list("content", flat=True)),
+            country_of_origin=import_application.country_of_origin,
+            country_of_consignment=import_application.country_of_consignment,
+            endorsements="\n".join(import_application.endorsement_list),
             revoked=ia.status == ImportApplication.Statuses.REVOKED,
             **self.extra_fields(ia),
         )
@@ -170,6 +191,89 @@ class IssuedCertificateReportInterface(ReportInterface):
         super().__init__(*args, **kwargs)
         self.legislations = dict(ProductLegislation.objects.values_list("pk", "name"))
 
+    def get_export_application_query(self) -> QuerySet:
+        return (
+            ExportApplication.objects.filter(
+                pk=OuterRef("export_application_certificates__export_application_id")
+            )
+            .annotate(
+                hse_email_count=Count(
+                    "case_emails",
+                    filter=Q(
+                        Q(case_emails__template_code=EmailTypes.HSE_CASE_EMAIL),
+                        ~Q(case_emails__status=CaseEmail.Status.DRAFT),
+                    ),
+                    distinct=True,
+                ),
+                beis_email_count=Count(
+                    "case_emails",
+                    filter=Q(
+                        Q(case_emails__template_code=EmailTypes.BEIS_CASE_EMAIL),
+                        ~Q(case_emails__status=CaseEmail.Status.DRAFT),
+                    ),
+                    distinct=True,
+                ),
+                application_update_count=Count(
+                    "update_requests",
+                    filter=Q(
+                        update_requests__status__in=[
+                            UpdateRequest.Status.CLOSED,
+                            UpdateRequest.Status.RESPONDED,
+                        ]
+                    ),
+                    distinct=True,
+                ),
+                fir_count=Count(
+                    "further_information_requests",
+                    filter=Q(
+                        further_information_requests__status__in=[
+                            FurtherInformationRequest.CLOSED,
+                            FurtherInformationRequest.RESPONDED,
+                        ]
+                    ),
+                    distinct=True,
+                ),
+                is_manufacturer_count=Count(
+                    "certificateoffreesaleapplication__schedules",
+                    filter=Q(
+                        certificateoffreesaleapplication__schedules__exporter_status=CFSSchedule.ExporterStatus.IS_MANUFACTURER
+                    ),
+                    distinct=True,
+                ),
+                is_responsible_person_count=Count(
+                    "certificateoffreesaleapplication__schedules",
+                    filter=Q(
+                        certificateoffreesaleapplication__schedules__schedule_statements_is_responsible_person=True
+                    ),
+                    distinct=True,
+                ),
+                countries_of_manufacture=ArrayAgg(
+                    "certificateoffreesaleapplication__schedules__country_of_manufacture__name",
+                    distinct=True,
+                    default=Value([]),
+                ),
+            )
+            .values(
+                json=JSONObject(
+                    submitted_datetime="submit_datetime",
+                    application_type="application_type__type",
+                    contact_title="contact__title",
+                    contact_first_name="contact__first_name",
+                    contact_last_name="contact__last_name",
+                    agent="agent__name",
+                    exporter="exporter__name",
+                    process_type="process_type",
+                    hse_email_count="hse_email_count",
+                    beis_email_count="beis_email_count",
+                    application_update_count="application_update_count",
+                    fir_count="fir_count",
+                    is_manufacturer_count="is_manufacturer_count",
+                    is_responsible_person_count="is_responsible_person_count",
+                    countries_of_manufacture="countries_of_manufacture",
+                ),
+            )
+        )
+
     def get_queryset(self) -> QuerySet:
         queryset = CaseDocumentReference.objects.filter(
             document_type=CaseDocumentReference.Type.CERTIFICATE,
@@ -184,19 +288,6 @@ class IssuedCertificateReportInterface(ReportInterface):
                 export_application_certificates__export_application__application_type__type_code=self.filters.application_type
             )
 
-        manufacturer_countries_sub_query = (
-            CFSSchedule.objects.filter(
-                application_id=OuterRef("export_application_certificates__export_application_id")
-            )
-            .order_by()
-            .values("application")
-            .annotate(
-                manufacturer_countries_array=ArrayAgg(
-                    "country_of_manufacture__name", distinct=True, default=Value([])
-                )
-            )
-            .values("manufacturer_countries_array")
-        )
         legislation_sub_query = (
             ProductLegislation.objects.filter(
                 cfsschedule__application_id=OuterRef(
@@ -210,84 +301,83 @@ class IssuedCertificateReportInterface(ReportInterface):
         )
 
         queryset = queryset.annotate(
-            manufacturer_countries=Subquery(manufacturer_countries_sub_query),
             legislations=Subquery(legislation_sub_query),
+            export_application=ArraySubquery(self.get_export_application_query()),
+        ).values(
+            "legislations",
+            "export_application",
+            country=F("reference_data__country__name"),
+            continent=F("reference_data__country__overseas_region__name"),
+            certificate_reference=F("reference"),
+            case_reference=F("export_application_certificates__case_reference"),
+            issue_datetime=F("export_application_certificates__case_completion_datetime"),
         )
-
         if self.filters.legislation:
             queryset = queryset.filter(legislations__contains=self.filters.legislation)
         return queryset.order_by("-reference")
 
-    def serialize_row(self, cdr: CaseDocumentReference) -> IssuedCertificateReportSerializer:
-        export_application = cdr.content_object.export_application.get_specific_model()
-        is_cfs = export_application.process_type == ProcessTypes.CFS
+    def serialize_row(self, cdr: dict) -> IssuedCertificateReportSerializer:
+        export_application: dict = cdr["export_application"][0]
+        export_application["countries_of_manufacture"] = ", ".join(
+            filter(None, export_application["countries_of_manufacture"])
+        )
+        export_application["contact_full_name"] = utils.format_contact_name(
+            export_application["contact_title"],
+            export_application["contact_first_name"],
+            export_application["contact_last_name"],
+        )
+        export_application["submitted_datetime"] = dt.datetime.fromisoformat(
+            export_application["submitted_datetime"]
+        )
+        is_cfs = export_application.pop("process_type") == ProcessTypes.CFS
 
+        processing_time = self.get_total_processing_time(
+            cdr["issue_datetime"], export_application["submitted_datetime"]
+        )
         return IssuedCertificateReportSerializer(
-            certificate_reference=cdr.reference,
-            case_reference=cdr.content_object.case_reference,
-            application_type=export_application.application_type.type,
-            submitted_datetime=export_application.submit_datetime,
-            issue_datetime=cdr.content_object.case_completion_datetime,
-            exporter=export_application.exporter.name,
-            contact_full_name=export_application.contact.full_name,
-            agent=export_application.agent.name if export_application.agent else "",
-            country=cdr.reference_data.country.name,
             is_manufacturer=(
-                "" if not is_cfs else self.get_is_manufacturer(export_application).title()
+                ""
+                if not is_cfs
+                else self.get_is_manufacturer(export_application["is_manufacturer_count"]).title()
             ),
             responsible_person_statement=(
-                "" if not is_cfs else self.get_is_responsible_person(export_application).title()
+                ""
+                if not is_cfs
+                else self.get_is_responsible_person(
+                    export_application["is_responsible_person_count"]
+                ).title()
             ),
-            countries_of_manufacture="" if not is_cfs else ",".join(cdr.manufacturer_countries),
-            hse_email_count=export_application.case_emails.filter(
-                template_code=EmailTypes.HSE_CASE_EMAIL
-            )
-            .exclude(status=CaseEmail.Status.DRAFT)
-            .count(),
-            beis_email_count=export_application.case_emails.filter(
-                template_code=EmailTypes.BEIS_CASE_EMAIL
-            )
-            .exclude(status=CaseEmail.Status.DRAFT)
-            .count(),
-            application_update_count=export_application.update_requests.filter(
-                status__in=[UpdateRequest.Status.CLOSED, UpdateRequest.Status.RESPONDED]
-            ).count(),
-            fir_count=export_application.further_information_requests.completed().count(),
             product_legislation=(
-                "" if not is_cfs else ", ".join([self.legislations[pk] for pk in cdr.legislations])
+                ""
+                if not is_cfs
+                else ", ".join([self.legislations[pk] for pk in cdr["legislations"]])
             ),
-            case_processing_time=self.get_total_processing_time(cdr, export_application),
-            total_processing_time=self.get_total_processing_time(cdr, export_application),
-            business_days_to_process=self.get_business_days_to_process(cdr, export_application),
-            continent=cdr.reference_data.country.overseas_region.name,
+            case_processing_time=processing_time,
+            total_processing_time=processing_time,
+            business_days_to_process=self.get_business_days_to_process(
+                cdr["issue_datetime"],
+                export_application["submitted_datetime"],
+            ),
+            **cdr,
+            **export_application,
         )
 
-    def get_is_responsible_person(self, export_application: ExportApplication) -> YesNoChoices:
-        if export_application.schedules.filter(
-            schedule_statements_is_responsible_person=True
-        ).exists():
-            return YesNoChoices.yes
-        return YesNoChoices.no
+    def get_is_responsible_person(self, is_responsible_person_count: int) -> YesNoChoices:
+        return YesNoChoices.yes if is_responsible_person_count > 0 else YesNoChoices.no
 
-    def get_is_manufacturer(self, export_application: ExportApplication) -> YesNoChoices:
-        if export_application.schedules.filter(
-            exporter_status=CFSSchedule.ExporterStatus.IS_MANUFACTURER
-        ):
-            return YesNoChoices.yes
-        return YesNoChoices.no
+    def get_is_manufacturer(self, is_manufacturer_count: int) -> YesNoChoices:
+        return YesNoChoices.yes if is_manufacturer_count > 0 else YesNoChoices.no
 
     def get_total_processing_time(
-        self, cdr: CaseDocumentReference, export_application: ExportApplication
+        self, issue_datetime: dt.datetime, submit_datetime: dt.datetime
     ) -> str:
-        return utils.format_time_delta(
-            cdr.content_object.case_completion_datetime, export_application.submit_datetime
-        )
+        return utils.format_time_delta(issue_datetime, submit_datetime)
 
     def get_business_days_to_process(
-        self, cdr: CaseDocumentReference, export_application: ExportApplication
+        self, end_datetime: dt.datetime, start_datetime: dt.datetime
     ) -> int:
-        start_date = export_application.submit_datetime.date()
-        end_date = cdr.content_object.case_completion_datetime.date()
+        start_date = start_datetime.date()
+        end_date = end_datetime.date()
         return utils.get_business_days(start_date, end_date)
 
 
@@ -382,37 +472,56 @@ class ImportLicenceInterface(ReportInterface):
                 _filter,
                 status__in=[ImpExpStatus.COMPLETED, ImpExpStatus.WITHDRAWN, ImpExpStatus.REVOKED],
             )
+            .annotate(
+                ima_type=F("application_type__type"),
+                ima_sub_type=F("application_type__sub_type"),
+                agent_name=F("agent__name"),
+                country_of_origin=F("origin_country__name"),
+                country_of_consignment=F("consignment_country__name"),
+                wood_shipping_year=F("woodquotaapplication__shipping_year"),
+                iron_shipping_year=F("ironsteelapplication__shipping_year"),
+                com_group_name=F("commodity_group__group_name"),
+                importer_printable=F("application_type__importer_printable"),
+                commodity_code=F("priorsurveillanceapplication__commodity__commodity_code"),
+                contact_title=F("contact__title"),
+                contact_first_name=F("contact__first_name"),
+                contact_last_name=F("contact__last_name"),
+            )
             .order_by("-reference")
             .distinct()
+            .select_related("importer")
+            .prefetch_related("licences")
         )
         if self.filters.application_type:
             queryset = queryset.filter(application_type__type=self.filters.application_type)
         return queryset
 
     def serialize_row(self, import_application: ImportApplication) -> ImportLicenceSerializer:
-        ia = import_application.get_specific_model()
+        ia = import_application
         is_adhoc = import_application.process_type == ProcessTypes.SANCTIONS
         is_sps = import_application.process_type == ProcessTypes.SPS
         licence = utils.get_licence_details(ia)
-
+        contact_full_name = utils.format_contact_name(
+            ia.contact_title, ia.contact_first_name, ia.contact_last_name
+        )
         return self.ReportSerializer(
             case_reference=ia.get_reference(),
             licence_reference=licence.reference,
             licence_type=licence.licence_type,
             under_appeal="",  # Unused field in V1
-            ima_type=ia.application_type.type,
-            ima_type_title=ia.application_type.get_type_display(),
-            ima_sub_type=ia.application_type.sub_type,
-            ima_sub_type_title=ia.application_type.get_sub_type_display(),
-            variation_number=utils.get_variation_number(ia),
+            ima_type=ia.ima_type,
+            ima_type_title=self.get_ima_type_title(ia.ima_type),
+            ima_sub_type=ia.ima_sub_type,
+            ima_sub_type_title=self.get_ima_sub_type_title(ia.ima_sub_type),
+            variation_number=utils.get_variation_number(ia.reference),
             status=ia.status,
             importer=ia.importer.display_name,
-            agent_name=ia.agent.name if ia.agent else None,
-            app_contact_name=getattr(ia.contact, "full_name", ""),
-            country_of_origin=getattr(ia.origin_country, "name", ""),
-            country_of_consignment=getattr(ia.consignment_country, "name", ""),
-            shipping_year=getattr(ia, "shipping_year", ""),
-            com_group_name=self.get_com_group_name(import_application),
+            agent_name=ia.agent_name,
+            app_contact_name=contact_full_name,
+            country_of_origin=ia.country_of_origin,
+            country_of_consignment=ia.country_of_consignment,
+            shipping_year=ia.wood_shipping_year or ia.iron_shipping_year or "",
+            com_group_name=ia.com_group_name,
             commodity_codes=self.get_commodity_codes(import_application, is_adhoc, is_sps),
             initial_submitted_datetime=ia.submit_datetime,
             initial_case_closed_datetime=licence.initial_case_closed_datetime,
@@ -421,26 +530,32 @@ class ImportLicenceInterface(ReportInterface):
             licence_dates=utils.get_licence_dates(licence),
             licence_start_date=licence.start_date,
             licence_expiry_date=licence.end_date,
-            importer_printable=ia.application_type.importer_printable,
+            importer_printable=ia.importer_printable,
         )
 
-    def get_com_group_name(self, import_application: ImportApplication) -> str:
-        ia = import_application.get_specific_model()
-        if not ia.commodity_group or not ia.commodity_group.group_name:
-            return ""
-        return ia.commodity_group.group_name
+    def get_ima_sub_type_title(self, ima_sub_type: str) -> str:
+        try:
+            return ImportApplicationType.SubTypes(ima_sub_type).label
+        except ValueError:
+            return ima_sub_type
+
+    def get_ima_type_title(self, ima_type: str) -> str:
+        try:
+            return ImportApplicationType.Types(ima_type).label
+        except ValueError:
+            return ima_type
 
     def get_commodity_codes(
         self, import_application: ImportApplication, is_adhoc: bool, is_sps: bool
     ) -> str:
-        ia = import_application.get_specific_model()
-        if is_sps and ia.commodity:
-            return f"Code: {ia.commodity.commodity_code}"
+        if is_sps and import_application.commodity_code:
+            return f"Code: {import_application.commodity_code}"
 
         if not is_adhoc:
             return ""
 
         details = []
+        ia = import_application.get_specific_model()
         for goods in ia.sanctions_goods.order_by("-commodity"):
             if goods.commodity:
                 details.append(f"Code: {goods.commodity}; Desc: {goods.goods_description}")
@@ -469,7 +584,20 @@ class SupplementaryFirearmsInterface(ReportInterface):
                 | Q(dflapplication__supplementary_info__isnull=False),
             )
             .exclude(status__in=[ImpExpStatus.IN_PROGRESS, ImpExpStatus.DELETED])
+            .annotate(
+                country_of_origin=F("origin_country__name"),
+                country_of_consignment=F("consignment_country__name"),
+                application_sub_type=F("application_type__sub_type"),
+                endorsement_list=ArrayAgg(
+                    "endorsements__content",
+                    distinct=True,
+                    filter=Q(endorsements__isnull=False),
+                    default=Value([]),
+                ),
+            )
             .order_by("-reference")
+            .select_related("importer", "importer_office")
+            .prefetch_related("licences")
         )
 
     def serialize_rows(self, import_application: ImportApplication) -> list:
@@ -481,11 +609,11 @@ class SupplementaryFirearmsInterface(ReportInterface):
                 report.get_report_firearms(is_upload=True),
                 report.get_report_firearms(is_no_firearm=True),
             ):
-                results.append(self.serialize_row(report_firearms, ia))
+                results.append(self.serialize_row(report_firearms, import_application))
         return results
 
     def serialize_row(
-        self, s: ReportFirearms, ia: FaImportApplication
+        self, s: ReportFirearms, ia: ImportApplication
     ) -> SupplementaryFirearmsSerializer:
         is_dfl = ia.process_type == ProcessTypes.FA_DFL
         is_sil = ia.process_type == ProcessTypes.FA_SIL
@@ -519,15 +647,15 @@ class SupplementaryFirearmsInterface(ReportInterface):
         return self.ReportSerializer(
             licence_reference=licence.reference,
             case_reference=ia.get_reference(),
-            case_type=ia.application_type.sub_type,
+            case_type=ia.application_sub_type,
             importer=ia.importer.display_name,
             eori_number=ia.importer.eori_number,
             importer_address=utils.get_importer_address(ia),
             licence_start_date=licence.start_date,
             licence_expiry_date=licence.end_date,
-            country_of_origin=getattr(ia.origin_country, "name", ""),
-            country_of_consignment=getattr(ia.consignment_country, "name", ""),
-            endorsements="\n".join(ia.endorsements.values_list("content", flat=True)),
+            country_of_origin=ia.country_of_origin,
+            country_of_consignment=ia.country_of_consignment,
+            endorsements="\n".join(ia.endorsement_list),
             report_date=report.date_received,
             constabularies=utils.get_constabularies(ia),
             who_bought_from_name=bought_from_name,
