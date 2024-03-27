@@ -19,6 +19,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django_filters import FilterSet
 from django_filters.views import FilterView
 
+from web.domains.case.export.forms import ProductsFileUploadForm
 from web.domains.case.export.views import (
     get_csf_schedule_legislation_config,
     get_show_schedule_statements_is_responsible_person,
@@ -286,6 +287,7 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMix
                 extra["show_schedule_statements_is_responsible_person"] = (
                     get_show_schedule_statements_is_responsible_person(schedule)
                 )
+                # Manufacturer details section context
                 extra["edit_manufacturer_url"] = reverse(
                     "cat:cfs-manufacturer-update",
                     kwargs={"cat_pk": self.object.pk, "schedule_template_pk": schedule.pk},
@@ -294,6 +296,16 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMix
                     "cat:cfs-manufacturer-delete",
                     kwargs={"cat_pk": self.object.pk, "schedule_template_pk": schedule.pk},
                 )
+
+                # Products section context
+                extra["is_biocidal"] = schedule.is_biocidal()
+                extra["products"] = schedule.products.all().order_by("pk")
+                extra["product_upload_form"] = ProductsFileUploadForm()
+                extra["has_legislation"] = schedule.legislations.filter(is_active=True).exists()
+                # TODO: ICMSLST-2564 Add urls when views exist.
+                extra["upload_product_spreadsheet_url"] = ""
+                extra["download_product_spreadsheet_url"] = ""
+                extra["add_schedule_product_url"] = ""
 
         if app_type == ExportApplicationType.Types.GMP and step == CatSteps.GMP:
             extra["include_contact"] = False
@@ -483,6 +495,9 @@ class CFSManufacturerDeleteView(
                 },
             )
         )
+
+
+# TODO: ICMSLST-2564 Add CFS product views here.
 
 
 class CFSScheduleTemplateAddView(

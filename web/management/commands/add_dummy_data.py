@@ -455,6 +455,15 @@ def create_certificate_application_templates(
     )
     cfs_schedule_template.legislations.add(ProductLegislation.objects.first())
 
+    for i in range(1, 6):
+        product = cfs_schedule_template.products.create(product_name=f"Test Product {i}")
+        for z in range(1, i + 1):
+            product.product_type_numbers.create(product_type_number=z)
+            # e.g. 111-11-1111
+            z = str(z)  # type:ignore[assignment]
+            cas = f"{z * 3}-{z * 2}-{z * 4}"
+            product.active_ingredients.create(name=f"Test Ingredient {z}", cas_number=cas)
+
     #
     # Add a GMP template
     gmp_cat = CertificateApplicationTemplate.objects.create(

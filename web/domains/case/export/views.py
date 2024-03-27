@@ -454,17 +454,30 @@ def cfs_edit_schedule(
         legislation_config = get_csf_schedule_legislation_config()
 
         context = {
-            "process": application,
-            "form": form,
             "page_title": "Edit Schedule",
+            "process": application,
             "schedule": schedule,
+            "form": form,
+            "case_type": "export",
             "is_biocidal": schedule.is_biocidal(),
-            "products": schedule.products.order_by("pk").all(),
+            "products": schedule.products.all().order_by("pk"),
             "product_upload_form": ProductsFileUploadForm(),
             "has_legislation": schedule_legislations.exists(),
-            "case_type": "export",
             "legislation_config": legislation_config,
             "show_schedule_statements_is_responsible_person": show_schedule_statements_is_responsible_person,
+            # Products section context
+            "upload_product_spreadsheet_url": reverse(
+                "export:cfs-schedule-product-spreadsheet-upload",
+                kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
+            ),
+            "download_product_spreadsheet_url": reverse(
+                "export:cfs-schedule-product-download-template",
+                kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
+            ),
+            "add_schedule_product_url": reverse(
+                "export:cfs-schedule-add-product",
+                kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
+            ),
         }
 
         return render(request, "web/domains/case/export/cfs-edit-schedule.html", context)
