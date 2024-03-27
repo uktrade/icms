@@ -107,16 +107,15 @@ class CommodityEditForm(CommodityForm):
 
 class CommodityGroupFilter(FilterSet):
     group_type = ChoiceFilter(
-        field_name="group_type", choices=CommodityGroup.TYPES, label="Group Type"
+        field_name="group_type",
+        choices=CommodityGroup.TYPES,
+        label="Group Type",
+        empty_label="Any",
     )
     commodity_type = ModelChoiceFilter(
-        queryset=CommodityType.objects.all(), label="Commodity Types"
-    )
-
-    application_type = ModelChoiceFilter(
-        queryset=ImportApplicationType.objects.filter(is_active=True),
-        field_name="usages__application_type",
-        label="Application Type",
+        queryset=CommodityType.objects.all(),
+        label="Commodity Type",
+        empty_label="Any",
     )
 
     group_code = CharFilter(field_name="group_code", lookup_expr="icontains", label="Group Code")
@@ -127,7 +126,10 @@ class CommodityGroupFilter(FilterSet):
     commodity_code = CharFilter(
         field_name="commodities__commodity_code", lookup_expr="icontains", label="Commodity Code"
     )
-    unit = ModelChoiceFilter(queryset=Unit.objects.all())
+    unit = ModelChoiceFilter(
+        queryset=Unit.objects.all(),
+        empty_label="Any",
+    )
 
     is_archived = BooleanFilter(
         field_name="is_active",
