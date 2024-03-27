@@ -16,6 +16,7 @@ class ConstabulariesFilter(FilterSet):
         choices=Constabulary.REGIONS,
         lookup_expr="icontains",
         label="Constabulary Region",
+        empty_label="Any",
     )
 
     email = CharFilter(field_name="email", lookup_expr="icontains", label="Email Address")
