@@ -23,7 +23,7 @@ repos:
         verbose: true
         require_serial: true
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.1
+    rev: v3.15.2
     hooks:
     -   id: pyupgrade
         args: [--py311-plus]
