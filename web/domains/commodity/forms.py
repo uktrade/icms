@@ -37,7 +37,7 @@ class CommodityFilter(FilterSet):
     )
 
     commodity_type = ModelChoiceFilter(
-        queryset=CommodityType.objects.all(), label="Commodity Types"
+        queryset=CommodityType.objects.all(), label="Commodity Type", empty_label="Any"
     )
 
     valid_start = JqueryDateFilter(
