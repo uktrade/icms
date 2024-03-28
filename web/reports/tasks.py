@@ -1,3 +1,5 @@
+from django.db import transaction
+
 from config.celery import app
 from web.models import ScheduleReport
 
@@ -13,17 +15,18 @@ from .generate import (
 
 @app.task
 def generate_report_task(scheduled_report_pk) -> None:
-    scheduled_report = ScheduleReport.objects.get(pk=scheduled_report_pk)
-    match scheduled_report.report.report_type:
-        case ReportType.ISSUED_CERTIFICATES:
-            generate_issued_certificate_report(scheduled_report)
-        case ReportType.ACCESS_REQUESTS:
-            generate_access_request_report(scheduled_report)
-        case ReportType.IMPORT_LICENCES:
-            generate_import_licence_report(scheduled_report)
-        case ReportType.SUPPLEMENTARY_FIREARMS:
-            generate_supplementary_firearms_report(scheduled_report)
-        case ReportType.FIREARMS_LICENCES:
-            generate_firearms_licences_report(scheduled_report)
-        case _:
-            raise ValueError("Unsupported Report Type")
+    with transaction.atomic():
+        scheduled_report = ScheduleReport.objects.get(pk=scheduled_report_pk)
+        match scheduled_report.report.report_type:
+            case ReportType.ISSUED_CERTIFICATES:
+                generate_issued_certificate_report(scheduled_report)
+            case ReportType.ACCESS_REQUESTS:
+                generate_access_request_report(scheduled_report)
+            case ReportType.IMPORT_LICENCES:
+                generate_import_licence_report(scheduled_report)
+            case ReportType.SUPPLEMENTARY_FIREARMS:
+                generate_supplementary_firearms_report(scheduled_report)
+            case ReportType.FIREARMS_LICENCES:
+                generate_firearms_licences_report(scheduled_report)
+            case _:
+                raise ValueError("Unsupported Report Type")

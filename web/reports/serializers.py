@@ -71,7 +71,7 @@ class IssuedCertificateReportSerializer(BaseSerializer):
     total_processing_time: str
     exporter: str
     contact_full_name: str
-    agent: str
+    agent: str_or_empty
     country: str
     is_manufacturer: str
     responsible_person_statement: str
@@ -120,11 +120,11 @@ class ImportLicenceSerializer(BaseSerializer):
     ima_sub_type_title: str_or_empty
     importer: str = pydantic.Field(serialization_alias="Importer Name")
     agent_name: str_or_empty
-    app_contact_name: str
-    country_of_origin: str = pydantic.Field(serialization_alias="Coo Country Name")
-    country_of_consignment: str = pydantic.Field(serialization_alias="Coc Country Name")
+    app_contact_name: str_or_empty
+    country_of_origin: str_or_empty = pydantic.Field(serialization_alias="Coo Country Name")
+    country_of_consignment: str_or_empty = pydantic.Field(serialization_alias="Coc Country Name")
     shipping_year: str | int
-    com_group_name: str
+    com_group_name: str_or_empty
     commodity_codes: str
     initial_submitted_datetime: datetime_or_empty
     initial_case_closed_datetime: datetime_or_empty
