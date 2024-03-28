@@ -188,6 +188,7 @@ def fa_oil_manage_and_complete_case(page: Page, app_id) -> None:
     #
     page.locator('[data-test-id="edit-licence"]').click()
     utils.set_licence_end_date(page)
+    page.get_by_role("button", name="Save").click()
 
     #
     # Add an Endorsement
