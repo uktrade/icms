@@ -4,7 +4,10 @@ import django_filters
 from django import forms
 
 from web.domains.case.export.forms import (
+    CFSActiveIngredientForm,
     CFSManufacturerDetailsForm,
+    CFSProductForm,
+    CFSProductTypeForm,
     EditCFScheduleForm,
     EditCFSForm,
     EditCOMForm,
@@ -15,6 +18,9 @@ from web.models import (
     CertificateOfFreeSaleApplicationTemplate,
     CertificateOfGoodManufacturingPracticeApplicationTemplate,
     CertificateOfManufactureApplicationTemplate,
+    CFSProductActiveIngredientTemplate,
+    CFSProductTemplate,
+    CFSProductTypeTemplate,
     CFSScheduleTemplate,
     ExportApplicationType,
 )
@@ -93,3 +99,21 @@ class CFSManufacturerDetailsTemplateForm(CFSManufacturerDetailsForm):
         model = CFSScheduleTemplate
         fields = copy_form_fields(CFSManufacturerDetailsForm.Meta.fields)
         widgets = CFSManufacturerDetailsForm.Meta.widgets
+
+
+class CFSProductTemplateForm(CFSProductForm):
+    class Meta:
+        model = CFSProductTemplate
+        fields = copy_form_fields(CFSProductForm.Meta.fields)
+
+
+class CFSProductTypeTemplateForm(CFSProductTypeForm):
+    class Meta:
+        model = CFSProductTypeTemplate
+        fields = copy_form_fields(CFSProductTypeForm.Meta.fields)
+
+
+class CFSActiveIngredientTemplateForm(CFSActiveIngredientForm):
+    class Meta:
+        model = CFSProductActiveIngredientTemplate
+        fields = copy_form_fields(CFSActiveIngredientForm.Meta.fields)
