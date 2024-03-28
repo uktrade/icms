@@ -14,7 +14,7 @@ from django.forms.models import ModelForm
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.generic import FormView, UpdateView, View
+from django.views.generic import CreateView, FormView, UpdateView, View
 from django.views.generic.detail import SingleObjectMixin
 from django_filters import FilterSet
 from django_filters.views import FilterView
@@ -29,6 +29,7 @@ from web.models import (
     CertificateOfFreeSaleApplicationTemplate,
     CertificateOfGoodManufacturingPracticeApplicationTemplate,
     CertificateOfManufactureApplicationTemplate,
+    CFSProductTemplate,
     CFSScheduleTemplate,
     ExportApplicationType,
     User,
@@ -43,6 +44,7 @@ from .forms import (
     CertificateOfGoodManufacturingPracticeApplicationTemplateForm,
     CertificateOfManufactureApplicationTemplateForm,
     CFSManufacturerDetailsTemplateForm,
+    CFSProductTemplateForm,
     CFSScheduleTemplateForm,
     CreateCATForm,
     EditCATForm,
@@ -305,7 +307,10 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMix
                 # TODO: ICMSLST-2564 Add urls when views exist.
                 extra["upload_product_spreadsheet_url"] = ""
                 extra["download_product_spreadsheet_url"] = ""
-                extra["add_schedule_product_url"] = ""
+                extra["add_schedule_product_url"] = reverse(
+                    "cat:cfs-schedule-product-create",
+                    kwargs={"cat_pk": self.object.pk, "schedule_template_pk": schedule.pk},
+                )
 
         if app_type == ExportApplicationType.Types.GMP and step == CatSteps.GMP:
             extra["include_contact"] = False
@@ -497,9 +502,6 @@ class CFSManufacturerDeleteView(
         )
 
 
-# TODO: ICMSLST-2564 Add CFS product views here.
-
-
 class CFSScheduleTemplateAddView(
     SingleObjectMixin, CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, View
 ):
@@ -596,3 +598,91 @@ class CFSScheduleTemplateDeleteView(
         return redirect(
             reverse("cat:edit-step", kwargs={"cat_pk": self.kwargs["cat_pk"], "step": CatSteps.CFS})
         )
+
+
+class CFSScheduleTemplateProductCreateView(
+    CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, CreateView
+):
+    form_class = CFSProductTemplateForm
+    template_name = "web/domains/cat/cfs/product-template-create.html"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        schedule = get_object_or_404(CFSScheduleTemplate, pk=self.kwargs["schedule_template_pk"])
+        return kwargs | {"schedule": schedule}
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        return context | {
+            "page_title": "Add Product",
+            "previous_link": self.get_edit_schedule_url(),
+        }
+
+    def get_success_url(self):
+        return reverse(
+            "cat:cfs-schedule-product-update",
+            kwargs={
+                "cat_pk": self.kwargs["cat_pk"],
+                "schedule_template_pk": self.kwargs["schedule_template_pk"],
+                "product_template_pk": self.object.pk,
+            },
+        )
+
+    def get_edit_schedule_url(self):
+        return reverse(
+            "cat:edit-step-related",
+            kwargs={
+                "cat_pk": self.kwargs["cat_pk"],
+                "step": CatSteps.CFS_SCHEDULE,
+                "step_pk": self.kwargs["schedule_template_pk"],
+            },
+        )
+
+
+class CFSScheduleTemplateProductUpdateView(
+    CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, UpdateView
+):
+    pk_url_kwarg: str = "product_template_pk"
+    model = CFSProductTemplate
+    form_class = CFSProductTemplateForm
+    template_name = "web/domains/cat/cfs/product-template-update.html"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        schedule = get_object_or_404(CFSScheduleTemplate, pk=self.kwargs["schedule_template_pk"])
+        return kwargs | {"schedule": schedule}
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        return context | {
+            "page_title": "Update Product",
+            "previous_link": self.get_edit_schedule_url(),
+        }
+
+    def get_success_url(self):
+        return reverse(
+            "cat:cfs-schedule-product-update",
+            kwargs={
+                "cat_pk": self.kwargs["cat_pk"],
+                "schedule_template_pk": self.kwargs["schedule_template_pk"],
+                "product_template_pk": self.object.pk,
+            },
+        )
+
+    def get_edit_schedule_url(self):
+        return reverse(
+            "cat:edit-step-related",
+            kwargs={
+                "cat_pk": self.kwargs["cat_pk"],
+                "step": CatSteps.CFS_SCHEDULE,
+                "step_pk": self.kwargs["schedule_template_pk"],
+            },
+        )
+
+
+class CFSScheduleTemplateProductDeleteView(
+    SingleObjectMixin, CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, View
+):
+    pass

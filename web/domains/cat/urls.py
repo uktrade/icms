@@ -48,4 +48,14 @@ urlpatterns = [
         views.CFSManufacturerDeleteView.as_view(),
         name="cfs-manufacturer-delete",
     ),
+    path(
+        "edit/<int:cat_pk>/schedule_template/<int:schedule_template_pk>/cfs-schedule-product-create/",
+        views.CFSScheduleTemplateProductCreateView.as_view(),
+        name="cfs-schedule-product-create",
+    ),
+    path(
+        "edit/<int:cat_pk>/schedule_template/<int:schedule_template_pk>/cfs-schedule-product-update/<int:product_template_pk>",
+        views.CFSScheduleTemplateProductUpdateView.as_view(),
+        name="cfs-schedule-product-update",
+    ),
 ]
