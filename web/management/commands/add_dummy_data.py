@@ -453,7 +453,11 @@ def create_certificate_application_templates(
         exporter_status=CFSScheduleTemplate.ExporterStatus.IS_MANUFACTURER,
         brand_name_holder=YesNoChoices.yes,
     )
-    cfs_schedule_template.legislations.add(ProductLegislation.objects.first())
+
+    # Add a biocidal product legislation as we add product types and active ingredients later on.
+    cfs_schedule_template.legislations.add(
+        ProductLegislation.objects.filter(is_biocidal=True).first()
+    )
 
     for i in range(1, 6):
         product = cfs_schedule_template.products.create(product_name=f"Test Product {i}")

@@ -4,7 +4,10 @@ import django_filters
 from django import forms
 
 from web.domains.case.export.forms import (
+    CFSActiveIngredientForm,
     CFSManufacturerDetailsForm,
+    CFSProductForm,
+    CFSProductTypeForm,
     EditCFScheduleForm,
     EditCFSForm,
     EditCOMForm,
@@ -15,6 +18,9 @@ from web.models import (
     CertificateOfFreeSaleApplicationTemplate,
     CertificateOfGoodManufacturingPracticeApplicationTemplate,
     CertificateOfManufactureApplicationTemplate,
+    CFSProductActiveIngredientTemplate,
+    CFSProductTemplate,
+    CFSProductTypeTemplate,
     CFSScheduleTemplate,
     ExportApplicationType,
 )
@@ -93,3 +99,98 @@ class CFSManufacturerDetailsTemplateForm(CFSManufacturerDetailsForm):
         model = CFSScheduleTemplate
         fields = copy_form_fields(CFSManufacturerDetailsForm.Meta.fields)
         widgets = CFSManufacturerDetailsForm.Meta.widgets
+
+
+class CFSProductTemplateForm(CFSProductForm):
+    class Meta:
+        model = CFSProductTemplate
+        fields = copy_form_fields(CFSProductForm.Meta.fields)
+        labels = {
+            "product_name": "Product Name",
+        }
+
+
+class CFSProductTypeTemplateForm(CFSProductTypeForm):
+    class Meta:
+        model = CFSProductTypeTemplate
+        fields = copy_form_fields(CFSProductTypeForm.Meta.fields)
+        labels = {
+            "product_type_number": "Product Type Number",
+        }
+
+
+class CFSProductTypeTemplateFormSetBase(forms.BaseInlineFormSet):
+    def get_form_kwargs(self, index):
+        kwargs = super().get_form_kwargs(index)
+
+        return kwargs | {"product": self.instance}
+
+    def clean(self):
+        """Checks that no two product types have the same number."""
+
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+
+        product_types = set()
+
+        for form in self.forms:
+            if self.can_delete and self._should_delete_form(form):
+                continue
+
+            if pt := form.cleaned_data.get("product_type_number"):
+                if pt in product_types:
+                    form.add_error(
+                        "product_type_number",
+                        "Product type number must be unique to the product.",
+                    )
+
+                product_types.add(pt)
+
+
+CFSProductTypeTemplateFormSet = forms.inlineformset_factory(
+    CFSProductTemplate,
+    CFSProductTypeTemplate,
+    form=CFSProductTypeTemplateForm,
+    formset=CFSProductTypeTemplateFormSetBase,
+)
+
+
+class CFSActiveIngredientTemplateForm(CFSActiveIngredientForm):
+    class Meta:
+        model = CFSProductActiveIngredientTemplate
+        fields = copy_form_fields(CFSActiveIngredientForm.Meta.fields)
+
+
+class CFSActiveIngredientTemplateFormSetBase(forms.BaseInlineFormSet):
+    def get_form_kwargs(self, index):
+        kwargs = super().get_form_kwargs(index)
+
+        return kwargs | {"product": self.instance}
+
+    def clean(self):
+        """Checks that no two active ingredients have the same CAS number."""
+
+        if any(self.errors):
+            # Don't bother validating the formset unless each form is valid on its own
+            return
+
+        cas_numbers = set()
+
+        for form in self.forms:
+            if self.can_delete and self._should_delete_form(form):
+                continue
+
+            if cn := form.cleaned_data.get("cas_number"):
+                if cn in cas_numbers:
+                    form.add_error("cas_number", "CAS number must be unique to the product.")
+
+                cas_numbers.add(cn)
+
+
+CFSActiveIngredientTemplateFormSet = forms.inlineformset_factory(
+    CFSProductTemplate,
+    CFSProductActiveIngredientTemplate,
+    form=CFSActiveIngredientTemplateForm,
+    formset=CFSActiveIngredientTemplateFormSetBase,
+)

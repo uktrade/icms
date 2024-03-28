@@ -1,0 +1,74 @@
+{% extends "layout/sidebar.html" %}
+
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% import "display/fields.html" as display %}
+
+{% block css %}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ previous_link }}" class="prev-link">Edit schedule</a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  {% block main_content_intro %}{% endblock %}
+  {% call forms.form(method='post', csrf_input=csrf_input) -%}
+    <h3>Product name</h3>
+    {% for field in form %}
+      {{ fields.field(field, prompt="north", label_cols='two') }}
+    {% endfor %}
+
+    {% if is_biocidal %}
+      <h3>Product types</h3>
+      <sub>Add any product types leaving unused extra rows blank</sub>
+      {{ pt_formset.management_form }}
+      {% for form in pt_formset %}
+          {{ form.id }}
+          <div class="row">
+            {{ fields.inline_field_with_label(form.product_type_number, prompt="north", label_cols='two', padding='zero', input_cols='three') }}
+            {% if form.instance.pk and pt_formset.can_delete %}
+              {{ fields.inline_field_with_label(form.DELETE, prompt="north", show_optional_indicator=False, label_cols='zero', padding='zero', input_cols='one') }}
+            {% endif %}
+          </div>
+      {% endfor %}
+      <h3>Active Ingredients</h3>
+      <sub>Add any active ingredients leaving unused extra rows blank</sub>
+      {{ ai_formset.management_form }}
+      {% for form in ai_formset %}
+          {{ form.id }}
+          <div class="row">
+            {{ fields.inline_field_with_label(form.name, prompt="north",  label_cols='two', padding='zero', input_cols='three') }}
+            {{ fields.inline_field_with_label(form.cas_number, prompt="north", label_cols='one', padding='zero', input_cols='two') }}
+            {% if form.instance.pk and ai_formset.can_delete %}
+              {{ fields.inline_field_with_label(form.DELETE, show_optional_indicator=False, prompt="north", label_cols='zero', padding='zero', input_cols='one') }}
+            {% endif %}
+          </div>
+      {% endfor %}
+    {% endif %}
+
+    <div class="section-break"></div>
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button type="submit" class="primary-button button">Save</button>
+            </li>
+          </ul>
+        </div>
+        <div class="one columns"></div>
+      </div>
+    </div>
+  {% endcall %}
+{% endblock %}
+
+{% block page_js %}
+{% endblock %}

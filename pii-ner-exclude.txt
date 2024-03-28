@@ -4291,3 +4291,10 @@ report__bought_from__registration_number
 dflapplication__goods_certificates__goods_description
 importer_first_name
 importer_address_1
+{{ fields.inline_field_with_label(form.product_type_number
+Product Type Number
+{{ fields.inline_field_with_label(form.cas_number
+schedule_pk
+id_pt_-1-product_type_number
+id_pt_-1-DELETE
+pt_-1-product_type_number

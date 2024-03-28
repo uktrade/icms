@@ -33,7 +33,6 @@
         {{ csrf_input }}
         {{ product_upload_form.file }}
         <button type="submit" class="button link-button inline-link-button icon-upload" form="id_upload-product-data">Upload</button>
-        </label>
       </form>
     </div>
     <div class="four columns"></div>
@@ -44,4 +43,6 @@
   {% include "web/domains/case/export/partials/cfs/schedule-product-list.html" %}
 {% endif %}
 
-<a href="{{ add_schedule_product_url }}" class="button small-button icon-plus">Add Product</a>
+{% if not read_only %}
+  <a href="{{ add_schedule_product_url }}" class="button small-button icon-plus">Add Product</a>
+{% endif %}
