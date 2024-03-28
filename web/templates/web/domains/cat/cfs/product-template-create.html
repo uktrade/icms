@@ -1,0 +1,44 @@
+{% extends "layout/sidebar.html" %}
+
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% import "display/fields.html" as display %}
+
+{% block css %}
+{% endblock %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ previous_link }}" class="prev-link">Edit schedule</a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  {% block main_content_intro %}{% endblock %}
+  {% call forms.form(method='post', csrf_input=csrf_input) -%}
+    {% for field in form %}
+      {{ fields.field(field) }}
+    {% endfor %}
+    <div class="section-break"></div>
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+              <button type="submit" class="primary-button button">Create</button>
+            </li>
+          </ul>
+        </div>
+        <div class="one columns"></div>
+      </div>
+    </div>
+  {% endcall %}
+{% endblock %}
+
+{% block page_js %}
+{% endblock %}

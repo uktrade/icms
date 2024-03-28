@@ -13,6 +13,7 @@ from web.models import (
     CertificateOfGoodManufacturingPracticeApplicationTemplate,
     CertificateOfManufactureApplicationTemplate,
     ExportApplicationType,
+    ProductLegislation,
 )
 from web.models.shared import AddressEntryType, YesNoChoices
 from web.tests.auth import AuthTestCase
@@ -514,7 +515,7 @@ class TestCFSManufacturerDeleteView(AuthTestCase):
         schedule.manufacturer_address = "Test manufacturer address"
         schedule.save()
 
-    def test_post_only(self, importer_client):
+    def test_post_only(self):
         response = self.exporter_client.get(self.url)
         assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
 
@@ -544,7 +545,7 @@ class TestCFSScheduleTemplateAddView(AuthTestCase):
         self.url = reverse("cat:cfs-schedule-add", kwargs={"cat_pk": self.app.pk})
         self.app.cfs_template.schedules.all().delete()
 
-    def test_post_only(self, importer_client):
+    def test_post_only(self):
         response = self.exporter_client.get(self.url)
         assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
 
@@ -584,7 +585,7 @@ class TestCFSScheduleTemplateCopyView(AuthTestCase):
         schedule.products.create(product_name="product 2")
         schedule.products.create(product_name="product 3")
 
-    def test_post_only(self, importer_client):
+    def test_post_only(self):
         response = self.exporter_client.get(self.url)
         assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
 
@@ -626,7 +627,7 @@ class TestCFSScheduleTemplateDeleteView(AuthTestCase):
             },
         )
 
-    def test_post_only(self, importer_client):
+    def test_post_only(self):
         response = self.exporter_client.get(self.url)
         assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
 
@@ -644,3 +645,162 @@ class TestCFSScheduleTemplateDeleteView(AuthTestCase):
 
         self.app.refresh_from_db()
         assert self.app.cfs_template.schedules.count() == 0
+
+
+class TestCFSScheduleTemplateProductCreateView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, cfs_cat):
+        self.app = cfs_cat
+        self.url = reverse(
+            "cat:cfs-schedule-product-create",
+            kwargs={
+                "cat_pk": self.app.pk,
+                "schedule_template_pk": cfs_cat.cfs_template.schedules.first().pk,
+            },
+        )
+
+    def test_permission(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_post(self):
+        assert self.app.cfs_template.schedules.first().products.count() == 0
+
+        form_data = {"product_name": "Test product 1"}
+        response = self.exporter_client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        schedule = self.app.cfs_template.schedules.first()
+        assert schedule.products.count() == 1
+
+        product = schedule.products.first()
+        assert product.product_name == "Test product 1"
+
+
+class TestCFSScheduleTemplateProductUpdateView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, cfs_cat):
+        self.app = cfs_cat
+        self.schedule = self.app.cfs_template.schedules.first()
+        self.product = self.schedule.products.create(product_name="Test product 1")
+
+        self.url = reverse(
+            "cat:cfs-schedule-product-update",
+            kwargs={
+                "cat_pk": self.app.pk,
+                "schedule_template_pk": self.schedule.pk,
+                "product_template_pk": self.product.pk,
+            },
+        )
+
+    def test_permission(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_post(self):
+        form_data = {
+            "product_name": "Test product 1 updated",
+        }
+        response = self.exporter_client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        self.product.refresh_from_db()
+        assert self.product.product_name == "Test product 1 updated"
+
+    def test_post_biocidal(self):
+        self.schedule.legislations.add(ProductLegislation.objects.filter(is_biocidal=True).first())
+
+        form_data = {
+            # Product form
+            "product_name": "Test product 1 updated",
+            # Product types formset
+            "pt_-TOTAL_FORMS": "3",
+            "pt_-INITIAL_FORMS": "0",
+            "pt_-MIN_NUM_FORMS": "0",
+            "pt_-MAX_NUM_FORMS": "1000",
+            "pt_-0-id": "",
+            "pt_-0-product_type_number": "1",
+            "pt_-1-id": "",
+            "pt_-1-product_type_number": "2",
+            "pt_-2-id": "",
+            "pt_-2-product_type_number": "3",
+            # Active ingredients formset
+            "ai_-TOTAL_FORMS": "3",
+            "ai_-INITIAL_FORMS": "0",
+            "ai_-MIN_NUM_FORMS": "0",
+            "ai_-MAX_NUM_FORMS": "1000",
+            "ai_-0-id": "",
+            "ai_-0-name": "Name 1",
+            "ai_-0-cas_number": "111-11-1111",
+            "ai_-1-id": "",
+            "ai_-1-name": "Name 2",
+            "ai_-1-cas_number": "222-22-2222",
+            "ai_-2-id": "",
+            "ai_-2-name": "Name 3",
+            "ai_-2-cas_number": "333-33-3333",
+        }
+
+        response = self.exporter_client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        self.product.refresh_from_db()
+        assert self.product.product_name == "Test product 1 updated"
+
+        assert list(
+            self.product.product_type_numbers.all().values_list("product_type_number", flat=True)
+        ) == [1, 2, 3]
+
+        assert list(self.product.active_ingredients.all().values("name", "cas_number")) == [
+            {"name": "Name 1", "cas_number": "111-11-1111"},
+            {"name": "Name 2", "cas_number": "222-22-2222"},
+            {"name": "Name 3", "cas_number": "333-33-3333"},
+        ]
+
+
+class TestCFSScheduleTemplateProductDeleteView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, cfs_cat):
+        self.app = cfs_cat
+        self.schedule = self.app.cfs_template.schedules.first()
+        self.product = self.schedule.products.create(product_name="Test product 1")
+
+        self.url = reverse(
+            "cat:cfs-schedule-product-delete",
+            kwargs={
+                "cat_pk": self.app.pk,
+                "schedule_template_pk": self.schedule.pk,
+                "product_template_pk": self.product.pk,
+            },
+        )
+
+    def test_post_only(self):
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_permission(self):
+        response = self.importer_client.post(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_two_client.post(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_post(self):
+        assert self.schedule.products.count() == 1
+
+        response = self.exporter_client.post(self.url)
+        assert response.status_code == HTTPStatus.FOUND
+
+        self.schedule.refresh_from_db()
+        assert self.schedule.products.count() == 0

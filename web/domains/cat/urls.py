@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 
 from . import views
 
@@ -29,23 +29,45 @@ urlpatterns = [
         name="cfs-schedule-add",
     ),
     path(
-        "edit/<int:cat_pk>/schedule_template/<int:schedule_template_pk>/copy-schedule/",
-        views.CFSScheduleTemplateCopyView.as_view(),
-        name="cfs-schedule-copy",
-    ),
-    path(
-        "edit/<int:cat_pk>/schedule_template/<int:schedule_template_pk>/delete-schedule/",
-        views.CFSScheduleTemplateDeleteView.as_view(),
-        name="cfs-schedule-delete",
-    ),
-    path(
-        "edit/<int:cat_pk>/schedule_template/<int:schedule_template_pk>/cfs-manufacturer-update/",
-        views.CFSManufacturerUpdateView.as_view(),
-        name="cfs-manufacturer-update",
-    ),
-    path(
-        "edit/<int:cat_pk>/schedule_template/<int:schedule_template_pk>/cfs-manufacturer-delete/",
-        views.CFSManufacturerDeleteView.as_view(),
-        name="cfs-manufacturer-delete",
+        "edit/<int:cat_pk>/schedule_template/<int:schedule_template_pk>/",
+        include(
+            [
+                path(
+                    "copy-schedule/",
+                    views.CFSScheduleTemplateCopyView.as_view(),
+                    name="cfs-schedule-copy",
+                ),
+                path(
+                    "delete-schedule/",
+                    views.CFSScheduleTemplateDeleteView.as_view(),
+                    name="cfs-schedule-delete",
+                ),
+                path(
+                    "cfs-manufacturer-update/",
+                    views.CFSManufacturerUpdateView.as_view(),
+                    name="cfs-manufacturer-update",
+                ),
+                path(
+                    "cfs-manufacturer-delete/",
+                    views.CFSManufacturerDeleteView.as_view(),
+                    name="cfs-manufacturer-delete",
+                ),
+                path(
+                    "cfs-schedule-product-create/",
+                    views.CFSScheduleTemplateProductCreateView.as_view(),
+                    name="cfs-schedule-product-create",
+                ),
+                path(
+                    "cfs-schedule-product-update/<int:product_template_pk>/",
+                    views.CFSScheduleTemplateProductUpdateView.as_view(),
+                    name="cfs-schedule-product-update",
+                ),
+                path(
+                    "cfs-schedule-product-delete/<int:product_template_pk>/",
+                    views.CFSScheduleTemplateProductDeleteView.as_view(),
+                    name="cfs-schedule-product-delete",
+                ),
+            ]
+        ),
     ),
 ]

@@ -92,3 +92,7 @@ def get_search_row(page: Page, app_id: int) -> Locator:
 
 def get_cat_list_row(page: Page, cat_pk: int) -> Locator:
     return page.locator(f'[data-test-id="cat-results-row-{cat_pk}"]')
+
+
+def get_cfs_product_list_row(page: Page, product_pk: int) -> Locator:
+    return page.locator(f'[data-test-id="schedule-product-row-{product_pk}"]')
