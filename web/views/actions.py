@@ -112,14 +112,19 @@ class EditTemplate(LinkAction):
     label = "Edit"
     icon = "icon-pencil"
 
-    def href(self, instance):
-        # TODO: add CFS_SCHEDULE and point it its special URL
+    def href(self, instance: Template):
         if instance.template_type == Template.CFS_DECLARATION_TRANSLATION:
             return reverse("template-cfs-declaration-translation-edit", kwargs={"pk": instance.pk})
         elif instance.template_type == Template.CFS_SCHEDULE_TRANSLATION:
             return reverse("template-cfs-schedule-translation-edit", kwargs={"pk": instance.pk})
 
         return f"{instance.id}/edit/"
+
+    def display(self, object: Template):
+        # CFS Schedule defines the reference text in English, and it should not be editable
+        if object.template_type == Template.CFS_SCHEDULE:
+            return False
+        return True
 
 
 class Archive(PostAction):

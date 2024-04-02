@@ -36,8 +36,10 @@ from web.models import (
     Template,
 )
 from web.models.shared import YesNoChoices
+from web.tests.domains.template.factory import TemplateFactory
 from web.tests.helpers import CaseURLS
 from web.types import DocumentTypes
+from web.views.actions import EditTemplate
 
 
 def _create_pack_documents(app):
@@ -770,3 +772,9 @@ def test_fetch_schedule_text(db, cfs_app_submitted, exporter_one_contact):
     assert schedule1.pk in result
     assert schedule2.pk in result
     assert len(result) == cfs_app_submitted.schedules.count()
+
+
+@pytest.mark.django_db
+def test_no_edit_cfs_schedule_template():
+    cfs_schedule_template = TemplateFactory(template_type=Template.CFS_SCHEDULE)
+    assert not EditTemplate().display(cfs_schedule_template)
