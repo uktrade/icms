@@ -4,7 +4,10 @@ from django.db.models import Q, QuerySet
 from django.forms import ModelForm, model_to_dict
 
 from web.domains.case.export.forms import (
+    CFSActiveIngredientForm,
     CFSManufacturerDetailsForm,
+    CFSProductForm,
+    CFSProductTypeForm,
     EditCFScheduleForm,
     EditCFSForm,
     EditCOMForm,
@@ -64,8 +67,9 @@ def set_template_data(
 
     # Extra CFS steps
     if template.application_type == ExportApplicationType.Types.FREE_SALE:
-        schedules_to_copy: QuerySet[CFSScheduleTemplate] = template_data.schedules.all()
 
+        # Copy each schedule
+        schedules_to_copy: QuerySet[CFSScheduleTemplate] = template_data.schedules.all()
         for schedule_template in schedules_to_copy:
             # Create an empty schedule before saving template data using form.
             instance = application.schedules.create(created_by=user)
@@ -73,36 +77,29 @@ def set_template_data(
             form = EditCFScheduleForm(instance=instance, data=data)
             new_schedule: CFSScheduleTemplate = _save_form(form, cat_pk)
 
-            # Copy the legislation records
-            new_schedule.legislations.set(schedule_template.legislations.all())
-
             # Set the manufacturer data.
             if data.get("manufacturer_name"):
                 form = CFSManufacturerDetailsForm(instance=new_schedule, data=data)
                 _save_form(form, cat_pk)
 
-            # TODO: ICMSLST-2564 Add product data when creating application from template.
-            # products_to_copy: list[CFSProductTemplate] = [p for p in schedule_template.products.all().order_by("pk")]
-            # for product in products_to_copy:
-            #     product_types_to_copy = [pt for pt in product.product_type_numbers.all().order_by("pk")]
-            #     ingredients_to_copy = [i for i in product.active_ingredients.all().order_by("pk")]
-            #
-            #     product.pk = None
-            #     product._state.adding = True
-            #     product.schedule = new_schedule
-            #     product.save()
-            #
-            #     for ptn in product_types_to_copy:
-            #         ptn.pk = None
-            #         ptn._state.adding = True
-            #         ptn.product = product
-            #         ptn.save()
-            #
-            #     for ingredient in ingredients_to_copy:
-            #         ingredient.pk = None
-            #         ingredient._state.adding = True
-            #         ingredient.product = product
-            #         ingredient.save()
+            # Copy each product
+            for existing_product in schedule_template.products.all():
+                # Create a new product
+                data = model_to_dict(existing_product, exclude=["id", "schedule"])
+                form = CFSProductForm(schedule=new_schedule, data=data)
+                new_product = _save_form(form, cat_pk)
+
+                # Copy any related product_type_numbers to new product
+                for product_type in existing_product.product_type_numbers.all():
+                    data = model_to_dict(product_type, exclude=["id", "product"])
+                    form = CFSProductTypeForm(product=new_product, data=data)
+                    _save_form(form, cat_pk)
+
+                # Copy any related active_ingredients to new product
+                for active_ingredient in existing_product.active_ingredients.all():
+                    data = model_to_dict(active_ingredient, exclude=["id", "product"])
+                    form = CFSActiveIngredientForm(product=new_product, data=data)
+                    _save_form(form, cat_pk)
 
 
 def _save_form(form: ModelForm, cat_pk: int) -> Any:

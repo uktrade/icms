@@ -4241,7 +4241,6 @@ CFS Specific Views
 the CFS Application
 cat_pk>/add-schedule/
 aria-label="Copy
-ICMSLST-2564 Add
 CertificateApplicationTemplate(id={cat_pk
 user_can_view
 Get CertificateApplicationTemplate
