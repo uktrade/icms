@@ -302,7 +302,7 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMix
                 extra["products"] = schedule.products.all().order_by("pk")
                 extra["product_upload_form"] = ProductsFileUploadForm()
                 extra["has_legislation"] = schedule.legislations.filter(is_active=True).exists()
-                # TODO: ICMSLST-2564 Add urls when views exist.
+                # TODO: ICMSLST-2584 Add urls when views exist.
                 extra["upload_product_spreadsheet_url"] = ""
                 extra["download_product_spreadsheet_url"] = ""
                 extra["add_schedule_product_url"] = ""
