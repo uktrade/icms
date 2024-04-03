@@ -77,7 +77,6 @@ process.get_reference
 HSE Emails'
 Response Preparation'
 View Application'
-Endorsement Usage Template (ICMSLST-638
 Add Firearm Details
 Edit Firearm Details
 web.tests.file_upload_handler
@@ -1162,7 +1161,6 @@ NOPE
 <li><button
 kwargs={'case_type
 users.</p></div
-ICMSLST-16 Workbasket
 Importer Access Request
 >Emails</h4>
 Edit CFS
@@ -1799,7 +1797,6 @@ Import and Export FIR
 get_workbasket_row
 DocumentPack
 v2 (See
-ICMSLST-1001
 Check a Process
 JS
 Withdrawal Request
@@ -1888,7 +1885,6 @@ Add Licence for Section
 Belarus
 "Check the given
 "Example XML
-TODO ICMSLST-1899 Ordinality
 SILSection
 MANUFACTURED_AFTER_1899_BEFORE_1939
 "Example XML <COMMODITY
@@ -1966,7 +1962,6 @@ Licence Response Preparation
 IMI Applications
 "Indicates the relevant details
 imi-case
-ICMSLST-19 Add
 Cancel
 Pending Withdrawal
 Update Variation Request
@@ -2140,7 +2135,6 @@ Summary of Changes
 ImpExpStatus
 Org (Importer or Exporter
 Document Reference
-TODO ICMSLST-1914 Expand
 declaration_template_mnem declaration_template_code_id
 default_commodity_group_code
 Prior Surveillance Declaration
@@ -2430,8 +2424,6 @@ ILB Case Officer
 Create ICMS Groups
 Importer
 Select an Importer
-ICMSLST-1939
-ICMSLST-1940 Assign
 ILB Admin/Case
 Case Variation
 CFSProduct
@@ -2640,7 +2632,6 @@ Modules
 web.can_view_edit_importer
 Edit
 kwargs={'org_pk
-ICMSLST-1939 Update
 Edit Importer
 View Importer{% endblock
 View Importer '
@@ -2682,7 +2673,6 @@ importer_one_fixture_data
 Test Exporter One
 Test Exporter 2
 "Returns Export Applications
-ICMSLST-1956
 New Template
 ICMSLST-1241 Implement
 "Check if the initialised
@@ -2733,7 +2723,6 @@ AppChecker
 "Check if the user can edit an application for the linked organisation
 "Check if the user can
 "Check if the user can vary an
-ICMSLST-1945 Revisit
 test_import_user
 SESBackend"
 CERTIFICATE_REVOKE
@@ -2845,7 +2834,6 @@ Exporter Access Requests</h4
 pending_importer_access_requests.exists
 A Test Org
 importer.user
-ICMSLST-2018 Add
 Variation Update Required
 Variation Update No Longer Required
 Variation Update Received
@@ -2875,7 +2863,6 @@ NCA
 Customs &
 Excise Management Act
 Digital Signatures Guidance</a
-ICMSLST-1947 Revisit
 Unknown Application Type
 {{ application_field(acc_req.submitted_by|string +
 Access Requested By
@@ -2900,17 +2887,13 @@ Access Request History
 Docs
 Unknown Application Type: HELLO
 Unknown Firearms Application Sub Type: HELLO
-TODO ICMSLST-2061
 f"Withdrawn
 FIR
 f"A FIR
 Helvetica
 Import Case Management System</a
 ImportApplication / ExportApplication
-TODO ICMSLST-2061 Change
 FIR Subject
-TODO ICMSLST-2061
-TODO ICMSLST-2061 Queue
 Test Commodity A
 Test Commodity B
 Test Other"
@@ -3143,7 +3126,6 @@ ElementTree
 "Example XML <PERSONAL_EMAIL
 User Email Addresses
 <null/
-TODO ICMSLST-2174 Include
 Test Subject
 Application Processing, Further Information
 Further Information Request
@@ -3238,7 +3220,6 @@ Invalid Sec 2
 quantity</div
 web.mail.emails.send_application_extension_complete_email
 web.mail.emails.send_case_complete_email
-ICMSLST-2145 Update
 Application Variation Request Complete
 Application Extension Complete
 web.mail.emails.send_completed_application_email
@@ -3293,7 +3274,6 @@ imi-confirm-information'
 class="extra
 west">Code</label
 BigAutoField
-ICMSLST-2196 Replace
 Revert
 P2
 id_token
@@ -3344,7 +3324,6 @@ the Council of 30 November 2009
 ELIGIBILITY_MAY_BE_SOLD
 COUNTRY_OF_MAN_STATEMENT_WITH_NAME
 "Generate the text to appear in a Certificate of Free Sale
-TODO ICMSLST-1913 Add
 Manufacturer Name
 Manufactureton
 the EU Cosmetics Regulation
@@ -3538,7 +3517,6 @@ f'2023-12-19
 12:51:59 - Signature "Test Signature
 12:51:59 - Archived
 Test Active Signature
-ICMSLST-1430 Revisit
 right">Date Issued
 the Department for International Trade.</li
 Fetch the signature file object from s3
@@ -3972,7 +3950,6 @@ show_agent_inputs
 newCommodity
 function submitSearchForm(searchForm
 checked.value
-ICMSLST-1182 Revisit
 const apps
 setupReopenCaseFormHandlers
 null && quantity

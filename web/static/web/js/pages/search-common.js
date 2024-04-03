@@ -54,7 +54,6 @@ const setupReassignFormEventHandler = function() {
     // reset error if needed:
     showReassignError(false);
 
-    // ICMSLST-1182 Revisit if needed.
     fetch(
       reassignForm.action, {mode: 'same-origin', method: "POST", body: formData}
     )
