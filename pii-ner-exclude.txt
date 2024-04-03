@@ -4275,3 +4275,5 @@ schedule_pk
 id_pt_-1-product_type_number
 id_pt_-1-DELETE
 pt_-1-product_type_number
+Section 5 of the Firearms Act
+GOODS_ITEM_ID

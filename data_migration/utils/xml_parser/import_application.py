@@ -30,6 +30,17 @@ FA_TYPE_CODES = {
 }
 
 
+def get_goods_item_position_from_xml(goods_xml: "ET") -> int:
+    """The goods item position is the order in which the goods appear in the COMMODITY_LIST.
+    GOODS_ITEM_ID is GOODS_ITEM_DESC and goods item position concatenated together.
+    This function retrieves the goods item position from the GOODS_ITEM_ID node.
+    """
+
+    goods_item_desc = get_xml_val(goods_xml, "GOODS_ITEM_DESC")
+    good_item_id = get_xml_val(goods_xml, "GOOD_ITEM_ID")
+    return int(good_item_id.replace(goods_item_desc, ""))
+
+
 class ImportContactParser(BaseXmlParser):
     MODEL = dm.ImportContact
     PARENT = [dm.SILApplication, dm.OpenIndividualLicenceApplication, dm.DFLApplication]
@@ -177,7 +188,6 @@ class SILGoodsParser(BaseXmlParser):
                 if not obj:
                     continue
 
-                # TODO ICMSLST-1899 Ordinality of goods in application does not necessarily match supplementary report
                 obj.legacy_ordinal = i
                 model_lists[obj._meta.model].append(obj)
 
@@ -459,12 +469,12 @@ class ReportFirearmParser(BaseXmlParser):
             xml_tree = etree.fromstring(xml)
             goods_xml_list = xml_tree.xpath(cls.ROOT_NODE)
 
-            for ordinal, goods_xml in enumerate(goods_xml_list, start=1):
+            for goods_xml in goods_xml_list:
                 reporting_mode = get_xml_val(goods_xml, "./FA_REPORTING_MODE")
                 firearm_details_xml_list = goods_xml.xpath(
                     "./FIREARMS_DETAILS_LIST/FIREARMS_DETAILS"
                 )
-
+                ordinal = get_goods_item_position_from_xml(goods_xml)
                 # reporting mode only accurate for upload. MANUAL and NO_REPORT both contain null values
                 if reporting_mode == "UPLOAD":
                     upload_xml_list = goods_xml.xpath("./FILE_UPLOAD_LIST/FILE_UPLOAD")
@@ -474,7 +484,6 @@ class ReportFirearmParser(BaseXmlParser):
                             cls.MODEL(
                                 report_id=parent_pk,
                                 is_upload=True,
-                                # TODO ICMSLST-1899 Ordinality of goods in application does not necessarily match supplementary report
                                 goods_certificate_legacy_id=ordinal,
                                 file_id=file_id,
                             )
@@ -484,8 +493,6 @@ class ReportFirearmParser(BaseXmlParser):
                 elif firearm_details_xml_list:
                     for firearm_xml in firearm_details_xml_list:
                         obj = cls.parse_manual_xml(parent_pk, firearm_xml)
-
-                        # TODO ICMSLST-1899 Ordinality of goods in application does not necessarily match supplementary report
                         obj.goods_certificate_legacy_id = ordinal
                         model_list[obj._meta.model].append(obj)
 
@@ -495,7 +502,6 @@ class ReportFirearmParser(BaseXmlParser):
                         cls.MODEL(
                             report_id=parent_pk,
                             is_no_firearm=True,
-                            # TODO ICMSLST-1899 Ordinality of goods in application does not necessarily match supplementary report
                             goods_certificate_legacy_id=ordinal,
                         )
                     )
@@ -556,6 +562,14 @@ class SILReportFirearmParser(BaseXmlParser):
     }
 
     @classmethod
+    def sort_goods_list_xml(cls, goods_list_xml: list["ET"]) -> dict[int, "ET"]:
+        goods_xml_dict: dict[int, "ET"] = {}
+        for goods_xml in goods_list_xml:
+            goods_item_position = get_goods_item_position_from_xml(goods_xml)
+            goods_xml_dict[goods_item_position] = goods_xml
+        return goods_xml_dict
+
+    @classmethod
     def get_queryset(cls) -> Generator:
         supplementary_info = "import_application__imad__supplementary_info"
         reports = f"{supplementary_info}__reports"
@@ -597,9 +611,9 @@ class SILReportFirearmParser(BaseXmlParser):
 
         for parent_pk, xml, section, ordinal in batch:
             xml_tree = etree.fromstring(xml)
-            goods_index = ordinal - 1
             goods_xml_list = xml_tree.xpath(cls.ROOT_NODE)
-            goods_xml = goods_xml_list[goods_index]
+            goods_xml_dict = cls.sort_goods_list_xml(goods_xml_list)
+            goods_xml = goods_xml_dict[ordinal]
             reporting_mode = get_xml_val(goods_xml, "./FA_REPORTING_MODE")
             firearm_details_xml_list = goods_xml.xpath("./FIREARMS_DETAILS_LIST/FIREARMS_DETAILS")
             model = cls.SECTION_MODEL[section]
@@ -613,7 +627,6 @@ class SILReportFirearmParser(BaseXmlParser):
                         model(
                             report_id=parent_pk,
                             is_upload=True,
-                            # TODO ICMSLST-1899 Ordinality of goods in application does not necessarily match supplementary report
                             goods_certificate_legacy_id=ordinal,
                             file_id=file_id,
                         )
@@ -623,7 +636,6 @@ class SILReportFirearmParser(BaseXmlParser):
             elif firearm_details_xml_list:
                 for firearm_details_xml in firearm_details_xml_list:
                     obj = cls.parse_manual_xml(parent_pk, model, firearm_details_xml)
-                    # TODO ICMSLST-1899 Ordinality of goods in application does not necessarily match supplementary report
                     obj.goods_certificate_legacy_id = ordinal
                     model_list[model].append(obj)
 
@@ -633,7 +645,6 @@ class SILReportFirearmParser(BaseXmlParser):
                     model(
                         report_id=parent_pk,
                         is_no_firearm=True,
-                        # TODO ICMSLST-1899 Ordinality of goods in application does not necessarily match supplementary report
                         goods_certificate_legacy_id=ordinal,
                     )
                 )
@@ -692,7 +703,6 @@ class DFLGoodsCertificateParser(BaseXmlParser):
 
         for parent_pk, xml_str in batch:
             xml_tree = etree.fromstring(xml_str)
-
             # The XML for this model is spread across two different XML elements.
             # First we get a list of each of the elements
             cert_list = xml_tree.xpath("FIREARMS_CERTIFICATE_LIST/FIREARMS_CERTIFICATE")
@@ -712,7 +722,6 @@ class DFLGoodsCertificateParser(BaseXmlParser):
 
                 # Add the legacy ordinal to the object so it can be referenced later
                 # The supplementary reports will use the same ordinal to link to the correct goods
-                # TODO ICMSLST-1899 Ordinality of goods in application does not necessarily match supplementary report
                 obj.legacy_ordinal = i
                 model_list[obj._meta.model].append(obj)
 

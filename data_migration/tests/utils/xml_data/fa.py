@@ -42,12 +42,12 @@ import_contact_xml = """
 </SELLER_HOLDER_LIST>
 """.strip()
 
-sr_upload_goods = """
+sr_upload_goods_template = """
 <GOODS_LINE_LIST>
   <GOODS_LINE>
-    <GOODS_ITEM_DESC>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
+    <GOODS_ITEM_DESC>Firearms-10, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
     <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
-    <GOOD_ITEM_ID>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
+    <GOOD_ITEM_ID>Firearms-10, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.{}</GOOD_ITEM_ID>
     <FA_REPORTING_MODE>UPLOAD</FA_REPORTING_MODE>
     <FIREARMS_DETAILS_LIST/>
     <FILE_UPLOAD_LIST>
@@ -56,7 +56,7 @@ sr_upload_goods = """
             <filename>SR Upload.pdf</filename>
             <content-type>pdf</content-type>
             <size>1234</size>
-            <upload-date-time>2022-11-05T12:11:03</upload-date-time>
+            <upload-date-time>2022-11-05T12:11:04</upload-date-time>
             <file-id>abcde</file-id>
           </FILE_CONTENT>
       </FILE_UPLOAD>
@@ -65,6 +65,8 @@ sr_upload_goods = """
   </GOODS_LINE>
 </GOODS_LINE_LIST>
 """.strip()
+
+sr_upload_goods = sr_upload_goods_template.format(1)
 
 sr_upload_xml = """
 <FA_SUPPLEMENTARY_REPORT_LIST>
@@ -109,16 +111,16 @@ sr_upload_xml = """
   </FA_SUPPLEMENTARY_REPORT>
 </FA_SUPPLEMENTARY_REPORT_LIST>
 """.strip().format(
-    sr_upload_goods
+    sr_upload_goods_template.format(1)
 )
 
 
 sr_manual_goods_1 = """
 <GOODS_LINE_LIST>
   <GOODS_LINE>
-    <GOODS_ITEM_DESC>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
+    <GOODS_ITEM_DESC>Firearms-1, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
     <GOODS_ITEM_QUANTITY>50</GOODS_ITEM_QUANTITY>
-    <GOOD_ITEM_ID>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
+    <GOOD_ITEM_ID>Firearms-1, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
     <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>
     <FIREARMS_DETAILS_LIST>
       <FIREARMS_DETAILS>
@@ -143,9 +145,9 @@ sr_manual_goods_1 = """
 sr_manual_goods_2 = """
 <GOODS_LINE_LIST>
   <GOODS_LINE>
-    <GOODS_ITEM_DESC>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
+    <GOODS_ITEM_DESC>Firearms-2, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
     <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
-    <GOOD_ITEM_ID>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
+    <GOOD_ITEM_ID>Firearms-2, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.2</GOOD_ITEM_ID>
     <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>
     <FIREARMS_DETAILS_LIST>
       <FIREARMS_DETAILS>
@@ -162,12 +164,12 @@ sr_manual_goods_2 = """
 """.strip()
 
 
-sr_manual_goods_3 = """
+sr_manual_goods_3_template = """
 <GOODS_LINE_LIST>
   <GOODS_LINE>
-    <GOODS_ITEM_DESC>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
+    <GOODS_ITEM_DESC>Firearms-3, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
     <GOODS_ITEM_QUANTITY>50</GOODS_ITEM_QUANTITY>
-    <GOOD_ITEM_ID>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
+    <GOOD_ITEM_ID>Firearms-3, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.{}</GOOD_ITEM_ID>
     <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>
     <FIREARMS_DETAILS_LIST>
       <FIREARMS_DETAILS>
@@ -187,9 +189,9 @@ sr_manual_goods_3 = """
     <GOODS_ITEM_SUBMIT/>
   </GOODS_LINE>
   <GOODS_LINE>
-    <GOODS_ITEM_DESC>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
+    <GOODS_ITEM_DESC>Firearms-4, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
     <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
-    <GOOD_ITEM_ID>Firearms, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
+    <GOOD_ITEM_ID>Firearms-4, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.{}</GOOD_ITEM_ID>
     <FA_REPORTING_MODE />
     <FIREARMS_DETAILS_LIST>
       <FIREARMS_DETAILS>
@@ -205,13 +207,85 @@ sr_manual_goods_3 = """
 </GOODS_LINE_LIST>
 """.strip()
 
+sr_manual_goods_3 = sr_manual_goods_3_template.format(3, 4)
+
+sr_manual_goods_4 = """
+<GOODS_LINE_LIST>
+  <GOODS_LINE>
+    <GOODS_ITEM_DESC>Firearms-2, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
+    <GOODS_ITEM_QUANTITY>50</GOODS_ITEM_QUANTITY>
+    <GOOD_ITEM_ID>Firearms-2, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.2</GOOD_ITEM_ID>
+    <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>
+    <FIREARMS_DETAILS_LIST>
+      <FIREARMS_DETAILS>
+        <SERIAL_NUMBER>321</SERIAL_NUMBER>
+        <CALIBRE>100</CALIBRE>
+        <MAKE_MODEL>Test B</MAKE_MODEL>
+        <PROOFING>N</PROOFING>
+      </FIREARMS_DETAILS>
+      <FIREARMS_DETAILS>
+        <SERIAL_NUMBER>543</SERIAL_NUMBER>
+        <CALIBRE>55</CALIBRE>
+        <MAKE_MODEL>Test A</MAKE_MODEL>
+        <PROOFING>Y</PROOFING>
+      </FIREARMS_DETAILS>
+    </FIREARMS_DETAILS_LIST>
+    <FILE_UPLOAD_LIST/>
+    <GOODS_ITEM_SUBMIT/>
+  </GOODS_LINE>
+  <GOODS_LINE>
+    <GOODS_ITEM_DESC>Firearms-1, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
+    <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
+    <GOOD_ITEM_ID>Firearms-1, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.1</GOOD_ITEM_ID>
+    <FA_REPORTING_MODE />
+    <FIREARMS_DETAILS_LIST>
+      <FIREARMS_DETAILS>
+        <SERIAL_NUMBER>11</SERIAL_NUMBER>
+        <CALIBRE>120</CALIBRE>
+        <MAKE_MODEL>Test C</MAKE_MODEL>
+        <PROOFING>Y</PROOFING>
+      </FIREARMS_DETAILS>
+    </FIREARMS_DETAILS_LIST>
+    <FILE_UPLOAD_LIST/>
+    <GOODS_ITEM_SUBMIT/>
+  </GOODS_LINE>
+</GOODS_LINE_LIST>
+""".strip()
+
+sr_manual_goods_5 = """
+<GOODS_LINE_LIST>
+  <GOODS_LINE>
+    <GOODS_ITEM_DESC>Firearms-5, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
+    <GOODS_ITEM_QUANTITY>50</GOODS_ITEM_QUANTITY>
+    <GOOD_ITEM_ID>Firearms-5, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.5</GOOD_ITEM_ID>
+    <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>
+    <FIREARMS_DETAILS_LIST>
+      <FIREARMS_DETAILS>
+        <SERIAL_NUMBER>N/A</SERIAL_NUMBER>
+        <CALIBRE>6MM</CALIBRE>
+        <MAKE_MODEL>A gun barrel</MAKE_MODEL>
+        <PROOFING>N</PROOFING>
+      </FIREARMS_DETAILS>
+      <FIREARMS_DETAILS>
+        <SERIAL_NUMBER>123456</SERIAL_NUMBER>
+        <CALIBRE>.30</CALIBRE>
+        <MAKE_MODEL>A gun</MAKE_MODEL>
+        <PROOFING>Y</PROOFING>
+      </FIREARMS_DETAILS>
+    </FIREARMS_DETAILS_LIST>
+    <FILE_UPLOAD_LIST/>
+    <GOODS_ITEM_SUBMIT/>
+  </GOODS_LINE>
+</GOODS_LINE_LIST>
+""".strip()
+
 
 sr_manual_legacy_goods = """
 <GOODS_LINE_LIST>
   <GOODS_LINE>
     <GOODS_ITEM_DESC>Legacy Commodity</GOODS_ITEM_DESC>
     <GOODS_ITEM_QUANTITY>25</GOODS_ITEM_QUANTITY>
-    <GOOD_ITEM_ID>Fireamrs</GOOD_ITEM_ID>
+    <GOOD_ITEM_ID>Legacy Commodity1</GOOD_ITEM_ID>
     <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>
     <FIREARMS_DETAILS_LIST>
       <FIREARMS_DETAILS>
@@ -227,7 +301,7 @@ sr_manual_legacy_goods = """
   <GOODS_LINE>
     <GOODS_ITEM_DESC>Legacy Commodity OC</GOODS_ITEM_DESC>
     <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
-    <GOOD_ITEM_ID>Fireamrs</GOOD_ITEM_ID>
+    <GOOD_ITEM_ID>Legacy Commodity OC2</GOOD_ITEM_ID>
     <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>
     <FIREARMS_DETAILS_LIST>
       <FIREARMS_DETAILS>
@@ -295,10 +369,13 @@ sr_manual_xml_5_goods = """
   </FA_SUPPLEMENTARY_REPORT>
 </FA_SUPPLEMENTARY_REPORT_LIST>
 """.strip().format(
-    sr_manual_goods_1.rstrip("</GOODS_LINE_LIST>"),
-    sr_manual_goods_2.lstrip("<GOODS_LINE_LIST>").rstrip("</GOODS_LINE_LIST>"),
-    sr_manual_goods_3.lstrip("<GOODS_LINE_LIST>").rstrip("</GOODS_LINE_LIST>"),
-    sr_manual_goods_1.lstrip("<GOODS_LINE_LIST>"),
+    sr_manual_goods_1.rstrip("</GOODS_LINE_LIST>").strip(),
+    sr_manual_goods_2.lstrip("<GOODS_LINE_LIST>").rstrip("</GOODS_LINE_LIST>").strip(),
+    sr_manual_goods_3_template.format(3, 4)
+    .lstrip("<GOODS_LINE_LIST>")
+    .rstrip("</GOODS_LINE_LIST>")
+    .strip(),
+    sr_manual_goods_5.lstrip("<GOODS_LINE_LIST>").strip(),
 )
 
 
@@ -367,7 +444,7 @@ dfl_sr = """
             <GOODS_LINE>
               <GOODS_ITEM_DESC>Test Commodity A</GOODS_ITEM_DESC>
               <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
-              <GOOD_ITEM_ID>Test Commodity A</GOOD_ITEM_ID>
+              <GOOD_ITEM_ID>Test Commodity A1</GOOD_ITEM_ID>
               <FA_REPORTING_MODE>UPLOAD</FA_REPORTING_MODE>
               <FIREARMS_DETAILS_LIST/>
               <FILE_UPLOAD_LIST>
@@ -392,7 +469,7 @@ dfl_sr = """
         <GOODS_LINE>
           <GOODS_ITEM_DESC>Test Commodity A</GOODS_ITEM_DESC>
           <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
-          <GOOD_ITEM_ID>1</GOOD_ITEM_ID>
+          <GOOD_ITEM_ID>Test Commodity A1</GOOD_ITEM_ID>
           <FA_REPORTING_MODE>UPLOAD</FA_REPORTING_MODE>
           <FIREARMS_DETAILS_LIST/>
           <FILE_UPLOAD_LIST>
@@ -411,7 +488,7 @@ dfl_sr = """
         <GOODS_LINE>
           <GOODS_ITEM_DESC>Test Commodity B</GOODS_ITEM_DESC>
           <GOODS_ITEM_QUANTITY>25</GOODS_ITEM_QUANTITY>
-          <GOOD_ITEM_ID>Fireamrs</GOOD_ITEM_ID>
+          <GOOD_ITEM_ID>Test Commodity B2</GOOD_ITEM_ID>
           <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>
           <FIREARMS_DETAILS_LIST>
             <FIREARMS_DETAILS>

@@ -158,8 +158,8 @@ def test_sil_report_firearms_parse_xml():
     data = xml_parser.SILReportFirearmParser.parse_xml(
         [
             (1, xml_data.sr_upload_goods, "SEC1", 1),
-            (2, xml_data.sr_manual_goods_3, "SEC5", 1),
-            (2, xml_data.sr_manual_goods_3, "SEC2", 2),
+            (2, xml_data.sr_manual_goods_3_template.format(1, 2), "SEC5", 1),
+            (2, xml_data.sr_manual_goods_3_template.format(5, 4), "SEC2", 4),
         ]
     )
 
@@ -175,7 +175,7 @@ def test_sil_report_firearms_parse_xml():
     sec2_data = data[dm.SILSupplementaryReportFirearmSection2]
     assert len(sec2_data) == 1
     sec2 = sec2_data[0]
-    assert sec2.goods_certificate_legacy_id == 2
+    assert sec2.goods_certificate_legacy_id == 4
     assert sec2.report_id == 2
     assert sec2.is_upload is False
     assert sec2.is_manual is True
