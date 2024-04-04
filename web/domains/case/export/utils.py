@@ -1,35 +1,38 @@
 import io
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from typing import Any
 
 from django.core.files.base import File
-from django.forms import ModelForm, ValidationError, model_to_dict
 from openpyxl import load_workbook
 
+from web.domains.case.app_copy import (
+    ApplicationCopy,
+    CFSApplicationCopy,
+    COMApplicationCopy,
+    GMPApplicationCopy,
+)
+from web.domains.case.export.forms import (
+    CFSActiveIngredientForm,
+    CFSProductForm,
+    CFSProductTypeForm,
+)
 from web.models import (
+    CertificateApplicationTemplate,
     CertificateOfFreeSaleApplication,
+    CertificateOfFreeSaleApplicationTemplate,
     CertificateOfGoodManufacturingPracticeApplication,
+    CertificateOfGoodManufacturingPracticeApplicationTemplate,
     CertificateOfManufactureApplication,
+    CertificateOfManufactureApplicationTemplate,
     CFSProduct,
     CFSSchedule,
+    ExportApplication,
+    ExportApplicationType,
     Exporter,
     Office,
     User,
 )
-from web.utils.sentry import capture_message
 from web.utils.spreadsheet import XlsxSheetConfig, generate_xlsx_file
-
-from .forms import (
-    CFSActiveIngredientForm,
-    CFSManufacturerDetailsForm,
-    CFSProductForm,
-    CFSProductTypeForm,
-    EditCFScheduleForm,
-    EditCFSForm,
-    EditCOMForm,
-    EditGMPForm,
-)
 
 
 class CustomError(Exception):
@@ -317,7 +320,7 @@ def _process_ingredients(product: CFSProduct, product_data: ProductData) -> None
         ingredient_form.save()
 
 
-def copy_export_application(
+def copy_export_application_to_export_application(
     existing_app: (
         CertificateOfFreeSaleApplication
         | CertificateOfManufactureApplication
@@ -338,15 +341,15 @@ def copy_export_application(
     match existing_app:
         case CertificateOfFreeSaleApplication():
             model_cls = CertificateOfFreeSaleApplication
-            copy_app_data = copy_cfs_data
+            copy_cls: type[ApplicationCopy] = CFSApplicationCopy
 
         case CertificateOfManufactureApplication():
             model_cls = CertificateOfManufactureApplication
-            copy_app_data = copy_com_data
+            copy_cls = COMApplicationCopy
 
         case CertificateOfGoodManufacturingPracticeApplication():
             model_cls = CertificateOfGoodManufacturingPracticeApplication
-            copy_app_data = copy_gmp_data
+            copy_cls = GMPApplicationCopy
 
         case _:
             raise ValueError(f"Can't create application for: {existing_app}")
@@ -363,132 +366,69 @@ def copy_export_application(
         last_updated_by=created_by,
     )
 
-    # Common model fields to exclude when copying.
-    # Most if not all of these fields are not defined in the form classes being used.
-    # It is to prevent this data being copied over if for some reason they are
-    # added to the forms in the future.
-    common_exclude = [
-        # Process fields
-        "is_active",
-        "created",
-        "finished",
-        "order_datetime",
-        # ApplicationBase fields
-        "status",
-        "submit_datetime",
-        "last_submit_datetime",
-        "reassign_datetime",
-        "reference",
-        "decision",
-        "refuse_reason",
-        # ExportApplicationABC fields
-        "last_update_datetime",
-        # ExportApplication fields
-        "last_updated_by",
-        "variation_requests",
-        "case_notes",
-        "further_information_requests",
-        "update_requests",
-        "case_emails",
-        "submitted_by",
-        "created_by",
-        "exporter",
-        "exporter_office",
-        "contact",
-        "agent",
-        "agent_office",
-        "case_owner",
-        "cleared_by",
-    ]
-
-    copy_app_data(existing_app, new_app, common_exclude, created_by)
+    copier = copy_cls(existing_app, new_app, created_by)
+    copier.copy_application_to_application()
 
     return new_app
 
 
-def copy_cfs_data(
-    existing: CertificateOfFreeSaleApplication,
-    new: CertificateOfFreeSaleApplication,
-    exclude_fields: list[str],
-    created_by: User,
+def copy_export_application_to_template(
+    cat: CertificateApplicationTemplate, application: ExportApplication
 ) -> None:
-    # Copy main form
-    data = model_to_dict(existing, exclude=exclude_fields + ["id"])
-    form = EditCFSForm(instance=new, data=data)
-    _save_form(form, existing.pk)
+    """Update a certificate application template with export application data.
 
-    # Copy each schedule
-    for existing_schedule in existing.schedules.all():
-        # Create an empty schedule before saving template data using form.
-        instance = new.schedules.create(created_by=created_by)
-        data = model_to_dict(existing_schedule, exclude=["id", "application"])
-        form = EditCFScheduleForm(instance=instance, data=data)
-        new_schedule: CFSSchedule = _save_form(form, existing.pk)
+    :param cat: Certificate Application Template.
+    :param application: Existing Export Application.
+    """
 
-        # Set the manufacturer data.
-        if data.get("manufacturer_name"):
-            form = CFSManufacturerDetailsForm(instance=new_schedule, data=data)
-            _save_form(form, existing.pk)
-
-        # Copy each product
-        for existing_product in existing_schedule.products.all():
-            # Create a new product
-            data = model_to_dict(existing_product, exclude=["id", "schedule"])
-            form = CFSProductForm(schedule=new_schedule, data=data)
-            new_product = _save_form(form, existing.pk)
-
-            # Copy any related product_type_numbers to new product
-            for product_type in existing_product.product_type_numbers.all():
-                data = model_to_dict(product_type, exclude=["id", "product"])
-                form = CFSProductTypeForm(product=new_product, data=data)
-                _save_form(form, existing.pk)
-
-            # Copy any related active_ingredients to new product
-            for active_ingredient in existing_product.active_ingredients.all():
-                data = model_to_dict(active_ingredient, exclude=["id", "product"])
-                form = CFSActiveIngredientForm(product=new_product, data=data)
-                _save_form(form, existing.pk)
+    template, copy_cls = _get_template_and_copy_cls(cat)
+    copier = copy_cls(application.get_specific_model(), template, template.template.owner)
+    copier.copy_application_to_template()
 
 
-def copy_com_data(
-    existing: CertificateOfManufactureApplication,
-    new: CertificateOfManufactureApplication,
-    exclude_fields: list[str],
-    created_by: User,
+def copy_template_to_export_application(
+    application: (
+        CertificateOfFreeSaleApplication
+        | CertificateOfManufactureApplication
+        | CertificateOfGoodManufacturingPracticeApplication
+    ),
+    cat: CertificateApplicationTemplate,
+    user: User,
 ) -> None:
-    data = model_to_dict(existing, exclude=exclude_fields + ["id"])
-    form = EditCOMForm(instance=new, data=data)
-    _save_form(form, existing.pk)
+    """Update an export application with certificate application template data.
+
+    :param application: Export Application.
+    :param cat: Certificate Application Template.
+    :param user: User who is creating the template.
+    """
+
+    template, copy_cls = _get_template_and_copy_cls(cat)
+    copier = copy_cls(template, application, user)
+    copier.copy_template_to_application()
 
 
-def copy_gmp_data(
-    existing: CertificateOfGoodManufacturingPracticeApplication,
-    new: CertificateOfGoodManufacturingPracticeApplication,
-    exclude_fields: list[str],
-    created_by: User,
-) -> None:
-    data = model_to_dict(existing, exclude=exclude_fields + ["id"])
-    form = EditGMPForm(instance=new, data=data)
-    _save_form(form, existing.pk)
+def _get_template_and_copy_cls(
+    cat: CertificateApplicationTemplate,
+) -> tuple[
+    CertificateOfFreeSaleApplicationTemplate
+    | CertificateOfManufactureApplicationTemplate
+    | CertificateOfGoodManufacturingPracticeApplicationTemplate,
+    type[ApplicationCopy],
+]:
+    match cat.application_type:
+        case ExportApplicationType.Types.FREE_SALE:
+            template = cat.cfs_template
+            copy_cls: type[ApplicationCopy] = CFSApplicationCopy
 
-    add_gmp_country(new)
+        case ExportApplicationType.Types.MANUFACTURE:
+            template = cat.com_template
+            copy_cls = COMApplicationCopy
 
+        case ExportApplicationType.Types.GMP:
+            template = cat.gmp_template
+            copy_cls = GMPApplicationCopy
 
-def add_gmp_country(application: CertificateOfGoodManufacturingPracticeApplication) -> None:
-    """GMP applications are for China only"""
-    country = application.application_type.country_group.countries.filter(is_active=True).first()
-    application.countries.add(country)
+        case _:
+            raise ValueError(f"Unknown application type {cat.application_type}")
 
-
-def _save_form(form: ModelForm, export_application_pk: int) -> Any:
-    if form.is_valid():
-        return form.save()
-    else:
-        error_msg = (
-            f"Error copying application using ExportApplication(id={export_application_pk})."
-            f" Form errors: {form.errors.as_text()}"
-        )
-
-        capture_message(error_msg)
-
-        raise ValidationError(error_msg)
+    return template, copy_cls

@@ -431,7 +431,7 @@ def create_certificate_application_templates(
     )
     CertificateOfManufactureApplicationTemplate.objects.create(
         template=com_cat,
-        is_pesticide_on_free_sale_uk=True,
+        is_pesticide_on_free_sale_uk=False,
         is_manufacturer=True,
         product_name="Test product_name",
         chemical_name="Test chemical_name",
@@ -450,6 +450,7 @@ def create_certificate_application_templates(
     cfs_template = CertificateOfFreeSaleApplicationTemplate.objects.create(template=cfs_cat)
     cfs_schedule_template = CFSScheduleTemplate.objects.create(
         application=cfs_template,
+        created_by=owner,
         exporter_status=CFSScheduleTemplate.ExporterStatus.IS_MANUFACTURER,
         brand_name_holder=YesNoChoices.yes,
     )

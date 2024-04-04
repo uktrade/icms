@@ -17,6 +17,7 @@ from web.flow import errors
 from web.mail.constants import EmailTypes
 from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import (
+    CertificateApplicationTemplate,
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
@@ -856,3 +857,86 @@ class TestCopyExportApplicationView:
         )
         case_progress.check_expected_status(new_app, [ImpExpStatus.IN_PROGRESS])
         case_progress.check_expected_task(new_app, Task.TaskType.PREPARE)
+
+
+class TestCreateCATemplateFromExportApplicationView:
+    def test_permission(
+        self, completed_cfs_app, ilb_admin_client, importer_client, exporter_client
+    ):
+        url = SearchURLS.copy_export_application_to_cat(completed_cfs_app.pk)
+
+        response = ilb_admin_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = importer_client.get(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = exporter_client.get(url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_can_copy_cfs_application_to_template(
+        self, completed_cfs_app, exporter_client, exporter, exporter_office
+    ):
+        url = SearchURLS.copy_export_application_to_cat(completed_cfs_app.pk)
+
+        form_data = {
+            "name": "Test CFS application template",
+            "description": "Test description",
+            "sharing": CertificateApplicationTemplate.SharingStatuses.EDIT,
+        }
+        resp = exporter_client.post(url, data=form_data)
+
+        assert resp.status_code == HTTPStatus.FOUND
+        resolver = resolve(resp.url)
+        assert resolver.view_name == "cat:edit"
+
+        new_template = CertificateApplicationTemplate.objects.get(pk=resolver.kwargs["cat_pk"])
+        assert new_template.name == "Test CFS application template"
+        assert new_template.description == "Test description"
+        assert new_template.sharing == CertificateApplicationTemplate.SharingStatuses.EDIT
+        assert new_template.cfs_template is not None
+        assert new_template.cfs_template.schedules.count() == completed_cfs_app.schedules.count()
+
+    def test_can_copy_com_application_to_template(
+        self, completed_com_app, exporter_client, exporter, exporter_office
+    ):
+        url = SearchURLS.copy_export_application_to_cat(completed_com_app.pk)
+
+        form_data = {
+            "name": "Test COM application template",
+            "description": "Test description",
+            "sharing": CertificateApplicationTemplate.SharingStatuses.EDIT,
+        }
+        resp = exporter_client.post(url, data=form_data)
+
+        assert resp.status_code == HTTPStatus.FOUND
+        resolver = resolve(resp.url)
+        assert resolver.view_name == "cat:edit"
+
+        new_template = CertificateApplicationTemplate.objects.get(pk=resolver.kwargs["cat_pk"])
+        assert new_template.name == "Test COM application template"
+        assert new_template.description == "Test description"
+        assert new_template.sharing == CertificateApplicationTemplate.SharingStatuses.EDIT
+        assert new_template.com_template is not None
+
+    def test_can_copy_gmp_application_to_template(
+        self, completed_gmp_app, exporter_client, exporter, exporter_office
+    ):
+        url = SearchURLS.copy_export_application_to_cat(completed_gmp_app.pk)
+
+        form_data = {
+            "name": "Test GMP application template",
+            "description": "Test description",
+            "sharing": CertificateApplicationTemplate.SharingStatuses.EDIT,
+        }
+        resp = exporter_client.post(url, data=form_data)
+
+        assert resp.status_code == HTTPStatus.FOUND
+        resolver = resolve(resp.url)
+        assert resolver.view_name == "cat:edit"
+
+        new_template = CertificateApplicationTemplate.objects.get(pk=resolver.kwargs["cat_pk"])
+        assert new_template.name == "Test GMP application template"
+        assert new_template.description == "Test description"
+        assert new_template.sharing == CertificateApplicationTemplate.SharingStatuses.EDIT
+        assert new_template.gmp_template is not None

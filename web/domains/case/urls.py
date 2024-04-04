@@ -66,6 +66,11 @@ search_urls = [
                     views_search.CopyExportApplicationView.as_view(),
                     name="search-copy-export-application",
                 ),
+                path(
+                    "copy-export-application-to-cat",
+                    views_search.CreateCATemplateFromExportApplicationView.as_view(),
+                    name="search-copy-export-app-to-cat",
+                ),
             ]
         ),
     ),

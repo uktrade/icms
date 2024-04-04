@@ -2674,7 +2674,6 @@ Test Exporter One
 Test Exporter 2
 "Returns Export Applications
 New Template
-ICMSLST-1241 Implement
 "Check if the initialised
 {{ fields.field(form.licence_ref
 {{ fields.field(form.licence_type
@@ -4277,3 +4276,4 @@ id_pt_-1-DELETE
 pt_-1-product_type_number
 Section 5 of the Firearms Act
 GOODS_ITEM_ID
+Existing Export Application

@@ -644,3 +644,10 @@ class SearchURLS:
             "case:search-copy-export-application",
             kwargs={"application_pk": application_pk, "case_type": "export"},
         )
+
+    @staticmethod
+    def copy_export_application_to_cat(application_pk: int) -> str:
+        return reverse(
+            "case:search-copy-export-app-to-cat",
+            kwargs={"application_pk": application_pk, "case_type": "export"},
+        )

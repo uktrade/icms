@@ -18,11 +18,11 @@ from django.views.generic import FormView, View
 from guardian.shortcuts import get_objects_for_user
 
 from web.domains.case.export.forms import CreateExportApplicationForm
-from web.domains.case.export.utils import copy_export_application
-from web.domains.case.export.views import (
-    CreateExportApplicationConfig,
-    get_create_export_app_config,
+from web.domains.case.export.utils import (
+    copy_export_application_to_export_application,
+    copy_export_application_to_template,
 )
+from web.domains.case.export.views import get_create_export_app_config
 from web.domains.case.forms import (
     RevokeApplicationForm,
     VariationRequestExportAppForm,
@@ -37,6 +37,9 @@ from web.domains.case.forms_search import (
 )
 from web.domains.case.services import case_progress, document_pack, reference
 from web.domains.case.shared import ImpExpStatus
+from web.domains.cat.forms import CreateCATForm
+from web.domains.cat.models import CertificateApplicationTemplate
+from web.domains.cat.utils import create_cat
 from web.domains.chief import client
 from web.flow.models import ProcessTypes
 from web.mail.emails import (
@@ -517,29 +520,16 @@ class RevokeCaseView(SearchActionFormBase):
         return "".join((search_url, "?", parse.urlencode(query_params)))
 
 
-@method_decorator(transaction.atomic, name="post")
-class CopyExportApplicationView(PermissionRequiredMixin, LoginRequiredMixin, FormView):
-    form_class = CreateExportApplicationForm
-    template_name = "web/domains/case/export/copy-application.html"
+class CopyAppOrCATPermissionMixin(PermissionRequiredMixin):
+    """Permission mixin common to copying applications and creating templates from applications."""
 
-    # Extra type hints for clarity
-    create_app_config: CreateExportApplicationConfig
     existing_app: ExportApplication
-    new_app: (
-        CertificateOfFreeSaleApplication
-        | CertificateOfManufactureApplication
-        | CertificateOfGoodManufacturingPracticeApplication
-    )
 
     def has_permission(self) -> bool:
         if not self.request.user.has_perm(Perms.sys.exporter_access):
             return False
 
         self.existing_app = get_object_or_404(ExportApplication, pk=self.kwargs["application_pk"])
-        self.create_app_config = get_create_export_app_config(
-            self.existing_app.application_type.type_code
-        )
-
         org = self.existing_app.exporter
         agent_org = self.existing_app.agent
         obj_perms = get_org_obj_permissions(org)
@@ -548,7 +538,20 @@ class CopyExportApplicationView(PermissionRequiredMixin, LoginRequiredMixin, For
             agent_org and self.request.user.has_perm(obj_perms.edit, agent_org)
         )
 
-    def get_context_data(self, **kwargs):
+
+@method_decorator(transaction.atomic, name="post")
+class CopyExportApplicationView(CopyAppOrCATPermissionMixin, LoginRequiredMixin, FormView):
+    form_class = CreateExportApplicationForm
+    template_name = "web/domains/case/export/copy-application.html"
+
+    # Extra type hints for clarity
+    new_app: (
+        CertificateOfFreeSaleApplication
+        | CertificateOfManufactureApplication
+        | CertificateOfGoodManufacturingPracticeApplication
+    )
+
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         application = self.existing_app.get_specific_model()
@@ -556,11 +559,14 @@ class CopyExportApplicationView(PermissionRequiredMixin, LoginRequiredMixin, For
             self.request.user, [Perms.obj.exporter.is_agent], Exporter
         ).values_list("pk", flat=True)
 
+        create_app_config = get_create_export_app_config(
+            self.existing_app.application_type.type_code
+        )
         return context | {
             "application_title": ProcessTypes(application.process_type).label,
             "existing_application": self.existing_app,
             "exporters_with_agents": list(exporters_with_agents),
-            "certificate_message": self.create_app_config.certificate_message,
+            "certificate_message": create_app_config.certificate_message,
         }
 
     def get_form_kwargs(self) -> dict[str, Any]:
@@ -576,7 +582,7 @@ class CopyExportApplicationView(PermissionRequiredMixin, LoginRequiredMixin, For
 
         # Create the Export application
         try:
-            self.new_app = copy_export_application(
+            self.new_app = copy_export_application_to_export_application(
                 self.existing_app.get_specific_model(),
                 form.cleaned_data["exporter"],
                 form.cleaned_data["exporter_office"],
@@ -605,6 +611,65 @@ class CopyExportApplicationView(PermissionRequiredMixin, LoginRequiredMixin, For
         return reverse(
             self.new_app.get_edit_view_name(), kwargs={"application_pk": self.new_app.pk}
         )
+
+
+@method_decorator(transaction.atomic, name="post")
+class CreateCATemplateFromExportApplicationView(
+    CopyAppOrCATPermissionMixin, LoginRequiredMixin, FormView
+):
+    """View for creating a certificate application template from an export application."""
+
+    form_class = CreateCATForm
+    template_name = "web/domains/case/export/copy-application-to-cat.html"
+
+    # Extra type hints for clarity
+    new_cat: CertificateApplicationTemplate
+
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        application = self.existing_app.get_specific_model()
+        return context | {
+            "application_title": ProcessTypes(application.process_type).label,
+            "existing_application": self.existing_app,
+        }
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs()
+
+        if self.request.method in ("POST", "PUT"):
+            data = self.request.POST.copy()
+            data["application_type"] = self.existing_app.application_type.type_code
+            kwargs["data"] = data
+
+        return kwargs
+
+    def form_valid(self, form: CreateCATForm) -> HttpResponseRedirect:
+        """Copy the existing application data to the new certificate application template.
+
+        This can only happen for applications that are valid.
+        """
+
+        try:
+            # Create the new certificate application template
+            # IF CFS don't create a cfs schedule as we are copying the application schedules.
+            self.new_cat = create_cat(form, self.request.user, create_cfs_schedule=False)
+
+            # Copy app data to cat template.
+            copy_export_application_to_template(self.new_cat, self.existing_app)
+
+        except Exception:
+            capture_exception()
+            messages.error(
+                self.request,
+                f"Unable to create new Certificate Application Template using application {self.existing_app.reference}.",
+            )
+            return super().form_invalid(form)
+
+        return super().form_valid(form)
+
+    def get_success_url(self) -> str:
+        return reverse("cat:edit", kwargs={"cat_pk": self.new_cat.pk})
 
 
 def _get_search_terms_from_form(
