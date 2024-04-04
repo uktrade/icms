@@ -73,6 +73,13 @@ class CFSScheduleTemplate(CFSScheduleABC):
         related_name="schedules",
         on_delete=models.CASCADE,
     )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        blank=False,
+        null=False,
+        related_name="+",
+    )
 
 
 class CFSProductTemplate(CFSProductABC):

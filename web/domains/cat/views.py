@@ -28,8 +28,6 @@ from web.domains.case.export.views import (
 from web.models import (
     CertificateApplicationTemplate,
     CertificateOfFreeSaleApplicationTemplate,
-    CertificateOfGoodManufacturingPracticeApplicationTemplate,
-    CertificateOfManufactureApplicationTemplate,
     CFSProductTemplate,
     CFSScheduleTemplate,
     ExportApplicationType,
@@ -53,6 +51,7 @@ from .forms import (
     EditCATForm,
 )
 from .utils import (
+    create_cat,
     get_user_templates,
     template_in_user_templates,
     user_can_edit_template,
@@ -101,26 +100,9 @@ def create(request: AuthenticatedHttpRequest) -> HttpResponse:
         if request.method == "POST":
             form = CreateCATForm(request.POST)
             if form.is_valid():
-                cat: CertificateApplicationTemplate = form.save(commit=False)
-                cat.owner = request.user
-                cat.save()
+                cat = create_cat(form, request.user)
 
-                match cat.application_type:
-                    case ExportApplicationType.Types.FREE_SALE:
-                        template_cls = CertificateOfFreeSaleApplicationTemplate
-
-                    case ExportApplicationType.Types.MANUFACTURE:
-                        template_cls = CertificateOfManufactureApplicationTemplate
-
-                    case ExportApplicationType.Types.GMP:
-                        template_cls = CertificateOfGoodManufacturingPracticeApplicationTemplate
-
-                template_cls.objects.create(template=cat)
                 messages.success(request, f"Template '{cat.name}' created.")
-
-                if cat.application_type == ExportApplicationType.Types.FREE_SALE:
-                    cat.refresh_from_db()
-                    cat.cfs_template.schedules.create()
 
                 return redirect(reverse("cat:edit", kwargs={"cat_pk": cat.pk}))
         else:
@@ -461,7 +443,7 @@ class CFSScheduleTemplateAddView(
     http_method_names = ["post"]
 
     def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
-        self.get_object().cfs_template.schedules.create()
+        self.get_object().cfs_template.schedules.create(created_by=self.request.user)
 
         return redirect(
             reverse("cat:edit-step", kwargs={"cat_pk": self.kwargs["cat_pk"], "step": CatSteps.CFS})

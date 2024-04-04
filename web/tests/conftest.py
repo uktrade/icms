@@ -24,13 +24,18 @@ from web.domains.case.utils import end_process_task
 from web.domains.signature import utils as signature_utils
 from web.flow.models import ProcessTypes
 from web.models import (
+    CertificateApplicationTemplate,
     CertificateOfFreeSaleApplication,
+    CertificateOfFreeSaleApplicationTemplate,
     CertificateOfGoodManufacturingPracticeApplication,
+    CertificateOfGoodManufacturingPracticeApplicationTemplate,
     CertificateOfManufactureApplication,
+    CertificateOfManufactureApplicationTemplate,
     ChecklistFirearmsOILApplication,
     Country,
     DFLApplication,
     DFLChecklist,
+    ExportApplicationType,
     Exporter,
     ExporterAccessRequest,
     File,
@@ -1449,3 +1454,40 @@ def report_schedule(report_user):
             "legislation": [],
         },
     )
+
+
+@pytest.fixture()
+def cfs_cat(exporter_one_contact) -> CertificateApplicationTemplate:
+    cat = CertificateApplicationTemplate.objects.create(
+        owner=exporter_one_contact,
+        name="CFS template",
+        application_type=ExportApplicationType.Types.FREE_SALE,
+    )
+    CertificateOfFreeSaleApplicationTemplate.objects.create(template=cat)
+    cat.cfs_template.schedules.create(created_by=exporter_one_contact)
+
+    return cat
+
+
+@pytest.fixture()
+def com_cat(exporter_one_contact) -> CertificateApplicationTemplate:
+    cat = CertificateApplicationTemplate.objects.create(
+        owner=exporter_one_contact,
+        name="COM template",
+        application_type=ExportApplicationType.Types.MANUFACTURE,
+    )
+    CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
+
+    return cat
+
+
+@pytest.fixture()
+def gmp_cat(exporter_one_contact) -> CertificateApplicationTemplate:
+    cat = CertificateApplicationTemplate.objects.create(
+        owner=exporter_one_contact,
+        name="GMP template",
+        application_type=ExportApplicationType.Types.GMP,
+    )
+    CertificateOfGoodManufacturingPracticeApplicationTemplate.objects.create(template=cat)
+
+    return cat

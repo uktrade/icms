@@ -1,0 +1,47 @@
+{% extends "layout/no-sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% from "display/fields.html" import application_field %}
+
+{% block css %}
+  {{ super() }}
+{% endblock %}
+
+{% block main_content %}
+  {% call forms.form(method='post', csrf_input=csrf_input) -%}
+    <h3>Create Certificate Application Template</h3>
+
+    <div class="info-box info-box-info">
+      <p class="bold">Create template from the following application:</p>
+      {{ application_field(existing_application.reference, "Case Reference") }}
+      {{ application_field(existing_application.application_type.get_type_code_display(), "Application Type") }}
+      {{ application_field(existing_application.get_status_display(), "Status") }}
+      {{ application_field(existing_application.submit_datetime.strftime('%d %b %Y %H:%M:%S'), "Submitted Date") }}
+      {{ application_field(existing_application.exporter.name, "Exporter") }}
+      {{ application_field(existing_application.contact.full_name, "Application Contact") }}
+    </div>
+
+    <p>Please enter the template details below.</p>
+    {{ application_field(existing_application.application_type.get_type_code_display(), "Application Type") }}
+    {% for field in form %}
+      {% if field.name != "application_type" %}
+        {{ fields.field(field, show_optional_indicator=False) }}
+      {% endif %}
+    {% endfor %}
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li><input type="submit" name="action" class="primary-button button" value="Create"/></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {% endcall %}
+{% endblock %}
+
+{% block page_js %}
+  {{ super() }}
+{% endblock %}

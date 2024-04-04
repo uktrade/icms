@@ -158,7 +158,7 @@ class CopyExportApplicationAction(ActionProtocol):
         )
 
     @staticmethod
-    def get_action(app: ImpOrExp) -> types.SearchAction:
+    def get_action(app: ExportApplication) -> types.SearchAction:
         return types.SearchAction(
             url=reverse(
                 "case:search-copy-export-application",
@@ -184,14 +184,16 @@ class CreateTemplateAction(ActionProtocol):
         )
 
     @staticmethod
-    def get_action(app: ImpOrExp) -> types.SearchAction:
-        # TODO: ICMSLST-1241 Implement action
+    def get_action(app: ExportApplication) -> types.SearchAction:
         return types.SearchAction(
-            url="#",
+            url=reverse(
+                "case:search-copy-export-app-to-cat",
+                kwargs={"application_pk": app.pk, "case_type": "export"},
+            ),
             name="create-template",
             label="Create Template",
             icon="icon-magic-wand",
-            is_post=True,
+            is_post=False,
         )
 
 

@@ -11,7 +11,6 @@ from web.models import (
     CertificateApplicationTemplate,
     CertificateOfFreeSaleApplicationTemplate,
     CertificateOfGoodManufacturingPracticeApplicationTemplate,
-    CertificateOfManufactureApplicationTemplate,
     ExportApplicationType,
     ProductLegislation,
 )
@@ -143,43 +142,6 @@ class TestCATCreateView(AuthTestCase):
 
         if app_type == ExportApplicationType.Types.FREE_SALE:
             assert related_template.schedules.count() == 1
-
-
-@pytest.fixture()
-def cfs_cat(exporter_one_contact) -> CertificateApplicationTemplate:
-    cat = CertificateApplicationTemplate.objects.create(
-        owner=exporter_one_contact,
-        name="CFS template",
-        application_type=ExportApplicationType.Types.FREE_SALE,
-    )
-    CertificateOfFreeSaleApplicationTemplate.objects.create(template=cat)
-    cat.cfs_template.schedules.create()
-
-    return cat
-
-
-@pytest.fixture()
-def com_cat(exporter_one_contact) -> CertificateApplicationTemplate:
-    cat = CertificateApplicationTemplate.objects.create(
-        owner=exporter_one_contact,
-        name="COM template",
-        application_type=ExportApplicationType.Types.MANUFACTURE,
-    )
-    CertificateOfManufactureApplicationTemplate.objects.create(template=cat)
-
-    return cat
-
-
-@pytest.fixture()
-def gmp_cat(exporter_one_contact) -> CertificateApplicationTemplate:
-    cat = CertificateApplicationTemplate.objects.create(
-        owner=exporter_one_contact,
-        name="GMP template",
-        application_type=ExportApplicationType.Types.GMP,
-    )
-    CertificateOfGoodManufacturingPracticeApplicationTemplate.objects.create(template=cat)
-
-    return cat
 
 
 class TestCATEditView(AuthTestCase):

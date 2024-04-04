@@ -3,7 +3,7 @@ from typing import NamedTuple
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import QuerySet
 from django.forms.models import model_to_dict
@@ -25,11 +25,7 @@ from web.domains.case.utils import (
     submit_application,
     view_application_file,
 )
-from web.domains.cat.utils import (
-    InvalidTemplateException,
-    set_template_data,
-    template_in_user_templates,
-)
+from web.domains.cat.utils import template_in_user_templates
 from web.domains.file.utils import create_file_model
 from web.flow.models import ProcessTypes
 from web.models import (
@@ -77,7 +73,7 @@ from .forms import (
 )
 from .utils import (
     CustomError,
-    add_gmp_country,
+    copy_template_to_export_application,
     generate_product_template_xlsx,
     process_products_file,
 )
@@ -179,8 +175,8 @@ def create_export_application(
 
                 if app_template:
                     try:
-                        set_template_data(application, app_template, request.user)
-                    except InvalidTemplateException:
+                        copy_template_to_export_application(application, app_template, request.user)
+                    except ValidationError:
                         messages.warning(request, "Unable to set all template data.")
 
                     # Refresh in case any template data has been saved.
@@ -192,7 +188,11 @@ def create_export_application(
 
                 # GMP applications are for China only
                 if application.application_type.type_code == ExportApplicationType.Types.GMP:
-                    add_gmp_country(application)
+                    # GMP applications are for China only
+                    country = application.application_type.country_group.countries.filter(
+                        is_active=True
+                    ).first()
+                    application.countries.add(country)
                 elif (
                     application_type.type_code == ExportApplicationType.Types.FREE_SALE
                     and not app_template

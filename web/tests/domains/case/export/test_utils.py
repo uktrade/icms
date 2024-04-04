@@ -5,11 +5,24 @@ from django.core.files.base import File
 
 from web.domains.case.export.utils import (
     CustomError,
-    copy_export_application,
+    copy_export_application_to_export_application,
+    copy_export_application_to_template,
+    copy_template_to_export_application,
     process_products_file,
 )
 from web.domains.case.shared import ImpExpStatus
-from web.models import CFSSchedule
+from web.domains.country.models import Country
+from web.models import (
+    CertificateOfFreeSaleApplication,
+    CertificateOfFreeSaleApplicationTemplate,
+    CertificateOfGoodManufacturingPracticeApplication,
+    CertificateOfGoodManufacturingPracticeApplicationTemplate,
+    CertificateOfManufactureApplication,
+    CertificateOfManufactureApplicationTemplate,
+    CFSSchedule,
+    ExportApplicationType,
+)
+from web.models.shared import AddressEntryType, YesNoChoices
 from web.tests.domains.legislation.factory import ProductLegislationFactory
 from web.utils.spreadsheet import XlsxSheetConfig, generate_xlsx_file
 
@@ -217,10 +230,10 @@ def test_duplicate_cas_number(cfs_app_submitted):
     assert "CAS number '111-11-1' duplicated for product 'Product 1' - line 3" in str(e.value)
 
 
-def test_copy_cfs_application(
+def test_cfs_copy_export_application_to_export_application(
     cfs_app_submitted, exporter_two, exporter_two_office, exporter_two_contact
 ):
-    new_app = copy_export_application(
+    new_app = copy_export_application_to_export_application(
         cfs_app_submitted,
         exporter=exporter_two,
         exporter_office=exporter_two_office,
@@ -231,11 +244,207 @@ def test_copy_cfs_application(
 
     assert not new_app.reference
     assert new_app.status == ImpExpStatus.IN_PROGRESS
-    _assert_many_to_many_equal(cfs_app_submitted.countries, new_app.countries)
 
-    assert cfs_app_submitted.schedules.count() == new_app.schedules.count()
+    _assert_cfs_equal(cfs_app_submitted, new_app)
 
-    for existing, new in zip(cfs_app_submitted.schedules.all(), new_app.schedules.all()):
+
+def test_com_copy_export_application_to_export_application(
+    com_app_submitted, exporter_two, exporter_two_office, exporter_two_contact
+):
+    new_app = copy_export_application_to_export_application(
+        com_app_submitted,
+        exporter=exporter_two,
+        exporter_office=exporter_two_office,
+        agent=None,
+        agent_office=None,
+        created_by=exporter_two_contact,
+    )
+
+    assert not new_app.reference
+    assert new_app.status == ImpExpStatus.IN_PROGRESS
+    _assert_com_equal(com_app_submitted, new_app)
+
+
+def test_gmp_copy_export_application_to_export_application(
+    gmp_app_submitted, exporter_two, exporter_two_office, exporter_two_contact
+):
+    new_app = copy_export_application_to_export_application(
+        gmp_app_submitted,
+        exporter=exporter_two,
+        exporter_office=exporter_two_office,
+        agent=None,
+        agent_office=None,
+        created_by=exporter_two_contact,
+    )
+
+    assert not new_app.reference
+    assert new_app.status == ImpExpStatus.IN_PROGRESS
+    _assert_gmp_equal(gmp_app_submitted, new_app)
+
+
+@pytest.fixture()
+def export_common(exporter_one_contact, exporter, exporter_office):
+    return {
+        "created_by": exporter_one_contact,
+        "last_updated_by": exporter_one_contact,
+        "exporter": exporter,
+        "exporter_office": exporter_office,
+    }
+
+
+@pytest.fixture()
+def cfs_app(export_common) -> CertificateOfFreeSaleApplication:
+    """A blank CertificateOfFreeSaleApplication instance ready for copying."""
+
+    return CertificateOfFreeSaleApplication.objects.create(
+        process_type=CertificateOfFreeSaleApplication.PROCESS_TYPE,
+        application_type=ExportApplicationType.objects.get(
+            type_code=ExportApplicationType.Types.FREE_SALE
+        ),
+        **export_common,
+    )
+
+
+@pytest.fixture()
+def com_app(export_common) -> CertificateOfManufactureApplication:
+    """A blank CertificateOfManufactureApplication instance ready for copying."""
+
+    return CertificateOfManufactureApplication.objects.create(
+        process_type=CertificateOfManufactureApplication.PROCESS_TYPE,
+        application_type=ExportApplicationType.objects.get(
+            type_code=ExportApplicationType.Types.MANUFACTURE
+        ),
+        **export_common,
+    )
+
+
+@pytest.fixture()
+def gmp_app(export_common) -> CertificateOfGoodManufacturingPracticeApplication:
+    """A blank CertificateOfGoodManufacturingPracticeApplication instance ready for copying."""
+
+    return CertificateOfGoodManufacturingPracticeApplication.objects.create(
+        process_type=CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE,
+        application_type=ExportApplicationType.objects.get(
+            type_code=ExportApplicationType.Types.GMP
+        ),
+        **export_common,
+    )
+
+
+def test_cfs_copy_template_to_export_application(cfs_cat, cfs_app, exporter_one_contact):
+    # Update cfs_cat with some data
+    cfs_template: CertificateOfFreeSaleApplicationTemplate = cfs_cat.cfs_template
+    cfs_template.countries.set(Country.objects.filter(name__in=["Argentina", "Barbados"]))
+
+    cfs_com = Country.objects.first()
+    cfs_template.schedules.create(
+        created_by=exporter_one_contact,
+        exporter_status="MANUFACTURER",
+        brand_name_holder=YesNoChoices.yes,
+        product_eligibility="SOLD_ON_UK_MARKET",
+        goods_placed_on_uk_market=YesNoChoices.yes,
+        goods_export_only=YesNoChoices.yes,
+        any_raw_materials=YesNoChoices.yes,
+        final_product_end_use="End Use or Final Product value",
+        country_of_manufacture=cfs_com,
+        schedule_statements_accordance_with_standards=True,
+        schedule_statements_is_responsible_person=False,
+    )
+
+    # Copy data across
+    copy_template_to_export_application(cfs_app, cfs_cat, exporter_one_contact)
+
+    # Assert data found in application.
+    cfs_app.refresh_from_db()
+    _assert_cfs_equal(cfs_template, cfs_app)
+
+
+def test_com_copy_template_to_export_application(com_cat, com_app, exporter_one_contact):
+    # Update com_cat with some data
+    com_template: CertificateOfManufactureApplicationTemplate = com_cat.com_template
+    com_template.is_pesticide_on_free_sale_uk = False
+    com_template.is_manufacturer = True
+    com_template.product_name = "Test product name"
+    com_template.chemical_name = "Test chemical name"
+    com_template.manufacturing_process = "Test manufacturing process"
+    com_template.save()
+
+    # Copy data across
+    copy_template_to_export_application(com_app, com_cat, exporter_one_contact)
+
+    # Assert data found in application.
+    com_app.refresh_from_db()
+    _assert_com_equal(com_template, com_app)
+
+
+def test_gmp_copy_template_to_export_application(gmp_cat, gmp_app, exporter_one_contact):
+    # Update cfs_cat with some data
+    gmp_template: CertificateOfGoodManufacturingPracticeApplicationTemplate = gmp_cat.gmp_template
+    gmp_template.brand_name = "Test brand name"
+    gmp_template.is_manufacturer = YesNoChoices.yes
+    gmp_template.is_responsible_person = YesNoChoices.yes
+    gmp_template.manufacturer_address = "Test manufacturer address"
+    gmp_template.manufacturer_address_entry_type = AddressEntryType.MANUAL
+    gmp_template.manufacturer_country = "GB"
+    gmp_template.manufacturer_name = "Test manufacturer name"
+    gmp_template.manufacturer_postcode = "S12SS"  # /PS-IGNORE
+    gmp_template.responsible_person_address = "Test responsible person address"
+    gmp_template.responsible_person_address_entry_type = AddressEntryType.MANUAL
+    gmp_template.responsible_person_country = "GB"
+    gmp_template.responsible_person_name = "Test responsible person name"
+    gmp_template.responsible_person_postcode = "S12SS"  # /PS-IGNORE
+    gmp_template.save()
+
+    # Copy data across
+    copy_template_to_export_application(gmp_app, gmp_cat, exporter_one_contact)
+
+    # Assert data found in application.
+    gmp_app.refresh_from_db()
+    _assert_gmp_equal(gmp_template, gmp_app)
+
+
+def test_cfs_copy_export_application_to_template(cfs_app_submitted, cfs_cat, exporter_one_contact):
+    # Clear the existing schedule
+    cfs_cat.cfs_template.schedules.all().delete()
+
+    # Copy data across
+    copy_export_application_to_template(cfs_cat, cfs_app_submitted)
+
+    # Assert data found in template
+    cfs_cat.refresh_from_db()
+    _assert_cfs_equal(cfs_app_submitted, cfs_cat.cfs_template)
+
+
+def test_com_copy_export_application_to_template(com_app_submitted, com_cat, exporter_one_contact):
+    # Copy data across
+    copy_export_application_to_template(com_cat, com_app_submitted)
+
+    # Assert data found in template
+    com_cat.refresh_from_db()
+    _assert_com_equal(com_app_submitted, com_cat.com_template)
+
+
+def test_gmp_copy_export_application_to_template(gmp_app_submitted, gmp_cat, exporter_one_contact):
+    # countries doesn't get saved in the form (as it's hardcoded) so make them equal here.
+    gmp_cat.gmp_template.countries.set(gmp_app_submitted.countries.all())
+
+    # Copy data across
+    copy_export_application_to_template(gmp_cat, gmp_app_submitted)
+
+    # Assert data found in template
+    gmp_cat.refresh_from_db()
+    _assert_gmp_equal(gmp_app_submitted, gmp_cat.gmp_template)
+
+
+def _assert_cfs_equal(
+    cfs_existing: CertificateOfFreeSaleApplication | CertificateOfFreeSaleApplicationTemplate,
+    cfs_new: CertificateOfFreeSaleApplication | CertificateOfFreeSaleApplicationTemplate,
+) -> None:
+    _assert_many_to_many_equal(cfs_existing.countries, cfs_new.countries)
+
+    assert cfs_existing.schedules.count() == cfs_new.schedules.count()
+
+    for existing, new in zip(cfs_existing.schedules.all(), cfs_new.schedules.all()):
         _assert_many_to_many_equal(existing.legislations, new.legislations)
 
         for field in [
@@ -257,33 +466,19 @@ def test_copy_cfs_application(
         ]:
             _assert_field_equal(existing, new, field)
 
-        for existing_product, new_product in zip(existing.products.all(), new.products.all()):
-            _assert_field_equal(existing_product, new_product, "product_name")
+        for existing_prod, new_prod in zip(existing.products.all(), new.products.all()):
+            _assert_field_equal(existing_prod, new_prod, "product_name")
             assert (
-                existing_product.product_type_numbers.count()
-                == new_product.product_type_numbers.count()
+                existing_prod.product_type_numbers.count() == new_prod.product_type_numbers.count()
             )
-            assert (
-                existing_product.active_ingredients.count()
-                == new_product.active_ingredients.count()
-            )
+            assert existing_prod.active_ingredients.count() == new_prod.active_ingredients.count()
 
 
-def test_copy_com_application(
-    com_app_submitted, exporter_two, exporter_two_office, exporter_two_contact
-):
-    new_app = copy_export_application(
-        com_app_submitted,
-        exporter=exporter_two,
-        exporter_office=exporter_two_office,
-        agent=None,
-        agent_office=None,
-        created_by=exporter_two_contact,
-    )
-
-    assert not new_app.reference
-    assert new_app.status == ImpExpStatus.IN_PROGRESS
-    _assert_many_to_many_equal(com_app_submitted.countries, new_app.countries)
+def _assert_com_equal(
+    com_existing: CertificateOfManufactureApplication | CertificateOfManufactureApplicationTemplate,
+    com_new: CertificateOfManufactureApplication | CertificateOfManufactureApplicationTemplate,
+) -> None:
+    _assert_many_to_many_equal(com_existing.countries, com_new.countries)
 
     for field in [
         "is_pesticide_on_free_sale_uk",
@@ -292,24 +487,20 @@ def test_copy_com_application(
         "chemical_name",
         "manufacturing_process",
     ]:
-        _assert_field_equal(com_app_submitted, new_app, field)
+        _assert_field_equal(com_existing, com_new, field)
 
 
-def test_copy_gmp_application(
-    gmp_app_submitted, exporter_two, exporter_two_office, exporter_two_contact
-):
-    new_app = copy_export_application(
-        gmp_app_submitted,
-        exporter=exporter_two,
-        exporter_office=exporter_two_office,
-        agent=None,
-        agent_office=None,
-        created_by=exporter_two_contact,
-    )
-
-    assert not new_app.reference
-    assert new_app.status == ImpExpStatus.IN_PROGRESS
-    _assert_many_to_many_equal(gmp_app_submitted.countries, new_app.countries)
+def _assert_gmp_equal(
+    gmp_existing: (
+        CertificateOfGoodManufacturingPracticeApplication
+        | CertificateOfGoodManufacturingPracticeApplicationTemplate
+    ),
+    gmp_new: (
+        CertificateOfGoodManufacturingPracticeApplication
+        | CertificateOfGoodManufacturingPracticeApplicationTemplate
+    ),
+) -> None:
+    _assert_many_to_many_equal(gmp_existing.countries, gmp_new.countries)
 
     for field in [
         "brand_name",
@@ -329,7 +520,7 @@ def test_copy_gmp_application(
         "auditor_accredited",
         "auditor_certified",
     ]:
-        _assert_field_equal(gmp_app_submitted, new_app, field)
+        _assert_field_equal(gmp_existing, gmp_new, field)
 
 
 def _assert_field_equal(existing, new, field_name):

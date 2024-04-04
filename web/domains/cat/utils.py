@@ -1,115 +1,46 @@
-from typing import Any
-
 from django.db.models import Q, QuerySet
-from django.forms import ModelForm, model_to_dict
 
-from web.domains.case.export.forms import (
-    CFSActiveIngredientForm,
-    CFSManufacturerDetailsForm,
-    CFSProductForm,
-    CFSProductTypeForm,
-    EditCFScheduleForm,
-    EditCFSForm,
-    EditCOMForm,
-    EditGMPForm,
-)
 from web.domains.exporter.models import Exporter
 from web.models import (
     CertificateApplicationTemplate,
-    CertificateOfFreeSaleApplication,
-    CertificateOfGoodManufacturingPracticeApplication,
-    CertificateOfManufactureApplication,
-    CFSScheduleTemplate,
+    CertificateOfFreeSaleApplicationTemplate,
+    CertificateOfGoodManufacturingPracticeApplicationTemplate,
+    CertificateOfManufactureApplicationTemplate,
     ExportApplicationType,
     User,
 )
 from web.permissions import get_user_exporter_permissions, organisation_get_contacts
-from web.utils.sentry import capture_message
+
+from .forms import CreateCATForm
 
 
-class InvalidTemplateException(Exception): ...  # noqa: E701
+def create_cat(
+    form: CreateCATForm, owner: User, create_cfs_schedule: bool = True
+) -> CertificateApplicationTemplate:
+    cat: CertificateApplicationTemplate = form.save(commit=False)
+    cat.owner = owner
+    cat.save()
 
+    match cat.application_type:
+        case ExportApplicationType.Types.FREE_SALE:
+            template_cls = CertificateOfFreeSaleApplicationTemplate
 
-def set_template_data(
-    application: (
-        CertificateOfFreeSaleApplication
-        | CertificateOfManufactureApplication
-        | CertificateOfGoodManufacturingPracticeApplication
-    ),
-    template: CertificateApplicationTemplate,
-    user: User,
-) -> None:
-    """Update the supplied application with the template data provided.
+        case ExportApplicationType.Types.MANUFACTURE:
+            template_cls = CertificateOfManufactureApplicationTemplate
 
-    :param application: Export Application
-    :param template: Application Template
-    :param user: User who is creating the template.
-    """
+        case ExportApplicationType.Types.GMP:
+            template_cls = CertificateOfGoodManufacturingPracticeApplicationTemplate
 
-    if template.application_type == ExportApplicationType.Types.MANUFACTURE:
-        template_data = template.com_template
-        form_cls = EditCOMForm
-    elif template.application_type == ExportApplicationType.Types.GMP:
-        template_data = template.gmp_template
-        form_cls = EditGMPForm
-    elif template.application_type == ExportApplicationType.Types.FREE_SALE:
-        template_data = template.cfs_template
-        form_cls = EditCFSForm
-    else:
-        raise ValueError(f"Unable to create template for app type: {template.application_type}")
+        case _:
+            raise ValueError(f"Unknown application type {cat.application_type}")
 
-    # Get data that we can save in the real application
-    data = model_to_dict(template_data, exclude=["id", "template"])
-    form = form_cls(instance=application, data=data)
+    template_cls.objects.create(template=cat)
 
-    cat_pk = template.pk
-    _save_form(form, cat_pk)
+    if cat.application_type == ExportApplicationType.Types.FREE_SALE and create_cfs_schedule:
+        cat.refresh_from_db()
+        cat.cfs_template.schedules.create(created_by=owner)
 
-    # Extra CFS steps
-    if template.application_type == ExportApplicationType.Types.FREE_SALE:
-
-        # Copy each schedule
-        schedules_to_copy: QuerySet[CFSScheduleTemplate] = template_data.schedules.all()
-        for schedule_template in schedules_to_copy:
-            # Create an empty schedule before saving template data using form.
-            instance = application.schedules.create(created_by=user)
-            data = model_to_dict(schedule_template, exclude=["id", "application"])
-            form = EditCFScheduleForm(instance=instance, data=data)
-            new_schedule: CFSScheduleTemplate = _save_form(form, cat_pk)
-
-            # Set the manufacturer data.
-            if data.get("manufacturer_name"):
-                form = CFSManufacturerDetailsForm(instance=new_schedule, data=data)
-                _save_form(form, cat_pk)
-
-            # Copy each product
-            for existing_product in schedule_template.products.all():
-                # Create a new product
-                data = model_to_dict(existing_product, exclude=["id", "schedule"])
-                form = CFSProductForm(schedule=new_schedule, data=data)
-                new_product = _save_form(form, cat_pk)
-
-                # Copy any related product_type_numbers to new product
-                for product_type in existing_product.product_type_numbers.all():
-                    data = model_to_dict(product_type, exclude=["id", "product"])
-                    form = CFSProductTypeForm(product=new_product, data=data)
-                    _save_form(form, cat_pk)
-
-                # Copy any related active_ingredients to new product
-                for active_ingredient in existing_product.active_ingredients.all():
-                    data = model_to_dict(active_ingredient, exclude=["id", "product"])
-                    form = CFSActiveIngredientForm(product=new_product, data=data)
-                    _save_form(form, cat_pk)
-
-
-def _save_form(form: ModelForm, cat_pk: int) -> Any:
-    if form.is_valid():
-        return form.save()
-    else:
-        error_msg = f"Error creating template using CertificateApplicationTemplate(id={cat_pk}). Form errors: {form.errors.as_text()}"
-
-        capture_message(error_msg)
-        raise InvalidTemplateException(error_msg)
+    return cat
 
 
 def get_user_templates(
