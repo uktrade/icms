@@ -121,6 +121,7 @@ ia_m2m = [
     M2M(dm.SIGLTransmission, web.ImportApplication, "sigl_transmissions"),
     M2M(dm.VariationRequest, web.ImportApplication, "variation_requests"),
     M2M(dm.CaseEmail, web.ImportApplication, "case_emails"),
+    M2M(dm.ConstabularyEmailAttachments, web.CaseEmail, "attachments"),
     M2M(dm.CaseNote, web.ImportApplication, "case_notes"),
     M2M(dm.UpdateRequest, web.ImportApplication, "update_requests"),
     M2M(dm.FurtherInformationRequest, web.ImportApplication, "further_information_requests"),
@@ -131,6 +132,7 @@ ia_m2m = [
 ]
 
 ia_xml = [
+    xml_parser.ConstabularyEmailAttachments,
     xml_parser.VariationImportParser,
     xml_parser.OPTCpCommodity,
     xml_parser.OPTTegCommodity,

@@ -1037,3 +1037,42 @@ class OPTCpCommodity(OPTCommodity):
 class OPTTegCommodity(OPTCommodity):
     MODEL = dm.OPTTegCommodity
     FIELD = "teg_commodities_xml"
+
+
+class ConstabularyEmailAttachments(BaseXmlParser):
+    PARENT = dm.CaseEmail
+    FIELD = "constabulary_attachments_xml"
+    MODEL = dm.ConstabularyEmailAttachments
+    ROOT_NODE = "/FIREARMS_CERTIFICATE_LIST/FIREARMS_CERTIFICATE"
+
+    @classmethod
+    def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Optional["Model"]:
+        """Example XML structure
+
+        <FIREARMS_CERTIFICATE_LIST>
+          <FIREARMS_CERTIFICATE>
+            <TARGET_ID />
+            <CERTIFICATE_REF />
+            <CERTIFICATE_TYPE />
+            <CONSTABULARY />
+            <EXPIRY_DATE />
+            <SELECT_FLAG />
+            <IS_IMPORTER_DOCUMENT />
+          </FIREARMS_CERTIFICATE>
+        </FIREARMS_CERTIFICATE_LIST>
+        """
+
+        if get_xml_val(xml, "./SELECT_FLAG") != "true":
+            return None
+
+        target_id = int_or_none(get_xml_val(xml, "./TARGET_ID"))
+
+        if not target_id:
+            return None
+
+        return cls.MODEL(
+            **{
+                "caseemail_id": parent_pk,
+                "file_target_id": target_id,
+            }
+        )
