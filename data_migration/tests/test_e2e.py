@@ -21,6 +21,7 @@ from web import models as web
 from . import utils
 
 sil_xml_parsers = [
+    xml_parser.ConstabularyEmailAttachments,
     xml_parser.ImportContactParser,
     xml_parser.SILGoodsParser,
     xml_parser.SILSupplementaryReportParser,
@@ -181,6 +182,7 @@ sil_data_source_target = {
             (dm.CaseNote, web.ImportApplication, "case_notes"),
             (dm.VariationRequest, web.ImportApplication, "variation_requests"),
             (dm.CaseEmail, web.ImportApplication, "case_emails"),
+            (dm.ConstabularyEmailAttachments, web.CaseEmail, "attachments"),
             (dm.UpdateRequest, web.ImportApplication, "update_requests"),
             (dm.FurtherInformationRequest, web.ImportApplication, "further_information_requests"),
             (dm.FirearmsAuthorityOffice, web.FirearmsAuthority, "linked_offices"),
@@ -385,13 +387,16 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert webRFOther.objects.filter(**sil1_f).count() == 2
 
     assert ia1.case_emails.count() == 3
+    assert ia1.case_emails.filter(template_code="IMA_CONSTAB_EMAIL").count() == 3
     assert ia2.case_emails.count() == 0
 
     open_email = ia1.case_emails.get(status="OPEN")
     assert len(open_email.cc_address_list) == 2
+    assert open_email.attachments.count() == 2
 
     closed_email = ia1.case_emails.get(status="CLOSED")
     assert len(closed_email.cc_address_list) == 1
+    assert closed_email.attachments.count() == 0
 
     assert ia1.reference == "IMA/2022/1234"
     assert ia1.licence_reference.prefix == "ILD"

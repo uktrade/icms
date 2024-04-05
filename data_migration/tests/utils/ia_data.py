@@ -1260,6 +1260,7 @@ ia_query_result = {
             ("subject",),
             ("body",),
             ("template_code",),
+            ("constabulary_attachments_xml",),
         ],
         [
             (
@@ -1270,6 +1271,7 @@ ia_query_result = {
                 None,  # subject
                 None,  # body
                 "IMA_CONSTAB_EMAIL",  # template_code
+                None,  # constabulary_attachments_xml
             ),
             (
                 1,  # ima_id
@@ -1279,6 +1281,7 @@ ia_query_result = {
                 "test a",  # subject
                 "test a body",  # bo
                 "IMA_CONSTAB_EMAIL",  # template_code
+                xd.condtabulary_email_attachments,  # constabulary_attachments_xml
             ),
             (
                 1,  # ima_id
@@ -1288,6 +1291,7 @@ ia_query_result = {
                 "test b",  # subject
                 "test b body",  # body
                 "IMA_CONSTAB_EMAIL",  # template_code
+                None,  # constabulary_attachments_xml
             ),
         ],
     ),

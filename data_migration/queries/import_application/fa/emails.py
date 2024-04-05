@@ -9,6 +9,7 @@ SELECT
   , ce.email_response response
   , ce.email_sent_datetime sent_datetime
   , ce.email_closed_datetime closed_datetime
+  , firearms_certificate_list constabulary_attachments_xml
   , 'IMA_CONSTAB_EMAIL' template_code
 FROM impmgr.xview_ima_constabulary_emails ce
 LEFT JOIN impmgr.xview_constabulary_details cd ON cd.con_id = ce.email_constabulary AND cd.status_control = 'C'

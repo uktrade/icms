@@ -12,7 +12,7 @@ from data_migration.utils.format import str_to_list
 
 from .base import MigrationBase
 from .export_application import ExportApplicationCertificate
-from .file import DocFolder, File, FileFolder
+from .file import DocFolder, File, FileFolder, FileTarget
 from .flow import Process
 from .import_application import ImportApplication, ImportApplicationLicence
 from .reference import Country
@@ -282,6 +282,7 @@ class CaseEmail(MigrationBase):
     sent_datetime = models.DateTimeField(null=True)
     closed_datetime = models.DateTimeField(null=True)
     template_code = models.CharField(max_length=30)
+    constabulary_attachments_xml = models.TextField(null=True)
 
     # attachments - M2M to file
 
@@ -317,6 +318,19 @@ class CaseEmail(MigrationBase):
             .values("id", importapplication_id=F("ima__id"), caseemail_id=F("id"))
             .iterator(chunk_size=2000)
         )
+
+
+class ConstabularyEmailAttachments(MigrationBase):
+    file_target = models.ForeignKey(FileTarget, on_delete=models.CASCADE)
+    caseemail = models.ForeignKey(CaseEmail, on_delete=models.CASCADE)
+
+    @classmethod
+    def get_excludes(cls) -> list[str]:
+        return ["file_target_id"]
+
+    @classmethod
+    def get_values_kwargs(cls) -> dict[str, Any]:
+        return {"file_id": F("file_target__files__id")}
 
 
 class CaseNote(MigrationBase):
