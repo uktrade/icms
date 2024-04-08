@@ -58,6 +58,11 @@ urlpatterns = [
                     name="cfs-schedule-product-create",
                 ),
                 path(
+                    "cfs-schedule-product-create-multiple/",
+                    views.CFSScheduleTemplateProductCreateMultipleView.as_view(),
+                    name="cfs-schedule-product-create-multiple",
+                ),
+                path(
                     "cfs-schedule-product-update/<int:product_template_pk>/",
                     views.CFSScheduleTemplateProductUpdateView.as_view(),
                     name="cfs-schedule-product-update",

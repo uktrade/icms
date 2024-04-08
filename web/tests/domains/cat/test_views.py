@@ -645,6 +645,72 @@ class TestCFSScheduleTemplateProductCreateView(AuthTestCase):
         assert product.product_name == "Test product 1"
 
 
+class TestCFSScheduleTemplateProductCreateMultipleView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, cfs_cat):
+        self.app = cfs_cat
+        self.schedule = cfs_cat.cfs_template.schedules.first()
+
+        self.url = reverse(
+            "cat:cfs-schedule-product-create-multiple",
+            kwargs={
+                "cat_pk": self.app.pk,
+                "schedule_template_pk": self.schedule.pk,
+            },
+        )
+
+    def test_permission(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_two_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        context = response.context
+        assert context["formset"] is not None
+        assert context["page_title"] == "Add Products"
+
+    def test_post(self):
+        assert self.schedule.products.count() == 0
+
+        form_data = {
+            "products-TOTAL_FORMS": "5",
+            "products-INITIAL_FORMS": "0",
+            "products-MIN_NUM_FORMS": "0",
+            "products-MAX_NUM_FORMS": "1000",
+            "products-0-id": "",
+            "products-0-product_name": "Test product 1",
+            "products-1-id": "",
+            "products-1-product_name": "Test product 2",
+            "products-2-id": "",
+            "products-2-product_name": "Test product 3",
+            "products-3-id": "",
+            "products-3-product_name": "Test product 4",
+            "products-4-id": "",
+            "products-4-product_name": "Test product 5",
+        }
+
+        response = self.exporter_client.post(self.url, data=form_data)
+        assert response.status_code == HTTPStatus.FOUND
+
+        self.schedule.refresh_from_db()
+        assert self.schedule.products.count() == 5
+        assert list(self.schedule.products.all().values_list("product_name", flat=True)) == [
+            "Test product 1",
+            "Test product 2",
+            "Test product 3",
+            "Test product 4",
+            "Test product 5",
+        ]
+
+
 class TestCFSScheduleTemplateProductUpdateView(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, _setup, cfs_cat):

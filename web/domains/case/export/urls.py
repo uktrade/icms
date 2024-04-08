@@ -47,6 +47,11 @@ schedule_urls = [
     ),
     path("product/add/", views.cfs_add_product, name="cfs-schedule-add-product"),
     path(
+        "product/add-multiple/",
+        views.CFSScheduleProductCreateMultipleView.as_view(),
+        name="cfs-schedule-add-multiple-products",
+    ),
+    path(
         "product/spreadsheet/download-template/",
         views.product_spreadsheet_download_template,
         name="cfs-schedule-product-download-template",

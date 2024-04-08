@@ -1,4 +1,5 @@
 from collections.abc import Iterable
+from typing import Any
 
 import django_filters
 from django import forms
@@ -110,6 +111,22 @@ class CFSProductTemplateForm(CFSProductForm):
         }
 
 
+class CFSProductTemplateFormSetBase(forms.BaseInlineFormSet):
+    def get_form_kwargs(self, index: int) -> dict[str, Any]:
+        kwargs = super().get_form_kwargs(index)
+
+        return kwargs | {"schedule": self.instance}
+
+
+CFSProductTemplateFormSet = forms.inlineformset_factory(
+    CFSScheduleTemplate,
+    CFSProductTemplate,
+    form=CFSProductTemplateForm,
+    formset=CFSProductTemplateFormSetBase,
+    extra=5,
+)
+
+
 class CFSProductTypeTemplateForm(CFSProductTypeForm):
     class Meta:
         model = CFSProductTypeTemplate
@@ -120,7 +137,7 @@ class CFSProductTypeTemplateForm(CFSProductTypeForm):
 
 
 class CFSProductTypeTemplateFormSetBase(forms.BaseInlineFormSet):
-    def get_form_kwargs(self, index):
+    def get_form_kwargs(self, index: int) -> dict[str, Any]:
         kwargs = super().get_form_kwargs(index)
 
         return kwargs | {"product": self.instance}
@@ -163,7 +180,7 @@ class CFSActiveIngredientTemplateForm(CFSActiveIngredientForm):
 
 
 class CFSActiveIngredientTemplateFormSetBase(forms.BaseInlineFormSet):
-    def get_form_kwargs(self, index):
+    def get_form_kwargs(self, index: int) -> dict[str, Any]:
         kwargs = super().get_form_kwargs(index)
 
         return kwargs | {"product": self.instance}
