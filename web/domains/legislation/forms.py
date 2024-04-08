@@ -14,6 +14,7 @@ class ProductLegislationFilter(FilterSet):
         choices=((True, "Yes"), (False, "No")),
         lookup_expr="exact",
         label="Is Biocidal",
+        empty_label="Any",
     )
 
     is_biocidal_claim = ChoiceFilter(
@@ -21,6 +22,7 @@ class ProductLegislationFilter(FilterSet):
         choices=((True, "Yes"), (False, "No")),
         lookup_expr="exact",
         label="Is Biocidal Claim",
+        empty_label="Any",
     )
 
     is_eu_cosmetics_regulation = ChoiceFilter(
@@ -28,6 +30,7 @@ class ProductLegislationFilter(FilterSet):
         choices=((True, "Yes"), (False, "No")),
         lookup_expr="exact",
         label="Is EU Cosmetics Regulation",
+        empty_label="Any",
     )
 
     gb_legislation = ChoiceFilter(
@@ -35,6 +38,7 @@ class ProductLegislationFilter(FilterSet):
         choices=((True, "Yes"), (False, "No")),
         lookup_expr="exact",
         label="Great Britain Legislation",
+        empty_label="Any",
     )
 
     ni_legislation = ChoiceFilter(
@@ -42,6 +46,7 @@ class ProductLegislationFilter(FilterSet):
         choices=((True, "Yes"), (False, "No")),
         lookup_expr="exact",
         label="Northern Ireland Legislation",
+        empty_label="Any",
     )
 
     status = ChoiceFilter(
@@ -49,11 +54,18 @@ class ProductLegislationFilter(FilterSet):
         choices=((True, "Current"), (False, "Archived")),
         lookup_expr="exact",
         label="Status",
+        empty_label="Any",
     )
 
     class Meta:
         model = ProductLegislation
         fields: list[Any] = []
+
+    @property
+    def form(self):
+        form = super().form
+        form.fields["status"].initial = True
+        return form
 
 
 class ProductLegislationForm(ModelForm):
