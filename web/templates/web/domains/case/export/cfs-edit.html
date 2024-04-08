@@ -52,10 +52,13 @@
               class="link-button button icon-pencil" data-input_action="edit"
               href="{{ icms_url('export:cfs-schedule-edit', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}"
             >Edit</a>
-            <a
-              class="link-button button icon-copy" data-input_action="copy"
-              href="{{ icms_url('export:cfs-schedule-copy', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}"
-            >Copy</a>
+            <form
+              method="post"
+              action="{{ icms_url('export:cfs-schedule-copy', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}"
+              class="form-inline">
+              {{ csrf_input }}
+              <button type="submit" class="link-button button icon-copy">Copy</button>
+            </form>
             <form
               method="post"
               action="{{ icms_url('export:cfs-schedule-delete', kwargs={'application_pk': process.pk, 'schedule_pk': schedule.pk}) }}"

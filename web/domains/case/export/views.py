@@ -1202,6 +1202,7 @@ def cfs_delete_product_type(
         )
 
 
+@require_POST
 @login_required
 def cfs_copy_schedule(
     request: AuthenticatedHttpRequest, *, application_pk: int, schedule_pk: int
