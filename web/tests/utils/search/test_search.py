@@ -1046,6 +1046,7 @@ def test_export_returns_in_progress_applications(exporter_one_fixture_data: Expo
     ["case_ref_pattern", "should_match"],
     [
         ("wood/foo/0001", True),
+        ("wood/foo/0002", False),
         ("wood%", True),
         ("wood%0001", True),
         ("wood%oo%000%", True),
@@ -1053,8 +1054,10 @@ def test_export_returns_in_progress_applications(exporter_one_fixture_data: Expo
         ("WOOD%0001", True),
         ("WOOD%OO%000%", True),
         ("%foo/0001", True),
-        ("%wood", False),
-        ("%WOOD", False),
+        # wildcard_search now adds a % when not present so this row should match
+        ("%wood", True),
+        # wildcard_search now adds a % when not present so this row should match
+        ("%WOOD", True),
         ("foo/0001%", False),
     ],
 )
