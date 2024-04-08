@@ -31,7 +31,7 @@ from web.permissions import Perms
 class ObsoleteCalibreGroupFilter(FilterSet):
     group_name = ChoiceFilter(
         field_name="name",
-        label="Obsolete Calibre Group Name",
+        label="Obsolete Calibre Group",
         lookup_expr="exact",
         empty_label="Any",
     )
