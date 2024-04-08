@@ -55,7 +55,8 @@
   {% with calibres = object.calibres.all() %}
   {% if not calibres %}
     <div class="info-box info-box-info">
-      There are no calibres attached.
+      <h5 class="mt-0">No current obsolete calibres are added to this group.</h5>
+      Use 'Create Obsolete Calibre' to add an obsolete calibre to this group.
     </div>
   {% else %}
     <div id="calibre_display_archived_checkbox" class="container setoutForm">

@@ -42,7 +42,8 @@
   {% with calibres = object.calibres.all() %}
   {% if not calibres %}
     <div class="info-box info-box-info">
-      There are no calibres attached.
+      <h5 class="mt-0">No current obsolete calibres are added to this group.</h5>
+      Note that groups that do not contain any current obsolete calibres will not appear on the application form.
     </div>
   {% else %}
     <table responsiveList class="setoutList">
