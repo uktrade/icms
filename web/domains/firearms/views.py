@@ -53,7 +53,7 @@ class ObsoleteCalibreListView(PostActionMixin, ModelFilterView):
     class Display:
         fields = ["name", "calibres__count"]
         fields_config = {
-            "name": {"header": "Obsolete Calibre Group Name", "link": True},
+            "name": {"header": "Obsolete Calibre Group", "link": True},
             "calibres__count": {
                 "header": "Number of Items",
                 "tooltip": "The total number of obsolete calibres in this group",
