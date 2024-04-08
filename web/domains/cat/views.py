@@ -36,6 +36,7 @@ from web.models import (
 from web.models.shared import AddressEntryType
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
+from web.views.generic import InlineFormsetView
 
 from .forms import (
     CATFilter,
@@ -45,6 +46,7 @@ from .forms import (
     CFSActiveIngredientTemplateFormSet,
     CFSManufacturerDetailsTemplateForm,
     CFSProductTemplateForm,
+    CFSProductTemplateFormSet,
     CFSProductTypeTemplateFormSet,
     CFSScheduleTemplateForm,
     CreateCATForm,
@@ -297,6 +299,10 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMix
                     "cat:cfs-schedule-product-create",
                     kwargs={"cat_pk": self.object.pk, "schedule_template_pk": schedule.pk},
                 )
+                extra["add_multiple_schedule_product_url"] = reverse(
+                    "cat:cfs-schedule-product-create-multiple",
+                    kwargs={"cat_pk": self.object.pk, "schedule_template_pk": schedule.pk},
+                )
 
         if app_type == ExportApplicationType.Types.GMP and step == CatSteps.GMP:
             extra["include_contact"] = False
@@ -419,7 +425,7 @@ class CATRestoreView(PermissionRequiredMixin, LoginRequiredMixin, View):
 class CFSTemplatePermissionRequiredMixin(PermissionRequiredMixin):
     """Permission required mixin common to all Edit CFS Template views."""
 
-    def has_permission(self):
+    def has_permission(self) -> bool:
         if not _has_permission(self.request.user):
             return False
 
@@ -522,10 +528,10 @@ class CFSManufacturerUpdateView(LoginRequiredMixin, CFSTemplatePermissionRequire
     form_class = CFSManufacturerDetailsTemplateForm
     template_name = "web/domains/cat/cfs/manufacturer-update.html"
 
-    def get_object(self, queryset=None):
+    def get_object(self, queryset: CFSScheduleTemplate | None = None) -> CFSScheduleTemplate:
         return get_cfs_schedule_template(**self.kwargs)
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse(
             "cat:edit-step-related",
             kwargs={
@@ -535,7 +541,7 @@ class CFSManufacturerUpdateView(LoginRequiredMixin, CFSTemplatePermissionRequire
             },
         )
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         return context | {
@@ -574,11 +580,11 @@ class CFSScheduleTemplateProductCreateView(
     form_class = CFSProductTemplateForm
     template_name = "web/domains/cat/cfs/product-template-create.html"
 
-    def get_form_kwargs(self):
+    def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
         return kwargs | {"schedule": get_cfs_schedule_template(**self.kwargs)}
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         return context | {
@@ -586,7 +592,7 @@ class CFSScheduleTemplateProductCreateView(
             "previous_link": self.get_edit_schedule_url(),
         }
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse(
             "cat:cfs-schedule-product-update",
             kwargs={
@@ -596,7 +602,7 @@ class CFSScheduleTemplateProductCreateView(
             },
         )
 
-    def get_edit_schedule_url(self):
+    def get_edit_schedule_url(self) -> str:
         return reverse(
             "cat:edit-step-related",
             kwargs={
@@ -605,6 +611,44 @@ class CFSScheduleTemplateProductCreateView(
                 "step_pk": self.kwargs["schedule_template_pk"],
             },
         )
+
+
+class CFSScheduleTemplateProductCreateMultipleView(
+    CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, InlineFormsetView
+):
+    # parent model config
+    model = CFSScheduleTemplate
+    pk_url_kwarg = "schedule_template_pk"
+
+    # Inline formset config
+    formset_class = CFSProductTemplateFormSet
+    template_name = "web/domains/cat/cfs/product-template-create-multiple.html"
+
+    def get_success_url(self) -> str:
+        return reverse(
+            "cat:edit-step-related",
+            kwargs={
+                "cat_pk": self.kwargs["cat_pk"],
+                "step": CatSteps.CFS_SCHEDULE,
+                "step_pk": self.object.pk,
+            },
+        )
+
+    def get_formset_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_formset_kwargs()
+
+        # Exclude existing related products as this is a create view.
+        queryset = CFSProductTemplateFormSet.model.objects.none()
+
+        return kwargs | {"queryset": queryset}
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        return context | {
+            "page_title": "Add Products",
+            "previous_link": self.get_success_url(),
+        }
 
 
 class CFSScheduleTemplateProductUpdateView(
@@ -618,14 +662,14 @@ class CFSScheduleTemplateProductUpdateView(
     pt_formset: CFSProductTypeTemplateFormSet
     ai_formset: CFSActiveIngredientTemplateFormSet
 
-    def get_object(self, queryset=None):
+    def get_object(self, queryset: CFSProductTemplate | None = None) -> CFSProductTemplate:
         return get_cfs_schedule_product(**self.kwargs)
 
-    def get_form_kwargs(self):
+    def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
         return kwargs | {"schedule": self.object.schedule}
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         return context | {
@@ -662,7 +706,7 @@ class CFSScheduleTemplateProductUpdateView(
         else:
             return self.form_invalid(form)
 
-    def form_valid(self, form):
+    def form_valid(self, form: CFSProductTemplateForm) -> HttpResponse:
         form.save()
 
         if self.object.schedule.is_biocidal():
@@ -671,7 +715,7 @@ class CFSScheduleTemplateProductUpdateView(
 
         return redirect(self.get_success_url())
 
-    def _set_formsets(self):
+    def _set_formsets(self) -> None:
         """Prefix needs to be the same for GET and POST to work correctly."""
         self.pt_formset = CFSProductTypeTemplateFormSet(
             self.request.POST or None, instance=self.object, prefix="pt_"
@@ -680,7 +724,7 @@ class CFSScheduleTemplateProductUpdateView(
             self.request.POST or None, instance=self.object, prefix="ai_"
         )
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse(
             "cat:cfs-schedule-product-update",
             kwargs={
@@ -690,7 +734,7 @@ class CFSScheduleTemplateProductUpdateView(
             },
         )
 
-    def get_edit_schedule_url(self):
+    def get_edit_schedule_url(self) -> str:
         return reverse(
             "cat:edit-step-related",
             kwargs={

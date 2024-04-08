@@ -1,0 +1,31 @@
+{% extends "web/domains/case/applicant-base.html" %}
+{% import "forms/fields.html" as fields %}
+
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ previous_link }}" class="prev-link">Edit schedule</a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block main_content %}
+  <h4>{{ page_title }}</h4>
+  <sub>Add any products leaving unused extra rows blank.</sub>
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    {{ formset.management_form }}
+    {% for form in formset %}
+        {{ form.id }}
+        <div class="row">
+          {{ fields.inline_field_with_label(form.product_name, prompt="north", label_cols='two', padding='zero', input_cols='four') }}
+          {% if form.instance.pk and formset.can_delete %}
+            {{ fields.inline_field_with_label(form.DELETE, prompt="north", show_optional_indicator=False, label_cols='zero', padding='zero', input_cols='one') }}
+          {% endif %}
+        </div>
+    {% endfor %}
+    {{ forms.submit_button(padding_cols="two") }}
+  {% endcall %}
+{% endblock %}

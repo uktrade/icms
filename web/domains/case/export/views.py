@@ -1,8 +1,8 @@
-from typing import NamedTuple
+from typing import Any, NamedTuple
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import QuerySet
@@ -10,6 +10,7 @@ from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import TemplateView
 from django_ratelimit import UNSAFE
@@ -27,6 +28,7 @@ from web.domains.case.utils import (
 )
 from web.domains.cat.utils import template_in_user_templates
 from web.domains.file.utils import create_file_model
+from web.flow.errors import ProcessError
 from web.flow.models import ProcessTypes
 from web.models import (
     CertificateApplicationTemplate,
@@ -55,11 +57,13 @@ from web.utils.validation import (
     PageErrors,
     create_page_errors,
 )
+from web.views.generic import InlineFormsetView
 
 from .forms import (
     CFSActiveIngredientForm,
     CFSManufacturerDetailsForm,
     CFSProductForm,
+    CFSProductFormSet,
     CFSProductTypeForm,
     CreateExportApplicationForm,
     EditCFScheduleForm,
@@ -478,6 +482,10 @@ def cfs_edit_schedule(
                 "export:cfs-schedule-add-product",
                 kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
             ),
+            "add_multiple_schedule_product_url": reverse(
+                "export:cfs-schedule-add-multiple-products",
+                kwargs={"application_pk": application.pk, "schedule_pk": schedule.pk},
+            ),
         }
 
         return render(request, "web/domains/case/export/cfs-edit-schedule.html", context)
@@ -700,6 +708,62 @@ def cfs_edit_product(
         }
 
         return render(request, "web/domains/case/export/cfs-edit-product.html", context)
+
+
+@method_decorator(transaction.atomic, name="post")
+class CFSScheduleProductCreateMultipleView(
+    PermissionRequiredMixin, LoginRequiredMixin, InlineFormsetView
+):
+    # parent model config
+    model = CFSSchedule
+    pk_url_kwarg = "schedule_pk"
+    object: CFSSchedule
+
+    # Inline formset config
+    formset_class = CFSProductFormSet
+    template_name = "web/domains/case/export/cfs-product-create-multiple.html"
+
+    def has_permission(self) -> bool:
+        application = get_object_or_404(
+            CertificateOfFreeSaleApplication, pk=self.kwargs["application_pk"]
+        )
+        check_can_edit_application(self.request.user, application)
+
+        try:
+            case_progress.application_in_progress(application)
+        except ProcessError:
+            capture_exception()
+
+            return False
+
+        return True
+
+    def get_success_url(self) -> str:
+        application_pk = self.kwargs["application_pk"]
+        schedule_pk = self.kwargs["schedule_pk"]
+
+        return reverse(
+            "export:cfs-schedule-edit",
+            kwargs={"application_pk": application_pk, "schedule_pk": schedule_pk},
+        )
+
+    def get_formset_kwargs(self) -> dict[str, Any]:
+        kwargs = super().get_formset_kwargs()
+
+        # Exclude existing related products as this is a create view.
+        queryset = CFSProductFormSet.model.objects.none()
+
+        return kwargs | {"queryset": queryset}
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        return context | {
+            "page_title": "Add Products",
+            "process": self.object.application,
+            "case_type": "export",
+            "previous_link": self.get_success_url(),
+        }
 
 
 @require_POST

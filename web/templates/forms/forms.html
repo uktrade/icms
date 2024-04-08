@@ -42,3 +42,18 @@
     </div>
   {% endif %}
 {%- endmacro %}
+
+{% macro submit_button(padding_cols="three", field_cols="six", btn_label="Create") %}
+  <div class="row">
+    <div class="{{ padding_cols }} columns"></div>
+    <div class="{{ field_cols }} columns">
+      <ul class="menu-out flow-across">
+        <li>
+          <button type="submit" class="primary-button button">{{ btn_label }}</button>
+        </li>
+      </ul>
+    </div>
+    {# Required to ensure column padding works correctly. #}
+    <div class="zero columns"></div>
+  </div>
+{% endmacro %}
