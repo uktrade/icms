@@ -150,7 +150,7 @@ def get_export_status_choices() -> list[tuple[Any, str]]:
 def get_wildcard_filter(field: str, search_pattern: str) -> models.Q:
     """Return the filter expression for the supplied field and search_pattern.
 
-    Strings with `%` are converted into django ORM code using one of several methods.
+    Uses the ilike lookup and adds a % to the end of the string if not in the search_pattern.
 
     :param field: The name of the field to search on
     :param search_pattern: the user supplied search pattern
@@ -159,20 +159,10 @@ def get_wildcard_filter(field: str, search_pattern: str) -> models.Q:
     if search_pattern.strip() == "%":
         return models.Q()
 
-    # The default search unless changed below
-    search_regex = search_pattern.replace("%", ".*")
-    search = {f"{field}__iregex": f"^{search_regex}"}
-    wildcards = search_pattern.count("%")
+    if not search_pattern.endswith("%"):
+        search_pattern += "%"
 
-    if wildcards == 0:
-        search = {f"{field}": search_pattern}
-
-    elif wildcards == 1:
-        if search_pattern.startswith("%"):
-            search = {f"{field}__iendswith": search_pattern[1:]}
-
-        elif search_pattern.endswith("%"):
-            search = {f"{field}__istartswith": search_pattern[:-1]}
+    search = {f"{field}__ilike": search_pattern}
 
     return models.Q(**search)
 
