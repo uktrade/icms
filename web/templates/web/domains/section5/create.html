@@ -25,7 +25,6 @@
 
 {% block main_content %}
   {% call forms.form(method='post', csrf_input=csrf_input) -%}
-    <h3>Calibre</h3>
     {% for field in form %}
         {{fields.field(field)}}
     {% endfor %}
