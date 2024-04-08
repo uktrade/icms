@@ -77,6 +77,10 @@ class TestProductLegislationFilter(TestCase):
         assert first.name == "Comprehensive legislation"
         assert last.name == "Test Legislation"
 
+    def test_status_initial(self):
+        filter = ProductLegislationFilter()
+        assert filter.form.fields["status"].initial is True
+
 
 class TestProductLegislationForm(TestCase):
     def test_form_valid(self):
