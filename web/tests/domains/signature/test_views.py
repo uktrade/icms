@@ -39,7 +39,7 @@ def test_create_first_signature(db, ilb_admin_client, ilb_admin_user, active_sig
     post_data = {
         "name": "Test Signature",
         "signatory": "Test Signatory",
-        "file": SimpleUploadedFile("myimage.png", b"file_content"),
+        "file": SimpleUploadedFile("myimage.jpeg", b"file_content"),
         "is_active": "on",
     }
     response = client.post(reverse("signature-create"), post_data, follow=True)
@@ -61,7 +61,7 @@ def test_create_inactive_signature(db, ilb_admin_client, ilb_admin_user, active_
     post_data = {
         "name": "Test Signature",
         "signatory": "Test Signatory",
-        "file": SimpleUploadedFile("myimage.png", b"file_content"),
+        "file": SimpleUploadedFile("myimage.jpeg", b"file_content"),
     }
     response = client.post(reverse("signature-create"), post_data, follow=True)
     content = str(response.content)
@@ -83,7 +83,7 @@ def test_create_active_signature(db, ilb_admin_client, ilb_admin_user, active_si
     post_data = {
         "name": "Test Signature",
         "signatory": "Test Signatory",
-        "file": SimpleUploadedFile("myimage.png", b"file_content"),
+        "file": SimpleUploadedFile("myimage.jpg", b"file_content"),
         "is_active": "on",
     }
     response = client.post(reverse("signature-create"), post_data, follow=True)
