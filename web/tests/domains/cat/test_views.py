@@ -86,7 +86,7 @@ class TestCATListView(AuthTestCase):
 
         response = self.exporter_client.get(self.url, data={"is_active": ""})
         assert response.status_code == HTTPStatus.OK
-        assert [t.pk for t in response.context["templates"]] == [active_t.pk, inactive_t.pk]
+        assert [t.pk for t in response.context["templates"]] == [inactive_t.pk, active_t.pk]
 
     def test_permission_filter(self):
         exporter_one_template = CertificateApplicationTemplate.objects.create(
@@ -130,6 +130,9 @@ class TestCATCreateView(AuthTestCase):
             "application_type": app_type,
             "sharing": "private",
         }
+        if app_type == ExportApplicationType.Types.FREE_SALE:
+            data["template_country"] = CertificateApplicationTemplate.CountryType.GB
+
         response = self.exporter_client.post(url, data)
 
         assert response.status_code == HTTPStatus.FOUND
@@ -142,6 +145,7 @@ class TestCATCreateView(AuthTestCase):
 
         if app_type == ExportApplicationType.Types.FREE_SALE:
             assert related_template.schedules.count() == 1
+            assert not template.is_ni_template
 
 
 class TestCATEditView(AuthTestCase):
@@ -160,7 +164,12 @@ class TestCATEditView(AuthTestCase):
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "web/domains/cat/edit.html")
 
-        form_data = {"name": cat.name, "description": "Updated description", "sharing": "private"}
+        form_data = {
+            "name": cat.name,
+            "description": "Updated description",
+            "sharing": "private",
+            "template_country": CertificateApplicationTemplate.CountryType.GB,
+        }
         response = self.exporter_client.post(url, data=form_data)
 
         assert response.status_code == HTTPStatus.FOUND
@@ -344,6 +353,7 @@ class TestCATArchiveView(AuthTestCase):
             owner=self.exporter_user,
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
+            template_country=CertificateApplicationTemplate.CountryType.GB,
         )
         CertificateOfFreeSaleApplicationTemplate.objects.create(template=cat)
         url = reverse("cat:archive", kwargs={"cat_pk": cat.pk})
@@ -379,6 +389,7 @@ class TestCATRestoreView(AuthTestCase):
             owner=self.exporter_user,
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
+            template_country=CertificateApplicationTemplate.CountryType.GB,
             is_active=False,
         )
         CertificateOfFreeSaleApplicationTemplate.objects.create(template=cat)
@@ -395,6 +406,7 @@ class TestCATReadOnlyView(AuthTestCase):
             owner=self.exporter_user,
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
+            template_country=CertificateApplicationTemplate.CountryType.GB,
         )
         CertificateOfFreeSaleApplicationTemplate.objects.create(template=cat)
         url = reverse("cat:view", kwargs={"cat_pk": cat.pk})
@@ -409,6 +421,7 @@ class TestCATReadOnlyView(AuthTestCase):
             owner=self.exporter_user,
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
+            template_country=CertificateApplicationTemplate.CountryType.GB,
         )
         CertificateOfFreeSaleApplicationTemplate.objects.create(template=cat)
         url = reverse("cat:view-step", kwargs={"cat_pk": cat.pk, "step": "cfs"})

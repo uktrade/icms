@@ -24,7 +24,11 @@
     <p>Please enter the template details below.</p>
     {{ application_field(existing_application.application_type.get_type_code_display(), "Application Type") }}
     {% for field in form %}
-      {% if field.name != "application_type" %}
+      {# Renderer everything other than those excluded here #}
+      {% if field.name not in ["application_type", "template_country"] %}
+        {{ fields.field(field, show_optional_indicator=False) }}
+      {# conditional template_country check #}
+      {% elif field.name == "template_country" and show_template_country %}
         {{ fields.field(field, show_optional_indicator=False) }}
       {% endif %}
     {% endfor %}

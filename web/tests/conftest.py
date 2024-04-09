@@ -1507,6 +1507,7 @@ def cfs_cat(exporter_one_contact) -> CertificateApplicationTemplate:
         owner=exporter_one_contact,
         name="CFS template",
         application_type=ExportApplicationType.Types.FREE_SALE,
+        template_country=CertificateApplicationTemplate.CountryType.GB,
     )
     CertificateOfFreeSaleApplicationTemplate.objects.create(template=cat)
     cat.cfs_template.schedules.create(created_by=exporter_one_contact)

@@ -68,3 +68,10 @@ class Office(models.Model):
             self.address_8,
         ]
         return "\n".join(f for f in fields if f)
+
+    @property
+    def is_in_northern_ireland(self) -> bool:
+        # Imported here because of circular dependency
+        from web.utils import is_northern_ireland_postcode
+
+        return is_northern_ireland_postcode(self.postcode)

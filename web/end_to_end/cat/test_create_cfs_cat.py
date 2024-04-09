@@ -7,7 +7,12 @@ def test_can_create_cfs_cat(pages: conftest.UserPages) -> None:
         page.get_by_role("link", name="Admin").click()
         page.get_by_role("link", name="Certificate Application Templates").click()
         page.get_by_role("link", name="Create Template").click()
+
+        # Wait for page js to load
+        page.wait_for_load_state(state="domcontentloaded")
         page.get_by_label("Application Type").select_option("CFS")
+        page.get_by_label("Template Country").select_option("GB")
+
         page.get_by_label("Template Name").click()
         page.get_by_label("Template Name").fill("Test CFS template")
         page.get_by_label("Template Description").click()
@@ -127,13 +132,18 @@ def test_can_create_cfs_cat(pages: conftest.UserPages) -> None:
         page.get_by_label("Close this message").click()
 
 
-def test_test_can_create_cfs_cat_biocidal_schdedule(pages: conftest.UserPages) -> None:
+def test_can_create_cfs_cat_biocidal_schdedule(pages: conftest.UserPages) -> None:
     with pages.exp_page() as page:
         # Create a new CFS Certificate Application Template
         page.get_by_role("link", name="Admin").click()
         page.get_by_role("link", name="Certificate Application Templates").click()
         page.get_by_role("link", name="Create Template").click()
+
+        # Wait for page js to load
+        page.wait_for_load_state(state="domcontentloaded")
         page.get_by_label("Application Type").select_option("CFS")
+        page.get_by_label("Template Country").select_option("GB")
+
         page.get_by_label("Template Name").click()
         page.get_by_label("Template Name").fill("Test CFS template")
         page.get_by_label("Template Description").click()

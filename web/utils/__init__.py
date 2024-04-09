@@ -45,3 +45,12 @@ def day_ordinal_date(date: dt.date) -> str:
             suffix = "th"
 
     return f"{day}{suffix} {date.strftime('%B %Y')}"
+
+
+def is_northern_ireland_postcode(postcode: str | None) -> bool:
+    """Returns true if the supplied postcode is an NI postcode."""
+
+    if not postcode:
+        return False
+
+    return postcode.casefold().startswith("bt")

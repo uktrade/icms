@@ -56,6 +56,7 @@ class TestCreateApplicationFromTemplate(AuthTestCase):
             owner=alice,
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
+            template_country=CertificateApplicationTemplate.CountryType.GB,
         )
         url = reverse(
             "export:create-application-from-template",
@@ -71,6 +72,7 @@ class TestCreateApplicationFromTemplate(AuthTestCase):
             owner=self.exporter_user,
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
+            template_country=CertificateApplicationTemplate.CountryType.GB,
             is_active=False,
         )
         url = reverse(
@@ -81,6 +83,68 @@ class TestCreateApplicationFromTemplate(AuthTestCase):
 
         assert response.status_code == 302
         assert response["Location"] == "/export/create/cfs/"
+
+    def test_cant_create_uk_cfs_app_using_ni_template(self):
+        cat = CertificateApplicationTemplate.objects.create(
+            owner=self.exporter_user,
+            name="CFS template for NI",
+            application_type=ExportApplicationType.Types.FREE_SALE,
+            template_country=CertificateApplicationTemplate.CountryType.NIR,
+        )
+
+        url = reverse(
+            "export:create-application-from-template",
+            kwargs={"type_code": cat.application_type.lower(), "template_pk": cat.pk},
+        )
+
+        form_data = {
+            "exporter": self.exporter.pk,
+            # Exporter office has a UK postcode
+            "exporter_office": self.exporter_office.pk,
+        }
+        response = self.exporter_client.post(url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        context = response.context
+        form = context["form"]
+        assert not form.is_valid()
+        assert len(form.errors) == 1
+        assert (
+            form.errors["exporter_office"][0]
+            == "Cannot copy a Northern Ireland Template to a GB CFS Application"
+        )
+
+    def test_cant_create_ni_cfs_app_using_uk_template(self):
+        cat = CertificateApplicationTemplate.objects.create(
+            owner=self.exporter_user,
+            name="CFS template for NI",
+            application_type=ExportApplicationType.Types.FREE_SALE,
+            template_country=CertificateApplicationTemplate.CountryType.GB,
+        )
+
+        url = reverse(
+            "export:create-application-from-template",
+            kwargs={"type_code": cat.application_type.lower(), "template_pk": cat.pk},
+        )
+
+        # Change the exporter office postcode to NI postcode.
+        self.exporter_office.postcode = "BT125QB"  # /PS-IGNORE
+        self.exporter_office.save()
+
+        form_data = {
+            "exporter": self.exporter.pk,
+            # Exporter office has a UK postcode
+            "exporter_office": self.exporter_office.pk,
+        }
+        response = self.exporter_client.post(url, data=form_data)
+        assert response.status_code == HTTPStatus.OK
+        context = response.context
+        form = context["form"]
+        assert not form.is_valid()
+        assert len(form.errors) == 1
+        assert (
+            form.errors["exporter_office"][0]
+            == "Cannot copy a GB Template to a Northern Ireland CFS Application"
+        )
 
 
 class TestFlow(AuthTestCase):

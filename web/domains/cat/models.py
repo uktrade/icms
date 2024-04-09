@@ -21,6 +21,10 @@ class CertificateApplicationTemplate(models.Model):
         VIEW = ("view", "Share (view only)")
         EDIT = ("edit", "Share (allow edit)")
 
+    class CountryType(TypedTextChoices):
+        GB = ("GB", "Great Britain")
+        NIR = ("NIR", "Northern Ireland")
+
     name = models.CharField(verbose_name="Template Name", max_length=70)
 
     description = models.CharField(verbose_name="Template Description", max_length=500)
@@ -34,6 +38,16 @@ class CertificateApplicationTemplate(models.Model):
             " and CE marked medical devices. Certificates of Manufacture are applicable only to"
             " pesticides that are for export only and not on free sale on the domestic market."
         ),
+    )
+    # CFS template specific field
+    template_country = models.CharField(
+        max_length=3,
+        choices=CountryType.choices,
+        verbose_name="Template Country",
+        help_text="Country where the goods will be exported from.",
+        default=None,
+        blank=True,
+        null=True,
     )
 
     sharing = models.CharField(
@@ -49,6 +63,10 @@ class CertificateApplicationTemplate(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
+
+    @property
+    def is_ni_template(self) -> bool:
+        return self.template_country == self.CountryType.NIR
 
 
 class CertificateOfManufactureApplicationTemplate(  # type: ignore[misc]

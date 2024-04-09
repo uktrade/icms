@@ -221,7 +221,7 @@ class ScheduleParagraphs:
         self.paragraph = " ".join(self._get_paragraphs())
 
     def _get_paragraphs(self) -> Iterator[str]:
-        is_ni = self.schedule.application.exporter_office.postcode.upper().startswith("BT")
+        is_ni = self.schedule.application.exporter_office.is_in_northern_ireland
         names = CFSScheduleParagraph.ParagraphName
 
         if self.schedule.exporter_status == self.schedule.ExporterStatus.IS_MANUFACTURER:

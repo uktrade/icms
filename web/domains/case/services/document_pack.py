@@ -119,7 +119,7 @@ def _get_paper_licence_only(application: ImportApplication) -> bool | None:
     # Specific check for FA_SIL applications
     # Default to "no" for everything other than a NI importer.
     if app_t.sub_type == app_t.SubTypes.SIL:
-        if not application.importer_office.postcode.casefold().startswith("bt"):
+        if not application.importer_office.is_in_northern_ireland:
             return False
 
     # Default to None so the user can pick it later

@@ -2,6 +2,7 @@ import re
 from typing import Any
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.db.models.query import QuerySet
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
@@ -12,9 +13,16 @@ import web.forms.widgets as icms_widgets
 from web.domains.case.forms import application_contacts
 from web.domains.file.utils import ICMSFileField
 from web.forms.mixins import OptionalFormMixin
-from web.models import Exporter, Office, ProductLegislation, User
+from web.models import (
+    CertificateApplicationTemplate,
+    Exporter,
+    Office,
+    ProductLegislation,
+    User,
+)
 from web.models.shared import AddressEntryType, YesNoChoices
 from web.permissions import Perms
+from web.utils import is_northern_ireland_postcode
 
 from .models import (
     CertificateOfFreeSaleApplication,
@@ -105,10 +113,17 @@ class CreateExportApplicationForm(forms.Form):
         ),
     )
 
-    def __init__(self, *args: Any, user: User, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *args: Any,
+        user: User,
+        cat: CertificateApplicationTemplate | None = None,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(*args, **kwargs)
 
         self.user = user
+        self.cat = cat
 
         # Return main exporters the user can edit or is an agent of.
         exporters = get_objects_for_user(
@@ -149,6 +164,25 @@ class CreateExportApplicationForm(forms.Form):
                 self.add_error("agent_office", "You must enter this item")
 
         return cleaned_data
+
+    def clean_exporter_office(self) -> Office:
+        office = self.cleaned_data["exporter_office"]
+
+        # CFS CAT specific check
+        if self.cat and self.cat.application_type == ExportApplicationType.Types.FREE_SALE:
+            # Check that the template and exporter office match
+            is_ni_app = office.is_in_northern_ireland
+            is_ni_template = self.cat.is_ni_template
+
+            if is_ni_template != is_ni_app:
+                if is_ni_template:
+                    msg = "Cannot copy a Northern Ireland Template to a GB CFS Application"
+                else:
+                    msg = "Cannot copy a GB Template to a Northern Ireland CFS Application"
+
+                raise ValidationError(msg)
+
+        return office
 
 
 class PrepareCertManufactureFormBase(forms.ModelForm):
@@ -330,17 +364,7 @@ class CFSScheduleFormBase(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        legislation_qs = ProductLegislation.objects.filter(is_active=True)
-
-        # Templates don't have an office so we're not able to filter legislation_qs.
-        if hasattr(self.instance.application, "exporter_office"):
-            postcode = self.instance.application.exporter_office.postcode
-
-            if postcode and postcode.upper().startswith("BT"):
-                legislation_qs = legislation_qs.filter(ni_legislation=True)
-            else:
-                legislation_qs = legislation_qs.filter(gb_legislation=True)
-
+        legislation_qs = self.get_legislations_queryset()
         self.fields["legislations"].queryset = legislation_qs.order_by("name")
 
         # the help-text for this field contains HTML markup, and it's nicer to render an HTML file than add raw HTML
@@ -361,6 +385,16 @@ class CFSScheduleFormBase(forms.ModelForm):
             self.add_error("biocidal_claim", "This field is required.")
 
         return cleaned_data
+
+    def get_legislations_queryset(self) -> QuerySet[ProductLegislation]:
+        legislation_qs = ProductLegislation.objects.filter(is_active=True)
+
+        if self.instance.application.exporter_office.is_in_northern_ireland:
+            legislation_qs = legislation_qs.filter(ni_legislation=True)
+        else:
+            legislation_qs = legislation_qs.filter(gb_legislation=True)
+
+        return legislation_qs
 
 
 class EditCFScheduleForm(OptionalFormMixin, CFSScheduleFormBase):
@@ -667,23 +701,25 @@ class SubmitGMPForm(EditGMPFormBase):
             )
 
         # Check responsible person postcode matches country
-        rp_postcode: str = cleaned_data["responsible_person_postcode"].upper()
+        rp_postcode: str = cleaned_data["responsible_person_postcode"]
         rp_country: str = cleaned_data["responsible_person_country"]
 
-        if rp_postcode.startswith("BT") and rp_country == self.instance.CountryType.GB:
+        rp_is_ni_postcode = is_northern_ireland_postcode(rp_postcode)
+        if rp_is_ni_postcode and rp_country == self.instance.CountryType.GB:
             self.add_error("responsible_person_postcode", "Postcode should not start with BT")
 
-        elif not rp_postcode.startswith("BT") and rp_country == self.instance.CountryType.NIR:
+        elif not rp_is_ni_postcode and rp_country == self.instance.CountryType.NIR:
             self.add_error("responsible_person_postcode", "Postcode must start with BT")
 
         # Check manufacturer postcode matches country
-        m_postcode: str = cleaned_data["manufacturer_postcode"].upper()
+        m_postcode: str = cleaned_data["manufacturer_postcode"]
         m_country: str = cleaned_data["manufacturer_country"]
+        m_is_ni_postcode = is_northern_ireland_postcode(m_postcode)
 
-        if m_postcode.startswith("BT") and m_country == self.instance.CountryType.GB:
+        if m_is_ni_postcode and m_country == self.instance.CountryType.GB:
             self.add_error("manufacturer_postcode", "Postcode should not start with BT")
 
-        elif not m_postcode.startswith("BT") and m_country == self.instance.CountryType.NIR:
+        elif not m_is_ni_postcode and m_country == self.instance.CountryType.NIR:
             self.add_error("manufacturer_postcode", "Postcode must start with BT")
 
         # Manufacturing certificates checks
