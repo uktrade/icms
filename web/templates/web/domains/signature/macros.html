@@ -12,7 +12,7 @@
 {% macro not_signed_image(classes) -%}
     <div name="no-signature-widget">
         <div id="signature-widget-image-container">
-            <img id="not_signed_image" class="{% if classes %}{{ classes }}{% endif %}" src="data:jpg;base64,{{ get_file_base64('web/img/dit-no-signature.png') }}">
+            <img id="not_signed_image" class="{% if classes %}{{ classes }}{% endif %}" src="data:jpg;base64,{{ get_file_base64('web/img/dit-no-signature.jpg') }}">
         </div>
     </div>
 {%- endmacro %}

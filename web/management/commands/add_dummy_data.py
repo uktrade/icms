@@ -491,12 +491,12 @@ def create_certificate_application_templates(
 
 def create_dummy_signature(user: User) -> None:
     """Creates a dummy active signature object to appear in licence and certificate documents"""
-    file_path = settings.BASE_DIR / "web/static/web/img/dit-no-signature.png"
+    file_path = settings.BASE_DIR / "web/static/web/img/dit-no-signature.jpg"
 
     if not file_path.is_file():
         raise CommandError("Dummy signature file missing")
 
-    filename = "active_dummy_signature.png"
+    filename = "active_dummy_signature.jpg"
     key = f"dummy_signature/{filename}"
     file_size = upload_file_obj_to_s3(file_path.open("rb"), key)
 
@@ -506,7 +506,7 @@ def create_dummy_signature(user: User) -> None:
         history=f"Created by add_dummy_data command on {dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         filename=filename,
         path=key,
-        content_type="image/png",
+        content_type="image/jpg",
         created_by=user,
         file_size=file_size,
         is_active=True,

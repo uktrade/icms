@@ -1,4 +1,5 @@
 import os.path
+from collections.abc import Iterable
 from typing import Any
 
 from django import forms
@@ -35,17 +36,13 @@ FILE_EXTENSION_ALLOW_LIST = [
     "xps",
 ]
 
-
 HELP_TEXT = "Only the following file extensions (types) are allowed to be uploaded: " + ", ".join(
     FILE_EXTENSION_ALLOW_LIST
 )
 
-IMAGE_EXTENSION_ALLOW_LIST = ["jpeg", "jpg", "png"]
+IMAGE_EXTENSION_ALLOW_LIST = ("jpeg", "jpg", "png")
 
-IMAGE_HELP_TEXT = (
-    "Only the following file extensions (types) are allowed to be uploaded: "
-    + ", ".join(IMAGE_EXTENSION_ALLOW_LIST)
-)
+IMAGE_HELP_TEXT = "Only the following file extensions (types) are allowed to be uploaded: "
 
 
 class ICMSFileField(forms.FileField):
@@ -59,11 +56,38 @@ class ICMSFileField(forms.FileField):
         )
 
 
+class ImageFileFieldValidator:
+    def __init__(self, allowed_extensions: Iterable[str] = IMAGE_EXTENSION_ALLOW_LIST) -> None:
+        self.allowed_extensions = allowed_extensions
+
+    def __call__(self, file: S3Boto3StorageFile) -> None:
+        """Django validator that only allows specific image file extensions."""
+
+        _, file_extension = os.path.splitext(file.name)
+
+        if file_extension.lstrip(".").lower() not in self.allowed_extensions:
+            # by the time custom validations are called, file upload handlers have
+            # already done their job and the file is in S3, so we have to delete it
+            delete_file_from_s3(file.name)
+
+            raise forms.ValidationError(
+                "Invalid file extension. Only these extensions are allowed: "
+                + ", ".join(self.allowed_extensions)
+            )
+
+
 class ImageFileField(forms.FileField):
-    def __init__(self, *, validators=(), help_text=IMAGE_HELP_TEXT, **kwargs) -> None:
+    def __init__(
+        self,
+        *,
+        validators=(),
+        allowed_extensions: Iterable[str] = IMAGE_EXTENSION_ALLOW_LIST,
+        help_text: str | None = None,
+        **kwargs,
+    ) -> None:
+        validate_image_file_extension = ImageFileFieldValidator(allowed_extensions)
+        help_text = help_text or IMAGE_HELP_TEXT + ", ".join(allowed_extensions)
         super().__init__(
-            # order is important: validate_file_extension can delete the file
-            # from S3, so has to be after the virus check
             validators=[validate_virus_check_result, validate_image_file_extension, *validators],
             help_text=help_text,
             **kwargs,
@@ -83,22 +107,6 @@ def validate_file_extension(file: S3Boto3StorageFile) -> None:
         raise forms.ValidationError(
             "Invalid file extension. Only these extensions are allowed: "
             + ", ".join(FILE_EXTENSION_ALLOW_LIST)
-        )
-
-
-def validate_image_file_extension(file: S3Boto3StorageFile) -> None:
-    """Django validator that only allows specific image file extensions."""
-
-    _, file_extension = os.path.splitext(file.name)
-
-    if file_extension.lstrip(".").lower() not in IMAGE_EXTENSION_ALLOW_LIST:
-        # by the time custom validations are called, file upload handlers have
-        # already done their job and the file is in S3, so we have to delete it
-        delete_file_from_s3(file.name)
-
-        raise forms.ValidationError(
-            "Invalid file extension. Only these extensions are allowed: "
-            + ", ".join(IMAGE_EXTENSION_ALLOW_LIST)
         )
 
 

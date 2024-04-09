@@ -77,6 +77,7 @@ process.get_reference
 HSE Emails'
 Response Preparation'
 View Application'
+Endorsement Usage Template (ICMSLST-638
 Add Firearm Details
 Edit Firearm Details
 web.tests.file_upload_handler
@@ -4278,3 +4279,4 @@ Section 5 of the Firearms Act
 GOODS_ITEM_ID
 Existing Export Application
 Add Products
+f"foo.bmp
