@@ -4,6 +4,16 @@ import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertInHTML
 
+from web.domains.case._import.fa_sil.models import (
+    SILGoodsSection582Obsolete,  # /PS-IGNORE
+)
+from web.domains.case._import.fa_sil.models import SILGoodsSection582Other  # /PS-IGNORE
+from web.domains.case._import.fa_sil.models import (
+    SILGoodsSection1,
+    SILGoodsSection2,
+    SILGoodsSection5,
+    SILLegacyGoods,
+)
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.models import ImportApplicationLicence, SILApplication, Task
@@ -196,3 +206,35 @@ def test_fa_sil_app_submitted_has_a_licence(fa_sil_app_submitted):
     assert fa_sil_app_submitted.licences.filter(
         status=ImportApplicationLicence.Status.DRAFT
     ).exists()
+
+
+def test_sil_upload_firearm_supplementary_report(
+    completed_sil_app_with_uploaded_supplementary_report,
+):
+    supplementary_report = (
+        completed_sil_app_with_uploaded_supplementary_report.supplementary_info.reports.get()
+    )
+    assert len(supplementary_report.get_report_firearms(is_upload=True)) == 5
+    assert len(supplementary_report.get_report_firearms(is_upload=False)) == 0
+
+    # Check that the uploaded files are associated with the correct section/good model
+    for uploaded_firearm in supplementary_report.get_report_firearms(is_upload=True):
+        match uploaded_firearm.section_type:
+            case "section1":
+                assert isinstance(uploaded_firearm.goods_certificate, SILGoodsSection1)
+            case "section2":
+                assert isinstance(uploaded_firearm.goods_certificate, SILGoodsSection2)
+            case "section5":
+                assert isinstance(uploaded_firearm.goods_certificate, SILGoodsSection5)
+            case "section582-obsolete":
+                assert isinstance(
+                    uploaded_firearm.goods_certificate, SILGoodsSection582Obsolete  # /PS-IGNORE
+                )
+            case "section582-other":
+                assert isinstance(
+                    uploaded_firearm.goods_certificate, SILGoodsSection582Other  # /PS-IGNORE
+                )
+            case "section_legacy":
+                assert isinstance(uploaded_firearm.goods_certificate, SILLegacyGoods)
+            case _:
+                assert False, "Unexpected section type"

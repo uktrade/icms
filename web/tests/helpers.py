@@ -545,6 +545,19 @@ class CaseURLS:
         return reverse("import:fa-sil:report-firearm-manual-add", kwargs=kwargs)
 
     @staticmethod
+    def fa_sil_report_upload_add(
+        application_pk: int, report_pk: int, section_pk: int, sil_section_type: str
+    ):
+        kwargs = {
+            "application_pk": application_pk,
+            "report_pk": report_pk,
+            "section_pk": section_pk,
+            "sil_section_type": sil_section_type,
+        }
+
+        return reverse("import:fa-sil:report-firearm-upload-add", kwargs=kwargs)
+
+    @staticmethod
     def fa_sil_report_no_firearm_add(
         application_pk: int, report_pk: int, section_pk: int, sil_section_type: str
     ):

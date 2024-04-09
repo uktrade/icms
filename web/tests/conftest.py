@@ -955,6 +955,51 @@ def completed_sil_app_with_supplementary_report(completed_sil_app, importer_clie
 
 
 @pytest.fixture
+def completed_sil_app_with_uploaded_supplementary_report(completed_sil_app, importer_client):
+    app = completed_sil_app
+    report = _add_supplementary_report_to_app(app, importer_client)
+    upload_section_1_firearm_url = CaseURLS.fa_sil_report_upload_add(
+        app.pk, report.pk, app.goods_section1.first().pk, "section1"
+    )
+    importer_client.post(
+        upload_section_1_firearm_url,
+        data={"file": SimpleUploadedFile("section1.png", b"file_content")},
+    )
+
+    upload_section_5_firearm_url = CaseURLS.fa_sil_report_upload_add(
+        app.pk, report.pk, app.goods_section5.first().pk, "section5"
+    )
+    importer_client.post(
+        upload_section_5_firearm_url,
+        data={"file": SimpleUploadedFile("section5.png", b"file_content")},
+    )
+    upload_section_2_firearm_url = CaseURLS.fa_sil_report_upload_add(
+        app.pk, report.pk, app.goods_section2.first().pk, "section2"
+    )
+    importer_client.post(
+        upload_section_2_firearm_url,
+        data={"file": SimpleUploadedFile("section2.png", b"file_content")},
+    )
+    upload_section_5_ob_firearm_url = CaseURLS.fa_sil_report_upload_add(
+        app.pk, report.pk, app.goods_section582_obsoletes.first().pk, "section582-obsolete"
+    )
+    importer_client.post(
+        upload_section_5_ob_firearm_url,
+        data={"file": SimpleUploadedFile("section582-obsolete.png", b"file_content")},
+    )
+    upload_section_5_other_firearm_url = CaseURLS.fa_sil_report_upload_add(
+        app.pk, report.pk, app.goods_section582_others.first().pk, "section582-other"
+    )
+    importer_client.post(
+        upload_section_5_other_firearm_url,
+        data={"file": SimpleUploadedFile("section582-other.png", b"file_content")},
+    )
+
+    app.refresh_from_db()
+    return app
+
+
+@pytest.fixture
 def completed_oil_app_with_supplementary_report(completed_oil_app, importer_client):
     app = completed_oil_app
     report = _add_supplementary_report_to_app(app, importer_client)

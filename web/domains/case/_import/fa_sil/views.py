@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import Any
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -11,11 +11,6 @@ from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
 
 from web.domains.case import forms as case_forms
-from web.domains.case._import.fa.forms import (
-    ImportContactKnowBoughtFromForm,
-    UserImportCertificateForm,
-)
-from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import SubmitForm
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
@@ -26,6 +21,7 @@ from web.domains.case.utils import (
     view_application_file,
 )
 from web.domains.case.views.utils import get_caseworker_view_readonly_status
+from web.domains.file.models import File
 from web.domains.file.utils import create_file_model
 from web.domains.template.utils import (
     add_application_cover_letter,
@@ -34,14 +30,16 @@ from web.domains.template.utils import (
 from web.models import Task, User
 from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
-from web.utils.validation import (
-    ApplicationErrors,
-    FieldError,
-    PageErrors,
-    create_page_errors,
-)
 
 from . import forms, models, types
+from .utils import (
+    _get_report_firearm_form_class,
+    _get_report_firearm_model,
+    _get_report_upload_firearm_form_class,
+    _get_sil_errors,
+    _get_sil_section_app_config,
+    _get_sil_section_resp_prep_config,
+)
 
 
 def check_can_edit_application(user: User, application: models.SILApplication) -> None:
@@ -49,346 +47,6 @@ def check_can_edit_application(user: User, application: models.SILApplication) -
 
     if not checker.can_edit():
         raise PermissionDenied
-
-
-class CreateSILSectionConfig(NamedTuple):
-    model_class: types.GoodsModelT
-    form_class: types.GoodsFormT
-    template: str
-
-
-class ResponsePrepEditSILSectionConfig(NamedTuple):
-    model_class: types.GoodsModelT
-    form_class: types.ResponsePrepGoodsFormT
-
-
-def _get_sil_section_app_config(sil_section_type: str) -> CreateSILSectionConfig:
-    if sil_section_type == "section1":
-        return CreateSILSectionConfig(
-            model_class=models.SILGoodsSection1,
-            form_class=forms.SILGoodsSection1Form,
-            template="web/domains/case/import/fa-sil/goods/section1.html",
-        )
-
-    elif sil_section_type == "section2":
-        return CreateSILSectionConfig(
-            model_class=models.SILGoodsSection2,
-            form_class=forms.SILGoodsSection2Form,
-            template="web/domains/case/import/fa-sil/goods/section2.html",
-        )
-
-    elif sil_section_type == "section5":
-        return CreateSILSectionConfig(
-            model_class=models.SILGoodsSection5,
-            form_class=forms.SILGoodsSection5Form,
-            template="web/domains/case/import/fa-sil/goods/section5.html",
-        )
-
-    elif sil_section_type == "section582-obsolete":
-        return CreateSILSectionConfig(
-            model_class=models.SILGoodsSection582Obsolete,  # /PS-IGNORE
-            form_class=forms.SILGoodsSection582ObsoleteForm,  # /PS-IGNORE
-            template="web/domains/case/import/fa-sil/goods/section582-obsolete.html",
-        )
-
-    elif sil_section_type == "section582-other":
-        return CreateSILSectionConfig(
-            model_class=models.SILGoodsSection582Other,  # /PS-IGNORE
-            form_class=forms.SILGoodsSection582OtherForm,  # /PS-IGNORE
-            template="web/domains/case/import/fa-sil/goods/section582-other.html",
-        )
-
-    elif sil_section_type == "section_legacy":
-        return CreateSILSectionConfig(
-            model_class=models.SILLegacyGoods,
-            # These are invalid, but we don't want to be able to edit them
-            form_class=None,  # type: ignore[arg-type]
-            template=None,  # type: ignore[arg-type]
-        )
-
-    raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
-
-
-def _get_sil_section_resp_prep_config(sil_section_type: str) -> ResponsePrepEditSILSectionConfig:
-    if sil_section_type == "section1":
-        return ResponsePrepEditSILSectionConfig(
-            model_class=models.SILGoodsSection1,
-            form_class=forms.ResponsePrepSILGoodsSection1Form,
-        )
-
-    elif sil_section_type == "section2":
-        return ResponsePrepEditSILSectionConfig(
-            model_class=models.SILGoodsSection2,
-            form_class=forms.ResponsePrepSILGoodsSection2Form,
-        )
-
-    elif sil_section_type == "section5":
-        return ResponsePrepEditSILSectionConfig(
-            model_class=models.SILGoodsSection5,
-            form_class=forms.ResponsePrepSILGoodsSection5Form,
-        )
-
-    elif sil_section_type == "section582-obsolete":
-        return ResponsePrepEditSILSectionConfig(
-            model_class=models.SILGoodsSection582Obsolete,  # /PS-IGNORE
-            form_class=forms.ResponsePrepSILGoodsSection582ObsoleteForm,  # /PS-IGNORE
-        )
-
-    elif sil_section_type == "section582-other":
-        return ResponsePrepEditSILSectionConfig(
-            model_class=models.SILGoodsSection582Other,  # /PS-IGNORE
-            form_class=forms.ResponsePrepSILGoodsSection582OtherForm,  # /PS-IGNORE
-        )
-
-    raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
-
-
-def _get_report_firearm_form_class(sil_section_type: str) -> types.SILReportFirearmFormT:
-    if sil_section_type == "section1":
-        return forms.SILSupplementaryReportFirearmSection1Form
-
-    elif sil_section_type == "section2":
-        return forms.SILSupplementaryReportFirearmSection2Form
-
-    elif sil_section_type == "section5":
-        return forms.SILSupplementaryReportFirearmSection5Form
-
-    elif sil_section_type == "section582-obsolete":
-        return forms.SILSupplementaryReportFirearmSection582ObsoleteForm  # /PS-IGNORE
-
-    elif sil_section_type == "section582-other":
-        return forms.SILSupplementaryReportFirearmSection582OtherForm  # /PS-IGNORE
-
-    elif sil_section_type == "section_legacy":
-        return forms.SILSupplementaryReportFirearmSectionLegacyForm
-
-    raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
-
-
-def _get_report_firearm_model(sil_section_type: str) -> types.SILReportFirearmModelT:
-    if sil_section_type == "section1":
-        return models.SILSupplementaryReportFirearmSection1
-
-    elif sil_section_type == "section2":
-        return models.SILSupplementaryReportFirearmSection2
-
-    elif sil_section_type == "section5":
-        return models.SILSupplementaryReportFirearmSection5
-
-    elif sil_section_type == "section582-obsolete":
-        return models.SILSupplementaryReportFirearmSection582Obsolete  # /PS-IGNORE
-
-    elif sil_section_type == "section582-other":
-        return models.SILSupplementaryReportFirearmSection582Other  # /PS-IGNORE
-
-    elif sil_section_type == "section_legacy":
-        return models.SILSupplementaryReportFirearmSectionLegacy
-
-    raise NotImplementedError(f"sil_section_type is not supported: {sil_section_type}")
-
-
-def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
-    errors = ApplicationErrors()
-
-    edit_url = reverse("import:fa-sil:edit", kwargs={"application_pk": application.pk})
-    edit_url = f"{edit_url}?validate"
-
-    # Check main form
-    application_details_errors = PageErrors(page_name="Application details", url=edit_url)
-    application_form = forms.SubmitFaSILForm(data=model_to_dict(application), instance=application)
-    create_page_errors(application_form, application_details_errors)
-
-    # Check know bought from
-    bought_from_errors = PageErrors(
-        page_name="Details of who bought from",
-        url=reverse("import:fa:manage-import-contacts", kwargs={"application_pk": application.pk}),
-    )
-
-    kbf_form = ImportContactKnowBoughtFromForm(
-        data={"know_bought_from": application.know_bought_from}, application=application
-    )
-    create_page_errors(kbf_form, bought_from_errors)
-
-    if application.know_bought_from and not application.importcontact_set.exists():
-        bought_from_errors.add(
-            FieldError(field_name="Person", messages=["At least one person must be added"])
-        )
-
-    errors.add(bought_from_errors)
-
-    # Goods validation
-    has_section1_goods = application.goods_section1.filter(is_active=True).exists()
-    has_section2_goods = application.goods_section2.filter(is_active=True).exists()
-    has_section5_goods = application.goods_section5.filter(is_active=True).exists()
-    has_section58_obsolete_goods = application.goods_section582_obsoletes.filter(
-        is_active=True
-    ).exists()
-    has_section58_other_goods = application.goods_section582_others.filter(is_active=True).exists()
-
-    if application.section1 and not has_section1_goods:
-        url = reverse(
-            "import:fa-sil:add-section",
-            kwargs={"application_pk": application.pk, "sil_section_type": "section1"},
-        )
-        section_errors = PageErrors(page_name="Add Licence for Section 1", url=url)
-        section_errors.add(
-            FieldError(field_name="Goods", messages=["At least one 'section 1' must be added"])
-        )
-        errors.add(section_errors)
-
-    if application.section2 and not has_section2_goods:
-        url = reverse(
-            "import:fa-sil:add-section",
-            kwargs={"application_pk": application.pk, "sil_section_type": "section2"},
-        )
-        section_errors = PageErrors(page_name="Add Licence for Section 2", url=url)
-        section_errors.add(
-            FieldError(field_name="Goods", messages=["At least one 'section 2' must be added"])
-        )
-        errors.add(section_errors)
-
-    if application.section5 and not has_section5_goods:
-        url = reverse(
-            "import:fa-sil:add-section",
-            kwargs={"application_pk": application.pk, "sil_section_type": "section5"},
-        )
-        section_errors = PageErrors(page_name="Add Licence for Section 5", url=url)
-        section_errors.add(
-            FieldError(field_name="Goods", messages=["At least one 'section 5' must be added"])
-        )
-        errors.add(section_errors)
-
-    if application.section58_obsolete and not has_section58_obsolete_goods:
-        url = reverse(
-            "import:fa-sil:add-section",
-            kwargs={"application_pk": application.pk, "sil_section_type": "section582-obsolete"},
-        )
-        section_errors = PageErrors(page_name="Add Licence for Section 58(2) - Obsolete", url=url)
-        section_errors.add(
-            FieldError(
-                field_name="Goods",
-                messages=["At least one 'section 58(2) - obsolete' must be added"],
-            )
-        )
-        errors.add(section_errors)
-
-    if application.section58_other and not has_section58_other_goods:
-        url = reverse(
-            "import:fa-sil:add-section",
-            kwargs={"application_pk": application.pk, "sil_section_type": "section582-other"},
-        )
-        section_errors = PageErrors(page_name="Add Licence for Section 58(2) - Other", url=url)
-        section_errors.add(
-            FieldError(
-                field_name="Add Section 5",
-                messages=["At least one section 'section 58(2) - other' must be added"],
-            )
-        )
-        errors.add(section_errors)
-
-    # Check "Licence For" sections match application goods lines.
-    licence_for_checks = (
-        (has_section1_goods, application.section1),
-        (has_section2_goods, application.section2),
-        (has_section5_goods, application.section5),
-        (has_section58_obsolete_goods, application.section58_obsolete),
-        (has_section58_other_goods, application.section58_other),
-    )
-    for has_goods, section in licence_for_checks:
-        if has_goods and not section:
-            application_details_errors.add(
-                FieldError(
-                    field_name="Firearm Licence For",
-                    messages=[
-                        "The sections selected here do not match those selected in the goods items."
-                    ],
-                )
-            )
-
-    # Add application detail errors now we have checked licence for
-    errors.add(application_details_errors)
-
-    importer_has_section5 = application.importer.section5_authorities.currently_active().exists()
-    selected_section5 = application.verified_section5.currently_active().exists()
-
-    # Verified Section 5
-    if application.section5 and importer_has_section5 and not selected_section5:
-        url = reverse("import:fa:manage-certificates", kwargs={"application_pk": application.pk})
-        section_errors = PageErrors(page_name="Certificates - Section 5 Authority", url=url)
-        section_errors.add(
-            FieldError(
-                field_name="Verified Section 5 Authorities",
-                messages=[
-                    "Please ensure you have selected at least one verified Section 5 Authority"
-                ],
-            )
-        )
-        errors.add(section_errors)
-
-    # User Section 5
-    if (
-        application.section5
-        and not importer_has_section5
-        and not application.user_section5.filter(is_active=True).exists()
-    ):
-        url = reverse(
-            "import:fa-sil:add-section5-document", kwargs={"application_pk": application.pk}
-        )
-        section_errors = PageErrors(page_name="Certificates - Section 5 Authority", url=url)
-        section_errors.add(
-            FieldError(
-                field_name="Section 5 Authorities",
-                messages=[
-                    "Please ensure you have uploaded at least one Section 5 Authority document."
-                ],
-            )
-        )
-        errors.add(section_errors)
-
-    # Certificates errors
-    correct_section = any((application.section1, application.section2, application.section5))
-
-    has_certificates = (
-        application.user_imported_certificates.filter(is_active=True).exists()
-        or application.verified_certificates.filter(is_active=True).exists()
-    )
-
-    if correct_section and not has_certificates:
-        certificate_errors = PageErrors(
-            page_name="Certificates",
-            url=reverse("import:fa:manage-certificates", kwargs={"application_pk": application.pk}),
-        )
-
-        certificate_errors.add(
-            FieldError(
-                field_name="Certificate", messages=["At least one certificate must be added"]
-            )
-        )
-
-        errors.add(certificate_errors)
-
-    user_imported_certificates = application.user_imported_certificates.filter(is_active=True)
-
-    for cert in user_imported_certificates:
-        page_errors = PageErrors(
-            page_name=f"Certificate - {cert.reference}",
-            url=reverse(
-                "import:fa:edit-certificate",
-                kwargs={"application_pk": application.pk, "certificate_pk": cert.pk},
-            ),
-        )
-
-        create_page_errors(
-            UserImportCertificateForm(
-                data=model_to_dict(cert), instance=cert, application=application
-            ),
-            page_errors,
-        )
-        errors.add(page_errors)
-
-    errors.add(get_org_update_request_errors(application, "import"))
-
-    return errors
 
 
 @login_required
@@ -949,6 +607,91 @@ def add_report_firearm_manual(
         template = "web/domains/case/import/fa/provide-report/edit-report-firearm-manual.html"
 
         return render(request=request, template_name=template, context=context)
+
+
+@login_required
+def add_report_firearm_upload(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    report_pk: int,
+    sil_section_type: str,
+    section_pk: int,
+) -> HttpResponse:
+    with transaction.atomic():
+        application: models.SILApplication = get_object_or_404(
+            models.SILApplication.objects.select_for_update(), pk=application_pk
+        )
+
+        check_can_edit_application(request.user, application)
+        case_progress.check_expected_status(application, [ImpExpStatus.COMPLETED])
+
+        supplementary_info: models.SILSupplementaryInfo = application.supplementary_info
+        report: models.SILSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
+
+        section_cert = report.get_section_certificates(sil_section_type).get(pk=section_pk)
+
+        form_class = _get_report_upload_firearm_form_class(sil_section_type)
+
+        if request.method == "POST":
+            form = form_class(data=request.POST, files=request.FILES)
+
+            if form.is_valid():
+                document = form.cleaned_data["file"]
+
+                report_firearm = form.save(commit=False)
+                report_firearm.report = report
+                report_firearm.goods_certificate = section_cert
+                report_firearm.is_upload = True
+
+                file_model = create_file_model(document, request.user, File.objects)
+                report_firearm.document = file_model
+
+                report_firearm.save()
+
+                return redirect(
+                    reverse(
+                        "import:fa:edit-report",
+                        kwargs={"application_pk": application.pk, "report_pk": report.pk},
+                    )
+                )
+
+        else:
+            form = form_class()
+
+        context = {
+            "process": application,
+            "case_type": "import",
+            "contacts": application.importcontact_set.all(),
+            "page_title": "Add Firearm Details",
+            "form": form,
+            "report": report,
+            "goods_description": section_cert.description,
+        }
+
+        template = "web/domains/case/import/fa/provide-report/add-report-firearm-upload.html"
+
+        return render(request=request, template_name=template, context=context)
+
+
+@require_GET
+@login_required
+def view_upload_document(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    report_firearm_pk: int,
+    sil_section_type: str,
+    **kwargs: dict[str, Any],
+) -> HttpResponse:
+    application: models.SILApplication = get_object_or_404(models.SILApplication, pk=application_pk)
+    supplementary_firearm_report_model = _get_report_firearm_model(sil_section_type)
+    supplementary_firearm_report = supplementary_firearm_report_model.objects.get(
+        pk=report_firearm_pk
+    )
+    document = supplementary_firearm_report.document
+
+    return view_application_file(request.user, application, File.objects, document.pk)
 
 
 @login_required

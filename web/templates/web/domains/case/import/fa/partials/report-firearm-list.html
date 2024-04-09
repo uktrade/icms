@@ -13,7 +13,7 @@
       <ul class="menu-out flow-across">
         <li>
           {{ buttons.manual_add_button(report, report_type, goods=goods, section=section, section_type=section_type) }}
-          {{ buttons.upload_document_button(report, report_type, goods=goods) }}
+          {{ buttons.upload_document_button(report, report_type, goods=goods, section=section, section_type=section_type) }}
           {{ buttons.no_firearm_button(report, report_type, csrf_input, goods=goods, section=section, section_type=section_type) }}
         </li>
       </ul>

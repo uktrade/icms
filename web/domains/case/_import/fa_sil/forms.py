@@ -614,39 +614,3 @@ class SILSupplementaryReportForm(forms.ModelForm):
             self.add_error(None, "You must enter this item.")
 
         return cleaned_data
-
-
-class SILSupplementaryReportFirearmSection1Form(forms.ModelForm):
-    class Meta:
-        model = models.SILSupplementaryReportFirearmSection1
-        fields = ("serial_number", "calibre", "model", "proofing")
-
-
-class SILSupplementaryReportFirearmSection2Form(forms.ModelForm):
-    class Meta:
-        model = models.SILSupplementaryReportFirearmSection2
-        fields = ("serial_number", "calibre", "model", "proofing")
-
-
-class SILSupplementaryReportFirearmSection5Form(forms.ModelForm):
-    class Meta:
-        model = models.SILSupplementaryReportFirearmSection5
-        fields = ("serial_number", "calibre", "model", "proofing")
-
-
-class SILSupplementaryReportFirearmSection582ObsoleteForm(forms.ModelForm):  # /PS-IGNORE
-    class Meta:
-        model = models.SILSupplementaryReportFirearmSection582Obsolete  # /PS-IGNORE
-        fields = ("serial_number", "calibre", "model", "proofing")
-
-
-class SILSupplementaryReportFirearmSection582OtherForm(forms.ModelForm):  # /PS-IGNORE
-    class Meta:
-        model = models.SILSupplementaryReportFirearmSection582Other  # /PS-IGNORE
-        fields = ("serial_number", "calibre", "model", "proofing")
-
-
-class SILSupplementaryReportFirearmSectionLegacyForm(forms.ModelForm):
-    class Meta:
-        model = models.SILSupplementaryReportFirearmSectionLegacy
-        fields = ("serial_number", "calibre", "model", "proofing")

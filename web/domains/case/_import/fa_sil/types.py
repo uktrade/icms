@@ -41,14 +41,3 @@ SILReportFirearmModel = Union[
 ]
 
 SILReportFirearmModelT = type[SILReportFirearmModel]
-
-SILReportFirearmFormT = type[
-    Union[
-        forms.SILSupplementaryReportFirearmSection1Form,
-        forms.SILSupplementaryReportFirearmSection2Form,
-        forms.SILSupplementaryReportFirearmSection5Form,
-        forms.SILSupplementaryReportFirearmSection582ObsoleteForm,  # /PS-IGNORE
-        forms.SILSupplementaryReportFirearmSection582OtherForm,  # /PS-IGNORE
-        forms.SILSupplementaryReportFirearmSectionLegacyForm,
-    ]
-]
