@@ -883,6 +883,7 @@ class TestCreateCATemplateFromExportApplicationView:
             "name": "Test CFS application template",
             "description": "Test description",
             "sharing": CertificateApplicationTemplate.SharingStatuses.EDIT,
+            "template_country": CertificateApplicationTemplate.CountryType.GB,
         }
         resp = exporter_client.post(url, data=form_data)
 

@@ -114,6 +114,7 @@ def create(request: AuthenticatedHttpRequest) -> HttpResponse:
             "page_title": "Create Certificate Application Template",
             "form": form,
             "read_only": False,
+            "show_template_country": form.show_template_country,
         }
 
         return render(request, "web/domains/cat/create.html", context)
@@ -263,6 +264,9 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMix
             "step": step,
             "cat_pk": self.object.pk,
         }
+
+        if step == "initial":
+            extra["show_template_country"] = form.show_template_country
 
         if app_type == ExportApplicationType.Types.FREE_SALE:
             if step == CatSteps.CFS:

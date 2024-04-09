@@ -19,6 +19,7 @@ from web.models import (
     User,
 )
 from web.permissions import Perms
+from web.utils import is_northern_ireland_postcode
 
 
 class CreateImportApplicationForm(forms.Form):
@@ -157,7 +158,7 @@ class CreateWoodQuotaApplicationForm(CreateImportApplicationForm):
             office: Office = cleaned_data["importer_office"]
             postcode: str | None = office.postcode
 
-            if not postcode or (not postcode.upper().startswith("BT")):
+            if not is_northern_ireland_postcode(postcode):
                 self.add_error(
                     "importer_office",
                     "Wood applications can only be made for Northern Ireland traders.",

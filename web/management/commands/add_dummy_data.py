@@ -444,6 +444,7 @@ def create_certificate_application_templates(
         name="Test CFS Template",
         description="description",
         application_type=ExportApplicationType.Types.FREE_SALE,
+        template_country=CertificateApplicationTemplate.CountryType.GB,
         sharing=CertificateApplicationTemplate.SharingStatuses.EDIT,
         owner=owner,
     )

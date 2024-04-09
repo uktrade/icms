@@ -22,7 +22,7 @@ from web.domains.template.utils import (
 from web.models import CertificateOfGoodManufacturingPracticeApplication
 from web.sites import get_exporter_site_domain
 from web.types import DocumentTypes
-from web.utils import day_ordinal_date, strip_spaces
+from web.utils import day_ordinal_date, is_northern_ireland_postcode, strip_spaces
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -319,7 +319,7 @@ def _get_importer_eori_numbers(application: "FaImportApplication") -> list[str]:
     importer = application.importer
     office = application.importer_office
     postcode = office.postcode
-    is_northern_ireland = postcode and postcode.upper().startswith("BT") or False
+    is_northern_ireland = is_northern_ireland_postcode(postcode)
 
     # Use override if set
     main_eori_num = office.eori_number or importer.eori_number

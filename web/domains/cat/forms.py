@@ -3,6 +3,7 @@ from typing import Any
 
 import django_filters
 from django import forms
+from django.db.models import QuerySet
 
 from web.domains.case.export.forms import (
     CFSActiveIngredientForm,
@@ -24,6 +25,7 @@ from web.models import (
     CFSProductTypeTemplate,
     CFSScheduleTemplate,
     ExportApplicationType,
+    ProductLegislation,
 )
 
 
@@ -48,15 +50,73 @@ class CATFilter(django_filters.FilterSet):
 class CreateCATForm(forms.ModelForm):
     class Meta:
         model = CertificateApplicationTemplate
-        fields = ("application_type", "name", "description", "sharing")
+        fields = ("application_type", "template_country", "name", "description", "sharing")
         widgets = {"description": forms.Textarea({"rows": 4})}
+
+    class Media:
+        js = ("web/js/pages/cat-form.js",)
+
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean()
+
+        application_type = cleaned_data.get("application_type")
+
+        # if application_type is not set template_country is not displayed.
+        if not application_type:
+            return cleaned_data
+
+        if application_type == ExportApplicationType.Types.FREE_SALE:
+            if not cleaned_data.get("template_country"):
+                self.add_error("template_country", "You must enter this item")
+
+        return cleaned_data
+
+    @property
+    def show_template_country(self) -> bool:
+        return (
+            self.is_bound
+            and self.data.get("application_type") == ExportApplicationType.Types.FREE_SALE
+        )
 
 
 class EditCATForm(forms.ModelForm):
     class Meta:
         model = CertificateApplicationTemplate
-        fields = ("name", "description", "sharing")
+        fields = ("template_country", "name", "description", "sharing")
         widgets = {"description": forms.Textarea({"rows": 4})}
+        help_texts = {
+            "template_country": (
+                "Country where the goods will be exported from."
+                " Changing this value will result in all schedule legislations being cleared from the template."
+            ),
+        }
+
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean()
+
+        if self.instance.application_type == ExportApplicationType.Types.FREE_SALE:
+            if not cleaned_data.get("template_country"):
+                self.add_error("template_country", "You must enter this item")
+
+        return cleaned_data
+
+    def save(self, commit: bool = True) -> CertificateApplicationTemplate:
+        # Save the CertificateApplicationTemplate instance
+        cat = super().save(commit=commit)
+
+        # Remove existing legislations.
+        if self.show_template_country and "template_country" in self.changed_data:
+            for schedule in cat.cfs_template.schedules.all():
+                schedule.legislations.all().delete()
+
+        return cat
+
+    @property
+    def show_template_country(self) -> bool:
+        return (
+            self.instance
+            and self.instance.application_type == ExportApplicationType.Types.FREE_SALE
+        )
 
 
 def copy_form_fields(form_fields: Iterable[str], *exclude: str) -> list[str]:
@@ -93,6 +153,16 @@ class CFSScheduleTemplateForm(EditCFScheduleForm):
         model = CFSScheduleTemplate
         fields = copy_form_fields(EditCFScheduleForm.Meta.fields)
         widgets = EditCFScheduleForm.Meta.widgets
+
+    def get_legislations_queryset(self) -> QuerySet[ProductLegislation]:
+        legislation_qs = ProductLegislation.objects.filter(is_active=True)
+
+        if self.instance.application.template.is_ni_template:
+            legislation_qs = legislation_qs.filter(ni_legislation=True)
+        else:
+            legislation_qs = legislation_qs.filter(gb_legislation=True)
+
+        return legislation_qs
 
 
 class CFSManufacturerDetailsTemplateForm(CFSManufacturerDetailsForm):

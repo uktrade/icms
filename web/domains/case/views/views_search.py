@@ -52,6 +52,7 @@ from web.models import (
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     ExportApplication,
+    ExportApplicationType,
     Exporter,
     ImportApplication,
     ImportApplicationType,
@@ -632,6 +633,9 @@ class CreateCATemplateFromExportApplicationView(
         return context | {
             "application_title": ProcessTypes(application.process_type).label,
             "existing_application": self.existing_app,
+            "show_template_country": (
+                application.application_type.type_code == ExportApplicationType.Types.FREE_SALE
+            ),
         }
 
     def get_form_kwargs(self) -> dict[str, Any]:

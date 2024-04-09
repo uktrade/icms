@@ -39,7 +39,13 @@
       {% include "web/domains/case/export/partials/cfs/edit-schedule-form-content.html" %}
     {% else %}
       {% for field in form %}
-        {{ fields.field(field) }}
+        {% if field.name == "template_country" %}
+          <div id="template_country-wrapper" {% if not show_template_country %} style="display: none"{% endif %}>
+            {{ fields.field(field, show_optional_indicator=False) }}
+          </div>
+        {% else %}
+          {{ fields.field(field) }}
+        {% endif %}
       {% endfor %}
     {% endif %}
     <div class="section-break"></div>

@@ -121,7 +121,6 @@ class CreateExportApplicationConfig(NamedTuple):
         | CertificateOfManufactureApplication
         | CertificateOfGoodManufacturingPracticeApplication
     ]
-    form_class: type[CreateExportApplicationForm]
     certificate_message: str
 
 
@@ -161,7 +160,7 @@ def create_export_application(
         app_template = None
 
     if request.method == "POST":
-        form = config.form_class(request.POST, user=request.user)
+        form = CreateExportApplicationForm(request.POST, user=request.user, cat=app_template)
 
         if form.is_valid():
             application = config.model_class()
@@ -213,7 +212,7 @@ def create_export_application(
             )
 
     else:
-        form = config.form_class(user=request.user)
+        form = CreateExportApplicationForm(user=request.user)
 
     exporters_with_agents = get_objects_for_user(
         request.user, [Perms.obj.exporter.is_agent], Exporter
@@ -250,7 +249,6 @@ def get_create_export_app_config(type_code: str) -> CreateExportApplicationConfi
     if type_code == ExportApplicationType.Types.MANUFACTURE:
         return CreateExportApplicationConfig(
             model_class=CertificateOfManufactureApplication,
-            form_class=CreateExportApplicationForm,
             certificate_message=(
                 "Certificates of Manufacture are applicable only to pesticides that are for export"
                 " only and not on free sale on the domestic market."
@@ -260,7 +258,6 @@ def get_create_export_app_config(type_code: str) -> CreateExportApplicationConfi
     elif type_code == ExportApplicationType.Types.FREE_SALE:
         return CreateExportApplicationConfig(
             model_class=CertificateOfFreeSaleApplication,
-            form_class=CreateExportApplicationForm,
             certificate_message=(
                 "If you are supplying the product to a client in the UK then you do not require a certificate."
                 " Your client may need to apply for a certificate if they subsequently export"
@@ -274,7 +271,6 @@ def get_create_export_app_config(type_code: str) -> CreateExportApplicationConfi
     elif type_code == ExportApplicationType.Types.GMP:
         return CreateExportApplicationConfig(
             model_class=CertificateOfGoodManufacturingPracticeApplication,
-            form_class=CreateExportApplicationForm,
             certificate_message="",
         )
 

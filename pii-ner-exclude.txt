@@ -4298,3 +4298,6 @@ Section 5 Obsolete Goods Unlimited
 Section 5 - Other
 Section 5 Other Goods
 Section 5 Other Goods Unlimited
+{{ application_field(application_template.get_is_ni_template_display
+GB CFS Application
+Template Country
