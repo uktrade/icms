@@ -3,6 +3,7 @@ from pytest_django.asserts import assertInHTML, assertRedirects
 
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
+from web.views.actions import Unarchive
 
 from .factory import TemplateFactory
 
@@ -41,6 +42,14 @@ class TestTemplateListView(AuthTestCase):
         response = self.ilb_admin_client.get(self.url, {"page": "3", "template_name": ""})
         page = response.context_data["page"]
         assert len(page.object_list) == 50
+
+    def test_archived_not_editable(self):
+        """Making sure that the only visible action for archived templates is the unarchive action"""
+        new_constabulary = TemplateFactory(is_active=False)
+        response = self.ilb_admin_client.get(self.url)
+        for action in response.context_data["display"].actions:
+            if action.display(new_constabulary) is True:
+                assert isinstance(action, Unarchive)
 
 
 class TestEndorsementCreateView(AuthTestCase):

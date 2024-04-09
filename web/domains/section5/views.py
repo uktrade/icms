@@ -30,7 +30,11 @@ class ListSection5(ModelFilterView):
             "description": {"header": "Description"},
         }
         opts = {"inline": True, "icon_only": True}
-        actions = [EditSection5Action(**opts), Archive(**opts), Unarchive(**opts)]
+        actions = [
+            EditSection5Action(hide_if_archived_object=True, **opts),
+            Archive(**opts),
+            Unarchive(**opts),
+        ]
 
     def get_queryset(self):
         qs = super().get_queryset().order_by("-is_active", "-created_datetime")

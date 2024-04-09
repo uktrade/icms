@@ -49,7 +49,7 @@ class TemplateListView(ModelFilterView):
             "template_type_verbose": {"header": "Template Type"},
             "template_status": {"header": "Template Status"},
         }
-        actions = [Archive(), Unarchive(), EditTemplate()]
+        actions = [Archive(), Unarchive(), EditTemplate(hide_if_archived_object=True)]
 
 
 @login_required

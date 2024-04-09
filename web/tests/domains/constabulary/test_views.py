@@ -9,6 +9,7 @@ from web.permissions import constabulary_get_contacts
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 from web.tests.helpers import get_test_client
+from web.views.actions import Unarchive
 
 from .factory import ConstabularyFactory
 
@@ -72,6 +73,14 @@ class TestConstabularyListView(AuthTestCase):
         response = self.ilb_admin_client.get(self.url, {"page": "2", "name": ""})
         page = response.context_data["page"]
         assert len(page.object_list) == 15
+
+    def test_archived_not_editable(self):
+        """Making sure that the only visible action for archived constabularies is the unarchive action"""
+        new_constabulary = ConstabularyFactory(is_active=False)
+        response = self.ilb_admin_client.get(self.url, {"archived": "on"})
+        for action in response.context_data["display"].actions:
+            if action.display(new_constabulary) is True:
+                assert isinstance(action, Unarchive)
 
 
 class TestConstabularyCreateView(AuthTestCase):

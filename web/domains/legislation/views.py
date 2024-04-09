@@ -35,7 +35,7 @@ class ProductLegislationListView(ModelFilterView):
             "is_ni_legislation": {"header": "Northern Ireland Legislation"},
         }
 
-        actions = [Archive(), Unarchive(), Edit()]
+        actions = [Archive(), Unarchive(), Edit(hide_if_archived_object=True)]
 
 
 class ProductLegislationCreateView(ModelCreateView):
