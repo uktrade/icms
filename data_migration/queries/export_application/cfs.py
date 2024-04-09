@@ -133,12 +133,21 @@ SELECT
   , e.email_subject subject
   , e.email_body body
   , e.response_body response
-  , e.start_datetime sent_datetime
+  , x.sent_datetime
   , CASE e.email_status WHEN 'CLOSED' THEN e.last_updated_datetime ELSE NULL END closed_datetime
   , 'CA_HSE_EMAIL' template_code
 FROM impmgr.xview_cert_app_hse_emails e
 INNER JOIN impmgr.hse_email_recipients r ON r.status = 'CURRENT'
+INNER JOIN impmgr.certificate_app_details cad ON cad.id = e.cad_id
+CROSS JOIN XMLTABLE(
+  '/*/CASE/HSE_EMAILS/EMAIL_LIST/EMAIL'
+  PASSING cad.xml_data
+  COLUMNS
+    email_id NUMBER PATH '/*/EMAIL_ID/text()'
+  , sent_datetime VARCHAR2(4000) PATH '/*/SEND/SENT_DATETIME/text()'
+) x
 WHERE e.status_control = 'C'
+AND x.email_id = e.email_id
 AND e.status <> ' DELETED'
 ORDER BY e.cad_id, e.email_id
 """
