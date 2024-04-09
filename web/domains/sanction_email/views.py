@@ -22,7 +22,11 @@ class SanctionEmailsListView(ModelFilterView):
             "email": {"header": "Email Address"},
         }
         opts = {"inline": True, "icon_only": True}
-        actions = [actions.Edit(**opts), actions.Archive(**opts), actions.Unarchive(*opts)]
+        actions = [
+            actions.Edit(hide_if_archived_object=True, **opts),
+            actions.Archive(**opts),
+            actions.Unarchive(*opts),
+        ]
 
 
 @login_required

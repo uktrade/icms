@@ -104,11 +104,20 @@ class Edit(LinkAction):
     label = "Edit"
     icon = "icon-pencil"
 
+    def __init__(self, *args, hide_if_archived_object: bool = False, **kwargs):
+        self.hide_if_archived_object = hide_if_archived_object
+        super().__init__(*args, **kwargs)
+
     def href(self, object):
         return f"{object.id}/edit/"
 
+    def display(self, object):
+        if isinstance(object, Archivable) and self.hide_if_archived_object and not object.is_active:
+            return False
+        return True
 
-class EditTemplate(LinkAction):
+
+class EditTemplate(Edit):
     label = "Edit"
     icon = "icon-pencil"
 
@@ -124,7 +133,7 @@ class EditTemplate(LinkAction):
         # CFS Schedule defines the reference text in English, and it should not be editable
         if object.template_type == Template.CFS_SCHEDULE:
             return False
-        return True
+        return super().display(object)
 
 
 class Archive(PostAction):

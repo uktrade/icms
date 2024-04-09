@@ -39,7 +39,7 @@ class ConstabularyListView(ModelFilterView):
             "email": {"header": "Email Address"},
             "telephone_number": {"header": "Telephone Number"},
         }
-        actions = [Archive(), Unarchive(), Edit()]
+        actions = [Archive(), Unarchive(), Edit(hide_if_archived_object=True)]
 
 
 class ConstabularyCreateView(ModelCreateView):
