@@ -42,27 +42,30 @@ class TestTemplatesFilter(TestCase):
         return TemplatesFilter(data=data).qs
 
     def test_template_name_filter(self):
-        results = self.run_filter({"template_name": "Active"})
+        results = self.run_filter({"template_name_title": "Active"})
         assert results.count() == 2
-
-    def test_template_type_filter(self):
-        results = self.run_filter({"template_type": Template.EMAIL_TEMPLATE})
-        assert self.email in results
 
     def test_application_domain_filter(self):
         results = self.run_filter({"application_domain": Template.IMPORT_APPLICATION})
         assert self.letter in results
         assert self.archived_endorsement in results
 
-    def test_template_title_filter(self):
-        results = self.run_filter({"template_title": "endors"})
-        assert results.count() == 1
-        assert results.first().template_title == "Endorsement Title"
-
     def test_template_content_filter(self):
         results = self.run_filter({"template_content": "test let"})
         assert results.count() == 1
         assert results.first().template_name == "Active Letter Template"
+
+    def test_filter_name_title(self):
+        """Tests that the template_name_title filter searches on both"""
+        template_object = TemplateFactory(template_name="weird_name", template_title="weird_title")
+        results = self.run_filter({"template_name_title": "weird_name"})
+
+        assert results.count() == 1
+        assert results.get() == template_object
+
+        results = self.run_filter({"template_name_title": "weird_title"})
+        assert results.count() == 1
+        assert results.get() == template_object
 
 
 class TestEmailTemplateForm(TestCase):

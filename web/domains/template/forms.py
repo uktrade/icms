@@ -2,6 +2,7 @@ import re
 from typing import Any
 
 from django import forms
+from django.db.models import Q, QuerySet
 from django_filters import CharFilter, ChoiceFilter, FilterSet
 from django_select2 import forms as s2forms
 
@@ -80,20 +81,33 @@ class LetterFragmentForm(forms.ModelForm):
 
 class TemplatesFilter(FilterSet):
     # Fields of the model that can be filtered
-    template_name = CharFilter(lookup_expr="icontains", label="Template Name")
+    template_name_title = CharFilter(
+        method="filter_name_title", label="Template / Endorsement Name"
+    )
     application_domain = ChoiceFilter(
-        choices=Template.DOMAINS, lookup_expr="exact", label="Application Domain"
+        choices=Template.DOMAINS, lookup_expr="exact", label="Application Domain", empty_label="Any"
     )
     template_type = ChoiceFilter(
-        choices=sorted(Template.TYPES), lookup_expr="exact", label="Template Type"
+        choices=sorted(Template.TYPES),
+        lookup_expr="exact",
+        label="Template Type",
+        empty_label="Any",
     )
-    template_title = CharFilter(lookup_expr="icontains", label="Template Title")
     template_content = CharFilter(lookup_expr="icontains", label="Template Content")
     is_active = ChoiceFilter(choices=Template.STATUS, lookup_expr="exact", label="Template Status")
 
     class Meta:
         model = Template
         fields: list[Any] = []  # Django complains without fields set in the meta
+
+    def filter_name_title(self, queryset: QuerySet, name: str, value: str) -> QuerySet:
+        """Search templates by both template_name and template_title.
+
+        template_title is used as the subject line for email templates, and users may want to search by that, but it's
+        not necessary to have an additional search field just for template_title."""
+        return queryset.filter(
+            Q(template_name__icontains=value) | Q(template_title__icontains=value)
+        )
 
 
 class EndorsementUsageForm(forms.Form):

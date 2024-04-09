@@ -39,14 +39,14 @@ class TemplateListView(ModelFilterView):
     class Display:
         fields = [
             "template_name",
-            "application_domain_verbose",
             "template_type_verbose",
+            "application_domain_verbose",
             "template_status",
         ]
         fields_config = {
-            "template_name": {"header": "Template Name", "link": True},
-            "application_domain_verbose": {"header": "Application Domain"},
+            "template_name": {"header": "Template / Endorsement Name", "link": True},
             "template_type_verbose": {"header": "Template Type"},
+            "application_domain_verbose": {"header": "Application Domain"},
             "template_status": {"header": "Template Status"},
         }
         actions = [Archive(), Unarchive(), EditTemplate(hide_if_archived_object=True)]
