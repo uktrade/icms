@@ -436,9 +436,12 @@ class SILSupplementaryReport(SupplementaryReportBase):
         )
 
     def get_add_firearm_url(
-        self, section_type: str, section_pk: int, url_type: Literal["manual", "no-firearm"]
+        self,
+        section_type: str,
+        section_pk: int,
+        url_type: Literal["upload", "manual", "no-firearm"],
     ) -> str:
-        if url_type not in ["manual", "no-firearm"]:
+        if url_type not in ["upload", "manual", "no-firearm"]:
             raise NotImplementedError(f"Invalid url type {url_type}")
 
         return reverse(
@@ -456,6 +459,12 @@ class SILSupplementaryReportFirearmBase(SupplementaryReportFirearmBase):
     class Meta:
         abstract = True
 
+    @property
+    def section_type(self) -> str:
+        # rather than pass section_type as a parameter to all the different HTML macros / python methods that require
+        # it, we can just use this property on the model itself to get the section type
+        raise NotImplementedError("section_type is not set")
+
     def get_description(self) -> str:
         return self.goods_certificate.description
 
@@ -471,12 +480,22 @@ class SILSupplementaryReportFirearmBase(SupplementaryReportFirearmBase):
             },
         )
 
-
-# TODO ICMSLST-1883:  SILSupplementaryReport firearms need to be able to handle documents
-#  Added to the models as part of ICMSLST-1756. Need to add to the frontend also
+    def get_view_upload_url(self) -> str:
+        return reverse(
+            "import:fa-sil:report-firearm-upload-view",
+            kwargs={
+                "application_pk": self.report.supplementary_info.import_application.pk,
+                "sil_section_type": self.section_type,
+                "report_pk": self.report.pk,
+                "section_pk": self.goods_certificate.pk,
+                "report_firearm_pk": self.pk,
+            },
+        )
 
 
 class SILSupplementaryReportFirearmSection1(SILSupplementaryReportFirearmBase):
+    section_type: str = "section1"
+
     report = models.ForeignKey(
         "web.SILSupplementaryReport", related_name="section1_firearms", on_delete=models.CASCADE
     )
@@ -491,6 +510,8 @@ class SILSupplementaryReportFirearmSection1(SILSupplementaryReportFirearmBase):
 
 
 class SILSupplementaryReportFirearmSection2(SILSupplementaryReportFirearmBase):
+    section_type: str = "section2"
+
     report = models.ForeignKey(
         "web.SILSupplementaryReport", related_name="section2_firearms", on_delete=models.CASCADE
     )
@@ -505,6 +526,8 @@ class SILSupplementaryReportFirearmSection2(SILSupplementaryReportFirearmBase):
 
 
 class SILSupplementaryReportFirearmSection5(SILSupplementaryReportFirearmBase):
+    section_type: str = "section5"
+
     report = models.ForeignKey(
         "web.SILSupplementaryReport", related_name="section5_firearms", on_delete=models.CASCADE
     )
@@ -521,6 +544,8 @@ class SILSupplementaryReportFirearmSection5(SILSupplementaryReportFirearmBase):
 class SILSupplementaryReportFirearmSection582Obsolete(  # /PS-IGNORE
     SILSupplementaryReportFirearmBase
 ):
+    section_type: str = "section582-obsolete"
+
     report = models.ForeignKey(
         "web.SILSupplementaryReport",
         related_name="section582_obsolete_firearms",
@@ -537,6 +562,8 @@ class SILSupplementaryReportFirearmSection582Obsolete(  # /PS-IGNORE
 
 
 class SILSupplementaryReportFirearmSection582Other(SILSupplementaryReportFirearmBase):  # /PS-IGNORE
+    section_type: str = "section582-other"
+
     report = models.ForeignKey(
         "web.SILSupplementaryReport",
         related_name="section582_other_firearms",
@@ -553,6 +580,8 @@ class SILSupplementaryReportFirearmSection582Other(SILSupplementaryReportFirearm
 
 
 class SILSupplementaryReportFirearmSectionLegacy(SILSupplementaryReportFirearmBase):
+    section_type: str = "section_legacy"
+
     report = models.ForeignKey(
         "web.SILSupplementaryReport",
         related_name="section_legacy_firearms",

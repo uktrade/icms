@@ -33,6 +33,12 @@
       class="button small-button icon-plus">
       Upload Document
     </a>
+  {% elif report_type == "sil" %}
+    <a
+      href="{{ report.get_add_firearm_url(section_type, section.pk, 'upload') }}"
+      class="button small-button icon-plus">
+      Upload Document
+    </a>
   {% endif %}
 {%- endmacro -%}
 
