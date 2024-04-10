@@ -3,7 +3,7 @@ from playwright.sync_api import Page
 from web.end_to_end import conftest, utils
 
 
-def test_can_create_cfs(pages: conftest.UserPages) -> None:
+def test_can_create_cfs_application(pages: conftest.UserPages) -> None:
     """End-to-end test for creating a CFS application.
 
     This tests requires multiple pages as there is a back and forth between user types.
@@ -60,11 +60,11 @@ def cfs_create(page: Page) -> int:
     page.get_by_label("Product name").fill("Product 1")
     page.get_by_role("button", name="Save").click()
 
-    # Navigagte back to main schedule view of application
+    # Navigate back to main schedule view of application
     page.get_by_role("link", name="CFS Application").click()
 
     # Copy Schedule 1 (opens schedule 2)
-    page.get_by_role("link", name="Copy").click()
+    page.get_by_role("button", name="Copy").click()
 
     # Delete existing product
     page.get_by_role("button", name="Delete").click()
