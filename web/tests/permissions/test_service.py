@@ -2,7 +2,7 @@ import pytest
 from guardian.shortcuts import remove_perm
 
 from web.flow.models import ProcessTypes
-from web.models import Constabulary, User
+from web.models import Constabulary, Report, User
 from web.permissions.perms import Perms
 from web.permissions.service import (
     AppChecker,
@@ -11,6 +11,7 @@ from web.permissions.service import (
     can_user_edit_section5_authorities,
     can_user_manage_org_contacts,
     can_user_view_org,
+    can_user_view_report,
     can_user_view_search_cases,
     constabulary_add_contact,
     constabulary_get_contacts,
@@ -20,6 +21,8 @@ from web.permissions.service import (
     get_case_officers_for_process_type,
     get_ilb_case_officers,
     get_org_obj_permissions,
+    get_report_permission,
+    get_report_type_for_permission,
     get_sanctions_case_officers,
     get_user_exporter_permissions,
     get_user_importer_permissions,
@@ -29,6 +32,7 @@ from web.permissions.service import (
     organisation_get_contacts,
     organisation_remove_contact,
 )
+from web.reports.constants import ReportType
 
 
 class TestPermissionsService:
@@ -548,6 +552,47 @@ class TestPermissionsService:
         assert self.exporter_contact.groups.filter(
             name=Perms.obj.exporter.get_group_name()
         ).exists()
+
+    @pytest.mark.parametrize(
+        "report_type,expected_result",
+        ((ReportType.ISSUED_CERTIFICATES, False), (ReportType.SUPPLEMENTARY_FIREARMS, True)),
+    )
+    def test_can_user_view_report(self, report_type, expected_result, nca_admin_user):
+        report = Report.objects.get(report_type=report_type)
+        assert can_user_view_report(nca_admin_user, report) == expected_result
+
+    def test_all_reports_have_permission(self):
+        # A test to confirm all report types have a unique page permission
+        expected_permissions = {
+            ReportType.ISSUED_CERTIFICATES: "web.can_view_report_issued_certificates",
+            ReportType.ACCESS_REQUESTS: "web.can_view_report_access_requests",
+            ReportType.IMPORT_LICENCES: "web.can_view_report_import_licences",
+            ReportType.SUPPLEMENTARY_FIREARMS: "web.can_view_report_supplementary_firearms",
+            ReportType.FIREARMS_LICENCES: "web.can_view_report_firearms_licences",
+        }
+        for report_type, _ in ReportType.choices:
+            report = Report.objects.get(report_type=report_type)
+            assert get_report_permission(report) == expected_permissions[report.report_type]
+
+    def test_get_report_permission_unknown(self):
+        report = Report.objects.get(report_type=ReportType.IMPORT_LICENCES)
+        report.report_type = "TEST"
+        with pytest.raises(ValueError, match="Unknown Report Type TEST"):
+            get_report_permission(report)
+
+    @pytest.mark.parametrize(
+        "perm,expected_report_type",
+        (
+            (Perms.sys.access_reports, None),
+            (Perms.page.view_report_import_licences, ReportType.IMPORT_LICENCES),
+            (Perms.page.view_report_supplementary_firearms, ReportType.SUPPLEMENTARY_FIREARMS),
+            (Perms.page.view_report_access_requests, ReportType.ACCESS_REQUESTS),
+            (Perms.page.view_report_firearms_licences, ReportType.FIREARMS_LICENCES),
+            (Perms.page.view_report_issued_certificates, ReportType.ISSUED_CERTIFICATES),
+        ),
+    )
+    def test_get_report_type_for_permission(self, perm, expected_report_type):
+        assert get_report_type_for_permission(perm) == expected_report_type
 
     @pytest.mark.parametrize(
         "process_type,expected_email_addresses",

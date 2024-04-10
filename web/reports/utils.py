@@ -8,8 +8,11 @@ from web.models import (
     ImportApplication,
     ImportApplicationType,
     ProductLegislation,
+    Report,
     ScheduleReport,
+    User,
 )
+from web.permissions import get_report_type_for_permission
 
 from .constants import DateFilterType, ReportType
 from .serializers import (
@@ -137,3 +140,10 @@ def format_importer_address(ia: QuerySet) -> str:
 def get_error_serializer_header() -> list[str]:
     schema = ErrorSerializer.model_json_schema(by_alias=True, mode="serialization")
     return schema["required"]
+
+
+def get_report_objects_for_user(user: User) -> QuerySet[Report]:
+    report_types = filter(
+        None, [get_report_type_for_permission(perm) for perm in user.get_all_permissions()]
+    )
+    return Report.objects.filter(report_type__in=report_types)

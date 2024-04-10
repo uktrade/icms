@@ -131,9 +131,10 @@ def test_eori_number_not_required_importer_individual_form(importer, importer_on
 
 
 @pytest.mark.django_db()
-def test_eori_numer_required_importer_organisation_form(importer):
+@patch("web.domains.importer.forms.api_get_company")
+def test_eori_number_required_importer_organisation_form(api_get_company, importer):
     """Assert the EORI number field is required when they already have one."""
-
+    api_get_company.return_value = None
     data = {"name": "hello", "eori_number": "", "registered_number": "42"}
     form = ImporterOrganisationForm(instance=importer, data=data)
 
@@ -145,7 +146,7 @@ def test_eori_numer_required_importer_organisation_form(importer):
 
 @pytest.mark.django_db()
 @patch("web.domains.importer.forms.api_get_company")
-def test_eori_numer_not_required_importer_organisation_form(api_get_company, importer):
+def test_eori_number_not_required_importer_organisation_form(api_get_company, importer):
     """Assert the EORI number field is not required when they don't already have one."""
     api_get_company.return_value = {
         "registered_office_address": {
@@ -164,8 +165,10 @@ def test_eori_numer_not_required_importer_organisation_form(api_get_company, imp
 
 
 @pytest.mark.django_db()
-def test_eori_numer_required_new_importer_organisation_form():
+@patch("web.domains.importer.forms.api_get_company")
+def test_eori_number_required_new_importer_organisation_form(api_get_company):
     """Assert the EORI number field required when it's a newly created Importer."""
+    api_get_company.return_value = None
     data = {"name": "hello", "eori_number": "", "registered_number": "42"}
     form = ImporterOrganisationForm(data=data)
 

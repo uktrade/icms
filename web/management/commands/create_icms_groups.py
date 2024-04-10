@@ -32,7 +32,11 @@ def get_groups():
             Perms.page.view_import_case_search,
             Perms.page.view_export_case_search,
             Perms.page.view_imi,
-            Perms.page.view_reports,
+            Perms.page.view_report_access_requests,
+            Perms.page.view_report_firearms_licences,
+            Perms.page.view_report_import_licences,
+            Perms.page.view_report_supplementary_firearms,
+            Perms.page.view_report_issued_certificates,
             #
             # Sys permissions
             Perms.sys.ilb_admin,
@@ -44,7 +48,7 @@ def get_groups():
             Perms.sys.edit_section_5_firearm_authorities,
             Perms.sys.commodity_admin,
             Perms.sys.search_all_cases,
-            Perms.sys.generate_reports,
+            Perms.sys.access_reports,
         ],
         #
         # "Importer User": (System group + object permissions to related importers)
@@ -72,11 +76,11 @@ def get_groups():
             # Page permissions
             Perms.sys.importer_regulator,
             Perms.page.view_import_case_search,
+            Perms.page.view_report_firearms_licences,
+            Perms.page.view_report_supplementary_firearms,
             # Sys permissions
             Perms.sys.search_all_cases,
-            # NOTE: This user in V1 will also have some kind of report access that V2 hasn't implemented.
-            # e.g.
-            # Perms.sys.report_access
+            Perms.sys.access_reports,
         ],
         "Home Office Case Officer": {
             # Page permissions
@@ -120,14 +124,6 @@ def get_groups():
             #
             # Sys permissions
             Perms.sys.search_all_cases,
-        },
-        "Report User": {
-            #
-            # Page permissions
-            Perms.page.view_reports,
-            #
-            # Sys permissions
-            Perms.sys.generate_reports,
         },
         "ICMS Admin Site User": {
             Perms.sys.is_icms_data_admin,

@@ -31,22 +31,42 @@ def get_report_model(report_type):
     return Report.objects.get(report_type=report_type)
 
 
-def test_report_list_view(report_user_client):
-    response = report_user_client.get(CaseURLS.report_list_view())
+def test_ilb_admin_report_list_view(ilb_admin_client):
+    response = ilb_admin_client.get(CaseURLS.report_list_view())
     assert response.status_code == 200
     assertContains(response, "Issued Certificates")
+    assertContains(response, "Access Request Report for Importers and Exporters")
+    assertContains(response, "ICMS Import Licence Data Extract Report")
+    assertContains(response, "ICMS - Supplementary firearms information")
+    assertContains(response, "ICMS - Firearms Licences")
     assertTemplateUsed(response, "web/domains/reports/list-view.html")
 
 
+def test_nca_admin_report_list_view(nca_admin_client):
+    response = nca_admin_client.get(CaseURLS.report_list_view())
+    assert response.status_code == 200
+    assertNotContains(response, "Issued Certificates")
+    assertNotContains(response, "Access Request Report for Importers and Exporters")
+    assertNotContains(response, "ICMS Import Licence Data Extract Report")
+    assertContains(response, "ICMS - Supplementary firearms information")
+    assertContains(response, "ICMS - Firearms Licences")
+    assertTemplateUsed(response, "web/domains/reports/list-view.html")
+
+
+def test_access_denied_run_history_view(nca_admin_client):
+    report = get_report_model(ReportType.ISSUED_CERTIFICATES)
+    url = CaseURLS.run_history_view(report.pk)
+    response = nca_admin_client.get(url)
+    assert response.status_code == 403
+
+
 @pytest.mark.parametrize("show_deleted", (True, False))
-def test_run_history_view(
-    report_user_client, report_schedule, deleted_report_schedule, show_deleted
-):
+def test_run_history_view(ilb_admin_client, report_schedule, deleted_report_schedule, show_deleted):
     report = get_report_model(ReportType.ISSUED_CERTIFICATES)
     url = CaseURLS.run_history_view(report.pk)
     if show_deleted:
         url = url + "?deleted=1"
-    response = report_user_client.get(url)
+    response = ilb_admin_client.get(url)
     assert response.status_code == 200
     assertContains(response, "Run History")
     assertContains(response, "Run Report")
@@ -96,16 +116,23 @@ def test_run_history_view(
     ),
 )
 @mock.patch("web.reports.tasks.generate_report_task.delay")
-def test_run_report_view(mock_generate_report, report_user_client, report_type, post_data):
+def test_run_report_view(mock_generate_report, ilb_admin_client, report_type, post_data):
     mock_generate_report.return_value = None
     report = get_report_model(report_type)
-    response = report_user_client.post(
+    response = ilb_admin_client.post(
         CaseURLS.run_report_view(report.pk),
         data=post_data,
     )
     assert response.status_code == 302, response.context["form"].errors
     assert mock_generate_report.called is True
     assert response.headers["location"] == CaseURLS.run_history_view(report.pk)
+
+
+def test_access_denied_run_report_view(nca_admin_client):
+    report = get_report_model(ReportType.ISSUED_CERTIFICATES)
+    url = CaseURLS.run_report_view(report.pk)
+    response = nca_admin_client.get(url)
+    assert response.status_code == 403
 
 
 @pytest.mark.parametrize(
@@ -210,13 +237,13 @@ def test_run_report_view(mock_generate_report, report_user_client, report_type, 
 )
 @mock.patch("web.reports.tasks.generate_report_task.delay")
 def test_run_report_view_form_errors(
-    mock_generate_report, report_user_client, report_type, post_data, expected_errors
+    mock_generate_report, ilb_admin_client, report_type, post_data, expected_errors
 ):
     mock_generate_report.return_value = None
     report = get_report_model(report_type)
-    response = report_user_client.get(CaseURLS.run_report_view(report.pk))
+    response = ilb_admin_client.get(CaseURLS.run_report_view(report.pk))
     assert response.status_code == 200
-    response = report_user_client.post(
+    response = ilb_admin_client.post(
         CaseURLS.run_report_view(report.pk),
         data=post_data,
     )
@@ -225,8 +252,8 @@ def test_run_report_view_form_errors(
     assert response.context["form"].errors == expected_errors
 
 
-def test_report_output_view(report_user_client, report_schedule):
-    response = report_user_client.get(
+def test_report_output_view(ilb_admin_client, report_schedule):
+    response = ilb_admin_client.get(
         CaseURLS.run_output_view(report_schedule.report.pk, report_schedule.pk)
     )
     assert response.status_code == 200
@@ -239,8 +266,15 @@ def test_report_output_view(report_user_client, report_schedule):
     assertContains(response, "Application Submitted date")
 
 
-def test_report_delete_view(report_user_client, report_schedule):
-    response = report_user_client.post(
+def test_access_denied_run_output_view(nca_admin_client, report_schedule):
+    response = nca_admin_client.get(
+        CaseURLS.run_output_view(report_schedule.report.pk, report_schedule.pk)
+    )
+    assert response.status_code == 403
+
+
+def test_report_delete_view(ilb_admin_client, report_schedule):
+    response = ilb_admin_client.post(
         CaseURLS.delete_report_view(report_schedule.report.pk, report_schedule.pk), follow=True
     )
     assert response.status_code == 200
@@ -250,7 +284,7 @@ def test_report_delete_view(report_user_client, report_schedule):
 
 @mock.patch("web.reports.views.get_file_from_s3")
 def test_download_report_view(
-    mock_get_file_from_s3, report_user_client, report_schedule, report_user
+    mock_get_file_from_s3, ilb_admin_client, report_schedule, ilb_admin_user
 ):
     file_data = b"testdata"
     mock_get_file_from_s3.return_value = file_data
@@ -260,13 +294,13 @@ def test_download_report_view(
         content_type="application/csv",
         file_size=10,
         path="test.csv",
-        created_by=report_user,
+        created_by=ilb_admin_user,
     )
     generated_report = GeneratedReport.objects.create(
         schedule=report_schedule, document=document, status=ReportStatus.COMPLETED
     )
 
-    response = report_user_client.get(
+    response = ilb_admin_client.get(
         CaseURLS.download_report_view(report_schedule.report.pk, generated_report.pk)
     )
     assert response.status_code == 200
