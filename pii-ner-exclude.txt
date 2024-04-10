@@ -4286,3 +4286,15 @@ Completed with Errors
 Show Deleted Runs'
 web.reports.generate_report
 Template / Endorsement Name
+Section 1 Goods
+Section 1 Goods Unlimited
+Section 2 Goods
+Section 2 Goods Unlimited
+Section 5 Goods
+Section 5 Goods Unlimited
+Section 5 - Obsolete Calibre
+Section 5 Obsolete Goods
+Section 5 Obsolete Goods Unlimited
+Section 5 - Other
+Section 5 Other Goods
+Section 5 Other Goods Unlimited

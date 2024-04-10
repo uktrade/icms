@@ -68,24 +68,58 @@ def fa_sil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_role("button", name="Save").click()
 
     #
-    # Add goods for each section
+    # Add goods with quantity and unlimited quantity for each section
     #
+
+    # Section 1
     page.get_by_role("link", name="Add Goods Item").click()
     page.get_by_role("link", name="Section 1").click()
     page.get_by_label("No").check()
     page.get_by_label("Description").click()
-    page.get_by_label("Description").fill("Description")
-    page.get_by_label("Quantity\n        \n          optional", exact=True).click()
-    page.get_by_label("Quantity\n        \n          optional", exact=True).fill("5")
+    page.get_by_label("Description").fill("Section 1 Goods")
+    page.get_by_label("Quantity", exact=True).click()
+    page.get_by_label("Quantity", exact=True).fill("5")
+    page.get_by_role("button", name="Save").click()
+
+    page.get_by_role("link", name="Add Goods Item").click()
+    page.get_by_role("link", name="Section 1").click()
+    page.get_by_label("No").check()
+    page.get_by_label("Description").click()
+    page.get_by_label("Description").fill("Section 1 Goods Unlimited")
+    page.get_by_label("Unlimited Quantity").check()
+    page.get_by_role("button", name="Save").click()
+
+    # Section 2
+    page.get_by_role("link", name="Add Goods Item").click()
+    page.get_by_role("link", name="Section 2").click()
+    page.get_by_label("No").check()
+    page.get_by_label("Description").click()
+    page.get_by_label("Description").fill("Section 2 Goods")
+    page.get_by_label("Quantity", exact=True).click()
+    page.get_by_label("Quantity", exact=True).fill("12345")
     page.get_by_role("button", name="Save").click()
 
     page.get_by_role("link", name="Add Goods Item").click()
     page.get_by_role("link", name="Section 2").click()
     page.get_by_label("No").check()
     page.get_by_label("Description").click()
-    page.get_by_label("Description").fill("Description")
-    page.get_by_label("Quantity\n        \n          optional", exact=True).click()
-    page.get_by_label("Quantity\n        \n          optional", exact=True).fill("12345")
+    page.get_by_label("Description").fill("Section 2 Goods Unlimited")
+    page.get_by_label("Unlimited Quantity").check()
+    page.get_by_role("button", name="Save").click()
+
+    # Section 5
+    page.get_by_role("link", name="Add Goods Item").click()
+    page.get_by_role("link", name="Section 5").first.click()
+    page.get_by_role("textbox", name="---------").click()
+    page.get_by_role(
+        "option",
+        name="5(1)(a) Any firearm capable of burst- or fully automatic fire and component parts of these.",
+    ).click()
+    page.get_by_label("No").check()
+    page.get_by_label("Description").click()
+    page.get_by_label("Description").fill("Section 5 Goods")
+    page.get_by_label("Quantity", exact=True).click()
+    page.get_by_label("Quantity", exact=True).fill("1000")
     page.get_by_role("button", name="Save").click()
 
     page.get_by_role("link", name="Add Goods Item").click()
@@ -97,10 +131,11 @@ def fa_sil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     ).click()
     page.get_by_label("No").check()
     page.get_by_label("Description").click()
-    page.get_by_label("Description").fill("Description")
+    page.get_by_label("Description").fill("Section 5 Goods Unlimited")
     page.get_by_label("Unlimited Quantity").check()
     page.get_by_role("button", name="Save").click()
 
+    # Section 5 - Obsolete Calibre
     page.get_by_role("link", name="Add Goods Item").click()
     page.get_by_role("link", name="Section 58(2) - Obsolete Calibre").click()
     page.locator("#id_curiosity_ornament").get_by_text("Yes").click()
@@ -111,18 +146,19 @@ def fa_sil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_role("textbox", name="---------").click()
     page.get_by_role("option", name="9mm").click()
     page.get_by_label("Description").click()
-    page.get_by_label("Description").fill("Description")
+    page.get_by_label("Description").fill("Section 5 Obsolete Goods")
     page.get_by_label("Quantity").click()
     page.get_by_label("Quantity").fill("54321")
     page.get_by_role("button", name="Save").click()
 
+    # Section 5 - Other
     page.get_by_role("link", name="Add Goods Item").click()
     page.get_by_role("link", name="Section 58(2) - Other").click()
     page.locator("#id_curiosity_ornament_0").check()
     page.get_by_label("Do you acknowledge the above statement?").check()
     page.locator("#id_manufacture_0").check()
     page.get_by_label("Description").click()
-    page.get_by_label("Description").fill("Desc")
+    page.get_by_label("Description").fill("Section 5 Other Goods")
     page.get_by_label("Quantity").click()
     page.get_by_label("Quantity").fill("12345")
     page.locator("#id_muzzle_loading_0").check()

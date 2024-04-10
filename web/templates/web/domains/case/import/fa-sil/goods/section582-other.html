@@ -31,9 +31,7 @@
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
     {{ fields.field(form.curiosity_ornament, show_optional_indicator=False) }}
-
     <hr />
-
     <div class="row">
       <div class="three columns"></div>
       <div class="six columns">
@@ -49,34 +47,22 @@
     {{ fields.field(form.acknowledgement,
                     checkbox_label='I acknowledge the above statement as true',
                     show_optional_indicator=False) }}
-
     <hr />
-
     {{ fields.field(form.manufacture, show_optional_indicator=False) }}
     {{ fields.field(form.description, show_optional_indicator=False) }}
     {{ fields.field(form.quantity, show_optional_indicator=False) }}
-
     <hr />
-
     {{ fields.field(form.muzzle_loading, show_optional_indicator=False) }}
-
     <hr />
-
     {{ fields.field(form.rimfire, show_optional_indicator=False) }}
     {{ fields.field(form.rimfire_details, show_optional_indicator=False) }}
-
     <hr />
-
     {{ fields.field(form.ignition, show_optional_indicator=False) }}
     {{ fields.field(form.ignition_details, show_optional_indicator=False) }}
     {{ fields.field(form.ignition_other, show_optional_indicator=False) }}
-
     <hr />
-
     {{ fields.field(form.chamber, show_optional_indicator=False) }}
-
     <hr />
-
     {{ fields.field(form.bore, show_optional_indicator=False) }}
     {{ fields.field(form.bore_details, show_optional_indicator=False) }}
 

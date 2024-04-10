@@ -37,9 +37,7 @@
   {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
 
     {{ fields.field(form.curiosity_ornament) }}
-
     <hr />
-
     <div class="row">
       <div class="three columns"></div>
       <div class="six columns">
@@ -52,27 +50,19 @@
       </div>
       <div class="three columns"></div>
     </div>
+
     {{ fields.field(form.acknowledgement,
                     checkbox_label='I acknowledge the above statement as true',
                     show_optional_indicator=False) }}
-
     <hr />
-
     {{ fields.field(form.centrefire, show_optional_indicator=False) }}
     {{ fields.field(form.manufacture, show_optional_indicator=False) }}
     {{ fields.field(form.original_chambering, show_optional_indicator=False) }}
-
     <hr />
-
     {{ fields.field(form.obsolete_calibre, show_optional_indicator=False) }}
-
     <hr />
-
     {{ fields.field(form.description, show_optional_indicator=False) }}
     {{ fields.field(form.quantity, show_optional_indicator=False) }}
-
-
-
 
     <div class="container">
       <div class="row">

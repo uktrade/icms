@@ -30,9 +30,11 @@
   <h3>Licence For Section 1</h3>
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
-    {% for field in form %}
-      {{ fields.field(field) }}
-    {% endfor %}
+    {{ fields.field(form.manufacture, show_optional_indicator=False) }}
+    {{ fields.field(form.description, show_optional_indicator=False) }}
+    <hr />
+    {{ fields.field(form.quantity, show_optional_indicator=False) }}
+    {{ fields.field(form.unlimited_quantity, checkbox_label='Unlimited Quantity', show_optional_indicator=False) }}
 
     <div class="container">
       <div class="row">
