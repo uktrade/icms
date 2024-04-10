@@ -31,9 +31,25 @@ class PagePermissions(PermissionTextChoice):
         "web.can_view_documents_constabulary",
         "Can view issued documents within constabulary region page",
     )
-    view_reports = (
-        "web.can_view_reports",
-        "Can view reports",
+    view_report_issued_certificates = (
+        "web.can_view_report_issued_certificates",
+        "Can view Issued Certificate Report",
+    )
+    view_report_access_requests = (
+        "web.can_view_report_access_requests",
+        "Can view Access Requests Report",
+    )
+    view_report_import_licences = (
+        "web.can_view_report_import_licences",
+        "Can view Import Licences Report",
+    )
+    view_report_supplementary_firearms = (
+        "web.can_view_report_supplementary_firearms",
+        "Can view Supplementary Firearms Report",
+    )
+    view_report_firearms_licences = (
+        "web.can_view_report_firearms_licences",
+        "Can view Firearms Licences Report",
     )
 
 
@@ -48,7 +64,7 @@ class SysPerms(PermissionTextChoice):
     commodity_admin = "web.commodity_admin", "Is a commodity administrator"
     manage_sanction_contacts = "web.manage_sanction_contacts", "Manage sanction email contacts"
     manage_signatures = "web.manage_signatures", "Manage signatures"
-    generate_reports = "web.generate_reports", "Generate reports"
+    access_reports = "web.access_reports", "Access reports"
 
     edit_firearm_authorities = (
         "web.edit_firearm_authorities",

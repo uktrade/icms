@@ -87,7 +87,6 @@ class Command(BaseCommand):
         self.create_ho_admin_user("ho_admin_user")
         self.create_san_admin_user("san_admin_user")
         self.create_import_search_user("import_search_user")
-        self.create_report_user("report_user")
         self.create_con_user(
             "con_user", linked_constabularies=["Nottingham", "Lincolnshire", "Derbyshire"]
         )
@@ -285,13 +284,6 @@ class Command(BaseCommand):
         user = self.create_user(username)
         add_email(user)
         add_group(user, "Import Search User")
-
-        return user
-
-    def create_report_user(self, username):
-        user = self.create_user(username)
-        add_email(user)
-        add_group(user, "Report User")
 
         return user
 

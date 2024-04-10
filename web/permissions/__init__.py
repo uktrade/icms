@@ -13,6 +13,7 @@ from .service import (
     can_user_edit_section5_authorities,
     can_user_manage_org_contacts,
     can_user_view_org,
+    can_user_view_report,
     can_user_view_search_cases,
     constabulary_add_contact,
     constabulary_get_contacts,
@@ -21,6 +22,7 @@ from .service import (
     get_case_officers_for_process_type,
     get_ilb_case_officers,
     get_org_obj_permissions,
+    get_report_type_for_permission,
     get_sanctions_case_officers,
     get_user_exporter_permissions,
     get_user_importer_permissions,
@@ -72,4 +74,6 @@ __all__ = [
     "exporter_object_permissions",
     "constabulary_object_permissions",
     "all_permissions",
+    "can_user_view_report",
+    "get_report_type_for_permission",
 ]

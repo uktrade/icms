@@ -11,7 +11,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, ListView, RedirectView
 
 from web.models import GeneratedReport, Report, ScheduleReport
-from web.permissions import Perms
+from web.permissions import Perms, can_user_view_report
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 from web.utils.spreadsheet import MIMETYPE
@@ -19,20 +19,26 @@ from web.utils.spreadsheet import MIMETYPE
 from .constants import ReportStatus, ReportType
 from .forms import ImportLicenceForm, IssuedCertificatesForm, ReportForm
 from .tasks import generate_report_task
-from .utils import format_parameters_used
+from .utils import format_parameters_used, get_report_objects_for_user
 
 ReportForms = Union[ImportLicenceForm, IssuedCertificatesForm, ReportForm]
 ReportFormType = type[ReportForms]
 
 
 class BaseReportView(LoginRequiredMixin, PermissionRequiredMixin):
-    permission_required = [Perms.page.view_reports]
+    permission_required = [Perms.sys.access_reports]
+
+    def has_permission(self) -> bool:
+        return super().has_permission() and can_user_view_report(
+            self.request.user, self.get_report()
+        )
 
     def get_report(self) -> Report:
         return get_object_or_404(Report, pk=self.kwargs["report_pk"])
 
 
-class ReportListView(BaseReportView, ListView):
+class ReportListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+    permission_required = [Perms.sys.access_reports]
     template_name = "web/domains/reports/list-view.html"
     model = Report
 
@@ -41,12 +47,15 @@ class ReportListView(BaseReportView, ListView):
         context["page_title"] = "Reports"
         return context
 
+    def get_queryset(self) -> QuerySet[Report]:
+        return get_report_objects_for_user(self.request.user)
+
 
 class RunHistoryListView(BaseReportView, ListView):
     template_name = "web/domains/reports/run-history-view.html"
     paginate_by = 20
 
-    def get_queryset(self) -> QuerySet:
+    def get_queryset(self) -> QuerySet[ScheduleReport]:
         queryset = ScheduleReport.objects.filter(report=self.get_report())
         if not self.request.GET.get("deleted"):
             queryset = queryset.exclude(status=ReportStatus.DELETED)
@@ -82,7 +91,6 @@ class RunOutputView(BaseReportView, DetailView):
 
 @method_decorator(transaction.atomic, name="post")
 class RunReportView(BaseReportView, CreateView):
-    permission_required = [Perms.page.view_reports, Perms.sys.generate_reports]  # type: ignore[list-item]
     template_name = "web/domains/reports/run-report.html"
 
     def get_context_data(self, *args: Any, **kwargs: Any) -> dict[str, Any]:

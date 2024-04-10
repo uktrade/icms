@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Literal, NamedTuple, TypeAlias
+from typing import TYPE_CHECKING, Literal, NamedTuple, TypeAlias
 
 from django.contrib.auth.models import Group, Permission
 from django.contrib.postgres.aggregates import ArrayAgg
@@ -18,7 +18,17 @@ from web.models import (
     ImporterUserObjectPermission,
     User,
 )
-from web.permissions import ExporterObjectPermissions, ImporterObjectPermissions, Perms
+from web.permissions import (
+    ExporterObjectPermissions,
+    ImporterObjectPermissions,
+    PagePermissions,
+    Perms,
+    SysPerms,
+)
+from web.reports.constants import ReportType
+
+if TYPE_CHECKING:
+    from web.models import Report
 
 ORGANISATION: TypeAlias = Importer | Exporter
 IMP_OR_EXP_PERMS_T = type[ImporterObjectPermissions | ExporterObjectPermissions]
@@ -442,3 +452,40 @@ def filter_users_with_org_access(org: ORGANISATION, users: QuerySet[User]) -> Qu
 
     # Note: We are ignoring user permissions by design
     return users.filter(groups__permissions__codename=org_access).distinct()
+
+
+def get_report_permission(report: "Report") -> PagePermissions:
+    match report.report_type:
+        case ReportType.ISSUED_CERTIFICATES:
+            return Perms.page.view_report_issued_certificates
+        case ReportType.IMPORT_LICENCES:
+            return Perms.page.view_report_import_licences
+        case ReportType.ACCESS_REQUESTS:
+            return Perms.page.view_report_access_requests
+        case ReportType.SUPPLEMENTARY_FIREARMS:
+            return Perms.page.view_report_supplementary_firearms
+        case ReportType.FIREARMS_LICENCES:
+            return Perms.page.view_report_firearms_licences
+        case _:
+            raise ValueError(f"Unknown Report Type {report.report_type}")
+
+
+def can_user_view_report(user: User, report: "Report") -> bool:
+    permission = get_report_permission(report)
+    return user.has_perm(permission)
+
+
+def get_report_type_for_permission(perm: PagePermissions | SysPerms) -> ReportType | None:
+    match perm:
+        case PagePermissions.view_report_issued_certificates:
+            return ReportType.ISSUED_CERTIFICATES
+        case PagePermissions.view_report_firearms_licences:
+            return ReportType.FIREARMS_LICENCES
+        case PagePermissions.view_report_supplementary_firearms:
+            return ReportType.SUPPLEMENTARY_FIREARMS
+        case PagePermissions.view_report_access_requests:
+            return ReportType.ACCESS_REQUESTS
+        case PagePermissions.view_report_import_licences:
+            return ReportType.IMPORT_LICENCES
+        case _:
+            return None

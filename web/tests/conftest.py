@@ -207,11 +207,6 @@ def exporter_agent_client(exporter_one_agent_one_contact, exporter_site) -> Clie
     return get_test_client(exporter_site.domain, exporter_one_agent_one_contact)
 
 
-@pytest.fixture()
-def report_user_client(report_user, caseworker_site) -> Client:
-    return get_test_client(caseworker_site.domain, report_user)
-
-
 #
 # User fixtures
 #
@@ -243,12 +238,6 @@ def san_admin_user(django_user_model):
 def import_search_user(django_user_model):
     """Fixture to get a Import Search user."""
     return django_user_model.objects.get(username="import_search_user")
-
-
-@pytest.fixture
-def report_user(django_user_model):
-    """Fixture to get a Reports user."""
-    return django_user_model.objects.get(username="report_user")
 
 
 @pytest.fixture
@@ -1484,12 +1473,12 @@ def mock_signature_file(monkeypatch):
 
 
 @pytest.fixture
-def report_schedule(report_user):
+def report_schedule(ilb_admin_user):
     issued_cert_report = Report.objects.get(report_type=ReportType.ISSUED_CERTIFICATES)
     return ScheduleReport.objects.create(
         report=issued_cert_report,
         title="test report",
-        scheduled_by=report_user,
+        scheduled_by=ilb_admin_user,
         notes="",
         parameters={
             "date_from": "2010-02-01",

@@ -179,14 +179,14 @@ def approved_importer_access_request(importer_access_request):
 
 @pytest.fixture
 @freeze_time("2021-02-11 12:00:00")
-def refused_importer_access_request(report_user):
+def refused_importer_access_request(ilb_admin_user):
     iar = ImporterAccessRequest.objects.create(
         process_type=ImporterAccessRequest.PROCESS_TYPE,
         request_type=ImporterAccessRequest.AGENT_ACCESS,
         status=ImporterAccessRequest.Statuses.CLOSED,
         response=ImporterAccessRequest.REFUSED,
-        submitted_by=report_user,
-        last_updated_by=report_user,
+        submitted_by=ilb_admin_user,
+        last_updated_by=ilb_admin_user,
         reference="iar/2",
         organisation_name="Import Ltd",
         organisation_address="1 Main Street",
@@ -206,14 +206,14 @@ def approved_exporter_access_request(exporter_access_request):
 
 @pytest.fixture
 @freeze_time("2021-02-11 12:00:00")
-def refused_exporter_access_request(report_user):
+def refused_exporter_access_request(ilb_admin_user):
     ear = ExporterAccessRequest.objects.create(
         process_type=ExporterAccessRequest.PROCESS_TYPE,
         request_type=ExporterAccessRequest.AGENT_ACCESS,
         status=ExporterAccessRequest.Statuses.CLOSED,
         response=ExporterAccessRequest.REFUSED,
-        submitted_by=report_user,
-        last_updated_by=report_user,
+        submitted_by=ilb_admin_user,
+        last_updated_by=ilb_admin_user,
         reference="ear/2",
         organisation_name="Export Ltd",
         organisation_address="2 Main Street",

@@ -4311,3 +4311,10 @@ Lancashire
 Poirot
 import_search_user_2
 Thomson
+Can view Access Requests Report
+Can view Supplementary Firearms Report
+Can view Firearms Licences Report
+Report
+Unknown Report Type TEST
+Africa
+Middle East

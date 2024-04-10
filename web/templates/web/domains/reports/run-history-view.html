@@ -16,13 +16,11 @@
 {% block main_content %}
 
   <h3>Run History</h3>
-    {% if "web.generate_reports" in perms %}
-      <a href="{{ icms_url('report:run-report-view', kwargs={'report_pk': report.pk}) }}" class="primary-button button">Run Report</a>
-    {% endif %}
+    <a href="{{ icms_url('report:run-report-view', kwargs={'report_pk': report.pk}) }}" class="primary-button button">Run Report</a>
   <div class="prompt">
-    {% if showing_deleted %}
+    {% if showing_deleted and object_list %}
       <a href="{{ icms_url('report:run-history-view', kwargs={'report_pk': report.pk}) }}">Hide Deleted Runs</a>
-    {% else %}
+    {% elif object_list %}
       <a href="{{ icms_url('report:run-history-view', kwargs={'report_pk': report.pk}) }}?deleted=1">Show Deleted Runs</a>
     {% endif  %}
   </div>

@@ -4,6 +4,7 @@ from web.reports.constants import ReportType
 from web.reports.utils import (
     format_parameters_used,
     get_error_serializer_header,
+    get_report_objects_for_user,
     get_variation_number,
 )
 
@@ -72,3 +73,27 @@ def test_get_error_serializer_header():
 )
 def test_get_variation_number(reference, expected_variation_number):
     assert get_variation_number(reference) == expected_variation_number
+
+
+def test_get_report_objects_for_ilb_admin_user(ilb_admin_user):
+    queryset = get_report_objects_for_user(ilb_admin_user)
+    assert set(queryset.values_list("report_type", flat=True)) == {
+        ReportType.ISSUED_CERTIFICATES,
+        ReportType.FIREARMS_LICENCES,
+        ReportType.ACCESS_REQUESTS,
+        ReportType.SUPPLEMENTARY_FIREARMS,
+        ReportType.IMPORT_LICENCES,
+    }
+
+
+def test_get_report_objects_for_nca_admin_user(nca_admin_user):
+    queryset = get_report_objects_for_user(nca_admin_user)
+    assert set(queryset.values_list("report_type", flat=True)) == {
+        ReportType.FIREARMS_LICENCES,
+        ReportType.SUPPLEMENTARY_FIREARMS,
+    }
+
+
+def test_get_report_objects_for_ho_admin_user(ho_admin_user):
+    queryset = get_report_objects_for_user(ho_admin_user)
+    assert set(queryset.values_list("report_type", flat=True)) == set()
