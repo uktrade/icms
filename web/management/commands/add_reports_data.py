@@ -15,18 +15,18 @@ templates = [
         ReportType.ACCESS_REQUESTS,
     ),
     (
-        "ICMS Import Licence Data Extract Report",
+        "Import Licence Data Extract Report",
         "Data extract of import licences filtering on licence type, submitted date and issued date",
         ReportType.IMPORT_LICENCES,
     ),
     (
-        "ICMS - Supplementary firearms information",
+        "Supplementary firearms information",
         "Data extract of import licences filtering on licence type, submitted date and issued date",
         ReportType.SUPPLEMENTARY_FIREARMS,
     ),
     (
-        "ICMS - Firearms Licences",
-        "Reports relating to ICMS Firearms licences",
+        "Firearms Licences",
+        "Reports relating to Firearms licences",
         ReportType.FIREARMS_LICENCES,
     ),
 ]

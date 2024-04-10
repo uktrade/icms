@@ -14,21 +14,21 @@ class TestGtmTags:
         assert set(settings.GTM_CONTAINER_IDS.keys()) == set(SiteName.labels)
 
     @override_settings(
-        GTM_CONTAINER_IDS={"Caseworker": "cw_container_id"},
+        GTM_CONTAINER_IDS={"Manage import licences and export certificates": "cw_container_id"},
     )
     def test_caseworker_tags_rendered_correctly(self, cw_client):
         response = cw_client.get("", follow=True)
         assert "id=cw_container_id" in response.content.decode("utf-8")
 
     @override_settings(
-        GTM_CONTAINER_IDS={"Export A Certificate": "export_container_id"},
+        GTM_CONTAINER_IDS={"Apply for an export certificate": "export_container_id"},
     )
     def test_export_tags_rendered_correctly(self, exporter_client):
         response = exporter_client.get("", follow=True)
         assert "id=export_container_id" in response.content.decode("utf-8")
 
     @override_settings(
-        GTM_CONTAINER_IDS={"Import A Licence": "import_container_id"},
+        GTM_CONTAINER_IDS={"Apply for an import licence": "import_container_id"},
     )
     def test_import_tags_rendered_correctly(self, importer_client):
         response = importer_client.get("", follow=True)

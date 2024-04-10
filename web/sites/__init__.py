@@ -11,9 +11,12 @@ from web.types import AuthenticatedHttpRequest, TypedTextChoices
 
 
 class SiteName(TypedTextChoices):
-    CASEWORKER = ("Caseworker", "Caseworker")
-    EXPORTER = ("Export A Certificate", "Export A Certificate")
-    IMPORTER = ("Import A Licence", "Import A Licence")
+    CASEWORKER = (
+        "Manage import licences and export certificates",
+        "Manage import licences and export certificates",
+    )
+    EXPORTER = ("Apply for an export certificate", "Apply for an export certificate")
+    IMPORTER = ("Apply for an import licence", "Apply for an import licence")
 
 
 def require_importer(check_permission=True):

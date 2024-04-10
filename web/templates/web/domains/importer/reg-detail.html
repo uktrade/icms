@@ -2,9 +2,8 @@
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
-{% block page_title %}View Importer{% endblock %}
 {% block context_header %}
-  View Importer '{{ object.display_name }}'
+  {{ page_title }} '{{ object.display_name }}'
 {% endblock %}
 
 {% block content_actions %}

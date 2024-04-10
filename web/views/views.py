@@ -62,25 +62,24 @@ def login_start_view(request: HttpRequest) -> HttpResponse:
     )
 
     if is_importer_site(request.site):
-        context = {
-            "service_title": "Apply for an Import Licence",
-            "service_description": "Use this service to apply for import licences",
+        extra = {
+            "service_description": "Use this service to apply for an import licence",
             "auth_login_url": one_login_login_url,
         }
     elif is_exporter_site(request.site):
-        context = {
-            "service_title": "Apply for a Certificate for Export",
-            "service_description": "Use this service to apply for certificates for export",
+        extra = {
+            "service_description": "Use this service to apply for an export certificate",
             "auth_login_url": one_login_login_url,
         }
     elif is_caseworker_site(request.site):
-        context = {
-            "service_title": "Manage import licences and certificates for export",
+        extra = {
             "service_description": "",
             "auth_login_url": staff_sso_login_url,
         }
     else:
         raise PermissionDenied
+
+    context = {"service_title": request.site.name} | extra
 
     return render(request, "login_start.html", context)
 

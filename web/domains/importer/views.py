@@ -198,6 +198,7 @@ class ImporterDetailRegulatorView(PermissionRequiredMixin, LoginRequiredMixin, D
         context = super().get_context_data(**kwargs)
 
         return context | {
+            "page_title": "View Importer",
             "parent_url": reverse("regulator-importer-list"),
             "is_main_importer": not self.object.is_agent(),
             "can_edit_firearm_authorities": can_user_edit_firearm_authorities(self.request.user),

@@ -1209,7 +1209,7 @@ Firearms references(s): 423,476,677\r\n"""
         emails.send_new_user_welcome_email(user, site)
         expected_import_personalisation = default_personalisation() | {
             "icms_url": expected_domain,
-            "service_name": "Import A Licence",
+            "service_name": "Apply for an import licence",
             "account_recovery_url": get_account_recovery_url(expected_domain),
             "access_request_url": get_importer_access_request_url(),
             "organisation_type": "Importer",
@@ -1232,7 +1232,7 @@ Firearms references(s): 423,476,677\r\n"""
         emails.send_new_user_welcome_email(user, site)
         expected_import_personalisation = default_personalisation() | {
             "icms_url": expected_domain,
-            "service_name": "Export A Certificate",
+            "service_name": "Apply for an export certificate",
             "account_recovery_url": get_account_recovery_url(expected_domain),
             "access_request_url": get_exporter_access_request_url(),
             "organisation_type": "Exporter",
@@ -1267,7 +1267,7 @@ Firearms references(s): 423,476,677\r\n"""
 
         expected_import_personalisation = default_personalisation() | {
             "icms_url": expected_domain,
-            "service_name": "Import A Licence",
+            "service_name": "Apply for an import licence",
             "organisation_name": self.importer.display_name,
             "first_name": invite.first_name,
             "last_name": invite.last_name,
@@ -1297,7 +1297,7 @@ Firearms references(s): 423,476,677\r\n"""
 
         expected_import_personalisation = default_personalisation() | {
             "icms_url": expected_domain,
-            "service_name": "Export A Certificate",
+            "service_name": "Apply for an export certificate",
             "organisation_name": self.exporter.name,
             "first_name": invite.first_name,
             "last_name": invite.last_name,

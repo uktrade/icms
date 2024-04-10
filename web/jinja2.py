@@ -190,7 +190,6 @@ def environment(**options):
             "get_latest_issued_document": get_latest_issued_document,
             "get_active_task_list": get_active_task_list,
             "get_user_obj_perms": get_user_obj_perms,
-            "page_title": "Import Case Management System",
             "get_css_rules_as_string": get_css_rules_as_string,
             "get_file_base64": get_file_base64,
             "gtm_enabled": settings.GTM_ENABLED,

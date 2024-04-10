@@ -19,12 +19,12 @@
 
     <link rel="icon" href="{{ static('web/img/favicon.png') }}" type="image/png">
 
-    {%- if page_title %}
+    {%- if page_title is defined and page_title %}
       {% set title=page_title %}
     {% else %}
-      {% set title='Import Case Management System' %}
+      {% set title=request.site.name %}
     {% endif -%}
-    <title>{% block page_title %}{{ title }}{% endblock %} - ICMS</title>
+    <title>{% block page_title %}{{ title }}{% endblock %}</title>
 
     {% compress css file main %}
       <link rel="stylesheet" type="text/css" href="{{ static('web/css/OpenSans/OpenSans.css') }}">
