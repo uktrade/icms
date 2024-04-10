@@ -506,7 +506,7 @@ P12_SIGNATURE_PASSWORD = env.p12_signature_password
 GTM_ENABLED = env.gtm_enabled
 
 GTM_CONTAINER_IDS = {
-    "Caseworker": env.gtm_caseworker_container_id,
-    "Export A Certificate": env.gtm_exporter_container_id,
-    "Import A Licence": env.gtm_importer_container_id,
+    "Manage import licences and export certificates": env.gtm_caseworker_container_id,
+    "Apply for an export certificate": env.gtm_exporter_container_id,
+    "Apply for an import licence": env.gtm_importer_container_id,
 }

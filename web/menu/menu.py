@@ -5,6 +5,7 @@ from django.conf import settings
 from django.urls import resolve, reverse
 
 from web.permissions import Perms, can_user_view_search_cases
+from web.sites import SiteName
 from web.types import AuthenticatedHttpRequest
 
 logger = logging.getLogger(__name__)
@@ -228,7 +229,7 @@ class Menu:
         MenuDropDown(
             label="Admin",
             sub_menu_list=[
-                ICMSAdminLink(label="ICMS Site Admin"),
+                ICMSAdminLink(label=f"{SiteName.CASEWORKER.label} Site Admin"),
                 SubMenuLink(label="CHIEF Dashboard", view="chief:pending-licences"),
                 SubMenu(
                     label="Importers/Exporters",

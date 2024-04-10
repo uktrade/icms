@@ -36,9 +36,9 @@ def test_ilb_admin_report_list_view(ilb_admin_client):
     assert response.status_code == 200
     assertContains(response, "Issued Certificates")
     assertContains(response, "Access Request Report for Importers and Exporters")
-    assertContains(response, "ICMS Import Licence Data Extract Report")
-    assertContains(response, "ICMS - Supplementary firearms information")
-    assertContains(response, "ICMS - Firearms Licences")
+    assertContains(response, "Import Licence Data Extract Report")
+    assertContains(response, "Supplementary firearms information")
+    assertContains(response, "Firearms Licences")
     assertTemplateUsed(response, "web/domains/reports/list-view.html")
 
 
@@ -47,9 +47,9 @@ def test_nca_admin_report_list_view(nca_admin_client):
     assert response.status_code == 200
     assertNotContains(response, "Issued Certificates")
     assertNotContains(response, "Access Request Report for Importers and Exporters")
-    assertNotContains(response, "ICMS Import Licence Data Extract Report")
-    assertContains(response, "ICMS - Supplementary firearms information")
-    assertContains(response, "ICMS - Firearms Licences")
+    assertNotContains(response, "Import Licence Data Extract Report")
+    assertContains(response, "Supplementary firearms information")
+    assertContains(response, "Firearms Licences")
     assertTemplateUsed(response, "web/domains/reports/list-view.html")
 
 

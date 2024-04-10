@@ -109,7 +109,7 @@
         <td>{{ email.comment or "" }}</td>
         <td>
           <a href="{{ icms_url('user-email-edit', kwargs={'user_pk':request.user.pk, 'email_pk': email.pk}) }}" class="button small-button icon-pencil">Edit</a>
-          {# Can't delete primary email or email used to log in to ICMS. #}
+          {# Can't delete primary email or email used to log in to the service. #}
           {% if not email.is_primary and not email.email|lower == request.user.email|lower %}
             <form method="post" action="{{ icms_url('user-email-delete', kwargs={'user_pk':request.user.pk, 'email_pk': email.pk}) }}" class="form-inline">
               {{ csrf_input }}

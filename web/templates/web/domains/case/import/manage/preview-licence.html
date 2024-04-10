@@ -5,9 +5,9 @@
     {%- if page_title %}
     {% set title=page_title %}
     {% else %}
-    {% set title='Import Case Management System' %}
+    {% set title=request.site.name %}
     {% endif -%}
-    <title>{% block page_title %}{{title}}{% endblock %} - ICMS</title>
+    <title>{% block page_title %}{{title}}{% endblock %}</title>
 
     <style>
       body {

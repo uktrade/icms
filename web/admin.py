@@ -199,10 +199,10 @@ class ICMSAdminSite(admin.AdminSite):
     """ILB Admin admin site."""
 
     # Text to put at the end of each page's <title>.
-    site_title = "ICMS site admin"
+    site_title = f"{SiteName.CASEWORKER.label} site admin"
 
     # Text to put in each page's <h1>.
-    site_header = "ICMS administration"
+    site_header = f"{SiteName.CASEWORKER.label} administration"
 
     # Text to put at the top of the admin index page.
     index_title = "Site administration"

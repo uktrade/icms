@@ -460,7 +460,7 @@ class ICMSHMRCChiefRequest(models.Model):
         PROCESSING = ("P", "With CHIEF (Pending)")
         SUCCESS = ("S", "CHIEF Success")
         ERROR = ("E", "CHIEF Error")
-        INTERNAL_ERROR = ("I", "ICMS error sending data to CHIEF")
+        INTERNAL_ERROR = ("I", "Internal error sending data to CHIEF")
 
     import_application = models.ForeignKey(
         "ImportApplication", on_delete=models.CASCADE, related_name="chief_references"
