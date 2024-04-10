@@ -261,7 +261,11 @@ def _get_section_goods(goods_qs, section):
         types.FirearmGoodsData(
             description=f"{g.description} to which {section} of the Firearms Act 1968, as amended, applies.",
             quantity=g.quantity,
-            controlled_by=types.ControlledByEnum.QUANTITY,
+            controlled_by=(
+                types.ControlledByEnum.OPEN
+                if g.unlimited_quantity
+                else types.ControlledByEnum.QUANTITY
+            ),
             unit=types.QuantityCodeEnum.NUMBER,
         )
         for g in goods_qs
