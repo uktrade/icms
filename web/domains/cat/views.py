@@ -12,7 +12,7 @@ from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import ObjectDoesNotExist
 from django.forms.models import ModelForm
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import CreateView, FormView, UpdateView, View
@@ -21,6 +21,11 @@ from django_filters import FilterSet
 from django_filters.views import FilterView
 
 from web.domains.case.export.forms import ProductsFileUploadForm
+from web.domains.case.export.utils import (
+    CustomError,
+    get_product_spreadsheet_response,
+    process_products_file,
+)
 from web.domains.case.export.views import (
     get_csf_schedule_legislation_config,
     get_show_schedule_statements_is_responsible_person,
@@ -36,6 +41,8 @@ from web.models import (
 from web.models.shared import AddressEntryType
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
+from web.utils.s3 import delete_file_from_s3
+from web.utils.sentry import capture_exception
 from web.views.generic import InlineFormsetView
 
 from .forms import (
@@ -281,14 +288,18 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMix
                 extra["show_schedule_statements_is_responsible_person"] = (
                     get_show_schedule_statements_is_responsible_person(schedule)
                 )
+
+                cfs_schedule_kwargs = {
+                    "cat_pk": self.object.pk,
+                    "schedule_template_pk": schedule.pk,
+                }
+
                 # Manufacturer details section context
                 extra["edit_manufacturer_url"] = reverse(
-                    "cat:cfs-manufacturer-update",
-                    kwargs={"cat_pk": self.object.pk, "schedule_template_pk": schedule.pk},
+                    "cat:cfs-manufacturer-update", kwargs=cfs_schedule_kwargs
                 )
                 extra["delete_manufacturer_url"] = reverse(
-                    "cat:cfs-manufacturer-delete",
-                    kwargs={"cat_pk": self.object.pk, "schedule_template_pk": schedule.pk},
+                    "cat:cfs-manufacturer-delete", kwargs=cfs_schedule_kwargs
                 )
 
                 # Products section context
@@ -296,16 +307,17 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMix
                 extra["products"] = schedule.products.all().order_by("pk")
                 extra["product_upload_form"] = ProductsFileUploadForm()
                 extra["has_legislation"] = schedule.legislations.filter(is_active=True).exists()
-                # TODO: ICMSLST-2584 Add urls when views exist.
-                extra["upload_product_spreadsheet_url"] = ""
-                extra["download_product_spreadsheet_url"] = ""
+                extra["upload_product_spreadsheet_url"] = reverse(
+                    "cat:cfs-schedule-product-spreadsheet-upload", kwargs=cfs_schedule_kwargs
+                )
+                extra["download_product_spreadsheet_url"] = reverse(
+                    "cat:cfs-schedule-product-download-template", kwargs=cfs_schedule_kwargs
+                )
                 extra["add_schedule_product_url"] = reverse(
-                    "cat:cfs-schedule-product-create",
-                    kwargs={"cat_pk": self.object.pk, "schedule_template_pk": schedule.pk},
+                    "cat:cfs-schedule-product-create", kwargs=cfs_schedule_kwargs
                 )
                 extra["add_multiple_schedule_product_url"] = reverse(
-                    "cat:cfs-schedule-product-create-multiple",
-                    kwargs={"cat_pk": self.object.pk, "schedule_template_pk": schedule.pk},
+                    "cat:cfs-schedule-product-create-multiple", kwargs=cfs_schedule_kwargs
                 )
 
         if app_type == ExportApplicationType.Types.GMP and step == CatSteps.GMP:
@@ -767,6 +779,74 @@ class CFSScheduleTemplateProductDeleteView(
                     "step_pk": self.kwargs["schedule_template_pk"],
                 },
             )
+        )
+
+
+class CFSScheduleTemplateProductDownloadSpreadsheetView(
+    CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, View
+):
+    http_method_names = ["get"]
+
+    def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+        schedule = get_cfs_schedule_template(**self.kwargs)
+        return get_product_spreadsheet_response(schedule)
+
+
+class CFSScheduleTemplateProductUploadSpreadsheetView(
+    CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, FormView
+):
+    """Post only FormView for processing a product template spreadsheet.
+
+    Always redirects to the success_url.
+    """
+
+    form_class = ProductsFileUploadForm
+    http_method_names = ["post"]
+
+    def form_valid(self, form: ProductsFileUploadForm) -> HttpResponseRedirect:
+        schedule_template = get_cfs_schedule_template(**self.kwargs)
+
+        products_file = form.cleaned_data["file"]
+
+        try:
+            product_count = process_products_file(products_file, schedule_template)
+            messages.success(
+                self.request, f"Upload Success: {product_count} products uploaded successfully"
+            )
+
+        except CustomError as custom_error:
+            messages.warning(self.request, f"Upload failed: {custom_error}")
+
+        except Exception:
+            messages.warning(self.request, "Upload failed: An unknown error occurred")
+            capture_exception()
+
+        finally:
+            products_file = self.request.FILES.get("file")
+
+            if products_file:
+                delete_file_from_s3(products_file.name)
+
+        return super().form_valid(form)
+
+    def form_invalid(self, form: ProductsFileUploadForm) -> HttpResponseRedirect:
+        if form.errors and "file" in form.errors:
+            err = form.errors["file"][0]
+        else:
+            err = "No valid file found. Please upload the spreadsheet."
+
+        messages.warning(self.request, f"Upload failed: {err}")
+
+        return redirect(self.get_success_url())
+
+    def get_success_url(self) -> str:
+        return reverse(
+            "cat:edit-step-related",
+            kwargs={
+                "cat_pk": self.kwargs["cat_pk"],
+                "step": CatSteps.CFS_SCHEDULE,
+                "step_pk": self.kwargs["schedule_template_pk"],
+            },
         )
 
 

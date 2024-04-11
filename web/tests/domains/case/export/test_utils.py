@@ -12,6 +12,7 @@ from web.domains.case.export.utils import (
 )
 from web.domains.case.shared import ImpExpStatus
 from web.domains.country.models import Country
+from web.domains.legislation.models import ProductLegislation
 from web.models import (
     CertificateOfFreeSaleApplication,
     CertificateOfFreeSaleApplicationTemplate,
@@ -56,17 +57,15 @@ def create_dummy_config(is_biocidal: bool = False) -> XlsxSheetConfig:
     return config
 
 
-def create_dummy_xlsx_file(config: XlsxSheetConfig) -> File:
+def create_dummy_xlsx_file(config: XlsxSheetConfig, name: str | None = None) -> File:
     xlsx_data = generate_xlsx_file([config])
-    xlsx_file = File(io.BytesIO(xlsx_data))
+    xlsx_file = File(io.BytesIO(xlsx_data), name=name)
 
     return xlsx_file
 
 
 def create_schedule(app, is_biocidal: bool = False):
-    legislation = ProductLegislationFactory()
-    legislation.is_biocidal = is_biocidal
-    legislation.save()
+    legislation = create_legislation(is_biocidal)
 
     schedule = CFSSchedule.objects.create(application=app, created_by=app.last_updated_by)
     schedule.legislations.add(legislation)
@@ -74,10 +73,38 @@ def create_schedule(app, is_biocidal: bool = False):
     return schedule
 
 
+def create_legislation(is_biocidal: bool) -> ProductLegislation:
+    legislation = ProductLegislationFactory()
+    legislation.is_biocidal = is_biocidal
+    legislation.save()
+
+    return legislation
+
+
 @pytest.mark.django_db
 @pytest.mark.parametrize("is_biocidal", [False, True])
-def test_process_products_file(cfs_app_submitted, is_biocidal):
+def test_process_products_file_cfs_app(cfs_app_submitted, is_biocidal):
     schedule = create_schedule(cfs_app_submitted, is_biocidal)
+    config = create_dummy_config(is_biocidal=is_biocidal)
+    xlsx_file = create_dummy_xlsx_file(config)
+    count = process_products_file(xlsx_file, schedule)
+
+    assert count == 3
+    assert schedule.products.count() == 3
+    assert schedule.products.filter(product_name="Product 1").count() == 1
+
+    if is_biocidal:
+        product_1 = schedule.products.get(product_name="Product 1")
+        assert product_1.active_ingredients.count() == 2
+        assert product_1.product_type_numbers.count() == 3
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("is_biocidal", [False, True])
+def test_process_products_file_cfs_template(cfs_cat, is_biocidal):
+    schedule = cfs_cat.cfs_template.schedules.first()
+    schedule.legislations.add(create_legislation(is_biocidal))
+
     config = create_dummy_config(is_biocidal=is_biocidal)
     xlsx_file = create_dummy_xlsx_file(config)
     count = process_products_file(xlsx_file, schedule)

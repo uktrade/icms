@@ -78,7 +78,7 @@ from .forms import (
 from .utils import (
     CustomError,
     copy_template_to_export_application,
-    generate_product_template_xlsx,
+    get_product_spreadsheet_response,
     process_products_file,
 )
 
@@ -1065,6 +1065,7 @@ def cfs_edit_product_type(
         return render(request, "web/domains/case/export/cfs-edit-product-child.html", context)
 
 
+@require_GET
 @login_required
 def product_spreadsheet_download_template(
     request: AuthenticatedHttpRequest,
@@ -1084,20 +1085,7 @@ def product_spreadsheet_download_template(
             CFSSchedule.objects.select_for_update(), pk=schedule_pk
         )
 
-        mime_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        response = HttpResponse(content_type=mime_type)
-        is_biocidal = schedule.is_biocidal()
-        workbook = generate_product_template_xlsx(is_biocidal)
-        response.write(workbook)
-
-        filename = "CFS Product Upload Template.xlsx"
-
-        if is_biocidal:
-            filename = "CFS Product Upload Biocide Template.xlsx"
-
-        response["Content-Disposition"] = f"attachment; filename={filename}"
-
-        return response
+        return get_product_spreadsheet_response(schedule)
 
 
 @require_POST

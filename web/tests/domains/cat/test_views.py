@@ -1,7 +1,10 @@
+import io
 from http import HTTPStatus
+from unittest import mock
 
 import pytest
 from django.urls import reverse, reverse_lazy
+from openpyxl import load_workbook
 from pytest_django.asserts import assertTemplateUsed
 
 from web.domains.cat.forms import CATFilter
@@ -16,6 +19,10 @@ from web.models import (
 )
 from web.models.shared import AddressEntryType, YesNoChoices
 from web.tests.auth import AuthTestCase
+from web.tests.domains.case.export.test_utils import (
+    create_dummy_config,
+    create_dummy_xlsx_file,
+)
 
 
 class TestCATListView(AuthTestCase):
@@ -845,3 +852,121 @@ class TestCFSScheduleTemplateProductDeleteView(AuthTestCase):
 
         self.schedule.refresh_from_db()
         assert self.schedule.products.count() == 0
+
+
+class TestCFSScheduleTemplateProductDownloadSpreadsheetView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, cfs_cat):
+        self.app = cfs_cat
+        self.schedule = self.app.cfs_template.schedules.first()
+
+        self.url = reverse(
+            "cat:cfs-schedule-product-download-template",
+            kwargs={
+                "cat_pk": self.app.pk,
+                "schedule_template_pk": self.schedule.pk,
+            },
+        )
+
+    def test_permission(self):
+        response = self.importer_client.post(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_two_client.post(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_get(self):
+        sheet = self.get_products_spreadsheet(False)
+
+        assert sheet.max_column == 1
+        assert sheet.max_row == 1
+
+        spreadsheet_rows = sheet.values
+        header = next(spreadsheet_rows)
+
+        assert list(header) == ["Product Name"]
+
+    def test_get_biocide(self):
+        self.schedule.legislations.add(ProductLegislation.objects.filter(is_biocidal=True).first())
+        sheet = self.get_products_spreadsheet(True)
+
+        assert sheet.max_column == 4
+        assert sheet.max_row == 1
+
+        spreadsheet_rows = sheet.values
+        header = next(spreadsheet_rows)
+
+        assert list(header) == [
+            "Product Name",
+            "Product Type Numbers (CSV)",
+            "Active Ingredient Name",
+            "Active Ingredient CAS Number",
+        ]
+
+    def get_products_spreadsheet(self, is_biocidal):
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assert response["Content-Type"] == (
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        assert response["Content-Disposition"] == (
+            f"attachment; filename=CFS Product Upload {'Biocide ' if is_biocidal else ''}Template.xlsx"
+        )
+        workbook = load_workbook(filename=io.BytesIO(response.content), read_only=True)
+        assert workbook.sheetnames == ["CFS Products"]
+        sheet = workbook["CFS Products"]
+
+        return sheet
+
+
+class TestCFSScheduleTemplateProductUploadSpreadsheetView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, cfs_cat):
+        self.app = cfs_cat
+        self.schedule = self.app.cfs_template.schedules.first()
+
+        self.url = reverse(
+            "cat:cfs-schedule-product-spreadsheet-upload",
+            kwargs={
+                "cat_pk": self.app.pk,
+                "schedule_template_pk": self.schedule.pk,
+            },
+        )
+
+    def test_post_only(self):
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_permission(self):
+        response = self.importer_client.post(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_two_client.post(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    @pytest.mark.parametrize("is_biocidal", [False, True])
+    def test_post(self, is_biocidal):
+        if is_biocidal:
+            self.schedule.legislations.add(
+                ProductLegislation.objects.filter(is_biocidal=True).first()
+            )
+
+        config = create_dummy_config(is_biocidal=is_biocidal)
+        file_name = f"CFS Product Upload {'Biocide ' if is_biocidal else ''}Template.xlsx"
+        file = create_dummy_xlsx_file(config, file_name)
+
+        with mock.patch("web.domains.cat.views.delete_file_from_s3") as mock_s3:
+            response = self.exporter_client.post(self.url, data={"file": file})
+
+            mock_s3.assert_called_once_with(file_name)
+
+        assert response.status_code == HTTPStatus.FOUND
+        self.schedule.refresh_from_db()
+        assert self.schedule.products.count() == 3
+        assert self.schedule.products.filter(product_name="Product 1").count() == 1
+
+        if is_biocidal:
+            product_1 = self.schedule.products.get(product_name="Product 1")
+            assert product_1.active_ingredients.count() == 2
+            assert product_1.product_type_numbers.count() == 3

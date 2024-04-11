@@ -72,6 +72,16 @@ urlpatterns = [
                     views.CFSScheduleTemplateProductDeleteView.as_view(),
                     name="cfs-schedule-product-delete",
                 ),
+                path(
+                    "cfs-schedule-product/spreadsheet/download-template/",
+                    views.CFSScheduleTemplateProductDownloadSpreadsheetView.as_view(),
+                    name="cfs-schedule-product-download-template",
+                ),
+                path(
+                    "cfs-schedule-product/spreadsheet/upload/",
+                    views.CFSScheduleTemplateProductUploadSpreadsheetView.as_view(),
+                    name="cfs-schedule-product-spreadsheet-upload",
+                ),
             ]
         ),
     ),

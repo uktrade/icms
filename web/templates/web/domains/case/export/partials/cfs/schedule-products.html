@@ -12,32 +12,34 @@
 </div>
 
 
-<div class="container setoutForm">
-  <div class="row">
-    <div class="two columns"></div>
-    <div class="six columns">
-      <a class="icon icon-download button"
-        href="{{ download_product_spreadsheet_url }}">
-        Download Template Spreadsheet
-      </a>
+{% if not read_only %}
+  <div class="container setoutForm">
+    <div class="row">
+      <div class="two columns"></div>
+      <div class="six columns">
+        <a class="icon icon-download button"
+          href="{{ download_product_spreadsheet_url }}">
+          Download Template Spreadsheet
+        </a>
+      </div>
+      <div class="four columns"></div>
     </div>
-    <div class="four columns"></div>
+    <br>
+    <div class="row">
+      <div class="two columns">
+        <label class="prompt west">Upload Spreadsheet<span class="mand-label">optional</span></label>
+      </div>
+      <div class="six columns input-group">
+        <form action="{{ upload_product_spreadsheet_url }}" method="post" enctype="multipart/form-data" id="id_upload-product-data">
+          {{ csrf_input }}
+          {{ product_upload_form.file }}
+          <button type="submit" class="button link-button inline-link-button icon-upload" form="id_upload-product-data">Upload</button>
+        </form>
+      </div>
+      <div class="four columns"></div>
+    </div>
   </div>
-  <br>
-  <div class="row">
-    <div class="two columns">
-      <label class="prompt west">Upload Spreadsheet<span class="mand-label">optional</span></label>
-    </div>
-    <div class="six columns input-group">
-      <form action="{{ upload_product_spreadsheet_url }}" method="post" enctype="multipart/form-data" id="id_upload-product-data">
-        {{ csrf_input }}
-        {{ product_upload_form.file }}
-        <button type="submit" class="button link-button inline-link-button icon-upload" form="id_upload-product-data">Upload</button>
-      </form>
-    </div>
-    <div class="four columns"></div>
-  </div>
-</div>
+{% endif %}
 
 {% if products %}
   {% include "web/domains/case/export/partials/cfs/schedule-product-list.html" %}
