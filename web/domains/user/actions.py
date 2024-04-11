@@ -1,40 +1,26 @@
-from django.contrib import messages
+from django.urls import reverse
 
-from web.views.actions import PostAction
+from web.models import User
+from web.views.actions import LinkAction
 
-from .models import User
 
-
-class ActivateUser(PostAction):
-    action = "activate"
+class ActivateUser(LinkAction):
     label = "Activate"
-    confirm = True
-    confirm_message = "Are you sure you want to activate this account?"
     icon = "icon-eye"
 
-    def display(self, user):
+    def display(self, user: User) -> bool:
         return not user.is_active
 
-    def handle(self, request, view, *args, **kwargs):
-        user: User = self._get_item(request, view.model)
-        user.is_active = True
-        user.save()
-        messages.success(request, "Account activated successfully")
+    def href(self, user: User) -> str:
+        return reverse("user-reactivate", kwargs={"user_pk": user.pk})
 
 
-class DeactivateUser(PostAction):
-    action = "block"
+class DeactivateUser(LinkAction):
     label = "Deactivate"
-    confirm = True
-    confirm_message = "Are you sure you want to deactivate this account?"
     icon = "icon-eye-blocked"
 
-    def display(self, user):
+    def display(self, user: User) -> bool:
         return user.is_active
 
-    def handle(self, request, view, *args, **kwargs):
-        user: User = self._get_item(request, view.model)
-        user.is_active = False
-        user.save()
-
-        messages.success(request, "Account deactivated successfully")
+    def href(self, user: User) -> str:
+        return reverse("user-deactivate", kwargs={"user_pk": user.pk})

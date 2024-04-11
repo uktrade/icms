@@ -15,6 +15,9 @@ from web.management.commands.add_v2_reference_data import (
     add_inactive_countries,
     add_region_to_existing_countries,
 )
+from web.management.commands.utils.add_template_data import (
+    add_user_management_email_templates,
+)
 from web.models import Constabulary, Exporter, Importer, UniqueReference, User
 from web.permissions import (
     constabulary_add_contact,
@@ -50,6 +53,7 @@ class Command(BaseCommand):
         call_command("loaddata", "overseas_regions")
         add_region_to_existing_countries(self.stdout)
         add_inactive_countries()
+        add_user_management_email_templates()
 
     def handle(self, *args: Any, **options: Any) -> None:
         skip_refs = options["skip_ref"]

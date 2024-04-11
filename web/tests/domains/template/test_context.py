@@ -1,10 +1,15 @@
+import datetime as dt
+
 import pytest
+from django.conf import settings
 
 from web.domains.template.context import (
     ScheduleParagraphContext,
+    UserManagementContext,
     _get_import_goods_description,
     _get_sil_goods_text,
 )
+from web.sites import get_exporter_site_domain, get_importer_site_domain
 
 
 def test_get_sil_section_1_goods_text():
@@ -76,3 +81,45 @@ def test_schedule_paragraph_context(cfs_app_submitted):
         match=r"RANDOM_VALUE is not a valid schedule paragraph context value",
     ):
         context["RANDOM_VALUE"]
+
+
+def test_importer_user_management_context(importer_one_contact):
+    importer_one_contact.importer_last_login = dt.datetime(2021, 10, 1, 12, 1, 1)
+    context = UserManagementContext(importer_one_contact)
+    assert context["PLATFORM"] == "Apply for an import licence"
+    assert context["CASE_OFFICER_EMAIL"] == settings.ILB_CONTACT_EMAIL
+    assert context["PLATFORM_LINK"] == get_importer_site_domain()
+    with pytest.raises(
+        ValueError,
+        match=r"RANDOM_VALUE is not a valid user management template context value",
+    ):
+        context["RANDOM_VALUE"]
+
+
+def test_exporter_user_management_context(exporter_one_contact):
+    exporter_one_contact.exporter_last_login = dt.datetime(2021, 10, 1, 12, 1, 1)
+    context = UserManagementContext(exporter_one_contact)
+    assert context["PLATFORM"] == "Apply for an export certificate"
+    assert context["CASE_OFFICER_EMAIL"] == settings.ILB_CONTACT_EMAIL
+    assert context["PLATFORM_LINK"] == get_exporter_site_domain()
+
+
+@pytest.mark.parametrize(
+    "importer_login,exporter_login",
+    (
+        (dt.datetime(2021, 10, 1, 12, 1, 1), dt.datetime(2021, 10, 1, 12, 1, 1)),
+        (None, None),
+    ),
+)
+def test_user_who_uses_both_platforms_management_context(
+    exporter_one_contact, importer_login, exporter_login
+):
+    exporter_one_contact.exporter_last_login = exporter_login
+    exporter_one_contact.importer_last_login = importer_login
+    context = UserManagementContext(exporter_one_contact)
+    assert context["PLATFORM"] == "Apply for an import licence or export certificate"
+    assert context["CASE_OFFICER_EMAIL"] == settings.ILB_CONTACT_EMAIL
+    assert (
+        context["PLATFORM_LINK"]
+        == f"{get_importer_site_domain()} for import or {get_exporter_site_domain()} for export."
+    )

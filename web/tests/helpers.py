@@ -60,27 +60,6 @@ def check_pages_checked(error: ApplicationErrors, expected_pages_checked: list[s
     assert sorted(expected_pages_checked) == checked, f"Actual checked pages: {checked}"
 
 
-def check_email_was_sent(
-    exp_num_emails: int,
-    exp_sent_to: str,
-    exp_subject: str,
-    exp_in_body: str | None = None,
-    exp_attachments: list[tuple[str, bytes]] | None = None,
-) -> None:
-    outbox = mail.outbox
-    assert len(outbox) == exp_num_emails
-    if exp_num_emails:
-        sent_email = outbox[exp_num_emails - 1]
-        assert sent_email.to == [exp_sent_to]
-        assert sent_email.subject == exp_subject
-
-        if exp_in_body:
-            assert exp_in_body in sent_email.body
-
-        if exp_attachments:
-            assert exp_attachments == sent_email.attachments
-
-
 def check_gov_notify_email_was_sent(
     exp_num_emails: int,
     exp_sent_to: list,

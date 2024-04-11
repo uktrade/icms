@@ -116,6 +116,14 @@ class EmailTypes(TypedTextChoices):
     HSE_CASE_EMAIL = ("CA_HSE_EMAIL", "Health and Safety Email")
     BEIS_CASE_EMAIL = ("CA_BEIS_EMAIL", "Business, Energy & Industrial Strategy Email")
 
+    DEACTIVATE_USER_EMAIL = ("DEACTIVATE_USER", "Deactivate User Email")
+    REACTIVATE_USER_EMAIL = ("REACTIVATE_USER", "Reactivate User Email")
+
+
+USER_MANAGEMENT_EMAILS = [EmailTypes.DEACTIVATE_USER_EMAIL, EmailTypes.REACTIVATE_USER_EMAIL]
+USER_MANAGEMENT_EMAIL_TYPES = [
+    (email_type.value, email_type.label) for email_type in USER_MANAGEMENT_EMAILS
+]
 
 IMPORT_CASE_EMAILS = [EmailTypes.CONSTABULARY_CASE_EMAIL, EmailTypes.SANCTIONS_CASE_EMAIL]
 EXPORT_CASE_EMAILS = [EmailTypes.HSE_CASE_EMAIL, EmailTypes.BEIS_CASE_EMAIL]

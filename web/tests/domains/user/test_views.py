@@ -4,9 +4,12 @@ import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
+from web.mail.constants import EmailTypes
 from web.models import Email, PhoneNumber, User
+from web.sites import get_exporter_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
+from web.tests.helpers import check_gov_notify_email_was_sent
 
 
 class TestUserUpdateView:
@@ -235,28 +238,6 @@ class TestUsersListView(AuthTestCase):
         response = self.importer_client.post(self.url, {"action": "archive"})
         assert response.status_code == 403
 
-    def test_activate_user(self):
-        self.importer_two_user.is_active = False
-        self.importer_two_user.save()
-
-        response = self.ilb_admin_client.post(
-            self.url, {"action": "activate", "item": self.importer_two_user.id}
-        )
-        assert response.status_code == HTTPStatus.OK
-
-        self.importer_two_user.refresh_from_db()
-        assert self.importer_two_user.is_active
-
-    def test_deactivate_user(self):
-        assert self.importer_user.is_active
-        response = self.ilb_admin_client.post(
-            self.url, {"action": "block", "item": self.importer_user.id}
-        )
-        assert response.status_code == HTTPStatus.OK
-
-        self.importer_user.refresh_from_db()
-        assert not self.importer_user.is_active
-
 
 class TestUserDetailView(AuthTestCase):
     @pytest.fixture(autouse=True)
@@ -280,6 +261,95 @@ class TestUserDetailView(AuthTestCase):
     def test_post_not_allowed_for_authorized_user(self):
         response = self.ilb_admin_client.post(self.url)
         assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+
+class TestReactivateUserView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
+        self.url = reverse("user-reactivate", kwargs={"user_pk": self.importer_user.pk})
+
+    def test_forbidden_access(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
+
+    def test_page_title(self):
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == 200
+        assert (
+            response.context_data["page_title"]
+            == "Reactivate I1_main_contact_first_name I1_main_contact_last_name's account"
+        )
+
+    @pytest.mark.parametrize(
+        "send_email",
+        (True, False),
+    )
+    def test_reactivate_user(self, send_email):
+        self.importer_user.is_active = False
+        self.importer_user.save()
+        response = self.ilb_admin_client.post(
+            self.url,
+            {"subject": "hello", "body": "dd", "send_email": send_email},
+        )
+        assert response.status_code == HTTPStatus.FOUND
+
+        self.importer_user.refresh_from_db()
+        assert self.importer_user.is_active
+        if send_email:
+            check_gov_notify_email_was_sent(
+                1,
+                [self.importer_user.email],
+                EmailTypes.CASE_EMAIL,
+                {"icms_url": get_exporter_site_domain()},
+                exp_subject="hello",
+                exp_in_body="dd",
+            )
+        else:
+            check_gov_notify_email_was_sent(0, [], EmailTypes.CASE_EMAIL, {})
+
+
+class TestDeactivateUserView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
+        self.url = reverse("user-deactivate", kwargs={"user_pk": self.importer_user.pk})
+
+    def test_forbidden_access(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == 403
+
+    def test_page_title(self):
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == 200
+        assert (
+            response.context_data["page_title"]
+            == "Deactivate I1_main_contact_first_name I1_main_contact_last_name's account"
+        )
+
+    @pytest.mark.parametrize(
+        "send_email",
+        (True, False),
+    )
+    def test_deactivate_user(self, send_email):
+        assert self.importer_user.is_active
+        response = self.ilb_admin_client.post(
+            self.url,
+            {"subject": "hello", "body": "dd", "send_email": send_email},
+        )
+        assert response.status_code == HTTPStatus.FOUND
+
+        self.importer_user.refresh_from_db()
+        assert not self.importer_user.is_active
+        if send_email:
+            check_gov_notify_email_was_sent(
+                1,
+                [self.importer_user.email],
+                EmailTypes.CASE_EMAIL,
+                {"icms_url": get_exporter_site_domain()},
+                exp_subject="hello",
+                exp_in_body="dd",
+            )
+        else:
+            check_gov_notify_email_was_sent(0, [], EmailTypes.CASE_EMAIL, {})
 
 
 def add_user_email(

@@ -28,6 +28,7 @@ from .add_template_data import (
     add_letter_fragment_templates,
     add_letter_templates,
     add_schedule_translation_templates,
+    add_user_management_email_templates,
 )
 
 
@@ -45,6 +46,7 @@ def load_app_test_data():
     add_email_templates()
     add_letter_templates()
     add_letter_fragment_templates()
+    add_user_management_email_templates()
     add_export_application_type_data()
     add_import_application_type_data()
     add_import_application_type_endorsements()
