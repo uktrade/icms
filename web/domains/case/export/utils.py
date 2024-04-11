@@ -3,6 +3,7 @@ from collections import OrderedDict
 from dataclasses import dataclass, field
 
 from django.core.files.base import File
+from django.http import HttpResponse
 from openpyxl import load_workbook
 
 from web.domains.case.app_copy import (
@@ -16,6 +17,11 @@ from web.domains.case.export.forms import (
     CFSProductForm,
     CFSProductTypeForm,
 )
+from web.domains.cat.forms import (
+    CFSActiveIngredientTemplateForm,
+    CFSProductTemplateForm,
+    CFSProductTypeTemplateForm,
+)
 from web.models import (
     CertificateApplicationTemplate,
     CertificateOfFreeSaleApplication,
@@ -25,7 +31,9 @@ from web.models import (
     CertificateOfManufactureApplication,
     CertificateOfManufactureApplicationTemplate,
     CFSProduct,
+    CFSProductTemplate,
     CFSSchedule,
+    CFSScheduleTemplate,
     ExportApplication,
     ExportApplicationType,
     Exporter,
@@ -46,6 +54,23 @@ class ProductData:
     cas_numbers: list[str] = field(default_factory=list)
 
 
+def get_product_spreadsheet_response(schedule: CFSSchedule | CFSScheduleTemplate) -> HttpResponse:
+    is_biocidal = schedule.is_biocidal()
+    mime_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    response = HttpResponse(content_type=mime_type)
+    workbook = generate_product_template_xlsx(is_biocidal)
+    response.write(workbook)
+
+    filename = "CFS Product Upload Template.xlsx"
+
+    if is_biocidal:
+        filename = "CFS Product Upload Biocide Template.xlsx"
+
+    response["Content-Disposition"] = f"attachment; filename={filename}"
+
+    return response
+
+
 def generate_product_template_xlsx(is_biocidal: bool = False) -> bytes:
     """Generates the schedule products xslx template for download"""
 
@@ -60,7 +85,7 @@ def generate_product_template_xlsx(is_biocidal: bool = False) -> bytes:
     return xlsx_data
 
 
-def process_products_file(products_file: File, schedule: CFSSchedule) -> int:
+def process_products_file(products_file: File, schedule: CFSSchedule | CFSScheduleTemplate) -> int:
     """Processes the uploaded xlsx file and save the products to the schedule.
 
     Raises an exception on any validation failure.
@@ -212,7 +237,7 @@ def _add_ingredient_to_product_data(
     """Gets and validates ingredient data from the row and adds to ProductData.
 
     Appends ingredient name to ProductData.ingredient_names.
-    Appends cas number to to ProductData.cas_numbers.
+    Appends cas number to ProductData.cas_numbers.
     """
 
     ingredient_name = row_data.get("Active Ingredient Name")
@@ -240,7 +265,7 @@ def _add_ingredient_to_product_data(
     product.cas_numbers.append(cas_number)
 
 
-def _process_product(schedule: CFSSchedule, product_name: str) -> CFSProduct:
+def _process_product(schedule: CFSSchedule | CFSScheduleTemplate, product_name: str) -> CFSProduct:
     """Gets existing product or saves new product using CFSProductForm and returns product"""
 
     existing_product = schedule.products.filter(product_name__iexact=product_name).first()
@@ -248,7 +273,12 @@ def _process_product(schedule: CFSSchedule, product_name: str) -> CFSProduct:
     if existing_product:
         return existing_product
 
-    form = CFSProductForm(data={"product_name": product_name}, schedule=schedule)
+    if isinstance(schedule, CFSSchedule):
+        product_form_cls = CFSProductForm
+    else:
+        product_form_cls = CFSProductTemplateForm
+
+    form = product_form_cls(data={"product_name": product_name}, schedule=schedule)
 
     if not form.is_valid():
         errors = form.errors
@@ -263,8 +293,15 @@ def _process_product(schedule: CFSSchedule, product_name: str) -> CFSProduct:
     return form.save()
 
 
-def _process_product_type_numbers(product: CFSProduct, product_data: ProductData) -> None:
+def _process_product_type_numbers(
+    product: CFSProduct | CFSProductTemplate, product_data: ProductData
+) -> None:
     """Gets product type numbers from ProductData and saves using CFSProductTypeForm"""
+
+    if isinstance(product, CFSProduct):
+        product_type_form_cls = CFSProductTypeForm
+    else:
+        product_type_form_cls = CFSProductTypeTemplateForm
 
     product_type_numbers = product_data.product_type_numbers
     existing_product_type_numbers = product.product_type_numbers.values_list(
@@ -272,7 +309,7 @@ def _process_product_type_numbers(product: CFSProduct, product_data: ProductData
     )
     for product_type_number in product_type_numbers:
         if product_type_number not in existing_product_type_numbers:
-            product_type_form = CFSProductTypeForm(
+            product_type_form = product_type_form_cls(
                 data={"product_type_number": product_type_number}, product=product
             )
 
@@ -291,6 +328,11 @@ def _process_product_type_numbers(product: CFSProduct, product_data: ProductData
 def _process_ingredients(product: CFSProduct, product_data: ProductData) -> None:
     """Gets ingredeient data from ProductData and saves using CFSActiveIngredientForm"""
 
+    if isinstance(product, CFSProduct):
+        ingredient_form_cls = CFSActiveIngredientForm
+    else:
+        ingredient_form_cls = CFSActiveIngredientTemplateForm
+
     ingredient_names = product_data.ingredient_names
     cas_numbers = product_data.cas_numbers
 
@@ -301,7 +343,7 @@ def _process_ingredients(product: CFSProduct, product_data: ProductData) -> None
     for ingredient in ingredient_data:
         name, cas_number = ingredient
 
-        ingredient_form = CFSActiveIngredientForm(
+        ingredient_form = ingredient_form_cls(
             data={"name": name, "cas_number": cas_number}, product=product
         )
 
