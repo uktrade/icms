@@ -3,6 +3,7 @@ import datetime as dt
 import pytz
 from django.conf import settings
 
+from web.mail.constants import EmailTypes
 from web.models import CFSScheduleParagraph, Country, CountryTranslationSet, Template
 
 
@@ -1215,7 +1216,7 @@ You must respond to this information request via the information request link no
 
 The application will be closed if the requested response is not received within 5 working days of our receipt of the original application.
 
-Please do not hesitate to contact { settings.ILB_GSI_CONTACT_EMAIL } if you have any queries regarding your application. Please quote the following reference number in any correspondence: [[CASE_REFERENCE]].
+Please do not hesitate to contact {settings.ILB_GSI_CONTACT_EMAIL} if you have any queries regarding your application. Please quote the following reference number in any correspondence: [[CASE_REFERENCE]].
 
 Yours sincerely,
 
@@ -1358,4 +1359,37 @@ def add_letter_fragment_templates():
         template_type="LETTER_FRAGMENT",
         template_content="<p>The marking requirements do not apply to imports into the UK of air weapons, firearms that are either for the military or police use and firearms that were manufactured before 1 September 1939. As regards imports into Northern Ireland, the marking requirements do not apply to firearms and relevant component parts manufactured anywhere in the European Union before 14 September 2018 or which were imported into the European Union before that date.</p>",
         application_domain="IMA",
+    )
+
+
+def add_user_management_email_templates():
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("18-APR-2024 08:50:23", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="[[PLATFORM]] account deactivated",
+        template_code=EmailTypes.DEACTIVATE_USER_EMAIL,
+        template_type="EMAIL_TEMPLATE",
+        application_domain="UM",
+        template_content="""Your [[PLATFORM]] account has been deactivated.
+
+Contact [[CASE_OFFICER_EMAIL]] if you have any questions.""",
+    )
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("18-APR-2024 08:50:23", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="[[PLATFORM]] account reactivated",
+        template_code=EmailTypes.REACTIVATE_USER_EMAIL,
+        template_type="EMAIL_TEMPLATE",
+        application_domain="UM",
+        template_content="""Welcome back to [[PLATFORM]].
+
+Your account has been reactivated.
+
+You can now sign in to your account here [[PLATFORM_LINK]]
+
+Contact [[CASE_OFFICER_EMAIL]] if you have any questions.""",
     )

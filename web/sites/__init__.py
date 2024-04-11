@@ -9,6 +9,8 @@ from django.http import HttpResponse
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest, TypedTextChoices
 
+PLATFORM_NAME = "Apply for an import licence or export certificate"
+
 
 class SiteName(TypedTextChoices):
     CASEWORKER = (

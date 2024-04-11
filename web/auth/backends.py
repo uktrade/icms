@@ -16,6 +16,8 @@ from web.one_login.types import UserInfo as OneLoginUserInfo
 from .types import STAFF_SSO_ID, StaffSSOProfile, StaffSSOUserCreateData
 from .utils import get_or_create_icms_user, set_site_last_login
 
+ANONYMOUS_USER_PK = 0
+
 
 class ModelAndObjectPermissionBackend(ModelBackend):
     """Custom django authentication backend.
@@ -170,7 +172,7 @@ class ICMSGovUKOneLoginBackend(OneLoginBackend):
 def get_anonymous_user_instance(user_model: type[User]) -> User:
     # Change the guardian anonymous user pk to match V1 guest user
     kwargs = {
-        "pk": 0,
+        "pk": ANONYMOUS_USER_PK,
         user_model.USERNAME_FIELD: guardian_settings.ANONYMOUS_USER_NAME,
     }
     user = user_model(**kwargs)

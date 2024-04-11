@@ -3,7 +3,7 @@ from typing import Any
 from django import forms
 from django.forms.widgets import EmailInput, Select, Textarea
 from django.utils.translation import gettext_lazy as _
-from django_filters import CharFilter, FilterSet
+from django_filters import CharFilter, ChoiceFilter, FilterSet
 
 from web.forms.fields import JqueryDateField, PhoneNumberField
 from web.forms.widgets import YesNoRadioSelectInline
@@ -79,6 +79,13 @@ class UserListFilter(FilterSet):
         field_name="organisation", lookup_expr="icontains", label="Organisation"
     )
     job_title = CharFilter(field_name="job_title", lookup_expr="icontains", label="Job Title")
+    is_active = ChoiceFilter(
+        field_name="is_active",
+        choices=((True, "Yes"), (False, "No")),
+        lookup_expr="exact",
+        label="Is Active",
+        empty_label="Any",
+    )
 
     class Meta:
         model = User
@@ -139,3 +146,9 @@ class UserEmailForm(forms.ModelForm):
                 email.save()
 
         return email
+
+
+class UserManagementEmailForm(forms.Form):
+    subject = forms.CharField(max_length=100, label="Subject")
+    body = forms.CharField(widget=forms.Textarea, label="Body")
+    send_email = forms.BooleanField(required=False)

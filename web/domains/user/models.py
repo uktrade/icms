@@ -51,6 +51,14 @@ class User(GuardianUserMixin, AbstractUser):
     def account_last_login_date(self):
         return None if self.last_login is None else self.last_login.date()
 
+    @property
+    def is_importer_user(self) -> bool:
+        return self.importer_last_login is not None
+
+    @property
+    def is_exporter_user(self) -> bool:
+        return self.exporter_last_login is not None
+
     class Meta:
         ordering = ("-is_active", "first_name")
 

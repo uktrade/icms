@@ -4363,3 +4363,19 @@ Custom 403
 UI
 schedule.is_biocidal_claim
 Dummy 'Is Biocidal Claim
+{{ application_field(platform_user.title
+{{ application_field(platform_user.date_of_birth
+{{ application_field(platform_user.department
+User Management
+Deactivate User
+PLATFORM
+Unsupported
+{{ application_field(platform_user.job_title
+{{ application_field(platform_user.importer_last_login.strftime('%d
+Last Importer Site Login
+{{ application_field(platform_user.exporter_last_login.strftime('%d %
+f'User
+{{ application_field(platform_user.is_active
+Is Active
+{{ platform_user.full_name }} Details
+"Reusable QuerySet

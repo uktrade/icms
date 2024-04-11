@@ -13,6 +13,13 @@ from web.models import (
     ExportApplication,
     ImportApplication,
     Process,
+    User,
+)
+from web.sites import (
+    PLATFORM_NAME,
+    SiteName,
+    get_exporter_site_domain,
+    get_importer_site_domain,
 )
 from web.types import DocumentTypes
 from web.utils import strip_spaces
@@ -332,3 +339,29 @@ class ScheduleParagraphContext:
                 )
             case _:
                 raise ValueError(f"{item} is not a valid schedule paragraph context value")
+
+
+class UserManagementContext:
+    def __init__(self, user: User):
+        self.user = user
+
+    def __getitem__(self, item: str) -> str:
+        is_importer = self.user.is_importer_user
+        is_exporter = self.user.is_exporter_user
+
+        match item, is_importer, is_exporter:
+            case "PLATFORM", True, False:
+                return SiteName.IMPORTER.label
+            case "PLATFORM", False, True:
+                return SiteName.EXPORTER.label
+            case "PLATFORM", _, _:
+                return PLATFORM_NAME
+            case "PLATFORM_LINK", True, False:
+                return get_importer_site_domain()
+            case "PLATFORM_LINK", False, True:
+                return get_exporter_site_domain()
+            case "PLATFORM_LINK", _, _:
+                return f"{get_importer_site_domain()} for import or {get_exporter_site_domain()} for export."
+            case "CASE_OFFICER_EMAIL", _, _:
+                return settings.ILB_CONTACT_EMAIL
+        raise ValueError(f"{item} is not a valid user management template context value")

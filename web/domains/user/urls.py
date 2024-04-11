@@ -72,4 +72,14 @@ urlpatterns = [
     # Admin Views to view users in ICMS.
     path("users/", views.UsersListView.as_view(), name="users-list"),
     path("users/<int:user_pk>/", views.UserDetailView.as_view(), name="user-details"),
+    path(
+        "users/<int:user_pk>/reactivate/",
+        views.UserReactivateFormView.as_view(),
+        name="user-reactivate",
+    ),
+    path(
+        "users/<int:user_pk>/deactivate/",
+        views.UserDeactivateFormView.as_view(),
+        name="user-deactivate",
+    ),
 ]

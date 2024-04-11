@@ -34,11 +34,13 @@ class Template(Archivable, models.Model):
     CERTIFICATE_APPLICATION = "CA"
     IMPORT_APPLICATION = "IMA"
     ACCESS_REQUEST = "IAR"
+    USER_MANAGEMENT = "UM"
 
     DOMAINS = (
         (CERTIFICATE_APPLICATION, "Certificate Applications"),
         (IMPORT_APPLICATION, "Import Applications"),
         (ACCESS_REQUEST, "Access Requests"),
+        (USER_MANAGEMENT, "User Management"),
     )
 
     # Template Status

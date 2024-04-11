@@ -1,0 +1,46 @@
+{% extends "layout/sidebar.html" %}
+{% import "forms/forms.html" as forms %}
+{% import "forms/fields.html" as fields %}
+{% from "display/fields.html" import application_section, application_field %}
+
+{% block content_actions %}
+  <div class="content-actions">
+    <ul class="menu-out flow-across">
+      <li>
+        <a href="{{ icms_url('user-details', kwargs={'user_pk': platform_user.pk}) }}" class="prev-link">
+          {{ platform_user.full_name }} Details
+        </a>
+      </li>
+    </ul>
+  </div>
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
+
+{% block main_content %}
+
+{% call application_section(page_title) %}
+  {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
+    {{ fields.field(form.subject) }}
+    {{ fields.field(form.body) }}
+    {{ fields.field(form.send_email) }}
+      <div class="container">
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="eight columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <button id="btn-submit" type="submit" class="primary-button button">{{ action }}</button>
+              </li>
+              <li>
+                <a href="{{ icms_url('users-list') }}" class="button link-button">Cancel</a>
+              </li>
+            </ul>
+          </div>
+          <div class="one columns"></div>
+        </div>
+      </div>
+  {% endcall %}
+{% endcall %}
+{% endblock  %}
