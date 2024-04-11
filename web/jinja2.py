@@ -195,6 +195,7 @@ def environment(**options):
             "get_file_base64": get_file_base64,
             "gtm_enabled": settings.GTM_ENABLED,
             "get_gtm_container_id": get_gtm_container_id,
+            "app_env": settings.APP_ENV,
         }
     )
     env.filters["show_all_attrs"] = show_all_attrs
