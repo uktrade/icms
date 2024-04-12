@@ -252,7 +252,7 @@ class RevokeApplicationForm(forms.Form):
         required=True, label="Reason", widget=forms.Textarea({"rows": 4, "cols": 50})
     )
 
-    def __init__(self, *args, readonly_form: bool = False, **kwargs):
+    def __init__(self, *args: Any, readonly_form: bool = False, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         if readonly_form:

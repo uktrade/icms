@@ -3,6 +3,7 @@ from typing import Any, Literal
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import transaction
+from django.db.models import QuerySet
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -313,7 +314,9 @@ class AccessRequestHistoryView(PermissionRequiredMixin, DetailView):
     # PermissionRequiredMixin Config
     permission_required = [Perms.sys.ilb_admin]
 
-    def get_object(self, queryset=None) -> ImporterAccessRequest | ExporterAccessRequest:
+    def get_object(
+        self, queryset: QuerySet[AccessRequest] | None = None
+    ) -> ImporterAccessRequest | ExporterAccessRequest:
         obj: AccessRequest = super().get_object(queryset)
 
         return obj.get_specific_model()

@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.forms import (
     CharField,
     ModelChoiceField,
@@ -108,7 +110,7 @@ class FirearmsAuthorityForm(ModelForm):
             "further_details": Textarea({"rows": 3}),
         }
 
-    def __init__(self, *args, user: User, importer: Importer, **kwargs):
+    def __init__(self, *args: Any, user: User, importer: Importer, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.importer = importer
         self.fields["linked_offices"].queryset = self.importer.offices.all()

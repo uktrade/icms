@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.contrib import messages
 from django.core.exceptions import SuspiciousOperation
 from django.shortcuts import get_object_or_404
@@ -104,7 +106,7 @@ class Edit(LinkAction):
     label = "Edit"
     icon = "icon-pencil"
 
-    def __init__(self, *args, hide_if_archived_object: bool = False, **kwargs):
+    def __init__(self, *args: Any, hide_if_archived_object: bool = False, **kwargs: Any) -> None:
         self.hide_if_archived_object = hide_if_archived_object
         super().__init__(*args, **kwargs)
 
@@ -121,7 +123,7 @@ class EditTemplate(Edit):
     label = "Edit"
     icon = "icon-pencil"
 
-    def href(self, instance: Template):
+    def href(self, instance: Template) -> str:
         if instance.template_type == Template.CFS_DECLARATION_TRANSLATION:
             return reverse("template-cfs-declaration-translation-edit", kwargs={"pk": instance.pk})
         elif instance.template_type == Template.CFS_SCHEDULE_TRANSLATION:
@@ -129,7 +131,7 @@ class EditTemplate(Edit):
 
         return f"{instance.id}/edit/"
 
-    def display(self, object: Template):
+    def display(self, object: Template) -> bool:
         # CFS Schedule defines the reference text in English, and it should not be editable
         if object.template_type == Template.CFS_SCHEDULE:
             return False

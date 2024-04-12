@@ -1,3 +1,5 @@
+from typing import Any
+
 from django import forms
 
 from web.domains.file.utils import ICMSFileField
@@ -14,7 +16,7 @@ class ImportContactKnowBoughtFromForm(forms.Form):
         widget=YesNoRadioSelectInline,
     )
 
-    def __init__(self, *args, application: FaImportApplication, **kwargs):
+    def __init__(self, *args: Any, application: FaImportApplication, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.app = application
 

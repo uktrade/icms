@@ -550,7 +550,9 @@ def view_authority_document(
 
 
 @login_required
-def view_authority(request: AuthenticatedHttpRequest, *, application_pk: int, authority_pk: int):
+def view_authority(
+    request: AuthenticatedHttpRequest, *, application_pk: int, authority_pk: int
+) -> HttpResponse:
     with transaction.atomic():
         import_application: ImportApplication = get_object_or_404(
             ImportApplication.objects.select_for_update(), pk=application_pk

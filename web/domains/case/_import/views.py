@@ -592,7 +592,7 @@ class IMICaseDetailView(PermissionRequiredMixin, LoginRequiredMixin, DetailView)
 @require_POST
 @permission_required(Perms.page.view_imi, raise_exception=True)
 @login_required
-def imi_confirm_provided(request: AuthenticatedHttpRequest, *, application_pk) -> HttpResponse:
+def imi_confirm_provided(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     """Indicates the relevant details have been sent to IMI."""
 
     with transaction.atomic():

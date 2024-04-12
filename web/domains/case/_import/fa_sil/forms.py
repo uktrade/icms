@@ -551,7 +551,7 @@ class SILSupplementaryInfoForm(forms.ModelForm):
         fields = ("no_report_reason",)
         widgets = {"no_report_reason": forms.Textarea({"rows": 3})}
 
-    def __init__(self, *args, application: models.SILApplication, **kwargs) -> None:
+    def __init__(self, *args: Any, application: models.SILApplication, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.application = application
@@ -582,7 +582,7 @@ class SILSupplementaryReportForm(forms.ModelForm):
         model = models.SILSupplementaryReport
         fields = ("transport", "date_received", "bought_from")
 
-    def __init__(self, *args, application: models.SILApplication, **kwargs) -> None:
+    def __init__(self, *args: Any, application: models.SILApplication, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.application = application

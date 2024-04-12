@@ -1,4 +1,5 @@
 from collections.abc import Generator
+from typing import Any
 
 from django.core.management.base import BaseCommand
 
@@ -408,7 +409,7 @@ def countries_data() -> Generator[tuple, None, None]:
     ]
 
 
-def add_region_to_existing_countries(stdout) -> None:
+def add_region_to_existing_countries(stdout):
     """
     For existing countries add the overseas region.
     pk is used as part of the select as country name is editable so could potentially change prior to go-live.
@@ -477,6 +478,6 @@ class Command(BaseCommand):
 
     help = """Add V2 reference data, Countries and Overseas Regions"""
 
-    def handle(self, *args, **options) -> None:
+    def handle(self, *args: Any, **options: Any) -> None:
         add_region_to_existing_countries(self.stdout)
         add_inactive_countries()

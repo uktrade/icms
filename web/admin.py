@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.admin import SiteAdmin
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
-from django.db.models import QuerySet
+from django.db.models import Model, QuerySet
 from django.urls import URLPattern, URLResolver, path
 from guardian.admin import GuardedModelAdmin
 
@@ -36,6 +36,7 @@ from web.models import (
 )
 from web.permissions import Perms
 from web.sites import SiteName
+from web.types import AuthenticatedHttpRequest
 from web.views import login_start_view
 
 
@@ -78,7 +79,9 @@ class EmailTemplateAdmin(admin.ModelAdmin):
 
     search_fields = ("name",)
 
-    def has_delete_permission(self, request, obj=None) -> bool:
+    def has_delete_permission(
+        self, request: AuthenticatedHttpRequest, obj: Model | None = None
+    ) -> bool:
         return False
 
 

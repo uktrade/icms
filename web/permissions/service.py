@@ -326,7 +326,9 @@ def is_user_org_admin(user: User, org: ORGANISATION) -> bool:
             raise ValueError(f"Unknown org {org}")
 
 
-def constabulary_get_contacts(constabulary: Constabulary, *, perms: list[str] | None = None):
+def constabulary_get_contacts(
+    constabulary: Constabulary, *, perms: list[str] | None = None
+) -> QuerySet[User]:
     if not perms:
         perms = [p.codename for p in Perms.obj.constabulary]
 
@@ -421,7 +423,7 @@ def get_case_officers_for_process_type(process_type: ProcessTypes) -> QuerySet[U
             return get_ilb_case_officers()
 
 
-def get_org_obj_permissions(org) -> IMP_OR_EXP_PERMS_T:
+def get_org_obj_permissions(org: ORGANISATION) -> IMP_OR_EXP_PERMS_T:
     match org:
         case Importer():
             return ImporterObjectPermissions

@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.base import File
 from django.http import HttpResponse
 from openpyxl import load_workbook
+from openpyxl.worksheet.worksheet import Worksheet
 
 from web.domains.case.app_copy import (
     ApplicationCopy,
@@ -121,11 +122,13 @@ def _get_header(is_biocidal: bool = False) -> list[str]:
     return ["Product Name"]
 
 
-def _extract_sheet_header(sheet, is_biocidal: bool = False) -> list[str]:
+def _extract_sheet_header(sheet: Worksheet, is_biocidal: bool = False) -> list[str]:
     """Get the expected header for xlsx and compare it to header in the first row of data"""
 
     header = _get_header(is_biocidal)
-    header_row = [col.strip() if col else "" for col in next(sheet.values)]
+    header_data: list[str] = list(next(sheet.values))  # type:ignore[arg-type]
+
+    header_row = [col.strip() if col else "" for col in header_data]
 
     # Check the number of columns with data in xlsx file matches the length of the header
     if "" in header_row:

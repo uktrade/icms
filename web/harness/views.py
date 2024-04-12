@@ -91,7 +91,7 @@ class CreateHarnessDataView(PermissionRequiredMixin, LoginRequiredMixin, View):
     # View config
     http_method_names = ["post"]
 
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> Any:
         self._create_harness_data()
 
         return redirect("harness:permissions")

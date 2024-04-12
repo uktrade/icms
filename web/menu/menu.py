@@ -21,7 +21,7 @@ def url(view_name, kwargs):
 
 
 def has_view_access(
-    request: AuthenticatedHttpRequest, view_name: str, view_kwargs: dict[str, Any]
+    request: AuthenticatedHttpRequest, view_name: str | None, view_kwargs: dict[str, Any] | None
 ) -> bool:
     """Check if current user has access to given view."""
 
@@ -34,6 +34,8 @@ def has_view_access(
             has_perm = True
 
         case "case:search":
+            # view_kwargs will be a dict for this case.
+            assert view_kwargs
             has_perm = can_user_view_search_cases(request.user, view_kwargs["case_type"])
 
         # All class based views checked here.
@@ -72,7 +74,13 @@ class MenuItem:
 
 
 class MenuLink(MenuItem):
-    def __init__(self, label=None, view=None, kwargs=None, target: str = "_self"):
+    def __init__(
+        self,
+        label: str | None = None,
+        view: str | None = None,
+        kwargs: dict[str, Any] | None = None,
+        target: str = "_self",
+    ):
         super().__init__(label)
 
         self.view = view

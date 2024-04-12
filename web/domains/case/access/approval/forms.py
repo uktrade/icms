@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.forms import ChoiceField, ModelChoiceField, ModelForm, Textarea
 
 from web.flow.models import ProcessTypes
@@ -21,7 +23,7 @@ class ExporterApprovalRequestForm(ModelForm):
         model = ExporterApprovalRequest
         fields = ["status", "requested_from"]
 
-    def __init__(self, *args, access_request: ExporterAccessRequest, **kwargs):
+    def __init__(self, *args: Any, access_request: ExporterAccessRequest, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.access_request = access_request
 
@@ -52,7 +54,7 @@ class ImporterApprovalRequestForm(ModelForm):
         model = ImporterApprovalRequest
         fields = ["status", "requested_from"]
 
-    def __init__(self, *args, access_request: ImporterAccessRequest, **kwargs):
+    def __init__(self, *args: Any, access_request: ImporterAccessRequest, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.access_request = access_request
 

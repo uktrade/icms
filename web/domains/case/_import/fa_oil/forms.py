@@ -99,7 +99,7 @@ class OILSupplementaryInfoForm(forms.ModelForm):
         widgets = {"no_report_reason": forms.Textarea({"rows": 3})}
 
     def __init__(
-        self, *args, application: models.OpenIndividualLicenceApplication, **kwargs
+        self, *args: Any, application: models.OpenIndividualLicenceApplication, **kwargs: Any
     ) -> None:
         super().__init__(*args, **kwargs)
 
@@ -132,7 +132,7 @@ class OILSupplementaryReportForm(forms.ModelForm):
         fields = ("transport", "date_received", "bought_from")
 
     def __init__(
-        self, *args, application: models.OpenIndividualLicenceApplication, **kwargs
+        self, *args: Any, application: models.OpenIndividualLicenceApplication, **kwargs: Any
     ) -> None:
         super().__init__(*args, **kwargs)
 

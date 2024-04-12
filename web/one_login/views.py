@@ -90,7 +90,7 @@ class AuthView(RedirectView):
 
 
 class AuthCallbackView(View):
-    def get(self, request: HttpRequest, *args, **kwargs) -> Any:
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> Any:
         auth_code = self.request.GET.get("code", None)
 
         if not auth_code:
