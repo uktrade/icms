@@ -24,7 +24,7 @@
   {% call application_section("Manufacturer Address") %}
     {{ application_field(schedule.manufacturer_name, "Name") }}
     {{ application_field(schedule.manufacturer_postcode or "" , "Postcode") }}
-    {{ application_field(schedule.manufacturer_address or "", "Address") }}
+    {{ application_field(schedule.manufacturer_address or "", "Address", field_span_classes="address_field") }}
   {% endcall %}
   {% if not read_only|default(False) %}
     <a class="button small-button icon-pencil" href="{{ _edit_man_url }}">Edit Manufacturer</a>

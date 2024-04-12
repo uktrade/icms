@@ -5039,3 +5039,7 @@ input.radio-input, input.radio-input-inline {
 .ml-3 {
     margin-left: 3em;
 }
+
+.address_field p {
+    padding-bottom: 0;
+}
