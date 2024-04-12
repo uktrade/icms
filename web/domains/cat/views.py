@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import (
     PermissionRequiredMixin,
     UserPassesTestMixin,
 )
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import ObjectDoesNotExist
 from django.forms.models import ModelForm
@@ -22,7 +22,6 @@ from django_filters.views import FilterView
 
 from web.domains.case.export.forms import ProductsFileUploadForm
 from web.domains.case.export.utils import (
-    CustomError,
     get_product_spreadsheet_response,
     process_products_file,
 )
@@ -814,8 +813,8 @@ class CFSScheduleTemplateProductUploadSpreadsheetView(
                 self.request, f"Upload Success: {product_count} products uploaded successfully"
             )
 
-        except CustomError as custom_error:
-            messages.warning(self.request, f"Upload failed: {custom_error}")
+        except ValidationError as err:
+            messages.warning(self.request, f"Upload failed: {err}")
 
         except Exception:
             messages.warning(self.request, "Upload failed: An unknown error occurred")

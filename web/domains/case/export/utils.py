@@ -2,6 +2,7 @@ import io
 from collections import OrderedDict
 from dataclasses import dataclass, field
 
+from django.core.exceptions import ValidationError
 from django.core.files.base import File
 from django.http import HttpResponse
 from openpyxl import load_workbook
@@ -128,13 +129,13 @@ def _extract_sheet_header(sheet, is_biocidal: bool = False) -> list[str]:
 
     # Check the number of columns with data in xlsx file matches the length of the header
     if "" in header_row:
-        raise CustomError(
+        raise ValidationError(
             "Number of columns with data do not match the number of columns in the header"
         )
 
     # Check the header in the xlsx file matches the expected template header
     if header != header_row:
-        raise CustomError("Spreadsheet header does not match the template header")
+        raise ValidationError("Spreadsheet header does not match the template header")
 
     return header
 
@@ -148,7 +149,7 @@ def _extract_product_data(products_file: File, is_biocidal: bool = False) -> dic
 
     if products_file.multiple_chunks():
         # If there is more than one chunk, the file is too big
-        raise CustomError("File too large to process")
+        raise ValidationError("File too large to process")
 
     data: OrderedDict = OrderedDict()
     chunk = next(products_file.chunks())
@@ -156,7 +157,7 @@ def _extract_product_data(products_file: File, is_biocidal: bool = False) -> dic
 
     try:
         if "CFS Products" not in workbook.sheetnames:
-            raise CustomError("Cannot find sheet with name 'CFS Products' in file")
+            raise ValidationError("Cannot find sheet with name 'CFS Products' in file")
 
         sheet = workbook["CFS Products"]
         header = _extract_sheet_header(sheet, is_biocidal)
@@ -179,7 +180,7 @@ def _extract_product_data(products_file: File, is_biocidal: bool = False) -> dic
             product_name = row_data.get("Product Name")
 
             if not product_name:
-                raise CustomError(f"Data missing in column 'Product Name' - line {row}")
+                raise ValidationError(f"Data missing in column 'Product Name' - line {row}")
 
             product = data.get(product_name, ProductData())
 
@@ -225,7 +226,7 @@ def _add_product_type_numbers_to_product_data(
                 product.product_type_numbers.append(product_type)
 
         except ValueError:
-            raise CustomError(
+            raise ValidationError(
                 f"Product type number '{val}' for product '{product_name}' is not a number - line {row}"
             )
 
@@ -246,18 +247,18 @@ def _add_ingredient_to_product_data(
     row = row_data["row"]
 
     if not ingredient_name:
-        raise CustomError(f"Ingredient name missing - line {row}")
+        raise ValidationError(f"Ingredient name missing - line {row}")
 
     if not cas_number:
-        raise CustomError(f"CAS number missing - line {row}")
+        raise ValidationError(f"CAS number missing - line {row}")
 
     if ingredient_name in product.ingredient_names:
-        raise CustomError(
+        raise ValidationError(
             f"Ingredient name '{ingredient_name}' duplicated for product '{product_name}' - line {row}"
         )
 
     if cas_number in product.cas_numbers:
-        raise CustomError(
+        raise ValidationError(
             f"CAS number '{cas_number}' duplicated for product '{product_name}' - line {row}"
         )
 
@@ -288,7 +289,7 @@ def _process_product(schedule: CFSSchedule | CFSScheduleTemplate, product_name: 
         if "product_name" in errors:
             msg += f" - {errors['product_name'][0]}"
 
-        raise CustomError(msg)
+        raise ValidationError(msg)
 
     return form.save()
 
@@ -320,7 +321,7 @@ def _process_product_type_numbers(
                 if "product_type_number" in errors:
                     msg += f" - {errors['product_type_number'][0]}"
 
-                raise CustomError(f"Product '{product.product_name} has error with {msg}")
+                raise ValidationError(f"Product '{product.product_name} has error with {msg}")
 
             product_type_form.save()
 
@@ -357,7 +358,7 @@ def _process_ingredients(product: CFSProduct, product_data: ProductData) -> None
             else:
                 msg = f"active ingredient name '{name}' CAS number '{cas_number}'"
 
-            raise CustomError(f"Product '{product.product_name}' has error with {msg}")
+            raise ValidationError(f"Product '{product.product_name}' has error with {msg}")
 
         ingredient_form.save()
 

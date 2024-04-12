@@ -76,7 +76,6 @@ from .forms import (
     SubmitGMPForm,
 )
 from .utils import (
-    CustomError,
     copy_template_to_export_application,
     get_product_spreadsheet_response,
     process_products_file,
@@ -1126,7 +1125,7 @@ def product_spreadsheet_upload(
 
                 messages.warning(request, f"Upload failed: {err}")
 
-    except CustomError as err:
+    except ValidationError as err:
         messages.warning(request, f"Upload failed: {err}")
 
     except Exception:
