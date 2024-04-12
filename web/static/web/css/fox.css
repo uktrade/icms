@@ -5040,6 +5040,6 @@ input.radio-input, input.radio-input-inline {
     margin-left: 3em;
 }
 
-.address_field p {
+.address_field p:not(:last-child) {
     padding-bottom: 0;
 }
