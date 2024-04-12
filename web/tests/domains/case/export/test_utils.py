@@ -1,10 +1,10 @@
 import io
 
 import pytest
+from django.core.exceptions import ValidationError
 from django.core.files.base import File
 
 from web.domains.case.export.utils import (
-    CustomError,
     copy_export_application_to_export_application,
     copy_export_application_to_template,
     copy_template_to_export_application,
@@ -24,7 +24,6 @@ from web.models import (
     ExportApplicationType,
 )
 from web.models.shared import AddressEntryType, YesNoChoices
-from web.tests.domains.legislation.factory import ProductLegislationFactory
 from web.utils.spreadsheet import XlsxSheetConfig, generate_xlsx_file
 
 
@@ -65,20 +64,10 @@ def create_dummy_xlsx_file(config: XlsxSheetConfig, name: str | None = None) -> 
 
 
 def create_schedule(app, is_biocidal: bool = False):
-    legislation = create_legislation(is_biocidal)
-
     schedule = CFSSchedule.objects.create(application=app, created_by=app.last_updated_by)
-    schedule.legislations.add(legislation)
+    schedule.legislations.add(ProductLegislation.objects.filter(is_biocidal=is_biocidal).first())
 
     return schedule
-
-
-def create_legislation(is_biocidal: bool) -> ProductLegislation:
-    legislation = ProductLegislationFactory()
-    legislation.is_biocidal = is_biocidal
-    legislation.save()
-
-    return legislation
 
 
 @pytest.mark.django_db
@@ -103,7 +92,7 @@ def test_process_products_file_cfs_app(cfs_app_submitted, is_biocidal):
 @pytest.mark.parametrize("is_biocidal", [False, True])
 def test_process_products_file_cfs_template(cfs_cat, is_biocidal):
     schedule = cfs_cat.cfs_template.schedules.first()
-    schedule.legislations.add(create_legislation(is_biocidal))
+    schedule.legislations.add(ProductLegislation.objects.filter(is_biocidal=is_biocidal).first())
 
     config = create_dummy_config(is_biocidal=is_biocidal)
     xlsx_file = create_dummy_xlsx_file(config)
@@ -126,7 +115,7 @@ def test_multiple_chunks_invalid(cfs_app_submitted):
     xlsx_file = create_dummy_xlsx_file(config)
     xlsx_file.DEFAULT_CHUNK_SIZE = 5000
 
-    with pytest.raises(CustomError) as e:
+    with pytest.raises(ValidationError) as e:
         process_products_file(xlsx_file, schedule)
 
     assert "File too large to process" in str(e.value)
@@ -139,7 +128,7 @@ def test_sheet_name_invalid(cfs_app_submitted):
     config.sheet_name = "Sheet 1"
     xlsx_file = create_dummy_xlsx_file(config)
 
-    with pytest.raises(CustomError) as e:
+    with pytest.raises(ValidationError) as e:
         process_products_file(xlsx_file, schedule)
 
     assert "Cannot find sheet with name 'CFS Products' in file" in str(e.value)
@@ -152,7 +141,7 @@ def test_invalid_header(cfs_app_submitted, is_biocidal):
     config = create_dummy_config(is_biocidal is False)
     xlsx_file = create_dummy_xlsx_file(config)
 
-    with pytest.raises(CustomError) as e:
+    with pytest.raises(ValidationError) as e:
         process_products_file(xlsx_file, schedule)
 
     assert "Spreadsheet header does not match the template header" in str(e.value)
@@ -167,7 +156,7 @@ def test_invalid_row_width(cfs_app_submitted, is_biocidal):
 
     xlsx_file = create_dummy_xlsx_file(config)
 
-    with pytest.raises(CustomError) as e:
+    with pytest.raises(ValidationError) as e:
         process_products_file(xlsx_file, schedule)
 
     assert "Number of columns with data do not match the number of columns in the header" in str(
@@ -182,7 +171,7 @@ def test_missing_product_name(cfs_app_submitted):
     config.rows[1][0] = None
     xlsx_file = create_dummy_xlsx_file(config)
 
-    with pytest.raises(CustomError) as e:
+    with pytest.raises(ValidationError) as e:
         process_products_file(xlsx_file, schedule)
 
     assert "Data missing in column 'Product Name' - line 3" in str(e.value)
@@ -195,7 +184,7 @@ def test_invalid_product_type_number(cfs_app_submitted):
     config.rows[1][1] = "a"
     xlsx_file = create_dummy_xlsx_file(config)
 
-    with pytest.raises(CustomError) as e:
+    with pytest.raises(ValidationError) as e:
         process_products_file(xlsx_file, schedule)
 
     assert "Product type number 'a' for product 'Product 1' is not a number - line 3" in str(
@@ -210,7 +199,7 @@ def test_missing_ingredient_name(cfs_app_submitted):
     config.rows[1][2] = None
     xlsx_file = create_dummy_xlsx_file(config)
 
-    with pytest.raises(CustomError) as e:
+    with pytest.raises(ValidationError) as e:
         process_products_file(xlsx_file, schedule)
 
     assert "Ingredient name missing - line 3" in str(e.value)
@@ -223,7 +212,7 @@ def test_missing_cas_number(cfs_app_submitted):
     config.rows[1][3] = None
     xlsx_file = create_dummy_xlsx_file(config)
 
-    with pytest.raises(CustomError) as e:
+    with pytest.raises(ValidationError) as e:
         process_products_file(xlsx_file, schedule)
 
     assert "CAS number missing - line 3" in str(e.value)
@@ -236,7 +225,7 @@ def test_duplicate_ingredient_name(cfs_app_submitted):
     config.rows[1][2] = "Ingredient 1"
     xlsx_file = create_dummy_xlsx_file(config)
 
-    with pytest.raises(CustomError) as e:
+    with pytest.raises(ValidationError) as e:
         process_products_file(xlsx_file, schedule)
 
     assert "Ingredient name 'Ingredient 1' duplicated for product 'Product 1' - line 3" in str(
@@ -251,7 +240,7 @@ def test_duplicate_cas_number(cfs_app_submitted):
     config.rows[1][3] = "111-11-1"
     xlsx_file = create_dummy_xlsx_file(config)
 
-    with pytest.raises(CustomError) as e:
+    with pytest.raises(ValidationError) as e:
         process_products_file(xlsx_file, schedule)
 
     assert "CAS number '111-11-1' duplicated for product 'Product 1' - line 3" in str(e.value)
