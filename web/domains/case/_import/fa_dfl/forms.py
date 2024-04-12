@@ -155,7 +155,7 @@ class DFLSupplementaryInfoForm(forms.ModelForm):
         fields = ("no_report_reason",)
         widgets = {"no_report_reason": forms.Textarea({"rows": 3})}
 
-    def __init__(self, *args, application: models.DFLApplication, **kwargs) -> None:
+    def __init__(self, *args: Any, application: models.DFLApplication, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.application = application
@@ -186,7 +186,7 @@ class DFLSupplementaryReportForm(forms.ModelForm):
         model = models.DFLSupplementaryReport
         fields = ("transport", "date_received", "bought_from")
 
-    def __init__(self, *args, application: models.DFLApplication, **kwargs) -> None:
+    def __init__(self, *args: Any, application: models.DFLApplication, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.application = application

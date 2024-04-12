@@ -233,7 +233,7 @@ def get_checklist_errors(application: ImpOrExp) -> PageErrors | None:
     return checklist_errors
 
 
-def get_response_preparation_errors(application: ImpOrExp, case_type) -> PageErrors | None:
+def get_response_preparation_errors(application: ImpOrExp, case_type: str) -> PageErrors | None:
     """Returns any response preparation errors."""
 
     prepare_errors = PageErrors(

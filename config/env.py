@@ -172,7 +172,7 @@ class EnvironmentBase(BaseSettings):
 
 
 # Convert the database_url to a PostgresDsn instance
-def validate_postgres_dsn_str(val) -> PostgresDsn:
+def validate_postgres_dsn_str(val: str) -> PostgresDsn:
     return TypeAdapter(PostgresDsn).validate_python(val)
 
 

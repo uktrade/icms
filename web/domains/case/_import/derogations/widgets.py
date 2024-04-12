@@ -59,7 +59,7 @@ class DerogationCommoditySelect(ModelSelect2Widget):
         request: HttpRequest,
         term: str,
         queryset: QuerySet | None = None,
-        **dependent_fields,
+        **dependent_fields: Any,
     ) -> "QuerySet[Commodity]":
         """Filter the available Commodities depending on the origin country selected by the user."""
 

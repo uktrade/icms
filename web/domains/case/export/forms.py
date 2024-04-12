@@ -500,7 +500,7 @@ class CFSProductForm(forms.ModelForm):
         model = CFSProduct
         fields = ("product_name",)
 
-    def __init__(self, *args, schedule: CFSSchedule, **kwargs):
+    def __init__(self, *args: Any, schedule: CFSSchedule, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.schedule = schedule
 
@@ -544,7 +544,7 @@ class CFSProductTypeForm(forms.ModelForm):
         model = CFSProductType
         fields = ("product_type_number",)
 
-    def __init__(self, *args, product: CFSProduct, **kwargs):
+    def __init__(self, *args: Any, product: CFSProduct, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.product = product
 
@@ -572,7 +572,7 @@ class CFSActiveIngredientForm(forms.ModelForm):
         model = CFSProductActiveIngredient
         fields = ("name", "cas_number")
 
-    def __init__(self, *args, product: CFSProduct, **kwargs):
+    def __init__(self, *args: Any, product: CFSProduct, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.product = product
 

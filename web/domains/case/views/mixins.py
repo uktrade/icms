@@ -2,7 +2,7 @@ from typing import Any, ClassVar
 
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.db import models
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
 
@@ -53,7 +53,7 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
 
         super().__init__(*args, **kwargs)
 
-    def setup(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
+    def setup(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> Any:
         for attr in ["current_status"]:
             if not hasattr(self, attr):
                 raise ImproperlyConfigured(f"The following class attribute must be set: {attr!r}")
@@ -120,12 +120,12 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
                 process=self.application, task_type=self.next_task_type, previous=self.task
             )
 
-    def get(self, request: HttpRequest, *args, **kwargs) -> Any:
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.set_application_and_task()
 
         return super().get(request, *args, **kwargs)
 
-    def post(self, request: HttpRequest, *args, **kwargs) -> Any:
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.set_application_and_task()
 
         return super().post(request, *args, **kwargs)
@@ -174,11 +174,11 @@ class ApplicationAndTaskRelatedObjectMixin:
         """Implement in child view if required."""
         return True
 
-    def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
+    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> Any:
         self.set_application_and_task()
         return super().get(request, *args, **kwargs)  # type: ignore[misc]
 
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> Any:
         self.set_application_and_task()
         return super().post(request, *args, **kwargs)  # type: ignore[misc]
 

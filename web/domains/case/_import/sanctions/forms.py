@@ -1,3 +1,5 @@
+from typing import Any
+
 from django import forms
 
 from web.domains.case.forms import application_contacts
@@ -69,7 +71,9 @@ class GoodsForm(forms.ModelForm):
             "value": forms.NumberInput(attrs={"step": 1}),
         }
 
-    def __init__(self, *args, application: SanctionsAndAdhocApplication, **kwargs):
+    def __init__(
+        self, *args: Any, application: SanctionsAndAdhocApplication, **kwargs: Any
+    ) -> None:
         super().__init__(*args, **kwargs)
 
         country_of_origin = application.origin_country

@@ -133,7 +133,7 @@ def redirect_after_submit(app: ImpOrExp, request: AuthenticatedHttpRequest) -> H
     return redirect(reverse("workbasket"))
 
 
-def application_history(app_reference: str, is_import=True):
+def application_history(app_reference: str, is_import: bool = True) -> None:
     """Debug method to print the history of the application
 
     >>> import importlib as im; from web.domains.case import utils

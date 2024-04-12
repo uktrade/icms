@@ -496,7 +496,7 @@ def get_csf_schedule_legislation_config() -> dict[int, dict[str, bool]]:
     }
 
 
-def get_show_schedule_statements_is_responsible_person(schedule) -> bool:
+def get_show_schedule_statements_is_responsible_person(schedule: CFSSchedule) -> bool:
     schedule_legislations = schedule.legislations.filter(is_active=True)
 
     has_cosmetics = schedule_legislations.filter(is_eu_cosmetics_regulation=True).exists()

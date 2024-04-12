@@ -1,8 +1,10 @@
 import functools
+from typing import Any
 
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse
 
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest, TypedTextChoices
@@ -19,7 +21,9 @@ def require_importer(check_permission=True):
         """Decorator to require that a view only accepts requests from the importer site."""
 
         @functools.wraps(f)
-        def _wrapped_view(request: AuthenticatedHttpRequest, *args, **kwargs):
+        def _wrapped_view(
+            request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any
+        ) -> HttpResponse:
             if not is_importer_site(request.site):
                 raise PermissionDenied("Importer feature requires importer site.")
 
@@ -38,7 +42,9 @@ def require_exporter(check_permission=True):
         """Decorator to require that a view only accepts requests from the exporter site."""
 
         @functools.wraps(f)
-        def _wrapped_view(request: AuthenticatedHttpRequest, *args, **kwargs):
+        def _wrapped_view(
+            request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any
+        ) -> HttpResponse:
             if not is_exporter_site(request.site):
                 raise PermissionDenied("Exporter feature requires exporter site.")
 

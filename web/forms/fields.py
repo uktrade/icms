@@ -72,7 +72,7 @@ class JqueryDateField(forms.DateField):
     widget = DateInput(format=JQUERY_DATE_FORMAT)
     input_formats = [JQUERY_DATE_FORMAT]
 
-    def __init__(self, *args, year_select_range: int = 100, **kwargs) -> None:
+    def __init__(self, *args: Any, year_select_range: int = 100, **kwargs: Any) -> None:
         self.year_select_range = year_select_range
         super().__init__(*args, **kwargs)
 

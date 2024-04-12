@@ -43,7 +43,7 @@ def get_application_contacts(application: ImpOrExp) -> QuerySet[User]:
     return get_organisation_contacts(org)
 
 
-def get_organisation_contacts(org) -> QuerySet[User]:
+def get_organisation_contacts(org: Organisation) -> QuerySet[User]:
     obj_perms = get_org_obj_permissions(org)
     return organisation_get_contacts(org, perms=[obj_perms.edit.codename])
 

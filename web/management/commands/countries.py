@@ -20,7 +20,7 @@ MEMBERSHIP = "Y"
 class Command(BaseCommand):
     help = "Import countries data from <stdin> or export to <stdout>"
 
-    def add_arguments(self, parser: argparse.ArgumentParser):
+    def add_arguments(self, parser: argparse.ArgumentParser) -> None:
         parser.add_argument(
             "operation", choices=["import", "export"], help="Import or export countries data"
         )
@@ -46,7 +46,7 @@ def get_country_data() -> tuple[QuerySet[Country], QuerySet[CountryGroup]]:
 
 def write_country_csv(
     countries: Iterable[Country], groups: Iterable[CountryGroup], dest: TextIO = sys.stdout
-):
+) -> None:
     getter = operator.attrgetter(*COUNTRY_FIELDS)
     groupnames = sorted(g.name for g in groups)
     # First few column names are country fields, followed by a column for

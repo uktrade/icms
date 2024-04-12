@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.core.exceptions import ImproperlyConfigured
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.urls import resolve, reverse
 
@@ -16,7 +16,7 @@ class UserFullyRegisteredMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
-    def __call__(self, request: HttpRequest):
+    def __call__(self, request: HttpRequest) -> HttpResponse:
         if not hasattr(request, "user"):
             raise ImproperlyConfigured("UserFullyRegisteredMiddleware requires a user to be set.")
 

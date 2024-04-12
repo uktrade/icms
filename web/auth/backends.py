@@ -106,7 +106,7 @@ class ICMSStaffSSOBackend(AuthbrokerBackend):
       - Checks the user.is_active field when authenticate is called.
     """
 
-    def authenticate(self, request: HttpRequest, **kwargs) -> User | None:
+    def authenticate(self, request: HttpRequest, **kwargs: Any) -> User | None:
         user = super().authenticate(request, **kwargs)
 
         if user and self.user_can_authenticate(user):
