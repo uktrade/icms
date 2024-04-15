@@ -27,12 +27,12 @@
       <a
         class="button small-button icon-pencil"
         href="{{ icms_url('case:add-response-case-email', kwargs={'application_pk': process.pk, 'case_email_pk': object.pk, 'case_type': case_type}) }}">
-        Record Response
+        {% if object.response %}Edit Response{% else %}Record Response{% endif %}
       </a>
     {% endif %}
   {% endif %}
 
-  <div class="row">
+  <div class="row mt-1">
     <div class="three columns">
       <label class="prompt west">
         Status
@@ -48,7 +48,21 @@
     <div class="three columns"></div>
   </div>
 
-  <div class="row">
+  <div class="row mt-1">
+    <div class="three columns">
+      <label class="prompt west">
+        Sent Date
+      </label>
+    </div>
+    <div class="six columns">
+      {% if object.sent_datetime %}
+        {{ object.sent_datetime.strftime("%d-%b-%Y %H:%M:%S") }}
+      {% endif %}
+    </div>
+    <div class="three columns"></div>
+  </div>
+
+  <div class="row mt-1">
     <div class="three columns">
       <label class="prompt west">
         To
@@ -60,7 +74,7 @@
     <div class="three columns"></div>
   </div>
 
-  <div class="row">
+  <div class="row mt-1">
     <div class="three columns">
       <label class="prompt west">
         Cc
@@ -76,7 +90,7 @@
     <div class="three columns"></div>
   </div>
 
-  <div class="row">
+  <div class="row mt-1">
     <div class="three columns">
       <label class="prompt west">
         Subject
@@ -88,7 +102,7 @@
     <div class="three columns"></div>
   </div>
 
-  <div class="row">
+  <div class="row mt-1">
     <div class="three columns">
       <label class="prompt west">
         Attachments
@@ -129,7 +143,7 @@
     <div class="three columns"></div>
   </div>
 
-  <div class="row">
+  <div class="row mt-1">
     <div class="three columns">
       <label class="prompt west">
         Body
@@ -141,22 +155,8 @@
     <div class="three columns"></div>
   </div>
 
-  <div class="row">
-    <div class="three columns">
-      <label class="prompt west">
-        Sent Date
-      </label>
-    </div>
-    <div class="six columns">
-      {% if object.sent_datetime %}
-        {{ object.sent_datetime.strftime("%d-%b-%Y %H:%M:%S") }}
-      {% endif %}
-    </div>
-    <div class="three columns"></div>
-  </div>
-
   {% if object.response %}
-    <div class="row">
+    <div class="row mt-1">
       <div class="three columns">
         <label class="prompt west">
           Response
@@ -169,7 +169,7 @@
     </div>
   {% endif %}
 
-  <div class="row">
+  <div class="row mt-1">
     <div class="three columns">
       <label class="prompt west">
         Closed Date
@@ -182,4 +182,19 @@
     </div>
     <div class="three columns"></div>
   </div>
+  
+  {% if object.response %}
+    <div class="row mt-1">
+      <div class="three columns">
+      </div>
+      <div class="six columns">
+        <a
+          class="button small-button icon-pencil"
+          href="{{ icms_url('case:add-response-case-email', kwargs={'application_pk': process.pk, 'case_email_pk': object.pk, 'case_type': case_type}) }}">
+          Edit Response
+        </a>
+      </div>
+      <div class="three columns"></div>
+    </div>
+  {% endif %}
 </fieldset>
