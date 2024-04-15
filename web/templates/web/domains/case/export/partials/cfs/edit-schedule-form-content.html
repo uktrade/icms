@@ -16,11 +16,16 @@
 {{ fields.field(form.country_of_manufacture) }}
 {{ fields.field(form.schedule_statements_accordance_with_standards, checkbox_label="These products are manufactured in accordance with the Good Manufacturing Practice standards set out in UK law") }}
 
+<div id="responsible-person-tooltip" role="tooltip" class="hint-content" aria-hidden="true">
+  <div class="screen-reader-only">This item has hint text,</div>
+  Cosmetics only - The responsible person statement clarifies that your company is legally responsible for ensuring that these goods meets the EU cosmetics product safety legislation requirements. It does NOT mean that the individual making the application is responsible for the product safety of these goods.
+</div>
 <div id="schedule-statements-is-responsible-person-wrapper" {% if not show_schedule_statements_is_responsible_person %} style="display: none"{% endif %}>
   {{ fields.field(
         form.schedule_statements_is_responsible_person,
         show_optional_indicator=False,
-        checkbox_label="I am the responsible person as defined by Cosmetic Regulation No 1223/2009 as applicable in GB. I am the person responsible for ensuring that the products listed in this schedule meet the safety requirements set out in that Regulation."
+        checkbox_label="I am the responsible person as defined by Cosmetic Regulation No 1223/2009 as applicable in GB. I am the person responsible for ensuring that the products listed in this schedule meet the safety requirements set out in that Regulation.",
+        tooltip_msg_id="responsible-person-tooltip"
      )
   }}
 </div>
