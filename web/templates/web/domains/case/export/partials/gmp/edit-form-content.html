@@ -20,7 +20,8 @@
 {{ fields.field(form.responsible_person_country) }}
 
 <h4>Manufacturer</h4>
-{{ fields.field(form.is_manufacturer) }}
+{% include 'web/domains/case/export/partials/shared/manufacturer-guidance-tooltip.html' %}
+{{ fields.field(form.is_manufacturer, tooltip_msg_id="manufacturer-guidance-tooltip") }}
 {{ fields.address_fields(
     form,
     'manufacturer_name',
