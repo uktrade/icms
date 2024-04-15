@@ -4320,3 +4320,4 @@ Africa
 Middle East
 Product Upload {'Biocide '
 view_kwargs
+div id="is-manufacturer-tooltip

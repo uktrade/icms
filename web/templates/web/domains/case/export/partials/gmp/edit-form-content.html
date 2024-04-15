@@ -20,7 +20,16 @@
 {{ fields.field(form.responsible_person_country) }}
 
 <h4>Manufacturer</h4>
-{{ fields.field(form.is_manufacturer) }}
+<div id="is-manufacturer-tooltip" role="tooltip" class="hint-content" aria-hidden="true">
+  <div class="screen-reader-only">This item has hint text,</div>You are the manufacturer if:
+  <br>
+  <ul>
+    <li>you make the product;</li>
+    <li>you have had the product designed or manufactured and are marketing the product under your own name of trade mark,</li>
+    <li>and you are the person responsible for placing it on the UK market (cosmetics only)</li>
+  </ul>
+</div>
+{{ fields.field(form.is_manufacturer, tooltip_msg_id="is-manufacturer-tooltip") }}
 {{ fields.address_fields(
     form,
     'manufacturer_name',
