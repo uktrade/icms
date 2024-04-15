@@ -116,7 +116,7 @@ class ClearMailshotFromWorkbasketView(
 
         return False
 
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         """Remove the mailshot from the `request.user` workbasket."""
 
         mailshot = self.get_object()

@@ -12,7 +12,7 @@ from .generate import (
 
 
 @app.task(name=GENERATE_REPORT_TASK_NAME, queue=CELERY_REPORTS_QUEUE_NAME)
-def generate_report_task(scheduled_report_pk) -> None:
+def generate_report_task(scheduled_report_pk: int) -> None:
     scheduled_report = ScheduleReport.objects.get(pk=scheduled_report_pk)
     match scheduled_report.report.report_type:
         case ReportType.ISSUED_CERTIFICATES:

@@ -137,7 +137,7 @@ def show_take_ownership_url(
     return action.show_link()
 
 
-def get_view_case_url(request: AuthenticatedHttpRequest, case_type: str, app_pk: int):
+def get_view_case_url(request: AuthenticatedHttpRequest, case_type: str, app_pk: int) -> str:
     """Used to retrieve the correct view case url based on the user permissions."""
 
     kwargs = {"application_pk": app_pk, "case_type": case_type}

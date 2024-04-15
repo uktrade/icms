@@ -38,8 +38,7 @@ check_untyped_defs = true
 warn_unused_configs = true
 warn_redundant_casts = true
 warn_unused_ignores = true
-# TODO: Add back in.
-#disallow_incomplete_defs = true
+disallow_incomplete_defs = true
 
 #
 # Modules to ignore missing imports

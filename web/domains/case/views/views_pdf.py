@@ -1,4 +1,4 @@
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -38,7 +38,7 @@ class DocumentPreviewBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRe
     document_types: ClassVar[list[DocumentTypes]]
     output_filename: ClassVar[str]
 
-    def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.set_application_and_task()
 
         document_type = self.kwargs["document_type"]

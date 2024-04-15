@@ -272,7 +272,7 @@ class Command(BaseCommand):
 
         return user
 
-    def create_con_user(self, username, linked_constabularies: list[str]):
+    def create_con_user(self, username: str, linked_constabularies: list[str]) -> None:
         user = self.create_user(username)
         add_email(user)
 

@@ -143,7 +143,7 @@ def fa_oil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     return app_id
 
 
-def fa_oil_manage_and_complete_case(page: Page, app_id) -> None:
+def fa_oil_manage_and_complete_case(page: Page, app_id: int) -> None:
     #
     # Complete Take Ownership
     #

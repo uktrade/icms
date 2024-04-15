@@ -13,7 +13,7 @@ UK_TZ = zoneinfo.ZoneInfo("Europe/London")
 FOXID_REGEX = r" foxid=\"[a-zA-Z0-9_]+\""
 
 
-def get_xml_val(xml: etree.ElementTree, xpath: str, text=True) -> Any:
+def get_xml_val(xml: etree.ElementTree, xpath: str, text: bool = True) -> Any:
     if text and not xpath.endswith("/text()"):
         xpath = xpath + "/text()"
 
@@ -167,7 +167,7 @@ def str_to_yes_no(y_n_str: str | None) -> str | None:
 
 
 def validate_decimal(
-    fields: list[str], data: dict[str, Any], max_digits=9, decimal_places=2
+    fields: list[str], data: dict[str, Any], max_digits: int = 9, decimal_places: int = 2
 ) -> None:
     """Pops the field from the dictionary of data if it is not a valid decimal"""
 
@@ -197,7 +197,7 @@ def validate_int(fields: list[str], data: dict[str, Any]) -> None:
             data.pop(field)
 
 
-def split_address(address: str, prefix="address_", max_lines=5) -> dict[str, str]:
+def split_address(address: str, prefix: str = "address_", max_lines: int = 5) -> dict[str, str]:
     """Splits an address by newline characters
 
     123 Test
@@ -213,7 +213,7 @@ def split_address(address: str, prefix="address_", max_lines=5) -> dict[str, str
     }
 
 
-def str_to_list(list_str: str, delimiter: str = ";"):
+def str_to_list(list_str: str, delimiter: str = ";") -> list[str] | None:
     lst = [x for x in list_str.split(delimiter) if x]
     return lst or None
 

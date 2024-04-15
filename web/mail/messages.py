@@ -1,6 +1,6 @@
 import copy
 import datetime as dt
-from typing import ClassVar, final
+from typing import Any, ClassVar, final
 from uuid import UUID
 
 from django.conf import settings
@@ -62,7 +62,7 @@ from .url_helpers import (
 class GOVNotifyEmailMessage(EmailMessage):
     name: ClassVar[EmailTypes]
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.template_id = self.get_template_id()
 
@@ -75,7 +75,7 @@ class GOVNotifyEmailMessage(EmailMessage):
         message["Personalisation"] = self.get_personalisation()
         return message
 
-    def get_personalisation(self) -> dict:
+    def get_personalisation(self) -> dict[str, Any]:
         return {
             "icms_url": self.get_site_domain(),
             "icms_contact_email": settings.ILB_CONTACT_EMAIL,
@@ -84,7 +84,7 @@ class GOVNotifyEmailMessage(EmailMessage):
             "body": self.body,
         } | self.get_context()
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         return {}
 
     def get_site_domain(self) -> str:
@@ -95,12 +95,12 @@ class GOVNotifyEmailMessage(EmailMessage):
 class NewUserWelcomeEmail(GOVNotifyEmailMessage):
     name = EmailTypes.NEW_USER_WELCOME
 
-    def __init__(self, *args, user: User, site: Site, **kwargs) -> None:
+    def __init__(self, *args: Any, user: User, site: Site, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.user = user
         self.site = site
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         site_domain = self.get_site_domain()
         context = {
             "service_name": self.site.name,
@@ -126,11 +126,11 @@ class NewUserWelcomeEmail(GOVNotifyEmailMessage):
 
 
 class BaseApplicationEmail(GOVNotifyEmailMessage):
-    def __init__(self, *args, application: ImpOrExp, **kwargs) -> None:
+    def __init__(self, *args: Any, application: ImpOrExp, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.application = application
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context()
         return context | {
             "reference": self.application.reference,
@@ -146,22 +146,22 @@ class BaseApplicationEmail(GOVNotifyEmailMessage):
 
 
 class BaseApprovalRequest(GOVNotifyEmailMessage):
-    def __init__(self, *args, approval_request: ImpOrExpApproval, **kwargs) -> None:
+    def __init__(self, *args: Any, approval_request: ImpOrExpApproval, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.approval_request = approval_request
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         access_request = self.approval_request.access_request.get_specific_model()
         return {"user_type": "agent" if access_request.is_agent_request else "user"}
 
 
 class BaseWithdrawalEmail(GOVNotifyEmailMessage):
-    def __init__(self, *args, withdrawal: WithdrawApplication, **kwargs) -> None:
+    def __init__(self, *args: Any, withdrawal: WithdrawApplication, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.withdrawal = withdrawal
         self.application = withdrawal.export_application or withdrawal.import_application
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         return {"reference": self.application.reference, "reason": self.withdrawal.reason}
 
     def get_site_domain(self) -> str:
@@ -172,7 +172,7 @@ class BaseWithdrawalEmail(GOVNotifyEmailMessage):
 
 
 class BaseVariationRequestEmail(BaseApplicationEmail):
-    def __init__(self, *args, variation_request: VariationRequest, **kwargs) -> None:
+    def __init__(self, *args: Any, variation_request: VariationRequest, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.variation_request = variation_request
 
@@ -181,11 +181,11 @@ class BaseVariationRequestEmail(BaseApplicationEmail):
 class AccessRequestEmail(GOVNotifyEmailMessage):
     name = EmailTypes.ACCESS_REQUEST
 
-    def __init__(self, *args, access_request: ImpAccessOrExpAccess, **kwargs) -> None:
+    def __init__(self, *args: Any, access_request: ImpAccessOrExpAccess, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.access_request = access_request
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         return {"reference": self.access_request.reference}
 
     def get_site_domain(self) -> str:
@@ -196,11 +196,11 @@ class AccessRequestEmail(GOVNotifyEmailMessage):
 class AccessRequestClosedEmail(GOVNotifyEmailMessage):
     name = EmailTypes.ACCESS_REQUEST_CLOSED
 
-    def __init__(self, *args, access_request: ImpAccessOrExpAccess, **kwargs) -> None:
+    def __init__(self, *args: Any, access_request: ImpAccessOrExpAccess, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.access_request = access_request
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         return {
             "request_type": self.access_request.REQUEST_TYPE.capitalize(),
             "agent": "Agent " if self.access_request.is_agent_request else "",
@@ -253,7 +253,7 @@ class ApplicationUpdateResponseEmail(BaseApplicationEmail):
 class ApplicationRefusedEmail(BaseApplicationEmail):
     name = EmailTypes.APPLICATION_REFUSED
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context()
         context["reason"] = self.application.refuse_reason
         return context
@@ -292,7 +292,7 @@ class WithdrawalAcceptedEmail(BaseWithdrawalEmail):
 class WithdrawalRejectedEmail(BaseWithdrawalEmail):
     name = EmailTypes.WITHDRAWAL_REJECTED
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context()
         context["reason_rejected"] = self.withdrawal.response
         return context
@@ -310,11 +310,11 @@ class WithdrawalCancelledEmail(BaseWithdrawalEmail):
 class ApplicationReassignedEmail(BaseApplicationEmail):
     name = EmailTypes.APPLICATION_REASSIGNED
 
-    def __init__(self, *args, comment: str, **kwargs) -> None:
+    def __init__(self, *args: Any, comment: str, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.comment = comment
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context()
         context["comment"] = self.comment or "None provided."
         return context
@@ -337,7 +337,7 @@ class FirearmsSupplementaryReportEmail(BaseApplicationEmail):
 class ConstabularyDeactivatedFirearmsEmail(BaseApplicationEmail):
     name = EmailTypes.CONSTABULARY_DEACTIVATED_FIREARMS
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context()
         context["documents_url"] = get_constabulary_document_view_url(
             self.application, self.get_document_pack(), full_url=True
@@ -363,7 +363,7 @@ class AccessRequestApprovalCompleteEmail(BaseApprovalRequest):
 class VariationRequestCancelledEmail(BaseVariationRequestEmail):
     name = EmailTypes.APPLICATION_VARIATION_REQUEST_CANCELLED
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context()
         context["reason"] = self.variation_request.reject_cancellation_reason
         return context
@@ -378,7 +378,7 @@ class VariationRequestCancelledEmail(BaseVariationRequestEmail):
 class VariationRequestUpdateRequiredEmail(BaseVariationRequestEmail):
     name = EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_REQUIRED
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context()
         context["reason"] = self.variation_request.update_request_reason
         return context
@@ -401,7 +401,7 @@ class VariationRequestUpdateReceivedEmail(BaseVariationRequestEmail):
 class VariationRequestRefusedEmail(BaseVariationRequestEmail):
     name = EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context()
         context["reason"] = self.application.variation_refuse_reason
         return context
@@ -411,7 +411,7 @@ class VariationRequestRefusedEmail(BaseVariationRequestEmail):
 class CaseEmail(GOVNotifyEmailMessage):
     name = EmailTypes.CASE_EMAIL
 
-    def __init__(self, *args, case_email: CaseEmailModel, **kwargs) -> None:
+    def __init__(self, *args: Any, case_email: CaseEmailModel, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.case_email = case_email
 
@@ -421,16 +421,16 @@ class CaseEmail(GOVNotifyEmailMessage):
         else:
             return get_exporter_site_domain()
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         return {"subject": self.case_email.subject, "body": self.case_email.body}
 
 
 class BaseFurtherInformationRequestEmail(GOVNotifyEmailMessage):
-    def __init__(self, *args, fir: FurtherInformationRequest, **kwargs) -> None:
+    def __init__(self, *args: Any, fir: FurtherInformationRequest, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.fir = fir
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context()
         context["subject"] = self.fir.request_subject
         context["body"] = self.fir.request_detail
@@ -442,7 +442,7 @@ class ApplicationFurtherInformationRequestEmail(
 ):
     name = EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context() | {"fir_type": "case"}
         return context
 
@@ -450,11 +450,11 @@ class ApplicationFurtherInformationRequestEmail(
 class AccessRequestFurtherInformationRequestEmail(BaseFurtherInformationRequestEmail):
     name = EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST
 
-    def __init__(self, *args, access_request: ImpAccessOrExpAccess, **kwargs) -> None:
+    def __init__(self, *args: Any, access_request: ImpAccessOrExpAccess, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.access_request = access_request
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context() | {
             "reference": self.access_request.reference,
             "fir_type": "access request",
@@ -500,7 +500,7 @@ class ApplicationFurtherInformationRequestWithdrawnEmail(ApplicationFurtherInfor
 class LicenceRevokedEmail(BaseApplicationEmail):
     name = EmailTypes.LICENCE_REVOKED
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context() | {
             "licence_number": self.get_licence_number(),
         }
@@ -515,7 +515,7 @@ class LicenceRevokedEmail(BaseApplicationEmail):
 class CertificateRevokedEmail(BaseApplicationEmail):
     name = EmailTypes.CERTIFICATE_REVOKED
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context() | {
             "certificate_references": ",".join(self.get_certificate_references()),
         }
@@ -532,11 +532,11 @@ class CertificateRevokedEmail(BaseApplicationEmail):
 class ApplicationUpdateEmail(BaseApplicationEmail):
     name = EmailTypes.APPLICATION_UPDATE
 
-    def __init__(self, *args, update_request: UpdateRequest, **kwargs) -> None:
+    def __init__(self, *args: Any, update_request: UpdateRequest, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.update_request = update_request
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context()
         context["subject"] = self.update_request.request_subject
         context["body"] = self.update_request.request_detail
@@ -547,11 +547,11 @@ class ApplicationUpdateEmail(BaseApplicationEmail):
 class AuthorityArchivedEmail(GOVNotifyEmailMessage):
     name = EmailTypes.AUTHORITY_ARCHIVED
 
-    def __init__(self, *args, authority: Authority, **kwargs) -> None:
+    def __init__(self, *args: Any, authority: Authority, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.authority = authority
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context()
         return context | {
             "authority_name": self.authority.reference,
@@ -577,18 +577,18 @@ class AuthorityArchivedEmail(GOVNotifyEmailMessage):
 class BaseAuthorityExpiringEmail(GOVNotifyEmailMessage):
     def __init__(
         self,
-        *args,
+        *args: Any,
         importers_details: list[ImporterDetails],
         authority_type: str,
         expiry_date: dt.date,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)
         self.importers_details = importers_details
         self.authority_type = authority_type
         self.expiry_date = expiry_date
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context()
         return context | {
             "importers_count": len(self.importers_details),
@@ -621,22 +621,22 @@ class Section5AuthorityExpiringEmail(BaseAuthorityExpiringEmail):
 class FirearmsAuthorityExpiringEmail(BaseAuthorityExpiringEmail):
     name = EmailTypes.AUTHORITY_EXPIRING_FIREARMS
 
-    def __init__(self, *args, constabulary: Constabulary, **kwargs) -> None:
+    def __init__(self, *args: Any, constabulary: Constabulary, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.constabulary = constabulary
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context()
         return context | {"constabulary_name": self.constabulary.name}
 
 
 class BaseMailshotEmail(GOVNotifyEmailMessage):
-    def __init__(self, *args, mailshot: Mailshot, site_domain: str, **kwargs) -> None:
+    def __init__(self, *args: Any, mailshot: Mailshot, site_domain: str, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.mailshot = mailshot
         self.site_domain = site_domain
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         context = super().get_context()
         context["subject"] = self.get_subject()
         context["body"] = self.get_body()
@@ -681,16 +681,16 @@ class OrganisationContactInviteEmail(GOVNotifyEmailMessage):
 
     def __init__(
         self,
-        *args,
+        *args: Any,
         organisation: Importer | Exporter,
         invite: ImporterContactInvite | ExporterContactInvite,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(*args, **kwargs)
         self.organisation = organisation
         self.invite = invite
 
-    def get_context(self) -> dict:
+    def get_context(self) -> dict[str, Any]:
         match self.organisation:
             case Importer():
                 service_name = SiteName.IMPORTER.label

@@ -1,8 +1,10 @@
+from typing import Any
+
 from django.db.models.query import QuerySet
-from django.http import HttpRequest
 from django_select2 import forms as s2forms
 
 from web.models import Country, ImportApplicationType
+from web.types import AuthenticatedHttpRequest
 
 
 class CommodityWidget(s2forms.ModelSelect2MultipleWidget):
@@ -40,11 +42,11 @@ class UsageCountryWidget(s2forms.ModelSelect2Widget):
 
     def filter_queryset(
         self,
-        request: HttpRequest,
+        request: AuthenticatedHttpRequest,
         term: str,
         queryset: QuerySet | None = None,
-        **dependent_fields,
-    ) -> QuerySet:
+        **dependent_fields: Any,
+    ) -> QuerySet[Country]:
         """Filter the available countries depending on the application type selected by the user."""
 
         if queryset is None:

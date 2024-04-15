@@ -196,7 +196,7 @@ def _prepare_fa_oil_response(
 
 def _prepare_fa_dfl_response(
     request: AuthenticatedHttpRequest, application: DFLApplication, context: dict[str, Any]
-):
+) -> HttpResponse:
     context.update(
         {
             "process": application,
@@ -213,7 +213,7 @@ def _prepare_fa_dfl_response(
 
 def _prepare_fa_sil_response(
     request: AuthenticatedHttpRequest, application: SILApplication, context: dict[str, Any]
-):
+) -> HttpResponse:
     section_1 = application.goods_section1.filter(is_active=True)
     section_2 = application.goods_section2.filter(is_active=True)
     section_5 = application.goods_section5.filter(is_active=True)

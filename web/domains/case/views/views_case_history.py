@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -10,11 +10,14 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.flow import errors
 from web.flow.models import ProcessTypes
-from web.models import Process, User
+from web.models import (
+    CaseDocumentReference,
+    ExportApplication,
+    ImportApplication,
+    Process,
+    User,
+)
 from web.permissions import AppChecker, Perms
-
-if TYPE_CHECKING:
-    from web.models import CaseDocumentReference, ExportApplication, ImportApplication
 
 
 def check_can_view_application(user: User, application: ImpOrExp) -> None:
@@ -33,7 +36,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
     model = Process
     pk_url_kwarg = "application_pk"
 
-    def has_permission(self):
+    def has_permission(self) -> bool:
         application = self.get_object().get_specific_model()
 
         check_can_view_application(self.request.user, application)
@@ -51,7 +54,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
 
         return True
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         application = self.object.get_specific_model()
         case_type = self.kwargs["case_type"]
         base_context = super().get_context_data(**kwargs)
@@ -78,7 +81,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
 
         return base_context | common_context | app_context
 
-    def _get_licence_context(self, application: "ImportApplication"):
+    def _get_licence_context(self, application: ImportApplication) -> dict[str, Any]:
         licences = document_pack.pack_licence_history(application)
 
         return {
@@ -113,7 +116,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
             ]
         }
 
-    def _get_certificate_context(self, application: "ExportApplication"):
+    def _get_certificate_context(self, application: ExportApplication) -> dict[str, Any]:
         certificates = document_pack.pack_certificate_history(application)
 
         return {
@@ -153,7 +156,7 @@ class CaseHistoryView(PermissionRequiredMixin, LoginRequiredMixin, DetailView):
         raise NotImplementedError(f"Unknown case_type {case_type}")
 
 
-def _get_cdr_name(app: "ExportApplication", cdr: "CaseDocumentReference") -> str:
+def _get_cdr_name(app: ExportApplication, cdr: CaseDocumentReference) -> str:
     app_label = ProcessTypes(app.process_type).label
 
     if app.process_type == ProcessTypes.GMP:

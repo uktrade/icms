@@ -1,4 +1,5 @@
 import json
+from typing import Any
 from uuid import UUID
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -27,7 +28,7 @@ class Command(BaseCommand):
         json_args = json.loads(task.task_args)
         return eval(json_args)
 
-    def handle(self, *args, **options) -> None:
+    def handle(self, *args: Any, **options: Any) -> None:
         self.stdout.write("Resending email")
         try:
             task = self.get_task(options["task_id"])

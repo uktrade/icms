@@ -208,7 +208,7 @@ class ModelFilterView(
         except EmptyPage:
             return paginator.page(paginator.num_pages)
 
-    def get_filterset(self, **kwargs) -> FilterSet:
+    def get_filterset(self, **kwargs: Any) -> FilterSet:
         queryset = self.get_queryset()
 
         if self.is_initial_page_load():

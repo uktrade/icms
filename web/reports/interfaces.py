@@ -179,7 +179,7 @@ class ReportInterface:
     def serialize_rows(self, r: Model) -> list:
         return [self.serialize_row(r)]
 
-    def serialize_row(self, *args, **kwargs) -> BaseModel:
+    def serialize_row(self, *args: Any, **kwargs: Any) -> BaseModel:
         raise NotImplementedError
 
     def get_queryset(self) -> QuerySet:
@@ -254,7 +254,7 @@ class ReportInterface:
             )
         )
 
-    def get_row_identifier(self, *args, **kwargs) -> str:
+    def get_row_identifier(self, *args: Any, **kwargs: Any) -> str:
         raise NotImplementedError
 
 
@@ -397,7 +397,7 @@ class BaseFirearmsLicenceInterface(ReportInterface):
             "section_obsolete",
         )
 
-    def serialize_row(self, ia: ImportApplication):
+    def serialize_row(self, ia: ImportApplication) -> BaseModel:
         licence = utils.get_licence_details(ia)
         import_user_name = utils.format_contact_name(
             ia["importer_title"], ia["importer_first_name"], ia["importer_last_name"]
@@ -436,7 +436,7 @@ class IssuedCertificateReportInterface(ReportInterface):
     # Added to fix typing
     filters: IssuedCertificateReportFilter
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.legislations = dict(ProductLegislation.objects.values_list("pk", "name"))
 
@@ -694,7 +694,7 @@ class AccessRequestTotalsInterface(ReportInterface):
             )
         ]
 
-    def get_row_identifier(self, **kwargs) -> str:
+    def get_row_identifier(self, **kwargs: Any) -> str:
         return "Totals"
 
 

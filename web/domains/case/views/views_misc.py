@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import ObjectDoesNotExist
-from django.http import Http404, HttpRequest, HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -620,7 +620,7 @@ class CheckCaseDocumentGenerationView(
     # PermissionRequiredMixin Config
     permission_required = [Perms.sys.ilb_admin]
 
-    def get(self, request: HttpRequest, *args, **kwargs) -> Any:
+    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.set_application_and_task()
 
         active_tasks = case_progress.get_active_task_list(self.application)
@@ -667,7 +667,7 @@ class RecreateCaseDocumentsView(
     # PermissionRequiredMixin Config
     permission_required = [Perms.sys.ilb_admin]
 
-    def post(self, request: HttpRequest, *args, **kwargs) -> Any:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         """Deletes existing draft PDFs and regenerates case document pack"""
         self.set_application_and_task()
         doc_pack = document_pack.pack_draft_get(self.application)
@@ -890,7 +890,7 @@ class ClearIssuedCaseDocumentsFromWorkbasket(
     def has_object_permission(self) -> bool:
         return AppChecker(self.request.user, self.application).can_view()
 
-    def post(self, request: HttpRequest, *args, **kwargs) -> Any:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         """Remove the document pack from the workbasket."""
         self.set_application_and_task()
 
@@ -919,7 +919,7 @@ class ClearCaseFromWorkbasket(ApplicationTaskMixin, LoginRequiredMixin, View):
     def has_object_permission(self) -> bool:
         return AppChecker(self.request.user, self.application).can_view()
 
-    def post(self, request: HttpRequest, *args, **kwargs) -> Any:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         """Remove the Case from the `request.user` workbasket."""
 
         self.set_application_and_task()

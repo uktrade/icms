@@ -66,7 +66,7 @@ class CountryCreateView(PermissionRequiredMixin, LoginRequiredMixin, PageTitleMi
     permission_required = Perms.sys.ilb_admin
     cancel_url = reverse_lazy("country:list")
 
-    def form_valid(self, form) -> HttpResponseRedirect:
+    def form_valid(self, form: CountryCreateForm) -> HttpResponseRedirect:
         country = form.cleaned_data["name"]
         country.is_active = True
         country.save()

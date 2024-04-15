@@ -18,6 +18,7 @@ from web.models import (
     ImportApplicationLicence,
 )
 from web.permissions import Perms
+from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 
 
@@ -48,7 +49,7 @@ class BaseConstabularyDocumentView(PermissionRequiredMixin, LoginRequiredMixin):
             case _:
                 return False
 
-    def get_document_pack(self, application) -> DocumentPack:
+    def get_document_pack(self, application: ImportApplication) -> DocumentPack:
         return get_object_or_404(application.licences, pk=self.kwargs["doc_pack_pk"])
 
 
@@ -57,7 +58,7 @@ class ConstabularyDocumentView(BaseConstabularyDocumentView, DetailView):
     model = ImportApplication
     pk_url_kwarg = "application_pk"
 
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         application = self.object.get_specific_model()
         case_type = "import"
@@ -116,7 +117,7 @@ class ConstabularyDocumentDownloadView(BaseConstabularyDocumentView, DetailView)
             return True
         return False
 
-    def get(self, *args, **kwargs) -> HttpResponse:
+    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         cdr = CaseDocumentReference.objects.get(pk=kwargs["cdr_pk"])
         file_content = get_file_from_s3(cdr.document.path)
         response = HttpResponse(content=file_content, content_type=cdr.document.content_type)

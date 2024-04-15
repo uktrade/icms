@@ -117,7 +117,7 @@ class ConstabularyContactsBaseView(
 
 
 class AddConstabularyContactView(ConstabularyContactsBaseView):
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         constabulary = self.get_object()
 
         contacts = constabulary_get_contacts(constabulary)
@@ -136,7 +136,7 @@ class AddConstabularyContactView(ConstabularyContactsBaseView):
 
 
 class DeleteConstabularyContactView(ConstabularyContactsBaseView):
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         constabulary = self.get_object()
 
         contacts = constabulary_get_contacts(constabulary)

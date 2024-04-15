@@ -1,5 +1,5 @@
 import os.path
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from typing import Any
 
 from django import forms
@@ -44,9 +44,13 @@ IMAGE_EXTENSION_ALLOW_LIST = ("jpeg", "jpg", "png")
 
 IMAGE_HELP_TEXT = "Only the following file extensions (types) are allowed to be uploaded: "
 
+VALIDATOR = Callable[[S3Boto3StorageFile], None]
+
 
 class ICMSFileField(forms.FileField):
-    def __init__(self, *, validators=(), help_text=HELP_TEXT, **kwargs) -> None:
+    def __init__(
+        self, *, validators: Iterable[VALIDATOR] = (), help_text: str = HELP_TEXT, **kwargs: Any
+    ) -> None:
         super().__init__(
             # order is important: validate_file_extension can delete the file
             # from S3, so has to be after the virus check
@@ -80,10 +84,10 @@ class ImageFileField(forms.FileField):
     def __init__(
         self,
         *,
-        validators=(),
+        validators: Iterable[VALIDATOR] = (),
         allowed_extensions: Iterable[str] = IMAGE_EXTENSION_ALLOW_LIST,
         help_text: str | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         validate_image_file_extension = ImageFileFieldValidator(allowed_extensions)
         help_text = help_text or IMAGE_HELP_TEXT + ", ".join(allowed_extensions)

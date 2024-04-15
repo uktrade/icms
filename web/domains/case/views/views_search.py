@@ -90,7 +90,7 @@ def search_cases(
     *,
     case_type: Literal["import", "export"],
     mode: str = "standard",
-    get_results=False,
+    get_results: bool = False,
 ) -> HttpResponse:
     if not can_user_view_search_cases(request.user, case_type):
         raise PermissionDenied
@@ -218,7 +218,7 @@ class ReopenApplicationView(
     next_status = ImpExpStatus.SUBMITTED
     next_task_type = Task.TaskType.PROCESS
 
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         """Reopen the application."""
         self.set_application_and_task()
         self.application.case_owner = None
@@ -245,7 +245,7 @@ class SearchActionFormBase(
 ):
     """Base class for showing a form view that retains the previous search results."""
 
-    def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         # Store the search url to create the return link later
         referrer = self.request.META.get("HTTP_REFERER", "")
 
@@ -254,7 +254,7 @@ class SearchActionFormBase(
 
         return super().get(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         return context | {
@@ -297,7 +297,7 @@ class SearchActionFormBase(
 class RequestVariationOpenBase(SearchActionFormBase):
     """Base class for opening a variation request for import and export applications."""
 
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         """Returns context data for both import and export application variation requests."""
 
         context = super().get_context_data(**kwargs)
@@ -438,7 +438,7 @@ class RevokeCaseView(SearchActionFormBase):
         else:
             return ["web/domains/case/manage/revoke-certificate.html"]
 
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         if self.application.status == ImpExpStatus.COMPLETED:

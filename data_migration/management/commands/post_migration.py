@@ -1,4 +1,5 @@
 import argparse
+from typing import Any
 
 import oracledb
 from django.contrib.auth.models import Group
@@ -27,7 +28,7 @@ from .utils.db import CONNECTION_CONFIG
 
 
 class Command(BaseCommand):
-    def add_arguments(self, parser: argparse.ArgumentParser):
+    def add_arguments(self, parser: argparse.ArgumentParser) -> None:
         parser.add_argument(
             "--skip_ref",
             help="Skip creating references",
@@ -50,7 +51,7 @@ class Command(BaseCommand):
         add_region_to_existing_countries(self.stdout)
         add_inactive_countries()
 
-    def handle(self, *args, **options) -> None:
+    def handle(self, *args: Any, **options: Any) -> None:
         skip_refs = options["skip_ref"]
         skip_perms = options["skip_perms"]
         skip_add_data = options["skip_add_data"]
@@ -144,7 +145,7 @@ class Command(BaseCommand):
                 else:
                     self.assign_user_groups(group_name, rows)
 
-    def assign_constabulary_contacts(self, rows: list[tuple[str, str, int]]):
+    def assign_constabulary_contacts(self, rows: list[tuple[str, str, int]]) -> None:
         """Assign contabulary contact permissions to the usernames provided in the data
 
         :param rows: each row of data should contain (username, roles, object_id)

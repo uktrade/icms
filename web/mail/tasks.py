@@ -30,19 +30,19 @@ from .types import ImporterDetails
 
 
 @app.task(name=SEND_MAILSHOT_TASK_NAME, queue=CELERY_MAIL_QUEUE_NAME)
-def send_mailshot_email_task(mailshot_pk: int):
+def send_mailshot_email_task(mailshot_pk: int) -> None:
     mailshot = Mailshot.objects.get(pk=mailshot_pk)
     send_mailshot_email(mailshot)
 
 
 @app.task(name=SEND_RETRACT_MAILSHOT_TASK_NAME, queue=CELERY_MAIL_QUEUE_NAME)
-def send_retract_mailshot_email_task(mailshot_pk: int):
+def send_retract_mailshot_email_task(mailshot_pk: int) -> None:
     mailshot = Mailshot.objects.get(pk=mailshot_pk)
     send_retract_mailshot_email(mailshot)
 
 
 @app.task(name=SEND_AUTHORITY_EXPIRING_SECTION_5_TASK_NAME, queue=CELERY_MAIL_QUEUE_NAME)
-def send_authority_expiring_section_5_email_task():
+def send_authority_expiring_section_5_email_task() -> None:
     expiry_date = timezone.now().date() + dt.timedelta(days=30)
     importers = get_expiring_importers_details(Section5Authority, expiry_date, None)
     if importers:
@@ -50,7 +50,7 @@ def send_authority_expiring_section_5_email_task():
 
 
 @app.task(name=SEND_AUTHORITY_EXPIRING_FIREARMS_TASK_NAME, queue=CELERY_MAIL_QUEUE_NAME)
-def send_authority_expiring_firearms_email_task():
+def send_authority_expiring_firearms_email_task() -> None:
     expiry_date = timezone.now().date() + dt.timedelta(days=30)
     constabularies = Constabulary.objects.filter(
         firearmsauthority__end_date=expiry_date, is_active=True

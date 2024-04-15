@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
@@ -25,7 +27,7 @@ class Command(BaseCommand):
         parser.add_argument("exporter_url")
         parser.add_argument("importer_url")
 
-    def handle(self, *args, **options) -> None:
+    def handle(self, *args: Any, **options: Any) -> None:
         cmd_args = CmdArgs(**options)
 
         site = Site.objects.get(name=SiteName.CASEWORKER)

@@ -188,7 +188,11 @@ def close_update_request(
 
 @login_required
 def start_update_request(
-    request: AuthenticatedHttpRequest, *, application_pk: int, update_request_pk=int, case_type: str
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    update_request_pk: int,
+    case_type: str,
 ) -> HttpResponse:
     model_class = get_class_imp_or_exp(case_type)
 

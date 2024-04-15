@@ -29,7 +29,7 @@ class Command(MigrationBaseCommand):
         "export_application": ["ea", "export_application", "ea-m2m", "export_application-m2m"],
     }
 
-    def add_arguments(self, parser: argparse.ArgumentParser):
+    def add_arguments(self, parser: argparse.ArgumentParser) -> None:
         super().add_arguments(parser)
 
         parser.add_argument(
@@ -132,7 +132,7 @@ class Command(MigrationBaseCommand):
         app_model: type[dm.ImportApplication] | type[dm.ExportApplication],
         pack_model: type[web.ImportApplicationLicence] | type[web.ExportApplicationCertificate],
         filter_params: dict[str, bool],
-    ):
+    ) -> None:
         """Create missing document packs for V1 where licences / certificates have not been generated"""
 
         statuses = (
