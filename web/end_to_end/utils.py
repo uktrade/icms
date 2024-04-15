@@ -62,7 +62,7 @@ def click_or_wait_and_reload(
     locator_str: str,
     role_data: dict[str, Any] | None = None,
     timeout: int = 5000,
-    attempts=5,
+    attempts: int = 5,
 ) -> None:
     """If an element is not on the page, wait and reload.
     Used for waiting for links that appear after asynchronous tasks"""

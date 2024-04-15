@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import (
 )
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views.decorators.http import require_POST
@@ -49,7 +49,7 @@ def _get_class_imp_or_exp(org_type: str) -> OrgT:
 
 @login_required
 @require_POST
-def add(request: AuthenticatedHttpRequest, *, org_type: str, org_pk: int):
+def add(request: AuthenticatedHttpRequest, *, org_type: str, org_pk: int) -> HttpResponse:
     """View used by org admins to add importer / exporter contacts"""
     model_class = _get_class_imp_or_exp(org_type)
     org: Org = get_object_or_404(model_class, pk=org_pk)
@@ -75,7 +75,9 @@ def add(request: AuthenticatedHttpRequest, *, org_type: str, org_pk: int):
 
 @login_required
 @require_POST
-def delete(request: AuthenticatedHttpRequest, *, org_type: str, org_pk: int, contact_pk: int):
+def delete(
+    request: AuthenticatedHttpRequest, *, org_type: str, org_pk: int, contact_pk: int
+) -> HttpResponse:
     """View used by org admins to remove importer / exporter contacts"""
 
     model_class = _get_class_imp_or_exp(org_type)

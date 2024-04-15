@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Any, Literal
 from urllib.parse import urljoin
 
 import mohawk
@@ -24,7 +24,7 @@ HTTPMethod = Literal["GET", "OPTIONS", "HEAD", "POST", "PUT", "PATCH", "DELETE"]
 
 
 def send_application_to_chief(
-    application: "ImportApplication", previous_task: Task | None, revoke_licence=False
+    application: "ImportApplication", previous_task: Task | None, revoke_licence: bool = False
 ) -> None:
     """Sends licence data to CHIEF if enabled.
 
@@ -107,7 +107,7 @@ def get_serializer(
             raise NotImplementedError(f"Unsupported process_type: {process_type}")
 
 
-def make_hawk_sender(method: HTTPMethod, url: str, **kwargs) -> mohawk.Sender:
+def make_hawk_sender(method: HTTPMethod, url: str, **kwargs: Any) -> mohawk.Sender:
     creds = {
         "id": settings.HAWK_AUTH_ID,
         "key": settings.HAWK_AUTH_KEY,
@@ -117,7 +117,9 @@ def make_hawk_sender(method: HTTPMethod, url: str, **kwargs) -> mohawk.Sender:
     return mohawk.Sender(creds, url, method, **kwargs)
 
 
-def make_request(method: HTTPMethod, url: str, **kwargs) -> tuple[mohawk.Sender, requests.Response]:
+def make_request(
+    method: HTTPMethod, url: str, **kwargs: Any
+) -> tuple[mohawk.Sender, requests.Response]:
     # Requests allows calling with a dict which is converted to a JSON body,
     # but we need the final body and type to create the Hawk signature, which
     # is then added as an auth header to the request.

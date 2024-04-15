@@ -28,7 +28,7 @@ class Command(MigrationBaseCommand):
         "export_application": ["ea", "export_application"],
     }
 
-    def add_arguments(self, parser: argparse.ArgumentParser):
+    def add_arguments(self, parser: argparse.ArgumentParser) -> None:
         super().add_arguments(parser)
 
         parser.add_argument(

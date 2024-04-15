@@ -16,7 +16,7 @@ from web.utils.s3 import upload_file_obj_to_s3
 class Command(BaseCommand):
     help = """Generates the static CFS Cover Letter PDF document and uploads to S3"""
 
-    def add_arguments(self, parser: argparse.ArgumentParser):
+    def add_arguments(self, parser: argparse.ArgumentParser) -> None:
         parser.add_argument(
             "--output",
             choices=["s3", "disk"],

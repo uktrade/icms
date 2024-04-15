@@ -73,5 +73,5 @@ class ModelReference:
     year: bool = True
 
 
-def source_target_list(lst: list[str]):
+def source_target_list(lst: list[str]) -> list[SourceTarget]:
     return [SourceTarget(getattr(dm, model_name), getattr(web, model_name)) for model_name in lst]

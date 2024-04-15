@@ -239,7 +239,7 @@ class SILGoodsParser(BaseXmlParser):
         return getattr(cls, f"parse_{section.lower()}")(parent_pk, xml)
 
     @classmethod
-    def parse_sec_base(cls, parent_pk, xml) -> dict[str, Any]:
+    def parse_sec_base(cls, parent_pk: int, xml: etree.ElementTree) -> dict[str, Any]:
         description = get_xml_val(xml, "./COMMODITY_DESC")
         manufacture = get_xml_val(xml, "./MANUFACTURED_BEFORE_1900")
         quantity = get_xml_val(xml, "./QUANTITY")

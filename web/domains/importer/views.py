@@ -835,7 +835,7 @@ def edit_user_importer_permissions(
     return render(request, "web/domains/organisation/edit-user-permissions.html", context)
 
 
-def _get_user_context(user) -> dict[str, Any]:
+def _get_user_context(user: User) -> dict[str, Any]:
     """Return common context depending on the user profile."""
 
     if user.has_perm(Perms.sys.importer_admin):

@@ -5,7 +5,7 @@ from django.db import transaction
 from django.db.models import Window
 from django.db.models.functions import RowNumber
 from django.forms import ModelForm
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -110,7 +110,7 @@ class VariationRequestCancelView(
     application: ImpOrExp
     task: Task
 
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         return context | {
@@ -177,7 +177,7 @@ class VariationRequestRequestUpdateView(
     # Extra typing for clarity
     object: VariationRequest
 
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         return context | {
@@ -231,7 +231,7 @@ class VariationRequestCancelUpdateRequestView(
     # Extra typing for clarity
     object: VariationRequest
 
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         variation_request = self.get_object()
         self.set_application_and_task()
 
@@ -273,7 +273,7 @@ class VariationRequestRespondToUpdateRequestView(
     # Extra typing for clarity
     object: VariationRequest
 
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         return context | {

@@ -318,7 +318,9 @@ def _view_com(
     return render(request, "web/domains/case/export/com/view.html", context)
 
 
-def _view_cfs(request: AuthenticatedHttpRequest, application: CertificateOfFreeSaleApplication):
+def _view_cfs(
+    request: AuthenticatedHttpRequest, application: CertificateOfFreeSaleApplication
+) -> HttpResponse:
     # Reuse the model verbose_name for the labels
     cfs_fields = CFSSchedule._meta.get_fields()
     labels = {f.name: getattr(f, "verbose_name", "") for f in cfs_fields}

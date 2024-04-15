@@ -173,7 +173,7 @@ class CoverLetterForm(forms.ModelForm):
         fields = ("cover_letter_text",)
         widgets = {"cover_letter_text": JoditTextArea(attrs={"lang": "html"})}
 
-    def __init__(self, *args, readonly: bool = False, **kwargs):
+    def __init__(self, *args: Any, readonly: bool = False, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.fields["cover_letter_text"].widget.attrs["readonly"] = readonly
@@ -285,7 +285,7 @@ class ChecklistBaseForm(forms.ModelForm):
             "authorisation",
         )
 
-    def __init__(self, *args, readonly_form: bool = False, **kwargs):
+    def __init__(self, *args: Any, readonly_form: bool = False, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         # Change checklist fields to required (e.g. only selected is valid)

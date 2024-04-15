@@ -12,7 +12,7 @@ class Command(BaseCommand):
         getmembers(queries, lambda obj: isinstance(obj, str))
     )
 
-    def add_arguments(self, parser: argparse.ArgumentParser):
+    def add_arguments(self, parser: argparse.ArgumentParser) -> None:
         parser.add_argument(
             "query_name",
             nargs="?",

@@ -94,7 +94,7 @@ def sanctions_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     return app_id
 
 
-def sanctions_manage_and_complete_case(page: Page, app_id) -> None:
+def sanctions_manage_and_complete_case(page: Page, app_id: int) -> None:
     #
     # Complete Take Ownership
     #

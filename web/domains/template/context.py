@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import Any, Protocol
 
 from django.conf import settings
 from django.db.models import F, QuerySet, Value
@@ -116,7 +116,7 @@ def _get_import_goods_description(app: ImportApplication) -> str:
 
 
 class TemplateContextProcessor(Protocol):
-    def __init__(self, process: Process, *args, **kwargs): ...
+    def __init__(self, process: Process, *args: Any, **kwargs: Any) -> None: ...
 
     def __getitem__(self, item: str) -> str: ...
 

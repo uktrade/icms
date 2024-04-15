@@ -210,7 +210,7 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMix
 
         return super().form_valid(form)
 
-    def get_form(self, form_class=None) -> ModelForm:
+    def get_form(self, form_class: type[ModelForm] | None = None) -> ModelForm:
         form = super().get_form(form_class)
 
         if self.read_only:
@@ -403,7 +403,7 @@ class CATArchiveView(PermissionRequiredMixin, LoginRequiredMixin, View):
     def has_permission(self) -> bool:
         return _has_permission(self.request.user)
 
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         cat = get_object_or_404(CertificateApplicationTemplate, pk=kwargs["cat_pk"])
 
         user = self.request.user
@@ -421,7 +421,7 @@ class CATRestoreView(PermissionRequiredMixin, LoginRequiredMixin, View):
     def has_permission(self) -> bool:
         return _has_permission(self.request.user)
 
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         cat = get_object_or_404(CertificateApplicationTemplate, pk=kwargs["cat_pk"])
         user = self.request.user
         if not template_in_user_templates(
@@ -463,7 +463,7 @@ class CFSScheduleTemplateAddView(
     # View
     http_method_names = ["post"]
 
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.get_object().cfs_template.schedules.create(created_by=self.request.user)
 
         return redirect(
@@ -474,7 +474,7 @@ class CFSScheduleTemplateAddView(
 class CFSScheduleTemplateCopyView(CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, View):
     http_method_names = ["post"]
 
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         schedule_template = get_cfs_schedule_template(**kwargs)
 
         copy_schedule(schedule_template, self.request.user)
@@ -530,7 +530,7 @@ def copy_schedule(schedule: CFSScheduleTemplate, user: User) -> None:
 class CFSScheduleTemplateDeleteView(CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, View):
     http_method_names = ["post"]
 
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         schedule_template = get_cfs_schedule_template(**kwargs)
         schedule_template.delete()
 
@@ -568,7 +568,7 @@ class CFSManufacturerUpdateView(LoginRequiredMixin, CFSTemplatePermissionRequire
 class CFSManufacturerDeleteView(CFSTemplatePermissionRequiredMixin, LoginRequiredMixin, View):
     http_method_names = ["post"]
 
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         schedule = get_cfs_schedule_template(**kwargs)
 
         schedule.manufacturer_name = None
@@ -695,13 +695,13 @@ class CFSScheduleTemplateProductUpdateView(
             "ai_formset": self.ai_formset,
         }
 
-    def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.object = self.get_object()
         self._set_formsets()
 
         return super().get(request, *args, **kwargs)
 
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.object = self.get_object()
         self._set_formsets()
         form = self.get_form()
@@ -765,7 +765,7 @@ class CFSScheduleTemplateProductDeleteView(
 ):
     http_method_names = ["post"]
 
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         product = get_cfs_schedule_product(**kwargs)
         product.delete()
 
@@ -786,7 +786,7 @@ class CFSScheduleTemplateProductDownloadSpreadsheetView(
 ):
     http_method_names = ["get"]
 
-    def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         schedule = get_cfs_schedule_template(**self.kwargs)
         return get_product_spreadsheet_response(schedule)
 
@@ -850,7 +850,7 @@ class CFSScheduleTemplateProductUploadSpreadsheetView(
 
 
 def get_cfs_schedule_template(
-    *, cat_pk: int, schedule_template_pk: int, **kwargs
+    *, cat_pk: int, schedule_template_pk: int, **kwargs: Any
 ) -> CFSScheduleTemplate:
     """Securely load a CFSScheduleTemplate instance using common view kwargs."""
 
@@ -862,7 +862,7 @@ def get_cfs_schedule_template(
 
 
 def get_cfs_schedule_product(
-    *, cat_pk: int, schedule_template_pk: int, product_template_pk: int, **kwargs
+    *, cat_pk: int, schedule_template_pk: int, product_template_pk: int, **kwargs: Any
 ) -> CFSProductTemplate:
     """Securely load a CFSProductTemplate instance using common view kwargs."""
 

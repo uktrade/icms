@@ -16,7 +16,7 @@ from .utils.db import CONNECTION_CONFIG
 
 
 class Command(BaseCommand):
-    def add_arguments(self, parser: argparse.ArgumentParser):
+    def add_arguments(self, parser: argparse.ArgumentParser) -> None:
         parser.add_argument(
             "--fail_only",
             help="Shows only the failures and not the passes",

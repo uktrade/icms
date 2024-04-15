@@ -82,7 +82,7 @@ def validate_request(request: HttpRequest) -> mohawk.Receiver:
 # Hawk view (no CSRF)
 @method_decorator(csrf_exempt, name="dispatch")
 class HawkViewBase(View):
-    def dispatch(self, *args, **kwargs) -> JsonResponse:
+    def dispatch(self, *args: Any, **kwargs: Any) -> JsonResponse:
         try:
             # Validate sender request
             hawk_receiver = validate_request(self.request)
@@ -107,7 +107,9 @@ class HawkViewBase(View):
         # return the response
         return response
 
-    def _get_hawk_response_header(self, hawk_receiver: mohawk.Receiver, response: JsonResponse):
+    def _get_hawk_response_header(
+        self, hawk_receiver: mohawk.Receiver, response: JsonResponse
+    ) -> str:
         sender_nonce = hawk_receiver.parsed_header.get("nonce")
 
         hawk_response_header = hawk_receiver.respond(
@@ -131,7 +133,7 @@ class LicenseDataCallback(HawkViewBase):
     # View Config
     http_method_names = ["post"]
 
-    def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         licence_replies = types.ChiefLicenceReplyResponseData.model_validate_json(request.body)
 
         with transaction.atomic():
@@ -172,7 +174,7 @@ class UsageDataCallbackView(HawkViewBase):
     # View Config
     http_method_names = ["post"]
 
-    def post(self, request: HttpRequest, *args, **kwargs) -> JsonResponse:
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> JsonResponse:
         response = types.ChiefUsageDataResponseData.model_validate_json(request.body)
 
         with transaction.atomic():
@@ -225,7 +227,7 @@ class ResendLicenceToChiefView(
     # View
     http_method_names = ["post"]
 
-    def post(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> Any:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.set_application_and_task()
 
         if self.application.status == ImpExpStatus.REVOKED:
@@ -292,7 +294,7 @@ class ChiefRequestDataView(PermissionRequiredMixin, DetailView):
     pk_url_kwarg = "icmshmrcchiefrequest_id"
     model = ICMSHMRCChiefRequest
 
-    def get(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         return JsonResponse(data=self.get_object().request_data)
 
 
@@ -313,7 +315,7 @@ class CheckChiefProgressView(
     # PermissionRequiredMixin Config
     permission_required = [Perms.sys.ilb_admin]
 
-    def get(self, request: HttpRequest, *args, **kwargs) -> Any:
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.set_application_and_task()
 
         active_tasks = case_progress.get_active_task_list(self.application)

@@ -36,7 +36,7 @@ from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp_or_
 CASE_TYPES = Literal["import", "export", "access"]
 
 
-def _check_process_state(application: ImpOrExpOrAccess, case_type: CASE_TYPES):
+def _check_process_state(application: ImpOrExpOrAccess, case_type: CASE_TYPES) -> None:
     """Check a Process instance is being processed by a caseworker.
 
     Access requests and import/export applications check different statuses.
@@ -125,7 +125,9 @@ def _manage_fir_redirect(application_pk: int, case_type: str) -> HttpResponse:
 @login_required
 @permission_required(Perms.sys.ilb_admin, raise_exception=True)
 @require_POST
-def add_fir(request, *, application_pk: int, case_type: CASE_TYPES) -> HttpResponse:
+def add_fir(
+    request: AuthenticatedHttpRequest, *, application_pk: int, case_type: CASE_TYPES
+) -> HttpResponse:
     model_class = get_class_imp_or_exp_or_access(case_type)
 
     with transaction.atomic():
@@ -154,7 +156,9 @@ def add_fir(request, *, application_pk: int, case_type: CASE_TYPES) -> HttpRespo
 
 @login_required
 @permission_required(Perms.sys.ilb_admin, raise_exception=True)
-def edit_fir(request, *, application_pk: int, fir_pk: int, case_type: CASE_TYPES) -> HttpResponse:
+def edit_fir(
+    request: AuthenticatedHttpRequest, *, application_pk: int, fir_pk: int, case_type: CASE_TYPES
+) -> HttpResponse:
     with transaction.atomic():
         model_class = get_class_imp_or_exp_or_access(case_type)
         application: ImpOrExpOrAccess = get_object_or_404(
@@ -410,7 +414,7 @@ def delete_fir_response_file(
     fir_pk: int,
     file_pk: int,
     case_type: CASE_TYPES,
-):
+) -> HttpResponse:
     redirect_url = "case:respond-fir"
 
     return _delete_fir_file(request.user, application_pk, fir_pk, file_pk, case_type, redirect_url)

@@ -272,7 +272,7 @@ def _get_section_goods(goods_qs, section):
     ]
 
 
-def _get_section_5_goods(goods_qs: "QuerySet[SILGoodsSection5]"):
+def _get_section_5_goods(goods_qs: "QuerySet[SILGoodsSection5]") -> list[types.FirearmGoodsData]:
     goods = []
 
     for g in goods_qs:
@@ -298,7 +298,9 @@ def _get_section_5_goods(goods_qs: "QuerySet[SILGoodsSection5]"):
     return goods
 
 
-def _get_section_58_obsolete_goods(goods_qs: "QuerySet[SILGoodsSection582Obsolete]"):  # /PS-IGNORE
+def _get_section_58_obsolete_goods(
+    goods_qs: "QuerySet[SILGoodsSection582Obsolete]",  # /PS-IGNORE
+) -> list[types.FirearmGoodsData]:
     goods = []
 
     for g in goods_qs:
@@ -407,7 +409,7 @@ def _get_restrictions(application: "ImportApplication") -> str:
     return "\n\n".join(endorsements)
 
 
-def _get_country_kwargs(code) -> dict[str, str]:
+def _get_country_kwargs(code: str) -> dict[str, str]:
     if len(code) == 2:
         return {"country_code": code}
     else:

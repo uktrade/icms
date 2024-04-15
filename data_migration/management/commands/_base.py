@@ -11,7 +11,7 @@ from .config.run_order import DATA_TYPE
 class MigrationBaseCommand(BaseCommand):
     DATA_TYPE_START: dict[str, list[str]] = {}
 
-    def add_arguments(self, parser: argparse.ArgumentParser):
+    def add_arguments(self, parser: argparse.ArgumentParser) -> None:
         parser.add_argument(
             "--batchsize",
             help="Number of results per query batch",

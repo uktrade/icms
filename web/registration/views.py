@@ -1,3 +1,5 @@
+from typing import Any
+
 import django.contrib.auth.views as auth_views
 from django.conf import settings
 from django.contrib import auth
@@ -29,7 +31,7 @@ class LoginView(auth_views.LoginView):
 
     @method_decorator(ratelimit(key="ip", rate="20/m", block=True))
     @method_decorator(ratelimit(key="post:username", rate="10/m", block=True))
-    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         """Rate limit users by IP and username.
 
         Stops a user trying to brute force a single username as well as trying different usernames from the same IP.
@@ -48,7 +50,9 @@ class LegacyAccountRecoveryView(LoginRequiredMixin, UserPassesTestMixin, FormVie
 
     # Mark all POST parameters as sensitive
     @method_decorator(sensitive_post_parameters())
-    def dispatch(self, request: AuthenticatedHttpRequest, *args, **kwargs) -> HttpResponse:
+    def dispatch(
+        self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any
+    ) -> HttpResponse:
         return super().dispatch(request, *args, **kwargs)
 
     def test_func(self) -> bool:
@@ -58,7 +62,7 @@ class LegacyAccountRecoveryView(LoginRequiredMixin, UserPassesTestMixin, FormVie
 
     @method_decorator(ratelimit(key="ip", rate="20/m", block=True))
     @method_decorator(ratelimit(key="post:legacy_email", rate="10/m", block=True))
-    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         """Rate limit users by IP and username.
 
         Stops a user trying to brute force a single legacy_email as well as trying different legacy_emails from the same IP.
