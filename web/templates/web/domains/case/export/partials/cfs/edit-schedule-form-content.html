@@ -1,4 +1,5 @@
-{{ fields.field(form.exporter_status) }}
+{% include 'web/domains/case/export/partials/shared/manufacturer-guidance-tooltip.html' %}
+{{ fields.field(form.exporter_status, tooltip_msg_id="manufacturer-guidance-tooltip") }}
 {{ fields.field(form.brand_name_holder) }}
 {{ fields.field(form.legislations) }}
 <div id="biocidal-claim-question-wrapper" {% if not is_biocidal %} style="display: none;"{% endif %}>
