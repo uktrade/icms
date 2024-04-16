@@ -60,6 +60,16 @@ export_data_source_target = {
             web.ExportCertificateCaseDocumentReferenceData,
         ),
         (dm.WithdrawApplication, web.WithdrawApplication),
+        (dm.CertificateApplicationTemplate, web.CertificateApplicationTemplate),
+        (dm.CertificateOfFreeSaleApplicationTemplate, web.CertificateOfFreeSaleApplicationTemplate),
+        (dm.CFSScheduleTemplate, web.CFSScheduleTemplate),
+        (dm.CFSProductTemplate, web.CFSProductTemplate),
+        (dm.CFSProductActiveIngredientTemplate, web.CFSProductActiveIngredientTemplate),
+        (dm.CFSProductTypeTemplate, web.CFSProductTypeTemplate),
+        (
+            dm.CertificateOfManufactureApplicationTemplate,
+            web.CertificateOfManufactureApplicationTemplate,
+        ),
     ],
     "file": [
         (dm.File, web.File),
@@ -115,6 +125,21 @@ export_query_model = {
         ),
         QueryModel(queries.beis_emails, "beis_emails", dm.CaseEmail),
         QueryModel(queries.hse_emails, "hse_emails", dm.CaseEmail),
+        QueryModel(
+            queries.export_application_template,
+            "Certificate Application Templates",
+            dm.CertificateApplicationTemplate,
+        ),
+        QueryModel(
+            queries.cfs_application_template,
+            "CFS Application Templates",
+            dm.CertificateOfFreeSaleApplicationTemplate,
+        ),
+        QueryModel(
+            queries.com_application_template,
+            "COM Application Templates",
+            dm.CertificateOfManufactureApplicationTemplate,
+        ),
     ],
     "reference": [
         QueryModel(queries.country_group, "country_group", dm.CountryGroup),
@@ -133,6 +158,9 @@ export_m2m = {
         (dm.ExportApplicationCountries, web.ExportApplication, "countries"),
         (dm.DocumentPackAcknowledgement, web.ExportApplicationCertificate, "cleared_by"),
         (dm.DocumentPackAcknowledgement, web.ExportApplication, "cleared_by"),
+        (dm.CFSTemplateCountries, web.CertificateOfFreeSaleApplicationTemplate, "countries"),
+        (dm.CFSTemplateLegislation, web.CFSScheduleTemplate, "legislations"),
+        (dm.COMTemplateCountries, web.CertificateOfManufactureApplicationTemplate, "countries"),
     ],
     "import_application": [],
     "file": [
@@ -152,6 +180,13 @@ export_xml = {
         xml_parser.UpdateExportParser,
         xml_parser.VariationExportParser,
         xml_parser.WithdrawalExportParser,
+        xml_parser.CFSApplicationTemplateCountryParser,
+        xml_parser.COMApplicationTemplateCountryParser,
+        xml_parser.CFSScheduleTemplateParser,
+        xml_parser.CFSTemplateLegislationParser,
+        xml_parser.CFSTemplateProductParser,
+        xml_parser.CFSTemplateActiveIngredientParser,
+        xml_parser.CFSTemplateProductTypeParser,
     ],
     "import_application": [],
 }
@@ -495,6 +530,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     assert sch1.legislations.count() == 0
     assert sch1.created_at == dt.datetime(2022, 11, 1, 12, 30, tzinfo=dt.UTC)
+    assert sch1.updated_at == dt.datetime(2022, 11, 1, 12, 30, tzinfo=dt.UTC)
     assert sch1.is_biocidal() is False
     assert sch2.legislations.count() == 2
     assert sch2.is_biocidal() is False
@@ -544,3 +580,90 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert w3.response_by_id == 2
     assert w3.created_datetime == dt.datetime(2024, 1, 31, 15, 00, 00, tzinfo=dt.UTC)
     assert w3.updated_datetime == dt.datetime(2024, 1, 31, 15, 10, 00, tzinfo=dt.UTC)
+
+    # Certificate Application Templates
+    assert web.CertificateApplicationTemplate.objects.count() == 2
+    cat1 = web.CertificateApplicationTemplate.objects.get(application_type="CFS")
+
+    assert cat1.name == "Template CFS"
+    assert cat1.description == "A CFS Template"
+    assert cat1.sharing == "PRIVATE"
+    assert cat1.owner_id == 2
+    assert cat1.created_datetime == dt.datetime(2023, 1, 2, 13, 23, tzinfo=dt.UTC)
+    assert cat1.last_updated_datetime == dt.datetime(2023, 1, 2, 14, 23, tzinfo=dt.UTC)
+
+    cfs_cat = web.CertificateOfFreeSaleApplicationTemplate.objects.first()
+    assert list(cfs_cat.countries.values_list("pk", flat=True).order_by("pk")) == [1, 2]
+    assert cfs_cat.last_update_datetime == dt.datetime(2023, 1, 2, 14, 23, tzinfo=dt.UTC)
+    assert cfs_cat.schedules.count() == 2
+
+    sch_t1: web.CFSScheduleTemplate
+    sch_t1, sch_t2 = cfs_cat.schedules.order_by("pk")
+
+    assert sch_t1.exporter_status == "MANUFACTURER"
+    assert sch_t1.brand_name_holder == "yes"
+    assert sch_t1.biocidal_claim == "no"
+    assert sch_t1.product_eligibility == "MEET_UK_PRODUCT_SAFETY"
+    assert sch_t1.goods_placed_on_uk_market == "no"
+    assert sch_t1.goods_export_only == "yes"
+    assert sch_t1.any_raw_materials == "yes"
+    assert sch_t1.final_product_end_use == "Test End Use"
+    assert sch_t1.country_of_manufacture_id == 1
+    assert sch_t1.schedule_statements_accordance_with_standards is False
+    assert sch_t1.schedule_statements_is_responsible_person is True
+    assert sch_t1.manufacturer_name == "Test Manufacturer"
+    assert sch_t1.manufacturer_address_entry_type == "SEARCH"
+    assert sch_t1.manufacturer_postcode == "Test Postcode"
+    assert sch_t1.manufacturer_address == "Test Address"
+    assert sch_t1.created_by_id == 2
+    assert sch_t1.created_at == dt.datetime(2023, 1, 2, 14, 23, tzinfo=dt.UTC)
+    assert sch_t1.updated_at == dt.datetime(2023, 1, 2, 14, 23, tzinfo=dt.UTC)
+    assert list(sch_t1.legislations.values_list("pk", flat=True).order_by("pk")) == [1, 3]
+
+    assert sch_t1.products.count() == 3
+    assert list(sch_t1.products.values_list("product_name", flat=True).order_by("pk")) == [
+        "Product A",
+        "Product B",
+        "Product C",
+    ]
+
+    assert list(sch_t2.products.values_list("product_name", flat=True).order_by("pk")) == [
+        "Product A",
+        "Product B",
+    ]
+    p1, p2 = sch_t2.products.order_by("pk")
+
+    p1.active_ingredients.count() == 2
+    ai1, ai2 = p1.active_ingredients.order_by("pk")
+    assert ai1.name == "AI 1"
+    assert ai1.cas_number == "12-34-5"
+    assert ai2.name == "AI 2"
+    assert ai2.cas_number == "22-34-5"
+
+    assert p2.active_ingredients.count() == 1
+    ai3 = p2.active_ingredients.first()
+    assert ai3.name == "AI 3"
+    assert ai3.cas_number == "32-34-5"
+
+    assert p1.product_type_numbers.count() == 2
+    assert list(p1.product_type_numbers.values_list("product_type_number", flat=True)) == [1, 2]
+    assert p2.product_type_numbers.count() == 1
+    assert p2.product_type_numbers.first().product_type_number == 3
+
+    cat2 = web.CertificateApplicationTemplate.objects.get(application_type="COM")
+
+    assert cat2.name == "Template COM"
+    assert cat2.description == "A COM Template"
+    assert cat2.sharing == "EDIT"
+    assert cat2.owner_id == 2
+    assert cat2.created_datetime == dt.datetime(2023, 1, 3, 13, 23, tzinfo=dt.UTC)
+    assert cat2.last_updated_datetime == dt.datetime(2023, 1, 3, 14, 23, tzinfo=dt.UTC)
+
+    com_cat = web.CertificateOfManufactureApplicationTemplate.objects.first()
+    assert list(com_cat.countries.values_list("pk", flat=True).order_by("pk")) == [1, 2]
+    assert com_cat.last_update_datetime == dt.datetime(2023, 1, 2, 14, 23, tzinfo=dt.UTC)
+    assert com_cat.is_manufacturer is True
+    assert com_cat.is_pesticide_on_free_sale_uk is False
+    assert com_cat.product_name == "Test product"
+    assert com_cat.chemical_name == "Test chemical"
+    assert com_cat.manufacturing_process == "Test manufacturing process"

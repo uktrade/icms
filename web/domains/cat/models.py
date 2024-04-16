@@ -17,9 +17,9 @@ from web.types import TypedTextChoices
 
 class CertificateApplicationTemplate(models.Model):
     class SharingStatuses(TypedTextChoices):
-        PRIVATE = ("private", "Private (do not share)")
-        VIEW = ("view", "Share (view only)")
-        EDIT = ("edit", "Share (allow edit)")
+        PRIVATE = ("PRIVATE", "Private (do not share)")
+        VIEW = ("VIEW", "Share (view only)")
+        EDIT = ("EDIT", "Share (allow edit)")
 
     class CountryType(TypedTextChoices):
         GB = ("GB", "Great Britain")
@@ -60,8 +60,8 @@ class CertificateApplicationTemplate(models.Model):
     )
 
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
-    created = models.DateTimeField(auto_now_add=True)
-    last_updated = models.DateTimeField(auto_now=True)
+    created_datetime = models.DateTimeField(auto_now_add=True)
+    last_updated_datetime = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
 
     @property

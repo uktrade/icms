@@ -110,7 +110,7 @@ WHERE certificate_reference LIKE :like_match
 
 
 export_certificate_timestamp_update = """
-UPDATE web_exportapplicationcertificate SET created_at = data_migration_exportapplicationcertificate.created_at
-FROM data_migration_exportapplicationcertificate
-WHERE web_exportapplicationcertificate.id = data_migration_exportapplicationcertificate.id
+UPDATE web_exportapplicationcertificate SET created_at = dm_eac.created_at, updated_at = dm_eac.updated_at
+FROM data_migration_exportapplicationcertificate dm_eac
+WHERE web_exportapplicationcertificate.id = dm_eac.id
 """

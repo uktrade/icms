@@ -529,6 +529,21 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         model=web.WithdrawApplication,
         filter_params={"export_application__isnull": False},
     ),
+    CheckQuery(
+        name="CFS Application Templates",
+        query=queries.cfs_application_templates_count,
+        model=web.CertificateOfFreeSaleApplicationTemplate,
+    ),
+    CheckQuery(
+        name="COM Application Templates",
+        query=queries.com_application_templates_count,
+        model=web.CertificateOfManufactureApplicationTemplate,
+    ),
+    CheckQuery(
+        name="GMP Application Templates",
+        query=queries.gmp_application_templates_count,
+        model=web.CertificateOfGoodManufacturingPracticeApplicationTemplate,
+    ),
 ]
 
 UNIQUE_REFERENCES = [

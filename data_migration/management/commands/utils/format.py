@@ -28,7 +28,9 @@ def format_row(
         if includes and column not in includes:
             continue
 
-        if value and (column.endswith("_datetime") or column in ("created", "created_at")):
+        if value and (
+            column.endswith("_datetime") or column in ("created", "created_at", "updated_at")
+        ):
             if isinstance(value, str):
                 value = datetime_or_none(value)
 

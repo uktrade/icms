@@ -154,7 +154,9 @@ ORDER BY e.cad_id, e.email_id
 
 
 cfs_schedule_timestamp_update = """
-UPDATE web_cfsschedule SET created_at = data_migration_cfsschedule.created_at
+UPDATE web_cfsschedule
+SET created_at = data_migration_cfsschedule.created_at
+, updated_at = data_migration_cfsschedule.updated_at
 FROM data_migration_cfsschedule
 WHERE web_cfsschedule.id = data_migration_cfsschedule.id
 """

@@ -30,6 +30,21 @@ export_query_model = [
     ),
     QueryModel(queries.beis_emails, "beis_emails", dm.CaseEmail),
     QueryModel(queries.hse_emails, "hse_emails", dm.CaseEmail),
+    QueryModel(
+        queries.export_application_template,
+        "Certifiate Application Templates",
+        dm.CertificateApplicationTemplate,
+    ),
+    QueryModel(
+        queries.cfs_application_template,
+        "CFS Application Templates",
+        dm.CertificateOfFreeSaleApplicationTemplate,
+    ),
+    QueryModel(
+        queries.com_application_template,
+        "COM Application Templates",
+        dm.CertificateOfManufactureApplicationTemplate,
+    ),
 ]
 
 export_source_target = [
@@ -48,6 +63,18 @@ export_source_target = [
     SourceTarget(dm.CFSProductActiveIngredient, web.CFSProductActiveIngredient),
     SourceTarget(dm.ExportApplicationCertificate, web.ExportApplicationCertificate),
     SourceTarget(dm.WithdrawApplication, web.WithdrawApplication),
+    SourceTarget(dm.CertificateApplicationTemplate, web.CertificateApplicationTemplate),
+    SourceTarget(
+        dm.CertificateOfFreeSaleApplicationTemplate, web.CertificateOfFreeSaleApplicationTemplate
+    ),
+    SourceTarget(
+        dm.CertificateOfManufactureApplicationTemplate,
+        web.CertificateOfManufactureApplicationTemplate,
+    ),
+    SourceTarget(dm.CFSScheduleTemplate, web.CFSScheduleTemplate),
+    SourceTarget(dm.CFSProductTemplate, web.CFSProductTemplate),
+    SourceTarget(dm.CFSProductTypeTemplate, web.CFSProductTypeTemplate),
+    SourceTarget(dm.CFSProductActiveIngredientTemplate, web.CFSProductActiveIngredientTemplate),
 ]
 
 export_m2m = [
@@ -60,6 +87,9 @@ export_m2m = [
     M2M(dm.UpdateRequest, web.ExportApplication, "update_requests"),
     M2M(dm.DocumentPackAcknowledgement, web.ExportApplicationCertificate, "cleared_by"),
     M2M(dm.DocumentPackAcknowledgement, web.ExportApplication, "cleared_by"),
+    M2M(dm.CFSTemplateCountries, web.CertificateOfFreeSaleApplicationTemplate, "countries"),
+    M2M(dm.COMTemplateCountries, web.CertificateOfManufactureApplicationTemplate, "countries"),
+    M2M(dm.CFSTemplateLegislation, web.CFSScheduleTemplate, "legislations"),
 ]
 
 export_xml = [
@@ -72,4 +102,11 @@ export_xml = [
     xml_parser.UpdateExportParser,
     xml_parser.VariationExportParser,
     xml_parser.WithdrawalExportParser,
+    xml_parser.CFSApplicationTemplateCountryParser,
+    xml_parser.COMApplicationTemplateCountryParser,
+    xml_parser.CFSScheduleTemplateParser,
+    xml_parser.CFSTemplateProductParser,
+    xml_parser.CFSTemplateProductTypeParser,
+    xml_parser.CFSTemplateActiveIngredientParser,
+    xml_parser.CFSTemplateLegislationParser,
 ]

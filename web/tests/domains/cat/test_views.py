@@ -135,7 +135,7 @@ class TestCATCreateView(AuthTestCase):
             "name": f"{app_type} Template name",
             "description": "Template description",
             "application_type": app_type,
-            "sharing": "private",
+            "sharing": CertificateApplicationTemplate.SharingStatuses.PRIVATE,
         }
         if app_type == ExportApplicationType.Types.FREE_SALE:
             data["template_country"] = CertificateApplicationTemplate.CountryType.GB
@@ -174,7 +174,7 @@ class TestCATEditView(AuthTestCase):
         form_data = {
             "name": cat.name,
             "description": "Updated description",
-            "sharing": "private",
+            "sharing": CertificateApplicationTemplate.SharingStatuses.PRIVATE,
             "template_country": CertificateApplicationTemplate.CountryType.GB,
         }
         response = self.exporter_client.post(url, data=form_data)
@@ -251,7 +251,11 @@ class TestCATEditView(AuthTestCase):
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "web/domains/cat/edit.html")
 
-        form_data = {"name": cat.name, "description": "Updated description", "sharing": "private"}
+        form_data = {
+            "name": cat.name,
+            "description": "Updated description",
+            "sharing": CertificateApplicationTemplate.SharingStatuses.PRIVATE,
+        }
         response = self.exporter_client.post(url, data=form_data)
 
         assert response.status_code == HTTPStatus.FOUND
@@ -289,7 +293,11 @@ class TestCATEditView(AuthTestCase):
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "web/domains/cat/edit.html")
 
-        form_data = {"name": cat.name, "description": "Updated description", "sharing": "private"}
+        form_data = {
+            "name": cat.name,
+            "description": "Updated description",
+            "sharing": CertificateApplicationTemplate.SharingStatuses.PRIVATE,
+        }
         response = self.exporter_client.post(url, data=form_data)
 
         assert response.status_code == HTTPStatus.FOUND
