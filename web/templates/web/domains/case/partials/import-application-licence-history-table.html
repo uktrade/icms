@@ -1,0 +1,51 @@
+{% set revoke_suffix = " - Revoked" if process.status == "REVOKED" else "" %}
+{% if licence.variation_request %}
+  <p class="bold">Variation Request {{ licence.variation_request[0] }} Response (case reference: {{ licence.case_reference }}){{ revoke_suffix }}</p>
+{% else %}
+  <h5>Initial Response (case reference: {{ licence.case_reference }}){{ revoke_suffix }}</h5>
+{% endif %}
+<table class="setoutList">
+  <thead>
+  <tr>
+    <th scope="col">Response Type</th>
+    <th scope="col">Licence Reference</th>
+    <th scope="col">Case Completion Date</th>
+    <th scope="col">Licence Information</th>
+    <th scope="col">Documents</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for doc in licence.documents %}
+    <tr>
+      <td><span class="text-widget">{{ application_type }} Import {{ doc.name }}</span></td>
+      <td>
+        {% if doc.reference %}
+          <span class="text-widget">{{ doc.reference }} {{ "(Paper)" if licence.issue_paper_licence_only else "(Electronic)" }}</span>
+        {% endif %}
+      </td>
+      <td><span class="text-widget">{{ licence.case_completion_date }}</span></td>
+      <td>
+        {% if doc.name == "Licence" %}
+          <div class="container setoutForm">
+            <div class="row">
+              <span class="text-widget"><span class="bold">Start Date</span> {{ licence.licence_start_date }}</span>
+            </div>
+            <div class="row">
+              <span class="text-widget"><span class="bold">End Date</span> {{ licence.licence_end_date }}</span>
+            </div>
+          </div>
+        {% endif %}
+      </td>
+      <td>
+        <a href="{{ doc.url }}">
+          {% if process.application_type.type == "FA" %}
+            View Firearms {{ doc.name }}
+          {% else %}
+            View {{ doc.name }}
+          {% endif %}
+        </a>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>

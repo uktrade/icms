@@ -1,5 +1,6 @@
+import datetime as dt
+
 from django.test import TestCase
-from django.utils.timezone import datetime
 
 from web.domains.commodity.forms import (
     CommodityFilter,
@@ -20,15 +21,15 @@ class TestCommodityFilter(TestCase):
         CommodityFactory(
             commodity_code="987654",
             is_active=True,
-            validity_start_date=datetime(1986, 5, 17),
-            validity_end_date=datetime(2050, 4, 12),
+            validity_start_date=dt.datetime(1986, 5, 17),
+            validity_end_date=dt.datetime(2050, 4, 12),
             commodity_type=commodity_type,
         )
         CommodityFactory(
             commodity_code="5151515151",
             is_active=True,
-            validity_start_date=datetime(2051, 7, 18),
-            validity_end_date=datetime(2055, 6, 19),
+            validity_start_date=dt.datetime(2051, 7, 18),
+            validity_end_date=dt.datetime(2055, 6, 19),
             commodity_type=commodity_type,
         )
 
@@ -44,11 +45,11 @@ class TestCommodityFilter(TestCase):
         assert results.count() > 1
 
     def test_validity_start_filter(self):
-        results = self.run_filter({"validy_start": datetime(1985, 12, 12)})
+        results = self.run_filter({"validy_start": dt.datetime(1985, 12, 12)})
         assert results.count() > 2
 
     def test_validity_end_filter(self):
-        results = self.run_filter({"valid_end": datetime(2051, 12, 12)})
+        results = self.run_filter({"valid_end": dt.datetime(2051, 12, 12)})
         assert results.count() > 1
 
     def test_filter_order(self):

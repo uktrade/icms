@@ -47,6 +47,7 @@ from web.domains.case._import.models import (
     EndorsementImportApplication,
     ICMSHMRCChiefRequest,
     ImportApplication,
+    ImportApplicationDownloadLink,
     ImportApplicationLicence,
     ImportApplicationType,
 )
@@ -232,6 +233,7 @@ __all__ = [
     "GlobalPermission",
     "ICMSHMRCChiefRequest",
     "ImportApplication",
+    "ImportApplicationDownloadLink",
     "ImportApplicationLicence",
     "ImportApplicationType",
     "ImportContact",
