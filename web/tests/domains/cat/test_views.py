@@ -408,30 +408,36 @@ class TestCATRestoreView(AuthTestCase):
 
 
 class TestCATReadOnlyView(AuthTestCase):
-    def test_show_disabled_form_for_template(self):
-        cat = CertificateApplicationTemplate.objects.create(
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
+        self.cat = CertificateApplicationTemplate.objects.create(
             owner=self.exporter_user,
             name="CFS template",
             application_type=ExportApplicationType.Types.FREE_SALE,
             template_country=CertificateApplicationTemplate.CountryType.GB,
         )
-        CertificateOfFreeSaleApplicationTemplate.objects.create(template=cat)
-        url = reverse("cat:view", kwargs={"cat_pk": cat.pk})
+        CertificateOfFreeSaleApplicationTemplate.objects.create(template=self.cat)
+
+    def test_show_disabled_form_for_template(self):
+        url = reverse("cat:view", kwargs={"cat_pk": self.cat.pk})
 
         response = self.exporter_client.get(url)
 
         assert response.status_code == HTTPStatus.OK
         assert response.context["read_only"] is True
 
+    def test_show_disabled_form_for_archived_template(self):
+        self.cat.is_active = False
+        self.cat.save()
+
+        url = reverse("cat:view", kwargs={"cat_pk": self.cat.pk})
+        response = self.exporter_client.get(url)
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.context["read_only"] is True
+
     def test_show_disabled_form_for_step(self):
-        cat = CertificateApplicationTemplate.objects.create(
-            owner=self.exporter_user,
-            name="CFS template",
-            application_type=ExportApplicationType.Types.FREE_SALE,
-            template_country=CertificateApplicationTemplate.CountryType.GB,
-        )
-        CertificateOfFreeSaleApplicationTemplate.objects.create(template=cat)
-        url = reverse("cat:view-step", kwargs={"cat_pk": cat.pk, "step": "cfs"})
+        url = reverse("cat:view-step", kwargs={"cat_pk": self.cat.pk, "step": "cfs"})
 
         response = self.exporter_client.get(url)
 

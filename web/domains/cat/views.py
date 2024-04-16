@@ -147,7 +147,7 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMix
     def has_permission(self) -> bool:
         return _has_permission(self.request.user)
 
-    def test_func(self):
+    def test_func(self) -> bool:
         """Runs before dispatch - Test template permission."""
         self.object = get_object_or_404(CertificateApplicationTemplate, pk=self.kwargs["cat_pk"])
 
@@ -397,6 +397,13 @@ def form_class_for_application_type(type_code: str, step: str) -> type[ModelForm
 
 class CATReadOnlyView(CATEditView):
     read_only = True
+
+    def test_func(self) -> bool:
+        """Runs before dispatch - Test template permission."""
+
+        self.object = get_object_or_404(CertificateApplicationTemplate, pk=self.kwargs["cat_pk"])
+
+        return template_in_user_templates(self.request.user, self.object, include_inactive=True)
 
 
 class CATArchiveView(PermissionRequiredMixin, LoginRequiredMixin, View):
