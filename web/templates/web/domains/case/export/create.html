@@ -23,7 +23,7 @@
         </div>
         {{ application_field(application_template.name, "Template Name") }}
         {{ application_field(application_template.description, "Description") }}
-        {{ application_field(application_template.sharing, "Sharing") }}
+        {{ application_field(application_template.get_sharing_display(), "Sharing") }}
         {% if application_template.application_type == "CFS" %}
           {{ application_field(application_template.get_template_country_display(), "Template Country") }}
         {% endif %}
