@@ -1,5 +1,6 @@
 import copy
 import datetime as dt
+from random import randint
 from typing import Any, ClassVar, final
 from uuid import UUID
 
@@ -19,9 +20,11 @@ from web.domains.case.types import (
 from web.models import CaseEmail as CaseEmailModel
 from web.models import (
     Constabulary,
+    DFLApplication,
     Exporter,
     ExporterContactInvite,
     FurtherInformationRequest,
+    ImportApplicationDownloadLink,
     Importer,
     ImporterContactInvite,
     Mailshot,
@@ -49,7 +52,7 @@ from .url_helpers import (
     get_account_recovery_url,
     get_authority_view_url,
     get_case_view_url,
-    get_constabulary_document_view_url,
+    get_dfl_application_otd_url,
     get_exporter_access_request_url,
     get_importer_access_request_url,
     get_importer_view_url,
@@ -337,11 +340,23 @@ class FirearmsSupplementaryReportEmail(BaseApplicationEmail):
 class ConstabularyDeactivatedFirearmsEmail(BaseApplicationEmail):
     name = EmailTypes.CONSTABULARY_DEACTIVATED_FIREARMS
 
+    # Added for clarity
+    application: DFLApplication
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        if not isinstance(self.application, DFLApplication):
+            raise ValueError("Application is not a DFLApplication")
+
+        self.constabulary = self.application.constabulary
+
     def get_context(self) -> dict[str, Any]:
         context = super().get_context()
-        context["documents_url"] = get_constabulary_document_view_url(
-            self.application, self.get_document_pack(), full_url=True
-        )
+        link = self.generate_view_case_documents_link()
+        context["documents_url"] = get_dfl_application_otd_url(link)
+        context["check_code"] = str(link.check_code)
+
         return context
 
     def get_site_domain(self) -> str:
@@ -349,6 +364,17 @@ class ConstabularyDeactivatedFirearmsEmail(BaseApplicationEmail):
 
     def get_document_pack(self) -> DocumentPack:
         return document_pack.pack_active_get(self.application)
+
+    def generate_view_case_documents_link(self) -> ImportApplicationDownloadLink:
+        if len(self.to) > 1:
+            raise ValueError("Unable to create download link for multiple emails.")
+
+        return ImportApplicationDownloadLink.objects.create(
+            check_code=randint(10000000, 99999999),
+            email=self.to[0],
+            constabulary=self.constabulary,
+            licence=document_pack.pack_active_get(self.application),
+        )
 
 
 @final

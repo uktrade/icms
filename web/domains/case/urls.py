@@ -460,5 +460,15 @@ urlpatterns = [
                 ),
             ]
         ),
-    )
+    ),
+    path(
+        "download-dfl-case-documents/<uuid:code>/",
+        views_documents.DownloadDFLCaseDocumentsFormView.as_view(),
+        name="download-dfl-case-documents",
+    ),
+    path(
+        "download-case-documents/<uuid:code>/regnerate-link/",
+        views_documents.RegenerateDFLCaseDocumentsDownloadLinkView.as_view(),
+        name="regenerate-dfl-case-documents-link",
+    ),
 ]

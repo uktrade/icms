@@ -1,14 +1,25 @@
+import datetime as dt
+import logging
 from typing import Any
 
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import QuerySet
+from django.utils import timezone
 from django_select2 import forms as s2forms
+from django_select2.forms import ModelSelect2Widget
 
 from web.domains.case.widgets import CheckboxSelectMultipleTable
 from web.domains.file.utils import ICMSFileField
 from web.forms.fields import JqueryDateField
 from web.forms.mixins import OptionalFormMixin
-from web.models import ExportApplication, ImportApplication, User
+from web.models import (
+    Constabulary,
+    ExportApplication,
+    ImportApplication,
+    ImportApplicationDownloadLink,
+    User,
+)
 from web.permissions import get_all_case_officers, organisation_get_contacts
 
 from .models import (
@@ -20,6 +31,8 @@ from .models import (
     WithdrawApplication,
 )
 from .types import CaseEmailConfig, ImpOrExp
+
+logger = logging.getLogger(__name__)
 
 
 class DocumentForm(forms.Form):
@@ -303,3 +316,72 @@ class ReassignOwnershipExport(ReassignOwnershipBaseForm):
     class Meta:
         model = ExportApplication
         fields = ReassignOwnershipBaseForm.Meta.fields
+
+
+class DownloadDFLCaseDocumentsForm(forms.Form):
+    link: ImportApplicationDownloadLink | None
+    # The same error message for every outcome
+    ERROR_MSG = (
+        "Licence data not found using the provided values."
+        " Please ensure all details are entered correctly and try again."
+    )
+
+    def __init__(self, *args: Any, code: str, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.code = code
+        self.link = None
+
+    email = forms.EmailField(help_text="Enter the associated constabulary email address.")
+    constabulary = forms.ModelChoiceField(
+        queryset=Constabulary.objects.filter(is_active=True),
+        label="Constabulary",
+        widget=ModelSelect2Widget(
+            attrs={
+                "data-minimum-input-length": 3,
+                "data-placeholder": "-- Select Constabulary",
+            },
+            search_fields=("name__icontains",),
+        ),
+    )
+    check_code = forms.CharField(max_length=8, help_text="Enter the check code found in the email")
+
+    def clean(self):
+        # Load and store the link record if valid, display error if not.
+        cleaned = super().clean()
+
+        check_code = cleaned.get("check_code")
+        email = cleaned.get("email")
+        constabulary = cleaned.get("constabulary")
+
+        if not (check_code and email and constabulary):
+            return cleaned
+
+        try:
+            # Store the link using just the code
+            link_qs = ImportApplicationDownloadLink.objects.filter(code=self.code, expired=False)
+            self.link = link_qs.get()
+        except ObjectDoesNotExist:
+            log_msg("Invalid code or expired link")
+            raise ValidationError(self.ERROR_MSG)
+
+        try:
+            # Check the form data matches the record by fetching the record again.
+            link_qs.get(check_code=check_code, email=email, constabulary=constabulary)
+        except ObjectDoesNotExist:
+            log_msg("Form data doesn't match link code")
+            raise ValidationError(self.ERROR_MSG)
+
+        # Check it's in the last 6 weeks
+        link: ImportApplicationDownloadLink = self.link  # type: ignore[assignment]
+        six_weeks_ago = timezone.now().date() - dt.timedelta(weeks=6)
+
+        if link.sent_at_datetime.date() < six_weeks_ago:
+            log_msg("Link created more than six weeks ago")
+
+            raise ValidationError(self.ERROR_MSG)
+
+        return cleaned
+
+
+def log_msg(msg: str) -> None:
+    logger.debug("DownloadDFLCaseDocumentsForm link error: %s", msg)

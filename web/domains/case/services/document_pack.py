@@ -392,7 +392,6 @@ def doc_ref_documents_all(doc_pack: DocumentPack) -> QuerySet[CaseDocumentRefere
 def _create_document(
     doc_pack: DocumentPack, doc_type: str, doc_reference: str | None = None
 ) -> CaseDocumentReference:
-    # TODO ICMSLST-2406 check_code generation is currently mimicing how V1 works
     check_code = randint(10000000, 99999999)
     return doc_pack.document_references.create(
         document_type=doc_type, reference=doc_reference, check_code=str(check_code)

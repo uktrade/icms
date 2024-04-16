@@ -16,6 +16,7 @@ from web.mail.url_helpers import (
     get_accept_org_invite_url,
     get_account_recovery_url,
     get_case_view_url,
+    get_dfl_application_otd_url,
     get_exporter_access_request_url,
     get_importer_access_request_url,
     get_mailshot_detail_view_url,
@@ -29,6 +30,7 @@ from web.models import (
     ExporterContactInvite,
     FirearmsAuthority,
     FurtherInformationRequest,
+    ImportApplicationDownloadLink,
     ImporterAccessRequest,
     ImporterContactInvite,
     Mailshot,
@@ -1174,22 +1176,15 @@ Firearms references(s): 423,476,677\r\n"""
         exp_template_id = get_gov_notify_template_id(EmailTypes.CONSTABULARY_DEACTIVATED_FIREARMS)
         emails.send_constabulary_deactivated_firearms_email(completed_dfl_app)
         active_pack = document_pack.pack_active_get(completed_dfl_app)
+        link = ImportApplicationDownloadLink.objects.get(licence=active_pack)
+
         expected_import_personalisation = default_personalisation() | {
             "icms_url": get_caseworker_site_domain(),
             "reference": completed_dfl_app.reference,
             "application_url": get_case_view_url(completed_dfl_app, get_caseworker_site_domain()),
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
-            "documents_url": urljoin(
-                get_caseworker_site_domain(),
-                reverse(
-                    "case:constabulary-doc",
-                    kwargs={
-                        "case_type": "import",
-                        "application_pk": completed_dfl_app.pk,
-                        "doc_pack_pk": active_pack.pk,
-                    },
-                ),
-            ),
+            "check_code": str(link.check_code),
+            "documents_url": get_dfl_application_otd_url(link),
         }
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(

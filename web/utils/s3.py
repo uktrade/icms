@@ -78,7 +78,7 @@ def put_object_in_s3(file_data: str | bytes, key: str, client: Optional["S3Clien
     return object_meta["ContentLength"]
 
 
-def create_presigned_url(key: str, expiration: int = 3600) -> str | None:
+def create_presigned_url(key: str, expiration: int = 60 * 60) -> str | None:
     """Generate a presigned URL to share an S3 object
 
     :param key: string
@@ -98,5 +98,8 @@ def create_presigned_url(key: str, expiration: int = 3600) -> str | None:
         capture_exception()
         return None
 
-    # The response contains the presigned URL
+    if response.startswith("http://localstack"):
+        response = response.replace("http://localstack", "http://localhost")
+
+    # The response is the presigned URL
     return response
