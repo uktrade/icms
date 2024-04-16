@@ -1,8 +1,11 @@
+from django.contrib.sites.models import Site
 from django.db import transaction
+from django.utils import timezone
 
 from web.models import Email as UserEmail
 from web.models import User
 from web.one_login.types import UserCreateData as OneLoginUserCreateData
+from web.sites import is_exporter_site, is_importer_site
 
 from .types import StaffSSOUserCreateData
 
@@ -78,3 +81,12 @@ def get_or_create_icms_user(
         )
 
     return user, created
+
+
+def set_site_last_login(user: User, site: Site) -> None:
+    if is_importer_site(site):
+        user.importer_last_login = timezone.now()
+        user.save(update_fields=["importer_last_login"])
+    elif is_exporter_site(site):
+        user.exporter_last_login = timezone.now()
+        user.save(update_fields=["exporter_last_login"])

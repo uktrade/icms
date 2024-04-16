@@ -37,6 +37,9 @@ class User(GuardianUserMixin, AbstractUser):
     # True for users that were migrated from V1.
     icms_v1_user = models.BooleanField(default=False)
 
+    importer_last_login = models.DateTimeField(null=True)
+    exporter_last_login = models.DateTimeField(null=True)
+
     def __str__(self):
         return self.full_name
 
