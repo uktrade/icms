@@ -14,7 +14,7 @@ from web.one_login.backends import OneLoginBackend
 from web.one_login.types import UserInfo as OneLoginUserInfo
 
 from .types import STAFF_SSO_ID, StaffSSOProfile, StaffSSOUserCreateData
-from .utils import get_or_create_icms_user
+from .utils import get_or_create_icms_user, set_site_last_login
 
 
 class ModelAndObjectPermissionBackend(ModelBackend):
@@ -96,6 +96,14 @@ class ModelAndObjectPermissionBackend(ModelBackend):
 
         return set()
 
+    def authenticate(self, request: HttpRequest, **kwargs: Any) -> User | None:
+        """Authenticates the user and if the user is using an exporter/importer site updates site last login date time."""
+        user = super().authenticate(request, **kwargs)
+        site = getattr(request, "site", None)
+        if user and site:
+            set_site_last_login(user, site)
+        return user
+
 
 class ICMSStaffSSOBackend(AuthbrokerBackend):
     """ICMS Specific staff-sso backend.
@@ -142,8 +150,10 @@ class ICMSGovUKOneLoginBackend(OneLoginBackend):
         # Store the site attribute so that get_or_create_user can use it.
         # Done here instead of OneLoginBackend as that class is ICMS agnostic.
         self.site = request.site
-
-        return super().authenticate(request, **credentials)
+        user = super().authenticate(request, **credentials)
+        if user:
+            set_site_last_login(user, request.site)
+        return user
 
     def get_or_create_user(self, profile: OneLoginUserInfo) -> User:
         id_key = self.get_profile_id_name()

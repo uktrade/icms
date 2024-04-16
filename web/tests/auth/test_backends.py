@@ -1,8 +1,11 @@
+import datetime as dt
 from unittest import mock
 
 import pytest
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
+from django.utils.timezone import make_aware
+from freezegun import freeze_time
 
 from web.auth.backends import ICMSGovUKOneLoginBackend, ICMSStaffSSOBackend
 from web.one_login.types import UserInfo
@@ -105,6 +108,8 @@ def test_user_valid_legacy_user_not_create(mocked_has_valid_token, mocked_get_pr
     assert user.email == "user@test.com"  # /PS-IGNORE
     assert user.has_usable_password() is False
     assert user.emails.first().email == "user@test.com"  # /PS-IGNORE
+    assert user.importer_last_login is None
+    assert user.exporter_last_login is None
 
 
 @pytest.mark.django_db
@@ -163,6 +168,7 @@ def test_get_user_user_doesnt_exist():
 
 
 class TestICMSGovUKOneLoginBackend:
+    @freeze_time("2024-01-01 12:00:00")
     @mock.patch.multiple(
         "web.one_login.backends",
         get_client=mock.DEFAULT,
@@ -185,8 +191,11 @@ class TestICMSGovUKOneLoginBackend:
         assert user.username == "some-unique-key"
         assert user.has_usable_password() is False
         assert user.emails.first().email == "user@test.com"  # /PS-IGNORE
+        assert user.importer_last_login is None
+        assert user.exporter_last_login == make_aware(dt.datetime(2024, 1, 1, 12, 0, 0))
         assert mock_send_new_user_welcome_email.call_args == mock.call(user, rf.site)
 
+    @freeze_time("2024-01-01 12:00:00")
     @mock.patch.multiple(
         "web.one_login.backends",
         get_client=mock.DEFAULT,
@@ -198,7 +207,7 @@ class TestICMSGovUKOneLoginBackend:
     def test_user_valid_legacy_user_not_create(
         self, mock_send_new_user_welcome_email, db, rf, **mocks
     ):
-        rf.site = Site.objects.get(name=SiteName.EXPORTER)
+        rf.site = Site.objects.get(name=SiteName.IMPORTER)
         User = get_user_model()
         user = User(
             username="user@test.com",  # /PS-IGNORE
@@ -206,6 +215,7 @@ class TestICMSGovUKOneLoginBackend:
             first_name="Test",
             last_name="User",
             icms_v1_user=True,
+            importer_last_login=make_aware(dt.datetime(2020, 12, 1, 9, 1, 0)),
         )
         user.set_password("password")
         user.save()
@@ -225,5 +235,6 @@ class TestICMSGovUKOneLoginBackend:
         assert user.email == "user@test.com"  # /PS-IGNORE
         assert user.has_usable_password() is False
         assert user.emails.first().email == "user@test.com"  # /PS-IGNORE
-
+        assert user.importer_last_login == make_aware(dt.datetime(2024, 1, 1, 12, 0, 0))
+        assert user.exporter_last_login is None
         assert mock_send_new_user_welcome_email.call_count == 0

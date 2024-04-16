@@ -1,8 +1,18 @@
+import datetime as dt
+
 import pytest
 from django.contrib.auth.hashers import PBKDF2PasswordHasher
+from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.timezone import make_aware
+from freezegun import freeze_time
 
-from web.auth.utils import get_legacy_user_by_username, migrate_user
+from web.auth.utils import (
+    get_legacy_user_by_username,
+    migrate_user,
+    set_site_last_login,
+)
+from web.sites import SiteName
 
 
 def test_can_check_legacy_user_password(legacy_user):
@@ -48,3 +58,23 @@ def test_migrate_user_success(legacy_user, one_login_user):
     assert legacy_user.username == "one_login_id"
     assert legacy_user.email == "one_login_user@example.com"  # /PS-IGNORE
     assert legacy_user.emails.filter(email="one_login_user@example.com").exists()  # /PS-IGNORE
+
+
+@freeze_time("2020-01-01 12:00:00")
+@pytest.mark.parametrize(
+    "site_name,exp_importer_last_login,exp_exporter_last_login",
+    (
+        (SiteName.CASEWORKER, None, None),
+        (SiteName.EXPORTER, None, make_aware(dt.datetime(2020, 1, 1, 12, 0, 0))),
+        (SiteName.IMPORTER, make_aware(dt.datetime(2020, 1, 1, 12, 0, 0)), None),
+    ),
+)
+def test_set_site_last_login(
+    import_search_user, site_name, exp_importer_last_login, exp_exporter_last_login
+):
+    user = import_search_user
+    site = Site.objects.create(name=site_name)
+    set_site_last_login(user, site)
+    user.refresh_from_db()
+    assert user.importer_last_login == exp_importer_last_login
+    assert user.exporter_last_login == exp_exporter_last_login
