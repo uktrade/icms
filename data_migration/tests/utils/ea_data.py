@@ -381,6 +381,7 @@ ea_query_result = {
             ("manufacturer_address_type",),
             ("created_by_id",),
             ("created_at",),
+            ("updated_at",),
             ("product_xml",),
             ("legislation_xml",),
         ],
@@ -402,6 +403,7 @@ ea_query_result = {
                 "MANUAL",  # manufacturer_address_type
                 2,  # created_by_id
                 dt.datetime(2022, 11, 1, 12, 30),  # created_at
+                dt.datetime(2022, 11, 1, 12, 30),  # updated_at
                 xd.cfs_product,  # product_xml
                 None,  # legislation_xml
             ),
@@ -422,6 +424,7 @@ ea_query_result = {
                 "MANUAL",  # manufacturer_address_type
                 2,  # created_by_id
                 dt.datetime(2022, 11, 1, 12, 30),  # created_at
+                dt.datetime(2022, 11, 1, 12, 30),  # updated_at
                 None,  # product_xml
                 xd.cfs_legislation,  # legislation_xml
             ),
@@ -442,6 +445,7 @@ ea_query_result = {
                 "MANUAL",  # manufacturer_address_type
                 2,  # created_by_id
                 dt.datetime(2022, 11, 1, 12, 30),  # created_at
+                dt.datetime(2022, 11, 1, 12, 30),  # updated_at
                 xd.cfs_product_biocide,  # product_xml
                 xd.cfs_legislation_biocide,  # legislation_xml
             ),
@@ -455,17 +459,19 @@ ea_query_result = {
             ("status",),
             ("case_reference",),
             ("created_at",),
+            ("updated_at",),
             ("document_pack_id",),
         ],
         [
             (
-                8,
-                18,
-                dt.datetime(2022, 4, 29),
-                "DR",
-                "GA/2022/9902",
-                dt.datetime(2022, 4, 29, 13, 21),
-                20,
+                8,  # ca_id
+                18,  # cad_id
+                dt.datetime(2022, 4, 29),  # case_completion_datetime
+                "DR",  # status
+                "GA/2022/9902",  # case_reference
+                dt.datetime(2022, 4, 29, 13, 21),  # created_at
+                dt.datetime(2022, 4, 29, 13, 21),  # updated_at
+                20,  # document_pack_id
             ),
             (
                 9,
@@ -473,6 +479,7 @@ ea_query_result = {
                 dt.datetime(2022, 4, 29),
                 "AR",
                 "GA/2022/9903",
+                dt.datetime(2022, 4, 29, 13, 21),
                 dt.datetime(2022, 4, 29, 13, 21),
                 21,
             ),
@@ -483,6 +490,7 @@ ea_query_result = {
                 "AC",
                 "CA/2022/9903/1",
                 dt.datetime(2022, 4, 29, 13, 21),
+                dt.datetime(2022, 4, 29, 13, 21),
                 22,
             ),
             (
@@ -491,6 +499,7 @@ ea_query_result = {
                 dt.datetime(2022, 4, 29),
                 "DR",
                 "CA/2022/9905",
+                dt.datetime(2022, 4, 29, 13, 21),
                 dt.datetime(2022, 4, 29, 13, 21),
                 23,
             ),
@@ -501,6 +510,7 @@ ea_query_result = {
                 "AC",
                 "CA/2022/9906",
                 dt.datetime(2022, 4, 29, 13, 21),
+                dt.datetime(2022, 4, 29, 13, 21),
                 24,
             ),
             (
@@ -509,6 +519,7 @@ ea_query_result = {
                 dt.datetime(2022, 4, 29),
                 "DR",
                 "CA/2022/9908",
+                dt.datetime(2022, 4, 29, 13, 21),
                 dt.datetime(2022, 4, 29, 13, 21),
                 25,
             ),
@@ -519,6 +530,7 @@ ea_query_result = {
                 "AR",
                 "CA/2022/9909",
                 dt.datetime(2022, 4, 29, 13, 21),
+                dt.datetime(2022, 4, 29, 13, 21),
                 26,
             ),
             (
@@ -528,6 +540,7 @@ ea_query_result = {
                 "AR",
                 "CA/2022/9909/1",
                 dt.datetime(2022, 4, 29, 13, 21),
+                dt.datetime(2022, 4, 29, 13, 21),
                 27,
             ),
             (
@@ -536,6 +549,7 @@ ea_query_result = {
                 dt.datetime(2022, 4, 29),
                 "AC",
                 "CA/2022/9909/2",
+                dt.datetime(2022, 4, 29, 13, 21),
                 dt.datetime(2022, 4, 29, 13, 21),
                 28,
             ),
@@ -790,6 +804,81 @@ ea_query_result = {
                 dt.datetime.now(),  # sent_datetime
                 None,  # closed_datetime
                 "CA_HSE_EMAIL",  # template_code
+            ),
+        ],
+    ),
+    queries.export_application_template: (
+        [
+            ("id",),
+            ("name",),
+            ("description",),
+            ("application_type",),
+            ("sharing",),
+            ("owner_id",),
+            ("created_datetime",),
+            ("last_updated_datetime",),
+            ("is_active",),
+        ],
+        [
+            (
+                1,  # id
+                "Template CFS",  # name
+                "A CFS Template",  # description
+                "CFS",  # application_type
+                "PRIVATE",  # sharing
+                2,  # owner_id
+                dt.datetime(2023, 1, 2, 13, 23),  # created_datetime
+                dt.datetime(2023, 1, 2, 14, 23),  # last_updated_datetime
+                1,  # is_active
+            ),
+            (
+                2,  # id
+                "Template COM",  # name
+                "A COM Template",  # description
+                "COM",  # application_type
+                "EDIT",  # sharing
+                2,  # owner_id
+                dt.datetime(2023, 1, 3, 13, 23),  # create_datetime
+                dt.datetime(2023, 1, 3, 14, 23),  # last_updated_datetime
+                1,  # is_active
+            ),
+        ],
+    ),
+    queries.cfs_application_template: (
+        [
+            ("id",),
+            ("template_id",),
+            ("countries_xml",),
+            ("schedules_xml",),
+        ],
+        [
+            (
+                1,  # id
+                1,  # template_id
+                xd.cat_countries_xml,  # countries_xml
+                xd.cfs_schedule_template_xml,  # schedules_xml
+            ),
+        ],
+    ),
+    queries.com_application_template: (
+        [
+            ("template_id",),
+            ("is_free_sale_uk",),
+            ("is_manufacturer",),
+            ("product_name",),
+            ("chemical_name",),
+            ("manufacturing_process",),
+            ("countries_xml",),
+        ],
+        [
+            (
+                1,  # template_id
+                False,  # is_free_sale_uk
+                True,  # is_manufacturer
+                "Test product",  # product_name
+                "Test chemical",  # chemical_name
+                "Test manufacturing process",  # test_manufacturing_process
+                xd.cat_countries_xml,  # countries_xml
             ),
         ],
     ),

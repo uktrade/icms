@@ -1,3 +1,4 @@
+from .cat import *  # NOQA
 from .cfs import *  # NOQA
 from .com import *  # NOQA
 from .export import *  # NOQA

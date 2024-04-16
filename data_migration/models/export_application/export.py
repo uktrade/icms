@@ -127,7 +127,7 @@ class ExportApplicationCertificate(MigrationBase):
     status = models.TextField(max_length=2, default="DR")
     case_reference = models.CharField(max_length=100, null=True, unique=True)
     created_at = models.DateTimeField()
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField()
     document_pack_id = models.IntegerField(unique=True, null=True)
 
     @classmethod

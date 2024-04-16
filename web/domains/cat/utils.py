@@ -81,7 +81,7 @@ def get_user_templates(
         **extra_filter,
     )
 
-    return cats.order_by("-created")
+    return cats.order_by("-created_datetime")
 
 
 def template_in_user_templates(

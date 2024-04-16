@@ -124,3 +124,24 @@ COLUMNS
 ) x
 WHERE xcad.status_control = 'C'
 """
+
+
+cfs_application_templates_count = """
+SELECT COUNT(*)
+FROM impmgr.certificate_app_templates cat
+WHERE ca_type = 'CFS'
+"""
+
+
+com_application_templates_count = """
+SELECT COUNT(*)
+FROM impmgr.certificate_app_templates cat
+WHERE ca_type = 'COM'
+"""
+
+
+gmp_application_templates_count = """
+SELECT COUNT(*)
+FROM impmgr.certificate_app_templates cat
+WHERE ca_type = 'GMP'
+"""

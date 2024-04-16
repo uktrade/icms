@@ -121,7 +121,7 @@ ia_m2m = [
     M2M(dm.SIGLTransmission, web.ImportApplication, "sigl_transmissions"),
     M2M(dm.VariationRequest, web.ImportApplication, "variation_requests"),
     M2M(dm.CaseEmail, web.ImportApplication, "case_emails"),
-    M2M(dm.ConstabularyEmailAttachments, web.CaseEmail, "attachments"),
+    # M2M(dm.ConstabularyEmailAttachments, web.CaseEmail, "attachments"),  TODO ICMSLST-2604
     M2M(dm.CaseNote, web.ImportApplication, "case_notes"),
     M2M(dm.UpdateRequest, web.ImportApplication, "update_requests"),
     M2M(dm.FurtherInformationRequest, web.ImportApplication, "further_information_requests"),
@@ -146,7 +146,7 @@ ia_xml = [
     xml_parser.UserImportCertificateParser,
     xml_parser.SILGoodsParser,
     xml_parser.SILSupplementaryReportParser,
-    xml_parser.SILReportFirearmParser,
+    # xml_parser.SILReportFirearmParser, TODO ICMSLST-2599
     xml_parser.DFLGoodsCertificateParser,
     xml_parser.DFLSupplementaryReportParser,
     xml_parser.DFLReportFirearmParser,

@@ -36,7 +36,7 @@ class CFSSchedule(MigrationBase):
     manufacturer_address = models.CharField(max_length=4000, null=True)
     created_by = models.ForeignKey(User, on_delete=models.PROTECT)
     created_at = models.DateTimeField()
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(null=True)
     product_xml = models.TextField(null=True)
     legislation_xml = models.TextField(null=True)
 

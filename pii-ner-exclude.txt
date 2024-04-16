@@ -4322,3 +4322,23 @@ Product Upload {'Biocide '
 view_kwargs
 "Authenticates the user
 exp_importer_last_login
+Certifiate Application
+SILReportFirearmParser
+TODO ICMSLST-2599
+NONE
+owner_wua_id
+xml_data
+/CA/APPLICATION//PRODUCTS/SCHEDULE_LIST/SCHEDULE
+is_manufacturer VARCHAR2(20
+ON dm_cfst.id
+A CFS Template
+A COM Template
+template_id
+Test End Use</END_USE
+Test End Use
+Test Postcode
+AI 1
+AI 2
+AI 3
+M2M(dm
+ELSE last_updated_datetime END last_updated_datetime
