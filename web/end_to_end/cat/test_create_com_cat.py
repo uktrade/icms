@@ -12,8 +12,7 @@ def test_can_create_com_cat(pages: conftest.UserPages) -> None:
         page.get_by_label("Template Name").fill("Test COM Template")
         page.get_by_label("Template Name").press("Tab")
         page.get_by_label("Template Description").fill("Test COM template description")
-        page.get_by_label("Sharing").select_option("view")
-        page.get_by_label("Sharing").select_option("edit")
+        page.get_by_label("Sharing").select_option("EDIT")
         page.get_by_role("button", name="Save").click()
 
         # Now we are on the edit page store the cat_pk.
