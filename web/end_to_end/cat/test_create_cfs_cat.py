@@ -17,7 +17,7 @@ def test_can_create_cfs_cat(pages: conftest.UserPages) -> None:
         page.get_by_label("Template Name").fill("Test CFS template")
         page.get_by_label("Template Description").click()
         page.get_by_label("Template Description").fill("Test CFS template description")
-        page.get_by_label("Sharing").select_option("edit")
+        page.get_by_label("Sharing").select_option("EDIT")
         page.get_by_role("button", name="Save").click()
 
         # Now we are on the edit page store the cat_pk.
@@ -148,7 +148,7 @@ def test_can_create_cfs_cat_biocidal_schdedule(pages: conftest.UserPages) -> Non
         page.get_by_label("Template Name").fill("Test CFS template")
         page.get_by_label("Template Description").click()
         page.get_by_label("Template Description").fill("Test CFS template description")
-        page.get_by_label("Sharing").select_option("edit")
+        page.get_by_label("Sharing").select_option("EDIT")
         page.get_by_role("button", name="Save").click()
 
         # Now we are on the edit page store the cat_pk.
