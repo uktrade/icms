@@ -4344,3 +4344,6 @@ M2M(dm
 ELSE last_updated_datetime END last_updated_datetime
 View Importer
 {{ page_title }
+rm icms_pgdata icms_redis_data
+Setting ICMS Sites
+http://caseworker:8080 http://export-a-certificate:8080
