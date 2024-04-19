@@ -29,6 +29,7 @@ SELECT
   , u.closed_by_wua_id closed_by_id
 FROM impmgr.xview_ima_updates u
 INNER JOIN impmgr.xview_ima_details xid ON xid.ima_id = u.ima_id AND xid.status_control = 'C'
+WHERE u.status_control = 'C'
 """
 
 
