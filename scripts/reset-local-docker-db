@@ -3,13 +3,30 @@
 set -e
 
 make down
-docker volume rm icms_pgdata
-make migrate
+docker volume rm icms_pgdata icms_redis_data
+# Include to remove localstack volume (requires you to run make local_s3 again)
+# icms_ls_data
+
+echo "Starting web (and related) containers"
+docker-compose up -d web
+
+echo "Running migrations"
+docker-compose exec web python ./manage.py migrate
+
+echo "Starting localstack"
 make localstack
-make manage args="create_icms_groups"
-make manage args="add_reports_data"
-make add_dummy_data
-make manage args="set_icms_sites http://caseworker:8080 http://export-a-certificate:8080 http://import-a-licence:8080"
+
+echo "Creating groups"
+docker-compose exec web python ./manage.py create_icms_groups
+
+echo "Adding report data"
+docker-compose exec web python ./manage.py add_reports_data
+
+echo "Adding dummy data"
+docker-compose exec web python ./manage.py add_dummy_data --password admin
+
+echo "Setting ICMS Sites"
+docker-compose exec web python ./manage.py set_icms_sites http://caseworker:8080 http://export-a-certificate:8080 http://import-a-licence:8080
 
 echo "Restarting containers in the background"
 make debug
