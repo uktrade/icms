@@ -2,7 +2,6 @@
 # Production deployment does not use this configuration.
 #
 # see https://hub.docker.com/ for the images used here
-version: "3.8"
 services:
     db:
         image: postgres:16.1
