@@ -191,8 +191,8 @@ class PrepareCertManufactureFormBase(forms.ModelForm):
         "<p>A Certificate of Manufacture cannot be completed for a pesticide on free sale in the UK.</p>"
         "<p>To process this request contact the following:</p>"
         "<ul>"
-        '<li>Agricultural pesticides - <a href="mailto:asg@hse.gsi.gov.uk">asg@hse.gsi.gov.uk</a>'  # /PS-IGNORE
-        '<li>Non-agricultural pesticides - <a href="mailto:biocidesenquiries@hse.gsi.gov.uk">biocidesenquiries@hse.gsi.gov.uk</a>'  # /PS-IGNORE
+        '<li>Agricultural pesticides - <a href="mailto:asg@hse.gov.uk">asg@hse.gov.uk</a>'  # /PS-IGNORE
+        '<li>Non-agricultural pesticides - <a href="mailto:biocidesenquiries@hse.gov.uk">biocidesenquiries@hse.gov.uk</a>'  # /PS-IGNORE
         "</ul>"
         "</div>"
     )
