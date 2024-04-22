@@ -313,7 +313,11 @@ class EditCFSFormBase(forms.ModelForm):
 
         widgets = {
             "countries": Select2MultipleWidget(
-                attrs={"data-minimum-input-length": 0, "data-placeholder": "Select Country"},
+                attrs={
+                    "data-minimum-input-length": 0,
+                    "data-placeholder": "Select Country",
+                    "data-maximum-selection-length": 40,
+                },
             )
         }
 
@@ -356,7 +360,11 @@ class CFSScheduleFormBase(forms.ModelForm):
             "goods_export_only": icms_widgets.RadioSelectInline,
             "any_raw_materials": icms_widgets.RadioSelectInline,
             "legislations": Select2MultipleWidget(
-                attrs={"data-minimum-input-length": 0, "data-placeholder": "Select Legislation"},
+                attrs={
+                    "data-minimum-input-length": 0,
+                    "data-placeholder": "Select Legislation",
+                    "data-maximum-selection-length": 3,
+                },
             ),
             "biocidal_claim": icms_widgets.RadioSelectInline,
         }
