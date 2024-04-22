@@ -67,18 +67,25 @@ class EditScheduleEventHandler {
 
   goodsOnUKMarketRadiosOnChange(e) {
     // check to set export only to no.
-    const isExportOnly = getIsExportOnlyValue() === "yes";
     const goodsOnUKMarket = e.target.value === "yes"
 
-    if (isExportOnly && goodsOnUKMarket) {
+    // we're about to manually change the value of goods_export_only, so we want to also trigger a change event so the
+    // other event handlers can run
+    const new_change_event = new Event("change");
+
+    if (goodsOnUKMarket){
       document.querySelector(`input[type=radio][name="goods_export_only"][value="no"]`).checked = true
-      updateIsResponsiblePerson(this.legislationSelect2.val(), getIsExportOnlyValue(), this.legislationConfig);
+      document.querySelector(`input[type=radio][name="goods_export_only"][value="no"]`).dispatchEvent(new_change_event)
+    } else {
+      document.querySelector(`input[type=radio][name="goods_export_only"][value="yes"]`).checked = true
+      document.querySelector(`input[type=radio][name="goods_export_only"][value="yes"]`).dispatchEvent(new_change_event)
     }
+
+    const isExportOnly = getIsExportOnlyValue() === "yes";
 
     // check if we should select the checkbox
     const selectedLegislations = this.legislationSelect2.val();
-    const exportOnly = getIsExportOnlyValue();
-    const fieldShown = showResponsiblePersonStatement(selectedLegislations, exportOnly, this.legislationConfig);
+    const fieldShown = showResponsiblePersonStatement(selectedLegislations, isExportOnly, this.legislationConfig);
 
     if (!fieldShown) {
       return;

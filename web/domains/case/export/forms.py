@@ -387,6 +387,9 @@ class CFSScheduleFormBase(forms.ModelForm):
         # to stop it from ever appearing, so we remove it manually now.
         self.fields["biocidal_claim"].empty_label = None
 
+        # the value of this field is determined by the value of the goods_placed_on_uk_market field
+        self.fields["goods_export_only"].disabled = True
+
     def clean(self):
         cleaned_data = self.cleaned_data
         biocidal_claim = cleaned_data.get("biocidal_claim", False)
@@ -395,6 +398,15 @@ class CFSScheduleFormBase(forms.ModelForm):
             self.add_error("biocidal_claim", "This field is required.")
 
         return cleaned_data
+
+    def save(self, commit=True):
+        # we want to manually set the goods_export_only field based on the goods_placed_on_uk_market field.
+        # because the goods_export_field is disabled, it is not included in the form data, so we need to set it manually
+        if self.instance.goods_placed_on_uk_market == YesNoChoices.no:
+            self.instance.goods_export_only = YesNoChoices.yes
+        elif self.instance.goods_placed_on_uk_market == YesNoChoices.yes:
+            self.instance.goods_export_only = YesNoChoices.no
+        return super().save(commit=commit)
 
     def get_legislations_queryset(self) -> QuerySet[ProductLegislation]:
         legislation_qs = ProductLegislation.objects.filter(is_active=True)

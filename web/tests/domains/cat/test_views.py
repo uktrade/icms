@@ -234,7 +234,9 @@ class TestCATEditView(AuthTestCase):
         assert schedule.brand_name_holder == YesNoChoices.yes
         assert schedule.product_eligibility == "SOLD_ON_UK_MARKET"
         assert schedule.goods_placed_on_uk_market == YesNoChoices.yes
-        assert schedule.goods_export_only == YesNoChoices.yes
+
+        # this value gets set to no when goods_placed_on_uk_market is yes
+        assert schedule.goods_export_only == YesNoChoices.no
         assert schedule.any_raw_materials == YesNoChoices.yes
         assert schedule.final_product_end_use == "End Use or Final Product value"
         assert schedule.country_of_manufacture == cfs_com

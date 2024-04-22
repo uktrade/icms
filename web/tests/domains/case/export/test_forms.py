@@ -3,6 +3,7 @@ from django.template.loader import render_to_string
 
 from web.domains.case.export.forms import EditCFScheduleForm, EditCOMForm, SubmitGMPForm
 from web.forms.widgets import RadioSelectInline
+from web.models.shared import YesNoChoices
 
 
 @pytest.mark.django_db
@@ -105,3 +106,32 @@ def test_edit_com_form_radio_select_widgets(com_app_in_progress):
 
     assert com_app.is_pesticide_on_free_sale_uk is False
     assert com_app.is_manufacturer is True
+
+
+@pytest.mark.django_db
+def test_edit_cfs_schedule_form_goods_export_only_auto_select(cfs_app_in_progress):
+    """Tests that the goods_export_only field is automatically selected based on the goods_placed_on_uk_market field."""
+    app_schedule = cfs_app_in_progress.schedules.get()
+
+    form = EditCFScheduleForm(
+        instance=app_schedule,
+        data={
+            "goods_placed_on_uk_market": YesNoChoices.yes,
+        },
+    )
+    assert form.fields["goods_export_only"].disabled
+    assert form.is_valid()
+    instance = form.save()
+
+    assert instance.goods_export_only == YesNoChoices.no
+
+    form = EditCFScheduleForm(
+        instance=app_schedule,
+        data={
+            "goods_placed_on_uk_market": YesNoChoices.no,
+        },
+    )
+    assert form.is_valid()
+    instance = form.save()
+
+    assert instance.goods_export_only == YesNoChoices.yes
