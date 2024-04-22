@@ -4347,3 +4347,4 @@ View Importer
 rm icms_pgdata icms_redis_data
 Setting ICMS Sites
 http://caseworker:8080 http://export-a-certificate:8080
+Test Chemical

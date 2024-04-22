@@ -227,6 +227,8 @@ class PrepareCertManufactureFormBase(forms.ModelForm):
 
         widgets = {
             "countries": Select2MultipleWidget,
+            "is_pesticide_on_free_sale_uk": icms_widgets.YesNoRadioSelectInline,
+            "is_manufacturer": icms_widgets.YesNoRadioSelectInline,
         }
 
     def __init__(self, *args, **kwargs):
