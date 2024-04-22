@@ -100,3 +100,7 @@ class UserImportCertificateForm(forms.ModelForm):
             self.fields["certificate_type"].choices = (
                 UserImportCertificate.CertificateType.registered_as_choice(),
             )
+            self.fields["certificate_type"].initial = (
+                UserImportCertificate.CertificateType.registered.value
+            )
+            self.fields["certificate_type"].disabled = True
