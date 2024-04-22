@@ -1,7 +1,8 @@
 import pytest
 from django.template.loader import render_to_string
 
-from web.domains.case.export.forms import EditCFScheduleForm, SubmitGMPForm
+from web.domains.case.export.forms import EditCFScheduleForm, EditCOMForm, SubmitGMPForm
+from web.forms.widgets import RadioSelectInline
 
 
 @pytest.mark.django_db
@@ -76,3 +77,31 @@ def test_edit_cfs_schedule_form_biocidal_claim_required(cfs_app_in_progress):
     )
     assert not form.is_valid()
     assert form.errors["biocidal_claim"][0] == "This field is required."
+
+
+@pytest.mark.django_db
+def test_edit_com_form_radio_select_widgets(com_app_in_progress):
+    """Tests that the is_pesticide_on_free_sale_uk and is_manufacturer fields are rendered as
+    RadioSelectInline widgets and get converted to_python as expected."""
+    com_app_in_progress.is_pesticide_on_free_sale_uk = None
+    com_app_in_progress.is_manufacturer = None
+    com_app_in_progress.save()
+
+    form = EditCOMForm(
+        instance=com_app_in_progress,
+        data={
+            "is_pesticide_on_free_sale_uk": "False",
+            "is_manufacturer": "True",
+            "product_name": "Test Product",
+            "chemical_name": "Test Chemical",
+            "manufacturing_process": "Test Process",
+        },
+    )
+    assert isinstance(form.fields["is_pesticide_on_free_sale_uk"].widget, RadioSelectInline)
+    assert isinstance(form.fields["is_manufacturer"].widget, RadioSelectInline)
+
+    assert form.is_valid()
+    com_app = form.save()
+
+    assert com_app.is_pesticide_on_free_sale_uk is False
+    assert com_app.is_manufacturer is True
