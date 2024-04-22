@@ -1,11 +1,11 @@
 {# Main GMP form used in edit GMP view and Edit GMP Template view #}
-<h4>Countries</h4>
-{{ display.application_field(country, "Country") }}
-{{ fields.field(form.brand_name) }}
-
 {% if include_contact %}
   {% include "partial/case/application-contact-details.html" %}
 {% endif %}
+
+<h4>Countries</h4>
+{{ display.application_field(country, "Country") }}
+{{ fields.field(form.brand_name) }}
 
 <h4>Responsible Person</h4>
 {{ fields.field(form.is_responsible_person) }}
