@@ -359,7 +359,7 @@ def test_cfs_copy_template_to_export_application(cfs_cat, cfs_app, exporter_one_
         brand_name_holder=YesNoChoices.yes,
         product_eligibility="SOLD_ON_UK_MARKET",
         goods_placed_on_uk_market=YesNoChoices.yes,
-        goods_export_only=YesNoChoices.yes,
+        goods_export_only=YesNoChoices.no,
         any_raw_materials=YesNoChoices.yes,
         final_product_end_use="End Use or Final Product value",
         country_of_manufacture=cfs_com,
