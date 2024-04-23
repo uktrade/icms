@@ -1,3 +1,4 @@
+import datetime as dt
 from unittest import mock
 
 import oracledb
@@ -79,7 +80,7 @@ def test_extract_xml(mock_connect):
         sr_goods_file_id="abcde",
         filename="SR Upload.pdf",
         content_type="pdf",
-        created_datetime="2022-11-05T12:11:03",
+        created_datetime=dt.datetime(2022, 11, 5, 12, 11, 3, tzinfo=dt.UTC),
         path="abcde/SR Upload.pdf",
         file_size=1234,
     )
