@@ -275,7 +275,7 @@ class EditCOMForm(OptionalFormMixin, PrepareCertManufactureFormBase):
     """
 
 
-class SubmitCOMForm(EditCOMForm):
+class SubmitCOMForm(PrepareCertManufactureFormBase):
     """Form used when submitting the application.
 
     All fields are fully validated to ensure form is correct.
@@ -334,6 +334,13 @@ class EditCFSForm(OptionalFormMixin, EditCFSFormBase):
         self.fields["countries"].queryset = ExportApplicationType.objects.get(
             type_code=ExportApplicationType.Types.FREE_SALE
         ).country_group.countries.filter(is_active=True)
+
+
+class SubmitCFSForm(EditCFSFormBase):
+    """Form used when submitting the application.
+
+    All fields are fully validated to ensure form is correct.
+    """
 
 
 class CFSScheduleFormBase(forms.ModelForm):
