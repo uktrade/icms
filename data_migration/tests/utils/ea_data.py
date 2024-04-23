@@ -466,7 +466,7 @@ ea_query_result = {
             (
                 8,  # ca_id
                 18,  # cad_id
-                dt.datetime(2022, 4, 29),  # case_completion_datetime
+                None,  # case_completion_datetime
                 "DR",  # status
                 "GA/2022/9902",  # case_reference
                 dt.datetime(2022, 4, 29, 13, 21),  # created_at
@@ -496,7 +496,7 @@ ea_query_result = {
             (
                 11,
                 21,
-                dt.datetime(2022, 4, 29),
+                None,
                 "DR",
                 "CA/2022/9905",
                 dt.datetime(2022, 4, 29, 13, 21),

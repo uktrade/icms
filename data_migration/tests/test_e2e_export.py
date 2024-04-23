@@ -203,7 +203,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     call_command("export_from_v1")
     call_command("extract_v1_xml")
     call_command("import_v1_data")
-    call_command("post_migration", "--skip_perms")
+    call_command("post_migration", "--skip_perms", "--skip_add_data")
 
     assert web.CertificateOfGoodManufacturingPracticeApplication.objects.count() == 4
     ea1, ea2, ea3, _ = web.ExportApplication.objects.filter(
@@ -307,7 +307,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ref2.check_code == "87654321"
     assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=4)
 
-    gmp1, gmp2, gmp3, _ = web.CertificateOfGoodManufacturingPracticeApplication.objects.order_by(
+    gmp1, gmp2, gmp3, gmp4 = web.CertificateOfGoodManufacturingPracticeApplication.objects.order_by(
         "pk"
     )
 
@@ -336,9 +336,13 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert web.CertificateOfManufactureApplication.objects.count() == 3
     com1, com2, com3 = web.CertificateOfManufactureApplication.objects.order_by("pk")
 
-    ea4, ea5, ea6 = web.ExportApplication.objects.filter(
-        process_ptr__process_type=ProcessTypes.COM
-    ).order_by("pk")
+    assert (
+        web.ExportApplication.objects.filter(process_ptr__process_type=ProcessTypes.COM).count()
+        == 3
+    )
+    ea4 = com1.exportapplication
+    ea5 = com2.exportapplication
+    ea6 = com3.exportapplication
 
     assert ea4.reference == "CA/2022/9904"
     assert web.UniqueReference.objects.get(prefix="CA", year=2022, reference=9904)
@@ -396,7 +400,14 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     assert cert4.status == "DR"
     assert cert4.document_references.count() == 1
+    assert cert4.case_completion_datetime is None
+    assert cert4.case_reference == "CA/2022/9905"
+    assert cert4.document_references.count() == 1
+
     assert cert5.status == "AC"
+    assert cert5.document_references.count() == 1
+    assert cert5.case_completion_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
+    assert cert5.case_reference == "CA/2022/9906"
     assert cert5.document_references.count() == 1
 
     ref3 = cert4.document_references.first()
@@ -405,30 +416,89 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ref3.reference == "COM/2022/00001"
     assert ref3.reference_data.country_id == 1
     assert ref3.check_code == "87651432"
+    assert ref3.document_type == "CERTIFICATE"
     assert web.UniqueReference.objects.get(prefix="COM", year=2022, reference=1)
 
     assert ref4.reference == "COM/2022/00002"
     assert ref4.reference_data.country_id == 1
     assert ref4.check_code == "87651432"
+    assert ref4.document_type == "CERTIFICATE"
     assert web.UniqueReference.objects.get(prefix="COM", year=2022, reference=2)
 
+    assert com1.is_active is True
+    assert com1.finished is None
     assert com1.is_pesticide_on_free_sale_uk is None
     assert com1.is_manufacturer is None
     assert com1.product_name is None
     assert com1.chemical_name is None
     assert com1.manufacturing_process is None
 
+    assert com1.exporter_id == 2
+    assert com1.application_type_id == 2
+    assert com1.created_by_id == 2
+    assert com1.last_updated_by_id == 2
+    assert com1.submitted_by_id is None
+
+    assert com1.created == dt.datetime(2022, 4, 27, 0, 0, 0, tzinfo=dt.UTC)
+    assert com1.submit_datetime is None
+    assert com1.last_submit_datetime is None
+
+    # Order datetime & last update datetime set to time migration ran
+    assert com1.order_datetime is not None
+    assert com1.last_update_datetime is not None
+
+    assert com1.status == "IN PROGRESS"
+    assert com1.reference == "CA/2022/9904"
+
+    assert com2.is_active is True
+    assert com2.finished is None
     assert com2.is_pesticide_on_free_sale_uk is True
     assert com2.is_manufacturer is False
     assert com2.product_name == "A product"
     assert com2.chemical_name == "A chemical"
     assert com2.manufacturing_process == "Test"
 
+    assert com2.exporter_id == 3
+    assert com2.application_type_id == 2
+    assert com2.created_by_id == 2
+    assert com2.last_updated_by_id == 2
+    assert com2.submitted_by_id is None
+
+    assert com2.created == dt.datetime(2022, 4, 28, 0, 0, 0, tzinfo=dt.UTC)
+    assert com2.submit_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
+    assert com2.last_submit_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
+
+    # Order datetime & last update datetime set to time migration ran
+    assert com2.order_datetime is not None
+    assert com2.last_update_datetime is not None
+
+    assert com2.status == "PROCESSING"
+    assert com2.reference == "CA/2022/9905"
+
+    assert com3.is_active is True
+    assert com3.finished is None
     assert com3.is_pesticide_on_free_sale_uk is False
     assert com3.is_manufacturer is True
     assert com3.product_name == "Another product"
     assert com3.chemical_name == "Another chemical"
     assert com3.manufacturing_process == "Test process"
+
+    assert com3.exporter_id == 2
+    assert com3.application_type_id == 2
+    assert com3.created_by_id == 2
+    assert com3.last_updated_by_id == 2
+    assert com3.submitted_by_id is None
+
+    assert com3.created == dt.datetime(2022, 4, 28, 0, 0, 0, tzinfo=dt.UTC)
+    assert com3.submit_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
+    assert com3.last_submit_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
+
+    # Order datetime & last update datetime set to time migration ran
+    assert com3.order_datetime is not None
+    assert com3.last_update_datetime is not None
+
+    assert com3.status == "COMPLETED"
+    assert com3.reference == "CA/2022/9906"
 
     assert web.CertificateOfFreeSaleApplication.objects.count() == 3
     cfs1, cfs2, cfs3 = web.CertificateOfFreeSaleApplication.objects.order_by("pk")

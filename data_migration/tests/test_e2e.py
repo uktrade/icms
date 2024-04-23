@@ -242,7 +242,7 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert dm.SILSupplementaryReportFirearmSectionLegacy.objects.filter(**sil3_f).count() == 2
 
     call_command("import_v1_data", "--skip_export")
-    call_command("post_migration", "--skip_perms")
+    call_command("post_migration", "--skip_perms", "--skip_add_data")
 
     importers = web.Importer.objects.order_by("pk")
     assert importers.count() == 3
@@ -290,7 +290,7 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     l2, l3, l4 = sil2_licences
 
     assert l1.created_at == dt.datetime(2022, 4, 27, 10, 43, tzinfo=dt.UTC)
-    assert list(l1.document_references.values_list("reference", flat=True)) == ["1234A", None]
+    assert set(l1.document_references.values_list("reference", flat=True)) == {"1234A", None}
     assert l1.document_references.filter(document_type="LICENCE").count() == 1
     assert l1.document_references.filter(document_type="COVER_LETTER").count() == 1
     assert list(l1.cleared_by.values_list("id", flat=True)) == [2]
@@ -601,7 +601,7 @@ def test_import_oil_data(mock_connect, dummy_dm_settings):
     assert oil2.section2 is False
 
     call_command("import_v1_data", "--skip_export")
-    call_command("post_migration", "--skip_perms")
+    call_command("post_migration", "--skip_perms", "--skip_add_data")
 
     oil1, oil2 = web.OpenIndividualLicenceApplication.objects.order_by("pk")
 
