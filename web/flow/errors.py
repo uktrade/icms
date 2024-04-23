@@ -1,4 +1,7 @@
-class ProcessError(Exception):
+from django.core.exceptions import PermissionDenied
+
+
+class ProcessError(PermissionDenied):
     pass
 
 

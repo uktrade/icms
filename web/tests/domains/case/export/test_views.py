@@ -232,8 +232,9 @@ class TestEditCom(AuthTestCase):
     def test_no_task(self):
         """Assert an application/flow requires an active task."""
         self.appl.tasks.all().delete()
-        with pytest.raises(Exception, match="prepare not in active task list"):
-            self.exporter_client.get(self.url)
+        response = self.exporter_client.get(self.url)
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
 
 class TestSubmitCom(AuthTestCase):
@@ -268,8 +269,9 @@ class TestSubmitCom(AuthTestCase):
     def test_no_task(self):
         """Assert an application/flow requires an active task."""
         self.appl.tasks.all().delete()
-        with pytest.raises(Exception, match="prepare not in active task list"):
-            self.exporter_client.get(self.url)
+        response = self.exporter_client.get(self.url)
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
 
 def test_create_csf_app_has_a_schedule(exporter_client, exporter, exporter_office):

@@ -14,7 +14,6 @@ from web.domains.case.models import DocumentPackBase, WithdrawApplication
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.views.views_misc import get_document_context
-from web.flow.errors import ProcessStateError
 from web.mail.constants import EmailTypes
 from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import (
@@ -76,8 +75,8 @@ def test_take_ownership(ilb_admin_client: "Client", wood_app_submitted):
 
 def test_take_ownership_in_progress(ilb_admin_client: "Client", wood_app_in_progress):
     # Can't own an in progress application
-    with pytest.raises(ProcessStateError):
-        ilb_admin_client.post(CaseURLS.take_ownership(wood_app_in_progress.pk))
+    response = ilb_admin_client.post(CaseURLS.take_ownership(wood_app_in_progress.pk))
+    assert response.status_code == HTTPStatus.FORBIDDEN
 
 
 @pytest.mark.parametrize(

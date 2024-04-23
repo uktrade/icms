@@ -5,6 +5,7 @@ from .views import (
     ModelUpdateView,
     RedirectBaseDomainView,
     cookie_consent_view,
+    handler403_capture_process_error_view,
     home,
     login_start_view,
     logout_view,
@@ -22,4 +23,5 @@ __all__ = [
     "logout_view",
     "health_check",
     "cookie_consent_view",
+    "handler403_capture_process_error_view",
 ]
