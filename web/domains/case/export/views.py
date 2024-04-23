@@ -71,6 +71,7 @@ from .forms import (
     EditCOMForm,
     EditGMPForm,
     ProductsFileUploadForm,
+    SubmitCFSForm,
     SubmitCFSScheduleForm,
     SubmitCOMForm,
     SubmitGMPForm,
@@ -359,19 +360,11 @@ def edit_cfs(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
         check_can_edit_application(request.user, application)
         case_progress.application_in_progress(application)
 
-        if request.method == "POST":
-            form = EditCFSForm(data=request.POST, instance=application)
+        form = get_application_form(application, request, EditCFSForm, SubmitCFSForm)
+        if request.method == "POST" and form.is_valid():
+            form.save()
 
-            if form.is_valid():
-                form.save()
-
-                return redirect(
-                    reverse("export:cfs-edit", kwargs={"application_pk": application_pk})
-                )
-
-        else:
-            initial = {} if application.contact else {"contact": request.user}
-            form = EditCFSForm(instance=application, initial=initial)
+            return redirect(reverse("export:cfs-edit", kwargs={"application_pk": application_pk}))
 
         schedules = application.schedules.all().order_by("created_at")
 
@@ -1288,10 +1281,10 @@ def _get_cfs_errors(application: CertificateOfFreeSaleApplication) -> Applicatio
     errors = ApplicationErrors()
     page_errors = PageErrors(
         page_name="Application details",
-        url=reverse("export:cfs-edit", kwargs={"application_pk": application.pk}),
+        url=reverse("export:cfs-edit", kwargs={"application_pk": application.pk}) + "?validate",
     )
     create_page_errors(
-        EditCFSForm(data=model_to_dict(application), instance=application), page_errors
+        SubmitCFSForm(data=model_to_dict(application), instance=application), page_errors
     )
 
     # Error checks related to schedules.
