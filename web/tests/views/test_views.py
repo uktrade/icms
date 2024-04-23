@@ -150,3 +150,31 @@ class TestSecurityHeaders:
         response = importer_client.get("")
         assert "X-Permitted-Cross-Domain-Policies" in response.headers
         assert response.headers["X-Permitted-Cross-Domain-Policies"] == "none"
+
+
+class TestHandler403CaptureProcessErrorView:  # /PS-IGNORE
+    @mock.patch("web.views.views.capture_exception")
+    def test_default_403_view(self, mock_capture_exception, importer_client):
+        # A view that requires the ilb_admin permission
+        url = reverse("chief:pending-licences")
+
+        response = importer_client.get(url)
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        # Only subclasses of ProcessError are sent to sentry
+        mock_capture_exception.assert_not_called()
+
+    @mock.patch("web.views.views.capture_exception")
+    def test_capture_process_error(
+        self, mock_capture_exception, fa_dfl_app_submitted, importer_client
+    ):
+        # This URL should raise a ProcessError when called as the app is submitted
+        url = reverse("import:fa-dfl:edit", kwargs={"application_pk": fa_dfl_app_submitted.pk})
+
+        response = importer_client.get(url)
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        # capture_exception called as a ProcessError was raised
+        mock_capture_exception.assert_called_once()

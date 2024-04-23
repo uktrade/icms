@@ -1,4 +1,5 @@
 import traceback
+from typing import Literal
 
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -21,14 +22,17 @@ def init_sentry(sentry_dsn: str, sentry_environment: str) -> None:
     sentry_initialized = True
 
 
-def capture_message(msg: str) -> None:
+def capture_message(
+    msg: str, level: Literal["fatal", "critical", "error", "warning", "info", "debug"] = "info"
+) -> None:
     """If Sentry is enabled, log the given message, otherwise print it to the console.
 
     :param msg: message to capture
+    :param level: message level
     """
 
     if sentry_initialized:
-        sentry_sdk.capture_message(msg)
+        sentry_sdk.capture_message(msg, level=level)
     else:
         print("Sentry::capture_message: %s" % msg)
 

@@ -13,7 +13,6 @@ from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
-from web.flow import errors
 from web.mail.constants import EmailTypes
 from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import (
@@ -315,10 +314,11 @@ class TestReopenApplicationViewImportApplication:
         self._check_valid_response(resp, self.wood_app)
 
     def test_reopen_application_when_processing_errors(self):
-        with pytest.raises(expected_exception=errors.ProcessStateError):
-            url = SearchURLS.reopen_case(application_pk=self.wood_app.pk)
-            self.client.post(url)
-            self._check_email_is_not_sent()
+        url = SearchURLS.reopen_case(application_pk=self.wood_app.pk)
+        response = self.client.post(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        self._check_email_is_not_sent()
 
     def test_reopen_application_unsets_caseworker(self, ilb_admin_user):
         self.wood_app.status = ImpExpStatus.STOPPED
@@ -414,10 +414,11 @@ class TestReopenApplicationViewExportApplication:
         self._check_valid_response(resp, self.app)
 
     def test_reopen_application_when_processing_errors(self):
-        with pytest.raises(expected_exception=errors.ProcessStateError):
-            url = SearchURLS.reopen_case(application_pk=self.app.pk)
-            self.client.post(url)
-            self._check_email_is_not_sent()
+        url = SearchURLS.reopen_case(application_pk=self.app.pk)
+        response = self.client.post(url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        self._check_email_is_not_sent()
 
     def test_reopen_application_unsets_caseworker(self, ilb_admin_user):
         self.app.status = ImpExpStatus.STOPPED

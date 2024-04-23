@@ -9,19 +9,22 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
+from django.views.defaults import permission_denied
 from django.views.generic import RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from django_filters import FilterSet
 
+from web.flow.errors import ProcessError
 from web.one_login.utils import OneLoginConfig
 from web.sites import is_caseworker_site, is_exporter_site, is_importer_site
+from web.utils.sentry import capture_exception
 
 from .actions import PostAction
 from .forms import CookieConsentForm
@@ -171,6 +174,28 @@ def cookie_consent_view(request: HttpRequest) -> HttpResponse:
             return response
         else:
             return render(request, "web/cookie-consent.html", context={"form": form})
+
+
+def handler403_capture_process_error_view(
+    request: HttpRequest, exception: Exception
+) -> HttpResponseForbidden:
+    """Custom 403 handler to send ProcessError exceptions to sentry.
+
+    https://docs.sentry.io/platforms/python/integrations/django/http_errors/
+    """
+
+    # Process errors are a subclass of PermissionDenied
+    # Two potential scenarios:
+    #     1. We have a bug with our expected status or expected task checking.
+    #     2. A user is accessing a view they can't access via the UI, e.g. loading the edit view
+    #        after an application has been submitted.
+    # We care about the first scenario as it will require a code change, e.g. change the expected
+    # status a view is checking for.
+    # We do not care about the second, and the user will correctly see a 403 error.
+    if isinstance(exception, ProcessError):
+        capture_exception()
+
+    return permission_denied(request, exception)
 
 
 class ModelFilterView(

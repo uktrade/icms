@@ -20,6 +20,10 @@ from django.urls import include, path
 
 from web.admin import icms_admin_site
 
+# Custom 403 handler to send process_error exceptions to sentry
+handler403 = "web.views.handler403_capture_process_error_view"
+
+
 urlpatterns = [
     #
     # Django Admin Site (superuser admin site)
