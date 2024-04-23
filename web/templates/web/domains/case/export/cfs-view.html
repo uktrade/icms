@@ -39,6 +39,9 @@
       {{ application_field(schedule.get_exporter_status_display(), labels["exporter_status"]) }}
       {{ application_field(schedule.get_brand_name_holder_display(), labels["brand_name_holder"]) }}
       {{ application_field(schedule_legislation_names|join("\n"), labels["legislations"]) }}
+      {% if schedule.biocidal_claim %}
+        {{ application_field(schedule.get_biocidal_claim_display(), labels["biocidal_claim"]) }}
+      {% endif %}
       {{ application_field(schedule.get_product_eligibility_display(), labels["product_eligibility"]) }}
       {{ application_field(schedule.get_goods_placed_on_uk_market_display(), labels["goods_placed_on_uk_market"]) }}
       {{ application_field(schedule.get_goods_export_only_display(), labels["goods_export_only"]) }}
