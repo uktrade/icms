@@ -7,8 +7,8 @@ from web.domains.case.export.forms import (
     CFSManufacturerDetailsForm,
     CFSProductForm,
     CFSProductTypeForm,
-    EditCFScheduleForm,
     EditCFSForm,
+    EditCFSScheduleForm,
     EditCOMForm,
     EditGMPForm,
 )
@@ -172,7 +172,7 @@ class CFSApplicationCopy(ApplicationCopy):
         for existing_schedule in self.existing.schedules.all():
             self.copy_schedule(
                 existing_schedule,
-                EditCFScheduleForm,
+                EditCFSScheduleForm,
                 CFSManufacturerDetailsForm,
                 CFSProductForm,
                 CFSProductTypeForm,
@@ -198,7 +198,7 @@ class CFSApplicationCopy(ApplicationCopy):
         for existing_schedule in self.existing.schedules.all():
             self.copy_schedule(
                 existing_schedule,
-                EditCFScheduleForm,
+                EditCFSScheduleForm,
                 CFSManufacturerDetailsForm,
                 CFSProductForm,
                 CFSProductTypeForm,
@@ -208,7 +208,7 @@ class CFSApplicationCopy(ApplicationCopy):
     def copy_schedule(
         self,
         existing_schedule: CFSSchedule | CFSScheduleTemplate,
-        edit_schedule_form: type[EditCFScheduleForm | CFSScheduleTemplateForm],
+        edit_schedule_form: type[EditCFSScheduleForm | CFSScheduleTemplateForm],
         manufacturer_details_form: type[
             CFSManufacturerDetailsForm | CFSManufacturerDetailsTemplateForm
         ],

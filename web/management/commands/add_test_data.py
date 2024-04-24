@@ -19,6 +19,7 @@ from web.models import (
     ObsoleteCalibre,
     ObsoleteCalibreGroup,
     Office,
+    ProductLegislation,
     Signature,
     Task,
     User,
@@ -97,6 +98,11 @@ class Command(BaseCommand):
 
         group = ObsoleteCalibreGroup.objects.create(name="Group 1", order=1)
         ObsoleteCalibre.objects.create(calibre_group=group, name="9mm", order=1)
+
+        # Add a dummy biocidal_claim legislation (defaults to GB and NI legislation)
+        ProductLegislation.objects.create(
+            name="Dummy 'Is Biocidal Claim legislation'", is_biocidal_claim=True
+        )
 
     def create_test_importers(self) -> None:
         for imp in TEST_IMPORTERS:

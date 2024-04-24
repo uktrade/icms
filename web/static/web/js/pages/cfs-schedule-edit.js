@@ -1,4 +1,4 @@
-window.addEventListener('load', (event) => {
+window.addEventListener('DOMContentLoaded', (event) => {
   const selectedProductRawMaterial = getCheckedRadioValue("any_raw_materials");
   setEndUse(selectedProductRawMaterial);
 
@@ -8,9 +8,6 @@ window.addEventListener('load', (event) => {
   const exportRadios = getRadioElements("goods_export_only");
 
   const events = new EditScheduleEventHandler(legislationSelect2);
-
-  // Show-hiding the is-biocidal-claim question on page load
-  showIsBiocidalClaim(events.legislationSelect2.val(), events.legislationConfig);
 
   // Setup listeners
   productRawMaterialRadios.forEach(

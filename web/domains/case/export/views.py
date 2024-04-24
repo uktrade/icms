@@ -66,8 +66,8 @@ from .forms import (
     CFSProductFormSet,
     CFSProductTypeForm,
     CreateExportApplicationForm,
-    EditCFScheduleForm,
     EditCFSForm,
+    EditCFSScheduleForm,
     EditCOMForm,
     EditGMPForm,
     ProductsFileUploadForm,
@@ -414,7 +414,7 @@ def cfs_edit_schedule(
         )
 
         if request.method == "POST":
-            form = EditCFScheduleForm(data=request.POST, instance=schedule)
+            form = EditCFSScheduleForm(data=request.POST, instance=schedule)
 
             if form.is_valid():
                 form.save()
@@ -435,7 +435,7 @@ def cfs_edit_schedule(
                 form_kwargs["data"] = model_to_dict(schedule)
                 form = SubmitCFSScheduleForm(**form_kwargs)
             else:
-                form = EditCFScheduleForm(**form_kwargs)
+                form = EditCFSScheduleForm(**form_kwargs)
 
         schedule_legislations = schedule.legislations.filter(is_active=True)
 
@@ -452,6 +452,7 @@ def cfs_edit_schedule(
             "form": form,
             "case_type": "export",
             "is_biocidal": schedule.is_biocidal(),
+            "is_biocidal_claim": schedule.is_biocidal_claim(),
             "products": schedule.products.all().order_by("pk"),
             "product_upload_form": ProductsFileUploadForm(),
             "has_legislation": schedule_legislations.exists(),

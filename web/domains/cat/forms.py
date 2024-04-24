@@ -10,8 +10,8 @@ from web.domains.case.export.forms import (
     CFSManufacturerDetailsForm,
     CFSProductForm,
     CFSProductTypeForm,
-    EditCFScheduleForm,
     EditCFSForm,
+    EditCFSScheduleForm,
     EditCOMForm,
     EditGMPForm,
 )
@@ -148,11 +148,11 @@ class CertificateOfFreeSaleApplicationTemplateForm(EditCFSForm):
         widgets = EditCFSForm.Meta.widgets
 
 
-class CFSScheduleTemplateForm(EditCFScheduleForm):
+class CFSScheduleTemplateForm(EditCFSScheduleForm):
     class Meta:
         model = CFSScheduleTemplate
-        fields = copy_form_fields(EditCFScheduleForm.Meta.fields)
-        widgets = EditCFScheduleForm.Meta.widgets
+        fields = copy_form_fields(EditCFSScheduleForm.Meta.fields)
+        widgets = EditCFSScheduleForm.Meta.widgets
 
     def get_legislations_queryset(self) -> QuerySet[ProductLegislation]:
         legislation_qs = ProductLegislation.objects.filter(is_active=True)
