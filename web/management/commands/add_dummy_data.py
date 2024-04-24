@@ -424,6 +424,11 @@ class Command(BaseCommand):
             ]
         )
 
+        # Add a dummy biocidal_claim legislation (defaults to GB and NI legislation)
+        ProductLegislation.objects.create(
+            name="Dummy 'Is Biocidal Claim legislation'", is_biocidal_claim=True
+        )
+
     def create_user(
         self,
         username: str,

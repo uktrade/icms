@@ -4361,3 +4361,5 @@ Constabulary Contact Users
 ProcessError
 Custom 403
 UI
+schedule.is_biocidal_claim
+Dummy 'Is Biocidal Claim

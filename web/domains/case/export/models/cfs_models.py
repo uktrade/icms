@@ -158,6 +158,9 @@ class CFSScheduleABC(models.Model):
     def is_biocidal(self) -> bool:
         return self.legislations.filter(is_biocidal=True).exists()
 
+    def is_biocidal_claim(self) -> bool:
+        return self.legislations.filter(is_biocidal_claim=True).exists()
+
 
 class CFSSchedule(CFSScheduleABC):
     application = models.ForeignKey(

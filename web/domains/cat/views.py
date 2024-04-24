@@ -303,6 +303,7 @@ class CATEditView(PermissionRequiredMixin, LoginRequiredMixin, UserPassesTestMix
 
                 # Products section context
                 extra["is_biocidal"] = schedule.is_biocidal()
+                extra["is_biocidal_claim"] = schedule.is_biocidal_claim()
                 extra["products"] = schedule.products.all().order_by("pk")
                 extra["product_upload_form"] = ProductsFileUploadForm()
                 extra["has_legislation"] = schedule.legislations.filter(is_active=True).exists()

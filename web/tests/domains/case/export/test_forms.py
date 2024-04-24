@@ -1,8 +1,15 @@
 import pytest
+from django.forms import model_to_dict
 from django.template.loader import render_to_string
 
-from web.domains.case.export.forms import EditCFScheduleForm, EditCOMForm, SubmitGMPForm
+from web.domains.case.export.forms import (
+    EditCFSScheduleForm,
+    EditCOMForm,
+    SubmitCFSScheduleForm,
+    SubmitGMPForm,
+)
 from web.forms.widgets import RadioSelectInline
+from web.models import ProductLegislation
 from web.models.shared import YesNoChoices
 
 
@@ -51,7 +58,7 @@ def test_gmp_form_clean_gb_postcode_ni_country(mocker, gmp_app_submitted):
 
 @pytest.mark.django_db
 def test_edit_cfs_schedule_form_biocidal_claim_helptext(cfs_app_in_progress):
-    form = EditCFScheduleForm(
+    form = EditCFSScheduleForm(
         instance=cfs_app_in_progress.schedules.first(),
     )
     assert form.fields["biocidal_claim"].help_text == render_to_string(
@@ -60,22 +67,15 @@ def test_edit_cfs_schedule_form_biocidal_claim_helptext(cfs_app_in_progress):
 
 
 @pytest.mark.django_db
-def test_edit_cfs_schedule_form_biocidal_claim_required(cfs_app_in_progress):
+def test_submit_cfs_schedule_form_biocidal_claim_required(cfs_app_in_progress):
     """Tests that the biocidal_claim field is required when one of the legislations is biocidal."""
     app_schedule = cfs_app_in_progress.schedules.get()
-    chosen_legislation = app_schedule.legislations.get()
-    chosen_legislation.is_biocidal_claim = True
-    chosen_legislation.save()
+    app_schedule.biocidal_claim = None
+    app_schedule.save()
 
-    app_schedule.refresh_from_db()
+    app_schedule.legislations.add(ProductLegislation.objects.filter(is_biocidal_claim=True)[0])
 
-    form = EditCFScheduleForm(
-        instance=app_schedule,
-        data={
-            "biocidal_claim": "",
-            "legislations": [chosen_legislation.pk],
-        },
-    )
+    form = SubmitCFSScheduleForm(data=model_to_dict(app_schedule), instance=app_schedule)
     assert not form.is_valid()
     assert form.errors["biocidal_claim"][0] == "This field is required."
 
@@ -113,7 +113,7 @@ def test_edit_cfs_schedule_form_goods_export_only_auto_select(cfs_app_in_progres
     """Tests that the goods_export_only field is automatically selected based on the goods_placed_on_uk_market field."""
     app_schedule = cfs_app_in_progress.schedules.get()
 
-    form = EditCFScheduleForm(
+    form = EditCFSScheduleForm(
         instance=app_schedule,
         data={
             "goods_placed_on_uk_market": YesNoChoices.yes,
@@ -125,7 +125,7 @@ def test_edit_cfs_schedule_form_goods_export_only_auto_select(cfs_app_in_progres
 
     assert instance.goods_export_only == YesNoChoices.no
 
-    form = EditCFScheduleForm(
+    form = EditCFSScheduleForm(
         instance=app_schedule,
         data={
             "goods_placed_on_uk_market": YesNoChoices.no,

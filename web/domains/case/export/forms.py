@@ -389,22 +389,10 @@ class CFSScheduleFormBase(forms.ModelForm):
         self.fields["biocidal_claim"].help_text = render_to_string(
             "web/domains/case/export/partials/cfs/biocidal_claim_help_text.html"
         )
-        # The biocidal_claim field has an empty choice of "----" as it's not a fundamentally
-        # required field (it's conditional) so we can't have blank=False on the model
-        # to stop it from ever appearing, so we remove it manually now.
-        self.fields["biocidal_claim"].empty_label = None
+        self.fields["biocidal_claim"].choices = YesNoChoices.choices
 
         # the value of this field is determined by the value of the goods_placed_on_uk_market field
         self.fields["goods_export_only"].disabled = True
-
-    def clean(self):
-        cleaned_data = self.cleaned_data
-        biocidal_claim = cleaned_data.get("biocidal_claim", False)
-        legislations = cleaned_data.get("legislations", ProductLegislation.objects.none())
-        if not biocidal_claim and legislations.filter(is_biocidal_claim=True).exists():
-            self.add_error("biocidal_claim", "This field is required.")
-
-        return cleaned_data
 
     def save(self, commit=True):
         # we want to manually set the goods_export_only field based on the goods_placed_on_uk_market field.
@@ -413,6 +401,13 @@ class CFSScheduleFormBase(forms.ModelForm):
             self.instance.goods_export_only = YesNoChoices.yes
         elif self.instance.goods_placed_on_uk_market == YesNoChoices.yes:
             self.instance.goods_export_only = YesNoChoices.no
+
+        # Clear biocidal_claim if we do not have a "is_biocidal_claim" legislation
+        # Have to check cleaned data instead of instance as it's a manytomany field
+        form_legislations = self.cleaned_data["legislations"]
+        if not form_legislations.filter(is_biocidal_claim=True).exists():
+            self.instance.biocidal_claim = None
+
         return super().save(commit=commit)
 
     def get_legislations_queryset(self) -> QuerySet[ProductLegislation]:
@@ -426,7 +421,7 @@ class CFSScheduleFormBase(forms.ModelForm):
         return legislation_qs
 
 
-class EditCFScheduleForm(OptionalFormMixin, CFSScheduleFormBase):
+class EditCFSScheduleForm(OptionalFormMixin, CFSScheduleFormBase):
     """Form used when editing the CFS schedule.
 
     All fields are optional to allow partial record saving.
@@ -465,16 +460,23 @@ class SubmitCFSScheduleForm(CFSScheduleFormBase):
             self.add_error("goods_export_only", "Both of these fields cannot be yes")
 
         # check legislations do not exceed three
-        legislations: QuerySet[ProductLegislation] = self.cleaned_data["legislations"]
+        legislations: QuerySet[ProductLegislation] = cleaned_data["legislations"]
 
         if legislations.count() > 3:
             self.add_error("legislations", "You must enter no more than 3 items.")
 
+        self._add_is_biocidal_errors(legislations)
+
+        self._add_is_biocidal_claim_errors(cleaned_data, legislations)
+
+        return cleaned_data
+
+    def _add_is_biocidal_errors(self, legislations: QuerySet[ProductLegislation]) -> None:
         # Check if legislation is not biocidal but products contain ingredients and product type numbers
         is_biocidal = legislations.filter(is_biocidal=True).exists()
 
         if is_biocidal:
-            return cleaned_data
+            return
 
         if self.instance.products.exclude(active_ingredients=None).count() > 0:
             self.add_error(
@@ -488,7 +490,18 @@ class SubmitCFSScheduleForm(CFSScheduleFormBase):
                 "Only biocidal legislation can contain products with product type numbers. Please edit the products.",
             )
 
-        return cleaned_data
+    def _add_is_biocidal_claim_errors(
+        self, cleaned_data: dict[str, Any], legislations: QuerySet[ProductLegislation]
+    ) -> None:
+        # Valid biocidal_claim values are "yes" and "no" when a biocidal_claim legislation exists.
+        biocidal_claim = cleaned_data.get("biocidal_claim")
+
+        if legislations.filter(is_biocidal_claim=True).exists():
+            if biocidal_claim is None:
+                self.add_error("biocidal_claim", "This field is required.")
+        else:
+            # Clear the value in case it was set before.
+            self.instance.biocidal_claim = None
 
 
 class CFSManufacturerDetailsForm(forms.ModelForm):

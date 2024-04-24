@@ -46,15 +46,15 @@ class TestProductLegislationFilter(TestCase):
 
     def test_name_filter(self):
         results = self.run_filter({"name": "legislation"})
-        assert results.count() == 3
+        assert results.count() == 4
 
     def test_biocidal_filter(self):
         results = self.run_filter({"is_biocidal": False})
-        assert results.count() == 25
+        assert results.count() == 26
 
     def test_biocidal_claim_filter(self):
         results = self.run_filter({"is_biocidal_claim": True})
-        assert results.count() == 1
+        assert results.count() == 2
 
         # Check the test legislation is in the results
         results = results.filter(name="Test Legislation")
@@ -67,11 +67,11 @@ class TestProductLegislationFilter(TestCase):
 
     def test_status_filter(self):
         results = self.run_filter({"status": True})
-        assert results.count() == 27
+        assert results.count() == 28
 
     def test_filter_order(self):
         results = self.run_filter({"name": "legislation"})
-        assert results.count() == 3
+        assert results.count() == 4
         first = results.first()
         last = results.last()
         assert first.name == "Comprehensive legislation"
