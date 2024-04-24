@@ -141,7 +141,7 @@ class CFSScheduleABC(models.Model):
         max_length=10,
         choices=AddressEntryType.choices,
         verbose_name="Address Type",
-        default=AddressEntryType.MANUAL,
+        default=AddressEntryType.SEARCH,
     )
 
     manufacturer_postcode = models.CharField(

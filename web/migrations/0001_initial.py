@@ -380,7 +380,7 @@ class Migration(migrations.Migration):
                     "responsible_person_address_entry_type",
                     models.CharField(
                         choices=[("M", "Manual"), ("S", "Search")],
-                        default="M",
+                        default="S",
                         max_length=10,
                         verbose_name="Address Type",
                     ),
@@ -421,7 +421,7 @@ class Migration(migrations.Migration):
                     "manufacturer_address_entry_type",
                     models.CharField(
                         choices=[("M", "Manual"), ("S", "Search")],
-                        default="M",
+                        default="S",
                         max_length=10,
                         verbose_name="Address Type",
                     ),
@@ -775,7 +775,7 @@ class Migration(migrations.Migration):
                     "manufacturer_address_entry_type",
                     models.CharField(
                         choices=[("M", "Manual"), ("S", "Search")],
-                        default="M",
+                        default="S",
                         max_length=10,
                         verbose_name="Address Type",
                     ),
@@ -970,7 +970,7 @@ class Migration(migrations.Migration):
                     "manufacturer_address_entry_type",
                     models.CharField(
                         choices=[("M", "Manual"), ("S", "Search")],
-                        default="M",
+                        default="S",
                         max_length=10,
                         verbose_name="Address Type",
                     ),
@@ -5988,7 +5988,7 @@ class Migration(migrations.Migration):
                     "responsible_person_address_entry_type",
                     models.CharField(
                         choices=[("M", "Manual"), ("S", "Search")],
-                        default="M",
+                        default="S",
                         max_length=10,
                         verbose_name="Address Type",
                     ),
@@ -6029,7 +6029,7 @@ class Migration(migrations.Migration):
                     "manufacturer_address_entry_type",
                     models.CharField(
                         choices=[("M", "Manual"), ("S", "Search")],
-                        default="M",
+                        default="S",
                         max_length=10,
                         verbose_name="Address Type",
                     ),
