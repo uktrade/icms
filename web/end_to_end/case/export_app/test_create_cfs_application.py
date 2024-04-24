@@ -44,7 +44,6 @@ def cfs_create(page: Page) -> int:
     ).click()
     page.get_by_label("The products are currently sold on the UK market").check()
     page.locator("#id_goods_placed_on_uk_market").get_by_text("Yes").click()
-    page.locator("#id_goods_export_only").get_by_text("No").click()
     page.locator("#id_any_raw_materials").get_by_text("Yes").click()
     page.get_by_label("End Use or Final Product").click()
     page.get_by_label("End Use or Final Product").fill("End Use or Final Product value")

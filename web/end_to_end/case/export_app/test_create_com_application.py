@@ -36,12 +36,8 @@ def com_create(page: Page) -> int:
     page.get_by_role("option", name="Albania").click()
     page.get_by_role("searchbox").click()
     page.get_by_role("option", name="Algeria").click()
-    page.get_by_role("combobox", name="Is the pesticide on free sale in the UK?").select_option(
-        "false"
-    )
-    page.get_by_role(
-        "combobox", name="Is the applicant company the manufacturer of the pesticide?"
-    ).select_option("true")
+    page.locator("#id_is_pesticide_on_free_sale_uk").get_by_text("No").click()
+    page.locator("#id_is_manufacturer").get_by_text("Yes").click()
     page.get_by_label("Product name").click()
     page.get_by_label("Product name").fill("Product name value")
     page.get_by_label("Chemical name").click()

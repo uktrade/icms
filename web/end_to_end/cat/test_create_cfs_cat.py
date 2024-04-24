@@ -60,7 +60,6 @@ def test_can_create_cfs_cat(pages: conftest.UserPages) -> None:
         ).click()
         page.get_by_label("The products are currently").check()
         page.locator("#id_goods_placed_on_uk_market_0").check()
-        page.locator("#id_goods_export_only_1").check()
         page.locator("#id_any_raw_materials_0").check()
         page.get_by_label("End Use or Final Product").click()
         page.get_by_label("End Use or Final Product").fill("Test End Use or Final Product")
