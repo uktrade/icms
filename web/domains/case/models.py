@@ -288,10 +288,6 @@ class CaseEmail(models.Model):
     sent_datetime = models.DateTimeField(null=True)
     closed_datetime = models.DateTimeField(null=True)
 
-    @property
-    def is_draft(self):
-        return self.status == self.Status.DRAFT
-
 
 class DocumentPackBase(models.Model):
     """Base class for Import Licences and Export Certificates"""

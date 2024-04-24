@@ -37,22 +37,21 @@
     <div class="container">
       <div class="row">
         <div class="three columns"></div>
-        <div class="eight columns">
+        <div class="six columns">
           <ul class="menu-out flow-across">
             <li>
-              <input
-                type="submit"
-                value="Save"
-                class="primary-button button" />
-
               <input
                 type="submit"
                 name="send"
                 value="Send"
                 class="primary-button button" />
             </li>
+            <li>
+              <a href="{{ icms_url('case:manage-case-emails', kwargs={'application_pk': process.pk, 'case_type': 'export'}) }}" class="button">Cancel</a>
+            </li>
           </ul>
         </div>
+        <div class="three columns"></div>
       </div>
     </div>
   {% endcall %}

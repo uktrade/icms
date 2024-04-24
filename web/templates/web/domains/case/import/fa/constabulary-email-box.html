@@ -1,29 +1,10 @@
 <fieldset>
   <legend class="bold">Constabulary Email</legend>
-
-  {% if object.is_draft %}
-    <form
-      method="post"
-      action="{{ icms_url('import:fa:archive-constabulary-email', kwargs={"application_pk": process.pk, "constabulary_email_pk": object.pk}) }}">
-      {{ csrf_input }}
-      <a
-        class="button small-button"
-        href="{{ icms_url('import:fa:edit-constabulary-email', kwargs={"application_pk": process.pk, "constabulary_email_pk": object.pk}) }}">
-        Edit/Send
-      </a>
-      <button
-        type="submit"
-        class="button small-button">
-        Delete
-      </button>
-    </form>
-  {% else %}
     <a
       class="button small-button"
       href="{{ icms_url('import:fa:add-response-constabulary-email', kwargs={"application_pk": process.pk, "constabulary_email_pk": object.pk}) }}">
       Record Response
     </a>
-  {% endif %}
 
   <div class="row">
     <div class="three columns">

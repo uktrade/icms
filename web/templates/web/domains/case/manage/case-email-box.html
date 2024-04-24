@@ -2,34 +2,11 @@
   <legend class="bold">Email</legend>
 
   {% if not readonly_view %}
-    {% if object.is_draft %}
-
-      <ul class="menu-out flow-across">
-        <li>
-          <a
-            class="button small-button icon-pencil"
-            href="{{ icms_url('case:edit-case-email', kwargs={'application_pk': process.pk, 'case_email_pk': object.pk, 'case_type': case_type}) }}">
-            Edit
-          </a>
-        </li>
-        <li>
-          <form
-            method="post"
-            action="{{ icms_url('case:archive-case-email', kwargs={'application_pk': process.pk, 'case_email_pk': object.pk, 'case_type': case_type}) }}">
-            {{ csrf_input }}
-            <button type="submit" class="button small-button icon-bin">
-              Delete
-            </button>
-          </form>
-        </li>
-      </ul>
-    {% else %}
-      <a
-        class="button small-button icon-pencil"
-        href="{{ icms_url('case:add-response-case-email', kwargs={'application_pk': process.pk, 'case_email_pk': object.pk, 'case_type': case_type}) }}">
-        {% if object.response %}Edit Response{% else %}Record Response{% endif %}
-      </a>
-    {% endif %}
+    <a
+      class="button small-button icon-pencil"
+      href="{{ icms_url('case:add-response-case-email', kwargs={'application_pk': process.pk, 'case_email_pk': object.pk, 'case_type': case_type}) }}">
+      Record Response
+    </a>
   {% endif %}
 
   <div class="row mt-1">
@@ -182,7 +159,7 @@
     </div>
     <div class="three columns"></div>
   </div>
-  
+
   {% if object.response %}
     <div class="row mt-1">
       <div class="three columns">

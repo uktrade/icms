@@ -113,27 +113,10 @@
             {% endif %}
           </td>
           <td>
-            {% if constabulary_email.is_draft %}
-              <a
-                href="{{ icms_url('import:fa:edit-constabulary-email', kwargs={"application_pk": process.pk, "constabulary_email_pk": constabulary_email.pk}) }}">
-                Edit/Send
-              </a>
-              <form
-                method="post"
-                action="{{ icms_url('import:fa:archive-constabulary-email', kwargs={"application_pk": process.pk, "constabulary_email_pk": constabulary_email.pk}) }}">
-                {{ csrf_input }}
-                <button
-                  type="submit"
-                  class="button link-button-no-padding">
-                  Delete
-                </button>
-              </form>
-            {% else %}
-              <a
-                href="{{ icms_url('import:fa:add-response-constabulary-email', kwargs={"application_pk": process.pk, "constabulary_email_pk": constabulary_email.pk}) }}">
-                Record Response
-              </a>
-            {% endif %}
+            <a
+              href="{{ icms_url('import:fa:add-response-constabulary-email', kwargs={"application_pk": process.pk, "constabulary_email_pk": constabulary_email.pk}) }}">
+              Record Response
+            </a>
           </td>
         </tr>
       {% endfor %}

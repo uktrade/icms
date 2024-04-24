@@ -74,12 +74,11 @@ class TestViewEmail(AuthTestCase):
             follow=True,
         )
         assert resp.status_code == 200
-        assert resp.context["form"].errors == {}
         case_email.refresh_from_db()
         assert case_email.subject == "TEST EMAIL"
         assert case_email.body == "TEST EMAIL BODY"
         assert case_email.to == self.importer_user.email
-        assert mock_send_case_email.called is False
+        assert mock_send_case_email.called is True
 
     @mock.patch("web.domains.case.views.views_email.send_case_email")
     def test_edit_case_email_and_send(self, mock_send_case_email, fa_dfl_app_submitted):
@@ -93,7 +92,6 @@ class TestViewEmail(AuthTestCase):
                 "subject": "TEST EMAIL",
                 "body": "TEST EMAIL BODY",
                 "to": self.importer_user.email,
-                "send": True,
             },
             follow=True,
         )

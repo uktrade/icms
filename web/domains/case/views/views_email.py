@@ -150,25 +150,12 @@ def edit_case_email(
             )
             if form.is_valid():
                 case_email = form.save()
-
-                if "send" in request.POST:
-                    send_case_email(case_email)
-
-                    return redirect(
-                        reverse(
-                            "case:manage-case-emails",
-                            kwargs={"application_pk": application_pk, "case_type": case_type},
-                        )
-                    )
+                send_case_email(case_email)
 
                 return redirect(
                     reverse(
-                        "case:edit-case-email",
-                        kwargs={
-                            "application_pk": application_pk,
-                            "case_email_pk": case_email_pk,
-                            "case_type": case_type,
-                        },
+                        "case:manage-case-emails",
+                        kwargs={"application_pk": application_pk, "case_type": case_type},
                     )
                 )
         else:
