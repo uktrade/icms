@@ -44,7 +44,7 @@ class CertificateOfGoodManufacturingPracticeApplicationABC(models.Model):
         max_length=10,
         choices=AddressEntryType.choices,
         verbose_name="Address Type",
-        default=AddressEntryType.MANUAL,
+        default=AddressEntryType.SEARCH,
     )
 
     responsible_person_postcode = models.CharField(
@@ -82,7 +82,7 @@ class CertificateOfGoodManufacturingPracticeApplicationABC(models.Model):
         max_length=10,
         choices=AddressEntryType.choices,
         verbose_name="Address Type",
-        default=AddressEntryType.MANUAL,
+        default=AddressEntryType.SEARCH,
     )
 
     manufacturer_postcode = models.CharField(
