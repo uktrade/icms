@@ -174,6 +174,12 @@ def create_document_pack_on_error(
     capture_message(f"create_case_document_pack Task {request.id!r} raised error: {exc!r}")
     capture_exception()
 
+    update_application_on_error(application_pk, user_pk)
+
+
+def update_application_on_error(application_pk: int, user_pk: int) -> None:
+    """Called in create_document_pack_on_error, extracted to function to test."""
+
     with transaction.atomic():
         # Transition application on to correct status
         application = Process.objects.get(pk=application_pk)
