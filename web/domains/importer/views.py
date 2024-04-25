@@ -105,7 +105,6 @@ class ImporterListAdminView(ModelFilterView):
     default_filters = {"status": True}
 
     model = Importer
-    # TODO: ICMSLST-2093 Fix duplicate rows being returned.
     queryset = Importer.objects.select_related("main_importer")
     page_title = "Maintain Importers"
     permission_required = Perms.sys.importer_admin
@@ -162,7 +161,6 @@ class ImporterListRegulatorView(ModelFilterView):
 
     # ListView config
     model = Importer
-    # TODO: ICMSLST-2093 Fix duplicate rows being returned.
     queryset = Importer.objects.select_related("main_importer")
     template_name = "web/domains/importer/reg-list.html"
 

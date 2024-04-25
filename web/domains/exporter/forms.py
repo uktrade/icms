@@ -2,6 +2,7 @@ from typing import Any
 
 from django import forms
 from django.core.exceptions import ValidationError
+from django.db.models import QuerySet
 from django_filters import CharFilter, ChoiceFilter, FilterSet
 from guardian.forms import UserObjectPermissionsForm
 
@@ -14,6 +15,13 @@ from .models import Exporter
 
 
 class ExporterFilter(FilterSet):
+    class AgentCharFilter(CharFilter):
+        def filter(self, qs: QuerySet[Exporter], value: str) -> QuerySet[Exporter]:
+            if not value:
+                return qs
+
+            return super().filter(qs, value).filter(agents__is_active=True)
+
     status = ChoiceFilter(
         field_name="is_active",
         choices=((True, "Current"), (False, "Archived")),
@@ -22,16 +30,18 @@ class ExporterFilter(FilterSet):
         empty_label="Any",
     )
     exporter_name = CharFilter(field_name="name", lookup_expr="icontains", label="Exporter Name")
-    agent_name = CharFilter(field_name="agents__name", lookup_expr="icontains", label="Agent Name")
+    agent_name = AgentCharFilter(
+        field_name="agents__name", lookup_expr="icontains", label="Agent Name"
+    )
 
     class Meta:
         model = Exporter
         fields: list[Any] = []
 
-    # Filter base queryset to only get exporters that are not agents.
     @property
-    def qs(self):
-        return super().qs.filter(main_exporter__isnull=True)
+    def qs(self) -> QuerySet[Exporter]:
+        # Filter base queryset to only get exporters that are not agents.
+        return super().qs.filter(main_exporter__isnull=True).distinct()
 
 
 class ExporterForm(forms.ModelForm):
