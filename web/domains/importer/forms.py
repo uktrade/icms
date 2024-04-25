@@ -2,7 +2,7 @@ from typing import Any
 
 from django import forms
 from django.core.exceptions import ValidationError
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from django_filters import CharFilter, ChoiceFilter, FilterSet
 from guardian.forms import UserObjectPermissionsForm
 
@@ -140,6 +140,23 @@ class ImporterOrganisationNonILBForm(ImporterOrganisationForm):
 
 
 class ImporterFilter(FilterSet):
+    class AgentCharFilter(CharFilter):
+        def filter(self, qs: QuerySet[Importer], value: str) -> QuerySet[Importer]:
+            if not value:
+                return qs
+
+            return qs.filter(
+                # Filter by the agent name
+                (
+                    Q(agents__name__icontains=value)
+                    | Q(agents__user__title__icontains=value)
+                    | Q(agents__user__first_name__icontains=value)
+                    | Q(agents__user__last_name__icontains=value)
+                ),
+                # Only include active.
+                agents__is_active=True,
+            )
+
     importer_entity_type = ChoiceFilter(
         field_name="type",
         choices=Importer.TYPES,
@@ -156,39 +173,22 @@ class ImporterFilter(FilterSet):
     )
 
     name = CharFilter(lookup_expr="icontains", label="Importer Name", method="filter_importer_name")
+    agent_name = AgentCharFilter(lookup_expr="icontains", label="Agent Name")
 
-    agent_name = CharFilter(lookup_expr="icontains", label="Agent Name", method="filter_agent_name")
-
-    # Filter base queryset to only get importers that are not agents.
     @property
-    def qs(self):
-        return super().qs.filter(main_importer__isnull=True)
+    def qs(self) -> QuerySet[Importer]:
+        # Filter base queryset to only get importers that are not agents.
+        return super().qs.filter(main_importer__isnull=True).distinct()
 
     def filter_importer_name(self, queryset, name, value):
         if not value:
             return queryset
 
-        # TODO: ICMSLST-2093 Fix duplicate rows being returned.
-        #  Filter organisation name for organisations and title, first_name, last_name
-        #  for individual importers
         return queryset.filter(
             Q(name__icontains=value)
             | Q(user__title__icontains=value)
             | Q(user__first_name__icontains=value)
             | Q(user__last_name__icontains=value)
-        )
-
-    def filter_agent_name(self, queryset, name, value):
-        if not value:
-            return queryset
-
-        #  Filter agent name for organisations and title, first_name, last_name
-        #  for individual importer agents
-        return queryset.filter(
-            Q(agents__name__icontains=value)
-            | Q(agents__user__title__icontains=value)
-            | Q(agents__user__first_name__icontains=value)
-            | Q(agents__user__last_name__icontains=value)
         )
 
     class Meta:
