@@ -70,8 +70,8 @@ def test_can_create_cfs_cat(pages: conftest.UserPages) -> None:
         # Add the manufacturer details to schedule 1
         page.get_by_role("link", name="Add Manufacturer").click()
         page.get_by_label("Name").click()
-        page.get_by_label("Name").press("Shift+CapsLock")
         page.get_by_label("Name").fill("Test Manufacturer")
+        page.get_by_text("Manual").click()
         page.get_by_label("Postcode").click()
         page.get_by_label("Postcode").fill("s111S")
         page.get_by_label("Address\n        \n          optional").click()
@@ -202,8 +202,8 @@ def test_can_create_cfs_cat_biocidal_schdedule(pages: conftest.UserPages) -> Non
         # Add the manufacturer details to schedule 1
         page.get_by_role("link", name="Add Manufacturer").click()
         page.get_by_label("Name").click()
-        page.get_by_label("Name").press("Shift+CapsLock")
         page.get_by_label("Name").fill("Test Manufacturer")
+        page.get_by_text("Manual").click()
         page.get_by_label("Postcode").click()
         page.get_by_label("Postcode").fill("s111S")
         page.get_by_label("Address\n        \n          optional").click()

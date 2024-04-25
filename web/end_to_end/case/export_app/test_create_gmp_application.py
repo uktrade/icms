@@ -36,6 +36,7 @@ def gmp_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.locator("#id_is_responsible_person_0").check()
     page.locator("#id_responsible_person_name").click()
     page.locator("#id_responsible_person_name").fill("Responsible person name")
+    page.locator("#id_responsible_person_address_entry_type").get_by_text("Manual").click()
     page.locator("#id_responsible_person_postcode").click()
     page.locator("#id_responsible_person_postcode").fill("S19ZZ")  # /PS-IGNORE
     page.locator("#id_responsible_person_address").click()
@@ -44,6 +45,7 @@ def gmp_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.locator("#id_is_manufacturer_0").check()
     page.locator("#id_manufacturer_name").click()
     page.locator("#id_manufacturer_name").fill("Manufacturer name")
+    page.locator("#id_manufacturer_address_entry_type").get_by_text("Manual").click()
     page.locator("#id_manufacturer_postcode").click()
     page.locator("#id_manufacturer_postcode").fill("S12ZZ")  # /PS-IGNORE
     page.locator("#id_manufacturer_address").click()
