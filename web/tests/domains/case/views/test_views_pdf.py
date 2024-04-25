@@ -25,8 +25,8 @@ def test_fa_oil_pre_sign_licence_view(fa_oil_app_processing, ilb_admin_client):
     _test_licence_pre_sign(fa_oil_app_processing, ilb_admin_client)
 
 
-def test_fa_dfl_pre_sign_licence_view(fa_dfl_app_processing, ilb_admin_client):
-    _test_licence_pre_sign(fa_dfl_app_processing, ilb_admin_client)
+def test_fa_dfl_pre_sign_licence_view(fa_dfl_app_pre_sign, ilb_admin_client):
+    _test_licence_pre_sign(fa_dfl_app_pre_sign, ilb_admin_client)
 
 
 def test_fa_sil_pre_sign_licence_view(fa_sil_app_processing, ilb_admin_client):

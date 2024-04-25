@@ -511,7 +511,7 @@ def fa_dfl_app_submitted(importer_client, importer, office, importer_one_contact
 
 
 @pytest.fixture()
-def fa_dfl_app_processing(
+def fa_dfl_app_pre_sign(
     importer_client, importer, office, importer_one_contact, ilb_admin_user, ilb_admin_client
 ) -> DFLApplication:
     app = create_in_progress_fa_dfl_app(importer_client, importer, office, importer_one_contact)
@@ -815,12 +815,21 @@ def gmp_app_submitted(
 
 
 @pytest.fixture()
-def cfs_app_submitted(
+def cfs_app_in_progress(
     exporter_client, exporter, exporter_office, exporter_one_contact
 ) -> CertificateOfFreeSaleApplication:
     app = create_in_progress_cfs_app(
         exporter_client, exporter, exporter_office, exporter_one_contact
     )
+    case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
+    case_progress.check_expected_task(app, Task.TaskType.PREPARE)
+
+    return app
+
+
+@pytest.fixture()
+def cfs_app_submitted(exporter_client, cfs_app_in_progress) -> CertificateOfFreeSaleApplication:
+    app = cfs_app_in_progress
     submit_app(client=exporter_client, view_name="export:cfs-submit", app_pk=app.pk)
 
     app.refresh_from_db()
@@ -832,14 +841,32 @@ def cfs_app_submitted(
 
 
 @pytest.fixture()
-def cfs_app_in_progress(
-    exporter_client, exporter, exporter_office, exporter_one_contact
-) -> CertificateOfFreeSaleApplication:
-    app = create_in_progress_cfs_app(
-        exporter_client, exporter, exporter_office, exporter_one_contact
-    )
-    case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
-    case_progress.check_expected_task(app, Task.TaskType.PREPARE)
+def cfs_app_processing(ilb_admin_client, cfs_app_submitted) -> CertificateOfFreeSaleApplication:
+    app = cfs_app_submitted
+
+    # Taking ownership and begin processing
+    ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
+    app.refresh_from_db()
+
+    app.decision = app.APPROVE
+    app.save()
+
+    case_progress.check_expected_status(app, [ImpExpStatus.PROCESSING])
+    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
+
+    return app
+
+
+@pytest.fixture()
+def cfs_app_pre_sign(ilb_admin_client, cfs_app_processing) -> CertificateOfFreeSaleApplication:
+    app = cfs_app_processing
+
+    # Start authorisation
+    ilb_admin_client.post(CaseURLS.start_authorisation(app.pk, "export"))
+    app.refresh_from_db()
+
+    case_progress.check_expected_status(app, [ImpExpStatus.PROCESSING])
+    case_progress.check_expected_task(app, Task.TaskType.AUTHORISE)
 
     return app
 
@@ -1214,19 +1241,9 @@ def completed_sanctions_app(sanctions_app_submitted, ilb_admin_client, ilb_admin
 
 
 @pytest.fixture
-def completed_cfs_app(cfs_app_submitted, ilb_admin_client, ilb_admin_user):
+def completed_cfs_app(cfs_app_pre_sign, ilb_admin_client, ilb_admin_user):
     """A Certificate of Free Sale (export) application that has been approved."""
-    app = cfs_app_submitted
-
-    ilb_admin_client.post(CaseURLS.take_ownership(app.pk, "export"))
-
-    app.refresh_from_db()
-    app.decision = app.APPROVE
-    app.save()
-
-    # Now start authorisation
-    response = ilb_admin_client.post(CaseURLS.start_authorisation(app.pk, "export"))
-    assertRedirects(response, reverse("workbasket"), 302)
+    app = cfs_app_pre_sign
 
     app.refresh_from_db()
     app.status = ImpExpStatus.COMPLETED
