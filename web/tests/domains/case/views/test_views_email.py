@@ -1,9 +1,11 @@
 from unittest import mock
 
 from django.core.handlers.wsgi import WSGIRequest
+from django.urls import reverse
 from django.utils import timezone
 from pytest_django.asserts import assertContains, assertRedirects, assertTemplateUsed
 
+from web.domains.case.forms import CaseEmailResponseForm
 from web.models import CaseEmail as CaseEmailModel
 from web.tests.auth import AuthTestCase
 from web.tests.helpers import CaseURLS
@@ -135,3 +137,82 @@ class TestViewEmail(AuthTestCase):
         case_email.refresh_from_db()
         assert case_email.status == CaseEmailModel.Status.CLOSED
         assert case_email.response == "Email actioned"
+
+    def test_all_response_forms_shown(self, cfs_app_submitted):
+        app = cfs_app_submitted
+        self.ilb_admin_client.post(CaseURLS.take_ownership(app.pk, case_type="export"))
+
+        self.ilb_admin_client.post(CaseURLS.create_case_emails(app.pk, case_type="export"))
+        self.ilb_admin_client.post(CaseURLS.create_case_emails(app.pk, case_type="export"))
+        response = self.ilb_admin_client.get(CaseURLS.manage_case_emails(app.pk, "export"))
+
+        assert response.status_code == 200
+        assertTemplateUsed(response, "web/domains/case/manage/case-emails.html")
+
+        case_emails = response.context["case_emails"]
+        assert case_emails.count() == 2
+
+        # assert that two forms are in the response body
+        url = reverse(
+            "case:add-response-case-email",
+            kwargs={
+                "application_pk": app.pk,
+                "case_email_pk": case_emails[0].pk,
+                "case_type": "export",
+            },
+        )
+        form_finder = f'action="{url}"'
+        assert form_finder in response.content.decode()
+
+        url = reverse(
+            "case:add-response-case-email",
+            kwargs={
+                "application_pk": app.pk,
+                "case_email_pk": case_emails[1].pk,
+                "case_type": "export",
+            },
+        )
+        form_finder = f'action="{url}"'
+        assert form_finder in response.content.decode()
+
+        assert isinstance(response.context["record_response_form"], CaseEmailResponseForm)
+
+    def test_responded_emails_not_shown(self, cfs_app_submitted):
+        app = cfs_app_submitted
+        self.ilb_admin_client.post(CaseURLS.take_ownership(app.pk, case_type="export"))
+
+        self.ilb_admin_client.post(CaseURLS.create_case_emails(app.pk, case_type="export"))
+        self.ilb_admin_client.post(CaseURLS.create_case_emails(app.pk, case_type="export"))
+
+        # now we mark one of them as responded to and confirm the form to respond no longer appears
+        completed_case_email = CaseEmailModel.objects.last()
+        completed_case_email.response = "test"
+        completed_case_email.save()
+
+        response = self.ilb_admin_client.get(CaseURLS.manage_case_emails(app.pk, "export"))
+        case_emails = response.context["case_emails"]
+        assert case_emails.count() == 2
+
+        url = reverse(
+            "case:add-response-case-email",
+            kwargs={
+                "application_pk": app.pk,
+                "case_email_pk": completed_case_email.pk,
+                "case_type": "export",
+            },
+        )
+        form_finder = f'action="{url}"'
+        assert form_finder not in response.content.decode()
+
+        url = reverse(
+            "case:add-response-case-email",
+            kwargs={
+                "application_pk": app.pk,
+                "case_email_pk": CaseEmailModel.objects.exclude(pk=completed_case_email.pk)
+                .get()
+                .pk,
+                "case_type": "export",
+            },
+        )
+        form_finder = f'action="{url}"'
+        assert form_finder in response.content.decode()
