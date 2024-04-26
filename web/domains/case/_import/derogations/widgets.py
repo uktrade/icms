@@ -2,8 +2,8 @@ from typing import Any
 
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
-from django_select2.forms import ModelSelect2Widget
 
+from web.forms.widgets import ICMSModelSelect2Widget
 from web.models import Commodity, Country, ImportApplicationType
 from web.utils.commodity import (
     get_usage_commodities,
@@ -12,7 +12,7 @@ from web.utils.commodity import (
 )
 
 
-class DerogationCountryOfOriginSelect(ModelSelect2Widget):
+class DerogationCountryOfOriginSelect(ICMSModelSelect2Widget):
     queryset = Country.objects.none()
 
     search_fields = ["name__icontains"]
@@ -31,7 +31,7 @@ class DerogationCountryOfOriginSelect(ModelSelect2Widget):
         return attrs
 
 
-class DerogationCommoditySelect(ModelSelect2Widget):
+class DerogationCommoditySelect(ICMSModelSelect2Widget):
     queryset = Commodity.objects.none()
 
     # The value entered by the user is used to search the commodity code

@@ -1,13 +1,13 @@
 from typing import Any
 
 from django.db.models.query import QuerySet
-from django_select2 import forms as s2forms
 
+from web.forms.widgets import ICMSModelSelect2MultipleWidget, ICMSModelSelect2Widget
 from web.models import Country, ImportApplicationType
 from web.types import AuthenticatedHttpRequest
 
 
-class CommodityWidget(s2forms.ModelSelect2MultipleWidget):
+class CommodityWidget(ICMSModelSelect2MultipleWidget):
     # The value entered by the user is used to search the commodity code
     search_fields = ["commodity_code__contains"]
 
@@ -28,7 +28,7 @@ class CommodityGroupCommodityWidget(CommodityWidget):
     dependent_fields = {"commodity_type": "commodity_type"}
 
 
-class UsageCountryWidget(s2forms.ModelSelect2Widget):
+class UsageCountryWidget(ICMSModelSelect2Widget):
     """Used when creating usage records"""
 
     queryset = Country.objects.all().filter(is_active=True)

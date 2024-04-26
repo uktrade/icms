@@ -2,11 +2,15 @@ from http import HTTPStatus
 from unittest import mock
 
 import pytest
+from django.http import QueryDict
 from django.test import override_settings
 from django.urls import reverse, reverse_lazy
 from pytest_django.asserts import assertRedirects
 
+from web.domains.case.forms_search import ImportSearchForm
+from web.domains.contacts.widgets import ContactWidget
 from web.one_login.utils import OneLoginConfig
+from web.tests.auth import AuthTestCase
 from web.views import views
 
 
@@ -178,3 +182,38 @@ class TestHandler403CaptureProcessErrorView:  # /PS-IGNORE
 
         # capture_exception called as a ProcessError was raised
         mock_capture_exception.assert_called_once()
+
+
+class TestLoginRequiredSelect2AutoResponseView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
+        # Query the search page to load the reassignment_user field in to the django_select2 cache.
+        response = self.ilb_admin_client.get(
+            reverse("case:search", kwargs={"case_type": "import", "mode": "standard"})
+        )
+        search_form: ImportSearchForm = response.context["form"]
+        contact_widget: ContactWidget = search_form.fields["reassignment_user"].widget
+
+        qd = QueryDict(mutable=True)
+        qd.update({"term": "ilb_admin_user", "field_id": contact_widget.field_id})
+        self.url = reverse("login-required-select2-view") + f"?{qd.urlencode()}"
+
+    def test_can_search_when_authenticated(self):
+        response = self.ilb_admin_client.get(self.url)
+
+        assert response.status_code == HTTPStatus.OK
+        expected = {
+            "more": False,
+            "results": [
+                {
+                    "id": self.ilb_admin_user.id,
+                    "text": f"{self.ilb_admin_user.full_name} - {self.ilb_admin_user.email}",
+                }
+            ],
+        }
+        assert expected == response.json()
+
+    def test_can_not_search_when_not_authenticated(self):
+        response = self.anonymous_client.get(self.url)
+
+        assert response.status_code == HTTPStatus.FORBIDDEN

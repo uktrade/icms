@@ -2,14 +2,14 @@ from typing import Any
 
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
-from django_select2 import forms as s2forms
 
+from web.forms.widgets import ICMSModelSelect2Widget
 from web.models import Commodity, CommodityGroup, Country, ImportApplicationType
 from web.utils.commodity import get_usage_commodity_groups, get_usage_records
 from web.utils.sort import sort_integer_strings
 
 
-class TextilesCategoryCommodityGroupWidget(s2forms.ModelSelect2Widget):
+class TextilesCategoryCommodityGroupWidget(ICMSModelSelect2Widget):
     queryset = CommodityGroup.objects.filter(commodity_type__type_code="TEXTILES")
 
     # The value entered by the user is used to search the commodity code
@@ -47,7 +47,7 @@ class TextilesCategoryCommodityGroupWidget(s2forms.ModelSelect2Widget):
         return sort_integer_strings(commodity_groups, "group_code")
 
 
-class TextilesCommodityWidget(s2forms.ModelSelect2Widget):
+class TextilesCommodityWidget(ICMSModelSelect2Widget):
     queryset = Commodity.objects.filter(commoditygroup__commodity_type__type_code="TEXTILES")
 
     # The value entered by the user is used to search the commodity code

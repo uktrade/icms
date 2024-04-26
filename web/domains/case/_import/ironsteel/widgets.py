@@ -2,13 +2,13 @@ from typing import Any
 
 from django.db.models.query import QuerySet
 from django.http import HttpRequest
-from django_select2 import forms as s2forms
 
+from web.forms.widgets import ICMSModelSelect2Widget
 from web.models import Commodity, CommodityGroup, Country, ImportApplicationType
 from web.utils.commodity import get_usage_commodities, get_usage_records
 
 
-class IronSteelCommodityGroupSelect(s2forms.ModelSelect2Widget):
+class IronSteelCommodityGroupSelect(ICMSModelSelect2Widget):
     queryset = CommodityGroup.objects.filter(commodity_type__type_code="IRON_STEEL")
 
     # The value entered by the user is used to search the commodity code
@@ -52,7 +52,7 @@ class IronSteelCommodityGroupSelect(s2forms.ModelSelect2Widget):
         return queryset.filter(usages__in=usage_records).order_by("pk")
 
 
-class IronSteelCommoditySelect(s2forms.ModelSelect2Widget):
+class IronSteelCommoditySelect(ICMSModelSelect2Widget):
     queryset = Commodity.objects.none()
 
     # The value entered by the user is used to search the commodity code

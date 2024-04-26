@@ -1,7 +1,7 @@
-from django_select2 import forms as s2forms
+from web.forms.widgets import ICMSModelSelect2Widget
 
 
-class ExporterWidget(s2forms.ModelSelect2Widget):
+class ExporterWidget(ICMSModelSelect2Widget):
     search_fields = [
         "name__icontains",
         "registered_number__icontains",

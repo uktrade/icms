@@ -1,4 +1,5 @@
 import django.forms.widgets as widgets
+from django_select2.forms import ModelSelect2MultipleWidget, ModelSelect2Widget
 
 
 class DateInput(widgets.DateInput):
@@ -69,3 +70,21 @@ class JoditTextArea(widgets.Textarea):
         attrs["class"] = "icms-jodit-editor"
 
         super().__init__(attrs)
+
+
+class LoginRequiredSelect2WidgetMixin:
+    def __init__(self, *args, **kwargs):
+        kwargs["data_view"] = "login-required-select2-view"
+        super().__init__(*args, **kwargs)
+
+
+class ICMSModelSelect2Widget(LoginRequiredSelect2WidgetMixin, ModelSelect2Widget):
+    """ModelSelect2Widget requiring a user to be logged in to IMCS."""
+
+    ...
+
+
+class ICMSModelSelect2MultipleWidget(ModelSelect2MultipleWidget):
+    """ModelSelect2MultipleWidget requiring a user to be logged in to IMCS."""
+
+    ...

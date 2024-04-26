@@ -4,6 +4,7 @@ from django.urls import include, path, register_converter
 from web import converters
 from web.registration.views import LegacyAccountRecoveryView
 from web.views import (
+    LoginRequiredSelect2AutoResponseView,
     RedirectBaseDomainView,
     cookie_consent_view,
     health_check,
@@ -70,6 +71,11 @@ urlpatterns = [
     #
     # Django select2 urls
     path("select2/", include("django_select2.urls")),
+    path(
+        "django-select2/fields/authenticated-auto.json",
+        LoginRequiredSelect2AutoResponseView.as_view(),
+        name="login-required-select2-view",
+    ),
     # Cookie consent URLs
     path("cookie-consent/", cookie_consent_view, name="cookie-consent"),
 ]

@@ -20,6 +20,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 from django_filters import FilterSet
+from django_select2.views import AutoResponseView
 
 from web.flow.errors import ProcessError
 from web.one_login.utils import OneLoginConfig
@@ -196,6 +197,12 @@ def handler403_capture_process_error_view(
         capture_exception()
 
     return permission_denied(request, exception)
+
+
+class LoginRequiredSelect2AutoResponseView(LoginRequiredMixin, AutoResponseView):
+    """Login required Django Select 2 AutoResponseView."""
+
+    raise_exception = True
 
 
 class ModelFilterView(

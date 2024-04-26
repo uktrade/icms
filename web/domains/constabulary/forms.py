@@ -3,7 +3,8 @@ from typing import Any
 from django.forms import ModelChoiceField, ModelForm, ValidationError
 from django.forms.widgets import CheckboxInput, Select
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter, FilterSet
-from django_select2.forms import ModelSelect2Widget
+
+from web.forms.widgets import ICMSModelSelect2Widget
 
 from .models import Constabulary
 
@@ -43,7 +44,7 @@ class ConstabulariesFilter(FilterSet):
         form.fields["name"] = ModelChoiceField(
             queryset=Constabulary.objects.all(),
             label="Constabulary Name",
-            widget=ModelSelect2Widget(
+            widget=ICMSModelSelect2Widget(
                 attrs={
                     "data-minimum-input-length": 0,
                     "data-placeholder": "-- Select Constabulary Name",
