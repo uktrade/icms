@@ -2,13 +2,12 @@ from typing import Any
 
 from django import forms
 from django.utils import timezone
-from django_select2.forms import ModelSelect2Widget
 from guardian.shortcuts import get_objects_for_user
 
 from web.domains.template.context import CoverLetterTemplateContext
 from web.domains.template.utils import find_invalid_placeholders
 from web.forms.fields import JqueryDateField
-from web.forms.widgets import JoditTextArea
+from web.forms.widgets import ICMSModelSelect2Widget, JoditTextArea
 from web.models import (
     EndorsementImportApplication,
     ImportApplication,
@@ -26,7 +25,7 @@ class CreateImportApplicationForm(forms.Form):
     importer = forms.ModelChoiceField(
         queryset=Importer.objects.none(),
         label="Main Importer",
-        widget=ModelSelect2Widget(
+        widget=ICMSModelSelect2Widget(
             attrs={
                 "data-minimum-input-length": 0,
                 "data-placeholder": "-- Select Importer",
@@ -41,7 +40,7 @@ class CreateImportApplicationForm(forms.Form):
     importer_office = forms.ModelChoiceField(
         queryset=Office.objects.none(),
         label="Importer Office",
-        widget=ModelSelect2Widget(
+        widget=ICMSModelSelect2Widget(
             attrs={
                 "data-minimum-input-length": 0,
                 "data-placeholder": "-- Select Office",
@@ -65,7 +64,7 @@ class CreateImportApplicationForm(forms.Form):
         required=False,
         queryset=Importer.objects.none(),
         label="Agent of Main Importer",
-        widget=ModelSelect2Widget(
+        widget=ICMSModelSelect2Widget(
             attrs={
                 "data-minimum-input-length": 0,
                 "data-placeholder": "-- Select Agent",
@@ -80,7 +79,7 @@ class CreateImportApplicationForm(forms.Form):
         required=False,
         queryset=Office.objects.none(),
         label="Agent Office",
-        widget=ModelSelect2Widget(
+        widget=ICMSModelSelect2Widget(
             attrs={
                 "data-minimum-input-length": 0,
                 "data-placeholder": "-- Select Office",

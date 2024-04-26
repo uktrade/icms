@@ -6,13 +6,14 @@ from django.core.exceptions import ValidationError
 from django.db.models.query import QuerySet
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
-from django_select2.forms import ModelSelect2Widget, Select2MultipleWidget
+from django_select2.forms import Select2MultipleWidget
 from guardian.shortcuts import get_objects_for_user
 
 import web.forms.widgets as icms_widgets
 from web.domains.case.forms import application_contacts
 from web.domains.file.utils import ICMSFileField
 from web.forms.mixins import OptionalFormMixin
+from web.forms.widgets import ICMSModelSelect2Widget
 from web.models import (
     CertificateApplicationTemplate,
     Exporter,
@@ -40,7 +41,7 @@ class CreateExportApplicationForm(forms.Form):
     exporter = forms.ModelChoiceField(
         queryset=Exporter.objects.none(),
         label="Main Exporter",
-        widget=ModelSelect2Widget(
+        widget=ICMSModelSelect2Widget(
             attrs={
                 "data-minimum-input-length": 0,
                 "data-placeholder": "-- Select Exporter",
@@ -51,7 +52,7 @@ class CreateExportApplicationForm(forms.Form):
     exporter_office = forms.ModelChoiceField(
         queryset=Office.objects.none(),
         label="Exporter Office",
-        widget=ModelSelect2Widget(
+        widget=ICMSModelSelect2Widget(
             attrs={
                 "data-minimum-input-length": 0,
                 "data-placeholder": "-- Select Office",
@@ -76,7 +77,7 @@ class CreateExportApplicationForm(forms.Form):
         required=False,
         queryset=Exporter.objects.none(),
         label="Agent of Exporter",
-        widget=ModelSelect2Widget(
+        widget=ICMSModelSelect2Widget(
             attrs={
                 "data-minimum-input-length": 0,
                 "data-placeholder": "-- Select Agent",
@@ -91,7 +92,7 @@ class CreateExportApplicationForm(forms.Form):
         required=False,
         queryset=Office.objects.none(),
         label="Agent Office",
-        widget=ModelSelect2Widget(
+        widget=ICMSModelSelect2Widget(
             attrs={
                 "data-minimum-input-length": 0,
                 "data-placeholder": "-- Select Office",

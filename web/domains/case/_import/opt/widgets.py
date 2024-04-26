@@ -1,9 +1,8 @@
-from django_select2 import forms as s2forms
-
+from web.forms.widgets import ICMSModelSelect2MultipleWidget
 from web.models import Commodity
 
 
-class OptCompensatingProductsCommodityWidget(s2forms.ModelSelect2MultipleWidget):
+class OptCompensatingProductsCommodityWidget(ICMSModelSelect2MultipleWidget):
     queryset = Commodity.objects.filter(commoditygroup__commodity_type__type_code="TEXTILES")
 
     # The value entered by the user is used to search the commodity code

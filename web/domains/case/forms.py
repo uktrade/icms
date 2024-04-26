@@ -7,12 +7,12 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import QuerySet
 from django.utils import timezone
 from django_select2 import forms as s2forms
-from django_select2.forms import ModelSelect2Widget
 
 from web.domains.case.widgets import CheckboxSelectMultipleTable
 from web.domains.file.utils import ICMSFileField
 from web.forms.fields import JqueryDateField
 from web.forms.mixins import OptionalFormMixin
+from web.forms.widgets import ICMSModelSelect2Widget
 from web.models import (
     Constabulary,
     ExportApplication,
@@ -335,7 +335,7 @@ class DownloadDFLCaseDocumentsForm(forms.Form):
     constabulary = forms.ModelChoiceField(
         queryset=Constabulary.objects.filter(is_active=True),
         label="Constabulary",
-        widget=ModelSelect2Widget(
+        widget=ICMSModelSelect2Widget(
             attrs={
                 "data-minimum-input-length": 3,
                 "data-placeholder": "-- Select Constabulary",
