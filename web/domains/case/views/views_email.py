@@ -82,6 +82,7 @@ def manage_case_emails(
         "no_emails_msg": no_emails_msg,
         "info_email": info_email,
         "readonly_view": readonly_view,
+        "record_response_form": forms.CaseEmailResponseForm(),
     }
 
     return render(

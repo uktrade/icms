@@ -23,12 +23,6 @@
           </form>
         </li>
       </ul>
-    {% else %}
-      <a
-        class="button small-button icon-pencil"
-        href="{{ icms_url('case:add-response-case-email', kwargs={'application_pk': process.pk, 'case_email_pk': object.pk, 'case_type': case_type}) }}">
-        {% if object.response %}Edit Response{% else %}Record Response{% endif %}
-      </a>
     {% endif %}
   {% endif %}
 
@@ -182,19 +176,42 @@
     </div>
     <div class="three columns"></div>
   </div>
-  
-  {% if object.response %}
-    <div class="row mt-1">
-      <div class="three columns">
+
+  {% if not readonly_view %}
+    {% if object.response %}
+      <div class="row mt-1">
+        <div class="three columns">
+        </div>
+        <div class="six columns">
+          <a
+            class="button small-button icon-pencil"
+            href="{{ icms_url('case:add-response-case-email', kwargs={'application_pk': process.pk, 'case_email_pk': object.pk, 'case_type': case_type}) }}">
+            Edit Response
+          </a>
+        </div>
+        <div class="three columns"></div>
       </div>
-      <div class="six columns">
-        <a
-          class="button small-button icon-pencil"
-          href="{{ icms_url('case:add-response-case-email', kwargs={'application_pk': process.pk, 'case_email_pk': object.pk, 'case_type': case_type}) }}">
-          Edit Response
-        </a>
-      </div>
-      <div class="three columns"></div>
-    </div>
+    {% else %}
+      {% call forms.form(action=icms_url('case:add-response-case-email', kwargs={'application_pk': process.pk, 'case_email_pk': object.pk, 'case_type': case_type}), method='post', csrf_input=csrf_input) -%}
+        {% for field in record_response_form %}
+          {{ fields.field(field) }}
+        {% endfor %}
+        <div class="row">
+          <div class="three columns"></div>
+          <div class="six columns">
+            <ul class="menu-out flow-across">
+              <li>
+                <input
+                    type="submit"
+                    value="Close"
+                    class="primary-button button" />
+              </li>
+            </ul>
+          </div>
+          <div class="three columns">
+          </div>
+        </div>
+      {% endcall %}
+    {% endif %}
   {% endif %}
 </fieldset>
