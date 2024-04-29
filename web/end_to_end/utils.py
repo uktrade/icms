@@ -4,7 +4,9 @@ from typing import Any, Optional
 
 from playwright.sync_api import Locator, Page, expect
 
-from web.forms.fields import JQUERY_DATE_FORMAT
+# Always match the format here: web/static/web/js/fox/core-footer.js
+# dateFormat: "dd'-'M'-'yy"
+JQUERY_DATE_FORMAT = "%d-%b-%Y"
 
 
 def get_application_id(url: str, pattern: str, group_name: str = "app_pk") -> int:

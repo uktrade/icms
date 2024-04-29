@@ -63,23 +63,24 @@ def fa_dfl_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_role("button", name="Save").click()
     utils.assert_page_url(page, f"/import/firearms/dfl/{dfl_id}/edit/")
 
+    # Navigate to Goods Certificates view
+    page.get_by_role("link", name="Goods Certificates").click()
+
+    # Add a goods line
     page.get_by_role("link", name="Add Goods").click()
     utils.assert_page_url(page, f"/import/firearms/dfl/{dfl_id}/goods-certificate/add/")
 
     page.get_by_label("Goods Description").click()
-
     page.get_by_label("Goods Description").fill("test")
 
     page.get_by_label("Deactivated Certificate Reference").click()
-
     page.get_by_label("Deactivated Certificate Reference").fill("test")
 
     page.get_by_role("combobox", name="Issuing Country").select_option("23")
-
     page.get_by_label("Document").set_input_files(sample_upload_file)
-
     page.get_by_role("button", name="Save").click()
-    utils.assert_page_url(page, f"/import/firearms/dfl/{dfl_id}/edit/")
+
+    utils.assert_page_url(page, f"/import/firearms/dfl/{dfl_id}/goods-certificate/list/")
 
     page.get_by_role("link", name="Details of Who Bought From").click()
     utils.assert_page_url(page, f"/import/firearms/fa/{dfl_id}/import-contacts/manage/")

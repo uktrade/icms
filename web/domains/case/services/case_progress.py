@@ -3,6 +3,7 @@ from django.db.models import QuerySet
 
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
+from web.domains.case.views.mixins import ApplicationTaskMixin
 from web.flow import errors
 from web.models import AccessRequest, ApprovalRequest, Process, Task
 
@@ -26,6 +27,10 @@ __all__ = [
     "get_expected_task",
     "get_active_tasks",
     "get_active_task_list",
+    #
+    # View Mixins
+    #
+    "InProgressApplicationStatusTaskMixin",
 ]
 
 
@@ -43,6 +48,17 @@ def application_in_progress(application: ImpOrExp) -> None:
 
     check_expected_status(application, expected_status)
     check_expected_task(application, expected_task)
+
+
+class InProgressApplicationStatusTaskMixin(ApplicationTaskMixin):
+    """Mixin for class based views that is equivalent to case_progress.application_in_progress()"""
+
+    current_status = [ST.IN_PROGRESS, ST.PROCESSING, ST.VARIATION_REQUESTED]
+    current_task_type = TT.PREPARE
+
+    def has_object_permission(self) -> bool:
+        """Mandatory user object permission checking for the loaded `self.application` record."""
+        raise NotImplementedError("has_object_permission must be implemented.")
 
 
 def application_in_processing(application: ImpOrExp) -> None:

@@ -219,7 +219,7 @@ def get_licence_endorsements(application: "ImpOrExp") -> list[list[str]] | list[
 def _get_fa_dfl_goods(application: "DFLApplication") -> list[str]:
     return [
         g.goods_description
-        for g in application.goods_certificates.all().order_by("created_datetime")
+        for g in application.goods_certificates.filter(is_active=True).order_by("created_datetime")
     ]
 
 

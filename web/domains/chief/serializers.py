@@ -145,7 +145,7 @@ def fa_dfl_serializer(
 
     goods = [
         types.FirearmGoodsData(description=g.goods_description)
-        for g in application.goods_certificates.all()
+        for g in application.goods_certificates.filter(is_active=True)
     ]
 
     country_kwargs = _get_country_kwargs(application.origin_country.hmrc_code)

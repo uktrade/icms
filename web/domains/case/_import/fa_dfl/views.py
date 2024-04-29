@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
+from django.views.generic.detail import DetailView
 from storages.backends.s3boto3 import S3Boto3StorageFile
 
 from web.domains.case._import.fa.forms import ImportContactKnowBoughtFromForm
@@ -86,19 +87,42 @@ def edit_dfl(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpR
                     reverse("import:fa-dfl:edit", kwargs={"application_pk": application_pk})
                 )
 
-        goods_list = application.goods_certificates.filter(is_active=True).select_related(
-            "issuing_country"
-        )
-
         context = {
             "process": application,
             "form": form,
             "page_title": _get_page_title("Edit"),
-            "goods_list": goods_list,
             "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/fa-dfl/edit.html", context)
+
+
+class DFLGoodsCertificateDetailView(case_progress.InProgressApplicationStatusTaskMixin, DetailView):
+    http_method_names = ["get"]
+    template_name = "web/domains/case/import/fa-dfl/goods-list.html"
+
+    # Extra typing for clarity
+    application: DFLApplication
+
+    def has_object_permission(self) -> bool:
+        """Handles all permission checking required to prove a request user can access this view."""
+        check_can_edit_application(self.request.user, self.application)
+
+        return True
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        goods_list = self.application.goods_certificates.filter(is_active=True).select_related(
+            "issuing_country"
+        )
+
+        return context | {
+            "case_type": "import",
+            "process": self.application,
+            "page_title": _get_page_title("Goods Certificates"),
+            "goods_list": goods_list,
+        }
 
 
 @login_required
@@ -131,7 +155,7 @@ def add_goods_certificate(
                 )
 
                 return redirect(
-                    reverse("import:fa-dfl:edit", kwargs={"application_pk": application_pk})
+                    reverse("import:fa-dfl:list-goods", kwargs={"application_pk": application_pk})
                 )
         else:
             form = AddDLFGoodsCertificateForm()
@@ -158,7 +182,7 @@ def edit_goods_certificate(
 
         case_progress.application_in_progress(application)
 
-        document = application.goods_certificates.get(pk=document_pk)
+        document = application.goods_certificates.filter(is_active=True).get(pk=document_pk)
 
         if request.method == "POST":
             form = EditDLFGoodsCertificateForm(data=request.POST, instance=document)
@@ -167,7 +191,7 @@ def edit_goods_certificate(
                 form.save()
 
                 return redirect(
-                    reverse("import:fa-dfl:edit", kwargs={"application_pk": application_pk})
+                    reverse("import:fa-dfl:list-goods", kwargs={"application_pk": application_pk})
                 )
 
         else:
@@ -199,7 +223,7 @@ def edit_goods_certificate_description(
 
         case_progress.application_in_processing(application)
 
-        document = application.goods_certificates.get(pk=document_pk)
+        document = application.goods_certificates.filter(is_active=True).get(pk=document_pk)
 
         if request.method == "POST":
             form = EditDFLGoodsCertificateDescriptionForm(data=request.POST, instance=document)
@@ -240,7 +264,10 @@ def view_goods_certificate(
 
     # Permission checks in view_application_file
     return view_application_file(
-        request.user, application, application.goods_certificates, document_pk
+        request.user,
+        application,
+        application.goods_certificates.filter(is_active=True),
+        document_pk,
     )
 
 
@@ -257,11 +284,13 @@ def delete_goods_certificate(
 
         case_progress.application_in_progress(application)
 
-        document = application.goods_certificates.get(pk=document_pk)
+        document = application.goods_certificates.filter(is_active=True).get(pk=document_pk)
         document.is_active = False
         document.save()
 
-        return redirect(reverse("import:fa-dfl:edit", kwargs={"application_pk": application_pk}))
+        return redirect(
+            reverse("import:fa-dfl:list-goods", kwargs={"application_pk": application_pk})
+        )
 
 
 @login_required
@@ -319,7 +348,7 @@ def _get_dfl_errors(application: DFLApplication) -> ApplicationErrors:
     errors.add(application_details_errors)
 
     # Check goods certificates
-    if not application.goods_certificates.exists():
+    if not application.goods_certificates.filter(is_active=True).exists():
         goods_errors = PageErrors(
             page_name="Application Details - Goods Certificates", url=add_goods_url
         )
@@ -413,7 +442,9 @@ def add_report_firearm_manual(
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
-        goods_certificate: DFLGoodsCertificate = application.goods_certificates.get(pk=goods_pk)
+        goods_certificate: DFLGoodsCertificate = application.goods_certificates.filter(
+            is_active=True
+        ).get(pk=goods_pk)
 
         if request.method == "POST":
             form = DFLSupplementaryReportFirearmForm(data=request.POST)
@@ -518,7 +549,9 @@ def add_report_firearm_upload(
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
-        goods_certificate: DFLGoodsCertificate = application.goods_certificates.get(pk=goods_pk)
+        goods_certificate: DFLGoodsCertificate = application.goods_certificates.filter(
+            is_active=True
+        ).get(pk=goods_pk)
 
         if request.method == "POST":
             form = DFLSupplementaryReportUploadFirearmForm(data=request.POST, files=request.FILES)
@@ -597,7 +630,9 @@ def add_report_firearm_no_firearm(
 
         supplementary_info: DFLSupplementaryInfo = application.supplementary_info
         report: DFLSupplementaryReport = supplementary_info.reports.get(pk=report_pk)
-        goods_certificate: DFLGoodsCertificate = application.goods_certificates.get(pk=goods_pk)
+        goods_certificate: DFLGoodsCertificate = application.goods_certificates.filter(
+            is_active=True
+        ).get(pk=goods_pk)
 
         DFLSupplementaryReportFirearm.objects.create(
             report=report, goods_certificate=goods_certificate, is_no_firearm=True

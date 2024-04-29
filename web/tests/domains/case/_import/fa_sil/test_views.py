@@ -193,9 +193,9 @@ class TestSubmitFaSIL:
         response = self.client.get(url)
 
         errors: ApplicationErrors = response.context["errors"]
-        check_page_errors(errors, "Application details", ["Firearm Licence For"])
+        check_page_errors(errors, "Application Details", ["Firearm Licence For"])
 
-        page_errors: PageErrors = errors.get_page_errors("Application details")
+        page_errors: PageErrors = errors.get_page_errors("Application Details")
         page_errors.errors[0].field_name = "Firearm Licence For"
         page_errors.errors[0].messages = [
             "The sections selected here do not match those selected in the goods items."

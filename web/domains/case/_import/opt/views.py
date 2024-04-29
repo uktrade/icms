@@ -320,7 +320,7 @@ def submit_opt(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         edit_url = reverse("import:opt:edit", kwargs=app_kwargs)
         edit_url = f"{edit_url}?validate"
 
-        edit_errors = PageErrors(page_name="Application details", url=edit_url)
+        edit_errors = PageErrors(page_name="Application Details", url=edit_url)
         create_page_errors(SubmitOptForm(data=app_data, instance=application), edit_errors)
         errors.add(edit_errors)
 

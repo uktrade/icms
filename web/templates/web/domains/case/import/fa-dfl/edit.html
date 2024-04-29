@@ -24,10 +24,3 @@
 {% block task_actions %}
   <input type="submit" name="action" class="primary-button button" value="Save"/>
 {% endblock %}
-
-{% block subtasks %}
-  <h4>Goods Certificates</h4>
-  {% with read_only = false %}
-    {% include "partial/case/import/fa-dfl/goods-list.html" %}
-  {% endwith %}
-{% endblock %}

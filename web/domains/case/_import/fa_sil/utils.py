@@ -181,7 +181,7 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
     edit_url = f"{edit_url}?validate"
 
     # Check main form
-    application_details_errors = PageErrors(page_name="Application details", url=edit_url)
+    application_details_errors = PageErrors(page_name="Application Details", url=edit_url)
     application_form = forms.SubmitFaSILForm(data=model_to_dict(application), instance=application)
     create_page_errors(application_form, application_details_errors)
 

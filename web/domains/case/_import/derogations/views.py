@@ -321,7 +321,7 @@ def _get_derogations_errors(application: DerogationsApplication) -> ApplicationE
     edit_url = reverse("import:derogations:edit", kwargs={"application_pk": application.pk})
     edit_url = f"{edit_url}?validate"
 
-    page_errors = PageErrors(page_name="Application details", url=edit_url)
+    page_errors = PageErrors(page_name="Application Details", url=edit_url)
     create_page_errors(
         SubmitDerogationsForm(data=model_to_dict(application), instance=application), page_errors
     )

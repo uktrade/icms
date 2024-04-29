@@ -321,7 +321,7 @@ def submit_com(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         edit_url = reverse("export:com-edit", kwargs={"application_pk": application_pk})
         edit_url = f"{edit_url}?validate"
 
-        page_errors = PageErrors(page_name="Application details", url=edit_url)
+        page_errors = PageErrors(page_name="Application Details", url=edit_url)
         create_page_errors(
             SubmitCOMForm(data=model_to_dict(application), instance=application), page_errors
         )
@@ -1542,7 +1542,7 @@ def submit_gmp(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         edit_url = reverse("export:gmp-edit", kwargs={"application_pk": application_pk})
         edit_url = f"{edit_url}?validate"
 
-        page_errors = PageErrors(page_name="Application details", url=edit_url)
+        page_errors = PageErrors(page_name="Application Details", url=edit_url)
         main_form = SubmitGMPForm(data=model_to_dict(application), instance=application)
 
         create_page_errors(main_form, page_errors)
