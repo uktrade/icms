@@ -293,7 +293,7 @@ def test_submit_dfl_get(dfl_app_pk, importer_client):
 
     check_page_errors(
         errors,
-        "Application details",
+        "Application Details",
         [
             "Proof Checked",
             "Country Of Origin",
@@ -303,11 +303,11 @@ def test_submit_dfl_get(dfl_app_pk, importer_client):
         ],
     )
 
-    check_page_errors(errors, "Goods Certificates", ["Goods Certificate"])
+    check_page_errors(errors, "Application Details - Goods Certificates", ["Goods Certificate"])
 
     check_page_errors(
         errors,
-        "Details of who bought from",
+        "Application Details - Details of Who Bought From",
         ["Do you know who you plan to buy/obtain these items from?"],
     )
 
@@ -329,7 +329,7 @@ def test_submit_dfl_post_invalid(dfl_app_pk, importer_client, importer_one_conta
 
     check_page_errors(
         errors,
-        "Application details",
+        "Application Details",
         [
             "Proof Checked",
             "Country Of Origin",
@@ -339,11 +339,11 @@ def test_submit_dfl_post_invalid(dfl_app_pk, importer_client, importer_one_conta
         ],
     )
 
-    check_page_errors(errors, "Goods Certificates", ["Goods Certificate"])
+    check_page_errors(errors, "Application Details - Goods Certificates", ["Goods Certificate"])
 
     check_page_errors(
         errors,
-        "Details of who bought from",
+        "Application Details - Details of Who Bought From",
         ["Do you know who you plan to buy/obtain these items from?"],
     )
 
@@ -387,7 +387,7 @@ def test_submit_dfl_post_invalid(dfl_app_pk, importer_client, importer_one_conta
     # now we have a valid application submit the application again to see the know_bought_from error
     response = importer_client.post(submit_url, form_data)
     errors = response.context["errors"]
-    check_page_errors(errors, "Details of who bought from", ["Person"])
+    check_page_errors(errors, "Application Details - Details of Who Bought From", ["Person"])
 
 
 def test_submit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact):

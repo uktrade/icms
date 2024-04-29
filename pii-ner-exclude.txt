@@ -4386,3 +4386,5 @@ Order datetime & last
 Called in create_document_pack_on_error
 record_response_form
 Login required Django Select
+Application Details - Goods Certificates
+Application Details - Details of Who Bought
