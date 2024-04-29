@@ -1,0 +1,8 @@
+{% extends "web/domains/case/applicant-base.html" %}
+
+{% block main_content %}
+  <h4>Goods Certificates</h4>
+  {% with read_only = false %}
+    {% include "partial/case/import/fa-dfl/goods-list.html" %}
+  {% endwith %}
+{% endblock %}

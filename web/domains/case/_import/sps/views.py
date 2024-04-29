@@ -108,7 +108,7 @@ def submit_sps(request: AuthenticatedHttpRequest, *, application_pk: int) -> Htt
         edit_url = reverse("import:sps:edit", kwargs={"application_pk": application.pk})
         edit_url = f"{edit_url}?validate"
 
-        edit_errors = PageErrors(page_name="Application details", url=edit_url)
+        edit_errors = PageErrors(page_name="Application Details", url=edit_url)
         create_page_errors(
             SubmitSPSForm(data=model_to_dict(application), instance=application), edit_errors
         )

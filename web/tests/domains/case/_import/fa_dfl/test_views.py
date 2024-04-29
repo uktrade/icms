@@ -1,4 +1,5 @@
 import re
+from http import HTTPStatus
 
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -21,6 +22,7 @@ from web.models import (
     User,
 )
 from web.models.shared import FirearmCommodity
+from web.tests.auth import AuthTestCase
 from web.tests.helpers import check_page_errors, get_test_client
 
 
@@ -44,7 +46,7 @@ def dfl_app_pk(importer_client, office, importer):
     application_pk = re.search(r"\d+", resp.url).group(0)
 
     expected_url = _get_view_url("edit", {"application_pk": application_pk})
-    assertRedirects(resp, expected_url, 302)
+    assertRedirects(resp, expected_url, HTTPStatus.FOUND)
 
     return application_pk
 
@@ -59,7 +61,7 @@ def test_edit_dfl_get(
     assertContains(
         response,
         "Firearms and Ammunition (Deactivated Firearms Licence) - Edit",
-        status_code=200,
+        status_code=HTTPStatus.OK,
     )
 
     # Check permissions
@@ -77,12 +79,12 @@ def test_validate_query_param_shows_errors(dfl_app_pk, importer_client):
     url = _get_view_url("edit", {"application_pk": dfl_app_pk})
 
     response = importer_client.get(url)
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
     form = response.context["form"]
     assert not form.errors
 
     response = importer_client.get(f"{url}?validate")
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.OK
 
     assertFormError(response.context["form"], "proof_checked", "You must enter this item")
     assertFormError(response.context["form"], "origin_country", "You must enter this item")
@@ -113,7 +115,7 @@ def test_edit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact):
     }
     response = importer_client.post(url, form_data)
 
-    assertRedirects(response, url, 302)
+    assertRedirects(response, url, HTTPStatus.FOUND)
 
     # check the data has been saved:
     dfl_app = DFLApplication.objects.get(pk=dfl_app_pk)
@@ -135,7 +137,7 @@ def test_add_goods_document_get(dfl_app_pk, importer_client):
     assertContains(
         response,
         "Firearms and Ammunition (Deactivated Firearms Licence) - Add Goods Certificate",
-        status_code=200,
+        status_code=HTTPStatus.OK,
     )
 
 
@@ -170,7 +172,9 @@ def test_add_goods_document_post_valid(dfl_app_pk, importer_client):
 
     response = importer_client.post(url, form_data)
 
-    assertRedirects(response, _get_view_url("edit", {"application_pk": dfl_app_pk}), 302)
+    assertRedirects(
+        response, _get_view_url("list-goods", {"application_pk": dfl_app_pk}), HTTPStatus.FOUND
+    )
 
     # Check the record has a file
     dfl_app = DFLApplication.objects.get(pk=dfl_app_pk)
@@ -199,7 +203,7 @@ def test_edit_goods_certificate_get(dfl_app_pk, importer_client):
     assertContains(
         response,
         "Firearms and Ammunition (Deactivated Firearms Licence) - Edit Goods Certificate",
-        status_code=200,
+        status_code=HTTPStatus.OK,
     )
 
 
@@ -244,7 +248,9 @@ def test_edit_goods_certificate_post_valid(dfl_app_pk, importer_client):
     }
     response = importer_client.post(url, form_data)
 
-    assertRedirects(response, _get_view_url("edit", {"application_pk": dfl_app_pk}), 302)
+    assertRedirects(
+        response, _get_view_url("list-goods", {"application_pk": dfl_app_pk}), HTTPStatus.FOUND
+    )
 
     # Check the record has a file
     dfl_app = DFLApplication.objects.get(pk=dfl_app_pk)
@@ -275,6 +281,52 @@ def _create_goods_cert(dfl_app_pk):
     return document_pk
 
 
+class TestDFLGoodsCertificateDetailView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, fa_dfl_app_in_progress):
+        self.url = reverse(
+            "import:fa-dfl:list-goods", kwargs={"application_pk": fa_dfl_app_in_progress.pk}
+        )
+
+    def test_permission(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_get_only(self):
+        response = self.importer_client.post(self.url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_goods_shown(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assertTemplateUsed(response, "web/domains/case/import/fa-dfl/goods-list.html")
+
+        context = response.context
+        assert len(context["goods_list"]) == 1
+
+        html = response.content.decode("utf-8")
+        assert "Goods Certificates" in html
+        assert "Add Goods" in html
+
+    def test_no_goods_shown(self, fa_dfl_app_in_progress):
+        fa_dfl_app_in_progress.goods_certificates.all().delete()
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assertTemplateUsed(response, "web/domains/case/import/fa-dfl/goods-list.html")
+
+        context = response.context
+        assert len(context["goods_list"]) == 0
+
+        html = response.content.decode("utf-8")
+        assert "There are no goods attached" in html
+        assert "Add Goods" in html
+
+
 def test_submit_dfl_get(dfl_app_pk, importer_client):
     url = _get_view_url("submit", kwargs={"application_pk": dfl_app_pk})
 
@@ -283,7 +335,7 @@ def test_submit_dfl_get(dfl_app_pk, importer_client):
     assertContains(
         response,
         "Firearms and Ammunition (Deactivated Firearms Licence) - Submit Application",
-        status_code=200,
+        status_code=HTTPStatus.OK,
     )
 
     assertTemplateUsed(response, "web/domains/case/import/import-case-submit.html")
@@ -322,7 +374,7 @@ def test_submit_dfl_post_invalid(dfl_app_pk, importer_client, importer_one_conta
     assertContains(
         response,
         "Firearms and Ammunition (Deactivated Firearms Licence) - Submit Application",
-        status_code=200,
+        status_code=HTTPStatus.OK,
     )
 
     errors = response.context["errors"]
@@ -450,7 +502,7 @@ def test_submit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact
     form_data = {"confirmation": "I AGREE"}
     response = importer_client.post(submit_url, form_data)
 
-    assertRedirects(response, reverse("workbasket"), 302)
+    assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
 
     # check the application is in the correct state
     application = DFLApplication.objects.get(pk=dfl_app_pk)

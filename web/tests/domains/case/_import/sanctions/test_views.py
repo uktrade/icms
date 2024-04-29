@@ -320,9 +320,9 @@ class TestSubmitSanctions:
         response = self.client.get(url)
 
         errors: ApplicationErrors = response.context["errors"]
-        check_page_errors(errors, "Application details", ["Goods - Commodity Code"])
+        check_page_errors(errors, "Application Details", ["Goods - Commodity Code"])
 
-        page_errors: PageErrors = errors.get_page_errors("Application details")
+        page_errors: PageErrors = errors.get_page_errors("Application Details")
         page_errors.errors[0].field_name = "Goods - Commodity Code"
         page_errors.errors[0].messages = [
             f"Duplicate commodity codes. Please ensure these codes are only listed once: {commodity.commodity_code}"

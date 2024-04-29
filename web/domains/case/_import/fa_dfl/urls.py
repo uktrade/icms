@@ -17,6 +17,11 @@ urlpatterns = [
                         [
                             path("add/", views.add_goods_certificate, name="add-goods"),
                             path(
+                                "list/",
+                                views.DFLGoodsCertificateDetailView.as_view(),
+                                name="list-goods",
+                            ),
+                            path(
                                 "<int:document_pk>/",
                                 include(
                                     [

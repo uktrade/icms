@@ -5,7 +5,6 @@ import re
 from playwright.sync_api import Page
 
 from web.end_to_end import conftest, types, utils
-from web.forms.fields import JQUERY_DATE_FORMAT
 
 
 def test_can_create_fa_sil(
@@ -179,8 +178,8 @@ def fa_sil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_role("combobox", name="Constabulary").select_option("1")
 
     future_date = utils.get_future_datetime().date()
-    issue_date = future_date.strftime(JQUERY_DATE_FORMAT)
-    expiry_date = dt.date(future_date.year + 1, 1, 1).strftime(JQUERY_DATE_FORMAT)
+    issue_date = future_date.strftime(utils.JQUERY_DATE_FORMAT)
+    expiry_date = dt.date(future_date.year + 1, 1, 1).strftime(utils.JQUERY_DATE_FORMAT)
     page.get_by_label("Date Issued").click()
     page.get_by_label("Date Issued").fill(issue_date)
     page.get_by_label("Date Issued").press("Enter")
