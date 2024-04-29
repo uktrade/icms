@@ -19,7 +19,7 @@
 {% endblock %}
 
 {% block main_content %}
-  <h4>Add goods certificate</h4>
+  <h4>Add Goods Certificate</h4>
   {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
     {{ fields.field(form.goods_description) }}
     {{ fields.field(form.deactivated_certificate_reference) }}

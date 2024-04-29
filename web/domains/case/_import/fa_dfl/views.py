@@ -313,14 +313,16 @@ def _get_dfl_errors(application: DFLApplication) -> ApplicationErrors:
     add_goods_url = reverse("import:fa-dfl:add-goods", kwargs={"application_pk": application.pk})
 
     # Check main form
-    application_details_errors = PageErrors(page_name="Application details", url=edit_url)
+    application_details_errors = PageErrors(page_name="Application Details", url=edit_url)
     application_form = SubmitFaDFLForm(data=model_to_dict(application), instance=application)
     create_page_errors(application_form, application_details_errors)
     errors.add(application_details_errors)
 
     # Check goods certificates
     if not application.goods_certificates.exists():
-        goods_errors = PageErrors(page_name="Goods Certificates", url=add_goods_url)
+        goods_errors = PageErrors(
+            page_name="Application Details - Goods Certificates", url=add_goods_url
+        )
         goods_errors.add(
             FieldError(
                 field_name="Goods Certificate", messages=["At least one certificate must be added"]
@@ -330,7 +332,7 @@ def _get_dfl_errors(application: DFLApplication) -> ApplicationErrors:
 
     # Check know bought from
     bought_from_errors = PageErrors(
-        page_name="Details of who bought from",
+        page_name="Application Details - Details of Who Bought From",
         url=reverse("import:fa:manage-import-contacts", kwargs={"application_pk": application.pk}),
     )
 
