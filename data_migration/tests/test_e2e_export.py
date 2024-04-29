@@ -206,9 +206,15 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     call_command("post_migration", "--skip_perms", "--skip_add_data")
 
     assert web.CertificateOfGoodManufacturingPracticeApplication.objects.count() == 4
-    ea1, ea2, ea3, _ = web.ExportApplication.objects.filter(
-        process_ptr__process_type=ProcessTypes.GMP
-    ).order_by("pk")
+    assert dm.CertificateOfGoodManufacturingPracticeApplication.objects.count() == 4
+
+    gmp1, gmp2, gmp3, gmp4 = web.CertificateOfGoodManufacturingPracticeApplication.objects.order_by(
+        "pk"
+    )
+    ea1: web.ExportApplication = gmp1.exportapplication
+    ea2: web.ExportApplication = gmp2.exportapplication
+    ea3: web.ExportApplication = gmp3.exportapplication
+    ea4: web.ExportApplication = gmp4.exportapplication
 
     assert ea1.reference == "GA/2022/9901"
     assert web.UniqueReference.objects.get(prefix="GA", year=2022, reference=9901)
@@ -219,13 +225,18 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ea3.reference == "GA/2022/9903/1"
     assert web.UniqueReference.objects.get(prefix="GA", year=2022, reference=9903)
 
+    assert ea4.reference == "GA/2022/9910"
+    assert web.UniqueReference.objects.get(prefix="GA", year=2022, reference=9910)
+
     assert ea1.countries.count() == 0
     assert ea2.countries.count() == 3
     assert ea3.countries.count() == 1
+    assert ea4.countries.count() == 0
 
     assert ea1.variation_requests.count() == 0
     assert ea2.variation_requests.count() == 0
     assert ea3.variation_requests.count() == 1
+    assert ea4.variation_requests.count() == 0
 
     vr1: web.VariationRequest = ea3.variation_requests.first()
     assert vr1.what_varied == "Changes 1"
@@ -235,20 +246,24 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ea1.update_requests.count() == 0
     assert ea2.update_requests.count() == 1
     assert ea3.update_requests.count() == 0
+    assert ea4.update_requests.count() == 0
 
     assert ea1.case_notes.count() == 0
     assert ea2.case_notes.count() == 2
     assert ea2.case_notes.filter(is_active=True).count() == 1
     assert ea2.case_notes.filter(is_active=False).count() == 1
     assert ea3.case_notes.count() == 0
+    assert ea4.case_notes.count() == 0
 
     assert ea1.case_emails.count() == 0
     assert ea2.case_emails.count() == 0
     assert ea3.case_emails.count() == 2
+    assert ea4.case_emails.count() == 0
 
     assert ea1.further_information_requests.count() == 0
     assert ea2.further_information_requests.count() == 0
     assert ea3.further_information_requests.count() == 0
+    assert ea4.further_information_requests.count() == 0
 
     case_note1 = ea2.case_notes.filter(is_active=True).first()
     assert case_note1.note == "This is a case note"
@@ -264,10 +279,12 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ea1.certificates.count() == 0
     assert ea2.certificates.count() == 1
     assert ea3.certificates.count() == 2
+    assert ea4.certificates.count() == 1
 
     assert list(ea1.cleared_by.values_list("id", flat=True)) == []
     assert list(ea2.cleared_by.values_list("id", flat=True)) == []
-    assert list(ea2.cleared_by.values_list("id", flat=True)) == []
+    assert list(ea3.cleared_by.values_list("id", flat=True)) == []
+    assert list(ea4.cleared_by.values_list("id", flat=True)) == []
 
     cert1 = ea2.certificates.first()
     cert2, cert3 = ea3.certificates.order_by("pk")
@@ -307,31 +324,138 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ref2.check_code == "87654321"
     assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=4)
 
-    gmp1, gmp2, gmp3, gmp4 = web.CertificateOfGoodManufacturingPracticeApplication.objects.order_by(
-        "pk"
-    )
+    assert gmp1.reference == "GA/2022/9901"
+    assert gmp1.status == "IN PROGRESS"
+    assert gmp1.is_active is True
+    assert gmp1.responsible_person_address_entry_type == "SEARCH"
+    assert gmp1.manufacturer_address_entry_type == "SEARCH"
+    assert gmp1.exporter_id == 2
+    assert gmp1.created_by_id == 2
+    assert gmp1.created == dt.datetime(2022, 4, 27, 0, 0, tzinfo=dt.timezone.utc)
 
+    none_fields = [
+        "finished",
+        "reassign_datetime",
+        "refuse_reason",
+        "contact_id",
+        "agent_id",
+        "agent_office_id",
+        "case_owner_id",
+    ]
+    for field in none_fields + [
+        "brand_name",
+        "submit_datetime",
+        "last_submit_datetime",
+        "gmp_certificate_issued",
+        "is_responsible_person",
+        "responsible_person_name",
+        "responsible_person_postcode",
+        "responsible_person_address",
+        "responsible_person_country",
+        "auditor_accredited",
+        "auditor_certified",
+        "submitted_by_id",
+        "decision",
+        "is_manufacturer",
+        "manufacturer_name",
+        "manufacturer_postcode",
+        "manufacturer_address",
+        "manufacturer_country",
+    ]:
+        assert getattr(gmp1, field) is None
+
+    assert gmp1.variation_requests.count() == 0
     assert gmp1.supporting_documents.count() == 1
-    assert gmp1.supporting_documents.first().file_type == "BRC_GSOCP"
-    assert gmp1.brand_name is None
-    assert gmp1.gmp_certificate_issued is None
+    gmp1_doc = gmp1.supporting_documents.first()
+    assert gmp1_doc.file_type == "BRC_GSOCP"
+    assert gmp1_doc.filename == "BRCGS.pdf"
+    assert gmp1_doc.content_type == "pdf"
 
-    assert gmp2.supporting_documents.count() == 2
-    assert gmp2.supporting_documents.filter(file_type="ISO_22716").count() == 1
-    assert gmp2.supporting_documents.filter(file_type="ISO_17065").count() == 1
+    for field in none_fields:
+        assert getattr(gmp2, field) is None
+
+    assert gmp2.reference == "GA/2022/9902"
+    assert gmp2.is_active is True
+    assert gmp2.is_responsible_person == "no"
+    assert gmp2.is_manufacturer == "no"
+    assert gmp2.status == "PROCESSING"
+    assert gmp2.responsible_person_address_entry_type == "SEARCH"
+    assert gmp2.manufacturer_address_entry_type == "MANUAL"
+    assert gmp2.exporter_id == 3
+    assert gmp2.created_by_id == 2
     assert gmp2.brand_name == "A brand"
+    assert gmp2.auditor_accredited == "no"
+    assert gmp2.auditor_certified is None
     assert (
         gmp2.gmp_certificate_issued
         == web.CertificateOfGoodManufacturingPracticeApplication.CertificateTypes.BRC_GSOCP
     )
+    assert gmp2.submit_datetime == dt.datetime(2022, 4, 29, 0, 0, tzinfo=dt.timezone.utc)
+    assert gmp2.last_submit_datetime is not None
 
-    assert gmp3.supporting_documents.count() == 1
-    assert gmp3.supporting_documents.first().file_type == "ISO_17021"
+    assert gmp2.variation_requests.count() == 0
+    assert gmp2.supporting_documents.count() == 2
+    gmp2_iso_17065_file = gmp2.supporting_documents.filter(file_type="ISO_17065").first()
+    assert gmp2_iso_17065_file is not None
+    assert gmp2_iso_17065_file.file_type == "ISO_17065"
+    assert gmp2_iso_17065_file.filename == "ISO17065.pdf"
+    assert gmp2_iso_17065_file.content_type == "pdf"
+    gmp2_iso_17021_file = gmp2.supporting_documents.filter(file_type="ISO_22716").first()
+    assert gmp2_iso_17021_file is not None
+    assert gmp2_iso_17021_file.file_type == "ISO_22716"
+    assert gmp2_iso_17021_file.filename == "ISO22716.pdf"
+    assert gmp2_iso_17021_file.content_type == "pdf"
+
+    assert gmp3.reference == "GA/2022/9903/1"
+    assert gmp3.is_active is True
+    assert gmp3.status == "COMPLETED"
     assert gmp3.brand_name == "Another brand"
+    assert gmp3.is_responsible_person == "yes"
+    assert gmp3.responsible_person_name == "G. M. Potter"
+    assert gmp3.responsible_person_address == "The Bridge\nLondon"
+    assert gmp3.responsible_person_country == "GB"
+    assert gmp3.responsible_person_postcode == "12345"
+    assert gmp3.is_manufacturer == "yes"
+    assert gmp3.manufacturer_name == "Cars"
+    assert gmp3.manufacturer_address == "The Street\nLondon"
+    assert gmp3.manufacturer_country == "GB"
+    assert gmp3.manufacturer_postcode == "12345"
+    assert gmp3.auditor_accredited == "yes"
+    assert gmp3.auditor_certified == "yes"
+    assert gmp3.submitted_by_id == 2
+    assert gmp3.decision == "APPROVE"
+
     assert (
         gmp3.gmp_certificate_issued
         == web.CertificateOfGoodManufacturingPracticeApplication.CertificateTypes.ISO_22716
     )
+    for field in none_fields:
+        assert getattr(gmp3, field) is None
+
+    assert gmp3.variation_requests.count() == 1
+    assert gmp3.supporting_documents.count() == 1
+
+    assert gmp3.responsible_person_address_entry_type == "MANUAL"
+    assert gmp3.manufacturer_address_entry_type == "MANUAL"
+    gmp3_iso_17021_file = gmp3.supporting_documents.filter(file_type="ISO_17021").first()
+    assert gmp3_iso_17021_file is not None
+    assert gmp3_iso_17021_file.file_type == "ISO_17021"
+    assert gmp3_iso_17021_file.filename == "ISO17021.pdf"
+    assert gmp3_iso_17021_file.content_type == "pdf"
+
+    assert gmp4.reference == "GA/2022/9910"
+    assert gmp4.is_active is True
+    assert gmp4.status == "WITHDRAWN"
+    assert gmp4.brand_name == "Test brand"
+    assert gmp4.decision == "REFUSE"
+
+    assert (
+        gmp4.gmp_certificate_issued
+        == web.CertificateOfGoodManufacturingPracticeApplication.CertificateTypes.ISO_22716
+    )
+
+    for field in none_fields:
+        assert getattr(gmp4, field) is None
 
     assert web.CertificateOfManufactureApplication.objects.count() == 3
     com1, com2, com3 = web.CertificateOfManufactureApplication.objects.order_by("pk")

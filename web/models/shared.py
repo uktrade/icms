@@ -7,8 +7,8 @@ from web.types import TypedTextChoices
 
 
 class AddressEntryType(TypedTextChoices):
-    MANUAL = ("M", "Manual")
-    SEARCH = ("S", "Search")
+    MANUAL = ("MANUAL", "Manual")
+    SEARCH = ("SEARCH", "Search")
 
 
 class YesNoChoices(TypedTextChoices):

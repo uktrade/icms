@@ -82,7 +82,7 @@ ea_query_result = {
             ("generate_cover_letter",),
             ("allow_hse_authorization",),
             ("country_group_legacy_id",),
-            ("country_of_manufacture_cg_id"),
+            ("country_of_manufacture_cg_id",),
         ],
         [
             (1, 1, "CFS", "Certificate of Free Sale", 1, 0, 0, "A", None),
@@ -93,10 +93,26 @@ ea_query_result = {
     queries.gmp_application: (
         EA_BASE_COLUMNS
         + [
+            ("responsible_address_type",),
+            ("manufacturer_address_type",),
             ("brand_name",),
             ("file_folder_id",),
             ("gmp_certificate_issued",),
             ("withdrawal_xml",),
+            ("is_responsible_person",),
+            ("responsible_person_name",),
+            ("responsible_person_address",),
+            ("responsible_person_country",),
+            ("responsible_person_postcode",),
+            ("auditor_accredited",),
+            ("auditor_certified",),
+            ("submitted_by_id",),
+            ("decision",),
+            ("is_manufacturer",),
+            ("manufacturer_name",),
+            ("manufacturer_address",),
+            ("manufacturer_country",),
+            ("manufacturer_postcode",),
         ],
         [
             (
@@ -119,10 +135,26 @@ ea_query_result = {
                 None,  # fir_xml
                 None,  # update_request_xml
                 None,  # variations_xml
+                "SEARCH",  # responsible_address_type
+                "SEARCH",  # manufacturer_address_type
                 None,  # brand_name
                 231,  # file_folder_id
                 None,  # gmp_certificate_issued
                 None,  # withdrawal_xml
+                None,  # is_responsible_person
+                None,  # responsible_person_name
+                None,  # responsible_person_address
+                None,  # responsible_person_country
+                None,  # responsible_person_postcode
+                None,  # auditor accredited
+                None,  # auditor certified
+                None,  # submitted by id
+                None,  # decision
+                None,  # is_manufacturer
+                None,  # manufacturer_name
+                None,  # manufacturer_address
+                None,  # manufacturer_country
+                None,  # manufacturer_postcode
             ),
             (
                 8,
@@ -144,10 +176,26 @@ ea_query_result = {
                 None,  # fir_xml
                 xd.export_update_xml_1,  # update_request_xml
                 None,  # variations_xml
+                "EMPTY",  # responsible_person_address_type
+                "MANUAL",  # manufacturer_address_type
                 "A brand",
                 232,
                 "BRCGS",  # gmp_certificate_issued
                 None,  # withdrawal_xml
+                "no",  # is_responsible_person
+                None,  # responsible_person_name
+                None,  # responsible_person_address
+                None,  # responsible_person_country
+                None,  # responsible_person_postcode
+                "no",  # auditor accredited
+                None,  # auditor certified
+                None,  # submitted by id
+                None,  # decision
+                "no",  # is_manufacturer
+                None,  # manufacturer_name
+                None,  # manufacturer_address
+                None,  # manufacturer_country
+                None,  # manufacturer_postcode
             ),
             (
                 9,
@@ -169,10 +217,26 @@ ea_query_result = {
                 None,  # fir_xml
                 None,  # update_request_xml
                 xd.export_varation_1,  # variations_xml
+                "MANUAL",  # responsible_person_address_type
+                "MANUAL",  # manufacturer_address_type
                 "Another brand",
                 233,  # file_folder_id
                 "ISO22716",  # gmp_certificate_issued
                 None,  # withdrawal_xml
+                "yes",  # is_responsible_person
+                "G. M. Potter",  # responsible_person_name
+                "The Bridge\nLondon",  # responsible_person_address
+                "GB",  # responsible_person_country
+                "12345",  # responsible_person_postcode
+                "yes",  # auditor accredited
+                "yes",  # auditor certified
+                2,  # submitted by id
+                "APPROVE",  # decision
+                "yes",  # is_manufacturer
+                "Cars",  # manufacturer_name
+                "The Street\nLondon",  # manufacturer_address
+                "GB",  # manufacturer_country
+                "12345",  # manufacturer_postcode
             ),
             (
                 16,  # ca_id
@@ -194,10 +258,26 @@ ea_query_result = {
                 None,  # fir_xml
                 None,  # update_request_xml
                 None,  # variations_xml
+                "MANUAL",  # responsible_person_address_type
+                "MANUAL",  # manufacturer_address_type
                 "Test brand",  # brand_name
                 234,  # file_folder_id
                 "ISO22716",  # gmp_certificate_issued
                 xd.export_withdrawal,  # withdrawal_xml
+                None,  # is_responsible_person
+                None,  # responsible_person_name
+                None,  # responsible_person_address
+                None,  # responsible_person_country
+                None,  # responsible_person_postcode
+                None,  # auditor accredited
+                None,  # auditor certified
+                None,  # submitted by id
+                "REFUSE",  # decision
+                None,  # is_manufacturer
+                None,  # manufacturer_name
+                None,  # manufacturer_address
+                None,  # manufacturer_country
+                None,  # manufacturer_postcode
             ),
         ],
     ),
@@ -400,7 +480,7 @@ ea_query_result = {
                 1,  # accordance_with_standards
                 0,  # is_repsonsible_person
                 "Manufacturer",  # manufacturer_name
-                "MANUAL",  # manufacturer_address_type
+                "SEARCH",  # manufacturer_address_type
                 2,  # created_by_id
                 dt.datetime(2022, 11, 1, 12, 30),  # created_at
                 dt.datetime(2022, 11, 1, 12, 30),  # updated_at
@@ -421,7 +501,7 @@ ea_query_result = {
                 0,  # accordance_with_standards
                 1,  # is_repsonsible_person
                 None,  # manufacturer_name
-                "MANUAL",  # manufacturer_address_type
+                "SEARCH",  # manufacturer_address_type
                 2,  # created_by_id
                 dt.datetime(2022, 11, 1, 12, 30),  # created_at
                 dt.datetime(2022, 11, 1, 12, 30),  # updated_at
@@ -442,7 +522,7 @@ ea_query_result = {
                 1,  # accordance_with_standards
                 0,  # is_repsonsible_person
                 "Manufacturer",  # manufacturer_name
-                "MANUAL",  # manufacturer_address_type
+                "SEARCH",  # manufacturer_address_type
                 2,  # created_by_id
                 dt.datetime(2022, 11, 1, 12, 30),  # created_at
                 dt.datetime(2022, 11, 1, 12, 30),  # updated_at
@@ -592,7 +672,7 @@ ea_query_result = {
                 "pdf",  # content_type
                 100,  # file_size
                 "path/to/gmp-cert-1.pdf",  # path
-                dt.datetime.now(),  # created_datetime
+                dt.datetime(2024, 1, 1, 10, 10),  # created_datetime
                 2,  # created_by_id
                 12345678,  # check_code
                 "GMP",  # prefix
@@ -611,7 +691,7 @@ ea_query_result = {
                 "pdf",  # content_type
                 100,  # file_size
                 "path/to/gmp-cert-2.pdf",  # path
-                dt.datetime.now(),  # created_datetime
+                dt.datetime(2024, 1, 1, 10, 10),  # created_datetime
                 2,  # created_by_id
                 56781234,  # check_code
                 "GMP",  # prefix
@@ -630,7 +710,7 @@ ea_query_result = {
                 "pdf",  # content_type
                 100,  # file_size
                 "path/to/gmp-cert-3.pdf",  # path
-                dt.datetime.now(),  # created_datetime
+                dt.datetime(2024, 1, 1, 10, 10),  # created_datetime
                 2,  # created_by_id
                 43215678,  # check_code
                 "GMP",  # prefix
@@ -649,7 +729,7 @@ ea_query_result = {
                 "pdf",  # content_type
                 100,  # file_size
                 "path/to/gmp-cert-4.pdf",  # path
-                dt.datetime.now(),  # created_datetime
+                dt.datetime(2024, 1, 1, 10, 10),  # created_datetime
                 2,  # created_by_id
                 87654321,  # check_code
                 "GMP",  # prefix
