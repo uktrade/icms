@@ -174,6 +174,7 @@ sps_data_source_target = {
         (dm.CommodityType, web.CommodityType),
         (dm.Commodity, web.Commodity),
         (dm.Template, web.Template),
+        (dm.UniqueReference, web.UniqueReference),
     ],
     "import_application": [
         (dm.ImportApplicationType, web.ImportApplicationType),
@@ -232,6 +233,9 @@ sps_data_source_target = {
             QueryModel(queries.import_application_files, "Import Application Files", dm.File),
         ],
         "import_application": [
+            QueryModel(
+                queries.ia_licence_doc_refs, "Import Licence Doc References", dm.UniqueReference
+            ),
             QueryModel(queries.ia_type, "ia_type", dm.ImportApplicationType),
             QueryModel(queries.sps_application, "sps_application", dm.PriorSurveillanceApplication),
             QueryModel(
@@ -268,10 +272,56 @@ def test_import_sps_data(mock_connect, dummy_dm_settings):
     sps1, sps2 = web.PriorSurveillanceApplication.objects.order_by("pk")
 
     assert sps1.contract_file.file_type == "pro_forma_invoice"
+    assert sps1.contract_file.filename == "contract-no-content.pdf"
     assert sps1.supporting_documents.count() == 2
-    assert sps1.quantity is None
-    assert sps1.value_gbp is None
-    assert sps1.value_eur is None
+    assert set(sps1.supporting_documents.values_list("path", flat=True)) == {
+        "contract/file/10002",
+        "contract/file/10003",
+    }
+    assert sps1.endorsements.count() == 0
+    assert sps1.status == "COMPLETED"
+    assert sps1.reference == "IMA/2022/10234"
+    assert sps1.decision == "APPROVE"
+    assert sps1.legacy_case_flag is False
+    assert sps1.licence_extended_flag is False
+    assert sps1.submitted_by.full_name == "Mr ILB Case-Officer"
+    assert sps1.created_by.full_name == "Mr ILB Case-Officer"
+    assert sps1.last_updated_by.full_name == "Mr ILB Case-Officer"
+    assert sps1.importer.name == "Test Org"
+    assert sps1.importer_office.postcode == "ABC"
+    assert sps1.contact.full_name == "Mr ILB Case-Officer"
+    assert sps1.is_active is True
+    assert sps1.commodity.commodity_code == "1000"
+    assert sps1.customs_cleared_to_uk is True
+    assert sps1.chief_usage_status == "D"
+
+    assert sps1.create_datetime == dt.datetime(2022, 4, 22, 0, 0, 0, tzinfo=dt.UTC)
+    assert sps1.created == dt.datetime(2022, 4, 22, 0, 0, 0, tzinfo=dt.UTC)
+    assert sps1.submit_datetime == dt.datetime(2022, 4, 23, 0, 0, 0, tzinfo=dt.UTC)
+    assert sps1.last_submit_datetime == dt.datetime(2022, 4, 23, 0, 0, 0, tzinfo=dt.UTC)
+    assert sps1.last_update_datetime == dt.datetime(2022, 4, 23, 0, 0, 0, tzinfo=dt.UTC)
+    assert sps1.order_datetime == dt.datetime(2022, 4, 23, 0, 0, 0, tzinfo=dt.UTC)
+
+    none_fields = [
+        "finished",
+        "reassign_datetime",
+        "refuse_reason",
+        "applicant_reference",
+        "variation_decision",
+        "variation_refuse_reason",
+        "agent_id",
+        "agent_office_id",
+        "origin_country_id",
+        "consignment_country_id",
+        "commodity_group_id",
+        "case_owner_id",
+        "cover_letter_text",
+        "imi_submitted_by_id",
+        "imi_submit_datetime",
+    ]
+
+    for field in none_fields + ["quantity", "value_gbp", "value_eur"]:
+        assert getattr(sps1, field) is None
 
     assert sps1.contract_file.filename == "contract-no-content.pdf"
     assert sps1.contract_file.content_type == "application/pdf"
@@ -288,11 +338,39 @@ def test_import_sps_data(mock_connect, dummy_dm_settings):
     assert st2.request_type == "CONFIRM"
     assert st3.request_type == "DELETE"
 
-    assert sps2.contract_file.file_type == "supply_contract"
-    assert sps2.supporting_documents.count() == 1
+    for field in none_fields:
+        assert getattr(sps2, field) is None
+
     assert sps2.quantity == 100
     assert sps2.value_gbp == 100
     assert sps2.value_eur == 100
+    assert sps2.status == "COMPLETED"
+    assert sps2.reference == "IMA/2022/10235"
+    assert sps2.decision == "APPROVE"
+    assert sps2.legacy_case_flag is False
+    assert sps2.licence_extended_flag is False
+    assert sps2.submitted_by.full_name == "Mr ILB Case-Officer"
+    assert sps2.created_by.full_name == "Mr ILB Case-Officer"
+    assert sps2.last_updated_by.full_name == "Mr ILB Case-Officer"
+    assert sps2.importer.name == "Test Org"
+    assert sps2.importer_office.postcode == "ABC"
+    assert sps2.contact.full_name == "Mr ILB Case-Officer"
+    assert sps2.is_active is True
+    assert sps2.commodity.commodity_code == "1001"
+    assert sps2.customs_cleared_to_uk is False
+    assert sps2.chief_usage_status == "E"
+
+    assert sps2.create_datetime == dt.datetime(2022, 4, 22, 0, 0, 0, tzinfo=dt.UTC)
+    assert sps2.created == dt.datetime(2022, 4, 22, 0, 0, 0, tzinfo=dt.UTC)
+    assert sps2.submit_datetime == dt.datetime(2022, 4, 23, 0, 0, 0, tzinfo=dt.UTC)
+    assert sps2.last_submit_datetime == dt.datetime(2022, 4, 23, 0, 0, 0, tzinfo=dt.UTC)
+    assert sps2.last_update_datetime == dt.datetime(2022, 4, 23, 0, 0, 0, tzinfo=dt.UTC)
+    assert sps2.order_datetime == dt.datetime(2022, 4, 23, 0, 0, 0, tzinfo=dt.UTC)
+
+    assert sps2.contract_file.file_type == "supply_contract"
+    assert sps2.supporting_documents.count() == 1
+    assert set(sps2.supporting_documents.values_list("path", flat=True)) == {"contract/file/10004"}
+    assert sps2.endorsements.count() == 0
 
     assert sps2.contract_file.filename == "contract-2.pdf"
     assert sps2.contract_file.content_type == "pdf"
