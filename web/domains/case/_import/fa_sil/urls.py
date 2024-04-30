@@ -14,6 +14,11 @@ urlpatterns = [
                 path("checklist/", views.manage_checklist, name="manage-checklist"),
                 path("set-cover-letter/", views.set_cover_letter, name="set-cover-letter"),
                 # Goods
+                path(
+                    "sections/list",
+                    views.SILGoodsCertificateDetailView.as_view(),
+                    name="list-goods",
+                ),
                 path("sections/choose/", views.choose_goods_section, name="choose-goods-section"),
                 path(
                     "<silsectiontype:sil_section_type>/",

@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
+from django.views.generic import DetailView
 
 from web.domains.case import forms as case_forms
 from web.domains.case.forms import SubmitForm
@@ -84,6 +85,30 @@ def edit(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpRespo
         return render(request, "web/domains/case/import/fa-sil/edit.html", context)
 
 
+class SILGoodsCertificateDetailView(case_progress.InProgressApplicationStatusTaskMixin, DetailView):
+    http_method_names = ["get"]
+    template_name = "web/domains/case/import/fa-sil/goods/list.html"
+
+    # Extra typing for clarity
+    application: models.SILApplication
+
+    def has_object_permission(self) -> bool:
+        """Handles all permission checking required to prove a request user can access this view."""
+        check_can_edit_application(self.request.user, self.application)
+
+        return True
+
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        # The goods get loaded directly in the templates so no extra context required.
+        return context | {
+            "case_type": "import",
+            "process": self.application,
+            "page_title": "Firearms and Ammunition (Specific Import Licence) - Goods",
+        }
+
+
 @login_required
 def choose_goods_section(request: AuthenticatedHttpRequest, *, application_pk: int) -> HttpResponse:
     application: models.SILApplication = get_object_or_404(models.SILApplication, pk=application_pk)
@@ -129,7 +154,7 @@ def add_section(
                 goods.save()
 
                 return redirect(
-                    reverse("import:fa-sil:edit", kwargs={"application_pk": application.pk})
+                    reverse("import:fa-sil:list-goods", kwargs={"application_pk": application.pk})
                 )
         else:
             form = config.form_class()
@@ -168,6 +193,11 @@ def edit_section(
                 goods = form.save(commit=False)
                 goods.import_application = application
                 goods.save()
+
+                return redirect(
+                    reverse("import:fa-sil:list-goods", kwargs={"application_pk": application.pk})
+                )
+
         else:
             form = config.form_class(instance=goods)
 
@@ -203,7 +233,9 @@ def delete_section(
         goods.is_active = False
         goods.save()
 
-        return redirect(reverse("import:fa-sil:edit", kwargs={"application_pk": application_pk}))
+        return redirect(
+            reverse("import:fa-sil:list-goods", kwargs={"application_pk": application_pk})
+        )
 
 
 @login_required

@@ -40,26 +40,6 @@
   <input type="submit" name="action" class="primary-button button" value="Save" />
 {% endblock %}
 
-{% block after_form %}
-  <h4>Goods - Licence for</h4>
-  {% with read_only = False %}
-    {% include "web/domains/case/import/fa-sil/goods/section1-boxes.html" %}
-    {% include "web/domains/case/import/fa-sil/goods/section2-boxes.html" %}
-    {% include "web/domains/case/import/fa-sil/goods/section5-boxes.html" %}
-    {% include "web/domains/case/import/fa-sil/goods/section582-obsolete-boxes.html" %}
-    {% include "web/domains/case/import/fa-sil/goods/section582-other-boxes.html" %}
-  {% endwith %}
-
-  <p>
-    <a
-      href="{{ icms_url('import:fa-sil:choose-goods-section', kwargs={'application_pk': process.pk}) }}"
-      class="button small-button">
-      Add Goods Item
-    </a>
-  </p>
-{% endblock %}
-
-
 {% block page_js %}
   {{ super() }}
   <script src="{{ static('web/js/pages/fa-sil-edit.js') }}" type="text/javascript"></script>

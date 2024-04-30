@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
@@ -110,7 +112,7 @@ class DFLGoodsCertificateDetailView(case_progress.InProgressApplicationStatusTas
 
         return True
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         goods_list = self.application.goods_certificates.filter(is_active=True).select_related(
