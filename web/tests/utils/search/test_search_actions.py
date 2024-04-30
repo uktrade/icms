@@ -3,12 +3,14 @@ import datetime as dt
 import pytest
 from dateutil.relativedelta import relativedelta
 
+from web.domains.case._import.models import ImportApplicationType
 from web.domains.case.shared import ImpExpStatus
 from web.models import (
     CertificateOfGoodManufacturingPracticeApplication,
     CertificateOfManufactureApplication,
     ImportApplication,
     ImportApplicationLicence,
+    SILApplication,
     WoodQuotaApplication,
 )
 from web.utils.search import types, utils
@@ -43,6 +45,16 @@ test_import_arg_values = [
         ImportApplicationLicence(licence_end_date=_past_date),
         [],
         [],
+    ),
+    (
+        SILApplication(
+            status=_st.COMPLETED,
+            decision=SILApplication.APPROVE,
+            application_type=ImportApplicationType(type="FA", sub_type="SIL"),
+        ),
+        ImportApplicationLicence(licence_end_date=_future_date),
+        ["Request Variation", "Revoke Licence", "Provide Supplementary Report"],
+        ["Request Variation", "Provide Supplementary Report"],
     ),
 ]
 

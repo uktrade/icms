@@ -27,7 +27,12 @@ def get_import_record_actions(
 
     actions = []
 
-    for action in [VariationRequestAction, RevokeLicenceAction, ReopenCaseAction]:
+    for action in [
+        VariationRequestAction,
+        RevokeLicenceAction,
+        ReopenCaseAction,
+        ProvideSupplementaryReportAction,
+    ]:
         if action.show_action(app, user_org_perms):
             actions.append(action.get_action(app))
 
@@ -91,6 +96,33 @@ class VariationRequestAction(ActionProtocol):
             name="request-variation",
             label="Request Variation",
             icon="icon-redo2",
+            is_post=False,
+        )
+
+
+#
+# Applicant action (Import)
+#
+class ProvideSupplementaryReportAction(ActionProtocol):
+    @staticmethod
+    def show_action(app: ImportApplication, uop: UserOrganisationPermissions) -> bool:
+        return (
+            app.status in [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
+            and app.decision == app.APPROVE
+            and app.application_type.type == "FA"
+            and _can_edit_org_or_agent(app, uop)
+        )
+
+    @staticmethod
+    def get_action(app: ImportApplication) -> types.SearchAction:
+        return types.SearchAction(
+            url=reverse(
+                "import:fa:provide-report",
+                kwargs={"application_pk": app.pk},
+            ),
+            name="provide-supplementary-report",
+            label="Provide Supplementary Report",
+            icon="icon-upload",
             is_post=False,
         )
 

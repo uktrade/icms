@@ -24,6 +24,7 @@ from web.domains.case._import.fa_sil.forms import (
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import view_application_file
+from web.domains.case.views.views_search import SearchActionFormBase
 from web.domains.file.utils import create_file_model
 from web.flow.models import ProcessTypes
 from web.models import (
@@ -594,6 +595,11 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
 
         form_class = _get_supplementary_info_form(application)
 
+        # find out where the user came from, if it was the search page, store the url in the request session
+        referrer = request.META.get("HTTP_REFERER", "")
+        if "search" in referrer:
+            request.session["provide_report_search_results_url"] = referrer
+
         if request.method == "POST":
             form = form_class(
                 data=request.POST, instance=application.supplementary_info, application=application
@@ -606,9 +612,15 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
                 supplementary_info.completed_by = request.user
                 supplementary_info.save()
 
-                return redirect(
-                    reverse("import:fa:provide-report", kwargs={"application_pk": application.pk})
-                )
+                if referrer := request.session.pop("provide_report_search_results_url", None):
+                    # if they came from the search page, return them to the search page
+                    return redirect(SearchActionFormBase.parse_search_results_url(referrer))
+                else:
+                    return redirect(
+                        reverse(
+                            "import:fa:provide-report", kwargs={"application_pk": application.pk}
+                        )
+                    )
 
             elif form.non_field_errors():
                 messages.error(request, form.non_field_errors()[0])
