@@ -10,7 +10,7 @@ from web.utils.commodity import get_usage_commodities, get_usage_records
 from .models import SanctionsAndAdhocApplication, SanctionsAndAdhocApplicationGoods
 
 
-class SanctionsAndAdhocLicenseFormBase(forms.ModelForm):
+class SanctionsAndAdhocLicenceFormBase(forms.ModelForm):
     exporter_name = forms.CharField(
         label="Exporter Name",
         required=False,
@@ -47,14 +47,14 @@ class SanctionsAndAdhocLicenseFormBase(forms.ModelForm):
         )
 
 
-class EditSanctionsAndAdhocLicenseForm(OptionalFormMixin, SanctionsAndAdhocLicenseFormBase):
+class EditSanctionsAndAdhocLicenceForm(OptionalFormMixin, SanctionsAndAdhocLicenceFormBase):
     """Form used when editing the application.
 
     All fields are optional to allow partial record saving.
     """
 
 
-class SubmitSanctionsAndAdhocLicenseForm(SanctionsAndAdhocLicenseFormBase):
+class SubmitSanctionsAndAdhocLicenceForm(SanctionsAndAdhocLicenceFormBase):
     """Form used when submitting the application.
 
     All fields are fully validated to ensure form is correct.

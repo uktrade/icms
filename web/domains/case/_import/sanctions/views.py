@@ -41,10 +41,10 @@ from web.utils.validation import (
 )
 
 from .forms import (
-    EditSanctionsAndAdhocLicenseForm,
+    EditSanctionsAndAdhocLicenceForm,
     GoodsForm,
     GoodsSanctionsLicenceForm,
-    SubmitSanctionsAndAdhocLicenseForm,
+    SubmitSanctionsAndAdhocLicenceForm,
 )
 from .models import SanctionsAndAdhocApplication, SanctionsAndAdhocApplicationGoods
 
@@ -72,8 +72,8 @@ def edit_application(request: AuthenticatedHttpRequest, *, application_pk: int) 
         form = get_application_form(
             application,
             request,
-            EditSanctionsAndAdhocLicenseForm,
-            SubmitSanctionsAndAdhocLicenseForm,
+            EditSanctionsAndAdhocLicenceForm,
+            SubmitSanctionsAndAdhocLicenceForm,
         )
 
         if request.method == "POST":
@@ -89,7 +89,7 @@ def edit_application(request: AuthenticatedHttpRequest, *, application_pk: int) 
         context = {
             "process": application,
             "form": form,
-            "page_title": "Sanctions and Adhoc License Application - Edit",
+            "page_title": "Sanctions and Adhoc Licence Application - Edit",
             "supporting_documents": supporting_documents,
             "case_type": "import",
         }
@@ -118,13 +118,13 @@ class SanctionsGoodsDetailView(case_progress.InProgressApplicationStatusTaskMixi
         ).distinct()
 
         # Check if the main application is valid when showing add goods link
-        show_add_goods = SubmitSanctionsAndAdhocLicenseForm(
+        show_add_goods = SubmitSanctionsAndAdhocLicenceForm(
             instance=self.application, data=model_to_dict(self.application)
         ).is_valid()
 
         return context | {
             "process": self.application,
-            "page_title": "Sanctions and Adhoc License Application - Goods",
+            "page_title": "Sanctions and Adhoc Licence Application - Goods",
             "goods_list": goods_list,
             "show_add_goods": show_add_goods,
             "case_type": "import",
@@ -161,7 +161,7 @@ def add_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Http
         context = {
             "process": application,
             "form": goods_form,
-            "page_title": "Sanctions and Adhoc License Application - Add Goods",
+            "page_title": "Sanctions and Adhoc Licence Application - Add Goods",
             "commodity_group_data": _get_sanctions_commodity_group_data(application),
             "case_type": "import",
         }
@@ -209,7 +209,7 @@ def edit_goods(
             "case_type": "import",
             "process": application,
             "form": form,
-            "page_title": "Sanctions and Adhoc License Application - Edit Goods",
+            "page_title": "Sanctions and Adhoc Licence Application - Edit Goods",
             "commodity_group_data": commodity_group_data,
             "unit_label": unit_label,
         }
@@ -287,6 +287,34 @@ def delete_goods(
     )
 
 
+class SanctionsSupportingDocumentsDetailView(
+    case_progress.InProgressApplicationStatusTaskMixin, DetailView
+):
+    http_method_names = ["get"]
+    template_name = "web/domains/case/import/sanctions/supporting-documents-list.html"
+
+    # Extra typing for clarity
+    application: SanctionsAndAdhocApplication
+
+    def has_object_permission(self) -> bool:
+        """Handles all permission checking required to prove a request user can access this view."""
+        check_can_edit_application(self.request.user, self.application)
+
+        return True
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        supporting_documents = self.application.supporting_documents.filter(is_active=True)
+
+        return context | {
+            "process": self.application,
+            "page_title": "Sanctions and Adhoc Licence Application - Supporting Documents",
+            "supporting_documents": supporting_documents,
+            "case_type": "import",
+        }
+
+
 @login_required
 def add_supporting_document(
     request: AuthenticatedHttpRequest, *, application_pk: int
@@ -308,7 +336,9 @@ def add_supporting_document(
                 create_file_model(document, request.user, application.supporting_documents)
 
                 return redirect(
-                    reverse("import:sanctions:edit", kwargs={"application_pk": application_pk})
+                    reverse(
+                        "import:sanctions:list-documents", kwargs={"application_pk": application_pk}
+                    )
                 )
         else:
             form = DocumentForm()
@@ -316,7 +346,7 @@ def add_supporting_document(
         context = {
             "process": application,
             "form": form,
-            "page_title": "Sanctions and Adhoc License Application",
+            "page_title": "Sanctions and Adhoc Licence Application",
             "case_type": "import",
         }
         return render(request, "web/domains/case/import/sanctions/add_document.html", context)
@@ -352,7 +382,9 @@ def delete_supporting_document(
         document.is_active = False
         document.save()
 
-        return redirect(reverse("import:sanctions:edit", kwargs={"application_pk": application_pk}))
+        return redirect(
+            reverse("import:sanctions:list-documents", kwargs={"application_pk": application_pk})
+        )
 
 
 @login_required
@@ -377,7 +409,7 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         page_errors = PageErrors(page_name="Application Details", url=edit_url)
         create_page_errors(
-            SubmitSanctionsAndAdhocLicenseForm(
+            SubmitSanctionsAndAdhocLicenceForm(
                 data=model_to_dict(application), instance=application
             ),
             page_errors,
@@ -451,10 +483,10 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
             form = SubmitForm()
 
     context = {
-        "page_title": "Sanctions and Adhoc License Application - Submit Application",
+        "page_title": "Sanctions and Adhoc Licence Application - Submit Application",
         "process": application,
         "form": form,
-        "application_title": "Sanctions and Adhoc License Application",
+        "application_title": "Sanctions and Adhoc Licence Application",
         "declaration": application.application_type.declaration_template,
         "errors": errors if errors.has_errors() else None,
         "case_type": "import",

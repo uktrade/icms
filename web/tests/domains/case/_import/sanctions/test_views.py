@@ -157,7 +157,7 @@ class TestSanctionsGoodsDetailView(AuthTestCase):
         assert len(context["goods_list"]) == 2
 
         html = response.content.decode("utf-8")
-        assert "Sanctions and Adhoc License Application - Goods" in html
+        assert "Sanctions and Adhoc Licence Application - Goods" in html
         assert "Add Goods" in html
 
     def test_no_goods_shown(self, sanctions_app_in_progress):
@@ -334,6 +334,57 @@ class TestSanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             "import:sanctions:list-goods", kwargs={"application_pk": self.process.pk}
         )
         assert len(SanctionsAndAdhocApplicationGoods.objects.all()) == 1
+
+
+class TestSanctionsSupportingDocumentsDetailView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, sanctions_app_in_progress):
+        self.url = reverse(
+            "import:sanctions:list-documents",
+            kwargs={"application_pk": sanctions_app_in_progress.pk},
+        )
+
+    def test_permission(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_get_only(self):
+        response = self.importer_client.post(self.url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_goods_shown(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assertTemplateUsed(
+            response, "web/domains/case/import/sanctions/supporting-documents-list.html"
+        )
+
+        context = response.context
+        assert len(context["supporting_documents"]) == 1
+
+        html = response.content.decode("utf-8")
+        assert "Sanctions and Adhoc Licence Application - Supporting Documents" in html
+        assert "Add Supporting Document" in html
+
+    def test_no_goods_shown(self, sanctions_app_in_progress):
+        sanctions_app_in_progress.supporting_documents.all().delete()
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assertTemplateUsed(
+            response, "web/domains/case/import/sanctions/supporting-documents-list.html"
+        )
+
+        context = response.context
+        assert len(context["supporting_documents"]) == 0
+
+        html = response.content.decode("utf-8")
+        assert "There are no supporting documents attached" in html
+        assert "Add Supporting Document" in html
 
 
 class TestSubmitSanctions:

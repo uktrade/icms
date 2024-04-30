@@ -2,7 +2,7 @@ import pytest
 
 from web.domains.case._import.sanctions.forms import (
     GoodsForm,
-    SubmitSanctionsAndAdhocLicenseForm,
+    SubmitSanctionsAndAdhocLicenceForm,
 )
 from web.models import Commodity, Country, Task
 from web.tests.auth import AuthTestCase
@@ -40,7 +40,7 @@ class TestSanctionsAndAdhocImportAppplicationForm(AuthTestCase):
             "exporter_name": None,
             "exporter_address": None,
         }
-        form = SubmitSanctionsAndAdhocLicenseForm(
+        form = SubmitSanctionsAndAdhocLicenceForm(
             data, instance=self.process, initial={"contact": self.importer_user}
         )
         assert form.is_valid(), form.errors
@@ -53,7 +53,7 @@ class TestSanctionsAndAdhocImportAppplicationForm(AuthTestCase):
             "exporter_name": None,
             "exporter_address": None,
         }
-        form = SubmitSanctionsAndAdhocLicenseForm(
+        form = SubmitSanctionsAndAdhocLicenceForm(
             data, instance=self.process, initial={"contact": self.importer_user}
         )
         assert form.is_valid() is False
@@ -61,7 +61,7 @@ class TestSanctionsAndAdhocImportAppplicationForm(AuthTestCase):
 
     def test_sa_form_invalid_without_required_fields(self):
         data = {"exporter_name": None, "exporter_address": None}
-        form = SubmitSanctionsAndAdhocLicenseForm(
+        form = SubmitSanctionsAndAdhocLicenceForm(
             data, instance=self.process, initial={"contact": self.importer_user}
         )
         assert form.is_valid() is False
