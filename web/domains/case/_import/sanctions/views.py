@@ -1,5 +1,6 @@
 import logging
 from collections import Counter
+from typing import Any
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
@@ -110,7 +111,7 @@ class SanctionsGoodsDetailView(case_progress.InProgressApplicationStatusTaskMixi
 
         return True
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         goods_list = annotate_commodity_unit(
@@ -302,7 +303,7 @@ class SanctionsSupportingDocumentsDetailView(
 
         return True
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         supporting_documents = self.application.supporting_documents.filter(is_active=True)

@@ -1,8 +1,9 @@
+from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import pytest
 from django.urls import reverse
-from pytest_django.asserts import assertInHTML
+from pytest_django.asserts import assertInHTML, assertTemplateUsed
 
 from web.domains.case._import.fa_sil.models import (
     SILGoodsSection582Obsolete,  # /PS-IGNORE
@@ -18,6 +19,7 @@ from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.models import ImportApplicationLicence, SILApplication, Task
 from web.tests.application_utils import create_import_app, save_app_data
+from web.tests.auth import AuthTestCase
 from web.tests.helpers import check_page_errors
 from web.utils.validation import ApplicationErrors, PageErrors
 
@@ -83,7 +85,7 @@ class TestEditFirearmsSILApplication:
             "unlimited_quantity": "on",
         }
         response = self.client.post(add_goods_url, data=data)
-        assert response.status_code == 302
+        assert response.status_code == HTTPStatus.FOUND
 
         # Specified quantity
 
@@ -94,7 +96,7 @@ class TestEditFirearmsSILApplication:
             "unlimited_quantity": "off",
         }
         response = self.client.post(add_goods_url, data=data)
-        assert response.status_code == 302
+        assert response.status_code == HTTPStatus.FOUND
 
         # Invalid quantity data
 
@@ -105,7 +107,7 @@ class TestEditFirearmsSILApplication:
             "unlimited_quantity": "",
         }
         response = self.client.post(add_goods_url, data=data)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assertInHTML(
             '<div class="error-message">You must enter either a quantity or select unlimited quantity</div>',
             response.content.decode("utf-8"),
@@ -129,7 +131,7 @@ class TestEditFirearmsSILApplication:
             "unlimited_quantity": "on",
         }
         response = self.client.post(add_goods_url, data=data)
-        assert response.status_code == 302
+        assert response.status_code == HTTPStatus.FOUND
 
         # Specified quantity
 
@@ -140,7 +142,7 @@ class TestEditFirearmsSILApplication:
             "unlimited_quantity": "off",
         }
         response = self.client.post(add_goods_url, data=data)
-        assert response.status_code == 302
+        assert response.status_code == HTTPStatus.FOUND
 
         # Invalid quantity data
 
@@ -151,7 +153,7 @@ class TestEditFirearmsSILApplication:
             "unlimited_quantity": "",
         }
         response = self.client.post(add_goods_url, data=data)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assertInHTML(
             '<div class="error-message">You must enter either a quantity or select unlimited quantity</div>',
             response.content.decode("utf-8"),
@@ -165,16 +167,69 @@ class TestEditFirearmsSILApplication:
 
         # No query param so no errors by default
         response = self.client.get(f"{edit_url}")
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         form = response.context["form"]
         assert not form.errors
 
         # Validate every field to check for any errors
         response = self.client.get(f"{edit_url}?validate")
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         form = response.context["form"]
         message = form.errors["origin_country"][0]
         assert message == "You must enter this item"
+
+
+class TestSILGoodsCertificateDetailView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, fa_sil_app_in_progress):
+        self.url = reverse(
+            "import:fa-sil:list-goods", kwargs={"application_pk": fa_sil_app_in_progress.pk}
+        )
+
+    def test_permission(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_get_only(self):
+        response = self.importer_client.post(self.url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_goods_shown(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assertTemplateUsed(response, "web/domains/case/import/fa-sil/goods/list.html")
+
+        html = response.content.decode("utf-8")
+        assert "Add Goods Item" in html
+        assert "Section 1 goods" in html
+        assert "Section 2 goods" in html
+        assert "Section 5 goods" in html
+        assert "Section 58 obsoletes goods" in html
+        assert "Section 58 other goods" in html
+
+    def test_no_goods_shown(self, fa_sil_app_in_progress):
+        fa_sil_app_in_progress.goods_section1.all().delete()
+        fa_sil_app_in_progress.goods_section2.all().delete()
+        fa_sil_app_in_progress.goods_section5.all().delete()
+        fa_sil_app_in_progress.goods_section582_obsoletes.all().delete()
+        fa_sil_app_in_progress.goods_section582_others.all().delete()
+
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assertTemplateUsed(response, "web/domains/case/import/fa-sil/goods/list.html")
+
+        html = response.content.decode("utf-8")
+        assert "Add Goods Item" in html
+        assert "Section 1 goods" not in html
+        assert "Section 2 goods" not in html
+        assert "Section 5 goods" not in html
+        assert "Section 58 obsoletes goods" not in html
+        assert "Section 58 other goods" not in html
 
 
 class TestSubmitFaSIL:

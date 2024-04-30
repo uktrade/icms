@@ -69,6 +69,7 @@ def fa_sil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     #
     # Add goods with quantity and unlimited quantity for each section
     #
+    page.get_by_role("link", name="Goods").click()
 
     # Section 1
     page.get_by_role("link", name="Add Goods Item").click()
