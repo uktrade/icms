@@ -1,6 +1,8 @@
+from http import HTTPStatus
+
 import pytest
 from django.urls import reverse
-from pytest_django.asserts import assertRedirects
+from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
 from web.models import (
     Commodity,
@@ -27,16 +29,16 @@ class TestSanctionsAndAdhocImportAppplicationCreateView(AuthTestCase):
 
     def test_anonymous_access_redirects(self):
         response = self.anonymous_client.get(self.url)
-        assert response.status_code == 302
+        assert response.status_code == HTTPStatus.FOUND
         assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
         response = self.exporter_client.get(self.url)
-        assert response.status_code == 403
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
     def test_create_ok(self):
         response = self.importer_client.get(self.url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
 
         self.importer_client.post(
             reverse("import:create-sanctions"),
@@ -54,11 +56,11 @@ class TestSanctionsAndAdhocImportAppplicationCreateView(AuthTestCase):
 
     def test_anonymous_post_access_redirects(self):
         response = self.anonymous_client.post(self.url)
-        assert response.status_code == 302
+        assert response.status_code == HTTPStatus.FOUND
 
     def test_forbidden_post_access(self):
         response = self.exporter_client.post(self.url)
-        assert response.status_code == 403
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
 
 class TestSanctionsAndAdhocImportAppplicationApplicantDetails(AuthTestCase):
@@ -82,16 +84,16 @@ class TestSanctionsAndAdhocImportAppplicationApplicantDetails(AuthTestCase):
     def test_anonymous_access_redirects(self):
         response = self.anonymous_client.get(self.url)
 
-        assert response.status_code == 302
+        assert response.status_code == HTTPStatus.FOUND
         assertRedirects(response, self.redirect_url)
 
     def test_forbidden_access(self):
         response = self.exporter_client.get(self.url)
-        assert response.status_code == 403
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
     def test_logged_in_permissions(self):
         response = self.importer_client.get(self.url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
 
     def test_page_content(self):
         response = self.importer_client.get(self.url)
@@ -117,7 +119,7 @@ class TestSanctionsAndAdhocImportAppplicationApplicantDetails(AuthTestCase):
         )
 
         response = self.importer_client.get(self.url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         application = SanctionsAndAdhocApplication.objects.get(pk=self.process.pk)
         assert application.contact == self.importer_user
         assert application.applicant_reference == app_ref
@@ -125,7 +127,52 @@ class TestSanctionsAndAdhocImportAppplicationApplicantDetails(AuthTestCase):
         assert application.consignment_country == self.valid_country
         assert application.exporter_name == exporter_name
         assert application.exporter_address == exporter_address
-        assert "There are no goods attached" in response.content.decode()
+
+
+class TestSanctionsGoodsDetailView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, sanctions_app_in_progress):
+        self.url = reverse(
+            "import:sanctions:list-goods", kwargs={"application_pk": sanctions_app_in_progress.pk}
+        )
+
+    def test_permission(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+    def test_get_only(self):
+        response = self.importer_client.post(self.url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED
+
+    def test_goods_shown(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assertTemplateUsed(response, "web/domains/case/import/sanctions/goods-list.html")
+
+        context = response.context
+        assert len(context["goods_list"]) == 2
+
+        html = response.content.decode("utf-8")
+        assert "Sanctions and Adhoc License Application - Goods" in html
+        assert "Add Goods" in html
+
+    def test_no_goods_shown(self, sanctions_app_in_progress):
+        sanctions_app_in_progress.sanctions_goods.all().delete()
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        assertTemplateUsed(response, "web/domains/case/import/sanctions/goods-list.html")
+
+        context = response.context
+        assert len(context["goods_list"]) == 0
+
+        html = response.content.decode("utf-8")
+        assert "There are no goods attached" in html
+        assert "Add Goods" in html
 
 
 class TestSanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
@@ -163,20 +210,20 @@ class TestSanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
     def test_add_anonymous_access_redirects(self):
         response = self.anonymous_client.get(self.add_url)
 
-        assert response.status_code == 302
+        assert response.status_code == HTTPStatus.FOUND
         assertRedirects(response, self.add_redirect_url)
 
     def test_add_forbidden_access(self):
         response = self.exporter_client.get(self.add_url)
-        assert response.status_code == 403
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
     def test_add_logged_in_permissions(self):
         response = self.importer_client.get(self.add_url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
 
     def test_add_page_content(self):
         response = self.importer_client.get(self.add_url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         page_contents = response.content.decode()
 
         # Header
@@ -198,29 +245,29 @@ class TestSanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             reverse("import:sanctions:add-goods", kwargs={"application_pk": self.process.pk}),
             data=data,
         )
-        assert response.status_code == 302
+        assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
-            "import:sanctions:edit", kwargs={"application_pk": self.process.pk}
+            "import:sanctions:list-goods", kwargs={"application_pk": self.process.pk}
         )
         assert SanctionsAndAdhocApplicationGoods.objects.count() == 2
 
     def test_edit_anonymous_access_redirects(self):
         response = self.anonymous_client.get(self.edit_url)
 
-        assert response.status_code == 302
+        assert response.status_code == HTTPStatus.FOUND
         assertRedirects(response, self.edit_redirect_url)
 
     def test_edit_forbidden_access(self):
         response = self.exporter_client.get(self.edit_url)
-        assert response.status_code == 403
+        assert response.status_code == HTTPStatus.FORBIDDEN
 
     def test_edit_logged_in_permissions(self):
         response = self.importer_client.get(self.edit_url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
 
     def test_edit_page_content(self):
         response = self.importer_client.get(self.edit_url)
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         page_contents = response.content.decode()
 
         # Header
@@ -252,10 +299,10 @@ class TestSanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             data=data,
         )
 
-        assert response.status_code == 302
+        assert response.status_code == HTTPStatus.FOUND
 
         assert response.url == reverse(
-            "import:sanctions:edit", kwargs={"application_pk": self.process.pk}
+            "import:sanctions:list-goods", kwargs={"application_pk": self.process.pk}
         )
         assert SanctionsAndAdhocApplicationGoods.objects.count() == 2
 
@@ -282,9 +329,9 @@ class TestSanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             ),
             data=data,
         )
-        assert response.status_code == 302
+        assert response.status_code == HTTPStatus.FOUND
         assert response.url == reverse(
-            "import:sanctions:edit", kwargs={"application_pk": self.process.pk}
+            "import:sanctions:list-goods", kwargs={"application_pk": self.process.pk}
         )
         assert len(SanctionsAndAdhocApplicationGoods.objects.all()) == 1
 

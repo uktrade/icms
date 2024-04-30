@@ -7,6 +7,7 @@ app_name = "sanctions"
 
 goods_urls = [
     path("add/", views.add_goods, name="add-goods"),
+    path("list/", views.SanctionsGoodsDetailView.as_view(), name="list-goods"),
     path(
         "<int:goods_pk>/",
         include(

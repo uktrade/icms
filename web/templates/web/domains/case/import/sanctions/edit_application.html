@@ -24,66 +24,7 @@
 {% endblock task_actions %}
 
 {% block subtasks %}
-
-        <h4>Goods</h4>
-
-        {% if goods_list %}
-
-            <table responsiveList class="setoutList" id="tbl-search-results">
-                <thead>
-                <tr>
-                    <th>
-                        Commodity Code
-                    </th>
-                    <th>Goods Descriptions</th>
-                    <th>Quantity</th>
-                    <th>Unit</th>
-                    <th>Value (GBP CIF)</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-
-                {% for row in goods_list %}
-                    <tr class="result-row">
-                        <td>{{ row.commodity }}</td>
-                        <td>{{ row.goods_description }}</td>
-                        <td>{{ row.quantity_amount }}</td>
-                        <td>{{ row.unit_description }}</td>
-                        <td>{{ row.value }}</td>
-                        <td>
-                          <a class="link-button button icon-pencil" data-input_action="edit"
-                             href="{{ icms_url('import:sanctions:edit-goods', kwargs={'application_pk': process.pk, 'goods_pk': row.pk}) }}"
-                          >Edit</a>
-
-                            <form action="{{ icms_url('import:sanctions:delete-goods', kwargs={'application_pk': process.pk, 'goods_pk': row.pk}) }}", method="POST">
-                                {{ csrf_input }}
-                              <button
-                                type="submit"
-                                class="link-button icon-bin button tooltipstered"
-                                aria-label="Delete"
-                                data-confirm="Are you sure you want to delete this record?">Delete
-                              </button>
-                            </form>
-                        </td>
-                    </tr>
-                {% endfor %}
-
-            </table>
-
-        {% else %}
-            <div class="info-box info-box-info">
-                There are no goods attached
-            </div>
-        {% endif %}
-
-        {% if show_add_goods %}
-          <a class="button small-button" href="{{ icms_url('import:sanctions:add-goods', kwargs={'application_pk': process.pk}) }}">Add Goods</a>
-        {% else %}
-          <p>Please complete above section before adding goods.</p>
-        {% endif %}
-
-        <h4>Supporting Documents</h4>
-
+    <h4>Supporting Documents</h4>
    {% if supporting_documents %}
      <table class="setoutList">
        <thead>

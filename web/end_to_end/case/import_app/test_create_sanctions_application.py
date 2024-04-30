@@ -55,9 +55,14 @@ def sanctions_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_label("Exporter Address").fill("Exporter address")
     page.get_by_role("button", name="Save").click()
 
+    page.get_by_role("link", name="Add Supporting Document").click()
+    page.get_by_label("Document").set_input_files(sample_upload_file)
+    page.get_by_role("button", name="Save").click()
+
     #
     # Add a goods line
     #
+    page.get_by_role("link", name="Goods").click()
     page.get_by_role("link", name="Add Goods").click()
     page.get_by_role("combobox", name="Commodity Code").select_option("3288")
     page.get_by_label("Goods Description").click()
@@ -66,9 +71,6 @@ def sanctions_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_label("Quantity").fill("12345")
     page.get_by_label("Value (GBP CIF)").click()
     page.get_by_label("Value (GBP CIF)").fill("54321")
-    page.get_by_role("button", name="Save").click()
-    page.get_by_role("link", name="Add Supporting Document").click()
-    page.get_by_label("Document").set_input_files(sample_upload_file)
     page.get_by_role("button", name="Save").click()
 
     #
