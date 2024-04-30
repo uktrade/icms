@@ -13,6 +13,7 @@ from web.models import (
     ImportContact,
     Task,
 )
+from web.tests.helpers import CaseURLS
 
 
 @pytest.fixture()
@@ -311,3 +312,21 @@ class TestDeleteImportContactView:
             reverse("import:fa:provide-report", kwargs={"application_pk": self.app.pk}),
             status_code=HTTPStatus.FOUND,
         )
+
+
+def test_upload_supplementary_report_search_redirect(
+    completed_oil_app_with_supplementary_report, importer_client
+):
+    """Tests that accessing the upload supplementary report page redirects to the search results page when the user
+    has accessed it from there."""
+    # Add Report
+    response = importer_client.post(
+        CaseURLS.fa_provide_report(completed_oil_app_with_supplementary_report.pk),
+        follow=True,
+        headers={"REFERER": "https://example.com/case/import/search/standard/?test=yes"},
+    )
+
+    assert response.resolver_match.view_name == "case:search-results"
+    assert response.resolver_match.kwargs["mode"] == "standard"
+    assert response.resolver_match.kwargs["case_type"] == "import"
+    assert response.request["QUERY_STRING"] == "test=yes"

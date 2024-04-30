@@ -268,10 +268,9 @@ class SearchActionFormBase(
 
         return self._default_return_url()
 
-    def _get_return_url(self) -> str:
-        """Check for a search_results_url and rebuild the search request."""
-
-        url = self.request.session.get("search_results_url")
+    @staticmethod
+    def parse_search_results_url(url: str) -> str:
+        """Parse a referrer search results URL, reform it, and get the relative path."""
         return_url: parse.ParseResult = parse.urlparse(url)
 
         is_import = "case/import/" in return_url.path
@@ -289,6 +288,10 @@ class SearchActionFormBase(
             search_url = "".join((search_url, "?", return_url.query))
 
         return search_url
+
+    def _get_return_url(self) -> str:
+        """Check for a search_results_url and rebuild the search request."""
+        return self.parse_search_results_url(self.request.session.get("search_results_url"))
 
     def _default_return_url(self):
         raise NotImplementedError("View must define _default_return_url")
