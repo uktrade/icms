@@ -2,8 +2,8 @@ window.addEventListener('load', (event) => {
   const addressEntries = document.querySelectorAll("div[name='address_entry_form']");
 
   addressEntries.forEach((node) => {
-    const addressTypeSearch = node.querySelector("div[name='address_type_field'] input[value='S']");
-    const addressTypeManual = node.querySelector("div[name='address_type_field'] input[value='M']");
+    const addressTypeSearch = node.querySelector("div[name='address_type_field'] input[value='SEARCH']");
+    const addressTypeManual = node.querySelector("div[name='address_type_field'] input[value='MANUAL']");
     const addressInput = node.querySelector("div[name='address_field'] textarea");
     const postcodeInputDiv = node.querySelector("div[name='postcode_field'] div.input-group");
     const postcodeInput = node.querySelector("div[name='postcode_field'] input");
@@ -11,7 +11,7 @@ window.addEventListener('load', (event) => {
     const selectAddress = node.querySelector("select[name='available_addresses']");
 
     // value of select when doing a lookup.
-    const SEARCH = "S"
+    const SEARCH = "SEARCH"
 
     // used to delay api search
     let postcodeSearchDelay;
