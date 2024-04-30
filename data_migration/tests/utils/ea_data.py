@@ -15,7 +15,7 @@ EA_BASE_COLUMNS = [
     ("created",),
     ("submit_datetime",),
     ("last_updated_by_id",),
-    ("last_updated_datetime",),
+    ("last_update_datetime",),
     ("variation_no",),
     ("application_type_id",),
     ("exporter_id",),
@@ -306,7 +306,7 @@ ea_query_result = {
                 dt.datetime(2022, 4, 27),  # created
                 None,  # submit_datetime
                 2,  # last_updated_by_id
-                dt.datetime(2022, 4, 27),  # last_updated_datetime
+                dt.datetime(2022, 4, 27),  # last_update_datetime
                 0,  # variation_no
                 2,  # application_type_id
                 2,  # exporter_id
@@ -389,7 +389,7 @@ ea_query_result = {
                 dt.datetime(2022, 4, 27),  # created
                 None,  # submit_datetime
                 2,  # last_updated_by_id
-                dt.datetime(2022, 4, 27),  # last_updated_datetime
+                dt.datetime(2022, 4, 27),  # last_update_datetime
                 0,  # variation_no
                 2,  # application_type_id
                 2,  # exporter_id
@@ -410,7 +410,7 @@ ea_query_result = {
                 dt.datetime(2022, 4, 28),  # created
                 dt.datetime(2022, 4, 29),  # submit_datetime
                 2,  # last_updated_by_id
-                dt.datetime(2022, 4, 29),  # last_updated_datetime
+                dt.datetime(2022, 4, 29),  # last_update_datetime
                 0,  # variation_no
                 2,  # application_type_id
                 3,  # exporter_id
@@ -431,7 +431,7 @@ ea_query_result = {
                 dt.datetime(2022, 4, 28),  # created
                 dt.datetime(2022, 4, 29),  # submit_datetime
                 2,  # last_updated_by_id
-                dt.datetime(2022, 4, 29),  # last_updated_datetime
+                dt.datetime(2022, 4, 29),  # last_update_datetime
                 2,  # variation_no
                 2,  # application_type_id
                 2,  # exporter_id

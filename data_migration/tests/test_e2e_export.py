@@ -567,9 +567,8 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert com1.submit_datetime is None
     assert com1.last_submit_datetime is None
 
-    # Order datetime & last update datetime set to time migration ran
-    assert com1.order_datetime is not None
-    assert com1.last_update_datetime is not None
+    assert com1.order_datetime == dt.datetime(2022, 4, 27, 0, 0, 0, tzinfo=dt.UTC)
+    assert com1.last_update_datetime == dt.datetime(2022, 4, 27, 0, 0, 0, tzinfo=dt.UTC)
 
     assert com1.status == "IN PROGRESS"
     assert com1.reference == "CA/2022/9904"
@@ -591,10 +590,8 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert com2.created == dt.datetime(2022, 4, 28, 0, 0, 0, tzinfo=dt.UTC)
     assert com2.submit_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
     assert com2.last_submit_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
-
-    # Order datetime & last update datetime set to time migration ran
-    assert com2.order_datetime is not None
-    assert com2.last_update_datetime is not None
+    assert com2.order_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
+    assert com2.last_update_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
 
     assert com2.status == "PROCESSING"
     assert com2.reference == "CA/2022/9905"
@@ -616,10 +613,8 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert com3.created == dt.datetime(2022, 4, 28, 0, 0, 0, tzinfo=dt.UTC)
     assert com3.submit_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
     assert com3.last_submit_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
-
-    # Order datetime & last update datetime set to time migration ran
-    assert com3.order_datetime is not None
-    assert com3.last_update_datetime is not None
+    assert com3.order_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
+    assert com3.last_update_datetime == dt.datetime(2022, 4, 29, 0, 0, 0, tzinfo=dt.UTC)
 
     assert com3.status == "COMPLETED"
     assert com3.reference == "CA/2022/9906"

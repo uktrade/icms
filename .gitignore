@@ -153,3 +153,8 @@ output_documents/
 .python-version
 /.env
 /scripts/reset-local-db-no-docker
+
+# End to end test data
+exporter_user.json
+importer_user.json
+ilb_admin.json

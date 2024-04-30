@@ -54,7 +54,7 @@ class ExportApplication(MigrationBase):
     application_type = models.ForeignKey(
         ExportApplicationType, on_delete=models.PROTECT, null=False
     )
-    last_update_datetime = models.DateTimeField(null=False, auto_now=True)
+    last_update_datetime = models.DateTimeField()
     last_updated_by = models.ForeignKey(
         User, on_delete=models.PROTECT, blank=False, null=False, related_name="updated_export_cases"
     )
@@ -129,6 +129,8 @@ class ExportApplicationCertificate(MigrationBase):
     created_at = models.DateTimeField()
     updated_at = models.DateTimeField()
     document_pack_id = models.IntegerField(unique=True, null=True)
+    revoke_reason = models.TextField(null=True)
+    revoke_email_sent = models.BooleanField(default=False)
 
     @classmethod
     def get_excludes(cls) -> list[str]:

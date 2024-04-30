@@ -289,17 +289,37 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     sil2_licences: QuerySet[web.ImportApplicationLicence] = sil2.licences.order_by("id")
     l2, l3, l4 = sil2_licences
 
+    assert l1.status == web.ImportApplicationLicence.Status.ACTIVE
+    assert l1.case_reference == "IMA/2022/1234"
+    assert l1.revoke_reason is None
+    assert l1.revoke_email_sent is False
+    assert l1.issue_paper_licence_only is False
     assert l1.created_at == dt.datetime(2022, 4, 27, 10, 43, tzinfo=dt.UTC)
-    assert set(l1.document_references.values_list("reference", flat=True)) == {"1234A", None}
-    assert l1.document_references.filter(document_type="LICENCE").count() == 1
-    assert l1.document_references.filter(document_type="COVER_LETTER").count() == 1
+    assert l1.updated_at == dt.datetime(2022, 4, 27, 10, 44, tzinfo=dt.UTC)
+    assert l1.case_completion_datetime == dt.datetime(2022, 4, 27, 10, 44, tzinfo=dt.UTC)
+
     assert list(l1.cleared_by.values_list("id", flat=True)) == [2]
 
+    doc1, doc2 = l1.document_references.order_by("id")
+    assert doc1.document_type == "LICENCE"
+    assert doc1.check_code is None
+    assert doc1.document.path == "firearms-licence-1.pdf"
+    assert doc1.reference == "1234A"
+
+    assert doc2.document_type == "COVER_LETTER"
+    assert doc2.check_code is None
+    assert doc2.document.path == "firearms-cover-1.pdf"
+    assert doc2.reference is None
+
     assert list(l2.document_references.values_list("reference", flat=True)) == ["1235B"]
+    assert l2.status == l2.Status.ARCHIVED
     assert l2.document_references.filter(document_type="LICENCE").count() == 1
     assert l2.document_references.filter(document_type="COVER_LETTER").count() == 0
     assert list(l2.cleared_by.values_list("id", flat=True).order_by("id")) == []
 
+    assert l3.status == l3.Status.REVOKED
+    assert l3.revoke_reason == "Test revoke reason"
+    assert l3.revoke_email_sent is True
     assert l3.document_references.count() == 1
     assert list(l3.cleared_by.values_list("id", flat=True)) == [2]
     assert l3.document_references.first().reference == "1236C"
