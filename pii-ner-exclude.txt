@@ -4394,3 +4394,7 @@ Provide Supplementary Report
 0004_alter_emailtemplate_name_and_more
 responsible_person_country
 "G. M. Potter
+Adhoc License Application - Goods
+Adhoc License Application - Add Goods
+Adhoc License Application - Edit Goods
+Application Details - Goods

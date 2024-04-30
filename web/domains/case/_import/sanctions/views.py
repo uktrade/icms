@@ -10,6 +10,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_POST
+from django.views.generic import DetailView
 
 from web.domains.case.app_checks import get_org_update_request_errors
 from web.domains.case.forms import DocumentForm, SubmitForm
@@ -84,29 +85,50 @@ def edit_application(request: AuthenticatedHttpRequest, *, application_pk: int) 
                     reverse("import:sanctions:edit", kwargs={"application_pk": application_pk})
                 )
 
-        # Check if the main application is valid when showing add goods link
-        show_add_goods = SubmitSanctionsAndAdhocLicenseForm(
-            instance=application, data=model_to_dict(application)
-        ).is_valid()
-
         supporting_documents = application.supporting_documents.filter(is_active=True)
-        goods_list = SanctionsAndAdhocApplicationGoods.objects.filter(
-            import_application=application
-        )
-
-        goods_list = annotate_commodity_unit(goods_list, "commodity__").distinct()
-
         context = {
             "process": application,
             "form": form,
             "page_title": "Sanctions and Adhoc License Application - Edit",
-            "goods_list": goods_list,
             "supporting_documents": supporting_documents,
-            "show_add_goods": show_add_goods,
             "case_type": "import",
         }
 
         return render(request, "web/domains/case/import/sanctions/edit_application.html", context)
+
+
+class SanctionsGoodsDetailView(case_progress.InProgressApplicationStatusTaskMixin, DetailView):
+    http_method_names = ["get"]
+    template_name = "web/domains/case/import/sanctions/goods-list.html"
+
+    # Extra typing for clarity
+    application: SanctionsAndAdhocApplication
+
+    def has_object_permission(self) -> bool:
+        """Handles all permission checking required to prove a request user can access this view."""
+        check_can_edit_application(self.request.user, self.application)
+
+        return True
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        goods_list = annotate_commodity_unit(
+            self.application.sanctions_goods.all(), "commodity__"
+        ).distinct()
+
+        # Check if the main application is valid when showing add goods link
+        show_add_goods = SubmitSanctionsAndAdhocLicenseForm(
+            instance=self.application, data=model_to_dict(self.application)
+        ).is_valid()
+
+        return context | {
+            "process": self.application,
+            "page_title": "Sanctions and Adhoc License Application - Goods",
+            "goods_list": goods_list,
+            "show_add_goods": show_add_goods,
+            "case_type": "import",
+        }
 
 
 @login_required
@@ -129,7 +151,9 @@ def add_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Http
                 obj.save()
 
                 return redirect(
-                    reverse("import:sanctions:edit", kwargs={"application_pk": application_pk})
+                    reverse(
+                        "import:sanctions:list-goods", kwargs={"application_pk": application_pk}
+                    )
                 )
         else:
             goods_form = GoodsForm(application=application)
@@ -137,7 +161,7 @@ def add_goods(request: AuthenticatedHttpRequest, *, application_pk: int) -> Http
         context = {
             "process": application,
             "form": goods_form,
-            "page_title": "Sanctions and Adhoc License Application",
+            "page_title": "Sanctions and Adhoc License Application - Add Goods",
             "commodity_group_data": _get_sanctions_commodity_group_data(application),
             "case_type": "import",
         }
@@ -171,7 +195,9 @@ def edit_goods(
                 obj.save()
 
                 return redirect(
-                    reverse("import:sanctions:edit", kwargs={"application_pk": application_pk})
+                    reverse(
+                        "import:sanctions:list-goods", kwargs={"application_pk": application_pk}
+                    )
                 )
         else:
             form = GoodsForm(instance=goods, application=application)
@@ -183,7 +209,7 @@ def edit_goods(
             "case_type": "import",
             "process": application,
             "form": form,
-            "page_title": "Edit Goods",
+            "page_title": "Sanctions and Adhoc License Application - Edit Goods",
             "commodity_group_data": commodity_group_data,
             "unit_label": unit_label,
         }
@@ -256,7 +282,9 @@ def delete_goods(
 
         get_object_or_404(application.sanctions_goods, pk=goods_pk).delete()
 
-    return redirect(reverse("import:sanctions:edit", kwargs={"application_pk": application_pk}))
+    return redirect(
+        reverse("import:sanctions:list-goods", kwargs={"application_pk": application_pk})
+    )
 
 
 @login_required
@@ -343,6 +371,9 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
 
         edit_url = reverse("import:sanctions:edit", kwargs={"application_pk": application.pk})
         edit_url = f"{edit_url}?validate"
+        add_goods_url = reverse(
+            "import:sanctions:add-goods", kwargs={"application_pk": application.pk}
+        )
 
         page_errors = PageErrors(page_name="Application Details", url=edit_url)
         create_page_errors(
@@ -358,12 +389,12 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
         ).values_list("commodity__commodity_code", flat=True)
 
         if goods_commodities.count() == 0:
-            page_errors.add(
-                FieldError(
-                    field_name="Commodity List",
-                    messages=["Please ensure you have added at least one commodity."],
-                )
+            goods_errors = PageErrors(page_name="Application Details - Goods", url=add_goods_url)
+            goods_errors.add(
+                FieldError(field_name="Goods", messages=["At least one goods line must be added"])
             )
+        else:
+            goods_errors = None
 
         usage_records = get_usage_records(ImportApplicationType.Types.SANCTION_ADHOC).filter(
             country=application.origin_country
@@ -401,6 +432,9 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
             )
 
         errors.add(page_errors)
+
+        if goods_errors:
+            errors.add(goods_errors)
 
         errors.add(get_org_update_request_errors(application, "import"))
 
