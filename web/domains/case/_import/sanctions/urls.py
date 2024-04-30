@@ -28,6 +28,7 @@ goods_urls = [
 
 supporting_document_urls = [
     path("add/", views.add_supporting_document, name="add-document"),
+    path("list/", views.SanctionsSupportingDocumentsDetailView.as_view(), name="list-documents"),
     path(
         "<int:document_pk>/",
         include(

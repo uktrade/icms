@@ -24,6 +24,7 @@
 
   {% elif process.process_type == "SanctionsAndAdhocApplication" %}
     {{ icms_link(request, icms_url('import:sanctions:list-goods', kwargs={'application_pk': process.pk}), 'Goods') }}
+    {{ icms_link(request, icms_url('import:sanctions:list-documents', kwargs={'application_pk': process.pk}), 'Supporting Documents') }}
 
   {% elif process.process_type == "OutwardProcessingTradeApplication" %}
     {{ icms_link(request, icms_url('import:opt:edit-compensating-products', kwargs={'application_pk': process.pk}),
