@@ -329,6 +329,10 @@ class ConstabularyEmailAttachments(MigrationBase):
         return ["file_target_id"]
 
     @classmethod
+    def get_exclude_parameters(cls) -> dict[str, Any]:
+        return {"file_target__files__isnull": True}
+
+    @classmethod
     def get_values_kwargs(cls) -> dict[str, Any]:
         return {"file_id": F("file_target__files__id")}
 
