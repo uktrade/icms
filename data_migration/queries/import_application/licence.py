@@ -19,13 +19,24 @@ SELECT
     ELSE 'AC'
   END status
   , ir.created_datetime created_at
+  , ird.start_datetime updated_at
   , ird.start_datetime case_completion_datetime
   , dp.dp_id document_pack_id
+  , x.revoke_reason
+  , CASE x.revoke_email_sent WHEN 'true' THEN 1 ELSE 0 END revoke_email_sent
 FROM impmgr.ima_responses ir
   INNER JOIN impmgr.ima_response_details ird ON ird.ir_id = ir.id
   INNER JOIN impmgr.import_applications ia ON ia.id = ir.ima_id
   INNER JOIN impmgr.xview_ima_details xiad ON xiad.ima_id = ia.id AND xiad.status_control = 'C'
+  INNER JOIN impmgr.import_application_details iad ON iad.id = xiad.imad_id
   LEFT JOIN decmgr.xview_document_packs dp ON dp.ds_id = ird.ds_id
+  CROSS JOIN XMLTABLE(
+    '/IMA/APP_PROCESSING/REVOKE'
+    PASSING iad.xml_data
+    COLUMNS
+      revoke_email_sent VARCHAR2(20) PATH './EMAIL_FLAG/text()'
+      , revoke_reason CLOB PATH './REASON/text()'
+  ) x
 WHERE ir.response_type LIKE '%_LICENCE'
 ORDER BY ird.id
 """
@@ -104,13 +115,13 @@ ia_licence_max_ref = (
 )
 
 ia_timestamp_update = """
-UPDATE web_importapplication SET create_datetime = data_migration_importapplication.create_datetime
-FROM data_migration_importapplication
-WHERE web_importapplication.process_ptr_id = data_migration_importapplication.id
+UPDATE web_importapplication SET create_datetime = dm_ia.create_datetime, last_update_datetime = dm_ia.last_update_datetime
+FROM data_migration_importapplication dm_ia
+WHERE web_importapplication.process_ptr_id = dm_ia.id
 """
 
 ia_licence_timestamp_update = """
-UPDATE web_importapplicationlicence SET created_at = data_migration_importapplicationlicence.created_at
-FROM data_migration_importapplicationlicence
-WHERE web_importapplicationlicence.id = data_migration_importapplicationlicence.id
+UPDATE web_importapplicationlicence SET created_at = dm_ial.created_at, updated_at = dm_ial.updated_at
+FROM data_migration_importapplicationlicence dm_ial
+WHERE web_importapplicationlicence.id = dm_ial.id
 """

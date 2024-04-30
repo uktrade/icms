@@ -205,7 +205,10 @@ class ImportApplicationLicence(MigrationBase):
     case_completion_datetime = models.DateTimeField(null=True)
     case_reference = models.CharField(max_length=100, null=True, unique=True)
     created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
     document_pack_id = models.IntegerField(unique=True, null=True)
+    revoke_reason = models.TextField(null=True)
+    revoke_email_sent = models.BooleanField()
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:

@@ -180,11 +180,15 @@ ia_query_result = {
             ("licence_start_date",),
             ("licence_end_date",),
             ("case_reference",),
-            ("is_paper_only",),
+            ("issue_paper_licence_only",),
             ("status",),
             ("variation_no",),
             ("created_at",),
+            ("updated_at",),
+            ("case_completion_datetime",),
             ("document_pack_id",),
+            ("revoke_reason",),
+            ("revoke_email_sent",),
         ],
         [
             (
@@ -193,11 +197,15 @@ ia_query_result = {
                 dt.datetime(2022, 4, 27).date(),  # licence_start_date
                 dt.datetime(2023, 4, 27).date(),  # licence_end_date
                 "IMA/2022/1234",  # case_reference
-                0,  # is_paper_only
+                0,  # issue_paper_licence_only
                 "AC",  # status
                 0,  # variation_number
                 dt.datetime(2022, 4, 27, 10, 43),  # created_at
+                dt.datetime(2022, 4, 27, 10, 44),  # updated_at
+                dt.datetime(2022, 4, 27, 10, 44),  # case_completion_datetime
                 1,  # document_pack_id
+                None,  # revoke_reason
+                0,  # revoke_email_sent
             ),
             (
                 2,  # ima_id
@@ -205,11 +213,15 @@ ia_query_result = {
                 dt.datetime(2022, 4, 27).date(),  # licence_start_date
                 dt.datetime(2023, 4, 30).date(),  # licence_end_date
                 "IMA/2022/2345",  # case_reference
-                0,  # is_paper_only
+                1,  # issue_paper_licence_only
                 "AR",  # status
                 0,  # variation_number
                 dt.datetime(2022, 4, 27, 10, 43),  # created_at
+                dt.datetime(2022, 4, 27, 10, 44),  # updated_at
+                dt.datetime(2022, 4, 27, 10, 44),  # case_completion_datetime
                 2,  # document_pack_id
+                None,  # revoke_reason
+                0,  # revoke_email_sent
             ),
             (
                 2,  # ima_id
@@ -217,11 +229,15 @@ ia_query_result = {
                 dt.datetime(2022, 4, 27).date(),  # licence_start_date
                 dt.datetime(2023, 5, 30).date(),  # licence_end_date
                 "IMA/2022/2345/1",  # case_reference
-                0,  # is_papaer_only
-                "AR",  # status
+                0,  # issue_papaer_licence_only
+                "RE",  # status
                 1,  # variation_number
                 dt.datetime(2022, 4, 27, 10, 43),  # created_at
+                dt.datetime(2022, 4, 27, 10, 44),  # updated_at
+                dt.datetime(2022, 4, 27, 10, 44),  # case_completion_datetime
                 3,  # document_pack_id
+                "Test revoke reason",  # revoke_reason
+                1,  # revoke_email_sent
             ),
             (
                 2,  # ima_id
@@ -229,11 +245,15 @@ ia_query_result = {
                 dt.datetime(2022, 4, 27).date(),  # licence_start_date
                 dt.datetime(2023, 6, 30).date(),  # licence_end_date
                 "IMA/2022/2345/2",  # case_reference
-                0,  # is_paper_only
+                0,  # issue_paper_licence_only
                 "AC",  # status
                 2,  # variation_number
                 dt.datetime(2022, 4, 27, 10, 43),  # created_at
+                dt.datetime(2022, 4, 27, 10, 44),  # updated_at
+                dt.datetime(2022, 4, 27, 10, 44),  # case_completion_datetime
                 4,  # document_pack_id
+                None,  # revoke_reason
+                0,  # revoke_email_sent
             ),
         ],
     ),

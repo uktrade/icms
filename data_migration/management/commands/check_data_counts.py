@@ -132,9 +132,9 @@ class Command(BaseCommand):
                 )
 
                 result = self.run_query(connection, check.query, check.bind_vars)
-                self._log_result(check.name, result, ref.reference)
+                self._log_result(check.name, str(result), ref.reference)
 
-    def _log_result(self, name: str, expected: int, actual: int) -> None:
+    def _log_result(self, name: str, expected: int | str, actual: int | str) -> None:
         """Compares the expected values with the actual values and logs the result
 
         :param name: The name of the check to be logged

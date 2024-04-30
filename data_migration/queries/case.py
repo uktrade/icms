@@ -106,6 +106,27 @@ WHERE web_process.id = data_migration_process.id
 """
 
 
+export_process_order_datetime_update = """
+UPDATE web_process SET order_datetime = dm_ea.last_update_datetime
+FROM data_migration_exportapplication dm_ea
+WHERE web_process.id = dm_ea.id
+"""
+
+
+import_process_order_datetime_update = """
+UPDATE web_process SET order_datetime = dm_ia.last_update_datetime
+FROM data_migration_importapplication dm_ia
+WHERE web_process.id = dm_ia.id
+"""
+
+
+access_request_process_order_datetime_update = """
+UPDATE web_process SET order_datetime = dm_ar.last_update_datetime
+FROM data_migration_accessrequest dm_ar
+WHERE web_process.id = dm_ar.id
+"""
+
+
 variation_request_timestamp_update = """
 UPDATE web_variationrequest SET requested_datetime = data_migration_variationrequest.requested_datetime
 FROM data_migration_variationrequest

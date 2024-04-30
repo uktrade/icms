@@ -114,3 +114,10 @@ UPDATE web_exportapplicationcertificate SET created_at = dm_eac.created_at, upda
 FROM data_migration_exportapplicationcertificate dm_eac
 WHERE web_exportapplicationcertificate.id = dm_eac.id
 """
+
+
+export_application_timestamp_update = """
+UPDATE web_exportapplication SET last_update_datetime = dm_ea.last_update_datetime
+FROM data_migration_exportapplication dm_ea
+WHERE web_exportapplication.process_ptr_id = dm_ea.id
+"""
