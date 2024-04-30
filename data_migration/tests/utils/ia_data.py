@@ -24,6 +24,7 @@ IA_BASE_COLUMNS = [
     ("process_type",),
     ("decision",),
     ("variations_xml",),
+    ("last_update_datetime",),
 ]
 
 ia_query_result = {
@@ -371,6 +372,8 @@ ia_query_result = {
             ("ILD", "1235", "ILD1235"),
             ("ILD", "12346", "ILD12346"),
             ("ILD", "1237", "ILD1237"),
+            ("ILD", "0001110", "ILD0001110"),
+            ("ILD", "0001111", "ILD0001111"),
         ],
     ),
     queries.opt_application: (
@@ -432,6 +435,7 @@ ia_query_result = {
                 "OutwardProcessingTradeApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
+                dt.datetime(2022, 4, 23),  # last_update_datetime
                 "Test",  # customs_office_name
                 "Test Address",  # customs_office_address
                 0.5,  # rate_of_yield
@@ -487,6 +491,7 @@ ia_query_result = {
                 "OutwardProcessingTradeApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
+                dt.datetime(2022, 4, 23),  # last_update_datetime
                 "Test",  # customs_office_name
                 "Test Address",  # customs_office_address
                 0.5,  # rate_of_yield
@@ -553,6 +558,7 @@ ia_query_result = {
                 "SanctionsApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
+                dt.datetime(2022, 4, 23),  # last_update_datetime
                 "Test Exporter",  # exporter_name
                 "123 Somewhere",  # exporter_address
                 xd.sanctions_commodities,  # commodities_xml
@@ -568,6 +574,10 @@ ia_query_result = {
             ("value_eur",),
             ("file_type",),
             ("target_id",),
+            ("commodity_id",),
+            ("licence_uref_id",),
+            ("customs_cleared_to_uk",),
+            ("chief_usage_status",),
         ],
         [
             (
@@ -579,7 +589,7 @@ ia_query_result = {
                 dt.datetime(2022, 4, 23),  # submit_datetime
                 dt.datetime(2022, 4, 22),  # create_datetime
                 dt.datetime(2022, 4, 22),  # created
-                0,  # vartiation_no
+                0,  # variation_no
                 2,  # submitted_by_id
                 2,  # created_by_id
                 2,  # last_updated_by_id
@@ -590,11 +600,16 @@ ia_query_result = {
                 "PriorSurveillanceApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
+                dt.datetime(2022, 4, 23),  # last_update_datetime
                 "NONSENSE",  # quantity
                 "NONSENSE",  # value_gbp
                 "NONSENSE",  # value_eur
                 "PRO_FORMA_INVOICE",  # file_type
                 1000,  # target_id
+                1,  # commodity_id
+                "ILD0001110",  # licence_uref_id
+                True,  # customs_cleared_to_uk
+                "D",  # chief usage status
             ),
             (
                 101,  # ima_id
@@ -616,11 +631,16 @@ ia_query_result = {
                 "PriorSurveillanceApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
+                dt.datetime(2022, 4, 23),  # last_update_datetime
                 100,  # quantity
                 100,  # value_gbp
                 100,  # value_eur
                 "SUPPLY_CONTRACT",  # file_type
                 1001,  # target_id
+                2,  # commodity_id
+                "ILD0001111",  # licence_uref_id
+                False,  # customs_cleared_to_uk
+                "E",  # chief usage status
             ),
         ],
     ),
@@ -647,6 +667,7 @@ ia_query_result = {
                 "TexilesQuotaApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
+                dt.datetime(2022, 4, 23),  # last_update_datetime
             ),
             (
                 42,  # ima_id
@@ -668,6 +689,7 @@ ia_query_result = {
                 "TexilesQuotaApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
+                dt.datetime(2022, 4, 23),  # last_update_datetime
             ),
             (
                 43,  # ima_id
@@ -689,6 +711,7 @@ ia_query_result = {
                 "TexilesQuotaApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
+                dt.datetime(2022, 4, 23),  # last_update_datetime
             ),
         ],
     ),
@@ -724,6 +747,7 @@ ia_query_result = {
                 "DFLApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
+                dt.datetime(2022, 4, 23),  # last_update_datetime
                 True,  # deactivated_firearm
                 True,  # proof_checked
                 1,  # constabulary_id
@@ -752,6 +776,7 @@ ia_query_result = {
                 "DFLApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
+                dt.datetime(2022, 4, 23),  # last_update_datetime
                 True,  # deactivated_firearm
                 True,  # proof_checked
                 1,  # constabulary_id
@@ -780,6 +805,7 @@ ia_query_result = {
                 "DFLApplication",  # process_type
                 None,  # decision
                 None,  # variations_xml
+                dt.datetime(2022, 4, 23),  # last_update_datetime
                 True,  # deactivated_firearm
                 True,  # proof_checked
                 1,  # constabulary_id
@@ -819,6 +845,7 @@ ia_query_result = {
                 "OpenIndividualLicenceApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
+                dt.datetime(2022, 4, 23),  # last_update_datetime
                 1,  # section1
                 1,  # section2
                 None,  # bought_from_details_xml
@@ -844,6 +871,7 @@ ia_query_result = {
                 "OpenIndividualLicenceApplication",  # process_type
                 "REFUSE",  # decision
                 None,  # variations_xml
+                dt.datetime(2022, 4, 23),  # last_update_datetime
                 1,  # section1
                 0,  # section2
                 xd.import_contact_xml,  # bought_from_details_xml
@@ -885,6 +913,7 @@ ia_query_result = {
                 "SILApplication",  # process_type
                 "APPROVE",  # decision
                 None,  # variations_xml
+                dt.datetime(2022, 4, 23),  # last_update_datetime
                 1,  # section1
                 1,  # section2
                 1,  # section5
@@ -915,6 +944,7 @@ ia_query_result = {
                 "SILApplication",  # process_type
                 "APPROVE",  # decision
                 xd.open_variation,  # variations_xml
+                dt.datetime(2022, 4, 23),  # last_update_datetime
                 1,  # section1
                 1,  # section2
                 1,  # section5
@@ -945,6 +975,7 @@ ia_query_result = {
                 "SILApplication",  # process_type
                 "APPROVE",  # decision
                 xd.open_variation,  # variations_xml
+                dt.datetime(2022, 4, 23),  # last_update_datetime
                 1,  # section1
                 0,  # section2
                 0,  # section5

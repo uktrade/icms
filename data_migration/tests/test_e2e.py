@@ -324,7 +324,7 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert list(l3.cleared_by.values_list("id", flat=True)) == [2]
     assert l3.document_references.first().reference == "1236C"
 
-    assert list(l4.document_references.values_list("reference", flat=True)) == ["1237E", None]
+    assert set(l4.document_references.values_list("reference", flat=True)) == {"1237E", None}
     assert l4.document_references.filter(document_type="LICENCE").count() == 1
     assert l4.document_references.filter(document_type="COVER_LETTER").count() == 1
     assert list(l4.cleared_by.values_list("id", flat=True)) == [3, 2]

@@ -45,7 +45,7 @@ class ImportApplication(MigrationBase):
     variation_decision = models.CharField(max_length=10, null=True)
     variation_refuse_reason = models.CharField(max_length=4000, null=True)
     licence_extended_flag = models.CharField(max_length=5, null=True)
-    last_update_datetime = models.DateTimeField(null=False, auto_now=True)
+    last_update_datetime = models.DateTimeField(null=True)
     application_type = models.ForeignKey(
         ImportApplicationType, on_delete=models.PROTECT, null=False
     )
