@@ -16,7 +16,6 @@ django-redis==5.4.0
 django-select2==8.1.2
 django-staff-sso-client==4.2.1
 Django==4.2.*
-elastic-apm==6.19.0
 gunicorn[gevent]==22.0.0
 html2text==2020.1.16
 humanize==4.9.0

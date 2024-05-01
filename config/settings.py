@@ -421,9 +421,7 @@ if APP_ENV == "production":
     # TODO compression causes 50 error on server
     # STATICFILES_STORAGE='whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-    # Elastic APM config
     INSTALLED_APPS += [  # NOQA
-        "elasticapm.contrib.django",
         "django_audit_log_middleware",
     ]
 
@@ -433,14 +431,6 @@ if APP_ENV == "production":
 
     # Audit log middleware user field
     AUDIT_LOG_USER_FIELD = "username"
-
-    ELASTIC_APM = {
-        "SERVICE_NAME": "ICMS",
-        "SECRET_TOKEN": env.elastic_apm_secret_token,
-        "SERVER_URL": env.elastic_apm_url,
-        "ENVIRONMENT": env.elastic_apm_environment,
-        "SERVER_TIMEOUT": env.elastic_apm_server_timeout,
-    }
 
 # Settings for non-production environments:
 else:
