@@ -71,7 +71,10 @@ class MigrationBaseCommand(BaseCommand):
 
     def _log_time(self) -> None:
         time_taken = tm.perf_counter() - self.split_time
-        self.log(f"\t\t--> {time_taken:.2f} seconds", "\n\n")
+        if time_taken // 60 > 0:
+            self.log(f"\t\t--> {time_taken // 60} mins {time_taken % 60} seconds", "\n\n")
+        else:
+            self.log(f"\t\t--> {time_taken:.2f} seconds", "\n\n")
         self.split_time = tm.perf_counter()
 
     def _log_script_end(self) -> None:
