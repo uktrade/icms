@@ -96,7 +96,7 @@ class Command(MigrationBaseCommand):
 
                     self._export_model_data(columns, rows, query_model.model)
 
-                    if export_start_time - tm.perf_counter() >= 60:
+                    if tm.perf_counter() - export_start_time >= 60:
                         self.log(f"\t\t {cursor.rowcount} records added..")
                         export_start_time = tm.perf_counter()
 

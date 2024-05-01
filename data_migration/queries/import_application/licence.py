@@ -30,12 +30,11 @@ FROM impmgr.ima_responses ir
   INNER JOIN impmgr.xview_ima_details xiad ON xiad.ima_id = ia.id AND xiad.status_control = 'C'
   INNER JOIN impmgr.import_application_details iad ON iad.id = xiad.imad_id
   LEFT JOIN decmgr.xview_document_packs dp ON dp.ds_id = ird.ds_id
-  CROSS JOIN XMLTABLE(
-    '/IMA/APP_PROCESSING/REVOKE'
+  CROSS JOIN XMLTABLE('/*'
     PASSING iad.xml_data
     COLUMNS
-      revoke_email_sent VARCHAR2(20) PATH './EMAIL_FLAG/text()'
-      , revoke_reason CLOB PATH './REASON/text()'
+      revoke_email_sent VARCHAR2(20) PATH '/IMA/APP_PROCESSING/REVOKE/EMAIL_FLAG/text()'
+      , revoke_reason CLOB PATH '/IMA/APP_PROCESSING/REVOKE/REASON/text()'
   ) x
 WHERE ir.response_type LIKE '%_LICENCE'
 ORDER BY ird.id
