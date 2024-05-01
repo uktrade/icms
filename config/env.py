@@ -110,12 +110,6 @@ class EnvironmentBase(BaseSettings):
     show_db_queries: bool = False
     show_debug_toolbar: bool = False
 
-    # Only set in production
-    elastic_apm_secret_token: str = ""
-    elastic_apm_url: str = ""
-    elastic_apm_environment: str = "development"
-    elastic_apm_server_timeout: str = "20s"
-
     companies_house_domain: str = "https://api.companieshouse.gov.uk/"
     companies_house_token: str
 
