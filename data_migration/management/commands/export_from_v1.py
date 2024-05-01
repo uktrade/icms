@@ -1,4 +1,5 @@
 import argparse
+import time as tm
 from typing import TYPE_CHECKING
 
 import oracledb
@@ -80,6 +81,8 @@ class Command(MigrationBaseCommand):
                 f"\t{idx} - Exporting {query_model.query_name} to {query_model.model.__name__} model"
             )
 
+            export_start_time = tm.perf_counter()
+
             # Create a new cursor for each query
             # oracledb sometimes throws `IndexError: list index out of range` when reusing cursor
             with connection.cursor() as cursor:
@@ -92,6 +95,10 @@ class Command(MigrationBaseCommand):
                         break
 
                     self._export_model_data(columns, rows, query_model.model)
+
+                    if export_start_time - tm.perf_counter() >= 60:
+                        self.log(f"\t\t {cursor.rowcount} records added..")
+                        export_start_time = tm.perf_counter()
 
             self._log_time()
 
