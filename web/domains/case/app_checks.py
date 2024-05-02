@@ -271,7 +271,11 @@ def get_response_preparation_errors(application: ImpOrExp, case_type: str) -> Pa
                 )
             )
 
-        if not end_date:
+        if (
+            not end_date
+            and application.application_type.type != ImportApplicationType.Types.SANCTION_ADHOC
+        ):
+            # we can skip end_date if it's a sanctions and adhoc application
             prepare_errors.add(
                 FieldError(field_name="Licence end date", messages=["Licence end date missing."])
             )
