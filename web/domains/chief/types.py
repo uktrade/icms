@@ -76,7 +76,7 @@ class LicenceDataPayloadBase(BaseModel):
     licence_reference: str  # Used as chief licenceRef field
 
     start_date: dt.date
-    end_date: dt.date
+    end_date: dt.date | None
 
 
 class CancelLicencePayload(LicenceDataPayloadBase):
@@ -120,7 +120,6 @@ class SanctionGoodsData(BaseModel):
 class SanctionsLicenceData(InsertAndReplaceBase):
     type: Literal["SAN"]
     goods: list[SanctionGoodsData]
-    end_date: dt.date | None
 
 
 class LicenceDataPayload(BaseModel):
