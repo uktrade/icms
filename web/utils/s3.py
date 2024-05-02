@@ -1,20 +1,18 @@
 import logging
-from typing import IO, TYPE_CHECKING, Any, Optional
+from typing import IO, Any, Optional
 
 import boto3
 from botocore.exceptions import ClientError
 from django.conf import settings
+from mypy_boto3_s3 import Client as S3Client
+from mypy_boto3_s3 import ServiceResource as S3Resource
 
 from web.utils.sentry import capture_exception
-
-if TYPE_CHECKING:
-    from mypy_boto3_s3 import Client as S3Client
 
 logger = logging.getLogger(__name__)
 
 
-def get_s3_client() -> "S3Client":
-    """Get an S3 client."""
+def _get_s3_extra_kwargs() -> dict[str, Any]:
     extra_kwargs = {}
 
     if settings.AWS_S3_ENDPOINT_URL:
@@ -23,12 +21,29 @@ def get_s3_client() -> "S3Client":
     if hasattr(settings, "AWS_ACCESS_KEY_ID") and hasattr(settings, "AWS_SECRET_ACCESS_KEY"):
         extra_kwargs["aws_access_key_id"] = settings.AWS_ACCESS_KEY_ID
         extra_kwargs["aws_secret_access_key"] = settings.AWS_SECRET_ACCESS_KEY
+    return extra_kwargs
 
+
+def get_s3_client() -> S3Client:
+    """Get an S3 client."""
     return boto3.client(
         "s3",
         region_name=settings.AWS_REGION,
-        **extra_kwargs,
+        **_get_s3_extra_kwargs(),
     )
+
+
+def get_s3_resource() -> S3Resource:
+    return boto3.resource(
+        "s3",
+        region_name=settings.AWS_REGION,
+        **_get_s3_extra_kwargs(),
+    )
+
+
+def get_s3_file_count(s3_resource: S3Resource, prefix: str) -> int:
+    bucket = s3_resource.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
+    return len([i for i in bucket.objects.filter(Prefix=prefix)])
 
 
 def get_file_from_s3(path: str, client: Optional["S3Client"] = None) -> bytes:

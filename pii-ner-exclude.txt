@@ -4399,3 +4399,9 @@ data_migration_accessrequest dm_ar
 x.revoke_reason
 Mr ILB Case-Officer
 customs_cleared_to_uk
+All Import Applications Have Unique Reference
+FA-DFL Application Files'
+FA-OIL Application Files'
+Sanctions & Adhoc Application
+Firearms & Ammunition Certificate Files'
+"Compares the file counts
