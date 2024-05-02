@@ -193,7 +193,7 @@ class CoverLetterForm(forms.ModelForm):
 
 class LicenceDateForm(forms.ModelForm):
     licence_start_date = JqueryDateField(required=True, label="Licence Start Date")
-    licence_end_date = JqueryDateField(required=True, label="Licence End Date")
+    licence_end_date = JqueryDateField(required=False, label="Licence End Date")
 
     class Meta:
         model = ImportApplicationLicence
@@ -204,19 +204,17 @@ class LicenceDateForm(forms.ModelForm):
         start_date = data.get("licence_start_date")
         end_date = data.get("licence_end_date")
 
-        if not start_date or not end_date:
-            return
-
         today = timezone.now().date()
 
         if start_date < today:
             self.add_error("licence_start_date", "Date must be in the future.")
 
-        if end_date < today:
-            self.add_error("licence_end_date", "Date must be in the future.")
+        if end_date:
+            if end_date < today:
+                self.add_error("licence_end_date", "Date must be in the future.")
 
-        if end_date <= start_date:
-            self.add_error("licence_end_date", "End Date must be after Start Date.")
+            if end_date <= start_date:
+                self.add_error("licence_end_date", "End Date must be after Start Date.")
 
 
 class LicenceDateAndPaperLicenceForm(LicenceDateForm):

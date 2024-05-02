@@ -120,6 +120,7 @@ class SanctionGoodsData(BaseModel):
 class SanctionsLicenceData(InsertAndReplaceBase):
     type: Literal["SAN"]
     goods: list[SanctionGoodsData]
+    end_date: dt.date | None
 
 
 class LicenceDataPayload(BaseModel):
