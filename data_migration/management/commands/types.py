@@ -67,6 +67,30 @@ class CheckQuery:
 
 
 @dataclass
+class CheckFileQuery:
+    name: str
+    query_model: QueryModel
+    model: ModelT
+    filter_params: Params = field(default_factory=dict)
+    exclude_params: Params = field(default_factory=dict)
+    adjustment: int = 0
+
+    @property
+    def query(self) -> str:
+        return (
+            f"WITH DOC_QUERY AS ({self.query_model.query}) SELECT count(1) as count FROM DOC_QUERY"
+        )
+
+    @property
+    def bind_vars(self) -> Params:
+        return self.query_model.parameters
+
+    @property
+    def path_prefix(self) -> str:
+        return str(self.query_model.parameters.get("path_prefix", ""))
+
+
+@dataclass
 class ModelReference:
     model: Model
     filter_params: Params = field(default_factory=dict)

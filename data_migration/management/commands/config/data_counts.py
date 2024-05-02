@@ -2,7 +2,13 @@ from django.db.models import Count
 
 import web.models as web
 from data_migration import queries
-from data_migration.management.commands.types import CheckCount, CheckModel, CheckQuery
+from data_migration.management.commands.config.run_order import files
+from data_migration.management.commands.types import (
+    CheckCount,
+    CheckFileQuery,
+    CheckModel,
+    CheckQuery,
+)
 from web.flow.models import ProcessTypes
 
 CHECK_DATA_COUNTS: list[CheckCount] = [
@@ -77,7 +83,7 @@ CHECK_DATA_COUNTS: list[CheckCount] = [
 
 CHECK_MODELS = [
     CheckModel(
-        name="All Import Applications Have Unqiue Reference",
+        name="All Import Applications Have Unique Reference",
         model_a=web.ImportApplication,
         filter_params_a={},
         model_b=web.UniqueReference,
@@ -575,5 +581,113 @@ UNIQUE_REFERENCES = [
         query=queries.export_certificate_doc_max_ref,
         filter_params={"prefix": "CFS"},
         bind_vars={"like_match": "CFS/2024/%"},
+    ),
+]
+
+
+FILE_QUERY_DICT = {}
+
+for query_model in files.file_query_model:
+    FILE_QUERY_DICT[query_model.query_name] = query_model
+
+
+CHECK_FILE_COUNTS: list[CheckFileQuery] = [
+    CheckFileQuery(
+        name="SPS Application Files",
+        query_model=FILE_QUERY_DICT["SPS Application Files"],
+        model=web.PriorSurveillanceApplication.supporting_documents.through,
+    ),
+    CheckFileQuery(
+        name="FA-DFL Application Files",
+        query_model=FILE_QUERY_DICT["FA-DFL Application Files"],
+        model=web.DFLApplication.goods_certificates.through,
+    ),
+    CheckFileQuery(
+        name="FA-OIL Application Files",
+        query_model=FILE_QUERY_DICT["FA-OIL Application Files"],
+        model=[
+            web.OpenIndividualLicenceApplication.user_imported_certificates.through,
+            web.OpenIndividualLicenceApplication.verified_certificates.through,
+        ],
+    ),
+    CheckFileQuery(
+        name="FA-SIL Application Files",
+        query_model=FILE_QUERY_DICT["FA-SIL Application Files"],
+        model=[
+            web.SILApplication.user_imported_certificates.through,
+            web.SILApplication.verified_certificates.through,
+        ],
+    ),
+    CheckFileQuery(
+        name="Sanctions & Adhoc Application Files",
+        query_model=FILE_QUERY_DICT["Sanctions & Adhoc Application Files"],
+        model=web.SanctionsAndAdhocApplication.supporting_documents.through,
+    ),
+    CheckFileQuery(
+        name="OPT Application Files",
+        query_model=FILE_QUERY_DICT["OPT Application Files"],
+        model=web.OutwardProcessingTradeApplication.documents.through,
+    ),
+    CheckFileQuery(
+        name="Wood Application Files",
+        query_model=FILE_QUERY_DICT["Wood Application Files"],
+        model=web.WoodQuotaApplication.supporting_documents.through,
+    ),
+    CheckFileQuery(
+        name="Textiles Application Files",
+        query_model=FILE_QUERY_DICT["Textiles Application Files"],
+        model=web.TextilesApplication.supporting_documents.through,
+    ),
+    CheckFileQuery(
+        name="Firearms & Ammunition Certificate Files",
+        query_model=FILE_QUERY_DICT["Firearms & Ammunition Certificate Files"],
+        model=[
+            web.SILSupplementaryReportFirearmSection1,
+            web.SILSupplementaryReportFirearmSection2,
+            web.SILSupplementaryReportFirearmSection5,
+            web.SILSupplementaryReportFirearmSection582Obsolete,  # /PS-IGNORE
+            web.SILSupplementaryReportFirearmSection582Other,  # /PS-IGNORE
+        ],
+    ),
+    CheckFileQuery(
+        name="Further Information Request Files",
+        query_model=FILE_QUERY_DICT["Further Information Request Files"],
+        model=web.FurtherInformationRequest.files.through,
+    ),
+    CheckFileQuery(
+        name="Mailshot Files",
+        query_model=FILE_QUERY_DICT["Mailshot Files"],
+        model=web.Mailshot.documents.through,
+    ),
+    CheckFileQuery(
+        name="GMP Application Files",
+        query_model=FILE_QUERY_DICT["GMP Application Files"],
+        model=web.GMPFile,
+    ),
+    CheckFileQuery(
+        name="Import Application Case Note Files",
+        query_model=FILE_QUERY_DICT["Import Application Case Note Files"],
+        model=web.ImportApplication.case_notes.through,
+    ),
+    CheckFileQuery(
+        name="Export Application Case Note Documents",
+        query_model=FILE_QUERY_DICT["Export Application Case Note Documents"],
+        model=web.ExportApplication.case_notes.through,
+    ),
+    CheckFileQuery(
+        name="Supplementary Report Goods Uploaded Files",
+        query_model=FILE_QUERY_DICT["Supplementary Report Goods Uploaded Files"],
+        model=web.DFLSupplementaryReportFirearm,
+        filter_params={"is_upload": True},
+    ),
+    CheckFileQuery(
+        name="Import Application Licence Documents",
+        query_model=FILE_QUERY_DICT["Import Application Licence Documents"],
+        model=web.ImportApplicationLicence,
+    ),
+    CheckFileQuery(
+        name="Export Application Certificate Documents",
+        query_model=FILE_QUERY_DICT["Export Application Certificate Documents"],
+        model=web.ExportApplicationCertificate,
     ),
 ]

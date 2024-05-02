@@ -1,18 +1,25 @@
 import argparse
+from typing import Any
 
 import oracledb
 from django.core.management.base import BaseCommand
 
 from web.models import UniqueReference
+from web.utils.s3 import get_s3_file_count, get_s3_resource
 
 from .config.data_counts import (
     CHECK_DATA_COUNTS,
     CHECK_DATA_QUERIES,
+    CHECK_FILE_COUNTS,
     CHECK_MODELS,
     UNIQUE_REFERENCES,
 )
 from .types import Anno, ModelT, Params, Val
 from .utils.db import CONNECTION_CONFIG
+
+DB_CHECKS = ["counts", "model_counts", "queries", "max_reference"]
+FILE_CHECKS = ["s3_file_counts"]
+CHECKS = DB_CHECKS + FILE_CHECKS
 
 
 class Command(BaseCommand):
@@ -22,15 +29,41 @@ class Command(BaseCommand):
             help="Shows only the failures and not the passes",
             action="store_true",
         )
+        parser.add_argument(
+            "--checks",
+            help="Specify which check to run by name or group alias (all/db/files), defaults to all available checks",
+            nargs="+",
+            choices=CHECKS + ["db", "files"],
+            type=str,
+            default="all",
+        )
 
-    def handle(self, *args, **options):
+    def handle(self, *args: Any, **options: Any) -> None:
         self.fail_only = options["fail_only"]
         self.passes = 0
         self.failures = 0
-        self.run_counts()
-        self.run_model_counts()
-        self.run_queries()
-        self.check_max_licence_and_cetificate_references()
+        checks = options["checks"]
+        if "all" in checks:
+            checks = CHECKS
+        elif "db" in checks:
+            checks = DB_CHECKS
+        elif "files" in checks:
+            checks = FILE_CHECKS
+        if "counts" in checks:
+            self.stdout.write("\nRunning count checks")
+            self.run_counts()
+        if "model_counts" in checks:
+            self.stdout.write("\nRunning model count checks")
+            self.run_model_counts()
+        if "queries" in checks:
+            self.stdout.write("\nRunning query checks")
+            self.run_queries()
+        if "max_reference" in checks:
+            self.stdout.write("\nRunning max reference checks")
+            self.check_max_licence_and_certificate_references()
+        if "s3_file_counts" in checks:
+            self.stdout.write("\nRunning s3 file count checks")
+            self.run_file_counts()
         self.stdout.write(f"TOTAL PASS: {self.passes} - TOTAL FAIL: {self.failures}")
 
     def get_actual(
@@ -70,11 +103,21 @@ class Command(BaseCommand):
             .count()
         )
 
-    def run_queries(self):
-        """Iterates over CHECK_DATA_QUERIES and runs queries in V1 to retrieve the data counts prior to data migration"""
+    def run_file_counts(self) -> None:
+        """Compares the file counts in V1 database to the amount of files uploaded to s3"""
+        s3_resource = get_s3_resource()
+        with oracledb.connect(**CONNECTION_CONFIG) as connection:
+            for check in CHECK_FILE_COUNTS:
+                expected = self.run_query(connection, check.query, check.bind_vars)
+                actual = get_s3_file_count(s3_resource, check.path_prefix)
+                actual += check.adjustment  # Adjust to account for excluded data. See check.note
+                self._log_result(check.name, expected, actual)
+
+    def run_queries(self) -> None:
+        """Iterates over CHECK_DATA_QUERIES and CHECK_FILE_COUNTS and runs queries in V1 to retrieve the data counts prior to data migration"""
 
         with oracledb.connect(**CONNECTION_CONFIG) as connection:
-            for check in CHECK_DATA_QUERIES:
+            for check in CHECK_DATA_QUERIES + CHECK_FILE_COUNTS:
                 expected = self.run_query(connection, check.query, check.bind_vars)
                 actual = self.get_actual(check.model, check.filter_params, check.exclude_params)
                 actual += check.adjustment  # Adjust to account for excluded data. See check.note
@@ -122,7 +165,7 @@ class Command(BaseCommand):
             )
             self._log_result(check.name, count_a, count_b)
 
-    def check_max_licence_and_cetificate_references(self) -> None:
+    def check_max_licence_and_certificate_references(self) -> None:
         with oracledb.connect(**CONNECTION_CONFIG) as connection:
             for check in UNIQUE_REFERENCES:
                 ref = (
