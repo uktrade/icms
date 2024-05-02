@@ -11,7 +11,6 @@ from django.urls import reverse
 from django.utils import timezone
 from qrcode import QRCode
 
-from web.domains.case._import.models import ImportApplicationType
 from web.domains.case.services import document_pack
 from web.domains.signature.utils import get_active_signature_file
 from web.domains.template.utils import (
@@ -298,12 +297,6 @@ def _get_licence_start_date(licence: "ImportApplicationLicence") -> str:
 def _get_licence_end_date(licence: "ImportApplicationLicence") -> str:
     if licence.licence_end_date:
         return day_ordinal_date(licence.licence_end_date)
-
-    if (
-        licence.import_application.application_type.type
-        == ImportApplicationType.Types.SANCTION_ADHOC
-    ):
-        return "No End Date"
     else:
         return "Licence End Date not set"
 
