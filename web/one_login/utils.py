@@ -43,7 +43,7 @@ class OneLoginConfig:
         self._conf: dict[str, Any] = {}
 
     def get_public_keys(self) -> list[dict[str, str]]:
-        # https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/integrate-with-code-flow/#validate-your-id-token
+        # https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/authenticate-your-user/#validate-your-id-token
         resp = requests.get(self.openid_config["jwks_uri"])
         resp.raise_for_status()
         data = resp.json()
@@ -106,14 +106,14 @@ def get_token(request: HttpRequest, auth_code: str) -> dict:
 
     client.register_client_auth_method(PrivateKeyJWT(token_endpoint=config.token_url))
 
-    # https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/integrate-with-code-flow/#receive-response-for-make-a-token-request
+    # https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/authenticate-your-user/#receive-response-for-make-a-token-request
     token = client.fetch_token(
         url=config.token_url,
         code=auth_code,
         # If you’re requesting a refresh token, you must set this parameter to refresh_token.
         # Otherwise, you need to set the parameter to authorization_code.
         grant_type="authorization_code",
-        # https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/integrate-with-code-flow/#make-a-post-request-to-the-token-endpoint
+        # https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/authenticate-your-user/#make-a-post-request-to-the-token-endpoint
         # Required value when using private_key_jwt auth.
         client_assertion_type="urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
     )
@@ -128,7 +128,7 @@ def validate_token(request: HttpRequest, token: dict[str, Any]) -> None:
     stored_nonce = get_oauth_nonce(request)
 
     # id_token contents:
-    # https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/integrate-with-code-flow/#understand-your-id-token
+    # https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/authenticate-your-user/#understand-your-id-token
     claims = jwt.decode(
         token["id_token"],
         config.get_public_keys(),

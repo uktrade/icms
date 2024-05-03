@@ -2,7 +2,7 @@ from typing import TypedDict
 
 
 class UserInfo(TypedDict):
-    # https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/integrate-with-code-flow/#receive-response-for-retrieve-user-information
+    # https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/authenticate-your-user/#retrieve-user-information
     # openid scope
     sub: str
     # email scope

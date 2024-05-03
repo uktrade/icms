@@ -28,7 +28,7 @@ from .utils import (
 logger = logging.getLogger(__name__)
 
 
-# https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/choose-the-level-of-authentication/#choose-the-level-of-authentication-for-your-service
+# https://docs.sign-in.service.gov.uk/before-integrating/choose-the-level-of-authentication/
 class AuthenticationLevel(enum.StrEnum):
     # Username and Password
     LOW_LEVEL = "Cl"
@@ -36,7 +36,7 @@ class AuthenticationLevel(enum.StrEnum):
     MEDIUM_LEVEL = "Cl.Cm"
 
 
-# https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/choose-the-level-of-identity-confidence/
+# https://docs.sign-in.service.gov.uk/before-integrating/choose-the-level-of-identity-confidence/
 class IdentityConfidenceLevel(enum.StrEnum):
     NONE = "P0"
     LOW = "P1"
