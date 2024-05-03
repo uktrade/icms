@@ -2,7 +2,7 @@
 
 # add packages needed only for development
 
-black==24.4.0
+black==24.4.2
 django-debug-toolbar==4.2
 django-extensions==3.2.3
 factory-boy==3.0.1
