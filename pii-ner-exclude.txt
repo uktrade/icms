@@ -3280,7 +3280,6 @@ Unset Lastname
 openid
 LOW_LEVEL & two-factor
 P1
-https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/integrate-with-code-flow/#make-a-post-request-to-the-token-endpoint
 private_key_jwt
 ICMSLST-2300 Revisit
 "Check if the user
