@@ -279,6 +279,47 @@ ea_query_result = {
                 None,  # manufacturer_country
                 None,  # manufacturer_postcode
             ),
+            (
+                17,
+                27,
+                "CertificateofGoodManufacturingPractice",
+                "GA/2022/9911",
+                "COMPLETED",
+                2,
+                dt.datetime(2022, 4, 28),
+                dt.datetime(2022, 4, 28),
+                dt.datetime(2022, 5, 29),
+                2,
+                dt.datetime(2022, 5, 29),
+                1,
+                21,
+                2,
+                "e-2-2",
+                None,  # case_note_xml
+                None,  # fir_xml
+                None,  # update_request_xml
+                xd.export_varation_1,  # variations_xml
+                "MANUAL",  # responsible_person_address_type
+                "MANUAL",  # manufacturer_address_type
+                "Another brand",
+                233,  # file_folder_id
+                "ISO22716",  # gmp_certificate_issued
+                None,  # withdrawal_xml
+                "yes",  # is_responsible_person
+                "G. M. Potter",  # responsible_person_name
+                "The Bridge\nLondon",  # responsible_person_address
+                "GB",  # responsible_person_country
+                "12345",  # responsible_person_postcode
+                "yes",  # auditor accredited
+                "yes",  # auditor certified
+                2,  # submitted by id
+                "APPROVE",  # decision
+                "yes",  # is_manufacturer
+                "Cars",  # manufacturer_name
+                "The Street\nLondon",  # manufacturer_address
+                "GB",  # manufacturer_country
+                "12345",  # manufacturer_postcode
+            ),
         ],
     ),
     queries.export_application_countries: (

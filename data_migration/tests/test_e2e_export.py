@@ -205,11 +205,11 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     call_command("import_v1_data")
     call_command("post_migration", "--skip_perms", "--skip_add_data")
 
-    assert web.CertificateOfGoodManufacturingPracticeApplication.objects.count() == 4
-    assert dm.CertificateOfGoodManufacturingPracticeApplication.objects.count() == 4
+    assert web.CertificateOfGoodManufacturingPracticeApplication.objects.count() == 5
+    assert dm.CertificateOfGoodManufacturingPracticeApplication.objects.count() == 5
 
-    gmp1, gmp2, gmp3, gmp4 = web.CertificateOfGoodManufacturingPracticeApplication.objects.order_by(
-        "pk"
+    gmp1, gmp2, gmp3, gmp4, gmp5 = (
+        web.CertificateOfGoodManufacturingPracticeApplication.objects.order_by("pk")
     )
     ea1: web.ExportApplication = gmp1.exportapplication
     ea2: web.ExportApplication = gmp2.exportapplication
@@ -453,6 +453,15 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
         gmp4.gmp_certificate_issued
         == web.CertificateOfGoodManufacturingPracticeApplication.CertificateTypes.ISO_22716
     )
+
+    # In V1 when a GMP application application is a copy of another GMP application, they share the same files
+
+    gmp5_iso_17021_file = gmp5.supporting_documents.filter(file_type="ISO_17021").first()
+    assert gmp5_iso_17021_file == gmp3_iso_17021_file
+    assert gmp5_iso_17021_file is not None
+    assert gmp5_iso_17021_file.file_type == "ISO_17021"
+    assert gmp5_iso_17021_file.filename == "ISO17021.pdf"
+    assert gmp5_iso_17021_file.content_type == "pdf"
 
     for field in none_fields:
         assert getattr(gmp4, field) is None

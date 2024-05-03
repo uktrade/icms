@@ -15,7 +15,7 @@ from .export import ExportApplication, ExportBase
 
 class CertificateOfGoodManufacturingPracticeApplication(ExportBase):
     cad = models.ForeignKey(ExportApplication, on_delete=models.CASCADE, to_field="cad_id")
-    file_folder = models.OneToOneField(FileFolder, on_delete=models.CASCADE, related_name="gmp")
+    file_folder = models.ForeignKey(FileFolder, on_delete=models.CASCADE, related_name="gmp")
     brand_name = models.CharField(max_length=100, null=True)
     is_responsible_person = models.CharField(max_length=3, null=True)
     responsible_person_name = models.CharField(max_length=200, null=True)
@@ -93,6 +93,7 @@ class GMPFile(MigrationBase):
                 target__folder__gmp__isnull=False,
             )
             .values(file_type=F("target__target_type"), file_ptr_id=F("id"))
+            .distinct()
             .iterator(chunk_size=2000)
         )
 
