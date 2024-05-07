@@ -35,16 +35,8 @@ jobs:
                 command: make docker_mypy
 
             - run:
-                  name: Check missing migrations
-                  command: make check_migrations
-
-            - run:
-                name: run unit tests
-                command: make test
-
-            - run:
-                name: run data migration unit tests
-                command: make migration_test
+                name: run end to end tests
+                command: make end_to_end_test_ci
 
             - run:
                   name: Publish unit test coverage
