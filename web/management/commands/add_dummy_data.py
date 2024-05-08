@@ -49,9 +49,9 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
-        if settings.APP_ENV not in ("local", "dev", "staging"):
+        if settings.APP_ENV not in ["local", "dev", "test", "staging"]:
             raise CommandError(
-                "Can only add dummy data in 'staging', 'dev' and 'local' environments!"
+                "Can only add dummy data in 'local', 'dev', 'test' and 'staging' environments!"
             )
 
         load_app_test_data()
