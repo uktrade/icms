@@ -1,11 +1,13 @@
 import logging
-from typing import IO, Any, Optional
+from typing import IO, TYPE_CHECKING, Any, Optional
 
 import boto3
 from botocore.exceptions import ClientError
 from django.conf import settings
-from mypy_boto3_s3 import Client as S3Client
-from mypy_boto3_s3 import ServiceResource as S3Resource
+
+if TYPE_CHECKING:
+    from mypy_boto3_s3 import Client as S3Client
+    from mypy_boto3_s3 import ServiceResource as S3Resource
 
 from web.utils.sentry import capture_exception
 
@@ -24,7 +26,7 @@ def _get_s3_extra_kwargs() -> dict[str, Any]:
     return extra_kwargs
 
 
-def get_s3_client() -> S3Client:
+def get_s3_client() -> "S3Client":
     """Get an S3 client."""
     return boto3.client(
         "s3",
@@ -33,7 +35,7 @@ def get_s3_client() -> S3Client:
     )
 
 
-def get_s3_resource() -> S3Resource:
+def get_s3_resource() -> "S3Resource":
     return boto3.resource(
         "s3",
         region_name=settings.AWS_REGION,
@@ -41,7 +43,7 @@ def get_s3_resource() -> S3Resource:
     )
 
 
-def get_s3_file_count(s3_resource: S3Resource, prefix: str) -> int:
+def get_s3_file_count(s3_resource: "S3Resource", prefix: str) -> int:
     bucket = s3_resource.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
     return len([i for i in bucket.objects.filter(Prefix=prefix)])
 
