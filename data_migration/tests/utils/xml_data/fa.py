@@ -145,7 +145,7 @@ sr_manual_goods_1 = """
 sr_manual_goods_2 = """
 <GOODS_LINE_LIST>
   <GOODS_LINE>
-    <GOODS_ITEM_DESC>Firearms-2, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.</GOODS_ITEM_DESC>
+    <GOODS_ITEM_DESC>Firearms-2, component parts</GOODS_ITEM_DESC>
     <GOODS_ITEM_QUANTITY>100</GOODS_ITEM_QUANTITY>
     <GOOD_ITEM_ID>Firearms-2, component parts thereof, or ammunition of any applicable commodity code, other than those falling under Section 5 of the Firearms Act 1968 as amended.2</GOOD_ITEM_ID>
     <FA_REPORTING_MODE>MANUAL</FA_REPORTING_MODE>

@@ -281,3 +281,18 @@ def test_sanction_goods_parser():
     assert g2.goods_description == "MORE"
     assert g2.quantity_amount == Decimal("10.000")
     assert g2.value == Decimal("40.23")
+
+
+@pytest.mark.parametrize(
+    "good_item_id,goods_item_desc,expected_position",
+    (
+        ("DFLProduct1005", "DFLProduct100", 5),
+        ("OILProduct100 with this and that14", "OILProduct100 with this and that1", 4),
+        ("SILProduct1001 with this and that.3", "SILProduct1001", 3),
+    ),
+)
+def test_goods_item_position_from_description(good_item_id, goods_item_desc, expected_position):
+    assert (
+        xml_parser.get_goods_item_position_from_description(good_item_id, goods_item_desc)
+        == expected_position
+    )

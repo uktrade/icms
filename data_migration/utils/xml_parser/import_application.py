@@ -1,3 +1,4 @@
+import re
 from collections import defaultdict
 from collections.abc import Generator
 from typing import TYPE_CHECKING, Any, Optional
@@ -38,7 +39,13 @@ def get_goods_item_position_from_xml(goods_xml: "ET") -> int:
 
     goods_item_desc = get_xml_val(goods_xml, "GOODS_ITEM_DESC")
     good_item_id = get_xml_val(goods_xml, "GOOD_ITEM_ID")
-    return int(good_item_id.replace(goods_item_desc, ""))
+    return get_goods_item_position_from_description(good_item_id, goods_item_desc)
+
+
+def get_goods_item_position_from_description(good_item_id: str, goods_item_desc: str) -> int:
+    string_suffix = good_item_id.replace(goods_item_desc, "")
+    numbers = re.findall(r"\d+", string_suffix)
+    return int(numbers[-1])
 
 
 class ImportContactParser(BaseXmlParser):

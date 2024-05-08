@@ -146,7 +146,7 @@ ia_xml = [
     xml_parser.UserImportCertificateParser,
     xml_parser.SILGoodsParser,
     xml_parser.SILSupplementaryReportParser,
-    # xml_parser.SILReportFirearmParser, TODO ICMSLST-2599
+    xml_parser.SILReportFirearmParser,
     xml_parser.DFLGoodsCertificateParser,
     xml_parser.DFLSupplementaryReportParser,
     xml_parser.DFLReportFirearmParser,
