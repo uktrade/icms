@@ -24,18 +24,21 @@ FAKE_DB_RESPONSE = [
         "PATH": "testfile.txt",
         "CREATED_DATETIME": dt.datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
         "SECURE_LOB_REF_ID": 1,
+        "FILE_SIZE": 6 * 1024**2,
     },
     {
         "BLOB_DATA": "blob2",
         "PATH": "testfile2.txt",
         "CREATED_DATETIME": dt.datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
         "SECURE_LOB_REF_ID": 2,
+        "FILE_SIZE": 1000,
     },
     {
         "BLOB_DATA": "blob2",
         "PATH": "testfile3.txt",
         "CREATED_DATETIME": dt.datetime.strptime(CREATED_DATETIME_ALT_2, "%Y-%m-%d %H:%M:%S"),
         "SECURE_LOB_REF_ID": 3,
+        "FILE_SIZE": 1000,
     },
 ]
 
@@ -95,15 +98,19 @@ class TestImportV1FilesToS3:
     @freezegun.freeze_time(CREATED_DATETIME_ALT)
     @mock.patch("data_migration.management.commands.import_v1_files_to_s3.s3_web.put_object_in_s3")
     @mock.patch(
+        "data_migration.management.commands.import_v1_files_to_s3.s3_web.upload_file_obj_to_s3_in_parts"
+    )
+    @mock.patch(
         "data_migration.management.commands.import_v1_files_to_s3.s3_web.upload_file_obj_to_s3"
     )
     @mock.patch.object(OracleDBProcessor, "execute_query")
     def test_process_query_and_upload(
-        self, mock_execute_query, mock_upload_file, mock_upload_last_run
+        self, mock_execute_query, mock_upload_file, mock_upload_file_in_parts, mock_upload_last_run
     ):
         mock_upload_last_run.return_value = None
 
         mock_upload_file.return_value = None
+        mock_upload_file_in_parts.return_value = None
         mock_execute_query.return_value.__enter__.return_value = iter(FAKE_DB_RESPONSE)
 
         self.cmd.process_query_and_upload(
@@ -121,6 +128,8 @@ class TestImportV1FilesToS3:
                 "started_at": "2023-01-01 01:00:00",
             }
         )
+        assert mock_upload_file.call_count == 2
+        assert mock_upload_file_in_parts.call_count == 1
 
     @freezegun.freeze_time(CREATED_DATETIME_ALT)
     @mock.patch("data_migration.management.commands.import_v1_files_to_s3.s3_web.put_object_in_s3")
@@ -146,6 +155,9 @@ class TestImportV1FilesToS3:
     @freezegun.freeze_time(CREATED_DATETIME_ALT)
     @mock.patch("data_migration.management.commands.import_v1_files_to_s3.s3_web.put_object_in_s3")
     @mock.patch(
+        "data_migration.management.commands.import_v1_files_to_s3.s3_web.upload_file_obj_to_s3_in_parts"
+    )
+    @mock.patch(
         "data_migration.management.commands.import_v1_files_to_s3.s3_web.upload_file_obj_to_s3"
     )
     @mock.patch("data_migration.management.commands.import_v1_files_to_s3.s3_web.get_file_from_s3")
@@ -157,6 +169,7 @@ class TestImportV1FilesToS3:
         mock_execute_query,
         mock_get_file_from_s3,
         mock_upload_file,
+        mock_upload_file_in_parts,
         mock_put_object_in_s3,
     ):
         mock_get_file_from_s3.return_value = (
@@ -164,6 +177,7 @@ class TestImportV1FilesToS3:
         )
         mock_put_object_in_s3.return_value = None
         mock_upload_file.return_value = None
+        mock_upload_file_in_parts.return_value = None
         mock_execute_count_query.return_value = 3, 1000
         mock_execute_query.return_value.__enter__.return_value = iter(FAKE_DB_RESPONSE)
 
@@ -171,7 +185,8 @@ class TestImportV1FilesToS3:
 
         assert mock_execute_count_query.called is True
         assert mock_execute_query.called is True
-        assert mock_upload_file.call_count == 3
+        assert mock_upload_file.call_count == 2
+        assert mock_upload_file_in_parts.call_count == 1
         assert mock_get_file_from_s3.called is True
 
         assert mock_put_object_in_s3.called is True

@@ -4,6 +4,7 @@ from typing import Any
 import oracledb
 from django.core.management.base import BaseCommand
 
+from data_migration.management.commands.types import CheckFileQuery, CheckQuery
 from web.models import UniqueReference
 from web.utils.s3 import get_s3_file_count, get_s3_resource
 
@@ -17,8 +18,8 @@ from .config.data_counts import (
 from .types import Anno, ModelT, Params, Val
 from .utils.db import CONNECTION_CONFIG
 
-DB_CHECKS = ["counts", "model_counts", "queries", "max_reference"]
-FILE_CHECKS = ["s3_file_counts"]
+DB_CHECKS = ["counts", "model_counts", "data_queries", "max_reference"]
+FILE_CHECKS = ["s3_file_counts", "file_queries"]
 CHECKS = DB_CHECKS + FILE_CHECKS
 
 
@@ -55,9 +56,12 @@ class Command(BaseCommand):
         if "model_counts" in checks:
             self.stdout.write("\nRunning model count checks")
             self.run_model_counts()
-        if "queries" in checks:
-            self.stdout.write("\nRunning query checks")
-            self.run_queries()
+        if "data_queries" in checks:
+            self.stdout.write("\nRunning data queries checks")
+            self.run_queries(CHECK_DATA_QUERIES)
+        if "file_queries" in checks:
+            self.stdout.write("\nRunning file db queries checks")
+            self.run_queries(CHECK_FILE_COUNTS)
         if "max_reference" in checks:
             self.stdout.write("\nRunning max reference checks")
             self.check_max_licence_and_certificate_references()
@@ -109,15 +113,15 @@ class Command(BaseCommand):
         with oracledb.connect(**CONNECTION_CONFIG) as connection:
             for check in CHECK_FILE_COUNTS:
                 expected = self.run_query(connection, check.query, check.bind_vars)
-                actual = get_s3_file_count(s3_resource, check.path_prefix)
+                actual = get_s3_file_count(s3_resource, check.get_path_prefixes())
                 actual += check.adjustment  # Adjust to account for excluded data. See check.note
                 self._log_result(check.name, expected, actual)
 
-    def run_queries(self) -> None:
+    def run_queries(self, queries: list[CheckQuery] | list[CheckFileQuery]) -> None:
         """Iterates over CHECK_DATA_QUERIES and CHECK_FILE_COUNTS and runs queries in V1 to retrieve the data counts prior to data migration"""
 
         with oracledb.connect(**CONNECTION_CONFIG) as connection:
-            for check in CHECK_DATA_QUERIES + CHECK_FILE_COUNTS:
+            for check in queries:
                 expected = self.run_query(connection, check.query, check.bind_vars)
                 actual = self.get_actual(check.model, check.filter_params, check.exclude_params)
                 actual += check.adjustment  # Adjust to account for excluded data. See check.note
@@ -188,7 +192,9 @@ class Command(BaseCommand):
         result = "PASS" if expected == actual else "FAIL"
 
         if not self.fail_only or result == "FAIL":
-            self.stdout.write(f"\t{result} - {name} -  EXPECTED: {expected} - ACTUAL: {actual}")
+            self.stdout.write(
+                f"\t{result} - {name} -  EXPECTED[V1]: {expected} - ACTUAL[V2]: {actual}"
+            )
 
         self._increment_counts(result == "PASS")
 
