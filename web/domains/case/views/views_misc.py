@@ -907,10 +907,13 @@ def _get_copy_recipients(application: ImpOrExp) -> "QuerySet[User]":
         return User.objects.none()
 
 
-class QuickIssueApplication(ApplicationTaskMixin, LoginRequiredMixin, View):
+class QuickIssueApplication(
+    ApplicationTaskMixin, LoginRequiredMixin, PermissionRequiredMixin, View
+):
     http_method_names = ["post"]
     current_status = [ImpExpStatus.PROCESSING]
     current_task_type = Task.TaskType.PROCESS
+    permission_required = [Perms.sys.ilb_admin]
 
     @transaction.atomic()
     def post(
