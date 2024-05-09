@@ -1002,3 +1002,53 @@ def test_cfs_get_document_context_with_cover_letter(db, cfs_app_submitted):
 
     assert context == expected
     assert list(context_cert_docs) == list(certificate_docs)
+
+
+def test_quick_issue_application_has_errors(ilb_admin_client, wood_application):
+    """Test quick issue catches the correct errors for an approved application."""
+
+    wood_application.decision = wood_application.APPROVE
+    # Create an open update request
+    wood_application.update_requests.create(status=UpdateRequest.Status.OPEN)
+    wood_application.save()
+
+    response = ilb_admin_client.post(CaseURLS.quick_issue(wood_application.pk))
+    assert response.status_code == 302
+
+    response = ilb_admin_client.post(CaseURLS.quick_issue(wood_application.pk), follow=True)
+    assert response.status_code == 200
+    errors: ApplicationErrors = response.context["errors"]
+    assert errors.has_errors()
+
+    check_pages_checked(errors, ["Checklist", "Response Preparation", "Application Updates"])
+
+    check_page_errors(errors, "Checklist", ["Checklist"])
+    check_page_errors(errors, "Response Preparation", [])
+    check_page_errors(errors=errors, page_name="Application Updates", error_field_names=["Status"])
+
+
+def test_quick_issue_approved_application_has_no_errors(ilb_admin_client, wood_application):
+    """Test a valid approved application ends in the correct state."""
+
+    wood_application.decision = wood_application.APPROVE
+
+    # Set licence details
+    _set_valid_licence(wood_application)
+
+    # Create the checklist (fully valid)
+    _add_valid_checklist(wood_application)
+    wood_application.save()
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.quick_issue(wood_application.pk, case_type="import"))
+
+    assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
+
+    wood_application.refresh_from_db()
+
+    case_progress.check_expected_status(wood_application, [ImpExpStatus.PROCESSING])
+    case_progress.check_expected_task(wood_application, Task.TaskType.AUTHORISE)
+
+    doc_pack = document_pack.pack_draft_get(wood_application)
+    licence_doc = document_pack.doc_ref_licence_get(doc_pack)
+    assert licence_doc.reference == "0000001B"
