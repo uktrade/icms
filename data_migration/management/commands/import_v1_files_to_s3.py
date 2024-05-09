@@ -91,7 +91,7 @@ class Command(BaseCommand):
 
         For a given query
          - Selects all files to be added to s3
-         - Uploads blob file data to s3
+         - Uploads blob file data to s3, if the file is larger than 5 MiB the file is uploaded in chunks
         """
         number_of_files_to_be_processed = min(row_count, self.db.limit or row_count)
         data_dict = self.get_initial_run_data_dict(
@@ -101,13 +101,16 @@ class Command(BaseCommand):
         )
 
         pbar = tqdm(total=number_of_files_to_be_processed, desc=query_model.query_name)
-
+        file_size_limit = 5 * 1024**2
         sql = self.db.get_sql(query_model)
         with self.db.execute_query(sql, query_parameters) as rows:
             try:
                 while True:
                     obj = next(rows)
-                    s3_web.upload_file_obj_to_s3(obj["BLOB_DATA"], obj["PATH"])
+                    if obj["FILE_SIZE"] > file_size_limit:
+                        s3_web.upload_file_obj_to_s3_in_parts(obj["BLOB_DATA"], obj["PATH"])
+                    else:
+                        s3_web.upload_file_obj_to_s3(obj["BLOB_DATA"], obj["PATH"])
                     pbar.update(1)
                     self.save_run_data(data_dict, pbar.n, obj)
             except StopIteration:

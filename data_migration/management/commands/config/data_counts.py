@@ -607,7 +607,10 @@ CHECK_FILE_COUNTS: list[CheckFileQuery] = [
     CheckFileQuery(
         name="SPS Application Files",
         query_model=FILE_QUERY_DICT["SPS Application Files"],
-        model=web.PriorSurveillanceApplication.supporting_documents.through,
+        model=[
+            web.PriorSurveillanceApplication.supporting_documents.through,
+            web.PriorSurveillanceContractFile,
+        ],
     ),
     CheckFileQuery(
         name="FA-DFL Application Files",
@@ -617,18 +620,14 @@ CHECK_FILE_COUNTS: list[CheckFileQuery] = [
     CheckFileQuery(
         name="FA-OIL Application Files",
         query_model=FILE_QUERY_DICT["FA-OIL Application Files"],
-        model=[
-            web.OpenIndividualLicenceApplication.user_imported_certificates.through,
-            web.OpenIndividualLicenceApplication.verified_certificates.through,
-        ],
+        model=web.UserImportCertificate,
+        filter_params={"oil_application__isnull": False},
     ),
     CheckFileQuery(
         name="FA-SIL Application Files",
         query_model=FILE_QUERY_DICT["FA-SIL Application Files"],
-        model=[
-            web.SILApplication.user_imported_certificates.through,
-            web.SILApplication.verified_certificates.through,
-        ],
+        model=[web.UserImportCertificate, web.SILUserSection5],
+        filter_params={"sil_application__isnull": False},
     ),
     CheckFileQuery(
         name="Sanctions & Adhoc Application Files",
@@ -644,6 +643,7 @@ CHECK_FILE_COUNTS: list[CheckFileQuery] = [
         name="Wood Application Files",
         query_model=FILE_QUERY_DICT["Wood Application Files"],
         model=web.WoodQuotaApplication.supporting_documents.through,
+        adjustment=2,
     ),
     CheckFileQuery(
         name="Textiles Application Files",
@@ -679,27 +679,40 @@ CHECK_FILE_COUNTS: list[CheckFileQuery] = [
     CheckFileQuery(
         name="Import Application Case Note Files",
         query_model=FILE_QUERY_DICT["Import Application Case Note Files"],
-        model=web.ImportApplication.case_notes.through,
+        model=web.CaseNote,
+        filter_params={"importapplication__isnull": False, "files__isnull": False},
     ),
     CheckFileQuery(
         name="Export Application Case Note Documents",
         query_model=FILE_QUERY_DICT["Export Application Case Note Documents"],
-        model=web.ExportApplication.case_notes.through,
+        model=web.CaseNote,
+        filter_params={"exportapplication__isnull": False, "files__isnull": False},
+        path_prefixes=["export_case_note_docs"],
     ),
     CheckFileQuery(
         name="Supplementary Report Goods Uploaded Files",
         query_model=FILE_QUERY_DICT["Supplementary Report Goods Uploaded Files"],
         model=web.DFLSupplementaryReportFirearm,
         filter_params={"is_upload": True},
+        path_prefixes=["fa_supplementary_report_upload_files"],
     ),
     CheckFileQuery(
         name="Import Application Licence Documents",
         query_model=FILE_QUERY_DICT["Import Application Licence Documents"],
-        model=web.ImportApplicationLicence,
+        model=web.CaseDocumentReference,
+        filter_params={
+            "document_type__in": [
+                "LICENCE",
+                "COVER_LETTER",
+            ]
+        },
+        path_prefixes=["import_licence_docs", "import_cover_letter"],
     ),
     CheckFileQuery(
         name="Export Application Certificate Documents",
         query_model=FILE_QUERY_DICT["Export Application Certificate Documents"],
-        model=web.ExportApplicationCertificate,
+        model=web.CaseDocumentReference,
+        filter_params={"document_type": web.CaseDocumentReference.Type.CERTIFICATE},
+        path_prefixes=["export_certificate"],
     ),
 ]

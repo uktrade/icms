@@ -353,7 +353,9 @@ file_query_model = [
         queries.fa_supplementary_report_upload_files,
         "Supplementary Report Goods Uploaded Files",
         dm.File,
-        {"created_datetime": DEFAULT_FILE_CREATED_DATETIME},
+        {
+            "created_datetime": DEFAULT_FILE_CREATED_DATETIME,
+        },
         "created_datetime",
     ),
     QueryModel(
@@ -366,7 +368,9 @@ file_query_model = [
         queries.export_certificate_docs,
         "Export Application Certificate Documents",
         dm.ExportCertificateCaseDocumentReferenceData,
-        {"secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID},
+        {
+            "secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID,
+        },
     ),
 ]
 
