@@ -11,7 +11,7 @@ from web import models as web
 ModelT = Union[T[Model], list[T[Model]]]
 Anno = dict[str, Any] | None
 Val = list[str] | None
-Params = dict[str, int | str | bool | tuple]
+Params = dict[str, int | str | bool | tuple | list]
 Ref = Literal["access", "export", "import", "mailshot"]
 
 
@@ -74,6 +74,7 @@ class CheckFileQuery:
     filter_params: Params = field(default_factory=dict)
     exclude_params: Params = field(default_factory=dict)
     adjustment: int = 0
+    path_prefixes: list[Any] = field(default_factory=list)
 
     @property
     def query(self) -> str:
@@ -85,9 +86,10 @@ class CheckFileQuery:
     def bind_vars(self) -> Params:
         return self.query_model.parameters
 
-    @property
-    def path_prefix(self) -> str:
-        return str(self.query_model.parameters.get("path_prefix", ""))
+    def get_path_prefixes(self) -> list[Any]:
+        if "path_prefix" in self.query_model.parameters:
+            self.path_prefixes.append(self.query_model.parameters["path_prefix"])
+        return list(set(self.path_prefixes))
 
 
 @dataclass

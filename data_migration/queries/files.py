@@ -205,6 +205,7 @@ WHERE ff.file_folder_type = :folder_type
 ORDER by fft.id
 """
 
+
 file_objects_folder_type = """
 SELECT
   fft.id target_id

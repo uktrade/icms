@@ -43,9 +43,12 @@ def get_s3_resource() -> "S3Resource":
     )
 
 
-def get_s3_file_count(s3_resource: "S3Resource", prefix: str) -> int:
+def get_s3_file_count(s3_resource: "S3Resource", prefixes: list[str]) -> int:
     bucket = s3_resource.Bucket(settings.AWS_STORAGE_BUCKET_NAME)
-    return len([i for i in bucket.objects.filter(Prefix=prefix)])
+    count = 0
+    for prefix in prefixes:
+        count += len([i for i in bucket.objects.filter(Prefix=prefix)])
+    return count
 
 
 def get_file_from_s3(path: str, client: Optional["S3Client"] = None) -> bytes:
