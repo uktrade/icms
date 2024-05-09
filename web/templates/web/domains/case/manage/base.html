@@ -41,6 +41,13 @@
         <input type="submit" class="button" value="Release Ownership"/>
       </form>
       <a href="{{ icms_url('case:reassign-ownership', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}" class="button">Reassign</a>
+      <form
+        method="post"
+        action="{{ icms_url('case:quick-issue', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}"
+        class="form-inline">
+        {{ csrf_input }}
+        <input type="submit" class="button" value="Quick Issue"/>
+      </form>
     {% endif %}
   {% endif %}
 {% endblock %}

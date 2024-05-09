@@ -22,15 +22,16 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.types import ImpOrExp
-from web.domains.case.utils import end_process_task, get_case_page_title
+from web.domains.case.utils import (
+    end_process_task,
+    get_case_page_title,
+    start_application_authorisation,
+)
 from web.flow import errors
 from web.flow.models import ProcessTypes
-from web.mail.constants import EmailTypes
 from web.mail.emails import (
     send_application_reassigned_email,
-    send_application_refused_email,
     send_application_stopped_email,
-    send_variation_request_email,
     send_withdrawal_email,
 )
 from web.models import CaseNote, File, Task, User, VariationRequest, WithdrawApplication
@@ -482,61 +483,7 @@ def start_authorisation(
         application_errors: ApplicationErrors = get_app_errors(application, case_type)
 
         if request.method == "POST" and not application_errors.has_errors():
-            task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
-
-            create_documents = True
-            send_vr_email = False
-
-            if application.status == application.Statuses.VARIATION_REQUESTED:
-                if (
-                    application.is_import_application()
-                    and application.variation_decision == application.REFUSE
-                ):
-                    vr = application.variation_requests.get(status=VariationRequest.Statuses.OPEN)
-                    next_task = None
-                    application.status = model_class.Statuses.COMPLETED
-                    vr.status = VariationRequest.Statuses.REJECTED
-                    vr.reject_cancellation_reason = application.variation_refuse_reason
-                    vr.closed_datetime = timezone.now()
-                    vr.save()
-                    send_vr_email = True
-                    create_documents = False
-                else:
-                    next_task = Task.TaskType.AUTHORISE
-
-            else:
-                if application.decision == application.REFUSE:
-                    next_task = Task.TaskType.REJECTED
-                    application.status = model_class.Statuses.COMPLETED
-                    create_documents = False
-
-                else:
-                    next_task = Task.TaskType.AUTHORISE
-                    application.status = model_class.Statuses.PROCESSING
-
-            application.update_order_datetime()
-            application.save()
-
-            end_process_task(task)
-
-            if next_task:
-                Task.objects.create(process=application, task_type=next_task, previous=task)
-
-            if create_documents:
-                document_pack.doc_ref_documents_create(application, request.icms.lock_manager)
-            else:
-                document_pack.pack_draft_archive(application)
-
-            if (
-                application.decision == application.REFUSE
-                and application.status == model_class.Statuses.COMPLETED
-            ):
-                send_application_refused_email(application)
-
-            if send_vr_email:
-                send_variation_request_email(
-                    vr, EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED, application
-                )
+            start_application_authorisation(application, request.icms.lock_manager)
             return redirect(reverse("workbasket"))
 
         else:
@@ -958,3 +905,27 @@ def _get_copy_recipients(application: ImpOrExp) -> "QuerySet[User]":
 
     else:
         return User.objects.none()
+
+
+class QuickIssueApplication(ApplicationTaskMixin, LoginRequiredMixin, View):
+    http_method_names = ["post"]
+    current_status = [ImpExpStatus.PROCESSING]
+    current_task_type = Task.TaskType.PROCESS
+
+    @transaction.atomic()
+    def post(
+        self, request: AuthenticatedHttpRequest, *args: Any, case_type: str, **kwargs: Any
+    ) -> HttpResponse:
+        self.set_application_and_task()
+
+        application_errors: ApplicationErrors = get_app_errors(self.application, case_type)
+        if application_errors.has_errors():
+            return redirect(
+                reverse(
+                    "case:start-authorisation",
+                    kwargs={"application_pk": self.application.pk, "case_type": case_type},
+                )
+            )
+        else:
+            start_application_authorisation(self.application, request.icms.lock_manager)
+            return redirect(reverse("workbasket"))
