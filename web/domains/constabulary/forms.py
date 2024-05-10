@@ -63,8 +63,12 @@ class ConstabularyForm(ModelForm):
         fields = ["name", "region", "email", "telephone_number"]
         widgets = {"region": Select(choices=Constabulary.REGIONS)}
 
-    def clean_telephone_number(self):
+    def clean_telephone_number(self) -> str | None:
         telephone_number = self.cleaned_data["telephone_number"]
+
+        if not telephone_number:
+            return None
+
         telephone_number = telephone_number.replace(" ", "")
         if not telephone_number.isdigit():
             raise ValidationError("Telephone number must contain only digits.")
