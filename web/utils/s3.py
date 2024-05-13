@@ -85,6 +85,54 @@ def upload_file_obj_to_s3(file_obj: IO[Any], key: str, client: Optional["S3Clien
     return object_meta["ContentLength"]
 
 
+def upload_file_obj_to_s3_in_parts(
+    file_obj: IO[Any], key: str, client: Optional["S3Client"] = None
+) -> int:
+    """Upload file obj to s3 and return the size of the file (bytes)."""
+    file_size_limit = 5 * 1024**2
+
+    if file_obj.size() < file_size_limit:
+        return upload_file_obj_to_s3(file_obj, key, client)
+
+    if not client:
+        client = get_s3_client()
+
+    response = client.create_multipart_upload(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=key)
+    upload_id = response["UploadId"]
+
+    parts_info = []
+
+    offset = 1
+    part_number = 1
+    num_bytes_in_chunk = file_size_limit
+    while True:
+        data = file_obj.read(offset, num_bytes_in_chunk)
+        if data:
+            part = client.upload_part(
+                Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+                Key=key,
+                Body=data,
+                UploadId=upload_id,
+                PartNumber=part_number,
+            )
+            parts_info.append({"PartNumber": part_number, "ETag": part["ETag"]})
+        if len(data) < num_bytes_in_chunk:
+            break
+        offset += len(data)
+        part_number += 1
+
+    client.complete_multipart_upload(
+        Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+        Key=key,
+        UploadId=upload_id,
+        MultipartUpload={"Parts": parts_info},
+    )
+
+    object_meta = client.head_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=key)
+
+    return object_meta["ContentLength"]
+
+
 def put_object_in_s3(file_data: str | bytes, key: str, client: Optional["S3Client"] = None) -> int:
     """Uploads data as file to s3 and return the size of the file (bytes)."""
 

@@ -107,7 +107,7 @@ class Command(BaseCommand):
             try:
                 while True:
                     obj = next(rows)
-                    s3_web.upload_file_obj_to_s3(obj["BLOB_DATA"], obj["PATH"])
+                    s3_web.upload_file_obj_to_s3_in_parts(obj["BLOB_DATA"], obj["PATH"])
                     pbar.update(1)
                     self.save_run_data(data_dict, pbar.n, obj)
             except StopIteration:
