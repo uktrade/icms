@@ -78,6 +78,18 @@ CHECK_DATA_COUNTS: list[CheckCount] = [
         model=web.Country,
         filter_params={"is_active": True},
     ),
+    CheckCount(
+        name="All Submitted DFL Applications Have Goods Certificate",
+        expected_count=0,
+        model=web.DFLApplication,
+        filter_params={"submit_datetime__isnull": False, "goods_certificates__isnull": True},
+    ),
+    CheckCount(
+        name="All Submitted DFL Applications Have Constabulary",
+        expected_count=0,
+        model=web.DFLApplication,
+        filter_params={"submit_datetime__isnull": False, "constabulary_id__isnull": True},
+    ),
 ]
 
 

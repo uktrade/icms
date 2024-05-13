@@ -4406,3 +4406,5 @@ Sanctions & Adhoc Application
 Firearms & Ammunition Certificate Files'
 "Compares the file counts
 that1
+All Submitted DFL Applications Have Goods Certificate
+All Submitted DFL Applications Have Constabulary

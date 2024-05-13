@@ -600,7 +600,10 @@ oil_data_source_target = {
 @mock.patch.dict(
     DATA_TYPE_M2M,
     {
-        "import_application": [(dm.Office, web.Importer, "offices")],
+        "import_application": [
+            (dm.Office, web.Importer, "offices"),
+            (dm.DFLGoodsCertificate, web.DFLApplication, "goods_certificates"),
+        ],
         "export_application": [],
         "file": [],
         "user": [],
@@ -664,6 +667,18 @@ def test_import_oil_data(mock_connect, dummy_dm_settings):
     assert dfl.constabulary_id == 1
     assert dfl.supplementary_info.reports.count() == 1
     assert dfl.cover_letter_text == utils.xml_data.cover_letter_text_dfl_v2
+
+    assert dfl.goods_certificates.count() == 2
+    dfl_goods1, dfl_goods2 = dfl.goods_certificates.order_by("id")
+    assert dfl_goods1.goods_description == "Test Commodity A"
+    assert dfl_goods1.deactivated_certificate_reference == "REF A"
+    assert dfl_goods1.issuing_country_id == 1
+    assert dfl_goods1.path == "goods/test_a.pdf"
+
+    assert dfl_goods2.goods_description == "Test Commodity B"
+    assert dfl_goods2.deactivated_certificate_reference == "REF B"
+    assert dfl_goods2.issuing_country_id == 2
+    assert dfl_goods2.path == "goods/test_b.pdf"
 
     sr4 = dfl.supplementary_info.reports.first()
     assert sr4.firearms.filter(is_upload=True).count() == 1

@@ -62,6 +62,7 @@ SELECT
   , XMLTYPE.getClobVal(x.cover_letter_text) cover_letter_text
   , XMLTYPE.getClobVal(x.variations_xml) variations_xml
   , XMLTYPE.getClobVal(x.withdrawal_xml) withdrawal_xml
+  , x.constabulary_id
 FROM impmgr.import_application_details ad
 CROSS JOIN XMLTABLE('/*'
   PASSING ad.xml_data
@@ -86,6 +87,7 @@ CROSS JOIN XMLTABLE('/*'
     , file_folder_id INTEGER PATH '/IMA/APP_METADATA/APP_DOCS_FF_ID/text()'
     , cover_letter_text XMLTYPE PATH '/IMA/APP_PROCESSING/RESPONSE/APPROVE/COVER_LETTER/*'
     , withdrawal_xml XMLTYPE PATH '/IMA/APP_PROCESSING/WITHDRAWAL/WITHDRAW_LIST'
+    , constabulary_id NUMBER PATH '/IMA/APP_DETAILS/FA_DETAILS/CONSTABULARY/text()'
   ) x
 WHERE status_control = 'C'
 ) ia_details ON ia_details.ima_id = xiad.ima_id
