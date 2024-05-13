@@ -275,6 +275,60 @@ ORDER BY secure_lob_ref_id
 """
 
 
+gmp_application_files = """
+SELECT
+  fft.id target_id
+  , fv.version_id
+  , fv.filename
+  , fv.content_type
+  , fv.file_size
+  , fv.path
+  , created_datetime
+  , fv.created_by_id
+  , sld.blob_data
+  , fv.secure_lob_ref_id
+FROM decmgr.file_folder_targets fft
+INNER JOIN decmgr.file_folders ff ON fft.ff_id = ff.id
+LEFT JOIN (
+  SELECT
+    fft_id target_id
+    , fv.id version_id
+    , create_start_datetime created_datetime
+    , create_by_wua_id created_by_id
+    , 'gmp_application_files/' || id || '-' || x.filename path
+    , DEREF(secure_lob_ref).id  secure_lob_ref_id
+    , x.*
+  FROM decmgr.file_versions fv
+  CROSS JOIN XMLTABLE('/*'
+    PASSING metadata_xml
+    COLUMNS
+      filename VARCHAR2(4000) PATH '/file-metadata/filename/text()'
+      , content_type VARCHAR2(4000) PATH '/file-metadata/content-type/text()'
+      , file_size NUMBER PATH '/file-metadata/size/text()'
+    ) x
+  WHERE status_control = 'C'
+ ) fv ON fv.target_id = fft.ID
+INNER JOIN securemgr.secure_lob_data sld ON sld.id = secure_lob_ref_id
+INNER JOIN (
+  SELECT file_folder_id
+  FROM impmgr.xview_certificate_app_details xcad
+  INNER JOIN impmgr.certificate_app_details cad ON cad.id = xcad.cad_id
+  CROSS JOIN XMLTABLE('/*'
+    PASSING cad.xml_data
+    COLUMNS
+      file_folder_id INTEGER PATH '/CA/APPLICATION/FILE_FOLDER_ID/text()'
+    ) x
+  WHERE xcad.status_control = 'C'
+  AND xcad.application_type = 'GMP'
+  AND cad.status <> 'DELETED'
+  AND (xcad.status <> 'IN_PROGRESS' OR xcad.last_updated_datetime > CURRENT_DATE - INTERVAL '14' DAY)
+) gmp ON gmp.file_folder_id = ff.id
+WHERE fv.secure_lob_ref_id > :secure_lob_ref_id
+  AND ff.file_folder_type = 'GMP_SUPPORTING_DOCUMENTS'
+ORDER by fv.secure_lob_ref_id
+"""
+
+
 fa_supplementary_report_upload_files = """
 SELECT
   'fa_supplementary_report_upload_files/' || x.sr_goods_file_id || '/' || x.filename PATH

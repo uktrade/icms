@@ -328,14 +328,10 @@ file_query_model = [
         {"secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID, "path_prefix": "mailshot_files"},
     ),
     QueryModel(
-        queries.file_objects_folder_type,
+        queries.gmp_application_files,
         "GMP Application Files",
         dm.File,
-        {
-            "secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID,
-            "folder_type": "GMP_SUPPORTING_DOCUMENTS",
-            "path_prefix": "gmp_application_files",
-        },
+        {"secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID},
     ),
     QueryModel(
         queries.file_objects_folder_type,
