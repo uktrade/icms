@@ -90,10 +90,7 @@ def upload_file_obj_to_s3_in_parts(
     file_obj: Any, key: str, client: Optional["S3Client"] = None
 ) -> int:
     """Upload file obj to s3 and return the size of the file (bytes)."""
-    file_size_limit = 5 * 1024**2
-
-    if file_obj.size() < file_size_limit:
-        return upload_file_obj_to_s3(file_obj, key, client)
+    chunk_size = 5 * 1024**2
 
     if not client:
         client = get_s3_client()
@@ -105,9 +102,8 @@ def upload_file_obj_to_s3_in_parts(
 
     offset = 1
     part_number = 1
-    num_bytes_in_chunk = file_size_limit
     while True:
-        data = file_obj.read(offset, num_bytes_in_chunk)
+        data = file_obj.read(offset, chunk_size)
         if data:
             part = client.upload_part(
                 Bucket=settings.AWS_STORAGE_BUCKET_NAME,
@@ -117,7 +113,7 @@ def upload_file_obj_to_s3_in_parts(
                 PartNumber=part_number,
             )
             parts_info.append({"PartNumber": part_number, "ETag": part["ETag"]})
-        if len(data) < num_bytes_in_chunk:
+        if len(data) < chunk_size:
             break
         offset += len(data)
         part_number += 1

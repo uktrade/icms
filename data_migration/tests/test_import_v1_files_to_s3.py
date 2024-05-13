@@ -24,18 +24,21 @@ FAKE_DB_RESPONSE = [
         "PATH": "testfile.txt",
         "CREATED_DATETIME": dt.datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
         "SECURE_LOB_REF_ID": 1,
+        "FILE_SIZE": 1000,
     },
     {
         "BLOB_DATA": "blob2",
         "PATH": "testfile2.txt",
         "CREATED_DATETIME": dt.datetime.strptime(CREATED_DATETIME_ALT, "%Y-%m-%d %H:%M:%S"),
         "SECURE_LOB_REF_ID": 2,
+        "FILE_SIZE": 1000,
     },
     {
         "BLOB_DATA": "blob2",
         "PATH": "testfile3.txt",
         "CREATED_DATETIME": dt.datetime.strptime(CREATED_DATETIME_ALT_2, "%Y-%m-%d %H:%M:%S"),
         "SECURE_LOB_REF_ID": 3,
+        "FILE_SIZE": 1000,
     },
 ]
 
