@@ -90,7 +90,6 @@ class GMPFile(MigrationBase):
             File.objects.select_related("target__folder__gmp_id")
             .filter(
                 target__folder__folder_type="GMP_SUPPORTING_DOCUMENTS",
-                target__folder__gmp__isnull=False,
             )
             .values(file_type=F("target__target_type"), file_ptr_id=F("id"))
             .distinct()

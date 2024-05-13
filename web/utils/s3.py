@@ -1,5 +1,5 @@
 import logging
-from typing import IO, TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 import boto3
 from botocore.exceptions import ClientError
@@ -8,6 +8,7 @@ from django.conf import settings
 if TYPE_CHECKING:
     from mypy_boto3_s3 import Client as S3Client
     from mypy_boto3_s3 import ServiceResource as S3Resource
+
 
 from web.utils.sentry import capture_exception
 
@@ -72,7 +73,7 @@ def delete_file_from_s3(path: str, client: Optional["S3Client"] = None) -> None:
     logger.debug("Removed file from S3: %s.", path)
 
 
-def upload_file_obj_to_s3(file_obj: IO[Any], key: str, client: Optional["S3Client"] = None) -> int:
+def upload_file_obj_to_s3(file_obj: Any, key: str, client: Optional["S3Client"] = None) -> int:
     """Upload file obj to s3 and return the size of the file (bytes)."""
 
     if not client:
@@ -86,7 +87,7 @@ def upload_file_obj_to_s3(file_obj: IO[Any], key: str, client: Optional["S3Clien
 
 
 def upload_file_obj_to_s3_in_parts(
-    file_obj: IO[Any], key: str, client: Optional["S3Client"] = None
+    file_obj: Any, key: str, client: Optional["S3Client"] = None
 ) -> int:
     """Upload file obj to s3 and return the size of the file (bytes)."""
     file_size_limit = 5 * 1024**2
@@ -125,7 +126,7 @@ def upload_file_obj_to_s3_in_parts(
         Bucket=settings.AWS_STORAGE_BUCKET_NAME,
         Key=key,
         UploadId=upload_id,
-        MultipartUpload={"Parts": parts_info},
+        MultipartUpload={"Parts": parts_info},  # type: ignore
     )
 
     object_meta = client.head_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=key)
