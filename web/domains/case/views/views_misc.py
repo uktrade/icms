@@ -23,6 +23,7 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import (
+    authorise_application_documents,
     end_process_task,
     get_case_page_title,
     start_application_authorisation,
@@ -514,20 +515,9 @@ def authorise_documents(
         )
 
         case_progress.application_is_authorised(application)
-        task = case_progress.get_expected_task(application, Task.TaskType.AUTHORISE)
 
         if request.method == "POST":
-            end_process_task(task, request.user)
-
-            Task.objects.create(
-                process=application, task_type=Task.TaskType.DOCUMENT_SIGNING, previous=task
-            )
-
-            application.update_order_datetime()
-            application.save()
-
-            # Queues all documents to be created
-            create_case_document_pack(application, request.user)
+            authorise_application_documents(application, request.user)
 
             messages.success(
                 request,
@@ -907,11 +897,15 @@ def _get_copy_recipients(application: ImpOrExp) -> "QuerySet[User]":
         return User.objects.none()
 
 
-class QuickIssueApplication(
+class QuickIssueApplicationView(
     ApplicationTaskMixin, LoginRequiredMixin, PermissionRequiredMixin, View
 ):
     http_method_names = ["post"]
-    current_status = [ImpExpStatus.PROCESSING]
+    current_status = [
+        ImpExpStatus.SUBMITTED,
+        ImpExpStatus.PROCESSING,
+        ImpExpStatus.VARIATION_REQUESTED,
+    ]
     current_task_type = Task.TaskType.PROCESS
     permission_required = [Perms.sys.ilb_admin]
 
@@ -921,14 +915,34 @@ class QuickIssueApplication(
     ) -> HttpResponse:
         self.set_application_and_task()
 
-        application_errors: ApplicationErrors = get_app_errors(self.application, case_type)
-        if application_errors.has_errors():
-            return redirect(
-                reverse(
-                    "case:start-authorisation",
-                    kwargs={"application_pk": self.application.pk, "case_type": case_type},
+        #
+        # Start authorisation step
+        #
+        with transaction.atomic():
+            application_errors: ApplicationErrors = get_app_errors(self.application, case_type)
+            if application_errors.has_errors():
+                return redirect(
+                    reverse(
+                        "case:start-authorisation",
+                        kwargs={"application_pk": self.application.pk, "case_type": case_type},
+                    )
                 )
+            else:
+                start_application_authorisation(self.application, request.icms.lock_manager)
+
+        #
+        # Authorise documents step
+        #
+        with transaction.atomic():
+
+            # re-fetching from the DB
+            application = self.get_object()
+            case_progress.application_is_authorised(application)
+            authorise_application_documents(application, request.user)
+
+            messages.success(
+                request,
+                f"Authorise Success: Application {self.application.reference} has been queued for document signing",
             )
-        else:
-            start_application_authorisation(self.application, request.icms.lock_manager)
-            return redirect(reverse("workbasket"))
+
+        return redirect(reverse("workbasket"))

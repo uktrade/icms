@@ -1041,13 +1041,12 @@ def test_quick_issue_approved_application_has_no_errors(ilb_admin_client, wood_a
 
     # Now start authorisation
     response = ilb_admin_client.post(CaseURLS.quick_issue(wood_application.pk, case_type="import"))
-
     assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
 
     wood_application.refresh_from_db()
 
     case_progress.check_expected_status(wood_application, [ImpExpStatus.PROCESSING])
-    case_progress.check_expected_task(wood_application, Task.TaskType.AUTHORISE)
+    case_progress.check_expected_task(wood_application, Task.TaskType.DOCUMENT_SIGNING)
 
     doc_pack = document_pack.pack_draft_get(wood_application)
     licence_doc = document_pack.doc_ref_licence_get(doc_pack)

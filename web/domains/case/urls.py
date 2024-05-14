@@ -261,7 +261,7 @@ authorisation_urls = [
     path("cancel/", views_misc.cancel_authorisation, name="cancel-authorisation"),
     path("authorise-documents/", views_misc.authorise_documents, name="authorise-documents"),
     path("document-packs/", views_misc.view_document_packs, name="document-packs"),
-    path("quick-issue/", views_misc.QuickIssueApplication.as_view(), name="quick-issue"),
+    path("quick-issue/", views_misc.QuickIssueApplicationView.as_view(), name="quick-issue"),
 ]
 
 case_progress_urls = [

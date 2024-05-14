@@ -11,15 +11,16 @@ from django.utils import timezone
 
 from web.domains.case.services import case_progress, document_pack, reference
 from web.flow.models import ProcessTypes
+from web.mail.constants import EmailTypes
+from web.mail.emails import send_application_refused_email, send_variation_request_email
 from web.models import ExportApplication, ImportApplication, Task, User
 from web.permissions import AppChecker
 from web.types import AuthenticatedHttpRequest
+from web.utils.lock_manager import LockManager
 from web.utils.s3 import get_file_from_s3
 
-from ...mail.constants import EmailTypes
-from ...mail.emails import send_application_refused_email, send_variation_request_email
-from ...utils.lock_manager import LockManager
 from .models import VariationRequest
+from .tasks import create_case_document_pack
 from .types import ImpOrExp, ImpOrExpOrAccess
 
 
@@ -171,7 +172,7 @@ def application_history(app_reference: str, is_import: bool = True) -> None:
         print(f"DocumentPack: {p}")
 
 
-def start_application_authorisation(application: ImpOrExp, lock_manager: "LockManager") -> None:
+def start_application_authorisation(application: ImpOrExp, lock_manager: LockManager) -> None:
     """Start the authorisation process for the application.
 
     :param app: The application to authorise
@@ -233,3 +234,23 @@ def start_application_authorisation(application: ImpOrExp, lock_manager: "LockMa
         send_variation_request_email(
             vr, EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED, application
         )
+
+
+def authorise_application_documents(application: ImpOrExp, user) -> None:
+    """Authorise the documents for the application.
+
+    :param application: The application to authorise
+    :param user: The user authorising the documents
+    """
+
+    task = case_progress.get_expected_task(application, Task.TaskType.AUTHORISE)
+    end_process_task(task, user)
+    Task.objects.create(
+        process=application, task_type=Task.TaskType.DOCUMENT_SIGNING, previous=task
+    )
+
+    application.update_order_datetime()
+    application.save()
+
+    # Queues all documents to be created
+    create_case_document_pack(application, user)
