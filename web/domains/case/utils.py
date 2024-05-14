@@ -20,7 +20,6 @@ from web.utils.lock_manager import LockManager
 from web.utils.s3 import get_file_from_s3
 
 from .models import VariationRequest
-from .tasks import create_case_document_pack
 from .types import ImpOrExp, ImpOrExpOrAccess
 
 
@@ -242,6 +241,7 @@ def authorise_application_documents(application: ImpOrExp, user) -> None:
     :param application: The application to authorise
     :param user: The user authorising the documents
     """
+    from .tasks import create_case_document_pack
 
     task = case_progress.get_expected_task(application, Task.TaskType.AUTHORISE)
     end_process_task(task, user)

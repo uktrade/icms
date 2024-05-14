@@ -1,6 +1,7 @@
 import datetime as dt
 from http import HTTPStatus
 from typing import TYPE_CHECKING
+from unittest import mock
 from unittest.mock import Mock
 
 import freezegun
@@ -12,6 +13,7 @@ from pytest_django.asserts import assertContains, assertRedirects, assertTemplat
 
 from web.domains.case.models import DocumentPackBase, WithdrawApplication
 from web.domains.case.services import case_progress, document_pack
+from web.domains.case.services.case_progress import get_active_task_list
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.views.views_misc import get_document_context
 from web.mail.constants import EmailTypes
@@ -1027,8 +1029,21 @@ def test_quick_issue_application_has_errors(ilb_admin_client, wood_application):
     check_page_errors(errors=errors, page_name="Application Updates", error_field_names=["Status"])
 
 
-def test_quick_issue_approved_application_has_no_errors(ilb_admin_client, wood_application):
+@mock.patch("web.utils.pdf.signer.get_active_signature_image")
+@mock.patch("web.domains.case.tasks.delete_file_from_s3")
+@mock.patch("web.domains.case.tasks.upload_file_obj_to_s3")
+def test_quick_issue_approved_application_has_no_errors(
+    mock_upload_file_obj_to_s3,
+    mock_delete_file_from_s3,
+    mock_get_active_signature_image,
+    dummy_signature_image,
+    ilb_admin_client,
+    wood_application,
+):
     """Test a valid approved application ends in the correct state."""
+    # Mock return value for dummy signature and file size
+    mock_get_active_signature_image.return_value = dummy_signature_image
+    mock_upload_file_obj_to_s3.return_value = 100
 
     wood_application.decision = wood_application.APPROVE
 
@@ -1045,9 +1060,9 @@ def test_quick_issue_approved_application_has_no_errors(ilb_admin_client, wood_a
 
     wood_application.refresh_from_db()
 
-    case_progress.check_expected_status(wood_application, [ImpExpStatus.PROCESSING])
-    case_progress.check_expected_task(wood_application, Task.TaskType.DOCUMENT_SIGNING)
+    case_progress.check_expected_status(wood_application, [ImpExpStatus.COMPLETED])
+    assert not get_active_task_list(wood_application)
 
-    doc_pack = document_pack.pack_draft_get(wood_application)
+    doc_pack = document_pack.pack_active_get(wood_application)
     licence_doc = document_pack.doc_ref_licence_get(doc_pack)
     assert licence_doc.reference == "0000001B"
