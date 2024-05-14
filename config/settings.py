@@ -453,9 +453,11 @@ CSP_DEFAULT_SRC = ("'self'",)
 # JS tags with a src attribute can only be loaded from ICMS itself or the DBT Sentry instance
 CSP_SCRIPT_SRC = (
     "'self'",
+    "'unsafe-eval'",
     "https://sentry.ci.uktrade.digital/",
     "https://cdnjs.cloudflare.com",
     "https://www.googletagmanager.com",
+    "https://*.google-analytics.com",
 )
 
 # JS scripts can import other scripts, following the same rules as above
@@ -475,6 +477,7 @@ CSP_FONT_SRC = (
 CSP_IMG_SRC = (
     "'self'",
     "data:",
+    "https://www.googletagmanager.com",
 )
 
 # CSP meta-settings
