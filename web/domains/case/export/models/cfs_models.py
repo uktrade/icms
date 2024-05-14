@@ -127,12 +127,11 @@ class CFSScheduleABC(models.Model):
     )
 
     schedule_statements_accordance_with_standards = models.BooleanField(
-        default=False, verbose_name="Schedule Statements", help_text="Select if applicable"
+        default=False,
+        verbose_name="Schedule Statements",
     )
 
-    schedule_statements_is_responsible_person = models.BooleanField(
-        default=False, help_text="Select if applicable", verbose_name=""
-    )
+    schedule_statements_is_responsible_person = models.BooleanField(default=False, verbose_name="")
 
     # "Manufactured at" section fields
     manufacturer_name = models.CharField(max_length=200, verbose_name="Name", null=True)
