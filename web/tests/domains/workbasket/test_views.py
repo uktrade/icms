@@ -1039,7 +1039,7 @@ class TestAuthorisedCaseAndDocumentsWorkbasket(AuthTestCase):
 
         #
         # Authorise Documents
-        with patch("web.domains.case.views.views_misc.create_case_document_pack", autospec=True):
+        with patch("web.domains.case.tasks.create_case_document_pack", autospec=True):
             form_data = {"password": "test"}
             self.ilb_admin_client.post(
                 CaseURLS.authorise_documents(self.imp_app.pk, "import"), data=form_data
@@ -1261,7 +1261,7 @@ class TestCompleteCaseWorkbasket(AuthTestCase):
 
         #
         # Authorise Documents
-        with patch("web.domains.case.views.views_misc.create_case_document_pack", autospec=True):
+        with patch("web.domains.case.tasks.create_case_document_pack", autospec=True):
             form_data = {"password": "test"}
             self.ilb_admin_client.post(
                 CaseURLS.authorise_documents(self.imp_app.pk, "import"), data=form_data
@@ -1477,7 +1477,7 @@ class TestCompleteCaseCHIEFFailWorkbasket(AuthTestCase):
 
         #
         # Authorise Documents
-        with patch("web.domains.case.views.views_misc.create_case_document_pack", autospec=True):
+        with patch("web.domains.case.tasks.create_case_document_pack", autospec=True):
             form_data = {"password": "test"}
             self.ilb_admin_client.post(
                 CaseURLS.authorise_documents(self.imp_app.pk, "import"), data=form_data
