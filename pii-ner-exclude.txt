@@ -4413,3 +4413,5 @@ files__isnull
 PartNumber
 CompletedPartTypeDef
 LOB
+Provide Supplementary Report
+tooltip_msg_id
