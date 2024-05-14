@@ -235,7 +235,7 @@ def start_application_authorisation(application: ImpOrExp, lock_manager: LockMan
         )
 
 
-def authorise_application_documents(application: ImpOrExp, user) -> None:
+def authorise_application_documents(application: ImpOrExp, user: User) -> None:
     """Authorise the documents for the application.
 
     :param application: The application to authorise
