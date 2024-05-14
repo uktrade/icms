@@ -211,6 +211,12 @@ class TestAdminActions:
 
         wb_action = action.get_workbasket_actions()[0]
         assert wb_action.name == "Take Ownership"
+        assert wb_action.section_label == "Application Processing"
+
+        # Test Out for update.
+        self.app.active_tasks.append(TT.PREPARE)
+        action = action.get_workbasket_actions()[0]
+        assert action.section_label == "Application Processing\nOut for Update"
 
     def test_take_ownership_action_not_shown(self):
         # setup (case owner is not set)

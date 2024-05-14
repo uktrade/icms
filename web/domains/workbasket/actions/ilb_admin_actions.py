@@ -27,12 +27,16 @@ class TakeOwnershipAction(Action):
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
 
+        section_label = "Application Processing"
+        if Task.TaskType.PREPARE in self.active_tasks:
+            section_label += "\nOut for Update"
+
         return [
             WorkbasketAction(
                 is_post=True,
                 name="Take Ownership",
                 url=reverse("case:take-ownership", kwargs=kwargs),
-                section_label="Application Processing",
+                section_label=section_label,
             )
         ]
 
@@ -49,6 +53,8 @@ class ViewApplicationCaseAction(Action):
         # A freshly submitted application (no case_owner yet)
         if self.status == ImpExpStatus.SUBMITTED and not self.application.case_owner:
             show_link = True
+            if Task.TaskType.PREPARE in self.active_tasks:
+                self.section_label += "\nOut for Update"
 
         elif self.status == ImpExpStatus.PROCESSING:
             # An application being processed by another ilb admin
