@@ -69,13 +69,14 @@ def test_can_create_cfs_cat(pages: conftest.UserPages) -> None:
 
         # Add the manufacturer details to schedule 1
         page.get_by_role("link", name="Add Manufacturer").click()
+        page.wait_for_load_state(state="domcontentloaded")
         page.get_by_label("Name").click()
         page.get_by_label("Name").fill("Test Manufacturer")
         page.get_by_text("Manual").click()
         page.get_by_label("Postcode").click()
         page.get_by_label("Postcode").fill("s111S")
-        page.get_by_label("Address\n        \n          optional").click()
-        page.get_by_label("Address\n        \n          optional").fill("Address line one")
+        page.get_by_label("Address", exact=True).click()
+        page.get_by_label("Address", exact=True).fill("Address line one")
         page.get_by_role("button", name="Save").click()
 
         # Add, edit and delete a product.
@@ -201,13 +202,14 @@ def test_can_create_cfs_cat_biocidal_schdedule(pages: conftest.UserPages) -> Non
 
         # Add the manufacturer details to schedule 1
         page.get_by_role("link", name="Add Manufacturer").click()
+        page.wait_for_load_state(state="domcontentloaded")
         page.get_by_label("Name").click()
         page.get_by_label("Name").fill("Test Manufacturer")
         page.get_by_text("Manual").click()
         page.get_by_label("Postcode").click()
         page.get_by_label("Postcode").fill("s111S")
-        page.get_by_label("Address\n        \n          optional").click()
-        page.get_by_label("Address\n        \n          optional").fill("Address line one")
+        page.get_by_label("Address", exact=True).click()
+        page.get_by_label("Address", exact=True).fill("Address line one")
         page.get_by_role("button", name="Save").click()
 
         # Add, edit and delete several products (including active ingredients / product types.
