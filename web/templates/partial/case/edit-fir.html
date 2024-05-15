@@ -27,13 +27,14 @@
                          kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': case_type}) }}"
             enctype="multipart/form-data"
             novalidate
+            id="edit-fir-form"
       >
         {{ csrf_input }}
         {% for field in form %}
             {{fields.field(field, mark_safe=True)}}
         {% endfor %}
-        <button type="submit" name="send" class="button primary-button">Send Request</button>
-        <button type="submit" name="save" class="button primary-button">Save</button>
+        <button type="button" id="send-fir-request-button" class="button primary-button">Send Request</button>
+        <button type="button" id="save-fir-request-button" class="button primary-button">Save</button>
       </form>
       <br>
       <p><label>Documents</label></p>

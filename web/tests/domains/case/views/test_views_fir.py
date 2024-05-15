@@ -35,7 +35,7 @@ def _create_fir(
             {
                 "request_subject": subject,
                 "request_detail": "test request detail",
-                "send": "",
+                "send": "True",
             },
         )
         assert mock_send_email.called is True
@@ -83,7 +83,7 @@ class TestImporterAccessRequestFIRView(AuthTestCase):
             data={
                 "request_subject": "open fir",
                 "request_detail": "test request detail",
-                "send": "",
+                "send": "True",
             },
             follow=True,
         )
@@ -311,3 +311,45 @@ class TestImportApplicationFIRView(TestExportApplicationFIRView):
         self.fir_type = "case"
         self.client = self.importer_client
         self.expected_site = get_importer_site_domain()
+
+
+def test_add_fir_retain_ownership_of_application(ilb_admin_client, fa_dfl_app_submitted):
+    fir = _create_fir(fa_dfl_app_submitted, ilb_admin_client, "import", "test withdraw")
+    fir.status = FurtherInformationRequest.DRAFT
+    fir.save()
+
+    ilb_admin_client.post(CaseURLS.take_ownership(fa_dfl_app_submitted.pk, "import"))
+    fa_dfl_app_submitted.refresh_from_db()
+    assert fa_dfl_app_submitted.case_owner
+    fa_dfl_app_submitted.refresh_from_db()
+    ilb_admin_client.post(
+        CaseURLS.edit_fir(fa_dfl_app_submitted.pk, fir_pk=fir.pk, case_type="import"),
+        data={
+            "release_ownership": "False",
+            "send": "True",
+            "request_subject": "test",
+            "request_detail": "test",
+        },
+    )
+    fa_dfl_app_submitted.refresh_from_db()
+    assert fa_dfl_app_submitted.case_owner
+
+
+def test_add_fir_release_ownership_of_application(ilb_admin_client, fa_dfl_app_submitted):
+    fir = _create_fir(fa_dfl_app_submitted, ilb_admin_client, "import", "test withdraw")
+    fir.status = FurtherInformationRequest.DRAFT
+    fir.save()
+    ilb_admin_client.post(CaseURLS.take_ownership(fa_dfl_app_submitted.pk, "import"))
+    fa_dfl_app_submitted.refresh_from_db()
+    assert fa_dfl_app_submitted.case_owner
+    ilb_admin_client.post(
+        CaseURLS.edit_fir(fa_dfl_app_submitted.pk, fir_pk=fir.pk, case_type="import"),
+        data={
+            "release_ownership": "True",
+            "send": "True",
+            "request_subject": "test",
+            "request_detail": "test",
+        },
+    )
+    fa_dfl_app_submitted.refresh_from_db()
+    assert not fa_dfl_app_submitted.case_owner

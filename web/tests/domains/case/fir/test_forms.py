@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 from django.test import TestCase
 
 from web.domains.case.fir import forms
@@ -36,6 +38,24 @@ class TestFurtherInformationRequestForm(TestCase):
         assert len(form.errors) == 1, form.errors
         message = form.errors["request_detail"][0]
         assert message == "You must enter this item"
+
+    def test_media_js_access_request(self):
+        form = forms.FurtherInformationRequestForm()
+        form.instance = MagicMock()
+        form.instance.accessrequest_set.exists = lambda: True
+
+        assert form.media._js == [
+            "web/js/pages/edit-fir-access-request.js",
+        ]
+
+    def test_media_js(self):
+        form = forms.FurtherInformationRequestForm()
+        form.instance = MagicMock()
+        form.instance.accessrequest_set.exists = lambda: False
+
+        assert form.media._js == [
+            "web/js/pages/edit-fir.js",
+        ]
 
 
 class TestFurtherInformationRequestResponseForm(TestCase):

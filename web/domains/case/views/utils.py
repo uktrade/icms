@@ -1,7 +1,12 @@
 from typing import TYPE_CHECKING
 
 from web.domains.case.services import case_progress
-from web.domains.case.types import ImpOrExpOrAccess, ImpOrExpOrAccessT, ImpOrExpT
+from web.domains.case.types import (
+    ImpOrExp,
+    ImpOrExpOrAccess,
+    ImpOrExpOrAccessT,
+    ImpOrExpT,
+)
 from web.flow.errors import ProcessError
 from web.models import AccessRequest, ExportApplication, ImportApplication
 
@@ -50,3 +55,16 @@ def get_caseworker_view_readonly_status(
         is_readonly = True
 
     return is_readonly
+
+
+def release_ownership_of_application(application: ImpOrExp, model_class: ImpOrExpT) -> ImpOrExp:
+    """Release ownership of the application."""
+
+    if application.status != model_class.Statuses.VARIATION_REQUESTED:
+        application.status = model_class.Statuses.SUBMITTED
+
+    application.case_owner = None
+    application.update_order_datetime()
+    application.save()
+
+    return application
