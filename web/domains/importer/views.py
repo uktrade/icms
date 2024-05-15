@@ -315,9 +315,8 @@ def create_section5(request: AuthenticatedHttpRequest, pk: int) -> HttpResponse:
                 clause_quantity.section5authority = section5
                 clause_quantity.save()
 
-            redirect_to = _get_section_5_redirect_url(request.user, importer)
             messages.success(request, "Section 5 Authority created successfully.")
-            return redirect(redirect_to)
+            return redirect(reverse("importer-section5-edit", kwargs={"pk": importer.pk}))
     else:
         form = Section5AuthorityForm(importer)
 
@@ -536,6 +535,8 @@ def delete_document_section5(
 
 
 def _get_section_5_redirect_url(user: User, importer: Importer) -> str:
+    """Used when archiving / un-archiving section5 authorities."""
+
     if user.has_perm(Perms.sys.importer_admin):
         return reverse("importer-edit", kwargs={"pk": importer.pk})
     elif user.has_perm(Perms.sys.importer_regulator):
