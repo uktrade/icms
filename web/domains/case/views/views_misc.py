@@ -46,7 +46,11 @@ from web.utils.s3 import delete_file_from_s3, get_s3_client
 from web.utils.validation import ApplicationErrors
 
 from .mixins import ApplicationAndTaskRelatedObjectMixin, ApplicationTaskMixin
-from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
+from .utils import (
+    get_caseworker_view_readonly_status,
+    get_class_imp_or_exp,
+    release_ownership_of_application,
+)
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
@@ -345,13 +349,7 @@ def release_ownership(
 
         case_progress.application_in_processing(application)
 
-        if application.status != model_class.Statuses.VARIATION_REQUESTED:
-            application.status = model_class.Statuses.SUBMITTED
-
-        application.case_owner = None
-        application.update_order_datetime()
-        application.save()
-
+        release_ownership_of_application(application, model_class)
         return redirect(reverse("workbasket"))
 
 

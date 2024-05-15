@@ -11,4 +11,27 @@
 {% block main_content %}
   <h3>Edit FIR</h3>
   {% include "partial/case/edit-fir.html" %}
+
+  <div class="modal-popover-container hidden" id="manage-ownership-modal">
+    <div class="modal-popover small-popover modal-alert-confirm">
+      <div class="modal-popover-content" role="alertdialog">
+        <div class="modal-popover-icon icon-question"></div>
+        <div class="modal-popover-text">Release ownership of application?</div>
+        <ul class="modal-popover-actions">
+            <li>
+              <button class="link-button" type="button" id="retain-ownership-button">No</button>
+            </li>
+            <li>
+              <button class="link-button" type="button" id="release-ownership-button">Yes</button>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </div>
 {% endblock %}
+
+
+{% block page_js %}
+  {{ super() }}
+  {{ form.media.js }}
+{% endblock page_js %}

@@ -26,12 +26,16 @@ from web.mail.emails import (
     send_further_information_request_responded_email,
     send_further_information_request_withdrawn_email,
 )
-from web.models import FurtherInformationRequest, User
+from web.models import AccessRequest, FurtherInformationRequest, User
 from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 
-from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp_or_access
+from .utils import (
+    get_caseworker_view_readonly_status,
+    get_class_imp_or_exp_or_access,
+    release_ownership_of_application,
+)
 
 CASE_TYPES = Literal["import", "export", "access"]
 
@@ -174,13 +178,19 @@ def edit_fir(
             if form.is_valid():
                 fir = form.save()
 
-                if "send" in form.data:
+                if form.cleaned_data["send"]:
                     fir.status = FurtherInformationRequest.OPEN
                     fir.save()
                     send_further_information_request_email(fir)
 
                     application.update_order_datetime()
                     application.save()
+
+                    if form.cleaned_data["release_ownership"] and not isinstance(
+                        application, AccessRequest
+                    ):
+                        # the user wants to release the ownership of the application
+                        release_ownership_of_application(application, model_class)
 
                 return _manage_fir_redirect(application_pk, case_type)
         else:
