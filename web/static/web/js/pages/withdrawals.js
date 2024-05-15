@@ -5,9 +5,9 @@ window.addEventListener("load", function (event) {
 
   // The div row containing the response field
   const showResponse = UTILS.getShowElementFunc("div.row_id_response");
-  showResponse(status.value === "rejected");
+  showResponse(status.value === "REJECTED");
 
   status.addEventListener("change", function (e) {
-    showResponse(e.target.value === "rejected");
+    showResponse(e.target.value === "REJECTED");
   });
 });
