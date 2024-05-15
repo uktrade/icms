@@ -227,7 +227,13 @@ class PrepareCertManufactureFormBase(forms.ModelForm):
         }
 
         widgets = {
-            "countries": Select2MultipleWidget,
+            "countries": Select2MultipleWidget(
+                attrs={
+                    "data-minimum-input-length": 0,
+                    "data-placeholder": "Select Countries",
+                    "data-maximum-selection-length": 40,
+                },
+            ),
             "is_pesticide_on_free_sale_uk": icms_widgets.YesNoRadioSelectInline,
             "is_manufacturer": icms_widgets.YesNoRadioSelectInline,
         }
