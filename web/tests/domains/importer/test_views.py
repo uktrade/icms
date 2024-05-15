@@ -386,7 +386,9 @@ class TestCreateSection5View(AuthTestCase):
 
         section5 = Section5Authority.objects.get()
         assert self.importer_office == section5.linked_offices.first()
-        assert response["Location"] == reverse("importer-edit", kwargs={"pk": self.importer.pk})
+        assert response["Location"] == reverse(
+            "importer-section5-edit", kwargs={"pk": self.importer.pk}
+        )
 
 
 class TestEditSection5View(AuthTestCase):
