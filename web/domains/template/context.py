@@ -1,7 +1,8 @@
 from typing import Any, Protocol
 
 from django.conf import settings
-from django.db.models import F, QuerySet, Value
+from django.db.models import F, QuerySet, TextField, Value
+from django.db.models.functions import Concat
 
 from web.domains.case.services import document_pack
 from web.flow.models import ProcessTypes
@@ -82,7 +83,15 @@ def _get_import_goods_description(app: ImportApplication) -> str:
             vals = ("quantity", "description")
             sec1 = app.goods_section1.values(*vals, section=Value("1"))
             sec2 = app.goods_section2.values(*vals, section=Value("2"))
-            sec5 = app.goods_section5.values(*vals, section=F("subsection"))
+            sec5 = app.goods_section5.values(
+                *vals,
+                section=Concat(
+                    F("section_5_clause__clause"),
+                    Value(" "),
+                    F("section_5_clause__description"),
+                    output_field=TextField(),
+                ),
+            )
             sec_obs = app.goods_section582_obsoletes.values(  # /PS-IGNORE
                 "obsolete_calibre", *vals, section=Value("58(2)")  # /PS-IGNORE
             )

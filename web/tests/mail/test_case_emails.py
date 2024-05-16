@@ -168,7 +168,7 @@ class TestImportCaseEmails(AuthTestCase):
         assert (
             "\n111 x Section 1 goods to which Section 1 of the Firearms Act 1968, as amended, applies.\n"
             "222 x Section 2 goods to which Section 2 of the Firearms Act 1968, as amended, applies.\n"
-            "333 x Section 5 goods to which Section section 5 subsection of the Firearms Act 1968, as amended, applies.\n"
+            "333 x Section 5 goods to which Section 5(A) section 5 subsection of the Firearms Act 1968, as amended, applies.\n"
             "444 x Section 58 obsoletes goods chambered in the obsolete calibre Obsolete calibre value to which "
             "Section 58(2) of the Firearms Act 1968, as amended, applies.\n"
             "555 x Section 58 other goods to which Section 58(2) of the Firearms Act 1968, as amended, applies.\n"
