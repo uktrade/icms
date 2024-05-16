@@ -295,8 +295,8 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
     # Add application detail errors now we have checked licence for
     errors.add(application_details_errors)
 
-    importer_has_section5 = application.importer.section5_authorities.currently_active().exists()
-    selected_section5 = application.verified_section5.currently_active().exists()
+    importer_has_section5 = application.importer.section5_authorities.active().exists()
+    selected_section5 = application.verified_section5.active().exists()
 
     # Verified Section 5
     if application.section5 and importer_has_section5 and not selected_section5:
@@ -306,7 +306,7 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
             FieldError(
                 field_name="Verified Section 5 Authorities",
                 messages=[
-                    "Please ensure you have selected at least one verified Section 5 Authority"
+                    "Please ensure you have selected at least one active verified Section 5 Authority"
                 ],
             )
         )
@@ -337,7 +337,7 @@ def _get_sil_errors(application: models.SILApplication) -> ApplicationErrors:
 
     has_certificates = (
         application.user_imported_certificates.filter(is_active=True).exists()
-        or application.verified_certificates.filter(is_active=True).exists()
+        or application.verified_certificates.active().exists()
     )
 
     if correct_section and not has_certificates:

@@ -169,7 +169,9 @@ class SILGoodsSection5(models.Model):
     )
     is_active = models.BooleanField(default=True)
 
-    subsection = models.CharField(max_length=300, verbose_name="Section 5 subsection")
+    section_5_clause = models.ForeignKey(
+        "web.Section5Clause", verbose_name="Section 5 subsection", on_delete=models.PROTECT
+    )
 
     manufacture = models.BooleanField(
         verbose_name="Was the firearm manufactured before 1900?", null=True

@@ -323,15 +323,19 @@ def manage_certificates(request: AuthenticatedHttpRequest, *, application_pk: in
         case_progress.application_in_progress(application)
 
         selected_verified = application.verified_certificates.filter(pk=OuterRef("pk")).values("pk")
-        verified_certificates = application.importer.firearms_authorities.filter(
-            is_active=True
-        ).annotate(selected=selected_verified)
+        verified_certificates = (
+            application.importer.firearms_authorities.active()
+            .filter(Q(linked_offices=None) | Q(linked_offices=application.importer_office))
+            .annotate(selected=selected_verified)
+        )
 
         extra_context = {}
 
         # FA-SIL specific context
         if application.process_type == ProcessTypes.FA_SIL:
-            verified_section5 = application.importer.section5_authorities.currently_active()
+            verified_section5 = application.importer.section5_authorities.active().filter(
+                Q(linked_offices=None) | Q(linked_offices=application.importer_office)
+            )
             available_verified_section5 = verified_section5.exclude(
                 pk__in=application.verified_section5.all()
             )

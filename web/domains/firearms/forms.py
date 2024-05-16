@@ -113,7 +113,7 @@ class FirearmsAuthorityForm(ModelForm):
     def __init__(self, *args: Any, user: User, importer: Importer, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.importer = importer
-        self.fields["linked_offices"].queryset = self.importer.offices.all()
+        self.fields["linked_offices"].queryset = self.importer.offices.filter(is_active=True)
 
         if not user.has_perm(Perms.sys.ilb_admin):
             constabularies = get_objects_for_user(

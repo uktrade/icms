@@ -274,10 +274,7 @@ def _get_section_5_goods(goods_qs: "QuerySet[SILGoodsSection5]") -> list[types.F
     goods = []
 
     for g in goods_qs:
-        # TODO: Revisit when implementing ICMSLT-1686
-        # This shouldn't use the full subsection but they are currently hardcoded.
-        # The hardcoded list needs resolving before we can fix this.
-        section = f"Section 5({g.subsection})"
+        section = f"Section {g.section_5_clause.clause}"
         description = (
             f"{g.description} to which {section} of the Firearms Act 1968, as amended, applies."
         )

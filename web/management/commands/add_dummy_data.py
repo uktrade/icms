@@ -397,17 +397,6 @@ class Command(BaseCommand):
 
         create_dummy_signature(ilb_admin_user)
 
-        # Add a few dummy section 5 clauses (The real values will come from the data migration)
-        Section5Clause.objects.create(
-            clause="5(1A)(a)", description="Test value 1", created_by=ilb_admin_user
-        )
-        Section5Clause.objects.create(
-            clause="5(1A)(b)", description="Test value 2", created_by=ilb_admin_user
-        )
-        Section5Clause.objects.create(
-            clause="5(1A)(c)", description="Test value 3", created_by=ilb_admin_user
-        )
-
         # Add some Firearm acts (Copied from data migration)
         FirearmsAct.objects.bulk_create(
             [
@@ -421,6 +410,59 @@ class Command(BaseCommand):
                     "Expanding Ammunition 5(1A)(f)",
                     "Suppressors",
                 ]
+            ]
+        )
+
+        # Add a few dummy section 5 clauses (The real values will come from the data migration)
+        dummy_section_5_clauses = (
+            (
+                "5(1)(a)",
+                "Any firearm capable of burst- or fully automatic fire and component parts of these.",
+            ),
+            (
+                "5(1)(ab)",
+                "Any semi-automatic, self-loading or pump action rifled gun and carbines but not pistols.",
+            ),
+            (
+                "5(1)(aba)",
+                "Any firearm with a barrel less than 30 cm long or which is less than 60 cm long"
+                " overall - short firearms (pistols and revolvers) and component parts of these.",
+            ),
+            (
+                "5(1)(ac)",
+                "Any pump-action or self-loading shotgun with a barrel less than 24 inches long or which is less than 40 inches long overall.",
+            ),
+            ("5(1)(ad)", " Any smoothbore revolver gun except 9mm rim fire or muzzle loaded."),
+            (
+                "5(1)(ae)",
+                "Any rocket launcher or mortar which fires a stabilised missile other than for line throwing, pyrotechnics or signalling.",
+            ),
+            ("5(1)(af)", " Any firearm using a self-contained gas cartridge system."),
+            (
+                "5(1)(b)",
+                "Any weapon designed or adapted to discharge noxious liquid, gas or other thing.",
+            ),
+            (
+                "5(1)(c)",
+                "Any cartridge with an explosive bullet or any ammo designed to discharge any "
+                "noxious thing (as described above) and if capable of being used with a firearm of"
+                " any description, any grenade, bomb or other like missile, rocket or shell designed to explode.",
+            ),
+            ("5(1A)(b)", " Explosive rockets or ammunition not covered in 5(1)(c)"),
+            (
+                "5(1A)(c)",
+                "Any launcher or projector not covered in 5(1)(ae) designed to fire any rocket or ammunition covered by 5(1A)(b) or 5(1)(c).",
+            ),
+            ("5(1A)(d)", "Incendiary ammunition."),
+            ("5(1A)(e)", "Armour-piercing ammunition."),
+            ("5(1A)(f)", "Expanding ammunition for use with pistols and revolvers."),
+            ("5(1A)(g)", "Expanding, explosive, armour-piercing or incendiary projectiles."),
+        )
+
+        Section5Clause.objects.bulk_create(
+            [
+                Section5Clause(clause=clause, description=description, created_by=ilb_admin_user)
+                for clause, description in dummy_section_5_clauses
             ]
         )
 

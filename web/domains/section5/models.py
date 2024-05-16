@@ -8,7 +8,7 @@ from web.models.shared import ArchiveReasonChoices
 
 
 class Section5AuthorityManager(models.Manager):
-    def currently_active(self):
+    def active(self):
         today = timezone.now().date()
 
         return self.filter(is_active=True, start_date__lte=today, end_date__gte=today)
