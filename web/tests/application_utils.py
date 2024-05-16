@@ -25,6 +25,7 @@ from web.models import (
     OpenIndividualLicenceApplication,
     ProductLegislation,
     SanctionsAndAdhocApplication,
+    Section5Clause,
     SILApplication,
     Usage,
     User,
@@ -278,7 +279,7 @@ def create_in_progress_fa_sil_app(
         manufacture=False,
         description="Section 5 goods",
         quantity=333,
-        subsection="section 5 subsection",
+        section_5_clause=Section5Clause.objects.first(),
     )
     sil_app.goods_section582_obsoletes.create(
         manufacture=False,

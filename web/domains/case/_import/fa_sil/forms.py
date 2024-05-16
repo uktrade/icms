@@ -13,6 +13,7 @@ from web.forms.widgets import YesNoRadioSelectInline
 from web.models import Country, ObsoleteCalibre, Template
 
 from . import models
+from .widgets import Section5ClauseSelect
 
 
 class FirearmSILFormBase(forms.ModelForm):
@@ -180,39 +181,17 @@ class SILGoodsSection2Form(forms.ModelForm):
 
 
 class SILGoodsSection5Form(forms.ModelForm):
-    # TODO: Revisit when implementing ICMSLT-1686
-    SUBSECTION_CHOICES = (
-        "5(1)(a) Any firearm capable of burst- or fully automatic fire and component parts of these.",
-        "5(1)(ab) Any semi-automatic, self-loading or pump action rifled gun and carbines but not pistols.",
-        (
-            "5(1)(aba) Any firearm with a barrel less than 30 cm long or which is less than 60 cm long"
-            " overall - short firearms (pistols and revolvers) and component parts of these."
-        ),
-        "5(1)(ac) Any pump-action or self-loading shotgun with a barrel less than 24 inches long or which is less than 40 inches long overall.",
-        "5(1)(ad) Any smoothbore revolver gun except 9mm rim fire or muzzle loaded.",
-        "5(1)(ae) Any rocket launcher or mortar which fires a stabilised missile other than for line throwing, pyrotechnics or signalling.",
-        "5(1)(af) Any firearm using a self-contained gas cartridge system.",
-        "5(1)(b) Any weapon designed or adapted to discharge noxious liquid, gas or other thing.",
-        (
-            "5(1)(c) Any cartridge with an explosive bullet or any ammo designed to discharge any noxious"
-            " thing (as described above) and if capable of being used with a firearm of any description, any"
-            " grenade, bomb or other like missile, rocket or shell designed to explode."
-        ),
-        "5(1A)(b) Explosive rockets or ammunition not covered in 5(1)(c)",
-        "5(1A)(c) Any launcher or projector not covered in 5(1)(ae) designed to fire any rocket or ammunition covered by 5(1A)(b) or 5(1)(c).",
-        "5(1A)(d) Incendiary ammunition.",
-        "5(1A)(e) Armour-piercing ammunition.",
-        "5(1A)(f) Expanding ammunition for use with pistols and revolvers.",
-        "5(1A)(g)  Expanding, explosive, armour-piercing or incendiary projectiles.",
-    )
-    subsection = forms.ChoiceField(
-        label="Section 5 subsection", choices=(), widget=s2forms.Select2Widget
-    )
-
     class Meta:
         model = models.SILGoodsSection5
-        fields = ("subsection", "manufacture", "description", "quantity", "unlimited_quantity")
+        fields = (
+            "section_5_clause",
+            "manufacture",
+            "description",
+            "quantity",
+            "unlimited_quantity",
+        )
         widgets = {
+            "section_5_clause": Section5ClauseSelect,
             "manufacture": YesNoRadioSelectInline,
             "description": forms.Textarea({"rows": 3}),
         }
@@ -222,10 +201,6 @@ class SILGoodsSection5Form(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["manufacture"].required = True
-
-        self.fields["subsection"].choices = [("", "---------")] + [
-            (x, x) for x in self.SUBSECTION_CHOICES
-        ]
 
     def clean_manufacture(self):
         manufactured_before_1900 = self.cleaned_data["manufacture"]

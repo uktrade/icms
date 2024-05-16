@@ -20,6 +20,7 @@ from web.models import (
     ObsoleteCalibreGroup,
     Office,
     ProductLegislation,
+    Section5Clause,
     Signature,
     Task,
     User,
@@ -82,7 +83,7 @@ class Command(BaseCommand):
         self.create_test_exporters()
 
         # ICMS Caseworkers (ILB, NCA & HO)
-        self.create_icms_admin_user("ilb_admin_user")
+        ilb_admin_user = self.create_icms_admin_user("ilb_admin_user")
         self.create_icms_admin_user("ilb_admin_two")
         self.create_nca_admin_user("nca_admin_user")
         self.create_ho_admin_user("ho_admin_user")
@@ -102,6 +103,11 @@ class Command(BaseCommand):
         # Add a dummy biocidal_claim legislation (defaults to GB and NI legislation)
         ProductLegislation.objects.create(
             name="Dummy 'Is Biocidal Claim legislation'", is_biocidal_claim=True
+        )
+
+        # Add a dummy section5Clause
+        Section5Clause.objects.create(
+            clause="5(A)", description="section 5 subsection", created_by=ilb_admin_user
         )
 
     def create_test_importers(self) -> None:

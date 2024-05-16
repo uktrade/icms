@@ -43,7 +43,7 @@ class Section5AuthorityForm(forms.ModelForm):
     def __init__(self, importer, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.importer = importer
-        self.fields["linked_offices"].queryset = self.importer.offices.all()
+        self.fields["linked_offices"].queryset = self.importer.offices.filter(is_active=True)
 
     def clean(self):
         data = super().clean()
