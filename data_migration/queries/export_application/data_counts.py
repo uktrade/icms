@@ -126,22 +126,27 @@ WHERE xcad.status_control = 'C'
 """
 
 
-cfs_application_templates_count = """
+cat_count = """
 SELECT COUNT(*)
 FROM impmgr.certificate_app_templates cat
-WHERE ca_type = 'CFS'
+WHERE ca_type = :APP_TYPE
 """
 
 
-com_application_templates_count = """
+cat_countries_count = """
 SELECT COUNT(*)
 FROM impmgr.certificate_app_templates cat
-WHERE ca_type = 'COM'
-"""
-
-
-gmp_application_templates_count = """
-SELECT COUNT(*)
-FROM impmgr.certificate_app_templates cat
-WHERE ca_type = 'GMP'
+CROSS JOIN XMLTABLE('
+  for $g1 in /CA/APPLICATION/COUNTRIES/COUNTRY_LIST/COUNTRY | <null/>
+  where /CA/APPLICATION/COUNTRIES/COUNTRY_LIST/COUNTRY and not($g1/self::null)
+  return
+  <root>
+    <country>{$g1/text()}</country>
+  </root>
+'
+PASSING cat.xml_data
+COLUMNS
+    country NUMBER PATH '/root/country/text()'
+) x
+WHERE ca_type = :APP_TYPE
 """

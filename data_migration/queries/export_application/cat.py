@@ -49,7 +49,7 @@ FROM (
     , x.countries_xml
   FROM impmgr.certificate_app_templates cat
   CROSS JOIN XMLTABLE(
-    '*'
+    '/*'
     PASSING cat.xml_data
     COLUMNS
       countries_xml XMLTYPE PATH '/CA/APPLICATION/COUNTRIES'

@@ -559,18 +559,33 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
     ),
     CheckQuery(
         name="CFS Application Templates",
-        query=queries.cfs_application_templates_count,
+        query=queries.cat_count,
         model=web.CertificateOfFreeSaleApplicationTemplate,
+        bind_vars={"APP_TYPE": "CFS"},
+    ),
+    CheckQuery(
+        name="CFS Application Template Countries",
+        query=queries.cat_countries_count,
+        model=web.CertificateOfManufactureApplicationTemplate.countries.through,
+        bind_vars={"APP_TYPE": "CFS"},
     ),
     CheckQuery(
         name="COM Application Templates",
-        query=queries.com_application_templates_count,
+        query=queries.cat_count,
         model=web.CertificateOfManufactureApplicationTemplate,
+        bind_vars={"APP_TYPE": "COM"},
+    ),
+    CheckQuery(
+        name="COM Application Template Countries",
+        query=queries.cat_countries_count,
+        model=web.CertificateOfManufactureApplicationTemplate.countries.through,
+        bind_vars={"APP_TYPE": "COM"},
     ),
     CheckQuery(
         name="GMP Application Templates",
-        query=queries.gmp_application_templates_count,
+        query=queries.cat_count,
         model=web.CertificateOfGoodManufacturingPracticeApplicationTemplate,
+        bind_vars={"APP_TYPE": "GMP"},
     ),
 ]
 

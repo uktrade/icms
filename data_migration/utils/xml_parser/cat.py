@@ -22,7 +22,7 @@ class CATTemplateCountryParser(BaseXmlParser):
     PARENT: Model
     MODEL: Model
     FIELD = "countries_xml"
-    ROOT_NODE = "/COUNTRY_LIST/COUNTRY"
+    ROOT_NODE = "/COUNTRIES/COUNTRY_LIST/COUNTRY"
 
     @classmethod
     def parse_xml_fields(cls, parent_pk: int, xml: etree.ElementTree) -> Model | None:

@@ -1,10 +1,12 @@
 from .cfs import cfs_product, cfs_product_biocide
 
 cat_countries_xml = """
-<COUNTRY_LIST>
-  <COUNTRY>1</COUNTRY>
-  <COUNTRY>2</COUNTRY>
-</COUNTRY_LIST>
+<COUNTRIES>
+  <COUNTRY_LIST>
+    <COUNTRY>1</COUNTRY>
+    <COUNTRY>2</COUNTRY>
+  </COUNTRY_LIST>
+</COUNTRIES>
 """
 
 
