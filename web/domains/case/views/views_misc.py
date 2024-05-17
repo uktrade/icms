@@ -22,17 +22,15 @@ from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.tasks import create_case_document_pack
 from web.domains.case.types import ImpOrExp
-from web.domains.case.utils import (
-    authorise_application_documents,
-    end_process_task,
-    get_case_page_title,
-    start_application_authorisation,
-)
+from web.domains.case.utils import end_process_task, get_case_page_title
 from web.flow import errors
 from web.flow.models import ProcessTypes
+from web.mail.constants import EmailTypes
 from web.mail.emails import (
     send_application_reassigned_email,
+    send_application_refused_email,
     send_application_stopped_email,
+    send_variation_request_email,
     send_withdrawal_email,
 )
 from web.models import CaseNote, File, Task, User, VariationRequest, WithdrawApplication
@@ -43,6 +41,7 @@ from web.permissions import (
     organisation_get_contacts,
 )
 from web.types import AuthenticatedHttpRequest
+from web.utils.lock_manager import LockManager
 from web.utils.pdf.utils import cfs_cover_letter_key_filename
 from web.utils.s3 import delete_file_from_s3, get_s3_client
 from web.utils.validation import ApplicationErrors
@@ -946,3 +945,86 @@ class QuickIssueApplicationView(
             )
 
         return redirect(reverse("workbasket"))
+
+
+def start_application_authorisation(application: ImpOrExp, lock_manager: LockManager) -> None:
+    """Start the authorisation process for the application.
+
+    :param app: The application to authorise
+    :param user: The user starting the authorisation process
+    """
+
+    task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
+
+    create_documents = True
+    send_vr_email = False
+
+    if application.status == application.Statuses.VARIATION_REQUESTED:
+        if (
+            application.is_import_application()
+            and application.variation_decision == application.REFUSE
+        ):
+            vr = application.variation_requests.get(status=VariationRequest.Statuses.OPEN)
+            next_task = None
+            application.status = application.Statuses.COMPLETED
+            vr.status = VariationRequest.Statuses.REJECTED
+            vr.reject_cancellation_reason = application.variation_refuse_reason
+            vr.closed_datetime = timezone.now()
+            vr.save()
+            send_vr_email = True
+            create_documents = False
+        else:
+            next_task = Task.TaskType.AUTHORISE
+
+    else:
+        if application.decision == application.REFUSE:
+            next_task = Task.TaskType.REJECTED
+            application.status = application.Statuses.COMPLETED
+            create_documents = False
+
+        else:
+            next_task = Task.TaskType.AUTHORISE
+            application.status = application.Statuses.PROCESSING
+
+    application.update_order_datetime()
+    application.save()
+
+    end_process_task(task)
+
+    if next_task:
+        Task.objects.create(process=application, task_type=next_task, previous=task)
+
+    if create_documents:
+        document_pack.doc_ref_documents_create(application, lock_manager)
+    else:
+        document_pack.pack_draft_archive(application)
+
+    if (
+        application.decision == application.REFUSE
+        and application.status == application.Statuses.COMPLETED
+    ):
+        send_application_refused_email(application)
+
+    if send_vr_email:
+        send_variation_request_email(
+            vr, EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED, application
+        )
+
+
+def authorise_application_documents(application: ImpOrExp, user: User) -> None:
+    """Authorise the documents for the application.
+
+    :param application: The application to authorise
+    :param user: The user authorising the documents
+    """
+    task = case_progress.get_expected_task(application, Task.TaskType.AUTHORISE)
+    end_process_task(task, user)
+    Task.objects.create(
+        process=application, task_type=Task.TaskType.DOCUMENT_SIGNING, previous=task
+    )
+
+    application.update_order_datetime()
+    application.save()
+
+    # Queues all documents to be created
+    create_case_document_pack(application, user)
