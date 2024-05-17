@@ -395,19 +395,20 @@ def test_import_sps_data(mock_connect, dummy_dm_settings):
     san = web.SanctionsAndAdhocApplication.objects.first()
     assert san.exporter_name == "Test Exporter"
     assert san.exporter_address == "123 Somewhere"
-    assert web.SanctionsAndAdhocApplicationGoods.objects.count() == 2
-    sg1, sg2 = web.SanctionsAndAdhocApplicationGoods.objects.order_by("pk")
-    assert sg1.goods_description == "Nice things"
-    assert sg1.import_application_id == san.id
-    assert sg1.quantity_amount == 3.00
-    assert sg1.value == 75
-    assert sg1.commodity_id == 1
 
-    assert sg2.goods_description == "More nice things"
+    assert san.sanctions_goods.count() == 2
+    sg1, sg2 = san.sanctions_goods.order_by("pk")
+    assert sg1.goods_description == "More nice things"
+    assert sg1.import_application_id == san.id
+    assert sg1.quantity_amount == 1.00
+    assert sg1.value == 100
+    assert sg1.commodity_id == 2
+
+    assert sg2.goods_description == "Nice things"
     assert sg2.import_application_id == san.id
-    assert sg2.quantity_amount == 1.00
-    assert sg2.value == 100
-    assert sg2.commodity_id == 2
+    assert sg2.quantity_amount == 3.00
+    assert sg2.value == 75
+    assert sg2.commodity_id == 1
 
 
 tex_data_source_target = {

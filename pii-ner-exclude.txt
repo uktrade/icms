@@ -4417,3 +4417,4 @@ Provide Supplementary Report
 tooltip_msg_id
 Select Countries
 SUBMITTED
+All Submitted Sanctions Applications Have Goods
