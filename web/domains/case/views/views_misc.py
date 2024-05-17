@@ -940,7 +940,7 @@ class QuickIssueApplicationView(
         #
         with transaction.atomic():
             # re-fetching from the DB
-            self.set_application_and_task()
+            self.application = self.get_object()
             case_progress.application_is_authorised(self.application)
             authorise_application_documents(self.application, request.user)
 
