@@ -1,6 +1,25 @@
 {% extends "layout/sidebar.html" %}
 
 {% block sidebar %}
+  {% if "web.ilb_admin" in perms %}
+    {% set exporter_search = icms_url("case:search-results", kwargs={"case_type": "export", "mode": "standard"}) %}
+    {% set importer_search = icms_url("case:search-results", kwargs={"case_type": "import", "mode": "standard"}) %}
+    <ul class="menu-out">
+      <li class="bold">Certificate Application Search</li>
+      <li><a href="{{ exporter_search + '?status=SUBMITTED' }}">Submitted</a></li>
+      <li><a href="{{ exporter_search + '?status=PROCESSING' }}">Processing</a></li>
+      <li><a href="{{ exporter_search + '?status=UPDATE_REQUESTED' }}">Out for update</a></li>
+      <li><a href="{{ exporter_search + '?status=FIR_REQUESTED' }}">Further information requests</a></li>
+    </ul>
+    <hr>
+    <ul class="menu-out">
+      <li class="bold">Import Application Search</li>
+      <li><a href="{{ importer_search + '?status=SUBMITTED' }}">Submitted</a></li>
+      <li><a href="{{ importer_search + '?status=PROCESSING' }}">Processing</a></li>
+      <li><a href="{{ importer_search + '?status=UPDATE_REQUESTED' }}">Out for update</a></li>
+      <li><a href="{{ importer_search + '?status=FIR_REQUESTED' }}">Further information requests</a></li>
+    </ul>
+  {% endif %}
 {% endblock %}
 
 {% block content_actions %}
