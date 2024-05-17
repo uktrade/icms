@@ -46,7 +46,11 @@
         action="{{ icms_url('case:quick-issue', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}"
         class="form-inline">
         {{ csrf_input }}
-        <input type="submit" class="button" value="Quick Issue"/>
+        {% if process.decision != "APPROVE" %}
+          <input type="button" class="button" value="Quick Issue" data-modal-message="The case must be approved to issue a licence."/>
+        {% else %}
+          <input type="submit" class="button" value="Quick Issue"/>
+        {% endif %}
       </form>
     {% endif %}
   {% endif %}
@@ -54,4 +58,9 @@
 
 {% block sidebar %}
   {% include "partial/case/" + case_type + "/sidebar-management.html" %}
+{% endblock %}
+
+{% block page_js %}
+  {{ super() }}
+  
 {% endblock %}

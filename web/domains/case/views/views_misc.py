@@ -908,16 +908,14 @@ class QuickIssueApplicationView(
     current_task_type = Task.TaskType.PROCESS
     permission_required = [Perms.sys.ilb_admin]
 
-    @transaction.atomic()
     def post(
-        self, request: AuthenticatedHttpRequest, *args: Any, case_type: str, **kwargs: Any
+        self, request: AuthenticatedHttpRequest, case_type: str, **kwargs: Any
     ) -> HttpResponse:
-        self.set_application_and_task()
-
         #
         # Start authorisation step
         #
         with transaction.atomic():
+            self.set_application_and_task()
             application_errors: ApplicationErrors = get_app_errors(self.application, case_type)
             if application_errors.has_errors():
                 return redirect(
@@ -933,11 +931,10 @@ class QuickIssueApplicationView(
         # Authorise documents step
         #
         with transaction.atomic():
-
             # re-fetching from the DB
-            application = self.get_object()
-            case_progress.application_is_authorised(application)
-            authorise_application_documents(application, request.user)
+            self.set_application_and_task()
+            case_progress.application_is_authorised(self.application)
+            authorise_application_documents(self.application, request.user)
 
             messages.success(
                 request,
