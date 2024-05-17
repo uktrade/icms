@@ -916,6 +916,14 @@ class QuickIssueApplicationView(
         #
         with transaction.atomic():
             self.set_application_and_task()
+
+            if self.application.decision != self.application.APPROVE:
+                messages.error(
+                    request,
+                    "The case must be approved to issue a licence.",
+                )
+                return redirect(reverse("workbasket"))
+
             application_errors: ApplicationErrors = get_app_errors(self.application, case_type)
             if application_errors.has_errors():
                 return redirect(

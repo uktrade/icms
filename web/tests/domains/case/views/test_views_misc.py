@@ -6,6 +6,7 @@ from unittest.mock import Mock
 
 import freezegun
 import pytest
+from django.contrib.messages import get_messages
 from django.core import mail
 from django.urls import reverse
 from django.utils import timezone
@@ -1066,3 +1067,31 @@ def test_quick_issue_approved_application_has_no_errors(
     doc_pack = document_pack.pack_active_get(wood_application)
     licence_doc = document_pack.doc_ref_licence_get(doc_pack)
     assert licence_doc.reference == "0000001B"
+
+
+def test_quick_issue_rejected_application_has_no_errors(
+    ilb_admin_client,
+    wood_application,
+):
+    """Test a valid refused application is dismissed by the view."""
+    # Mock return value for dummy signature and file size
+    wood_application.decision = wood_application.REFUSE
+
+    # Set licence details
+    _set_valid_licence(wood_application)
+
+    # Create the checklist (fully valid)
+    _add_valid_checklist(wood_application)
+    wood_application.save()
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.quick_issue(wood_application.pk, case_type="import"))
+    assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
+    messages = list(get_messages(response.wsgi_request))
+    assert len(messages) == 1
+    assert str(messages[0]) == "The case must be approved to issue a licence."
+
+    wood_application.refresh_from_db()
+
+    case_progress.check_expected_status(wood_application, [ImpExpStatus.PROCESSING])
+    assert get_active_task_list(wood_application) == ["process"]
