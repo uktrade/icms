@@ -90,6 +90,12 @@ CHECK_DATA_COUNTS: list[CheckCount] = [
         model=web.DFLApplication,
         filter_params={"submit_datetime__isnull": False, "constabulary_id__isnull": True},
     ),
+    CheckCount(
+        name="All Submitted Sanctions Applications Have Goods",
+        expected_count=0,
+        model=web.SanctionsAndAdhocApplication,
+        filter_params={"submit_datetime__isnull": False, "sanctions_goods__isnull": True},
+    ),
 ]
 
 
@@ -344,6 +350,9 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         query=queries.fa_authority_quantity_count,
         model=web.ClauseQuantity,
         bind_vars={"AUTHORITY_TYPE": "SECTION5"},
+    ),
+    CheckQuery(
+        name="Sanctions Emails", query=queries.sanctions_email_count, model=web.SanctionEmail
     ),
     CheckQuery(
         name="CFS Products",

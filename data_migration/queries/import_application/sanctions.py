@@ -9,7 +9,6 @@ SELECT
   , xiad.submitted_datetime submit_datetime
   , xiad.response_decision decision
   , xiad.refuse_reason
-  , xiad.applicant_reference
   , ia.created_datetime create_datetime
   , ia.created_datetime created
   , xiad.variation_no
@@ -48,7 +47,8 @@ FROM impmgr.import_application_details ad
 CROSS JOIN XMLTABLE('/*'
   PASSING ad.xml_data
   COLUMNS
-    exporter_name VARCHAR2(4000) PATH '/IMA/APP_DETAILS/ADHOC_DETAILS/EXPORTER_NAME/text()'
+    applicant_reference VARCHAR2(4000) PATH '/IMA/APP_DETAILS/ADHOC_DETAILS/APPLICANT_REFERENCE/text()'
+    , exporter_name VARCHAR2(4000) PATH '/IMA/APP_DETAILS/ADHOC_DETAILS/EXPORTER_NAME/text()'
     , exporter_address VARCHAR2(4000) PATH '/IMA/APP_DETAILS/ADHOC_DETAILS/EXPORTER_ADDRESS/text()'
     , commodities_xml XMLTYPE PATH '/IMA/APP_DETAILS/ADHOC_DETAILS/COMMODITY_LIST'
     , sanction_emails_xml XMLTYPE PATH '/IMA/APP_PROCESSING/SANCTION_EMAIL_MASTER/SANCTION_EMAIL_LIST'

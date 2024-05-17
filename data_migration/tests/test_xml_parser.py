@@ -271,16 +271,16 @@ def test_sanction_goods_parser():
     g1, g2 = goods
 
     assert g1.import_application_id == 1
-    assert g1.commodity_id == 1
-    assert g1.goods_description == "GOODS"
-    assert g1.quantity_amount == Decimal("5.000")
-    assert g1.value == Decimal("100.00")
+    assert g1.commodity_id == 2
+    assert g1.goods_description == "MORE"
+    assert g1.quantity_amount == Decimal("10.000")
+    assert g1.value == Decimal("40.23")
 
     assert g2.import_application_id == 1
-    assert g2.commodity_id == 2
-    assert g2.goods_description == "MORE"
-    assert g2.quantity_amount == Decimal("10.000")
-    assert g2.value == Decimal("40.23")
+    assert g2.commodity_id == 1
+    assert g2.goods_description == "GOODS"
+    assert g2.quantity_amount == Decimal("5.000")
+    assert g2.value == Decimal("100.00")
 
 
 @pytest.mark.parametrize(

@@ -941,6 +941,7 @@ class SanctionGoodsParser(BaseXmlParser):
     PARENT = dm.SanctionsAndAdhocApplication
     FIELD = "commodities_xml"
     ROOT_NODE = "/COMMODITY_LIST/COMMODITY"
+    REVERSE_LIST = True
 
     @classmethod
     def parse_xml_fields(
