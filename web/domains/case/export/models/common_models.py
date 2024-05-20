@@ -186,8 +186,17 @@ class ExportApplication(ExportApplicationABC, ApplicationBase):
         return status
 
     @property
-    def application_approved(self):
+    def application_approved(self) -> bool:
         return self.decision == self.APPROVE
+
+    def can_quick_issue(self) -> bool:
+        """Checks if there are any rejected active variation requests"""
+        if self.variation_requests.filter(
+            status=self.variation_requests.REJECTED, is_active=True
+        ).exists():
+            return False
+        elif self.status == self.Statuses.SUBMITTED:
+            return True
 
 
 class ExportApplicationCertificate(DocumentPackBase):

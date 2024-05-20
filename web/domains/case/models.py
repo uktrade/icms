@@ -3,7 +3,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 
 from web.flow.models import Process
 from web.mail.constants import CASE_EMAIL_TYPES
@@ -248,7 +248,7 @@ class ApplicationBase(Process):
     def get_reference(self) -> str:
         return self.reference or self.DEFAULT_REF
 
-    def current_update_requests(self):
+    def current_update_requests(self) -> QuerySet[UpdateRequest]:
         st = UpdateRequest.Status
 
         update_requests = self.update_requests.filter(
@@ -256,6 +256,10 @@ class ApplicationBase(Process):
         )
 
         return update_requests
+
+    def can_quick_issue(self) -> bool:
+        """Check if the application can be quick-issued"""
+        raise NotImplementedError
 
 
 class CaseEmail(models.Model):
