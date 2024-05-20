@@ -1,11 +1,14 @@
 from http import HTTPStatus
+from typing import Any
 
 import pytest
 from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
+from web.forms.fields import JQUERY_DATE_FORMAT
 from web.mail.constants import EmailTypes
 from web.models import Email, PhoneNumber, User
+from web.one_login.backends import ONE_LOGIN_UNSET_NAME
 from web.sites import get_exporter_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
@@ -15,6 +18,9 @@ from web.tests.helpers import check_gov_notify_email_was_sent
 class TestUserUpdateView:
     @pytest.fixture(autouse=True)
     def setup(self, importer_client, importer_one_contact, exporter_client, exporter_one_contact):
+        self.importer_user = importer_one_contact
+        self.exporter_user = exporter_one_contact
+
         self.importer_url = reverse("user-edit", kwargs={"user_pk": importer_one_contact.pk})
         self.exporter_url = reverse("user-edit", kwargs={"user_pk": exporter_one_contact.pk})
 
@@ -33,6 +39,40 @@ class TestUserUpdateView:
 
         response = self.exporter_client.get(self.exporter_url)
         assert response.status_code == HTTPStatus.OK
+
+    def test_new_one_login_user_redirects_to_importer_access_requests(self):
+        self.importer_user.first_name = ONE_LOGIN_UNSET_NAME
+        self.importer_user.save()
+
+        form_data = self._get_post_data(self.importer_user, first_name="Bob")
+        response = self.importer_client.post(self.importer_url, data=form_data)
+
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("access:importer-request")
+
+    def test_new_one_login_user_redirects_to_exporter_access_requests(self):
+        self.exporter_user.first_name = ONE_LOGIN_UNSET_NAME
+        self.exporter_user.save()
+
+        form_data = self._get_post_data(self.exporter_user, first_name="Bob")
+        response = self.exporter_client.post(self.exporter_url, data=form_data)
+
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("access:exporter-request")
+
+    def _get_post_data(self, user: User, **overrides: Any) -> dict[str, Any]:
+        return {
+            "title": user.title or "",
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
+            "organisation": user.organisation or "",
+            "department": user.department or "",
+            "job_title": user.job_title or "",
+            "location_at_address": user.location_at_address or "",
+            "work_address": user.work_address or "",
+            "date_of_birth": user.date_of_birth.strftime(JQUERY_DATE_FORMAT),
+        } | overrides
 
 
 class TestUserCreateTelephoneView:

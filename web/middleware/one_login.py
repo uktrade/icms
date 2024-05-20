@@ -4,6 +4,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.urls import resolve, reverse
 
+from web.models import User
 from web.one_login.backends import ONE_LOGIN_UNSET_NAME
 
 
@@ -33,7 +34,7 @@ class UserFullyRegisteredMiddleware:
         if (
             user.is_authenticated
             and resolve(request.path).view_name not in allowed_views
-            and (user.first_name == ONE_LOGIN_UNSET_NAME or user.last_name == ONE_LOGIN_UNSET_NAME)
+            and new_one_login_user(user)
         ):
             messages.info(request, "Please set your Forename and Surname")
 
@@ -42,3 +43,7 @@ class UserFullyRegisteredMiddleware:
         response = self.get_response(request)
 
         return response
+
+
+def new_one_login_user(user: User) -> bool:
+    return user.first_name == ONE_LOGIN_UNSET_NAME or user.last_name == ONE_LOGIN_UNSET_NAME
