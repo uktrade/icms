@@ -374,3 +374,9 @@ def test_check_cfs_revoked_certifcate(mock_presign_url, exp_client, completed_cf
     assert f'<td id="certificate-issue-date">{issue_date}</td>' in content
     assert '<td id="certificate-status">Revoked</td>' in content
     assert '<td id="certificate-document"></td>' in content
+
+
+def test_v1_to_v2_redirect(exp_client):
+    response = exp_client.get("/icms/fox/icms/IMP_CERT_CERTIFICATE_CHECKER/check/")
+    assert response.status_code == HTTPStatus.MOVED_PERMANENTLY
+    assert response.url == reverse("checker:certificate-checker")

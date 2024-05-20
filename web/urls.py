@@ -2,6 +2,7 @@ from django.conf import settings
 from django.urls import include, path, register_converter
 
 from web import converters
+from web.domains.checker.views import V1ToV2RedirectCheckCertificateView
 from web.registration.views import LegacyAccountRecoveryView
 from web.views import (
     LoginRequiredSelect2AutoResponseView,
@@ -78,6 +79,11 @@ urlpatterns = [
     ),
     # Cookie consent URLs
     path("cookie-consent/", cookie_consent_view, name="cookie-consent"),
+    # V1->V2 certificate checker
+    path(
+        "icms/fox/icms/IMP_CERT_CERTIFICATE_CHECKER/check/",
+        V1ToV2RedirectCheckCertificateView.as_view(),
+    ),
 ]
 
 if settings.DEBUG:

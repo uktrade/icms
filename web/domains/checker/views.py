@@ -2,7 +2,7 @@ from typing import Any
 
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
-from django.views.generic import FormView
+from django.views.generic import FormView, RedirectView
 from django_ratelimit.decorators import ratelimit
 
 from web.flow.models import ProcessTypes
@@ -117,3 +117,9 @@ class CheckCertificateView(FormView):
         return self.render_to_response(
             self.get_context_data(form=form, warning_message="You must enter all details.")
         )
+
+
+class V1ToV2RedirectCheckCertificateView(RedirectView):
+    query_string = True
+    permanent = True
+    pattern_name = "checker:certificate-checker"
