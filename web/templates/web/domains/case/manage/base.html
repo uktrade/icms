@@ -46,7 +46,7 @@
         action="{{ icms_url('case:quick-issue', kwargs={'application_pk': process.pk, 'case_type': case_type}) }}"
         class="form-inline">
         {{ csrf_input }}
-        {% if process.decision != "APPROVE" %}
+        {% if (process.status == "VARIATION_REQUESTED" and process.variation_decision != "APPROVE") or (process.status != "VARIATION_REQUESTED" and process.decision != "APPROVE")  %}
           <input type="button" class="button" value="Quick Issue" data-modal-message="The case must be approved to issue a licence."/>
         {% else %}
           <input type="submit" class="button" value="Quick Issue"/>
