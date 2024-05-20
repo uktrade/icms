@@ -582,6 +582,8 @@ ea_query_result = {
             ("created_at",),
             ("updated_at",),
             ("document_pack_id",),
+            ("revoke_reason",),
+            ("revoke_email_sent",),
         ],
         [
             (
@@ -593,6 +595,8 @@ ea_query_result = {
                 dt.datetime(2022, 4, 29, 13, 21),  # created_at
                 dt.datetime(2022, 4, 29, 13, 21),  # updated_at
                 20,  # document_pack_id
+                None,  # revoke reason
+                False,  # revoke email sent
             ),
             (
                 9,
@@ -613,6 +617,8 @@ ea_query_result = {
                 dt.datetime(2022, 4, 29, 13, 21),
                 dt.datetime(2022, 4, 29, 13, 21),
                 22,
+                None,
+                False,
             ),
             (
                 11,
@@ -623,6 +629,8 @@ ea_query_result = {
                 dt.datetime(2022, 4, 29, 13, 21),
                 dt.datetime(2022, 4, 29, 13, 21),
                 23,
+                None,
+                False,
             ),
             (
                 12,
@@ -633,6 +641,8 @@ ea_query_result = {
                 dt.datetime(2022, 4, 29, 13, 21),
                 dt.datetime(2022, 4, 29, 13, 21),
                 24,
+                None,
+                False,
             ),
             (
                 14,
@@ -643,6 +653,8 @@ ea_query_result = {
                 dt.datetime(2022, 4, 29, 13, 21),
                 dt.datetime(2022, 4, 29, 13, 21),
                 25,
+                None,
+                False,
             ),
             (
                 15,
@@ -653,6 +665,8 @@ ea_query_result = {
                 dt.datetime(2022, 4, 29, 13, 21),
                 dt.datetime(2022, 4, 29, 13, 21),
                 26,
+                None,
+                False,
             ),
             (
                 15,
@@ -663,6 +677,8 @@ ea_query_result = {
                 dt.datetime(2022, 4, 29, 13, 21),
                 dt.datetime(2022, 4, 29, 13, 21),
                 27,
+                None,
+                False,
             ),
             (
                 15,
@@ -673,6 +689,20 @@ ea_query_result = {
                 dt.datetime(2022, 4, 29, 13, 21),
                 dt.datetime(2022, 4, 29, 13, 21),
                 28,
+                None,
+                False,
+            ),
+            (
+                9,
+                26,
+                dt.datetime(2022, 4, 29),
+                "RE",
+                "GA/2022/9909",
+                dt.datetime(2022, 4, 29, 13, 21),
+                dt.datetime(2022, 4, 29, 13, 21),
+                29,
+                "No longer trading",
+                True,
             ),
         ],
     ),
@@ -747,7 +777,7 @@ ea_query_result = {
                 "GMP/2022/00003",  # case_document_ref_id
                 "CERTIFICATE",  # document_type
                 3,  # country_id
-                "gmp-cert-1.pdf",  # filename
+                "gmp-cert-3.pdf",  # filename
                 "pdf",  # content_type
                 100,  # file_size
                 "path/to/gmp-cert-3.pdf",  # path
@@ -852,6 +882,25 @@ ea_query_result = {
                 "CFS",  # prefix
                 2022,  # year
                 2,  # reference_no
+            ),
+            (
+                26,  # cad_id
+                9,  # certificate_id
+                109,  # document_legacy_id
+                "GMP/2022/00005",  # reference
+                "GMP/2022/00005",  # case_document_ref_id
+                "CERTIFICATE",  # document_type
+                1,  # country_id
+                "gmp-cert-5.pdf",  # filename
+                "pdf",  # content_type
+                100,  # file_size
+                "path/to/gmp-cert-5.pdf",  # path
+                dt.datetime(2024, 1, 1, 10, 10),  # created_datetime
+                2,  # created_by_id
+                87654355,  # check_code
+                "GMP",  # prefix
+                2022,  # year
+                5,  # reference_no
             ),
         ],
     ),

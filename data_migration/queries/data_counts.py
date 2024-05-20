@@ -159,3 +159,28 @@ FROM impmgr.saction_email_details
 WHERE sanction_email_id <> 1
 AND status_control = 'C'
 """
+
+export_certificate_draft_count = """
+SELECT COUNT(*)
+FROM impmgr.certificate_app_responses car
+  INNER JOIN impmgr.cert_app_response_details card ON card.car_id = car.id
+WHERE card.status = 'DRAFT'
+"""
+
+export_certificate_revoked_count = """
+SELECT COUNT(*)
+FROM impmgr.certificate_app_responses car
+  INNER JOIN impmgr.cert_app_response_details card ON card.car_id = car.id
+  INNER JOIN impmgr.certificate_applications ca ON ca.id = car.ca_id
+  INNER JOIN impmgr.certificate_app_details cad_c ON cad_c.ca_id = car.ca_id AND cad_c.status_control = 'C'
+WHERE cad_c.status = 'REVOKED'
+"""
+
+export_certificate_active_count = """
+SELECT COUNT(*)
+FROM impmgr.certificate_app_responses car
+  INNER JOIN impmgr.cert_app_response_details card ON card.car_id = car.id
+  INNER JOIN impmgr.certificate_applications ca ON ca.id = car.ca_id
+  INNER JOIN impmgr.certificate_app_details cad_c ON cad_c.ca_id = car.ca_id AND cad_c.status_control = 'C'
+WHERE cad_c.status <> 'REVOKED' and card.is_last_issued <> 'false' and card.status <> 'DRAFT'
+"""
