@@ -374,7 +374,8 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     assert web.SILGoodsSection2.objects.filter(**sil1_f).count() == 1
     assert web.SILGoodsSection5.objects.filter(**sil1_f).count() == 1
     sec5 = web.SILGoodsSection5.objects.filter(**sil1_f).first()
-    assert sec5.subsection == "Test Description"
+    assert sec5.section_5_clause.clause == "Test Clause"
+    assert sec5.section_5_clause.description == "Test Description"
     assert web.SILGoodsSection582Obsolete.objects.filter(**sil1_f).count() == 1  # /PS-IGNORE
     sil_oc = web.SILGoodsSection582Obsolete.objects.filter(**sil1_f).first()  # /PS-IGNORE
     assert sil_oc.obsolete_calibre == "Test OC"

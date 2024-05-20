@@ -172,7 +172,7 @@ class SILGoodsSection5(MigrationBase):
         SILApplication, on_delete=models.PROTECT, related_name="goods_section5"
     )
     is_active = models.BooleanField(default=True)
-    section_5_clause = models.ForeignKey(
+    section_5_code = models.ForeignKey(
         Section5Clause, on_delete=models.PROTECT, to_field="legacy_code"
     )
     manufacture = models.BooleanField(null=True)
@@ -183,11 +183,11 @@ class SILGoodsSection5(MigrationBase):
 
     @classmethod
     def get_values_kwargs(cls) -> dict[str, Any]:
-        return {"subsection": F("section_5_clause__description")}
+        return {"section_5_clause_id": F("section_5_code__id")}
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["section_5_clause_id"]
+        return super().get_excludes() + ["section_5_code_id"]
 
 
 class SILGoodsSection582Obsolete(MigrationBase):  # /PS-IGNORE

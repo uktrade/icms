@@ -107,7 +107,7 @@ def test_sil_goods_parse_xml():
     assert sec5.quantity == 10
     assert sec5.unlimited_quantity is False
     assert sec5.manufacture is False
-    assert sec5.section_5_clause_id == "5_1_ABA"
+    assert sec5.section_5_code_id == "5_1_ABA"
     assert sec5.legacy_ordinal == 3
 
     sec5_obs_goods = data[dm.SILGoodsSection582Obsolete]  # /PS-IGNORE
