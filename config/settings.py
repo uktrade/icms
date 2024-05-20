@@ -156,10 +156,13 @@ AUTHBROKER_ANONYMOUS_URL_NAMES = env.staff_sso_authbroker_anonymous_url_names
 
 #
 # GOV.UK One Login settings
-GOV_UK_ONE_LOGIN_CLIENT_ID = env.gov_uk_one_login_client_id
-GOV_UK_ONE_LOGIN_CLIENT_SECRET = env.gov_uk_one_login_client_secret
-GOV_UK_ONE_LOGIN_SCOPE = env.gov_uk_one_login_scope
 GOV_UK_ONE_LOGIN_OPENID_CONFIG_URL = env.gov_uk_one_login_openid_config_url
+GOV_UK_ONE_LOGIN_SCOPE = env.gov_uk_one_login_scope
+GOV_UK_ONE_LOGIN_GET_CLIENT_CONFIG_PATH = env.gov_uk_one_login_get_client_config_path
+GOV_UK_ONE_LOGIN_IMPORTER_CLIENT_ID = env.gov_uk_one_login_importer_client_id
+GOV_UK_ONE_LOGIN_IMPORTER_CLIENT_SECRET = env.gov_uk_one_login_importer_client_secret
+GOV_UK_ONE_LOGIN_EXPORTER_CLIENT_ID = env.gov_uk_one_login_exporter_client_id
+GOV_UK_ONE_LOGIN_EXPORTER_CLIENT_SECRET = env.gov_uk_one_login_exporter_client_secret
 
 #
 # Authentication feature flags
