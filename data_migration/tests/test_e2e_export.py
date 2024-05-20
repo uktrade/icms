@@ -278,7 +278,7 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     assert ea1.certificates.count() == 0
     assert ea2.certificates.count() == 1
-    assert ea3.certificates.count() == 2
+    assert ea3.certificates.count() == 3
     assert ea4.certificates.count() == 1
 
     assert list(ea1.cleared_by.values_list("id", flat=True)) == []
@@ -287,41 +287,82 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert list(ea4.cleared_by.values_list("id", flat=True)) == []
 
     cert1 = ea2.certificates.first()
-    cert2, cert3 = ea3.certificates.order_by("pk")
+    cert2, cert3, cert4 = ea3.certificates.order_by("pk")
 
     assert list(cert1.cleared_by.values_list("id", flat=True)) == []
     assert list(cert2.cleared_by.values_list("id", flat=True)) == []
     assert list(cert3.cleared_by.values_list("id", flat=True)) == []
 
     assert cert1.status == "DR"
+    assert cert1.case_reference == "GA/2022/9902"
+    assert cert1.revoke_reason is None
+    assert cert1.revoke_email_sent is False
+    assert cert1.case_completion_datetime is None
+    assert cert1.updated_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
     assert cert1.created_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
-    assert cert2.status == "AR"
-    assert cert2.document_references.count() == 0
-    assert cert3.status == "AC"
-    assert cert3.document_references.count() == 1
+    assert cert1.document_references.count() == 3
 
-    refs = cert1.document_references.order_by("pk")
-    ref2 = cert3.document_references.first()
-
-    assert refs.count() == 3
-    assert refs[0].reference == "GMP/2022/00001"
-    assert refs[0].reference_data.country_id == 1
-    assert refs[0].check_code == "12345678"
+    cert1_ref1, cert1_ref2, cert1_ref3 = cert1.document_references.order_by("pk")
+    assert cert1_ref1.reference == "GMP/2022/00001"
+    assert cert1_ref1.reference_data.country_id == 1
+    assert cert1_ref1.check_code == "12345678"
+    assert cert1_ref1.document_type == "CERTIFICATE"
+    assert cert1_ref1.document.filename == "gmp-cert-1.pdf"
     assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=1)
 
-    assert refs[1].reference == "GMP/2022/00002"
-    assert refs[1].reference_data.country_id == 2
-    assert refs[1].check_code == "56781234"
+    assert cert1_ref2.reference == "GMP/2022/00002"
+    assert cert1_ref2.reference_data.country_id == 2
+    assert cert1_ref2.check_code == "56781234"
     assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=2)
 
-    assert refs[2].reference == "GMP/2022/00003"
-    assert refs[2].reference_data.country_id == 3
-    assert refs[2].check_code == "43215678"
+    assert cert1_ref3.reference == "GMP/2022/00003"
+    assert cert1_ref3.reference_data.country_id == 3
+    assert cert1_ref3.check_code == "43215678"
+    assert cert1_ref3.document_type == "CERTIFICATE"
+    assert cert1_ref3.document.filename == "gmp-cert-3.pdf"
     assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=3)
 
-    assert ref2.reference == "GMP/2022/00004"
-    assert ref2.reference_data.country_id == 1
-    assert ref2.check_code == "87654321"
+    assert cert2.status == "AR"
+    assert cert2.case_reference == "GA/2022/9903"
+    assert cert2.revoke_reason is None
+    assert cert2.revoke_email_sent is False
+    assert cert2.case_completion_datetime == dt.datetime(2022, 4, 29, 0, 0, tzinfo=dt.UTC)
+    assert cert2.updated_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
+    assert cert2.created_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
+    assert cert2.document_references.count() == 0
+
+    assert cert3.status == "AC"
+    assert cert3.case_reference == "CA/2022/9903/1"
+    assert cert3.revoke_reason is None
+    assert cert3.revoke_email_sent is False
+    assert cert3.case_completion_datetime == dt.datetime(2022, 4, 29, 0, 0, tzinfo=dt.UTC)
+    assert cert3.updated_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
+    assert cert3.created_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
+    assert cert3.document_references.count() == 1
+
+    cert3_ref1 = cert3.document_references.first()
+    assert cert3_ref1.reference == "GMP/2022/00004"
+    assert cert3_ref1.reference_data.country_id == 1
+    assert cert3_ref1.check_code == "87654321"
+    assert cert3_ref1.document_type == "CERTIFICATE"
+    assert cert3_ref1.document.filename == "gmp-cert-4.pdf"
+    assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=4)
+
+    assert cert4.status == "RE"
+    assert cert4.case_reference == "GA/2022/9909"
+    assert cert4.revoke_reason == "No longer trading"
+    assert cert4.revoke_email_sent is True
+    assert cert4.case_completion_datetime == dt.datetime(2022, 4, 29, 0, 0, tzinfo=dt.UTC)
+    assert cert4.updated_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
+    assert cert4.created_at == dt.datetime(2022, 4, 29, 13, 21, tzinfo=dt.UTC)
+    assert cert4.document_references.count() == 1
+
+    cert4_ref1 = cert4.document_references.first()
+    assert cert4_ref1.reference == "GMP/2022/00005"
+    assert cert4_ref1.reference_data.country_id == 1
+    assert cert4_ref1.check_code == "87654355"
+    assert cert4_ref1.document_type == "CERTIFICATE"
+    assert cert4_ref1.document.filename == "gmp-cert-5.pdf"
     assert web.UniqueReference.objects.get(prefix="GMP", year=2022, reference=4)
 
     assert gmp1.reference == "GA/2022/9901"

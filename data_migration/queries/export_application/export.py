@@ -44,12 +44,20 @@ SELECT
   , card.start_datetime created_at
   , card.last_updated_datetime updated_at
   , dp.dp_id document_pack_id
+  , x.revoke_reason
+  , CASE x.revoke_email_sent WHEN 'true' THEN 1 ELSE 0 END revoke_email_sent
 FROM impmgr.certificate_app_responses car
   INNER JOIN impmgr.cert_app_response_details card ON card.car_id = car.id
   INNER JOIN impmgr.certificate_applications ca ON ca.id = car.ca_id
   INNER JOIN impmgr.certificate_app_details cad ON cad.id = card.cad_id
   INNER JOIN impmgr.certificate_app_details cad_c ON cad_c.ca_id = car.ca_id AND cad_c.status_control = 'C'
   LEFT JOIN decmgr.xview_document_packs dp ON dp.ds_id = card.document_set_id
+  CROSS JOIN XMLTABLE('/*'
+    PASSING cad.xml_data
+    COLUMNS
+      revoke_email_sent VARCHAR2(20) PATH '/CA/CASE/REVOKE/SEND_EMAIL/text()'
+      , revoke_reason CLOB PATH '/CA/CASE/REVOKE/REASON/text()'
+  ) x
 WHERE card.status <> 'DELETED'
 ORDER BY card.id
 """

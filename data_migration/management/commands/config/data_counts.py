@@ -618,6 +618,24 @@ UNIQUE_REFERENCES = [
         filter_params={"prefix": "CFS"},
         bind_vars={"like_match": "CFS/2024/%"},
     ),
+    CheckQuery(
+        name="Export Certificates - DRAFT",
+        query=queries.export_certificate_draft_count,
+        model=web.ExportApplicationCertificate,
+        filter_params={"status": "DR"},
+    ),
+    CheckQuery(
+        name="Export Certificates - REVOKED",
+        query=queries.export_certificate_revoked_count,
+        model=web.ExportApplicationCertificate,
+        filter_params={"status": "RE"},
+    ),
+    CheckQuery(
+        name="Export Certificates - ACTIVE",
+        query=queries.export_certificate_active_count,
+        model=web.ExportApplicationCertificate,
+        filter_params={"status": "AC"},
+    ),
 ]
 
 
