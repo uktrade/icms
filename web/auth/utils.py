@@ -1,5 +1,9 @@
+import logging
+
+from django.conf import settings
 from django.contrib.sites.models import Site
 from django.db import transaction
+from django.http import HttpRequest
 from django.utils import timezone
 
 from web.models import Email as UserEmail
@@ -8,6 +12,8 @@ from web.one_login.types import UserCreateData as OneLoginUserCreateData
 from web.sites import is_exporter_site, is_importer_site
 
 from .types import StaffSSOUserCreateData
+
+logger = logging.getLogger(__name__)
 
 
 def get_legacy_user_by_username(email_address: str) -> User:
@@ -90,3 +96,31 @@ def set_site_last_login(user: User, site: Site) -> None:
     elif is_exporter_site(site):
         user.exporter_last_login = timezone.now()
         user.save(update_fields=["exporter_last_login"])
+
+
+def get_one_login_client_id(request: HttpRequest) -> str:
+    """Used as part of GOV_UK_ONE_LOGIN_GET_CLIENT_CONFIG_PATH to load client id dynamically."""
+
+    if is_exporter_site(request.site):
+        logger.debug("Fetching exporter site client id")
+        return settings.GOV_UK_ONE_LOGIN_EXPORTER_CLIENT_ID
+
+    if is_importer_site(request.site):
+        logger.debug("Fetching importer site client id")
+        return settings.GOV_UK_ONE_LOGIN_IMPORTER_CLIENT_ID
+
+    raise ValueError(f"No GOV.UK One Login client ID for site {request.site}")
+
+
+def get_one_login_client_secret(request: HttpRequest) -> str:
+    """Used as part of GOV_UK_ONE_LOGIN_GET_CLIENT_CONFIG_PATH to load client secret dynamically."""
+
+    if is_exporter_site(request.site):
+        logger.debug("Fetching exporter site secret")
+        return settings.GOV_UK_ONE_LOGIN_EXPORTER_CLIENT_SECRET
+
+    if is_importer_site(request.site):
+        logger.debug("Fetching importer site secret")
+        return settings.GOV_UK_ONE_LOGIN_IMPORTER_CLIENT_SECRET
+
+    raise ValueError(f"No GOV.UK One Login client secret for site {request.site}")

@@ -46,10 +46,13 @@ class EnvironmentBase(BaseSettings):
 
     # GOV.UK One Login
     gov_uk_one_login_enabled: bool
-    gov_uk_one_login_client_id: str
-    gov_uk_one_login_client_secret: str
-    gov_uk_one_login_scope: str
     gov_uk_one_login_openid_config_url: str
+    gov_uk_one_login_scope: str
+    gov_uk_one_login_importer_client_id: str
+    gov_uk_one_login_importer_client_secret: str
+    gov_uk_one_login_exporter_client_id: str
+    gov_uk_one_login_exporter_client_secret: str
+    gov_uk_one_login_get_client_config_path: str = "web.auth.utils"
 
     # GOV.UK Notify to send/receive emails (which are implemented using gov notify)
     gov_notify_api_key: str

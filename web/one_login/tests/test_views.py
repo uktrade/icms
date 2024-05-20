@@ -29,7 +29,8 @@ def correct_settings():
         GOV_UK_ONE_LOGIN_ENABLED=True,
         GOV_UK_ONE_LOGIN_OPENID_CONFIG_URL=FAKE_OPENID_CONFIG_URL,
         # Required to fix tests (these tests don't really care about SITE_ID)
-        SITE_ID=1,
+        # 2 == The exporter site
+        SITE_ID=2,
     ):
         yield None
 
