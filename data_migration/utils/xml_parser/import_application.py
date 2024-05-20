@@ -285,7 +285,7 @@ class SILGoodsParser(BaseXmlParser):
         return dm.SILGoodsSection5(
             **data
             | {
-                "section_5_clause_id": section_5_clause,
+                "section_5_code_id": section_5_clause,
                 "unlimited_quantity": bool(str_to_bool(unlimited_quantity)),
             }
         )
