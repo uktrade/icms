@@ -216,3 +216,89 @@ class TestViewEmail(AuthTestCase):
         )
         form_finder = f'action="{url}"'
         assert form_finder in response.content.decode()
+
+    def test_hse_email_count_sidebar(self, cfs_app_submitted):
+        self.ilb_admin_client.post(
+            CaseURLS.take_ownership(cfs_app_submitted.pk, case_type="export")
+        )
+
+        resp = self.ilb_admin_client.get(
+            CaseURLS.manage_case_emails(cfs_app_submitted.pk, case_type="export")
+        )
+        assert resp.status_code == 200
+        assert "HSE Emails (0/0)" in resp.content.decode()
+
+        # create a case email
+        self.ilb_admin_client.post(
+            CaseURLS.create_case_emails(cfs_app_submitted.pk, case_type="export")
+        )
+
+        resp = self.ilb_admin_client.get(
+            CaseURLS.manage_case_emails(cfs_app_submitted.pk, case_type="export")
+        )
+        assert resp.status_code == 200
+        assert "HSE Emails (0/1)" in resp.content.decode()
+
+        # now we mark one of them as open to and confirm that the count updates accordingly
+        completed_case_email = CaseEmailModel.objects.last()
+        completed_case_email.status = CaseEmailModel.Status.OPEN
+        completed_case_email.save()
+
+        resp = self.ilb_admin_client.get(
+            CaseURLS.manage_case_emails(cfs_app_submitted.pk, case_type="export")
+        )
+        assert resp.status_code == 200
+        assert "HSE Emails (1/1)" in resp.content.decode()
+
+        # now we mark one of them as closed to and confirm that the count updates accordingly
+        completed_case_email.status = CaseEmailModel.Status.CLOSED
+        completed_case_email.save()
+
+        resp = self.ilb_admin_client.get(
+            CaseURLS.manage_case_emails(cfs_app_submitted.pk, case_type="export")
+        )
+        assert resp.status_code == 200
+        assert "HSE Emails (0/1)" in resp.content.decode()
+
+    def test_beis_email_count_sidebar(self, gmp_app_submitted):
+        self.ilb_admin_client.post(
+            CaseURLS.take_ownership(gmp_app_submitted.pk, case_type="export")
+        )
+
+        resp = self.ilb_admin_client.get(
+            CaseURLS.manage_case_emails(gmp_app_submitted.pk, case_type="export")
+        )
+        assert resp.status_code == 200
+        assert "BEIS Emails (0/0)" in resp.content.decode()
+
+        # create a case email
+        self.ilb_admin_client.post(
+            CaseURLS.create_case_emails(gmp_app_submitted.pk, case_type="export")
+        )
+
+        resp = self.ilb_admin_client.get(
+            CaseURLS.manage_case_emails(gmp_app_submitted.pk, case_type="export")
+        )
+        assert resp.status_code == 200
+        assert "BEIS Emails (0/1)" in resp.content.decode()
+
+        # now we mark one of them as open to and confirm that the count updates accordingly
+        completed_case_email = CaseEmailModel.objects.last()
+        completed_case_email.status = CaseEmailModel.Status.OPEN
+        completed_case_email.save()
+
+        resp = self.ilb_admin_client.get(
+            CaseURLS.manage_case_emails(gmp_app_submitted.pk, case_type="export")
+        )
+        assert resp.status_code == 200
+        assert "BEIS Emails (1/1)" in resp.content.decode()
+
+        # now we mark one of them as closed to and confirm that the count updates accordingly
+        completed_case_email.status = CaseEmailModel.Status.CLOSED
+        completed_case_email.save()
+
+        resp = self.ilb_admin_client.get(
+            CaseURLS.manage_case_emails(gmp_app_submitted.pk, case_type="export")
+        )
+        assert resp.status_code == 200
+        assert "BEIS Emails (0/1)" in resp.content.decode()
