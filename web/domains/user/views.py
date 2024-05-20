@@ -27,8 +27,11 @@ from web.domains.template.context import UserManagementContext
 from web.domains.template.utils import replace_template_values
 from web.mail.constants import EmailTypes
 from web.mail.emails import send_case_email
+from web.middleware.one_login import new_one_login_user
 from web.models import CaseEmail, Email, PhoneNumber, Template, User
 from web.permissions import Perms
+from web.sites import is_exporter_site, is_importer_site
+from web.types import AuthenticatedHttpRequest
 from web.views import ModelFilterView
 
 from .actions import ActivateUser, DeactivateUser
@@ -80,6 +83,28 @@ class UserUpdateView(UserBaseMixin, UpdateView):
     pk_url_kwarg = "user_pk"
     form_class = UserDetailsUpdateForm
     template_name = "web/domains/user/user_edit.html"
+    new_one_login_user = False
+
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> Any:
+        user = self.request.user
+        self.new_one_login_user = new_one_login_user(user)
+
+        return super().post(request, *args, **kwargs)
+
+    def get_success_url(self) -> str:
+        # Redirect to new access request page when user updates their details correctly.
+        if self.new_one_login_user:
+            self.request.user.refresh_from_db()
+            user = self.request.user
+            site = self.request.site
+
+            if not new_one_login_user(user):
+                if is_exporter_site(site):
+                    return reverse("access:exporter-request")
+                elif is_importer_site(site):
+                    return reverse("access:importer-request")
+
+        return super().get_success_url()
 
 
 class UserCreateTelephoneView(UserBaseMixin, CreateView):
