@@ -47,7 +47,7 @@ class ExporterFilter(FilterSet):
 class ExporterForm(forms.ModelForm):
     class Meta:
         model = Exporter
-        fields = ["name", "registered_number", "comments"]
+        fields = ["name", "registered_number", "comments", "exclusive_correspondence"]
         widgets = {"name": forms.Textarea(attrs={"rows": 1})}
 
     class Media:

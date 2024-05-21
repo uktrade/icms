@@ -264,6 +264,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert exp1.name == "Test Org"
     assert exp1.registered_number == "123"
     assert exp1.main_exporter_id is None
+    assert exp1.exclusive_correspondence is True
     assert exp1.offices.count() == 0
 
     assert exp2.pk == 2
@@ -271,6 +272,7 @@ def test_import_user_data(mock_connect, dummy_dm_settings):
     assert exp2.name == "Test Agent"
     assert exp2.registered_number == "124"
     assert exp2.main_exporter_id == 1
+    assert exp2.exclusive_correspondence is False
     assert exp2.offices.count() == 2
 
     office4, office5 = exp2.offices.order_by("pk")

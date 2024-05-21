@@ -269,6 +269,16 @@ def exporter_one_contact(django_user_model):
 
 
 @pytest.fixture()
+def exporter_secondary_contact(django_user_model):
+    return django_user_model.objects.get(username="E1_secondary_contact")
+
+
+@pytest.fixture()
+def exporter_inactive_contact(django_user_model):
+    return django_user_model.objects.get(username="E1_inactive_contact")
+
+
+@pytest.fixture()
 def exporter_one_agent_one_contact(django_user_model):
     return django_user_model.objects.get(username="E1_A1_main_contact")
 

@@ -204,20 +204,21 @@ class Importer(MigrationBase):
 
 
 class Exporter(MigrationBase):
-    is_active = models.BooleanField(null=False, default=True)
+    is_active = models.BooleanField(default=True)
     name = models.TextField()
     registered_number = models.CharField(max_length=15, null=True)
     comments = models.TextField(null=True)
     main_exporter = models.ForeignKey(
         "self", on_delete=models.SET_NULL, null=True, related_name="agents"
     )
+    exclusive_correspondence = models.BooleanField(default=False)
 
 
 class Office(MigrationBase):
     importer = models.ForeignKey(Importer, on_delete=models.CASCADE, null=True)
     exporter = models.ForeignKey(Exporter, on_delete=models.CASCADE, null=True)
     legacy_id = models.CharField(max_length=30, unique=True)
-    is_active = models.BooleanField(null=False, default=True)
+    is_active = models.BooleanField(default=True)
     postcode = models.CharField(max_length=30, null=True)
     address = models.CharField(max_length=4000, null=True)
     eori_number = models.CharField(max_length=20, null=True)

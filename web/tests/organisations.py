@@ -114,7 +114,12 @@ EXPORTER_ONE = TestExporter(
             [ExpOP.manage_contacts_and_agents, ExpOP.edit, ExpOP.view],
             is_active=False,
         ),
+        ExporterContact(
+            "E1_secondary_contact",
+            [ExpOP.manage_contacts_and_agents, ExpOP.edit, ExpOP.view],
+        ),
     ],
+    exclusive_correspondence=True,
     agents=[
         AgentExporter(
             exporter_name="Test Exporter 1 Agent 1",

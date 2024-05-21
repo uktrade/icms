@@ -4447,3 +4447,6 @@ Firearms Authority
 Section 5 Authorities</h4
 { section_5_authority.end_date.strftime('%d-%b-%Y'
 Test Reference
+Exclusive Correspondence
+{{ fields.field(form.registered_number
+{{ fields.field(form.exclusive_correspondence

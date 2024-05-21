@@ -35,17 +35,22 @@ def get_notification_emails(user: User) -> list[str]:
     return get_user_emails_by_ids([user.id])
 
 
+def get_organisation_contacts(org: Organisation) -> QuerySet[User]:
+    obj_perms = get_org_obj_permissions(org)
+    return organisation_get_contacts(org, perms=[obj_perms.edit.codename])
+
+
 def get_application_contacts(application: ImpOrExp) -> QuerySet[User]:
+    exclusive_correspondence = False
     if application.is_import_application():
         org = application.agent or application.importer
     else:
         org = application.agent or application.exporter
-    return get_organisation_contacts(org)
-
-
-def get_organisation_contacts(org: Organisation) -> QuerySet[User]:
-    obj_perms = get_org_obj_permissions(org)
-    return organisation_get_contacts(org, perms=[obj_perms.edit.codename])
+        exclusive_correspondence = application.exporter.exclusive_correspondence
+    contacts = get_organisation_contacts(org)
+    if exclusive_correspondence and application.contact in contacts:
+        return contacts.filter(pk=application.contact.pk)
+    return contacts
 
 
 def get_all_case_officers_email_addresses() -> list[str]:

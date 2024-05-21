@@ -21,7 +21,9 @@ from web.tests.helpers import (
 
 class TestManageAccessApprovalView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup, importer_access_request, exporter_access_request):
+    def setup(
+        self, _setup, importer_access_request, exporter_access_request, exporter_secondary_contact
+    ):
         # Link the access requests to the orgs.
         self.iar = get_linked_access_request(importer_access_request, self.importer)
         self.ear = get_linked_access_request(exporter_access_request, self.exporter)
@@ -34,6 +36,7 @@ class TestManageAccessApprovalView(AuthTestCase):
             "access:case-management-access-approval",
             kwargs={"access_request_pk": self.ear.pk, "entity": "exporter"},
         )
+        self.exporter_secondary_contact = exporter_secondary_contact
 
     def test_permission(self):
         for url in [self.importer_url, self.exporter_url]:
@@ -64,8 +67,9 @@ class TestManageAccessApprovalView(AuthTestCase):
         context = response.context
         requested_from = context["form"].fields["requested_from"].queryset
 
-        assert requested_from.count() == 1
+        assert requested_from.count() == 2
         assert requested_from.first() == self.exporter_user
+        assert requested_from.last() == self.exporter_secondary_contact
 
     def test_post_importer(self):
         form_data = {
@@ -104,8 +108,8 @@ class TestManageAccessApprovalView(AuthTestCase):
         assert approval_request.access_request == self.ear
         assert approval_request.requested_by == self.ilb_admin_user
         check_gov_notify_email_was_sent(
-            1,
-            [self.exporter_user.email],
+            2,
+            [self.exporter_user.email, self.exporter_secondary_contact.email],
             EmailTypes.EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED,
             {"user_type": "user", "icms_url": get_exporter_site_domain()},
         )

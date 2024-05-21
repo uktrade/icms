@@ -4764,6 +4764,10 @@ fieldset {
     background: #FFF5F5;
 }
 
+.hint-addon {
+    vertical-align: middle;
+}
+
 .setoutForm .history input,
 .setoutForm .history button,
 .setoutForm .history select,

@@ -424,11 +424,12 @@ user_query_result = {
             ("name",),
             ("registered_number",),
             ("main_exporter_id",),
+            ("exclusive_correspondence",),
         ],
         [
-            (1, 1, "Test Org", 123, None),
-            (2, 1, "Test Agent", 124, 1),
-            (3, 0, "Test Inactive", 125, None),
+            (1, 1, "Test Org", 123, None, 1),
+            (2, 1, "Test Agent", 124, 1, 0),
+            (3, 0, "Test Inactive", 125, None, 0),
         ],
     ),
     queries.exporter_offices: (
