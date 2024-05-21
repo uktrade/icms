@@ -110,7 +110,7 @@ def fa_sil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     # Section 5
     page.get_by_role("link", name="Add Goods Item").click()
     page.get_by_role("link", name="Section 5").first.click()
-    page.get_by_role("textbox", name="---------").click()
+    page.get_by_text("Please choose a subsection").click()
     page.get_by_role(
         "option",
         name="5(1)(a) Any firearm capable of burst- or fully automatic fire and component parts of these.",
@@ -124,7 +124,7 @@ def fa_sil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
 
     page.get_by_role("link", name="Add Goods Item").click()
     page.get_by_role("link", name="Section 5").first.click()
-    page.get_by_role("textbox", name="---------").click()
+    page.get_by_text("Please choose a subsection").click()
     page.get_by_role(
         "option",
         name="5(1)(a) Any firearm capable of burst- or fully automatic fire and component parts of these.",
