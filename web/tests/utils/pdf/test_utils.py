@@ -6,6 +6,7 @@ import pytest
 from web.models import SILGoodsSection582Obsolete  # /PS-IGNORE
 from web.models import SILGoodsSection582Other  # /PS-IGNORE
 from web.models import (
+    Country,
     EndorsementImportApplication,
     SILGoodsSection1,
     SILGoodsSection2,
@@ -14,6 +15,7 @@ from web.models import (
 )
 from web.types import DocumentTypes
 from web.utils.pdf import utils
+from web.utils.pdf.utils import _get_importer_eori_numbers
 
 
 @pytest.fixture(autouse=True)
@@ -329,3 +331,58 @@ def test_collect_endorsements_split_newline_return_characters(fa_sil_app_submitt
     assert len(endorsements[-1]) == 2
     assert endorsements[-1][0] == "This is a"
     assert endorsements[-1][1] == "test"
+
+
+def test__get_importer_eori_numbers_fa_dfl(fa_dfl_app_submitted):
+    assert _get_importer_eori_numbers(fa_dfl_app_submitted) == ["GB0123456789ABCDE"]
+
+    # EU Consignment country should show XI EORI
+    fa_dfl_app_submitted.consignment_country = Country.objects.get(name="France")
+    fa_dfl_app_submitted.save()
+    assert _get_importer_eori_numbers(fa_dfl_app_submitted) == [
+        "GB0123456789ABCDE",
+        "XI0123456789ABCDE",
+    ]
+
+
+def test__get_importer_eori_numbers_fa_oil(fa_oil_app_submitted):
+    # FA-OIL shows as long as the importer office is in NI
+    assert _get_importer_eori_numbers(fa_oil_app_submitted) == [
+        "GB0123456789ABCDE",
+        "XI0123456789ABCDE",
+    ]
+
+    fa_oil_app_submitted.importer_office.postcode = "S12SS"  # /PS-IGNORE
+    fa_oil_app_submitted.importer_office.save()
+
+    assert _get_importer_eori_numbers(fa_oil_app_submitted) == ["GB0123456789ABCDE"]
+
+
+def test__get_importer_eori_numbers_fa_sil(fa_sil_app_submitted):
+    assert _get_importer_eori_numbers(fa_sil_app_submitted) == ["GB0123456789ABCDE"]
+
+    # EU Consignment country should show XI EORI
+    fa_sil_app_submitted.consignment_country = Country.objects.get(name="France")
+    fa_sil_app_submitted.save()
+    assert _get_importer_eori_numbers(fa_sil_app_submitted) == [
+        "GB0123456789ABCDE",
+        "XI0123456789ABCDE",
+    ]
+
+
+def test__get_importer_eori_numbers_sanctions(sanctions_app_submitted):
+    assert _get_importer_eori_numbers(sanctions_app_submitted) == ["GB0123456789ABCDE"]
+
+    # EU Consignment country does not affect eori number
+    sanctions_app_submitted.consignment_country = Country.objects.get(name="France")
+    sanctions_app_submitted.save()
+    assert _get_importer_eori_numbers(sanctions_app_submitted) == ["GB0123456789ABCDE"]
+
+
+def test__get_importer_eori_numbers_wood(wood_app_submitted):
+    assert _get_importer_eori_numbers(wood_app_submitted) == ["GB0123456789ABCDE"]
+
+    # EU Consignment country does not affect eori number
+    wood_app_submitted.consignment_country = Country.objects.get(name="France")
+    wood_app_submitted.save()
+    assert _get_importer_eori_numbers(wood_app_submitted) == ["GB0123456789ABCDE"]

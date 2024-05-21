@@ -4435,3 +4435,10 @@ Active Users
 Can view Active Users Report
 Groups
 can_view_export_case_search
+CountryGroup
+Certificate of Free Sale Countries
+Certificate of Free Sale Country of Manufacture Countries
+Certificate of Manufacture Countries
+Goods Manufacturing Practice Countries
+XI EORI
+EU Consignment
