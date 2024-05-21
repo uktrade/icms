@@ -224,6 +224,15 @@ class GoodsSectionSerializer(pydantic.BaseModel):
     obsolete_calibre: str | None = None
 
 
+class UserSerializer(BaseSerializer):
+    first_name: str
+    last_name: str
+    email_address: str
+    is_importer: yes_no
+    is_exporter: yes_no
+    businesses: str_or_empty
+
+
 class ErrorSerializer(BaseSerializer):
     report_name: str
     identifier: str

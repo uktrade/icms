@@ -51,6 +51,10 @@ class PagePermissions(PermissionTextChoice):
         "web.can_view_report_firearms_licences",
         "Can view Firearms Licences Report",
     )
+    view_report_active_users = (
+        "web.can_view_report_active_users",
+        "Can view Active Users Report",
+    )
 
 
 class SysPerms(PermissionTextChoice):

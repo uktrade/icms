@@ -569,6 +569,7 @@ class TestPermissionsService:
             ReportType.IMPORT_LICENCES: "web.can_view_report_import_licences",
             ReportType.SUPPLEMENTARY_FIREARMS: "web.can_view_report_supplementary_firearms",
             ReportType.FIREARMS_LICENCES: "web.can_view_report_firearms_licences",
+            ReportType.ACTIVE_USERS: "web.can_view_report_active_users",
         }
         for report_type, _ in ReportType.choices:
             report = Report.objects.get(report_type=report_type)

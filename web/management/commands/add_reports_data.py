@@ -29,6 +29,11 @@ templates = [
         "Reports relating to Firearms licences",
         ReportType.FIREARMS_LICENCES,
     ),
+    (
+        "Active Users",
+        "Data extract of active users",
+        ReportType.ACTIVE_USERS,
+    ),
 ]
 
 

@@ -1499,7 +1499,7 @@ def report_schedule(ilb_admin_user):
         notes="",
         parameters={
             "date_from": "2010-02-01",
-            "date_to": "2024-01-12",
+            "date_to": "2054-01-12",
             "date_filter_type": DateFilterType.SUBMITTED,
             "application_type": "",
             "legislation": [],

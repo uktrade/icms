@@ -83,6 +83,7 @@ def test_get_report_objects_for_ilb_admin_user(ilb_admin_user):
         ReportType.ACCESS_REQUESTS,
         ReportType.SUPPLEMENTARY_FIREARMS,
         ReportType.IMPORT_LICENCES,
+        ReportType.ACTIVE_USERS,
     }
 
 
