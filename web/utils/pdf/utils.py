@@ -2,16 +2,19 @@ import base64
 import datetime as dt
 import re
 from tempfile import NamedTemporaryFile
-from typing import TYPE_CHECKING, Any, Union
+from typing import Any
 from urllib.parse import urlencode, urljoin
 
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
+from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils import timezone
 from qrcode import QRCode
 
+from web.domains.case._import.fa.types import FaImportApplication
 from web.domains.case.services import document_pack
+from web.domains.country.utils import get_eu_countries
 from web.domains.signature.utils import get_active_signature_file
 from web.domains.template.utils import (
     fetch_cfs_declaration_translations,
@@ -19,46 +22,46 @@ from web.domains.template.utils import (
     get_cover_letter_content,
     get_letter_fragment,
 )
-from web.models import CertificateOfGoodManufacturingPracticeApplication
+from web.flow.models import ProcessTypes
+from web.models import SILGoodsSection582Obsolete  # /PS-IGNORE
+from web.models import SILGoodsSection582Other  # /PS-IGNORE
+from web.models import (
+    CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
+    CertificateOfManufactureApplication,
+    Country,
+    DFLApplication,
+    ExportApplication,
+    ExportApplicationCertificate,
+    ImportApplication,
+    ImportApplicationLicence,
+    OpenIndividualLicenceApplication,
+    SanctionsAndAdhocApplication,
+    SanctionsAndAdhocApplicationGoods,
+    SILApplication,
+    SILGoodsSection1,
+    SILGoodsSection2,
+    SILGoodsSection5,
+    WoodQuotaApplication,
+)
 from web.sites import get_exporter_site_domain
 from web.types import DocumentTypes
 from web.utils import day_ordinal_date, is_northern_ireland_postcode, strip_spaces
 
-if TYPE_CHECKING:
-    from django.db.models import QuerySet
+Context = dict[str, Any]
 
-    from web.domains.case._import.fa.types import FaImportApplication
-    from web.domains.case._import.fa_sil import models as sil_models
-    from web.domains.case.types import ImpOrExp
-    from web.models import (
-        CertificateOfFreeSaleApplication,
-        CertificateOfManufactureApplication,
-        Country,
-        DFLApplication,
-        ExportApplication,
-        ExportApplicationCertificate,
-        ImportApplication,
-        ImportApplicationLicence,
-        OpenIndividualLicenceApplication,
-        SanctionsAndAdhocApplication,
-        SanctionsAndAdhocApplicationGoods,
-        WoodQuotaApplication,
-    )
-
-    SILGoods = Union[
-        sil_models.SILGoodsSection1,
-        sil_models.SILGoodsSection2,
-        sil_models.SILGoodsSection5,
-        sil_models.SILGoodsSection582Obsolete,  # /PS-IGNORE
-        sil_models.SILGoodsSection582Other,  # /PS-IGNORE
-    ]
-
-    Context = dict[str, Any]
+SILGoods = (
+    SILGoodsSection1
+    | SILGoodsSection2
+    | SILGoodsSection5
+    | SILGoodsSection582Obsolete  # /PS-IGNORE
+    | SILGoodsSection582Other  # /PS-IGNORE
+)
 
 
 def get_licence_context(
-    application: "ImpOrExp", licence: "ImportApplicationLicence", doc_type: DocumentTypes
-) -> "Context":
+    application: ImportApplication, licence: ImportApplicationLicence, doc_type: DocumentTypes
+) -> Context:
     importer = application.importer
     office = application.importer_office
     endorsements = get_licence_endorsements(application)
@@ -82,8 +85,8 @@ def get_licence_context(
 
 
 def _get_fa_licence_context(
-    application: "FaImportApplication", licence: "ImportApplicationLicence", doc_type: DocumentTypes
-) -> "Context":
+    application: FaImportApplication, licence: ImportApplicationLicence, doc_type: DocumentTypes
+) -> Context:
     context = get_licence_context(application, licence, doc_type)
 
     return context | {
@@ -94,10 +97,10 @@ def _get_fa_licence_context(
 
 
 def get_fa_oil_licence_context(
-    application: "OpenIndividualLicenceApplication",
-    licence: "ImportApplicationLicence",
+    application: OpenIndividualLicenceApplication,
+    licence: ImportApplicationLicence,
     doc_type: DocumentTypes,
-) -> "Context":
+) -> Context:
     context = _get_fa_licence_context(application, licence, doc_type)
 
     return context | {
@@ -108,8 +111,8 @@ def get_fa_oil_licence_context(
 
 
 def get_fa_dfl_licence_context(
-    application: "DFLApplication", licence: "ImportApplicationLicence", doc_type: DocumentTypes
-) -> "Context":
+    application: DFLApplication, licence: ImportApplicationLicence, doc_type: DocumentTypes
+) -> Context:
     context = _get_fa_licence_context(application, licence, doc_type)
 
     return context | {
@@ -120,10 +123,10 @@ def get_fa_dfl_licence_context(
 
 
 def get_fa_sil_licence_context(
-    application: "sil_models.SILApplication",
-    licence: "ImportApplicationLicence",
+    application: SILApplication,
+    licence: ImportApplicationLicence,
     doc_type: DocumentTypes,
-) -> "Context":
+) -> Context:
     context = _get_fa_licence_context(application, licence, doc_type)
     markings_text = get_letter_fragment(application)
 
@@ -135,11 +138,11 @@ def get_fa_sil_licence_context(
     }
 
 
-def get_country_and_geo_code(country: "Country") -> str:
+def get_country_and_geo_code(country: Country) -> str:
     return f"{country.name} {country.hmrc_code} {country.commission_code}"
 
 
-def get_sanctions_goods_line(goods: "SanctionsAndAdhocApplicationGoods") -> list[str]:
+def get_sanctions_goods_line(goods: SanctionsAndAdhocApplicationGoods) -> list[str]:
     goods_line = _split_text_field_newlines(goods.goods_description)
     last_line = goods_line.pop()
     quantity = f"{goods.quantity_amount:.3f}".rstrip("0").rstrip(".")
@@ -149,10 +152,10 @@ def get_sanctions_goods_line(goods: "SanctionsAndAdhocApplicationGoods") -> list
 
 
 def get_sanctions_licence_context(
-    application: "SanctionsAndAdhocApplication",
-    licence: "ImportApplicationLicence",
+    application: SanctionsAndAdhocApplication,
+    licence: ImportApplicationLicence,
     doc_type: DocumentTypes,
-) -> "Context":
+) -> Context:
     context = get_licence_context(application, licence, doc_type)
     goods_list = [
         get_sanctions_goods_line(goods) for goods in application.sanctions_goods.order_by("pk")
@@ -168,10 +171,10 @@ def get_sanctions_licence_context(
 
 
 def get_wood_licence_context(
-    application: "WoodQuotaApplication",
-    licence: "ImportApplicationLicence",
+    application: WoodQuotaApplication,
+    licence: ImportApplicationLicence,
     doc_type: DocumentTypes,
-) -> "Context":
+) -> Context:
     context = get_licence_context(application, licence, doc_type)
 
     return context | {
@@ -186,9 +189,7 @@ def get_wood_licence_context(
     }
 
 
-def get_cover_letter_context(
-    application: "FaImportApplication", doc_type: DocumentTypes
-) -> "Context":
+def get_cover_letter_context(application: FaImportApplication, doc_type: DocumentTypes) -> Context:
     content = get_cover_letter_content(application, doc_type)
     preview = doc_type == DocumentTypes.COVER_LETTER_PREVIEW
     signature, signature_file = get_active_signature_file()
@@ -206,7 +207,7 @@ def get_cover_letter_context(
     }
 
 
-def get_licence_endorsements(application: "ImpOrExp") -> list[list[str]] | list[str]:
+def get_licence_endorsements(application: ImportApplication) -> list[list[str]] | list[str]:
     """Return a list of endorsements for the application."""
     endorsements = [
         content.split("\r\n")
@@ -216,7 +217,7 @@ def get_licence_endorsements(application: "ImpOrExp") -> list[list[str]] | list[
     return endorsements
 
 
-def _get_fa_dfl_goods(application: "DFLApplication") -> list[str]:
+def _get_fa_dfl_goods(application: DFLApplication) -> list[str]:
     return [
         g.goods_description
         for g in application.goods_certificates.filter(is_active=True).order_by("created_datetime")
@@ -246,7 +247,7 @@ def _get_sil_section_labels() -> list[tuple[str, str]]:
     ]
 
 
-def _get_fa_sil_goods(application: "sil_models.SILApplication") -> list[tuple[str, int]]:
+def _get_fa_sil_goods(application: SILApplication) -> list[tuple[str, int]]:
     """Return all related goods."""
 
     fa_sil_goods = []
@@ -261,7 +262,7 @@ def _get_fa_sil_goods(application: "sil_models.SILApplication") -> list[tuple[st
 
 def get_fa_sil_goods_item(
     goods_section: str,
-    active_goods: "QuerySet[SILGoods]",
+    active_goods: QuerySet[SILGoods],
     label_suffix: str,
 ) -> list[tuple[str, int]]:
     if goods_section in ["goods_section1", "goods_section2", "goods_section5", "goods_legacy"]:
@@ -287,14 +288,14 @@ def get_fa_sil_goods_item(
     return []
 
 
-def _get_licence_start_date(licence: "ImportApplicationLicence") -> str:
+def _get_licence_start_date(licence: ImportApplicationLicence) -> str:
     if licence.licence_start_date:
         return day_ordinal_date(licence.licence_start_date)
 
     return "Licence Start Date not set"
 
 
-def _get_licence_end_date(licence: "ImportApplicationLicence") -> str:
+def _get_licence_end_date(licence: ImportApplicationLicence) -> str:
     if licence.licence_end_date:
         return day_ordinal_date(licence.licence_end_date)
 
@@ -311,11 +312,7 @@ def _get_licence_number(application: "ImportApplication", doc_type: DocumentType
     return "[[Licence Number]]"
 
 
-def _get_importer_eori_numbers(application: "FaImportApplication") -> list[str]:
-    # TODO: ICMSLST-580 Revisit the EORI numbers that appear on a licence.
-    # TODO: Check the Country of Consignment logic for other firearm licence types
-    # TODO: If the applicant’s address has a BT (Belfast) post code AND the Country of Consignment is an EU country:
-
+def _get_importer_eori_numbers(application: ImportApplication) -> list[str]:
     importer = application.importer
     office = application.importer_office
     postcode = office.postcode
@@ -327,8 +324,18 @@ def _get_importer_eori_numbers(application: "FaImportApplication") -> list[str]:
     # EORI numbers to return
     eori_numbers = [main_eori_num]
 
+    # Add XI EORI for NI traders (only for firearm applications)
     if is_northern_ireland:
-        eori_numbers.append(f"XI{main_eori_num[2:]}")
+        # FA-OIL adds XI EORI for NI Traders
+        if application.process_type == ProcessTypes.FA_OIL:
+            eori_numbers.append(f"XI{main_eori_num[2:]}")
+
+        # FA-SIL / FA-DFL check the consignment country as well
+        elif (
+            application.process_type in [ProcessTypes.FA_SIL, ProcessTypes.FA_DFL]
+            and application.consignment_country in get_eu_countries()
+        ):
+            eori_numbers.append(f"XI{main_eori_num[2:]}")
 
     return eori_numbers
 
@@ -337,10 +344,10 @@ def _certificate_document_context(
     application: "ExportApplication",
     certificate: "ExportApplicationCertificate",
     doc_type: DocumentTypes,
-    country: "Country",
-) -> "Context":
+    country: Country,
+) -> Context:
     qr_check_url = urljoin(get_exporter_site_domain(), reverse("checker:certificate-checker"))
-    context: "Context" = {"qr_check_url": qr_check_url}
+    context: Context = {"qr_check_url": qr_check_url}
 
     if doc_type == DocumentTypes.CERTIFICATE_PREVIEW:
         context["reference"] = "[[CERTIFICATE_REFERENCE]]"
@@ -373,8 +380,8 @@ def _get_certificate_context(
     application: "ExportApplication",
     certificate: "ExportApplicationCertificate",
     doc_type: DocumentTypes,
-    country: "Country",
-) -> "Context":
+    country: Country,
+) -> Context:
     context = _certificate_document_context(application, certificate, doc_type, country)
     preview = doc_type == DocumentTypes.CERTIFICATE_PREVIEW
     signature, signature_file = get_active_signature_file()
@@ -399,8 +406,8 @@ def get_cfs_certificate_context(
     application: "CertificateOfFreeSaleApplication",
     certificate: "ExportApplicationCertificate",
     doc_type: DocumentTypes,
-    country: "Country",
-) -> "Context":
+    country: Country,
+) -> Context:
     context = _get_certificate_context(application, certificate, doc_type, country)
 
     context |= {
@@ -416,8 +423,8 @@ def get_com_certificate_context(
     application: "CertificateOfManufactureApplication",
     certificate: "ExportApplicationCertificate",
     doc_type: DocumentTypes,
-    country: "Country",
-) -> "Context":
+    country: Country,
+) -> Context:
     context = _get_certificate_context(application, certificate, doc_type, country)
     return context | {
         "page_title": f"Certificate of Manufacture ({country.name}) Preview",
@@ -431,8 +438,8 @@ def get_gmp_certificate_context(
     application: "CertificateOfGoodManufacturingPracticeApplication",
     certificate: "ExportApplicationCertificate",
     doc_type: DocumentTypes,
-    country: "Country",
-) -> "Context":
+    country: Country,
+) -> Context:
     context = _get_certificate_context(application, certificate, doc_type, country)
     expiry_delta = relativedelta(years=3)
 

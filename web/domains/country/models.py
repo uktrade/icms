@@ -38,6 +38,7 @@ class Country(models.Model):
 
 
 class CountryGroup(models.Model):
+    # TODO: ICMSLST-2671 Use CountryGroupName as choices.
     name = models.CharField(
         max_length=4000, blank=False, null=False, unique=True, verbose_name="Group Name"
     )

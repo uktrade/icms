@@ -162,7 +162,7 @@ def sanctions_expected_preview_context(active_signature):
         "page_title": "Licence Preview",
         "preview_licence": True,
         "importer_name": "Test Importer 1",
-        "eori_numbers": ["GB0123456789ABCDE", "XI0123456789ABCDE"],
+        "eori_numbers": ["GB0123456789ABCDE"],
         "importer_address": ["I1 address line 1", "I1 address line 2"],
         "importer_postcode": "BT180LZ",  # /PS-IGNORE
         "endorsements": [],
@@ -188,7 +188,7 @@ def wood_expected_preview_context(active_signature):
         "page_title": "Licence Preview",
         "preview_licence": True,
         "importer_name": "Test Importer 1",
-        "eori_numbers": ["GB0123456789ABCDE", "XI0123456789ABCDE"],
+        "eori_numbers": ["GB0123456789ABCDE"],
         "importer_address": ["I1 address line 1", "I1 address line 2"],
         "importer_postcode": "BT180LZ",  # /PS-IGNORE
         "endorsements": [],
