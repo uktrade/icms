@@ -136,7 +136,9 @@ class TestEmails(AuthTestCase):
         with pytest.raises(ValueError, match="Unknown access request type: UNKNOWN"):
             emails.send_access_request_closed_email(exporter_access_request)
 
-    def test_exporter_send_approval_request_opened_email(self, exporter_access_request):
+    def test_exporter_send_approval_request_opened_email(
+        self, exporter_access_request, exporter_secondary_contact
+    ):
         ear = get_linked_access_request(exporter_access_request, self.exporter)
         ear_approval = add_approval_request(ear, self.ilb_admin_user, self.exporter_user)
         exp_template_id = get_gov_notify_template_id(
@@ -147,9 +149,14 @@ class TestEmails(AuthTestCase):
             "icms_url": get_exporter_site_domain(),
         }
         emails.send_approval_request_opened_email(ear_approval)
-        assert self.mock_gov_notify_client.send_email_notification.call_count == 1
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 2
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             self.exporter_user.email,
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            exporter_secondary_contact.email,
             exp_template_id,
             personalisation=expected_personalisation,
         )
@@ -197,7 +204,8 @@ class TestEmails(AuthTestCase):
             personalisation=expected_personalisation,
         )
 
-    def test_send_application_stopped_email(self, completed_cfs_app):
+    def test_send_application_stopped_email(self, completed_cfs_app, exporter_two):
+        completed_cfs_app.exporter = exporter_two
         exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_STOPPED)
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
@@ -208,12 +216,13 @@ class TestEmails(AuthTestCase):
         emails.send_application_stopped_email(completed_cfs_app)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
-            "E1_main_contact@example.com",  # /PS-IGNORE
+            "E2_main_contact@example.com",  # /PS-IGNORE
             exp_template_id,
             personalisation=expected_personalisation,
         )
 
-    def test_send_application_reopened_email(self, completed_cfs_app):
+    def test_send_application_reopened_email(self, completed_cfs_app, exporter_secondary_contact):
+        completed_cfs_app.contact = exporter_secondary_contact
         exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_REOPENED)
         expected_personalisation = default_personalisation() | {
             "reference": completed_cfs_app.reference,
@@ -224,7 +233,31 @@ class TestEmails(AuthTestCase):
         emails.send_application_reopened_email(completed_cfs_app)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            "E1_secondary_contact@example.com",  # /PS-IGNORE
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+
+    def test_send_application_reopened_email_inactive_contact(
+        self, completed_cfs_app, exporter_inactive_contact
+    ):
+        completed_cfs_app.contact = exporter_inactive_contact
+        exp_template_id = get_gov_notify_template_id(EmailTypes.APPLICATION_REOPENED)
+        expected_personalisation = default_personalisation() | {
+            "reference": completed_cfs_app.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(completed_cfs_app, get_exporter_site_domain()),
+            "icms_url": get_exporter_site_domain(),
+        }
+        emails.send_application_reopened_email(completed_cfs_app)
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 2
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
             "E1_main_contact@example.com",  # /PS-IGNORE
+            exp_template_id,
+            personalisation=expected_personalisation,
+        )
+        self.mock_gov_notify_client.send_email_notification.assert_any_call(
+            "E1_secondary_contact@example.com",  # /PS-IGNORE
             exp_template_id,
             personalisation=expected_personalisation,
         )
@@ -986,7 +1019,7 @@ class TestEmails(AuthTestCase):
         mailshot.status = Mailshot.Statuses.RETRACTED
         mailshot.save()
         emails.send_retract_mailshot_email(mailshot)
-        assert self.mock_gov_notify_client.send_email_notification.call_count == 6
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 7
         expected_import_personalisation = default_personalisation() | {
             "body": "retract message",
             "icms_url": get_importer_site_domain(),
@@ -1039,7 +1072,7 @@ class TestEmails(AuthTestCase):
         mailshot.status = Mailshot.Statuses.PUBLISHED
         mailshot.save()
         emails.send_mailshot_email(mailshot)
-        assert self.mock_gov_notify_client.send_email_notification.call_count == 6
+        assert self.mock_gov_notify_client.send_email_notification.call_count == 7
         expected_import_personalisation = default_personalisation() | {
             "body": "original message",
             "icms_url": get_importer_site_domain(),

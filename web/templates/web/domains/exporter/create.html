@@ -1,4 +1,5 @@
 {% extends "layout/sidebar.html" %}
+{% include 'web/domains/exporter/exclusive_correspondence_tooltip.html' %}
 {% import "forms/forms.html" as forms %}
 {% import "forms/fields.html" as fields %}
 
@@ -20,11 +21,10 @@
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
     {% block fields %}
-      {% for field in form %}
-      {% with lookup = field.name in ['name', 'registered_number'] %}
-        {{ fields.field(field, lookup=lookup) }}
-      {% endwith %}
-      {% endfor %}
+        {{ fields.field(form.name, lookup=True) }}
+        {{ fields.field(form.registered_number, lookup=True) }}
+        {{ fields.field(form.comments) }}
+        {{ fields.field(form.exclusive_correspondence, checkbox_label="Send application correspondence to the nominated application contact only", tooltip_msg_id="correspondence-exclusive-tooltip", input_cols='five') }}
     {% endblock %}
 
     <div class="container">

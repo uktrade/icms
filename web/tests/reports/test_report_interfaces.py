@@ -1329,6 +1329,14 @@ class TestActiveUserInterface:
                 "Last Name": "E1_main_contact_last_name",  # /PS-IGNORE
             },
             {
+                "Businesses": "Test Exporter 1",
+                "Email Address": "E1_secondary_contact@example.com",  # /PS-IGNORE
+                "First Name": "E1_secondary_contact_first_name",  # /PS-IGNORE
+                "Is Exporter": "Yes",
+                "Is Importer": "No",
+                "Last Name": "E1_secondary_contact_last_name",  # /PS-IGNORE
+            },
+            {
                 "Businesses": "Test Exporter 1, Test Exporter 1 Agent 1",
                 "Email Address": "E1_A1_main_contact@example.com",  # /PS-IGNORE
                 "First Name": "E1_A1_main_contact_first_name",  # /PS-IGNORE

@@ -72,7 +72,10 @@ class Command(BaseCommand):
 
         # exporter 1
         exporter_1 = Exporter.objects.create(
-            is_active=True, name="Dummy exporter", registered_number="42"
+            is_active=True,
+            name="Dummy exporter",
+            registered_number="42",
+            exclusive_correspondence=True,
         )
 
         office = Office.objects.create(
@@ -93,7 +96,10 @@ class Command(BaseCommand):
 
         # exporter 2
         exporter_2 = Exporter.objects.create(
-            is_active=True, name="Dummy exporter 2", registered_number="43"
+            is_active=True,
+            name="Dummy exporter 2",
+            registered_number="43",
+            exclusive_correspondence=True,
         )
         e_office = Office.objects.create(
             is_active=True,

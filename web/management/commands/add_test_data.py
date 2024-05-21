@@ -175,6 +175,7 @@ class Command(BaseCommand):
             registered_number=exp.registered_number,
             main_exporter=main_exporter,
             is_active=exp.is_active,
+            exclusive_correspondence=exp.exclusive_correspondence,
         )
 
         exporter_offices = [

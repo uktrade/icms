@@ -56,6 +56,7 @@ class AgentExporter:
     offices: list[Office]
     contacts: list[ExporterContact]
     is_active: bool = True
+    exclusive_correspondence: bool = False
 
 
 @dataclasses.dataclass
@@ -67,3 +68,4 @@ class TestExporter:
     agents: list[AgentExporter]
     type: Literal["INDIVIDUAL", "ORGANISATION"] = "ORGANISATION"
     is_active: bool = True
+    exclusive_correspondence: bool = False

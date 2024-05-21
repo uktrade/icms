@@ -98,6 +98,7 @@ SELECT
   , organisation_registered_number registered_number
   , comments
   , e.main_e_id main_exporter_id
+  , CASE xed.is_correspondence_exclusive WHEN 'true' THEN 1 ELSE 0 END exclusive_correspondence
 FROM impmgr.exporters e
 INNER JOIN impmgr.xview_exporter_details xed ON xed.e_id = e.id
 WHERE status_control = 'C'

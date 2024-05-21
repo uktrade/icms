@@ -26,5 +26,5 @@ def test_get_ilb_case_officers_email_addresses_override_recipients():
 
 
 @pytest.mark.django_db
-def test_get_organisation_contact_email_addresses(importer, importer_one_contact):
+def test_get_importer_organisation_contact_email_addresses(importer, importer_one_contact):
     assert get_organisation_contact_email_addresses(importer) == [importer_one_contact.email]

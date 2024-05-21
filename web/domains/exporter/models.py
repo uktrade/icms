@@ -55,6 +55,7 @@ class Exporter(Archivable, models.Model):
     main_exporter = models.ForeignKey(
         "self", on_delete=models.SET_NULL, blank=True, null=True, related_name="agents"
     )
+    exclusive_correspondence = models.BooleanField(default=False)
 
     def get_edit_view_name(self) -> str:
         if self.is_agent():
