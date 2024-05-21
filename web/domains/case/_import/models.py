@@ -254,6 +254,7 @@ class ImportApplication(ApplicationBase):
         related_name="import_applications_from",
         verbose_name="Country Of Origin",
         help_text="Select the country where the goods were made.",
+        limit_choices_to={"is_active": True},
     )
 
     consignment_country = models.ForeignKey(
@@ -263,6 +264,7 @@ class ImportApplication(ApplicationBase):
         related_name="import_applications_to",
         verbose_name="Country Of Consignment",
         help_text="Select the country where the goods were shipped from.",
+        limit_choices_to={"is_active": True},
     )
 
     variation_requests = models.ManyToManyField("web.VariationRequest")

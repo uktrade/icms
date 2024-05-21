@@ -91,6 +91,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
         related_name="+",
         verbose_name="Country Of Origin",
         help_text="Select the country that the compensating products originate from.",
+        limit_choices_to={"is_active": True},
     )
 
     cp_processing_country = models.ForeignKey(
@@ -100,6 +101,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
         related_name="+",
         verbose_name="Country Of Processing",
         help_text="Select the country that the compensating products were processed in.",
+        limit_choices_to={"is_active": True},
     )
 
     cp_category = models.CharField(
@@ -167,6 +169,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
             "Select the country, or group of countries (e.g. Any EU Country)"
             " that the temporary exported goods originate from."
         ),
+        limit_choices_to={"is_active": True},
     )
 
     teg_total_quantity = models.DecimalField(

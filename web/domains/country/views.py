@@ -47,7 +47,8 @@ class CountryListView(PermissionRequiredMixin, LoginRequiredMixin, PageTitleMixi
     permission_required = Perms.sys.ilb_admin
 
     def get_queryset(self):
-        return super().get_queryset().filter(is_active=True).prefetch_related("country_groups")
+        # we want to prefetch country groups for each country as it's quicker to display
+        return super().get_queryset().prefetch_related("country_groups")
 
 
 class CountryEditView(ModelUpdateView):

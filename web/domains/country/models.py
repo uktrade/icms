@@ -44,7 +44,12 @@ class CountryGroup(models.Model):
     comments = models.CharField(
         max_length=4000, blank=True, null=True, verbose_name="Group Comments"
     )
-    countries = models.ManyToManyField("web.Country", blank=True, related_name="country_groups")
+    countries = models.ManyToManyField(
+        "web.Country",
+        blank=True,
+        related_name="country_groups",
+        limit_choices_to={"is_active": True},
+    )
 
     def get_absolute_url(self):
         return reverse("country:group-view", kwargs={"pk": self.pk})
@@ -72,7 +77,13 @@ class CountryTranslationSet(Archivable, models.Model):
 
 class CountryTranslation(models.Model):
     translation = models.CharField(max_length=150, blank=False, null=False)
-    country = models.ForeignKey("web.Country", on_delete=models.CASCADE, blank=False, null=False)
+    country = models.ForeignKey(
+        "web.Country",
+        on_delete=models.CASCADE,
+        blank=False,
+        null=False,
+        limit_choices_to={"is_active": True},
+    )
     translation_set = models.ForeignKey(
         "web.CountryTranslationSet", on_delete=models.CASCADE, blank=False, null=False
     )

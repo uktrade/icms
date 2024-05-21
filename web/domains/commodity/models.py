@@ -104,7 +104,9 @@ class CommodityGroup(Archivable, models.Model):
 
 class Usage(models.Model):
     application_type = models.ForeignKey("web.ImportApplicationType", on_delete=models.PROTECT)
-    country = models.ForeignKey("web.Country", on_delete=models.PROTECT)
+    country = models.ForeignKey(
+        "web.Country", on_delete=models.PROTECT, limit_choices_to={"is_active": True}
+    )
     commodity_group = models.ForeignKey(
         "web.CommodityGroup", on_delete=models.PROTECT, related_name="usages"
     )

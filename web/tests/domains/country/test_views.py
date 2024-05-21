@@ -1,6 +1,7 @@
 import pytest
 from pytest_django.asserts import assertRedirects
 
+from web.domains.country.models import Country
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 
@@ -31,7 +32,7 @@ class TestCountryListView(AuthTestCase):
     def test_page_results(self):
         response = self.ilb_admin_client.get(self.url)
         results = response.context_data["object_list"]
-        assert len(results) == 183
+        assert len(results) == Country.objects.all().count()
 
 
 class TestCountryEditView(AuthTestCase):

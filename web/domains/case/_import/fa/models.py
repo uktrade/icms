@@ -54,7 +54,12 @@ class ImportContact(models.Model):
     city = models.CharField(max_length=200, verbose_name="Town/City")
     postcode = models.CharField(max_length=200, null=True, blank=True)
     region = models.CharField(max_length=200, null=True, blank=True)
-    country = models.ForeignKey("web.Country", on_delete=models.PROTECT, related_name="+")
+    country = models.ForeignKey(
+        "web.Country",
+        on_delete=models.PROTECT,
+        related_name="+",
+        limit_choices_to={"is_active": True},
+    )
     dealer = models.CharField(max_length=10, choices=DEALER_CHOICES, null=True)
 
     created_datetime = models.DateTimeField(auto_now_add=True)
