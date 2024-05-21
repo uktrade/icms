@@ -4431,3 +4431,7 @@ dp.dp_id document_pack_id
 Export Certificates - DRAFT
 Export Certificates - REVOKED
 Export Certificates - ACTIVE
+Active Users
+Can view Active Users Report
+Groups
+can_view_export_case_search

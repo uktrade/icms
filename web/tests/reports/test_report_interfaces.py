@@ -21,6 +21,7 @@ from web.models import (
 )
 from web.reports.interfaces import (
     AccessRequestTotalsInterface,
+    ActiveUserInterface,
     DFLFirearmsLicenceInterface,
     ExporterAccessRequestInterface,
     ImporterAccessRequestInterface,
@@ -167,6 +168,15 @@ EXPECTED_FIREARMS_LICENCES_HEADER = [
     "Endorsements",
     "Revoked",
     "Goods Description",
+]
+
+EXPECTED_ACTIVE_USER_HEADER = [
+    "First Name",  # /PS-IGNORE
+    "Last Name",  # /PS-IGNORE
+    "Email Address",
+    "Is Importer",
+    "Is Exporter",
+    "Businesses",
 ]
 
 
@@ -1259,4 +1269,79 @@ class TestFirearmsLicencesInterface:
                 "First Constabulary Email Sent Date": "09/03/2024 11:00:00",
                 "Last Constabulary Email Closed Date": "10/03/2024 09:00:00",
             }
+        ]
+
+
+class TestActiveUserInterface:
+    @pytest.fixture(autouse=True)
+    def _setup(self, report_schedule, ilb_admin_user):
+        self.report_schedule = report_schedule
+        self.ilb_admin_user = ilb_admin_user
+
+    def test_get_data_header(self):
+        interface = ActiveUserInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["header"] == EXPECTED_ACTIVE_USER_HEADER
+        assert data["errors"] == []
+
+    def test_get_data(self):
+        interface = ActiveUserInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Businesses": "",
+                "Email Address": "access_request_user@example.com",  # /PS-IGNORE
+                "First Name": "access_request_user_first_name",  # /PS-IGNORE
+                "Is Exporter": "No",
+                "Is Importer": "No",
+                "Last Name": "access_request_user_last_name",  # /PS-IGNORE
+            },
+            {
+                "Businesses": "Test Importer 1",
+                "Email Address": "I1_main_contact@example.com",  # /PS-IGNORE
+                "First Name": "I1_main_contact_first_name",  # /PS-IGNORE
+                "Is Exporter": "No",
+                "Is Importer": "Yes",
+                "Last Name": "I1_main_contact_last_name",  # /PS-IGNORE
+            },
+            {
+                "Businesses": "Test Importer 1, Test Importer 1 Agent 1",
+                "Email Address": "I1_A1_main_contact@example.com",  # /PS-IGNORE
+                "First Name": "I1_A1_main_contact_first_name",  # /PS-IGNORE
+                "Is Exporter": "No",
+                "Is Importer": "Yes",
+                "Last Name": "I1_A1_main_contact_last_name",  # /PS-IGNORE
+            },
+            {
+                "Businesses": "Test Importer 2",
+                "Email Address": "I2_main_contact@example.com",  # /PS-IGNORE
+                "First Name": "I2_main_contact_first_name",  # /PS-IGNORE
+                "Is Exporter": "No",
+                "Is Importer": "Yes",
+                "Last Name": "I2_main_contact_last_name",  # /PS-IGNORE
+            },
+            {
+                "Businesses": "Test Exporter 1",
+                "Email Address": "E1_main_contact@example.com",  # /PS-IGNORE
+                "First Name": "E1_main_contact_first_name",  # /PS-IGNORE
+                "Is Exporter": "Yes",
+                "Is Importer": "No",
+                "Last Name": "E1_main_contact_last_name",  # /PS-IGNORE
+            },
+            {
+                "Businesses": "Test Exporter 1, Test Exporter 1 Agent 1",
+                "Email Address": "E1_A1_main_contact@example.com",  # /PS-IGNORE
+                "First Name": "E1_A1_main_contact_first_name",  # /PS-IGNORE
+                "Is Exporter": "Yes",
+                "Is Importer": "No",
+                "Last Name": "E1_A1_main_contact_last_name",  # /PS-IGNORE
+            },
+            {
+                "Businesses": "Test Exporter 2",
+                "Email Address": "E2_main_contact@example.com",  # /PS-IGNORE
+                "First Name": "E2_main_contact_first_name",  # /PS-IGNORE
+                "Is Exporter": "Yes",
+                "Is Importer": "No",
+                "Last Name": "E2_main_contact_last_name",  # /PS-IGNORE
+            },
         ]

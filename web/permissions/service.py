@@ -468,6 +468,8 @@ def get_report_permission(report: "Report") -> PagePermissions:
             return Perms.page.view_report_supplementary_firearms
         case ReportType.FIREARMS_LICENCES:
             return Perms.page.view_report_firearms_licences
+        case ReportType.ACTIVE_USERS:
+            return Perms.page.view_report_active_users
         case _:
             raise ValueError(f"Unknown Report Type {report.report_type}")
 
@@ -489,5 +491,7 @@ def get_report_type_for_permission(perm: PagePermissions | SysPerms) -> ReportTy
             return ReportType.ACCESS_REQUESTS
         case PagePermissions.view_report_import_licences:
             return ReportType.IMPORT_LICENCES
+        case PagePermissions.view_report_active_users:
+            return ReportType.ACTIVE_USERS
         case _:
             return None

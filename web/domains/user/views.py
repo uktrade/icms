@@ -22,7 +22,6 @@ from django.views.generic import (
 )
 from django.views.generic.detail import SingleObjectMixin
 
-from web.auth.backends import ANONYMOUS_USER_PK
 from web.domains.template.context import UserManagementContext
 from web.domains.template.utils import replace_template_values
 from web.mail.constants import EmailTypes
@@ -42,11 +41,7 @@ from .forms import (
     UserManagementEmailForm,
     UserPhoneNumberForm,
 )
-
-
-def user_list_view_qs() -> QuerySet[User]:
-    """Reusable QuerySet that can be used in several views."""
-    return User.objects.exclude(pk=ANONYMOUS_USER_PK).exclude(is_superuser=True)
+from .utils import user_list_view_qs
 
 
 class UserBaseMixin(LoginRequiredMixin, UserPassesTestMixin):

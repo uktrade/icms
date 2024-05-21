@@ -14,7 +14,7 @@ from web.models import (
 from .constants import DateFilterType
 
 
-class ReportForm(forms.ModelForm):
+class BasicReportForm(forms.ModelForm):
     class Meta:
         model = ScheduleReport
         fields = ["title", "notes"]
@@ -27,6 +27,12 @@ class ReportForm(forms.ModelForm):
         label="Date to",
         help_text="Date (inclusive of this day ie 31-Jan-24 23:59:59)",
     )
+
+
+class ReportForm(BasicReportForm):
+    class Meta:
+        model = BasicReportForm.Meta.model
+        fields = BasicReportForm.Meta.fields
 
     def clean(self):
         cleaned_data = super().clean()

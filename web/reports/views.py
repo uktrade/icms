@@ -17,7 +17,12 @@ from web.utils.s3 import get_file_from_s3
 from web.utils.spreadsheet import MIMETYPE
 
 from .constants import ReportStatus, ReportType
-from .forms import ImportLicenceForm, IssuedCertificatesForm, ReportForm
+from .forms import (
+    BasicReportForm,
+    ImportLicenceForm,
+    IssuedCertificatesForm,
+    ReportForm,
+)
 from .tasks import generate_report_task
 from .utils import format_parameters_used, get_report_objects_for_user
 
@@ -128,6 +133,8 @@ class RunReportView(BaseReportView, CreateView):
                 return IssuedCertificatesForm
             case ReportType.IMPORT_LICENCES:
                 return ImportLicenceForm
+            case ReportType.ACTIVE_USERS:
+                return BasicReportForm
             case _:
                 return ReportForm
 

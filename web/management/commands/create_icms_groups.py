@@ -37,6 +37,7 @@ def get_groups():
             Perms.page.view_report_import_licences,
             Perms.page.view_report_supplementary_firearms,
             Perms.page.view_report_issued_certificates,
+            Perms.page.view_report_active_users,
             #
             # Sys permissions
             Perms.sys.ilb_admin,

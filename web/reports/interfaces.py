@@ -27,6 +27,7 @@ from web.domains.case._import.fa.types import FaImportApplication, ReportFirearm
 from web.domains.case._import.fa_sil.types import GoodsModel
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpAccessOrExpAccess
+from web.domains.user.utils import user_list_view_qs
 from web.flow.models import ProcessTypes
 from web.mail.constants import EmailTypes
 from web.models import SILGoodsSection582Obsolete  # /PS-IGNORE
@@ -43,10 +44,12 @@ from web.models import (
     ExportApplication,
     ExportApplicationCertificate,
     ExporterAccessRequest,
+    ExporterUserObjectPermission,
     FurtherInformationRequest,
     ImportApplication,
     ImportApplicationType,
     ImporterAccessRequest,
+    ImporterUserObjectPermission,
     OILSupplementaryReportFirearm,
     OpenIndividualLicenceApplication,
     ProductLegislation,
@@ -61,8 +64,10 @@ from web.models import (
     SILSupplementaryReportFirearmSection5,
     SILSupplementaryReportFirearmSectionLegacy,
     UpdateRequest,
+    User,
     UserImportCertificate,
 )
+from web.permissions import Perms
 from web.utils.pdf.utils import _get_sil_section_labels, get_fa_sil_goods_item
 from web.utils.search.app_data import _add_import_licence_data
 from web.utils.sentry import capture_exception
@@ -81,6 +86,7 @@ from .serializers import (
     OILFirearmsLicenceSerializer,
     SILFirearmsLicenceSerializer,
     SupplementaryFirearmsSerializer,
+    UserSerializer,
 )
 
 
@@ -1155,3 +1161,65 @@ class SILFirearmsLicenceInterface(BaseFirearmsLicenceInterface):
             "first_constabulary_email_sent_date": constabulary_email_times.first_email_sent,
             "last_constabulary_email_closed_date": constabulary_email_times.last_email_closed,
         }
+
+
+class ActiveUserInterface(ReportInterface):
+    name = "Active Users"
+    ReportSerializer = UserSerializer
+    ReportFilter = BasicReportFilter
+    filters: BasicReportFilter
+
+    def get_queryset(self) -> QuerySet:
+        _filter = Q(
+            date_joined__date__range=(
+                self.filters.date_from,
+                self.filters.date_to,
+            )
+        )
+        _permissions_filter = Q(
+            Q(groups__isnull=True)
+            | Q(
+                groups__permissions__codename__in=[
+                    Perms.sys.exporter_access.codename,
+                    Perms.sys.importer_access.codename,
+                ]
+            )
+        )
+        return (
+            user_list_view_qs()
+            .filter(_filter, _permissions_filter, is_active=True)
+            .annotate(
+                exporters=ArraySubquery(
+                    ExporterUserObjectPermission.objects.filter(user__pk=OuterRef("pk"))
+                    .values_list("content_object__name", flat=True)
+                    .distinct()
+                ),
+                importers=ArraySubquery(
+                    ImporterUserObjectPermission.objects.filter(user__pk=OuterRef("pk"))
+                    .values_list("content_object__name", flat=True)
+                    .distinct()
+                ),
+            )
+            .distinct()
+            .values(
+                "first_name",
+                "last_name",
+                "email",
+                "exporters",
+                "importers",
+            )
+            .order_by("pk")
+        )
+
+    def serialize_row(self, user: User) -> UserSerializer:
+        return self.ReportSerializer(
+            first_name=user["first_name"],
+            last_name=user["last_name"],
+            email_address=user["email"],
+            is_importer=True if user["importers"] else False,
+            is_exporter=True if user["exporters"] else False,
+            businesses=", ".join(user["exporters"] + user["importers"]),
+        )
+
+    def get_row_identifier(self, user: User) -> str:
+        return user["email"]

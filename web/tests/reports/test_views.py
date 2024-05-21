@@ -113,6 +113,15 @@ def test_run_history_view(ilb_admin_client, report_schedule, deleted_report_sche
                 "date_filter_type": DateFilterType.CLOSED,
             },
         ),
+        (
+            ReportType.ACTIVE_USERS,
+            {
+                "title": "test report",
+                "date_from": "1-Jan-2006",
+                "date_to": "1-Jan-2022",
+                "notes": "",
+            },
+        ),
     ),
 )
 @mock.patch("web.reports.tasks.generate_report_task.delay")
