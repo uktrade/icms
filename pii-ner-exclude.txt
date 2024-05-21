@@ -4408,3 +4408,4 @@ Firearms & Ammunition Certificate Files'
 ModalMessage
 this.d.find('.alert-dismiss').click
 "Check if the application can be quick-issued
+certificate?"/

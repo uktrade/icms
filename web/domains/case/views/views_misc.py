@@ -901,38 +901,40 @@ class QuickIssueApplicationView(
 ):
     http_method_names = ["post"]
     current_status = [
-        ImpExpStatus.SUBMITTED,
         ImpExpStatus.PROCESSING,
         ImpExpStatus.VARIATION_REQUESTED,
     ]
     current_task_type = Task.TaskType.PROCESS
     permission_required = [Perms.sys.ilb_admin]
 
-    def post(
-        self, request: AuthenticatedHttpRequest, case_type: str, **kwargs: Any
-    ) -> HttpResponse:
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         #
         # Start authorisation step
         #
         with transaction.atomic():
             self.set_application_and_task()
-            if not self.application.can_quick_issue():
+
+            app_approved = (
+                self.application.status == ImpExpStatus.PROCESSING
+                and self.application.decision == self.application.APPROVE
+            )
+
+            # There is no variation_decision field on export applications.
+            if self.application.is_import_application():
+                variation_approved = (
+                    self.application.status == ImpExpStatus.VARIATION_REQUESTED
+                    and self.application.variation_decision == self.application.REFUSE
+                )
+            else:
+                variation_approved = self.application.status == ImpExpStatus.VARIATION_REQUESTED
+
+            if not (app_approved or variation_approved):
                 messages.error(
-                    request,
-                    "The case must be approved to issue a licence.",
+                    request, "The case must be approved to issue a licence / certificate."
                 )
                 return redirect(reverse("workbasket"))
 
-            if (
-                self.application.decision != self.application.APPROVE
-                and not self.application.is_import_application()
-            ):
-                messages.error(
-                    request,
-                    "The case must be approved to issue a licence.",
-                )
-                return redirect(reverse("workbasket"))
-
+            case_type = self.kwargs["case_type"]
             application_errors: ApplicationErrors = get_app_errors(self.application, case_type)
             if application_errors.has_errors():
                 return redirect(
@@ -948,7 +950,7 @@ class QuickIssueApplicationView(
         # Authorise documents step
         #
         with transaction.atomic():
-            # re-fetching from the DB
+            # re-fetching from the DB (This assumes the current_status is still the same as the previous step)
             self.application = self.get_object()
             case_progress.application_is_authorised(self.application)
             authorise_application_documents(self.application, request.user)

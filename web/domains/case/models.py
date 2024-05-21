@@ -257,10 +257,6 @@ class ApplicationBase(Process):
 
         return update_requests
 
-    def can_quick_issue(self) -> bool:
-        """Check if the application can be quick-issued"""
-        raise NotImplementedError
-
 
 class CaseEmail(models.Model):
     class Status(TypedTextChoices):

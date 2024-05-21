@@ -357,18 +357,6 @@ class ImportApplication(ApplicationBase):
             return f"{status} (Refused)"
         return status
 
-    def can_quick_issue(self) -> bool:
-        """If the application has a variation requested, then we need to check if the variation has been approved. If
-        not, we can just check the decision."""
-        if (
-            self.status == self.Statuses.VARIATION_REQUESTED
-            and self.variation_decision == self.APPROVE
-        ):
-            return True
-        elif self.decision == self.APPROVE:
-            return True
-        return False
-
 
 class EndorsementImportApplication(models.Model):
     import_application = models.ForeignKey(
