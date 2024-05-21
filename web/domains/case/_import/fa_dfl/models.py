@@ -33,6 +33,7 @@ class DFLGoodsCertificate(File):
         verbose_name="Issuing Country",
         blank=False,
         null=False,
+        limit_choices_to={"is_active": True},
     )
 
     def __str__(self):
