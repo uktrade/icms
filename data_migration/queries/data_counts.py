@@ -155,7 +155,7 @@ AND x.status <> 'DRAFT'
 
 sanctions_email_count = """
 SELECT COUNT(*)
-FROM impmgr.saction_email_details
+FROM impmgr.sanction_email_details
 WHERE sanction_email_id <> 1
 AND status_control = 'C'
 """
