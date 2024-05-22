@@ -4442,3 +4442,8 @@ Certificate of Manufacture Countries
 Goods Manufacturing Practice Countries
 XI EORI
 EU Consignment
+SIL
+Firearms Authority
+Section 5 Authorities</h4
+{ section_5_authority.end_date.strftime('%d-%b-%Y'
+Test Reference

@@ -302,3 +302,121 @@ class TestViewEmail(AuthTestCase):
         )
         assert resp.status_code == 200
         assert "BEIS Emails (0/1)" in resp.content.decode()
+
+    def test_verified_authorities_empty(self, gmp_app_submitted):
+        self.ilb_admin_client.post(
+            CaseURLS.take_ownership(gmp_app_submitted.pk, case_type="export")
+        )
+
+        resp = self.ilb_admin_client.get(
+            CaseURLS.manage_case_emails(gmp_app_submitted.pk, case_type="export")
+        )
+        assert resp.context["verified_section_5_authorities"] == []
+        assert resp.context["verified_firearms_authorities"] == []
+
+    def test_verified_section5_authorities_none_expired(
+        self, fa_sil_app_submitted, section5_authority
+    ):
+        section5_authority.start_date = timezone.now() - timezone.timedelta(days=1)
+        section5_authority.end_date = timezone.now() + timezone.timedelta(days=1)
+        section5_authority.save()
+        fa_sil_app_submitted.verified_section5.add(section5_authority)
+        self.ilb_admin_client.post(
+            CaseURLS.take_ownership(fa_sil_app_submitted.pk, case_type="import")
+        )
+
+        resp = self.ilb_admin_client.get(
+            CaseURLS.manage_case_emails(fa_sil_app_submitted.pk, case_type="import")
+        )
+        verified_section5_authorities = resp.context["verified_section_5_authorities"]
+        assert verified_section5_authorities.count() == 1
+        assert verified_section5_authorities[0] == section5_authority
+        assert (
+            "One or more verified Section 5 Authorities have been selected by the applicant"
+            in resp.content.decode()
+        )
+        assert "At least one verified Section 5 Authority has expired" not in resp.content.decode()
+
+    def test_verified_section5_authorities_some_expired(
+        self, fa_sil_app_submitted, section5_authority
+    ):
+        section5_authority.start_date = timezone.now() - timezone.timedelta(days=2)
+        section5_authority.end_date = timezone.now() - timezone.timedelta(days=1)
+        section5_authority.save()
+        fa_sil_app_submitted.verified_section5.add(section5_authority)
+        self.ilb_admin_client.post(
+            CaseURLS.take_ownership(fa_sil_app_submitted.pk, case_type="import")
+        )
+
+        resp = self.ilb_admin_client.get(
+            CaseURLS.manage_case_emails(fa_sil_app_submitted.pk, case_type="import")
+        )
+        verified_section5_authorities = resp.context["verified_section_5_authorities"]
+        assert verified_section5_authorities.count() == 1
+        assert verified_section5_authorities[0] == section5_authority
+        assert (
+            "One or more verified Section 5 Authorities have been selected by the applicant"
+            in resp.content.decode()
+        )
+        assert "At least one verified Section 5 Authority has expired" in resp.content.decode()
+
+    def test_verified_firearms_authorities_none_expired(
+        self, fa_sil_app_submitted, firearms_authority
+    ):
+        firearms_authority.start_date = timezone.now() - timezone.timedelta(days=1)
+        firearms_authority.end_date = timezone.now() + timezone.timedelta(days=1)
+        firearms_authority.save()
+        fa_sil_app_submitted.verified_certificates.add(firearms_authority)
+        self.ilb_admin_client.post(
+            CaseURLS.take_ownership(fa_sil_app_submitted.pk, case_type="import")
+        )
+
+        resp = self.ilb_admin_client.get(
+            CaseURLS.manage_case_emails(fa_sil_app_submitted.pk, case_type="import")
+        )
+        verified_firearms_authorities = resp.context["verified_firearms_authorities"]
+        assert verified_firearms_authorities.count() == 1
+        assert verified_firearms_authorities[0] == firearms_authority
+        assert (
+            "One or more verified Firearms Authorities have been selected by the applicant"
+            in resp.content.decode()
+        )
+        assert "At least one verified Firearms Authority has expired" not in resp.content.decode()
+
+    def test_verified_firearms_authorities_some_expired(
+        self, fa_sil_app_submitted, firearms_authority
+    ):
+        firearms_authority.start_date = timezone.now() - timezone.timedelta(days=2)
+        firearms_authority.end_date = timezone.now() - timezone.timedelta(days=2)
+        firearms_authority.save()
+        fa_sil_app_submitted.verified_certificates.add(firearms_authority)
+        self.ilb_admin_client.post(
+            CaseURLS.take_ownership(fa_sil_app_submitted.pk, case_type="import")
+        )
+
+        resp = self.ilb_admin_client.get(
+            CaseURLS.manage_case_emails(fa_sil_app_submitted.pk, case_type="import")
+        )
+        verified_firearms_authorities = resp.context["verified_firearms_authorities"]
+        assert verified_firearms_authorities.count() == 1
+        assert verified_firearms_authorities[0] == firearms_authority
+        assert (
+            "One or more verified Firearms Authorities have been selected by the applicant"
+            in resp.content.decode()
+        )
+        assert "At least one verified Firearms Authority has expired" in resp.content.decode()
+
+    def test_oil_app_doesnt_have_section5(self, fa_oil_app_submitted, firearms_authority):
+        firearms_authority.start_date = timezone.now() - timezone.timedelta(days=2)
+        firearms_authority.end_date = timezone.now() + timezone.timedelta(days=2)
+        firearms_authority.save()
+        fa_oil_app_submitted.verified_certificates.add(firearms_authority)
+        self.ilb_admin_client.post(
+            CaseURLS.take_ownership(fa_oil_app_submitted.pk, case_type="import")
+        )
+        resp = self.ilb_admin_client.get(
+            CaseURLS.manage_case_emails(fa_oil_app_submitted.pk, case_type="import")
+        )
+        assert resp.context["verified_section_5_authorities"] == []
+        assert resp.context["verified_firearms_authorities"].count() == 1
+        assert resp.context["verified_firearms_authorities"][0] == firearms_authority

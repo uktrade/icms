@@ -39,6 +39,7 @@ from web.models import (
     Exporter,
     ExporterAccessRequest,
     File,
+    FirearmsAuthority,
     ImportContact,
     Importer,
     ImporterAccessRequest,
@@ -48,6 +49,7 @@ from web.models import (
     Report,
     SanctionsAndAdhocApplication,
     ScheduleReport,
+    Section5Authority,
     Signature,
     SILApplication,
     SILChecklist,
@@ -1543,3 +1545,24 @@ def gmp_cat(exporter_one_contact) -> CertificateApplicationTemplate:
     CertificateOfGoodManufacturingPracticeApplicationTemplate.objects.create(template=cat)
 
     return cat
+
+
+@pytest.fixture()
+def section5_authority(importer) -> Section5Authority:
+    return Section5Authority.objects.create(
+        reference="Test Reference",
+        importer=importer,
+        address="Test Address",
+        is_active=True,
+    )
+
+
+@pytest.fixture()
+def firearms_authority(importer) -> FirearmsAuthority:
+    return FirearmsAuthority.objects.create(
+        reference="Test Reference",
+        importer=importer,
+        address="Test Address",
+        is_active=True,
+        certificate_type=FirearmsAuthority.DEACTIVATED_FIREARMS,
+    )
