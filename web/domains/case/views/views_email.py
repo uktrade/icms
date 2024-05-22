@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import BooleanField, ExpressionWrapper, Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -72,6 +72,27 @@ def manage_case_emails(
     else:
         info_email = ""
 
+    verified_section_5_authorities = []
+    verified_firearms_authorities = []
+
+    if application.process_type in [
+        SILApplication.PROCESS_TYPE,
+        OpenIndividualLicenceApplication.PROCESS_TYPE,
+    ]:
+        # it's a SIL or OIL application, get the verified firearm authorities
+        today_date = timezone.now().date()
+        specific_application = application.get_specific_model()
+        verified_firearms_authorities = specific_application.verified_certificates.all().annotate(
+            is_expired=ExpressionWrapper(Q(end_date__lt=today_date), output_field=BooleanField())
+        )
+
+        if application.process_type == SILApplication.PROCESS_TYPE:
+            verified_section_5_authorities = specific_application.verified_section5.all().annotate(
+                is_expired=ExpressionWrapper(
+                    Q(end_date__lt=today_date), output_field=BooleanField()
+                )
+            )
+
     context = {
         "process": application,
         "page_title": "Manage Emails",
@@ -83,6 +104,8 @@ def manage_case_emails(
         "info_email": info_email,
         "readonly_view": readonly_view,
         "record_response_form": forms.CaseEmailResponseForm(),
+        "verified_section_5_authorities": verified_section_5_authorities,
+        "verified_firearms_authorities": verified_firearms_authorities,
     }
 
     return render(

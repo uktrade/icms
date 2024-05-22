@@ -18,6 +18,135 @@
     <h4>{{ email_subtitle }}</h4>
   {% endif %}
 
+  {% if verified_firearms_authorities %}
+    <div class="info-box {% if verified_firearms_authorities.filter(is_expired=True).exists() %}info-box-warning{% else %}info-box-info{% endif %}">
+      <div class="screen-reader-only">Warning information box,</div>
+      <h4>Verified Firearms Authorities</h4>
+        <p>One or more verified Firearms Authorities have been selected by the applicant. Verified Firearms Authority documents may still be attached to constabulary emails if required.</p>
+
+        {% if verified_firearms_authorities.filter(is_expired=True).exists() %}
+          <br>
+          <span>At least one verified Firearms Authority has expired or has been archived since the application was submitted. These are indicated with a <span class="icon-warning orange-text"></span> icon.</span>
+        {% endif %}
+        <table class="setoutList">
+          <thead>
+            <tr>
+              <th scope="col">Reference</th>
+              <th scope="col">Certificate Type</th>
+              <th scope="col">Issuing Constabulary</th>
+              <th scope="col">Address</th>
+              <th scope="col">Postcode</th>
+              <th scope="col">Start Date</th>
+              <th scope="col">End Date</th>
+              <th scope="col">Expired</th>
+              <th scope="col">Archived</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for firearm_authority in verified_firearms_authorities %}
+              <tr>
+                <td>
+                  <span class="text-widget">{{ firearm_authority.reference }}</span>
+                </td>
+                <td>
+                  <span class="text-widget">{{ firearm_authority.get_certificate_type_display() }}</span>
+                </td>
+                <td>
+                  <span class="text-widget">{{ firearm_authority.issuing_constabulary.name }}</span>
+                </td>
+                <td>
+                  <span class="text-widget">{{ firearm_authority.address }}</span>
+                </td>
+                <td>
+                  <span class="text-widget">{{ firearm_authority.postcode }}</span>
+                </td>
+                <td>
+                  <span class="text-widget">{{ firearm_authority.start_date.strftime('%d-%b-%Y') }}</span>
+                </td>
+                <td>
+                  <span class="text-widget">{{ firearm_authority.end_date.strftime('%d-%b-%Y') }}</span>
+                </td>
+                <td>
+                  <span class="text-widget">{% if firearm_authority.is_expired %}<p class="icon-warning orange-text"></p>{% else %}Not Expired{% endif %}</span>
+                </td>
+                <td>
+                  <span class="text-widget">{% if firearm_authority.is_active %}Not Archived{% else %}Archived{% endif %}</span>
+                </td>
+                <td>
+                  <ul class="menu-out flow-across">
+                    <li>
+                      <a rel="noopener noreferrer" target="_blank" href="{{ icms_url('importer-firearms-edit', kwargs={'pk': firearm_authority.pk}) }}">View details</a>
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+  {% endif %}
+  
+    {% if verified_section_5_authorities %}
+      <div class="info-box {% if verified_section_5_authorities.filter(is_expired=True).exists() %}info-box-warning{% else %}info-box-info{% endif %}">
+        <div class="screen-reader-only">Warning information box,</div>
+        <h4>Verified Section 5 Authorities</h4>
+        <p>One or more verified Section 5 Authorities have been selected by the applicant. Verified Section 5 Authority documents may still be attached to constabulary emails if required.</p>
+        {% if verified_section_5_authorities.filter(is_expired=True).exists() %}
+          <br>
+          <span>At least one verified Section 5 Authority has expired or has been archived since the application was submitted. These are indicated with a <span class="icon-warning orange-text"></span> icon.</span>
+        {% endif %}
+        <table class="setoutList">
+          <thead>
+            <tr>
+                <th scope="col">Reference</th>
+                <th scope="col">Address</th>
+                <th scope="col">Postcode</th>
+                <th scope="col">Start Date</th>
+                <th scope="col">End Date</th>
+                <th scope="col">Expired</th>
+                <th scope="col">Archived</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+          <tbody>
+            {% for section_5_authority in verified_section_5_authorities %}
+              <tr>
+                <td>
+                  <span class="text-widget">{{ section_5_authority.reference }}</span>
+                </td>
+                <td>
+                  <span class="text-widget">{{ section_5_authority.address }}</span>
+                </td>
+                <td>
+                  <span class="text-widget">{{ section_5_authority.postcode }}</span>
+                </td>
+                <td>
+                  <span class="text-widget">{{ section_5_authority.start_date.strftime('%d-%b-%Y') }}</span>
+                </td>
+                <td>
+                  <span class="text-widget">{{ section_5_authority.end_date.strftime('%d-%b-%Y') }}</span>
+                </td>
+                <td>
+                  <span class="text-widget">{% if section_5_authority.is_expired %}<p class="icon-warning orange-text"></p>{% endif %}</span>
+                </td>
+                <td>
+                  <span class="text-widget">{% if section_5_authority.is_active %}Not Archived{% else %}Archived{% endif %}</span>
+                </td>
+                <td>
+                  <ul class="menu-out flow-across">
+                    <li>
+                      <a rel="noopener noreferrer" target="_blank" href="{{ icms_url('importer-section5-edit', kwargs={'pk': section_5_authority.pk}) }}">View details</a>
+                    </li>
+                  </ul>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+  {% endif %}
+
   {% if not readonly_view %}
     <hr />
     <form
