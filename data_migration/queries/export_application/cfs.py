@@ -16,10 +16,10 @@ SELECT
   , ca.created_datetime created
   , xcad.created_by_wua_id created_by_id
   , xcad.exporter_id
-  , xcad.exporter_office_id
+  , CASE WHEN xcad.exporter_id IS NULL THEN NULL ELSE 'e-' || xcad.exporter_id || '-' || xcad.exporter_office_id END xcad.exporter_office_legacy_id
   , rp_wua.wua_id contact_id
   , xcad.agent_id
-  , xcad.agent_office_id
+  , CASE WHEN xcad.agent_id IS NULL THEN NULL ELSE 'e-' || xcad.agent_id || '-' || xcad.agent_office_id END agent_office_legacy_id
   , 'CertificateOfFreeSaleApplication' process_type
   , cat.id application_type_id
   , case_owner.wua_id case_owner_id
@@ -63,8 +63,8 @@ SELECT
   , schedules.goods_export_only
   , schedules.any_raw_materials
   , schedules.final_product_end_use
-  , CASE st_gmp.statement WHEN NULL THEN 0 ELSE 1 END accordance_with_standards
-  , CASE st_rp.statement WHEN NULL THEN 0 ELSE 1 END is_responsible_person
+  , CASE WHEN st_gmp.statement IS NULL THEN 0 ELSE 1 END accordance_with_standards
+  , CASE WHEN st_rp.statement IS NULL THEN 0 ELSE 1 END is_responsible_person
   , xcas.manufactured_at_name manufacturer_name
   , schedules.manufacturer_address_type
   , xcas.manufactured_at_postcode manufacturer_postcode
@@ -102,7 +102,7 @@ INNER JOIN (
       , uk_market VARCHAR2(5) PATH '/SCHEDULE/IS_NEVER_EU_MARKET[not(fox-error)]/text()'
       , any_raw_materials VARCHAR2(5) PATH '/SCHEDULE/RAW_MATERIALS_EXIST[not(fox-error)]/text()'
       , final_product_end_use VARCHAR2(4000) PATH '/SCHEDULE/END_USE[not(fox-error)]/text()'
-      , manufacturer_address_type VARCHAR2(4000) PATH '/SCHEDULE/MANUFACTURED_AT/ENTRY_TYPE[not(fox-error)]/text()'
+      , manufacturer_address_type VARCHAR2(4000) PATH '/SCHEDULE/MANUFACTURED_AT/ADDRESS_ENTRY_TYPE[not(fox-error)]/text()'
       , legislation_xml XMLTYPE PATH '/SCHEDULE/LEGISLATION_LIST'
       , product_xml XMLTYPE PATH '/SCHEDULE/PRODUCT_LIST'
     ) x

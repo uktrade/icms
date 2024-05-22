@@ -16,10 +16,10 @@ SELECT
   , ca.created_datetime created
   , xcad.created_by_wua_id created_by_id
   , xcad.exporter_id
-  , xcad.exporter_office_id
+  , CASE WHEN xcad.exporter_id IS NULL THEN NULL ELSE 'e-' || xcad.exporter_id || '-' || xcad.exporter_office_id END xcad.exporter_office_legacy_id
   , rp_wua.wua_id contact_id
   , xcad.agent_id
-  , xcad.agent_office_id
+  , CASE WHEN xcad.agent_id IS NULL THEN NULL ELSE 'e-' || xcad.agent_id || '-' || xcad.agent_office_id END agent_office_legacy_id
   , 'CertificateofGoodManufacturingPractice' process_type
   , cat.id application_type_id
   , case_owner.wua_id case_owner_id
