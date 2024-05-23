@@ -17,5 +17,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
 application = get_wsgi_application()
 
-if is_copilot():
+
+# is_copilot() evaluates to True locally now so also check APP_ENV
+# This was done to use DBTPlatformEnvironment instead of CloudFoundryEnvironment going forward.
+if is_copilot() and os.environ.get("APP_ENV", "") != "local":
     application = OpenTelemetryMiddleware(application)

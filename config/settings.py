@@ -28,11 +28,11 @@ from web.utils.sentry import init_sentry
 BASE_DIR: Path = Path(__file__).resolve().parent.parent
 
 # Application definition
-DEBUG = env.icms_debug
+DEBUG = env.debug
 WSGI_APPLICATION = "config.wsgi.application"
 APP_ENV = env.app_env
-SECRET_KEY = env.icms_secret_key
-ALLOWED_HOSTS = env.allowed_hosts
+SECRET_KEY = env.secret_key
+ALLOWED_HOSTS = env.allowed_hosts_list
 FIXTURE_DIRS = [
     BASE_DIR / "data_migration/management/commands/fixtures",
     BASE_DIR / "web/management/commands/fixtures",
@@ -195,15 +195,15 @@ else:
     SEND_ALL_EMAILS_TO = []
 
 # Email/phone contacts
-EMAIL_FROM = env.icms_email_from
-ILB_CONTACT_EMAIL = env.icms_ilb_contact_email
-ILB_GSI_CONTACT_EMAIL = env.icms_ilb_gsi_contact_email
-ILB_CONTACT_PHONE = env.icms_ilb_contact_phone
-ILB_CONTACT_NAME = env.icms_ilb_contact_name
-ILB_CONTACT_ADDRESS = env.icms_ilb_contact_address
-ICMS_FIREARMS_HOMEOFFICE_EMAIL = env.icms_firearms_homeoffice_email
-ICMS_CFS_HSE_EMAIL = env.icms_cfs_hse_email
-ICMS_GMP_BEIS_EMAIL = env.icms_gmp_beis_email
+EMAIL_FROM = env.email_from
+ILB_CONTACT_EMAIL = env.ilb_contact_email
+ILB_GSI_CONTACT_EMAIL = env.ilb_gsi_contact_email
+ILB_CONTACT_PHONE = env.ilb_contact_phone
+ILB_CONTACT_NAME = env.ilb_contact_name
+ILB_CONTACT_ADDRESS = env.ilb_contact_address
+ICMS_FIREARMS_HOMEOFFICE_EMAIL = env.firearms_homeoffice_email
+ICMS_CFS_HSE_EMAIL = env.cfs_hse_email
+ICMS_GMP_BEIS_EMAIL = env.gmp_beis_email
 
 # File storage
 # for https://github.com/uktrade/django-chunk-s3-av-upload-handlers
@@ -322,9 +322,9 @@ GUARDIAN_GET_INIT_ANONYMOUS_USER = "web.auth.backends.get_anonymous_user_instanc
 ALLOW_BYPASS_CHIEF_NEVER_ENABLE_IN_PROD = env.allow_bypass_chief_never_enable_in_prod
 
 # getAddress.io api key for post code search
-ADDRESS_API_KEY = env.icms_address_api_key
+ADDRESS_API_KEY = env.address_api_key
 
-SILENCED_SYSTEM_CHECKS = env.icms_silenced_system_checks
+SILENCED_SYSTEM_CHECKS = env.silenced_system_checks
 SILENCED_SYSTEM_CHECKS.extend(
     [
         # Guardian authentication backend is not hooked (Replaced with ModelAndObjectPermissionBackend).
@@ -358,11 +358,11 @@ CHIEF_MAX_QUANTITY = 99_999_999_999.999
 
 # Data migration settings
 ALLOW_DATA_MIGRATION = env.allow_data_migration
-ICMS_V1_REPLICA_USER = env.icms_v1_replica_user
-ICMS_V1_REPLICA_PASSWORD = env.icms_v1_replica_password
-ICMS_V1_REPLICA_DSN = env.icms_v1_replica_dsn
-ICMS_PROD_USER = env.icms_prod_user
-ICMS_PROD_PASSWORD = env.icms_prod_password
+ICMS_V1_REPLICA_USER = env.v1_replica_user
+ICMS_V1_REPLICA_PASSWORD = env.v1_replica_password
+ICMS_V1_REPLICA_DSN = env.v1_replica_dsn
+ICMS_PROD_USER = env.prod_user
+ICMS_PROD_PASSWORD = env.prod_password
 DATA_MIGRATION_EMAIL_DOMAIN_EXCLUDE = env.data_migration_email_domain_exclude
 
 # Workbasket pagination setting
@@ -407,7 +407,9 @@ LOGGING: dict[str, Any] = {
 }
 
 # Django Log Formatter ASIM settings
-if is_copilot():
+# is_copilot() evaluates to True locally now so also check env.app_env
+# This was done to use DBTPlatformEnvironment instead of CloudFoundryEnvironment going forward.
+if is_copilot() and env.app_env != "local":
     DLFA_TRACE_HEADERS = ("X-B3-TraceId", "X-B3-SpanId")
 
     # Set the correct handlers when running in DBT Platform
