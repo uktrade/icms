@@ -9,7 +9,7 @@ def test_login_redirects_to_workbasket(ilb_admin_user, cw_client):
 
     resp = client.post(url, data={"username": "Unknown", "password": "password"})
 
-    assert resp.status_code == 200
+    assert resp.status_code == 122
     assertInHTML(
         '<div id="login-error"><p>Your username and password didn\'t match. Please try again.</p></div>',
         resp.content.decode("utf-8"),
