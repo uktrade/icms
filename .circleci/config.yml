@@ -1,54 +1,165 @@
-# Circleci 2.0 config:
-# https://circleci.com/docs/2.0/configuration-reference
+# Circleci 2.1 config:
+# https://circleci.com/docs/2.1/configuration-reference
 
 # Available machine images:
 # https://circleci.com/docs/2.0/configuration-reference/#available-machine-images
 
-version: 2
+orbs:
+  codecov: codecov/codecov@4.1.0
+
+version: 2.1
 jobs:
-    build:
-        machine:
-            image: ubuntu-2204:current
 
-        steps:
-            - checkout
+  install_python_dependencies:
+    docker:
+      - image: cimg/python:3.11.7
+    steps:
+      - checkout
 
-            - run:
-                name: build containers
-                # Create an empty .env file so containers build.
-                command: cp .env.circleci .env && make build
+      - restore_cache:
+          key: deps-{{ checksum "requirements-dev.txt" }}
 
-            - run:
-                name: run black (code formatting check)
-                command: make docker_black
+      - run:
+          name: create and activate virtualenv
+          command: |
+            virtualenv .venv;
+            echo "source .venv/bin/activate" >> $BASH_ENV;
 
-            - run:
-                name: run flake8 (coding standards compliance test)
-                command: make docker_flake8
+      - run:
+          name: install python dependencies
+          command: |
+            python -m pip install --upgrade pip
+            pip install -r requirements-dev.txt
 
-            - run:
-                name: run isort (import formatter check)
-                command: make docker_isort
+      - save_cache:
+          key: deps-{{ checksum "requirements-dev.txt" }}
+          paths:
+            - ".venv"
+            - "~/.cache/pip"
 
-            - run:
-                name: run mypy
-                command: make docker_mypy
+      - run:
+          name: remove comments from .env.circleci
+          command: |
+            grep -o '^[^#]*' .env.circleci > .env
+            
 
-            - run:
-                  name: Check missing migrations
-                  command: make check_migrations
+      - run:
+          name: collect static files
+          command: |
+              source .env && export $(cut -d= -f1 < .env)
+              python manage.py collectstatic --noinput
 
-            - run:
-                name: run unit tests
-                command: make test
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .venv
+            - .env
+            - static
 
-            - run:
-                name: run data migration unit tests
-                command: make migration_test
+  code_hygiene:
+    docker:
+      - image: cimg/python:3.11.7
+    steps:
+      - checkout
 
-            - run:
-                  name: Publish unit test coverage
-                  command: |
-                      curl -Os https://uploader.codecov.io/latest/linux/codecov
-                      chmod +x codecov
-                      ./codecov -t ${CODECOV_TOKEN} -s test-reports -f "*.xml"
+      - attach_workspace:
+          at: .
+
+      - run:
+          name: activate virtualenv
+          command: echo "source .venv/bin/activate" >> $BASH_ENV;
+
+      - run:
+          name: run black (code formatting check)
+          command: |
+            make black
+
+      - run:
+          name: run flake8 (coding standards compliance test)
+          command: make flake8
+
+      - run:
+          name: run isort (import formatter check)
+          command: make isort
+
+      - run:
+          name: run mypy
+          command: make mypy
+
+
+      - run:
+          name: check missing migrations
+          command: |
+            source .env && export $(cut -d= -f1 < .env)
+            python ./manage.py makemigrations --check --dry-run --settings=config.settings_local
+
+  test:
+    docker:
+      - image: cimg/python:3.11.7
+      - image: cimg/postgres:16.1
+        environment:
+          POSTGRES_DB: icms_test_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+      - image: cimg/redis:7.0.15
+        command: redis-server --port 6379
+
+    parallelism: 10
+
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: .
+
+      - run:
+          name: activate virtualenv
+          command: echo "source .venv/bin/activate" >> $BASH_ENV;
+
+      - run:
+          name: install playwright
+          command: playwright install --with-deps chromium
+
+      - run:
+          name: run data migration unit tests
+          command: |
+            source .env && export $(cut -d= -f1 < .env)
+            pytest \
+              data_migration \
+              --circleci-parallelize \
+              --create-db \
+              --ignore web/end_to_end \
+              --junitxml=test-results/data-migration-results.xml
+
+      - run:
+          name: run unit tests
+          command: |
+            source .env && export $(cut -d= -f1 < .env)
+            python manage.py collectstatic --noinput
+            pytest \
+              --ignore web/end_to_end \
+              --dist=loadfile \
+              --cov=web \
+              --cov=config \
+              --cov-report=json:test-reports/coverage.json \
+              --circleci-parallelize \
+              --maxprocesses=2 \
+              -n=auto \
+              --junitxml=test-results/unit-test-results.xml
+
+      - store_test_results:
+          path: test-results
+
+      - codecov/upload:
+          file: test-reports/coverage.json
+
+workflows:
+  ci:
+    jobs:
+      - install_python_dependencies
+      - test:
+          requires:
+            - install_python_dependencies
+      - code_hygiene:
+          requires:
+            - install_python_dependencies
