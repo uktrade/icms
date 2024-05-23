@@ -4454,3 +4454,12 @@ ModalMessage
 this.d.find('.alert-dismiss').click
 "Check if the application can be quick-issued
 certificate?"/
+env.app_env
+Redis / Celery
+ICMS_STAFF_SSO_AUTHBROKER_CLIENT_SECRET=
+ICMS_GOV_UK_ONE_LOGIN_OPENID_CONFIG_URL=
+ICMS_CLAM_AV_USERNAME='test
+ICMS_CLAM_AV_PASSWORD=
+ICMS_ICMS_HMRC_DOMAIN='http://web
+ICMS_P12_SIGNATURE_PASSWORD=
+ICMS_GTM_CASEWORKER_CONTAINER_ID=

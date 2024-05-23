@@ -7,7 +7,7 @@ from django.conf import settings
 
 from web.mail.constants import SEND_AUTHORITY_EXPIRING_SECTION_5_TASK_NAME
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
 app = Celery("icms")
 app.config_from_object("django.conf:settings", namespace="CELERY")

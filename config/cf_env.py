@@ -1,41 +1,72 @@
-import os
+from typing import Annotated, Any
 
 import dj_database_url
-from dbt_copilot_python.database import database_url_from_env
-from dbt_copilot_python.network import setup_allowed_hosts
-from dbt_copilot_python.utility import is_copilot
-from pydantic import computed_field
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    PostgresDsn,
+    TypeAdapter,
+    computed_field,
+)
+from pydantic.functional_validators import PlainValidator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from .cf_env import CloudFoundryEnvironment
+
+# Convert the database_url to a PostgresDsn instance
+def validate_postgres_dsn_str(val: str) -> PostgresDsn:
+    return TypeAdapter(PostgresDsn).validate_python(val)
 
 
-class DBTPlatformEnvironment(BaseSettings):
+CFPostgresDSN = Annotated[PostgresDsn, PlainValidator(validate_postgres_dsn_str)]
+
+
+class VCAPServices(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    postgres: list[dict[str, Any]]
+    redis: list[dict[str, Any]]
+    aws_s3_bucket: list[dict[str, Any]] = Field(alias="aws-s3-bucket")
+
+
+class VCAPApplication(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    application_id: str
+    application_name: str
+    application_uris: list[str]
+    cf_api: str
+    limits: dict[str, Any]
+    name: str
+    organization_id: str
+    organization_name: str
+    space_id: str
+    uris: list[str]
+
+
+class CloudFoundryEnvironment(BaseSettings):
     """Class holding all environment variables for ICMS.
 
-    Environment variables all have a prefix of "ICMS_"
-    e.g. ICMS_STAFF_SSO_ENABLED == DBTPlatformEnvironment.staff_sso_enabled
+    Instance attributes are matched to environment variables by name (ignoring case).
+    e.g. CloudFoundryEnvironment.app_env loads and validates the APP_ENV environment variable.
     """
 
     model_config = SettingsConfigDict(
-        env_prefix="ICMS_",
         extra="ignore",
         validate_default=False,
     )
 
-    build_step: bool = False
+    database_url: CFPostgresDSN
 
+    # Cloud Foundry Environment Variables
+    vcap_services: VCAPServices | None = None
+    vcap_application: VCAPApplication | None = None
+
+    # Start of Environment Variables
     app_env: str
-    secret_key: str
-    allowed_hosts: list[str]
-    debug: bool = False
-
-    # S3 env vars
-    aws_region: str = ""
-    aws_storage_bucket_name: str = ""
-
-    # Redis env vars
-    celery_broker_url: str = ""
+    secret_key: str = Field(alias="icms_secret_key")
+    allowed_hosts: list[str] = Field(alias="icms_allowed_hosts")
+    debug: bool = Field(alias="icms_debug", default=False)
 
     # Staff SSO
     staff_sso_enabled: bool
@@ -67,15 +98,15 @@ class DBTPlatformEnvironment(BaseSettings):
     send_all_emails_to: list[str]
 
     # Email/phone contacts
-    email_from: str
-    ilb_contact_email: str
-    ilb_gsi_contact_email: str
-    ilb_contact_phone: str
-    ilb_contact_name: str
-    ilb_contact_address: str
-    firearms_homeoffice_email: str
-    cfs_hse_email: str
-    gmp_beis_email: str
+    email_from: str = Field(alias="icms_email_from")
+    ilb_contact_email: str = Field(alias="icms_ilb_contact_email")
+    ilb_gsi_contact_email: str = Field(alias="icms_ilb_gsi_contact_email")
+    ilb_contact_phone: str = Field(alias="icms_ilb_contact_phone")
+    ilb_contact_name: str = Field(alias="icms_ilb_contact_name")
+    ilb_contact_address: str = Field(alias="icms_ilb_contact_address")
+    firearms_homeoffice_email: str = Field(alias="icms_firearms_homeoffice_email")
+    cfs_hse_email: str = Field(alias="icms_cfs_hse_email")
+    gmp_beis_email: str = Field(alias="icms_gmp_beis_email")
 
     # Anti-virus django-chunk-s3-av-upload-handlers settings
     # https://github.com/uktrade/django-chunk-s3-av-upload-handlers#clamav
@@ -90,8 +121,8 @@ class DBTPlatformEnvironment(BaseSettings):
     # Bypass chief
     allow_bypass_chief_never_enable_in_prod: bool = False
 
-    address_api_key: str = ""
-    silenced_system_checks: list[str] = []
+    address_api_key: str = Field(alias="icms_address_api_key", default="")
+    silenced_system_checks: list[str] = Field(alias="icms_silenced_system_checks", default=[])
 
     send_licence_to_chief: bool
     icms_hmrc_domain: str
@@ -101,11 +132,11 @@ class DBTPlatformEnvironment(BaseSettings):
 
     # Data migration - Section has defaults as they are only set in production
     allow_data_migration: bool
-    v1_replica_user: str = ""
-    v1_replica_password: str = ""
-    v1_replica_dsn: str = ""
-    prod_user: str = ""
-    prod_password: str = ""
+    v1_replica_user: str = Field(alias="icms_v1_replica_user", default="")
+    v1_replica_password: str = Field(alias="icms_v1_replica_password", default="")
+    v1_replica_dsn: str = Field(alias="icms_v1_replica_dsn", default="")
+    prod_user: str = Field(alias="icms_prod_user", default="")
+    prod_password: str = Field(alias="icms_prod_password", default="")
     data_migration_email_domain_exclude: str = ""
 
     workbasket_per_page: int = 100
@@ -150,50 +181,27 @@ class DBTPlatformEnvironment(BaseSettings):
     @computed_field  # type: ignore[misc]
     @property
     def allowed_hosts_list(self) -> list[str]:
-        if self.build_step:
-            return self.allowed_hosts
-
-        # Makes an external network request so only call when running on DBT Platform
-        return setup_allowed_hosts(self.allowed_hosts)
+        return self.allowed_hosts
 
     @computed_field  # type: ignore[misc]
     @property
     def database_config(self) -> dict:
-        if self.build_step:
-            return {"default": {}}
-
-        return {
-            "default": dj_database_url.parse(database_url_from_env("DATABASE_CREDENTIALS")),
-        }
+        return {"default": dj_database_url.parse(str(self.database_url))}
 
     @computed_field  # type: ignore[misc]
     @property
     def s3_bucket_config(self) -> dict:
-        """Return s3 bucket config that matches keys used in CF"""
+        if self.vcap_services:
+            app_bucket_creds = self.vcap_services.aws_s3_bucket[0]["credentials"]
+        else:
+            app_bucket_creds = {}
 
-        if self.build_step:
-            return {"aws_region": "", "bucket_name": ""}
-
-        return {"aws_region": self.aws_region, "bucket_name": self.aws_storage_bucket_name}
+        return app_bucket_creds
 
     @computed_field  # type: ignore[misc]
     @property
     def redis_url(self) -> str:
-        if self.build_step:
-            return ""
+        if self.vcap_services:
+            return self.vcap_services.redis[0]["credentials"]["uri"]
 
-        return self.celery_broker_url
-
-
-if is_copilot():
-    if "BUILD_STEP" in os.environ:
-        # When building use the fake settings in .env.circleci
-        env: DBTPlatformEnvironment | CloudFoundryEnvironment = DBTPlatformEnvironment(
-            _env_file=".env.circleci", _env_file_encoding="utf-8"
-        )  # type:ignore[call-arg]
-    else:
-        # When deployed read values from environment variables
-        env = DBTPlatformEnvironment()  # type:ignore[call-arg]
-else:
-    # Cloud Foundry environment
-    env = CloudFoundryEnvironment()  # type:ignore[call-arg]
+        return self.local_redis_url
