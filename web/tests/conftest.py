@@ -1,8 +1,10 @@
 import binascii
 import datetime as dt
+import io
 import os
 from unittest import mock
 
+import PIL
 import pytest
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
@@ -15,6 +17,7 @@ from django.urls import reverse
 from freezegun import freeze_time
 from jinja2 import Template as Jinja2Template
 from notifications_python_client import NotificationsAPIClient
+from PIL.PngImagePlugin import PngImageFile
 from pytest_django.asserts import assertRedirects
 
 from web.auth.fox_hasher import FOXPBKDF2SHA1Hasher
@@ -1576,3 +1579,13 @@ def firearms_authority(importer) -> FirearmsAuthority:
         is_active=True,
         certificate_type=FirearmsAuthority.DEACTIVATED_FIREARMS,
     )
+
+
+@pytest.fixture()
+def dummy_signature_image():
+    """Generate a dummy signature image for testing"""
+    image = PIL.Image.new("RGBA", size=(50, 50), color=(256, 0, 0))
+    image_file = io.BytesIO()
+    image.save(image_file, "PNG")
+    image_file.seek(0)
+    return PngImageFile(image_file)

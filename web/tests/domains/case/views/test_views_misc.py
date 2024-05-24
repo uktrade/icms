@@ -1,10 +1,12 @@
 import datetime as dt
 from http import HTTPStatus
 from typing import TYPE_CHECKING
+from unittest import mock
 from unittest.mock import Mock
 
 import freezegun
 import pytest
+from django.contrib.messages import get_messages
 from django.core import mail
 from django.urls import reverse
 from django.utils import timezone
@@ -12,6 +14,7 @@ from pytest_django.asserts import assertContains, assertRedirects, assertTemplat
 
 from web.domains.case.models import DocumentPackBase, WithdrawApplication
 from web.domains.case.services import case_progress, document_pack
+from web.domains.case.services.case_progress import get_active_task_list
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.views.views_misc import get_document_context
 from web.mail.constants import EmailTypes
@@ -26,6 +29,8 @@ from web.models import (
 )
 from web.models.shared import YesNoNAChoices
 from web.sites import get_caseworker_site_domain, get_importer_site_domain
+from web.tests.conftest import _add_valid_checklist as generic_add_valid_checklist
+from web.tests.conftest import _set_valid_licence as generic_set_valid_licence
 from web.tests.helpers import (
     CaseURLS,
     add_variation_request_to_app,
@@ -1002,3 +1007,174 @@ def test_cfs_get_document_context_with_cover_letter(db, cfs_app_submitted):
 
     assert context == expected
     assert list(context_cert_docs) == list(certificate_docs)
+
+
+def test_quick_issue_application_has_errors(ilb_admin_client, wood_application):
+    """Test quick issue catches the correct errors for an approved application."""
+
+    wood_application.decision = wood_application.APPROVE
+    # Create an open update request
+    wood_application.update_requests.create(status=UpdateRequest.Status.OPEN)
+    wood_application.save()
+
+    response = ilb_admin_client.post(CaseURLS.quick_issue(wood_application.pk))
+    assert response.status_code == 302
+
+    response = ilb_admin_client.post(CaseURLS.quick_issue(wood_application.pk), follow=True)
+    assert response.status_code == 200
+    errors: ApplicationErrors = response.context["errors"]
+    assert errors.has_errors()
+
+    check_pages_checked(errors, ["Checklist", "Response Preparation", "Application Updates"])
+
+    check_page_errors(errors, "Checklist", ["Checklist"])
+    check_page_errors(errors, "Response Preparation", [])
+    check_page_errors(errors=errors, page_name="Application Updates", error_field_names=["Status"])
+
+
+@mock.patch("web.utils.pdf.signer.get_active_signature_image")
+@mock.patch("web.domains.case.tasks.delete_file_from_s3")
+@mock.patch("web.domains.case.tasks.upload_file_obj_to_s3")
+def test_quick_issue_approved_application_has_no_errors(
+    mock_upload_file_obj_to_s3,
+    mock_delete_file_from_s3,
+    mock_get_active_signature_image,
+    dummy_signature_image,
+    ilb_admin_client,
+    wood_application,
+):
+    """Test a valid approved application ends in the correct state."""
+    # Mock return value for dummy signature and file size
+    mock_get_active_signature_image.return_value = dummy_signature_image
+    mock_upload_file_obj_to_s3.return_value = 100
+
+    wood_application.decision = wood_application.APPROVE
+
+    # Set licence details
+    _set_valid_licence(wood_application)
+
+    # Create the checklist (fully valid)
+    _add_valid_checklist(wood_application)
+    wood_application.save()
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.quick_issue(wood_application.pk, case_type="import"))
+    assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
+
+    wood_application.refresh_from_db()
+
+    case_progress.check_expected_status(wood_application, [ImpExpStatus.COMPLETED])
+    assert not get_active_task_list(wood_application)
+
+    doc_pack = document_pack.pack_active_get(wood_application)
+    licence_doc = document_pack.doc_ref_licence_get(doc_pack)
+    assert licence_doc.reference == "0000001B"
+
+
+def test_quick_issue_rejected_application_has_no_errors(
+    ilb_admin_client,
+    wood_application,
+):
+    """Test a valid refused application is dismissed by the view."""
+    # Mock return value for dummy signature and file size
+    wood_application.decision = wood_application.REFUSE
+
+    # Set licence details
+    _set_valid_licence(wood_application)
+
+    # Create the checklist (fully valid)
+    _add_valid_checklist(wood_application)
+    wood_application.save()
+
+    # Now start authorisation
+    response = ilb_admin_client.post(CaseURLS.quick_issue(wood_application.pk, case_type="import"))
+    assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
+    messages = list(get_messages(response.wsgi_request))
+    assert len(messages) == 1
+    assert str(messages[0]) == "The case must be approved to issue a licence / certificate."
+
+    wood_application.refresh_from_db()
+
+    case_progress.check_expected_status(wood_application, [ImpExpStatus.PROCESSING])
+    assert get_active_task_list(wood_application) == [Task.TaskType.PROCESS]
+
+
+@mock.patch("web.utils.pdf.signer.get_active_signature_image")
+@mock.patch("web.domains.case.tasks.delete_file_from_s3")
+@mock.patch("web.domains.case.tasks.upload_file_obj_to_s3")
+def test_quick_issue_accepted_variation_requested_application(
+    mock_upload_file_obj_to_s3,
+    mock_delete_file_from_s3,
+    mock_get_active_signature_image,
+    dummy_signature_image,
+    ilb_admin_client,
+    fa_sil_app_submitted,
+    ilb_admin_user,
+):
+    """Test an approved variation requested application ends in the correct status & has the correct task"""
+    # Mock return value for dummy signature and file size
+    mock_get_active_signature_image.return_value = dummy_signature_image
+    mock_upload_file_obj_to_s3.return_value = 100
+
+    ilb_admin_client.post(CaseURLS.take_ownership(fa_sil_app_submitted.pk))
+    fa_sil_app_submitted.refresh_from_db()
+    fa_sil_app_submitted.decision = fa_sil_app_submitted.APPROVE
+    fa_sil_app_submitted.cover_letter_text = "Example Cover letter"
+    fa_sil_app_submitted.decision = fa_sil_app_submitted.APPROVE
+    fa_sil_app_submitted.save()
+
+    generic_set_valid_licence(fa_sil_app_submitted)
+    generic_add_valid_checklist(fa_sil_app_submitted)
+
+    fa_sil_app_submitted.status = ImpExpStatus.VARIATION_REQUESTED
+    fa_sil_app_submitted.variation_decision = fa_sil_app_submitted.APPROVE
+    fa_sil_app_submitted.save()
+    add_variation_request_to_app(
+        fa_sil_app_submitted, ilb_admin_user, status=VariationRequest.Statuses.ACCEPTED
+    )
+
+    response = ilb_admin_client.post(
+        CaseURLS.quick_issue(fa_sil_app_submitted.pk, case_type="import")
+    )
+    assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
+
+    fa_sil_app_submitted.refresh_from_db()
+
+    case_progress.check_expected_status(fa_sil_app_submitted, [ImpExpStatus.VARIATION_REQUESTED])
+    assert get_active_task_list(fa_sil_app_submitted) == [Task.TaskType.CHIEF_WAIT]
+
+
+def test_quick_issue_refused_variation_requested_application(
+    ilb_admin_client, fa_sil_app_submitted, ilb_admin_user
+):
+    """Test an approved variation requested application ends in the correct status & has the correct task"""
+
+    ilb_admin_client.post(CaseURLS.take_ownership(fa_sil_app_submitted.pk))
+    fa_sil_app_submitted.refresh_from_db()
+    fa_sil_app_submitted.decision = fa_sil_app_submitted.APPROVE
+    fa_sil_app_submitted.cover_letter_text = "Example Cover letter"
+    fa_sil_app_submitted.decision = fa_sil_app_submitted.APPROVE
+    fa_sil_app_submitted.save()
+
+    generic_set_valid_licence(fa_sil_app_submitted)
+    generic_add_valid_checklist(fa_sil_app_submitted)
+
+    fa_sil_app_submitted.status = ImpExpStatus.VARIATION_REQUESTED
+    fa_sil_app_submitted.variation_decision = fa_sil_app_submitted.REFUSE
+    fa_sil_app_submitted.save()
+    add_variation_request_to_app(
+        fa_sil_app_submitted, ilb_admin_user, status=VariationRequest.Statuses.REJECTED
+    )
+
+    response = ilb_admin_client.post(
+        CaseURLS.quick_issue(fa_sil_app_submitted.pk, case_type="import")
+    )
+    assertRedirects(response, reverse("workbasket"), HTTPStatus.FOUND)
+    messages = list(get_messages(response.wsgi_request))
+    assert len(messages) == 1
+    assert str(messages[0]) == "The case must be approved to issue a licence / certificate."
+
+    fa_sil_app_submitted.refresh_from_db()
+
+    case_progress.check_expected_status(fa_sil_app_submitted, [ImpExpStatus.VARIATION_REQUESTED])
+    assert get_active_task_list(fa_sil_app_submitted) == [Task.TaskType.PROCESS]

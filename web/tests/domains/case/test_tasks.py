@@ -1,9 +1,4 @@
-import io
 from unittest import mock
-
-import PIL
-import pytest
-from PIL.PngImagePlugin import PngImageFile
 
 from web.domains.case.services import case_progress, document_pack
 from web.domains.case.shared import ImpExpStatus
@@ -14,16 +9,6 @@ from web.domains.case.tasks import (
 from web.domains.case.utils import end_process_task
 from web.models import ICMSHMRCChiefRequest, Task, VariationRequest
 from web.tests.helpers import add_variation_request_to_app
-
-
-@pytest.fixture()
-def dummy_signature_image():
-    """Generate a dummy signature image for testing"""
-    image = PIL.Image.new("RGBA", size=(50, 50), color=(256, 0, 0))
-    image_file = io.BytesIO()
-    image.save(image_file, "PNG")
-    image_file.seek(0)
-    return PngImageFile(image_file)
 
 
 def sign_pre_signed_application(application, user):

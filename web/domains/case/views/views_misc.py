@@ -41,6 +41,7 @@ from web.permissions import (
     organisation_get_contacts,
 )
 from web.types import AuthenticatedHttpRequest
+from web.utils.lock_manager import LockManager
 from web.utils.pdf.utils import cfs_cover_letter_key_filename
 from web.utils.s3 import delete_file_from_s3, get_s3_client
 from web.utils.validation import ApplicationErrors
@@ -480,61 +481,7 @@ def start_authorisation(
         application_errors: ApplicationErrors = get_app_errors(application, case_type)
 
         if request.method == "POST" and not application_errors.has_errors():
-            task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
-
-            create_documents = True
-            send_vr_email = False
-
-            if application.status == application.Statuses.VARIATION_REQUESTED:
-                if (
-                    application.is_import_application()
-                    and application.variation_decision == application.REFUSE
-                ):
-                    vr = application.variation_requests.get(status=VariationRequest.Statuses.OPEN)
-                    next_task = None
-                    application.status = model_class.Statuses.COMPLETED
-                    vr.status = VariationRequest.Statuses.REJECTED
-                    vr.reject_cancellation_reason = application.variation_refuse_reason
-                    vr.closed_datetime = timezone.now()
-                    vr.save()
-                    send_vr_email = True
-                    create_documents = False
-                else:
-                    next_task = Task.TaskType.AUTHORISE
-
-            else:
-                if application.decision == application.REFUSE:
-                    next_task = Task.TaskType.REJECTED
-                    application.status = model_class.Statuses.COMPLETED
-                    create_documents = False
-
-                else:
-                    next_task = Task.TaskType.AUTHORISE
-                    application.status = model_class.Statuses.PROCESSING
-
-            application.update_order_datetime()
-            application.save()
-
-            end_process_task(task)
-
-            if next_task:
-                Task.objects.create(process=application, task_type=next_task, previous=task)
-
-            if create_documents:
-                document_pack.doc_ref_documents_create(application, request.icms.lock_manager)
-            else:
-                document_pack.pack_draft_archive(application)
-
-            if (
-                application.decision == application.REFUSE
-                and application.status == model_class.Statuses.COMPLETED
-            ):
-                send_application_refused_email(application)
-
-            if send_vr_email:
-                send_variation_request_email(
-                    vr, EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED, application
-                )
+            start_application_authorisation(application, request.icms.lock_manager)
             return redirect(reverse("workbasket"))
 
         else:
@@ -565,20 +512,9 @@ def authorise_documents(
         )
 
         case_progress.application_is_authorised(application)
-        task = case_progress.get_expected_task(application, Task.TaskType.AUTHORISE)
 
         if request.method == "POST":
-            end_process_task(task, request.user)
-
-            Task.objects.create(
-                process=application, task_type=Task.TaskType.DOCUMENT_SIGNING, previous=task
-            )
-
-            application.update_order_datetime()
-            application.save()
-
-            # Queues all documents to be created
-            create_case_document_pack(application, request.user)
+            authorise_application_documents(application, request.user)
 
             messages.success(
                 request,
@@ -956,3 +892,153 @@ def _get_copy_recipients(application: ImpOrExp) -> "QuerySet[User]":
 
     else:
         return User.objects.none()
+
+
+class QuickIssueApplicationView(
+    ApplicationTaskMixin, LoginRequiredMixin, PermissionRequiredMixin, View
+):
+    http_method_names = ["post"]
+    current_status = [
+        ImpExpStatus.PROCESSING,
+        ImpExpStatus.VARIATION_REQUESTED,
+    ]
+    current_task_type = Task.TaskType.PROCESS
+    permission_required = [Perms.sys.ilb_admin]
+
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        #
+        # Start authorisation step
+        #
+        with transaction.atomic():
+            self.set_application_and_task()
+
+            app_approved = (
+                self.application.status == ImpExpStatus.PROCESSING
+                and self.application.decision == self.application.APPROVE
+            )
+
+            # There is no variation_decision field on export applications.
+            if self.application.is_import_application():
+                variation_approved = (
+                    self.application.status == ImpExpStatus.VARIATION_REQUESTED
+                    and self.application.variation_decision == self.application.APPROVE
+                )
+            else:
+                variation_approved = self.application.status == ImpExpStatus.VARIATION_REQUESTED
+
+            if not (app_approved or variation_approved):
+                messages.error(
+                    request, "The case must be approved to issue a licence / certificate."
+                )
+                return redirect(reverse("workbasket"))
+
+            case_type = self.kwargs["case_type"]
+            application_errors: ApplicationErrors = get_app_errors(self.application, case_type)
+            if application_errors.has_errors():
+                return redirect(
+                    reverse(
+                        "case:start-authorisation",
+                        kwargs={"application_pk": self.application.pk, "case_type": case_type},
+                    )
+                )
+            else:
+                start_application_authorisation(self.application, request.icms.lock_manager)
+
+        #
+        # Authorise documents step
+        #
+        with transaction.atomic():
+            # re-fetching from the DB (This assumes the current_status is still the same as the previous step)
+            self.application = self.get_object()
+            case_progress.application_is_authorised(self.application)
+            authorise_application_documents(self.application, request.user)
+
+            messages.success(
+                request,
+                f"Authorise Success: Application {self.application.reference} has been queued for document signing",
+            )
+
+        return redirect(reverse("workbasket"))
+
+
+def start_application_authorisation(application: ImpOrExp, lock_manager: LockManager) -> None:
+    """Start the authorisation process for the application.
+
+    :param app: The application to authorise
+    :param user: The user starting the authorisation process
+    """
+
+    task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
+
+    create_documents = True
+    send_vr_email = False
+
+    if application.status == application.Statuses.VARIATION_REQUESTED:
+        if (
+            application.is_import_application()
+            and application.variation_decision == application.REFUSE
+        ):
+            vr = application.variation_requests.get(status=VariationRequest.Statuses.OPEN)
+            next_task = None
+            application.status = application.Statuses.COMPLETED
+            vr.status = VariationRequest.Statuses.REJECTED
+            vr.reject_cancellation_reason = application.variation_refuse_reason
+            vr.closed_datetime = timezone.now()
+            vr.save()
+            send_vr_email = True
+            create_documents = False
+        else:
+            next_task = Task.TaskType.AUTHORISE
+
+    else:
+        if application.decision == application.REFUSE:
+            next_task = Task.TaskType.REJECTED
+            application.status = application.Statuses.COMPLETED
+            create_documents = False
+
+        else:
+            next_task = Task.TaskType.AUTHORISE
+            application.status = application.Statuses.PROCESSING
+
+    application.update_order_datetime()
+    application.save()
+
+    end_process_task(task)
+
+    if next_task:
+        Task.objects.create(process=application, task_type=next_task, previous=task)
+
+    if create_documents:
+        document_pack.doc_ref_documents_create(application, lock_manager)
+    else:
+        document_pack.pack_draft_archive(application)
+
+    if (
+        application.decision == application.REFUSE
+        and application.status == application.Statuses.COMPLETED
+    ):
+        send_application_refused_email(application)
+
+    if send_vr_email:
+        send_variation_request_email(
+            vr, EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED, application
+        )
+
+
+def authorise_application_documents(application: ImpOrExp, user: User) -> None:
+    """Authorise the documents for the application.
+
+    :param application: The application to authorise
+    :param user: The user authorising the documents
+    """
+    task = case_progress.get_expected_task(application, Task.TaskType.AUTHORISE)
+    end_process_task(task, user)
+    Task.objects.create(
+        process=application, task_type=Task.TaskType.DOCUMENT_SIGNING, previous=task
+    )
+
+    application.update_order_datetime()
+    application.save()
+
+    # Queues all documents to be created
+    create_case_document_pack(application, user)

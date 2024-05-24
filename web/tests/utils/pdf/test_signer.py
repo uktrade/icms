@@ -3,13 +3,11 @@ import io
 import logging
 from unittest.mock import patch
 
-import PIL
 import pytest
 from django.conf import settings
 from django.test import override_settings
 from endesive.pdf import verify
 from OpenSSL import crypto
-from PIL.PngImagePlugin import PngImageFile
 
 from web.types import DocumentTypes
 from web.utils.pdf.exceptions import SignatureTextNotFound
@@ -44,16 +42,6 @@ def pkc12_base64():
     p12_data = p12.export(passphrase=MOCK_CERT_PASSWORD.encode())
 
     return base64.b64encode(p12_data)  # /PS-IGNORE
-
-
-@pytest.fixture()
-def dummy_signature_image():
-    """Generate a dummy signature image for testing"""
-    image = PIL.Image.new("RGBA", size=(50, 50), color=(256, 0, 0))
-    image_file = io.BytesIO()
-    image.save(image_file, "PNG")
-    image_file.seek(0)
-    return PngImageFile(image_file)
 
 
 @patch("web.utils.pdf.generator.PdfGenBase.get_document_html")
