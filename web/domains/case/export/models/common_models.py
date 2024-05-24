@@ -186,7 +186,7 @@ class ExportApplication(ExportApplicationABC, ApplicationBase):
         return status
 
     @property
-    def application_approved(self):
+    def application_approved(self) -> bool:
         return self.decision == self.APPROVE
 
 

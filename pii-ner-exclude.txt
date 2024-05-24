@@ -4450,3 +4450,7 @@ Test Reference
 Exclusive Correspondence
 {{ fields.field(form.registered_number
 {{ fields.field(form.exclusive_correspondence
+ModalMessage
+this.d.find('.alert-dismiss').click
+"Check if the application can be quick-issued
+certificate?"/
