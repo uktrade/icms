@@ -4,7 +4,7 @@ import dj_database_url
 from dbt_copilot_python.database import database_url_from_env
 from dbt_copilot_python.network import setup_allowed_hosts
 from dbt_copilot_python.utility import is_copilot
-from pydantic import computed_field
+from pydantic import Field, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .cf_env import CloudFoundryEnvironment
@@ -23,7 +23,8 @@ class DBTPlatformEnvironment(BaseSettings):
         validate_default=False,
     )
 
-    build_step: bool = False
+    # Build step doesn't have "ICMS_" prefix
+    build_step: bool = Field(alias="build_step", default=False)
 
     app_env: str
     secret_key: str
