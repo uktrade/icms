@@ -400,6 +400,18 @@ def test_import_sil_data(mock_connect, dummy_dm_settings):
     sil1_f = {"goods_certificate__import_application_id": sil1.pk}
     sil2_f = {"goods_certificate__import_application_id": sil2.pk}
 
+    sr1: web.SILSupplementaryReport = sil1.supplementary_info.reports.first()
+    assert sr1.transport == "RAIL"
+    assert sr1.date_received == dt.date(2021, 11, 3)
+    assert sr1.bought_from_id is None
+    assert sr1.created == dt.datetime(2021, 11, 7, 13, 41, tzinfo=dt.UTC)
+
+    sr2: web.SILSupplementaryReport = sil2.supplementary_info.reports.first()
+    assert sr2.transport == "AIR"
+    assert sr2.date_received == dt.date(2021, 10, 14)
+    assert sr2.bought_from_id == 3
+    assert sr2.created == dt.datetime(2021, 11, 8, 8, 31, 34, tzinfo=dt.UTC)
+
     assert web.SILSupplementaryReportFirearmSection1.objects.filter(**sil1_f).count() == 2
     assert web.SILSupplementaryReportFirearmSection1.objects.filter(**sil2_f).count() == 1
     assert web.SILSupplementaryReportFirearmSection2.objects.filter(**sil1_f).count() == 1
@@ -656,6 +668,9 @@ def test_import_oil_data(mock_connect, dummy_dm_settings):
     sr1 = oil1.supplementary_info.reports.first()
     sr2, sr3 = oil2.supplementary_info.reports.order_by("pk")
 
+    assert sr1.transport == "AIR"
+    assert sr1.date_received == dt.date(2021, 10, 14)
+    assert sr1.created == dt.datetime(2021, 11, 8, 8, 31, 34, tzinfo=dt.UTC)
     assert sr1.firearms.count() == 1
     assert sr2.firearms.count() == 2
     assert sr3.firearms.count() == 1
@@ -682,6 +697,9 @@ def test_import_oil_data(mock_connect, dummy_dm_settings):
     assert dfl_goods2.path == "goods/test_b.pdf"
 
     sr4 = dfl.supplementary_info.reports.first()
+    assert sr4.transport == "AIR"
+    assert sr4.date_received == dt.date(2021, 10, 14)
+    assert sr4.created == dt.datetime(2021, 11, 8, 8, 31, 34, tzinfo=dt.UTC)
     assert sr4.firearms.filter(is_upload=True).count() == 1
     assert sr4.firearms.filter(is_manual=True).count() == 1
 

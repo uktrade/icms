@@ -90,6 +90,9 @@ TIMESTAMP_UPDATES: list[str] = [
     queries.com_template_timestamp_update,
     queries.cfs_template_timestamp_update,
     queries.cfs_schedule_template_timestamp_update,
+    queries.sil_supplementary_report_timestamp_update,
+    queries.oil_supplementary_report_timestamp_update,
+    queries.dfl_supplementary_report_timestamp_update,
 ]
 
 # TODO ICMSLST-1832 EndorsementImportApplication - check if needed in V2

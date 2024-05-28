@@ -78,8 +78,8 @@ CROSS JOIN XMLTABLE('/*'
     section1 VARCHAR2(4) PATH '/IMA/APP_DETAILS/FA_DETAILS/SECTION_LIST/SECTION[text()="SEC1"]/text()'
     , section2 VARCHAR2(4) PATH '/IMA/APP_DETAILS/FA_DETAILS/SECTION_LIST/SECTION[text()="SEC2"]/text()'
     , section5 VARCHAR2(4) PATH '/IMA/APP_DETAILS/FA_DETAILS/SECTION_LIST/SECTION[text()="SEC5"]/text()'
-    , section58_obsolete VARCHAR2(13) PATH '/IMA/APP_DETAILS/FA_DETAILS/SECTION_LIST/SECTION[text()="SEC5_OBSOLETE"]/text()'
-    , section58_other VARCHAR2(10) PATH '/IMA/APP_DETAILS/FA_DETAILS/SECTION_LIST/SECTION[text()="SEC5_OTHER"]/text()'
+    , section58_obsolete VARCHAR2(13) PATH '/IMA/APP_DETAILS/FA_DETAILS/SECTION_LIST/SECTION[text()="OBSOLETE_CALIBRE"]/text()'
+    , section58_other VARCHAR2(10) PATH '/IMA/APP_DETAILS/FA_DETAILS/SECTION_LIST/SECTION[text()="OTHER"]/text()'
     , other_description VARCHAR2(4000) PATH '/IMA/APP_DETAILS/FA_DETAILS/SECTION_OTHER[not(fox-error)]/text()'
     , military_police VARCHAR2(10) PATH '/IMA/APP_DETAILS/FA_DETAILS/MILITARY_OR_POLICE[not(fox-error)]/text()'
     , eu_single_market VARCHAR2(10) PATH '/IMA/APP_DETAILS/FA_DETAILS/SINGLE_MARKET_BEFORE_SEP2018[not(fox-error)]/text()'
@@ -156,4 +156,11 @@ WHERE
   AND xiad.IMA_SUB_TYPE = 'SIL'
   AND xiad.status_control = 'C'
   AND xiad.submitted_datetime IS NOT NULL
+"""
+
+
+sil_supplementary_report_timestamp_update = """
+UPDATE web_silsupplementaryreport SET created = dm_sr.created
+FROM data_migration_silsupplementaryreport dm_sr
+WHERE web_silsupplementaryreport.id = dm_sr.id
 """

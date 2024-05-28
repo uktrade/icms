@@ -176,7 +176,7 @@ class SupplementaryReportBase(MigrationBase):
     transport = models.CharField(max_length=4, null=True)
     date_received = models.DateField(null=True)
     bought_from_legacy_id = models.IntegerField(null=True)
-    created = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(null=True)
     report_firearms_xml = models.TextField(null=True)
 
     @classmethod

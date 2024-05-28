@@ -140,3 +140,10 @@ WHERE
   AND xiad.status_control = 'C'
   AND xiad.submitted_datetime IS NOT NULL
 """
+
+
+oil_supplementary_report_timestamp_update = """
+UPDATE web_oilsupplementaryreport SET created = dm_sr.created
+FROM data_migration_oilsupplementaryreport dm_sr
+WHERE web_oilsupplementaryreport.id = dm_sr.id
+"""

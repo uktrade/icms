@@ -9,6 +9,7 @@ from lxml import etree
 from data_migration import models as dm
 from data_migration.utils.format import (
     date_or_none,
+    datetime_or_none,
     decimal_or_none,
     get_xml_val,
     int_or_none,
@@ -413,6 +414,7 @@ class SupplementaryReportParser(BaseXmlParser):
         date_received = get_xml_val(xml, "./RECEIVED_DATE[not(fox-error)]")
         report_firearms_xml = get_xml_val(xml, "./GOODS_LINE_LIST", text=False)
         bought_from_legacy_id = get_xml_val(xml, "./REPORT_SELLER_HOLDER[not(fox-error)]")
+        created = get_xml_val(xml, "./SUBMITTED_DATETIME[not(fox-error)]")
 
         return cls.MODEL(
             **{
@@ -421,6 +423,7 @@ class SupplementaryReportParser(BaseXmlParser):
                 "date_received": date_or_none(date_received),
                 "bought_from_legacy_id": bought_from_legacy_id,
                 "report_firearms_xml": xml_str_or_none(report_firearms_xml),
+                "created": datetime_or_none(created),
             }
         )
 
