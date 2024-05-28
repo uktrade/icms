@@ -194,6 +194,12 @@ end_to_end_test_local: ## Run end to end tests locally
 	make end_to_end_clear_session && \
 	.venv/bin/python -m pytest -c playwright/pytest.ini web/end_to_end/ ${args}
 
+end_to_end_test_remote_dev: end_to_end_install_dependencies end_to_end_clear_session ## Run end to end tests locally
+	pytest -c playwright/pytest.ini web/end_to_end/test_login.py
+
+end_to_end_install_dependencies:
+	pip install -r requirements-playwright.txt && playwright install chromium
+
 create_end_to_end_caseworker: ## Create an end to end test using codegen for the caseworker site
 	.venv/bin/python -m playwright codegen http://caseworker:8080/ --target python-pytest --viewport-size "1920, 1080" ${args}
 

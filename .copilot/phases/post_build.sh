@@ -9,7 +9,6 @@ echo "Running post build..."
 
 if [ "$APP_ENV" == "dev" ]
 then
-  echo "Starting post build phase"
-  pip install -r requirements-playwright.txt
-  pytest -c playwright/pytest.ini web/end_to_end/
+  echo "Running end to end tests"
+  make end_to_end_test_remote_dev
 fi
