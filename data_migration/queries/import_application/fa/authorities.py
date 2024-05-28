@@ -116,6 +116,7 @@ FROM data_migration_importcontact
 WHERE web_importcontact.id = data_migration_importcontact.id
 """
 
+
 section5_clause_timestamp_update = """
 UPDATE web_section5clause SET created_datetime = data_migration_section5clause.created_datetime
 FROM data_migration_section5clause

@@ -140,3 +140,10 @@ WHERE
   AND xiad.status_control = 'C'
   AND xiad.submitted_datetime IS NOT NULL
 """
+
+
+dfl_supplementary_report_timestamp_update = """
+UPDATE web_dflsupplementaryreport SET created = dm_sr.created
+FROM data_migration_dflsupplementaryreport dm_sr
+WHERE web_dflsupplementaryreport.id = dm_sr.id
+"""
