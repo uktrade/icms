@@ -32,11 +32,11 @@ class DBTPlatformEnvironment(BaseSettings):
     debug: bool = False
 
     # S3 env vars
-    aws_region: str = ""
-    aws_storage_bucket_name: str = ""
+    aws_region: str = Field(alias="aws_region", default="")
+    aws_storage_bucket_name: str = Field(alias="aws_storage_bucket_name", default="")
 
     # Redis env vars
-    celery_broker_url: str = ""
+    celery_broker_url: str = Field(alias="celery_broker_url", default="")
 
     # Staff SSO
     staff_sso_enabled: bool
@@ -119,7 +119,7 @@ class DBTPlatformEnvironment(BaseSettings):
 
     sentry_enabled: bool = False
     sentry_dsn: str = ""
-    sentry_environment: str = ""
+    sentry_environment: str = Field(alias="sentry_environment", default="")
 
     # Redis settings
     local_redis_url: str = "redis://redis:6379"
