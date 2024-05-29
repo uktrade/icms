@@ -25,9 +25,6 @@ docker-compose exec web python ./manage.py add_reports_data
 echo "Adding dummy data"
 docker-compose exec web python ./manage.py add_dummy_data --password admin
 
-echo "Setting ICMS Sites"
-docker-compose exec web python ./manage.py set_icms_sites http://caseworker:8080 http://export-a-certificate:8080 http://import-a-licence:8080
-
 echo "Restarting containers in the background"
 make debug
 

@@ -9,7 +9,6 @@ from playwright.sync_api import sync_playwright
 from web.domains.case.types import DocumentPack, ImpOrExp
 from web.flow.models import ProcessTypes
 from web.models import Country
-from web.sites import get_caseworker_site_domain
 from web.types import DocumentTypes
 
 from . import utils
@@ -181,13 +180,3 @@ class StaticPdfGenerator(PdfGenBase):
             }
 
         return super().get_document_context()
-
-
-def get_icms_domain() -> str:
-    """Used to access static files when generating pdfs"""
-
-    # Need to use the local docker-compose network name to access the static files.
-    if settings.APP_ENV == "local":
-        return settings.LOCAL_SITE_URL
-
-    return get_caseworker_site_domain()

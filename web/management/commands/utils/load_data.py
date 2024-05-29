@@ -33,6 +33,7 @@ from .add_template_data import (
 
 
 def load_app_test_data():
+    call_command("set_icms_sites")
     call_command("loaddata", "overseas_regions")
     call_command("loaddata", "country")
     call_command("loaddata", "country_groups")

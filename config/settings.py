@@ -447,8 +447,10 @@ else:
     STRICT_TEMPLATES = copy.deepcopy(TEMPLATES)
     STRICT_TEMPLATES[0]["OPTIONS"].update({"undefined": jinja2.StrictUndefined})  # type: ignore[attr-defined]
 
-# Local site URL management
-LOCAL_SITE_URL = env.local_site_url
+# Site URL management
+CASEWORKER_SITE_URL = env.caseworker_site_url
+IMPORTER_SITE_URL = env.importer_site_url
+EXPORTER_SITE_URL = env.exporter_site_url
 
 # CSP Settings
 
