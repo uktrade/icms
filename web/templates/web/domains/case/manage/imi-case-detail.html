@@ -43,7 +43,7 @@
           "Registration Number") }}
     {{ application_field(app.importer_office.address, "Address") }}
 
-    {# TODO: Revisit when implementing ICMSLST-1177 #}
+    {# This is hardcoded to Yes in V1 #}
     {{ application_field("Yes", "Is the purchaser / acquirer a dealer") }}
   {% endcall %}
 
