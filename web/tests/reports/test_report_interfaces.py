@@ -19,6 +19,7 @@ from web.models import (
     UpdateRequest,
     VariationRequest,
 )
+from web.permissions import organisation_add_contact
 from web.reports.interfaces import (
     AccessRequestTotalsInterface,
     ActiveUserInterface,
@@ -1284,7 +1285,10 @@ class TestActiveUserInterface:
         assert data["header"] == EXPECTED_ACTIVE_USER_HEADER
         assert data["errors"] == []
 
-    def test_get_data(self):
+    def test_get_data(self, importer, ilb_admin_two):
+        # Makes an admin user an importer to make sure they are excluded from the report
+        organisation_add_contact(importer, ilb_admin_two)
+
         interface = ActiveUserInterface(self.report_schedule)
         data = interface.get_data()
         assert data["results"] == [

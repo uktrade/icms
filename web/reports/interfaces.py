@@ -1188,6 +1188,9 @@ class ActiveUserInterface(ReportInterface):
         return (
             user_list_view_qs()
             .filter(_filter, _permissions_filter, is_active=True)
+            .exclude(
+                groups__permissions__codename=Perms.sys.ilb_admin.codename,
+            )
             .annotate(
                 exporters=ArraySubquery(
                     ExporterUserObjectPermission.objects.filter(user__pk=OuterRef("pk"))
