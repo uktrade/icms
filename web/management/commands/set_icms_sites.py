@@ -20,12 +20,30 @@ class CmdArgs(BaseModel):
 
 
 class Command(BaseCommand):
-    help = "Configure sites required to run ICMS."
+    help = "Configure sites required to run ICMS. If no values are specified the values are taken from the environment variables."
 
     def add_arguments(self, parser):
-        parser.add_argument("caseworker_url")
-        parser.add_argument("exporter_url")
-        parser.add_argument("importer_url")
+        parser.add_argument(
+            "--caseworker_url",
+            dest="caseworker_url",
+            type=str,
+            required=False,
+            default=settings.CASEWORKER_SITE_URL,
+        )
+        parser.add_argument(
+            "--exporter_url",
+            dest="exporter_url",
+            type=str,
+            required=False,
+            default=settings.EXPORTER_SITE_URL,
+        )
+        parser.add_argument(
+            "--importer_url",
+            dest="importer_url",
+            type=str,
+            required=False,
+            default=settings.IMPORTER_SITE_URL,
+        )
 
     def handle(self, *args: Any, **options: Any) -> None:
         cmd_args = CmdArgs(**options)

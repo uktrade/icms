@@ -131,8 +131,10 @@ class DBTPlatformEnvironment(BaseSettings):
     celery_task_always_eager: bool = False
     celery_eager_propagates_exceptions: bool = False
 
-    # local site URL management
-    local_site_url: str = "http://web:8080/"
+    # Site URL management
+    caseworker_site_url: str
+    importer_site_url: str
+    exporter_site_url: str
 
     # CSP settings
     csp_report_only: bool = True

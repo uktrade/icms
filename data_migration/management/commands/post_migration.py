@@ -54,6 +54,7 @@ class Command(BaseCommand):
         add_region_to_existing_countries(self.stdout)
         add_inactive_countries()
         add_user_management_email_templates()
+        call_command("set_icms_sites")
 
     def handle(self, *args: Any, **options: Any) -> None:
         skip_refs = options["skip_ref"]
