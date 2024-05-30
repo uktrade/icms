@@ -8,6 +8,7 @@
   <meta name="description" content="{{ importer_site_name }} import licence">
   <title>{{ page_title }}</title>
   <style>
+    {{ get_css_rules_as_string("web/css/pdfs/fonts.css")|safe }}
     {{ get_css_rules_as_string("web/css/pdfs/licence-and-certificate-common-style.css")|safe }}
     {{ get_css_rules_as_string("web/css/pdfs/fa-common-licence-style.css")|safe }}
     {{ get_css_rules_as_string("web/css/components/signature.css")|safe }}
