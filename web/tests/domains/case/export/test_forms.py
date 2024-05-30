@@ -3,6 +3,7 @@ from django.forms import model_to_dict
 from django.template.loader import render_to_string
 
 from web.domains.case.export.forms import (
+    CFSActiveIngredientForm,
     EditCFSScheduleForm,
     EditCOMForm,
     SubmitCFSScheduleForm,
@@ -135,3 +136,38 @@ def test_edit_cfs_schedule_form_goods_export_only_auto_select(cfs_app_in_progres
     instance = form.save()
 
     assert instance.goods_export_only == YesNoChoices.yes
+
+
+@pytest.mark.parametrize(
+    ["cas_numer", "is_valid"],
+    [
+        # Incorrect basic format
+        ("1", False),
+        ("1-1", False),
+        ("1-1-1", False),
+        ("1-12-1", False),
+        ("12-1-1", False),
+        ("12345678-12-1", False),
+        # Real CAS numbers
+        ("50-37-3", True),
+        ("544-17-2", True),
+        ("9048-49-1", True),
+        ("19855-56-2", True),
+        ("393290-85-2", True),
+        ("1234567-89-5", True),
+        # Real CAS Numbers (with first digit incremented to fail check digit)
+        ("60-37-3", False),
+        ("644-17-2", False),
+        ("0048-49-1", False),
+        ("29855-56-2", False),
+        ("493290-85-2", False),
+        ("2234567-89-5", False),
+    ],
+)
+def test_cas_number_validation(cas_numer: str, is_valid: bool, cfs_app_in_progress):
+    data = {"name": "Test Chemical", "cas_number": cas_numer}
+
+    product = cfs_app_in_progress.schedules.first().products.first()
+    form = CFSActiveIngredientForm(data=data, product=product)
+
+    assert form.is_valid() == is_valid

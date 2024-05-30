@@ -7383,7 +7383,7 @@
   "model": "web.countrytranslation",
   "pk": 821,
   "fields": {
-    "translation": "Папуа – Новая Гвинея",
+    "translation": "Папуа - Новая Гвинея",
     "country": 177,
     "translation_set": 3
   }

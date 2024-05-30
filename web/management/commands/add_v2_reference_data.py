@@ -85,7 +85,7 @@ def countries_data() -> Generator[tuple, None, None]:
         (31, "Colombia", "CO", ST, "480", True, LATIN_AMERICA),
         (None, "Comoros (Great Comoro Anjouan and Moheli)", "KM", ST, "375", False, AFRICA),
         (33, "Congo", "CG", ST, "318", True, AFRICA),
-        (34, "Congo (Democratic Republic of – formerly CD Zaire)", "CD", ST, "322", True, AFRICA),
+        (34, "Congo (Democratic Republic of - formerly CD Zaire)", "CD", ST, "322", True, AFRICA),
         (None, "Continental Shelf (NW European) - Belgian Sector", "ZB", SYS, "", False, EUROPE),
         (None, "Continental Shelf (NW European) - Cyprus Sector", "ZJ", SYS, "", False, EUROPE),
         (None, "Continental Shelf (NW European) - Danish Sector", "ZD", SYS, "", False, EUROPE),

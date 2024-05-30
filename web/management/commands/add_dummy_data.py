@@ -594,13 +594,24 @@ def create_certificate_application_templates(
         ProductLegislation.objects.filter(is_biocidal=True).first()
     )
 
+    # Sample of valid cas numbers to add
+    valid_cas_numbers = [
+        "12002-61-8",
+        "7440-22-4",
+        "27039-77-6",
+        "7785-23-1",
+        "7783-89-3",
+        "506-64-9",
+        "563-63-3",
+        "7783-90-6",
+    ]
+
     for i in range(1, 6):
         product = cfs_schedule_template.products.create(product_name=f"Test Product {i}")
         for z in range(1, i + 1):
             product.product_type_numbers.create(product_type_number=z)
-            # e.g. 111-11-1111
             z = str(z)  # type:ignore[assignment]
-            cas = f"{z * 3}-{z * 2}-{z * 4}"
+            cas = valid_cas_numbers[i - 1]
             product.active_ingredients.create(name=f"Test Ingredient {z}", cas_number=cas)
 
     #

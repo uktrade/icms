@@ -807,13 +807,13 @@ class TestCFSScheduleTemplateProductUpdateView(AuthTestCase):
             "ai_-MAX_NUM_FORMS": "1000",
             "ai_-0-id": "",
             "ai_-0-name": "Name 1",
-            "ai_-0-cas_number": "111-11-1111",
+            "ai_-0-cas_number": "107-07-3",
             "ai_-1-id": "",
             "ai_-1-name": "Name 2",
-            "ai_-1-cas_number": "222-22-2222",
+            "ai_-1-cas_number": "506-64-9",
             "ai_-2-id": "",
             "ai_-2-name": "Name 3",
-            "ai_-2-cas_number": "333-33-3333",
+            "ai_-2-cas_number": "534-16-7",
         }
 
         response = self.exporter_client.post(self.url, data=form_data)
@@ -827,9 +827,9 @@ class TestCFSScheduleTemplateProductUpdateView(AuthTestCase):
         ) == [1, 2, 3]
 
         assert list(self.product.active_ingredients.all().values("name", "cas_number")) == [
-            {"name": "Name 1", "cas_number": "111-11-1111"},
-            {"name": "Name 2", "cas_number": "222-22-2222"},
-            {"name": "Name 3", "cas_number": "333-33-3333"},
+            {"name": "Name 1", "cas_number": "107-07-3"},
+            {"name": "Name 2", "cas_number": "506-64-9"},
+            {"name": "Name 3", "cas_number": "534-16-7"},
         ]
 
 

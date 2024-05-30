@@ -91,7 +91,7 @@ def cfs_create(page: Page) -> int:
     page.get_by_label("Name").click()
     page.get_by_label("Name").fill("name value")
     page.get_by_label("CAS Number").click()
-    page.get_by_label("CAS Number").fill("11-11-1")
+    page.get_by_label("CAS Number").fill("107-07-3")
     page.get_by_role("button", name="Save").click()
 
     # Click save on the Goods list view

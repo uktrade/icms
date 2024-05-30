@@ -4464,3 +4464,7 @@ ICMS_ICMS_HMRC_DOMAIN='http://web
 ICMS_P12_SIGNATURE_PASSWORD=
 ICMS_GTM_CASEWORKER_CONTAINER_ID=
 UPDATE web_dflsupplementaryreport SET
+https://www.cas.org/support/documentation/chemical-substances/checkdig A CAS Registry
+Chemical Abstracts Service
+Medicines & Healthcare Regulatory Authority - MHRA
+Health & Safety Executive - HSE
