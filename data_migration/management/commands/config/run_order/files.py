@@ -376,6 +376,7 @@ file_query_model = [
 
 file_m2m = [
     M2M(dm.MailshotDoc, web.Mailshot, "documents"),
+    M2M(dm.ConstabularyEmailAttachments, web.CaseEmail, "attachments"),
     M2M(dm.FIRFile, web.FurtherInformationRequest, "files"),
     M2M(dm.CaseNoteFile, web.CaseNote, "files"),
     M2M(dm.FirearmsAuthorityFile, web.FirearmsAuthority, "files"),
