@@ -1,11 +1,13 @@
 from typing import Any
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.http import urlencode
 from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import ListView
 from guardian.shortcuts import get_objects_for_user
@@ -91,8 +93,8 @@ def create_exporter(request: AuthenticatedHttpRequest) -> HttpResponse:
         form = ExporterForm(request.POST)
         if form.is_valid():
             exporter: Exporter = form.save()
-
-            return redirect(reverse("exporter-edit", kwargs={"pk": exporter.pk}))
+            messages.info(request, "Exporter created successfully."),
+            return redirect(reverse("exporter-list") + "?" + urlencode({"name": exporter.name}))
     else:
         form = ExporterForm()
 
@@ -114,9 +116,9 @@ def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
     form = form_cls(request.POST or None, instance=exporter)
 
     if request.method == "POST" and form.is_valid():
-        form.save()
-
-        return redirect(reverse("exporter-edit", kwargs={"pk": pk}))
+        exporter = form.save()
+        messages.info(request, "Updated exporter details have been saved.")
+        return redirect(reverse("exporter-list") + "?" + urlencode({"name": exporter.name}))
 
     contacts = organisation_get_contacts(exporter)
     object_permissions = get_exporter_object_permissions(exporter)

@@ -1,6 +1,8 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.http import urlencode
 
 from web.permissions import Perms
 from web.views import ModelFilterView, actions
@@ -35,8 +37,12 @@ def create_sanction_email(request):
     if request.method == "POST":
         form = forms.SanctionEmailForm(request.POST)
         if form.is_valid():
-            sanction_email = form.save()
-            return redirect(reverse("sanction-emails:edit", kwargs={"pk": sanction_email.pk}))
+            sanction_email: models.SanctionEmail = form.save()
+            messages.info(request, "New sanction email created successfully.")
+            return redirect(
+                reverse("sanction-emails:list") + "?" + urlencode({"name": sanction_email.name})
+            )
+
     else:
         form = forms.SanctionEmailForm()
 
@@ -56,8 +62,11 @@ def edit_sanction_email(request, pk):
     if request.method == "POST":
         form = forms.SanctionEmailForm(request.POST, instance=sanction_email)
         if form.is_valid():
-            form.save()
-            return redirect(reverse("sanction-emails:edit", kwargs={"pk": pk}))
+            sanction_email = form.save()
+            messages.info(request, "Sanction email details saved.")
+            return redirect(
+                reverse("sanction-emails:list") + "?" + urlencode({"name": sanction_email.name})
+            )
     else:
         form = forms.SanctionEmailForm(instance=sanction_email)
 

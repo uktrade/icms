@@ -18,7 +18,10 @@ from web.sites import get_caseworker_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 from web.tests.domains.importer.factory import ImporterFactory
-from web.tests.helpers import check_gov_notify_email_was_sent
+from web.tests.helpers import (
+    check_gov_notify_email_was_sent,
+    get_messages_from_response,
+)
 from web.utils.s3 import get_file_from_s3
 
 
@@ -209,7 +212,8 @@ class TestIndividualImporterCreateView(AuthTestCase):
         }
         response = self.ilb_admin_client.post(self.url, data)
         importer = Importer.objects.first()
-        assertRedirects(response, reverse("importer-edit", kwargs={"pk": importer.pk}))
+        assertRedirects(response, reverse("importer-list") + f"?name={importer.name}")
+        assert "Importer created successfully." in get_messages_from_response(response)
         assert importer.user == self.importer_user
 
 
@@ -247,7 +251,7 @@ class TestOrganisationImporterCreateView(AuthTestCase):
         }
         response = self.ilb_admin_client.post(self.url, data)
         importer = Importer.objects.first()
-        assertRedirects(response, reverse("importer-edit", kwargs={"pk": importer.id}))
+        assertRedirects(response, reverse("importer-list") + f"?name={importer.name}")
         assert importer.name == "test importer", importer
 
 

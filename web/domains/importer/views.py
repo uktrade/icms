@@ -10,6 +10,7 @@ from django.forms.models import inlineformset_factory
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils.http import urlencode
 from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import DetailView, ListView
 from guardian.shortcuts import get_objects_for_user
@@ -221,8 +222,8 @@ def create_importer(request: AuthenticatedHttpRequest, *, entity_type: str) -> H
 
             if entity_type == "individual":
                 organisation_add_contact(importer, importer.user)
-
-            return redirect(reverse("importer-edit", kwargs={"pk": importer.pk}))
+            messages.info(request, "Importer created successfully.")
+            return redirect(reverse("importer-list") + "?" + urlencode({"name": importer.name}))
     else:
         form = ImporterForm()
 
@@ -270,7 +271,9 @@ def edit_importer(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
                 "An EORI number is required to progress an application from this importer, "
                 "please provide one as soon as possible.",
             )
-        return redirect(reverse("importer-edit", kwargs={"pk": pk}))
+        else:
+            messages.info(request, "Updated importer details have been saved.")
+        return redirect(reverse("importer-list") + "?" + urlencode({"name": importer.name}))
 
     contacts = organisation_get_contacts(importer)
     object_permissions = get_importer_object_permissions(importer)
