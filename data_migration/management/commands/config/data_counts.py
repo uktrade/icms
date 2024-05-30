@@ -587,6 +587,24 @@ CHECK_DATA_QUERIES: list[CheckQuery] = [
         model=web.CertificateOfGoodManufacturingPracticeApplicationTemplate,
         bind_vars={"APP_TYPE": "GMP"},
     ),
+    CheckQuery(
+        name="Export Certificates - DRAFT",
+        query=queries.export_certificate_draft_count,
+        model=web.ExportApplicationCertificate,
+        filter_params={"status": "DR"},
+    ),
+    CheckQuery(
+        name="Export Certificates - REVOKED",
+        query=queries.export_certificate_revoked_count,
+        model=web.ExportApplicationCertificate,
+        filter_params={"status": "RE"},
+    ),
+    CheckQuery(
+        name="Export Certificates - ACTIVE",
+        query=queries.export_certificate_active_count,
+        model=web.ExportApplicationCertificate,
+        filter_params={"status": "AC"},
+    ),
 ]
 
 UNIQUE_REFERENCES = [
@@ -617,24 +635,6 @@ UNIQUE_REFERENCES = [
         query=queries.export_certificate_doc_max_ref,
         filter_params={"prefix": "CFS"},
         bind_vars={"like_match": "CFS/2024/%"},
-    ),
-    CheckQuery(
-        name="Export Certificates - DRAFT",
-        query=queries.export_certificate_draft_count,
-        model=web.ExportApplicationCertificate,
-        filter_params={"status": "DR"},
-    ),
-    CheckQuery(
-        name="Export Certificates - REVOKED",
-        query=queries.export_certificate_revoked_count,
-        model=web.ExportApplicationCertificate,
-        filter_params={"status": "RE"},
-    ),
-    CheckQuery(
-        name="Export Certificates - ACTIVE",
-        query=queries.export_certificate_active_count,
-        model=web.ExportApplicationCertificate,
-        filter_params={"status": "AC"},
     ),
 ]
 
