@@ -10,6 +10,7 @@ from web.models import Exporter
 from web.permissions import Perms
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
+from web.tests.helpers import get_messages_from_response
 
 
 class TestExporterListView(AuthTestCase):
@@ -92,8 +93,12 @@ class TestExporterCreateView(AuthTestCase):
                 "locality": "Bruxelles",
             }
         }
-        self.ilb_admin_client.post(self.url, {"name": "test exporter", "registered_number": "42"})
+        response = self.ilb_admin_client.post(
+            self.url, {"name": "test exporter", "registered_number": "42"}
+        )
         exporter = Exporter.objects.first()
+        assertRedirects(response, reverse("exporter-list") + f"?name={exporter.name}")
+        assert "Exporter created successfully." in get_messages_from_response(response)
         assert exporter.name == "test exporter"
 
     def test_page_title(self):
@@ -163,7 +168,7 @@ class TestDetailExporterView(AuthTestCase):
         response = self.importer_client.get(self.url)
         assert response.status_code == HTTPStatus.FORBIDDEN
 
-    def get_get(self):
+    def test_get(self):
         response = self.ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 

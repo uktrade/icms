@@ -1,5 +1,7 @@
 from django.conf import settings
+from django.contrib.messages import get_messages
 from django.core import mail
+from django.http import HttpResponse, HttpResponseRedirect
 from django.test.client import Client
 from django.urls import reverse
 from django.utils import timezone
@@ -139,6 +141,10 @@ def add_approval_request(
         requested_by=requested_by,
         requested_from=requested_from,
     )
+
+
+def get_messages_from_response(response: HttpResponseRedirect | HttpResponse) -> list[str]:
+    return [msg.message for msg in get_messages(response.wsgi_request)]
 
 
 class CaseURLS:
