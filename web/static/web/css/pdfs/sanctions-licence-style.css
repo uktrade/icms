@@ -2,10 +2,6 @@
     color: black;
 }
 
-:root {
-    font-family: Helvetica;
-}
-
 @page {
     size: A4;
     margin: 48px 36px 60px 72px;

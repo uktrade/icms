@@ -1,10 +1,13 @@
+* {
+    font-family: 'Helvetica', sans-serif;
+}
+
 @page {
     margin: 25px 65px 35px 0 !important;
     size: A4;
 }
 
 body {
-    font-family: Helvetica, Arial, sans-serif;
     font-size: 16px;
     line-height: 1.3em;
 }
@@ -111,6 +114,5 @@ img {
 }
 
 .signature p {
-    font-family: serif;
     font-weight: bold;
 }

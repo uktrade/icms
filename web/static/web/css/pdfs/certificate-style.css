@@ -7,7 +7,6 @@
 
     @top-right {
         content: "Page " counter(page) " of " counter(pages) " ";
-        font-family: Helvetica;
         font-size: 13px;
         width: fit-content;
         height: fit-content;
@@ -23,10 +22,6 @@
         padding-bottom: 14px;
         content: element(header);
     }
-}
-
-body {
-    font-family: Helvetica;
 }
 
 header {
