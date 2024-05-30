@@ -559,7 +559,7 @@ def create_in_progress_cfs_app(
     # Add an ingredient to the product
     add_ingredient_url = reverse("export:cfs-schedule-add-ingredient", kwargs=product_kwargs)
     resp = exporter_client.post(
-        add_ingredient_url, {"name": "A Ingredient", "cas_number": "11-22-3"}
+        add_ingredient_url, {"name": "A Ingredient", "cas_number": "107-07-3"}
     )
     assert resp.status_code == 302
 

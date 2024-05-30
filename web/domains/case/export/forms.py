@@ -626,11 +626,38 @@ class CFSActiveIngredientForm(forms.ModelForm):
         self.product = product
 
     def clean_cas_number(self):
+        """Clean the CAS Number.
+
+        See validation here:
+        https://www.cas.org/support/documentation/chemical-substances/checkdig
+
+        A CAS Registry Number includes up to 10 digits which are separated into 3 groups by hyphens.
+        The first part of the number, starting from the left, has 2 to 7 digits;
+        the second part has 2 digits.
+        The final part consists of a single check digit.
+        This method does not currently do the check digit checking as described in the above link.
+        """
+
         cas_number = self.cleaned_data["cas_number"]
 
-        # TODO: What is the validation for cas number?
-        if not re.match("[1-9]{1}[0-9]{1,5}-[0-9]{2}-[0-9]", cas_number):
-            raise forms.ValidationError("CAS number is in an incorrect format.")
+        if not re.match("[0-9]{2,7}-[0-9]{2}-[0-9]{1}", cas_number):
+            raise forms.ValidationError(
+                "Enter in the correct format. The first part of the number has 2 to 7 digits;"
+                " the second part has 2 digits. The final part consists of a single check digit"
+            )
+
+        # CAS number is valid so perform check digit validation
+        first, second, check_digit = cas_number.split("-")
+        cas_digits = first + second
+
+        check_sum = 0
+        for pos, digit in enumerate(cas_digits[::-1], start=1):
+            check_sum += pos * int(digit)
+
+        if check_sum % 10 != int(check_digit):
+            raise forms.ValidationError(
+                "This is not a valid CAS number (check digit validation has failed)."
+            )
 
         if (
             self.product.active_ingredients.filter(cas_number=cas_number)

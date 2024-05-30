@@ -208,7 +208,15 @@ class CFSProductActiveIngredientABC(models.Model):
         abstract = True
 
     name = models.CharField(max_length=500)
-    cas_number = models.CharField(max_length=50, verbose_name="CAS Number")
+    cas_number = models.CharField(
+        max_length=50,
+        verbose_name="CAS Number",
+        help_text=(
+            "A CAS (Chemical Abstracts Service) Registry Number is a unique chemical identifier."
+            " Numbers must be separated by hyphens."
+            " For example, the CAS number for caffeine is 58-08-2."
+        ),
+    )
 
 
 class CFSProductActiveIngredient(CFSProductActiveIngredientABC):

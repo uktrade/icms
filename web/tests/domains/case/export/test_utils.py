@@ -39,10 +39,10 @@ def create_dummy_config(is_biocidal: bool = False) -> XlsxSheetConfig:
             "Active Ingredient CAS Number",
         ]
         config.rows = [
-            ["Product 1", "1,2,3", "Ingredient 1", "111-11-1"],
-            ["Product 1", "1,2,3", "Ingredient 2", "111-11-2"],
-            ["Product 2", "4,5,6", "Ingredient 3", "111-11-3"],
-            ["Product 3", "7", "Ingredient 4", "111-11-4"],
+            ["Product 1", "1,2,3", "Ingredient 1", "107-07-3"],
+            ["Product 1", "1,2,3", "Ingredient 2", "506-64-9"],
+            ["Product 2", "4,5,6", "Ingredient 3", "534-16-7"],
+            ["Product 3", "7", "Ingredient 4", "506-65-0"],
         ]
 
     else:
@@ -237,13 +237,13 @@ def test_duplicate_ingredient_name(cfs_app_submitted):
 def test_duplicate_cas_number(cfs_app_submitted):
     schedule = create_schedule(cfs_app_submitted, is_biocidal=True)
     config = create_dummy_config(is_biocidal=True)
-    config.rows[1][3] = "111-11-1"
+    config.rows[1][3] = "107-07-3"
     xlsx_file = create_dummy_xlsx_file(config)
 
     with pytest.raises(ValidationError) as e:
         process_products_file(xlsx_file, schedule)
 
-    assert "CAS number '111-11-1' duplicated for product 'Product 1' - line 3" in str(e.value)
+    assert "CAS number '107-07-3' duplicated for product 'Product 1' - line 3" in str(e.value)
 
 
 def test_cfs_copy_export_application_to_export_application(
