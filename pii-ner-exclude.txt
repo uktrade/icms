@@ -4476,3 +4476,236 @@ Caseworker
 email:</h4
 addresses:</h4
 UK One
+5mm - 5.9mm
+6mm - 6.99mm
+7mm - 7.99mm
+8mm - 8.5mm
+9mm - 9.5mm
+10.0mm
+10.4mm - 10.8mm
+11.0mm
+11.1mm
+11.2mm
+11.5mm - 11.9mm
+12mm - 14mm
+15mm
+11.25mm
+Boxer
+Caliber Reduction Exptl
+9.1mm
+10.15mm
+7.25mm
+Colt Revolver
+11.53mm
+Albini-Braendlin
+15.24mm
+6.3mm
+12.2mm
+Mondragon
+8.15mm
+10.4mm
+11mm
+Austrian Werndl
+11.15mm
+Rook
+Pickert
+Colt
+Webley
+9.3mm
+Koeffler
+.65 Gatling
+12.5mm
+7.53mm
+.45 Brown Standard Military Target Rifle
+11.5mm
+15.2mm
+6.5mm
+Bergmann No.3 Pistol
+12.7mm
+Serbian
+7.5mm
+Schmidt Rubin
+Mannlicher Pistol M.1894
+Kronprinz
+8.3mm
+Rubin
+Kropatschek-Hessig
+Meigs
+Austrian
+Gardner & Gatling
+Wesson
+Nitro Express
+.425 Westley
+Westley
+Richards
+.400-2.5 inch
+Kynoch
+Evans Short
+11.35mm
+Schouboe
+5.43mm
+10.16mm
+Berdan Exptl
+8.5mm
+Mars
+16.5mm
+.45 Mars Long"
+5.5mm
+Velo
+12.8mm
+Remington
+45R
+11.6mm
+.55/100 Maynard
+Merwin Hulbert Long
+Manceux
+10.25mm
+Hunting-Express
+11.3mm
+Dutch
+8mm
+Russian Berdan
+5.6mm
+Merwin Hulbert
+12mm
+17.5mm
+.45 Mars Short"
+.430 Revolver
+Turkish
+.400-3 inch
+10.35mm
+Italian
+Remington Army Pistol
+11.7mm
+Holub
+7.65mm
+Frommer M. 1901
+.577 2.5 inch
+17mm
+Remington Navy Pistol
+10.6mm
+Indian
+Roth-Sauer
+Gibbs No.4
+1 inch
+Nordenfelt-Palmcranz
+11.43mm
+10.3mm
+Japanese
+Winchester
+Bergmann-Schmeisser
+Bergmann NO.2 Pistol
+Spencer Carbine"
+7.7mm
+Bittner
+2.7mm
+Thuer
+Pidault & Cordier
+9.4mm
+18.84mm
+10mm
+Raphael
+53mm
+20 Bore/.577 Alex
+Jeffrey Rook
+9.5mm
+Marlin
+US Exptl
+10.75mm
+S&W
+13.2mm
+18mm
+Maynard
+11.4mm
+Gendarmerie Carbine
+BSA
+Springfield Pistol
+Rimless Belted Nitro Express
+3mm
+6.6mm
+10.7mm
+7.8mm
+Bergmann No.5
+German
+.577 Snider
+10.8mm
+Ballard
+8 mm
+6.8mm
+Schulhof
+.380 Black Powder Express
+Ward Burton Exptl
+13mm
+Rochaz-Lindner
+4.25mm
+Gras Exptl
+.577-2.25 inch
+Ballard Everlasting
+Egyptian
+7mm
+Enfield
+Stevens Everlasting
+10.66mm
+Sauer
+Gevelot
+Remington-Hepburn
+Lee Navy
+Charola
+Anitua
+Belgian
+14.5mm
+33R Austrian Wanzl
+Berdan Carbine
+Black Powder & Nitro Express
+Roth
+Morris
+Spanish
+Berdan
+.450 Black Powder Express
+.250 Rook
+110 2.4 inch
+Thick Rim
+Sharps Necked
+14.66mm
+Magnum Express
+.50/115 Bullard"
+.450 Needham
+2 5/8 inch
+14.7mm
+No.2 Express
+.50/140 Sharps
+German Target Pistol Cartridges
+2 7/16 inch
+Navy
+58 Gewehrprufungskommission M1897
+British
+the 320 Revolver C.F., Short or Long
+Peabody What Cheer
+56mm
+.450 Soper
+2.5 inch
+.340 Short or Long Revolver
+.440 Long Revolver
+.440 Nagant
+Argentine
+57mm
+Smith & Wesson
+.440 Revolver
+Rimless Mauser
+.500 Revolver
+Thomas Turner No 2
+Westley Richards
+Jeffrey
+US Converted Musket
+.442 Long Revolver
+.500-1.5 inch
+.442 Revolver
+.500-2.5 inch
+Portuguese
+Kropatschek
+.500-3 inch
+.40/110 Winchester Express
+.500-3.25 inch
+Exptl
+58 mm
+Webley Carbine

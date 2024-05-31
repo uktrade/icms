@@ -16,8 +16,6 @@ from web.models import (
     ImportApplicationType,
     Importer,
     ImporterAccessRequest,
-    ObsoleteCalibre,
-    ObsoleteCalibreGroup,
     Office,
     ProductLegislation,
     Section5Clause,
@@ -96,9 +94,6 @@ class Command(BaseCommand):
         # enable disabled application types
         ImportApplicationType.objects.update(is_active=True)
         ExportApplicationType.objects.update(is_active=True)
-
-        group = ObsoleteCalibreGroup.objects.create(name="Group 1", order=1)
-        ObsoleteCalibre.objects.create(calibre_group=group, name="9mm", order=1)
 
         # Add a dummy biocidal_claim legislation (defaults to GB and NI legislation)
         ProductLegislation.objects.create(
