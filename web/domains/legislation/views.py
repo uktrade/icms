@@ -1,3 +1,4 @@
+from django.db.models import QuerySet
 from django.urls import reverse_lazy
 
 from web.permissions import Perms
@@ -15,6 +16,9 @@ class ProductLegislationListView(ModelFilterView):
     page_title = "Maintain Product Legislation"
     permission_required = Perms.sys.ilb_admin
     paginate = False
+
+    def get_initial_data(self, queryset: QuerySet) -> QuerySet:
+        return queryset
 
     class Display:
         fields = [

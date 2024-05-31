@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -22,6 +23,10 @@ class ListSection5(ModelFilterView):
     model = Section5Clause
     permission_required = Perms.sys.ilb_admin
     page_title = "Maintain Section 5 Clauses"
+    ordering = ("clause",)
+
+    def get_initial_data(self, queryset: QuerySet) -> QuerySet:
+        return queryset
 
     class Display:
         fields = ["clause", "description"]
@@ -35,11 +40,6 @@ class ListSection5(ModelFilterView):
             Archive(**opts),
             Unarchive(**opts),
         ]
-
-    def get_queryset(self):
-        qs = super().get_queryset().order_by("-is_active", "-created_datetime")
-
-        return qs
 
 
 @login_required

@@ -34,6 +34,7 @@ class TemplateListView(ModelFilterView):
     filterset_class = TemplatesFilter
     page_title = "Maintain Templates"
     permission_required = Perms.sys.ilb_admin
+    ordering = ("template_type", "template_name")
 
     # Default display fields on the listing page of the model
     class Display:
