@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
-from django.db.models import F
+from django.db.models import F, QuerySet
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -49,6 +49,9 @@ class ObsoleteCalibreListView(PostActionMixin, ModelFilterView):
     page_title = "Maintain Obsolete Calibres"
     permission_required = Perms.sys.ilb_admin
     paginate = False
+
+    def get_initial_data(self, queryset: QuerySet) -> QuerySet:
+        return queryset
 
     class Display:
         fields = ["name", "calibres__count"]

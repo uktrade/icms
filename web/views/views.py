@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import PermissionDenied
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -244,8 +245,7 @@ class ModelFilterView(
 
         if self.is_initial_page_load():
             filterset_data = self.default_filters
-            # Do not show results until a search has been performed.
-            queryset = queryset.none()
+            queryset = self.get_initial_data(queryset)
         else:
             filterset_data = self.request.GET
 
@@ -269,6 +269,10 @@ class ModelFilterView(
         request_query_params = set(self.request.GET.keys())
 
         return form_filters.isdisjoint(request_query_params)
+
+    def get_initial_data(self, queryset: QuerySet) -> QuerySet:
+        """Do not show results until a search has been performed by default"""
+        return queryset.none()
 
     def get_context_data(self, **kwargs: dict[str, Any]) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
