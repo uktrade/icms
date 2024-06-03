@@ -1,4 +1,3 @@
-import enum
 import logging
 from typing import Any
 
@@ -13,6 +12,7 @@ from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic.base import RedirectView, View
 
+from .types import AuthenticationLevel, IdentityConfidenceLevel
 from .utils import (
     TOKEN_SESSION_KEY,
     OneLoginConfig,
@@ -28,22 +28,9 @@ from .utils import (
 logger = logging.getLogger(__name__)
 
 
-# https://docs.sign-in.service.gov.uk/before-integrating/choose-the-level-of-authentication/
-class AuthenticationLevel(enum.StrEnum):
-    # Username and Password
-    LOW_LEVEL = "Cl"
-    # LOW_LEVEL & two-factor authentication
-    MEDIUM_LEVEL = "Cl.Cm"
-
-
-# https://docs.sign-in.service.gov.uk/before-integrating/choose-the-level-of-identity-confidence/
-class IdentityConfidenceLevel(enum.StrEnum):
-    NONE = "P0"
-    LOW = "P1"
-    MEDIUM = "P2"
-
-
-def get_trust_vector(auth_level: str, identity_level: str) -> dict[str, str]:
+def get_trust_vector(
+    auth_level: AuthenticationLevel, identity_level: IdentityConfidenceLevel
+) -> dict[str, str]:
     return {"vtr": f"['{auth_level}.{identity_level}']"}
 
 
@@ -73,7 +60,8 @@ class AuthView(RedirectView):
 
         nonce = generate_token()
         trust_vector = get_trust_vector(
-            AuthenticationLevel.MEDIUM_LEVEL, IdentityConfidenceLevel.NONE
+            settings.GOV_UK_ONE_LOGIN_AUTHENTICATION_LEVEL,
+            settings.GOV_UK_ONE_LOGIN_CONFIDENCE_LEVEL,
         )
 
         url, state = client.create_authorization_url(

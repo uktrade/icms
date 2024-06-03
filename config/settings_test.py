@@ -3,6 +3,8 @@ from .settings import *
 
 DEBUG = True
 
+AUTHENTICATION_BACKENDS = ["web.auth.backends.ModelAndObjectPermissionBackend"]
+
 # speed up tests; see https://docs.djangoproject.com/en/3.0/topics/testing/overview/#password-hashing
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
@@ -60,3 +62,6 @@ MAIL_TASK_RETRY_JITTER = True
 MAIL_TASK_MAX_RETRIES = 5
 
 GTM_ENABLED = True
+
+# Local .env sometimes overrides this there set here to prevent that.
+GOV_UK_ONE_LOGIN_AUTHENTICATION_LEVEL = one_login_types.AuthenticationLevel.MEDIUM_LEVEL

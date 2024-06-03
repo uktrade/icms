@@ -6,8 +6,8 @@ from django.utils.translation import gettext_lazy as _
 from django_filters import CharFilter, ChoiceFilter, FilterSet
 
 from web.forms.fields import JqueryDateField, PhoneNumberField
-from web.forms.widgets import YesNoRadioSelectInline
-from web.models import Email, PhoneNumber, User
+from web.forms.widgets import ICMSModelSelect2Widget, YesNoRadioSelectInline
+from web.models import Email, Exporter, Importer, PhoneNumber, User
 
 
 class UserDetailsUpdateForm(forms.ModelForm):
@@ -152,3 +152,93 @@ class UserManagementEmailForm(forms.Form):
     subject = forms.CharField(max_length=100, label="Subject")
     body = forms.CharField(widget=forms.Textarea, label="Body")
     send_email = forms.BooleanField(required=False)
+
+
+class ImporterWidget(ICMSModelSelect2Widget):
+    search_fields = [
+        "name__icontains",
+        "registered_number__icontains",
+        "eori_number__icontains",
+        "user__first_name__icontains",
+        "user__email__icontains",
+    ]
+
+    def label_from_instance(self, importer: Importer) -> str:
+        return importer.display_name
+
+
+class ExporterWidget(ICMSModelSelect2Widget):
+    search_fields = [
+        "name__icontains",
+        "registered_number__icontains",
+    ]
+
+    def label_from_instance(self, exporter: Exporter) -> str:
+        return exporter.name
+
+
+class OneLoginTestAccountsCreateForm(forms.Form):
+    user_email = forms.EmailField(help_text="Enter the email address of the user you want to setup")
+
+    importer = forms.ModelChoiceField(
+        label="Importer",
+        help_text=(
+            "Search an importer to link."
+            " Importers returned are matched against name, registerer number"
+            ", eori number and user name/email."
+        ),
+        queryset=Importer.objects.filter(is_active=True, main_importer__isnull=True),
+        widget=ImporterWidget,
+        required=False,
+    )
+
+    importer_agent = forms.ModelChoiceField(
+        label="Agent Importer",
+        help_text=(
+            "Search an agent importer to link."
+            " Importers returned are matched against name, registerer number"
+            ", eori number and user name/email."
+        ),
+        queryset=Importer.objects.filter(is_active=True, main_importer__isnull=False),
+        widget=ImporterWidget,
+        required=False,
+    )
+
+    exporter = forms.ModelChoiceField(
+        label="Exporter",
+        help_text=(
+            "Search an exporter to link."
+            " Exporters returned are matched against name and registerer number."
+        ),
+        queryset=Exporter.objects.filter(is_active=True, main_exporter__isnull=True),
+        widget=ExporterWidget,
+        required=False,
+    )
+
+    exporter_agent = forms.ModelChoiceField(
+        label="Agent Exporter",
+        help_text=(
+            "Search an agent exporter to link."
+            " Exporters returned are matched against name and registerer number."
+        ),
+        queryset=Exporter.objects.filter(is_active=True, main_exporter__isnull=False),
+        widget=ExporterWidget,
+        required=False,
+    )
+
+    def clean_user_email(self) -> str:
+        email = self.cleaned_data["user_email"]
+
+        if not User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("User must exist before test accounts can be created.")
+
+        return email.lower()
+
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean()
+
+        fields = ["importer", "importer_agent", "exporter", "exporter_agent"]
+        if not any([cleaned_data.get(f) for f in fields]):
+            self.add_error(None, "At least one link must be provided.")
+
+        return cleaned_data

@@ -11,6 +11,7 @@ from django.db import transaction
 from django.db.models import QuerySet
 from django.forms import Form
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import (
@@ -27,14 +28,15 @@ from web.domains.template.utils import replace_template_values
 from web.mail.constants import EmailTypes
 from web.mail.emails import send_case_email
 from web.middleware.one_login import new_one_login_user
-from web.models import CaseEmail, Email, PhoneNumber, Template, User
-from web.permissions import Perms
-from web.sites import is_exporter_site, is_importer_site
+from web.models import CaseEmail, Email, Exporter, Importer, PhoneNumber, Template, User
+from web.permissions import Perms, organisation_add_contact, organisation_get_contacts
+from web.sites import is_exporter_site, is_importer_site, require_caseworker
 from web.types import AuthenticatedHttpRequest
 from web.views import ModelFilterView
 
 from .actions import ActivateUser, DeactivateUser
 from .forms import (
+    OneLoginTestAccountsCreateForm,
     UserDetailsUpdateForm,
     UserEmailForm,
     UserListFilter,
@@ -290,3 +292,88 @@ class UserDeactivateFormView(UserReactivateFormView):
     def update_user(self, user: User) -> None:
         user.is_active = False
         user.save()
+
+
+@method_decorator(require_caseworker, name="dispatch")
+class OneLoginTestAccountsCreateFormView(
+    UserPassesTestMixin, PermissionRequiredMixin, LoginRequiredMixin, FormView
+):
+    # PermissionRequiredMixin config
+    permission_required = Perms.page.view_one_login_test_account_setup
+
+    # FormView config
+    form_class = OneLoginTestAccountsCreateForm
+    extra_context = {"page_title": "Create One Login Test Accounts"}
+    template_name = "web/domains/user/one_login/test_account_create.html"
+
+    def test_func(self) -> bool:
+        # Only enabled in the following environments
+        return settings.APP_ENV in ("local", "dev", "staging")
+
+    def form_valid(self, form: OneLoginTestAccountsCreateForm) -> HttpResponseRedirect:
+        cd = form.cleaned_data
+
+        user = get_object_or_404(User, email__iexact=cd["user_email"])
+
+        for field in ["importer", "importer_agent", "exporter", "exporter_agent"]:
+            org = cd[field]
+
+            if org:
+                create_user_alias(user, org, f"{field}_user")
+
+        return redirect(reverse("one-login-test-accounts-detail", kwargs={"user_pk": user.pk}))
+
+
+def create_user_alias(user: User, org: Importer | Exporter, alias: str) -> None:
+    local, domain = user.email.split("@")
+    alias_email = f"{local}+{alias}@{domain}".lower()
+
+    user_alias, _ = User.objects.get_or_create(
+        email=alias_email,
+        defaults={
+            "username": alias_email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "date_of_birth": user.date_of_birth,
+            "is_superuser": False,
+            "is_active": True,
+            # Set so that ICMSGovUKOneLoginBackend updates the user correctly.
+            "icms_v1_user": True,
+        },
+    )
+
+    if user_alias not in organisation_get_contacts(org):
+        organisation_add_contact(org, user_alias)
+
+
+class OneLoginTestAccountsDetailView(
+    UserPassesTestMixin, PermissionRequiredMixin, LoginRequiredMixin, DetailView
+):
+    # PermissionRequiredMixin config
+    permission_required = Perms.page.view_one_login_test_account_setup
+
+    # DetailView config
+    pk_url_kwarg = "user_pk"
+    model = User
+    queryset = user_list_view_qs()
+    template_name = "web/domains/user/one_login/test_account_detail.html"
+
+    extra_context = {
+        "page_title": "Gov.UK One Login Test Accounts",
+    }
+
+    def test_func(self) -> bool:
+        # Only enabled in the following environments
+        return settings.APP_ENV in ("local", "dev", "staging")
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        user = get_object_or_404(User, pk=self.kwargs["user_pk"])
+
+        local, domain = user.email.split("@")
+        linked_one_login_users = User.objects.filter(email__ilike=f"{local}+%@{domain}")
+
+        return context | {
+            "one_login_user": user,
+            "linked_one_login_users": linked_one_login_users,
+        }
