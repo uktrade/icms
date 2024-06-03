@@ -22,6 +22,7 @@ from django.forms import Field
 from django_log_formatter_asim import ASIMFormatter
 
 from config.env import env
+from web.one_login import types as one_login_types
 from web.utils.sentry import init_sentry
 
 # Build paths inside the project like this: BASE_DIR / "subdir".
@@ -163,6 +164,8 @@ GOV_UK_ONE_LOGIN_IMPORTER_CLIENT_ID = env.gov_uk_one_login_importer_client_id
 GOV_UK_ONE_LOGIN_IMPORTER_CLIENT_SECRET = env.gov_uk_one_login_importer_client_secret
 GOV_UK_ONE_LOGIN_EXPORTER_CLIENT_ID = env.gov_uk_one_login_exporter_client_id
 GOV_UK_ONE_LOGIN_EXPORTER_CLIENT_SECRET = env.gov_uk_one_login_exporter_client_secret
+GOV_UK_ONE_LOGIN_AUTHENTICATION_LEVEL = one_login_types.AuthenticationLevel.MEDIUM_LEVEL
+GOV_UK_ONE_LOGIN_CONFIDENCE_LEVEL = one_login_types.IdentityConfidenceLevel.NONE
 
 #
 # Authentication feature flags
@@ -446,6 +449,10 @@ else:
     # Used in tests to override the TEMPLATES setting.
     STRICT_TEMPLATES = copy.deepcopy(TEMPLATES)
     STRICT_TEMPLATES[0]["OPTIONS"].update({"undefined": jinja2.StrictUndefined})  # type: ignore[attr-defined]
+
+    # Used to change one login auth level (remove 2FA in non-production)
+    if env.gov_uk_one_login_authentication_level_override:
+        GOV_UK_ONE_LOGIN_AUTHENTICATION_LEVEL = env.gov_uk_one_login_authentication_level_override  # type: ignore[assignment]
 
 # Site URL management
 CASEWORKER_SITE_URL = env.caseworker_site_url

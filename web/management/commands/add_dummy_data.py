@@ -64,6 +64,7 @@ class Command(BaseCommand):
         ho_case_officer = Group.objects.get(name="Home Office Case Officer")
         san_case_officer = Group.objects.get(name="Sanctions Case Officer")
         import_search_user = Group.objects.get(name="Import Search User")
+        dev_admin_group = Group.objects.get(name="Dev Admin")
 
         # Enable disabled application types to test / develop them
         if settings.SET_INACTIVE_APP_TYPES_ACTIVE:
@@ -387,6 +388,14 @@ class Command(BaseCommand):
             groups=[exporter_user_group],
             linked_importers=[exporter_1],
             icms_v1_user=True,
+        )
+
+        self.create_user(
+            username="dev_admin",
+            password=options["password"],
+            first_name="Maurice",
+            last_name="Moss",
+            groups=[dev_admin_group],
         )
 
         self.create_superuser("admin", options["password"])

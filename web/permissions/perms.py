@@ -55,6 +55,10 @@ class PagePermissions(PermissionTextChoice):
         "web.can_view_report_active_users",
         "Can view Active Users Report",
     )
+    view_one_login_test_account_setup = (
+        "web.can_view_one_login_test_account_setup",
+        "Can view One Login Test Account Setup",
+    )
 
 
 class SysPerms(PermissionTextChoice):

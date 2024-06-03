@@ -12,8 +12,8 @@
 
     <li class="icon-user" id="user-info">
       <a class="dropdown-label" href="#">
-        {# Include the username in non prod envs as it's useful to see at a glance what user you are logged in as #}
-        {{ request.user.full_name }}{% if app_env != "production" %} ({{ request.user.username }}){% endif %}
+        {# Include the email in non prod envs as it's useful to see at a glance what user you are logged in as #}
+        {{ request.user.full_name }}{% if app_env != "production" %} ({{ request.user.email }}){% endif %}
       </a>
       <ul class="menu-out flow-down top-menu-subcategory-list">
         <li>

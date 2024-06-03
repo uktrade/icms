@@ -63,6 +63,16 @@ def require_exporter(check_permission=True):
     return decorator
 
 
+def require_caseworker(f):
+    @functools.wraps(f)
+    def _wrapped_view(request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        if not is_caseworker_site(request.site):
+            raise PermissionDenied("Caseworker feature requires caseworker site.")
+        return f(request, *args, **kwargs)
+
+    return _wrapped_view
+
+
 def is_exporter_site(site: Site) -> bool:
     return site.name == SiteName.EXPORTER
 

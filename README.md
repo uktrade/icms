@@ -78,6 +78,7 @@ Start everything using docker-compose: `make debug`
 
 Go to http://caseworker:8080, login with the one of the test accounts:
   - admin (Superuser that doesn't reflect a real user of the system)
+  - dev_admin (currently used to create Gov.UK One Login test accounts)
   - ilb_admin
   - ilb_admin_2
   - nca_admin

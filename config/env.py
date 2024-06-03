@@ -56,6 +56,7 @@ class DBTPlatformEnvironment(BaseSettings):
     gov_uk_one_login_exporter_client_id: str
     gov_uk_one_login_exporter_client_secret: str
     gov_uk_one_login_get_client_config_path: str = "web.auth.utils"
+    gov_uk_one_login_authentication_level_override: str = ""
 
     # GOV.UK Notify to send/receive emails (which are implemented using gov notify)
     gov_notify_api_key: str

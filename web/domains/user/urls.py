@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import include, path
 
 from . import views
@@ -83,3 +84,21 @@ urlpatterns = [
         name="user-deactivate",
     ),
 ]
+
+
+if settings.APP_ENV in ("local", "dev", "staging"):
+    urlpatterns.extend(
+        [
+            # One Login Test User urls
+            path(
+                "setup-one-login-test-accounts/",
+                views.OneLoginTestAccountsCreateFormView.as_view(),
+                name="one-login-test-accounts-create",
+            ),
+            path(
+                "one-login-test-accounts/<int:user_pk>/",
+                views.OneLoginTestAccountsDetailView.as_view(),
+                name="one-login-test-accounts-detail",
+            ),
+        ]
+    )
