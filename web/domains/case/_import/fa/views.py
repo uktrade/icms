@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import OuterRef, Q
@@ -8,6 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
+from django.views.generic import DetailView
 
 from web.domains.case._import.fa_dfl.forms import (
     DFLSupplementaryInfoForm,
@@ -24,6 +26,7 @@ from web.domains.case._import.fa_sil.forms import (
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.utils import view_application_file
+from web.domains.case.views.mixins import ApplicationTaskMixin
 from web.domains.case.views.views_search import SearchActionFormBase
 from web.domains.file.utils import create_file_model
 from web.flow.models import ProcessTypes
@@ -646,6 +649,32 @@ def provide_report(request: AuthenticatedHttpRequest, *, application_pk: int) ->
             template_name="web/domains/case/import/fa/provide-report/report-info.html",
             context=context,
         )
+
+
+class ViewFirearmsReportDetailView(
+    PermissionRequiredMixin, LoginRequiredMixin, ApplicationTaskMixin, DetailView
+):
+    # PermissionRequiredMixin config
+    permission_required = Perms.sys.ilb_admin
+
+    # ApplicationTaskMixin config
+    current_status = [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
+
+    # DetailView config
+    http_method_names = ["get"]
+    template_name = "web/domains/case/import/fa/provide-report/report-info.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        return context | {
+            "ilb_read_only": True,
+            "process": self.application,
+            "case_type": "import",
+            "contacts": self.application.importcontact_set.all(),
+            "page_title": "Firearms Supplementary Information Overview",
+            "report_type": _get_report_type(self.application),
+        }
 
 
 @login_required

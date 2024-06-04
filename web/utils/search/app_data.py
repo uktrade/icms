@@ -51,7 +51,9 @@ def get_fa_dfl_applications(search_ids: list[int]) -> "QuerySet[DFLApplication]"
     applications = DFLApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
 
-    applications = applications.select_related("origin_country", "consignment_country")
+    applications = applications.select_related(
+        "origin_country", "consignment_country", "supplementary_info"
+    )
 
     applications = _add_import_licence_data(applications)
 
@@ -62,7 +64,9 @@ def get_fa_oil_applications(search_ids: list[int]) -> "QuerySet[OpenIndividualLi
     applications = OpenIndividualLicenceApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
 
-    applications = applications.select_related("origin_country", "consignment_country")
+    applications = applications.select_related(
+        "origin_country", "consignment_country", "supplementary_info"
+    )
 
     applications = _add_import_licence_data(applications)
 
@@ -73,7 +77,9 @@ def get_fa_sil_applications(search_ids: list[int]) -> "QuerySet[SILApplication]"
     applications = SILApplication.objects.filter(pk__in=search_ids)
     applications = _apply_import_optimisation(applications)
 
-    applications = applications.select_related("origin_country", "consignment_country")
+    applications = applications.select_related(
+        "origin_country", "consignment_country", "supplementary_info"
+    )
 
     applications = _add_import_licence_data(applications)
 

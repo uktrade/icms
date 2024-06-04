@@ -11,6 +11,7 @@ from web.models import (
     ImportApplication,
     ImportApplicationLicence,
     SILApplication,
+    SILSupplementaryInfo,
     WoodQuotaApplication,
 )
 from web.utils.search import types, utils
@@ -22,6 +23,19 @@ from web.utils.search.actions import (
 _st = ImpExpStatus
 _future_date = dt.date(dt.date.today().year + 1, 1, 1)
 _past_date = dt.date(dt.date.today().year - 1, 1, 1)
+
+
+def get_sil_application(*, supplementary_report_compete: bool) -> SILApplication:
+    application = SILApplication(
+        status=_st.COMPLETED,
+        decision=SILApplication.APPROVE,
+        application_type=ImportApplicationType(type="FA", sub_type="SIL"),
+    )
+
+    application.supplementary_info = SILSupplementaryInfo(import_application=application)
+    application.supplementary_info.is_complete = supplementary_report_compete
+
+    return application
 
 
 test_import_arg_values = [
@@ -47,14 +61,16 @@ test_import_arg_values = [
         [],
     ),
     (
-        SILApplication(
-            status=_st.COMPLETED,
-            decision=SILApplication.APPROVE,
-            application_type=ImportApplicationType(type="FA", sub_type="SIL"),
-        ),
+        get_sil_application(supplementary_report_compete=False),
         ImportApplicationLicence(licence_end_date=_future_date),
-        ["Request Variation", "Revoke Licence", "Provide Supplementary Report"],
+        ["Request Variation", "Revoke Licence"],
         ["Request Variation", "Provide Supplementary Report"],
+    ),
+    (
+        get_sil_application(supplementary_report_compete=True),
+        ImportApplicationLicence(licence_end_date=_future_date),
+        ["Request Variation", "Revoke Licence"],
+        ["Request Variation"],
     ),
 ]
 

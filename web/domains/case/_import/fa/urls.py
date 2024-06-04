@@ -115,6 +115,11 @@ urlpatterns = [
                             path("", views.provide_report, name="provide-report"),
                             path("repoen/", views.reopen_report, name="reopen-report"),
                             path(
+                                "view/",
+                                views.ViewFirearmsReportDetailView.as_view(),
+                                name="view-report",
+                            ),
+                            path(
                                 "create/",
                                 views.create_report,
                                 name="create-report",
