@@ -56,6 +56,10 @@ class OrganisationData(BaseModel):
         if not v.upper().startswith("GB"):
             raise ValueError("Must start with 'GB' prefix")
 
+        # Valid value for individual importers
+        if v.upper() == "GBPR":
+            return v.upper()
+
         # Example value: GB123456789012345
         eori_number_length = len(v[2:])
 

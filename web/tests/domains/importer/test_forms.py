@@ -41,27 +41,19 @@ def test_required_fields_importer_individual_form():
     assert expected in form.errors["user"]
 
 
-def test_invalid_eori_number_importer_individual_form():
-    """Assert eori number starts with prefix."""
-    form = ImporterIndividualForm({"eori_number": "42"})
-
-    assert form.is_valid() is False
-    assert "eori_number" in form.errors
-    error = "'42' doesn't start with GBPR"
-    assert error in form.errors["eori_number"]
-
-
 @pytest.mark.django_db()
 def test_type_importer_individual_form(importer_one_contact):
     """Assert individual importer type is set on save."""
 
-    data = {"user": importer_one_contact.pk, "eori_number": "GBPR"}
+    data = {"user": importer_one_contact.pk}
     form = ImporterIndividualForm(data)
 
     assert form.is_valid(), form.errors
     importer = form.save()
 
     assert importer.type == "INDIVIDUAL"
+    # This value should always get saved
+    assert importer.eori_number == ImporterIndividualForm.EORI_INDIVIDUAL
 
 
 def test_required_fields_importer_organisation_form():
@@ -84,6 +76,16 @@ def test_invalid_eori_number_importer_organisation_form():
     assert error in form.errors["eori_number"]
 
 
+def test_invalid_eori_number_length_importer_organisation_form():
+    """Assert eori number starts with prefix."""
+    form = ImporterOrganisationForm({"eori_number": "GB12345"})
+
+    assert form.is_valid() is False
+    assert "eori_number" in form.errors
+    error = "Must start with 'GB' followed by 12 or 15 numbers"
+    assert error in form.errors["eori_number"]
+
+
 @pytest.mark.django_db()
 @patch("web.domains.importer.forms.api_get_company")
 def test_type_importer_organisation_form(api_get_company):
@@ -96,26 +98,13 @@ def test_type_importer_organisation_form(api_get_company):
         }
     }
 
-    data = {"name": "hello", "eori_number": "GB", "registered_number": "42"}
+    data = {"name": "hello", "eori_number": "GB123456789012345", "registered_number": "42"}
     form = ImporterOrganisationForm(data)
 
     assert form.is_valid(), form.errors
     importer = form.save()
 
     assert importer.type == "ORGANISATION"
-
-
-@pytest.mark.django_db()
-def test_eori_number_required_importer_individual_form(importer):
-    """Assert the EORI number field is required when they already have one."""
-    importer.eori_number = "GBPR234234"
-    importer.save()
-    form = ImporterIndividualForm(instance=importer, data={"eori_number": ""})
-
-    assert not form.is_valid()
-    assert "eori_number" in form.errors
-    error = "You must enter this item"
-    assert error in form.errors["eori_number"]
 
 
 @pytest.mark.django_db()
@@ -179,18 +168,6 @@ def test_eori_number_required_new_importer_organisation_form(api_get_company):
 
 
 @pytest.mark.django_db()
-def test_eori_number_required_new_importer_individual_form(importer_one_contact):
-    """Assert the EORI number field required when it's a newly created Importer."""
-    data = {"user": importer_one_contact.pk, "eori_number": ""}
-    form = ImporterIndividualForm(data)
-
-    assert not form.is_valid()
-    assert "eori_number" in form.errors
-    error = "You must enter this item"
-    assert error in form.errors["eori_number"]
-
-
-@pytest.mark.django_db()
 @patch("web.domains.importer.forms.api_get_company")
 def test_invalid_company_number_okay(api_get_company, importer):
     """Assert that an invalid company number can be saved."""
@@ -214,7 +191,7 @@ def test_valid_company_number_okay(api_get_company):
         }
     }
 
-    data = {"name": "hello", "eori_number": "GB", "registered_number": "42"}
+    data = {"name": "hello", "eori_number": "GB123456789012345", "registered_number": "42"}
     form = ImporterOrganisationForm(data)
 
     assert form.is_valid()

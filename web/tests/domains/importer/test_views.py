@@ -245,7 +245,7 @@ class TestOrganisationImporterCreateView(AuthTestCase):
         }
 
         data = {
-            "eori_number": "GB",
+            "eori_number": "GB123456789012345",
             "name": "test importer",
             "registered_number": "42",
         }
