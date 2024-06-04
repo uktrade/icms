@@ -601,6 +601,11 @@ class CaseURLS:
         return reverse("import:fa:provide-report", kwargs=kwargs)
 
     @staticmethod
+    def fa_view_report(application_pk: int) -> str:
+        kwargs = {"application_pk": application_pk}
+        return reverse("import:fa:view-report", kwargs=kwargs)
+
+    @staticmethod
     def download_dfl_case_documents(code: str) -> str:
         return reverse("case:download-dfl-case-documents", kwargs={"code": code})
 

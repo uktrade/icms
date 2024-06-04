@@ -13,6 +13,7 @@ from web.models import (
     ImportContact,
     Task,
 )
+from web.tests.auth import AuthTestCase
 from web.tests.helpers import CaseURLS
 
 
@@ -330,3 +331,35 @@ def test_upload_supplementary_report_search_redirect(
     assert response.resolver_match.kwargs["mode"] == "standard"
     assert response.resolver_match.kwargs["case_type"] == "import"
     assert response.request["QUERY_STRING"] == "test=yes"
+
+
+class TestViewFirearmsReportDetailView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, completed_oil_app_with_supplementary_report):
+        self.app = completed_oil_app_with_supplementary_report
+        self.url = CaseURLS.fa_view_report(self.app.pk)
+
+    def test_permission(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_get(self):
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+        context = response.context
+        assert context["ilb_read_only"]
+        assert context["process"] == self.app
+
+        html = response.content.decode("utf-8")
+        assert "Reopen" not in html
+        assert '<button type="submit"' not in html
+
+    def test_post_forbidden(self):
+        response = self.ilb_admin_client.post(self.url)
+        assert response.status_code == HTTPStatus.METHOD_NOT_ALLOWED

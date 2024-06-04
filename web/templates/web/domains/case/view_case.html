@@ -24,10 +24,15 @@
           {{ icms_link(request, icms_url('case:applicant-case-history', kwargs={'application_pk': process.pk, 'case_type': case_type}), response_label ) }}
         {% endif %}
       {% endif %}
-
       {% if process.status in ["COMPLETED", "REVOKED"] %}
-        {% if process.application_type.type == "FA" and process.decision == process.APPROVE and user_obj_perms.can_edit_application(process) %}
-          {{ icms_link(request, icms_url('import:fa:provide-report', kwargs={'application_pk': process.pk}), 'Firearms Supplementary Information') }}
+        {% if process.application_type.type == "FA" and process.decision == process.APPROVE %}
+          {# Applicant link (they have edit access) #}
+          {% if user_obj_perms.can_edit_application(process) %}
+            {{ icms_link(request, icms_url('import:fa:provide-report', kwargs={'application_pk': process.pk}), 'Firearms Supplementary Information') }}
+          {# Readonly ILB Admin link #}
+          {% elif "web.ilb_admin" in perms %}
+            {{ icms_link(request, icms_url('import:fa:view-report', kwargs={'application_pk': process.pk}), 'Firearms Supplementary Information') }}
+          {% endif %}
         {% endif %}
       {% endif %}
 

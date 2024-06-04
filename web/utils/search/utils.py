@@ -117,12 +117,14 @@ class UserOrganisationPermissions:
         organisation_pk: int,
         *permissions: ImporterObjectPermissions | ExporterObjectPermissions,
         any_perm: bool = False,
+        include_ilb_admin: bool = True,
     ) -> bool:
         """Check if the initialised user has permissions for a given organisation.
 
         :param organisation_pk: Primary key of organisation to check.
         :param permissions: Single permission, or sequence of permissions to check.
         :param any_perm: If True, any of permission in sequence is accepted. Default is False.
+        :param include_ilb_admin: If True, return True if user has ilb_admin permission.
         """
 
         user_org_perms = self._cache[organisation_pk]
@@ -136,4 +138,4 @@ class UserOrganisationPermissions:
             # True if all required perms are in the user org perms
             has_permission = user_org_perms.issuperset(required_perms)
 
-        return self.has_ilb_admin_perm or has_permission
+        return (include_ilb_admin and self.has_ilb_admin_perm) or has_permission

@@ -110,7 +110,8 @@ class ProvideSupplementaryReportAction(ActionProtocol):
             app.status in [ImpExpStatus.COMPLETED, ImpExpStatus.REVOKED]
             and app.decision == app.APPROVE
             and app.application_type.type == "FA"
-            and _can_edit_org_or_agent(app, uop)
+            and _can_edit_org_or_agent(app, uop, include_ilb_admin=False)
+            and not app.supplementary_info.is_complete
         )
 
     @staticmethod
@@ -320,7 +321,9 @@ class ReopenExportCaseAction(ActionProtocol):
         )
 
 
-def _can_edit_org_or_agent(app: ImpOrExp, uop: UserOrganisationPermissions) -> bool:
+def _can_edit_org_or_agent(
+    app: ImpOrExp, uop: UserOrganisationPermissions, *, include_ilb_admin: bool = True
+) -> bool:
     """Return true if the uop user can edit the org / agent of the supplied application.
 
     Notes:
@@ -345,7 +348,7 @@ def _can_edit_org_or_agent(app: ImpOrExp, uop: UserOrganisationPermissions) -> b
 
     can_edit_org = False
     for org_id in check_orgs:
-        if uop.has_permission(org_id, obj_perms.edit):
+        if uop.has_permission(org_id, obj_perms.edit, include_ilb_admin=include_ilb_admin):
             can_edit_org = True
 
             break

@@ -17,33 +17,32 @@
 
 {% block main_content %}
   {% if process.supplementary_info.is_complete %}
-    <div class="info-box info-box-info">
-      Use the Reopen button if you have more information to report on this application.
-    </div>
-
-    {% call forms.form(
-      action=icms_url('import:fa:reopen-report', kwargs={'application_pk': process.pk}),
-      method="post",
-      csrf_input=csrf_input,
-      id="id-reopen_report") -%}
-      <button type="submit" class="secondary-button button" for="id-reopen_report">
-        Reopen
-      </button>
-    {% endcall %}
+    {% if not ilb_read_only|default(False) %}
+      <div class="info-box info-box-info">
+        Use the Reopen button if you have more information to report on this application.
+      </div>
+      {% call forms.form(
+        action=icms_url('import:fa:reopen-report', kwargs={'application_pk': process.pk}),
+        method="post",
+        csrf_input=csrf_input,
+        id="id-reopen_report") -%}
+        <button type="submit" class="secondary-button button" for="id-reopen_report">
+          Reopen
+        </button>
+      {% endcall %}
+    {% endif %}
     <div class="section-break"></div>
   {% endif %}
 
   <h3>Details of who bought from</h3>
-  {% with can_delete = True, read_only = process.supplementary_info.is_complete %}
+  {% with can_delete = True, read_only = process.supplementary_info.is_complete or ilb_read_only|default(False) %}
     {% include "partial/import-contacts/list.html" %}
   {% endwith %}
 
-  {% with reports = process.supplementary_info.reports.all(), read_only = process.supplementary_info.is_complete or not process.importcontact_set.exists() %}
+  {% with reports = process.supplementary_info.reports.all(), read_only = process.supplementary_info.is_complete or not process.importcontact_set.exists() or ilb_read_only|default(False) %}
     {% include "web/domains/case/import/fa/partials/report-list.html" %}
   {% endwith %}
 
-  <div class="section-break"></div>
-  <h3>Complete Supplementary Reporting</h3>
   <div class="section-break"></div>
 
   {% if process.supplementary_info.is_complete %}
@@ -57,16 +56,20 @@
 
     {{ application_field(process.supplementary_info.completed_by, "Report Completed By") }}
     {{ application_field(process.supplementary_info.completed_datetime.strftime('%d-%b-%Y'), "Date Reporting Completed") }}
-  {% endif %}
-    {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-      <div class="modal-popover-container hidden">
-        <div class="modal-popover regular-popover" tabindex="0">
-          <div class="modal-popover-content">
-            <h2 id="engine-modal-popover-title">Complete Supplementary Reporting Information</h2>
-            <p>
-              You should only complete reporting if you have provided the details of who you bought
-              the items from and goods that will be imported against this licence. Do you want to complete reporting?
-            </p>
+
+  {% else %}
+    {% if not ilb_read_only|default(False) %}
+      <h3>Complete Supplementary Reporting</h3>
+      <div class="section-break"></div>
+      {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+        <div class="modal-popover-container hidden">
+          <div class="modal-popover regular-popover" tabindex="0">
+            <div class="modal-popover-content">
+              <h2 id="engine-modal-popover-title">Complete Supplementary Reporting Information</h2>
+              <p>
+                You should only complete reporting if you have provided the details of who you bought
+                the items from and goods that will be imported against this licence. Do you want to complete reporting?
+              </p>
               <ul class="menu-out modal-popover-actions flow-across">
                 <li>
                   <button type="submit" class="primary-button button">
@@ -79,15 +82,16 @@
                   </button>
                 </li>
               </ul>
+            </div>
           </div>
         </div>
-      </div>
-      {% if not process.supplementary_info.reports.exists() and not contacts %}
-        {{ fields.field(form.no_report_reason) }}
-      {% endif %}
-    {%- endcall %}
-
-    <button type="button" onclick="$('.modal-popover-container').show()" class="button primary-button">
-      Confirm Reporting Complete
-    </button>
+        {% if not process.supplementary_info.reports.exists() and not contacts %}
+          {{ fields.field(form.no_report_reason) }}
+        {% endif %}
+      {%- endcall %}
+      <button type="button" onclick="$('.modal-popover-container').show()" class="button primary-button">
+        Confirm Reporting Complete
+      </button>
+    {% endif %}
+  {% endif %}
 {% endblock %}
