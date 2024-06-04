@@ -17,6 +17,8 @@ from web.utils.companieshouse import api_get_company
 
 
 class ImporterIndividualForm(forms.ModelForm):
+    EORI_INDIVIDUAL = "GBPR"
+
     class Meta:
         model = Importer
         fields = ["user", "eori_number", "region_origin", "comments"]
@@ -29,17 +31,22 @@ class ImporterIndividualForm(forms.ModelForm):
         if self.instance.eori_number or not self.instance.pk:
             self.fields["eori_number"].required = True
 
+        self.fields["eori_number"].initial = self.EORI_INDIVIDUAL
+        self.fields["eori_number"].disabled = True
+
     def clean(self):
         """Set type as individual as Importer can be an organisation too."""
         self.instance.type = Importer.INDIVIDUAL
         return super().clean()
 
     def clean_eori_number(self):
-        """Make sure eori number starts with GBPR."""
+        """Make sure eori number equals GBPR."""
         if eori_number := self.cleaned_data.get("eori_number"):
-            prefix = "GBPR"
-            if not eori_number.lower().startswith(prefix.lower()):
-                raise ValidationError(f"'{eori_number}' doesn't start with {prefix}")
+            if not eori_number.lower() == self.EORI_INDIVIDUAL.lower():
+                raise ValidationError(
+                    f"'{eori_number}' must be set to {self.EORI_INDIVIDUAL} for individual importers."
+                )
+
             return eori_number
 
 
@@ -101,6 +108,12 @@ class ImporterOrganisationForm(forms.ModelForm):
 
             if not eori_number.lower().startswith(prefix.lower()):
                 raise ValidationError(f"'{eori_number}' doesn't start with {prefix}")
+
+            # Example value: GB123456789012345
+            eori_number_length = len(eori_number[2:])
+
+            if eori_number_length != 12 and eori_number_length != 15:
+                raise ValidationError("Must start with 'GB' followed by 12 or 15 numbers")
 
             return eori_number
 
