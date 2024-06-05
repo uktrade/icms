@@ -144,7 +144,7 @@ def fa_sil_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.locator("#id_manufacture").get_by_text("Yes").click()
     page.locator("#id_original_chambering").get_by_text("Yes").click()
     page.get_by_role("textbox", name="---------").click()
-    page.get_by_role("option", name="9mm").click()
+    page.get_by_role("option", name="9mm Mars").click()
     page.get_by_label("Description").click()
     page.get_by_label("Description").fill("Section 5 Obsolete Goods")
     page.get_by_label("Quantity").click()
