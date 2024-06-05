@@ -14,7 +14,6 @@ from qrcode import QRCode
 
 from web.domains.case._import.fa.types import FaImportApplication
 from web.domains.case.services import document_pack
-from web.domains.country.utils import get_eu_countries
 from web.domains.signature.utils import get_active_signature_file
 from web.domains.template.utils import (
     fetch_cfs_declaration_translations,
@@ -333,7 +332,7 @@ def _get_importer_eori_numbers(application: ImportApplication) -> list[str]:
         # FA-SIL / FA-DFL check the consignment country as well
         elif (
             application.process_type in [ProcessTypes.FA_SIL, ProcessTypes.FA_DFL]
-            and application.consignment_country in get_eu_countries()
+            and application.consignment_country in Country.util.get_eu_countries()
         ):
             eori_numbers.append(f"XI{main_eori_num[2:]}")
 

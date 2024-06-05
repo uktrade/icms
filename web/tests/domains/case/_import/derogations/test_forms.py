@@ -12,11 +12,11 @@ class TestDerogationsForm:
         self.user = importer_one_contact
         self.importer = importer
 
-        self.valid_country = Country.objects.filter(
-            country_groups__name="Derogation from Sanctions COOs"
-        ).first()
+        derogation_countries = Country.app.get_derogations_coo_countries()
+
+        self.valid_country = derogation_countries.first()
         self.invalid_country = Country.objects.exclude(
-            country_groups__name="Derogation from Sanctions COOs"
+            pk__in=derogation_countries.values_list("pk", flat=True)
         ).first()
 
         self.process = DerogationsApplicationFactory.create(

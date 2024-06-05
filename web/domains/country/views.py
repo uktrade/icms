@@ -1,10 +1,11 @@
 import logging
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import Any, TypedDict
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
+from django.db.models import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
@@ -27,9 +28,6 @@ from .forms import (
     CountryTranslationSetEditForm,
 )
 from .models import Country, CountryGroup, CountryTranslation, CountryTranslationSet
-
-if TYPE_CHECKING:
-    from django.db.models import QuerySet
 
 logger = logging.getLogger(__name__)
 
@@ -109,10 +107,13 @@ class CountryGroupListView(ModelFilterView):
     class Display:
         fields = ["name"]
         fields_config = {
-            "name": {"header": "Country Group Name"},
+            "name": {"header": "Country Group Name", "method": "get_name_display"},
         }
         opts = {"inline": True, "icon_only": True}
         actions = [ViewObject(**opts), EditCountryGroup(**opts)]
+
+    def get_initial_data(self, queryset: QuerySet) -> QuerySet:
+        return queryset
 
 
 class CountryGroupCreateView(PermissionRequiredMixin, LoginRequiredMixin, CreateView):
@@ -263,7 +264,7 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
         return super().get(request)
 
     def get_missing_translations(
-        self, country_list: "QuerySet[Country]", country_translations: dict[int, str]
+        self, country_list: QuerySet[Country], country_translations: dict[int, str]
     ) -> MissingTranslationsDict:
         missing_translations: list[Country] = []
         remaining_count = 0

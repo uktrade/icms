@@ -56,30 +56,7 @@ class ImportApplicationType(models.Model):
     usage_auto_category_desc_flag = models.BooleanField(blank=False, null=False)
     case_checklist_flag = models.BooleanField(blank=False, null=False)
     importer_printable = models.BooleanField(blank=False, null=False)
-    origin_country_group = models.ForeignKey(
-        "web.CountryGroup",
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="import_application_types_from",
-    )
-    consignment_country_group = models.ForeignKey(
-        "web.CountryGroup",
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="import_application_types_to",
-    )
-    master_country_group = models.ForeignKey(
-        "web.CountryGroup",
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="import_application_types",
-    )
-    commodity_type = models.ForeignKey(
-        "web.CommodityType", on_delete=models.PROTECT, blank=True, null=True
-    )
+
     declaration_template = models.ForeignKey(
         "web.Template",
         on_delete=models.PROTECT,
@@ -89,9 +66,6 @@ class ImportApplicationType(models.Model):
     )
     endorsements = models.ManyToManyField(
         "web.Template", related_name="endorsement_application_types"
-    )
-    default_commodity_group = models.ForeignKey(
-        "web.CommodityGroup", on_delete=models.PROTECT, blank=True, null=True
     )
 
     def __str__(self) -> str:

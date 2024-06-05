@@ -2,6 +2,7 @@ from typing import Any
 
 from django.db.models.query import QuerySet
 
+from web.domains.country.types import CountryGroupName
 from web.forms.widgets import ICMSModelSelect2MultipleWidget, ICMSModelSelect2Widget
 from web.models import Country, ImportApplicationType
 from web.types import AuthenticatedHttpRequest
@@ -52,48 +53,51 @@ class UsageCountryWidget(ICMSModelSelect2Widget):
         if queryset is None:
             queryset = self.get_queryset()
 
-        application_type: str | None = dependent_fields.get("application_type")
+        application_type_pk: str | None = dependent_fields.get("application_type")
 
-        if not application_type:
+        if not application_type_pk:
             return queryset.none()
 
-        group_name = self._get_country_of_origin_group_name(application_type)
+        group_name = self._get_country_of_origin_group_name(application_type_pk)
 
         return queryset.filter(country_groups__name=group_name)
 
-    def _get_country_of_origin_group_name(self, app_type):
-        application_type = ImportApplicationType.objects.get(pk=app_type)
+    def _get_country_of_origin_group_name(self, app_type_pk: str) -> str:
+        application_type = ImportApplicationType.objects.get(pk=int(app_type_pk))
 
         types = ImportApplicationType.Types
         subtypes = ImportApplicationType.SubTypes
 
-        mapped_types = {
-            types.DEROGATION: "Derogation from Sanctions COOs",
-            types.IRON_STEEL: "Iron and Steel (Quota) COOs",
-            types.OPT: "OPT COOs",
-            types.SANCTION_ADHOC: "Sanctions and Adhoc License",
-            types.SPS: "Non EU Single Countries",
-            types.TEXTILES: "Textile COOs",
-            types.WOOD_QUOTA: "Wood (Quota) COOs",
-        }
-
-        mapped_types_with_subtypes = {
-            types.FIREARMS: {
-                subtypes.OIL: "Firearms and Ammunition (OIL) COOs",
-                subtypes.DFL: "Firearms and Ammunition (Deactivated) Issuing Countries",
-                subtypes.SIL: "Firearms and Ammunition (SIL) COOs",
-            }
-        }
-
-        if application_type.type in mapped_types.keys():
-            group_name = mapped_types[application_type.type]
-        elif application_type.type in mapped_types_with_subtypes.keys():
-            group_name = mapped_types_with_subtypes[application_type.type][
-                application_type.sub_type
-            ]
-        else:
-            raise NotImplementedError(
-                f"Can't get group name for {application_type.type}, {application_type.sub_type}"
-            )
+        match (application_type.type, application_type.sub_type):
+            #
+            # Active Application types
+            #
+            case (types.FIREARMS, subtypes.OIL):
+                group_name = CountryGroupName.FA_OIL_COO
+            case (types.FIREARMS, subtypes.DFL):
+                group_name = CountryGroupName.FA_DFL_IC
+            case (types.FIREARMS, subtypes.SIL):
+                group_name = CountryGroupName.FA_SIL_COO
+            case (types.SANCTION_ADHOC, _):
+                group_name = CountryGroupName.SANCTIONS_COC_COO
+            case (types.WOOD_QUOTA, _):
+                group_name = CountryGroupName.WOOD_COO
+            #
+            # Inactive Application types
+            #
+            case (types.DEROGATION, _):
+                group_name = CountryGroupName.DEROGATION_FROM_SANCTION_COO
+            case (types.IRON_STEEL, _):
+                group_name = CountryGroupName.IRON
+            case (types.OPT, _):
+                group_name = CountryGroupName.OPT_COO
+            case (types.SPS, _):
+                group_name = CountryGroupName.NON_EU
+            case (types.TEXTILES, _):
+                group_name = CountryGroupName.TEXTILES_COO
+            case _:
+                raise ValueError(
+                    f"Can't get group name for {application_type.type}, {application_type.sub_type}"
+                )
 
         return group_name

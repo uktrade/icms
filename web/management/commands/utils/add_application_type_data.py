@@ -1,30 +1,13 @@
-from web.models import (
-    CountryGroup,
-    ExportApplicationType,
-    ImportApplicationType,
-    Template,
-)
+from web.models import ExportApplicationType, ImportApplicationType, Template
 
 
 def add_export_application_type_data():
-    cfs_cg = CountryGroup.objects.get(name="Certificate of Free Sale Countries")
-
-    cfg_cg_for_com = CountryGroup.objects.get(
-        name="Certificate of Free Sale Country of Manufacture Countries"
-    )
-
-    com_cg = CountryGroup.objects.get(name="Certificate of Manufacture Countries")
-
-    gmp_cg = CountryGroup.objects.get(name="Goods Manufacturing Practice Countries")
-
     ExportApplicationType.objects.create(
         type_code="CFS",
         type="Certificate of Free Sale",
         allow_multiple_products=True,
         generate_cover_letter=False,
         allow_hse_authorization=False,
-        country_group=cfs_cg,
-        country_group_for_manufacture=cfg_cg_for_com,
     )
 
     ExportApplicationType.objects.create(
@@ -33,7 +16,6 @@ def add_export_application_type_data():
         allow_multiple_products=False,
         generate_cover_letter=False,
         allow_hse_authorization=False,
-        country_group=com_cg,
     )
 
     ExportApplicationType.objects.create(
@@ -42,7 +24,6 @@ def add_export_application_type_data():
         allow_multiple_products=False,
         generate_cover_letter=False,
         allow_hse_authorization=False,
-        country_group=gmp_cg,
     )
 
 

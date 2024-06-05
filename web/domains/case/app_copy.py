@@ -31,6 +31,7 @@ from web.models import (
     CertificateOfManufactureApplicationTemplate,
     CFSSchedule,
     CFSScheduleTemplate,
+    Country,
     User,
 )
 from web.utils.sentry import capture_message
@@ -154,7 +155,7 @@ class GMPApplicationCopy(ApplicationCopy):
         super().copy_application_to_application()
 
         # GMP applications are for China only
-        country = self.new.application_type.country_group.countries.filter(is_active=True).first()
+        country = Country.app.get_gmp_countries().first()
         self.new.countries.add(country)
 
 

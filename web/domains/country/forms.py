@@ -54,6 +54,10 @@ class CountryGroupEditForm(ModelForm):
         labels = {"name": "Group Name", "comments": "Group Comments"}
         widgets = {"comments": Textarea({"rows": 5, "cols": 20})}
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["name"].disabled = True
+
 
 class CountryTranslationSetEditForm(ModelForm):
     class Meta:

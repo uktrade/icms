@@ -8,7 +8,7 @@
                 <select id="country-group-select" name="country-group" aria-required="true">
                     {% for group in groups %}
                         <option value="{{group.id}}" {% if group.id == object.id %} selected {% endif %}>
-                            {{group.name}}
+                            {{group.get_name_display()}}
                         </option>
                     {% endfor %}
                 </select>

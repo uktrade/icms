@@ -34,7 +34,12 @@ def test_data_migration_not_enabled():
 def test_export_data(mock_connect):
     mock_connect.return_value = utils.MockConnect()
     call_command("export_from_v1", "--skip_user", "--skip_ia", "--skip_file", "--skip_export")
-    assert models.CountryGroup.objects.filter(country_group_id__in=["A", "B", "C"]).count() == 3
+    assert (
+        models.CountryGroup.objects.filter(
+            country_group_id__in=["FA_SIL_COO", "FA_SIL_COC", "FA_OIL_COO"]
+        ).count()
+        == 3
+    )
 
 
 test_query_model = {

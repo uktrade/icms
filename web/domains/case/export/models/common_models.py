@@ -28,16 +28,6 @@ class ExportApplicationType(models.Model):
     allow_multiple_products = models.BooleanField(blank=False, null=False)
     generate_cover_letter = models.BooleanField(blank=False, null=False)
     allow_hse_authorization = models.BooleanField(blank=False, null=False)
-    country_group = models.ForeignKey(
-        "web.CountryGroup", on_delete=models.PROTECT, blank=False, null=False
-    )
-    country_group_for_manufacture = models.ForeignKey(
-        "web.CountryGroup",
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="manufacture_export_application_types",
-    )
 
     def __str__(self):
         return f"{self.type}"

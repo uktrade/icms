@@ -215,8 +215,7 @@ class ImportSearchAdvancedForm(ImportSearchForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        countries = Country.objects.filter(is_active=True, type=Country.SOVEREIGN_TERRITORY)
+        countries = Country.util.get_all_countries()
 
         self.fields["origin_country"].queryset = countries
         self.fields["consignment_country"].queryset = countries
@@ -259,8 +258,7 @@ class ExportSearchForm(SearchFormBase):
 class ExportSearchAdvancedForm(ExportSearchForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        countries = Country.objects.filter(is_active=True, type=Country.SOVEREIGN_TERRITORY)
+        countries = Country.util.get_all_countries()
 
         self.fields["certificate_country"].queryset = countries
         self.fields["manufacture_country"].queryset = countries

@@ -56,9 +56,7 @@ class TestDegrogationDetailsView(AuthTestCase):
         Task.objects.create(process=self.process, task_type=Task.TaskType.PREPARE)
         self.url = f"/import/derogations/{self.process.pk}/edit/"
 
-        self.valid_country = Country.objects.filter(
-            country_groups__name="Derogation from Sanctions COOs"
-        ).first()
+        self.valid_country = Country.app.get_derogations_coo_countries().first()
 
         self.commodity_type = CommodityTypeFactory.create()
 

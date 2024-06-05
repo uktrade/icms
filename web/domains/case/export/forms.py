@@ -16,6 +16,7 @@ from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import ICMSModelSelect2Widget
 from web.models import (
     CertificateApplicationTemplate,
+    Country,
     Exporter,
     Office,
     ProductLegislation,
@@ -245,10 +246,7 @@ class PrepareCertManufactureFormBase(forms.ModelForm):
         self.fields["product_name"].required = True
         self.fields["chemical_name"].required = True
         self.fields["manufacturing_process"].required = True
-
-        self.fields["countries"].queryset = ExportApplicationType.objects.get(
-            type_code=ExportApplicationType.Types.MANUFACTURE
-        ).country_group.countries.filter(is_active=True)
+        self.fields["countries"].queryset = Country.app.get_com_countries()
 
         # Contact isn't a field in the template.
         if "contact" in self.fields:
@@ -338,9 +336,7 @@ class EditCFSForm(OptionalFormMixin, EditCFSFormBase):
         if "contact" in self.fields:
             self.fields["contact"].queryset = application_contacts(self.instance)
 
-        self.fields["countries"].queryset = ExportApplicationType.objects.get(
-            type_code=ExportApplicationType.Types.FREE_SALE
-        ).country_group.countries.filter(is_active=True)
+        self.fields["countries"].queryset = Country.app.get_cfs_countries()
 
 
 class SubmitCFSForm(EditCFSFormBase):
@@ -400,6 +396,7 @@ class CFSScheduleFormBase(forms.ModelForm):
 
         # the value of this field is determined by the value of the goods_placed_on_uk_market field
         self.fields["goods_export_only"].disabled = True
+        self.fields["country_of_manufacture"].queryset = Country.app.get_cfs_com_countries()
 
     def save(self, commit=True):
         # we want to manually set the goods_export_only field based on the goods_placed_on_uk_market field.

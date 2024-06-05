@@ -63,7 +63,7 @@ def test_can_create_cfs_cat(pages: conftest.UserPages) -> None:
         page.locator("#id_any_raw_materials_0").check()
         page.get_by_label("End Use or Final Product").click()
         page.get_by_label("End Use or Final Product").fill("Test End Use or Final Product")
-        page.get_by_label("Country Of Manufacture").select_option("1")
+        page.get_by_label("Country Of Manufacture").select_option("38")
         page.get_by_label("These products are").check()
         page.get_by_role("button", name="Save").click()
 
@@ -196,7 +196,7 @@ def test_can_create_cfs_cat_biocidal_schdedule(pages: conftest.UserPages) -> Non
         page.locator("#id_any_raw_materials_0").check()
         page.get_by_label("End Use or Final Product").click()
         page.get_by_label("End Use or Final Product").fill("Test End Use or Final Product")
-        page.get_by_label("Country Of Manufacture").select_option("1")
+        page.get_by_label("Country Of Manufacture").select_option("38")
         page.get_by_label("These products are").check()
         page.get_by_role("button", name="Save").click()
 

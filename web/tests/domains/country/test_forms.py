@@ -8,11 +8,11 @@ from web.domains.country.forms import (
     CountryTranslationEditForm,
     CountryTranslationSetEditForm,
 )
-from web.models import Country
+from web.domains.country.types import CountryGroupName
+from web.models import Country, CountryGroup
 
 from .factory import (
     CountryFactory,
-    CountryGroupFactory,
     CountryTranslationFactory,
     CountryTranslationSetFactory,
 )
@@ -92,18 +92,9 @@ class TestCountryEditForm(TestCase):
 
 class TestCountryGroupEditForm(TestCase):
     def test_form_valid(self):
-        form = CountryGroupEditForm(instance=CountryGroupFactory(), data={"name": "Some countries"})
+        group = CountryGroup.objects.get(name=CountryGroupName.EU)
+        form = CountryGroupEditForm(instance=group, data={"comments": "A test comment"})
         assert form.is_valid() is True
-
-    def test_form_invalid(self):
-        form = CountryGroupEditForm(instance=CountryGroupFactory(), data={})
-        assert form.is_valid() is False
-
-    def test_invalid_form_message(self):
-        form = CountryGroupEditForm(instance=CountryGroupFactory(), data={})
-        assert len(form.errors) == 1
-        message = form.errors["name"][0]
-        assert message == "You must enter this item"
 
 
 class TestCountryTranslationSetEditForm(TestCase):

@@ -77,9 +77,7 @@ class TestSanctionsAndAdhocImportAppplicationApplicantDetails(AuthTestCase):
         self.url = f"/import/sanctions/{self.process.pk}/edit/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
-        self.valid_country = Country.objects.filter(
-            country_groups__name="Sanctions and Adhoc License"
-        ).first()
+        self.valid_country = Country.util.get_all_countries().get(name="Iran")
 
     def test_anonymous_access_redirects(self):
         response = self.anonymous_client.get(self.url)

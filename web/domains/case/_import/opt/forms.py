@@ -99,7 +99,7 @@ class CompensatingProductsOPTFormBase(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        opt_coo_countries = Country.objects.filter(country_groups__name="OPT COOs", is_active=True)
+        opt_coo_countries = Country.app.get_opt_coo_countries()
 
         self.fields["cp_origin_country"].queryset = opt_coo_countries
         self.fields["cp_processing_country"].queryset = opt_coo_countries
@@ -167,9 +167,7 @@ class TemporaryExportedGoodsOPTFormBase(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields["teg_origin_country"].queryset = Country.objects.filter(
-            country_groups__name="OPT Temp Export COOs", is_active=True
-        )
+        self.fields["teg_origin_country"].queryset = Country.app.get_opt_temp_export_coo_countries()
 
 
 class EditTemporaryExportedGoodsOPTForm(OptionalFormMixin, TemporaryExportedGoodsOPTFormBase):
