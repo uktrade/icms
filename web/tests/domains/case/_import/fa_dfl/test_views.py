@@ -96,9 +96,7 @@ def test_validate_query_param_shows_errors(dfl_app_pk, importer_client):
 def test_edit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact):
     url = _get_view_url("edit", {"application_pk": dfl_app_pk})
 
-    dfl_countries = Country.objects.filter(
-        country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries"
-    )
+    dfl_countries = Country.util.get_all_countries()
     origin_country = dfl_countries[0]
     consignment_country = dfl_countries[1]
     constabulary = Constabulary.objects.first()
@@ -158,9 +156,7 @@ def test_add_goods_document_post_invalid(dfl_app_pk, importer_client):
 def test_add_goods_document_post_valid(dfl_app_pk, importer_client):
     url = _get_view_url("add-goods", kwargs={"application_pk": dfl_app_pk})
 
-    issuing_country = Country.objects.filter(
-        country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries"
-    ).first()
+    issuing_country = Country.app.get_fa_dfl_issuing_countries().first()
     goods_file = SimpleUploadedFile("myimage.png", b"file_content")
 
     form_data = {
@@ -237,10 +233,7 @@ def test_edit_goods_certificate_post_valid(dfl_app_pk, importer_client):
         "edit-goods", kwargs={"application_pk": dfl_app_pk, "document_pk": document_pk}
     )
 
-    issuing_country = Country.objects.filter(
-        country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries"
-    ).first()
-
+    issuing_country = Country.app.get_fa_dfl_issuing_countries().first()
     form_data = {
         "goods_description": "New goods description",
         "deactivated_certificate_reference": "New deactived certificate reference",
@@ -265,9 +258,7 @@ def test_edit_goods_certificate_post_valid(dfl_app_pk, importer_client):
 
 def _create_goods_cert(dfl_app_pk):
     dfl_app = DFLApplication.objects.get(pk=dfl_app_pk)
-    issuing_country = Country.objects.filter(
-        country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries"
-    ).first()
+    issuing_country = Country.app.get_fa_dfl_issuing_countries().first()
     dfl_app.goods_certificates.create(
         filename="test-file.txt",
         goods_description="goods_description value",
@@ -409,9 +400,7 @@ def test_submit_dfl_post_invalid(dfl_app_pk, importer_client, importer_one_conta
     )
 
     # Test the know bought from check
-    dfl_countries = Country.objects.filter(
-        country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries"
-    )
+    dfl_countries = Country.util.get_all_countries()
     origin_country = dfl_countries[0]
     consignment_country = dfl_countries[1]
     constabulary = Constabulary.objects.first()
@@ -458,9 +447,7 @@ def test_submit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact
     )
     submit_url = _get_view_url("submit", kwargs={"application_pk": dfl_app_pk})
 
-    dfl_countries = Country.objects.filter(
-        country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries"
-    )
+    dfl_countries = Country.util.get_all_countries()
     origin_country = dfl_countries[0]
     consignment_country = dfl_countries[1]
     constabulary = Constabulary.objects.first()
@@ -480,9 +467,7 @@ def test_submit_dfl_post_valid(dfl_app_pk, importer_client, importer_one_contact
     # Save the main application
     importer_client.post(edit_url, form_data)
 
-    issuing_country = Country.objects.filter(
-        country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries"
-    ).first()
+    issuing_country = Country.app.get_fa_dfl_issuing_countries().first()
     goods_file = SimpleUploadedFile("myimage.png", b"file_content")
 
     form_data = {

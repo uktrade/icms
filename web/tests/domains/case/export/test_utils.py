@@ -350,7 +350,9 @@ def gmp_app(export_common) -> CertificateOfGoodManufacturingPracticeApplication:
 def test_cfs_copy_template_to_export_application(cfs_cat, cfs_app, exporter_one_contact):
     # Update cfs_cat with some data
     cfs_template: CertificateOfFreeSaleApplicationTemplate = cfs_cat.cfs_template
-    cfs_template.countries.set(Country.objects.filter(name__in=["Argentina", "Barbados"]))
+    cfs_template.countries.set(
+        Country.app.get_cfs_countries().filter(name__in=["Argentina", "Barbados"])
+    )
 
     cfs_com = Country.objects.first()
     cfs_template.schedules.create(

@@ -2,10 +2,17 @@ import pytest
 from pytest_django.asserts import assertRedirects
 
 from web.domains.country.models import Country
+from web.domains.country.types import CountryGroupName
+from web.models import CountryGroup
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 
-from .factory import CountryFactory, CountryGroupFactory, CountryTranslationSetFactory
+from .factory import CountryFactory, CountryTranslationSetFactory
+
+
+@pytest.fixture()
+def country_group(db):
+    return CountryGroup.objects.get(name=CountryGroupName.EU)
 
 
 class TestCountryListView(AuthTestCase):
@@ -85,8 +92,6 @@ class TestCountryCreateView(AuthTestCase):
 class TestCountryGroupDefaultView(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, _setup):
-        CountryGroupFactory(name="Asian Countries")
-        CountryGroupFactory(name="American Countries")
         self.url = "/country/groups/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
@@ -110,8 +115,8 @@ class TestCountryGroupDefaultView(AuthTestCase):
 
 class TestCountryGroupView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup):
-        self.group = CountryGroupFactory(name="European Countries")
+    def setup(self, _setup, country_group):
+        self.group = country_group
         self.url = f"/country/groups/{self.group.id}/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
@@ -130,13 +135,13 @@ class TestCountryGroupView(AuthTestCase):
 
     def test_page_title(self):
         response = self.ilb_admin_client.get(self.url)
-        assert response.context_data["page_title"] == "Viewing European Countries - (0 countries)"
+        assert response.context_data["page_title"] == "Viewing EU - (28 countries)"
 
 
 class TestCountryGroupEditView(AuthTestCase):
     @pytest.fixture(autouse=True)
-    def setup(self, _setup):
-        self.group = CountryGroupFactory(name="African Countries")
+    def setup(self, _setup, country_group):
+        self.group = country_group
         self.url = f"/country/groups/{self.group.id}/edit/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
@@ -161,7 +166,7 @@ class TestCountryGroupEditView(AuthTestCase):
 
     def test_page_title(self):
         response = self.ilb_admin_client.get(self.url)
-        assert response.context_data["page_title"] == "Editing African Countries - (0 countries)"
+        assert response.context_data["page_title"] == "Editing EU - (28 countries)"
 
     def test_group_countries(self):
         self.setupCountries()

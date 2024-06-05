@@ -66,10 +66,7 @@ class DerogationsFormBase(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields["contact"].queryset = application_contacts(self.instance)
-
-        non_eu_countries = Country.objects.filter(
-            country_groups__name="Non EU Single Countries", is_active=True
-        )
+        non_eu_countries = Country.util.get_non_eu_countries()
         self.fields["consignment_country"].queryset = non_eu_countries
 
 

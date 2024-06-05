@@ -33,14 +33,12 @@ class ExportApplicationType(MigrationBase):
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["country_group_legacy_id", "country_of_manufacture_cg_id"]
-
-    @classmethod
-    def get_values_kwargs(cls) -> dict[str, Any]:
-        return {
-            "country_group_id": F("country_group_legacy__id"),
-            "country_group_for_manufacture_id": F("country_of_manufacture_cg__id"),
-        }
+        return super().get_excludes() + [
+            "country_group_legacy_id",
+            "country_of_manufacture_cg_id",
+            "country_group_id",
+            "country_group_for_manufacture_id",
+        ]
 
 
 class ExportApplication(MigrationBase):

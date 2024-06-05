@@ -17,9 +17,9 @@ ref_query_result = {
     queries.country_group: (
         [("country_group_id",), ("name",), ("comments",)],
         [
-            ("A", "TEST GROUP A", None),
-            ("B", "TEST GROUP B", "Comment B"),
-            ("C", "TEST GROUP C", "Comment C"),
+            ("FA_SIL_COO", "Firearms and Ammunition (SIL) COOs", None),
+            ("FA_SIL_COC", "Firearms and Ammunition (SIL) COCs", "Comment B"),
+            ("FA_OIL_COO", "Firearms and Ammunition (OIL) COOs", "Comment C"),
         ],
     ),
     queries.unit: (

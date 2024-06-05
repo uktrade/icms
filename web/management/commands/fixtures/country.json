@@ -2057,7 +2057,7 @@
   "fields": {
     "name": "Liberia",
     "is_active": true,
-    "type": "SYSTEM",
+    "type": "SOVEREIGN_TERRITORY",
     "commission_code": "268",
     "hmrc_code": "LR",
     "overseas_region": 1
@@ -2093,7 +2093,7 @@
   "fields": {
     "name": "Aruba",
     "is_active": true,
-    "type": "SYSTEM",
+    "type": "SOVEREIGN_TERRITORY",
     "commission_code": "474",
     "hmrc_code": "AW",
     "overseas_region": 6
@@ -2117,7 +2117,7 @@
   "fields": {
     "name": "Mali",
     "is_active": true,
-    "type": "SYSTEM",
+    "type": "SOVEREIGN_TERRITORY",
     "commission_code": "232",
     "hmrc_code": "ML",
     "overseas_region": 1
@@ -2177,7 +2177,7 @@
   "fields": {
     "name": "Cameroon",
     "is_active": true,
-    "type": "SYSTEM",
+    "type": "SOVEREIGN_TERRITORY",
     "commission_code": "302",
     "hmrc_code": "CM",
     "overseas_region": 1

@@ -36,15 +36,10 @@ class SanctionsAndAdhocLicenceFormBase(forms.ModelForm):
 
         self.fields["contact"].queryset = application_contacts(self.instance)
 
-        # Didn't use `get_usage_countries` for speed.
-        self.fields["origin_country"].queryset = Country.objects.filter(
-            country_groups__name="Sanctions and Adhoc License", is_active=True
-        )
-
-        self.fields["consignment_country"].queryset = Country.objects.filter(
-            country_groups__name="Sanctions and Adhoc License Countries of shipping (consignment)",
-            is_active=True,
-        )
+        # TODO: ICMSLST-2666 Use Country.app.get_sanctions_countries() in validation.
+        sanction_countries = Country.app.get_sanctions_coo_and_coc_countries()
+        self.fields["origin_country"].queryset = sanction_countries
+        self.fields["consignment_country"].queryset = sanction_countries
 
 
 class EditSanctionsAndAdhocLicenceForm(OptionalFormMixin, SanctionsAndAdhocLicenceFormBase):

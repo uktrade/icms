@@ -83,9 +83,9 @@ def create_test_dm_models():
         [
             dm.CountryGroup(**dict(zip(["id", "country_group_id", "name", "comments"], cg)))
             for cg in [
-                (200, "A", "TEST GROUP A", None),
-                (201, "B", "TEST GROUP B", "Comment B"),
-                (202, "C", "TEST GROUP C", "Comment C"),
+                (200, "FA_SIL_COO", "Firearms and Ammunition (SIL) COOs", None),
+                (201, "FA_SIL_COC", "Firearms and Ammunition (SIL) COCs", "Comment B"),
+                (202, "FA_OIL_COO", "Firearms and Ammunition (OIL) COOs", "Comment C"),
             ]
         ]
     )

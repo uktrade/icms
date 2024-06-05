@@ -106,9 +106,7 @@ def create_in_progress_fa_dfl_app(
     )
 
     # Save a valid set of data.
-    dfl_countries = Country.objects.filter(
-        country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries"
-    )
+    dfl_countries = Country.util.get_all_countries()
     origin_country = dfl_countries[0]
     consignment_country = dfl_countries[1]
     constabulary = Constabulary.objects.get(name="Derbyshire")
@@ -125,9 +123,7 @@ def create_in_progress_fa_dfl_app(
     save_app_data(
         client=importer_client, view_name="import:fa-dfl:edit", app_pk=app_pk, form_data=form_data
     )
-    issuing_country = Country.objects.filter(
-        country_groups__name="Firearms and Ammunition (Deactivated) Issuing Countries"
-    ).first()
+    issuing_country = Country.app.get_fa_dfl_issuing_countries().first()
 
     # Add a goods file to the fa-dfl app
     post_data = {
@@ -228,12 +224,8 @@ def create_in_progress_fa_sil_app(
         agent_office_pk=agent_office.pk if agent_office else None,
     )
     # Save a valid set of data.
-    origin_country = Country.objects.filter(
-        country_groups__name="Firearms and Ammunition (SIL) COCs"
-    ).first()
-    consignment_country = Country.objects.filter(
-        country_groups__name="Firearms and Ammunition (SIL) COOs"
-    ).first()
+    origin_country = Country.app.get_fa_sil_coo_countries().first()
+    consignment_country = Country.app.get_fa_sil_coc_countries().first()
 
     form_data = {
         "contact": importer_one_contact.pk,
@@ -324,12 +316,8 @@ def create_in_progress_sanctions_app(
         agent_office_pk=agent_office.pk if agent_office else None,
     )
     # Save a valid set of data.
-    origin_country = Country.objects.filter(
-        country_groups__name="Sanctions and Adhoc License"
-    ).first()
-    consignment_country = Country.objects.filter(
-        country_groups__name="Sanctions and Adhoc License Countries of shipping (consignment)"
-    ).first()
+    origin_country = Country.util.get_all_countries().get(name="Iran")
+    consignment_country = Country.util.get_all_countries().first()
 
     form_data = {
         "contact": importer_contact.pk,
@@ -529,7 +517,7 @@ def create_in_progress_cfs_app(
         "goods_placed_on_uk_market": "no",
         "goods_export_only": "yes",
         "any_raw_materials": "no",
-        "country_of_manufacture": Country.objects.first().pk,
+        "country_of_manufacture": Country.app.get_cfs_com_countries().first().pk,
         "schedule_statements_accordance_with_standards": True,
         "schedule_statements_is_responsible_person": True,
         "manufacturer_name": "Man Name",

@@ -30,17 +30,16 @@ class FirearmOILFormBase(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.all_countries_queryset = Country.objects.filter(name="Any Country", is_active=True)
-        self.all_countries_object = self.all_countries_queryset.get()
+        self.origin_country_qs = Country.app.get_fa_oil_coo_countries()
+        self.consignment_country_qs = Country.app.get_fa_oil_coc_countries()
 
-        locked_location_field_kwargs = {
-            "queryset": self.all_countries_queryset,
-            "help_text": None,
-            "empty_label": None,
-            "disabled": True,
-        }
-        self.fields["origin_country"] = forms.ModelChoiceField(**locked_location_field_kwargs)
-        self.fields["consignment_country"] = forms.ModelChoiceField(**locked_location_field_kwargs)
+        locked_location_field_kwargs = {"help_text": None, "empty_label": None, "disabled": True}
+        self.fields["origin_country"] = forms.ModelChoiceField(
+            queryset=self.origin_country_qs, **locked_location_field_kwargs
+        )
+        self.fields["consignment_country"] = forms.ModelChoiceField(
+            queryset=self.consignment_country_qs, **locked_location_field_kwargs
+        )
 
         self.fields["contact"].queryset = application_contacts(self.instance)
 
@@ -48,8 +47,9 @@ class FirearmOILFormBase(forms.ModelForm):
         cleaned_data = super().clean()
 
         # because these fields are disabled, they are included correctly in the cleaned_data
-        cleaned_data["origin_country"] = self.all_countries_object
-        cleaned_data["consignment_country"] = self.all_countries_object
+        cleaned_data["origin_country"] = self.origin_country_qs.get()
+        cleaned_data["consignment_country"] = self.consignment_country_qs.get()
+
         return cleaned_data
 
 

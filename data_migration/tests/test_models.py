@@ -36,21 +36,6 @@ def test_country_data_export():
 
 
 @pytest.mark.django_db
-def test_import_application_type_related():
-    iat = factory.ImportApplicationTypeFactory()
-    result = iat.get_related()
-    expected = [
-        "commodity_type",
-        "consignment_country_group",
-        "default_commodity_group",
-        "master_country_group",
-        "origin_country_group",
-    ]
-
-    assert sorted(result) == expected
-
-
-@pytest.mark.django_db
 def test_import_application_type_values():
     iat = factory.ImportApplicationTypeFactory()
     result = iat.get_values()
@@ -60,15 +45,9 @@ def test_import_application_type_values():
         "chief_category_prefix",
         "chief_flag",
         "chief_licence_prefix",
-        "commodity_type__id",
-        "commodity_type_id",
-        "consignment_country_group__id",
-        "consignment_country_group_id",
         "cover_letter_flag",
         "cover_letter_schedule_flag",
         "default_commodity_desc",
-        "default_commodity_group__id",
-        "default_commodity_group_id",
         "default_licence_length_months",
         "electronic_licence_flag",
         "exp_cert_upload_flag",
@@ -78,12 +57,8 @@ def test_import_application_type_values():
         "is_active",
         "licence_category_description",
         "licence_type_code",
-        "master_country_group__id",
-        "master_country_group_id",
         "multiple_commodities_flag",
         "name",
-        "origin_country_group__id",
-        "origin_country_group_id",
         "paper_licence_flag",
         "quantity_unlimited_flag",
         "sigl_category_prefix",
@@ -111,10 +86,8 @@ def test_import_application_type_data_export():
         data_dict[field] = 1234
 
     result = iat.data_export(data_dict)
-    assert len(result.keys()) == 33
+    assert len(result.keys()) == 28
     assert result["sigl_flag"] is True
-    assert result["origin_country_group_id"] == 1234
-    assert "origin_country_group__id" not in result
 
 
 @pytest.mark.django_db

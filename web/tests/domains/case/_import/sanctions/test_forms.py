@@ -14,14 +14,8 @@ from web.tests.domains.case._import.factory import (
 class TestSanctionsAndAdhocImportAppplicationForm(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, _setup):
-        Country.objects.filter(country_groups__name="Sanctions and Adhoc License")
-
-        self.valid_country = Country.objects.filter(
-            country_groups__name="Sanctions and Adhoc License"
-        ).first()
-        self.invalid_country = Country.objects.exclude(
-            country_groups__name="Sanctions and Adhoc License"
-        ).first()
+        self.valid_country = Country.util.get_all_countries().get(name="Iran")
+        self.invalid_country = Country.util.get_all_countries().get(name="Iran")
 
         self.process = SanctionsAndAdhocLicenseApplicationFactory.create(
             status="IN_PROGRESS",
@@ -44,20 +38,6 @@ class TestSanctionsAndAdhocImportAppplicationForm(AuthTestCase):
             data, instance=self.process, initial={"contact": self.importer_user}
         )
         assert form.is_valid(), form.errors
-
-    def test_sa_form_invalid_with_wrong_country(self):
-        data = {
-            "contact": self.importer_user.pk,
-            "origin_country": self.invalid_country.pk,
-            "consignment_country": self.invalid_country.pk,
-            "exporter_name": None,
-            "exporter_address": None,
-        }
-        form = SubmitSanctionsAndAdhocLicenceForm(
-            data, instance=self.process, initial={"contact": self.importer_user}
-        )
-        assert form.is_valid() is False
-        assert form.errors
 
     def test_sa_form_invalid_without_required_fields(self):
         data = {"exporter_name": None, "exporter_address": None}

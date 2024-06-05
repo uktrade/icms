@@ -62,13 +62,8 @@ class TextilesFormBase(forms.ModelForm):
             ("false", "No"),
         ]
 
-        self.fields["origin_country"].queryset = Country.objects.filter(
-            country_groups__name="Textile COOs", is_active=True
-        )
-
-        self.fields["consignment_country"].queryset = Country.objects.filter(
-            country_groups__name="Textile COCs", is_active=True
-        )
+        self.fields["origin_country"].queryset = Country.app.get_textiles_coo_countries()
+        self.fields["consignment_country"].queryset = Country.util.get_all_countries()
 
 
 class EditTextilesForm(OptionalFormMixin, TextilesFormBase):

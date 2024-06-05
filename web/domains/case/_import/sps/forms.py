@@ -33,10 +33,7 @@ class SPSFormBase(forms.ModelForm):
         self.fields["contact"].queryset = application_contacts(self.instance)
 
         self.fields["customs_cleared_to_uk"].required = True
-
-        countries = Country.objects.filter(
-            country_groups__name="Non EU Single Countries", is_active=True
-        )
+        countries = Country.util.get_non_eu_countries()
         self.fields["origin_country"].queryset = countries
         self.fields["consignment_country"].queryset = countries
 

@@ -1014,11 +1014,8 @@ ia_query_result = {
             ("case_checklist_flag",),
             ("importer_printable",),
             ("commodity_type_id",),
-            ("consignment_country_group_id",),
             ("declaration_template_code_id",),
             ("default_commodity_group_id",),
-            ("master_country_group_id",),
-            ("origin_country_group_id",),
         ],
         [
             (
@@ -1046,11 +1043,8 @@ ia_query_result = {
                 "true",  # case_checklist_flag
                 "false",  # importer_printable
                 "TYPE_A",  # commodity_type_id
-                "A",  # consignment_country_group_id
                 "IMA_GEN_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
-                None,  # master_country_group_id
-                "A",  # origin_country_group_id
             ),
             (
                 3,  # id
@@ -1077,11 +1071,8 @@ ia_query_result = {
                 "true",  # case_checklist_flag
                 "false",  # importer_printable
                 "TYPE_A",  # commodity_type_id
-                "A",  # consignment_country_group_id
                 "IMA_OPT_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
-                None,  # master_country_group_id
-                "A",  # origin_country_group_id
             ),
             (
                 4,  # id
@@ -1108,11 +1099,8 @@ ia_query_result = {
                 "true",  # case_checklist_flag
                 "false",  # importer_printable
                 None,  # commodity_type_id
-                "A",  # consignment_country_group_id
                 "IMA_GEN_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
-                None,  # master_country_group_id
-                "A",  # origin_country_group_id
             ),
             (
                 5,  # id
@@ -1139,11 +1127,8 @@ ia_query_result = {
                 "true",  # case_checklist_flag
                 "false",  # importer_printable
                 "TYPE_B",  # commodity_type_id
-                "A",  # consignment_country_group_id
                 "IMA_GEN_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
-                "A",  # master_country_group_id
-                "A",  # origin_country_group_id
             ),
             (
                 6,  # id
@@ -1170,11 +1155,8 @@ ia_query_result = {
                 "true",  # case_checklist_flag
                 "false",  # importer_printable
                 "TYPE_B",  # commodity_type_id
-                "A",  # consignment_country_group_id
                 "IMA_GEN_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
-                "A",  # master_country_group_id
-                "A",  # origin_country_group_id
             ),
             (
                 9,  # id
@@ -1201,11 +1183,8 @@ ia_query_result = {
                 "true",  # case_checklist_flag
                 "false",  # importer_printable
                 "TYPE_A",  # commodity_type_id
-                "A",  # consignment_country_group_id
                 "IMA_GEN_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
-                None,  # master_country_group_id
-                "A",  # origin_country_group_id
             ),
             (
                 10,  # id
@@ -1232,11 +1211,8 @@ ia_query_result = {
                 "true",  # case_checklist_flag
                 "false",  # importer_printable
                 "TYPE_B",  # commodity_type_id
-                "A",  # consignment_country_group_id
                 "IMA_GEN_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
-                "A",  # master_country_group_id
-                "A",  # origin_country_group_id
             ),
             (
                 11,  # id
@@ -1263,11 +1239,8 @@ ia_query_result = {
                 "true",  # case_checklist_flag
                 "false",  # importer_printable
                 "TYPE_B",  # commodity_type_id
-                "A",  # consignment_country_group_id
                 "IMA_GEN_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
-                "A",  # master_country_group_id
-                "A",  # origin_country_group_id
             ),
             (
                 12,  # id
@@ -1294,11 +1267,8 @@ ia_query_result = {
                 "true",  # case_checklist_flag
                 "false",  # importer_printable
                 "TYPE_B",  # commodity_type_id
-                "A",  # consignment_country_group_id
                 "IMA_GEN_DECLARATION",  # declaration_template_code_id
                 None,  # default_commodity_group_id
-                "A",  # master_country_group_id
-                "A",  # origin_country_group_id
             ),
         ],
     ),

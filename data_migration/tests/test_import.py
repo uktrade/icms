@@ -54,9 +54,15 @@ def test_import_ref_data(dummy_dm_settings):
 
     last_cg = web.CountryGroup.objects.order_by("pk").last()
     cg_pk = (last_cg and last_cg.pk + 1) or 1
-    cg1 = dm.CountryGroup.objects.create(id=cg_pk, country_group_id="A", name="A")
-    cg2 = dm.CountryGroup.objects.create(id=cg_pk + 1, country_group_id="B", name="B")
-    cg3 = dm.CountryGroup.objects.create(id=cg_pk + 2, country_group_id="C", name="C")
+    cg1 = dm.CountryGroup.objects.create(
+        id=cg_pk, country_group_id="CFS", name="Certificate of Free Sale Countries"
+    )
+    cg2 = dm.CountryGroup.objects.create(
+        id=cg_pk + 1, country_group_id="COM", name="Certificate of Manufacture Countries"
+    )
+    cg3 = dm.CountryGroup.objects.create(
+        id=cg_pk + 2, country_group_id="GMP", name="Goods Manufacturing Practice Countries"
+    )
 
     last_cgc = web.CountryGroup.countries.through.objects.order_by("pk").last()
     cgc_pk = (last_cgc and last_cgc.pk + 1) or 1
@@ -73,10 +79,10 @@ def test_import_ref_data(dummy_dm_settings):
     )
 
     call_command("import_v1_data", "--skip_user", "--skip_ia", "--skip_task", "--skip_file")
-    assert web.CountryGroup.objects.filter(name__in=["A", "B", "C"]).count() == 3
-    assert web.CountryGroup.objects.get(name="A").countries.count() == 1
-    assert web.CountryGroup.objects.get(name="B").countries.count() == 2
-    assert web.CountryGroup.objects.get(name="C").countries.count() == 1
+    assert web.CountryGroup.objects.filter(name__in=["CFS", "COM", "GMP"]).count() == 3
+    assert web.CountryGroup.objects.get(name="CFS").countries.count() == 1
+    assert web.CountryGroup.objects.get(name="COM").countries.count() == 2
+    assert web.CountryGroup.objects.get(name="GMP").countries.count() == 1
 
 
 start_test_source_target = {

@@ -24,7 +24,7 @@ from web.domains.chief import types as chief_types
 from web.domains.chief import utils as chief_utils
 from web.flow.models import ProcessTypes
 from web.models import (
-    CountryGroup,
+    Country,
     DerogationsApplication,
     DFLApplication,
     ICMSHMRCChiefRequest,
@@ -526,14 +526,14 @@ class IMICaseListView(PermissionRequiredMixin, LoginRequiredMixin, ListView):
 
     def get_queryset(self) -> "QuerySet[ImportApplication]":
         """Return all applications that have been acknowledged."""
-        imi_eu_countries = CountryGroup.objects.get(name="EU Countries (IMI Cases)").countries.all()
+        eu_countries = Country.util.get_eu_countries()
         qs = ImportApplication.objects.filter(
             application_type__type=ImportApplicationType.Types.FIREARMS,
             application_type__sub_type=ImportApplicationType.SubTypes.SIL,
             status=ImpExpStatus.COMPLETED,
             decision=ImportApplication.APPROVE,
             importer_office__postcode__istartswith="BT",
-            consignment_country__in=imi_eu_countries,
+            consignment_country__in=eu_countries,
             imi_submitted_by__isnull=True,
         )
 

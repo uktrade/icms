@@ -69,13 +69,8 @@ class IronSteelFormBase(forms.ModelForm):
             ("false", "No"),
         ]
 
-        self.fields["origin_country"].queryset = Country.objects.filter(
-            country_groups__name="Iron and Steel (Quota) COOs", is_active=True
-        )
-
-        self.fields["consignment_country"].queryset = Country.objects.filter(
-            country_groups__name="Iron and Steel (Quota) COCs", is_active=True
-        )
+        self.fields["origin_country"].queryset = Country.app.get_iron_coo_countries()
+        self.fields["consignment_country"].queryset = Country.util.get_all_countries()
 
 
 class EditIronSteelForm(OptionalFormMixin, IronSteelFormBase):

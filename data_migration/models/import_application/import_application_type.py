@@ -72,18 +72,15 @@ class ImportApplicationType(MigrationBase):
         CommodityGroup, on_delete=models.SET_NULL, to_field="group_code", null=True
     )
 
-    @staticmethod
-    def get_excludes() -> list[str]:
-        return ["declaration_template_code_id"]
-
-    @staticmethod
-    def get_includes() -> list[str]:
+    @classmethod
+    def get_excludes(cls) -> list[str]:
         return [
-            "commodity_type__id",
-            "consignment_country_group__id",
-            "default_commodity_group__id",
-            "master_country_group__id",
-            "origin_country_group__id",
+            "declaration_template_code_id",
+            "origin_country_group_id",
+            "consignment_country_group_id",
+            "master_country_group_id",
+            "commodity_type_id",
+            "default_commodity_group_id",
         ]
 
     @classmethod

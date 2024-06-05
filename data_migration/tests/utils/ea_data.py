@@ -85,9 +85,20 @@ ea_query_result = {
             ("country_of_manufacture_cg_id",),
         ],
         [
-            (1, 1, "CFS", "Certificate of Free Sale", 1, 0, 0, "A", None),
-            (2, 1, "COM", "Certificate of Manufacture", 0, 0, 0, "B", None),
-            (21, 1, "GMP", "Certificate of Good Manufacturing Practice", 1, 0, 0, "C", None),
+            # Invalid country_group_legacy_id values (but it isn't used for anything)
+            (1, 1, "CFS", "Certificate of Free Sale", 1, 0, 0, "FA_SIL_COO", None),
+            (2, 1, "COM", "Certificate of Manufacture", 0, 0, 0, "FA_SIL_COC", None),
+            (
+                21,
+                1,
+                "GMP",
+                "Certificate of Good Manufacturing Practice",
+                1,
+                0,
+                0,
+                "FA_OIL_COO",
+                None,
+            ),
         ],
     ),
     queries.gmp_application: (

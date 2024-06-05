@@ -47,7 +47,7 @@ def cfs_create(page: Page) -> int:
     page.locator("#id_any_raw_materials").get_by_text("Yes").click()
     page.get_by_label("End Use or Final Product").click()
     page.get_by_label("End Use or Final Product").fill("End Use or Final Product value")
-    page.get_by_role("combobox", name="Country Of Manufacture").select_option("1")
+    page.get_by_role("combobox", name="Country Of Manufacture").select_option("38")
     page.get_by_text(
         "These products are manufactured in accordance with the Good Manufacturing Practi"
     ).click()

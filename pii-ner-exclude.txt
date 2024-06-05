@@ -4709,3 +4709,28 @@ Kropatschek
 Exptl
 58 mm
 Webley Carbine
+Get Certificate of Free Sale
+Get Certificate of Manufacture
+Get Certificate of Good Manufacturing Practice
+Get FA-DFL
+Get FA-OIL
+Get FA-SIL
+ICMSLST-2666 Use Country.app.get_sanctions_countries(
+ICMSLST-2666 Use
+Get Sanctions countries
+Get Wood
+Get Sanctions origin and consignment countries
+DB Field
+Duplicate the enum value to
+Refactor
+ICMSLST-2666 Use Country.app.get_sanctions_countries
+Inactive Application
+Match the V1 Country Group Name
+V2 Country Group
+FA_SIL_COC
+OPT_TEMP_EXPORT_COO
+Match the V1 Country Group Name
+V2 Country Group
+FA_SIL_COC
+OPT_TEMP_EXPORT_COO
+F("country_group_legacy__id

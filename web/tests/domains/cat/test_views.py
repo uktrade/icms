@@ -9,11 +9,11 @@ from pytest_django.asserts import assertTemplateUsed
 
 from web.domains.cat.forms import CATFilter
 from web.domains.cat.views import CatSteps
-from web.domains.country.models import Country
 from web.models import (
     CertificateApplicationTemplate,
     CertificateOfFreeSaleApplicationTemplate,
     CertificateOfGoodManufacturingPracticeApplicationTemplate,
+    Country,
     ExportApplicationType,
     ProductLegislation,
 )
@@ -188,9 +188,7 @@ class TestCATEditView(AuthTestCase):
         response = self.exporter_client.get(url)
         assert response.status_code == HTTPStatus.OK
         assertTemplateUsed(response, "web/domains/cat/cfs/edit.html")
-        valid_countries = ExportApplicationType.objects.get(
-            type_code=ExportApplicationType.Types.FREE_SALE
-        ).country_group.countries.filter(is_active=True)
+        valid_countries = Country.app.get_cfs_countries()
         first_vc = valid_countries.first()
         form_data = {"countries": [first_vc.pk]}
         response = self.exporter_client.post(url, data=form_data)

@@ -39,6 +39,7 @@ from web.models import (
     CFSProductActiveIngredient,
     CFSProductType,
     CFSSchedule,
+    Country,
     ExportApplicationType,
     Exporter,
     GMPFile,
@@ -189,12 +190,9 @@ def create_export_application(
                     process=application, task_type=Task.TaskType.PREPARE, owner=request.user
                 )
 
-                # GMP applications are for China only
                 if application.application_type.type_code == ExportApplicationType.Types.GMP:
                     # GMP applications are for China only
-                    country = application.application_type.country_group.countries.filter(
-                        is_active=True
-                    ).first()
+                    country = Country.app.get_gmp_countries().first()
                     application.countries.add(country)
                 elif (
                     application_type.type_code == ExportApplicationType.Types.FREE_SALE

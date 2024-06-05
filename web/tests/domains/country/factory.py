@@ -2,7 +2,7 @@ import random
 
 import factory.fuzzy
 
-from web.models import Country, CountryGroup, CountryTranslation, CountryTranslationSet
+from web.models import Country, CountryTranslation, CountryTranslationSet
 
 
 class CountryFactory(factory.django.DjangoModelFactory):
@@ -14,14 +14,6 @@ class CountryFactory(factory.django.DjangoModelFactory):
     type = factory.fuzzy.FuzzyChoice(Country.TYPES, getter=lambda t: t[0])
     commission_code = factory.Faker("pystr", max_chars=20)
     hmrc_code = factory.Faker("pystr", max_chars=20)
-
-
-class CountryGroupFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = CountryGroup
-
-    name = factory.Faker("sentence", nb_words=2)
-    comments = factory.Faker("paragraph", nb_sentences=2)
 
 
 class CountryTranslationSetFactory(factory.django.DjangoModelFactory):

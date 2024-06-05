@@ -3,12 +3,26 @@ from django.urls import reverse
 
 from web.models.mixins import Archivable
 
+from .managers import ApplicationCountryManager, UtilityCountryManager
+from .types import CountryGroupName
+
 
 class Country(models.Model):
+    # Default manager.
+    objects = models.Manager()
+    # Custom Managers.
+    app = ApplicationCountryManager()
+    util = UtilityCountryManager()
+
     SOVEREIGN_TERRITORY = "SOVEREIGN_TERRITORY"
     SYSTEM = "SYSTEM"
-
     TYPES = ((SOVEREIGN_TERRITORY, "Sovereign Territory"), (SYSTEM, "System"))
+
+    class Meta:
+        ordering = ("name",)
+        constraints = [
+            models.UniqueConstraint(fields=["name", "is_active"], name="country_group_unique")
+        ]
 
     name = models.CharField(max_length=4000, blank=False, null=False, unique=True)
     is_active = models.BooleanField(blank=False, null=False, default=True)
@@ -30,17 +44,13 @@ class Country(models.Model):
     def name_slug(self):
         return self.name.lower().replace(" ", "_")
 
-    class Meta:
-        ordering = ("name",)
-        constraints = [
-            models.UniqueConstraint(fields=["name", "is_active"], name="country_group_unique")
-        ]
-
 
 class CountryGroup(models.Model):
-    # TODO: ICMSLST-2671 Use CountryGroupName as choices.
     name = models.CharField(
-        max_length=4000, blank=False, null=False, unique=True, verbose_name="Group Name"
+        max_length=255,
+        unique=True,
+        verbose_name="Group Name",
+        choices=CountryGroupName.choices,
     )
     comments = models.CharField(
         max_length=4000, blank=True, null=True, verbose_name="Group Comments"
