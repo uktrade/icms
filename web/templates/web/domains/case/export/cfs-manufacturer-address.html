@@ -21,6 +21,7 @@
 {% endblock %}
 
 {% block form_content %}
+  {% include "partial/case/save-info-box.html" %}
   {{ fields.address_fields(
     form,
     'manufacturer_name',

@@ -1,6 +1,7 @@
 {% extends "web/domains/case/applicant-base.html" %}
 
 {% block main_content %}
+  {% include "partial/case/save-info-box.html" %}
   <h4>Goods</h4>
   {% if goods_list %}
     <table class="setoutList">

@@ -7,7 +7,7 @@
  {% block main_content %}
 
    {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
-
+     {% include "partial/case/save-info-box.html" %}
      {% include "partial/case/application-contact-details.html" %}
 
      <h4>Wood (Quota)</h4>

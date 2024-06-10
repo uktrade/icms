@@ -1,6 +1,7 @@
 {% extends "web/domains/case/applicant-base.html" %}
 
 {% block main_content %}
+  {% include "partial/case/save-info-box.html" %}
   <h4>Goods Certificates</h4>
   {% with read_only = false %}
     {% include "partial/case/import/fa-dfl/goods-list.html" %}
