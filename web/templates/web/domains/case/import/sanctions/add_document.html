@@ -18,8 +18,8 @@
 {% endblock %}
 
 {% block main_content %}
-
-    <h4>Sanctions and Adhoc License</h4>
+    {% include "partial/case/save-info-box.html" %}
+    <h4>Sanctions and Adhoc Licence</h4>
 
     {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
 

@@ -19,6 +19,7 @@
 {% endblock %}
 
 {% block main_content %}
+  {% include "partial/case/save-info-box.html" %}
   <h4>Add Goods Certificate</h4>
   {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
     {{ fields.field(form.goods_description) }}

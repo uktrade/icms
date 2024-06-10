@@ -20,6 +20,7 @@
 {% endblock %}
 
 {% block main_content %}
+  {% include "partial/case/save-info-box.html" %}
   <h3>Details of who bought from</h3>
     {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
       {% for field in form %}

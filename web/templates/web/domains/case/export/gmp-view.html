@@ -10,7 +10,7 @@
     {{ application_field(process.brand_name, process|verbose_name('brand_name')) }}
   {% endcall %}
 
-  {% call application_section("Responisbible Person") %}
+  {% call application_section("Responsible Person") %}
     {{ application_field(process.is_responsible_person|capitalize, process|verbose_name('is_responsible_person'))}}
     {{ application_field(process.responsible_person_name, "Name")}}
     {{ application_field(process.responsible_person_address, "Address")}}
