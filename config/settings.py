@@ -477,21 +477,24 @@ CSP_SCRIPT_SRC = (
 # JS scripts can import other scripts, following the same rules as above
 CSP_CONNECT_SRC = CSP_SCRIPT_SRC
 
-# CSS elements with a src attribute can only be loaded from ICMS itself or inline, e.g. <style> tags
+# CSS elements with a src attribute can only be loaded from ICMS itself, google,  or inline, e.g. <style> tags
 CSP_STYLE_SRC = (
     "'self'",
     "'unsafe-inline'",
+    "https://www.fonts.gstatic.com",
 )
-# Fonts can only be loaded from ICMS itself or data URIs
+# Fonts can only be loaded from ICMS itself, google, or data URIs
 CSP_FONT_SRC = (
     "'self'",
     "data:",
+    "https://www.fonts.gstatic.com",
 )
-# Images can only be loaded from ICMS itself or data URIs
+# Images can only be loaded from ICMS itself, google, or data URIs
 CSP_IMG_SRC = (
     "'self'",
     "data:",
     "https://www.googletagmanager.com",
+    "https://www.fonts.gstatic.com",
 )
 
 # CSP meta-settings
