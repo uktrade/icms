@@ -4715,15 +4715,12 @@ Get Certificate of Good Manufacturing Practice
 Get FA-DFL
 Get FA-OIL
 Get FA-SIL
-ICMSLST-2666 Use Country.app.get_sanctions_countries(
-ICMSLST-2666 Use
 Get Sanctions countries
 Get Wood
 Get Sanctions origin and consignment countries
 DB Field
 Duplicate the enum value to
 Refactor
-ICMSLST-2666 Use Country.app.get_sanctions_countries
 Inactive Application
 Match the V1 Country Group Name
 V2 Country Group

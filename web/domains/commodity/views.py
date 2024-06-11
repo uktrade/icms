@@ -81,7 +81,6 @@ class CommodityGroupListView(ModelFilterView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-
         return qs.select_related("commodity_type").prefetch_related("commodities")
 
     class Display:

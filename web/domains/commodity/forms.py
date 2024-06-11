@@ -117,7 +117,6 @@ class CommodityGroupFilter(FilterSet):
         label="Commodity Type",
         empty_label="Any",
     )
-
     group_code = CharFilter(field_name="group_code", lookup_expr="icontains", label="Group Code")
     group_name = CharFilter(field_name="group_name", lookup_expr="icontains", label="Group Name")
     group_description = CharFilter(
@@ -130,7 +129,15 @@ class CommodityGroupFilter(FilterSet):
         queryset=Unit.objects.all(),
         empty_label="Any",
     )
-
+    application_type = ModelChoiceFilter(
+        queryset=ImportApplicationType.objects.filter(is_active=True),
+        field_name="usages__application_type",
+        label="Application Type",
+        help_text=(
+            "Shows all commodity group usages relating to the chosen application type."
+            " Mainly useful for Sanctions and Adhoc Licence Application"
+        ),
+    )
     is_archived = BooleanFilter(
         field_name="is_active",
         widget=CheckboxInput,
