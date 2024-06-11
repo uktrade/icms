@@ -21,7 +21,6 @@ from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 from web.views import ModelFilterView
 from web.views.actions import Archive, Edit, Unarchive
-from web.views.mixins import PostActionMixin
 
 from .forms import (
     ArchiveFirearmsAuthorityForm,
@@ -42,7 +41,7 @@ from .models import (
 logger = logging.getLogger(__name__)
 
 
-class ObsoleteCalibreListView(PostActionMixin, ModelFilterView):
+class ObsoleteCalibreListView(ModelFilterView):
     template_name = "web/domains/firearms/group/list.html"
     filterset_class = ObsoleteCalibreGroupFilter
     model = ObsoleteCalibreGroup
