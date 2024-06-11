@@ -1,6 +1,7 @@
 import pytest
 
 from web.domains.case._import.sanctions.forms import (
+    EditSanctionsAndAdhocLicenceForm,
     GoodsForm,
     SubmitSanctionsAndAdhocLicenceForm,
 )
@@ -15,7 +16,6 @@ class TestSanctionsAndAdhocImportAppplicationForm(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, _setup):
         self.valid_country = Country.util.get_all_countries().get(name="Iran")
-        self.invalid_country = Country.util.get_all_countries().get(name="Iran")
 
         self.process = SanctionsAndAdhocLicenseApplicationFactory.create(
             status="IN_PROGRESS",
@@ -63,3 +63,71 @@ class TestSanctionsAndAdhocImportAppplicationForm(AuthTestCase):
         form = GoodsForm(data, application=self.process)
         assert form.is_valid() is False
         assert len(form.errors) == 4
+
+    def test_sanctioned_country_selected(self):
+        sanctioned_countries = Country.app.get_sanctions_countries()
+        invalid_countries = Country.util.get_all_countries().exclude(
+            pk__in=sanctioned_countries.values_list("pk")
+        )
+
+        # Test both invalid
+        form = EditSanctionsAndAdhocLicenceForm(
+            data={
+                "origin_country": invalid_countries[0],
+                "consignment_country": invalid_countries[1],
+            },
+            instance=self.process,
+        )
+        assert not form.is_valid()
+        assert form.errors["origin_country"][0] == (
+            "The country of manufacture or country of shipment must be one of Belarus, Iran,"
+            " Korea (North), Libya, Russian Federation, Somalia or Syria"
+        )
+
+        # Test sanctioned origin_country is valid
+        form = EditSanctionsAndAdhocLicenceForm(
+            data={
+                "origin_country": sanctioned_countries[0],
+                "consignment_country": invalid_countries[0],
+            },
+            instance=self.process,
+        )
+        assert form.is_valid()
+
+        # Test sanctioned consignment_country is valid.
+        form = EditSanctionsAndAdhocLicenceForm(
+            data={
+                "origin_country": invalid_countries[0],
+                "consignment_country": sanctioned_countries[0],
+            },
+            instance=self.process,
+        )
+        assert form.is_valid()
+
+    def test_sanctions_goods_filter(self):
+        #
+        # No countries selected == no commodities available.
+        self.process.origin_country = None
+        self.process.consignment_country = None
+        self.process.save()
+
+        form = GoodsForm(application=self.process)
+        assert not form.fields["commodity"].queryset.exists()
+
+        #
+        # Setting origin country to sanctioned country == commodities available
+        self.process.origin_country = Country.app.get_sanctions_countries().get(name="Iran")
+        self.process.consignment_country = None
+        self.process.save()
+
+        form = GoodsForm(application=self.process)
+        assert form.fields["commodity"].queryset.exists()
+
+        #
+        # Setting consignment country to sanctioned country == commodities available
+        self.process.origin_country = None
+        self.process.consignment_country = Country.app.get_sanctions_countries().get(name="Syria")
+        self.process.save()
+
+        form = GoodsForm(application=self.process)
+        assert form.fields["commodity"].queryset.exists()

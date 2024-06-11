@@ -30,16 +30,45 @@ class SanctionsAndAdhocLicenceFormBase(forms.ModelForm):
             "exporter_name",
             "exporter_address",
         )
+        labels = {
+            "origin_country": "Country of manufacture (origin)",
+            "consignment_country": "Country of shipment (consignment)",
+        }
+        help_texts = {
+            "consignment_country": (
+                "Country from which the goods will be physically consigned or despatched."
+            )
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.fields["contact"].queryset = application_contacts(self.instance)
 
-        # TODO: ICMSLST-2666 Use Country.app.get_sanctions_countries() in validation.
         sanction_countries = Country.app.get_sanctions_coo_and_coc_countries()
         self.fields["origin_country"].queryset = sanction_countries
         self.fields["consignment_country"].queryset = sanction_countries
+
+    def clean(self) -> dict[str, Any]:
+        cleaned_data = super().clean()
+
+        origin = cleaned_data.get("origin_country")
+        consignment = cleaned_data.get("consignment_country")
+
+        if origin and consignment:
+            sanctioned = Country.app.get_sanctions_countries().values_list("pk", flat=True)
+            # One or both countries should be sanctioned
+            if origin.pk not in sanctioned and consignment.pk not in sanctioned:
+                # values_list doesn't support negative indexing so create a list.
+                names = list(
+                    Country.app.get_sanctions_countries()
+                    .order_by("name")
+                    .values_list("name", flat=True)
+                )
+                error = f"The country of manufacture or country of shipment must be one of {', '.join(names[:-1])} or {names[-1]}"
+                self.add_error("origin_country", error)
+
+        return cleaned_data
 
 
 class EditSanctionsAndAdhocLicenceForm(OptionalFormMixin, SanctionsAndAdhocLicenceFormBase):
@@ -71,10 +100,17 @@ class GoodsForm(forms.ModelForm):
     ) -> None:
         super().__init__(*args, **kwargs)
 
-        country_of_origin = application.origin_country
+        sanctioned_countries = Country.app.get_sanctions_countries()
+
+        countries_to_search = []
+        if application.origin_country in sanctioned_countries:
+            countries_to_search.append(application.origin_country)
+
+        if application.consignment_country in sanctioned_countries:
+            countries_to_search.append(application.consignment_country)
 
         usage_records = get_usage_records(ImportApplicationType.Types.SANCTION_ADHOC).filter(
-            country=country_of_origin
+            country__in=countries_to_search
         )
 
         self.fields["commodity"].queryset = get_usage_commodities(usage_records)
