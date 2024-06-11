@@ -406,6 +406,7 @@ LOGGING: dict[str, Any] = {
             "level": "INFO",
             "propagate": False,
         },
+        "mohawk": {"level": "INFO"},
     },
 }
 
