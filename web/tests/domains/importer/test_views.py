@@ -4,7 +4,6 @@ from urllib.parse import urljoin
 
 import freezegun
 import pytest
-from django.contrib.messages import get_messages
 from django.urls import reverse
 from django.utils import timezone
 from guardian.shortcuts import remove_perm
@@ -23,6 +22,19 @@ from web.tests.helpers import (
     get_messages_from_response,
 )
 from web.utils.s3 import get_file_from_s3
+
+
+@pytest.fixture
+def fake_company_api_response():
+    with patch("web.domains.importer.forms.api_get_company") as api_get_company:
+        api_get_company.return_value = {
+            "registered_office_address": {
+                "address_line_1": "60 rue Wiertz",
+                "postcode": "B-1047",
+                "locality": "Bruxelles",
+            }
+        }
+        yield
 
 
 class TestImporterListAdminView(AuthTestCase):
@@ -137,10 +149,7 @@ class TestImporterListRegulatorView(AuthTestCase):
     def test_get(self):
         response = self.ho_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
-        print(response.context)
-
         assert response.context["page_title"] == "Maintain Importers"
-
         importers = response.context["object_list"]
         assert importers.count() == 4
 
@@ -234,16 +243,7 @@ class TestOrganisationImporterCreateView(AuthTestCase):
         response = self.ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
-    @patch("web.domains.importer.forms.api_get_company")
-    def test_importer_created(self, api_get_company):
-        api_get_company.return_value = {
-            "registered_office_address": {
-                "address_line_1": "60 rue Wiertz",
-                "postcode": "B-1047",
-                "locality": "Bruxelles",
-            }
-        }
-
+    def test_importer_created(self, fake_company_api_response):
         data = {
             "eori_number": "GB123456789012345",
             "name": "test importer",
@@ -255,11 +255,13 @@ class TestOrganisationImporterCreateView(AuthTestCase):
         assert importer.name == "test importer", importer
 
 
-class TestImporterEditView(AuthTestCase):
+class TestAdminIndividualImporterEditView(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, _setup):
         self.importer.type = self.importer.INDIVIDUAL
+        self.importer.eori_number = "GBPR"
         self.importer.save()
+
         self.url = reverse("importer-edit", kwargs={"pk": self.importer.id})
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
@@ -284,45 +286,11 @@ class TestImporterEditView(AuthTestCase):
     def test_page_title(self):
         response = self.ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
-
         resp_html = response.content.decode("utf-8")
-
         assertInHTML(f"Editing Importer '{self.importer!s}'", resp_html)
 
-    def test_disabled_fields_when_editing_as_non_org_admin(self):
-        response = self.importer_client.get(self.url)
-        assert response.status_code == HTTPStatus.OK
-
-        for field in ["user", "eori_number"]:
-            assert response.context["form"].fields[field].disabled
-            assert (
-                response.context["form"].fields[field].help_text
-                == "Contact ILB to update this field."
-            )
-
-        # Change org type and test again
-        self.importer.type = self.importer.ORGANISATION
-        self.importer.save()
-        response = self.importer_client.get(self.url)
-        assert response.status_code == HTTPStatus.OK
-
-        for field in ["registered_number", "name", "eori_number"]:
-            assert response.context["form"].fields[field].disabled
-            assert (
-                response.context["form"].fields[field].help_text
-                == "Contact ILB to update this field."
-            )
-
-    @patch("web.domains.importer.forms.api_get_company")
-    def test_warning_message_displayed_admin_missing_eori_number(self, api_get_company):
+    def test_warning_message_displayed_admin_missing_eori_number(self, fake_company_api_response):
         """Tests that a warning message is displayed when the admin user doesn't provide an EORI number."""
-        api_get_company.return_value = {
-            "registered_office_address": {
-                "address_line_1": "60 rue Wiertz",
-                "postcode": "B-1047",
-                "locality": "Bruxelles",
-            }
-        }
         self.importer.eori_number = None
         self.importer.save()
 
@@ -334,22 +302,86 @@ class TestImporterEditView(AuthTestCase):
                 "eori_number": "",
                 "user": self.importer_user.pk,
             },
-            follow=True,
         )
+        assert response.status_code == HTTPStatus.FOUND
+        assertRedirects(response, reverse("importer-list") + f"?name={self.importer.name}")
+        exp_msg = "An EORI number is required to progress an application from this importer, please provide one as soon as possible."
+        messages = get_messages_from_response(response)
+        assert exp_msg in messages
 
-        assert response.status_code == HTTPStatus.OK
-        messages = list(get_messages(response.wsgi_request))
-        message = str(messages[0])
-        assert (
-            "An EORI number is required to progress an application from this importer, please provide one as soon as possible."
-            in message
+
+class TestAdminOrganisationImporterEditView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
+        self.url = reverse("importer-edit", kwargs={"pk": self.importer.id})
+
+    def test_importer_edit_admin_user(self, fake_company_api_response):
+        response = self.ilb_admin_client.post(
+            self.url,
+            {
+                "name": "test importer",
+                "user": self.importer_user.pk,
+                "region_origin": "",
+                "comments": "test",
+                "registered_number": "42",
+                "eori_number": self.importer.eori_number,
+            },
         )
+        self.importer.refresh_from_db()
+        assertRedirects(response, reverse("importer-list") + f"?name={self.importer.name}")
+        assert "Updated importer details have been saved." in get_messages_from_response(response)
+        assert self.importer.name == "test importer"
 
     def test_prefilled_search_url(self):
         """Tests that the URL to search Importer Access Requests is prefilled with the importer name."""
         response = self.ilb_admin_client.get(self.url)
         resp_html = response.content.decode("utf-8")
         assert f"{reverse('access:importer-list')}?importer_name={self.importer.name}" in resp_html
+
+
+class TestOrganisationImporterEditView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
+        self.url = reverse("importer-edit", kwargs={"pk": self.importer.id})
+        self.redirect_url = f"{LOGIN_URL}?next={self.url}"
+
+    def test_disabled_fields_when_editing(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        for field in ["registered_number", "name", "eori_number"]:
+            assert response.context["form"].fields[field].disabled
+            assert (
+                response.context["form"].fields[field].help_text
+                == "Contact ILB to update this field."
+            )
+
+    def test_importer_edit_import_user(self, fake_company_api_response):
+        response = self.importer_client.post(self.url, {"comments": "test"})
+        self.importer.refresh_from_db()
+        assertRedirects(response, reverse("user-importer-list"))
+        assert "Updated importer details have been saved." in get_messages_from_response(response)
+        assert self.importer.comments == "test"
+
+
+class TestIndividualImporterEditView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
+        self.importer.type = self.importer.INDIVIDUAL
+        self.importer.eori_number = "GBPR"
+        self.importer.save()
+        self.url = reverse("importer-edit", kwargs={"pk": self.importer.id})
+
+    def test_disabled_fields_when_editing(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        for field in ["user", "eori_number"]:
+            assert response.context["form"].fields[field].disabled
+            assert (
+                response.context["form"].fields[field].help_text
+                == "Contact ILB to update this field."
+            )
 
 
 class TestCreateSection5View(AuthTestCase):
@@ -377,7 +409,7 @@ class TestCreateSection5View(AuthTestCase):
     def test_post(self):
         data = {
             "linked_offices": self.importer_office.pk,
-            "reference": "12",
+            "reference": "11",
             "postcode": "ox51dw",  # /PS-IGNORE
             "address": "1 Some road Town County",
             "start_date": "01-Dec-2020",
@@ -902,7 +934,7 @@ class TestOrganisationAgentCreateView(AuthTestCase):
         assert agent.name == "test importer", agent
 
 
-class TestAgentEditView(AuthTestCase):
+class TestAdminOrganisationAgentEditView(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, _setup):
         self.url = reverse("importer-agent-edit", kwargs={"pk": self.importer_agent.pk})
@@ -921,7 +953,55 @@ class TestAgentEditView(AuthTestCase):
         response = self.ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
-    def test_disabled_fields_when_editing_as_non_org_admin(self):
+    def test_post(self):
+        data = {
+            "type": "ORGANISATION",
+            "name": self.importer_agent.name,
+            "registered_number": "quarante-deux",
+            "comments": "Alter agent",
+        }
+        response = self.ilb_admin_client.post(self.url, data)
+        assertRedirects(
+            response, reverse("importer-edit", kwargs={"pk": self.importer_agent.main_importer.pk})
+        )
+        self.importer_agent.refresh_from_db()
+        assert self.importer_agent.comments == "Alter agent"
+        assert self.importer_agent.registered_number == "quarante-deux"
+        assert "Updated agent details have been saved." in get_messages_from_response(response)
+
+
+class TestAdminIndividualAgentEditView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
+        self.url = reverse("importer-agent-edit", kwargs={"pk": self.importer_agent.pk})
+        self.redirect_url = f"{LOGIN_URL}?next={self.url}"
+        self.importer.type = self.importer.INDIVIDUAL
+        self.importer.save()
+
+    def test_post(self):
+        data = {
+            "type": Importer.INDIVIDUAL,
+            "name": self.importer_agent.name,
+            "registered_number": "quarante-deux",
+            "comments": "Alter agent",
+        }
+        response = self.ilb_admin_client.post(self.url, data)
+        assertRedirects(
+            response, reverse("importer-edit", kwargs={"pk": self.importer_agent.main_importer.pk})
+        )
+        self.importer_agent.refresh_from_db()
+        assert self.importer_agent.comments == "Alter agent"
+        assert self.importer_agent.registered_number == "quarante-deux"
+        assert "Updated agent details have been saved." in get_messages_from_response(response)
+
+
+class TestOrganisationAgentEditView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup):
+        self.url = reverse("importer-agent-edit", kwargs={"pk": self.importer_agent.pk})
+        self.redirect_url = f"{LOGIN_URL}?next={self.url}"
+
+    def test_disabled_fields_when_editing(self):
         response = self.importer_agent_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
@@ -947,16 +1027,16 @@ class TestAgentEditView(AuthTestCase):
 
     def test_post(self):
         data = {
-            "type": "ORGANISATION",
-            "name": self.importer_agent.name,
-            "registered_number": "quarante-deux",
             "comments": "Alter agent",
         }
-        response = self.ilb_admin_client.post(self.url, data)
-        assertRedirects(response, self.url)
+        response = self.importer_client.post(self.url, data)
+        assertRedirects(
+            response, reverse("importer-edit", kwargs={"pk": self.importer_agent.main_importer.pk})
+        )
         self.importer_agent.refresh_from_db()
         assert self.importer_agent.comments == "Alter agent"
-        assert self.importer_agent.registered_number == "quarante-deux"
+        assert self.importer_agent.registered_number is None
+        assert "Updated agent details have been saved." in get_messages_from_response(response)
 
 
 class TestAgentArchiveView(AuthTestCase):

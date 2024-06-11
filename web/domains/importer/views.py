@@ -273,7 +273,10 @@ def edit_importer(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
             )
         else:
             messages.info(request, "Updated importer details have been saved.")
-        return redirect(reverse("importer-list") + "?" + urlencode({"name": importer.name}))
+        if request.user.has_perm(Perms.sys.importer_admin):
+            return redirect(reverse("importer-list") + "?" + urlencode({"name": importer.name}))
+        else:
+            return redirect(reverse("user-importer-list"))
 
     contacts = organisation_get_contacts(importer)
     object_permissions = get_importer_object_permissions(importer)
@@ -728,7 +731,8 @@ def edit_agent(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse:
         form = form_cls(request.POST, instance=agent)
         if form.is_valid():
             agent = form.save()
-            return redirect(reverse("importer-agent-edit", kwargs={"pk": agent.pk}))
+            messages.info(request, "Updated agent details have been saved.")
+            return redirect(reverse("importer-edit", kwargs={"pk": agent.main_importer.pk}))
     else:
         form = form_cls(instance=agent)
 

@@ -13,6 +13,20 @@ from web.tests.conftest import LOGIN_URL
 from web.tests.helpers import get_messages_from_response
 
 
+@pytest.fixture
+def fake_company_api_response():
+    with patch("web.domains.exporter.forms.api_get_company") as api_get_company:
+        api_get_company.return_value = {
+            "registered_office_address": {
+                "address_line_1": "60 rue Wiertz",
+                "postcode": "B-1047",
+                "locality": "Bruxelles",
+            }
+        }
+        yield
+        assert api_get_company.called is True
+
+
 class TestExporterListView(AuthTestCase):
     url = "/exporter/"
     redirect_url = f"{LOGIN_URL}?next={url}"
@@ -84,15 +98,7 @@ class TestExporterCreateView(AuthTestCase):
         response = self.ilb_admin_client.get(self.url)
         assert response.status_code == HTTPStatus.OK
 
-    @patch("web.domains.exporter.forms.api_get_company")
-    def test_exporter_created(self, api_get_company):
-        api_get_company.return_value = {
-            "registered_office_address": {
-                "address_line_1": "60 rue Wiertz",
-                "postcode": "B-1047",
-                "locality": "Bruxelles",
-            }
-        }
+    def test_admin_exporter_created(self, fake_company_api_response):
         response = self.ilb_admin_client.post(
             self.url, {"name": "test exporter", "registered_number": "42"}
         )
@@ -151,6 +157,31 @@ class TestEditExporterView(AuthTestCase):
         response = self.ilb_admin_client.get(self.url)
         resp_html = response.content.decode("utf-8")
         assert f"{reverse('access:exporter-list')}?exporter_name={self.exporter.name}" in resp_html
+
+    def test_exporter_edit_admin_user(self, fake_company_api_response):
+        response = self.ilb_admin_client.post(
+            self.url,
+            {"name": "test exporter", "registered_number": "42", "exclusive_correspondence": False},
+        )
+        exporter = Exporter.objects.first()
+        assertRedirects(response, reverse("exporter-list") + f"?name={exporter.name}")
+        assert "Updated exporter details have been saved." in get_messages_from_response(response)
+        assert exporter.name == "test exporter"
+        assert exporter.exclusive_correspondence is False
+
+    def test_exporter_edit_export_user(self, fake_company_api_response):
+        exporter = Exporter.objects.first()
+        assert exporter.exclusive_correspondence is True
+        assert exporter.comments is None
+        response = self.exporter_client.post(
+            self.url, {"comments": "test", "exclusive_correspondence": False}
+        )
+        exporter.refresh_from_db()
+        assertRedirects(response, reverse("user-exporter-list"))
+        assert "Updated exporter details have been saved." in get_messages_from_response(response)
+        assert exporter.name == "Test Exporter 1"
+        assert exporter.comments == "test"
+        assert exporter.exclusive_correspondence is False
 
 
 class TestDetailExporterView(AuthTestCase):

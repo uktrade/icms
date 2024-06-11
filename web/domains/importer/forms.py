@@ -146,6 +146,7 @@ class ImporterOrganisationForm(forms.ModelForm):
 class ImporterOrganisationNonILBForm(ImporterOrganisationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["registered_number"].required = False
 
         for key in ["registered_number", "name", "eori_number"]:
             self.fields[key].disabled = True
@@ -270,6 +271,7 @@ class AgentOrganisationForm(forms.ModelForm):
 class AgentOrganisationNonILBForm(AgentOrganisationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["registered_number"].required = False
 
         for key in ["name", "registered_number"]:
             self.fields[key].disabled = True

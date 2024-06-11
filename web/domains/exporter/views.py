@@ -118,7 +118,10 @@ def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
     if request.method == "POST" and form.is_valid():
         exporter = form.save()
         messages.info(request, "Updated exporter details have been saved.")
-        return redirect(reverse("exporter-list") + "?" + urlencode({"name": exporter.name}))
+        if request.user.has_perm(Perms.sys.exporter_admin):
+            return redirect(reverse("exporter-list") + "?" + urlencode({"name": exporter.name}))
+        else:
+            return redirect(reverse("user-exporter-list"))
 
     contacts = organisation_get_contacts(exporter)
     object_permissions = get_exporter_object_permissions(exporter)
