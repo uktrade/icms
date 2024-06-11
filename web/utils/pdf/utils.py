@@ -1,6 +1,7 @@
 import base64
 import datetime as dt
 import re
+from collections.abc import Iterable
 from tempfile import NamedTemporaryFile
 from typing import Any
 from urllib.parse import urlencode, urljoin
@@ -223,6 +224,50 @@ def _get_fa_dfl_goods(application: DFLApplication) -> list[str]:
     ]
 
 
+# TODO: Revisit in ICMSLST-2708
+def _get_fa_sil_goods(application: SILApplication) -> Iterable[tuple[str, int | str]]:
+    """Return all related FA SIL goods"""
+
+    for g in application.goods_section1.filter(is_active=True):
+        section = "1"
+        description = f"{g.description} to which Section {section} of the Firearms Act 1968, as amended, applies."
+
+        yield description, "Unlimited" if g.unlimited_quantity else g.quantity
+
+    for g in application.goods_section2.filter(is_active=True):
+        section = "2"
+        description = f"{g.description} to which Section {section} of the Firearms Act 1968, as amended, applies."
+
+        yield description, "Unlimited" if g.unlimited_quantity else g.quantity
+
+    for g in application.goods_section5.filter(is_active=True):
+        description = f"{g.description} to which Section {g.section_5_clause.clause} of the Firearms Act 1968, as amended, applies."
+
+        yield description, "Unlimited" if g.unlimited_quantity else g.quantity
+
+    for g in application.goods_legacy.filter(is_active=True):
+        section = "unknown"
+        description = f"{g.description} to which Section {section} of the Firearms Act 1968, as amended, applies."
+
+        yield description, "Unlimited" if g.unlimited_quantity else g.quantity
+
+    for g in application.goods_section582_others.filter(is_active=True):
+        section = "58(2)"
+        description = f"{g.description} to which Section {section} of the Firearms Act 1968, as amended, applies."
+
+        yield description, g.quantity
+
+    for g in application.goods_section582_obsoletes.filter(is_active=True):
+        section = "58(2)"
+        description = (
+            f"{g.description} chambered in the obsolete calibre {g.obsolete_calibre} to which"
+            f" Section {section} of the Firearms Act 1968, as amended, applies."
+        )
+
+        yield description, g.quantity
+
+
+# TODO: Revisit and remove in ICMSLST-2708
 def _get_sil_section_labels() -> list[tuple[str, str]]:
     return [
         ("goods_section1", "to which Section 1 of the Firearms Act 1968, as amended, applies."),
@@ -246,19 +291,7 @@ def _get_sil_section_labels() -> list[tuple[str, str]]:
     ]
 
 
-def _get_fa_sil_goods(application: SILApplication) -> list[tuple[str, int]]:
-    """Return all related goods."""
-
-    fa_sil_goods = []
-
-    for goods_section, label_suffix in _get_sil_section_labels():
-        related_manager = getattr(application, goods_section)
-        active_goods = related_manager.filter(is_active=True)
-        fa_sil_goods.extend(get_fa_sil_goods_item(goods_section, active_goods, label_suffix))
-
-    return fa_sil_goods
-
-
+# TODO: Revisit and remove in ICMSLST-2708
 def get_fa_sil_goods_item(
     goods_section: str,
     active_goods: QuerySet[SILGoods],
