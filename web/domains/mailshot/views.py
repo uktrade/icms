@@ -194,6 +194,10 @@ class MailshotCreateView(PermissionRequiredMixin, LoginRequiredMixin, View):
 
 
 class MailshotEditView(PostActionMixin, ModelUpdateView):
+    # PostActionMixin config
+    post_actions = ["save_draft"]
+
+    # ModelUpdateView config
     template_name = "web/domains/mailshot/edit.html"
     form_class = MailshotForm
     model = Mailshot

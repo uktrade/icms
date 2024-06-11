@@ -1,5 +1,7 @@
-from typing import Any
+from typing import Any, ClassVar
 
+from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from django.views.generic.base import View
 from django.views.generic.list import ListView
 
@@ -35,9 +37,18 @@ class PostActionMixin:
     """Handle post requests with action variable: Calls method with the same
     name as action variable to handle action"""
 
+    # Any child class must define this.
+    # List of actions a client is able to call on a POST request.
+    post_actions: ClassVar[list[str]]
+
     def post(self, request, *args, **kwargs):
-        action = request.POST.get("action")
-        if action:
+        if action := request.POST.get("action"):
+            if action not in getattr(self, "post_actions", []):
+                if settings.APP_ENV != "production":
+                    raise ValueError(f"Action {action} not in post_actions")
+                else:
+                    raise PermissionDenied
+
             if hasattr(self, action):
                 return getattr(self, action)(request, *args, **kwargs)
 

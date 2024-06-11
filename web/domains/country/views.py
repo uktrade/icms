@@ -143,6 +143,10 @@ class CountryGroupView(ModelDetailView):
 
 
 class CountryGroupEditView(PostActionMixin, ModelUpdateView):
+    # PostActionMixin config
+    post_actions = ["add_country", "save", "accept_countries"]
+
+    # ModelUpdateView config
     model = CountryGroup
     template_name = "web/domains/country/groups/edit.html"
     form_class = CountryGroupEditForm
@@ -214,6 +218,10 @@ class CountryGroupEditView(PostActionMixin, ModelUpdateView):
 
 
 class CountryTranslationSetListView(PostActionMixin, ModelCreateView):
+    # PostActionMixin config
+    post_actions = ["archive", "unarchive"]
+
+    # ModelCreateView config
     model = CountryTranslationSet
     form_class = CountryTranslationSetEditForm
     template_name = "web/domains/country/translations/list.html"
@@ -250,6 +258,10 @@ class CountryTranslationSetListView(PostActionMixin, ModelCreateView):
 
 
 class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
+    # PostActionMixin config
+    post_actions = ["archive"]
+
+    # ModelCreateView config
     model = CountryTranslationSet
     template_name = "web/domains/country/translations/edit.html"
     form_class = CountryTranslationSetEditForm
