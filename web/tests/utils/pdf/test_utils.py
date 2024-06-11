@@ -8,6 +8,7 @@ from web.models import SILGoodsSection582Other  # /PS-IGNORE
 from web.models import (
     Country,
     EndorsementImportApplication,
+    Section5Clause,
     SILGoodsSection1,
     SILGoodsSection2,
     SILGoodsSection5,
@@ -15,7 +16,7 @@ from web.models import (
 )
 from web.types import DocumentTypes
 from web.utils.pdf import utils
-from web.utils.pdf.utils import _get_importer_eori_numbers
+from web.utils.pdf.utils import _get_fa_sil_goods, _get_importer_eori_numbers
 
 
 @pytest.fixture(autouse=True)
@@ -386,3 +387,64 @@ def test__get_importer_eori_numbers_wood(wood_app_submitted):
     wood_app_submitted.consignment_country = Country.objects.get(name="France")
     wood_app_submitted.save()
     assert _get_importer_eori_numbers(wood_app_submitted) == ["GB0123456789ABCDE"]
+
+
+def test__get_fa_sil_goods(fa_sil_app_submitted, ilb_admin_user):
+    expected = [
+        ("Section 1 goods to which Section 1 of the Firearms Act 1968, as amended, applies.", 111),
+        ("Section 2 goods to which Section 2 of the Firearms Act 1968, as amended, applies.", 222),
+        (
+            "Section 5 goods to which Section 5(A) of the Firearms Act 1968, as amended, applies.",
+            333,
+        ),
+        (
+            "Section 58 obsoletes goods chambered in the obsolete calibre Obsolete calibre value to"
+            " which Section 58(2) of the Firearms Act 1968, as amended, applies.",
+            444,
+        ),
+        (
+            "Section 58 other goods to which Section 58(2) of the Firearms Act 1968, as amended, applies.",
+            555,
+        ),
+    ]
+    actual = _get_fa_sil_goods(fa_sil_app_submitted)
+
+    assert expected == sorted(actual)
+
+    # Test adding a new custom section 5 clause.
+    new_clause = Section5Clause.objects.create(
+        clause="FAKE CLAUSE", description="A fake section 5 clause", created_by=ilb_admin_user
+    )
+    SILGoodsSection5.objects.create(
+        import_application=fa_sil_app_submitted,
+        section_5_clause=new_clause,
+        description="Section 5 goods",
+        quantity=666,
+    )
+
+    fa_sil_app_submitted.refresh_from_db()
+
+    expected = [
+        ("Section 1 goods to which Section 1 of the Firearms Act 1968, as amended, applies.", 111),
+        ("Section 2 goods to which Section 2 of the Firearms Act 1968, as amended, applies.", 222),
+        (
+            "Section 5 goods to which Section 5(A) of the Firearms Act 1968, as amended, applies.",
+            333,
+        ),
+        (
+            "Section 5 goods to which Section FAKE CLAUSE of the Firearms Act 1968, as amended, applies.",
+            666,
+        ),
+        (
+            "Section 58 obsoletes goods chambered in the obsolete calibre Obsolete calibre value to"
+            " which Section 58(2) of the Firearms Act 1968, as amended, applies.",
+            444,
+        ),
+        (
+            "Section 58 other goods to which Section 58(2) of the Firearms Act 1968, as amended, applies.",
+            555,
+        ),
+    ]
+    actual = _get_fa_sil_goods(fa_sil_app_submitted)
+
+    assert expected == sorted(actual)
