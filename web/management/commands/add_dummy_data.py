@@ -4,6 +4,7 @@ from typing import Any
 
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 
 from web.domains.country.models import Country
@@ -46,14 +47,11 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
-        if settings.APP_ENV not in ("local", "dev", "staging"):
-            raise CommandError(
-                "Can only add dummy data in 'staging', 'dev' and 'local' environments!"
-            )
+        if settings.APP_ENV in ["hotfix", "production"]:
+            raise CommandError("Can only add dummy data in non-production environments.")
 
-        load_app_test_data()
-
-        # Load groups we want to assign to test users:
+        # Create groups and load the groups we want to assign to test users:
+        call_command("create_icms_groups")
         ilb_admin_group = Group.objects.get(name="ILB Case Officer")
         importer_user_group = Group.objects.get(name="Importer User")
         exporter_user_group = Group.objects.get(name="Exporter User")
@@ -62,6 +60,9 @@ class Command(BaseCommand):
         san_case_officer = Group.objects.get(name="Sanctions Case Officer")
         import_search_user = Group.objects.get(name="Import Search User")
         dev_admin_group = Group.objects.get(name="Dev Admin")
+
+        # Load application test data
+        load_app_test_data()
 
         # Enable disabled application types to test / develop them
         if settings.SET_INACTIVE_APP_TYPES_ACTIVE:

@@ -16,12 +16,6 @@ docker-compose exec web python ./manage.py migrate
 echo "Starting localstack"
 make localstack
 
-echo "Creating groups"
-docker-compose exec web python ./manage.py create_icms_groups
-
-echo "Adding report data"
-docker-compose exec web python ./manage.py add_reports_data
-
 echo "Adding dummy data"
 docker-compose exec web python ./manage.py add_dummy_data --password admin
 
