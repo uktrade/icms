@@ -1,3 +1,5 @@
+import datetime as dt
+import io
 from typing import Any, ClassVar
 
 from django.contrib.auth.decorators import login_required
@@ -16,6 +18,7 @@ from web.models import Country, File, Process
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest, DocumentTypes
 from web.utils.pdf import PdfGenerator
+from web.utils.pdf.signer import sign_pdf
 
 from .mixins import ApplicationTaskMixin
 
@@ -55,11 +58,21 @@ class DocumentPreviewBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRe
             country=country_pk and Country.objects.get(pk=country_pk),
         )
 
-        # TODO: Remove this when all the pdfs have been created
+        # TODO - remove both of these - ICMSLST-2710
+
         # Useful when debugging pdf layout
         if "html" in self.request.GET:
             html = pdf_gen.get_document_html()
             return HttpResponse(html)
+
+        if "signed" in self.request.GET:
+            signed_pdf_bytes = pdf_gen.get_pdf()
+            signed_pdf_io = io.BytesIO(signed_pdf_bytes)  # type:ignore[arg-type]
+            signed_pdf = sign_pdf(signed_pdf_io)
+            signed_pdf.seek(0)
+            response = HttpResponse(signed_pdf, content_type="application/pdf")
+            response["Content-Disposition"] = f"filename={dt.datetime.now().isoformat()}-signed.pdf"
+            return response
 
         return return_pdf(pdf_gen, self.output_filename)
 

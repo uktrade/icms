@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <link href="https://fonts.cdnfonts.com/css/helvetica-neue-55" rel="stylesheet">
     <style>
       {{ get_css_rules_as_string('web/css/pdfs/fonts.css')|safe }}
       {{ get_css_rules_as_string('web/css/pdfs/licence-and-certificate-common-style.css')|safe }}
@@ -23,7 +24,7 @@
         <div class="flex-row">
           <p><span class="reference {{ 'preview-orange' if preview }}">{{ reference }}</span></p>
         </div>
-        <div class="flex-row">
+        <div class="flex-row mb-2">
           {{ dbt_logo(classes="header-block") }}
         </div>
         <hr>
@@ -32,13 +33,13 @@
       <div class="title-page">
         <div class="watermark_container">
           <div class="dbt_logo_watermark"></div>
-          <div class="title-block above_watermark">
+          <div class="above_watermark">
             <h3 class="title centre">
-              <p class="title-line black">CERTIFICATE</p>
-              <p class="title-line black">BY</p>
-              <p class="title-line black">DEPARTMENT FOR BUSINESS AND TRADE</p>
+              <p class="bold title-line">CERTIFICATE</p>
+              <p class="bold title-line">BY</p>
+              <p class="bold title-line">DEPARTMENT FOR BUSINESS AND TRADE</p>
             </h3>
-            <h4 class="country centre">{{ country }}</h4>
+            <h3 class="bold centre title-line country">{{ country }}</h3>
             {% block certificate_statement %}
             {% endblock %}
           </div>

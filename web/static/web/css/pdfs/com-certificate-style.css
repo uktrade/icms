@@ -31,10 +31,6 @@ body {
     counter-reset: li-counter;
 }
 
-p {
-    line-height: 1.2em;
-}
-
 #dbt-logo {
     width: 330px;
     margin-top: -50px;

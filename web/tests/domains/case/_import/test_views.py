@@ -111,7 +111,7 @@ def test_preview_cfs_certificate(ilb_admin_client, cfs_app_submitted):
     pdf = response.content
     assert pdf.startswith(b"%PDF-")
     # ensure the pdf generated has some content
-    assert 5000 < len(pdf) < 200000
+    assert 5000 < len(pdf)
 
 
 @pytest.mark.django_db

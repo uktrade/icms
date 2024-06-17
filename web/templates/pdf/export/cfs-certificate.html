@@ -1,52 +1,127 @@
-{% extends "pdf/shared/certificate-base.html" %}
+{% from "web/domains/signature/macros.html" import document_signature_placeholder %}
+{% from "web/domains/signature/macros.html" import dbt_logo %}
+{% from "web/domains/signature/macros.html" import not_signed_image %}
 
-{% block stylesheet %}
-  <style>
-    {{ get_css_rules_as_string('web/css/pdfs/cfs-certificate-style.css')|safe }}
-  </style>
-{% endblock %}
 
-{% block certificate_statement %}
-  <p>
-    It is hereby certified for the purposes of the laws of the above mentioned country that the product(s)
-    named in the Schedule which forms part of this certificate may lawfully be sold in the United Kingdom
-    if it meets the statutory requirements.
-  </p>
-  {% for statement_translation in statement_translations %}
-    <p class="statement_translation">{{ statement_translation }}</p>
-  {% endfor %}
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      {{ get_css_rules_as_string('web/css/pdfs/fonts.css')|safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/constants.css')|safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/cfs-certificate-style.css')|safe }}
+      .dbt_logo_watermark {
+        background-image: url("data:image/png;base64,{{ get_file_base64('web/img/dbt_logo.png') }}");
+      }
+    </style>
+    <title>{{ page_title }}</title>
+  </head>
 
-{% block schedules %}
-  {% for schedule in process.schedules.order_by('created_at') %}
-    {% set english_paragraphs = schedule_text[schedule.pk].english_paragraphs %}
-    {% set translation_paragraphs = schedule_text[schedule.pk].translation_paragraphs %}
-    <div class="schedule-block page-margin">
-      <p class="schedule-index">Schedule {{ loop.index }} of {{ loop.length }}</p>
-      <h4 class="schedule-header">{{ english_paragraphs.header | upper }}</h4>
-      <p>{{ english_paragraphs.introduction }}</p>
-      <p>{{ english_paragraphs.paragraph }}</p>
-      {% if translation_paragraphs %}
-        <h4>{{ translation_paragraphs.header | upper }}</h4>
-        <p>{{ translation_paragraphs.introduction }}</p>
-        <p>{{ translation_paragraphs.paragraph }}</p>
-        <h4 class="product-header">{{ english_paragraphs.product | upper }}
-          / {{ translation_paragraphs.product | upper }}</h4>
-      {% else %}
-        <h4 class="product-header">{{ english_paragraphs.product | upper }}</h4>
-      {% endif %}
-      <div class="products-block">
-        {% for product_name in schedule.products.values_list("product_name", flat=True).order_by('pk') %}
-          <p class="product-name">{{ product_name }}</p>
-        {% endfor %}
+  <body>
+    <div class="page-margin">
+      <header>
+        <div class="flex-row">
+          <p class="mb-0-5"><span class="reference {{ 'preview-orange' if preview }}">{{ reference }}</span></p>
+        </div>
+        <div class="flex-row mb-2">
+          {{ dbt_logo(classes="header-block") }}
+        </div>
+        <hr>
+      </header>
+
+      <div class="title-page">
+        <div class="watermark_container">
+          <div class="dbt_logo_watermark"></div>
+          <div class="above_watermark">
+            <h3 class="title centre">
+              <p class="bold title-line">CERTIFICATE</p>
+              <p class="bold title-line">BY</p>
+              <p class="bold title-line">DEPARTMENT FOR BUSINESS AND TRADE</p>
+            </h3>
+            <h3 class="bold centre title-line country">{{ country }}</h3>
+              <p>
+                It is hereby certified for the purposes of the laws of the above mentioned country that the product(s)
+                named in the Schedule which forms part of this certificate may lawfully be sold in the United Kingdom
+                if it meets the statutory requirements.
+              </p>
+              {% for statement_translation in statement_translations %}
+                <p class="statement_translation">{{ statement_translation }}</p>
+              {% endfor %}
+          </div>
+        </div>
+        <footer class="title-footer">
+          <div class="signature-block">
+            {% if preview %}
+              {{ not_signed_image() }}
+              <div class="qr-code">
+                <span class="qr-placeholder {{ 'preview-orange' if preview }}">[[QR_PLACEHOLDER]]</span>
+              </div>
+              <div class="qr-text-block">
+                <span class="qr-text">QR code will be generated when documents are authorised.</span>
+              </div>
+            {% else %}
+              {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory) }}
+              <div class="qr-code">
+                <img class="qr-img" src="data:image/png;base64, {{ qr_img_base64 }}"/>
+              </div>
+              <div class="qr-text-block">
+                <p class="qr-text">
+                  Scan this QR code to check this certificate's validity.
+                  <strong>Certificate Code:<br>{{ certificate_code }}</strong>
+                </p>
+                <p class="qr-text">
+                  Alternatively you can go to <strong>{{ qr_check_url }}</strong>
+                  and enter the certificate reference and code.
+                </p>
+              </div>
+            {% endif %}
+          </div>
+          <div class="date-block">
+            <span>Date issued:</span>
+            <span>{{ issue_date }}</span>
+          </div>
+        </footer>
       </div>
-      <footer class="schedule_only_valid_block">
-        <p>
-          This schedule is only valid with Certificate
-          <span class="footer-reference {{ 'preview-orange' if preview }}">{{ reference }}</span>
-        </p>
-        <p>Date Issued: {{ issue_date }}</p>
-      </footer>
+
+      {% for schedule in process.schedules.order_by('created_at') %}
+        {% set english_paragraphs = schedule_text[schedule.pk].english_paragraphs %}
+        {% set translation_paragraphs = schedule_text[schedule.pk].translation_paragraphs %}
+        <div class="schedule-block page-margin">
+          <div class="header">
+            <p class="reference">{{ reference }}</p>
+            <p class="schedule-index reference">Schedule {{ loop.index }} of {{ loop.length }}</p>
+          </div>
+
+          <h4 class="schedule-header bold">{{ english_paragraphs.header | upper }}</h4>
+
+          <p>{{ english_paragraphs.introduction }}</p>
+          <div class="watermark_container">
+            <div class="dbt_logo_watermark"></div>
+            <p>{{ english_paragraphs.paragraph }}</p>
+            {% if translation_paragraphs %}
+              <h4>{{ translation_paragraphs.header | upper }}</h4>
+              <p>{{ translation_paragraphs.introduction }}</p>
+              <p>{{ translation_paragraphs.paragraph }}</p>
+              <h4 class="product-header bold">{{ english_paragraphs.product | upper }}
+                / {{ translation_paragraphs.product | upper }}</h4>
+            {% else %}
+              <h4 class="product-header bold">{{ english_paragraphs.product | upper }}</h4>
+            {% endif %}
+            <div class="products-block">
+              {% for product_name in schedule.products.values_list("product_name", flat=True).order_by('pk') %}
+                <p class="product-name">{{ product_name }}</p>
+              {% endfor %}
+            </div>
+            <footer class="schedule_only_valid_block">
+              <p>
+                This schedule is only valid with Certificate
+                <span class="{{ 'preview-orange' if preview }} footer-reference">{{ reference }}</span>
+              </p>
+              <p>Date issued: {{ issue_date }}</p>
+            </footer>
+          </div>
+        </div>
+      {% endfor %}
     </div>
-  {% endfor %}
-{% endblock %}
+  </body>
+</html>
