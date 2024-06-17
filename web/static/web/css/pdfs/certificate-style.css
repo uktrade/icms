@@ -40,7 +40,7 @@ header {
 }
 
 hr {
-    border-top: 2px solid black;
+    border-top: 0.15em solid black;
     border-bottom: none;
 }
 
@@ -71,19 +71,21 @@ hr {
 }
 
 .title-line {
-    margin-bottom: 19px;
+    margin-bottom: 25px;
 }
 
 .country {
     font-size: 20px;
     margin-bottom: 38px;
+    font-weight: bold;
 }
 
 p {
-    line-height: 1.2em;
+    line-height: 1.3em;
 }
 
 .signature-block {
+    margin-bottom: 60px;
     display: flex;
     justify-content: space-evenly;
     align-items: stretch;
@@ -102,8 +104,8 @@ p {
 }
 
 .qr-img {
-    width: 110px;
-    height: 110px;
+    width: 140px;
+    height: 140px;
     display: block;
     margin: 0 auto;
 }
@@ -136,20 +138,18 @@ p {
     text-align: center;
 }
 
-.title-line {
-    font-weight: bold;
-}
-
 .dbt_logo_watermark {
     background-size: contain;
     background-repeat: no-repeat;
     filter: grayscale(100%) opacity(0.1);
     z-index: 1;
     width: 100%;
-    height: 100%;
+    height: 70%;
     position: absolute;
     margin-top: 20px;
     margin-right: 5px;
+    page-break-inside: avoid;
+    page-break-after: avoid;
 }
 
 .above_watermark {

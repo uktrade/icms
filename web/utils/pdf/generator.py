@@ -30,7 +30,10 @@ class PdfGenBase:
             context = browser.new_context()
             page = context.new_page()
             page.set_content(document_html)
-            pdf_data = page.pdf()
+
+            pdf_data = page.pdf(
+                format="A4",
+            )
 
             if target:
                 target.write(pdf_data)
