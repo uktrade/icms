@@ -43,6 +43,7 @@ class CheckCount:
     filter_params: Params = field(default_factory=dict)
     annotation: Anno = None
     values: Val = None
+    exclude_params: Params = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

@@ -147,7 +147,7 @@ class Command(BaseCommand):
             actual = self.get_actual(
                 check.model,
                 check.filter_params,
-                {},
+                check.exclude_params,
                 annotation=check.annotation,
                 values=check.values,
             )

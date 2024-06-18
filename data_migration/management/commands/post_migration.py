@@ -12,6 +12,7 @@ from guardian.shortcuts import remove_perm
 
 from web.management.commands.add_reports_data import add_reports
 from web.management.commands.add_v2_reference_data import (
+    add_country_translations,
     add_inactive_countries,
     add_region_to_existing_countries,
 )
@@ -53,6 +54,7 @@ class Command(BaseCommand):
         call_command("loaddata", "overseas_regions")
         add_region_to_existing_countries(self.stdout)
         add_inactive_countries()
+        add_country_translations()
         add_user_management_email_templates()
         call_command("set_icms_sites")
 

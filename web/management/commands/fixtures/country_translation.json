@@ -7828,5 +7828,4280 @@
     "country": 42,
     "translation_set": 3
   }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 871,
+  "fields": {
+    "translation": "Samoa américaines",
+    "country": 185,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 872,
+  "fields": {
+    "translation": "Samoa Americana",
+    "country": 185,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 873,
+  "fields": {
+    "translation": "Американское Самоа",
+    "country": 185,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 874,
+  "fields": {
+    "translation": "Samoa Americana",
+    "country": 185,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 875,
+  "fields": {
+    "translation": "Amerikan Samoası",
+    "country": 185,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 876,
+  "fields": {
+    "translation": "Andorre",
+    "country": 186,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 877,
+  "fields": {
+    "translation": "Andorra",
+    "country": 186,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 878,
+  "fields": {
+    "translation": "андорра",
+    "country": 186,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 879,
+  "fields": {
+    "translation": "Andorra",
+    "country": 186,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 880,
+  "fields": {
+    "translation": "Andorra",
+    "country": 186,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 881,
+  "fields": {
+    "translation": "Anguilla",
+    "country": 187,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 882,
+  "fields": {
+    "translation": "Anguilla",
+    "country": 187,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 883,
+  "fields": {
+    "translation": "Ангилья",
+    "country": 187,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 884,
+  "fields": {
+    "translation": "Anguila",
+    "country": 187,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 885,
+  "fields": {
+    "translation": "Anguilla",
+    "country": 187,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 886,
+  "fields": {
+    "translation": "Antarctique (territoire situé au sud du 60° de latitude sud, hors AQ Norwegian NOK, y compris les Territoires austraux français (TF), les îles Bouvet Krone (BV), la Géorgie du Sud et les îles Sandwich du Sud (GS))",
+    "country": 188,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 887,
+  "fields": {
+    "translation": "Antártica (território ao sul de 60° de latitude sul, não AQ NOK norueguês, incluindo os Territórios Franceses do Sul (TF), Ilhas Bouvet Krone (BV), Geórgia do Sul e Ilhas Sandwich do Sul (GS))",
+    "country": 188,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 888,
+  "fields": {
+    "translation": "Антарктида (территория к югу от 60° южной широты, а не AQ Norwegian NOK, включая Французские Южные территории (TF), острова Буве Крон (BV), Южная Георгия и Южные Сандвичевы острова (GS))",
+    "country": 188,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 889,
+  "fields": {
+    "translation": "Antártida (territorio al sur de los 60° de latitud sur, no AQ Norwegian NOK, incluidos los Territorios Australes Franceses (TF), las Islas Bouvet Krone (BV), las Islas Georgias del Sur y Sandwich del Sur (GS))",
+    "country": 188,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 890,
+  "fields": {
+    "translation": "Antarktika (60° güney enleminin güneyindeki bölge, Fransız Güney Bölgeleri (TF), Bouvet Krone Adaları (BV), Güney Georgia ve Güney Sandwich Adaları (GS) dahil AQ Norveç NOK değil)",
+    "country": 188,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 891,
+  "fields": {
+    "translation": "Antigua-et-Barbuda",
+    "country": 189,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 892,
+  "fields": {
+    "translation": "Antígua e Barbuda",
+    "country": 189,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 893,
+  "fields": {
+    "translation": "Антигуа и Барбуда",
+    "country": 189,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 894,
+  "fields": {
+    "translation": "Antigua y Barbuda",
+    "country": 189,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 895,
+  "fields": {
+    "translation": "Antigua ve Barbuda",
+    "country": 189,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 896,
+  "fields": {
+    "translation": "Antilles néerlandaises",
+    "country": 190,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 897,
+  "fields": {
+    "translation": "Antilhas Holandesas",
+    "country": 190,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 898,
+  "fields": {
+    "translation": "Нидерландские Антильские острова",
+    "country": 190,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 899,
+  "fields": {
+    "translation": "Antillas Neerlandesas",
+    "country": 190,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 900,
+  "fields": {
+    "translation": "Hollanda Antilleri",
+    "country": 190,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 901,
+  "fields": {
+    "translation": "Île Bouvet",
+    "country": 191,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 902,
+  "fields": {
+    "translation": "Ilha Bouvet",
+    "country": 191,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 903,
+  "fields": {
+    "translation": "Остров Буве",
+    "country": 191,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 904,
+  "fields": {
+    "translation": "Isla Bouvet",
+    "country": 191,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 905,
+  "fields": {
+    "translation": "Bouvet Adası",
+    "country": 191,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 906,
+  "fields": {
+    "translation": "Territoire antarctique britannique",
+    "country": 192,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 907,
+  "fields": {
+    "translation": "Território Antártico Britânico",
+    "country": 192,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 908,
+  "fields": {
+    "translation": "Британская антарктическая территория",
+    "country": 192,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 909,
+  "fields": {
+    "translation": "Territorio Antártico Británico",
+    "country": 192,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 910,
+  "fields": {
+    "translation": "İngiliz Antarktika Bölgesi",
+    "country": 192,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 911,
+  "fields": {
+    "translation": "Territoire britannique de l'océan Indien",
+    "country": 193,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 912,
+  "fields": {
+    "translation": "Território britânico do Oceano Índico",
+    "country": 193,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 913,
+  "fields": {
+    "translation": "Британская территория в Индийском океане",
+    "country": 193,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 914,
+  "fields": {
+    "translation": "Territorio Británico del Océano Índico",
+    "country": 193,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 915,
+  "fields": {
+    "translation": "İngiliz Hint Okyanusu Bölgesi",
+    "country": 193,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 916,
+  "fields": {
+    "translation": "Burundi",
+    "country": 194,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 917,
+  "fields": {
+    "translation": "Burúndi",
+    "country": 194,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 918,
+  "fields": {
+    "translation": "Бурунди",
+    "country": 194,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 919,
+  "fields": {
+    "translation": "Burundi",
+    "country": 194,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 920,
+  "fields": {
+    "translation": "Burundi",
+    "country": 194,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 921,
+  "fields": {
+    "translation": "Burkina Faso",
+    "country": 184,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 922,
+  "fields": {
+    "translation": "Burkina Faso",
+    "country": 184,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 923,
+  "fields": {
+    "translation": "Буркина-Фасо",
+    "country": 184,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 924,
+  "fields": {
+    "translation": "Burkina Faso",
+    "country": 184,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 925,
+  "fields": {
+    "translation": "Burkina Faso",
+    "country": 184,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 926,
+  "fields": {
+    "translation": "Îles Canaries",
+    "country": 195,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 927,
+  "fields": {
+    "translation": "Ilhas Canárias",
+    "country": 195,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 928,
+  "fields": {
+    "translation": "Канарские острова",
+    "country": 195,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 929,
+  "fields": {
+    "translation": "Islas Canarias",
+    "country": 195,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 930,
+  "fields": {
+    "translation": "Kanarya Adaları",
+    "country": 195,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 931,
+  "fields": {
+    "translation": "Cap Vert",
+    "country": 196,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 932,
+  "fields": {
+    "translation": "Cabo Verde",
+    "country": 196,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 933,
+  "fields": {
+    "translation": "Кабо-Верде",
+    "country": 196,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 934,
+  "fields": {
+    "translation": "Cabo Verde",
+    "country": 196,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 935,
+  "fields": {
+    "translation": "Yeşil Burun Adaları",
+    "country": 196,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 936,
+  "fields": {
+    "translation": "Îles Caïmans",
+    "country": 197,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 937,
+  "fields": {
+    "translation": "Ilhas Cayman",
+    "country": 197,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 938,
+  "fields": {
+    "translation": "Каймановы острова",
+    "country": 197,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 939,
+  "fields": {
+    "translation": "Islas Caimán",
+    "country": 197,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 940,
+  "fields": {
+    "translation": "Cayman Adaları",
+    "country": 197,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 941,
+  "fields": {
+    "translation": "République centrafricaine",
+    "country": 198,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 942,
+  "fields": {
+    "translation": "República Centro-Africana",
+    "country": 198,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 943,
+  "fields": {
+    "translation": "Центральноафриканская Республика",
+    "country": 198,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 944,
+  "fields": {
+    "translation": "República Centroafricana",
+    "country": 198,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 945,
+  "fields": {
+    "translation": "Orta Afrika Cumhuriyeti",
+    "country": 198,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 946,
+  "fields": {
+    "translation": "Ceuta",
+    "country": 199,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 947,
+  "fields": {
+    "translation": "Ceuta",
+    "country": 199,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 948,
+  "fields": {
+    "translation": "Сеута",
+    "country": 199,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 949,
+  "fields": {
+    "translation": "Ceuta",
+    "country": 199,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 950,
+  "fields": {
+    "translation": "Ceuta",
+    "country": 199,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 951,
+  "fields": {
+    "translation": "Tchad",
+    "country": 200,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 952,
+  "fields": {
+    "translation": "Chad",
+    "country": 200,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 953,
+  "fields": {
+    "translation": "Чад",
+    "country": 200,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 954,
+  "fields": {
+    "translation": "Chad",
+    "country": 200,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 955,
+  "fields": {
+    "translation": "Çad",
+    "country": 200,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 956,
+  "fields": {
+    "translation": "Île Christmas (océan Indien)",
+    "country": 201,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 957,
+  "fields": {
+    "translation": "Ilha do Natal (Oceano Índico)",
+    "country": 201,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 958,
+  "fields": {
+    "translation": "Остров Рождества (Индийский океан)",
+    "country": 201,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 959,
+  "fields": {
+    "translation": "Isla de Navidad (Océano Índico)",
+    "country": 201,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 960,
+  "fields": {
+    "translation": "Noel Adası (Hint Okyanusu)",
+    "country": 201,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 961,
+  "fields": {
+    "translation": "Îles Cocos (Keeling)",
+    "country": 202,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 962,
+  "fields": {
+    "translation": "Ilhas Cocos (Keeling)",
+    "country": 202,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 963,
+  "fields": {
+    "translation": "Кокосовые острова (Килинг)",
+    "country": 202,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 964,
+  "fields": {
+    "translation": "Islas Cocos (Keeling)",
+    "country": 202,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 965,
+  "fields": {
+    "translation": "Cocos (Keeling) Adaları",
+    "country": 202,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 966,
+  "fields": {
+    "translation": "Comores (Grande Comore, Anjouan et Mohéli)",
+    "country": 203,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 967,
+  "fields": {
+    "translation": "Comores (Grande Comoro Anjouan e Moheli)",
+    "country": 203,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 968,
+  "fields": {
+    "translation": "Коморские острова (Великие Коморские острова, Анжуан и Мохели)",
+    "country": 203,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 969,
+  "fields": {
+    "translation": "Comoras (Gran Comora, Anjouan y Moheli)",
+    "country": 203,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 970,
+  "fields": {
+    "translation": "Komorlar (Büyük Komoro Anjouan ve Moheli)",
+    "country": 203,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 971,
+  "fields": {
+    "translation": "Plateau continental (Europe du Nord-Ouest) - Secteur belge",
+    "country": 204,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 972,
+  "fields": {
+    "translation": "Plataforma Continental (Noroeste da Europa) - Setor belga",
+    "country": 204,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 973,
+  "fields": {
+    "translation": "Континентальный шельф (Северо-Западная Европа) — бельгийский сектор",
+    "country": 204,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 974,
+  "fields": {
+    "translation": "Plataforma continental (noroeste de Europa) - Sector belga",
+    "country": 204,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 975,
+  "fields": {
+    "translation": "Kıta Sahanlığı (Kuzey Avrupa) - Belçika Sektörü",
+    "country": 204,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 976,
+  "fields": {
+    "translation": "Plateau continental (Europe du Nord-Ouest) - Secteur chypriote",
+    "country": 205,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 977,
+  "fields": {
+    "translation": "Plataforma Continental (Noroeste da Europa) - Setor de Chipre",
+    "country": 205,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 978,
+  "fields": {
+    "translation": "Континентальный шельф (Северо-Западная Европа) — сектор Кипра",
+    "country": 205,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 979,
+  "fields": {
+    "translation": "Plataforma continental (noroeste de Europa) - Sector de Chipre",
+    "country": 205,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 980,
+  "fields": {
+    "translation": "Kıta Sahanlığı (Kuzey Avrupa) - Kıbrıs Sektörü",
+    "country": 205,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 981,
+  "fields": {
+    "translation": "Plateau continental (Europe du Nord-Ouest) - Secteur danois",
+    "country": 206,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 982,
+  "fields": {
+    "translation": "Plataforma Continental (Noroeste da Europa) - Setor dinamarquês",
+    "country": 206,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 983,
+  "fields": {
+    "translation": "Континентальный шельф (Северо-Западная Европа) — датский сектор",
+    "country": 206,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 984,
+  "fields": {
+    "translation": "Plataforma continental (noroeste de Europa) - Sector danés",
+    "country": 206,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 985,
+  "fields": {
+    "translation": "Kıta Sahanlığı (Kuzey Avrupa) - Danimarka Sektörü",
+    "country": 206,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 986,
+  "fields": {
+    "translation": "Plateau continental (Europe du Nord-Ouest) - Secteur de la Finlande",
+    "country": 207,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 987,
+  "fields": {
+    "translation": "Plataforma Continental (Noroeste da Europa) - Setor da Finlândia",
+    "country": 207,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 988,
+  "fields": {
+    "translation": "Континентальный шельф (Северо-Западная Европа) — сектор Финляндии",
+    "country": 207,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 989,
+  "fields": {
+    "translation": "Plataforma continental (noroeste de Europa) - Sector de Finlandia",
+    "country": 207,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 990,
+  "fields": {
+    "translation": "Kıta Sahanlığı (Kuzey Avrupa) - Finlandiya Sektörü",
+    "country": 207,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 991,
+  "fields": {
+    "translation": "Plateau continental (Europe du Nord-Ouest) - Secteur français",
+    "country": 208,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 992,
+  "fields": {
+    "translation": "Plataforma Continental (Noroeste da Europa) - Setor francês",
+    "country": 208,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 993,
+  "fields": {
+    "translation": "Континентальный шельф (Северо-Западная Европа) — французский сектор",
+    "country": 208,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 994,
+  "fields": {
+    "translation": "Plataforma continental (noroeste de Europa) - Sector francés",
+    "country": 208,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 995,
+  "fields": {
+    "translation": "Kıta Sahanlığı (Kuzey Avrupa) - Fransız Sektörü",
+    "country": 208,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 996,
+  "fields": {
+    "translation": "Plateau continental (Europe du Nord-Ouest) - Secteur allemand",
+    "country": 209,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 997,
+  "fields": {
+    "translation": "Plataforma Continental (noroeste da Europa) - Setor alemão",
+    "country": 209,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 998,
+  "fields": {
+    "translation": "Континентальный шельф (Северо-Западная Европа) — сектор Германии",
+    "country": 209,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 999,
+  "fields": {
+    "translation": "Plataforma continental (noroeste de Europa) - Sector alemán",
+    "country": 209,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1000,
+  "fields": {
+    "translation": "Kıta Sahanlığı (Kuzey Avrupa) - Alman Sektörü",
+    "country": 209,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1001,
+  "fields": {
+    "translation": "Plateau continental (Europe du Nord-Ouest) - Secteur Grèce",
+    "country": 210,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1002,
+  "fields": {
+    "translation": "Plataforma Continental (Noroeste da Europa) - Setor da Grécia",
+    "country": 210,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1003,
+  "fields": {
+    "translation": "Континентальный шельф (Северо-Западная Европа) — сектор Греции",
+    "country": 210,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1004,
+  "fields": {
+    "translation": "Plataforma continental (noroeste de Europa) - Sector de Grecia",
+    "country": 210,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1005,
+  "fields": {
+    "translation": "Kıta Sahanlığı (Kuzey Avrupa) - Yunanistan Sektörü",
+    "country": 210,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1006,
+  "fields": {
+    "translation": "Plateau continental (Europe du Nord-Ouest) - Secteur irlandais",
+    "country": 211,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1007,
+  "fields": {
+    "translation": "Plataforma Continental (Noroeste da Europa) - Setor irlandês",
+    "country": 211,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1008,
+  "fields": {
+    "translation": "Континентальный шельф (Северо-Западная Европа) — ирландский сектор",
+    "country": 211,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1009,
+  "fields": {
+    "translation": "Plataforma continental (noroeste de Europa) - Sector irlandés",
+    "country": 211,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1010,
+  "fields": {
+    "translation": "Kıta Sahanlığı (Kuzey Avrupa) - İrlanda Sektörü",
+    "country": 211,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1011,
+  "fields": {
+    "translation": "Plateau continental (Europe du Nord-Ouest) - Secteur Italie",
+    "country": 212,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1012,
+  "fields": {
+    "translation": "Plataforma Continental (Noroeste da Europa) - Setor da Itália",
+    "country": 212,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1013,
+  "fields": {
+    "translation": "Континентальный шельф (Северо-Западная Европа) — сектор Италии",
+    "country": 212,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1014,
+  "fields": {
+    "translation": "Plataforma continental (noroeste de Europa) - Sector de Italia",
+    "country": 212,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1015,
+  "fields": {
+    "translation": "Kıta Sahanlığı (Kuzey Avrupa) - İtalya Sektörü",
+    "country": 212,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1016,
+  "fields": {
+    "translation": "Plateau continental (Europe du Nord-Ouest) - Secteur néerlandais",
+    "country": 213,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1017,
+  "fields": {
+    "translation": "Plataforma Continental (Noroeste da Europa) - Setor Holandês",
+    "country": 213,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1018,
+  "fields": {
+    "translation": "Континентальный шельф (Северо-Западная Европа) — сектор Нидерландов",
+    "country": 213,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1019,
+  "fields": {
+    "translation": "Plataforma continental (noroeste de Europa) - Sector de los Países Bajos",
+    "country": 213,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1020,
+  "fields": {
+    "translation": "Kıta Sahanlığı (Kuzey Avrupa) - Hollanda Sektörü",
+    "country": 213,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1021,
+  "fields": {
+    "translation": "Plateau continental (Europe du Nord-Ouest) - Secteur norvégien",
+    "country": 214,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1022,
+  "fields": {
+    "translation": "Plataforma Continental (Noroeste da Europa) - Setor norueguês",
+    "country": 214,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1023,
+  "fields": {
+    "translation": "Континентальный шельф (Северо-Западная Европа) — норвежский сектор",
+    "country": 214,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1024,
+  "fields": {
+    "translation": "Plataforma continental (noroeste de Europa) - Sector noruego",
+    "country": 214,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1025,
+  "fields": {
+    "translation": "Kıta Sahanlığı (Kuzey Avrupa) - Norveç Sektörü",
+    "country": 214,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1026,
+  "fields": {
+    "translation": "Plateau continental (Europe du Nord-Ouest) - Secteur de la Suède",
+    "country": 215,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1027,
+  "fields": {
+    "translation": "Plataforma Continental (Noroeste da Europa) - Setor da Suécia",
+    "country": 215,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1028,
+  "fields": {
+    "translation": "Континентальный шельф (Северо-Западная Европа) — сектор Швеции",
+    "country": 215,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1029,
+  "fields": {
+    "translation": "Plataforma continental (noroeste de Europa) - Sector de Suecia",
+    "country": 215,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1030,
+  "fields": {
+    "translation": "Kıta Sahanlığı (Kuzey Avrupa) - İsveç Sektörü",
+    "country": 215,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1031,
+  "fields": {
+    "translation": "Îles Cook",
+    "country": 216,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1032,
+  "fields": {
+    "translation": "Ilhas Cook",
+    "country": 216,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1033,
+  "fields": {
+    "translation": "Острова Кука",
+    "country": 216,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1034,
+  "fields": {
+    "translation": "Islas Cook",
+    "country": 216,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1035,
+  "fields": {
+    "translation": "Cook Adaları",
+    "country": 216,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1036,
+  "fields": {
+    "translation": "Curaçao",
+    "country": 217,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1037,
+  "fields": {
+    "translation": "Curaçao",
+    "country": 217,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1038,
+  "fields": {
+    "translation": "Кюрасао",
+    "country": 217,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1039,
+  "fields": {
+    "translation": "Curazao",
+    "country": 217,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1040,
+  "fields": {
+    "translation": "Curacao",
+    "country": 217,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1041,
+  "fields": {
+    "translation": "Djibouti",
+    "country": 218,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1042,
+  "fields": {
+    "translation": "Djibuti",
+    "country": 218,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1043,
+  "fields": {
+    "translation": "Джибути",
+    "country": 218,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1044,
+  "fields": {
+    "translation": "Yibuti",
+    "country": 218,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1045,
+  "fields": {
+    "translation": "Cibuti",
+    "country": 218,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1046,
+  "fields": {
+    "translation": "Timor oriental",
+    "country": 219,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1047,
+  "fields": {
+    "translation": "Timor Leste",
+    "country": 219,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1048,
+  "fields": {
+    "translation": "Восточный Тимор",
+    "country": 219,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1049,
+  "fields": {
+    "translation": "Timor Oriental",
+    "country": 219,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1050,
+  "fields": {
+    "translation": "Doğu Timor",
+    "country": 219,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1051,
+  "fields": {
+    "translation": "Érythrée",
+    "country": 220,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1052,
+  "fields": {
+    "translation": "Eritreia",
+    "country": 220,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1053,
+  "fields": {
+    "translation": "Эритрея",
+    "country": 220,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1054,
+  "fields": {
+    "translation": "Eritrea",
+    "country": 220,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1055,
+  "fields": {
+    "translation": "Eritre",
+    "country": 220,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1056,
+  "fields": {
+    "translation": "Fidji",
+    "country": 221,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1057,
+  "fields": {
+    "translation": "Fiji",
+    "country": 221,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1058,
+  "fields": {
+    "translation": "Фиджи",
+    "country": 221,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1059,
+  "fields": {
+    "translation": "Fiyi",
+    "country": 221,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1060,
+  "fields": {
+    "translation": "Fiji",
+    "country": 221,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1061,
+  "fields": {
+    "translation": "Territoire antarctique français",
+    "country": 222,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1062,
+  "fields": {
+    "translation": "Território Antártico Francês",
+    "country": 222,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1063,
+  "fields": {
+    "translation": "Французская антарктическая территория",
+    "country": 222,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1064,
+  "fields": {
+    "translation": "Territorio Antártico Francés",
+    "country": 222,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1065,
+  "fields": {
+    "translation": "Fransız Antarktika Bölgesi",
+    "country": 222,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1066,
+  "fields": {
+    "translation": "Guyane française",
+    "country": 223,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1067,
+  "fields": {
+    "translation": "Guiana Francesa",
+    "country": 223,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1068,
+  "fields": {
+    "translation": "Французская Гвиана",
+    "country": 223,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1069,
+  "fields": {
+    "translation": "Guayana Francesa",
+    "country": 223,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1070,
+  "fields": {
+    "translation": "Fransız Guyanası",
+    "country": 223,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1071,
+  "fields": {
+    "translation": "Polynésie française",
+    "country": 224,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1072,
+  "fields": {
+    "translation": "Polinésia Francesa",
+    "country": 224,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1073,
+  "fields": {
+    "translation": "Французская Полинезия",
+    "country": 224,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1074,
+  "fields": {
+    "translation": "Polinesia Francesa",
+    "country": 224,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1075,
+  "fields": {
+    "translation": "Fransız Polinezyası",
+    "country": 224,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1076,
+  "fields": {
+    "translation": "Territoire du Sud français",
+    "country": 225,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1077,
+  "fields": {
+    "translation": "Território Francês do Sul",
+    "country": 225,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1078,
+  "fields": {
+    "translation": "Французская южная территория",
+    "country": 225,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1079,
+  "fields": {
+    "translation": "Territorio Austral Francés",
+    "country": 225,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1080,
+  "fields": {
+    "translation": "Fransız Güney Bölgesi",
+    "country": 225,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1081,
+  "fields": {
+    "translation": "Grenade (y compris les Grenadines du Sud)",
+    "country": 226,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1082,
+  "fields": {
+    "translation": "Granada (incluindo Granadinas do Sul)",
+    "country": 226,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1083,
+  "fields": {
+    "translation": "Гренада (включая Южные Гренадины)",
+    "country": 226,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1084,
+  "fields": {
+    "translation": "Granada (incluidas las Granadinas del Sur)",
+    "country": 226,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1085,
+  "fields": {
+    "translation": "Grenada (Güney Grenadinler dahil)",
+    "country": 226,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1086,
+  "fields": {
+    "translation": "Guadeloupe",
+    "country": 227,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1087,
+  "fields": {
+    "translation": "Guadalupe",
+    "country": 227,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1088,
+  "fields": {
+    "translation": "Гваделупа",
+    "country": 227,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1089,
+  "fields": {
+    "translation": "Guadalupe",
+    "country": 227,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1090,
+  "fields": {
+    "translation": "Guadeloupe",
+    "country": 227,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1091,
+  "fields": {
+    "translation": "Guam",
+    "country": 228,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1092,
+  "fields": {
+    "translation": "Guam",
+    "country": 228,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1093,
+  "fields": {
+    "translation": "Гуам",
+    "country": 228,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1094,
+  "fields": {
+    "translation": "Guam",
+    "country": 228,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1095,
+  "fields": {
+    "translation": "Guam",
+    "country": 228,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1096,
+  "fields": {
+    "translation": "Guinée-Bissau (ancienne Guinée portugaise)",
+    "country": 229,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1097,
+  "fields": {
+    "translation": "Guiné-Bissau (antiga Guiné Portuguesa)",
+    "country": 229,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1098,
+  "fields": {
+    "translation": "Гвинея-Бисау (бывшая Португальская Гвинея)",
+    "country": 229,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1099,
+  "fields": {
+    "translation": "Guinea-Bissau (antes Guinea Portuguesa)",
+    "country": 229,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1100,
+  "fields": {
+    "translation": "Gine-Bissau (eski adıyla Portekiz Ginesi)",
+    "country": 229,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1101,
+  "fields": {
+    "translation": "Hawaii",
+    "country": 230,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1102,
+  "fields": {
+    "translation": "Havaí",
+    "country": 230,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1103,
+  "fields": {
+    "translation": "Гавайи",
+    "country": 230,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1104,
+  "fields": {
+    "translation": "Hawai",
+    "country": 230,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1105,
+  "fields": {
+    "translation": "Hawaii",
+    "country": 230,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1106,
+  "fields": {
+    "translation": "Îles Heard et McDonald",
+    "country": 231,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1107,
+  "fields": {
+    "translation": "Ilhas Heard e McDonald",
+    "country": 231,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1108,
+  "fields": {
+    "translation": "Острова Херд и Макдональд",
+    "country": 231,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1109,
+  "fields": {
+    "translation": "Islas Heard y McDonald",
+    "country": 231,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1110,
+  "fields": {
+    "translation": "Heard ve McDonald Adaları",
+    "country": 231,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1111,
+  "fields": {
+    "translation": "Kiribati",
+    "country": 232,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1112,
+  "fields": {
+    "translation": "Kiribati",
+    "country": 232,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1113,
+  "fields": {
+    "translation": "Кирибати",
+    "country": 232,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1114,
+  "fields": {
+    "translation": "Kiribati",
+    "country": 232,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1115,
+  "fields": {
+    "translation": "Kiribati",
+    "country": 232,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1116,
+  "fields": {
+    "translation": "Lesotho",
+    "country": 233,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1117,
+  "fields": {
+    "translation": "Lesoto",
+    "country": 233,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1118,
+  "fields": {
+    "translation": "Лесото",
+    "country": 233,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1119,
+  "fields": {
+    "translation": "Lesoto",
+    "country": 233,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1120,
+  "fields": {
+    "translation": "Lesotho",
+    "country": 233,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1121,
+  "fields": {
+    "translation": "Malawi",
+    "country": 234,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1122,
+  "fields": {
+    "translation": "Malawi",
+    "country": 234,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1123,
+  "fields": {
+    "translation": "Малави",
+    "country": 234,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1124,
+  "fields": {
+    "translation": "Malawi",
+    "country": 234,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1125,
+  "fields": {
+    "translation": "Malavi",
+    "country": 234,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1126,
+  "fields": {
+    "translation": "Îles Marshall",
+    "country": 235,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1127,
+  "fields": {
+    "translation": "Ilhas Marshall",
+    "country": 235,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1128,
+  "fields": {
+    "translation": "Маршалловы острова",
+    "country": 235,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1129,
+  "fields": {
+    "translation": "Islas Marshall",
+    "country": 235,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1130,
+  "fields": {
+    "translation": "Marshall Adaları",
+    "country": 235,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1131,
+  "fields": {
+    "translation": "Martinique",
+    "country": 236,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1132,
+  "fields": {
+    "translation": "Martinica",
+    "country": 236,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1133,
+  "fields": {
+    "translation": "Мартиника",
+    "country": 236,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1134,
+  "fields": {
+    "translation": "Martinica",
+    "country": 236,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1135,
+  "fields": {
+    "translation": "Martinik",
+    "country": 236,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1136,
+  "fields": {
+    "translation": "Mayotte (Grande-Terre et Pamanzi)",
+    "country": 237,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1137,
+  "fields": {
+    "translation": "Mayotte (Grand Terre e Pamanzi)",
+    "country": 237,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1138,
+  "fields": {
+    "translation": "Майотта (Гранд-Терре и Паманзи)",
+    "country": 237,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1139,
+  "fields": {
+    "translation": "Mayotte (Grande Terre y Pamanzi)",
+    "country": 237,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1140,
+  "fields": {
+    "translation": "Mayotte (Grand Terre ve Pamanzi)",
+    "country": 237,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1141,
+  "fields": {
+    "translation": "Melilla (y compris Peñon de Vélez de la Gomera, Peñon de Alhucemas et les îles Chafarinas)",
+    "country": 238,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1142,
+  "fields": {
+    "translation": "Melilla (incluindo Penon de Velez de la Gomera, Penon de Alhucemas e as Ilhas Chafarinas)",
+    "country": 238,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1143,
+  "fields": {
+    "translation": "Мелилья (включая Пенон-де-Велес-де-ла-Гомера, Пенон-де-Альхусемас и острова Чафаринас)",
+    "country": 238,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1144,
+  "fields": {
+    "translation": "Melilla (incluyendo Peñón de Vélez de la Gomera, Peñón de Alhucemas y las islas Chafarinas)",
+    "country": 238,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1145,
+  "fields": {
+    "translation": "Melilla (Penon de Velez de la Gomera, Penon de Alhucemas ve Chafarinas Adaları dahil)",
+    "country": 238,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1146,
+  "fields": {
+    "translation": "Monaco",
+    "country": 182,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1147,
+  "fields": {
+    "translation": "Mônaco",
+    "country": 182,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1148,
+  "fields": {
+    "translation": "Монако",
+    "country": 182,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1149,
+  "fields": {
+    "translation": "Mónaco",
+    "country": 182,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1150,
+  "fields": {
+    "translation": "Monako",
+    "country": 182,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1151,
+  "fields": {
+    "translation": "Montserrat",
+    "country": 239,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1152,
+  "fields": {
+    "translation": "Montserrat",
+    "country": 239,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1153,
+  "fields": {
+    "translation": "Монсеррат",
+    "country": 239,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1154,
+  "fields": {
+    "translation": "Montserrat",
+    "country": 239,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1155,
+  "fields": {
+    "translation": "Montserrat",
+    "country": 239,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1156,
+  "fields": {
+    "translation": "Nouvelle-Calédonie et dépendances",
+    "country": 240,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1157,
+  "fields": {
+    "translation": "Nova Caledônia e dependências",
+    "country": 240,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1158,
+  "fields": {
+    "translation": "Новая Каледония и зависимые территории",
+    "country": 240,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1159,
+  "fields": {
+    "translation": "Nueva Caledonia y dependencias",
+    "country": 240,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1160,
+  "fields": {
+    "translation": "Yeni Kaledonya ve Bağımlılıkları",
+    "country": 240,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1161,
+  "fields": {
+    "translation": "Niger",
+    "country": 241,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1162,
+  "fields": {
+    "translation": "Níger",
+    "country": 241,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1163,
+  "fields": {
+    "translation": "Нигер",
+    "country": 241,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1164,
+  "fields": {
+    "translation": "Níger",
+    "country": 241,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1165,
+  "fields": {
+    "translation": "Nijer",
+    "country": 241,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1166,
+  "fields": {
+    "translation": "Île de Niue",
+    "country": 242,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1167,
+  "fields": {
+    "translation": "Ilha Niue",
+    "country": 242,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1168,
+  "fields": {
+    "translation": "Остров Ниуэ",
+    "country": 242,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1169,
+  "fields": {
+    "translation": "Isla Niue",
+    "country": 242,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1170,
+  "fields": {
+    "translation": "Niue Adası",
+    "country": 242,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1171,
+  "fields": {
+    "translation": "Île Norfolk",
+    "country": 243,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1172,
+  "fields": {
+    "translation": "Ilha Norfolk",
+    "country": 243,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1173,
+  "fields": {
+    "translation": "Остров Норфолк",
+    "country": 243,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1174,
+  "fields": {
+    "translation": "Isla Norfolk",
+    "country": 243,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1175,
+  "fields": {
+    "translation": "Norfolk Adası",
+    "country": 243,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1176,
+  "fields": {
+    "translation": "Îles Mariannes du Nord",
+    "country": 244,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1177,
+  "fields": {
+    "translation": "Ilhas Marianas do Norte",
+    "country": 244,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1178,
+  "fields": {
+    "translation": "Северные Марианские острова",
+    "country": 244,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1179,
+  "fields": {
+    "translation": "Islas Marianas del Norte",
+    "country": 244,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1180,
+  "fields": {
+    "translation": "Kuzey Mariana Adaları",
+    "country": 244,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1181,
+  "fields": {
+    "translation": "Palaos",
+    "country": 245,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1182,
+  "fields": {
+    "translation": "Palau",
+    "country": 245,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1183,
+  "fields": {
+    "translation": "Палау",
+    "country": 245,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1184,
+  "fields": {
+    "translation": "Palaos",
+    "country": 245,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1185,
+  "fields": {
+    "translation": "Palau",
+    "country": 245,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1186,
+  "fields": {
+    "translation": "Île Pitcairn",
+    "country": 246,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1187,
+  "fields": {
+    "translation": "Ilha Pitcairn",
+    "country": 246,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1188,
+  "fields": {
+    "translation": "Остров Питкэрн",
+    "country": 246,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1189,
+  "fields": {
+    "translation": "Isla Pitcairn",
+    "country": 246,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1190,
+  "fields": {
+    "translation": "Pitcairn Adası",
+    "country": 246,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1191,
+  "fields": {
+    "translation": "Samoa (anciennement Samoa occidentales)",
+    "country": 247,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1192,
+  "fields": {
+    "translation": "Samoa (antiga Samoa Ocidental)",
+    "country": 247,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1193,
+  "fields": {
+    "translation": "Самоа (ранее Западное Самоа)",
+    "country": 247,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1194,
+  "fields": {
+    "translation": "Samoa (anteriormente Samoa Occidental)",
+    "country": 247,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1195,
+  "fields": {
+    "translation": "Samoa (eski adıyla Batı Samoa)",
+    "country": 247,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1196,
+  "fields": {
+    "translation": "Saint Berthélemy",
+    "country": 248,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1197,
+  "fields": {
+    "translation": "São Bertolomeu",
+    "country": 248,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1198,
+  "fields": {
+    "translation": "Сен-Бертельми",
+    "country": 248,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1199,
+  "fields": {
+    "translation": "San Berthelemy",
+    "country": 248,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1200,
+  "fields": {
+    "translation": "Aziz Berthelemy",
+    "country": 248,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1201,
+  "fields": {
+    "translation": "Bonaire, Saint-Eustache et Saba",
+    "country": 249,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1202,
+  "fields": {
+    "translation": "Bonaire, Santo Eustáquio e Saba",
+    "country": 249,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1203,
+  "fields": {
+    "translation": "Бонэйр, Синт-Эстатиус и Саба",
+    "country": 249,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1204,
+  "fields": {
+    "translation": "Bonaire, San Eustaquio y Saba",
+    "country": 249,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1205,
+  "fields": {
+    "translation": "Bonaire, Sint Eustatius ve Saba",
+    "country": 249,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1206,
+  "fields": {
+    "translation": "Saint-Kitts-et-Nevis",
+    "country": 250,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1207,
+  "fields": {
+    "translation": "São Cristóvão e Nevis",
+    "country": 250,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1208,
+  "fields": {
+    "translation": "Сент-Китс и Невис",
+    "country": 250,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1209,
+  "fields": {
+    "translation": "San Cristóbal y Nieves",
+    "country": 250,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1210,
+  "fields": {
+    "translation": "Saint Kitts ve Nevis",
+    "country": 250,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1211,
+  "fields": {
+    "translation": "Sainte-Lucie",
+    "country": 251,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1212,
+  "fields": {
+    "translation": "Santa Lúcia",
+    "country": 251,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1213,
+  "fields": {
+    "translation": "Сент-Люсия",
+    "country": 251,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1214,
+  "fields": {
+    "translation": "Santa Lucía",
+    "country": 251,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1215,
+  "fields": {
+    "translation": "Saint Lucia",
+    "country": 251,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1216,
+  "fields": {
+    "translation": "Saint-Martin (partie néerlandaise)",
+    "country": 252,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1217,
+  "fields": {
+    "translation": "St Maarten (Parte Holandesa)",
+    "country": 252,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1218,
+  "fields": {
+    "translation": "Сен-Мартен (голландская часть)",
+    "country": 252,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1219,
+  "fields": {
+    "translation": "San Martín (parte holandesa)",
+    "country": 252,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1220,
+  "fields": {
+    "translation": "St Maarten (Hollanda Bölümü)",
+    "country": 252,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1221,
+  "fields": {
+    "translation": "Saint-Pierre-et-Miquelon",
+    "country": 253,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1222,
+  "fields": {
+    "translation": "São Pedro e Miquelon",
+    "country": 253,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1223,
+  "fields": {
+    "translation": "Сен-Пьер и Микелон",
+    "country": 253,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1224,
+  "fields": {
+    "translation": "San Pedro y Miquelón",
+    "country": 253,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1225,
+  "fields": {
+    "translation": "Saint-Pierre ve Miquelon",
+    "country": 253,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1226,
+  "fields": {
+    "translation": "Saint-Vincent-et-les Grenadines",
+    "country": 254,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1227,
+  "fields": {
+    "translation": "São Vicente e Granadinas",
+    "country": 254,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1228,
+  "fields": {
+    "translation": "Сент-Винсент и Гренадины",
+    "country": 254,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1229,
+  "fields": {
+    "translation": "San Vicente y las Granadinas",
+    "country": 254,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1230,
+  "fields": {
+    "translation": "St Vincent ve Grenadinler",
+    "country": 254,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1231,
+  "fields": {
+    "translation": "Saint-Marin",
+    "country": 255,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1232,
+  "fields": {
+    "translation": "San Marino",
+    "country": 255,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1233,
+  "fields": {
+    "translation": "Сан-Марино",
+    "country": 255,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1234,
+  "fields": {
+    "translation": "San Marino",
+    "country": 255,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1235,
+  "fields": {
+    "translation": "San Marino",
+    "country": 255,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1236,
+  "fields": {
+    "translation": "Sao Tomé-et-Principe",
+    "country": 256,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1237,
+  "fields": {
+    "translation": "São Tomé e Príncipe",
+    "country": 256,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1238,
+  "fields": {
+    "translation": "Сан-Томе и Принсипи",
+    "country": 256,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1239,
+  "fields": {
+    "translation": "Santo Tomé y Príncipe",
+    "country": 256,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1240,
+  "fields": {
+    "translation": "Sao Tome ve Principe",
+    "country": 256,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1241,
+  "fields": {
+    "translation": "Sierra Leone",
+    "country": 257,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1242,
+  "fields": {
+    "translation": "Serra Leoa",
+    "country": 257,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1243,
+  "fields": {
+    "translation": "Сьерра-Леоне",
+    "country": 257,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1244,
+  "fields": {
+    "translation": "Sierra Leona",
+    "country": 257,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1245,
+  "fields": {
+    "translation": "Sierra Leone",
+    "country": 257,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1246,
+  "fields": {
+    "translation": "Îles Géorgie du Sud et Sandwich du Sud",
+    "country": 258,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1247,
+  "fields": {
+    "translation": "Ilhas Geórgia do Sul e Sandwich do Sul",
+    "country": 258,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1248,
+  "fields": {
+    "translation": "Южная Георгия и Южные Сандвичевы острова",
+    "country": 258,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1249,
+  "fields": {
+    "translation": "Islas Georgias del Sur y Sandwich del Sur",
+    "country": 258,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1250,
+  "fields": {
+    "translation": "Güney Georgia ve Güney Sandwich Adaları",
+    "country": 258,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1251,
+  "fields": {
+    "translation": "Soudan du Sud",
+    "country": 259,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1252,
+  "fields": {
+    "translation": "Sudão do Sul",
+    "country": 259,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1253,
+  "fields": {
+    "translation": "Южный Судан",
+    "country": 259,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1254,
+  "fields": {
+    "translation": "Sudán del Sur",
+    "country": 259,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1255,
+  "fields": {
+    "translation": "Güney Sudan",
+    "country": 259,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1256,
+  "fields": {
+    "translation": "Togo",
+    "country": 260,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1257,
+  "fields": {
+    "translation": "Togo",
+    "country": 260,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1258,
+  "fields": {
+    "translation": "Того",
+    "country": 260,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1259,
+  "fields": {
+    "translation": "Togo",
+    "country": 260,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1260,
+  "fields": {
+    "translation": "Togo",
+    "country": 260,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1261,
+  "fields": {
+    "translation": "Îles Tokélaou",
+    "country": 261,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1262,
+  "fields": {
+    "translation": "Ilhas Tokelau",
+    "country": 261,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1263,
+  "fields": {
+    "translation": "Острова Токелау",
+    "country": 261,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1264,
+  "fields": {
+    "translation": "Islas Tokelau",
+    "country": 261,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1265,
+  "fields": {
+    "translation": "Tokelau Adaları",
+    "country": 261,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1266,
+  "fields": {
+    "translation": "Tonga",
+    "country": 262,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1267,
+  "fields": {
+    "translation": "Reino de Tonga",
+    "country": 262,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1268,
+  "fields": {
+    "translation": "Тонга",
+    "country": 262,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1269,
+  "fields": {
+    "translation": "Tonga",
+    "country": 262,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1270,
+  "fields": {
+    "translation": "Tonga",
+    "country": 262,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1271,
+  "fields": {
+    "translation": "Îles Turques-et-Caïques",
+    "country": 263,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1272,
+  "fields": {
+    "translation": "Ilhas Turks e Caicos",
+    "country": 263,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1273,
+  "fields": {
+    "translation": "Острова Теркс и Кайкос",
+    "country": 263,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1274,
+  "fields": {
+    "translation": "Islas Turcas y Caicos",
+    "country": 263,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1275,
+  "fields": {
+    "translation": "Turks ve Caicos Adaları",
+    "country": 263,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1276,
+  "fields": {
+    "translation": "Tuvalu",
+    "country": 264,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1277,
+  "fields": {
+    "translation": "Tuvalu",
+    "country": 264,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1278,
+  "fields": {
+    "translation": "Тувалу",
+    "country": 264,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1279,
+  "fields": {
+    "translation": "Tuvalu",
+    "country": 264,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1280,
+  "fields": {
+    "translation": "Tuvalu",
+    "country": 264,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1281,
+  "fields": {
+    "translation": "Ouganda",
+    "country": 180,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1282,
+  "fields": {
+    "translation": "Uganda",
+    "country": 180,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1283,
+  "fields": {
+    "translation": "Уганда",
+    "country": 180,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1284,
+  "fields": {
+    "translation": "Uganda",
+    "country": 180,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1285,
+  "fields": {
+    "translation": "Uganda",
+    "country": 180,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1286,
+  "fields": {
+    "translation": "Îles mineures éloignées des États-Unis (y compris l'île Baker, l'île Howland, l'île Jarvis, l'atoll Johnson, le récif Kingman, les îles Midway, l'île Navassa, l'atoll de Palmyra et l'île Wake)",
+    "country": 265,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1287,
+  "fields": {
+    "translation": "Ilhas menores periféricas dos Estados Unidos (incluindo Ilha Baker, Ilha Howland, Ilha Jarvis, Atol Johnson, Kingman Reef, Ilhas Midway, Ilha Navassa, Atol Palmyra e Ilha Wake)",
+    "country": 265,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1288,
+  "fields": {
+    "translation": "Малые отдаленные острова США (включая острова Бейкер, Хоуленд, Джарвис, атолл Джонсон, риф Кингман, острова Мидуэй, остров Навасса, атолл Пальмира и остров Уэйк)",
+    "country": 265,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1289,
+  "fields": {
+    "translation": "Islas periféricas menores de los Estados Unidos (incluidas la isla Baker, la isla Howland, la isla Jarvis, el atolón Johnson, el arrecife Kingman, las islas Midway, la isla Navassa, el atolón Palmyra y la isla Wake)",
+    "country": 265,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1290,
+  "fields": {
+    "translation": "Amerika Birleşik Devletleri küçük uzak adaları (Baker Adası, Howland Adası, Jarvis Adası, Johnson Atolü, Kingman Reef, Midway Adaları, Navassa Adası, Palmyra Atolü ve Wake Adası dahil)",
+    "country": 265,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1291,
+  "fields": {
+    "translation": "Vanuatu",
+    "country": 266,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1292,
+  "fields": {
+    "translation": "Vanuatu",
+    "country": 266,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1293,
+  "fields": {
+    "translation": "Вануату",
+    "country": 266,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1294,
+  "fields": {
+    "translation": "Vanuatu",
+    "country": 266,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1295,
+  "fields": {
+    "translation": "vanuatu",
+    "country": 266,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1296,
+  "fields": {
+    "translation": "Cité du Vatican",
+    "country": 267,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1297,
+  "fields": {
+    "translation": "Cidade do Vaticano",
+    "country": 267,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1298,
+  "fields": {
+    "translation": "Ватикан",
+    "country": 267,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1299,
+  "fields": {
+    "translation": "Ciudad del Vaticano",
+    "country": 267,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1300,
+  "fields": {
+    "translation": "Vatikan",
+    "country": 267,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1301,
+  "fields": {
+    "translation": "Îles Vierges des États-Unis",
+    "country": 268,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1302,
+  "fields": {
+    "translation": "Ilhas Virgens dos EUA",
+    "country": 268,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1303,
+  "fields": {
+    "translation": "Виргинские острова США",
+    "country": 268,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1304,
+  "fields": {
+    "translation": "Islas Vírgenes de los Estados Unidos",
+    "country": 268,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1305,
+  "fields": {
+    "translation": "ABD Virgin Adaları",
+    "country": 268,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1306,
+  "fields": {
+    "translation": "Îles Wallis-et-Futuna",
+    "country": 269,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1307,
+  "fields": {
+    "translation": "Ilhas Wallis e Futuna",
+    "country": 269,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1308,
+  "fields": {
+    "translation": "Острова Уоллис и Футуна",
+    "country": 269,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1309,
+  "fields": {
+    "translation": "Islas Wallis y Futuna",
+    "country": 269,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1310,
+  "fields": {
+    "translation": "Wallis ve Futuna Adaları",
+    "country": 269,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1311,
+  "fields": {
+    "translation": "Sahara occidental",
+    "country": 270,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1312,
+  "fields": {
+    "translation": "Saara Ocidental",
+    "country": 270,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1313,
+  "fields": {
+    "translation": "Западная Сахара",
+    "country": 270,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1314,
+  "fields": {
+    "translation": "Sáhara Occidental",
+    "country": 270,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1315,
+  "fields": {
+    "translation": "Batı Sahra",
+    "country": 270,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1316,
+  "fields": {
+    "translation": "Cameroun",
+    "country": 183,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1317,
+  "fields": {
+    "translation": "Camarões",
+    "country": 183,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1318,
+  "fields": {
+    "translation": "Камерун",
+    "country": 183,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1319,
+  "fields": {
+    "translation": "Camerún",
+    "country": 183,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1320,
+  "fields": {
+    "translation": "Kamerun",
+    "country": 183,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1321,
+  "fields": {
+    "translation": "N'importe quel pays",
+    "country": 5,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1322,
+  "fields": {
+    "translation": "Qualquer país",
+    "country": 5,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1323,
+  "fields": {
+    "translation": "Любая страна",
+    "country": 5,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1324,
+  "fields": {
+    "translation": "Cualquier país",
+    "country": 5,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1325,
+  "fields": {
+    "translation": "Herhangi Bir Ülke",
+    "country": 5,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1326,
+  "fields": {
+    "translation": "Tout pays non membre de l'UE",
+    "country": 6,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1327,
+  "fields": {
+    "translation": "Qualquer país fora da UE",
+    "country": 6,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1328,
+  "fields": {
+    "translation": "Любая страна, не входящая в ЕС",
+    "country": 6,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1329,
+  "fields": {
+    "translation": "Cualquier país no perteneciente a la UE",
+    "country": 6,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1330,
+  "fields": {
+    "translation": "AB Dışı Herhangi Bir Ülke",
+    "country": 6,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1331,
+  "fields": {
+    "translation": "N'importe quel pays de l'UE",
+    "country": 32,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1332,
+  "fields": {
+    "translation": "Qualquer país da UE",
+    "country": 32,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1333,
+  "fields": {
+    "translation": "Любая страна ЕС",
+    "country": 32,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1334,
+  "fields": {
+    "translation": "Cualquier país de la UE",
+    "country": 32,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1335,
+  "fields": {
+    "translation": "Herhangi bir AB ülkesi",
+    "country": 32,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1336,
+  "fields": {
+    "translation": "Union européenne",
+    "country": 158,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1337,
+  "fields": {
+    "translation": "União Européia",
+    "country": 158,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1338,
+  "fields": {
+    "translation": "Европейский союз",
+    "country": 158,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1339,
+  "fields": {
+    "translation": "Unión Europea",
+    "country": 158,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1340,
+  "fields": {
+    "translation": "Avrupa Birliği",
+    "country": 158,
+    "translation_set": 5
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1341,
+  "fields": {
+    "translation": "Plateau continental (Europe du Nord-Ouest) - Secteur britannique",
+    "country": 181,
+    "translation_set": 1
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1342,
+  "fields": {
+    "translation": "Plataforma Continental (noroeste da Europa) - Setor do Reino Unido",
+    "country": 181,
+    "translation_set": 2
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1343,
+  "fields": {
+    "translation": "Континентальный шельф (Северо-Западная Европа) — сектор Великобритании",
+    "country": 181,
+    "translation_set": 3
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1344,
+  "fields": {
+    "translation": "Plataforma continental (noroeste de Europa) - Sector del Reino Unido",
+    "country": 181,
+    "translation_set": 4
+  }
+},
+{
+  "model": "web.countrytranslation",
+  "pk": 1345,
+  "fields": {
+    "translation": "Kıta Sahanlığı (Kuzey Avrupa) - İngiltere Sektörü",
+    "country": 181,
+    "translation_set": 5
+  }
 }
 ]

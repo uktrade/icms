@@ -3,7 +3,640 @@ from typing import Any
 
 from django.core.management.base import BaseCommand
 
-from web.models import Country, OverseasRegion
+from web.models import (
+    Country,
+    CountryTranslation,
+    CountryTranslationSet,
+    OverseasRegion,
+)
+
+LANGUAGE_CODE_MAP = {
+    "Russian": "ru",
+    "French": "fr",
+    "Spanish": "es",
+    "Portuguese": "pt",
+    "Turkish": "tr",
+}
+
+TRANSLATIONS = {
+    "American Samoa": {
+        "fr": "Samoa américaines",
+        "es": "Samoa Americana",
+        "tr": "Amerikan Samoası",
+        "ru": "Американское Самоа",
+        "pt": "Samoa Americana",
+    },
+    "Andorra": {
+        "fr": "Andorre",
+        "es": "Andorra",
+        "tr": "Andorra",
+        "ru": "андорра",
+        "pt": "Andorra",
+    },
+    "Anguilla": {
+        "fr": "Anguilla",
+        "es": "Anguila",
+        "tr": "Anguilla",
+        "ru": "Ангилья",
+        "pt": "Anguilla",
+    },
+    (
+        "Antarctica (territory south of 60° south latitude, not AQ Norwegian NOK including the French Southern Territories (TF), Bouvet Krone Islands (BV), "
+        "South Georgia and South Sandwich Islands (GS))"
+    ): {
+        "fr": (
+            "Antarctique (territoire situé au sud du 60° de latitude sud, hors AQ Norwegian NOK, y compris les Territoires austraux français (TF), "
+            "les îles Bouvet Krone (BV), la Géorgie du Sud et les îles Sandwich du Sud (GS))"
+        ),
+        "es": (
+            "Antártida (territorio al sur de los 60° de latitud sur, no AQ Norwegian NOK, incluidos los Territorios Australes Franceses (TF), "
+            "las Islas Bouvet Krone (BV), las Islas Georgias del Sur y Sandwich del Sur (GS))"
+        ),
+        "tr": (
+            "Antarktika (60° güney enleminin güneyindeki bölge, Fransız Güney Bölgeleri (TF), Bouvet Krone Adaları (BV), "
+            "Güney Georgia ve Güney Sandwich Adaları (GS) dahil AQ Norveç NOK değil)"
+        ),
+        "ru": (
+            "Антарктида (территория к югу от 60° южной широты, а не AQ Norwegian NOK, включая Французские Южные территории (TF), острова Буве Крон (BV), "
+            "Южная Георгия и Южные Сандвичевы острова (GS))"
+        ),
+        "pt": (
+            "Antártica (território ao sul de 60° de latitude sul, não AQ NOK norueguês, incluindo os Territórios Franceses do Sul (TF), "
+            "Ilhas Bouvet Krone (BV), Geórgia do Sul e Ilhas Sandwich do Sul (GS))"
+        ),
+    },
+    "Antigua and Barbuda": {
+        "fr": "Antigua-et-Barbuda",
+        "es": "Antigua y Barbuda",
+        "tr": "Antigua ve Barbuda",
+        "ru": "Антигуа и Барбуда",
+        "pt": "Antígua e Barbuda",
+    },
+    "Netherlands Antilles": {
+        "fr": "Antilles néerlandaises",
+        "es": "Antillas Neerlandesas",
+        "tr": "Hollanda Antilleri",
+        "ru": "Нидерландские Антильские острова",
+        "pt": "Antilhas Holandesas",
+    },
+    "Bouvet Island": {
+        "fr": "Île Bouvet",
+        "es": "Isla Bouvet",
+        "tr": "Bouvet Adası",
+        "ru": "Остров Буве",
+        "pt": "Ilha Bouvet",
+    },
+    "British Antarctic Territory": {
+        "fr": "Territoire antarctique britannique",
+        "es": "Territorio Antártico Británico",
+        "tr": "İngiliz Antarktika Bölgesi",
+        "ru": "Британская антарктическая территория",
+        "pt": "Território Antártico Britânico",
+    },
+    "British Indian Ocean Territory": {
+        "fr": "Territoire britannique de l'océan Indien",
+        "es": "Territorio Británico del Océano Índico",
+        "tr": "İngiliz Hint Okyanusu Bölgesi",
+        "ru": "Британская территория в Индийском океане",
+        "pt": "Território britânico do Oceano Índico",
+    },
+    "Burundi": {
+        "fr": "Burundi",
+        "es": "Burundi",
+        "tr": "Burundi",
+        "ru": "Бурунди",
+        "pt": "Burúndi",
+    },
+    "Burkina Faso": {
+        "fr": "Burkina Faso",
+        "es": "Burkina Faso",
+        "tr": "Burkina Faso",
+        "ru": "Буркина-Фасо",
+        "pt": "Burkina Faso",
+    },
+    "Canary Islands": {
+        "fr": "Îles Canaries",
+        "es": "Islas Canarias",
+        "tr": "Kanarya Adaları",
+        "ru": "Канарские острова",
+        "pt": "Ilhas Canárias",
+    },
+    "Cape Verde": {
+        "fr": "Cap Vert",
+        "es": "Cabo Verde",
+        "tr": "Yeşil Burun Adaları",
+        "ru": "Кабо-Верде",
+        "pt": "Cabo Verde",
+    },
+    "Cayman Islands": {
+        "fr": "Îles Caïmans",
+        "es": "Islas Caimán",
+        "tr": "Cayman Adaları",
+        "ru": "Каймановы острова",
+        "pt": "Ilhas Cayman",
+    },
+    "Central African Republic": {
+        "fr": "République centrafricaine",
+        "es": "República Centroafricana",
+        "tr": "Orta Afrika Cumhuriyeti",
+        "ru": "Центральноафриканская Республика",
+        "pt": "República Centro-Africana",
+    },
+    "Ceuta": {"fr": "Ceuta", "es": "Ceuta", "tr": "Ceuta", "ru": "Сеута", "pt": "Ceuta"},
+    "Chad": {"fr": "Tchad", "es": "Chad", "tr": "Çad", "ru": "Чад", "pt": "Chad"},
+    "Christmas Island (Indian Ocean)": {
+        "fr": "Île Christmas (océan Indien)",
+        "es": "Isla de Navidad (Océano Índico)",
+        "tr": "Noel Adası (Hint Okyanusu)",
+        "ru": "Остров Рождества (Индийский океан)",
+        "pt": "Ilha do Natal (Oceano Índico)",
+    },
+    "Cocos (Keeling) Islands": {
+        "fr": "Îles Cocos (Keeling)",
+        "es": "Islas Cocos (Keeling)",
+        "tr": "Cocos (Keeling) Adaları",
+        "ru": "Кокосовые острова (Килинг)",
+        "pt": "Ilhas Cocos (Keeling)",
+    },
+    "Comoros (Great Comoro Anjouan and Moheli)": {
+        "fr": "Comores (Grande Comore, Anjouan et Mohéli)",
+        "es": "Comoras (Gran Comora, Anjouan y Moheli)",
+        "tr": "Komorlar (Büyük Komoro Anjouan ve Moheli)",
+        "ru": "Коморские острова (Великие Коморские острова, Анжуан и Мохели)",
+        "pt": "Comores (Grande Comoro Anjouan e Moheli)",
+    },
+    "Continental Shelf (NW European) - Belgian Sector": {
+        "fr": "Plateau continental (Europe du Nord-Ouest) - Secteur belge",
+        "es": "Plataforma continental (noroeste de Europa) - Sector belga",
+        "tr": "Kıta Sahanlığı (Kuzey Avrupa) - Belçika Sektörü",
+        "ru": "Континентальный шельф (Северо-Западная Европа) — бельгийский сектор",
+        "pt": "Plataforma Continental (Noroeste da Europa) - Setor belga",
+    },
+    "Continental Shelf (NW European) - Cyprus Sector": {
+        "fr": "Plateau continental (Europe du Nord-Ouest) - Secteur chypriote",
+        "es": "Plataforma continental (noroeste de Europa) - Sector de Chipre",
+        "tr": "Kıta Sahanlığı (Kuzey Avrupa) - Kıbrıs Sektörü",
+        "ru": "Континентальный шельф (Северо-Западная Европа) — сектор Кипра",
+        "pt": "Plataforma Continental (Noroeste da Europa) - Setor de Chipre",
+    },
+    "Continental Shelf (NW European) - Danish Sector": {
+        "fr": "Plateau continental (Europe du Nord-Ouest) - Secteur danois",
+        "es": "Plataforma continental (noroeste de Europa) - Sector danés",
+        "tr": "Kıta Sahanlığı (Kuzey Avrupa) - Danimarka Sektörü",
+        "ru": "Континентальный шельф (Северо-Западная Европа) — датский сектор",
+        "pt": "Plataforma Continental (Noroeste da Europa) - Setor dinamarquês",
+    },
+    "Continental Shelf (NW European) - Finland Sector": {
+        "fr": "Plateau continental (Europe du Nord-Ouest) - Secteur de la Finlande",
+        "es": "Plataforma continental (noroeste de Europa) - Sector de Finlandia",
+        "tr": "Kıta Sahanlığı (Kuzey Avrupa) - Finlandiya Sektörü",
+        "ru": "Континентальный шельф (Северо-Западная Европа) — сектор Финляндии",
+        "pt": "Plataforma Continental (Noroeste da Europa) - Setor da Finlândia",
+    },
+    "Continental Shelf (NW European) - French Sector": {
+        "fr": "Plateau continental (Europe du Nord-Ouest) - Secteur français",
+        "es": "Plataforma continental (noroeste de Europa) - Sector francés",
+        "tr": "Kıta Sahanlığı (Kuzey Avrupa) - Fransız Sektörü",
+        "ru": "Континентальный шельф (Северо-Западная Европа) — французский сектор",
+        "pt": "Plataforma Continental (Noroeste da Europa) - Setor francês",
+    },
+    "Continental Shelf (NW European) - German Sector": {
+        "fr": "Plateau continental (Europe du Nord-Ouest) - Secteur allemand",
+        "es": "Plataforma continental (noroeste de Europa) - Sector alemán",
+        "tr": "Kıta Sahanlığı (Kuzey Avrupa) - Alman Sektörü",
+        "ru": "Континентальный шельф (Северо-Западная Европа) — сектор Германии",
+        "pt": "Plataforma Continental (noroeste da Europa) - Setor alemão",
+    },
+    "Continental Shelf (NW European) - Greece Sector": {
+        "fr": "Plateau continental (Europe du Nord-Ouest) - Secteur Grèce",
+        "es": "Plataforma continental (noroeste de Europa) - Sector de Grecia",
+        "tr": "Kıta Sahanlığı (Kuzey Avrupa) - Yunanistan Sektörü",
+        "ru": "Континентальный шельф (Северо-Западная Европа) — сектор Греции",
+        "pt": "Plataforma Continental (Noroeste da Europa) - Setor da Grécia",
+    },
+    "Continental Shelf (NW European) - Irish Sector": {
+        "fr": "Plateau continental (Europe du Nord-Ouest) - Secteur irlandais",
+        "es": "Plataforma continental (noroeste de Europa) - Sector irlandés",
+        "tr": "Kıta Sahanlığı (Kuzey Avrupa) - İrlanda Sektörü",
+        "ru": "Континентальный шельф (Северо-Западная Европа) — ирландский сектор",
+        "pt": "Plataforma Continental (Noroeste da Europa) - Setor irlandês",
+    },
+    "Continental Shelf (NW European) - Italy Sector": {
+        "fr": "Plateau continental (Europe du Nord-Ouest) - Secteur Italie",
+        "es": "Plataforma continental (noroeste de Europa) - Sector de Italia",
+        "tr": "Kıta Sahanlığı (Kuzey Avrupa) - İtalya Sektörü",
+        "ru": "Континентальный шельф (Северо-Западная Европа) — сектор Италии",
+        "pt": "Plataforma Continental (Noroeste da Europa) - Setor da Itália",
+    },
+    "Continental Shelf (NW European) - Netherlands Sector": {
+        "fr": "Plateau continental (Europe du Nord-Ouest) - Secteur néerlandais",
+        "es": "Plataforma continental (noroeste de Europa) - Sector de los Países Bajos",
+        "tr": "Kıta Sahanlığı (Kuzey Avrupa) - Hollanda Sektörü",
+        "ru": "Континентальный шельф (Северо-Западная Европа) — сектор Нидерландов",
+        "pt": "Plataforma Continental (Noroeste da Europa) - Setor Holandês",
+    },
+    "Continental Shelf (NW European) - Norwegian Sector": {
+        "fr": "Plateau continental (Europe du Nord-Ouest) - Secteur norvégien",
+        "es": "Plataforma continental (noroeste de Europa) - Sector noruego",
+        "tr": "Kıta Sahanlığı (Kuzey Avrupa) - Norveç Sektörü",
+        "ru": "Континентальный шельф (Северо-Западная Европа) — норвежский сектор",
+        "pt": "Plataforma Continental (Noroeste da Europa) - Setor norueguês",
+    },
+    "Continental Shelf (NW European) - Sweden Sector": {
+        "fr": "Plateau continental (Europe du Nord-Ouest) - Secteur de la Suède",
+        "es": "Plataforma continental (noroeste de Europa) - Sector de Suecia",
+        "tr": "Kıta Sahanlığı (Kuzey Avrupa) - İsveç Sektörü",
+        "ru": "Континентальный шельф (Северо-Западная Европа) — сектор Швеции",
+        "pt": "Plataforma Continental (Noroeste da Europa) - Setor da Suécia",
+    },
+    "Cook Islands": {
+        "fr": "Îles Cook",
+        "es": "Islas Cook",
+        "tr": "Cook Adaları",
+        "ru": "Острова Кука",
+        "pt": "Ilhas Cook",
+    },
+    "Curacao": {
+        "fr": "Curaçao",
+        "es": "Curazao",
+        "tr": "Curacao",
+        "ru": "Кюрасао",
+        "pt": "Curaçao",
+    },
+    "Djibouti": {
+        "fr": "Djibouti",
+        "es": "Yibuti",
+        "tr": "Cibuti",
+        "ru": "Джибути",
+        "pt": "Djibuti",
+    },
+    "East Timor": {
+        "fr": "Timor oriental",
+        "es": "Timor Oriental",
+        "tr": "Doğu Timor",
+        "ru": "Восточный Тимор",
+        "pt": "Timor Leste",
+    },
+    "Eritrea": {
+        "fr": "Érythrée",
+        "es": "Eritrea",
+        "tr": "Eritre",
+        "ru": "Эритрея",
+        "pt": "Eritreia",
+    },
+    "Fiji": {"fr": "Fidji", "es": "Fiyi", "tr": "Fiji", "ru": "Фиджи", "pt": "Fiji"},
+    "French Antarctic Territory": {
+        "fr": "Territoire antarctique français",
+        "es": "Territorio Antártico Francés",
+        "tr": "Fransız Antarktika Bölgesi",
+        "ru": "Французская антарктическая территория",
+        "pt": "Território Antártico Francês",
+    },
+    "French Guiana": {
+        "fr": "Guyane française",
+        "es": "Guayana Francesa",
+        "tr": "Fransız Guyanası",
+        "ru": "Французская Гвиана",
+        "pt": "Guiana Francesa",
+    },
+    "French Polynesia": {
+        "fr": "Polynésie française",
+        "es": "Polinesia Francesa",
+        "tr": "Fransız Polinezyası",
+        "ru": "Французская Полинезия",
+        "pt": "Polinésia Francesa",
+    },
+    "French Southern Territory": {
+        "fr": "Territoire du Sud français",
+        "es": "Territorio Austral Francés",
+        "tr": "Fransız Güney Bölgesi",
+        "ru": "Французская южная территория",
+        "pt": "Território Francês do Sul",
+    },
+    "Grenada (including Southern Grenadines)": {
+        "fr": "Grenade (y compris les Grenadines du Sud)",
+        "es": "Granada (incluidas las Granadinas del Sur)",
+        "tr": "Grenada (Güney Grenadinler dahil)",
+        "ru": "Гренада (включая Южные Гренадины)",
+        "pt": "Granada (incluindo Granadinas do Sul)",
+    },
+    "Guadeloupe": {
+        "fr": "Guadeloupe",
+        "es": "Guadalupe",
+        "tr": "Guadeloupe",
+        "ru": "Гваделупа",
+        "pt": "Guadalupe",
+    },
+    "Guam": {"fr": "Guam", "es": "Guam", "tr": "Guam", "ru": "Гуам", "pt": "Guam"},
+    "Guinea-Bissau (formerly Portuguese Guinea)": {
+        "fr": "Guinée-Bissau (ancienne Guinée portugaise)",
+        "es": "Guinea-Bissau (antes Guinea Portuguesa)",
+        "tr": "Gine-Bissau (eski adıyla Portekiz Ginesi)",
+        "ru": "Гвинея-Бисау (бывшая Португальская Гвинея)",
+        "pt": "Guiné-Bissau (antiga Guiné Portuguesa)",
+    },
+    "Hawaii": {"fr": "Hawaii", "es": "Hawai", "tr": "Hawaii", "ru": "Гавайи", "pt": "Havaí"},
+    "Heard and McDonald Islands": {
+        "fr": "Îles Heard et McDonald",
+        "es": "Islas Heard y McDonald",
+        "tr": "Heard ve McDonald Adaları",
+        "ru": "Острова Херд и Макдональд",
+        "pt": "Ilhas Heard e McDonald",
+    },
+    "Kiribati": {
+        "fr": "Kiribati",
+        "es": "Kiribati",
+        "tr": "Kiribati",
+        "ru": "Кирибати",
+        "pt": "Kiribati",
+    },
+    "Lesotho": {"fr": "Lesotho", "es": "Lesoto", "tr": "Lesotho", "ru": "Лесото", "pt": "Lesoto"},
+    "Malawi": {"fr": "Malawi", "es": "Malawi", "tr": "Malavi", "ru": "Малави", "pt": "Malawi"},
+    "Marshall Islands": {
+        "fr": "Îles Marshall",
+        "es": "Islas Marshall",
+        "tr": "Marshall Adaları",
+        "ru": "Маршалловы острова",
+        "pt": "Ilhas Marshall",
+    },
+    "Martinique": {
+        "fr": "Martinique",
+        "es": "Martinica",
+        "tr": "Martinik",
+        "ru": "Мартиника",
+        "pt": "Martinica",
+    },
+    "Mayotte (Grand Terre and Pamanzi)": {
+        "fr": "Mayotte (Grande-Terre et Pamanzi)",
+        "es": "Mayotte (Grande Terre y Pamanzi)",
+        "tr": "Mayotte (Grand Terre ve Pamanzi)",
+        "ru": "Майотта (Гранд-Терре и Паманзи)",
+        "pt": "Mayotte (Grand Terre e Pamanzi)",
+    },
+    "Melilla (including Penon de Velez de la Gomera, Penon de Alhucemas and the Chafarinas Islands)": {
+        "fr": "Melilla (y compris Peñon de Vélez de la Gomera, Peñon de Alhucemas et les îles Chafarinas)",
+        "es": "Melilla (incluyendo Peñón de Vélez de la Gomera, Peñón de Alhucemas y las islas Chafarinas)",
+        "tr": "Melilla (Penon de Velez de la Gomera, Penon de Alhucemas ve Chafarinas Adaları dahil)",
+        "ru": "Мелилья (включая Пенон-де-Велес-де-ла-Гомера, Пенон-де-Альхусемас и острова Чафаринас)",
+        "pt": "Melilla (incluindo Penon de Velez de la Gomera, Penon de Alhucemas e as Ilhas Chafarinas)",
+    },
+    "Monaco": {"fr": "Monaco", "es": "Mónaco", "tr": "Monako", "ru": "Монако", "pt": "Mônaco"},
+    "Montserrat": {
+        "fr": "Montserrat",
+        "es": "Montserrat",
+        "tr": "Montserrat",
+        "ru": "Монсеррат",
+        "pt": "Montserrat",
+    },
+    "New Caledonia and Dependencies": {
+        "fr": "Nouvelle-Calédonie et dépendances",
+        "es": "Nueva Caledonia y dependencias",
+        "tr": "Yeni Kaledonya ve Bağımlılıkları",
+        "ru": "Новая Каледония и зависимые территории",
+        "pt": "Nova Caledônia e dependências",
+    },
+    "Niger": {"fr": "Niger", "es": "Níger", "tr": "Nijer", "ru": "Нигер", "pt": "Níger"},
+    "Niue Island": {
+        "fr": "Île de Niue",
+        "es": "Isla Niue",
+        "tr": "Niue Adası",
+        "ru": "Остров Ниуэ",
+        "pt": "Ilha Niue",
+    },
+    "Norfolk Island": {
+        "fr": "Île Norfolk",
+        "es": "Isla Norfolk",
+        "tr": "Norfolk Adası",
+        "ru": "Остров Норфолк",
+        "pt": "Ilha Norfolk",
+    },
+    "Northern Mariana Islands": {
+        "fr": "Îles Mariannes du Nord",
+        "es": "Islas Marianas del Norte",
+        "tr": "Kuzey Mariana Adaları",
+        "ru": "Северные Марианские острова",
+        "pt": "Ilhas Marianas do Norte",
+    },
+    "Palau": {"fr": "Palaos", "es": "Palaos", "tr": "Palau", "ru": "Палау", "pt": "Palau"},
+    "Pitcairn Island": {
+        "fr": "Île Pitcairn",
+        "es": "Isla Pitcairn",
+        "tr": "Pitcairn Adası",
+        "ru": "Остров Питкэрн",
+        "pt": "Ilha Pitcairn",
+    },
+    "Samoa (formerly Western Samoa)": {
+        "fr": "Samoa (anciennement Samoa occidentales)",
+        "es": "Samoa (anteriormente Samoa Occidental)",
+        "tr": "Samoa (eski adıyla Batı Samoa)",
+        "ru": "Самоа (ранее Западное Самоа)",
+        "pt": "Samoa (antiga Samoa Ocidental)",
+    },
+    "St Berthelemy": {
+        "fr": "Saint Berthélemy",
+        "es": "San Berthelemy",
+        "tr": "Aziz Berthelemy",
+        "ru": "Сен-Бертельми",
+        "pt": "São Bertolomeu",
+    },
+    "Bonaire, Sint Eustatius and Saba": {
+        "fr": "Bonaire, Saint-Eustache et Saba",
+        "es": "Bonaire, San Eustaquio y Saba",
+        "tr": "Bonaire, Sint Eustatius ve Saba",
+        "ru": "Бонэйр, Синт-Эстатиус и Саба",
+        "pt": "Bonaire, Santo Eustáquio e Saba",
+    },
+    "St Kitts and Nevis": {
+        "fr": "Saint-Kitts-et-Nevis",
+        "es": "San Cristóbal y Nieves",
+        "tr": "Saint Kitts ve Nevis",
+        "ru": "Сент-Китс и Невис",
+        "pt": "São Cristóvão e Nevis",
+    },
+    "St Lucia": {
+        "fr": "Sainte-Lucie",
+        "es": "Santa Lucía",
+        "tr": "Saint Lucia",
+        "ru": "Сент-Люсия",
+        "pt": "Santa Lúcia",
+    },
+    "St Maarten (Dutch Part)": {
+        "fr": "Saint-Martin (partie néerlandaise)",
+        "es": "San Martín (parte holandesa)",
+        "tr": "St Maarten (Hollanda Bölümü)",
+        "ru": "Сен-Мартен (голландская часть)",
+        "pt": "St Maarten (Parte Holandesa)",
+    },
+    "St Pierre and Miquelon": {
+        "fr": "Saint-Pierre-et-Miquelon",
+        "es": "San Pedro y Miquelón",
+        "tr": "Saint-Pierre ve Miquelon",
+        "ru": "Сен-Пьер и Микелон",
+        "pt": "São Pedro e Miquelon",
+    },
+    "St Vincent and the Grenadines": {
+        "fr": "Saint-Vincent-et-les Grenadines",
+        "es": "San Vicente y las Granadinas",
+        "tr": "St Vincent ve Grenadinler",
+        "ru": "Сент-Винсент и Гренадины",
+        "pt": "São Vicente e Granadinas",
+    },
+    "San Marino": {
+        "fr": "Saint-Marin",
+        "es": "San Marino",
+        "tr": "San Marino",
+        "ru": "Сан-Марино",
+        "pt": "San Marino",
+    },
+    "Sao Tome and Principe": {
+        "fr": "Sao Tomé-et-Principe",
+        "es": "Santo Tomé y Príncipe",
+        "tr": "Sao Tome ve Principe",
+        "ru": "Сан-Томе и Принсипи",
+        "pt": "São Tomé e Príncipe",
+    },
+    "Sierra Leone": {
+        "fr": "Sierra Leone",
+        "es": "Sierra Leona",
+        "tr": "Sierra Leone",
+        "ru": "Сьерра-Леоне",
+        "pt": "Serra Leoa",
+    },
+    "South Georgia and South Sandwich Islands": {
+        "fr": "Îles Géorgie du Sud et Sandwich du Sud",
+        "es": "Islas Georgias del Sur y Sandwich del Sur",
+        "tr": "Güney Georgia ve Güney Sandwich Adaları",
+        "ru": "Южная Георгия и Южные Сандвичевы острова",
+        "pt": "Ilhas Geórgia do Sul e Sandwich do Sul",
+    },
+    "South Sudan": {
+        "fr": "Soudan du Sud",
+        "es": "Sudán del Sur",
+        "tr": "Güney Sudan",
+        "ru": "Южный Судан",
+        "pt": "Sudão do Sul",
+    },
+    "Togo": {"fr": "Togo", "es": "Togo", "tr": "Togo", "ru": "Того", "pt": "Togo"},
+    "Tokelau Islands": {
+        "fr": "Îles Tokélaou",
+        "es": "Islas Tokelau",
+        "tr": "Tokelau Adaları",
+        "ru": "Острова Токелау",
+        "pt": "Ilhas Tokelau",
+    },
+    "Tonga": {"fr": "Tonga", "es": "Tonga", "tr": "Tonga", "ru": "Тонга", "pt": "Reino de Tonga"},
+    "Turks and Caicos Islands": {
+        "fr": "Îles Turques-et-Caïques",
+        "es": "Islas Turcas y Caicos",
+        "tr": "Turks ve Caicos Adaları",
+        "ru": "Острова Теркс и Кайкос",
+        "pt": "Ilhas Turks e Caicos",
+    },
+    "Tuvalu": {"fr": "Tuvalu", "es": "Tuvalu", "tr": "Tuvalu", "ru": "Тувалу", "pt": "Tuvalu"},
+    "Uganda": {"fr": "Ouganda", "es": "Uganda", "tr": "Uganda", "ru": "Уганда", "pt": "Uganda"},
+    (
+        "United States minor outlying islands (including Baker Island, Howland Island, Jarvis Island, Johnson Atoll, Kingman Reef, "
+        "Midway Islands, Navassa Island, Palmyra Atoll and Wake Island)"
+    ): {
+        "fr": (
+            "Îles mineures éloignées des États-Unis (y compris l'île Baker, l'île Howland, l'île Jarvis, l'atoll Johnson, le récif Kingman, les îles Midway, "
+            "l'île Navassa, l'atoll de Palmyra et l'île Wake)"
+        ),
+        "es": (
+            "Islas periféricas menores de los Estados Unidos (incluidas la isla Baker, la isla Howland, la isla Jarvis, el atolón Johnson, "
+            "el arrecife Kingman, las islas Midway, la isla Navassa, el atolón Palmyra y la isla Wake)"
+        ),
+        "tr": (
+            "Amerika Birleşik Devletleri küçük uzak adaları (Baker Adası, Howland Adası, Jarvis Adası, Johnson Atolü, Kingman Reef, Midway Adaları, "
+            "Navassa Adası, Palmyra Atolü ve Wake Adası dahil)"
+        ),
+        "ru": (
+            "Малые отдаленные острова США (включая острова Бейкер, Хоуленд, Джарвис, атолл Джонсон, риф Кингман, острова Мидуэй, "
+            "остров Навасса, атолл Пальмира и остров Уэйк)"
+        ),
+        "pt": (
+            "Ilhas menores periféricas dos Estados Unidos (incluindo Ilha Baker, Ilha Howland, Ilha Jarvis, Atol Johnson, Kingman Reef, Ilhas Midway, "
+            "Ilha Navassa, Atol Palmyra e Ilha Wake)"
+        ),
+    },
+    "Vanuatu": {
+        "fr": "Vanuatu",
+        "es": "Vanuatu",
+        "tr": "vanuatu",
+        "ru": "Вануату",
+        "pt": "Vanuatu",
+    },
+    "Vatican City": {
+        "fr": "Cité du Vatican",
+        "es": "Ciudad del Vaticano",
+        "tr": "Vatikan",
+        "ru": "Ватикан",
+        "pt": "Cidade do Vaticano",
+    },
+    "Virgin Islands of USA": {
+        "fr": "Îles Vierges des États-Unis",
+        "es": "Islas Vírgenes de los Estados Unidos",
+        "tr": "ABD Virgin Adaları",
+        "ru": "Виргинские острова США",
+        "pt": "Ilhas Virgens dos EUA",
+    },
+    "Wallis and Futuna Islands": {
+        "fr": "Îles Wallis-et-Futuna",
+        "es": "Islas Wallis y Futuna",
+        "tr": "Wallis ve Futuna Adaları",
+        "ru": "Острова Уоллис и Футуна",
+        "pt": "Ilhas Wallis e Futuna",
+    },
+    "Western Sahara": {
+        "fr": "Sahara occidental",
+        "es": "Sáhara Occidental",
+        "tr": "Batı Sahra",
+        "ru": "Западная Сахара",
+        "pt": "Saara Ocidental",
+    },
+    "Cameroon": {
+        "fr": "Cameroun",
+        "es": "Camerún",
+        "tr": "Kamerun",
+        "ru": "Камерун",
+        "pt": "Camarões",
+    },
+    "Any Country": {
+        "fr": "N'importe quel pays",
+        "es": "Cualquier país",
+        "tr": "Herhangi Bir Ülke",
+        "ru": "Любая страна",
+        "pt": "Qualquer país",
+    },
+    "Any Non EU Country": {
+        "fr": "Tout pays non membre de l'UE",
+        "es": "Cualquier país no perteneciente a la UE",
+        "tr": "AB Dışı Herhangi Bir Ülke",
+        "ru": "Любая страна, не входящая в ЕС",
+        "pt": "Qualquer país fora da UE",
+    },
+    "Any EU Country": {
+        "fr": "N'importe quel pays de l'UE",
+        "es": "Cualquier país de la UE",
+        "tr": "Herhangi bir AB ülkesi",
+        "ru": "Любая страна ЕС",
+        "pt": "Qualquer país da UE",
+    },
+    "European Union": {
+        "fr": "Union européenne",
+        "es": "Unión Europea",
+        "tr": "Avrupa Birliği",
+        "ru": "Европейский союз",
+        "pt": "União Européia",
+    },
+    "Continental Shelf (NW European) - UK Sector": {
+        "fr": "Plateau continental (Europe du Nord-Ouest) - Secteur britannique",
+        "es": "Plataforma continental (noroeste de Europa) - Sector del Reino Unido",
+        "tr": "Kıta Sahanlığı (Kuzey Avrupa) - İngiltere Sektörü",
+        "ru": "Континентальный шельф (Северо-Западная Европа) — сектор Великобритании",
+        "pt": "Plataforma Continental (noroeste da Europa) - Setor do Reino Unido",
+    },
+}
 
 
 def countries_data() -> Generator[tuple, None, None]:
@@ -463,6 +1096,20 @@ def add_inactive_countries() -> None:
             )
 
 
+def add_country_translations() -> None:
+    """Adds missing translations for specified countries"""
+    for country_name, translations in TRANSLATIONS.items():
+        country = Country.objects.get(name=country_name)
+        for translation_set in CountryTranslationSet.objects.filter(is_active=True):
+            lang_code = LANGUAGE_CODE_MAP[translation_set.name]
+            translation = translations[lang_code]
+            CountryTranslation.objects.get_or_create(
+                country=country,
+                translation_set=translation_set,
+                defaults={"translation": translation},
+            )
+
+
 class Command(BaseCommand):
     """
     Countries data including HMRC code sourced from:
@@ -481,3 +1128,4 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:
         add_region_to_existing_countries(self.stdout)
         add_inactive_countries()
+        add_country_translations()
