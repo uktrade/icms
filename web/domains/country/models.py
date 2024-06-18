@@ -87,7 +87,7 @@ class CountryTranslationSet(Archivable, models.Model):
 
 
 class CountryTranslation(models.Model):
-    translation = models.CharField(max_length=150, blank=False, null=False)
+    translation = models.CharField(max_length=255, blank=False, null=False)
     country = models.ForeignKey(
         "web.Country",
         on_delete=models.CASCADE,

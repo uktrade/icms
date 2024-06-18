@@ -96,6 +96,62 @@ CHECK_DATA_COUNTS: list[CheckCount] = [
         model=web.SanctionsAndAdhocApplication,
         filter_params={"submit_datetime__isnull": False, "sanctions_goods__isnull": True},
     ),
+    CheckCount(
+        name="Active country translation sets",
+        expected_count=5,
+        model=web.CountryTranslationSet,
+        filter_params={"is_active": True},
+    ),
+    CheckCount(
+        name="Missing French country translations",
+        expected_count=0,
+        model=web.Country,
+        exclude_params={
+            "id__in": web.CountryTranslation.objects.filter(
+                translation_set__name="French"
+            ).values_list("country_id")
+        },
+    ),
+    CheckCount(
+        name="Missing Spanish country translations",
+        expected_count=0,
+        model=web.Country,
+        exclude_params={
+            "id__in": web.CountryTranslation.objects.filter(
+                translation_set__name="Spanish"
+            ).values_list("country_id")
+        },
+    ),
+    CheckCount(
+        name="Missing Russian country translations",
+        expected_count=0,
+        model=web.Country,
+        exclude_params={
+            "id__in": web.CountryTranslation.objects.filter(
+                translation_set__name="Russian"
+            ).values_list("country_id")
+        },
+    ),
+    CheckCount(
+        name="Missing Portuguese country translations",
+        expected_count=0,
+        model=web.Country,
+        exclude_params={
+            "id__in": web.CountryTranslation.objects.filter(
+                translation_set__name="Portuguese"
+            ).values_list("country_id")
+        },
+    ),
+    CheckCount(
+        name="Missing Turkish country translations",
+        expected_count=0,
+        model=web.Country,
+        exclude_params={
+            "id__in": web.CountryTranslation.objects.filter(
+                translation_set__name="Turkish"
+            ).values_list("country_id")
+        },
+    ),
 ]
 
 
