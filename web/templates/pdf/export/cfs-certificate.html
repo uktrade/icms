@@ -45,7 +45,7 @@
                 if it meets the statutory requirements.
               </p>
               {% for statement_translation in statement_translations %}
-                <p class="statement_translation">{{ statement_translation }}</p>
+                <p class="statement_translation">{{ statement_translation|safe }}</p>
               {% endfor %}
           </div>
         </div>
