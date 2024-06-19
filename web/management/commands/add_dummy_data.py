@@ -31,6 +31,95 @@ from web.models.shared import YesNoChoices
 from web.permissions import constabulary_add_contact, organisation_add_contact
 from web.utils.s3 import upload_file_obj_to_s3
 
+IMPORT_USERS = [
+    # importer_user / importer_agent
+    {
+        "first_name": "Dave",
+        "last_name": "Jones",
+        "agent_first_name": "Cameron",
+        "agent_last_name": "Hasra",
+    },
+    # importer_user_2 / importer_agent_2
+    {
+        "first_name": "Luke",
+        "last_name": "Mosley",
+        "agent_first_name": "Sarah",
+        "agent_last_name": "Logan",
+    },
+    # importer_user_3 / importer_agent_3
+    {
+        "first_name": "Lucy",
+        "last_name": "Ross",
+        "agent_first_name": "Issac",
+        "agent_last_name": "Campbell",
+    },
+    # importer_user_4 / importer_agent_4
+    {
+        "first_name": "James",
+        "last_name": "Hall",
+        "agent_first_name": "Brian",
+        "agent_last_name": "Roach",
+    },
+    # importer_user_5 / importer_agent_5
+    {
+        "first_name": "Steven",
+        "last_name": "Rudd",
+        "agent_first_name": "Julie",
+        "agent_last_name": "Dale",
+    },
+]
+
+EXPORT_USERS = [
+    # exporter_user / exporter_agent
+    {
+        "first_name": "Sally",
+        "last_name": "Davis",
+        "agent_first_name": "Marie",
+        "agent_last_name": "Jacobs",
+    },
+    # exporter_user_2 / exporter_agent_2
+    {
+        "first_name": "Jesse",
+        "last_name": "Carey",
+        "agent_first_name": "Paul",
+        "agent_last_name": "Adams",
+    },
+    # exporter_user_3 / exporter_agent_3
+    {
+        "first_name": "Joe",
+        "last_name": "Dunn",
+        "agent_first_name": "Sue",
+        "agent_last_name": "Daniels",
+    },
+    # exporter_user_4 / exporter_agent_4
+    {
+        "first_name": "Vincent",
+        "last_name": "Duke",
+        "agent_first_name": "Ron",
+        "agent_last_name": "Wilkinson",
+    },
+    # exporter_user_5 / exporter_agent_5
+    {
+        "first_name": "Angela",
+        "last_name": "Young",
+        "agent_first_name": "Harry",
+        "agent_last_name": "Fry",
+    },
+]
+
+ADMIN_USERS = [
+    # ilb_admin
+    {"first_name": "Ashley", "last_name": "Smith"},
+    # ilb_admin_2
+    {"first_name": "Samantha", "last_name": "Stevens"},
+    # ilb_admin_3
+    {"first_name": "Ian", "last_name": "Hughes"},
+    # ilb_admin_4
+    {"first_name": "Jane", "last_name": "Cross"},
+    # ilb_admin_5
+    {"first_name": "Drew", "last_name": "Moss"},
+]
+
 
 class Command(BaseCommand):
     help = """Add dummy data. For development use only."""
@@ -46,15 +135,250 @@ class Command(BaseCommand):
             required=True,
         )
 
+    def add_ilb_admin_users(self, password: str) -> None:
+        ilb_admin_group = Group.objects.get(name="ILB Case Officer")
+        for index, user in enumerate(EXPORT_USERS, start=1):
+            ilb_admin_user = self.create_user(
+                username="ilb_admin" if index == 1 else f"ilb_admin_{index}",
+                password=password,
+                first_name=user["first_name"],
+                last_name=user["last_name"],
+                groups=[ilb_admin_group],
+            )
+            if index == 1:
+                create_dummy_signature(ilb_admin_user)
+                self.add_section_five_clauses(ilb_admin_user)
+
+    def add_exporters_and_users(self, password: str) -> None:
+        exporter_user_group = Group.objects.get(name="Exporter User")
+        for index, users in enumerate(EXPORT_USERS, start=1):
+            exporter = Exporter.objects.create(
+                is_active=True,
+                name=f"Dummy exporter {index}",
+                registered_number=f"4{index}",
+                exclusive_correspondence=True,
+            )
+
+            office = Office.objects.create(
+                is_active=True,
+                address_1=f"{index} Buckingham Palace",
+                address_2="London",
+                postcode=f"SW{index}A {index}AA",  # /PS-IGNORE
+            )
+            exporter.offices.add(office)
+
+            office = Office.objects.create(
+                is_active=True,
+                address_1=f"{index}00 Roden St",
+                address_2="Belfast",
+                postcode=f"BT1{index} {index}QB",  # /PS-IGNORE
+            )
+            exporter.offices.add(office)
+
+            self.stdout.write(f"Created dummy exporter {index}")
+
+            # agent for exporter
+            agent_exporter = Exporter.objects.create(
+                is_active=True,
+                name=f"Dummy agent exporter {index}",
+                registered_number=f"42{index}",
+                main_exporter=exporter,
+            )
+
+            office = Office.objects.create(
+                is_active=True,
+                address_1=f"{index} some way",
+                address_2="Townsville",
+                postcode=f"S4{index} 3SS",  # /PS-IGNORE
+            )
+            agent_exporter.offices.add(office)
+
+            exporter_username = "exporter_user" if index == 1 else f"exporter_user_{index}"
+            exporter_user = self.create_user(
+                username=exporter_username,
+                password=password,
+                first_name=users["first_name"],
+                last_name=users["last_name"],
+                groups=[exporter_user_group],
+                linked_exporters=[exporter],
+            )
+            create_certificate_application_templates(exporter_user)
+
+            self.create_user(
+                username="exporter_agent" if index == 1 else f"exporter_agent_{index}",
+                password=password,
+                first_name=users["agent_first_name"],
+                last_name=users["agent_last_name"],
+                groups=[exporter_user_group],
+                linked_exporter_agents=[agent_exporter],
+            )
+            self.stdout.write(f"Created {exporter_username} & agent")
+            if index == 1:
+                self.create_user(
+                    username="migrated-user-2@example.com",  # /PS-IGNORE
+                    password=password,
+                    first_name="Dani",
+                    last_name="Winslow",
+                    groups=[exporter_user_group],
+                    linked_importers=[exporter],
+                    icms_v1_user=True,
+                )
+                self.stdout.write("Created fake migrated exporter user")
+
+    def add_importers_and_users(self, password: str) -> None:
+        importer_user_group = Group.objects.get(name="Importer User")
+        for index, users in enumerate(IMPORT_USERS, start=1):
+            importer = Importer.objects.create(
+                is_active=True,
+                name=f"Dummy importer {index}",
+                registered_number=f"8{index}",
+                eori_number=f"GB12345678901234{index}",
+                type=Importer.ORGANISATION,
+            )
+
+            office = Office.objects.create(
+                is_active=True,
+                address_1=f"{index} Whitehall Pl",
+                address_2="Westminster",
+                address_3="London",
+                postcode=f"SW{index}A {index}HP",  # /PS-IGNORE
+            )
+            importer.offices.add(office)
+
+            office = Office.objects.create(
+                is_active=True,
+                address_1=f"{index}0{index} Some place",
+                address_2="Belfast",
+                postcode=f"BT{index}2 {index}QB",  # /PS-IGNORE
+            )
+            importer.offices.add(office)
+
+            self.stdout.write(f"Created dummy importer {index}")
+
+            # agent for importer
+            importer_one_agent_one = Importer.objects.create(
+                is_active=True,
+                name=f"Dummy agent for importer {index}",
+                registered_number=f"84{index}",
+                type=Importer.ORGANISATION,
+                main_importer=importer,
+            )
+
+            office = Office.objects.create(
+                is_active=True,
+                address_1=f"{index} Some office road",
+                address_2="London",
+                postcode=f"WT{index} 2AL",  # /PS-IGNORE
+            )
+            importer_one_agent_one.offices.add(office)
+
+            # Second agent for importer
+            importer_one_agent_two = Importer.objects.create(
+                is_active=True,
+                name=f"Dummy agent 2 for importer {index}",
+                registered_number="123",
+                type=Importer.ORGANISATION,
+                main_importer=importer,
+            )
+            office = Office.objects.create(
+                is_active=True,
+                address_1="Some other office road",
+                address_2="London",
+                postcode=f"WT{index} {index}AL",  # /PS-IGNORE
+            )
+            importer_one_agent_two.offices.add(office)
+
+            importer_username = "importer_user" if index == 1 else f"importer_user_{index}"
+            self.create_user(
+                username=importer_username,
+                password=password,
+                first_name=users["first_name"],
+                last_name=users["last_name"],
+                groups=[importer_user_group],
+                linked_importers=[importer],
+            )
+
+            self.create_user(
+                username="importer_agent" if index == 1 else f"importer_agent_{index}",
+                password=password,
+                first_name=users["agent_first_name"],
+                last_name=users["agent_last_name"],
+                groups=[importer_user_group],
+                linked_importer_agents=[importer_one_agent_one, importer_one_agent_two],
+            )
+            self.stdout.write(f"Created {importer_username} & agent")
+            if index == 1:
+                self.create_user(
+                    username="migrated-user-1@example.com",  # /PS-IGNORE
+                    password=password,
+                    first_name="Bill",
+                    last_name="Wesley",
+                    groups=[importer_user_group],
+                    linked_importers=[importer],
+                    icms_v1_user=True,
+                )
+                self.stdout.write("Created fake migrated importer user")
+
+    def add_section_five_clauses(self, ilb_admin_user):
+        # Add a few dummy section 5 clauses (The real values will come from the data migration)
+        dummy_section_5_clauses = (
+            (
+                "5(1)(a)",
+                "Any firearm capable of burst- or fully automatic fire and component parts of these.",
+            ),
+            (
+                "5(1)(ab)",
+                "Any semi-automatic, self-loading or pump action rifled gun and carbines but not pistols.",
+            ),
+            (
+                "5(1)(aba)",
+                "Any firearm with a barrel less than 30 cm long or which is less than 60 cm long"
+                " overall - short firearms (pistols and revolvers) and component parts of these.",
+            ),
+            (
+                "5(1)(ac)",
+                "Any pump-action or self-loading shotgun with a barrel less than 24 inches long or which is less than 40 inches long overall.",
+            ),
+            ("5(1)(ad)", " Any smoothbore revolver gun except 9mm rim fire or muzzle loaded."),
+            (
+                "5(1)(ae)",
+                "Any rocket launcher or mortar which fires a stabilised missile other than for line throwing, pyrotechnics or signalling.",
+            ),
+            ("5(1)(af)", " Any firearm using a self-contained gas cartridge system."),
+            (
+                "5(1)(b)",
+                "Any weapon designed or adapted to discharge noxious liquid, gas or other thing.",
+            ),
+            (
+                "5(1)(c)",
+                "Any cartridge with an explosive bullet or any ammo designed to discharge any "
+                "noxious thing (as described above) and if capable of being used with a firearm of"
+                " any description, any grenade, bomb or other like missile, rocket or shell designed to explode.",
+            ),
+            ("5(1A)(b)", " Explosive rockets or ammunition not covered in 5(1)(c)"),
+            (
+                "5(1A)(c)",
+                "Any launcher or projector not covered in 5(1)(ae) designed to fire any rocket or ammunition covered by 5(1A)(b) or 5(1)(c).",
+            ),
+            ("5(1A)(d)", "Incendiary ammunition."),
+            ("5(1A)(e)", "Armour-piercing ammunition."),
+            ("5(1A)(f)", "Expanding ammunition for use with pistols and revolvers."),
+            ("5(1A)(g)", "Expanding, explosive, armour-piercing or incendiary projectiles."),
+        )
+
+        Section5Clause.objects.bulk_create(
+            [
+                Section5Clause(clause=clause, description=description, created_by=ilb_admin_user)
+                for clause, description in dummy_section_5_clauses
+            ]
+        )
+
     def handle(self, *args: Any, **options: Any) -> None:
         if settings.APP_ENV in ["hotfix", "production"]:
             raise CommandError("Can only add dummy data in non-production environments.")
 
         # Create groups and load the groups we want to assign to test users:
         call_command("create_icms_groups")
-        ilb_admin_group = Group.objects.get(name="ILB Case Officer")
-        importer_user_group = Group.objects.get(name="Importer User")
-        exporter_user_group = Group.objects.get(name="Exporter User")
         nca_case_officer = Group.objects.get(name="NCA Case Officer")
         ho_case_officer = Group.objects.get(name="Home Office Case Officer")
         san_case_officer = Group.objects.get(name="Sanctions Case Officer")
@@ -69,219 +393,9 @@ class Command(BaseCommand):
             ImportApplicationType.objects.update(is_active=True)
             ExportApplicationType.objects.update(is_active=True)
 
-        # exporter 1
-        exporter_1 = Exporter.objects.create(
-            is_active=True,
-            name="Dummy exporter",
-            registered_number="42",
-            exclusive_correspondence=True,
-        )
-
-        office = Office.objects.create(
-            is_active=True,
-            address_1="Buckingham Palace",
-            address_2="London",
-            postcode="SW1A 1AA",  # /PS-IGNORE
-        )
-        exporter_1.offices.add(office)
-
-        office = Office.objects.create(
-            is_active=True,
-            address_1="209 Roden St",
-            address_2="Belfast",
-            postcode="BT12 5QB",  # /PS-IGNORE
-        )
-        exporter_1.offices.add(office)
-
-        # exporter 2
-        exporter_2 = Exporter.objects.create(
-            is_active=True,
-            name="Dummy exporter 2",
-            registered_number="43",
-            exclusive_correspondence=True,
-        )
-        e_office = Office.objects.create(
-            is_active=True,
-            address_1="Address line 1",
-            address_2="Adress line 2",
-            postcode="SW1A 1AA",  # /PS-IGNORE
-        )
-        exporter_2.offices.add(e_office)
-
-        # importer
-        importer_1 = Importer.objects.create(
-            is_active=True,
-            name="Dummy importer",
-            registered_number="84",
-            eori_number="GB123456789012345",
-            type=Importer.ORGANISATION,
-        )
-
-        office = Office.objects.create(
-            is_active=True,
-            address_1="3 Whitehall Pl",
-            address_2="Westminster",
-            address_3="London",
-            postcode="SW1A 2HP",  # /PS-IGNORE
-        )
-        importer_1.offices.add(office)
-
-        office = Office.objects.create(
-            is_active=True,
-            address_1="902 Some place",
-            address_2="Belfast",
-            postcode="BT12 5QB",  # /PS-IGNORE
-        )
-        importer_1.offices.add(office)
-
-        # importer 2
-        importer_2 = Importer.objects.create(
-            is_active=True,
-            name="Dummy importer 2",
-            registered_number="85",
-            eori_number="GB123456789054321",
-            type=Importer.ORGANISATION,
-        )
-
-        office = Office.objects.create(
-            is_active=True,
-            address_1="Some Road",
-            address_2="Some lane",
-            address_3="London",
-            postcode="SW1A 2PH",  # /PS-IGNORE
-        )
-        importer_2.offices.add(office)
-
-        office = Office.objects.create(
-            is_active=True,
-            address_1="1 Some other place",
-            address_2="Belfast",
-            postcode="BT12 5QB",  # /PS-IGNORE
-        )
-        importer_2.offices.add(office)
-
-        self.stdout.write("Created dummy importer's / exporter's")
-
-        # agent for importer
-        importer_one_agent_one = Importer.objects.create(
-            is_active=True,
-            name="Dummy agent for importer",
-            registered_number="842",
-            type=Importer.ORGANISATION,
-            main_importer=importer_1,
-        )
-
-        office = Office.objects.create(
-            is_active=True,
-            address_1="Some office road",
-            address_2="London",
-            postcode="WT6 2AL",  # /PS-IGNORE
-        )
-        importer_one_agent_one.offices.add(office)
-
-        # Second agent for importer
-        importer_one_agent_two = Importer.objects.create(
-            is_active=True,
-            name="Dummy agent 2 for importer",
-            registered_number="123",
-            type=Importer.ORGANISATION,
-            main_importer=importer_1,
-        )
-        office = Office.objects.create(
-            is_active=True,
-            address_1="Some other office road",
-            address_2="London",
-            postcode="WT6 2AL",  # /PS-IGNORE
-        )
-        importer_one_agent_two.offices.add(office)
-
-        # agent for exporter
-        agent_exporter = Exporter.objects.create(
-            is_active=True,
-            name="Dummy agent exporter",
-            registered_number="422",
-            main_exporter=exporter_1,
-        )
-
-        office = Office.objects.create(
-            is_active=True,
-            address_1="14 some way",
-            address_2="Townsville",
-            postcode="S44 3SS",  # /PS-IGNORE
-        )
-        agent_exporter.offices.add(office)
-
-        self.stdout.write("Created dummy agent for importer/exporter")
-
-        ilb_admin_user = self.create_user(
-            username="ilb_admin",
-            password=options["password"],
-            first_name="Ashley",
-            last_name="Smith",
-            groups=[ilb_admin_group],
-        )
-
-        self.create_user(
-            username="ilb_admin_2",
-            password=options["password"],
-            first_name="Samantha",
-            last_name="Stevens",
-            groups=[ilb_admin_group],
-        )
-
-        self.create_user(
-            username="importer_user",
-            password=options["password"],
-            first_name="Dave",
-            last_name="Jones",
-            groups=[importer_user_group],
-            linked_importers=[importer_1],
-        )
-
-        self.create_user(
-            username="importer_user_2",
-            password=options["password"],
-            first_name="Luke",
-            last_name="Mosley",
-            groups=[importer_user_group],
-            linked_importers=[importer_2],
-        )
-
-        exporter_user = self.create_user(
-            username="exporter_user",
-            password=options["password"],
-            first_name="Sally",
-            last_name="Davis",
-            groups=[exporter_user_group],
-            linked_exporters=[exporter_1],
-        )
-
-        self.create_user(
-            username="exporter_user_2",
-            password=options["password"],
-            first_name="Jesse",
-            last_name="Carey",
-            groups=[exporter_user_group],
-            linked_exporters=[exporter_2],
-        )
-
-        self.create_user(
-            username="importer_agent",
-            password=options["password"],
-            first_name="Cameron",
-            last_name="Hasra",
-            groups=[importer_user_group],
-            linked_importer_agents=[importer_one_agent_one, importer_one_agent_two],
-        )
-
-        self.create_user(
-            username="exporter_agent",
-            password=options["password"],
-            first_name="Marie",
-            last_name="Jacobs",
-            groups=[exporter_user_group],
-            linked_exporter_agents=[agent_exporter],
-        )
+        self.add_importers_and_users(options["password"])
+        self.add_exporters_and_users(options["password"])
+        self.add_ilb_admin_users(options["password"])
 
         self.create_user(
             username="nca_admin",
@@ -366,28 +480,6 @@ class Command(BaseCommand):
             groups=[import_search_user],
         )
 
-        #
-        # Add some fake V1 migrated users.
-        self.create_user(
-            username="migrated-user-1@example.com",  # /PS-IGNORE
-            password=options["password"],
-            first_name="Bill",
-            last_name="Wesley",
-            groups=[importer_user_group],
-            linked_importers=[importer_1],
-            icms_v1_user=True,
-        )
-
-        self.create_user(
-            username="migrated-user-2@example.com",  # /PS-IGNORE
-            password=options["password"],
-            first_name="Dani",
-            last_name="Winslow",
-            groups=[exporter_user_group],
-            linked_importers=[exporter_1],
-            icms_v1_user=True,
-        )
-
         self.create_user(
             username="dev_admin",
             password=options["password"],
@@ -402,63 +494,6 @@ class Command(BaseCommand):
             f"Created following users: {', '.join([repr(u) for u in self.users_created])}"
         )
         self.stdout.write("Created following superusers: 'admin'")
-
-        create_certificate_application_templates(exporter_user)
-
-        create_dummy_signature(ilb_admin_user)
-
-        # Add a few dummy section 5 clauses (The real values will come from the data migration)
-        dummy_section_5_clauses = (
-            (
-                "5(1)(a)",
-                "Any firearm capable of burst- or fully automatic fire and component parts of these.",
-            ),
-            (
-                "5(1)(ab)",
-                "Any semi-automatic, self-loading or pump action rifled gun and carbines but not pistols.",
-            ),
-            (
-                "5(1)(aba)",
-                "Any firearm with a barrel less than 30 cm long or which is less than 60 cm long"
-                " overall - short firearms (pistols and revolvers) and component parts of these.",
-            ),
-            (
-                "5(1)(ac)",
-                "Any pump-action or self-loading shotgun with a barrel less than 24 inches long or which is less than 40 inches long overall.",
-            ),
-            ("5(1)(ad)", " Any smoothbore revolver gun except 9mm rim fire or muzzle loaded."),
-            (
-                "5(1)(ae)",
-                "Any rocket launcher or mortar which fires a stabilised missile other than for line throwing, pyrotechnics or signalling.",
-            ),
-            ("5(1)(af)", " Any firearm using a self-contained gas cartridge system."),
-            (
-                "5(1)(b)",
-                "Any weapon designed or adapted to discharge noxious liquid, gas or other thing.",
-            ),
-            (
-                "5(1)(c)",
-                "Any cartridge with an explosive bullet or any ammo designed to discharge any "
-                "noxious thing (as described above) and if capable of being used with a firearm of"
-                " any description, any grenade, bomb or other like missile, rocket or shell designed to explode.",
-            ),
-            ("5(1A)(b)", " Explosive rockets or ammunition not covered in 5(1)(c)"),
-            (
-                "5(1A)(c)",
-                "Any launcher or projector not covered in 5(1)(ae) designed to fire any rocket or ammunition covered by 5(1A)(b) or 5(1)(c).",
-            ),
-            ("5(1A)(d)", "Incendiary ammunition."),
-            ("5(1A)(e)", "Armour-piercing ammunition."),
-            ("5(1A)(f)", "Expanding ammunition for use with pistols and revolvers."),
-            ("5(1A)(g)", "Expanding, explosive, armour-piercing or incendiary projectiles."),
-        )
-
-        Section5Clause.objects.bulk_create(
-            [
-                Section5Clause(clause=clause, description=description, created_by=ilb_admin_user)
-                for clause, description in dummy_section_5_clauses
-            ]
-        )
 
         # Add a dummy biocidal_claim legislation (defaults to GB and NI legislation)
         ProductLegislation.objects.create(
