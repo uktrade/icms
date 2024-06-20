@@ -9,6 +9,19 @@
   </tr>
   </thead>
   <tbody>
+      {% if show_name_change_notification_document %}
+        <tr>
+            <td>DIT to DBT Notification Document</td>
+            <td>
+              <a class="inline-link-button pdf icon-file-pdf button link-button"
+                 href="{{ static('web/docs/DIT-DBT-NameChangeNotification.pdf') }}"
+                 target="_blank"
+                 rel="noopener noreferrer">
+                View PDF
+              </a>
+            </td>
+        </tr>
+      {% endif %}
       {% if cover_letter_flag %}
         <tr>
             <td>{{ type_label }} Cover Letter</td>
