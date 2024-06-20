@@ -31,15 +31,15 @@ def _get_selected_product_data(biocidal_schedules: QuerySet[CFSSchedule]) -> str
     product_data = []
 
     for p in products:
-        p_types = (str(pk) for pk in p.product_type_numbers.values_list("pk", flat=True))
+        p_types = ", ".join(str(p.product_type_number) for p in p.product_type_numbers.all())
         ingredient_list = p.active_ingredients.values_list("name", "cas_number")
         ingredients = (f"{name} ({cas})" for name, cas in ingredient_list)
 
         product = "\n".join(
             [
                 f"Product: {p.product_name}",
-                f"Product type numbers: {', '.join(p_types)}",
-                f"Active ingredients (CAS numbers): f{', '.join(ingredients)}",
+                f"Product type numbers: {p_types}",
+                f"Active ingredients (CAS numbers): {', '.join(ingredients)}",
             ]
         )
         product_data.append(product)
