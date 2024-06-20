@@ -249,3 +249,17 @@ div[name="signature-widget"] > span {
 .schedule_only_valid_block > p, .footer-reference {
     font-size: 14px;
 }
+
+
+.schedule_only_valid_block {
+    position: absolute;
+    bottom: 0;
+}
+
+.chunked_products_list {
+    page-break-after: always;
+}
+
+.chunked_product_watermark {
+    margin-top: 150px;
+}

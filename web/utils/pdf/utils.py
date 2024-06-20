@@ -442,10 +442,19 @@ def get_cfs_certificate_context(
 ) -> Context:
     context = _get_certificate_context(application, certificate, doc_type, country)
 
+    schedules = application.schedules.order_by("created_at")
+    # we want to split the products into groups of 25, so we can put each group on a separate page to stop
+    # the list from overflowing onto the signature field
+    for schedule in schedules:
+        products = schedule.products.values_list("product_name", flat=True).order_by("pk")
+        split_products = [products[i : i + 25] for i in range(0, len(products), 25)]
+        schedule.split_products = split_products
+
     context |= {
         "schedule_text": fetch_schedule_text(application, country),
         "statement_translations": fetch_cfs_declaration_translations(country),
         "page_title": f"Certificate of Free Sale ({country.name}) Preview",
+        "schedules": schedules,
     }
 
     return context

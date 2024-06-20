@@ -11,7 +11,7 @@
       {{ get_css_rules_as_string('web/css/pdfs/constants.css')|safe }}
       {{ get_css_rules_as_string('web/css/pdfs/cfs-certificate-style.css')|safe }}
       .dbt_logo_watermark {
-        background-image: url("data:image/png;base64,{{ get_file_base64('web/img/dbt_logo.png') }}");
+          background-image: url("data:image/png;base64,{{ get_file_base64('web/img/dbt_logo.png') }}");
       }
     </style>
     <title>{{ page_title }}</title>
@@ -39,14 +39,14 @@
               <p class="bold title-line">DEPARTMENT FOR BUSINESS AND TRADE</p>
             </h3>
             <h3 class="bold centre title-line country">{{ country }}</h3>
-              <p>
-                It is hereby certified for the purposes of the laws of the above mentioned country that the product(s)
-                named in the Schedule which forms part of this certificate may lawfully be sold in the United Kingdom
-                if it meets the statutory requirements.
-              </p>
-              {% for statement_translation in statement_translations %}
-                <p class="statement_translation">{{ statement_translation|safe }}</p>
-              {% endfor %}
+            <p>
+              It is hereby certified for the purposes of the laws of the above mentioned country that the product(s)
+              named in the Schedule which forms part of this certificate may lawfully be sold in the United Kingdom
+              if it meets the statutory requirements.
+            </p>
+            {% for statement_translation in statement_translations %}
+              <p class="statement_translation">{{ statement_translation|safe }}</p>
+            {% endfor %}
           </div>
         </div>
         <footer class="title-footer">
@@ -83,44 +83,46 @@
         </footer>
       </div>
 
-      {% for schedule in process.schedules.order_by('created_at') %}
+      {% for schedule in schedules %}
         {% set english_paragraphs = schedule_text[schedule.pk].english_paragraphs %}
         {% set translation_paragraphs = schedule_text[schedule.pk].translation_paragraphs %}
-        <div class="schedule-block page-margin">
-          <div class="header">
-            <p class="reference">{{ reference }}</p>
-            <p class="schedule-index reference">Schedule {{ loop.index }} of {{ loop.length }}</p>
-          </div>
-
-          <h4 class="schedule-header bold">{{ english_paragraphs.header | upper }}</h4>
-
-          <p>{{ english_paragraphs.introduction }}</p>
-          <div class="watermark_container">
-            <div class="dbt_logo_watermark"></div>
-            <p>{{ english_paragraphs.paragraph }}</p>
-            {% if translation_paragraphs %}
-              <h4>{{ translation_paragraphs.header | upper }}</h4>
-              <p>{{ translation_paragraphs.introduction }}</p>
-              <p>{{ translation_paragraphs.paragraph }}</p>
-              <h4 class="product-header bold">{{ english_paragraphs.product | upper }}
-                / {{ translation_paragraphs.product | upper }}</h4>
-            {% else %}
-              <h4 class="product-header bold">{{ english_paragraphs.product | upper }}</h4>
-            {% endif %}
-            <div class="products-block">
-              {% for product_name in schedule.products.values_list("product_name", flat=True).order_by('pk') %}
+        {% for chunked_products_list in schedule.split_products %}
+          <div class="schedule-block page-margin">
+            <div class="content">
+              <div class="header">
+                <p class="reference">{{ reference }}</p>
+                <p class="schedule-index reference">Schedule {{ loop.index }} of {{ loop.length }}</p>
+              </div>
+              {% if loop.first %}
+                <h4 class="schedule-header bold">{{ english_paragraphs.header | upper }}</h4>
+                <p>{{ english_paragraphs.introduction }}</p>
+                <div class="dbt_logo_watermark"></div>
+                <p>{{ english_paragraphs.paragraph }}</p>
+                {% if translation_paragraphs %}
+                  <h4>{{ translation_paragraphs.header | upper }}</h4>
+                  <p>{{ translation_paragraphs.introduction }}</p>
+                  <p>{{ translation_paragraphs.paragraph }}</p>
+                  <h4 class="product-header bold">{{ english_paragraphs.product | upper }}
+                    / {{ translation_paragraphs.product | upper }}</h4>
+                {% else %}
+                  <h4 class="product-header bold">{{ english_paragraphs.product | upper }}</h4>
+                {% endif %}
+              {% else %}
+                <div class="dbt_logo_watermark chunked_product_watermark"></div>
+              {% endif %}
+              {% for product_name in chunked_products_list %}
                 <p class="product-name">{{ product_name }}</p>
               {% endfor %}
+              <footer class="schedule_only_valid_block">
+                <p>
+                  This schedule is only valid with Certificate
+                  <span class="{{ 'preview-orange' if preview }} footer-reference">{{ reference }}</span>
+                </p>
+                <p>Date issued: {{ issue_date }}</p>
+              </footer>
             </div>
-            <footer class="schedule_only_valid_block">
-              <p>
-                This schedule is only valid with Certificate
-                <span class="{{ 'preview-orange' if preview }} footer-reference">{{ reference }}</span>
-              </p>
-              <p>Date issued: {{ issue_date }}</p>
-            </footer>
           </div>
-        </div>
+        {% endfor %}
       {% endfor %}
     </div>
   </body>

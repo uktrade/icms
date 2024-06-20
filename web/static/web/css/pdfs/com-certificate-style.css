@@ -87,10 +87,6 @@ li {
     line-height: 1.2em;
 }
 
-@page {
-    size: A4;
-}
-
 .flex-column {
     display: flex;
     flex-direction: column;
@@ -133,7 +129,7 @@ ul, ol {
 }
 
 .align_bottom_footer {
-    position: absolute;
+    position: fixed;
     bottom: 0;
 }
 
