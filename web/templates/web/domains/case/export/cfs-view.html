@@ -35,7 +35,7 @@
     {% set not_export_only = schedule.goods_export_only == "no" %}
     {% set show_schedule_statements_is_responsible_person = has_cosmetics and not_export_only %}
 
-    {% call application_section("Shedule " + loop.index|string, "view-schedule-" + loop.index|string) %}
+    {% call application_section("Schedule " + loop.index|string, "view-schedule-" + loop.index|string) %}
       {{ application_field(schedule.get_exporter_status_display(), labels["exporter_status"]) }}
       {{ application_field(schedule.get_brand_name_holder_display(), labels["brand_name_holder"]) }}
       {{ application_field(schedule_legislation_names|join("\n"), labels["legislations"]) }}
