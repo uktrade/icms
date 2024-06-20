@@ -39,7 +39,7 @@
   {% if show_help_text %}
       <p>You have been issued with the following documents. Please view them and take any appropriate action.</p>
   {% endif %}
-  {% with show_generation_status = False %}
+  {% with show_generation_status = False, show_name_change_notification_document=True %}
     {% include "web/domains/case/document-list.html" %}
   {% endwith %}
 
