@@ -1,6 +1,6 @@
 /*
-we're defining the fonts here used in the PDFs as base64 strings as we can't import them from a CDN or the static root 
-when using playwright 
+we're defining the fonts here used in the PDFs as base64 strings as we can't import them from a CDN or the static root
+when using playwright
 */
 
 @font-face {
@@ -27,10 +27,12 @@ when using playwright
 * {
     font-family: 'Helvetica', sans-serif;
     font-weight: normal;
+    -webkit-print-color-adjust: exact;
 }
 
 strong {
     font-weight: bold;
+    font-size: inherit;
 }
 
 .light-text {

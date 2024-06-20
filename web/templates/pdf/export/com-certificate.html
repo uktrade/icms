@@ -6,10 +6,9 @@
 <html lang="en">
   <head>
     <style>
-      {{ get_css_rules_as_string("web/css/pdfs/licence-and-certificate-common-style.css")|safe }}
-      {{ get_css_rules_as_string("web/css/pdfs/certificate-style.css")|safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/fonts.css')|safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/constants.css')|safe }}
       {{ get_css_rules_as_string("web/css/pdfs/com-certificate-style.css")|safe }}
-      {{ get_css_rules_as_string("web/css/components/signature.css")|safe }}
 			{% if preview %}
 				{{ get_css_rules_as_string("web/css/pdfs/preview.css")|safe }}
       {% endif %}
@@ -21,46 +20,48 @@
     <div class="page-margin">
       <div class="certificate-header flex-row">
         <div class="flex-column two-third">
-          {{ dbt_logo(classes="header-block") }}
+          {{ dbt_logo(classes="large-header-logo") }}
         </div>
-        <div class="flex-column thirty_width">
+        <div class="flex-column thirty_width certificate-reference">
           <p class="reference {{ 'preview-orange' if preview }}">{{ reference }}</p>
         </div>
       </div>
-      <p class="issue-date">{{ issue_date }}</p>
-      <p class="title-line">TO WHOM IT MAY CONCERN</p>
-      <ol>
-        <li>
-          The Department for Business and Trade ("The Department") confirms that,
-          {{ exporter_name }}, of, {{ exporter_address }} ("The Company") are manufacturers of the following:
-        </li>
-      </ol>
-      <div class="com-item">
-        <p><strong>PRODUCT NAME:</strong></p>
-        <p>{{ product_name }}</p>
+      <div class="content">
+        <p class="issue-date">{{ issue_date }}</p>
+        <p class="title-line">TO WHOM IT MAY CONCERN</p>
+        <ol start="1">
+          <li>
+            The Department for Business and Trade ("The Department") confirms that,
+            {{ exporter_name }}, of, {{ exporter_address }} ("The Company") are manufacturers of the following:
+          </li>
+        </ol>
+        <div class="com-item">
+          <p><strong>PRODUCT NAME:</strong></p>
+          <p>{{ product_name }}</p>
+        </div>
+        <div class="com-item">
+          <p><strong>CHEMICAL NAME:</strong></p>
+          <p>{{ chemical_name }}</p>
+        </div>
+        <div class="com-item">
+          <p><strong>MANUFACTURING PROCESS:</strong></p>
+          {% for line in manufacturing_process_list %}
+            <p>{{ line }}</p>
+          {% endfor %}
+        </div>
+        <ol class="statements" start="2">
+          <li>
+            This letter is issued by the Department solely for the purpose of registration of
+            <strong>{{ product_name }}</strong> in <strong>{{ country }}</strong> and is entirely
+            based on information supplied by the Company to the Department.
+          </li>
+          <li>
+            The Department makes no representation as to the legal rights or obligations of
+            whatever nature attaching to the above product, or, concerning the right of the
+            Company to manufacture it.
+          </li>
+        </ol>
       </div>
-      <div class="com-item">
-        <p><strong>CHEMICAL NAME:</strong></p>
-        <p>{{ chemical_name }}</p>
-      </div>
-      <div class="com-item">
-        <p><strong>MANUFACTURING PROCESS:</strong></p>
-        {% for line in manufacturing_process_list %}
-          <p>{{ line }}</p>
-        {% endfor %}
-      </div>
-      <ol class="statements">
-        <li>
-          This letter is issued by the Department solely for the purpose of registration of
-          <strong>{{ product_name }}</strong> in <strong>{{ country }}</strong> and is entirely
-          based on information supplied by the Company to the Department.
-        </li>
-        <li>
-          The Department makes no representation as to the legal rights or obligations of
-          whatever nature attaching to the above product, or, concerning the right of the
-          Company to manufacture it.
-        </li>
-      </ol>
       <footer class="align_bottom_footer">
         <div class="signature-block flex-row">
           <div class="flex-column third">
@@ -80,13 +81,14 @@
             {% endif %}
           </div>
           <div class="flex-column third">
-            <span class="qr-text">Scan this QR code to check this
-                  certificate's validity. <strong>Certificate
-                Code:</strong> <p class="{{ 'preview-orange' if preview }}">{{ certificate_code }}</p>
-                  Alternatively you can go to
-                  {{ qr_check_url }} and
-                  enter the certificate reference and
-                  code.
+            <span class="qr-text">
+              Scan this QR code to check this certificate's validity.
+              <strong>Certificate Code:</strong>
+              <p class="{{ 'preview-orange' if preview }} mb-0 mt-0">
+                <strong>{{ certificate_code }}</strong>
+              </p>
+                Alternatively you can go to <strong>{{ qr_check_url }}</strong> and enter the certificate reference and
+                code.
             </span>
           </div>
         </div>
