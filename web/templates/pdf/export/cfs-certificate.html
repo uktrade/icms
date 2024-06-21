@@ -86,7 +86,7 @@
       {% for schedule in schedules %}
         {% set english_paragraphs = schedule_text[schedule.pk].english_paragraphs %}
         {% set translation_paragraphs = schedule_text[schedule.pk].translation_paragraphs %}
-        {% for chunked_products_list in schedule.split_products %}
+        {% for chunked_products_list in schedule.chunked_products %}
           <div class="schedule-block page-margin">
             <div class="content">
               <div class="header">

@@ -447,8 +447,8 @@ def get_cfs_certificate_context(
     # the list from overflowing onto the signature field
     for schedule in schedules:
         products = schedule.products.values_list("product_name", flat=True).order_by("pk")
-        split_products = [products[i : i + 25] for i in range(0, len(products), 25)]
-        schedule.split_products = split_products
+        chunked_products = [products[i : i + 25] for i in range(0, len(products), 25)]
+        schedule.chunked_products = chunked_products
 
     context |= {
         "schedule_text": fetch_schedule_text(application, country),

@@ -19,6 +19,7 @@ from web.models import (
     WoodQuotaChecklist,
 )
 from web.models.shared import YesNoNAChoices
+from web.tests.domains.case.export.factory import CFSProductFactory
 from web.tests.helpers import CaseURLS
 from web.types import DocumentTypes
 from web.utils.pdf import PdfGenerator, StaticPdfGenerator, utils
@@ -477,6 +478,11 @@ def test_get_pdf(db, oil_app, licence):
 
 def test_get_preview_cfs_certificate_context(cfs_app_submitted):
     app = cfs_app_submitted
+
+    schedule = app.schedules.first()
+
+    # creating loads of products to check the chunk splitting
+    CFSProductFactory.create_batch(40, schedule=schedule)
     country = app.countries.first()
     certificate = app.certificates.first()
     generator = PdfGenerator(DocumentTypes.CERTIFICATE_PREVIEW, app, certificate, country)
@@ -488,6 +494,12 @@ def test_get_preview_cfs_certificate_context(cfs_app_submitted):
     assert context["statement_translations"] == []
     assert context["exporter_name"] == app.exporter.name.upper()
     assert context["reference"] == "[[CERTIFICATE_REFERENCE]]"
+
+    chunked_products = context["schedules"].first().chunked_products
+    assert len(chunked_products) == 2
+    assert len(chunked_products[0]) == 25
+    # it's 16 because there's already 1 product in the schedule. 25+16 = 41 (1 more than batch created)
+    assert len(chunked_products[1]) == 16
 
 
 def test_get_preview_com_certificate_context(com_app_submitted):
