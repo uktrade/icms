@@ -51,7 +51,11 @@
   <div class="two columns">
     <span>{{ process.get_status_display() }}</span>
   </div>
-
-  <div class="eight columns"></div>
-
+  <div class="two columns">
+    <label class="prompt west">Exporter Address</label>
+  </div>
+  <div class="two columns">
+    <span>{{ process.exporter_office.address }} {{ process.exporter_office.postcode or "" }}</span>
+  </div>
+  <div class="four columns"></div>
 </div>
