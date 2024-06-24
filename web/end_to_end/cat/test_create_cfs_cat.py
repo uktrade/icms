@@ -110,11 +110,13 @@ def test_can_create_cfs_cat(pages: conftest.UserPages) -> None:
         # Create an application from the CFS Template
         utils.get_cat_list_row(page, cat_pk).get_by_role("link", name="Create Application").click()
         page.get_by_text("-- Select Exporter").click()
-        page.get_by_role("option", name="Dummy exporter").click()
+        page.get_by_role("option", name="Dummy Exporter 1").click()
         page.locator("#select2-id_exporter_office-container").get_by_text(
             "-- Select Office"
         ).click()
-        page.get_by_role("option", name="Buckingham Palace\nLondon\nSW1A 1AA").click()  # /PS-IGNORE
+        page.get_by_role(
+            "option", name="1 Buckingham Palace\nLondon\nSW1A 1AA"  # /PS-IGNORE
+        ).click()
         page.get_by_role("button", name="Create").click()
 
         # Check we are on the CFS Application Edit view.
@@ -263,11 +265,13 @@ def test_can_create_cfs_cat_biocidal_schdedule(pages: conftest.UserPages) -> Non
         # Create an application from the CFS Template
         utils.get_cat_list_row(page, cat_pk).get_by_role("link", name="Create Application").click()
         page.get_by_text("-- Select Exporter").click()
-        page.get_by_role("option", name="Dummy exporter").click()
+        page.get_by_role("option", name="Dummy Exporter 1").click()
         page.locator("#select2-id_exporter_office-container").get_by_text(
             "-- Select Office"
         ).click()
-        page.get_by_role("option", name="Buckingham Palace\nLondon\nSW1A 1AA").click()  # /PS-IGNORE
+        page.get_by_role(
+            "option", name="1 Buckingham Palace\nLondon\nSW1A 1AA"  # /PS-IGNORE
+        ).click()
         page.get_by_role("button", name="Create").click()
 
         # Check we are on the CFS Application Edit view.

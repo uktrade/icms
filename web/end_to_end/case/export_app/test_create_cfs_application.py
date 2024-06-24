@@ -21,10 +21,10 @@ def cfs_create(page: Page) -> int:
     page.get_by_role("link", name="Certificate of Free Sale").click()
 
     page.get_by_text("-- Select Exporter").click()
-    page.get_by_role("option", name="Dummy exporter").click()
+    page.get_by_role("option", name="Dummy Exporter 1").click()
     page.get_by_role("combobox", name="-- Select Office").get_by_text("-- Select Office").click()
 
-    page.get_by_role("option", name="Buckingham Palace\nLondon\nSW1A 1AA").click()  # /PS-IGNORE
+    page.get_by_role("option", name="1 Buckingham Palace\nLondon\nSW1A 1AA").click()  # /PS-IGNORE
     page.get_by_role("button", name="Create").click()
     page.get_by_placeholder("Select Country").click()
     page.get_by_role("option", name="Afghanistan").click()

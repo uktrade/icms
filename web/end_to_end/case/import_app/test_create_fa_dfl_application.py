@@ -33,14 +33,14 @@ def fa_dfl_create(page: Page, sample_upload_file: types.FilePayload) -> int:
 
     page.get_by_text("-- Select Importer").click()
 
-    page.get_by_role("option", name="Dummy importer").click()
+    page.get_by_role("option", name="Dummy importer 1").click()
 
     page.get_by_role("combobox", name="-- Select Office").locator(
         'span[role="textbox"]:has-text("-- Select Office")'
     ).click()
 
     page.get_by_role(
-        "option", name="3 Whitehall Pl\nWestminster\nLondon\nSW1A 2HP"  # /PS-IGNORE
+        "option", name="1 Whitehall Pl\nWestminster\nLondon\nSW1A 1HP"  # /PS-IGNORE
     ).click()
 
     page.get_by_role("button", name="Create").click()

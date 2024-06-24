@@ -32,10 +32,10 @@ def sanctions_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     # Set importer
     #
     page.get_by_text("-- Select Importer").click()
-    page.get_by_role("option", name="Dummy importer").click()
+    page.get_by_role("option", name="Dummy importer 1").click()
     page.get_by_role("combobox", name="-- Select Office").get_by_text("-- Select Office").click()
     page.get_by_role(
-        "option", name="3 Whitehall Pl\nWestminster\nLondon\nSW1A 2HP"  # /PS-IGNORE
+        "option", name="1 Whitehall Pl\nWestminster\nLondon\nSW1A 1HP"  # /PS-IGNORE
     ).click()
     page.get_by_role("button", name="Create").click()
 
@@ -47,8 +47,8 @@ def sanctions_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     #
     page.get_by_label("Applicant's Reference").click()
     page.get_by_label("Applicant's Reference").fill("Applicant's reference value")
-    page.get_by_role("combobox", name="Country Of Origin").select_option("122")
-    page.get_by_role("combobox", name="Country Of Consignment").select_option("1")
+    page.get_by_role("combobox", name="Country of manufacture (origin)").select_option("122")
+    page.get_by_role("combobox", name="Country of shipment (consignment)").select_option("1")
     page.get_by_label("Exporter Name").click()
     page.get_by_label("Exporter Name").fill("Exporter name")
     page.get_by_label("Exporter Address").click()

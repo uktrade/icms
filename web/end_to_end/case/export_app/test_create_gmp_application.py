@@ -22,9 +22,9 @@ def gmp_create(page: Page, sample_upload_file: types.FilePayload) -> int:
     page.get_by_role("link", name="Certificate of Good Manufacturing Practice").click()
 
     page.get_by_text("-- Select Exporter").click()
-    page.get_by_role("option", name="Dummy exporter").click()
+    page.get_by_role("option", name="Dummy Exporter 1").click()
     page.get_by_role("combobox", name="-- Select Office").get_by_text("-- Select Office").click()
-    page.get_by_role("option", name="Buckingham Palace\nLondon\nSW1A 1AA").click()  # /PS-IGNORE
+    page.get_by_role("option", name="1 Buckingham Palace\nLondon\nSW1A 1AA").click()  # /PS-IGNORE
     page.get_by_role("button", name="Create").click()
 
     gmp_id = utils.get_application_id(page.url, r"export/gmp/(?P<app_pk>\d+)/edit/")
