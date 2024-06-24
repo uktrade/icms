@@ -137,7 +137,7 @@ class Command(BaseCommand):
 
     def add_ilb_admin_users(self, password: str) -> None:
         ilb_admin_group = Group.objects.get(name="ILB Case Officer")
-        for index, user in enumerate(EXPORT_USERS, start=1):
+        for index, user in enumerate(ADMIN_USERS, start=1):
             ilb_admin_user = self.create_user(
                 username="ilb_admin" if index == 1 else f"ilb_admin_{index}",
                 password=password,
