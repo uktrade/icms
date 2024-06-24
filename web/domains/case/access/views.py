@@ -1,5 +1,6 @@
 from typing import Any, Literal
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import transaction
@@ -219,6 +220,12 @@ def link_access_request(
             if form.is_valid():
                 form.save()
 
+                messages.success(
+                    request,
+                    f"Successfully linked {entity.title()} to access request."
+                    " Access request can now be closed by navigating to Close Access Request page,"
+                    " or approval can be requested via the Access Approval page.",
+                )
                 return redirect(
                     reverse(
                         "access:link-request",
