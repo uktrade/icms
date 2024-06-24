@@ -101,9 +101,12 @@ def test_respond_update_request(
     resp = importer_client.post(
         CaseURLS.respond_update_request(wood_app_submitted.pk, "import"),
         data={"response_detail": "fixed it"},
+        follow=True,
     )
+    assert resp.status_code == 200
+    assert resp.resolver_match.view_name == "import:wood:submit-quota"
+    assert resp.resolver_match.kwargs["application_pk"] == wood_app_submitted.pk
 
-    assert resp.status_code == 302
     update_request.refresh_from_db()
     assert update_request.status == UpdateRequest.Status.RESPONDED
     wood_app_submitted.refresh_from_db()
