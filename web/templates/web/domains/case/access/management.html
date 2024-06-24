@@ -60,13 +60,16 @@
   {% else %}
     <h3>Link Importer to Access Request</h3>
   {% endif %}
-
   <div class="eight columns">
     {% call forms.form(method='post', csrf_input=csrf_input) -%}
       {{ fields.field(form.link) }}
       {% if show_agent_link %}
         {{ fields.field(form.agent_link, show_optional_indicator=False) }}
       {% endif %}
+      <p>
+        If the {{ org }} is not found in the above list, click <a href="{{ create_org_url }}" target="_blank" rel="noopener noreferrer">this link</a>
+        to create a new {{ org }} (opens in new tab) before returning here to complete the access request. You may need to reload the browser page to see the new {{ org }}.
+      </p>
       <button type="submit" class="button primary-button">Link</button>
     {% endcall %}
   </div>

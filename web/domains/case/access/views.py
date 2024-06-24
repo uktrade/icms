@@ -240,6 +240,8 @@ def link_access_request(
             "process": access_request,
             "form": form,
             "show_agent_link": access_request.is_agent_request,
+            "org": entity.title(),
+            "create_org_url": reverse("importer-list" if entity == "importer" else "exporter-list"),
         }
 
     return render(
