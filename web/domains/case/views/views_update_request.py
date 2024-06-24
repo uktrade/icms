@@ -275,7 +275,8 @@ def respond_update_request(
                 send_application_update_response_email(application)
                 return redirect(
                     reverse(
-                        application.get_edit_view_name(), kwargs={"application_pk": application_pk}
+                        application.get_submit_view_name(),
+                        kwargs={"application_pk": application_pk},
                     )
                 )
         else:
