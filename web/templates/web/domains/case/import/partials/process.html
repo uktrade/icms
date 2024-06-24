@@ -30,8 +30,9 @@
   <div class="two columns">
     <span>
       {{ process.application_type.get_type_display() }}
-      -
-      {{ process.application_type.get_sub_type_display() }}
+      {% if process.application_type.type == process.application_type.Types.FIREARMS %}
+        - {{ process.application_type.get_sub_type_display() }}
+      {% endif %}
     </span>
   </div>
   <div class="two columns">
@@ -59,7 +60,7 @@
     <label class="prompt west">Importer Address</label>
   </div>
   <div class="two columns">
-    <span>{{ process.importer_office.address }}</span>
+    <span>{{ process.importer_office.address }} {{ process.importer_office.postcode or "" }}</span>
   </div>
   <div class="two columns">
     <label class="prompt west">Importer EORI</label>
