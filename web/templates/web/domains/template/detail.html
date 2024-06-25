@@ -52,7 +52,7 @@
             <dt class="bold">Email Subject</dt>
             <dd>{{ object.template_title}}</dd>
             <dt class="bold">Email Body</dt>
-            <dd>{{ object.template_content }}</dd>
+            <dd>{{ object.template_content|nl2br }}</dd>
           </dl>
         {% elif object.template_type == "LETTER_TEMPLATE"%}
           <dl>

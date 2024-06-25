@@ -4769,3 +4769,15 @@ Section 5(B
 Goods 7
 Goods 8
 GoodsSectionSerializer
+NEEDED
+UNCLEAR
+Section 5) Grateful if the Home Office
+CLARIFICATION
+INCLUDE SUGGESTIONS
+CASE_REFERENCE]] Request
+CASE_REFERENCE]] Good
+CASE_REFERENCE]] Application
+CASE_REFERENCE]] Import
+Registered Firearms Dealer
+CASE_REFERENCE]] Biocidal
+CASE_REFERENCE]] Case
