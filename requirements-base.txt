@@ -22,7 +22,7 @@ humanize==4.9.0
 Jinja2==3.1.4
 lxml==4.9.3
 mohawk==1.1.0
-notifications-python-client==8.1.0
+notifications-python-client==9.1.0
 openpyxl==3.0.7
 oracledb==1.2.0
 phonenumbers==8.12.12

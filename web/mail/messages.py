@@ -53,6 +53,7 @@ from .url_helpers import (
     get_account_recovery_url,
     get_authority_view_url,
     get_case_email_otd_url,
+    get_case_manage_view_url,
     get_case_view_url,
     get_dfl_application_otd_url,
     get_exporter_access_request_url,
@@ -60,6 +61,7 @@ from .url_helpers import (
     get_importer_view_url,
     get_mailshot_detail_view_url,
     get_maintain_importers_view_url,
+    get_update_request_view_url,
     get_validate_digital_signatures_url,
 )
 
@@ -209,15 +211,29 @@ class AccessRequestClosedEmail(GOVNotifyEmailMessage):
         return {
             "request_type": self.access_request.REQUEST_TYPE.capitalize(),
             "agent": "Agent " if self.access_request.is_agent_request else "",
+            "is_agent": "yes" if self.access_request.is_agent_request else "no",
+            "has_been_refused": (
+                "yes" if self.access_request.response == self.access_request.REFUSED else "no"
+            ),
             "organisation": self.access_request.organisation_name,
             "outcome": self.access_request.get_response_display(),
             "reason": self.get_reason(),
+            "service_name": self.get_service_name().lower(),
         }
 
     def get_reason(self) -> str:
         if not self.access_request.response_reason:
             return ""
         return f"Reason: {self.access_request.response_reason}"
+
+    def get_service_name(self) -> str:
+        match self.access_request.REQUEST_TYPE:
+            case "importer":
+                return SiteName.IMPORTER.label
+            case "exporter":
+                return SiteName.EXPORTER.label
+            case _:
+                raise ValueError(f"Unknown access request type: {self.access_request.REQUEST_TYPE}")
 
     def get_site_domain(self) -> str:
         match self.access_request.REQUEST_TYPE:
@@ -252,6 +268,14 @@ class ApplicationStoppedEmail(BaseApplicationEmail):
 @final
 class ApplicationUpdateResponseEmail(BaseApplicationEmail):
     name = EmailTypes.APPLICATION_UPDATE_RESPONSE
+
+    def get_context(self) -> dict[str, Any]:
+        context = super().get_context()
+        context["application_url"] = get_case_manage_view_url(self.application)
+        return context
+
+    def get_site_domain(self) -> str:
+        return get_caseworker_site_domain()
 
 
 @final
@@ -358,7 +382,7 @@ class ConstabularyDeactivatedFirearmsEmail(BaseApplicationEmail):
         link = self.generate_view_case_documents_link()
         context["documents_url"] = get_dfl_application_otd_url(link)
         context["check_code"] = str(link.check_code)
-
+        context["constabulary_name"] = self.constabulary.name
         return context
 
     def get_site_domain(self) -> str:
@@ -589,6 +613,9 @@ class ApplicationUpdateEmail(BaseApplicationEmail):
         context = super().get_context()
         context["subject"] = self.update_request.request_subject
         context["body"] = self.update_request.request_detail
+        context["application_update_url"] = get_update_request_view_url(
+            self.application, self.update_request, self.get_site_domain()
+        )
         return context
 
 

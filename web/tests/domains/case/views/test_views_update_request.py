@@ -4,7 +4,11 @@ from pytest_django.asserts import assertContains, assertTemplateUsed
 
 from web.domains.case.types import ImpOrExp
 from web.mail.constants import EmailTypes
-from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
+from web.mail.url_helpers import (
+    get_case_view_url,
+    get_update_request_view_url,
+    get_validate_digital_signatures_url,
+)
 from web.models import ImportApplication, UpdateRequest, User
 from web.sites import get_importer_site_domain
 from web.tests.application_utils import resubmit_app
@@ -65,6 +69,9 @@ def test_manage_update_requests(ilb_admin_client: Client, wood_app_submitted: Im
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
             "application_url": get_case_view_url(wood_app_submitted, get_importer_site_domain()),
             "icms_url": get_importer_site_domain(),
+            "application_update_url": get_update_request_view_url(
+                wood_app_submitted, update_request, get_importer_site_domain()
+            ),
         },
         exp_subject=post["request_subject"],
         exp_in_body=post["request_detail"],

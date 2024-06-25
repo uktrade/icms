@@ -6,7 +6,10 @@ from django.utils import timezone
 from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
 from web.mail.constants import EmailTypes
-from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
+from web.mail.url_helpers import (
+    get_case_manage_view_url,
+    get_validate_digital_signatures_url,
+)
 from web.models import (
     Commodity,
     Country,
@@ -16,7 +19,7 @@ from web.models import (
     Task,
     UpdateRequest,
 )
-from web.sites import get_importer_site_domain
+from web.sites import get_caseworker_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 from web.tests.domains.case._import.factory import (
@@ -495,7 +498,7 @@ class TestSubmitSanctions:
                 "validate_digital_signatures_url": get_validate_digital_signatures_url(
                     full_url=True
                 ),
-                "application_url": get_case_view_url(self.app, get_importer_site_domain()),
-                "icms_url": get_importer_site_domain(),
+                "application_url": get_case_manage_view_url(self.app),
+                "icms_url": get_caseworker_site_domain(),
             },
         )
