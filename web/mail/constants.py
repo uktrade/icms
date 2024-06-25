@@ -112,7 +112,7 @@ class EmailTypes(TypedTextChoices):
 
     # Case emails
     CONSTABULARY_CASE_EMAIL = ("IMA_CONSTAB_EMAIL", "Constabulary Email")
-    SANCTIONS_CASE_EMAIL = ("IMA_SANCTION_EMAIL", "Sanctions Email")
+    SANCTIONS_CASE_EMAIL = ("IMA_SANCTIONS_EMAIL", "Sanctions Email")
     HSE_CASE_EMAIL = ("CA_HSE_EMAIL", "Health and Safety Email")
     BEIS_CASE_EMAIL = ("CA_BEIS_EMAIL", "Business, Energy & Industrial Strategy Email")
 

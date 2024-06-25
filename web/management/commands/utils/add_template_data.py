@@ -972,14 +972,14 @@ Yours sincerely,
 [[CASE_OFFICER_NAME]]""",
     )
     # TODO: template extracted from the test system not from the db as missing
-    # search IMA_SANCTION_EMAIL to see usage
+    # search IMA_SANCTIONS_EMAIL to see usage
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             dt.datetime.strptime("22-FEB-2019 11:06:59", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
         template_name="Sanction email",
-        template_code="IMA_SANCTION_EMAIL",
+        template_code="IMA_SANCTIONS_EMAIL",
         template_type="EMAIL_TEMPLATE",
         application_domain="IMA",
         template_title="Import Sanctions and Adhoc Licence",
