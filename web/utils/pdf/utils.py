@@ -3,12 +3,11 @@ import datetime as dt
 import re
 from collections.abc import Iterable
 from tempfile import NamedTemporaryFile
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urlencode, urljoin
 
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
-from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils import timezone
 from qrcode import QRCode
@@ -47,6 +46,9 @@ from web.models import (
 from web.sites import get_exporter_site_domain
 from web.types import DocumentTypes
 from web.utils import day_ordinal_date, is_northern_ireland_postcode, strip_spaces
+
+if TYPE_CHECKING:
+    from web.reports.serializers import GoodsSectionSerializer
 
 Context = dict[str, Any]
 
@@ -224,100 +226,98 @@ def _get_fa_dfl_goods(application: DFLApplication) -> list[str]:
     ]
 
 
-# TODO: Revisit in ICMSLST-2708
 def _get_fa_sil_goods(application: SILApplication) -> Iterable[tuple[str, int | str]]:
     """Return all related FA SIL goods"""
 
     for g in application.goods_section1.filter(is_active=True):
-        section = "1"
-        description = f"{g.description} to which Section {section} of the Firearms Act 1968, as amended, applies."
+        description = _get_description(g.description, "1")
 
-        yield description, "Unlimited" if g.unlimited_quantity else g.quantity
+        yield description, _get_unlimited_or_quantity(g)
 
     for g in application.goods_section2.filter(is_active=True):
-        section = "2"
-        description = f"{g.description} to which Section {section} of the Firearms Act 1968, as amended, applies."
+        description = _get_description(g.description, "2")
 
-        yield description, "Unlimited" if g.unlimited_quantity else g.quantity
+        yield description, _get_unlimited_or_quantity(g)
 
     for g in application.goods_section5.filter(is_active=True):
-        description = f"{g.description} to which Section {g.section_5_clause.clause} of the Firearms Act 1968, as amended, applies."
+        description = _get_description(g.description, g.section_5_clause.clause)
 
-        yield description, "Unlimited" if g.unlimited_quantity else g.quantity
+        yield description, _get_unlimited_or_quantity(g)
 
     for g in application.goods_legacy.filter(is_active=True):
-        section = "unknown"
-        description = f"{g.description} to which Section {section} of the Firearms Act 1968, as amended, applies."
+        description = _get_description(g.description, "unknown")
 
-        yield description, "Unlimited" if g.unlimited_quantity else g.quantity
+        yield description, _get_unlimited_or_quantity(g)
 
     for g in application.goods_section582_others.filter(is_active=True):
-        section = "58(2)"
-        description = f"{g.description} to which Section {section} of the Firearms Act 1968, as amended, applies."
+        description = _get_description(g.description, "58(2)")
 
         yield description, g.quantity
 
     for g in application.goods_section582_obsoletes.filter(is_active=True):
-        section = "58(2)"
-        description = (
-            f"{g.description} chambered in the obsolete calibre {g.obsolete_calibre} to which"
-            f" Section {section} of the Firearms Act 1968, as amended, applies."
+        description = _get_description(
+            f"{g.description} chambered in the obsolete calibre {g.obsolete_calibre}", "58(2)"
         )
 
         yield description, g.quantity
 
 
-# TODO: Revisit and remove in ICMSLST-2708
-def _get_sil_section_labels() -> list[tuple[str, str]]:
-    return [
-        ("goods_section1", "to which Section 1 of the Firearms Act 1968, as amended, applies."),
-        ("goods_section2", "to which Section 2 of the Firearms Act 1968, as amended, applies."),
-        (
-            "goods_section5",
-            "to which Section 5(1)(ac) of the Firearms Act 1968, as amended, applies.",
-        ),
-        (
-            "goods_section582_others",
-            "to which Section 58(2) of the Firearms Act 1968, as amended, applies.",
-        ),
-        (
-            "goods_section582_obsoletes",
-            "to which Section 58(2) of the Firearms Act 1968, as amended, applies.",
-        ),
-        (
-            "goods_legacy",
-            "",
-        ),
-    ]
+def _get_description(desc: str, section: str) -> str:
+    return f"{desc} to which Section {section} of the Firearms Act 1968, as amended, applies."
 
 
-# TODO: Revisit and remove in ICMSLST-2708
+def _get_unlimited_or_quantity(g: "SILGoods | GoodsSectionSerializer") -> str | int:
+    return "Unlimited" if g.unlimited_quantity else g.quantity  # type:ignore[return-value]
+
+
 def get_fa_sil_goods_item(
     goods_section: str,
-    active_goods: QuerySet[SILGoods],
-    label_suffix: str,
-) -> list[tuple[str, int]]:
-    if goods_section in ["goods_section1", "goods_section2", "goods_section5", "goods_legacy"]:
-        goods = []
-        for g in active_goods:
-            quantity = "Unlimited" if g.unlimited_quantity else g.quantity
-            goods.append((f"{g.description} {label_suffix}", quantity))
+    active_goods: Iterable["GoodsSectionSerializer"],
+) -> list[tuple[str, str]]:
+    """Used exclusively in web/reports/interfaces.py to load goods data."""
 
-        return goods
+    goods = []
 
-    elif goods_section == "goods_section582_others":
-        return [(f"{g.description} {label_suffix}", g.quantity) for g in active_goods]
+    for g in active_goods:
+        match goods_section:
+            #
+            # Goods types with unlimited
+            #
+            case "goods_section1":
+                description = _get_description(g.description, "1")
+                quantity = _get_unlimited_or_quantity(g)
 
-    elif goods_section == "goods_section582_obsoletes":
-        return [
-            (
-                f"{g.description} chambered in the obsolete calibre {g.obsolete_calibre} {label_suffix}",
-                g.quantity,
-            )
-            for g in active_goods
-        ]
+            case "goods_section2":
+                description = _get_description(g.description, "2")
+                quantity = _get_unlimited_or_quantity(g)
 
-    return []
+            case "goods_section5":
+                description = _get_description(g.description, g.clause)  # type:ignore[arg-type]
+                quantity = _get_unlimited_or_quantity(g)
+
+            case "goods_legacy":
+                description = _get_description(g.description, "unknown")
+                quantity = _get_unlimited_or_quantity(g)
+
+            #
+            # Goods types without unlimited
+            #
+            case "goods_section582_others":
+                description = _get_description(g.description, "58(2)")
+                quantity = str(g.quantity)
+
+            case "goods_section582_obsoletes":
+                description = _get_description(
+                    f"{g.description} chambered in the obsolete calibre {g.obsolete_calibre}",
+                    "58(2)",
+                )
+                quantity = str(g.quantity)
+            case _:
+                raise ValueError(f"Unknown goods_section: {goods_section}")
+
+        goods.append((description, str(quantity)))
+
+    return goods
 
 
 def _get_licence_start_date(licence: ImportApplicationLicence) -> str:

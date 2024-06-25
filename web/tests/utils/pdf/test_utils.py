@@ -3,17 +3,14 @@ from unittest.mock import MagicMock, create_autospec, patch
 
 import pytest
 
-from web.models import SILGoodsSection582Obsolete  # /PS-IGNORE
-from web.models import SILGoodsSection582Other  # /PS-IGNORE
 from web.models import (
     Country,
     EndorsementImportApplication,
     Section5Clause,
-    SILGoodsSection1,
-    SILGoodsSection2,
     SILGoodsSection5,
     Template,
 )
+from web.reports.serializers import GoodsSectionSerializer
 from web.types import DocumentTypes
 from web.utils.pdf import utils
 from web.utils.pdf.utils import _get_fa_sil_goods, _get_importer_eori_numbers
@@ -207,77 +204,87 @@ def test_fa_sil_get_pre_sign_context(sil_app, licence, sil_expected_preview_cont
 
 def test_section_1_get_fa_sil_goods_item():
     section_1_goods = [
-        SILGoodsSection1(description="Goods 1", quantity=10),
-        SILGoodsSection1(description="Goods 2", quantity=20),
+        GoodsSectionSerializer(description="Goods 1", quantity=10),
+        GoodsSectionSerializer(description="Goods 2", quantity=20),
     ]
-    expected_goods = [("Goods 1 test suffix", 10), ("Goods 2 test suffix", 20)]
-    actual_goods = utils.get_fa_sil_goods_item("goods_section1", section_1_goods, "test suffix")
+    expected_goods = [
+        ("Goods 1 to which Section 1 of the Firearms Act 1968, as amended, applies.", "10"),
+        ("Goods 2 to which Section 1 of the Firearms Act 1968, as amended, applies.", "20"),
+    ]
+    actual_goods = utils.get_fa_sil_goods_item("goods_section1", section_1_goods)
 
     assert expected_goods == actual_goods
 
 
 def test_section_2_get_fa_sil_goods_item():
     section_2_goods = [
-        SILGoodsSection2(description="Goods 3", quantity=30),
-        SILGoodsSection2(description="Goods 4", quantity=40),
+        GoodsSectionSerializer(description="Goods 3", quantity=30),
+        GoodsSectionSerializer(description="Goods 4", quantity=40),
     ]
-    expected_goods = [("Goods 3 test suffix", 30), ("Goods 4 test suffix", 40)]
-    actual_goods = utils.get_fa_sil_goods_item("goods_section2", section_2_goods, "test suffix")
+    expected_goods = [
+        ("Goods 3 to which Section 2 of the Firearms Act 1968, as amended, applies.", "30"),
+        ("Goods 4 to which Section 2 of the Firearms Act 1968, as amended, applies.", "40"),
+    ]
+    actual_goods = utils.get_fa_sil_goods_item("goods_section2", section_2_goods)
 
     assert expected_goods == actual_goods
 
 
 def test_section_5_get_fa_sil_goods_item():
     section_5_goods = [
-        SILGoodsSection5(description="Goods 5", quantity=50),
-        SILGoodsSection5(description="Goods 6", unlimited_quantity=True),
+        GoodsSectionSerializer(description="Goods 5", quantity=50, clause="5(A)"),
+        GoodsSectionSerializer(
+            description="Goods 6", quantity=0, unlimited_quantity=True, clause="5(B)"
+        ),
     ]
 
-    expected_goods = [("Goods 5 test suffix", 50), ("Goods 6 test suffix", "Unlimited")]
-    actual_goods = utils.get_fa_sil_goods_item("goods_section5", section_5_goods, "test suffix")
+    expected_goods = [
+        ("Goods 5 to which Section 5(A) of the Firearms Act 1968, as amended, applies.", "50"),
+        (
+            "Goods 6 to which Section 5(B) of the Firearms Act 1968, as amended, applies.",
+            "Unlimited",
+        ),
+    ]
+    actual_goods = utils.get_fa_sil_goods_item("goods_section5", section_5_goods)
 
     assert expected_goods == actual_goods
 
 
 def test_section_58_other_get_fa_sil_goods_item():
     section_58_other_goods = [
-        SILGoodsSection582Other(description="Goods 7", quantity=70),  # /PS-IGNORE
-        SILGoodsSection582Other(description="Goods 8", quantity=80),  # /PS-IGNORE
+        GoodsSectionSerializer(description="Goods 7", quantity=70),
+        GoodsSectionSerializer(description="Goods 8", quantity=80),
     ]
 
-    expected_goods = [("Goods 7 test suffix", 70), ("Goods 8 test suffix", 80)]
-    actual_goods = utils.get_fa_sil_goods_item(
-        "goods_section582_others", section_58_other_goods, "test suffix"
-    )
+    expected_goods = [
+        ("Goods 7 to which Section 58(2) of the Firearms Act 1968, as amended, applies.", "70"),
+        ("Goods 8 to which Section 58(2) of the Firearms Act 1968, as amended, applies.", "80"),
+    ]
+    actual_goods = utils.get_fa_sil_goods_item("goods_section582_others", section_58_other_goods)
 
     assert expected_goods == actual_goods
 
 
 def test_section_58_obsolete_get_fa_sil_goods_item():
     section_58_obsolete_goods = [
-        SILGoodsSection582Obsolete(  # /PS-IGNORE
-            description="Goods 9", quantity=90, obsolete_calibre="Calibre 1"
-        ),
-        SILGoodsSection582Obsolete(  # /PS-IGNORE
-            description="Goods 10", quantity=100, obsolete_calibre="Calibre 2"
-        ),
+        GoodsSectionSerializer(description="Goods 9", quantity=90, obsolete_calibre="Calibre 1"),
+        GoodsSectionSerializer(description="Goods 10", quantity=100, obsolete_calibre="Calibre 2"),
     ]
 
     expected_goods = [
-        ("Goods 9 chambered in the obsolete calibre Calibre 1 test suffix", 90),
-        ("Goods 10 chambered in the obsolete calibre Calibre 2 test suffix", 100),
+        (
+            "Goods 9 chambered in the obsolete calibre Calibre 1 to which Section 58(2) of the Firearms Act 1968, as amended, applies.",
+            "90",
+        ),
+        (
+            "Goods 10 chambered in the obsolete calibre Calibre 2 to which Section 58(2) of the Firearms Act 1968, as amended, applies.",
+            "100",
+        ),
     ]
 
     actual_goods = utils.get_fa_sil_goods_item(
-        "goods_section582_obsoletes", section_58_obsolete_goods, "test suffix"
+        "goods_section582_obsoletes", section_58_obsolete_goods
     )
-
-    assert expected_goods == actual_goods
-
-
-def test_invalid_section_returns_no_goods():
-    expected_goods = []
-    actual_goods = utils.get_fa_sil_goods_item("invalid_section", [], "test suffix")
 
     assert expected_goods == actual_goods
 

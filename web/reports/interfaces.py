@@ -68,7 +68,7 @@ from web.models import (
     UserImportCertificate,
 )
 from web.permissions import Perms
-from web.utils.pdf.utils import _get_sil_section_labels, get_fa_sil_goods_item
+from web.utils.pdf.utils import get_fa_sil_goods_item
 from web.utils.search.app_data import _add_import_licence_data
 from web.utils.sentry import capture_exception
 
@@ -182,7 +182,13 @@ class ReportInterface:
         return schema["required"]
 
     @handle_error
-    def serialize_rows(self, r: Model) -> list:
+    def serialize_rows(self, r: Model | dict) -> list:
+        """r can either be a model or a dict.
+
+        When get_queryset returned a queryset r is a Model instance.
+        When get_queryset returns queryset.values() r is a dict.
+        """
+
         return [self.serialize_row(r)]
 
     def serialize_row(self, *args: Any, **kwargs: Any) -> BaseModel:
@@ -208,6 +214,10 @@ class ReportInterface:
             extra_fields = extra_fields | {"obsolete_calibre": "obsolete_calibre"}
         if unlimited_quantity:
             extra_fields = extra_fields | {"unlimited_quantity": "unlimited_quantity"}
+
+        if model == SILGoodsSection5:
+            extra_fields["clause"] = "section_5_clause__clause"
+
         return (
             model.objects.filter(Q(import_application_id=OuterRef("pk")))
             .filter(is_active=True)
@@ -403,7 +413,7 @@ class BaseFirearmsLicenceInterface(ReportInterface):
             "section_obsolete",
         )
 
-    def serialize_row(self, ia: ImportApplication) -> BaseModel:
+    def serialize_row(self, ia: dict) -> BaseModel:
         licence = utils.get_licence_details(ia)
         import_user_name = utils.format_contact_name(
             ia["importer_title"], ia["importer_first_name"], ia["importer_last_name"]
@@ -429,7 +439,7 @@ class BaseFirearmsLicenceInterface(ReportInterface):
     def get_row_identifier(self, ia: ImportApplication) -> str:
         return ia["reference"]
 
-    def extra_fields(self, ia: FaImportApplication) -> dict[str, Any]:
+    def extra_fields(self, ia: dict) -> dict[str, Any]:
         raise NotImplementedError
 
 
@@ -571,8 +581,8 @@ class IssuedCertificateReportInterface(ReportInterface):
             queryset = queryset.filter(legislations__contains=self.filters.legislation)
         return queryset.order_by("-reference")
 
-    def serialize_row(self, cdr: QuerySet) -> IssuedCertificateReportSerializer:
-        export_application: QuerySet = cdr["export_application"][0]
+    def serialize_row(self, cdr: dict) -> IssuedCertificateReportSerializer:
+        export_application: dict = cdr["export_application"][0]
         export_application["countries_of_manufacture"] = ", ".join(
             filter(None, export_application["countries_of_manufacture"])
         )
@@ -800,7 +810,7 @@ class ImportLicenceInterface(ReportInterface):
     def get_row_identifier(self, ia: ImportApplication) -> str:
         return ia["reference"]
 
-    def serialize_row(self, ia: ImportApplication) -> ImportLicenceSerializer:
+    def serialize_row(self, ia: dict) -> ImportLicenceSerializer:
         licence = utils.get_licence_details(ia)
         import_user_name = utils.format_contact_name(
             ia["importer_title"], ia["importer_first_name"], ia["importer_last_name"]
@@ -850,7 +860,7 @@ class ImportLicenceInterface(ReportInterface):
         except ValueError:
             return ima_type
 
-    def get_commodity_codes(self, ia: ImportApplication) -> str:
+    def get_commodity_codes(self, ia: dict) -> str:
         commodity_code = ia["commodity_code"]
         if commodity_code:
             return f"Code: {commodity_code}"
@@ -1001,7 +1011,7 @@ class SupplementaryFirearmsInterface(ReportInterface):
             "constabularies_list",
         )
 
-    def serialize_rows(self, ia: ImportApplication) -> list:
+    def serialize_rows(self, ia: dict) -> list:
         results = []
         for report_firearms in chain(
             ia["section_1_reports"],
@@ -1020,9 +1030,7 @@ class SupplementaryFirearmsInterface(ReportInterface):
         return ia["reference"]
 
     @handle_error
-    def serialize_row(
-        self, s: ReportFirearms, ia: ImportApplication
-    ) -> SupplementaryFirearmsSerializer:
+    def serialize_row(self, s: ReportFirearms, ia: dict) -> SupplementaryFirearmsSerializer:
         is_dfl = ia["process_type"] == ProcessTypes.FA_DFL
         is_sil = ia["process_type"] == ProcessTypes.FA_SIL
         is_oil = ia["process_type"] == ProcessTypes.FA_OIL
@@ -1103,7 +1111,7 @@ class DFLFirearmsLicenceInterface(BaseFirearmsLicenceInterface):
     def get_application_filter(self) -> Q:
         return Q(dflapplication__isnull=False)
 
-    def extra_fields(self, ia: ImportApplication) -> dict[str, Any]:
+    def extra_fields(self, ia: dict) -> dict[str, Any]:
         return {"goods_description": "\n".join(ia["dfl_certificate_descriptions"])}
 
 
@@ -1115,7 +1123,7 @@ class OILFirearmsLicenceInterface(BaseFirearmsLicenceInterface):
     def get_application_filter(self) -> Q:
         return Q(openindividuallicenceapplication__isnull=False)
 
-    def extra_fields(self, ia: ImportApplication) -> dict[str, Any]:
+    def extra_fields(self, ia: dict) -> dict[str, Any]:
         constabulary_email_times = utils.get_constabulary_email_times(ia)
         return {
             "constabularies": ", ".join(ia["constabularies_list"]),
@@ -1132,12 +1140,10 @@ class SILFirearmsLicenceInterface(BaseFirearmsLicenceInterface):
     def get_application_filter(self) -> Q:
         return Q(silapplication__isnull=False)
 
-    def extra_fields(self, ia: ImportApplication) -> dict[str, Any]:
+    def extra_fields(self, ia: dict) -> dict[str, Any]:
         constabulary_email_times = utils.get_constabulary_email_times(ia)
 
         descriptions = []
-        section_suffix_dict = dict(_get_sil_section_labels())
-
         for (
             goods_section,
             sections,
@@ -1149,9 +1155,8 @@ class SILFirearmsLicenceInterface(BaseFirearmsLicenceInterface):
             ("goods_section582_others", ia["section_other"]),
             ("goods_section582_obsoletes", ia["section_obsolete"]),
         ]:
-            suffix = section_suffix_dict[goods_section]
             items = get_fa_sil_goods_item(
-                goods_section, [GoodsSectionSerializer(**r) for r in sections], suffix
+                goods_section, (GoodsSectionSerializer(**r) for r in sections)
             )
             descriptions.extend([f"{quantity} x {desc}" for desc, quantity in items])
 
@@ -1214,7 +1219,7 @@ class ActiveUserInterface(ReportInterface):
             .order_by("pk")
         )
 
-    def serialize_row(self, user: User) -> UserSerializer:
+    def serialize_row(self, user: dict) -> UserSerializer:
         return self.ReportSerializer(
             first_name=user["first_name"],
             last_name=user["last_name"],

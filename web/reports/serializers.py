@@ -222,6 +222,7 @@ class GoodsSectionSerializer(pydantic.BaseModel):
     quantity: int | None
     unlimited_quantity: bool = False
     obsolete_calibre: str | None = None
+    clause: str | None = None
 
 
 class UserSerializer(BaseSerializer):
