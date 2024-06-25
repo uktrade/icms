@@ -245,7 +245,7 @@ class UserReactivateFormView(PermissionRequiredMixin, FormView):
         ctx = UserManagementContext(user)
         email_template = Template.objects.get(template_code=self.email_template_code)
         return initial | {
-            "subject": replace_template_values(email_template.template_name, ctx),
+            "subject": replace_template_values(email_template.template_title, ctx),
             "body": replace_template_values(email_template.template_content, ctx),
         }
 

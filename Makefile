@@ -182,16 +182,13 @@ end_to_end_clear_session: ## Clears the session cookies stored after running end
 	rm -f exporter_user.json && \
 	rm -f ilb_admin.json
 
-end_to_end_test: ## Run end to end tests in a container
-	make end_to_end_clear_session && \
+end_to_end_test: end_to_end_clear_session ## Run end to end tests in a container
 	docker-compose run -it --rm playwright-runner pytest -c playwright/pytest.ini  web/end_to_end/ --numprocesses=auto ${args}
 
-end_to_end_test_firearm_chief: ## Ran to send applications to icms-hmrc
-	make end_to_end_clear_session && \
+end_to_end_test_firearm_chief: end_to_end_clear_session ## Run send applications end to end tests to icms-hmrc
 	docker-compose run -it --rm -e CHIEF_END_TO_END_TEST=1 playwright-runner pytest -c playwright/pytest.ini web/end_to_end/ -k test_can_create_fa_ --numprocesses 3 ${args}
 
-end_to_end_test_local: ## Run end to end tests locally
-	make end_to_end_clear_session && \
+end_to_end_test_local: end_to_end_clear_session ## Run end to end tests locally
 	.venv/bin/python -m pytest -c playwright/pytest.ini web/end_to_end/ ${args}
 
 create_end_to_end_caseworker: ## Create an end to end test using codegen for the caseworker site

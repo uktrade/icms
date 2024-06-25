@@ -331,6 +331,9 @@ class TestCloseAccessRequest(AuthTestCase):
                 "reason": "",
                 "request_type": "Importer",
                 "icms_url": get_importer_site_domain(),
+                "is_agent": "no",
+                "has_been_refused": "no",
+                "service_name": "apply for an import licence",
             },
         )
 
@@ -358,6 +361,9 @@ class TestCloseAccessRequest(AuthTestCase):
                 "reason": "Reason: test refuse",
                 "request_type": "Importer",
                 "icms_url": get_importer_site_domain(),
+                "is_agent": "no",
+                "has_been_refused": "yes",
+                "service_name": "apply for an import licence",
             },
         )
 
@@ -390,6 +396,9 @@ class TestCloseAccessRequest(AuthTestCase):
                 "reason": "",
                 "request_type": "Exporter",
                 "icms_url": get_exporter_site_domain(),
+                "is_agent": "no",
+                "has_been_refused": "no",
+                "service_name": "apply for an export certificate",
             },
         )
 
@@ -417,6 +426,9 @@ class TestCloseAccessRequest(AuthTestCase):
                 "reason": "Reason: test refuse",
                 "request_type": "Exporter",
                 "icms_url": get_exporter_site_domain(),
+                "is_agent": "no",
+                "has_been_refused": "yes",
+                "service_name": "apply for an export certificate",
             },
         )
 

@@ -15,12 +15,14 @@ from web.mail.types import ImporterDetails
 from web.mail.url_helpers import (
     get_accept_org_invite_url,
     get_account_recovery_url,
+    get_case_manage_view_url,
     get_case_view_url,
     get_dfl_application_otd_url,
     get_exporter_access_request_url,
     get_importer_access_request_url,
     get_mailshot_detail_view_url,
     get_maintain_importers_view_url,
+    get_update_request_view_url,
     get_validate_digital_signatures_url,
 )
 from web.models import (
@@ -102,6 +104,9 @@ class TestEmails(AuthTestCase):
             "reason": "",
             "request_type": "Importer",
             "icms_url": get_importer_site_domain(),
+            "is_agent": "yes",
+            "has_been_refused": "no",
+            "service_name": "apply for an import licence",
         }
         emails.send_access_request_closed_email(importer_access_request)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -122,6 +127,9 @@ class TestEmails(AuthTestCase):
             "reason": "",
             "request_type": "Exporter",
             "icms_url": get_exporter_site_domain(),
+            "is_agent": "no",
+            "has_been_refused": "yes",
+            "service_name": "apply for an export certificate",
         }
         emails.send_access_request_closed_email(exporter_access_request)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -933,8 +941,8 @@ class TestEmails(AuthTestCase):
         expected_personalisation = default_personalisation() | {
             "reference": completed_dfl_app.reference,
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
-            "application_url": get_case_view_url(completed_dfl_app, get_importer_site_domain()),
-            "icms_url": get_importer_site_domain(),
+            "application_url": get_case_manage_view_url(completed_dfl_app),
+            "icms_url": get_caseworker_site_domain(),
         }
         emails.send_application_update_response_email(completed_dfl_app)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -957,6 +965,9 @@ class TestEmails(AuthTestCase):
             "icms_url": get_importer_site_domain(),
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
             "application_url": get_case_view_url(wood_app_submitted, get_importer_site_domain()),
+            "application_update_url": get_update_request_view_url(
+                wood_app_submitted, update_request, get_importer_site_domain()
+            ),
         }
         emails.send_application_update_email(update_request)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
@@ -1218,6 +1229,7 @@ Firearms references(s): 423,476,677\r\n"""
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
             "check_code": str(link.check_code),
             "documents_url": get_dfl_application_otd_url(link),
+            "constabulary_name": "Derbyshire",
         }
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(

@@ -1368,28 +1368,44 @@ def add_user_management_email_templates():
             dt.datetime.strptime("18-APR-2024 08:50:23", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
-        template_name="[[PLATFORM]] account deactivated",
+        template_title="Your [[PLATFORM]] account has been deactivated",
+        template_name="User account deactivated",
         template_code=EmailTypes.DEACTIVATE_USER_EMAIL,
         template_type="EMAIL_TEMPLATE",
         application_domain="UM",
-        template_content="""Your [[PLATFORM]] account has been deactivated.
+        template_content="""Dear [[FIRST_NAME]],
 
-Contact [[CASE_OFFICER_EMAIL]] if you have any questions.""",
+Your [[PLATFORM]] account has been deactivated.
+
+Contact [[CASE_OFFICER_EMAIL]] if you have any questions.
+
+Yours sincerely
+
+Import Licensing Branch
+""",
     )
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             dt.datetime.strptime("18-APR-2024 08:50:23", DATETIME_FORMAT), is_dst=None
         ),
         is_active=True,
-        template_name="[[PLATFORM]] account reactivated",
+        template_title="Your [[PLATFORM]] account has been reactivated",
+        template_name="User account reactivated",
         template_code=EmailTypes.REACTIVATE_USER_EMAIL,
         template_type="EMAIL_TEMPLATE",
         application_domain="UM",
-        template_content="""Welcome back to [[PLATFORM]].
+        template_content="""Dear [[FIRST_NAME]],
+
+Welcome back to [[PLATFORM]].
 
 Your account has been reactivated.
 
 You can now sign in to your account here [[PLATFORM_LINK]]
 
-Contact [[CASE_OFFICER_EMAIL]] if you have any questions.""",
+Contact [[CASE_OFFICER_EMAIL]] if you have any questions.
+
+Yours sincerely,
+
+Import Licencing Branch
+""",
     )

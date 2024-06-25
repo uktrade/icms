@@ -17,6 +17,7 @@ from web.models import (
     Importer,
     ImporterContactInvite,
     Mailshot,
+    UpdateRequest,
 )
 from web.sites import (
     get_caseworker_site_domain,
@@ -39,6 +40,26 @@ def get_case_view_url(application: ImpOrExp, domain: str) -> str:
     else:
         url_kwargs["case_type"] = "export"
     return urljoin(domain, reverse("case:view", kwargs=url_kwargs))
+
+
+def get_case_manage_view_url(application: ImpOrExp) -> str:
+    url_kwargs = {"application_pk": application.pk}
+    if application.is_import_application():
+        url_kwargs["case_type"] = "import"
+    else:
+        url_kwargs["case_type"] = "export"
+    return urljoin(get_caseworker_site_domain(), reverse("case:manage", kwargs=url_kwargs))
+
+
+def get_update_request_view_url(
+    application: ImpOrExp, update_request: UpdateRequest, domain: str
+) -> str:
+    url_kwargs = {"application_pk": application.pk, "update_request_pk": update_request.pk}
+    if application.is_import_application():
+        url_kwargs["case_type"] = "import"
+    else:
+        url_kwargs["case_type"] = "export"
+    return urljoin(domain, reverse("case:start-update-request", kwargs=url_kwargs))
 
 
 def get_importer_view_url(importer: Importer, full_url: bool = False) -> str:
