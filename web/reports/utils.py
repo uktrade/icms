@@ -2,10 +2,8 @@ import datetime as dt
 
 from django.db.models import QuerySet
 
-from web.domains.case._import.fa.types import FaImportApplication
 from web.models import (
     ExportApplicationType,
-    ImportApplication,
     ImportApplicationType,
     ProductLegislation,
     Report,
@@ -23,7 +21,7 @@ from .serializers import (
 )
 
 
-def get_licence_details(ia: ImportApplication) -> LicenceSerializer:
+def get_licence_details(ia: dict) -> LicenceSerializer:
     if ia["latest_licence_cdr_data"]:
         licence = LicenceSerializer(
             start_date=ia["latest_licence_start_date"],
@@ -86,7 +84,7 @@ def format_time_delta(from_datetime: dt.datetime, to_datetime: dt.datetime) -> s
     return f"{time_delta.days}d {hours}h {minutes}m"
 
 
-def get_constabulary_email_times(ia: FaImportApplication) -> ConstabularyEmailTimesSerializer:
+def get_constabulary_email_times(ia: dict) -> ConstabularyEmailTimesSerializer:
     return ConstabularyEmailTimesSerializer(
         first_email_sent=ia["constabulary_email_first_email_sent"],
         last_email_closed=ia["constabulary_email_last_email_closed"],
