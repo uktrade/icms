@@ -4,7 +4,7 @@ from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.flow import errors
-from web.models import Task
+from web.models import Task, UpdateRequest
 
 TT = Task.TaskType
 ST = ImpExpStatus
@@ -20,6 +20,40 @@ def test_application_in_progress(fa_sil):
 
     with pytest.raises(errors.TaskError):
         _setup_application(fa_sil, ST.IN_PROGRESS, TT.REJECTED)
+        case_progress.application_in_progress(fa_sil)
+
+
+def test_application_in_progress_update_request(fa_sil, ilb_admin_user):
+    # Test edge case where a case officer creates an update request
+    _setup_application(fa_sil, ST.PROCESSING, TT.PREPARE)
+    fa_sil.case_owner = ilb_admin_user
+    fa_sil.save()
+
+    fa_sil.update_requests.create(status=UpdateRequest.Status.OPEN)
+    case_progress.application_in_progress(fa_sil)
+
+
+def test_application_in_progress_update_request_no_case_owner(fa_sil, ilb_admin_user):
+    # edge case where a case officer creates an update request and then releases ownership of
+    # the case.
+    _setup_application(fa_sil, ST.SUBMITTED, TT.PREPARE)
+    fa_sil.case_owner = None
+    fa_sil.save()
+
+    fa_sil.update_requests.create(status=UpdateRequest.Status.OPEN)
+    case_progress.application_in_progress(fa_sil)
+
+    # if the case officer is set it is incorrect.
+    with pytest.raises(errors.ProcessStateError):
+        fa_sil.case_owner = ilb_admin_user
+        fa_sil.save()
+        case_progress.application_in_progress(fa_sil)
+
+    # If submitted without an update request it is incorrect
+    with pytest.raises(errors.ProcessStateError):
+        fa_sil.case_owner = None
+        fa_sil.save()
+        fa_sil.current_update_requests().delete()
         case_progress.application_in_progress(fa_sil)
 
 

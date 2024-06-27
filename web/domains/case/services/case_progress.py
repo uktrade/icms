@@ -46,7 +46,19 @@ def application_in_progress(application: ImpOrExp) -> None:
     expected_status = [ST.IN_PROGRESS, ST.PROCESSING, ST.VARIATION_REQUESTED]
     expected_task = TT.PREPARE
 
-    check_expected_status(application, expected_status)
+    try:
+        check_expected_status(application, expected_status)
+    except errors.ProcessStateError as e:
+        # Special case where a case officer creates an update request and then releases ownership.
+        # Release ownership will change the status to SUBMITTED and therefore the
+        # check_expected_status call will raise an exception.
+        if not (
+            application.status == ST.SUBMITTED
+            and not application.case_owner
+            and application.current_update_requests().exists()
+        ):
+            raise e
+
     check_expected_task(application, expected_task)
 
 
