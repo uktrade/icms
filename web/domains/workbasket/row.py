@@ -33,48 +33,33 @@ def get_workbasket_row_func(process_type: str) -> GetWorkbasketRow:
         #
         # Import Applications
         #
-        case ProcessTypes.DEROGATIONS:
-            return _get_case_wb_row
-        case ProcessTypes.FA_DFL:
-            return _get_case_wb_row
-        case ProcessTypes.FA_OIL:
-            return _get_case_wb_row
-        case ProcessTypes.FA_SIL:
-            return _get_case_wb_row
-        case ProcessTypes.IRON_STEEL:
-            return _get_case_wb_row
-        case ProcessTypes.OPT:
-            return _get_case_wb_row
-        case ProcessTypes.SANCTIONS:
-            return _get_case_wb_row
-        case ProcessTypes.SPS:
-            return _get_case_wb_row
-        case ProcessTypes.TEXTILES:
-            return _get_case_wb_row
-        case ProcessTypes.WOOD:
+        case (
+            ProcessTypes.DEROGATIONS
+            | ProcessTypes.FA_DFL
+            | ProcessTypes.FA_OIL
+            | ProcessTypes.FA_SIL
+            | ProcessTypes.IRON_STEEL
+            | ProcessTypes.OPT
+            | ProcessTypes.SANCTIONS
+            | ProcessTypes.SPS
+            | ProcessTypes.TEXTILES
+            | ProcessTypes.WOOD
+        ):
             return _get_case_wb_row
         #
         # Export Applications
         #
-        case ProcessTypes.COM:
-            return _get_case_wb_row
-        case ProcessTypes.CFS:
-            return _get_case_wb_row
-        case ProcessTypes.GMP:
+        case ProcessTypes.COM | ProcessTypes.CFS | ProcessTypes.GMP:
             return _get_case_wb_row
         #
         # Access requests
         #
-        case ProcessTypes.IAR:
-            return _get_access_wb_row
-        case ProcessTypes.EAR:
+        case ProcessTypes.IAR | ProcessTypes.EAR:
             return _get_access_wb_row
         #
         # Approval requests
         #
-        case ProcessTypes.ExpApprovalReq:
-            return _get_approval_wb_row
-        case ProcessTypes.ImpApprovalReq:
+        case ProcessTypes.ExpApprovalReq | ProcessTypes.ImpApprovalReq:
             return _get_approval_wb_row
         #
         # Mailshots

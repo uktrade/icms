@@ -4,12 +4,27 @@ from django.conf import settings
 from django.urls import reverse
 
 from web.domains.case.shared import ImpExpStatus
+from web.domains.case.types import ImpOrExp
 from web.domains.workbasket.base import WorkbasketAction
 from web.models import Task
 
 from .base import Action, ActionT
 
 """Actions that only apply to ilb admin users are added here"""
+
+
+def get_app_processing_label(application: ImpOrExp, active_tasks: list[str]) -> str:
+    """Returns the app processing label used in several actions."""
+
+    section_label = "Application Processing"
+
+    if Task.TaskType.PREPARE in active_tasks:
+        section_label += ", Out for Update"
+
+    if application.annotation_open_fir_pks:
+        section_label += ", Further Information Requested"
+
+    return section_label
 
 
 class TakeOwnershipAction(Action):
@@ -26,17 +41,12 @@ class TakeOwnershipAction(Action):
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
-
-        section_label = "Application Processing"
-        if Task.TaskType.PREPARE in self.active_tasks:
-            section_label += "\nOut for Update"
-
         return [
             WorkbasketAction(
                 is_post=True,
                 name="Take Ownership",
                 url=reverse("case:take-ownership", kwargs=kwargs),
-                section_label=section_label,
+                section_label=get_app_processing_label(self.application, self.active_tasks),
             )
         ]
 
@@ -44,25 +54,21 @@ class TakeOwnershipAction(Action):
 class ViewApplicationCaseAction(Action):
     """Case officer "View Case" link"""
 
-    # Used for sorting the view link in to a section (this is the default)
-    section_label = "Application Processing"
+    section_label: str
 
     def show_link(self) -> bool:
         show_link = False
 
+        # Used for sorting the view link in to a section (this is the default)
+        self.section_label = get_app_processing_label(self.application, self.active_tasks)
+
         # A freshly submitted application (no case_owner yet)
         if self.status == ImpExpStatus.SUBMITTED and not self.application.case_owner:
             show_link = True
-            if Task.TaskType.PREPARE in self.active_tasks:
-                self.section_label += "\nOut for Update"
 
         elif self.status == ImpExpStatus.PROCESSING:
-            # An application being processed by another ilb admin
-            if not self.is_case_owner():
-                show_link = True
-
             # An authorised application
-            elif Task.TaskType.AUTHORISE in self.active_tasks:
+            if Task.TaskType.AUTHORISE in self.active_tasks:
                 show_link = True
                 self.section_label = "Authorise Documents"
 
@@ -180,14 +186,7 @@ class ManageApplicationAction(Action):
 
     def get_workbasket_actions(self) -> list[WorkbasketAction]:
         kwargs = self.get_kwargs()
-
-        section_label = "Application Processing"
-
-        if Task.TaskType.PREPARE in self.active_tasks:
-            section_label += ", Out for Update"
-
-        if self.application.annotation_open_fir_pks:
-            section_label += ", Further Information Requested"
+        section_label = get_app_processing_label(self.application, self.active_tasks)
 
         return [
             WorkbasketAction(
