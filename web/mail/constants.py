@@ -75,7 +75,7 @@ class EmailTypes(TypedTextChoices):
         "Application Variation Request Refused",
     )
     CASE_EMAIL = ("CASE_EMAIL", "Case Email")
-
+    CASE_EMAIL_WITH_DOCUMENTS = ("CASE_EMAIL_WITH_DOCUMENTS", "Case Email With Documents")
     APPLICATION_FURTHER_INFORMATION_REQUEST = (
         "APPLICATION_FURTHER_INFORMATION_REQUEST",
         "Application Further Information Request",

@@ -6,7 +6,7 @@ from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
 from django.urls import reverse
 
-from web.domains.case.models import ApplicationBase, DocumentPackBase
+from web.domains.case.models import ApplicationBase, DocumentPackBase, DownloadLinkBase
 from web.flow.models import ProcessTypes
 from web.models.shared import EnumJsonEncoder, YesNoNAChoices
 from web.types import TypedTextChoices
@@ -463,25 +463,12 @@ class ChiefRequestResponseErrors(models.Model):
     error_msg = models.CharField(null=True, max_length=255)
 
 
-class ImportApplicationDownloadLink(models.Model):
+class ConstabularyLicenceDownloadLink(DownloadLinkBase):
     """Model used to send links to constabularies to download case documents."""
 
-    FAILURE_LIMIT = 3
-
-    # Used in email link to load record.
-    code = models.UUIDField(default=uuid.uuid4, editable=False)
-
-    # Found in email to prove the user has access to the mailbox
-    check_code = models.CharField(max_length=8, editable=False)
-    email = models.EmailField(max_length=254)
     constabulary = models.ForeignKey("web.Constabulary", on_delete=models.PROTECT, related_name="+")
 
     # Used to retrieve correct licence later
     licence = models.ForeignKey(
         "web.ImportApplicationLicence", related_name="+", on_delete=models.PROTECT
     )
-
-    failure_count = models.IntegerField(default=0)
-    expired = models.BooleanField(default=False)
-
-    sent_at_datetime = models.DateTimeField(auto_now_add=True)

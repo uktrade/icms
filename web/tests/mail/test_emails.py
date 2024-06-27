@@ -25,12 +25,12 @@ from web.mail.url_helpers import (
 )
 from web.models import (
     Constabulary,
+    ConstabularyLicenceDownloadLink,
     EmailTemplate,
     ExporterAccessRequest,
     ExporterContactInvite,
     FirearmsAuthority,
     FurtherInformationRequest,
-    ImportApplicationDownloadLink,
     ImporterAccessRequest,
     ImporterContactInvite,
     Mailshot,
@@ -1209,7 +1209,7 @@ Firearms references(s): 423,476,677\r\n"""
         exp_template_id = get_gov_notify_template_id(EmailTypes.CONSTABULARY_DEACTIVATED_FIREARMS)
         emails.send_constabulary_deactivated_firearms_email(completed_dfl_app)
         active_pack = document_pack.pack_active_get(completed_dfl_app)
-        link = ImportApplicationDownloadLink.objects.get(licence=active_pack)
+        link = ConstabularyLicenceDownloadLink.objects.get(licence=active_pack)
 
         expected_import_personalisation = default_personalisation() | {
             "icms_url": get_caseworker_site_domain(),
