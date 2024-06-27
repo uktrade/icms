@@ -129,7 +129,11 @@ class ClearApplicationAction(Action):
 
 class RespondToFurtherInformationRequestAction(Action):
     def show_link(self) -> bool:
-        correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+        correct_status = self.status in [
+            ImpExpStatus.SUBMITTED,
+            ImpExpStatus.PROCESSING,
+            ImpExpStatus.VARIATION_REQUESTED,
+        ]
 
         return (
             correct_status
@@ -155,7 +159,11 @@ class RespondToUpdateRequestAction(Action):
     def show_link(self) -> bool:
         show_link = False
 
-        correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+        correct_status = self.status in [
+            ImpExpStatus.SUBMITTED,
+            ImpExpStatus.PROCESSING,
+            ImpExpStatus.VARIATION_REQUESTED,
+        ]
         correct_task = Task.TaskType.PREPARE in self.active_tasks
         can_edit = self.app_checker.can_edit()
 
@@ -186,7 +194,11 @@ class ResumeUpdateRequestAction(Action):
     def show_link(self) -> bool:
         show_link = False
 
-        correct_status = self.status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+        correct_status = self.status in [
+            ImpExpStatus.SUBMITTED,
+            ImpExpStatus.PROCESSING,
+            ImpExpStatus.VARIATION_REQUESTED,
+        ]
         correct_task = Task.TaskType.PREPARE in self.active_tasks
         can_edit = self.app_checker.can_edit()
 

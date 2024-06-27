@@ -202,7 +202,8 @@ def start_update_request(
         )
         check_can_edit_application(request.user, application)
         case_progress.check_expected_status(
-            application, [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+            application,
+            [ImpExpStatus.SUBMITTED, ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED],
         )
 
         update_requests = application.update_requests.filter(is_active=True)
