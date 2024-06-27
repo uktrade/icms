@@ -28,6 +28,7 @@ class TestAdminActions:
 
         # Set the minimum required fields.
         self.app = WoodQuotaApplication(pk=1, importer=importer)
+        self.app.annotation_open_fir_pks = []
 
     def test_view_case_action_is_shown(self):
         """A freshly submitted application (no case_owner yet)"""
@@ -44,7 +45,7 @@ class TestAdminActions:
         wb_action = action.get_workbasket_actions()[0]
         assert wb_action.name == "View"
 
-    def test_view_case_action_is_shown_app_processing_another_admin(self):
+    def test_view_case_action_is_not_shown_app_processing_another_admin(self):
         """An application being processed by another ilb admin"""
         # setup
         self.app.status = ST.PROCESSING
@@ -54,10 +55,7 @@ class TestAdminActions:
         # test
         config = ActionConfig(user=self.user, case_type="import", application=self.app)
         action = ViewApplicationCaseAction.from_config(config)
-        assert action.show_link()
-
-        wb_action = action.get_workbasket_actions()[0]
-        assert wb_action.name == "View"
+        assert not action.show_link()
 
     def test_view_case_action_is_shown_when_authorised(self):
         # setup
@@ -215,8 +213,16 @@ class TestAdminActions:
 
         # Test Out for update.
         self.app.active_tasks.append(TT.PREPARE)
-        action = action.get_workbasket_actions()[0]
-        assert action.section_label == "Application Processing\nOut for Update"
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.section_label == "Application Processing, Out for Update"
+
+        # Test FIR
+        self.app.annotation_open_fir_pks = [1]
+        self.app.active_tasks.append(TT.PREPARE)
+        wb_action = action.get_workbasket_actions()[0]
+        assert wb_action.section_label == (
+            "Application Processing, Out for Update, Further Information Requested"
+        )
 
     def test_take_ownership_action_not_shown(self):
         # setup (case owner is not set)
@@ -490,6 +496,7 @@ class TestAdminActions:
         case_type = "import"
         application = WoodQuotaApplication(pk=1, status=ST.VARIATION_REQUESTED, importer=importer)
         application.active_tasks = []  # This is to fake the active_tasks annotation
+        application.annotation_open_fir_pks = []
 
         sections = get_workbasket_admin_sections(user, case_type, application)
         names = []
