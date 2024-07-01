@@ -197,7 +197,7 @@ if settings.DEBUG:
         MenuLink(label="L10N Test Harness", view="harness:l10n", target="_blank"),
     ]
 
-if settings.APP_ENV in ("local", "dev", "staging"):
+if settings.APP_ENV in ("local", "dev", "uat", "staging"):
     extra_menu_items.extend(
         [MenuLink(label="One Login Test Users", view="one-login-test-accounts-create")]
     )
