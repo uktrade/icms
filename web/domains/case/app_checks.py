@@ -488,7 +488,7 @@ def get_org_update_request_errors(application: ImpOrExp, case_type: str) -> Page
 
     if pending_update.exists() or incomplete_update.exists():
         update_request_errors.add(
-            FieldError(field_name="Summary of Changes", messages=["You must enter this item."])
+            FieldError(field_name="Response to request", messages=["You must enter this item."])
         )
 
     return update_request_errors

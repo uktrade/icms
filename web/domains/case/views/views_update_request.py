@@ -221,7 +221,13 @@ def start_update_request(
             application.save()
 
             return redirect(
-                reverse(application.get_edit_view_name(), kwargs={"application_pk": application_pk})
+                reverse(
+                    "case:respond-update-request",
+                    kwargs={
+                        "case_type": case_type,
+                        "application_pk": application_pk,
+                    },
+                )
             )
 
         context = {
@@ -279,7 +285,7 @@ def respond_update_request(
 
                 return redirect(
                     reverse(
-                        application.get_submit_view_name(),
+                        application.get_edit_view_name(),
                         kwargs={"application_pk": application_pk},
                     )
                 )

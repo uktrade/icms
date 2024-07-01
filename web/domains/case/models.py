@@ -84,9 +84,9 @@ class UpdateRequest(models.Model):
     request_subject = models.CharField(max_length=100, null=True)
     request_detail = models.TextField(null=True)
     response_detail = models.TextField(
-        verbose_name="Summary of Changes",
+        verbose_name="Response to Request",
         null=True,
-        help_text="Please enter a summary of the updates made",
+        help_text="Please either confirm acceptance of the updates requested or your reason for no updates being made",
     )
     request_datetime = models.DateTimeField(null=True)
 

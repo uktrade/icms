@@ -104,7 +104,7 @@ def test_respond_update_request(
         follow=True,
     )
     assert resp.status_code == 200
-    assert resp.resolver_match.view_name == "import:wood:submit-quota"
+    assert resp.resolver_match.view_name == "import:wood:edit"
     assert resp.resolver_match.kwargs["application_pk"] == wood_app_submitted.pk
 
     update_request.refresh_from_db()

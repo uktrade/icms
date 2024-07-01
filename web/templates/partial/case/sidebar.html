@@ -1,6 +1,9 @@
 {# sidebar used by importer/exporter to create/edit/submit applications #}
 
 <ul class="menu-out">
+  {% if process.current_update_requests() %}
+    {{ icms_link(request, icms_url('case:respond-update-request', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'Application Updates') }}
+  {% endif %}
   {{ icms_link(request, icms_url(process.get_edit_view_name(), kwargs={'application_pk': process.pk}), process.get_application_details_link()) }}
 
   {% if process.process_type == "OpenIndividualLicenceApplication" %}
@@ -56,10 +59,6 @@
                                      kwargs={'application_pk': process.pk, 'fq_type': 'fq_subcontract_production'}),
                    'Subcontract production') }}
     </ul>
-  {% endif %}
-
-  {% if process.current_update_requests() %}
-    {{ icms_link(request, icms_url('case:respond-update-request', kwargs={'application_pk': process.pk, 'case_type': case_type}), 'Application Updates') }}
   {% endif %}
   {{ icms_link(request, icms_url(process.get_submit_view_name(), kwargs={'application_pk': process.pk}), 'Submit') }}
 </ul>
