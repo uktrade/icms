@@ -192,7 +192,7 @@ MAIL_TASK_RETRY_JITTER = env.mail_task_retry_jitter
 MAIL_TASK_MAX_RETRIES = env.mail_task_max_retries
 
 # Same logic here: icms/web/mail/decorators.py
-if APP_ENV in ("local", "dev", "staging"):
+if APP_ENV in ("local", "dev", "uat", "staging"):
     SEND_ALL_EMAILS_TO = env.send_all_emails_to
 else:
     SEND_ALL_EMAILS_TO = []

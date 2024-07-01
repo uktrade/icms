@@ -86,7 +86,7 @@ urlpatterns = [
 ]
 
 
-if settings.APP_ENV in ("local", "dev", "staging"):
+if settings.APP_ENV in ("local", "dev", "uat", "staging"):
     urlpatterns.extend(
         [
             # One Login Test User urls

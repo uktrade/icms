@@ -11,7 +11,7 @@ def override_recipients(f):
 
     @wraps(f)
     def wrapper(*args, **kwargs):
-        if settings.APP_ENV in ("local", "dev", "staging") and settings.SEND_ALL_EMAILS_TO:
+        if settings.APP_ENV in ("local", "dev", "uat", "staging") and settings.SEND_ALL_EMAILS_TO:
             return settings.SEND_ALL_EMAILS_TO
         return f(*args, **kwargs)
 

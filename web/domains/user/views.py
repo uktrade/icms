@@ -308,7 +308,7 @@ class OneLoginTestAccountsCreateFormView(
 
     def test_func(self) -> bool:
         # Only enabled in the following environments
-        return settings.APP_ENV in ("local", "dev", "staging")
+        return settings.APP_ENV in ("local", "dev", "uat", "staging")
 
     def form_valid(self, form: OneLoginTestAccountsCreateForm) -> HttpResponseRedirect:
         cd = form.cleaned_data
@@ -364,7 +364,7 @@ class OneLoginTestAccountsDetailView(
 
     def test_func(self) -> bool:
         # Only enabled in the following environments
-        return settings.APP_ENV in ("local", "dev", "staging")
+        return settings.APP_ENV in ("local", "dev", "uat", "staging")
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
