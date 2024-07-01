@@ -521,3 +521,6 @@ GTM_CONTAINER_IDS = {
     "Apply for an export certificate": env.gtm_exporter_container_id,
     "Apply for an import licence": env.gtm_importer_container_id,
 }
+
+# Feature flags
+FEATURE_FLAG_V2_EMAIL_CONTENT = env.feature_flag_v2_email_content

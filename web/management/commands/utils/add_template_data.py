@@ -909,6 +909,329 @@ EU transfers falling within the provisions of Directives 91/477/EEC and 93/15/EE
 
 
 def add_email_templates():
+    if settings.FEATURE_FLAG_V2_EMAIL_CONTENT:
+        _add_v2_email_templates()
+    else:
+        _add_v1_email_templates()
+
+
+def _add_v1_email_templates():
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("22-FEB-2019 12:50:10", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="Stop Case Email",
+        template_code="STOP_CASE",
+        template_type="EMAIL_TEMPLATE",
+        application_domain="IMA",
+        template_title="ICMS Case Reference [[CASE_REFERENCE]] Stopped",
+        template_content="Processing on ICMS Case Reference [[CASE_REFERENCE]] has been stopped. Please contact ILB if you believe this is in error or require further information.",
+    )
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("19-MAR-2019 11:01:12", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="Further Information Request email",
+        template_code="IMA_RFI",
+        template_type="EMAIL_TEMPLATE",
+        application_domain="IMA",
+        template_title="[[CASE_REFERENCE]] Further Information Request",
+        template_content=f"""Dear [[IMPORTER_NAME]],
+
+To enable ILB to process your application, I am writing to ask you for [FURTHER INFORMATION / CLARIFICATION] regarding [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT]
+
+You must respond to this information request via the information request  link now assigned to the case. Your application will not be processed further until you respond to this request.
+
+The application will be closed if the requested response is not received within 5 working days of our receipt of the original application.
+
+Please do not hesitate to contact { settings.ILB_CONTACT_EMAIL } if you have any queries regarding your application.  Please quote the following reference number in any correspondence: [[CASE_REFERENCE]].
+
+Yours sincerely,
+
+[[CASE_OFFICER_NAME]]""",
+    )
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("19-MAR-2019 11:00:27", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="Application Update email",
+        template_code="IMA_APP_UPDATE",
+        template_type="EMAIL_TEMPLATE",
+        application_domain="IMA",
+        template_title="[[CASE_REFERENCE]] Request for Application Update",
+        template_content=f"""Dear [[IMPORTER_NAME]]
+
+To enable ILB to process your application, I am writing to ask you for application updates regarding [DESCRIBE WHAT UPDATES ARE NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT]
+
+You must make the requested amendments via the update  link now assigned to the case. Your application will not be processed further until you submit the updates.
+
+The application will be closed if the requested updates are not received within 5 working days of our receipt of the original application.
+
+Please do not hesitate to contact { settings.ILB_GSI_CONTACT_EMAIL } if you have any queries regarding your application.  Please quote the following reference number in any correspondence: [[CASE_REFERENCE]].
+
+This application will be closed if all requested updates are not completed within 5 working days of our receipt of the original application.
+
+Yours sincerely,
+
+[[CASE_OFFICER_NAME]]""",
+    )
+    # TODO: template extracted from the test system not from the db as missing
+    # search IMA_SANCTION_EMAIL to see usage
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("22-FEB-2019 11:06:59", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="Sanction email",
+        template_code="IMA_SANCTION_EMAIL",
+        template_type="EMAIL_TEMPLATE",
+        application_domain="IMA",
+        template_title="Import Sanctions and Adhoc Licence",
+        template_content="""
+Dear Colleagues
+
+We have received an import licence application from:
+[[IMPORTER_NAME]]
+[[IMPORTER_ADDRESS]]
+
+The application is for the following:
+
+[[GOODS_DESCRIPTION]]
+
+Thanks and best regards
+
+[[CASE_OFFICER_NAME]]
+[[CASE_OFFICER_EMAIL]]
+[[CASE_OFFICER_PHONE]]
+""",
+    )
+
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("22-FEB-2019 11:06:59", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="Firearms Constabulary email",
+        template_code="IMA_CONSTAB_EMAIL",
+        template_type="EMAIL_TEMPLATE",
+        application_domain="IMA",
+        template_title="Import Licence RFD Enquiry",
+        template_content="""Dear Colleagues
+
+[[CASE_REFERENCE]]
+
+We have received an import licence application from:
+
+[[IMPORTER_NAME]]
+[[IMPORTER_ADDRESS]]
+
+The application is for:
+[[GOODS_DESCRIPTION]]
+
+Grateful if the Police can advise on the validity of the RFD/Firearms/Shotgun Certificate, and whether there are any objections to the issuing of the import licence.
+Grateful if the Police can validate the RFD / and Section 1 and 2 authority/authorities on the applicants ICMS account. (delete as appropriate).
+Grateful if Home Office can confirm use of obsolete calibre or any other Section 58(2) exemption and if there are any reasons why an import licence should not be issued. (delete if not applicable)
+Grateful if the Home Office can validate the Section 5 authority on the applicants ICMS account. (delete if not Section 5)
+Grateful if you can check the attached deactivation certificate and advise as to whether or not it is valid and matches your records. (DELETE IF NOT DEACTIVATED)
+
+Please note that the import licence will not be issued until we have had your response/responses to this e-mail.
+
+Thanks and best regards
+
+[[CASE_OFFICER_NAME]]
+[[CASE_OFFICER_EMAIL]]
+[[CASE_OFFICER_PHONE]]""",
+    )
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("22-FEB-2019 12:31:29", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="Case reopening email",
+        template_code="CASE_REOPEN",
+        template_type="EMAIL_TEMPLATE",
+        application_domain="IMA",
+        template_title="Case Reopened: [[CASE_REFERENCE]]",
+        template_content="ILB has reopened case reference [[CASE_REFERENCE]] and will resume processing on this case. Please contact ILB for further information.",
+    )
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("05-DEC-2013 17:20:07", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="Publish Mailshot Email",
+        template_code="PUBLISH_MAILSHOT",
+        template_type="EMAIL_TEMPLATE",
+        application_domain="IMA",
+        template_title="New Mailshot",
+        template_content="A new mailshot has been published and is available to view from your workbasket.",
+    )
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("05-DEC-2013 17:20:07", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="Retract Mailshot Email",
+        template_code="RETRACT_MAILSHOT",
+        template_type="EMAIL_TEMPLATE",
+        application_domain="IMA",
+        template_title="Retracted Mailshot",
+        template_content="A published mailshot has been retracted.",
+    )
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("19-MAR-2019 11:01:26", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="Further Information Request Email",
+        template_code="IAR_RFI_EMAIL",
+        template_type="EMAIL_TEMPLATE",
+        application_domain="IAR",
+        template_title="[[REQUEST_REFERENCE]] Further Information Request",
+        template_content=f"""Dear [[REQUESTER_NAME]],
+
+To enable ILB to process your application, I am writing to ask you for [FURTHER INFORMATION / CLARIFICATION] regarding [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT]
+
+You must only reply via the information request link now assigned to the request available when you log in.
+
+Please do not hesitate to contact { settings.ILB_GSI_CONTACT_EMAIL } if you have any queries regarding your application. Please quote the following reference number in any correspondence: [[REQUEST_REFERENCE]].
+
+Yours sincerely,
+
+[[CURRENT_USER_NAME]]""",
+    )
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("22-AUG-2018 15:47:36", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="HSE Enquiry Email",
+        template_code="CA_HSE_EMAIL",
+        template_type="EMAIL_TEMPLATE",
+        application_domain="CA",
+        template_title="Biocidal Product Enquiry",
+        template_content="""Dear Colleagues
+
+[[CASE_REFERENCE]]
+
+We have received a [[APPLICATION_TYPE]] application from:
+[[EXPORTER_NAME]]
+[[EXPORTER_ADDRESS]]
+[[CONTACT_EMAIL]]
+
+The application is for the following countries:
+[[CERT_COUNTRIES]]
+
+The application is for the following biocidal products:
+[[SELECTED_PRODUCTS]]
+
+Grateful for your guidance on the items listed.
+
+Thanks and best regards
+
+[[CASE_OFFICER_NAME]]
+[[CASE_OFFICER_EMAIL]]
+[[CASE_OFFICER_PHONE]]""",
+    )
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("22-AUG-2018 15:47:36", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="BEIS OPSS Enquiry Email",
+        template_code="CA_BEIS_EMAIL",
+        template_type="EMAIL_TEMPLATE",
+        application_domain="CA",
+        template_title="Good Manufacturing Practice Application Enquiry",
+        template_content="""Dear Colleagues
+
+[[CASE_REFERENCE]]
+
+We have received a [[APPLICATION_TYPE]] application from:
+[[EXPORTER_NAME]]
+[[EXPORTER_ADDRESS]]
+
+Please review and advise whether or not this branch can issue a GMP Certificate for this
+request.
+
+Manufacturer:
+[[MANUFACTURER_NAME]]
+[[MANUFACTURER_ADDRESS]]
+[[MANUFACTURER_POSTCODE]]
+
+Responsible person:
+[[RESPONSIBLE_PERSON_NAME]]
+[[RESPONSIBLE_PERSON_ADDRESS]]
+[[RESPONSIBLE_PERSON_POSTCODE]]
+
+Name of brands:
+[[BRAND_NAMES]]
+
+The application is for the following countries:
+[[CERT_COUNTRIES]]
+
+Thanks and best regards
+
+[[CASE_OFFICER_NAME]]
+[[CASE_OFFICER_EMAIL]]
+[[CASE_OFFICER_PHONE]]""",
+    )
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("19-MAR-2019 11:00:11", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="Application Update Email",
+        template_code="CA_APPLICATION_UPDATE_EMAIL",
+        template_type="EMAIL_TEMPLATE",
+        application_domain="CA",
+        template_title="[[CASE_REFERENCE]] Request for Application Update",
+        template_content=f"""Dear [[EXPORTER_NAME]]
+
+To enable ILB to process your application, I am writing to ask you for application updates regarding [DESCRIBE WHAT UPDATES ARE NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT].
+
+You must select the responsible person statement if you have placed the product on the EU market.  This only applies to cosmetics. [DELETE IF NOT APPLICABLE]
+
+You must make the requested amendments via the update  link now assigned to the case. The application will not be processed further until you submit the updates.
+
+The application will be closed if the requested updates are not received within 5 working days of our receipt of the original application.
+
+Please do not hesitate to contact { settings.ILB_GSI_CONTACT_EMAIL } if you have any queries regarding your application. Please quote the following reference number in any correspondence: [[CASE_REFERENCE]].
+
+Yours sincerely,
+
+[[CASE_OFFICER_NAME]]""",
+    )
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("19-MAR-2019 11:01:42", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="Further Information Request Email",
+        template_code="CA_RFI_EMAIL",
+        template_type="EMAIL_TEMPLATE",
+        application_domain="CA",
+        template_title="[[CASE_REFERENCE]] Further Information Request",
+        template_content=f"""Dear [[EXPORTER_NAME]],
+
+To enable ILB to process your application, I am writing to ask you for [FURTHER INFORMATION / CLARIFICATION] regarding [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT].
+
+You must respond to this information request via the information request link now assigned to the case. Your application will not be processed further until you respond to this request.
+
+The application will be closed if the requested response is not received within 5 working days of our receipt of the original application.
+
+Please do not hesitate to contact {settings.ILB_GSI_CONTACT_EMAIL} if you have any queries regarding your application. Please quote the following reference number in any correspondence: [[CASE_REFERENCE]].
+
+Yours sincerely,
+
+[[CASE_OFFICER_NAME]]""",
+    )
+
+
+def _add_v2_email_templates():
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             dt.datetime.strptime("22-FEB-2019 12:50:10", DATETIME_FORMAT), is_dst=None
@@ -1363,6 +1686,46 @@ def add_letter_fragment_templates():
 
 
 def add_user_management_email_templates():
+    if settings.FEATURE_FLAG_V2_EMAIL_CONTENT:
+        _add_v2_user_management_email_templates()
+    else:
+        _add_v1_user_management_email_templates()
+
+
+def _add_v2_user_management_email_templates():
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("18-APR-2024 08:50:23", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="[[PLATFORM]] account deactivated",
+        template_code=EmailTypes.DEACTIVATE_USER_EMAIL,
+        template_type="EMAIL_TEMPLATE",
+        application_domain="UM",
+        template_content="""Your [[PLATFORM]] account has been deactivated.
+
+Contact [[CASE_OFFICER_EMAIL]] if you have any questions.""",
+    )
+    Template.objects.get_or_create(
+        start_datetime=pytz.timezone("UTC").localize(
+            dt.datetime.strptime("18-APR-2024 08:50:23", DATETIME_FORMAT), is_dst=None
+        ),
+        is_active=True,
+        template_name="[[PLATFORM]] account reactivated",
+        template_code=EmailTypes.REACTIVATE_USER_EMAIL,
+        template_type="EMAIL_TEMPLATE",
+        application_domain="UM",
+        template_content="""Welcome back to [[PLATFORM]].
+
+Your account has been reactivated.
+
+You can now sign in to your account here [[PLATFORM_LINK]]
+
+Contact [[CASE_OFFICER_EMAIL]] if you have any questions.""",
+    )
+
+
+def _add_v1_user_management_email_templates():
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
             dt.datetime.strptime("18-APR-2024 08:50:23", DATETIME_FORMAT), is_dst=None

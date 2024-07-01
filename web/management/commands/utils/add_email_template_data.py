@@ -1,7 +1,9 @@
+from django.conf import settings
+
 from web.mail.constants import EmailTypes
 from web.models import EmailTemplate
 
-templates = [
+v1_templates = [
     (EmailTypes.ACCESS_REQUEST, "d8905fee-1f7d-48dc-bc11-aee71c130b3e"),
     (EmailTypes.ACCESS_REQUEST_CLOSED, "6cfc34cc-7e61-4f30-b73c-e7f5d5ae95ae"),  # /PS-IGNORE
     (
@@ -100,7 +102,111 @@ templates = [
 ]
 
 
+v2_templates = [
+    (EmailTypes.ACCESS_REQUEST, "6d20993f-7e9f-49b5-8c74-28654e6e84d0"),
+    (EmailTypes.ACCESS_REQUEST_CLOSED, "956b148a-796c-4052-b7dd-7bbfb51cc049"),  # /PS-IGNORE
+    (
+        EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE,
+        "61320f80-36ec-4bdf-97f7-68bf3d9f1d9c",  # /PS-IGNORE
+    ),
+    (EmailTypes.APPLICATION_COMPLETE, "2e03bc8e-1d57-404d-ba53-0fbf00316a4d"),  # /PS-IGNORE
+    (
+        EmailTypes.APPLICATION_EXTENSION_COMPLETE,
+        "68b93697-95db-4e95-a00f-5106489fd264",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.APPLICATION_VARIATION_REQUEST_COMPLETE,
+        "428fc248-d668-4f46-9522-b60b88142e36",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.APPLICATION_VARIATION_REQUEST_CANCELLED,
+        "4083d2ae-efd9-420c-b159-29cbfa9bf1b6",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.APPLICATION_VARIATION_REQUEST_REFUSED,
+        "63d2228e-27b4-4810-957c-75ba5baae463",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_REQUIRED,
+        "9bfe0641-bc19-4ac1-b2d8-8ec7b4011fe0",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_RECEIVED,
+        "7b272d9b-ccc0-4ef4-8a7a-e9d7cb4eceb5",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.APPLICATION_VARIATION_REQUEST_UPDATE_CANCELLED,
+        "f9f04289-fd0a-46ed-b521-a2cd2402ca83",  # /PS-IGNORE
+    ),
+    (EmailTypes.APPLICATION_STOPPED, "bac90963-7e9f-4e67-8c16-99ff905b3e02"),  # /PS-IGNORE
+    (EmailTypes.APPLICATION_REFUSED, "02b558e7-2902-429d-b5de-c8dac83da7b7"),  # /PS-IGNORE
+    (EmailTypes.APPLICATION_REASSIGNED, "99c3103b-8bf5-470f-8624-6b7791aedb32"),  # /PS-IGNORE
+    (EmailTypes.APPLICATION_REOPENED, "179ff4fe-236a-4718-befc-56cd2c977d0c"),  # /PS-IGNORE
+    (EmailTypes.APPLICATION_UPDATE, "960f3436-a190-4f65-9e05-1fef479a7a0b"),  # /PS-IGNORE
+    (EmailTypes.APPLICATION_UPDATE_RESPONSE, "f6c09508-bcc8-49e7-be2c-102d32f153ed"),  # /PS-IGNORE
+    (
+        EmailTypes.EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED,
+        "267b4a1c-7f61-4e76-becd-286b5252b0e7",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.FIREARMS_SUPPLEMENTARY_REPORT,
+        "55fc0197-94c8-4125-8784-1b637faa15fb",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED,
+        "09b7654d-26b4-49d7-967d-ca457f5f1f3a",  # /PS-IGNORE
+    ),
+    (EmailTypes.WITHDRAWAL_ACCEPTED, "93b464af-a0a0-479d-b69d-4ec5c6ef6966"),  # /PS-IGNORE
+    (EmailTypes.WITHDRAWAL_CANCELLED, "8d18435a-6c8a-41ca-aa98-64f99438076e"),  # /PS-IGNORE
+    (EmailTypes.WITHDRAWAL_OPENED, "fd0e9524-bcb8-4d3d-8fe0-09910bb2f6a2"),  # /PS-IGNORE
+    (EmailTypes.WITHDRAWAL_REJECTED, "59cee5db-9f9f-4966-b46a-07743b3e9e72"),  # /PS-IGNORE
+    (EmailTypes.CASE_EMAIL, "3e68fc83-ad05-4c32-826a-d950ce2dfa32"),  # /PS-IGNORE
+    (
+        EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST,
+        "7aa33950-19ac-4d1c-ad7b-e0a1b493914f",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST_RESPONDED,
+        "5e198272-1ae5-4dff-98bc-2f2f52142ee2",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST_WITHDRAWN,
+        "c4e9e6fc-c48d-4eac-a556-a0bc9026ad58",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST,
+        "683c2b2e-352c-493d-ab7f-aa08c118afb2",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_RESPONDED,
+        "b8fa5a85-bdbf-4dcf-8eec-e23bc5c805fa",  # /PS-IGNORE
+    ),
+    (
+        EmailTypes.ACCESS_REQUEST_FURTHER_INFORMATION_REQUEST_WITHDRAWN,
+        "853224f4-fb63-4d83-9a56-ee78f39ef636",  # /PS-IGNORE
+    ),
+    (EmailTypes.LICENCE_REVOKED, "642e8280-a6f0-4e45-89db-4cf37f9cb446"),  # /PS-IGNORE
+    (EmailTypes.CERTIFICATE_REVOKED, "eb8c610c-35c9-4a47-aa5d-5bfa465b5156"),  # /PS-IGNORE
+    (EmailTypes.AUTHORITY_ARCHIVED, "845c64ba-43ca-4145-a7e3-a54d1f565991"),  # /PS-IGNORE
+    (EmailTypes.AUTHORITY_EXPIRING_SECTION_5, "fe064185-33ff-44c0-bef9-6e0763121974"),  # /PS-IGNORE
+    (EmailTypes.AUTHORITY_EXPIRING_FIREARMS, "e1a3439c-bd1b-4553-a924-4a9db2cd6420"),  # /PS-IGNORE
+    (EmailTypes.MAILSHOT, "ecf686cf-b312-4a95-b984-246fdfdbd03a"),  # /PS-IGNORE
+    (EmailTypes.RETRACT_MAILSHOT, "811448a4-5cdc-4258-bd8b-734d67f6624c"),  # /PS-IGNORE
+    (
+        EmailTypes.CONSTABULARY_DEACTIVATED_FIREARMS,
+        "e8602eab-2312-4e18-8a8e-b0d99b569bb8",  # /PS-IGNORE
+    ),
+    (EmailTypes.NEW_USER_WELCOME, "2880f0ec-4f33-45a8-b98c-ff383dfdb577"),  # /PS-IGNORE
+    (EmailTypes.ORG_CONTACT_INVITE, "974d789b-7881-4a68-b262-c958c74567b8"),  # /PS-IGNORE
+]
+
+
 def add_email_gov_notify_templates():
+    if settings.FEATURE_FLAG_V2_EMAIL_CONTENT:
+        templates = v2_templates
+    else:
+        templates = v1_templates
+
     EmailTemplate.objects.bulk_create(
         [
             EmailTemplate(name=name, gov_notify_template_id=gov_notify_template_id)

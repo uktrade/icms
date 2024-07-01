@@ -151,6 +151,9 @@ class DBTPlatformEnvironment(BaseSettings):
     gtm_importer_container_id: str = ""
     gtm_exporter_container_id: str = ""
 
+    # Feature flags
+    feature_flag_v2_email_content: bool = False
+
     @computed_field  # type: ignore[misc]
     @property
     def allowed_hosts_list(self) -> list[str]:
