@@ -1,6 +1,5 @@
 import datetime as dt
 
-import pytz
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
@@ -110,8 +109,7 @@ APPLICATION_UPDATE_IMPORTER_BODY = f"""Dear [[IMPORTER_NAME]]
 You need to update your application with the following information for Import Licensing Branch (ILB) to process your application.
 [DESCRIBE WHAT UPDATES ARE NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT]
 
-Your application will not be processed further until you submit these updates. Use this link [Link to case in apply for an import licence]
- to go to your application in apply for an import licence.
+Your application will not be processed further until you submit these updates.
 
 The application will be closed if the requested updates are not received within 1 working day of this email.
 
@@ -132,7 +130,6 @@ You need to update your application with the following information for the Impor
 Select the responsible person statement if you have placed the product on the EU market. This only applies to cosmetics. [DELETE IF NOT APPLICABLE]
 
 The application will not be processed further until you submit the updates.
- Use this link [Link to case in apply for an export certificate] to your application in apply for an export certificate.
 
 The application will be closed if the requested updates are not received within 1 working day of this email.
 
@@ -150,6 +147,7 @@ BEIS_EMAIL_BODY = """Dear colleagues
 
 We have received a [[APPLICATION_TYPE]] application from:
 
+Exporter details:
 [[EXPORTER_NAME]]
 [[EXPORTER_ADDRESS]]
 
@@ -175,7 +173,7 @@ Yours sincerely
 [[CASE_OFFICER_PHONE]]
 """
 
-CASE_REOPEN_BODY = f"""Dear [[EXPORTER_NAME]],
+CASE_REOPEN_BODY = f"""Dear [[IMPORTER_NAME]],
 
 Import Licensing Branch has reopened and resumed processing case reference [[CASE_REFERENCE]].
 Contact {settings.ILB_CONTACT_EMAIL} if you have any questions about your application.
@@ -184,8 +182,11 @@ Yours sincerely,
 
 Import Licensing Branch
 """
+
 CERTIFICATE_REVOKED_BODY = f"""Dear [[EXPORTER_NAME]],
+
 Your certificate(s) [[CERTIFICATE_REFERENCE(S)]] have been revoked.
+
 Contact {settings.ILB_GSI_CONTACT_EMAIL} if you believe this is in error or need further information.
 
 Yours sincerely,
@@ -202,15 +203,12 @@ We have received an import licence application from:
 The application is for:
 [[GOODS_DESCRIPTION]]
 
-Use this link [Link to case in apply for an import licence] to view the application in apply for an import licence.
 [DELETE BELOW AS APPLICABLE]
 
 Grateful if the Police can advise on the validity of the RFD/Firearms/Shotgun Certificate, and whether
  there are any objections to the issuing of the import licence.
 
 Grateful if the Police can validate the RFD / and Section 1 and 2 authority/authorities on the applicants apply for an import licence.
-
-The Police have validated the RFD on the applicants apply for an import licence account. (Delete if not Section 5)
 
 Grateful if the Home Office can validate the Section 5 authority on the applicants apply for an import licence.
 
@@ -227,6 +225,7 @@ Yours sincerely
 [[CASE_OFFICER_EMAIL]]
 [[CASE_OFFICER_PHONE]]
 """
+
 IMA_RFI_BODY = f"""Dear [[IMPORTER_NAME]],
 
 You need to provide some more information for Import Licensing Branch (ILB) to process your application.
@@ -234,7 +233,6 @@ You need to provide some more information for Import Licensing Branch (ILB) to p
  regarding [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT].
 
 Your application will not be processed further until you respond to this request.
-Use this link [Link to case in apply for an import licence] to your application in apply for an import licence.
 
 The application will be closed if the requested response is not received within 1 working day of this email.
 
@@ -253,11 +251,11 @@ Some more information is needed for the Import Licensing Branch (ILB) to process
 [DESCRIBE WHAT INFORMATION OR CLARIFICATION IS NEEDED. INCLUDE SUGGESTIONS IF RELEVANT].
 
 Your application will not be processed further until you respond to this request.
-Use this link [Link to case in apply for an export certificate] to your application in apply for an export certificate.
 
 The application will be closed if the requested response is not received 1 working day of this email.
 
 Contact {settings.ILB_GSI_CONTACT_EMAIL} if you have any questions about your application.
+
 Include case reference number [[CASE_REFERENCE]] in your email, so we know which application you are contacting us about.
 
 Yours sincerely,
@@ -272,6 +270,7 @@ HSE_BODY = """Dear colleagues
 We have received a [[APPLICATION_TYPE]] application from:
 [[EXPORTER_NAME]]
 [[EXPORTER_ADDRESS]]
+[[CONTACT_EMAIL]]
 
 The application is for countries:
 
@@ -280,8 +279,6 @@ The application is for countries:
 The application is for biocidal products:
 
 [[SELECTED_PRODUCTS]]
-
-Use this link [Link to case in apply for an export certificate] to view the application in apply for an export certificate.
 
 We would be grateful for your guidance on the items listed.
 
@@ -294,8 +291,7 @@ Yours sincerely,
 
 IAR_RFI_BODY = f"""Dear [[REQUESTER_NAME]],
 
-Some more information is needed for the Import Licensing Branch (ILB) to process your request to access the Import Case Management System
- (apply for an import licence or export certificate).
+Some more information is needed for the Import Licensing Branch (ILB) to process your request to access apply for an import licence or export certificate.
 [DESCRIBE WHAT INFORMATION OR CLARIFICATION IS NEEDED. INCLUDE SUGGESTIONS IF RELEVANT].
 
 Use this link [Link to case in apply for an import licence or export certificate] to your access request in apply for an import licence or export certificate.
@@ -337,6 +333,7 @@ Yours sincerely,
 
 Import Licensing Branch
 """
+
 SANCTIONS_BODY = """Dear colleagues
 
 We have received an import licence application from:
@@ -346,8 +343,6 @@ We have received an import licence application from:
 The application is for:
 
 [[GOODS_DESCRIPTION]]
-
-Use this link [Link to case in apply for an import licence] to view the application in apply for an import licence.
 
 Yours sincerely,
 
@@ -416,20 +411,37 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         update_database_email_templates()
+        archive_database_email_templates()
         update_gov_notify_template_ids()
 
 
 def update_database_email_templates():
     for template_code, subject, body in EMAIL_CONTENT:
-        Template.objects.filter(template_code=template_code, is_active=True).update(
-            template_title=subject,
-            template_content=body,
-            start_datetime=dt.datetime.now(pytz.UTC),
-        )
+        try:
+            template = Template.objects.get(template_code=template_code)
+        except Template.DoesNotExist:
+            print(template_code)
+        else:
+            template.template_title = subject
+            template.template_content = body
+            template.start_datetime = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            template.save(update_fields=["template_title", "template_content", "start_datetime"])
+
+
+def archive_database_email_templates():
+    templates = [
+        "STOP_CASE",
+        "CASE_REOPEN",
+        "LICENCE_REVOKE",
+        "CERTIFICATE_REVOKE",
+        "PUBLISH_MAILSHOT",
+        "RETRACT_MAILSHOT",
+    ]
+    Template.objects.filter(template_code__in=templates).update(is_active=False)
 
 
 def update_gov_notify_template_ids():
     for email_type, gov_notify_template_id in EMAIL_TEMPLATES:
-        EmailTemplate.objects.filter(name=email_type).update(
-            gov_notify_template_id=gov_notify_template_id
-        )
+        email_template = EmailTemplate.objects.get(name=email_type)
+        email_template.gov_notify_template_id = gov_notify_template_id
+        email_template.save(update_fields=["gov_notify_template_id"])
