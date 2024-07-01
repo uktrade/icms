@@ -73,10 +73,7 @@ class LinkOrgAccessRequestFormBase(ModelForm):
             link = cleaned_data.get("link")
             agent_link = cleaned_data.get("agent_link")
 
-            if not agent_link:
-                self.add_error("agent_link", "You must enter this item")
-
-            elif agent_link.get_main_org() != link:
+            if agent_link and agent_link.get_main_org() != link:
                 self.add_error("agent_link", "Agent organisation is not linked to main org.")
 
         return cleaned_data
@@ -152,11 +149,18 @@ class CloseAccessRequestForm(ModelForm):
     def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
 
-        if (
-            cleaned_data.get("response") == AccessRequest.REFUSED
-            and cleaned_data.get("response_reason") == ""
-        ):
+        response = cleaned_data.get("response")
+        response_reason = cleaned_data.get("response_reason")
+
+        if response == AccessRequest.REFUSED and response_reason == "":
             self.add_error(
                 "response_reason", "This field is required when Access Request is refused"
             )
+
+        if response == AccessRequest.APPROVED:
+            if self.instance.is_agent_request and not self.instance.agent_link:
+                self.add_error(
+                    "response", "You must link an agent before approving the agent access request."
+                )
+
         return cleaned_data
