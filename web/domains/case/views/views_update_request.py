@@ -273,7 +273,10 @@ def respond_update_request(
 
                 application.update_order_datetime()
                 application.save()
+
+                # TODO: ICMSLST-2737 Send this email after the user resubmits the application
                 send_application_update_response_email(application)
+
                 return redirect(
                     reverse(
                         application.get_submit_view_name(),

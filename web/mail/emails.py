@@ -34,6 +34,7 @@ from web.models import (
     VariationRequest,
     WithdrawApplication,
 )
+from web.permissions import get_ilb_case_officers
 from web.sites import get_exporter_site_domain, get_importer_site_domain
 
 from .constants import EmailTypes
@@ -262,7 +263,13 @@ def send_variation_request_update_cancelled_email(
 def send_variation_request_update_received_email(
     variation_request: VariationRequest, application: ImpOrExp
 ) -> None:
-    recipients = get_email_addresses_for_users([application.case_owner])
+    # A case owner can release ownership of a case when out for a variation update request.
+    if application.case_owner:
+        send_to = [application.case_owner]
+    else:
+        send_to = get_ilb_case_officers()
+
+    recipients = get_email_addresses_for_users(send_to)
     for recipient in recipients:
         VariationRequestUpdateReceivedEmail(
             application=application, variation_request=variation_request, to=[recipient]
@@ -320,7 +327,13 @@ def send_application_reopened_email(application: ImpOrExp) -> None:
 
 
 def send_application_update_response_email(application: ImpOrExp) -> None:
-    recipients = get_email_addresses_for_users([application.case_owner])
+    # A case owner can release ownership of a case when out for an update request.
+    if application.case_owner:
+        send_to = [application.case_owner]
+    else:
+        send_to = get_ilb_case_officers()
+
+    recipients = get_email_addresses_for_users(send_to)
     for recipient in recipients:
         ApplicationUpdateResponseEmail(application=application, to=[recipient]).send()
 
