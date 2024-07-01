@@ -373,4 +373,6 @@ class UserManagementContext:
                 return f"{get_importer_site_domain()} for import or {get_exporter_site_domain()} for export."
             case "CASE_OFFICER_EMAIL", _, _:
                 return settings.ILB_CONTACT_EMAIL
+            case "FIRST_NAME", _, _:
+                return self.user.first_name
         raise ValueError(f"{item} is not a valid user management template context value")
