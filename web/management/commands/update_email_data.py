@@ -106,7 +106,7 @@ EMAIL_TEMPLATES = [
 
 APPLICATION_UPDATE_IMPORTER_BODY = f"""Dear [[IMPORTER_NAME]]
 
-You need to update your application with the following information for Import Licensing Branch (ILB) to process your application.
+You need to update your application with the following information for Import licencing Branch (ILB) to process your application.
 [DESCRIBE WHAT UPDATES ARE NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT]
 
 Your application will not be processed further until you submit these updates.
@@ -124,7 +124,7 @@ Yours sincerely,
 
 APPLICATION_UPDATE_EXPORTER_BODY = f"""Dear [[EXPORTER_NAME]]
 
-You need to update your application with the following information for the Import Licensing Branch (ILB) to process your application.
+You need to update your application with the following information for the Import licencing Branch (ILB) to process your application.
 [DESCRIBE WHAT UPDATES ARE NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT].
 
 Select the responsible person statement if you have placed the product on the EU market. This only applies to cosmetics. [DELETE IF NOT APPLICABLE]
@@ -151,7 +151,7 @@ Exporter details:
 [[EXPORTER_NAME]]
 [[EXPORTER_ADDRESS]]
 
-Please review and advise whether Import Licensing Branch can issue a GMP certificate for this request.
+Please review and advise whether Import licencing Branch can issue a GMP certificate for this request.
 
 Manufacturer:
 [[MANUFACTURER_NAME]]
@@ -175,12 +175,12 @@ Yours sincerely
 
 CASE_REOPEN_BODY = f"""Dear [[IMPORTER_NAME]],
 
-Import Licensing Branch has reopened and resumed processing case reference [[CASE_REFERENCE]].
+Import Licencing Branch has reopened and resumed processing case reference [[CASE_REFERENCE]].
 Contact {settings.ILB_CONTACT_EMAIL} if you have any questions about your application.
 
 Yours sincerely,
 
-Import Licensing Branch
+Import licencing Branch
 """
 
 CERTIFICATE_REVOKED_BODY = f"""Dear [[EXPORTER_NAME]],
@@ -191,7 +191,7 @@ Contact {settings.ILB_GSI_CONTACT_EMAIL} if you believe this is in error or need
 
 Yours sincerely,
 
-Import Licensing Branch
+Import licencing Branch
 """
 
 FIREARMS_CONSTABULARY_BODY = """Dear colleagues
@@ -228,7 +228,7 @@ Yours sincerely
 
 IMA_RFI_BODY = f"""Dear [[IMPORTER_NAME]],
 
-You need to provide some more information for Import Licensing Branch (ILB) to process your application.
+You need to provide some more information for Import licencing Branch (ILB) to process your application.
 [DESCRIBE WHAT INFORMATION OR CLARIFICATION IS NEEDED. INCLUDE SUGGESTIONS IF RELEVANT]
  regarding [DESCRIBE WHAT FURTHER INFORMATION IS NEEDED / WHAT IS UNCLEAR, MAKE SUGGESTIONS IF RELEVANT].
 
@@ -247,7 +247,7 @@ Yours sincerely,
 
 CA_RFI_BODY = f"""Dear [[EXPORTER_NAME]],
 
-Some more information is needed for the Import Licensing Branch (ILB) to process your application.
+Some more information is needed for the Import licencing Branch (ILB) to process your application.
 [DESCRIBE WHAT INFORMATION OR CLARIFICATION IS NEEDED. INCLUDE SUGGESTIONS IF RELEVANT].
 
 Your application will not be processed further until you respond to this request.
@@ -291,7 +291,7 @@ Yours sincerely,
 
 IAR_RFI_BODY = f"""Dear [[REQUESTER_NAME]],
 
-Some more information is needed for the Import Licensing Branch (ILB) to process your request to access apply for an import licence or export certificate.
+Some more information is needed for the Import licencing Branch (ILB) to process your request to access apply for an import licence or export certificate.
 [DESCRIBE WHAT INFORMATION OR CLARIFICATION IS NEEDED. INCLUDE SUGGESTIONS IF RELEVANT].
 
 Use this link [Link to case in apply for an import licence or export certificate] to your access request in apply for an import licence or export certificate.
@@ -312,7 +312,7 @@ Contact {settings.ILB_GSI_CONTACT_EMAIL} if you believe this is in error or need
 
 Yours sincerely,
 
-Import Licensing Branch
+Import licencing Branch
 """
 
 PUBLISH_MAILSHOT_BODY = """Dear [[FIRST_NAME]],
@@ -322,7 +322,7 @@ A new mailshot has been published. You can view it from your workbasket in apply
 
 Yours sincerely,
 
-Import Licensing Branch
+Import licencing Branch
 """
 
 RETRACT_MAILSHOT_BODY = """Dear [[FIRST_NAME]],
@@ -331,7 +331,7 @@ A published mailshot has been retracted.
 
 Yours sincerely,
 
-Import Licensing Branch
+Import licencing Branch
 """
 
 SANCTIONS_BODY = """Dear colleagues
@@ -359,7 +359,7 @@ Contact {settings.ILB_GSI_CONTACT_EMAIL} if you believe this is in error or need
 
 Yours sincerely,
 
-Import Licensing Branch
+Import licencing Branch
 """
 
 
@@ -387,7 +387,7 @@ EMAIL_CONTENT = [
     ),
     (
         "IMA_CONSTAB_EMAIL",
-        "[[CASE_REFERENCE]] Import license Registered Firearms Dealer (RFD) enquiry",
+        "[[CASE_REFERENCE]] Import licence Registered Firearms Dealer (RFD) enquiry",
         FIREARMS_CONSTABULARY_BODY,
     ),
     ("IMA_RFI", "[[CASE_REFERENCE]] Request for more information", IMA_RFI_BODY),
