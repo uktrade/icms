@@ -45,7 +45,14 @@
         </div>
         <div class="com-item">
           <p><strong>MANUFACTURING PROCESS:</strong></p>
+          {# we want to break the page whenever the text gets too long, otherwise it overlaps with the signature #}
+          {% set ns = namespace(character_count=0) %}
           {% for line in manufacturing_process_list %}
+            {% set ns.character_count = ns.character_count + line|length %}
+            {% if ns.character_count >= 1300 %}
+              {% set ns.character_count = 0 %}
+              <div class="page-break"></div>
+            {% endif %}
             <p>{{ line }}</p>
           {% endfor %}
         </div>

@@ -152,3 +152,7 @@
 .pl-1 {
     padding-left: 1em;
 }
+
+.page-break {
+    page-break-after: always;
+}
