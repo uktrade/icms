@@ -11,7 +11,8 @@ from django.utils import timezone
 
 from web.domains.case.services import document_pack, reference
 from web.flow.models import ProcessTypes
-from web.models import ExportApplication, ImportApplication, Task, User
+from web.mail.emails import send_application_update_response_email
+from web.models import ExportApplication, ImportApplication, Task, UpdateRequest, User
 from web.permissions import AppChecker
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
@@ -93,7 +94,6 @@ def submit_application(app: ImpOrExp, request: AuthenticatedHttpRequest, task: T
             request.icms.lock_manager, application=app
         )
 
-    # if case owner is present, an update request has just been filed
     if app.case_owner:
         # Only change to processing if it's not a variation request
         if app.status != app.Statuses.VARIATION_REQUESTED:
@@ -108,6 +108,19 @@ def submit_application(app: ImpOrExp, request: AuthenticatedHttpRequest, task: T
     app.submitted_by = request.user
     app.update_order_datetime()
     app.save()
+
+    # Mark an open update request as responded.
+    active_update_request = app.update_requests.filter(
+        status=UpdateRequest.Status.UPDATE_IN_PROGRESS, is_active=True
+    ).first()
+
+    if active_update_request:
+        # Mark update request as responded
+        active_update_request.status = UpdateRequest.Status.RESPONDED
+        active_update_request.save()
+
+        # Notify caseworker / ILB
+        send_application_update_response_email(app)
 
     task.is_active = False
     task.finished = timezone.now()
