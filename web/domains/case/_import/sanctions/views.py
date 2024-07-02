@@ -24,7 +24,7 @@ from web.domains.case.utils import (
 )
 from web.domains.file.utils import create_file_model
 from web.domains.template.utils import add_template_data_on_submit
-from web.models import ImportApplicationType, Task, User
+from web.models import Country, ImportApplicationType, Task, User
 from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 from web.utils.commodity import (
@@ -429,8 +429,17 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
         else:
             goods_errors = None
 
+        sanctioned_countries = Country.app.get_sanctions_countries()
+
+        countries_to_search = []
+        if application.origin_country in sanctioned_countries:
+            countries_to_search.append(application.origin_country)
+
+        if application.consignment_country in sanctioned_countries:
+            countries_to_search.append(application.consignment_country)
+
         usage_records = get_usage_records(ImportApplicationType.Types.SANCTION_ADHOC).filter(
-            country=application.origin_country
+            country__in=countries_to_search
         )
 
         sanction_and_adhoc_commodities = get_usage_commodities(usage_records).values_list(
@@ -443,7 +452,7 @@ def submit_sanctions(request: AuthenticatedHttpRequest, *, application_pk: int) 
                     FieldError(
                         field_name="Goods - Commodity Code",
                         messages=[
-                            f"Commodity '{goods_commodity}' is invalid for the selected country of origin."
+                            f"Commodity '{goods_commodity}' is invalid for the selected country of manufacture or country of shipment."
                         ],
                     )
                 )

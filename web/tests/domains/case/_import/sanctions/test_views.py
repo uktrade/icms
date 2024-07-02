@@ -390,6 +390,9 @@ class TestSubmitSanctions:
     def setup(self, importer_client, sanctions_app_in_progress):
         self.app = sanctions_app_in_progress
         self.client = importer_client
+        self.url = reverse(
+            "import:sanctions:submit-sanctions", kwargs={"application_pk": self.app.pk}
+        )
 
     def test_submit_catches_duplicate_commodities(self):
         sanction_usage = get_usage_records(ImportApplicationType.Types.SANCTION_ADHOC).filter(
@@ -399,6 +402,7 @@ class TestSubmitSanctions:
         commodity = available_commodities.first()
         another_commodity = available_commodities.last()
 
+        self.app.sanctions_goods.all().delete()
         self.app.sanctions_goods.create(
             commodity=commodity, goods_description="Goods 1", quantity_amount=1, value=1
         )
@@ -411,15 +415,47 @@ class TestSubmitSanctions:
             commodity=another_commodity, goods_description="Goods 3", quantity_amount=1, value=1
         )
 
-        url = reverse("import:sanctions:submit-sanctions", kwargs={"application_pk": self.app.pk})
-
-        response = self.client.get(url)
+        response = self.client.get(self.url)
 
         errors: ApplicationErrors = response.context["errors"]
         check_page_errors(errors, "Application Details", ["Goods - Commodity Code"])
 
         page_errors: PageErrors = errors.get_page_errors("Application Details")
-        page_errors.errors[0].field_name = "Goods - Commodity Code"
-        page_errors.errors[0].messages = [
-            f"Duplicate commodity codes. Please ensure these codes are only listed once: {commodity.commodity_code}"
+        assert page_errors.errors[0].field_name == "Goods - Commodity Code"
+        assert page_errors.errors[0].messages == [
+            f"Duplicate commodity codes. Please ensure these codes are only listed once: {commodity.commodity_code}."
+        ]
+
+    def test_submit_catches_invalid_commodity(self):
+        # All countries available in the sanctions form
+        available_countries = Country.app.get_sanctions_coo_and_coc_countries()
+        # Countries with sanctions
+        sanctioned_countries = Country.app.get_sanctions_countries()
+
+        # set a valid non-sanctioned country for origin
+        self.app.origin_country = available_countries.difference(sanctioned_countries).first()
+        self.app.consignment_country = sanctioned_countries.first()
+
+        sanction_usage = get_usage_records(ImportApplicationType.Types.SANCTION_ADHOC).filter(
+            country=self.app.consignment_country
+        )
+        available_commodities = get_usage_commodities(sanction_usage)
+
+        commodity = Commodity.objects.all().difference(available_commodities).first()
+
+        self.app.sanctions_goods.all().delete()
+        # Add an invalid commodity
+        self.app.sanctions_goods.create(
+            commodity=commodity, goods_description="Goods 1", quantity_amount=1, value=1
+        )
+
+        response = self.client.get(self.url)
+
+        errors: ApplicationErrors = response.context["errors"]
+        check_page_errors(errors, "Application Details", ["Goods - Commodity Code"])
+
+        page_errors: PageErrors = errors.get_page_errors("Application Details")
+        assert page_errors.errors[0].field_name == "Goods - Commodity Code"
+        assert page_errors.errors[0].messages == [
+            f"Commodity '{commodity.commodity_code}' is invalid for the selected country of manufacture or country of shipment."
         ]
