@@ -141,37 +141,6 @@ class CFSDeclarationTranslationForm(forms.ModelForm):
             "countries": s2forms.Select2MultipleWidget,
         }
 
-    def clean_countries(self):
-        countries = self.cleaned_data["countries"]
-
-        # don't allow multiple non-archived translations for a given language;
-        # how would the system know which one to use?
-
-        query = Template.objects.filter(
-            template_type=Template.CFS_DECLARATION_TRANSLATION, is_active=True
-        )
-
-        if self.instance.pk is not None:
-            query = query.exclude(pk=self.instance.pk)
-
-        already_translated = set(query.values_list("countries", flat=True))
-
-        # list of country names that we need to error about
-        errors = []
-
-        for country in countries:
-            if country.pk in already_translated:
-                errors.append(country.name)
-
-        if errors:
-            errors_str = ", ".join(errors)
-
-            raise forms.ValidationError(
-                f"These countries already have the CFS Declaration translated: {errors_str}"
-            )
-
-        return countries
-
     def save(self, commit=True):
         instance = super().save(commit=False)
         instance.application_domain = Template.CERTIFICATE_APPLICATION
