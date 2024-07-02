@@ -403,7 +403,12 @@ def _add_user_import_annotations(
     open_ur_pks_annotation = ArrayAgg(
         "update_requests__pk",
         distinct=True,
-        filter=Q(**{"update_requests__status": UpdateRequest.Status.OPEN, "is_active": True}),
+        filter=Q(
+            **{
+                "update_requests__status": UpdateRequest.Status.OPEN,
+                "update_requests__is_active": True,
+            }
+        ),
         default=Value([]),
     )
 
@@ -448,7 +453,12 @@ def _add_user_export_annotations(
     open_ur_pks_annotation = ArrayAgg(
         "update_requests__pk",
         distinct=True,
-        filter=Q(**{"update_requests__status": UpdateRequest.Status.OPEN, "is_active": True}),
+        filter=Q(
+            **{
+                "update_requests__status": UpdateRequest.Status.OPEN,
+                "update_requests__is_active": True,
+            }
+        ),
         default=Value([]),
     )
 
