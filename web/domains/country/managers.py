@@ -98,13 +98,15 @@ class ApplicationCountryManager(CountryMangerBase):
     def get_sanctions_coo_and_coc_countries(self) -> QuerySet["Country"]:
         """Get Sanctions origin and consignment countries.
 
+        This includes more countries than those that currently have sanctions against them.
+        See `Country.app.get_sanctions_countries()` for list of countries with sanctions.
+
         DB Field: SanctionsAndAdhocApplication.origin_country
         DB Field: SanctionsAndAdhocApplication.consignment_country
         """
 
         return self._get_country_group_countries(CountryGroupName.SANCTIONS_COC_COO)
 
-    # TODO: ICMSLST-2666 Use when refactoring form logic.
     def get_sanctions_countries(self) -> QuerySet["Country"]:
         """Get Sanctions countries."""
 
