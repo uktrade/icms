@@ -1,5 +1,6 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -7,17 +8,14 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_GET, require_POST
 
-from web.domains.case import forms, models
+from web.domains.case import forms
 from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task, get_case_page_title
 from web.domains.template.utils import get_application_update_template_data
-from web.mail.emails import (
-    send_application_update_email,
-    send_application_update_response_email,
-)
-from web.models import Task, User
+from web.mail.emails import send_application_update_email
+from web.models import Task, UpdateRequest, User
 from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
 
@@ -45,9 +43,13 @@ def list_update_requests(
 
     update_requests = application.update_requests.filter(is_active=True)
     update_request = update_requests.filter(
-        status__in=[models.UpdateRequest.Status.OPEN, models.UpdateRequest.Status.RESPONDED]
+        status__in=[
+            UpdateRequest.Status.OPEN,
+            UpdateRequest.Status.UPDATE_IN_PROGRESS,
+            UpdateRequest.Status.RESPONDED,
+        ]
     ).first()
-    previous_update_requests = update_requests.filter(status=models.UpdateRequest.Status.CLOSED)
+    previous_update_requests = update_requests.filter(status=UpdateRequest.Status.CLOSED)
 
     context = {
         "process": application,
@@ -91,7 +93,7 @@ def manage_update_requests(
                 update_request = form.save(commit=False)
                 update_request.requested_by = request.user
                 update_request.request_datetime = timezone.now()
-                update_request.status = models.UpdateRequest.Status.OPEN
+                update_request.status = UpdateRequest.Status.OPEN
                 update_request.save()
 
                 application.update_requests.add(update_request)
@@ -114,9 +116,9 @@ def manage_update_requests(
 
         update_requests = application.update_requests.filter(is_active=True)
         update_request = update_requests.filter(
-            status__in=[models.UpdateRequest.Status.OPEN, models.UpdateRequest.Status.RESPONDED]
+            status__in=[UpdateRequest.Status.OPEN, UpdateRequest.Status.RESPONDED]
         ).first()
-        previous_update_requests = update_requests.filter(status=models.UpdateRequest.Status.CLOSED)
+        previous_update_requests = update_requests.filter(status=UpdateRequest.Status.CLOSED)
 
         context = {
             "process": application,
@@ -157,21 +159,47 @@ def close_update_request(
 
         update_request = get_object_or_404(application.update_requests, pk=update_request_pk)
 
-        update_request.status = models.UpdateRequest.Status.CLOSED
-        update_request.closed_by = request.user
-        update_request.closed_datetime = timezone.now()
-        update_request.save()
+        if update_request.status not in [UpdateRequest.Status.OPEN, UpdateRequest.Status.RESPONDED]:
+            messages.warning(
+                request,
+                "Unable to close Update Request. Status must be Open or Responded to close.",
+            )
+
+            return redirect(
+                reverse(
+                    "case:list-update-requests",
+                    kwargs={"application_pk": application_pk, "case_type": case_type},
+                )
+            )
+
+        # The update request has been withdrawn therefore we can delete.
+        if update_request.status == UpdateRequest.Status.OPEN:
+            update_request.status = UpdateRequest.Status.DELETED
+            update_request.response_detail = "Request was withdrawn by ILB and marked inactive."
+            update_request.is_active = False
+            update_request.closed_by = request.user
+            update_request.save()
+
+            # TODO: ICMSLST-2742 Send Withdraw Application Update email here
+            #       Or at the end of the view (as it's a task).
+
+        # Close the responded update request.
+        else:
+            update_request.status = UpdateRequest.Status.CLOSED
+            update_request.closed_by = request.user
+            update_request.closed_datetime = timezone.now()
+            update_request.save()
 
         # If there are no more active update requests check for an optional process task.
         # There will be one if the ILB Admin closes the update request before the applicant
         # has responded (e.g. one was opened in error).
         if not (
             application.update_requests.filter(is_active=True)
-            .exclude(status=models.UpdateRequest.Status.CLOSED)
+            .exclude(status=UpdateRequest.Status.CLOSED)
             .exists()
         ):
             process_task = (
-                case_progress.get_active_tasks(application)
+                case_progress.get_active_tasks(application, select_for_update=True)
                 .filter(task_type=Task.TaskType.PREPARE)
                 .first()
             )
@@ -207,14 +235,20 @@ def start_update_request(
         )
 
         update_requests = application.update_requests.filter(is_active=True)
-        update_request = get_object_or_404(
-            update_requests.filter(is_active=True).filter(status=models.UpdateRequest.Status.OPEN),
-            pk=update_request_pk,
-        )
-        previous_update_requests = update_requests.filter(status=models.UpdateRequest.Status.CLOSED)
+        try:
+            update_request = update_requests.get(
+                pk=update_request_pk, is_active=True, status=UpdateRequest.Status.OPEN
+            )
+        except ObjectDoesNotExist:
+            messages.warning(
+                request, "Update Request has been withdrawn and is no longer available"
+            )
+            return redirect(reverse("workbasket"))
+
+        previous_update_requests = update_requests.filter(status=UpdateRequest.Status.CLOSED)
 
         if request.method == "POST":
-            update_request.status = models.UpdateRequest.Status.UPDATE_IN_PROGRESS
+            update_request.status = UpdateRequest.Status.UPDATE_IN_PROGRESS
             update_request.save()
 
             application.update_order_datetime()
@@ -261,17 +295,16 @@ def respond_update_request(
         update_requests = application.update_requests.filter(is_active=True)
         update_request = update_requests.get(
             status__in=[
-                models.UpdateRequest.Status.UPDATE_IN_PROGRESS,
-                models.UpdateRequest.Status.RESPONDED,
+                UpdateRequest.Status.UPDATE_IN_PROGRESS,
+                UpdateRequest.Status.RESPONDED,
             ]
         )
-        previous_update_requests = update_requests.filter(status=models.UpdateRequest.Status.CLOSED)
+        previous_update_requests = update_requests.filter(status=UpdateRequest.Status.CLOSED)
 
         if request.method == "POST":
             form = forms.UpdateRequestResponseForm(request.POST, instance=update_request)
             if form.is_valid():
                 update_request = form.save(commit=False)
-                update_request.status = models.UpdateRequest.Status.RESPONDED
 
                 update_request.response_by = request.user
                 update_request.response_datetime = timezone.now()
@@ -279,9 +312,6 @@ def respond_update_request(
 
                 application.update_order_datetime()
                 application.save()
-
-                # TODO: ICMSLST-2737 Send this email after the user resubmits the application
-                send_application_update_response_email(application)
 
                 return redirect(
                     reverse(

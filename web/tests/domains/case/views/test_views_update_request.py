@@ -5,7 +5,7 @@ from pytest_django.asserts import assertContains, assertTemplateUsed
 from web.domains.case.types import ImpOrExp
 from web.mail.constants import EmailTypes
 from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
-from web.models import ImportApplication, UpdateRequest
+from web.models import ImportApplication, UpdateRequest, User
 from web.sites import get_importer_site_domain
 from web.tests.application_utils import resubmit_app
 from web.tests.helpers import CaseURLS, check_gov_notify_email_was_sent
@@ -108,20 +108,9 @@ def test_respond_update_request(
     assert resp.resolver_match.kwargs["application_pk"] == wood_app_submitted.pk
 
     update_request.refresh_from_db()
-    assert update_request.status == UpdateRequest.Status.RESPONDED
+    assert update_request.status == UpdateRequest.Status.UPDATE_IN_PROGRESS
     wood_app_submitted.refresh_from_db()
     assert wood_app_submitted.status == ImportApplication.Statuses.PROCESSING
-    check_gov_notify_email_was_sent(
-        1,
-        ["ilb_admin_user@example.com"],  # /PS-IGNORE
-        EmailTypes.APPLICATION_UPDATE_RESPONSE,
-        {
-            "reference": wood_app_submitted.reference,
-            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
-            "application_url": get_case_view_url(wood_app_submitted, get_importer_site_domain()),
-            "icms_url": get_importer_site_domain(),
-        },
-    )
 
 
 def test_close_update_request(
@@ -163,5 +152,29 @@ def test_close_update_request(
     assert resp.status_code == 302
     update_request.refresh_from_db()
     assert update_request.status == UpdateRequest.Status.CLOSED
+    wood_app_submitted.refresh_from_db()
+    assert wood_app_submitted.status == ImportApplication.Statuses.PROCESSING
+
+
+def test_withdraw_update_request(
+    importer_client: Client,
+    ilb_admin_client: Client,
+    wood_app_submitted: ImportApplication,
+    ilb_admin_user: User,
+) -> None:
+    update_request = get_open_update_request(ilb_admin_client, wood_app_submitted)
+
+    resp = ilb_admin_client.post(
+        CaseURLS.close_update_request(wood_app_submitted.pk, update_request.pk, "import"),
+        data={},
+    )
+    assert resp.status_code == 302
+
+    update_request.refresh_from_db()
+    assert update_request.status == UpdateRequest.Status.DELETED
+    assert update_request.response_detail == "Request was withdrawn by ILB and marked inactive."
+    assert not update_request.is_active
+    assert update_request.closed_by == ilb_admin_user
+
     wood_app_submitted.refresh_from_db()
     assert wood_app_submitted.status == ImportApplication.Statuses.PROCESSING
