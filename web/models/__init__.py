@@ -44,10 +44,10 @@ from web.domains.case._import.ironsteel.models import (
 )
 from web.domains.case._import.models import (
     ChiefRequestResponseErrors,
+    ConstabularyLicenceDownloadLink,
     EndorsementImportApplication,
     ICMSHMRCChiefRequest,
     ImportApplication,
-    ImportApplicationDownloadLink,
     ImportApplicationLicence,
     ImportApplicationType,
 )
@@ -101,6 +101,7 @@ from web.domains.case.fir.models import FurtherInformationRequest
 from web.domains.case.models import (
     CaseDocumentReference,
     CaseEmail,
+    CaseEmailDownloadLink,
     CaseNote,
     UpdateRequest,
     VariationRequest,
@@ -184,6 +185,7 @@ __all__ = [
     "CFSScheduleTemplate",
     "CaseDocumentReference",
     "CaseEmail",
+    "CaseEmailDownloadLink",
     "CaseNote",
     "CertificateApplicationTemplate",
     "CertificateOfFreeSaleApplication",
@@ -233,7 +235,7 @@ __all__ = [
     "GlobalPermission",
     "ICMSHMRCChiefRequest",
     "ImportApplication",
-    "ImportApplicationDownloadLink",
+    "ConstabularyLicenceDownloadLink",
     "ImportApplicationLicence",
     "ImportApplicationType",
     "ImportContact",

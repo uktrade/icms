@@ -613,6 +613,14 @@ class CaseURLS:
     def regenerate_dfl_case_documents_link(code: str) -> str:
         return reverse("case:regenerate-dfl-case-documents-link", kwargs={"code": code})
 
+    @staticmethod
+    def download_case_email_documents(code: str) -> str:
+        return reverse("case:download-case-email-documents", kwargs={"code": code})
+
+    @staticmethod
+    def regenerate_case_email_documents_link(code: str) -> str:
+        return reverse("case:regenerate-case-email-documents-link", kwargs={"code": code})
+
 
 class SearchURLS:
     @staticmethod
