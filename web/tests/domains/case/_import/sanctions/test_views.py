@@ -2,8 +2,11 @@ from http import HTTPStatus
 
 import pytest
 from django.urls import reverse
+from django.utils import timezone
 from pytest_django.asserts import assertRedirects, assertTemplateUsed
 
+from web.mail.constants import EmailTypes
+from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import (
     Commodity,
     Country,
@@ -11,14 +14,16 @@ from web.models import (
     SanctionsAndAdhocApplication,
     SanctionsAndAdhocApplicationGoods,
     Task,
+    UpdateRequest,
 )
+from web.sites import get_importer_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 from web.tests.domains.case._import.factory import (
     SanctionsAndAdhocApplicationGoodsFactory,
     SanctionsAndAdhocLicenseApplicationFactory,
 )
-from web.tests.helpers import check_page_errors
+from web.tests.helpers import check_gov_notify_email_was_sent, check_page_errors
 from web.utils.commodity import get_usage_commodities, get_usage_records
 from web.utils.validation import ApplicationErrors, PageErrors
 
@@ -459,3 +464,38 @@ class TestSubmitSanctions:
         assert page_errors.errors[0].messages == [
             f"Commodity '{commodity.commodity_code}' is invalid for the selected country of manufacture or country of shipment."
         ]
+
+    def test_submit_sanctions_closes_open_update_request(
+        self, ilb_admin_user, importer_one_contact
+    ):
+        # Add a fake update request.
+        self.app.update_requests.create(
+            status=UpdateRequest.Status.UPDATE_IN_PROGRESS,
+            request_subject="request_subject value",
+            request_detail="request_detail value",
+            response_detail="response_detail value",
+            request_datetime=timezone.now(),
+            requested_by=ilb_admin_user,
+            response_datetime=timezone.now(),
+            response_by=importer_one_contact,
+        )
+        # Set the case officer (to fake them being the person who initiated the update request.
+        self.app.case_owner = ilb_admin_user
+        self.app.save()
+
+        self.client.post(self.url, data={"confirmation": "I AGREE"})
+
+        self.app.refresh_from_db()
+        check_gov_notify_email_was_sent(
+            1,
+            ["ilb_admin_user@example.com"],  # /PS-IGNORE
+            EmailTypes.APPLICATION_UPDATE_RESPONSE,
+            {
+                "reference": self.app.reference,
+                "validate_digital_signatures_url": get_validate_digital_signatures_url(
+                    full_url=True
+                ),
+                "application_url": get_case_view_url(self.app, get_importer_site_domain()),
+                "icms_url": get_importer_site_domain(),
+            },
+        )

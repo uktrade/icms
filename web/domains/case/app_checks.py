@@ -480,13 +480,11 @@ def get_org_update_request_errors(application: ImpOrExp, case_type: str) -> Page
         ),
     )
 
-    update_requests = application.update_requests.filter(is_active=True)
-    pending_update = update_requests.filter(status=models.UpdateRequest.Status.UPDATE_IN_PROGRESS)
-    incomplete_update = update_requests.filter(status=models.UpdateRequest.Status.RESPONDED).filter(
-        response_detail__isnull=True
+    incomplete_update = application.update_requests.filter(is_active=True).filter(
+        status=models.UpdateRequest.Status.UPDATE_IN_PROGRESS, response_detail__isnull=True
     )
 
-    if pending_update.exists() or incomplete_update.exists():
+    if incomplete_update.exists():
         update_request_errors.add(
             FieldError(field_name="Response to request", messages=["You must enter this item."])
         )
