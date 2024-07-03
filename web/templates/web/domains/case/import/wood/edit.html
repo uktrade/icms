@@ -5,7 +5,6 @@
 
 
  {% block main_content %}
-
    {% call forms.form(action='', method='post', csrf_input=csrf_input, class="prevent-data-loss") -%}
      {% include "partial/case/save-info-box.html" %}
      {% include "partial/case/application-contact-details.html" %}
@@ -20,7 +19,7 @@
      {{ fields.field(form.exporter_vat_nr) }}
 
      <h4>Goods</h4>
-     {{ fields.field(form.commodity) }}
+     {{ fields.field(form.commodity, mark_safe=True) }}
      {{ fields.field(form.goods_description) }}
      {{ fields.field(form.goods_qty) }}
      {{ fields.field(form.goods_unit) }}

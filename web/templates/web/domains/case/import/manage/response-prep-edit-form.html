@@ -15,7 +15,11 @@
   <h3>Edit</h3>
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
     {% for field in form %}
-      {{ fields.field(field) }}
+      {% if field.name == "commodity" %}
+        {{ fields.field(field, mark_safe=True) }}
+      {% else %}
+        {{ fields.field(field) }}
+      {% endif %}
     {% endfor %}
 
     <div class="container">

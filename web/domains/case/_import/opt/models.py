@@ -145,17 +145,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
     )
 
     cp_commodities = models.ManyToManyField(
-        "web.Commodity",
-        related_name="+",
-        verbose_name="Commodity Code",
-        help_text=(
-            "It is the responsibility of the applicant to ensure that the"
-            " commodity code in this box is correct. If you are unsure of"
-            " the correct commodity code, consult the HM Revenue and Customs"
-            " Integrated Tariff Book, Volume 2, which is available from the"
-            " Stationery Office. If you are still in doubt, contact the"
-            " Classification Advisory Service on (01702) 366077."
-        ),
+        "web.Commodity", related_name="+", verbose_name="Commodity Code"
     )
 
     # Temporary Exported Goods fields (teg_ prefix)
@@ -193,17 +183,7 @@ class OutwardProcessingTradeApplication(ImportApplication):
     )
 
     teg_commodities = models.ManyToManyField(
-        "web.Commodity",
-        related_name="+",
-        verbose_name="Commodity Code",
-        help_text=(
-            "It is the responsibility of the applicant to ensure that the"
-            " commodity code in this box is correct. If you are unsure of the"
-            " correct commodity code, consult the HM Revenue and Customs"
-            " Integrated Tariff Book, Volume 2, which is available from the"
-            " Stationery Office. If you are still in doubt, contact the"
-            " Classification Advisory Service on (01702) 366077."
-        ),
+        "web.Commodity", related_name="+", verbose_name="Commodity Code"
     )
 
     # further questions (fq_ prefix)

@@ -19,7 +19,7 @@
 {% block form_content %}
   {% include "partial/case/save-info-box.html" %}
   <h4>Sanctions and Adhoc Licence</h4>
-  {{ fields.field(form.commodity) }}
+  {{ fields.field(form.commodity, mark_safe=True) }}
   {{ fields.field(form.goods_description) }}
   {{ fields.field(form.quantity_amount) }}
 

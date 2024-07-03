@@ -9,6 +9,7 @@ from django.forms import (
     ModelMultipleChoiceField,
 )
 from django.forms.widgets import CheckboxInput, Textarea
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django_filters import (
     BooleanFilter,
@@ -29,6 +30,10 @@ from .widgets import UsageCountryWidget
 
 class JqueryDateFilter(Filter):
     field_class = JqueryDateField
+
+
+# Used in application forms.
+COMMODITY_HELP_TEXT = render_to_string("partial/commodity/commodity_help_text.html")
 
 
 class CommodityFilter(FilterSet):

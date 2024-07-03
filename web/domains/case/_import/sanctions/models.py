@@ -26,13 +26,6 @@ class SanctionsAndAdhocApplicationGoods(models.Model):
         null=True,
         related_name="+",
         verbose_name="Commodity Code",
-        help_text=(
-            "It is the responsibility of the applicant to ensure that the commodity code in"
-            " this box is correct. If you are unsure of the correct commodity code,"
-            " consult the HM Revenue and Customs Integrated Tariff Book, Volume 2,"
-            " which is available from the Stationery Office. If you are still in doubt,"
-            " contact the Classification Advisory Service on (01702) 366077."
-        ),
     )
 
     goods_description = models.CharField(max_length=4096, verbose_name="Goods Description")
@@ -42,7 +35,15 @@ class SanctionsAndAdhocApplicationGoods(models.Model):
     # quantityIssued 9(11).9(3)
     quantity_amount = models.DecimalField(max_digits=14, decimal_places=3, verbose_name="Quantity")
     # value issued: 9(10).9(2)
-    value = models.DecimalField(max_digits=12, decimal_places=2, verbose_name="Value (GBP CIF)")
+    value = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        verbose_name="Value (GBP CIF)",
+        help_text=(
+            "The value is the total value of all goods under the specified commodity code."
+            " It is not the value of a single unit."
+        ),
+    )
 
     def __str__(self):
         return (

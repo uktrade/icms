@@ -42,13 +42,6 @@ class WoodQuotaApplication(ImportApplication):
         null=True,
         related_name="+",
         verbose_name="Commodity Code",
-        help_text=(
-            "It is the responsibility of the applicant to ensure that the commodity code in"
-            " this box is correct. If you are unsure of the correct commodity code,"
-            " consult the HM Revenue and Customs Integrated Tariff Book, Volume 2,"
-            " which is available from the Stationery Office. If you are still in doubt,"
-            " contact the Classification Advisory Service on (01702) 366077."
-        ),
     )
 
     goods_description = models.CharField(max_length=100, null=True)

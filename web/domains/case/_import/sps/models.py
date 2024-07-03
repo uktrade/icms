@@ -34,13 +34,6 @@ class PriorSurveillanceApplication(ImportApplication):
         null=True,
         related_name="+",
         verbose_name="Commodity Code",
-        help_text=(
-            "It is the responsibility of the applicant to ensure that the"
-            " commodity code in this box is correct. If you are unsure of the"
-            " correct commodity code, consult the HM Revenue & Customs at"
-            " classification.enquiries@hmrc.gov.uk or use the online trade"  # /PS-IGNORE
-            " tariff https://www.gov.uk/trade-tariff/sections."
-        ),
     )
 
     quantity = models.PositiveBigIntegerField(
