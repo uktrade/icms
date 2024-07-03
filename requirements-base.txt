@@ -52,3 +52,4 @@ certvalidator~=0.11 # endesive sub-dependency
 pillow~=10.2        # endesive sub-dependency
 paramiko~=3.4       # endesive sub-dependency
 attrs~=23.2         # endesive sub-dependency
+pdf2image~=1.17.0
