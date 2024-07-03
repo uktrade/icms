@@ -11,7 +11,7 @@ class BaseTestImportPDFVisualRegression(BaseTestPDFVisualRegression):
 
 
 class TestOilLicence(BaseTestImportPDFVisualRegression):
-    benchmark_pdf_image_file = "oil_licence.pdf"
+    benchmark_pdf_image_file_path = "oil_licence.pdf"
 
     def test_pdf(self, fa_oil_app_submitted):
         self.application = fa_oil_app_submitted
@@ -19,7 +19,7 @@ class TestOilLicence(BaseTestImportPDFVisualRegression):
 
 
 class TestDflLicence(BaseTestImportPDFVisualRegression):
-    benchmark_pdf_image_file = "dfl_licence.pdf"
+    benchmark_pdf_image_file_path = "dfl_licence.pdf"
 
     def test_pdf(self, fa_dfl_app_submitted):
         self.application = fa_dfl_app_submitted
@@ -27,7 +27,7 @@ class TestDflLicence(BaseTestImportPDFVisualRegression):
 
 
 class TestSilLicence(BaseTestImportPDFVisualRegression):
-    benchmark_pdf_image_file = "sil_licence.pdf"
+    benchmark_pdf_image_file_path = "sil_licence.pdf"
 
     def test_pdf(self, fa_sil_app_submitted):
         self.application = fa_sil_app_submitted
@@ -35,7 +35,7 @@ class TestSilLicence(BaseTestImportPDFVisualRegression):
 
 
 class TestCoverLetter(BaseTestImportPDFVisualRegression):
-    benchmark_pdf_image_file = "cover_letter.pdf"
+    benchmark_pdf_image_file_path = "cover_letter.pdf"
 
     def get_generator_kwargs(self) -> dict[str, any]:
         kwargs = super().get_generator_kwargs()

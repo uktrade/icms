@@ -13,7 +13,7 @@ class BaseTestExportPDFVisualRegression(BaseTestPDFVisualRegression):
 
 
 class TestComCertificate(BaseTestExportPDFVisualRegression):
-    benchmark_pdf_image_file = "com_certificate.pdf"
+    benchmark_pdf_image_file_path = "com_certificate.pdf"
 
     def test_pdf(self, com_app_submitted):
         self.application = com_app_submitted
@@ -21,7 +21,7 @@ class TestComCertificate(BaseTestExportPDFVisualRegression):
 
 
 class TestCfsCertificate(BaseTestExportPDFVisualRegression):
-    benchmark_pdf_image_file = "cfs_certificate.pdf"
+    benchmark_pdf_image_file_path = "cfs_certificate.pdf"
 
     def test_pdf(self, cfs_app_submitted):
         self.application = cfs_app_submitted
@@ -29,7 +29,7 @@ class TestCfsCertificate(BaseTestExportPDFVisualRegression):
 
 
 class TestGmpCertificate(BaseTestExportPDFVisualRegression):
-    benchmark_pdf_image_file = "gmp_certificate.pdf"
+    benchmark_pdf_image_file_path = "gmp_certificate.pdf"
 
     def test_pdf(self, gmp_app_submitted):
         self.application = gmp_app_submitted
@@ -37,7 +37,7 @@ class TestGmpCertificate(BaseTestExportPDFVisualRegression):
 
 
 class TestCfsCoverLetter(BaseTestPDFVisualRegression):
-    benchmark_pdf_image_file = "cfs_cover_letter.pdf"
+    benchmark_pdf_image_file_path = "cfs_cover_letter.pdf"
 
     def get_generator(self):
         return StaticPdfGenerator(DocumentTypes.CFS_COVER_LETTER)

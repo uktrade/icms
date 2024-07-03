@@ -3,25 +3,9 @@
 They are not really tests and as such are not ran as part of the test suite. The reason they are written as tests is
 because they depend on pytest fixtures to populate the data needed to produce the PDFs."""
 
-import datetime as dt
-import json
-
-import pytest
-
 from web.tests.utils.pdf.test_visual_regression import BENCHMARK_PDF_DIRECTORY
 from web.types import DocumentTypes
 from web.utils.pdf import PdfGenerator, StaticPdfGenerator
-
-
-@pytest.fixture(autouse=True, scope="session")
-def save_timestamp():
-    """Save the current timestamp to a file so that we can freeze time when generating the PDFs we are going to test.
-
-    We run this at the end of the session so that we only save the timestamp once."""
-    yield
-    date_stamp = {"date_created": dt.datetime.now().isoformat()}
-    with open(BENCHMARK_PDF_DIRECTORY / "date_created.json", "w") as f:
-        json.dump(date_stamp, f)
 
 
 def test_generate_benchmark_cfs_certificate(cfs_app_submitted):
