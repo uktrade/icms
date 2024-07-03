@@ -1,4 +1,3 @@
-from random import randint
 from typing import TYPE_CHECKING
 
 from django.db.models import Manager, QuerySet
@@ -392,10 +391,7 @@ def doc_ref_documents_all(doc_pack: DocumentPack) -> QuerySet[CaseDocumentRefere
 def _create_document(
     doc_pack: DocumentPack, doc_type: str, doc_reference: str | None = None
 ) -> CaseDocumentReference:
-    check_code = randint(10000000, 99999999)
-    return doc_pack.document_references.create(
-        document_type=doc_type, reference=doc_reference, check_code=str(check_code)
-    )
+    return doc_pack.document_references.create(document_type=doc_type, reference=doc_reference)
 
 
 def _get_qm(application: ImpOrExp) -> Manager[DocumentPack]:

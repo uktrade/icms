@@ -1,6 +1,6 @@
 import datetime as dt
 import logging
-from typing import Any
+from typing import Any, ClassVar
 
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -14,10 +14,11 @@ from web.forms.fields import JqueryDateField
 from web.forms.mixins import OptionalFormMixin
 from web.forms.widgets import ICMSModelSelect2Widget
 from web.models import (
+    CaseEmailDownloadLink,
     Constabulary,
+    ConstabularyLicenceDownloadLink,
     ExportApplication,
     ImportApplication,
-    ImportApplicationDownloadLink,
     User,
 )
 from web.permissions import get_all_case_officers, organisation_get_contacts
@@ -318,11 +319,11 @@ class ReassignOwnershipExport(ReassignOwnershipBaseForm):
         fields = ReassignOwnershipBaseForm.Meta.fields
 
 
-class DownloadDFLCaseDocumentsForm(forms.Form):
-    link: ImportApplicationDownloadLink | None
-    # The same error message for every outcome
-    ERROR_MSG = (
-        "Licence data not found using the provided values."
+class DownloadDocumentsFormBase(forms.Form):
+    link_class: ClassVar[type[ConstabularyLicenceDownloadLink | CaseEmailDownloadLink]]
+    link: ConstabularyLicenceDownloadLink | CaseEmailDownloadLink | None
+    ERROR_MSG: ClassVar[str] = (
+        "Data not found using the provided values."
         " Please ensure all details are entered correctly and try again."
     )
 
@@ -330,6 +331,55 @@ class DownloadDFLCaseDocumentsForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.code = code
         self.link = None
+
+    email = forms.EmailField(help_text="Enter the associated email address.")
+    check_code = forms.CharField(max_length=8, help_text="Enter the check code found in the email")
+
+    def clean(self):
+        # Load and store the link record if valid, display error if not.
+        cleaned = super().clean()
+
+        if not all(cleaned.values()):
+            return cleaned
+
+        link_qs = self.link_class.objects.filter(code=self.code, expired=False)
+
+        try:
+            # Store the link using just the code
+            self.link = link_qs.get()
+        except ObjectDoesNotExist:
+            log_msg("Invalid code or expired link")
+            raise ValidationError(self.ERROR_MSG)
+
+        try:
+            # Check the form data matches the record by fetching the record again.
+            link_qs.get(**cleaned)
+        except ObjectDoesNotExist:
+            log_msg("Form data doesn't match link code")
+            raise ValidationError(self.ERROR_MSG)
+
+        # Check it's in the last 6 weeks
+        six_weeks_ago = timezone.now().date() - dt.timedelta(weeks=6)
+
+        if self.link.sent_at_datetime.date() < six_weeks_ago:  # type: ignore[union-attr]
+            log_msg("Link created more than six weeks ago")
+
+            raise ValidationError(self.ERROR_MSG)
+
+        return cleaned
+
+
+class DownloadCaseEmailDocumentsForm(DownloadDocumentsFormBase):
+    link_class = CaseEmailDownloadLink
+
+
+class DownloadDFLCaseDocumentsForm(DownloadDocumentsFormBase):
+    link_class = ConstabularyLicenceDownloadLink
+    # The same error message for every outcome
+    ERROR_MSG = (
+        "Licence data not found using the provided values."
+        " Please ensure all details are entered correctly and try again."
+    )
 
     email = forms.EmailField(help_text="Enter the associated constabulary email address.")
     constabulary = forms.ModelChoiceField(
@@ -343,44 +393,6 @@ class DownloadDFLCaseDocumentsForm(forms.Form):
             search_fields=("name__icontains",),
         ),
     )
-    check_code = forms.CharField(max_length=8, help_text="Enter the check code found in the email")
-
-    def clean(self):
-        # Load and store the link record if valid, display error if not.
-        cleaned = super().clean()
-
-        check_code = cleaned.get("check_code")
-        email = cleaned.get("email")
-        constabulary = cleaned.get("constabulary")
-
-        if not (check_code and email and constabulary):
-            return cleaned
-
-        try:
-            # Store the link using just the code
-            link_qs = ImportApplicationDownloadLink.objects.filter(code=self.code, expired=False)
-            self.link = link_qs.get()
-        except ObjectDoesNotExist:
-            log_msg("Invalid code or expired link")
-            raise ValidationError(self.ERROR_MSG)
-
-        try:
-            # Check the form data matches the record by fetching the record again.
-            link_qs.get(check_code=check_code, email=email, constabulary=constabulary)
-        except ObjectDoesNotExist:
-            log_msg("Form data doesn't match link code")
-            raise ValidationError(self.ERROR_MSG)
-
-        # Check it's in the last 6 weeks
-        link: ImportApplicationDownloadLink = self.link  # type: ignore[assignment]
-        six_weeks_ago = timezone.now().date() - dt.timedelta(weeks=6)
-
-        if link.sent_at_datetime.date() < six_weeks_ago:
-            log_msg("Link created more than six weeks ago")
-
-            raise ValidationError(self.ERROR_MSG)
-
-        return cleaned
 
 
 def log_msg(msg: str) -> None:

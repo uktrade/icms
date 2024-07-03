@@ -1,3 +1,6 @@
+import uuid
+from random import randint
+
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -293,6 +296,35 @@ class CaseEmail(models.Model):
         return self.status == self.Status.DRAFT
 
 
+def create_check_code() -> int:
+    return randint(10000000, 99999999)
+
+
+class DownloadLinkBase(models.Model):
+    """Base model used to send links in emails to download documents."""
+
+    class Meta:
+        abstract = True
+
+    FAILURE_LIMIT = 3
+
+    # Used in email link to load record.
+    code = models.UUIDField(default=uuid.uuid4, editable=False)
+
+    # Found in email to prove the user has access to the mailbox
+    check_code = models.CharField(max_length=8, editable=False, default=create_check_code)
+    email = models.EmailField(max_length=254)
+    failure_count = models.IntegerField(default=0)
+    expired = models.BooleanField(default=False)
+    sent_at_datetime = models.DateTimeField(auto_now_add=True)
+
+
+class CaseEmailDownloadLink(DownloadLinkBase):
+    """Model used to send links in case emails to download attached documents."""
+
+    case_email = models.ForeignKey("web.CaseEmail", on_delete=models.PROTECT)
+
+
 class DocumentPackBase(models.Model):
     """Base class for Import Licences and Export Certificates"""
 
@@ -336,7 +368,7 @@ class CaseDocumentReference(models.Model):
     reference = models.CharField(max_length=20, verbose_name="Document Reference", null=True)
 
     # Code to verify document at /check
-    check_code = models.CharField(null=True, max_length=16)
+    check_code = models.CharField(null=True, max_length=16, default=create_check_code)
 
     # Fields to set up the generic model for import / export models.
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)

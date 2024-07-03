@@ -3,8 +3,10 @@ from typing import NamedTuple, Union
 from django.db.models import QuerySet
 
 from web.models import (
+    CaseEmailDownloadLink,
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
+    ConstabularyLicenceDownloadLink,
     DerogationsApplication,
     DFLApplication,
     ExportApplication,
@@ -80,6 +82,8 @@ ApplicationsWithCaseEmail = Union[
 ]
 
 DocumentPack = Union[ImportApplicationLicence, ExportApplicationCertificate]
+
+DownloadLink = Union[ConstabularyLicenceDownloadLink, CaseEmailDownloadLink]
 
 
 class CaseEmailConfig(NamedTuple):

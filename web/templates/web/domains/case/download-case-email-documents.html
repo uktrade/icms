@@ -1,0 +1,48 @@
+{% extends "web/domains/case/download-documents-base.html" %}
+{% from "display/fields.html" import application_section, application_field %}
+
+{% set regenerate_link = "case:regenerate-case-email-documents-link" %}
+
+{% block main_content %}
+  {{ super() }}
+
+  {% if exporter %}
+    {% call display.application_section("Exporter") %}
+      {{ display.application_field(exporter.name, "Exporter Name")}}
+      {{ display.application_field(exporter.office_address, "Office Address")}}
+      {{ display.application_field(exporter.office_postcode, "Office Postcode")}}
+    {% endcall %}
+  {% endif %}
+
+  {% if importer %}
+    {% call display.application_section("Importer") %}
+      {{ display.application_field(exporter.name, "Importer Name")}}
+      {{ display.application_field(exporter.office_address, "Office Address")}}
+      {{ display.application_field(exporter.office_postcode, "Office Postcode")}}
+    {% endcall %}
+  {% endif %}
+
+  {% if documents %}
+    {% call display.application_section("") %}
+      <table class="setoutList">
+        <thead>
+        <tr>
+          <th scope="col">Document Type</th>
+          <th scope="col">Document</th>
+        </tr>
+        </thead>
+        <tbody>
+          {% for doc in documents %}
+            <td>{{ doc.name }}</td>
+            <td>
+              <a href="{{ doc.url }}">
+                  View Document
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endcall %}
+  {% endif %}
+{% endblock %}

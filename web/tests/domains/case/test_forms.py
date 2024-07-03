@@ -6,7 +6,7 @@ from pytest_django.asserts import assertFormError
 
 from web.domains.case.forms import DownloadDFLCaseDocumentsForm
 from web.domains.case.services import document_pack
-from web.models import Constabulary, ImportApplicationDownloadLink
+from web.models import Constabulary, ConstabularyLicenceDownloadLink
 
 
 @pytest.fixture()
@@ -15,8 +15,8 @@ def constabulary(db) -> Constabulary:
 
 
 @pytest.fixture()
-def link(completed_dfl_app, constabulary) -> ImportApplicationDownloadLink:
-    return ImportApplicationDownloadLink.objects.create(
+def link(completed_dfl_app, constabulary) -> ConstabularyLicenceDownloadLink:
+    return ConstabularyLicenceDownloadLink.objects.create(
         check_code=12345678,
         email="test_user@example.com",  # /PS-IGNORE
         constabulary=constabulary,

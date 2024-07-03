@@ -7,12 +7,13 @@ from django.templatetags.static import static
 from web.domains.case.types import Authority, DocumentPack, ImpOrExp
 from web.models import (
     CaseDocumentReference,
+    CaseEmailDownloadLink,
+    ConstabularyLicenceDownloadLink,
     DFLApplication,
     Exporter,
     ExporterContactInvite,
     FirearmsAuthority,
     ImportApplication,
-    ImportApplicationDownloadLink,
     Importer,
     ImporterContactInvite,
     Mailshot,
@@ -126,7 +127,7 @@ def get_accept_org_invite_url(
     return urljoin(site_url, reverse("contacts:accept-org-invite", kwargs={"code": invite.code}))
 
 
-def get_dfl_application_otd_url(link: ImportApplicationDownloadLink) -> str:
+def get_dfl_application_otd_url(link: ConstabularyLicenceDownloadLink) -> str:
     qd = QueryDict(mutable=True)
     qd.update(
         {
@@ -139,5 +140,21 @@ def get_dfl_application_otd_url(link: ImportApplicationDownloadLink) -> str:
     return urljoin(
         get_caseworker_site_domain(),
         reverse("case:download-dfl-case-documents", kwargs={"code": link.code})
+        + f"?{qd.urlencode()}",
+    )
+
+
+def get_case_email_otd_url(link: CaseEmailDownloadLink) -> str:
+    qd = QueryDict(mutable=True)
+    qd.update(
+        {
+            "email": link.email,
+            "check_code": link.check_code,
+        }
+    )
+
+    return urljoin(
+        get_caseworker_site_domain(),
+        reverse("case:download-case-email-documents", kwargs={"code": link.code})
         + f"?{qd.urlencode()}",
     )
