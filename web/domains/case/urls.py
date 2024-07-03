@@ -468,8 +468,18 @@ urlpatterns = [
         name="download-dfl-case-documents",
     ),
     path(
-        "download-case-documents/<uuid:code>/regnerate-link/",
+        "download-dfl-case-documents/<uuid:code>/regnerate-link/",
         views_documents.RegenerateDFLCaseDocumentsDownloadLinkView.as_view(),
         name="regenerate-dfl-case-documents-link",
+    ),
+    path(
+        "download-case-email-documents/<uuid:code>/",
+        views_documents.DownloadCaseEmailDocumentsFormView.as_view(),
+        name="download-case-email-documents",
+    ),
+    path(
+        "download-case-email-documents/<uuid:code>/regnerate-link/",
+        views_documents.RegenerateCaseEmailDocumentsDownloadLinkView.as_view(),
+        name="regenerate-case-email-documents-link",
     ),
 ]

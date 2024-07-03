@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, ClassVar
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -13,19 +13,31 @@ from django_ratelimit import UNSAFE
 from django_ratelimit.decorators import ratelimit
 from guardian.shortcuts import get_objects_for_user
 
-from web.domains.case.forms import DownloadDFLCaseDocumentsForm
+from web.domains.case.forms import (
+    DownloadCaseEmailDocumentsForm,
+    DownloadDFLCaseDocumentsForm,
+    DownloadDocumentsFormBase,
+)
 from web.domains.case.services import document_pack
-from web.domains.case.types import DocumentPack
+from web.domains.case.types import DocumentPack, DownloadLink, ImpOrExp
 from web.domains.case.utils import get_case_page_title
 from web.flow.models import ProcessTypes
-from web.mail.emails import send_constabulary_deactivated_firearms_email
+from web.mail.constants import EmailTypes
+from web.mail.emails import (
+    send_case_email,
+    send_constabulary_deactivated_firearms_email,
+)
 from web.mail.url_helpers import get_constabulary_document_download_view_url
 from web.models import (
     CaseDocumentReference,
+    CaseEmail,
+    CaseEmailDownloadLink,
+    CertificateOfGoodManufacturingPracticeApplication,
     Constabulary,
-    DFLApplication,
+    ConstabularyLicenceDownloadLink,
+    ExportApplication,
+    GMPFile,
     ImportApplication,
-    ImportApplicationDownloadLink,
     ImportApplicationLicence,
 )
 from web.permissions import Perms
@@ -36,7 +48,7 @@ from web.utils.sentry import capture_exception
 
 @method_decorator(ratelimit(key="ip", rate="10/m", method=UNSAFE, block=True), name="post")
 @method_decorator(ratelimit(key="ip", rate="20/m", method="GET", block=True), name="get")
-class DownloadDFLCaseDocumentsFormView(FormView):
+class DownloadCaseDocumentsFormView(FormView):
     """View to see all documents relating to an import application.
 
     View does not require a logged-in user, it instead asks a user to enter information
@@ -44,11 +56,9 @@ class DownloadDFLCaseDocumentsFormView(FormView):
     """
 
     # FormView config
-    form_class = DownloadDFLCaseDocumentsForm
     template_name = "web/domains/case/download-case-documents.html"
+    form_class: type[DownloadDocumentsFormBase]
     http_method_names = ["get", "post"]
-
-    licence_date_format = "%d %b %Y"
 
     # We don't want to see the cookie banner / enable the JS
     extra_context = {"gtm_enabled": False}
@@ -60,25 +70,138 @@ class DownloadDFLCaseDocumentsFormView(FormView):
 
         return initial | {
             "email": self.request.GET.get("email"),
-            "constabulary": self.request.GET.get("constabulary"),
             "check_code": self.request.GET.get("check_code"),
         }
 
     def get_form_kwargs(self) -> dict[str, Any]:
         # Supply the code to the form.
-        # Ensures we can only ever load a ImportApplicationDownloadLink record
+        # Ensures we can only ever load a DownloadLink record
         # associated with the code in the URL.
         return super().get_form_kwargs() | {
             "code": self.kwargs["code"],
         }
 
-    def form_valid(self, form: DownloadDFLCaseDocumentsForm) -> HttpResponse:
-        link: ImportApplicationDownloadLink = form.link  # type: ignore[assignment]
+    def get_extra_context(self, form: DownloadDocumentsFormBase) -> dict[str, Any]:
+        return {}
 
-        # Load case documents here
+    def form_valid(self, form: DownloadDocumentsFormBase) -> HttpResponse:
+        link: DownloadLink = form.link  # type: ignore[assignment]
+
+        # Reset the failure count
+        link.failure_count = 0
+        link.save()
+
+        context = self.get_extra_context(form)
+        return self.render_to_response(self.get_context_data(**context))
+
+    def form_invalid(self, form: DownloadDocumentsFormBase) -> HttpResponse:
+        if form.link:
+            link = form.link
+
+            if link.failure_count < link.FAILURE_LIMIT:
+                link.failure_count = F("failure_count") + 1
+                link.save()
+                # failure_count is updated when sql is executed, therefore refresh value from db
+                link.refresh_from_db()
+
+            if link.failure_count == link.FAILURE_LIMIT:
+                link.expired = True
+                link.save()
+
+        return super().form_invalid(form)
+
+
+class DownloadCaseEmailDocumentsFormView(DownloadCaseDocumentsFormView):
+    """View to see supporting documents relating to a gmp application.
+
+    View does not require a logged-in user, it instead asks a user to enter information
+    relating to the case.
+    """
+
+    form_class = DownloadCaseEmailDocumentsForm
+    template_name = "web/domains/case/download-case-email-documents.html"
+
+    def get_application(self, case_email: CaseEmail) -> ImpOrExp:
+        match case_email.template_code:
+            case EmailTypes.BEIS_CASE_EMAIL:
+                return ExportApplication.objects.get(case_emails=case_email).get_specific_model()
+            case EmailTypes.CONSTABULARY_CASE_EMAIL:
+                return ImportApplication.objects.get(case_emails=case_email).get_specific_model()
+            case _:
+                raise ValueError(f"Email attachments not supported for {case_email.template_code}.")
+
+    def get_extra_context(self, form: DownloadCaseEmailDocumentsForm) -> dict[str, Any]:
+        link: CaseEmailDownloadLink = form.link  # type: ignore[assignment]
+        application = self.get_application(link.case_email)
+
+        # Importer / Exporter details
+        match application:
+            case ExportApplication():
+                context = {
+                    "exporter": {
+                        "name": application.exporter.name,
+                        "office_address": application.exporter_office.address,
+                        "office_postcode": application.exporter_office.postcode,
+                    }
+                }
+            case ImportApplication():
+                context = {
+                    "importer": {
+                        "name": application.importer.name,
+                        "office_address": application.importer_office.address,
+                        "office_postcode": application.importer_office.postcode,
+                    }
+                }
+            case _:
+                raise ValueError("Email attachments not supported for {case_email.template_code}.")
+
+        # Documents
+        match application:
+            case CertificateOfGoodManufacturingPracticeApplication():
+                return context | {
+                    "documents": [
+                        {
+                            "name": GMPFile.Type(doc.gmpfile.file_type).label,
+                            "url": create_presigned_url(doc.path),
+                        }
+                        for doc in link.case_email.attachments.all()
+                    ],
+                }
+
+        return context
+
+
+class DownloadDFLCaseDocumentsFormView(DownloadCaseDocumentsFormView):
+    """View to see all documents relating to an import application.
+
+    View does not require a logged-in user, it instead asks a user to enter information
+    relating to the case.
+    """
+
+    # FormView config
+    form_class = DownloadDFLCaseDocumentsForm
+    licence_date_format = "%d %b %Y"
+
+    def get_initial(self) -> dict:
+        """Load the form using query params from the request."""
+
+        initial = super().get_initial()
+
+        return initial | {
+            "constabulary": self.request.GET.get("constabulary"),
+        }
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        return context | {"regenerate_link": "case:regenerate-dfl-case-documents-link"}
+
+    def get_extra_context(self, form: DownloadDFLCaseDocumentsForm) -> dict[str, Any]:
+        link: ConstabularyLicenceDownloadLink = form.link  # type: ignore[assignment]
         pack: ImportApplicationLicence = link.licence
         application = link.licence.import_application.get_specific_model()
-        context = {
+
+        return {
+            "regenerate_link": "case:regenerate-dfl-case-documents-link",
             "doc_pack": pack,
             "process": application,
             "application_type": ProcessTypes(application.process_type).label,
@@ -102,44 +225,26 @@ class DownloadDFLCaseDocumentsFormView(FormView):
             },
         }
 
-        # Reset the failure count
-        link.failure_count = 0
-        link.save()
-
-        return self.render_to_response(self.get_context_data(form=form, **context))
-
-    def form_invalid(self, form: DownloadDFLCaseDocumentsForm) -> HttpResponse:
-        if form.link:
-            link = form.link
-
-            if link.failure_count < ImportApplicationDownloadLink.FAILURE_LIMIT:
-                link.failure_count = F("failure_count") + 1
-                link.save()
-                # failure_count is updated when sql is executed, therefore refresh value from db
-                link.refresh_from_db()
-
-            if link.failure_count == ImportApplicationDownloadLink.FAILURE_LIMIT:
-                link.expired = True
-                link.save()
-
-        return super().form_invalid(form)
-
 
 @method_decorator(ratelimit(key="ip", rate="10/m", method=UNSAFE, block=True), name="post")
-class RegenerateDFLCaseDocumentsDownloadLinkView(View):
+class RegenerateDownloadLinkView(View):
     http_method_names = ["post"]
+    link_class: ClassVar[type[ConstabularyLicenceDownloadLink | CaseEmailDownloadLink]]
+    download_url_name: str
+
+    @staticmethod
+    def resend_email(link: DownloadLink) -> None:
+        raise NotImplementedError("Method to resend email must be defined.")
 
     def post(self, request: HttpResponse, *args: Any, **kwargs: Any) -> HttpResponse:
         try:
-            link = ImportApplicationDownloadLink.objects.get(code=kwargs["code"])
-            application: DFLApplication = link.licence.import_application.get_specific_model()
+            link = self.link_class.objects.get(code=kwargs["code"])
 
             # Expire the old one (if it wasn't already)
             link.expired = True
             link.save()
 
-            # Resend the new one
-            send_constabulary_deactivated_firearms_email(application)
+            self.resend_email(link)
 
         except ObjectDoesNotExist:
             pass
@@ -151,9 +256,26 @@ class RegenerateDFLCaseDocumentsDownloadLinkView(View):
 
         messages.info(request, "If the case exists a new email has been generated.")
 
-        return redirect(
-            reverse("case:download-dfl-case-documents", kwargs={"code": self.kwargs.get("code")})
-        )
+        return redirect(reverse(self.download_url_name, kwargs={"code": self.kwargs.get("code")}))
+
+
+class RegenerateDFLCaseDocumentsDownloadLinkView(RegenerateDownloadLinkView):
+    download_url_name = "case:download-dfl-case-documents"
+    link_class = ConstabularyLicenceDownloadLink
+
+    @staticmethod
+    def resend_email(link: ConstabularyLicenceDownloadLink) -> None:
+        application = link.licence.import_application.get_specific_model()
+        send_constabulary_deactivated_firearms_email(application)
+
+
+class RegenerateCaseEmailDocumentsDownloadLinkView(RegenerateDownloadLinkView):
+    download_url_name = "case:download-case-email-documents"
+    link_class = CaseEmailDownloadLink
+
+    @staticmethod
+    def resend_email(link: CaseEmailDownloadLink) -> None:
+        send_case_email(link.case_email)
 
 
 # Note: Not currently in use (replaced by DownloadDFLCaseDocumentsFormView)

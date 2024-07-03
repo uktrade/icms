@@ -1,6 +1,5 @@
 import copy
 import datetime as dt
-from random import randint
 from typing import Any, ClassVar, final
 from uuid import UUID
 
@@ -13,18 +12,20 @@ from web.domains.case.services import document_pack
 from web.domains.case.types import (
     Authority,
     DocumentPack,
+    DownloadLink,
     ImpAccessOrExpAccess,
     ImpOrExp,
     ImpOrExpApproval,
 )
 from web.models import CaseEmail as CaseEmailModel
 from web.models import (
+    CaseEmailDownloadLink,
     Constabulary,
+    ConstabularyLicenceDownloadLink,
     DFLApplication,
     Exporter,
     ExporterContactInvite,
     FurtherInformationRequest,
-    ImportApplicationDownloadLink,
     Importer,
     ImporterContactInvite,
     Mailshot,
@@ -51,6 +52,7 @@ from .url_helpers import (
     get_accept_org_invite_url,
     get_account_recovery_url,
     get_authority_view_url,
+    get_case_email_otd_url,
     get_case_view_url,
     get_dfl_application_otd_url,
     get_exporter_access_request_url,
@@ -365,12 +367,11 @@ class ConstabularyDeactivatedFirearmsEmail(BaseApplicationEmail):
     def get_document_pack(self) -> DocumentPack:
         return document_pack.pack_active_get(self.application)
 
-    def generate_view_case_documents_link(self) -> ImportApplicationDownloadLink:
+    def generate_view_case_documents_link(self) -> ConstabularyLicenceDownloadLink:
         if len(self.to) > 1:
             raise ValueError("Unable to create download link for multiple emails.")
 
-        return ImportApplicationDownloadLink.objects.create(
-            check_code=randint(10000000, 99999999),
+        return ConstabularyLicenceDownloadLink.objects.create(
             email=self.to[0],
             constabulary=self.constabulary,
             licence=document_pack.pack_active_get(self.application),
@@ -433,10 +434,7 @@ class VariationRequestRefusedEmail(BaseVariationRequestEmail):
         return context
 
 
-@final
-class CaseEmail(GOVNotifyEmailMessage):
-    name = EmailTypes.CASE_EMAIL
-
+class BaseCaseEmail(GOVNotifyEmailMessage):
     def __init__(self, *args: Any, case_email: CaseEmailModel, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.case_email = case_email
@@ -449,6 +447,31 @@ class CaseEmail(GOVNotifyEmailMessage):
 
     def get_context(self) -> dict[str, Any]:
         return {"subject": self.case_email.subject, "body": self.case_email.body}
+
+
+@final
+class CaseEmail(BaseCaseEmail):
+    name = EmailTypes.CASE_EMAIL
+
+
+@final
+class CaseEmailWithDocuments(BaseCaseEmail):
+    name = EmailTypes.CASE_EMAIL_WITH_DOCUMENTS
+
+    def get_context(self) -> dict[str, Any]:
+        context = super().get_context()
+        link = self.generate_documents_download_link()
+
+        return context | {
+            "documents_url": (link and get_case_email_otd_url(link)) or "",
+            "check_code": (link and str(link.check_code)) or "",
+        }
+
+    def generate_documents_download_link(self) -> DownloadLink | None:
+        if not self.case_email.attachments.exists():
+            return None
+
+        return CaseEmailDownloadLink.objects.create(case_email=self.case_email, email=self.to[0])
 
 
 class BaseFurtherInformationRequestEmail(GOVNotifyEmailMessage):

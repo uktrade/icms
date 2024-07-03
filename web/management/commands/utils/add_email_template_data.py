@@ -60,6 +60,7 @@ templates = [
     (EmailTypes.WITHDRAWAL_OPENED, "e3499a7c-ad6e-4ceb-bed3-d0a9a137f6a9"),  # /PS-IGNORE
     (EmailTypes.WITHDRAWAL_REJECTED, "ffbed03f-bebc-4f87-a602-e83df0c72890"),  # /PS-IGNORE
     (EmailTypes.CASE_EMAIL, "657aa427-8dda-496a-b933-fa7be10f16fd"),  # /PS-IGNORE
+    (EmailTypes.CASE_EMAIL_WITH_DOCUMENTS, "d208a30a-f03d-447a-89cf-c29f192b3cc4"),  # /PS-IGNORE
     (
         EmailTypes.APPLICATION_FURTHER_INFORMATION_REQUEST,
         "fc26629c-51bd-427a-bd7d-81322f669f65",  # /PS-IGNORE

@@ -1,65 +1,11 @@
-{% extends "layout/public.html" %}
-{% import "forms/forms.html" as forms %}
-{% import "forms/fields.html" as form_fields %}
-{% import "display/fields.html" as display %}
-
-{% block css %}
-  {{ super() }}
-  {{ form.media.css }}
-  {# Apply a little extra styling we normally get when not using public.html as a base. #}
-  <style>
-      p.helptext {
-          margin-top: 0.5em;
-      }
-
-      .setoutForm input {
-          border-radius: 3px;
-          background-color: transparent;
-          font-family: 'Open Sans', sans-serif;
-      }
-  </style>
-{% endblock %}
-
-{# Disable the cookie banner #}
-{# (pressing Accept analytics cookies / Reject analytics cookies loses the form values #}
-{# Need to fix the following in base.html: action="{{ icms_url('cookie-consent') }}?referrer_url={{ request.path }}" #}
-{% block cookie_banner %} {% endblock %}
+{% extends "web/domains/case/download-documents-base.html" %}
 
 {% block main_content %}
-  <div id="header">
-    <h1>Download Case Documents</h1>
-    <p class="subheading">The DBT Import Licensing Branch's system for downloading case
-      documents.</p>
-  </div>
-  <p class="bold">Please fill out the form below to access the case documents.</p>
-
-  <br>
-  <div class="row">
-    {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
-      {% for field in form %}
-        {{ form_fields.field(field, label_cols='three', padding='zero', input_cols='six') }}
-      {% endfor %}
-      {{ forms.form_errors(form) }}
-      {{ forms.submit_button(padding_cols="two", btn_label="Submit") }}
-    {% endcall %}
-  </div>
-  {% if form.errors %}
-    <div class="row">
-      <p>If You are having issues downloading the licence click the Regenerate Link button below to get sent a new email.</p>
-      {% call forms.form(action=icms_url("case:regenerate-dfl-case-documents-link", kwargs={"code": form.code}), method='post', csrf_input=csrf_input) %}
-        {{ forms.submit_button(padding_cols="two", btn_label="Regenerate Link") }}
-      {% endcall %}
-    </div>
-  {% endif %}
+  {{ super() }}
   {% if doc_pack %}
     <hr>
     {% call display.application_section("Licence documents") %}
       {% include "web/domains/case/partials/import-application-licence-history-table.html" %}
     {% endcall %}
   {% endif %}
-{% endblock %}
-
-{% block page_js %}
-  {{ super() }}
-  {{ form.media.js }}
 {% endblock %}
