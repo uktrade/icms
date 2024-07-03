@@ -1,6 +1,7 @@
 import logging
 from typing import Any
 from urllib import parse
+from urllib.parse import urljoin
 
 from django.conf import settings
 from django.contrib import auth
@@ -24,8 +25,14 @@ from django_filters import FilterSet
 from django_select2.views import AutoResponseView
 
 from web.flow.errors import ProcessError
-from web.one_login.utils import OneLoginConfig
-from web.sites import is_caseworker_site, is_exporter_site, is_importer_site
+from web.one_login.utils import get_one_login_logout_url
+from web.sites import (
+    get_exporter_site_domain,
+    get_importer_site_domain,
+    is_caseworker_site,
+    is_exporter_site,
+    is_importer_site,
+)
 from web.utils.sentry import capture_exception
 
 from .actions import PostAction
@@ -110,17 +117,21 @@ def logout_view(request: HttpRequest) -> HttpResponse:
     # 1. Fetch cached backend for user
     backend = request.session.get(auth.BACKEND_SESSION_KEY, "")
 
-    # 2. Clear session and user
-    auth.logout(request)
-
-    # 3. Using user backend, redirect to correct auth logout view.
+    # 2. Using user backend, set correct auth logout view.
     login_start = reverse("login-start")
     match backend:
         case "web.auth.backends.ICMSStaffSSOBackend":
             url = parse.urljoin(settings.AUTHBROKER_URL, "logout/")
 
         case "web.auth.backends.ICMSGovUKOneLoginBackend":
-            url = OneLoginConfig().end_session_url
+            if is_exporter_site(request.site):
+                site = get_exporter_site_domain()
+            elif is_importer_site(request.site):
+                site = get_importer_site_domain()
+            else:
+                raise ValueError(f"Unable to determine site: {request.site}")
+
+            url = get_one_login_logout_url(request, urljoin(site, reverse("login-start")))
 
         case "web.auth.backends.ModelAndObjectPermissionBackend":
             url = login_start
@@ -129,6 +140,10 @@ def logout_view(request: HttpRequest) -> HttpResponse:
             logger.error(f"Unknown backend: {backend}, defaulting to login_start")
             url = login_start
 
+    # 3. Clear session and user
+    auth.logout(request)
+
+    # 4. Redirect to correct logout url.
     return redirect(url)
 
 

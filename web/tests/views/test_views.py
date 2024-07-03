@@ -9,7 +9,7 @@ from pytest_django.asserts import assertRedirects
 
 from web.domains.case.forms_search import ImportSearchForm
 from web.domains.contacts.widgets import ContactWidget
-from web.one_login.utils import OneLoginConfig
+from web.one_login.utils import get_one_login_logout_url
 from web.tests.auth import AuthTestCase
 from web.views import views
 
@@ -91,9 +91,9 @@ class TestLogoutView:
             importer_one_contact, backend="web.auth.backends.ICMSGovUKOneLoginBackend"
         )
 
-        one_login_config_mock = mock.create_autospec(spec=OneLoginConfig)
-        one_login_config_mock.return_value.end_session_url = "https://fake-one.login.gov.uk/logout/"
-        monkeypatch.setattr(views, "OneLoginConfig", one_login_config_mock)
+        get_one_login_logout_url_mock = mock.create_autospec(spec=get_one_login_logout_url)
+        get_one_login_logout_url_mock.return_value = "https://fake-one.login.gov.uk/logout/"
+        monkeypatch.setattr(views, "get_one_login_logout_url", get_one_login_logout_url_mock)
 
         response = imp_client.post(reverse("logout-user"))
 

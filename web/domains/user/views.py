@@ -359,7 +359,7 @@ class OneLoginTestAccountsDetailView(
     template_name = "web/domains/user/one_login/test_account_detail.html"
 
     extra_context = {
-        "page_title": "Gov.UK One Login Test Accounts",
+        "page_title": "GOV.UK One Login Test Accounts",
     }
 
     def test_func(self) -> bool:
