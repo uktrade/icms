@@ -1,21 +1,3 @@
-
 <style>
-    .playwright-header {
-        width: 100%;
-    }
-
-    .page_number_count {
-        margin-right: 107px;
-        float: right;
-    }
-
-    .page_number_count, .pageNumber, .totalPages {
-        font-family: Helvetica, sans-serif;
-        font-size: 15px;
-    }
-    {{ get_css_rules_as_string('web/css/pdfs/fonts.css')|safe }}
+    {{ get_css_rules_as_string('web/css/pdfs/fonts.css') | safe }}
 </style>
-
-<div class="playwright-header">
-  <span class="page_number_count">Page <span class="pageNumber"></span> of <span class="totalPages"></span></span>
-</div>
