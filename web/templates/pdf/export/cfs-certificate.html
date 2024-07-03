@@ -7,9 +7,12 @@
 <html lang="en">
   <head>
     <style>
-      {{ get_css_rules_as_string('web/css/pdfs/fonts.css')|safe }}
-      {{ get_css_rules_as_string('web/css/pdfs/constants.css')|safe }}
-      {{ get_css_rules_as_string('web/css/pdfs/cfs-certificate-style.css')|safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/fonts.css') | safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/constants.css') | safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/cfs-certificate-style.css') | safe }}
+      {% if preview %}
+        {{ get_css_rules_as_string('web/css/pdfs/preview.css') | safe }}
+      {% endif %}
       .dbt_logo_watermark {
         background-image: url("data:image/png;base64,{{ get_file_base64('web/img/dbt_logo.png') }}");
       }
@@ -18,13 +21,10 @@
   </head>
 
   <body>
-    <div class="page-margin">
+    <div>
       <header>
-        <div class="flex-row">
-          <p class="mb-0-5"><span class="reference {{ 'preview-orange' if preview }}">{{ reference }}</span></p>
-        </div>
         <div class="flex-row mb-2">
-          {{ dbt_logo(classes="header-block") }}
+          {{ dbt_logo(classes="header-logo") }}
         </div>
         <hr>
       </header>
@@ -76,20 +76,15 @@
               </div>
             {% endif %}
           </div>
-          <div class="date-block">
-            <span>Date issued:</span>
-            <span>{{ issue_date }}</span>
-          </div>
         </footer>
       </div>
 
       {% for schedule in process.schedules.order_by('created_at') %}
         {% set english_paragraphs = schedule_text[schedule.pk].english_paragraphs %}
         {% set translation_paragraphs = schedule_text[schedule.pk].translation_paragraphs %}
-        <div class="schedule-block page-margin">
-          <div class="header">
-            <p class="reference">{{ reference }}</p>
-            <p class="schedule-index reference">Schedule {{ loop.index }} of {{ loop.length }}</p>
+        <div class="schedule-block">
+          <div class="schedule-index-block">
+            <p class="schedule-index mt-0">Schedule {{ loop.index }} of {{ loop.length }}</p>
           </div>
 
           <h4 class="schedule-header bold">{{ english_paragraphs.header | upper }}</h4>
@@ -112,13 +107,6 @@
                 <p class="product-name">{{ product_name }}</p>
               {% endfor %}
             </div>
-            <footer class="schedule_only_valid_block">
-              <p>
-                This schedule is only valid with Certificate
-                <span class="{{ 'preview-orange' if preview }} footer-reference">{{ reference }}</span>
-              </p>
-              <p>Date issued: {{ issue_date }}</p>
-            </footer>
           </div>
         </div>
       {% endfor %}

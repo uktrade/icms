@@ -11,7 +11,7 @@ from web.flow.models import ProcessTypes
 from web.models import Country
 from web.types import DocumentTypes
 
-from . import utils
+from . import pages, utils
 
 
 @dataclass
@@ -31,15 +31,15 @@ class PdfGenBase:
             page = context.new_page()
             page.set_content(document_html)
 
-            pdf_data = page.pdf(
-                format="A4",
-            )
+            pdf_data = page.pdf(format="A4")
 
-            if target:
-                target.write(pdf_data)
-                return None
+        pdf_data = self.format_pages(pdf_data)
 
-            return pdf_data
+        if target:
+            target.write(pdf_data)
+            return None
+
+        return pdf_data
 
     # TODO: Remove this when all the pdfs have been created
     # See web/domains/case/views/views_pdf.py for example
@@ -48,6 +48,9 @@ class PdfGenBase:
             template_name=self.get_template(),
             context=self.get_document_context(),
         )
+
+    def format_pages(self, pdf_data: bytes) -> bytes:
+        return pdf_data
 
     def get_template(self) -> str:
         """Returns the correct template"""
@@ -161,6 +164,13 @@ class PdfGenerator(PdfGenBase):
                 raise ValueError(f"Unsupported process type: {self.application.process_type}")
 
         return context
+
+    def format_pages(self, pdf_data: bytes) -> bytes:
+        match self.application.process_type:
+            case ProcessTypes.CFS:
+                return pages.format_cfs_pages(pdf_data, self.get_document_context())
+            case _:
+                return pdf_data
 
 
 @dataclass
