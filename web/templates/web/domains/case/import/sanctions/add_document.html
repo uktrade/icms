@@ -18,7 +18,18 @@
 {% endblock %}
 
 {% block main_content %}
-    {% include "partial/case/save-info-box.html" %}
+    <div class="info-box info-box-info">
+      You must save your information then select another section to move through the application.
+      <br>Please provide all information and documents relevant to the consideration of your application, including, as a minimum:
+      <ul>
+        <li>A short summary of the submitted documents, outlining what they are (e.g., sales contracts, invoices, shipping documentation).</li>
+        <li>When did you agree the purchase of these goods, with whom, and what is their value?</li>
+        <li>Where are the goods located now?</li>
+        <li>What will the goods be used for after they enter the UK?</li>
+        <li>What will be the UK port of entry for these goods?</li>
+      </ul>
+      <br>Please note that you may need to respond to additional questions after your application is submitted.
+    </div>
     <h4>Sanctions and Adhoc Licence</h4>
 
     {% call forms.form(action='', method='post', csrf_input=csrf_input, enctype='multipart/form-data') -%}
