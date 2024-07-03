@@ -2,6 +2,7 @@ import datetime as dt
 from functools import cached_property
 from pathlib import Path
 
+from django.conf import settings
 from freezegun import freeze_time
 from pdf2image import convert_from_bytes
 from PIL import Image, ImageChops
@@ -9,7 +10,15 @@ from PIL import Image, ImageChops
 from web.domains.case.models import ApplicationBase
 from web.utils.pdf import PdfGenerator
 
-BENCHMARK_PDF_DIRECTORY = Path(__name__).parent / "benchmark_pdfs"
+BENCHMARK_PDF_DIRECTORY = (
+    Path(settings.BASE_DIR)
+    / "web"
+    / "tests"
+    / "utils"
+    / "pdf"
+    / "test_visual_regression"
+    / "benchmark_pdfs"
+)
 
 
 class BaseTestPDFVisualRegression:
