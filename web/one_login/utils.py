@@ -10,7 +10,7 @@ from authlib.oauth2.rfc7523 import PrivateKeyJWT
 from authlib.oidc.core import IDToken
 from django.conf import settings
 from django.core.cache import cache
-from django.http import HttpRequest
+from django.http import HttpRequest, QueryDict
 from django.urls import reverse
 from django.utils.module_loading import import_string
 
@@ -229,3 +229,29 @@ def get_client_secret(request: HttpRequest) -> str:
 
     # Default if custom function not defined
     return getattr(settings, "GOV_UK_ONE_LOGIN_CLIENT_SECRET", "")
+
+
+def get_one_login_logout_url(
+    request: HttpRequest, post_logout_redirect_uri: str | None = None
+) -> str:
+    """Get logout url for logging a user out of GOV.UK One Login.
+
+    https://docs.sign-in.service.gov.uk/integrate-with-integration-environment/managing-your-users-sessions/#log-your-user-out-of-gov-uk-one-login
+
+    :param request: Django HttpRequest instance
+    :param post_logout_redirect_uri: Optional redirect url
+    """
+
+    url = OneLoginConfig().end_session_url
+
+    if post_logout_redirect_uri:
+        qd = QueryDict(mutable=True)
+        qd.update(
+            {
+                "id_token_hint": request.session[TOKEN_SESSION_KEY]["id_token"],
+                "post_logout_redirect_uri": post_logout_redirect_uri,
+            }
+        )
+        url = f"{url}?{qd.urlencode()}"
+
+    return url
