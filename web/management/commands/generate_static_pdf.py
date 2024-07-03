@@ -21,7 +21,7 @@ class Command(BaseCommand):
             "--output",
             choices=["s3", "disk"],
             default="s3",
-            help="Specify preffered output s3 / disk. Disk saves documents to output_documents folder. Defualts to S3.",
+            help="Specify preferred output s3 / disk. Disk saves documents to output_documents folder. Defaults to S3.",
         )
 
     def handle(self, *args: Any, **options: Any) -> None:

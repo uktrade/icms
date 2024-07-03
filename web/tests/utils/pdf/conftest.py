@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
 from django.utils import timezone
 
@@ -11,7 +13,9 @@ from web.models import (
     SILApplication,
     Template,
 )
+from web.types import DocumentTypes
 from web.utils import day_ordinal_date
+from web.utils.pdf import PdfGenerator
 
 
 @pytest.fixture()
@@ -205,3 +209,17 @@ def wood_expected_preview_context(active_signature):
         "signature": active_signature,
         "signature_file": "",
     }
+
+
+@pytest.fixture()
+def dfl_cover_letter_pdf_generator(licence) -> tuple[PdfGenerator, MagicMock]:
+    with patch(
+        "web.utils.pdf.utils.get_active_signature_file"
+    ) as patched_get_active_signature_file:
+        magic_mock = MagicMock()
+        patched_get_active_signature_file.return_value = (magic_mock, "A")
+        app = DFLApplication(process_type=DFLApplication.PROCESS_TYPE)
+        app.cover_letter_text = "ABC"
+
+        generator = PdfGenerator(DocumentTypes.COVER_LETTER_PREVIEW, app, licence)
+        return generator, magic_mock

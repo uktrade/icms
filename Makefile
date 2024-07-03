@@ -212,3 +212,12 @@ localstack: ## runs localstack (s3) container
 
 down: ## Stops and downs containers
 	docker-compose down --remove-orphans
+
+generate_benchmark_pdfs:
+	./run-tests.sh \
+		web/tests/utils/pdf/test_visual_regression/generate_benchmark_pdfs.py
+
+pdf_visual_regression_test:
+	./run-tests.sh \
+		web/tests/utils/pdf/test_visual_regression/test_import.py \
+		web/tests/utils/pdf/test_visual_regression/test_export.py
