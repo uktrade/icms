@@ -43,6 +43,25 @@
   {% if has_legislation %}
     {% include "web/domains/case/export/partials/cfs/schedule-products.html" %}
   {% endif %}
+
+  {# Add another schedule #}
+  <div class="info-box info-box-info">
+    You must create separate schedules if any of the product information differs e.g. country of manufacture.
+    <br>
+    Click 'Add Schedule' below to add another schedule, or you may copy and modify an existing schedule using the 'Copy' link on the previous page.
+  </div>
+  <hr>
+  <form
+    method="post"
+    action="{{ icms_url('export:cfs-schedule-add', kwargs={'application_pk': process.pk}) }}"
+    class="form-inline">
+    {{ csrf_input }}
+    <button
+      type="submit"
+      class="button small-button icon-plus"
+    >Add Schedule
+    </button>
+  </form>
 {% endblock %}
 
 {% block page_js %}
