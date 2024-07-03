@@ -4,6 +4,7 @@ from django import forms
 
 from web.domains.case._import.forms import ChecklistBaseForm
 from web.domains.case.forms import application_contacts
+from web.domains.commodity.forms import COMMODITY_HELP_TEXT
 from web.domains.file.utils import ICMSFileField
 from web.forms.fields import JqueryDateField
 from web.forms.mixins import OptionalFormMixin
@@ -50,6 +51,7 @@ class WoodQuotaFormBase(forms.ModelForm):
             "exporter_address": forms.Textarea(attrs={"rows": 4}),
             "additional_comments": forms.Textarea(attrs={"rows": 4}),
         }
+        help_texts = {"commodity": COMMODITY_HELP_TEXT}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -127,6 +129,7 @@ class GoodsWoodQuotaLicenceForm(forms.ModelForm):
     class Meta:
         model = models.WoodQuotaApplication
         fields = ("commodity", "goods_description", "goods_qty", "goods_unit")
+        help_texts = {"commodity": COMMODITY_HELP_TEXT}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

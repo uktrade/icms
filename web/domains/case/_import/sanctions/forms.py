@@ -3,6 +3,7 @@ from typing import Any
 from django import forms
 
 from web.domains.case.forms import application_contacts
+from web.domains.commodity.forms import COMMODITY_HELP_TEXT
 from web.forms.mixins import OptionalFormMixin
 from web.models import Country, ImportApplicationType
 from web.utils.commodity import get_usage_commodities, get_usage_records
@@ -94,6 +95,7 @@ class GoodsForm(forms.ModelForm):
             "quantity_amount": forms.NumberInput(attrs={"step": 1}),
             "value": forms.NumberInput(attrs={"step": 1}),
         }
+        help_texts = {"commodity": COMMODITY_HELP_TEXT}
 
     def __init__(
         self, *args: Any, application: SanctionsAndAdhocApplication, **kwargs: Any
@@ -121,6 +123,7 @@ class GoodsSanctionsLicenceForm(forms.ModelForm):
         model = SanctionsAndAdhocApplicationGoods
         fields = ["commodity", "goods_description", "quantity_amount", "value"]
         widgets = {"goods_description": forms.Textarea(attrs={"cols": 80, "rows": 20})}
+        help_texts = {"commodity": COMMODITY_HELP_TEXT}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
