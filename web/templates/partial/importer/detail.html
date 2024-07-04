@@ -17,7 +17,7 @@
     <dt class="bold">Importer Region Origin</dt>
     <dd>{{ importer.get_region_origin_display()|default("N/A", True) }}</dd>
     <dt class="bold">Comments</dt>
-    <dd>{{ importer.comments|default("N/A", True) }}</dd>
+    <dd>{{ importer.comments|default("", True)|nl2br }}</dd>
   </dl>
 {% else %}
   <dl>
