@@ -15,7 +15,9 @@
                          kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': case_type }) }}"
             class="form-inline">
           {{ csrf_input }}
-          <button type="submit" class="small-button icon-undo2">Withdraw Request</button>
+        <button type="submit" class="small-button icon-undo2" data-confirm="Are you sure you want to withdraw this further information request?">
+          Withdraw Request
+        </button>
       </form>
     {% elif fir.status == 'RESPONDED' %}
       <form method="post"
@@ -24,7 +26,9 @@
                          kwargs={'application_pk': process.pk, 'fir_pk': fir.pk, 'case_type': case_type }) }}"
             class="form-inline">
           {{ csrf_input }}
-          <button type="submit" class="small-button">Close</button>
+        <button type="submit" class="small-button" data-confirm="Are you sure you want to close this further information request?">
+          Close
+        </button>
       </form>
     {% endif %}
 
