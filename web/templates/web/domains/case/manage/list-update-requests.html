@@ -27,9 +27,15 @@
               {{ csrf_input }}
               {# Change style of button depending on status #}
               {% if update_request.status == "OPEN" %}
-                <input type="submit" class="button" value="Withdraw Request">
+                <input
+                  type="submit" class="button" value="Withdraw Request"
+                  data-confirm="Are you sure you want to withdraw this update?"
+                >
               {% elif update_request.status == "RESPONDED" %}
-                <input type="submit" class="button primary-button" value="Close Request">
+                <input
+                  type="submit" class="button primary-button" value="Close Request"
+                  data-confirm="Are you sure you want to close this update?"
+                >
               {% endif %}
             </form>
           {% endif %}
