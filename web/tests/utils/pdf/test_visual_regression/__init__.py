@@ -99,5 +99,7 @@ class BaseTestPDFVisualRegression:
             # get a quantifiable difference metric
             diff_metric = len(set(diff.getdata()))
 
+            print(diff_metric)
+
             # we're expecting a number lower than the tolerable difference
             assert diff_metric <= self.tolerable_difference
