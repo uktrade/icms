@@ -121,6 +121,10 @@ jobs:
           command: playwright install --with-deps chromium
 
       - run:
+          name: install poppler
+          command: sudo apt-get update && sudo apt-get install -y poppler-utils
+
+      - run:
           name: run data migration unit tests
           command: |
             source .env && export $(cut -d= -f1 < .env)
