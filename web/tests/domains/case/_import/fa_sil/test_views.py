@@ -232,6 +232,78 @@ class TestSILGoodsCertificateDetailView(AuthTestCase):
         assert "Section 58 other goods" not in html
 
 
+class TestSILResponsePrepEditGoodsView(AuthTestCase):
+    @pytest.fixture(autouse=True)
+    def setup(self, _setup, fa_sil_app_submitted):
+        self.quantity_section = SILGoodsSection5.objects.get(
+            import_application=fa_sil_app_submitted, description="Section 5 goods"
+        )
+        self.url = reverse(
+            "import:fa-sil:response-prep-edit-goods",
+            kwargs={
+                "application_pk": fa_sil_app_submitted.pk,
+                "section_pk": self.quantity_section.pk,
+                "sil_section_type": "section5",
+            },
+        )
+        self.unlimited_quantity_section = SILGoodsSection5.objects.get(
+            import_application=fa_sil_app_submitted, description="Unlimited Section 5 goods"
+        )
+        self.url_unlimited_quantity = reverse(
+            "import:fa-sil:response-prep-edit-goods",
+            kwargs={
+                "application_pk": fa_sil_app_submitted.pk,
+                "section_pk": self.unlimited_quantity_section.pk,
+                "sil_section_type": "section5",
+            },
+        )
+
+    def test_permission(self):
+        response = self.importer_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.exporter_client.get(self.url)
+        assert response.status_code == HTTPStatus.FORBIDDEN
+
+        response = self.ilb_admin_client.get(self.url)
+        assert response.status_code == HTTPStatus.OK
+
+        response = self.ilb_admin_client.get(self.url_unlimited_quantity)
+        assert response.status_code == HTTPStatus.OK
+
+    def test_update_unlimited_quantity_section(self):
+        response = self.ilb_admin_client.post(
+            self.url_unlimited_quantity,
+            data={
+                "quantity": "",
+                "unlimited_quantity": "on",
+                "description": "New unlimited description",
+            },
+        )
+        assert response.status_code == HTTPStatus.FOUND, response.context["form"].errors
+        self.unlimited_quantity_section.refresh_from_db()
+        assert self.unlimited_quantity_section.description == "New unlimited description"
+
+    def test_update_quantity_section(self):
+        response = self.ilb_admin_client.post(
+            self.url,
+            data={"quantity": 333, "description": "New description"},
+        )
+        assert response.status_code == HTTPStatus.FOUND, response.context["form"].errors
+        self.quantity_section.refresh_from_db()
+        assert self.quantity_section.description == "New description"
+
+    def test_update_quantity_section_no_quantity(self):
+        response = self.ilb_admin_client.post(
+            self.url_unlimited_quantity,
+            data={"quantity": "", "unlimited_quantity": False, "description": "New description"},
+        )
+        assert response.status_code == HTTPStatus.OK
+        assert response.context["form"].errors == {
+            "quantity": ["You must enter either a quantity or select unlimited quantity"]
+        }
+
+
 class TestSubmitFaSIL:
     @pytest.fixture(autouse=True)
     def setup(self, importer_client, fa_sil_app_in_progress):

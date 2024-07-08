@@ -413,6 +413,10 @@ def test__get_fa_sil_goods(fa_sil_app_submitted, ilb_admin_user):
             "Section 58 other goods to which Section 58(2) of the Firearms Act 1968, as amended, applies.",
             555,
         ),
+        (
+            "Unlimited Section 5 goods to which Section 5(A) of the Firearms Act 1968, as amended, applies.",
+            "Unlimited",
+        ),
     ]
     actual = _get_fa_sil_goods(fa_sil_app_submitted)
 
@@ -450,6 +454,10 @@ def test__get_fa_sil_goods(fa_sil_app_submitted, ilb_admin_user):
         (
             "Section 58 other goods to which Section 58(2) of the Firearms Act 1968, as amended, applies.",
             555,
+        ),
+        (
+            "Unlimited Section 5 goods to which Section 5(A) of the Firearms Act 1968, as amended, applies.",
+            "Unlimited",
         ),
     ]
     actual = _get_fa_sil_goods(fa_sil_app_submitted)

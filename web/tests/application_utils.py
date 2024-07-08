@@ -273,6 +273,12 @@ def create_in_progress_fa_sil_app(
         quantity=333,
         section_5_clause=Section5Clause.objects.first(),
     )
+    sil_app.goods_section5.create(
+        manufacture=False,
+        description="Unlimited Section 5 goods",
+        unlimited_quantity=True,
+        section_5_clause=Section5Clause.objects.first(),
+    )
     sil_app.goods_section582_obsoletes.create(
         manufacture=False,
         description="Section 58 obsoletes goods",
