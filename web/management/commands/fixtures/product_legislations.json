@@ -1,0 +1,1224 @@
+[
+{
+  "model": "web.productlegislation",
+  "pk": 1,
+  "fields": {
+    "name": "EN 301 489-6 V1.3.1 - Electromagnetic compatibility and Radio spectrum Matters (ERM); Electromagnetic Compatibility (EMC) standard for radio equipment and services; Part 6: Specific conditions for Digital Enhanced Cordless Telecommunications (DECT) equipment",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 2,
+  "fields": {
+    "name": "Aerosol Dispensers Directive 75/324/EEC",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 3,
+  "fields": {
+    "name": "Biocide Products Regulation 528/2012 (EU BPR)",
+    "is_active": false,
+    "is_biocidal": true,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 4,
+  "fields": {
+    "name": "Commission Regulation (EU) No 10/2011 on plastic materials and articles intended to come into contact with food",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 5,
+  "fields": {
+    "name": "Commission Regulation (EU) No 284/2011 laying down specific conditions and detailed procedures for the import of polyamide and melamine plastic kitchenware originating in or consigned from the People’s Republic of China and Hong Kong Special Administrative Region, China",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 6,
+  "fields": {
+    "name": "EN 301 489-1 V1.9.2 - Electromagnetic compatibility and Radio spectrum Matters (ERM); Electromagnetic Compatibility (EMC) standard for radio equipment and services; Part 1: Common technical requirements",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 7,
+  "fields": {
+    "name": "EU Cosmetics Regulation 1223/2009",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": true,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 8,
+  "fields": {
+    "name": "EU Electromagnetic Compatibility (EMC) Directive 2004/108/EC",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 9,
+  "fields": {
+    "name": "General Product Safety Directive 2001/95/EC",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 10,
+  "fields": {
+    "name": "IVD Directive 98/79/EC",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 11,
+  "fields": {
+    "name": "Low Voltage Directive 2006/95/EEC",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 12,
+  "fields": {
+    "name": "Pressure Equipment Directive 97/23/EC",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 13,
+  "fields": {
+    "name": "Regulation (EC) 648/2004 on Detergents",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 14,
+  "fields": {
+    "name": "Regulation (EC) No 1272/2008 on classification, labelling and packaging of substances and mixtures (CLP)",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 15,
+  "fields": {
+    "name": "Regulation (EC) No 1907/2006 concerning the Registration, Evaluation, Authorisation and Restriction of Chemicals (REACH)",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 16,
+  "fields": {
+    "name": "Regulation (EC) No 1935/2004 on materials and articles intended to come into contact with food",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 17,
+  "fields": {
+    "name": "Commission Directive 2011/8/EU amending Directive 2002/72/EC as regards the restriction of use of Bisphenol A in plastic infant feeding bottles",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 18,
+  "fields": {
+    "name": "Council Directive 84/500/EEC on the approximation of the laws of the Member States relating to ceramic articles intended to come into contact with foodstuffs",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 19,
+  "fields": {
+    "name": "Chemicals (Hazard Information and Packaging for Supply) Regulations 2009",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 20,
+  "fields": {
+    "name": "Toy Safety Directive 2009/48/EC",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 21,
+  "fields": {
+    "name": "Council Directive 93/42/EEC concerning medical devices",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 22,
+  "fields": {
+    "name": "Council Directive 89/686/EEC on the approximation of the laws of the Member States relating to personal protective equipment",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 23,
+  "fields": {
+    "name": "Directive 89/686/EEC on personal protective equipment",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 24,
+  "fields": {
+    "name": "Directive 2011/65/EU on the restriction of the use of certain hazardous substances in electrical and electronic equipment",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 41,
+  "fields": {
+    "name": "Machinery Directive 2006/42/EC",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 42,
+  "fields": {
+    "name": "EU Fertiliser regulation 2003/2003",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 61,
+  "fields": {
+    "name": "Council Directive 89/686/EEC relating to personal protective equipment (PPE)",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 81,
+  "fields": {
+    "name": "Council Regulation (EC) No 834/2007 on organic production and labelling of organic products",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 101,
+  "fields": {
+    "name": "Regulation (EC) No 1333/2008 on Food Additives",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 121,
+  "fields": {
+    "name": "EU Electromagnetic Compatibility (EMC) Directive 2014/30/EU",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 122,
+  "fields": {
+    "name": "Low Voltage Directive 2014/35/EU",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 123,
+  "fields": {
+    "name": "EN 1504-2 Products and systems for the protection and repair of concrete structures",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 124,
+  "fields": {
+    "name": "EN 13813 Screed material and floor screeds - Screed materials - Properties and requirements",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 141,
+  "fields": {
+    "name": "Council Directive relating to personal protective equipment - 89/686/EEC",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 161,
+  "fields": {
+    "name": "Regulation (EC) No 1830/2003 concerning the traceability and labelling of genetically modified organisms and the traceability of food and feed products produced from genetically modified organisms",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 181,
+  "fields": {
+    "name": "Council Regulation 834/2007 on organic production and labelling of organic products",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 201,
+  "fields": {
+    "name": "Regulation (EU) 2016/425 on Personal Protective Equipment",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 221,
+  "fields": {
+    "name": "Regulation (EC) No. 1272/2008 of the European Parliament and of the Council of 16 December 2008 on classification, labelling and packaging of substances and mixtures (as amended by The Chemicals (Health and Safety) and Genetically Modified Organisms (Contained Use) (Amendment etc.) (EU Exit) Regulations 2019)",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 222,
+  "fields": {
+    "name": "REGULATION (EC) No 648/2004 OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL of 31 March 2004 on detergents (as amend by The Detergents (Amendment) (EU Exit) Regulations 2019 (S.I. 2019/672) as amended by the Detergents (Amendment) (EU Exit) Regulations 2020)",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 223,
+  "fields": {
+    "name": "The Detergents (Amendment) (EU Exit) Regulations 2019 (S.I. 2019/672) and; The Detergents (Safeguarding) (Amendment) (EU Exit) Regulations 2019 (S.I. 2019/671) as amended by the Detergents (Amendment) (EU Exit) Regulations",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 224,
+  "fields": {
+    "name": "Council Directive 75/324/EEC of 20 May 1975 on the approximation of the laws of the Member States relating to aerosol dispensers and Aerosol Dispensers Regulations 2009/ 2824 as applicable in NI",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 225,
+  "fields": {
+    "name": "Aerosol Dispensers Regulations 2009/ 2824 as applicable in GB",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 226,
+  "fields": {
+    "name": "Directive 2014/68/EU of the European Parliament and of the Council of 15 May 2014 on the harmonisation of the laws of the Member States relating to the making available on the market of pressure equipment and Pressure Equipment (Safety) Regulations 2016/1105 as applicable in NI",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 227,
+  "fields": {
+    "name": "Pressure Equipment (Safety) Regulations 2016/1105 as applicable in GB",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 228,
+  "fields": {
+    "name": "Regulation (EU) 2016/425 of the European Parliament and of the Council of 9 March 2016 on personal protective equipment and Regulation (EU) 2016/425 of the European Parliament and of the Council of 9 March 2016 on personal protective equipment as applicable in NI",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 229,
+  "fields": {
+    "name": "Regulation 2016/425 of the European Parliament and of the Council of 9 March 2016 on personal protective equipment as applicable in GB",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 230,
+  "fields": {
+    "name": "Directive 2006/42/EC of the European Parliament and of the Council of 17 May 2006 on machinery, and amending Directive 95/16/EC and Supply of Machinery (Safety) Regulations 2008/1597 as applicable in NI",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 231,
+  "fields": {
+    "name": "Supply of Machinery (Safety) Regulations 2008/1597 as applicable in GB",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 232,
+  "fields": {
+    "name": "Directive 2014/30/EU of the European Parliament and of the Council of 26 February 2014 on the harmonisation of the laws of the Member States relating to electromagnetic compatibility and Electromagnetic compatibility Regulations 2016/1091 as applicable in NI",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 233,
+  "fields": {
+    "name": "Electromagnetic compatibility Regulations 2016/1091 as applicable in GB",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 234,
+  "fields": {
+    "name": "Directive 2014/35/EU of the European Parliament and of the Council of 26 February 2014 on the harmonisation of the laws of the Member States relating to the making available on the market of electrical equipment designed for use within certain voltage limits and Electrical Equipment (Safety) Regulations 2016/1101 as applicable in NI",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 235,
+  "fields": {
+    "name": "Electrical Equipment (Safety) Regulations 2016/1101 as applicable in GB",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 236,
+  "fields": {
+    "name": "Regulation (EC) No 1223/2009 of the European Parliament and of the Council of 30 November 2009 on cosmetic products and Regulation (EC) No 1223/2009 of the European Parliament and of the Council of 30 November 2009 on cosmetic products as applicable in NI",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": true,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 237,
+  "fields": {
+    "name": "Cosmetic Regulation No 1223/2009 as applicable in GB",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": true,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 238,
+  "fields": {
+    "name": "Directive 2009/48/EC of the European Parliament and of the Council of 18 June 2009 on the safety of toys and Toys (Safety) Regulations 2011/1881 as applicable in NI",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 239,
+  "fields": {
+    "name": "Toys (Safety) Regulations 2011/1881 as applicable in GB",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 240,
+  "fields": {
+    "name": "Regulation (EU) No. 528/2012 of the European Parliament and of the Council concerning the making available on the market and use of biocidal products, as it has effect in Northern Ireland",
+    "is_active": true,
+    "is_biocidal": true,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 241,
+  "fields": {
+    "name": "Regulation (EU) No. 528/2012 of the European Parliament and of the Council concerning the making available on the market and use of biocidal products, as it has effect in Great Britain",
+    "is_active": true,
+    "is_biocidal": true,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 242,
+  "fields": {
+    "name": "Regulation (EC) No. 1272/2008 of the European Parliament and of the Council of 16 December 2008 on classification, labelling and packaging of substances and mixtures",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 243,
+  "fields": {
+    "name": "Council Regulation 834/2007 on organic production and labelling of organic products and The Organic Products Regulations (Northern Ireland) 2020",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 244,
+  "fields": {
+    "name": "Council Regulation 834/2007 on organic production and labelling of organic products as transposed into UK law and The Organic Products Regulations 2009",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 245,
+  "fields": {
+    "name": "EU Fertiliser regulation 2003/2003",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 246,
+  "fields": {
+    "name": "The EC Fertilisers Regulations (Northern Ireland) 2006",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 247,
+  "fields": {
+    "name": "Fertiliser Regulations (Northern Ireland) 1992",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 248,
+  "fields": {
+    "name": "The Fertilisers Regulations 1991",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 249,
+  "fields": {
+    "name": "The EC Fertilisers (England and Wales) Regulations 2006",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 250,
+  "fields": {
+    "name": "The EC Fertilisers (Scotland) Regulations 2006",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 251,
+  "fields": {
+    "name": "The Ammonium Nitrate Materials (High Nitrogen Content) Safety Regulations 2003",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 252,
+  "fields": {
+    "name": "Regulation (EU) 2018/213 on the use of bisphenol A in varnishes and coatings intended to come into contact with food and The Materials & Articles in contact with Food Regulations (NI) 2012 (as amended)",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 253,
+  "fields": {
+    "name": "Regulation 2018/213 - Bisphenol A in plastic infant feeding bottles as transposed into UK law",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 254,
+  "fields": {
+    "name": "Regulation (EU) No. 10/2011 on plastic materials and articles intended to come into contact with food and The Materials & Articles in contact with Food Regulations (NI) 2012 (as amended)",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 255,
+  "fields": {
+    "name": "Commission Regulation (EU) No 10/2011 on plastic materials and articles intended to come into contact with food as transposed into UK law",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 256,
+  "fields": {
+    "name": "Directive 84/500/EEC relating to ceramic articles intended to come into contact with foodstuffs and The Materials & Articles in contact with Food Regulations (NI) 2012 (as amended)",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 257,
+  "fields": {
+    "name": "Council Directive 84/500/EEC on the approximation of the laws of the Member States relating to ceramic articles intended to come into contact with foodstuffs as transposed into UK law",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 258,
+  "fields": {
+    "name": "Regulation (EC) No. 1935/2004 on materials and articles intended to come into contact with food and The Materials & Articles in contact with Food Regulations (NI) 2012 (as amended)",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 259,
+  "fields": {
+    "name": "Regulation (EC) No 1935/2004 on materials and articles intended to come into contact with food as transposed into UK law",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 260,
+  "fields": {
+    "name": "EU Electromagnetic Compatibility (EMC) Directive 2014/30/EU and Electromagnetic compatibility Regulations 2016/1091",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 261,
+  "fields": {
+    "name": "Electromagnetic compatibility Regulations 2016/1091 as applicable in GB",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 262,
+  "fields": {
+    "name": "General Product Safety Directive 2001/95/EC and the General Product Safety Regulations 2005 as applicable in NI",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 263,
+  "fields": {
+    "name": "The General Product Safety Regulations 2005 as applicable in GB",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 264,
+  "fields": {
+    "name": "Regulation (EC) No 1907/2006 on the Registration, Evaluation, Authorisation and Restriction of Chemicals (REACH) (as amended by the REACH etc. (Amendment etc.) (EU Exit) Regulations 2019(SI 2019/758) and the REACH etc. (Amendment etc.) (EU Exit) Regulations 2020)",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 265,
+  "fields": {
+    "name": "The REACH etc. (Amendment etc.) (EU Exit) Regulations 2019(SI 2019/758) as amended by the REACH etc. (Amendment etc.) (EU Exit) Regulations 2020",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 266,
+  "fields": {
+    "name": "Regulation (EC) No 1830/2003 concerning the traceability and labelling of genetically modified organisms and the traceability of food and feed products produced from genetically modified organisms and Genetically Modified Organisms (Traceability and Labelling) Regulations (Northern Ireland) 2005",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 267,
+  "fields": {
+    "name": "Regulation No 1830/2003 concerning the traceability and labelling of genetically modified organisms and the traceability of food and feed products produced from genetically modified organisms (as amended by The Genetically Modified Organisms (Amendment) (EU Exit) Regulations 2019 (SI 2019/ 90), The Environment, Food and Rural Affairs (Amendment) (EU Exit) Regulations 2019 (SI 2019/ 778))",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 268,
+  "fields": {
+    "name": "The Genetically Modified Organisms (Traceability and Labelling) (Scotland) Regulations 2004 No. 438",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 281,
+  "fields": {
+    "name": "test",
+    "is_active": false,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 301,
+  "fields": {
+    "name": "BS EN 54 - Fire detection and fire alarm system",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 321,
+  "fields": {
+    "name": "The Personal Protective Equipment Regulations (Regulation (EU) 2016/425) as they apply In GB, as amended.",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 322,
+  "fields": {
+    "name": "The Personal Protective Equipment Regulations (Regulation (Eu) 2016/425) as they apply In NI, as amended.",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": false,
+    "ni_legislation": true
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 341,
+  "fields": {
+    "name": "ISO 11607-1 Packaging for terminally sterilized medical devices",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 342,
+  "fields": {
+    "name": "EN 868-6 Packaging for terminally sterilized medical devices",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 361,
+  "fields": {
+    "name": "EN 15426 – Candles – Specification for Soothing Behaviour",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 362,
+  "fields": {
+    "name": "EN 15493 – Candles – Specification for Fire Safety",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+},
+{
+  "model": "web.productlegislation",
+  "pk": 363,
+  "fields": {
+    "name": "EN 15494 – Candles – Product safety labels",
+    "is_active": true,
+    "is_biocidal": false,
+    "is_eu_cosmetics_regulation": false,
+    "is_biocidal_claim": false,
+    "gb_legislation": true,
+    "ni_legislation": false
+  }
+}
+]

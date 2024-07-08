@@ -1,10 +1,9 @@
 import pytest
 from pytest_django.asserts import assertRedirects
 
+from web.models import ProductLegislation
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
-
-from .factory import ProductLegislationFactory
 
 
 class TestProductLegislationListView(AuthTestCase):
@@ -31,7 +30,7 @@ class TestProductLegislationListView(AuthTestCase):
     def test_number_of_results(self):
         response = self.ilb_admin_client.get(self.url, {"name": ""})
         results = response.context_data["results"]
-        assert results.count() == 27
+        assert results.count() == 95
 
 
 class TestProductLegislationCreateView(AuthTestCase):
@@ -59,7 +58,7 @@ class TestProductLegislationCreateView(AuthTestCase):
 class TestProductLegislationUpdateView(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, _setup):
-        self.legislation = ProductLegislationFactory()  # Create a product legislation
+        self.legislation = ProductLegislation.objects.first()
         self.url = f"/product-legislation/{self.legislation.id}/edit/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 
@@ -84,7 +83,7 @@ class TestProductLegislationUpdateView(AuthTestCase):
 class TestProductLegislationDetailView(AuthTestCase):
     @pytest.fixture(autouse=True)
     def setup(self, _setup):
-        self.legislation = ProductLegislationFactory()
+        self.legislation = ProductLegislation.objects.first()
         self.url = f"/product-legislation/{self.legislation.id}/"
         self.redirect_url = f"{LOGIN_URL}?next={self.url}"
 

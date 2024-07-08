@@ -324,7 +324,11 @@ class TestIssuedCertificateReportInterface:
         self._setup_app_with_variation_request(completed_cfs_app)
         self._setup_app_update_submitted_and_completed_dates(completed_cfs_app)
         self._setup_app_with_case_email(completed_cfs_app, EmailTypes.HSE_CASE_EMAIL, True)
-        self.report_schedule.parameters["legislation"] = ["3"]
+        self.report_schedule.parameters["legislation"] = ["241"]
+        pl_name = (
+            "Regulation (EU) No. 528/2012 of the European Parliament and of the Council concerning the making available on the market and use of"
+            " biocidal products, as it has effect in Great Britain"
+        )
         self.report_schedule.save()
         interface = IssuedCertificateReportInterface(self.report_schedule)
         data = interface.get_data()
@@ -347,7 +351,7 @@ class TestIssuedCertificateReportInterface:
                 "HSE Email Count": 1,
                 "Is Manufacturer": "Yes",
                 "Issue Datetime": "09/01/2024 13:07:00",
-                "Product Legislation": "Biocide Products Regulation 528/2012 as retained in UK law",
+                "Product Legislation": pl_name,
                 "Responsible Person Statement": "Yes",
                 "Submitted Datetime": "01/01/2024 12:00:00",
                 "Total Processing Time": "8d 1h 7m",
@@ -370,7 +374,7 @@ class TestIssuedCertificateReportInterface:
                 "HSE Email Count": 1,
                 "Is Manufacturer": "Yes",
                 "Issue Datetime": "09/01/2024 13:07:00",
-                "Product Legislation": "Biocide Products Regulation 528/2012 as retained in UK law",
+                "Product Legislation": pl_name,
                 "Responsible Person Statement": "Yes",
                 "Submitted Datetime": "01/01/2024 12:00:00",
                 "Total Processing Time": "8d 1h 7m",
