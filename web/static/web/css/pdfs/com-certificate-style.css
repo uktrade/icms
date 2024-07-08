@@ -1,31 +1,54 @@
 @page {
     size: A4;
-    margin-top: 60px;
-    margin-right: 70px;
-    margin-bottom: 20px;
+    margin-top: 70px;
+    margin-right: 85px;
+    margin-bottom: 220px;
     margin-left: 85px;
+ }
+
+@page:first {
+    margin-bottom: 20px;
 }
 
-.signature-block {
-    display: flex;
-    justify-content: space-evenly;
-    align-items: stretch;
-    flex-wrap: nowrap;
+.preview-orange {
+    color: darkorange;
 }
 
-.signature,
-.qr-code,
-.qr-text {
-    display: block;
-    flex: 33% 0 0;
+.preview-green {
+    color: #0B8433;
 }
 
-.qr-text {
-    font-size: 12px;
+p {
+    line-height: 1.2em;
+}
+
+.blank-page {
+    page-break-after: always;
 }
 
 body {
     counter-reset: li-counter;
+}
+
+.certificate-header {
+    margin-bottom: 40px;
+    justify-content: space-between;
+}
+
+.large-header-logo {
+    height: 125px;
+    width: 250px;
+}
+
+.certificate-reference {
+    align-items: flex-end;
+    margin-right: 0;
+}
+
+.reference {
+    font-size: 14px;
+    margin-top: 20px;
+    margin-right: 0;
 }
 
 .issue-date {
@@ -35,7 +58,6 @@ body {
 .title-line {
     margin-bottom: 12px;
 }
-
 
 ol:first-of-type {
     margin-bottom: 40px;
@@ -49,7 +71,23 @@ ol li:not(:last-child) {
     margin-bottom: 12px;
 }
 
-div.com-item p {
+li {
+    line-height: 1.2em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+
+ol li {
+    padding-left: 20px;
+}
+
+ol {
+    padding-left: 20px;
+}
+
+div.com-item > p {
     margin: 0;
 }
 
@@ -62,122 +100,17 @@ div.com-item p {
 }
 
 
-ol li {
-    padding-left: 20px;
-}
-
-ol {
-    padding-left: 20px;
-}
-
-.large-header-logo {
-    height: 125px;
-    width: 250px;
-}
-
-.certificate-reference {
-    align-items: end;
-}
-
-.signature-block {
-    margin-bottom: 40px;
-}
-
-li {
-    line-height: 1.2em;
-}
-
-@page {
-    size: A4;
-}
-
-.flex-column {
-    display: flex;
-    flex-direction: column;
-}
-
-.flex-row {
-    display: flex;
-    flex-direction: row;
-}
-
-.align-centre {
-    align-items: center;
-}
-
-
-.two-third {
-    flex: 67% 0 0;
-}
-
-
-.third {
-    flex: 33% 0 0;
-}
-
-.thirty_width {
-    flex: 30% 0 0;
-}
-
-
-ul, ol {
-    list-style-position: outside;
-}
-
-.preview-orange {
-    color: darkorange;
-}
-
-.preview-green {
-    color: #0B8433;
-}
-
-.align_bottom_footer {
-    position: absolute;
-    bottom: 0;
-}
-
-
-.certificate-header {
-    margin-bottom: 40px;
-}
-
-
-header {
-    position: running(header);
-}
-
-.reference {
-    font-size: 13px;
-}
-
-#dbt-logo {
-    width: 210px;
-    margin: -30px 0 15px 64px;
-    display: inline-block;
-    vertical-align: top;
-}
-
-hr {
-    border-top: 0.15em solid black;
-    border-bottom: none;
-}
-
-
-.title-line {
-    margin-bottom: 25px;
-}
-
-
-p {
-    line-height: 1.3em;
-}
-
 .signature-block {
     display: flex;
     justify-content: space-evenly;
     align-items: stretch;
     flex-wrap: nowrap;
+    margin-bottom: 40px;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
 }
 
 .signature,
@@ -209,8 +142,8 @@ p {
 }
 
 .qr-text {
-    font-size: 11px;
-    margin: 0;
+    font-size: 12px;
+    margin-top: 20px;
 }
 
 

@@ -17,7 +17,8 @@
   </head>
 
   <body>
-    <div class="page-margin">
+    <div class="main-content">
+      <div class="blank-page"></div>
       <div class="certificate-header flex-row">
         <div class="flex-column two-third">
           {{ dbt_logo(classes="large-header-logo") }}
@@ -62,7 +63,7 @@
           </li>
         </ol>
       </div>
-      <footer class="align_bottom_footer">
+      <footer>
         <div class="signature-block flex-row">
           <div class="flex-column third">
             {% if preview %}
@@ -87,7 +88,7 @@
               <p class="{{ 'preview-orange' if preview }} mb-0 mt-0">
                 <strong>{{ certificate_code }}</strong>
               </p>
-                Alternatively you can go to <strong>{{ qr_check_url }}</strong> and enter the certificate reference and
+                Alternatively you can go to <strong class="avoid-break">{{ qr_check_url }}</strong> and enter the certificate reference and
                 code.
             </span>
           </div>
