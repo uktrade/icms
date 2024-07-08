@@ -24,7 +24,7 @@ from web.reports.utils import (
                 "Date From": "03 Feb 2011",
                 "Date to": "16 Nov 2014",
                 "Application Type": "Certificate of Good Manufacturing Practice",
-                "Legislation": "Biocide Products Regulation 528/2012 as retained in UK law<br>Biocide Products Regulation 528/2012 (EU BPR)",
+                "Legislation": "Aerosol Dispensers Directive 75/324/EEC<br>Biocide Products Regulation 528/2012 (EU BPR)",
             },
         ),
         (

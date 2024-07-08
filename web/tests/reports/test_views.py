@@ -90,7 +90,7 @@ def test_run_history_view(ilb_admin_client, report_schedule, deleted_report_sche
                 "date_to": "1-Jan-2022",
                 "notes": "",
                 "application_type": "CFS",
-                "legislation": ["20"],
+                "legislation": ["1"],
             },
         ),
         (

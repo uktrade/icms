@@ -18,7 +18,6 @@ from .add_commodity_group_usage_data import add_usage_data
 from .add_constabulary_data import add_constabulary_data
 from .add_email_template_data import add_email_gov_notify_templates
 from .add_fa_data import add_firearms_act_data, add_obsolete_calibre_data
-from .add_product_legislation_data import add_product_legislation_data
 from .add_sanction_data import add_sanction_data
 from .add_template_data import (
     add_cfs_declaration_templates,
@@ -61,7 +60,7 @@ def load_app_test_data():
     add_constabulary_data()
     add_firearms_act_data()
     add_obsolete_calibre_data()
-    add_product_legislation_data()
+    call_command("loaddata", "product_legislations")
     add_sanction_data()
     add_email_gov_notify_templates()
     add_reports()

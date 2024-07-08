@@ -497,284 +497,261 @@ def test_get_fir_template_data_error(ilb_admin_user):
         get_fir_template_data(fir, ilb_admin_user)
 
 
-def test_create_schedule_paragraph_gb_manufacture_address(
-    db, cfs_app_submitted, exporter_one_contact
-):
-    country = Country.objects.get(name="Germany")
+class TestCreateSchedule:
 
-    schedule = CFSSchedule.objects.create(
-        application=cfs_app_submitted,
-        exporter_status=CFSSchedule.ExporterStatus.IS_MANUFACTURER,
-        brand_name_holder=YesNoChoices.yes,
-        product_eligibility=CFSSchedule.ProductEligibility.SOLD_ON_UK_MARKET,
-        goods_placed_on_uk_market=YesNoChoices.yes,
-        goods_export_only=YesNoChoices.no,
-        country_of_manufacture=country,
-        manufacturer_name="Manufacturer Name",
-        manufacturer_address="123 Manufacturer, Manufactureton",
-        manufacturer_postcode="123456",
-        schedule_statements_is_responsible_person=True,
-        schedule_statements_accordance_with_standards=True,
-        created_by=exporter_one_contact,
-    )
+    @pytest.fixture(autouse=True)
+    def setup(self, db):
+        self.aerosol_pl = ProductLegislation.objects.get(
+            name="Aerosol Dispensers Regulations 2009/ 2824 as applicable in GB",
+        )
+        self.biocide_pl = ProductLegislation.objects.get(
+            name="Biocide Products Regulation 528/2012 (EU BPR)"
+        )
 
-    pl = ProductLegislation.objects.get(
-        name="Aerosol Dispensers Regulations 2009/ 2824 as retained in UK law"
-    )
-    schedule.legislations.add(pl)
+    def test_create_schedule_paragraph_gb_manufacture_address(
+        self, cfs_app_submitted, exporter_one_contact
+    ):
+        country = Country.objects.get(name="Germany")
 
-    pl = ProductLegislation.objects.get(
-        name="Biocide Products Regulation 528/2012 as retained in UK law"
-    )
-    schedule.legislations.add(pl)
+        schedule = CFSSchedule.objects.create(
+            application=cfs_app_submitted,
+            exporter_status=CFSSchedule.ExporterStatus.IS_MANUFACTURER,
+            brand_name_holder=YesNoChoices.yes,
+            product_eligibility=CFSSchedule.ProductEligibility.SOLD_ON_UK_MARKET,
+            goods_placed_on_uk_market=YesNoChoices.yes,
+            goods_export_only=YesNoChoices.no,
+            country_of_manufacture=country,
+            manufacturer_name="Manufacturer Name",
+            manufacturer_address="123 Manufacturer, Manufactureton",
+            manufacturer_postcode="123456",
+            schedule_statements_is_responsible_person=True,
+            schedule_statements_accordance_with_standards=True,
+            created_by=exporter_one_contact,
+        )
 
-    template = Template.objects.get(template_type=Template.CFS_SCHEDULE)
-    sp = ScheduleParagraphs(schedule, template)
+        schedule.legislations.add(self.aerosol_pl)
+        schedule.legislations.add(self.biocide_pl)
 
-    assert sp.header == "Schedule to Certificate of Free Sale"
-    assert sp.introduction == (
-        "TEST EXPORTER 1, of E1 ADDRESS LINE 1 E1 ADDRESS LINE 2 HG15DB has made the following "  # /PS-IGNORE
-        "legal declaration in relation to the products listed in this schedule:"
-    )
-    assert sp.paragraph == (
-        "I am the manufacturer. I am the responsible person as defined by the "
-        "EU Cosmetics Regulation 1223/2009 and I am the person responsible for "
-        "ensuring that the products listed in this schedule meet the safety "
-        "requirements set out in the EU Cosmetics Regulation 1223/2009. I certify "
-        "that these products meet the safety requirements set out under UK and EU "
-        "legislation, specifically: Aerosol Dispensers Regulations 2009/ 2824 as "
-        "retained in UK law, Biocide Products Regulation 528/2012 as retained in UK law. "
-        "These products are currently sold on the EU market. "
-        "These products are manufactured in accordance with the Good Manufacturing Practice "
-        "standards set out in UK and EU law The products were manufactured in Germany by "
-        "Manufacturer Name at 123 MANUFACTURER, MANUFACTURETON 123456"
-    )
+        template = Template.objects.get(template_type=Template.CFS_SCHEDULE)
+        sp = ScheduleParagraphs(schedule, template)
 
+        assert sp.header == "Schedule to Certificate of Free Sale"
+        assert sp.introduction == (
+            "TEST EXPORTER 1, of E1 ADDRESS LINE 1 E1 ADDRESS LINE 2 HG15DB has made the following "  # /PS-IGNORE
+            "legal declaration in relation to the products listed in this schedule:"
+        )
+        assert sp.paragraph == (
+            "I am the manufacturer. I am the responsible person as defined by the "
+            "EU Cosmetics Regulation 1223/2009 and I am the person responsible for "
+            "ensuring that the products listed in this schedule meet the safety "
+            "requirements set out in the EU Cosmetics Regulation 1223/2009. I certify "
+            "that these products meet the safety requirements set out under UK and EU "
+            "legislation, specifically: Aerosol Dispensers Regulations 2009/ 2824 as "
+            "applicable in GB, Biocide Products Regulation 528/2012 (EU BPR). "
+            "These products are currently sold on the EU market. "
+            "These products are manufactured in accordance with the Good Manufacturing Practice "
+            "standards set out in UK and EU law The products were manufactured in Germany by "
+            "Manufacturer Name at 123 MANUFACTURER, MANUFACTURETON 123456"
+        )
 
-def test_create_schedule_paragraph_gb_manufacture_country(
-    db, cfs_app_submitted, exporter_one_contact
-):
-    country = Country.objects.get(name="Germany")
+    def test_create_schedule_paragraph_gb_manufacture_country(
+        self, cfs_app_submitted, exporter_one_contact
+    ):
+        country = Country.objects.get(name="Germany")
 
-    schedule = CFSSchedule.objects.create(
-        application=cfs_app_submitted,
-        exporter_status=CFSSchedule.ExporterStatus.IS_MANUFACTURER,
-        brand_name_holder=YesNoChoices.yes,
-        product_eligibility=CFSSchedule.ProductEligibility.SOLD_ON_UK_MARKET,
-        goods_placed_on_uk_market=YesNoChoices.yes,
-        goods_export_only=YesNoChoices.no,
-        country_of_manufacture=country,
-        manufacturer_name=None,
-        manufacturer_address=None,
-        manufacturer_postcode=None,
-        schedule_statements_is_responsible_person=False,
-        schedule_statements_accordance_with_standards=False,
-        created_by=exporter_one_contact,
-    )
+        schedule = CFSSchedule.objects.create(
+            application=cfs_app_submitted,
+            exporter_status=CFSSchedule.ExporterStatus.IS_MANUFACTURER,
+            brand_name_holder=YesNoChoices.yes,
+            product_eligibility=CFSSchedule.ProductEligibility.SOLD_ON_UK_MARKET,
+            goods_placed_on_uk_market=YesNoChoices.yes,
+            goods_export_only=YesNoChoices.no,
+            country_of_manufacture=country,
+            manufacturer_name=None,
+            manufacturer_address=None,
+            manufacturer_postcode=None,
+            schedule_statements_is_responsible_person=False,
+            schedule_statements_accordance_with_standards=False,
+            created_by=exporter_one_contact,
+        )
 
-    pl = ProductLegislation.objects.get(
-        name="Aerosol Dispensers Regulations 2009/ 2824 as retained in UK law"
-    )
-    schedule.legislations.add(pl)
+        schedule.legislations.add(self.aerosol_pl)
+        schedule.legislations.add(self.biocide_pl)
 
-    pl = ProductLegislation.objects.get(
-        name="Biocide Products Regulation 528/2012 as retained in UK law"
-    )
-    schedule.legislations.add(pl)
+        template = Template.objects.get(template_type=Template.CFS_SCHEDULE)
+        sp = ScheduleParagraphs(schedule, template)
 
-    template = Template.objects.get(template_type=Template.CFS_SCHEDULE)
-    sp = ScheduleParagraphs(schedule, template)
+        assert sp.header == "Schedule to Certificate of Free Sale"
+        assert sp.introduction == (
+            "TEST EXPORTER 1, of E1 ADDRESS LINE 1 E1 ADDRESS LINE 2 HG15DB has made the following "  # /PS-IGNORE
+            "legal declaration in relation to the products listed in this schedule:"
+        )
+        assert sp.paragraph == (
+            "I am the manufacturer. I certify that these products meet the safety requirements "
+            "set out under UK and EU legislation, specifically: Aerosol Dispensers Regulations 2009/ 2824 as "
+            "applicable in GB, Biocide Products Regulation 528/2012 (EU BPR). "
+            "These products are currently sold on the EU market. "
+            "The products were manufactured in Germany"
+        )
 
-    assert sp.header == "Schedule to Certificate of Free Sale"
-    assert sp.introduction == (
-        "TEST EXPORTER 1, of E1 ADDRESS LINE 1 E1 ADDRESS LINE 2 HG15DB has made the following "  # /PS-IGNORE
-        "legal declaration in relation to the products listed in this schedule:"
-    )
-    assert sp.paragraph == (
-        "I am the manufacturer. I certify that these products meet the safety requirements "
-        "set out under UK and EU legislation, specifically: Aerosol Dispensers Regulations 2009/ 2824 as "
-        "retained in UK law, Biocide Products Regulation 528/2012 as retained in UK law. "
-        "These products are currently sold on the EU market. "
-        "The products were manufactured in Germany"
-    )
+    def test_create_schedule_paragraph_ni_manufacture_name(
+        self, cfs_app_submitted, exporter_one_contact
+    ):
+        country = Country.objects.get(name="Spain")
+        ni_office = Office.objects.filter(postcode__startswith="BT").first()
+        cfs_app_submitted.exporter_office = ni_office
 
+        schedule = CFSSchedule.objects.create(
+            application=cfs_app_submitted,
+            exporter_status=CFSSchedule.ExporterStatus.IS_NOT_MANUFACTURER,
+            brand_name_holder=YesNoChoices.yes,
+            product_eligibility=CFSSchedule.ProductEligibility.MEET_UK_PRODUCT_SAFETY,
+            goods_placed_on_uk_market=YesNoChoices.no,
+            goods_export_only=YesNoChoices.yes,
+            country_of_manufacture=country,
+            manufacturer_name="Manufacturer Name",
+            schedule_statements_is_responsible_person=True,
+            schedule_statements_accordance_with_standards=True,
+            created_by=exporter_one_contact,
+        )
 
-def test_create_schedule_paragraph_ni_manufacture_name(cfs_app_submitted, exporter_one_contact):
-    country = Country.objects.get(name="Spain")
-    ni_office = Office.objects.filter(postcode__startswith="BT").first()
-    cfs_app_submitted.exporter_office = ni_office
+        pl = ProductLegislation.objects.get(
+            name="Chemicals (Hazard Information and Packaging for Supply) Regulations 2009"
+        )
+        schedule.legislations.add(pl)
 
-    schedule = CFSSchedule.objects.create(
-        application=cfs_app_submitted,
-        exporter_status=CFSSchedule.ExporterStatus.IS_NOT_MANUFACTURER,
-        brand_name_holder=YesNoChoices.yes,
-        product_eligibility=CFSSchedule.ProductEligibility.MEET_UK_PRODUCT_SAFETY,
-        goods_placed_on_uk_market=YesNoChoices.no,
-        goods_export_only=YesNoChoices.yes,
-        country_of_manufacture=country,
-        manufacturer_name="Manufacturer Name",
-        schedule_statements_is_responsible_person=True,
-        schedule_statements_accordance_with_standards=True,
-        created_by=exporter_one_contact,
-    )
+        template = Template.objects.get(template_type=Template.CFS_SCHEDULE)
+        sp = ScheduleParagraphs(schedule, template)
 
-    pl = ProductLegislation.objects.get(
-        name="Chemicals (Hazard Information and Packaging for Supply) Regulations 2009"
-    )
-    schedule.legislations.add(pl)
+        assert sp.header == "Schedule to Certificate of Free Sale"
+        assert sp.introduction == (
+            "TEST EXPORTER 1, of I1 ADDRESS LINE 1 I1 ADDRESS LINE 2 BT180LZ has made the following "  # /PS-IGNORE
+            "legal declaration in relation to the products listed in this schedule:"
+        )
+        assert sp.paragraph == (
+            "I am not the manufacturer. I am the responsible person as defined by Regulation "
+            "(EC) No 1223/2009 of the European Parliament and of the Council of 30 November "
+            "2009 on cosmetic products and Cosmetic Regulation No 1223/2009 as applicable in "
+            "NI. I am the person responsible for ensuring that the products listed in this "
+            "schedule meet the safety requirements set out in the Regulations. I certify that "
+            "these products meet the safety requirements set out under UK and EU legislation, "
+            "specifically: Chemicals (Hazard Information and Packaging for Supply) Regulations "
+            "2009. These products meet the product safety requirements to be sold on the EU market. "
+            "These products are manufactured in accordance with the Good Manufacturing Practice "
+            "standards set out in UK or EU law where applicable The products were manufactured "
+            "in Spain by Manufacturer Name"
+        )
 
-    template = Template.objects.get(template_type=Template.CFS_SCHEDULE)
-    sp = ScheduleParagraphs(schedule, template)
+    def test_create_schedule_paragraph_translation(self, cfs_app_submitted, exporter_one_contact):
+        country = Country.objects.get(name="Germany")
 
-    assert sp.header == "Schedule to Certificate of Free Sale"
-    assert sp.introduction == (
-        "TEST EXPORTER 1, of I1 ADDRESS LINE 1 I1 ADDRESS LINE 2 BT180LZ has made the following "  # /PS-IGNORE
-        "legal declaration in relation to the products listed in this schedule:"
-    )
-    assert sp.paragraph == (
-        "I am not the manufacturer. I am the responsible person as defined by Regulation "
-        "(EC) No 1223/2009 of the European Parliament and of the Council of 30 November "
-        "2009 on cosmetic products and Cosmetic Regulation No 1223/2009 as applicable in "
-        "NI. I am the person responsible for ensuring that the products listed in this "
-        "schedule meet the safety requirements set out in the Regulations. I certify that "
-        "these products meet the safety requirements set out under UK and EU legislation, "
-        "specifically: Chemicals (Hazard Information and Packaging for Supply) Regulations "
-        "2009. These products meet the product safety requirements to be sold on the EU market. "
-        "These products are manufactured in accordance with the Good Manufacturing Practice "
-        "standards set out in UK or EU law where applicable The products were manufactured "
-        "in Spain by Manufacturer Name"
-    )
+        schedule = CFSSchedule.objects.create(
+            application=cfs_app_submitted,
+            exporter_status=CFSSchedule.ExporterStatus.IS_MANUFACTURER,
+            brand_name_holder=YesNoChoices.yes,
+            product_eligibility=CFSSchedule.ProductEligibility.SOLD_ON_UK_MARKET,
+            goods_placed_on_uk_market=YesNoChoices.yes,
+            goods_export_only=YesNoChoices.no,
+            country_of_manufacture=country,
+            manufacturer_name="Manufacturer Name",
+            manufacturer_address="123 Manufacturer, Manufactureton",
+            manufacturer_postcode="123456",
+            schedule_statements_is_responsible_person=True,
+            schedule_statements_accordance_with_standards=True,
+            created_by=exporter_one_contact,
+        )
+        schedule.legislations.add(self.aerosol_pl)
+        schedule.legislations.add(self.biocide_pl)
 
+        template = Template.objects.get(template_type=Template.CFS_SCHEDULE_TRANSLATION)
+        sp = ScheduleParagraphs(schedule, template)
 
-def test_create_schedule_paragraph_translation(db, cfs_app_submitted, exporter_one_contact):
-    country = Country.objects.get(name="Germany")
+        assert sp.header == "Horario para el Certificado de Libre Venta"
+        assert sp.introduction == (
+            "TEST EXPORTER 1, de E1 ADDRESS LINE 1 E1 ADDRESS LINE 2 HG15DB ha hecho la siguiente declaración "  # /PS-IGNORE
+            "legal en relación con los productos enumerados en este cronograma:"
+        )
+        assert sp.paragraph == (
+            "Yo soy el fabricante. Soy la persona responsable según lo definido por el Reglamento "
+            "de cosméticos n. ° 1223/2009 según se aplique en GB. Soy la persona responsable de "
+            "garantizar que los productos enumerados en este programa cumplan con los requisitos "
+            "de seguridad establecidos en ese Reglamento. Certifico que estos productos cumplen "
+            "con los requisitos de seguridad establecidos en esta legislación: Aerosol Dispensers "
+            "Regulations 2009/ 2824 as applicable in GB, Biocide Products Regulation 528/2012 "
+            "(EU BPR). Estos productos se venden actualmente en el mercado del Reino Unido. "
+            "Estos productos se fabrican de acuerdo con las normas de buenas prácticas de fabricación "
+            "establecidas en las leyes del Reino Unido Los productos fueron fabricados en Alemania "
+            "por Manufacturer Name en 123 MANUFACTURER, MANUFACTURETON 123456"
+        )
 
-    schedule = CFSSchedule.objects.create(
-        application=cfs_app_submitted,
-        exporter_status=CFSSchedule.ExporterStatus.IS_MANUFACTURER,
-        brand_name_holder=YesNoChoices.yes,
-        product_eligibility=CFSSchedule.ProductEligibility.SOLD_ON_UK_MARKET,
-        goods_placed_on_uk_market=YesNoChoices.yes,
-        goods_export_only=YesNoChoices.no,
-        country_of_manufacture=country,
-        manufacturer_name="Manufacturer Name",
-        manufacturer_address="123 Manufacturer, Manufactureton",
-        manufacturer_postcode="123456",
-        schedule_statements_is_responsible_person=True,
-        schedule_statements_accordance_with_standards=True,
-        created_by=exporter_one_contact,
-    )
+    def test_schedule_text(self, cfs_app_submitted, exporter_one_contact):
+        country = Country.objects.get(name="Germany")
+        schedule = cfs_app_submitted.schedules.first()
 
-    pl = ProductLegislation.objects.get(
-        name="Aerosol Dispensers Regulations 2009/ 2824 as retained in UK law"
-    )
-    schedule.legislations.add(pl)
+        st = ScheduleText(schedule, country)
 
-    pl = ProductLegislation.objects.get(
-        name="Biocide Products Regulation 528/2012 as retained in UK law"
-    )
-    schedule.legislations.add(pl)
+        assert isinstance(st.english_paragraphs, ScheduleParagraphs)
+        assert st.english_paragraphs.paragraph
+        assert st.translation_paragraphs is None
 
-    template = Template.objects.get(template_type=Template.CFS_SCHEDULE_TRANSLATION)
-    sp = ScheduleParagraphs(schedule, template)
+    def test_schedule_text_translation(self, cfs_app_submitted, exporter_one_contact):
+        country = Country.objects.get(name="Argentina")
+        schedule = cfs_app_submitted.schedules.first()
 
-    assert sp.header == "Horario para el Certificado de Libre Venta"
-    assert sp.introduction == (
-        "TEST EXPORTER 1, de E1 ADDRESS LINE 1 E1 ADDRESS LINE 2 HG15DB ha hecho la siguiente declaración "  # /PS-IGNORE
-        "legal en relación con los productos enumerados en este cronograma:"
-    )
-    assert sp.paragraph == (
-        "Yo soy el fabricante. Soy la persona responsable según lo definido por el Reglamento "
-        "de cosméticos n. ° 1223/2009 según se aplique en GB. Soy la persona responsable de "
-        "garantizar que los productos enumerados en este programa cumplan con los requisitos "
-        "de seguridad establecidos en ese Reglamento. Certifico que estos productos cumplen "
-        "con los requisitos de seguridad establecidos en esta legislación: Aerosol Dispensers "
-        "Regulations 2009/ 2824 as retained in UK law, Biocide Products Regulation 528/2012 "
-        "as retained in UK law. Estos productos se venden actualmente en el mercado del Reino Unido. "
-        "Estos productos se fabrican de acuerdo con las normas de buenas prácticas de fabricación "
-        "establecidas en las leyes del Reino Unido Los productos fueron fabricados en Alemania "
-        "por Manufacturer Name en 123 MANUFACTURER, MANUFACTURETON 123456"
-    )
+        st = ScheduleText(schedule, country)
 
+        assert isinstance(st.english_paragraphs, ScheduleParagraphs)
+        assert st.english_paragraphs.paragraph
+        assert isinstance(st.translation_paragraphs, ScheduleParagraphs)
+        assert st.translation_paragraphs.paragraph
 
-def test_schedule_text(db, cfs_app_submitted, exporter_one_contact):
-    country = Country.objects.get(name="Germany")
-    schedule = cfs_app_submitted.schedules.first()
+    def test_fetch_schedule_text(self, cfs_app_submitted, exporter_one_contact):
+        country = Country.objects.get(name="Argentina")
 
-    st = ScheduleText(schedule, country)
+        schedule1 = CFSSchedule.objects.create(
+            application=cfs_app_submitted,
+            exporter_status=CFSSchedule.ExporterStatus.IS_MANUFACTURER,
+            brand_name_holder=YesNoChoices.yes,
+            product_eligibility=CFSSchedule.ProductEligibility.SOLD_ON_UK_MARKET,
+            goods_placed_on_uk_market=YesNoChoices.yes,
+            goods_export_only=YesNoChoices.no,
+            country_of_manufacture=country,
+            manufacturer_name="Manufacturer Name",
+            manufacturer_address="123 Manufacturer, Manufactureton",
+            manufacturer_postcode="123456",
+            schedule_statements_is_responsible_person=True,
+            schedule_statements_accordance_with_standards=True,
+            created_by=exporter_one_contact,
+        )
 
-    assert isinstance(st.english_paragraphs, ScheduleParagraphs)
-    assert st.english_paragraphs.paragraph
-    assert st.translation_paragraphs is None
+        schedule1.legislations.add(self.aerosol_pl)
 
+        schedule2 = CFSSchedule.objects.create(
+            application=cfs_app_submitted,
+            exporter_status=CFSSchedule.ExporterStatus.IS_MANUFACTURER,
+            brand_name_holder=YesNoChoices.yes,
+            product_eligibility=CFSSchedule.ProductEligibility.MEET_UK_PRODUCT_SAFETY,
+            goods_placed_on_uk_market=YesNoChoices.no,
+            goods_export_only=YesNoChoices.yes,
+            country_of_manufacture=country,
+            manufacturer_name="Manufacturer Name",
+            manufacturer_address="123 Manufacturer, Manufactureton",
+            manufacturer_postcode="123456",
+            schedule_statements_is_responsible_person=True,
+            schedule_statements_accordance_with_standards=True,
+            created_by=exporter_one_contact,
+        )
 
-def test_schedule_text_translation(db, cfs_app_submitted, exporter_one_contact):
-    country = Country.objects.get(name="Argentina")
-    schedule = cfs_app_submitted.schedules.first()
+        schedule2.legislations.add(self.aerosol_pl)
 
-    st = ScheduleText(schedule, country)
+        cfs_app_submitted.refresh_from_db()
 
-    assert isinstance(st.english_paragraphs, ScheduleParagraphs)
-    assert st.english_paragraphs.paragraph
-    assert isinstance(st.translation_paragraphs, ScheduleParagraphs)
-    assert st.translation_paragraphs.paragraph
+        result = fetch_schedule_text(cfs_app_submitted, country)
 
+        assert schedule1.pk in result
+        assert schedule2.pk in result
+        assert len(result) == cfs_app_submitted.schedules.count()
 
-def test_fetch_schedule_text(db, cfs_app_submitted, exporter_one_contact):
-    country = Country.objects.get(name="Argentina")
-
-    schedule1 = CFSSchedule.objects.create(
-        application=cfs_app_submitted,
-        exporter_status=CFSSchedule.ExporterStatus.IS_MANUFACTURER,
-        brand_name_holder=YesNoChoices.yes,
-        product_eligibility=CFSSchedule.ProductEligibility.SOLD_ON_UK_MARKET,
-        goods_placed_on_uk_market=YesNoChoices.yes,
-        goods_export_only=YesNoChoices.no,
-        country_of_manufacture=country,
-        manufacturer_name="Manufacturer Name",
-        manufacturer_address="123 Manufacturer, Manufactureton",
-        manufacturer_postcode="123456",
-        schedule_statements_is_responsible_person=True,
-        schedule_statements_accordance_with_standards=True,
-        created_by=exporter_one_contact,
-    )
-
-    pl = ProductLegislation.objects.get(
-        name="Aerosol Dispensers Regulations 2009/ 2824 as retained in UK law"
-    )
-    schedule1.legislations.add(pl)
-
-    schedule2 = CFSSchedule.objects.create(
-        application=cfs_app_submitted,
-        exporter_status=CFSSchedule.ExporterStatus.IS_MANUFACTURER,
-        brand_name_holder=YesNoChoices.yes,
-        product_eligibility=CFSSchedule.ProductEligibility.MEET_UK_PRODUCT_SAFETY,
-        goods_placed_on_uk_market=YesNoChoices.no,
-        goods_export_only=YesNoChoices.yes,
-        country_of_manufacture=country,
-        manufacturer_name="Manufacturer Name",
-        manufacturer_address="123 Manufacturer, Manufactureton",
-        manufacturer_postcode="123456",
-        schedule_statements_is_responsible_person=True,
-        schedule_statements_accordance_with_standards=True,
-        created_by=exporter_one_contact,
-    )
-
-    pl = ProductLegislation.objects.get(
-        name="Aerosol Dispensers Regulations 2009/ 2824 as retained in UK law"
-    )
-    schedule2.legislations.add(pl)
-
-    cfs_app_submitted.refresh_from_db()
-
-    result = fetch_schedule_text(cfs_app_submitted, country)
-
-    assert schedule1.pk in result
-    assert schedule2.pk in result
-    assert len(result) == cfs_app_submitted.schedules.count()
-
-
-@pytest.mark.django_db
-def test_no_edit_cfs_schedule_template():
-    cfs_schedule_template = TemplateFactory(template_type=Template.CFS_SCHEDULE)
-    assert not EditTemplate().display(cfs_schedule_template)
+    def test_no_edit_cfs_schedule_template(self):
+        cfs_schedule_template = TemplateFactory(template_type=Template.CFS_SCHEDULE)
+        assert not EditTemplate().display(cfs_schedule_template)
