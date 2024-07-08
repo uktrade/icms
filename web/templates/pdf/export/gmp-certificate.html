@@ -1,6 +1,7 @@
 {% from "web/domains/signature/macros.html" import document_signature_placeholder %}
 {% from "web/domains/signature/macros.html" import dbt_logo %}
 {% from "web/domains/signature/macros.html" import not_signed_image %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,6 +9,9 @@
       {{ get_css_rules_as_string('web/css/pdfs/fonts.css')|safe }}
       {{ get_css_rules_as_string('web/css/pdfs/constants.css')|safe }}
       {{ get_css_rules_as_string("web/css/pdfs/gmp-certificate-style.css")|safe }}
+      {% if preview %}
+        {{ get_css_rules_as_string('web/css/pdfs/preview.css')|safe }}
+      {% endif %}
       .dbt_logo_watermark {
         background-image: url("data:image/png;base64,{{ get_file_base64('web/img/dbt_logo.png') }}");
       }
@@ -16,81 +20,72 @@
   </head>
 
   <body>
-    <div class="page-margin">
-      <header>
-        <div class="flex-row">
-          <p class="mb-0-5"><span class="reference {{ 'preview-orange' if preview }}">{{ reference }}</span></p>
-        </div>
-        <div class="flex-row mb-2 pl-0-5">
-          {{ dbt_logo(classes="header-logo") }}
-        </div>
-        <hr>
-      </header>
-
-      <div class="title-page">
-        <div class="watermark_container">
-          <div class="dbt_logo_watermark"></div>
-          <div class="above_watermark">
-            <h3 class="title centre mt-0">
-              <p class="bold title-line mt-0">CERTIFICATE</p>
-              <p class="bold title-line">BY</p>
-              <p class="bold title-line">DEPARTMENT FOR BUSINESS AND TRADE</p>
-            </h3>
-            <h3 class="bold centre title-line country">{{ country }}</h3>
-            <div class="content">
-              <p class="centre">
-                This certificate is issued to {{ brand_name }} by the UK Department for Business and Trade.
-              </p>
-              <p class="statement centre">
-                {% if is_ni %}
-                    This is to certify that all cosmetic products {{ manufacturer_name }} at {{ manufacturer_address }}
-                    are manufactured in compliance with Good Manufacturing Practice referred to in either Regulation (EC) No 1223/2009
-                    of the European Parliament and of the Council of 30 November 2009 on cosmetic products as applicable in {{ manufacturer_country }}
-                    or the Brand Reputation Compliance Global Standard (BRCGS) for Consumer Products.
-                {% else %}
-                    This is to certify that all cosmetic products manufactured by {{ manufacturer_name }} at {{ manufacturer_address }}
-                    are manufactured in compliance with Good Manufacturing Practice referred to in the Cosmetic Regulation No 1223/2009
-                    as amended by the Product Safety and Metrology etc. (Amendment etc.) (EU Exit) Regulations 2019 as applicable in
-                    {{ manufacturer_country }} or the Brand Reputation Compliance Global Standard (BRCGS) for Consumer Products.
-                {% endif %}
-              </p>
-              <p class="centre"><strong>This certificate expires on {{ expiry_date }}</strong></p>
-            </div>
-          </div>
-        </div>
-        <footer class="title-footer">
-          <div class="signature-block">
-            {% if preview %}
-              {{ not_signed_image() }}
-              <div class="qr-code">
-                <span class="qr-placeholder {{ 'preview-orange' if preview }}">[[QR_PLACEHOLDER]]</span>
-              </div>
-              <div class="qr-text-block">
-                <span class="qr-text">QR code will be generated when documents are authorised.</span>
-              </div>
-            {% else %}
-              {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory) }}
-              <div class="qr-code">
-                <img class="qr-img" src="data:image/png;base64, {{ qr_img_base64 }}"/>
-              </div>
-              <div class="qr-text-block">
-                <p class="qr-text">
-                  Scan this QR code to check this certificate's validity.
-                  <strong>Certificate Code: {{ certificate_code }}</strong>
-                </p>
-                <p class="qr-text">
-                  Alternatively you can go to <strong>{{ qr_check_url }}</strong>
-                  and enter the certificate reference and code.
-                </p>
-              </div>
-            {% endif %}
-          </div>
-          <div class="date-block">
-            <span>Date issued:</span>
-            <span>{{ issue_date }}</span>
-          </div>
-        </footer>
+    <header>
+      <div class="flex-row mb-2 pl-0-5">
+        {{ dbt_logo(classes="header-logo") }}
       </div>
+      <hr>
+    </header>
+
+    <div class="title-page">
+      <div class="watermark_container">
+        <div class="dbt_logo_watermark"></div>
+        <div class="above_watermark">
+          <h3 class="title centre mt-0">
+            <p class="bold title-line mt-0">CERTIFICATE</p>
+            <p class="bold title-line">BY</p>
+            <p class="bold title-line">DEPARTMENT FOR BUSINESS AND TRADE</p>
+          </h3>
+          <h3 class="bold centre title-line country">{{ country }}</h3>
+          <div class="content">
+            <p class="centre">
+              This certificate is issued to {{ brand_name }} by the UK Department for Business and Trade.
+            </p>
+            <p class="statement centre">
+              {% if is_ni %}
+                  This is to certify that all cosmetic products {{ manufacturer_name }} at {{ manufacturer_address }}
+                  are manufactured in compliance with Good Manufacturing Practice referred to in either Regulation (EC) No 1223/2009
+                  of the European Parliament and of the Council of 30 November 2009 on cosmetic products as applicable in {{ manufacturer_country }}
+                  or the Brand Reputation Compliance Global Standard (BRCGS) for Consumer Products.
+              {% else %}
+                  This is to certify that all cosmetic products manufactured by {{ manufacturer_name }} at {{ manufacturer_address }}
+                  are manufactured in compliance with Good Manufacturing Practice referred to in the Cosmetic Regulation No 1223/2009
+                  as amended by the Product Safety and Metrology etc. (Amendment etc.) (EU Exit) Regulations 2019 as applicable in
+                  {{ manufacturer_country }} or the Brand Reputation Compliance Global Standard (BRCGS) for Consumer Products.
+              {% endif %}
+            </p>
+            <p class="centre"><strong>This certificate expires on {{ expiry_date }}</strong></p>
+          </div>
+        </div>
+      </div>
+      <footer class="title-footer">
+        <div class="signature-block">
+          {% if preview %}
+            {{ not_signed_image() }}
+            <div class="qr-code">
+              <span class="qr-placeholder {{ 'preview-orange' if preview }}">[[QR_PLACEHOLDER]]</span>
+            </div>
+            <div class="qr-text-block">
+              <span class="qr-text">QR code will be generated when documents are authorised.</span>
+            </div>
+          {% else %}
+            {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory) }}
+            <div class="qr-code">
+              <img class="qr-img" src="data:image/png;base64, {{ qr_img_base64 }}"/>
+            </div>
+            <div class="qr-text-block">
+              <p class="qr-text">
+                Scan this QR code to check this certificate's validity.
+                <strong>Certificate Code: {{ certificate_code }}</strong>
+              </p>
+              <p class="qr-text">
+                Alternatively you can go to <strong>{{ qr_check_url }}</strong>
+                and enter the certificate reference and code.
+              </p>
+            </div>
+          {% endif %}
+        </div>
+      </footer>
     </div>
   </body>
 </html>
