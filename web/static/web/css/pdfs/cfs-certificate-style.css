@@ -81,6 +81,7 @@ p {
     display: block;
     flex: 40% 0 0;
 }
+
 .qr-text-block {
     display: block;
     flex: 31% 0 0;
@@ -144,14 +145,10 @@ p {
     font-size: 13px;
 }
 
-.centre {
-    text-align: center;
-}
-
 .dbt_logo_watermark {
     background-size: contain;
     background-repeat: no-repeat;
-    filter: grayscale(100%) opacity(0.1);
+    filter: grayscale(100%) opacity(0.1) blur(1px);
     z-index: 1;
     width: 95%;
     height: 70%;

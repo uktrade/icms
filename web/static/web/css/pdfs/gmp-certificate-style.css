@@ -1,9 +1,9 @@
 @page {
     size: A4;
-    margin-top: 45px;
+    margin-top: 94px;
     margin-right: 85px;
-    margin-bottom: 20px;
-    margin-left: 85px;
+    margin-bottom: 130px;
+    margin-left: 90px;
 }
 
 * {
@@ -13,31 +13,12 @@
 
 }
 
-.flex-row {
-    display: flex;
-    flex-direction: row;
-}
-
 ul, ol {
     list-style-position: outside;
 }
 
-.mb-2 {
-    margin-bottom: 2em;
-}
-
-
-.bold {
-    font-weight: bold;
-}
-
-
 header {
-    position: running(header);
-}
-
-.reference {
-    font-size: 14px;
+    margin-top: -4px;
 }
 
 .header-logo {
@@ -45,20 +26,20 @@ header {
     vertical-align: top;
     height: 80px;
     width: 160px;
-    margin-left: 4px;
+    margin-left: -2px;
 }
 
 hr {
-    border-top: 0.10em solid black;
+    border-top: 0.125em solid black;
     border-bottom: none;
-    margin-top: 15px;
+    margin-bottom: 16px;
 }
 
 .title-page {
     padding-top: 8px;
     display: flex;
     flex-wrap: wrap;
-    height: 815px;
+    height: 750px;
     align-content: space-between;
 }
 
@@ -74,11 +55,11 @@ hr {
 .title {
     font-size: 16px;
     color: black;
-    margin-bottom: 60px;
+    margin-bottom: 56px;
 }
 
 .title-line {
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .country {
@@ -92,27 +73,32 @@ p {
 }
 
 .signature-block {
-    margin-bottom: 60px;
+    margin-bottom: 20px;
     display: flex;
     justify-content: space-evenly;
     align-items: stretch;
     flex-wrap: nowrap;
 }
 
-.signature,
+.signature {
+    display: block;
+    flex: 40% 0 0;
+}
+
 .qr-text-block {
     display: block;
     flex: 31% 0 0;
+    padding-left: 16px;
 }
 
 .qr-code {
-    flex: 38% 0 0;
+    flex: 31% 0 0;
     flex-direction: column;
 }
 
 .qr-img {
-    width: 130px;
-    height: 130px;
+    width: 135px;
+    height: 135px;
     display: block;
     margin: 0 auto;
 }
@@ -125,6 +111,7 @@ p {
 
 .qr-text-block {
     padding-top: 12px;
+    padding-right: 15px;
 }
 
 .qr-text {
@@ -132,28 +119,15 @@ p {
     margin: 0;
 }
 
-.date-block {
-    margin-top: 24px;
-}
-
-.date-block > span {
-    display: block;
-    font-size: 16px;
-}
-
-.centre {
-    text-align: center;
-}
-
 .dbt_logo_watermark {
     background-size: contain;
     background-repeat: no-repeat;
-    filter: grayscale(100%) opacity(0.1);
+    filter: grayscale(100%) opacity(0.1) blur(1px);
     z-index: 1;
-    width: 100%;
+    width: 95%;
     height: 70%;
     position: absolute;
-    margin-top: 20px;
+    margin-top: 30px;
     margin-right: 5px;
     page-break-inside: avoid;
     page-break-after: avoid;

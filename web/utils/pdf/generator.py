@@ -169,6 +169,8 @@ class PdfGenerator(PdfGenBase):
         match self.application.process_type:
             case ProcessTypes.CFS:
                 return pages.format_cfs_pages(pdf_data, self.get_document_context())
+            case ProcessTypes.GMP:
+                return pages.format_gmp_pages(pdf_data, self.get_document_context())
             case ProcessTypes.COM:
                 return pages.format_com_pages(pdf_data)
             case _:
