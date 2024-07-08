@@ -48,3 +48,21 @@ def format_cfs_pages(pdf_data: bytes, context: dict[str, Any]) -> bytes:
     with io.BytesIO() as bytes_stream:
         writer.write(bytes_stream)
         return bytes_stream.getvalue()
+
+
+def format_com_pages(pdf_data: bytes) -> bytes:
+    """Function to merge the first page containing only the footer with the following pages
+    in CFS PDF documents."""
+
+    reader = pypdf.PdfReader(io.BytesIO(pdf_data))
+    writer = pypdf.PdfWriter()
+
+    footer_page = reader.pages[0]
+
+    for page in reader.pages[1:]:
+        page.merge_page(footer_page)
+        writer.add_page(page)
+
+    with io.BytesIO() as bytes_stream:
+        writer.write(bytes_stream)
+        return bytes_stream.getvalue()

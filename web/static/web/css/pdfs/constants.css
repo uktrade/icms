@@ -8,6 +8,10 @@
     flex-direction: row;
 }
 
+.avoid-break {
+    break-inside: avoid;
+}
+
 .align-centre {
     align-items: center;
 }
