@@ -475,11 +475,16 @@ class ResponsePrepSILGoodsSection2Form(ResponsePrepBaseForm):
 
 
 class ResponsePrepSILGoodsSection5Form(ResponsePrepBaseForm):
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["quantity"].required = False
+
     class Meta:
         model = models.SILGoodsSection5
         fields = ResponsePrepBaseForm.Meta.fields + ("unlimited_quantity",)
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
 
         quantity = cleaned_data.get("quantity")
@@ -492,6 +497,7 @@ class ResponsePrepSILGoodsSection5Form(ResponsePrepBaseForm):
 
         if unlimited_quantity:
             cleaned_data["quantity"] = None
+        return cleaned_data
 
 
 class ResponsePrepSILGoodsSection582ObsoleteForm(ResponsePrepBaseForm):  # /PS-IGNORE
