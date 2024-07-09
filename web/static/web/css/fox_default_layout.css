@@ -1127,3 +1127,12 @@ ul.modal-popup-actions li {
     float: none;
   }
 }
+
+.footer-link {
+  float: right;
+  padding: 0.5em;
+}
+
+.footer-link>a {
+  text-decoration: none;
+}
