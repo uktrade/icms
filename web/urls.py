@@ -5,6 +5,7 @@ from web import converters
 from web.domains.checker.views import V1ToV2RedirectCheckCertificateView
 from web.registration.views import LegacyAccountRecoveryView
 from web.views import (
+    AccessibilityStatementView,
     LoginRequiredSelect2AutoResponseView,
     RedirectBaseDomainView,
     cookie_consent_view,
@@ -79,6 +80,11 @@ urlpatterns = [
     ),
     # Cookie consent URLs
     path("cookie-consent/", cookie_consent_view, name="cookie-consent"),
+    path(
+        "accessibility-statement/",
+        AccessibilityStatementView.as_view(),
+        name="accessibility-statement",
+    ),
     # V1->V2 certificate checker
     path(
         "icms/fox/icms/IMP_CERT_CERTIFICATE_CHECKER/check/",

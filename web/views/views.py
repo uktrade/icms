@@ -17,7 +17,7 @@ from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 from django.views.defaults import permission_denied
-from django.views.generic import RedirectView
+from django.views.generic import RedirectView, TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
@@ -344,3 +344,7 @@ class ModelDetailView(PermissionRequiredMixin, LoginRequiredMixin, PageTitleMixi
 
     def get_page_title(self):
         return f"Viewing {self.object}"
+
+
+class AccessibilityStatementView(TemplateView):
+    template_name = "web/accessibility_statement.html"

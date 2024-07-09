@@ -100,7 +100,11 @@
     </main>
 
     <footer>
-      {% block footer %}{% endblock %}
+      {% block footer %}
+          <div class="footer-link">
+            <a href="{{ icms_url('accessibility-statement') }}" target="_blank">Accessibility Statement</a>
+          </div>
+      {% endblock %}
     </footer>
 
 

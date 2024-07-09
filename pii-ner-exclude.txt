@@ -4800,3 +4800,18 @@ Unlimited x Unlimited Section 5
 ICMSLST-2760 Add
 ICMSLST-2759 Filter
 ICMSLST-2761 Revisit
+The Equality and Human Rights Commission
+the Public Sector Bodies Accessibility Regulations
+keyboard</li
+JAWS
+NVDA
+VoiceOver)</li
+content.</li
+window</li
+problems</h4
+target="_blank">Advisory and Support Service
+Government Digital Service
+4th September 2024
+DAC
+Digital Accessibility Centre
+noreferrer">Accessibility Statement</a
