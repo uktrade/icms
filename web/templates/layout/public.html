@@ -24,7 +24,9 @@
 {% block footer %}
 <div id="footer">
     <div id="footer-content">
-        © <a href="http://www.nationalarchives.gov.uk/information-management/our-services/crown-copyright.htm">Crown Copyright</a>. All content is available under the <a href="http://www.nationalarchives.gov.uk/doc/open-government-licence/">Open Government Licence</a>, except where otherwise stated. <a href="https://www.ilb.trade.gov.uk/docs/DIT_DDaT_Fair_Processing_Notice_ICMS.pdf">Fair Processing Notice</a>
+      © <a href="http://www.nationalarchives.gov.uk/information-management/our-services/crown-copyright.htm">Crown Copyright</a>. 
+      All content is available under the <a href="http://www.nationalarchives.gov.uk/doc/open-government-licence/">Open Government Licence</a>
+      , except where otherwise stated. <a href="{{ static('web/docs/PrivacyNotice.pdf') }}" class="pdf" target="_blank" rel="noopener noreferrer">Fair Processing Notice</a>
         <br><br>
         <a href="{{ icms_url('cookie-consent') }}?referrer_url={{ request.path }}">Cookies</a>
         <a href="{{ icms_url('accessibility-statement') }}" target="_blank" rel="noopener noreferrer">Accessibility Statement</a>
