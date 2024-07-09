@@ -139,7 +139,6 @@ jobs:
           name: run unit tests
           command: |
             source .env && export $(cut -d= -f1 < .env)
-            python manage.py collectstatic --noinput
             pytest \
               --ignore web/end_to_end \
               --dist=loadfile \

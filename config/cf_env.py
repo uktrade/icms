@@ -183,7 +183,7 @@ class CloudFoundryEnvironment(BaseSettings):
 
     # Testing
     # Flag to decide if we want to save the PDFs generated as part of the visual regression tests - useful for debugging
-    save_generated_pdfs: bool = False
+    save_generated_pdfs: bool = True
 
     @computed_field  # type: ignore[misc]
     @property

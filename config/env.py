@@ -151,10 +151,6 @@ class DBTPlatformEnvironment(BaseSettings):
     gtm_importer_container_id: str = ""
     gtm_exporter_container_id: str = ""
 
-    # Testing
-    # Flag to decide if we want to save the PDFs generated as part of the visual regression tests - useful for debugging
-    save_generated_pdfs: bool = False
-
     @computed_field  # type: ignore[misc]
     @property
     def allowed_hosts_list(self) -> list[str]:
