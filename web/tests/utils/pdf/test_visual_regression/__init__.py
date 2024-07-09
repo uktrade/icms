@@ -98,6 +98,7 @@ class BaseTestPDFVisualRegression:
                         / self.__class__.__name__
                         / f"generated_page_{page}.png"
                     )
+                    print(f"Saving generated PDF to {output_file}")
                     output_file.parent.mkdir(exist_ok=True, parents=True)
                     with open(output_file, "wb") as f:
                         image.save(f, "PNG")
