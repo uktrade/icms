@@ -90,6 +90,7 @@ class BaseTestPDFVisualRegression:
             generated_pdf_image = convert_from_bytes(self.get_pdf())
 
             # save the generated pdfs for debugging if required
+            print(f"Setting is set to {settings.SAVE_GENERATED_PDFS}")
             if settings.SAVE_GENERATED_PDFS:
                 for page, image in enumerate(generated_pdf_image):
                     output_file = (
