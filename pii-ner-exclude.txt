@@ -647,7 +647,6 @@ Active Letter Template
 Letter Title
 Email Title
 Test Endorsement
-TODO Add
 f"IMA/{year}/00003
 GBSAN0000001B
 GBSIL0000004E
@@ -2600,7 +2599,6 @@ Disposition
 Constabulary Name
 "Legislation Name
 Debug
-TODO Update
 View Applications / Licences
 Edit Applications / Vary Licences
 Is Importer Contact
@@ -4317,7 +4315,6 @@ view_kwargs
 exp_importer_last_login
 Certifiate Application
 SILReportFirearmParser
-TODO ICMSLST-2599
 NONE
 owner_wua_id
 xml_data
@@ -4800,3 +4797,6 @@ The EC Fertilisers (England and Wales) Regulations 2006
 The EC Fertilisers
 Council
 Unlimited x Unlimited Section 5
+ICMSLST-2760 Add
+ICMSLST-2759 Filter
+ICMSLST-2761 Revisit

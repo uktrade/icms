@@ -1,5 +1,5 @@
-# TODO: Revisit this when we know how to calculate it.
 def get_euro_exchange_rate() -> float:
+    # Note: Used in inactive application type so no need to fix this hardcoded function.
     return 1.11
 
 

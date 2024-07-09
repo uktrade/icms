@@ -84,7 +84,6 @@ def modify_query(request, **new_params):
 
 
 def icms_link(request: HttpRequest, url: str, link_text: str, target: str = "_self") -> str:
-    # TODO: might have to enhance this to strip out path components after "#" from both urls
     class_attr = "current-page" if request.path == url else ""
 
     return Markup(

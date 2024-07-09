@@ -794,17 +794,11 @@ def test_case_statuses(importer_one_fixture_data):
     st = ImpExpStatus
     Build.wood_application("completed", importer_one_fixture_data, override_status=st.COMPLETED)
 
-    # TODO: ICMSLST-1105: filter Oustanding Open Requests
-    # Build.wood_application("open_request", importer_one_fixture_data)
-
     Build.wood_application("processing", importer_one_fixture_data, override_status=st.PROCESSING)
     app = Build.wood_application("fir", importer_one_fixture_data, override_status=st.PROCESSING)
     app.further_information_requests.create(
         status=FurtherInformationRequest.OPEN, process_type=FurtherInformationRequest.PROCESS_TYPE
     )
-
-    # TODO: ICMSLST-1104: filter SIGL
-    # Build.wood_application("sigl", importer_one_fixture_data)
 
     app = Build.wood_application("update", importer_one_fixture_data, override_status=st.PROCESSING)
     app.update_requests.create(status=UpdateRequest.Status.OPEN)
@@ -821,16 +815,10 @@ def test_case_statuses(importer_one_fixture_data):
     user = importer_one_fixture_data.ilb_admin_user
     _test_search_by_status(wt, ImpExpStatus.COMPLETED, user, expected=["completed"])
 
-    # TODO: ICMSLST-1105 filter Oustanding Open Requests
-    # _test_search_by_status(wt, scs.OPEN_REQUESTS, "open_request")
-
     _test_search_by_status(
         wt, ImpExpStatus.PROCESSING, user, expected=["update", "fir", "processing"]
     )
     _test_search_by_status(wt, "FIR_REQUESTED", user, expected=["fir"])
-
-    # TODO: ICMSLST-1104: filter SIGL
-    # _test_search_by_status(wt, scs.PROCESSING_SIGL, "sigl")
 
     _test_search_by_status(wt, "UPDATE_REQUESTED", user, expected=["update"])
     _test_search_by_status(wt, ImpExpStatus.REVOKED, user, expected=["revoked"])
@@ -923,11 +911,6 @@ def test_export_search_by_exporter_or_agent(exporter_one_fixture_data: ExportFix
     results = search_applications(search_terms, exporter_one_fixture_data.ilb_admin_user)
 
     assert results.total_rows == 0
-
-
-def test_export_search_by_closed_dates(exporter_one_fixture_data: ExportFixtureData):
-    # TODO: Add test when doing ICMSLST-1107
-    ...
 
 
 def test_export_search_by_certificate_country(exporter_one_fixture_data: ExportFixtureData):

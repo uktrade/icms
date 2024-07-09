@@ -152,7 +152,7 @@ def get_userinfo(client: OAuth2Session) -> types.UserInfo:
 
 
 def has_valid_token(client: OAuth2Session) -> bool:
-    # ICMSLST-2300 Revisit if supporting OIDC back-channel logout.
+    # TODO: ICMSLST-2300 Revisit if supporting OIDC back-channel logout.
     return client.token is not None
 
 

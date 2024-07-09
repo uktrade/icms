@@ -7,7 +7,7 @@
 # https://docs.docker.com/compose/reference/envvars/#compose_project_name
 COMPOSE_PROJECT_NAME=icms
 
-# TODO: understand what this is for and whether it's still needed
+# TODO: ICMSLST-2762 understand what this is for and whether it's still needed
 UID=$(shell id -u):$(shell id -g)
 
 ##@ Help
@@ -150,9 +150,6 @@ shell: ## Starts the Python interactive interpreter
 psql: ## Starts psql
 	@unset UID && \
 	PGPASSWORD=password psql -p 6000 -h localhost -U postgres
-
-# TODO: does this make sense...?
-all: requirements-web
 
 local_s3: ## creates s3 buckets on localstack container
 	aws --endpoint-url=http://localhost:4566 s3 mb s3://icms.local

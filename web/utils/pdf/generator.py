@@ -41,8 +41,6 @@ class PdfGenBase:
 
         return pdf_data
 
-    # TODO: Remove this when all the pdfs have been created
-    # See web/domains/case/views/views_pdf.py for example
     def get_document_html(self) -> str:
         return render_to_string(
             template_name=self.get_template(),

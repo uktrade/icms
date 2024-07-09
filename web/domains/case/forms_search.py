@@ -98,7 +98,6 @@ class ImportSearchForm(SearchFormBase):
         required=False,
     )
 
-    # TODO: add application_subtype only shown when application_type==firearms
     application_sub_type = forms.ChoiceField(
         label="Sub-Type",
         choices=[(None, "Any")] + ImportApplicationType.SubTypes.choices,

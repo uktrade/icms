@@ -386,7 +386,6 @@ def send_further_information_request_withdrawn_email(fir: FurtherInformationRequ
 def send_access_request_further_information_request_responded_email(
     fir: FurtherInformationRequest, access_request: ImpAccessOrExpAccess
 ) -> None:
-    # TODO: ICMSLST-2333 Gov Notify - Email attachments
     recipients = get_email_addresses_for_users([fir.requested_by])
     for recipient in recipients:
         AccessRequestFurtherInformationRequestRespondedEmail(
@@ -397,7 +396,6 @@ def send_access_request_further_information_request_responded_email(
 def send_application_further_information_request_responded_email(
     fir: FurtherInformationRequest, application: ImpOrExp
 ) -> None:
-    # TODO: ICMSLST-2333 Gov Notify - Email attachments
     application = application.get_specific_model()
     recipients = get_email_addresses_for_users([fir.requested_by])
     for recipient in recipients:
@@ -409,7 +407,6 @@ def send_application_further_information_request_responded_email(
 def send_access_request_further_information_request_withdrawn_email(
     fir: FurtherInformationRequest, access_request: ImpAccessOrExpAccess
 ) -> None:
-    # TODO: ICMSLST-2333 Gov Notify - Email attachments
     recipients = get_email_addresses_for_users([access_request.submitted_by])
     for recipient in recipients:
         AccessRequestFurtherInformationRequestWithdrawnEmail(
@@ -420,7 +417,6 @@ def send_access_request_further_information_request_withdrawn_email(
 def send_application_further_information_request_withdrawn_email(
     fir: FurtherInformationRequest, application: ImpOrExp
 ) -> None:
-    # TODO: ICMSLST-2333 Gov Notify - Email attachments
     application = application.get_specific_model()
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:
@@ -432,7 +428,6 @@ def send_application_further_information_request_withdrawn_email(
 def send_access_request_further_information_request_email(
     fir: FurtherInformationRequest, access_request: ImpAccessOrExpAccess
 ) -> None:
-    # TODO: ICMSLST-2333 Gov Notify - Email attachments
     recipients = get_email_addresses_for_users([access_request.submitted_by])
     for recipient in recipients:
         AccessRequestFurtherInformationRequestEmail(
@@ -443,7 +438,6 @@ def send_access_request_further_information_request_email(
 def send_application_further_information_request_email(
     fir: FurtherInformationRequest, application: ImpOrExp
 ) -> None:
-    # TODO: ICMSLST-2333 Gov Notify - Email attachments
     application = application.get_specific_model()
     recipients = get_application_contact_email_addresses(application)
     for recipient in recipients:

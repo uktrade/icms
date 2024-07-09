@@ -17,12 +17,12 @@ class ExportApplicationType(models.Model):
 
     is_active = models.BooleanField(blank=False, null=False, default=True)
 
-    # TODO ICMSLST-2085: Change this to type to match ImportApplication
+    # TODO: ICMSLST-2085 Change this to type to match ImportApplication
     type_code = models.CharField(
         max_length=30, blank=False, null=False, unique=True, choices=Types.choices
     )
 
-    # TODO ICMSLST-2085: Change this to name to match ImportApplication
+    # TODO: ICMSLST-2085 Change this to name to match ImportApplication
     type = models.CharField(max_length=70, blank=False, null=False)
 
     allow_multiple_products = models.BooleanField(blank=False, null=False)

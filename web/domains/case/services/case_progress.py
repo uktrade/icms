@@ -34,10 +34,10 @@ __all__ = [
 ]
 
 
-# TODO: Consider splitting.
-#       def application_in_progress
-#       def application_in_progress_update_request
-#       def application_in_progress_variation_request
+# Consider splitting to the following if required in the future:
+#   - def application_in_progress
+#   - def application_in_progress_update_request
+#   - def application_in_progress_variation_request
 def application_in_progress(application: ImpOrExp) -> None:
     """Check if the application is in progress with the applicant."""
 

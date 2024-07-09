@@ -427,7 +427,9 @@ if env.sentry_enabled:
 
 # Settings for production environment
 if APP_ENV == "production":
-    # TODO compression causes 50 error on server
+    # TODO: ICMSLST-2760 Add whitenoise static file compression.
+    #       Note - commented out code below is for older versions of django.
+    #       compression causes 50 error on server
     # STATICFILES_STORAGE='whitenoise.storage.CompressedManifestStaticFilesStorage'
 
     INSTALLED_APPS += [  # NOQA
