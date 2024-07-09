@@ -151,6 +151,9 @@ jobs:
               -n=auto \
               --junitxml=test-results/unit-test-results.xml
 
+      - store_artifacts:
+          path: generated_pdfs
+
       - store_test_results:
           path: test-results
 

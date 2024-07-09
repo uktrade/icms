@@ -89,17 +89,41 @@ class BaseTestPDFVisualRegression:
             # different dates cause different headers and footers in the PDFs, which would cause the test to fail.
             generated_pdf_image = convert_from_bytes(self.get_pdf())
 
+            # save the generated pdfs for debugging if required
+            if settings.SAVE_GENERATED_PDFS:
+                for page, image in enumerate(generated_pdf_image):
+                    output_file = (
+                        Path(settings.BASE_DIR)
+                        / "generated_pdfs"
+                        / self.__class__.__name__
+                        / f"generated_page_{page}.png"
+                    )
+                    output_file.parent.mkdir(exist_ok=True, parents=True)
+                    with open(output_file, "wb") as f:
+                        image.save(f, "PNG")
+
         # both pdfs should at least have the same number of pages
         assert len(generated_pdf_image) == len(benchmark_pdf_image)
 
-        for generated_page, benchmark_page in zip(generated_pdf_image, benchmark_pdf_image):
+        for page, (generated_page, benchmark_page) in enumerate(
+            zip(generated_pdf_image, benchmark_pdf_image)
+        ):
             # compare the images pixel by pixel
             diff = ImageChops.difference(generated_page, benchmark_page)
 
+            # Save the diff image for debugging if required
+            if settings.SAVE_GENERATED_PDFS:
+                output_file = (
+                    Path(settings.BASE_DIR)
+                    / "generated_pdfs"
+                    / self.__class__.__name__
+                    / f"diff_{page}.png"
+                )
+                with open(output_file, "wb") as f:
+                    diff.save(f, "PNG")
+
             # get a quantifiable difference metric
             diff_metric = len(set(diff.getdata()))
-
-            print(diff_metric)
 
             # we're expecting a number lower than the tolerable difference
             assert diff_metric <= self.tolerable_difference

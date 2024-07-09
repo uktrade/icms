@@ -65,3 +65,5 @@ GTM_ENABLED = True
 
 # Local .env sometimes overrides this there set here to prevent that.
 GOV_UK_ONE_LOGIN_AUTHENTICATION_LEVEL = one_login_types.AuthenticationLevel.MEDIUM_LEVEL
+
+SAVE_GENERATED_PDFS = env.save_generated_pdfs
