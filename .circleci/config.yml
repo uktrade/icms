@@ -86,7 +86,6 @@ jobs:
           name: run mypy
           command: make mypy
 
-
       - run:
           name: check missing migrations
           command: |
@@ -159,6 +158,38 @@ jobs:
       - codecov/upload:
           file: test-reports/coverage.json
 
+  generate_benchmark_pdfs:
+    docker:
+      - image: cimg/python:3.11.7
+      - image: cimg/postgres:16.1
+        environment:
+          POSTGRES_DB: icms_test_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: .
+
+      - run:
+          name: activate virtualenv
+          command: echo "source .venv/bin/activate" >> $BASH_ENV;
+
+      - run:
+          name: install playwright
+          command: playwright install --with-deps chromium
+
+      - run:
+          name: generate benchmark pdfs
+          command: |
+            source .env && export $(cut -d= -f1 < .env)
+            pytest web/tests/utils/pdf/test_visual_regression/generate_benchmark_pdfs.py
+
+      - store_artifacts:
+          path: web/tests/utils/pdf/test_visual_regression/benchmark_pdfs
+
 workflows:
   ci:
     jobs:
@@ -167,5 +198,8 @@ workflows:
           requires:
             - install_python_dependencies
       - code_hygiene:
+          requires:
+            - install_python_dependencies
+      - generate_benchmark_pdfs:
           requires:
             - install_python_dependencies
