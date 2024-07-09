@@ -40,7 +40,7 @@ def cfs_create(page: Page) -> int:
     page.locator("#id_brand_name_holder").get_by_text("Yes").click()
     page.get_by_placeholder("Select Legislation").click()
     page.get_by_role(
-        "option", name="Aerosol Dispensers Regulations 2009/ 2824 as retained in UK law"
+        "option", name="Aerosol Dispensers Regulations 2009/ 2824 as applicable in GB"
     ).click()
     page.get_by_label("The products are currently sold on the UK market").check()
     page.locator("#id_goods_placed_on_uk_market").get_by_text("Yes").click()
@@ -70,10 +70,14 @@ def cfs_create(page: Page) -> int:
 
     # Change to Biocide regulation to change product page
     page.get_by_role(
-        "listitem", name="Aerosol Dispensers Regulations 2009/ 2824 as retained in UK law"
+        "listitem", name="Aerosol Dispensers Regulations 2009/ 2824 as applicable in GB"
     ).get_by_text("×").click()
     page.get_by_role(
-        "option", name="Biocide Products Regulation 528/2012 as retained in UK law"
+        "option",
+        name=(
+            "Regulation (EU) No. 528/2012 of the European Parliament and of the Council concerning the making available on the market and use of"
+            " biocidal products, as it has effect in Great Britain"
+        ),
     ).click()
     page.get_by_role("button", name="Save").click()
 

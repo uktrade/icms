@@ -56,7 +56,7 @@ def test_can_create_cfs_cat(pages: conftest.UserPages) -> None:
         page.locator("#id_brand_name_holder").get_by_text("Yes").click()
         page.get_by_placeholder("Select Legislation").click()
         page.get_by_role(
-            "option", name="Aerosol Dispensers Regulations 2009/ 2824 as retained in UK law"
+            "option", name="Aerosol Dispensers Regulations 2009/ 2824 as applicable in GB"
         ).click()
         page.get_by_label("The products are currently").check()
         page.locator("#id_goods_placed_on_uk_market_0").check()
@@ -190,7 +190,11 @@ def test_can_create_cfs_cat_biocidal_schdedule(pages: conftest.UserPages) -> Non
         page.get_by_placeholder("Select Legislation").click()
 
         page.get_by_role(
-            "option", name="Biocide Products Regulation 528/2012 as retained in UK law"
+            "option",
+            name=(
+                "Regulation (EU) No. 528/2012 of the European Parliament and of the Council concerning the making available on the market and use of"
+                " biocidal products, as it has effect in Great Britain"
+            ),
         ).click()
         page.get_by_label("The products are currently").check()
         page.locator("#id_goods_placed_on_uk_market_0").check()
