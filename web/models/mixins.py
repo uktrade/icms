@@ -3,7 +3,8 @@ class Archivable:
         self.is_active = False
         self.save()  # type: ignore[attr-defined]
 
-    # TODO: we have to expand this unarchive, sometimes it should be blocked.
+    # TODO: ICMSLST-2761 Revisit and remove Archivable.
+    #  we have to expand this unarchive, sometimes it should be blocked.
     # e.g. the system shouldn't allow you to have more than one active
     # translation for language X for some template (see what was done in
     # ICMSLST-483)

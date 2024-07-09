@@ -198,8 +198,6 @@ class ApplicationBase(Process):
     """Common base class for Import/ExportApplication. Needed because some
     common code needs a Django model class to work with (see
     ResponsePreparationForm).
-
-    TODO: possibly move more duplicated stuff from Import/ExportApplication to here.
     """
 
     class Meta:

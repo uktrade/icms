@@ -60,7 +60,7 @@ def get_caseworker_app_filters(user: User) -> tuple[Q, ...]:
         Q(is_active=True),
         #
         # Active application types
-        # TODO: Filter all workbasket queries by active app types.
+        # TODO: ICMSLST-2759 Filter all workbasket queries by active app types.
         #       Do this later as excluding inactive app types can hide bugs
         #       with migration code / the legacy data.
         # Q(application_type__is_active=True),

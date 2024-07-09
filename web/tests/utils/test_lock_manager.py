@@ -15,18 +15,6 @@ def test_no_tables(lock_manager):
         lock_manager.lock_tables([])
 
 
-# TODO: enabling this causes 22 random test failures elsewhere, just setting
-# transaction=True somehow modifies global DB state??
-#
-# @pytest.mark.django_db(transaction=True)
-# def test_no_transaction(lock_manager):
-#     with pytest.raises(
-#         RuntimeError,
-#         match="lock_tables cannot be called without being inside a database transaction",
-#     ):
-#         lock_manager.lock_tables([UniqueReference])
-
-
 @pytest.mark.django_db
 def test_success(lock_manager):
     assert not lock_manager.is_table_locked(UniqueReference)

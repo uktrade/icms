@@ -31,12 +31,11 @@ class DocumentPreviewBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRe
         ImpExpStatus.VARIATION_REQUESTED,
     ]
 
+    # PermissionRequiredMixin Config
+    permission_required = [Perms.sys.ilb_admin]
+
     # View Config
     http_method_names = ["get"]
-
-    # TODO: ICMSLST-1436 Add document_type permission checks.
-    # e.g. document_type == "pre-sign" check the app has been "authorised"
-    permission_required = [Perms.sys.ilb_admin]
 
     document_types: ClassVar[list[DocumentTypes]]
     output_filename: ClassVar[str]
@@ -58,8 +57,7 @@ class DocumentPreviewBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRe
             country=country_pk and Country.objects.get(pk=country_pk),
         )
 
-        # TODO - remove both of these - ICMSLST-2710
-
+        # TODO: ICMSLST-2710 remove both dev features.
         # Useful when debugging pdf layout
         if "html" in self.request.GET:
             html = pdf_gen.get_document_html()

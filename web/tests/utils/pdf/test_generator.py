@@ -24,7 +24,6 @@ from web.types import DocumentTypes
 from web.utils.pdf import PdfGenerator, StaticPdfGenerator, utils
 
 
-# TODO: Revisit when doing ICMSLST-1428
 @pytest.fixture(autouse=True)
 def mock_get_licence_endorsements(monkeypatch):
     mock_get_licence_endorsements = create_autospec(utils.get_licence_endorsements)

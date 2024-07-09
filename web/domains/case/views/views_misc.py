@@ -580,7 +580,6 @@ class CheckCaseDocumentGenerationView(
             reload_workbasket = True
 
         else:
-            # TODO: Sent a sentry message instead to handle the error gracefully
             raise Exception("Unknown state for application")
 
         return JsonResponse(data={"msg": msg, "reload_workbasket": reload_workbasket})

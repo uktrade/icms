@@ -971,7 +971,7 @@ Yours sincerely,
 
 [[CASE_OFFICER_NAME]]""",
     )
-    # TODO: template extracted from the test system not from the db as missing
+    # Template extracted from the test system not from the db as missing
     # search IMA_SANCTIONS_EMAIL to see usage
     Template.objects.get_or_create(
         start_datetime=pytz.timezone("UTC").localize(
