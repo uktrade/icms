@@ -29,7 +29,7 @@
   {% endcall %}
 
   {% for schedule in schedules %}
-    {% set schedule_legislations = schedule.legislations.filter(is_active=True) %}
+    {% set schedule_legislations = schedule.legislations.all() %}
     {% set schedule_legislation_names = schedule_legislations.values_list("name", flat=True) %}
     {% set has_cosmetics = schedule_legislations.filter(is_eu_cosmetics_regulation=True).exists() %}
     {% set not_export_only = schedule.goods_export_only == "no" %}

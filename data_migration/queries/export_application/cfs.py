@@ -82,7 +82,7 @@ INNER JOIN (
     cad.id cad_id
     , x.schedule_ordinal
     , CASE x.brand_name_holder WHEN 'true' THEN 'yes' WHEN 'false' THEN 'no' ELSE NULL END brand_name_holder
-    , x.eligibility product_eligibility
+    , CASE x.eligibility product_eligibility
     , CASE x.uk_market WHEN 'true' THEN 'yes' WHEN 'false' THEN 'no' ELSE NULL END goods_placed_on_uk_market
     , CASE x.export_only WHEN 'true' THEN 'yes' WHEN 'false' THEN 'no' ELSE NULL END goods_export_only
     , CASE x.any_raw_materials WHEN 'true' THEN 'yes' WHEN 'false' THEN 'no' ELSE NULL END any_raw_materials

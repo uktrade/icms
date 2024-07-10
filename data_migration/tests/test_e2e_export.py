@@ -764,15 +764,44 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert cfs3.schedules.count() == 2
     assert web.UniqueReference.objects.get(prefix="CFS", year=2022, reference=2)
 
+    sch1: web.CFSSchedule
+    sch2: web.CFSSchedule
+    sch3: web.CFSSchedule
     sch1 = cfs2.schedules.first()
     sch2, sch3 = cfs3.schedules.order_by("pk")
 
+    assert sch1.product_eligibility == web.CFSSchedule.ProductEligibility.MEET_UK_PRODUCT_SAFETY
+    assert sch1.exporter_status == web.CFSSchedule.ExporterStatus.IS_MANUFACTURER
+    assert sch1.brand_name_holder is None
+    assert sch1.goods_placed_on_uk_market == "no"
+    assert sch1.goods_export_only == "yes"
+    assert sch1.any_raw_materials == "no"
+    assert sch1.final_product_end_use is None
+    assert sch1.country_of_manufacture_id == 1
+    assert sch1.schedule_statements_accordance_with_standards is True
+    assert sch1.schedule_statements_is_responsible_person is False
+    assert sch1.manufacturer_name == "Manufacturer"
+    assert sch1.manufacturer_address_entry_type == "SEARCH"
     assert sch1.legislations.count() == 0
     assert sch1.created_at == dt.datetime(2022, 11, 1, 12, 30, tzinfo=dt.UTC)
     assert sch1.updated_at == dt.datetime(2022, 11, 1, 12, 30, tzinfo=dt.UTC)
     assert sch1.is_biocidal() is False
+
+    assert sch2.product_eligibility == web.CFSSchedule.ProductEligibility.SOLD_ON_UK_MARKET
+    assert sch2.exporter_status == web.CFSSchedule.ExporterStatus.IS_NOT_MANUFACTURER
+    assert sch2.brand_name_holder == "yes"
+    assert sch2.goods_placed_on_uk_market == "yes"
+    assert sch2.goods_export_only == "no"
+    assert sch2.any_raw_materials == "yes"
+    assert sch2.final_product_end_use == "A product"
+    assert sch2.country_of_manufacture_id == 1
+    assert sch2.schedule_statements_accordance_with_standards is False
+    assert sch2.schedule_statements_is_responsible_person is True
+    assert sch2.manufacturer_name is None
+    assert sch2.manufacturer_address_entry_type == "SEARCH"
     assert sch2.legislations.count() == 2
     assert sch2.is_biocidal() is False
+
     assert sch3.legislations.count() == 1
     assert sch3.is_biocidal() is True
 
