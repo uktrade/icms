@@ -41,6 +41,16 @@ class CFSSchedule(MigrationBase):
     legislation_xml = models.TextField(null=True)
 
     @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        eligibility_map = {"ON_SALE": "SOLD_ON_UK_MARKET", "MAY_BE_SOLD": "MEET_UK_PRODUCT_SAFETY"}
+        product_eligibility = data["product_eligibility"]
+
+        if product_eligibility:
+            data["product_eligibility"] = eligibility_map[product_eligibility]
+
+        return data
+
+    @classmethod
     def get_excludes(cls) -> list[str]:
         return super().get_excludes() + [
             "cad_id",

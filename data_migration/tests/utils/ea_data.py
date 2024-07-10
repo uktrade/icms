@@ -523,7 +523,7 @@ ea_query_result = {
                 1,  # schedule_ordinal
                 "MANUFACTURER",  # exporter_status
                 None,  # brand_name_holder
-                "ON_SALE",  # product_eligibility
+                "MAY_BE_SOLD",  # product_eligibility
                 "no",  # goods_placed_on_uk_market
                 "yes",  # goods_export_only
                 "no",  # any_raw_materials
@@ -544,7 +544,7 @@ ea_query_result = {
                 1,  # schedule_ordinal
                 "NOT_MANUFACTURER",  # exporter_status
                 "yes",  # brand_name_holder
-                "MAY_BE_SOLD",  # product_eligibility
+                "ON_SALE",  # product_eligibility
                 "yes",  # goods_placed_on_uk_market
                 "no",  # goods_export_only
                 "yes",  # any_raw_materials
