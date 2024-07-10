@@ -3,6 +3,7 @@ from http import HTTPStatus
 from unittest import mock
 
 import pytest
+from django.contrib.auth.models import AnonymousUser
 from django.http import QueryDict
 from pytest_django.asserts import assertContains
 
@@ -437,7 +438,7 @@ class TestRegenerateBEISCaseEmailDownloadLinkView:
 
     @mock.patch("web.domains.case.views.views_documents.send_case_email")
     @mock.patch("web.domains.case.views.views_documents.capture_exception")
-    def test_post_valid_link(self, mocked_capture_exception, mocked_send_case_email):
+    def test_post_valid_link_arse(self, mocked_capture_exception, mocked_send_case_email):
         assert not self.link.expired
         response = self.client.post(self.valid_url, follow=True)
         assert response.status_code == HTTPStatus.OK
@@ -450,7 +451,7 @@ class TestRegenerateBEISCaseEmailDownloadLinkView:
         assert self.link.expired
 
         # Check the correct related code has been called.
-        mocked_send_case_email.assert_called_once_with(self.link.case_email)
+        mocked_send_case_email.assert_called_once_with(self.link.case_email, AnonymousUser())
         mocked_capture_exception.assert_not_called()
 
     @mock.patch("web.domains.case.views.views_documents.send_case_email")
@@ -467,7 +468,7 @@ class TestRegenerateBEISCaseEmailDownloadLinkView:
         assert str(messages[0]) == "If the case exists a new email has been generated."
 
         # Check the correct related code has been called.
-        mocked_send_case_email.assert_called_once_with(self.link.case_email)
+        mocked_send_case_email.assert_called_once_with(self.link.case_email, AnonymousUser())
         mocked_capture_exception.assert_called_once()
 
     @mock.patch("web.domains.case.views.views_documents.send_case_email")

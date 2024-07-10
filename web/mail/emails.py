@@ -476,7 +476,7 @@ def send_retract_mailshot_email_to_organisations(
         RetractMailshotEmail(mailshot=mailshot, site_domain=site_domain, to=[recipient]).send()
 
 
-def send_case_email(case_email: CaseEmailModel) -> None:
+def send_case_email(case_email: CaseEmailModel, sent_by: User) -> None:
     recipients = get_email_addresses_for_case_email(case_email)
     for recipient in recipients:
         if case_email.attachments.exists():
@@ -485,6 +485,7 @@ def send_case_email(case_email: CaseEmailModel) -> None:
             CaseEmail(case_email=case_email, to=[recipient]).send()
     case_email.status = CaseEmailModel.Status.OPEN
     case_email.sent_datetime = timezone.now()
+    case_email.sent_by = sent_by
     case_email.save()
 
 

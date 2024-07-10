@@ -12,7 +12,10 @@
 {% block main_content %}
   <h3>Add Response to Email</h3>
 
-  {% include 'web/domains/case/manage/case-email-box.html' %}
+  {# For this view we just want a readonly view of the case email. #}
+  {% with readonly_view = True  %}
+    {% include 'web/domains/case/manage/case-email-box.html' %}
+  {% endwith %}
 
   {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
     {% for field in form %}
@@ -28,7 +31,9 @@
               <input
                 type="submit"
                 value="Close"
-                class="primary-button button" />
+                class="primary-button button"
+                data-confirm="Are you sure you want to close this email?"
+              />
           </ul>
         </div>
       </div>

@@ -281,7 +281,7 @@ class TestIssuedCertificateReportInterface:
     ) -> None:
         case_email = create_case_email(app, email_type)
         if completed:
-            send_case_email(case_email)
+            send_case_email(case_email, self.ilb_admin_user)
         app.case_emails.add(case_email)
 
     def _setup_app_with_fir(self, app: ImpOrExp) -> None:
@@ -1239,7 +1239,7 @@ class TestFirearmsLicencesInterface:
                 cc=["cc_address@example.com"],  # /PS-IGNORE
             )
             completed_sil_app.case_emails.add(case_email)
-            send_case_email(case_email)
+            send_case_email(case_email, self.ilb_admin_user)
             case_email.status = CaseEmail.Status.CLOSED
             case_email.closed_datetime = make_aware(dt.datetime(2024, 3, 10, 9, 0, 0))
             case_email.save()
