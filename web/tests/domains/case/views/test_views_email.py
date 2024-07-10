@@ -6,7 +6,7 @@ from django.utils import timezone
 from pytest_django.asserts import assertContains, assertRedirects, assertTemplateUsed
 
 from web.domains.case.forms import CaseEmailResponseForm
-from web.models import CaseEmail as CaseEmailModel
+from web.models import CaseEmail
 from web.tests.auth import AuthTestCase
 from web.tests.helpers import CaseURLS
 
@@ -120,7 +120,7 @@ class TestViewEmail(AuthTestCase):
     def test_add_response_to_case_email(self, fa_dfl_app_submitted):
         self.create_case_for_application(fa_dfl_app_submitted)
         case_email = fa_dfl_app_submitted.case_emails.get()
-        case_email.status = CaseEmailModel.Status.OPEN
+        case_email.status = CaseEmail.Status.OPEN
         case_email.sent_datetime = timezone.now()
         case_email.save()
 
@@ -135,7 +135,7 @@ class TestViewEmail(AuthTestCase):
         )
         assert resp.status_code == 302
         case_email.refresh_from_db()
-        assert case_email.status == CaseEmailModel.Status.CLOSED
+        assert case_email.status == CaseEmail.Status.CLOSED
         assert case_email.response == "Email actioned"
 
     def test_all_response_forms_shown(self, cfs_app_submitted):
@@ -144,6 +144,11 @@ class TestViewEmail(AuthTestCase):
 
         self.ilb_admin_client.post(CaseURLS.create_case_emails(app.pk, case_type="export"))
         self.ilb_admin_client.post(CaseURLS.create_case_emails(app.pk, case_type="export"))
+
+        # fake both emails being sent (so we can record response)
+        app.refresh_from_db()
+        app.case_emails.all().update(status=CaseEmail.Status.OPEN)
+
         response = self.ilb_admin_client.get(CaseURLS.manage_case_emails(app.pk, "export"))
 
         assert response.status_code == 200
@@ -184,8 +189,13 @@ class TestViewEmail(AuthTestCase):
         self.ilb_admin_client.post(CaseURLS.create_case_emails(app.pk, case_type="export"))
         self.ilb_admin_client.post(CaseURLS.create_case_emails(app.pk, case_type="export"))
 
+        # fake both emails being sent (so we can record response)
+        app.refresh_from_db()
+        app.case_emails.all().update(status=CaseEmail.Status.OPEN)
+
         # now we mark one of them as responded to and confirm the form to respond no longer appears
-        completed_case_email = CaseEmailModel.objects.last()
+        completed_case_email = CaseEmail.objects.last()
+        completed_case_email.status = CaseEmail.Status.CLOSED
         completed_case_email.response = "test"
         completed_case_email.save()
 
@@ -208,9 +218,7 @@ class TestViewEmail(AuthTestCase):
             "case:add-response-case-email",
             kwargs={
                 "application_pk": app.pk,
-                "case_email_pk": CaseEmailModel.objects.exclude(pk=completed_case_email.pk)
-                .get()
-                .pk,
+                "case_email_pk": CaseEmail.objects.exclude(pk=completed_case_email.pk).get().pk,
                 "case_type": "export",
             },
         )
@@ -240,8 +248,8 @@ class TestViewEmail(AuthTestCase):
         assert "HSE Emails (0/1)" in resp.content.decode()
 
         # now we mark one of them as open to and confirm that the count updates accordingly
-        completed_case_email = CaseEmailModel.objects.last()
-        completed_case_email.status = CaseEmailModel.Status.OPEN
+        completed_case_email = CaseEmail.objects.last()
+        completed_case_email.status = CaseEmail.Status.OPEN
         completed_case_email.save()
 
         resp = self.ilb_admin_client.get(
@@ -251,7 +259,7 @@ class TestViewEmail(AuthTestCase):
         assert "HSE Emails (1/1)" in resp.content.decode()
 
         # now we mark one of them as closed to and confirm that the count updates accordingly
-        completed_case_email.status = CaseEmailModel.Status.CLOSED
+        completed_case_email.status = CaseEmail.Status.CLOSED
         completed_case_email.save()
 
         resp = self.ilb_admin_client.get(
@@ -283,8 +291,8 @@ class TestViewEmail(AuthTestCase):
         assert "BEIS Emails (0/1)" in resp.content.decode()
 
         # now we mark one of them as open to and confirm that the count updates accordingly
-        completed_case_email = CaseEmailModel.objects.last()
-        completed_case_email.status = CaseEmailModel.Status.OPEN
+        completed_case_email = CaseEmail.objects.last()
+        completed_case_email.status = CaseEmail.Status.OPEN
         completed_case_email.save()
 
         resp = self.ilb_admin_client.get(
@@ -294,7 +302,7 @@ class TestViewEmail(AuthTestCase):
         assert "BEIS Emails (1/1)" in resp.content.decode()
 
         # now we mark one of them as closed to and confirm that the count updates accordingly
-        completed_case_email.status = CaseEmailModel.Status.CLOSED
+        completed_case_email.status = CaseEmail.Status.CLOSED
         completed_case_email.save()
 
         resp = self.ilb_admin_client.get(

@@ -45,7 +45,7 @@ class TestExportCaseEmails(AuthTestCase):
         )
 
     @freeze_time("2024-01-01 12:00:00")
-    def test_send_gmp_case_beis_email(self, gmp_app_submitted):
+    def test_send_gmp_case_beis_email(self, gmp_app_submitted, ilb_admin_user):
         self.ilb_admin_client.post(CaseURLS.take_ownership(gmp_app_submitted.pk, "export"))
         gmp_app_submitted.refresh_from_db()
         case_email = create_case_email(
@@ -54,7 +54,7 @@ class TestExportCaseEmails(AuthTestCase):
             "to_address@example.com",  # /PS-IGNORE
         )
         assert case_email.status == CaseEmailModel.Status.DRAFT
-        send_case_email(case_email)
+        send_case_email(case_email, ilb_admin_user)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 1
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             "to_address@example.com",  # /PS-IGNORE
@@ -70,6 +70,7 @@ class TestExportCaseEmails(AuthTestCase):
         case_email.refresh_from_db()
         assert case_email.status == CaseEmailModel.Status.OPEN
         assert case_email.sent_datetime.isoformat() == "2024-01-01T12:00:00+00:00"
+        assert case_email.sent_by == ilb_admin_user
 
     def test_create_cfs_case_hse_email(self, cfs_app_submitted):
         app = cfs_app_submitted
@@ -109,7 +110,7 @@ class TestImportCaseEmails(AuthTestCase):
         assert case_email.subject == "Import Licence RFD Enquiry"
         assert "\ngoods_description value\n" in case_email.body
 
-    def test_send_dfl_constabulary_email(self, fa_dfl_app_submitted):
+    def test_send_dfl_constabulary_email(self, fa_dfl_app_submitted, ilb_admin_user):
         self.ilb_admin_client.post(CaseURLS.take_ownership(fa_dfl_app_submitted.pk, "import"))
         fa_dfl_app_submitted.refresh_from_db()
         case_email = create_case_email(
@@ -118,7 +119,7 @@ class TestImportCaseEmails(AuthTestCase):
             "to_address@example.com",  # /PS-IGNORE
             cc=["cc_address@example.com", "to_address@example.com"],  # /PS-IGNORE
         )
-        send_case_email(case_email)
+        send_case_email(case_email, ilb_admin_user)
         assert self.mock_gov_notify_client.send_email_notification.call_count == 2
         self.mock_gov_notify_client.send_email_notification.assert_any_call(
             "to_address@example.com",  # /PS-IGNORE

@@ -232,8 +232,7 @@ class RegenerateDownloadLinkView(View):
     link_class: ClassVar[type[ConstabularyLicenceDownloadLink | CaseEmailDownloadLink]]
     download_url_name: str
 
-    @staticmethod
-    def resend_email(link: DownloadLink) -> None:
+    def resend_email(self, link: DownloadLink) -> None:
         raise NotImplementedError("Method to resend email must be defined.")
 
     def post(self, request: HttpResponse, *args: Any, **kwargs: Any) -> HttpResponse:
@@ -263,8 +262,7 @@ class RegenerateDFLCaseDocumentsDownloadLinkView(RegenerateDownloadLinkView):
     download_url_name = "case:download-dfl-case-documents"
     link_class = ConstabularyLicenceDownloadLink
 
-    @staticmethod
-    def resend_email(link: ConstabularyLicenceDownloadLink) -> None:
+    def resend_email(self, link: ConstabularyLicenceDownloadLink) -> None:
         application = link.licence.import_application.get_specific_model()
         send_constabulary_deactivated_firearms_email(application)
 
@@ -273,9 +271,8 @@ class RegenerateCaseEmailDocumentsDownloadLinkView(RegenerateDownloadLinkView):
     download_url_name = "case:download-case-email-documents"
     link_class = CaseEmailDownloadLink
 
-    @staticmethod
-    def resend_email(link: CaseEmailDownloadLink) -> None:
-        send_case_email(link.case_email)
+    def resend_email(self, link: CaseEmailDownloadLink) -> None:
+        send_case_email(link.case_email, self.request.user)
 
 
 # Note: Not currently in use (replaced by DownloadDFLCaseDocumentsFormView)

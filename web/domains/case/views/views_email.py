@@ -3,18 +3,22 @@ from typing import TYPE_CHECKING
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.db import transaction
-from django.db.models import BooleanField, ExpressionWrapper, Q
+from django.db.models import BooleanField, ExpressionWrapper, Q, Window
+from django.db.models.functions import RowNumber
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
+from web.domains.case import forms, models
 from web.domains.case.services import case_progress
+from web.domains.case.types import ApplicationsWithCaseEmail, CaseEmailConfig, ImpOrExp
 from web.flow.models import ProcessTypes
 from web.mail.constants import EmailTypes
 from web.mail.emails import create_case_email, send_case_email
 from web.models import (
+    CaseEmail,
     CertificateOfFreeSaleApplication,
     CertificateOfGoodManufacturingPracticeApplication,
     Constabulary,
@@ -29,8 +33,6 @@ from web.models import (
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest
 
-from .. import forms, models
-from ..types import ApplicationsWithCaseEmail, CaseEmailConfig, ImpOrExp
 from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
 
 if TYPE_CHECKING:
@@ -93,10 +95,18 @@ def manage_case_emails(
                 )
             )
 
+    case_emails = (
+        application.case_emails.filter(is_active=True)
+        # Show most recent first
+        .order_by("-pk")
+        # Count the emails oldest to newest
+        .annotate(email_num=Window(expression=RowNumber(), order_by="pk"))
+    )
+
     context = {
         "process": application,
         "page_title": "Manage Emails",
-        "case_emails": application.case_emails.filter(is_active=True),
+        "case_emails": case_emails,
         "case_type": case_type,
         "email_title": email_title,
         "email_subtitle": email_subtitle,
@@ -176,7 +186,7 @@ def edit_case_email(
                 case_email = form.save()
 
                 if "send" in request.POST:
-                    send_case_email(case_email)
+                    send_case_email(case_email, request.user)
 
                     return redirect(
                         reverse(
@@ -263,7 +273,12 @@ def add_response_case_email(
 
         case_progress.application_in_processing(application)
 
-        case_email = get_object_or_404(application.case_emails, pk=case_email_pk)
+        case_email = get_object_or_404(
+            application.case_emails,
+            pk=case_email_pk,
+            # Prevent draft emails being closed.
+            status__in=[CaseEmail.Status.OPEN, CaseEmail.Status.CLOSED],
+        )
 
         if request.method == "POST":
             form = forms.CaseEmailResponseForm(request.POST, instance=case_email)
@@ -271,6 +286,7 @@ def add_response_case_email(
                 case_email = form.save(commit=False)
                 case_email.status = models.CaseEmail.Status.CLOSED
                 case_email.closed_datetime = timezone.now()
+                case_email.closed_by = request.user
                 case_email.save()
 
                 return redirect(

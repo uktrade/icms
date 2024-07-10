@@ -287,7 +287,24 @@ class CaseEmail(models.Model):
     response = models.TextField(max_length=4000, null=True)
 
     sent_datetime = models.DateTimeField(null=True)
+
+    # Optional because not all V1 emails have this data.
+    sent_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="+",
+    )
+
     closed_datetime = models.DateTimeField(null=True)
+
+    # Optional because not all V1 emails have this data.
+    closed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="+",
+    )
 
     @property
     def is_draft(self):

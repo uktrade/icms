@@ -261,7 +261,7 @@ class UserReactivateFormView(PermissionRequiredMixin, FormView):
                 subject=form.cleaned_data["subject"],
                 body=form.cleaned_data["body"],
             )
-            send_case_email(case_email)
+            send_case_email(case_email, self.request.user)
             message = f"{message} & email sent"
 
         messages.info(self.request, message)

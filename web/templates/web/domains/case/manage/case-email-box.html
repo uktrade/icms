@@ -1,6 +1,5 @@
 <fieldset>
-  <legend class="bold">Email</legend>
-
+  <legend class="bold">Email {{ object.email_num or "" }}</legend>
   {% if not readonly_view %}
     {% if object.is_draft %}
 
@@ -17,7 +16,7 @@
             method="post"
             action="{{ icms_url('case:archive-case-email', kwargs={'application_pk': process.pk, 'case_email_pk': object.pk, 'case_type': case_type}) }}">
             {{ csrf_input }}
-            <button type="submit" class="button small-button icon-bin">
+            <button type="submit" class="button small-button icon-bin" data-confirm="Are you sure you want to delete this email?">
               Delete
             </button>
           </form>
@@ -42,19 +41,32 @@
     <div class="three columns"></div>
   </div>
 
-  <div class="row mt-1">
-    <div class="three columns">
-      <label class="prompt west">
-        Sent Date
-      </label>
-    </div>
-    <div class="six columns">
-      {% if object.sent_datetime %}
+  {% if object.sent_datetime %}
+    <div class="row mt-1">
+      <div class="three columns">
+        <label class="prompt west">
+          Sent Date
+        </label>
+      </div>
+      <div class="six columns">
         {{ object.sent_datetime.strftime("%d-%b-%Y %H:%M:%S") }}
-      {% endif %}
+      </div>
+      <div class="three columns"></div>
     </div>
-    <div class="three columns"></div>
-  </div>
+  {% endif %}
+  {% if object.sent_by %}
+    <div class="row mt-1">
+      <div class="three columns">
+        <label class="prompt west">
+          Sent By
+        </label>
+      </div>
+      <div class="six columns">
+        {{ object.sent_by.full_name }}
+      </div>
+      <div class="three columns"></div>
+    </div>
+  {% endif %}
 
   <div class="row mt-1">
     <div class="three columns">
@@ -125,7 +137,7 @@
                     {{ attachment.human_readable_file_size() }}
                   </td>
                   <td>
-                    Supporting Document
+                    Supporting Documents
                   </td>
                 </tr>
               {% endfor %}
@@ -161,21 +173,33 @@
       </div>
       <div class="three columns"></div>
     </div>
+    <div class="row mt-1">
+      <div class="three columns">
+        <label class="prompt west">
+          Closed Date
+        </label>
+      </div>
+      <div class="six columns">
+        {% if object.closed_datetime %}
+          {{ object.closed_datetime.strftime("%d-%b-%Y %H:%M:%S") }}
+        {% endif %}
+      </div>
+      <div class="three columns"></div>
+    </div>
+    {% if object.closed_by %}
+      <div class="row mt-1">
+        <div class="three columns">
+          <label class="prompt west">
+            Closed By
+          </label>
+        </div>
+        <div class="six columns">
+          {{ object.closed_by.full_name }}
+        </div>
+        <div class="three columns"></div>
+      </div>
+    {% endif %}
   {% endif %}
-
-  <div class="row mt-1">
-    <div class="three columns">
-      <label class="prompt west">
-        Closed Date
-      </label>
-    </div>
-    <div class="six columns">
-      {% if object.closed_datetime %}
-        {{ object.closed_datetime.strftime("%d-%b-%Y %H:%M:%S") }}
-      {% endif %}
-    </div>
-    <div class="three columns"></div>
-  </div>
 
   {% if not readonly_view %}
     {% if object.response %}
@@ -191,7 +215,8 @@
         </div>
         <div class="three columns"></div>
       </div>
-    {% else %}
+    {% endif %}
+    {% if object.status == object.Status.OPEN %}
       {% call forms.form(action=icms_url('case:add-response-case-email', kwargs={'application_pk': process.pk, 'case_email_pk': object.pk, 'case_type': case_type}), method='post', csrf_input=csrf_input) -%}
         {% for field in record_response_form %}
           {{ fields.field(field) }}
@@ -204,7 +229,9 @@
                 <input
                     type="submit"
                     value="Close"
-                    class="primary-button button" />
+                    class="primary-button button"
+                    data-confirm="Are you sure you want to close this email?"
+                />
               </li>
             </ul>
           </div>
