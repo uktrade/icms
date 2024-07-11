@@ -8,7 +8,10 @@ SELECT
   , xtd.template_mnem template_code
   , xtd.template_type
   , xtd.application_domain
-  , xtd.declaration_title template_title
+  , CASE
+    WHEN xtd.template_type = 'EMAIL_TEMPLATE' THEN xtd.email_subject
+    ELSE xtd.declaration_title
+  END template_title
   , CASE
     WHEN xtd.template_type LIKE 'LETTER_%' THEN xtd.letter_body
     WHEN xtd.template_type = 'DECLARATION' THEN TO_CLOB(xtd.declaration_text)

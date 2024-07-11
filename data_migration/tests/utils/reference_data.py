@@ -182,7 +182,7 @@ ref_query_result = {
                 "EMAIL_1",  # template_code
                 "EMAIL_TEMPLATE",  # template_type
                 "IAR",  # application_domain
-                None,  # template_title
+                "Email Subject",  # template_title
                 xd.email_template,  # template_content
             ),
             (

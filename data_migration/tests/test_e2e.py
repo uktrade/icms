@@ -826,6 +826,7 @@ def test_import_template(mock_connect, dummy_dm_settings):
     # Email Templates
     assert web.Template.objects.filter(template_type="EMAIL_TEMPLATE").count() == 1
     email_template = web.Template.objects.get(template_type="EMAIL_TEMPLATE")
+    assert email_template.template_title == "Email Subject"
     assert email_template.template_content == utils.xml_data.email_template
 
     # CFS Templates
