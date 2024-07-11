@@ -9,6 +9,7 @@ urlpatterns = [
         include(
             [
                 path("", views.UserUpdateView.as_view(), name="user-edit"),
+                path("new-user/", views.NewUserUpdateView.as_view(), name="new-user-edit"),
                 path(
                     "number/",
                     include(

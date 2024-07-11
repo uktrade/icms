@@ -36,6 +36,7 @@ from web.views import ModelFilterView
 
 from .actions import ActivateUser, DeactivateUser
 from .forms import (
+    OneLoginNewUserUpdateForm,
     OneLoginTestAccountsCreateForm,
     UserDetailsUpdateForm,
     UserEmailForm,
@@ -102,6 +103,26 @@ class UserUpdateView(UserBaseMixin, UpdateView):
                     return reverse("access:importer-request")
 
         return super().get_success_url()
+
+
+class NewUserUpdateView(LoginRequiredMixin, UpdateView):
+    """View shown after a new user is redirected back to ICMS from GOV.UK One Login."""
+
+    # UpdateView config
+    model = User
+    pk_url_kwarg = "user_pk"
+    form_class = OneLoginNewUserUpdateForm
+    template_name = "web/domains/user/one_login/user_edit.html"
+
+    def get_success_url(self) -> str:
+        site = self.request.site
+
+        if is_exporter_site(site):
+            return reverse("access:exporter-request")
+        elif is_importer_site(site):
+            return reverse("access:importer-request")
+        else:
+            return reverse("workbasket")
 
 
 class UserCreateTelephoneView(UserBaseMixin, CreateView):

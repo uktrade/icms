@@ -4,13 +4,13 @@ from django.contrib.auth import get_user_model
 from django.http import HttpRequest
 
 from . import types
+from .constants import ONE_LOGIN_UNSET_NAME
 from .utils import get_client, get_userinfo, has_valid_token
 
 if TYPE_CHECKING:
     from django.contrib.auth.models import User
 
 UserModel = get_user_model()
-ONE_LOGIN_UNSET_NAME = "one_login_unset"
 
 
 class OneLoginBackend:

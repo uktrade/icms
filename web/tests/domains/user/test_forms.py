@@ -3,11 +3,13 @@ import random
 from django.test import TestCase
 
 from web.domains.user.forms import (
+    OneLoginNewUserUpdateForm,
     UserDetailsUpdateForm,
     UserListFilter,
     UserPhoneNumberForm,
 )
 from web.models import PhoneNumber
+from web.one_login.constants import ONE_LOGIN_UNSET_NAME
 
 TOTAL_TEST_USERS = 19
 
@@ -138,3 +140,23 @@ class TestUserPhoneNumberForm(TestCase):
         assert form.is_valid() is True
         form = UserPhoneNumberForm(data=self.phone_number("+90 216 123 45 67"))
         assert form.is_valid() is True
+
+
+class TestOneLoginNewUserUpdateForm:
+    def test_form_errors_when_first_name_is_unset(self, importer_one_contact):
+        importer_one_contact.first_name = ONE_LOGIN_UNSET_NAME
+        importer_one_contact.save()
+
+        form = OneLoginNewUserUpdateForm(initial={}, instance=importer_one_contact)
+
+        assert form["first_name"].initial == ""
+        assert form["last_name"].initial == importer_one_contact.last_name
+
+    def test_form_sets_correct_initial_data_for_last_name(self, importer_one_contact):
+        importer_one_contact.last_name = ONE_LOGIN_UNSET_NAME
+        importer_one_contact.save()
+
+        form = OneLoginNewUserUpdateForm(initial={}, instance=importer_one_contact)
+
+        assert form["first_name"].initial == importer_one_contact.first_name
+        assert form["last_name"].initial == ""
