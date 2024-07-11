@@ -158,3 +158,6 @@ output_documents/
 exporter_user.json
 importer_user.json
 ilb_admin.json
+/generated_pdfs/
+/python_version.txt
+/.env.no-docker

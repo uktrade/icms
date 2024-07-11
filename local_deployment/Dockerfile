@@ -8,6 +8,8 @@ RUN apt-get update && apt-get install  \
     python3-dev libpq-dev \
     # To compile static assets
     npm  \
+    # poppler for PDF visual regression tests \
+    poppler-utils \
     -y
 
 ENV ICMS_WEB_PORT ${ICMS_WEB_PORT}
