@@ -12,12 +12,18 @@ jobs:
 
   install_python_dependencies:
     docker:
-      - image: cimg/python:3.11.7
+      - image: cimg/python:3.11.4
     steps:
       - checkout
 
+      - run:
+          name: get python version
+          command: python --version > python_version.txt
+
       - restore_cache:
-          key: deps-{{ checksum "requirements-dev.txt" }}
+          # we're using a key that includes a checksum of the requirements file and the python version
+          # so that we can cache the dependencies for each version of python
+          key: deps-{{ checksum "requirements-dev.txt" }}-{{ checksum "python_version.txt" }}
 
       - run:
           name: create and activate virtualenv
@@ -58,7 +64,7 @@ jobs:
 
   code_hygiene:
     docker:
-      - image: cimg/python:3.11.7
+      - image: cimg/python:3.11.4
     steps:
       - checkout
 
@@ -86,7 +92,6 @@ jobs:
           name: run mypy
           command: make mypy
 
-
       - run:
           name: check missing migrations
           command: |
@@ -95,7 +100,7 @@ jobs:
 
   test:
     docker:
-      - image: cimg/python:3.11.7
+      - image: cimg/python:3.11.4
       - image: cimg/postgres:16.1
         environment:
           POSTGRES_DB: icms_test_db
@@ -121,6 +126,10 @@ jobs:
           command: playwright install --with-deps chromium
 
       - run:
+          name: install poppler
+          command: sudo apt-get update && sudo apt-get install -y poppler-utils
+
+      - run:
           name: run data migration unit tests
           command: |
             source .env && export $(cut -d= -f1 < .env)
@@ -135,7 +144,6 @@ jobs:
           name: run unit tests
           command: |
             source .env && export $(cut -d= -f1 < .env)
-            python manage.py collectstatic --noinput
             pytest \
               --ignore web/end_to_end \
               --dist=loadfile \
@@ -146,6 +154,9 @@ jobs:
               --maxprocesses=2 \
               -n=auto \
               --junitxml=test-results/unit-test-results.xml
+
+      - store_artifacts:
+          path: generated_pdfs
 
       - store_test_results:
           path: test-results

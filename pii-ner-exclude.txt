@@ -4817,3 +4817,6 @@ noreferrer">Accessibility Statement</a
 noreferrer">Fair Processing Notice</a
 Business and Trade" src=
 0018_caseemaildownloadlink_and_more
+"Save the current timestamp
+Patches the get_signature_file_base64
+get_signature_file_base64

@@ -41,7 +41,7 @@ django-csp~=3.7
 pypdf==4.2.0
 reportlab==4.2.2
 PyMuPDF~=1.23.16
-playwright==1.42
+playwright
 pyOpenSSL==24.0.0
 # Pin endesive sub-dependencies as they aren't pinned in endesive repo
 # Periodically review these to see if we can install newer versions
@@ -54,3 +54,4 @@ certvalidator~=0.11 # endesive sub-dependency
 pillow~=10.2        # endesive sub-dependency
 paramiko~=3.4       # endesive sub-dependency
 attrs~=23.2         # endesive sub-dependency
+pdf2image~=1.17.0
