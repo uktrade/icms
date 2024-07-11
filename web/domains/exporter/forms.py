@@ -123,7 +123,7 @@ class AgentForm(forms.ModelForm):
 
         self.fields["main_exporter"].required = True
         self.fields["name"].required = True
-        self.fields["registered_number"].required = True
+        self.fields["registered_number"].required = False
 
 
 class AgentNonILBForm(AgentForm):
