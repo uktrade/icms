@@ -82,7 +82,7 @@ INNER JOIN (
     cad.id cad_id
     , x.schedule_ordinal
     , CASE x.brand_name_holder WHEN 'true' THEN 'yes' WHEN 'false' THEN 'no' ELSE NULL END brand_name_holder
-    , CASE x.eligibility product_eligibility
+    , x.eligibility product_eligibility
     , CASE x.uk_market WHEN 'true' THEN 'yes' WHEN 'false' THEN 'no' ELSE NULL END goods_placed_on_uk_market
     , CASE x.export_only WHEN 'true' THEN 'yes' WHEN 'false' THEN 'no' ELSE NULL END goods_export_only
     , CASE x.any_raw_materials WHEN 'true' THEN 'yes' WHEN 'false' THEN 'no' ELSE NULL END any_raw_materials
@@ -98,8 +98,8 @@ INNER JOIN (
       schedule_ordinal FOR ORDINALITY
       , eligibility VARCHAR2(20) PATH '/SCHEDULE/ELIGIBILITY[not(fox-error)]/text()'
       , brand_name_holder VARCHAR2(5) PATH '/SCHEDULE/BRAND_NAME_STATUS[not(fox-error)]/text()'
-      , export_only VARCHAR2(5) PATH '/SCHEDULE/IS_EU_MARKET[not(fox-error)]/text()'
-      , uk_market VARCHAR2(5) PATH '/SCHEDULE/IS_NEVER_EU_MARKET[not(fox-error)]/text()'
+      , uk_market VARCHAR2(5) PATH '/SCHEDULE/IS_EU_MARKET[not(fox-error)]/text()'
+      , export_only VARCHAR2(5) PATH '/SCHEDULE/IS_NEVER_EU_MARKET[not(fox-error)]/text()'
       , any_raw_materials VARCHAR2(5) PATH '/SCHEDULE/RAW_MATERIALS_EXIST[not(fox-error)]/text()'
       , final_product_end_use VARCHAR2(4000) PATH '/SCHEDULE/END_USE[not(fox-error)]/text()'
       , manufacturer_address_type VARCHAR2(4000) PATH '/SCHEDULE/MANUFACTURED_AT/ADDRESS_ENTRY_TYPE[not(fox-error)]/text()'
