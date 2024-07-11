@@ -4,6 +4,8 @@ from django.db import models
 from guardian.core import ObjectPermissionChecker
 from guardian.mixins import GuardianUserMixin
 
+from web.one_login.constants import ONE_LOGIN_UNSET_NAME
+
 
 class User(GuardianUserMixin, AbstractUser):
     def __init__(self, *args, **kwargs):
@@ -44,8 +46,14 @@ class User(GuardianUserMixin, AbstractUser):
         return self.full_name
 
     @property
-    def full_name(self):
-        return " ".join(filter(None, (self.title, self.first_name, self.last_name)))
+    def full_name(self) -> str:
+        """Returns full name of user."""
+
+        return " ".join(
+            name
+            for name in (self.title, self.first_name, self.last_name)
+            if name and name != ONE_LOGIN_UNSET_NAME
+        )
 
     @property
     def account_last_login_date(self):

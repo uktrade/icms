@@ -8,6 +8,34 @@ from django_filters import CharFilter, ChoiceFilter, FilterSet
 from web.forms.fields import JqueryDateField, PhoneNumberField
 from web.forms.widgets import ICMSModelSelect2Widget, YesNoRadioSelectInline
 from web.models import Email, Exporter, Importer, PhoneNumber, User
+from web.one_login.constants import ONE_LOGIN_UNSET_NAME
+
+
+class OneLoginNewUserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name"]
+
+    def __init__(self, *args: Any, initial: dict[str, Any], instance: User, **kwargs: Any) -> None:
+        """Form used to get new users to provide their name.
+
+        The first_name and last_name of users coming from GOV.UK One Login will be set to
+        "one_login_unset".
+        For that scenario that form sets the initial value to "".
+        """
+
+        one_login_default_name = ONE_LOGIN_UNSET_NAME.casefold()
+
+        if instance.first_name.casefold() == one_login_default_name:
+            initial |= {"first_name": ""}
+
+        if instance.last_name.casefold() == one_login_default_name:
+            initial |= {"last_name": ""}
+
+        super().__init__(*args, initial=initial, instance=instance, **kwargs)
+
+        self.fields["first_name"].required = True
+        self.fields["last_name"].required = True
 
 
 class UserDetailsUpdateForm(forms.ModelForm):

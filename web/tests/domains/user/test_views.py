@@ -8,7 +8,7 @@ from pytest_django.asserts import assertRedirects
 from web.forms.fields import JQUERY_DATE_FORMAT
 from web.mail.constants import EmailTypes
 from web.models import Email, PhoneNumber, User
-from web.one_login.backends import ONE_LOGIN_UNSET_NAME
+from web.one_login.constants import ONE_LOGIN_UNSET_NAME
 from web.sites import get_exporter_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
@@ -40,26 +40,6 @@ class TestUserUpdateView:
         response = self.exporter_client.get(self.exporter_url)
         assert response.status_code == HTTPStatus.OK
 
-    def test_new_one_login_user_redirects_to_importer_access_requests(self):
-        self.importer_user.first_name = ONE_LOGIN_UNSET_NAME
-        self.importer_user.save()
-
-        form_data = self._get_post_data(self.importer_user, first_name="Bob")
-        response = self.importer_client.post(self.importer_url, data=form_data)
-
-        assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("access:importer-request")
-
-    def test_new_one_login_user_redirects_to_exporter_access_requests(self):
-        self.exporter_user.first_name = ONE_LOGIN_UNSET_NAME
-        self.exporter_user.save()
-
-        form_data = self._get_post_data(self.exporter_user, first_name="Bob")
-        response = self.exporter_client.post(self.exporter_url, data=form_data)
-
-        assert response.status_code == HTTPStatus.FOUND
-        assert response.url == reverse("access:exporter-request")
-
     def _get_post_data(self, user: User, **overrides: Any) -> dict[str, Any]:
         return {
             "title": user.title or "",
@@ -73,6 +53,39 @@ class TestUserUpdateView:
             "work_address": user.work_address or "",
             "date_of_birth": user.date_of_birth.strftime(JQUERY_DATE_FORMAT),
         } | overrides
+
+
+class TestNewUserUpdateView:
+    @pytest.fixture(autouse=True)
+    def setup(self, importer_client, importer_one_contact, exporter_client, exporter_one_contact):
+        self.importer_user = importer_one_contact
+        self.exporter_user = exporter_one_contact
+
+        self.importer_url = reverse("new-user-edit", kwargs={"user_pk": importer_one_contact.pk})
+        self.exporter_url = reverse("new-user-edit", kwargs={"user_pk": exporter_one_contact.pk})
+
+        self.importer_client = importer_client
+        self.exporter_client = exporter_client
+
+    def test_new_one_login_user_redirects_to_importer_access_requests(self):
+        self.importer_user.first_name = ONE_LOGIN_UNSET_NAME
+        self.importer_user.save()
+
+        form_data = {"first_name": "Bob", "last_name": self.importer_user.last_name}
+        response = self.importer_client.post(self.importer_url, data=form_data)
+
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("access:importer-request")
+
+    def test_new_one_login_user_redirects_to_exporter_access_requests(self):
+        self.exporter_user.first_name = ONE_LOGIN_UNSET_NAME
+        self.exporter_user.save()
+
+        form_data = {"first_name": "Bob", "last_name": self.exporter_user.last_name}
+        response = self.exporter_client.post(self.exporter_url, data=form_data)
+
+        assert response.status_code == HTTPStatus.FOUND
+        assert response.url == reverse("access:exporter-request")
 
 
 class TestUserCreateTelephoneView:
