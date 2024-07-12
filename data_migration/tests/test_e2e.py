@@ -845,3 +845,8 @@ def test_import_template(mock_connect, dummy_dm_settings):
     cfs_dec_template = web.Template.objects.get(template_type="CFS_DECLARATION_TRANSLATION")
     assert cfs_dec_template.template_content == "Some translated text with ' data '"
     assert list(cfs_dec_template.countries.values_list("id", flat=True)) == [2, 3]
+
+    # Country data
+    assert web.Country.objects.count() == 9
+    assert web.Country.objects.filter(is_active=True).count() == 8
+    assert web.Country.objects.filter(type=web.Country.SOVEREIGN_TERRITORY).count() == 5

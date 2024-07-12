@@ -13,6 +13,14 @@ class Country(MigrationBase):
     commission_code = models.CharField(max_length=20, null=False)
     hmrc_code = models.CharField(max_length=20, null=False)
 
+    @classmethod
+    def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
+        name = data["name"]
+        if name in ["Mali", "Liberia", "Aruba", "Cameroon", "Gambia"]:
+            data["type"] = "SOVEREIGN_TERRITORY"
+
+        return data
+
 
 class CountryGroup(MigrationBase):
     country_group_id = models.CharField(max_length=15, unique=True)
