@@ -12,6 +12,11 @@ ref_query_result = {
             (2, "CB", 1, "A", 101, "CB"),
             (3, "CC", 1, "B", 102, "CC"),
             (4, "CD", 0, "A", 103, "CD"),
+            (5, "Aruba", 1, "B", 104, "CE"),
+            (6, "Liberia", 1, "C", 105, "CF"),
+            (7, "Mali", 1, "C", 107, "CG"),
+            (8, "Gambia", 1, "B", 109, "CH"),
+            (9, "Cameroon", 1, "A", 110, "CI"),
         ],
     ),
     queries.country_group: (
