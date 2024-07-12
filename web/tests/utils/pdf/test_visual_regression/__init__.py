@@ -1,4 +1,5 @@
 import datetime as dt
+import json
 from pathlib import Path
 
 from django.conf import settings
@@ -18,6 +19,8 @@ BENCHMARK_PDF_DIRECTORY = (
     / "test_visual_regression"
     / "benchmark_pdfs"
 )
+
+date_created_json_file = BENCHMARK_PDF_DIRECTORY / "dates_created.json"
 
 
 class BaseTestPDFVisualRegression:
@@ -75,10 +78,8 @@ class BaseTestPDFVisualRegression:
         """Get the creation date of the benchmark PDF.
 
         This is used to freeze time when generating the PDFs. so they look the same."""
-        iso_time_created = (
-            (BENCHMARK_PDF_DIRECTORY / self.benchmark_pdf_image_file_path).stat().st_ctime
-        )
-        return dt.datetime.fromtimestamp(iso_time_created)
+        date_stamp_dict = json.loads(date_created_json_file.read_text())
+        return dt.datetime.fromisoformat(date_stamp_dict[self.benchmark_pdf_image_file_path])
 
     def compare_pdf(self) -> None:
         benchmark_pdf_image = self.benchmark_pdf_image
