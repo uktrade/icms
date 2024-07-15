@@ -18,7 +18,7 @@
   {% with ilb_admin=False %}
     <h4>Current Application Update</h4>
     {% call fieldsets.fieldset("Application Update") %}
-      {% include "partial/update-request-info.html" %}
+      {% include "partial/update-request-detail.html" %}
 
       {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
         {% for field in form %}
@@ -49,7 +49,7 @@
       {% for update_request in previous_update_requests %}
 
         {% call fieldsets.fieldset("Application Update") %}
-          {% include "partial/update-request-info.html" %}
+          {% include "partial/update-request-detail.html" %}
         {% endcall %}
 
       {% endfor %}

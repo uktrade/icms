@@ -239,21 +239,29 @@ further_information_requests_urls = [
 
 update_requests_urls = [
     path("list/", views_update_request.list_update_requests, name="list-update-requests"),
-    path("manage/", views_update_request.manage_update_requests, name="manage-update-requests"),
-    path("respond/", views_update_request.respond_update_request, name="respond-update-request"),
+    path("add/", views_update_request.add_update_request, name="add-update-request"),
     path(
         "<int:update_request_pk>/",
         include(
             [
+                path("edit/", views_update_request.edit_update_request, name="edit-update-request"),
                 path(
-                    "start/", views_update_request.start_update_request, name="start-update-request"
+                    "delete/",
+                    views_update_request.delete_update_request,
+                    name="delete-update-request",
                 ),
                 path(
                     "close/", views_update_request.close_update_request, name="close-update-request"
                 ),
+                # Applicant url
+                path(
+                    "start/", views_update_request.start_update_request, name="start-update-request"
+                ),
             ]
         ),
     ),
+    # Applicant url
+    path("respond/", views_update_request.respond_update_request, name="respond-update-request"),
 ]
 
 authorisation_urls = [

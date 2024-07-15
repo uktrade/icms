@@ -660,18 +660,42 @@ class TestApplicationUpdatesWorkbasket(AuthTestCase):
         self.ilb_admin_two_client.post(CaseURLS.take_ownership(self.exp_agent_app.pk, "export"))
 
         # Create Application Update Request for each app.
-        form_data = {"request_subject": "subject", "request_detail": "detail"}
+        form_data = {"request_subject": "subject", "request_detail": "detail", "send": "true"}
+
+        response = self.ilb_admin_client.post(
+            CaseURLS.add_draft_update_request(self.imp_app.pk), follow=True
+        )
+        update_request_pk = response.resolver_match.kwargs["update_request_pk"]
         self.ilb_admin_client.post(
-            CaseURLS.manage_update_requests(self.imp_app.pk, "import"), data=form_data
+            CaseURLS.edit_update_requests(self.imp_app.pk, update_request_pk, "import"),
+            data=form_data,
         )
+
+        response = self.ilb_admin_client.post(
+            CaseURLS.add_draft_update_request(self.imp_agent_app.pk), follow=True
+        )
+        update_request_pk = response.resolver_match.kwargs["update_request_pk"]
         self.ilb_admin_client.post(
-            CaseURLS.manage_update_requests(self.imp_agent_app.pk, "import"), data=form_data
+            CaseURLS.edit_update_requests(self.imp_agent_app.pk, update_request_pk, "import"),
+            data=form_data,
         )
-        self.ilb_admin_two_client.post(
-            CaseURLS.manage_update_requests(self.exp_app.pk, "export"), data=form_data
+
+        response = self.ilb_admin_two_client.post(
+            CaseURLS.add_draft_update_request(self.exp_app.pk, "export"), follow=True
         )
+        update_request_pk = response.resolver_match.kwargs["update_request_pk"]
         self.ilb_admin_two_client.post(
-            CaseURLS.manage_update_requests(self.exp_agent_app.pk, "export"), data=form_data
+            CaseURLS.edit_update_requests(self.exp_app.pk, update_request_pk, "export"),
+            data=form_data,
+        )
+
+        response = self.ilb_admin_two_client.post(
+            CaseURLS.add_draft_update_request(self.exp_agent_app.pk, "export"), follow=True
+        )
+        update_request_pk = response.resolver_match.kwargs["update_request_pk"]
+        self.ilb_admin_two_client.post(
+            CaseURLS.edit_update_requests(self.exp_agent_app.pk, update_request_pk, "export"),
+            data=form_data,
         )
 
         # Start changes on several of them (shows different actions)

@@ -21,7 +21,9 @@
   </div>
   <div class="six columns">
     <span class="text-widget">
-      {{ update_request.request_datetime.strftime('%d-%b-%Y') }}
+      {% if update_request.request_datetime %}
+        {{ update_request.request_datetime.strftime('%d-%b-%Y') }}
+      {% endif %}
     </span>
   </div>
   <div class="three columns"></div>
@@ -34,7 +36,7 @@
   </div>
   <div class="six columns">
     <span class="text-widget">
-      {{ update_request.requested_by }}
+      {{ update_request.requested_by or "" }}
     </span>
   </div>
   <div class="three columns"></div>
@@ -48,19 +50,6 @@
   <div class="six columns">
     <span class="text-widget">
       {{ update_request.request_subject }}
-    </span>
-  </div>
-  <div class="three columns"></div>
-</div>
-<div class="row">
-  <div class="three columns">
-    <label class="prompt west">
-      Request CC Email Addresses
-    </label>
-  </div>
-  <div class="six columns">
-    <span class="text-widget">
-      {{ update_request.email_cc_address_list or '' }}
     </span>
   </div>
   <div class="three columns"></div>
