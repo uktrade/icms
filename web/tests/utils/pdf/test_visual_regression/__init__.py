@@ -1,5 +1,6 @@
 import datetime as dt
 import json
+from functools import cached_property
 from pathlib import Path
 
 from django.conf import settings
@@ -73,7 +74,7 @@ class BaseTestPDFVisualRegression:
             (BENCHMARK_PDF_DIRECTORY / self.benchmark_pdf_image_file_path).read_bytes()
         )
 
-    @property
+    @cached_property
     def benchmark_pdf_creation_date(self) -> dt.datetime:
         """Get the creation date of the benchmark PDF.
 
