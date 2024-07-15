@@ -51,16 +51,6 @@ class TestCountryTranslationSet(TestCase):
         assert set.name == "French"
         assert set.is_active is False
 
-    def test_archive_translation_set(self):
-        set = self.create_translation_set(is_active=True)
-        set.archive()
-        assert set.is_active is False
-
-    def test_unarchive_translation_set(self):
-        set = self.create_translation_set(is_active=False)
-        set.unarchive()
-        assert set.is_active is True
-
     def test_string_representation(self):
         translation_set = self.create_translation_set(name="Sindarin")
         assert translation_set.__str__() == "Country Translation Set (Sindarin)"

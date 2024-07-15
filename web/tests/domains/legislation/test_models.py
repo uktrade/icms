@@ -28,16 +28,6 @@ class TestProductLegislation(TestCase):
         assert product_legisation.is_biocidal_claim is False
         assert product_legisation.is_eu_cosmetics_regulation is True
 
-    def test_archive_legislation(self):
-        product_legisation = self.create_legislation()
-        product_legisation.archive()
-        assert product_legisation.is_active is False
-
-    def test_unarchive_legislation(self):
-        product_legisation = self.create_legislation()
-        product_legisation.unarchive()
-        assert product_legisation.is_active is True
-
     def test_biocidal_yes_no_label(self):
         product_legisation = self.create_legislation()
         assert product_legisation.is_biocidal_yes_no == "No"

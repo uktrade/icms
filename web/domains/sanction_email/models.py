@@ -1,9 +1,7 @@
 from django.db import models
 
-from web.models.mixins import Archivable
 
-
-class SanctionEmail(Archivable, models.Model):
+class SanctionEmail(models.Model):
     is_active = models.BooleanField(default=True)
     name = models.CharField(max_length=255)
     email = models.EmailField(verbose_name="Email Address", max_length=254)

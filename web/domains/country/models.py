@@ -1,8 +1,6 @@
 from django.db import models
 from django.urls import reverse
 
-from web.models.mixins import Archivable
-
 from .managers import ApplicationCountryManager, UtilityCountryManager
 from .types import CountryGroupName
 
@@ -72,7 +70,7 @@ class CountryGroup(models.Model):
         ordering = ("name",)
 
 
-class CountryTranslationSet(Archivable, models.Model):
+class CountryTranslationSet(models.Model):
     name = models.CharField(max_length=100, blank=False, null=False)
     is_active = models.BooleanField(blank=False, null=False, default=True)
 

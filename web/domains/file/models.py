@@ -4,8 +4,6 @@ import humanize
 from django.conf import settings
 from django.db import models
 
-from web.models.mixins import Archivable
-
 logger = logging.getLogger(__name__)
 
 
@@ -14,7 +12,7 @@ class ActiveManager(models.Manager):
         return self.filter(is_active=True)
 
 
-class File(Archivable, models.Model):
+class File(models.Model):
     objects = ActiveManager()
 
     is_active = models.BooleanField(default=True)

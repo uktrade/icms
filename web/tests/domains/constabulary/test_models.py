@@ -23,16 +23,6 @@ class TestConstabulary(TestCase):
         assert constabulary.region == Constabulary.EAST_MIDLANDS
         assert constabulary.is_active is True
 
-    def test_archive_constabulary(self):
-        constabulary = self.create_constabulary()
-        constabulary.archive()
-        assert constabulary.is_active is False
-
-    def test_unarchive_constabulary(self):
-        constabulary = self.create_constabulary()
-        constabulary.unarchive()
-        assert constabulary.is_active is True
-
     def test_region_verbose(self):
         constabulary = self.create_constabulary()
         assert constabulary.region_verbose == "East Midlands"

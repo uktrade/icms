@@ -17,14 +17,3 @@ class TestImporter(TestCase):
         assert isinstance(importer, Importer)
         assert importer.name == "Very Best Importers Ltd."
         assert importer.type == Importer.ORGANISATION
-
-    def test_archive_importer(self):
-        importer = self.create_importer()
-        importer.archive()
-        assert importer.is_active is False
-
-    def test_unarchive_importer(self):
-        importer = self.create_importer(is_active=False)
-        assert importer.is_active is False
-        importer.unarchive()
-        assert importer.is_active is True
