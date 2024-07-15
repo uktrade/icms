@@ -127,15 +127,19 @@ ORDER BY xcas.cad_id, xcas.schedule_ordinal
 hse_emails = """
 SELECT
   e.ca_id
+  , xml_data
   , CASE e.email_status WHEN 'DELETED' THEN 0 ELSE 1 END is_active
   , e.email_status status
-  , r.email_address  "to"
+  , r.email_address "to"
   , e.email_subject subject
   , e.email_body body
   , e.response_body response
   , x.sent_datetime
+  , x.sent_by_id
   , CASE e.email_status WHEN 'CLOSED' THEN e.last_updated_datetime ELSE NULL END closed_datetime
+  , x.closed_by_id
   , 'CA_HSE_EMAIL' template_code
+  , 'HSE' email_type
 FROM impmgr.xview_cert_app_hse_emails e
 INNER JOIN impmgr.hse_email_recipients r ON r.status = 'CURRENT'
 INNER JOIN impmgr.certificate_app_details cad ON cad.id = e.cad_id
@@ -145,6 +149,8 @@ CROSS JOIN XMLTABLE(
   COLUMNS
     email_id NUMBER PATH '/*/EMAIL_ID/text()'
   , sent_datetime VARCHAR2(4000) PATH '/*/SEND/SENT_DATETIME/text()'
+  , sent_by_id NUMBER PATH '/*/SEND/SENT_BY_WUA_ID/text()'
+  , closed_by_id NUMBER PATH '/*/CLOSE/CLOSED_BY_WUA_ID/text()'
 ) x
 WHERE e.status_control = 'C'
 AND x.email_id = e.email_id

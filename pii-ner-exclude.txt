@@ -4829,3 +4829,4 @@ Cameroon
 Approval Complete
 Access Request\nFurther Information Requested
 len(expected_row.keys
+x.closed_by_id
