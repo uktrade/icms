@@ -280,15 +280,17 @@ class CaseEmail(MigrationBase):
     body = models.TextField(max_length=4000, null=True)
     response = models.TextField(max_length=4000, null=True)
     sent_datetime = models.DateTimeField(null=True)
+    sent_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="+")
     closed_datetime = models.DateTimeField(null=True)
+    closed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="+")
     template_code = models.CharField(max_length=30)
+    email_type = models.CharField(max_length=30)
     constabulary_attachments_xml = models.TextField(null=True)
-
-    # attachments - M2M to file
 
     @classmethod
     def get_excludes(cls) -> list[str]:
-        return super().get_excludes() + ["ima_id", "ca_id"]
+        # TODO ICMSLST-2783: Remove email_type if added to web models
+        return super().get_excludes() + ["ima_id", "ca_id", "email_type"]
 
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
