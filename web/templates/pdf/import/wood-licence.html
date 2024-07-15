@@ -8,32 +8,19 @@
     <meta name="description" content="{{ importer_site_name }} import licence">
     <title>{{ page_title }}</title>
     <style>
-      {{ get_css_rules_as_string("web/css/pdfs/licence-and-certificate-common-style.css")|safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/fonts.css')|safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/constants.css')|safe }}
       {{ get_css_rules_as_string("web/css/pdfs/wood-licence-style.css")|safe }}
-      {{ get_css_rules_as_string("web/css/components/signature.css")|safe }}
       {% if preview_licence %}
         {{ get_css_rules_as_string("web/css/pdfs/preview.css")|safe }}
       {% endif %}
     </style>
   </head>
-  <body>
-    <header>
-      <div class="flex-row">
-        <div class="half eu"><strong>EUROPEAN UNION</strong></div>
-        <div class="quota"><strong>QUOTA AUTHORISATION</strong></div>
-      </div>
-    </header>
-    <div class="holder-number holder-number-first b-top b-left b-right">
-      <span>1</span>
-    </div>
-    <footer>
-      <span class="holders bordered">Holder's copy</span>
-    </footer>
-    <div class="holder-number holder-number-last bordered"><span>1</span></div>
+  <body class="bordered">
     <main class="bordered flex-row wrap">
       <div class="flex-row row b-bottom">
-        <div class="consignee half content-block b-right">
-          <p class="details-text"><strong>1. </strong>Importer (name, full address, country, VAT No)</p>
+        <div class="half content-block b-right">
+          <p><strong>1. </strong>Importer (name, full address, country, VAT No)</p>
           <p class="content">{{ importer_name | upper }}</p>
           {% for line in importer_address %}
             <p class="content">{{ line | upper }}</p>
@@ -52,21 +39,21 @@
               </div>
             </div>
         </div>
-        <div class="half flex-row wrap">
-          <div class="issue-number content-block b-bottom row">
-            <p class="details-text"><strong>2. </strong>Issue number</p>
+        <div class="">
+          <div class="content-block b-bottom row">
+            <p><strong>2. </strong>Issue No</p>
             <p class="{{ 'preview-orange' if preview_licence }}">{{ licence_number }}</p>
           </div>
-          <div class="port content-block b-bottom row">
-            <p class="details-text"><strong>3. </strong>Exporter (name, full address, VAT No)</p>
-              <p>{{ exporter_name }}</p>
+          <div class="content-block b-bottom row">
+            <p><strong>3. </strong>Exporter (name, full address, VAT No)</p>
+              <p>{{ exporter_name | upper }}</p>
               {% for line in exporter_address %}
-                <p>{{ line }}</p>
+                <p>{{ line | upper }}</p>
               {% endfor %}
               <p>{{ exporter_vat_number }}</p>
           </div>
-          <div class="authority content-block row flex-row wrap">
-            <p class="details-text row"><strong>4. </strong>Authority responsible for issue (name, address and telephone No)</p>
+          <div class="content-block row flex-row wrap">
+            <p class="row"><strong>4. </strong>Authority responsible for issue (name, address and telephone No)</p>
             <p class="address-line row">Department for Business and Trade</p>
             <p class="address-line row">Queensway House, West Precinct</p>
             <p class="address-line row">Billingham, United Kingdom, TS23 2NF</p>  <!-- /PS-IGNORE -->
@@ -74,9 +61,10 @@
           </div>
         </div>
       </div>
-      <div class="flex-row row b-bottom">
-        <div class="declarant half content-block b-right">
-          <p class="details-text"><strong>5. </strong>Declarant/representative as applicable (name and full address)</p>
+      </div>
+      <div class="flex-row row b-bottom-extended">
+        <div class="half content-block b-right">
+          <p><strong>5. </strong>Declarant/representative as applicable (name and full address)</p>
           <p class="content">{{ importer_name | upper }}</p>
           {% for line in importer_address %}
             <p>{{ line | upper}}</p>
@@ -90,50 +78,56 @@
             </div>
           </div>
         </div>
-        <div class="validity content-block half">
-          <p class="details-text"><strong>6. </strong>Last day of validity</p>
+        <div class="content-block half min-height-150">
+          <p><strong>6. </strong>Last day of validity</p>
           <p>{{ licence_end_date }}</p>
         </div>
       </div>
-      <div class="row b-bottom flex-row">
-        <div class="content-block goods two-third b-right">
-          <p class="details-text"><strong>7. </strong>Description of goods, commodity code and category, quantity, and value in GBP (cif at UK frontier)</p>
+      <div class="flex-row row b-bottom">
+        <div class="two-third content-block b-right">
+          <p><strong>7. </strong>Description of goods</p>
           <p>{{ goods }}</p>
         </div>
-        <div class="flex-row third wrap">
-          <div class="commodity-code content-block b-bottom row">
-            <p class="details-text"><strong>8. </strong>CN code</p>
+        <div class="third third-block">
+          <div class="content-block b-bottom row">
+            <p><strong>8. </strong>CN code</p>
             <p>{{ commodity_code }}</p>
           </div>
-          <div class="quantity content-block row">
-            <p class="details-text"><strong>9. </strong>Quantity in m³</p>
-            <p>{{ quantity }}</p>
-          </div>
+          <div class="flex-row wrap quantity">
+            <div class="content-block row">
+              <p><strong>9. </strong>Quantity in m³</p>
+              <p>{{ quantity }}</p>
+            </div>
+          </div> 
         </div>
       </div>
-      <div class="endorsements content-block row b-bottom">
-        <p class="details-text"><strong>10. </strong>Additional remarks</p>
-        {% if endorsements %}
-          {% for endorsement in endorsements %}
-            {% for endorsement_line in endorsement %}
-              <p>{{ endorsement_line }}</p>
+      <div class="flex-row row">
+        <div class="endorsements content-block row">
+          <p><strong>10. </strong>Additional remarks</p>
+          {% if endorsements %}
+            {% for endorsement in endorsements %}
+              {% for endorsement_line in endorsement %}
+                <p>{{ endorsement_line }}</p>
+              {% endfor %}
             {% endfor %}
-          {% endfor %}
-        {% elif preview_licence %}
-          <p class="additional-remarks">[[ADDITIONAL_REMARKS]]</p>
-        {% endif %}
-      </div>
-      <div class="signature content-block flex-row row wrap">
-        <p class="details-text row"><strong>11. </strong>Competent authority's endorsement</p>
-        <div class="digital-signature half">
-            {% if preview_licence %}
-                {{ not_signed_image() }}
-            {% else %}
-                {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory)  }}
-            {% endif %}
+          {% elif preview_licence %}
+            <p class="preview-green">[[ADDITIONAL_REMARKS]]</p>
+          {% endif %}
         </div>
-        <div class="dbt-logo-block half">
-            {{ dbt_logo(classes="header-block") }}
+      </div>
+      <div class="signature-block content-block b-top flex-row row">
+        <div class="flex-row row wrap">
+          <p class="row"><strong>11. </strong>Competent authority's endorsement</p>
+          <div class="digital-signature half">
+              {% if preview_licence %}
+                  {{ not_signed_image() }}
+              {% else %}
+                  {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory)  }}
+              {% endif %}
+          </div>
+          <div class="dbt-logo-block half">
+              {{ dbt_logo(classes="header-block") }}
+          </div>
         </div>
       </div>
     </main>

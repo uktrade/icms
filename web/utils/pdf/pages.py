@@ -101,3 +101,45 @@ def format_com_pages(pdf_data: bytes) -> bytes:
     with io.BytesIO() as bytes_stream:
         writer.write(bytes_stream)
         return bytes_stream.getvalue()
+
+
+def format_wood_pages(pdf_data: bytes) -> bytes:
+    reader = pypdf.PdfReader(io.BytesIO(pdf_data))
+    writer = pypdf.PdfWriter()
+
+    top_margin = 795
+    left_margin = 66
+    right_margin = 560
+    page_total = len(reader.pages)
+    for page_number, page in enumerate(reader.pages):
+        packet = io.BytesIO()
+        new_page = canvas.Canvas(packet, pagesize=portrait(A4))
+        new_page.setFont("Helvetica-Bold", 10)
+        new_page.drawRightString(184, top_margin, "EUROPEAN UNION")
+        new_page.drawRightString(480, top_margin, "QUOTA AUTHORISATION")
+
+        # Top of the page horizontal line
+        new_page.line(left_margin, 791, right_margin, 791)
+
+        if page_number == 0:
+            # holders copy text
+            new_page.saveState()
+            new_page.rotate(90)
+            new_page.setFont("Helvetica", 12)
+            new_page.drawString(600, -85, "Holder's copy")
+            new_page.restoreState()
+
+        if page_total > 0 and page_number != page_total - 1:
+            # Bottom of page horizontal line
+            new_page.line(left_margin, 46, right_margin, 46)
+
+        new_page.save()
+
+        packet.seek(0)
+        new_pdf = pypdf.PdfReader(packet)
+        page.merge_page(new_pdf.pages[0])
+        writer.add_page(page)
+
+    with io.BytesIO() as bytes_stream:
+        writer.write(bytes_stream)
+        return bytes_stream.getvalue()

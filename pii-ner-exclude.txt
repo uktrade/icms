@@ -4836,3 +4836,8 @@ Raise PermissionDenied
 Application Update Withdrawn
 Django 4.2.14
 EmailTypes
+EUROPEAN UNION
+Holder
+new_page.rotate(90
+90 degrees'
+Helvetica-Bold
