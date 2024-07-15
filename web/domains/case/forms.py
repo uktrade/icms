@@ -73,6 +73,9 @@ class UpdateRequestForm(forms.ModelForm):
     class Meta:
         model = UpdateRequest
         fields = ("request_subject", "request_detail")
+        widgets = {
+            "request_detail": forms.Textarea({"rows": 20}),
+        }
 
 
 class UpdateRequestResponseForm(forms.ModelForm):

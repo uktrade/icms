@@ -4832,3 +4832,4 @@ x.closed_by_id
 SELECT iad.id imad_id
 iad.ima_id
 CLOB PATH
+Raise PermissionDenied

@@ -23,7 +23,7 @@
 
   <h4>Start Application Update</h4>
   {% call fieldsets.fieldset("Application Update") %}
-    {% include "partial/update-request-info.html" %}
+    {% include "partial/update-request-detail.html" %}
     <div class="row">
       <div class="three columns"></div>
       <div class="six columns">
@@ -44,7 +44,7 @@
     {% for update_request in previous_update_requests %}
 
       {% call fieldsets.fieldset("Application Update") %}
-        {% include "partial/update-request-info.html" %}
+        {% include "partial/update-request-detail.html" %}
       {% endcall %}
 
     {% endfor %}

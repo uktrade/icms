@@ -19,18 +19,21 @@ def get_open_update_request(
     client: Client, app: ImpOrExp, post: dict | None = None
 ) -> UpdateRequest:
     if post is None:
-        post = {"request_subject": "subject", "request_detail": "detail"}
+        post = {"request_subject": "subject", "request_detail": "detail", "send": "true"}
 
     assert app.update_requests.count() == 0
     assert app.status == ImportApplication.Statuses.SUBMITTED
 
     client.post(CaseURLS.take_ownership(app.pk))
 
-    resp = client.get(CaseURLS.manage_update_requests(app.pk))
+    response = client.post(CaseURLS.add_draft_update_request(app.pk), follow=True)
+    update_request_pk = response.resolver_match.kwargs["update_request_pk"]
+
+    resp = client.get(CaseURLS.edit_update_requests(app.pk, update_request_pk))
     assert resp.status_code == 200
     assertContains(resp, "I am writing to ask you for application updates regarding")
 
-    resp = client.post(CaseURLS.manage_update_requests(app.pk), data=post)
+    resp = client.post(CaseURLS.edit_update_requests(app.pk, update_request_pk), data=post)
     assert resp.status_code == 302
     assert app.update_requests.count() == 1
 
@@ -48,7 +51,7 @@ def test_list_update_requests_get(
     assert resp.status_code == 200
 
     assertContains(resp, "Wood (Quota) - Update Requests")
-    assertTemplateUsed(resp, "web/domains/case/manage/list-update-requests.html")
+    assertTemplateUsed(resp, "web/domains/case/manage/update-requests/list.html")
 
     assert resp.context["previous_update_requests"].count() == 0
     assert resp.context["update_request"] is None
@@ -58,6 +61,7 @@ def test_manage_update_requests(ilb_admin_client: Client, wood_app_submitted: Im
     post = {
         "request_subject": f"My Application update for {wood_app_submitted.reference}",
         "request_detail": "Please update your application",
+        "send": "true",
     }
     update_request = get_open_update_request(ilb_admin_client, wood_app_submitted, post=post)
     check_gov_notify_email_was_sent(
@@ -178,10 +182,32 @@ def test_withdraw_update_request(
     assert resp.status_code == 302
 
     update_request.refresh_from_db()
-    assert update_request.status == UpdateRequest.Status.DELETED
-    assert update_request.response_detail == "Request was withdrawn by ILB and marked inactive."
-    assert not update_request.is_active
-    assert update_request.closed_by == ilb_admin_user
+
+    assert update_request.status == UpdateRequest.Status.DRAFT
+    assert update_request.is_active
 
     wood_app_submitted.refresh_from_db()
     assert wood_app_submitted.status == ImportApplication.Statuses.PROCESSING
+
+
+def test_delete_draft_update_request(ilb_admin_client, fa_oil_app_submitted):
+    assert fa_oil_app_submitted.update_requests.filter(is_active=True).count() == 0
+    assert fa_oil_app_submitted.status == ImportApplication.Statuses.SUBMITTED
+
+    ilb_admin_client.post(CaseURLS.take_ownership(fa_oil_app_submitted.pk))
+
+    response = ilb_admin_client.post(
+        CaseURLS.add_draft_update_request(fa_oil_app_submitted.pk), follow=True
+    )
+    update_request_pk = response.resolver_match.kwargs["update_request_pk"]
+
+    assert fa_oil_app_submitted.update_requests.filter(is_active=True).count() == 1
+    assert fa_oil_app_submitted.update_requests.first().status == UpdateRequest.Status.DRAFT
+
+    response = ilb_admin_client.post(
+        CaseURLS.delete_draft_update_request(fa_oil_app_submitted.pk, update_request_pk)
+    )
+    assert response.status_code == 302
+
+    assert fa_oil_app_submitted.update_requests.filter(is_active=True).count() == 0
+    assert fa_oil_app_submitted.update_requests.first().status == UpdateRequest.Status.DELETED

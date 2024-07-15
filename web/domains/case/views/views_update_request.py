@@ -22,10 +22,21 @@ from web.types import AuthenticatedHttpRequest
 from .utils import get_caseworker_view_readonly_status, get_class_imp_or_exp
 
 
-def check_can_edit_application(user: User, application: ImpOrExp) -> None:
-    checker = AppChecker(user, application)
+#
+# *****************************************************************************
+# The following views are ILB Admin only views
+# *****************************************************************************
+#
+def check_ilb_permission(application: ImpOrExp, case_type: str, user: User) -> None:
+    """Raise PermissionDenied unless the view is editable by the supplied user.
 
-    if not checker.can_edit():
+    This checks user is the assigned caseworker and the application has the correct status
+    and associated tasks.
+    """
+
+    readonly_view = get_caseworker_view_readonly_status(application, case_type, user)
+
+    if readonly_view:
         raise PermissionDenied
 
 
@@ -35,6 +46,8 @@ def check_can_edit_application(user: User, application: ImpOrExp) -> None:
 def list_update_requests(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
+    """ILB Admin view listing all update requests for a given application."""
+
     model_class = get_class_imp_or_exp(case_type)
 
     application: ImpOrExp = get_object_or_404(model_class, pk=application_pk)
@@ -44,6 +57,7 @@ def list_update_requests(
     update_requests = application.update_requests.filter(is_active=True)
     update_request = update_requests.filter(
         status__in=[
+            UpdateRequest.Status.DRAFT,
             UpdateRequest.Status.OPEN,
             UpdateRequest.Status.UPDATE_IN_PROGRESS,
             UpdateRequest.Status.RESPONDED,
@@ -54,7 +68,7 @@ def list_update_requests(
     context = {
         "process": application,
         "page_title": get_case_page_title(case_type, application, "Update Requests"),
-        "previous_update_requests": previous_update_requests,
+        "previous_update_requests": previous_update_requests.order_by("-pk"),
         "update_request": update_request,
         "has_any_update_requests": update_requests.exists(),
         "case_type": case_type,
@@ -63,17 +77,18 @@ def list_update_requests(
 
     return render(
         request=request,
-        template_name="web/domains/case/manage/list-update-requests.html",
+        template_name="web/domains/case/manage/update-requests/list.html",
         context=context,
     )
 
 
 @login_required
 @permission_required(Perms.sys.ilb_admin, raise_exception=True)
-def manage_update_requests(
+@require_POST
+def add_update_request(
     request: AuthenticatedHttpRequest, *, application_pk: int, case_type: str
 ) -> HttpResponse:
-    """Allows admin to submit an update request to the applicant"""
+    """ILB Admin view to add a draft update request."""
 
     model_class = get_class_imp_or_exp(case_type)
 
@@ -82,60 +97,154 @@ def manage_update_requests(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        readonly_view = get_caseworker_view_readonly_status(application, case_type, request.user)
+        check_ilb_permission(application, case_type, request.user)
+
         email_subject, email_content = get_application_update_template_data(application)
 
-        if request.method == "POST" and not readonly_view:
-            task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
+        ur = application.update_requests.create(
+            status=UpdateRequest.Status.DRAFT,
+            request_subject=email_subject,
+            request_detail=email_content,
+        )
 
-            form = forms.UpdateRequestForm(request.POST)
-            if form.is_valid():
-                update_request = form.save(commit=False)
-                update_request.requested_by = request.user
-                update_request.request_datetime = timezone.now()
-                update_request.status = UpdateRequest.Status.OPEN
-                update_request.save()
+        return redirect(
+            reverse(
+                "case:edit-update-request",
+                kwargs={
+                    "application_pk": application_pk,
+                    "update_request_pk": ur.pk,
+                    "case_type": case_type,
+                },
+            )
+        )
 
-                application.update_requests.add(update_request)
 
-                Task.objects.create(
-                    process=application, task_type=Task.TaskType.PREPARE, previous=task
+@login_required
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+def edit_update_request(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    update_request_pk: int,
+    case_type: str,
+) -> HttpResponse:
+    """ILB Admin view to edit / send an update request to an applicant."""
+
+    model_class = get_class_imp_or_exp(case_type)
+
+    with transaction.atomic():
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+
+        check_ilb_permission(application, case_type, request.user)
+
+        try:
+            update_request = get_object_or_404(
+                application.update_requests, pk=update_request_pk, status=UpdateRequest.Status.DRAFT
+            )
+        except ObjectDoesNotExist:
+            messages.warning(request, "Update Request is no longer available")
+            return redirect(
+                reverse(
+                    "case:list-update-requests",
+                    kwargs={"application_pk": application_pk, "case_type": case_type},
                 )
-                send_application_update_email(update_request)
-                application.update_order_datetime()
-                application.save()
-
-                return redirect(reverse("workbasket"))
-        else:
-            form = forms.UpdateRequestForm(
-                initial={
-                    "request_subject": email_subject,
-                    "request_detail": email_content,
-                }
             )
 
-        update_requests = application.update_requests.filter(is_active=True)
-        update_request = update_requests.filter(
-            status__in=[UpdateRequest.Status.OPEN, UpdateRequest.Status.RESPONDED]
-        ).first()
-        previous_update_requests = update_requests.filter(status=UpdateRequest.Status.CLOSED)
+        if request.method == "POST":
+            task = case_progress.get_expected_task(application, Task.TaskType.PROCESS)
 
+            form = forms.UpdateRequestForm(request.POST, instance=update_request)
+            if form.is_valid():
+                update_request = form.save()
+
+                if "send" in form.data:
+                    update_request.requested_by = request.user
+                    update_request.request_datetime = timezone.now()
+                    update_request.status = UpdateRequest.Status.OPEN
+                    update_request.save()
+
+                    Task.objects.create(
+                        process=application, task_type=Task.TaskType.PREPARE, previous=task
+                    )
+                    send_application_update_email(update_request)
+                    application.update_order_datetime()
+                    application.save()
+
+                return redirect(
+                    reverse(
+                        "case:list-update-requests",
+                        kwargs={"application_pk": application.pk, "case_type": case_type},
+                    )
+                )
+
+        else:
+            form = forms.UpdateRequestForm(instance=update_request)
+
+        previous_update_requests = application.update_requests.filter(
+            is_active=True, status=UpdateRequest.Status.CLOSED
+        )
         context = {
             "process": application,
             "page_title": get_case_page_title(case_type, application, "Update Requests"),
             "form": form,
-            "previous_update_requests": previous_update_requests,
-            "update_request": update_request,
-            "has_any_update_requests": update_requests.exists(),
+            "previous_update_requests": previous_update_requests.order_by("-pk"),
             "case_type": case_type,
-            "readonly_view": readonly_view,
         }
 
         return render(
             request=request,
-            template_name="web/domains/case/manage/update-requests.html",
+            template_name="web/domains/case/manage/update-requests/edit.html",
             context=context,
         )
+
+
+@login_required
+@permission_required(Perms.sys.ilb_admin, raise_exception=True)
+def delete_update_request(
+    request: AuthenticatedHttpRequest,
+    *,
+    application_pk: int,
+    update_request_pk: int,
+    case_type: str,
+) -> HttpResponse:
+    """ILB Admin view to delete a draft update request."""
+
+    model_class = get_class_imp_or_exp(case_type)
+
+    with transaction.atomic():
+        application: ImpOrExp = get_object_or_404(
+            model_class.objects.select_for_update(), pk=application_pk
+        )
+
+        check_ilb_permission(application, case_type, request.user)
+
+        try:
+            update_request = get_object_or_404(
+                application.update_requests, pk=update_request_pk, status=UpdateRequest.Status.DRAFT
+            )
+        except ObjectDoesNotExist:
+            messages.warning(request, "Update Request is no longer available")
+            return redirect(
+                reverse(
+                    "case:list-update-requests",
+                    kwargs={"application_pk": application_pk, "case_type": case_type},
+                )
+            )
+
+        update_request.is_active = False
+        update_request.status = UpdateRequest.Status.DELETED
+        update_request.response_detail = "Request was deleted by ILB and marked inactive."
+        update_request.closed_by = request.user
+        update_request.save()
+
+    return redirect(
+        reverse(
+            "case:list-update-requests",
+            kwargs={"application_pk": application_pk, "case_type": case_type},
+        )
+    )
 
 
 @login_required
@@ -148,6 +257,8 @@ def close_update_request(
     update_request_pk: int,
     case_type: str,
 ) -> HttpResponse:
+    """ILB Admin view to close or withdraw an update request."""
+
     model_class = get_class_imp_or_exp(case_type)
 
     with transaction.atomic():
@@ -155,7 +266,7 @@ def close_update_request(
             model_class.objects.select_for_update(), pk=application_pk
         )
 
-        case_progress.application_in_processing(application)
+        check_ilb_permission(application, case_type, request.user)
 
         update_request = get_object_or_404(application.update_requests, pk=update_request_pk)
 
@@ -172,13 +283,14 @@ def close_update_request(
                 )
             )
 
-        # The update request has been withdrawn therefore we can delete.
+        # The update request has been withdrawn so revert to draft.
         if update_request.status == UpdateRequest.Status.OPEN:
-            update_request.status = UpdateRequest.Status.DELETED
-            update_request.response_detail = "Request was withdrawn by ILB and marked inactive."
-            update_request.is_active = False
-            update_request.closed_by = request.user
+            update_request.status = UpdateRequest.Status.DRAFT
             update_request.save()
+
+            # Close the task created when sending the update request.
+            task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
+            end_process_task(task, request.user)
 
             # TODO: ICMSLST-2742 Send Withdraw Application Update email here
             #       Or at the end of the view (as it's a task).
@@ -190,28 +302,24 @@ def close_update_request(
             update_request.closed_datetime = timezone.now()
             update_request.save()
 
-        # If there are no more active update requests check for an optional process task.
-        # There will be one if the ILB Admin closes the update request before the applicant
-        # has responded (e.g. one was opened in error).
-        if not (
-            application.update_requests.filter(is_active=True)
-            .exclude(status=UpdateRequest.Status.CLOSED)
-            .exists()
-        ):
-            process_task = (
-                case_progress.get_active_tasks(application, select_for_update=True)
-                .filter(task_type=Task.TaskType.PREPARE)
-                .first()
-            )
-            if process_task:
-                end_process_task(process_task, request.user)
-
     return redirect(
         reverse(
             "case:list-update-requests",
             kwargs={"application_pk": application_pk, "case_type": case_type},
         )
     )
+
+
+#
+# *****************************************************************************
+# The following views are applicant only views
+# *****************************************************************************
+#
+def check_can_edit_application(user: User, application: ImpOrExp) -> None:
+    checker = AppChecker(user, application)
+
+    if not checker.can_edit():
+        raise PermissionDenied
 
 
 @login_required
@@ -268,7 +376,7 @@ def start_update_request(
             "process": application,
             "case_type": case_type,
             "update_request": update_request,
-            "previous_update_requests": previous_update_requests,
+            "previous_update_requests": previous_update_requests.order_by("-pk"),
         }
 
         return render(
@@ -327,7 +435,7 @@ def respond_update_request(
             "case_type": case_type,
             "form": form,
             "update_request": update_request,
-            "previous_update_requests": previous_update_requests,
+            "previous_update_requests": previous_update_requests.order_by("-pk"),
         }
 
         return render(

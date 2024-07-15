@@ -242,9 +242,34 @@ class CaseURLS:
         return reverse("case:list-update-requests", kwargs=kwargs)
 
     @staticmethod
-    def manage_update_requests(application_pk: int, case_type: str = "import") -> str:
-        kwargs = {"application_pk": application_pk, "case_type": case_type}
-        return reverse("case:manage-update-requests", kwargs=kwargs)
+    def add_draft_update_request(application_pk: int, case_type: str = "import") -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "case_type": case_type,
+        }
+        return reverse("case:add-update-request", kwargs=kwargs)
+
+    @staticmethod
+    def edit_update_requests(
+        application_pk: int, update_request_pk: int, case_type: str = "import"
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "update_request_pk": update_request_pk,
+            "case_type": case_type,
+        }
+        return reverse("case:edit-update-request", kwargs=kwargs)
+
+    @staticmethod
+    def delete_draft_update_request(
+        application_pk: int, update_request_pk: int, case_type: str = "import"
+    ) -> str:
+        kwargs = {
+            "application_pk": application_pk,
+            "update_request_pk": update_request_pk,
+            "case_type": case_type,
+        }
+        return reverse("case:delete-update-request", kwargs=kwargs)
 
     @staticmethod
     def start_update_request(

@@ -1,0 +1,48 @@
+{% extends "web/domains/case/manage/base.html" %}
+{% import "forms/fields.html" as fields %}
+{% import "forms/fieldsets.html" as fieldsets %}
+{% import "forms/forms.html" as forms %}
+
+
+{% block main_content %}
+  <h3>Application Updates</h3>
+  {% include "partial/update-request-info-banner.html" %}
+
+  {% call forms.form(action='', method='post', csrf_input=csrf_input) -%}
+    <div class="row">
+      <div class="three columns">
+        <label class="prompt west">Status</label>
+      </div>
+      <div class="six columns">
+        <div class="status {{ form.instance.status|lower }}">
+          <div>
+            <span class="text-widget">{{ form.instance.get_status_display() }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="three columns"></div>
+    </div>
+    {% for field in form %}
+      {{ fields.field(field) }}
+    {% endfor %}
+
+    <div class="container">
+      <div class="row">
+        <div class="three columns"></div>
+        <div class="eight columns">
+          <ul class="menu-out flow-across">
+            <li>
+            <button type="submit" name="send" class="button primary-button" data-confirm="Are you sure you want to send this update request?">Send Request</button>
+            <button type="submit" name="save" class="button primary-button">Save</button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  {% endcall %}
+  {% for update_request in previous_update_requests %}
+    {% call fieldsets.fieldset("Application Update") %}
+      {% include "partial/update-request-detail.html" %}
+    {% endcall %}
+  {% endfor %}
+{% endblock %}
