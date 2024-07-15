@@ -212,6 +212,11 @@ def exporter_agent_client(exporter_one_agent_one_contact, exporter_site) -> Clie
     return get_test_client(exporter_site.domain, exporter_one_agent_one_contact)
 
 
+@pytest.fixture()
+def access_request_user_client(access_request_user, importer_site) -> Client:
+    return get_test_client(importer_site.domain, access_request_user)
+
+
 #
 # User fixtures
 #

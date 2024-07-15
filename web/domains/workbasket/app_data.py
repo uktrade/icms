@@ -114,22 +114,16 @@ def get_ilb_admin_qs(user: User) -> chain[QuerySet]:
     # Annotations used on every row to improve performance
     open_fir_pks_annotation = _get_open_firs_pk_annotation("further_information_requests")
 
-    open_exporter_approval_requests = Exists(
-        ExporterApprovalRequest.objects.filter(
-            access_request=OuterRef("pk"), status=ExporterApprovalRequest.Statuses.OPEN
-        )
-    )
-    open_importer_approval_requests = Exists(
-        ImporterApprovalRequest.objects.filter(
-            access_request=OuterRef("pk"), status=ImporterApprovalRequest.Statuses.OPEN
-        )
-    )
-
     exporter_access_requests = (
         ExporterAccessRequest.objects.filter(is_active=True, status=submitted)
         .annotate(
             annotation_open_fir_pks=open_fir_pks_annotation,
-            annotation_has_open_approval_request=open_exporter_approval_requests,
+            annotation_has_open_approval_request=_get_approval_request_annotation(
+                ExporterApprovalRequest, ApprovalRequest.Statuses.OPEN
+            ),
+            annotation_has_complete_approval_request=_get_approval_request_annotation(
+                ExporterApprovalRequest, ApprovalRequest.Statuses.COMPLETED
+            ),
         )
         .select_related("submitted_by")
     )
@@ -138,7 +132,12 @@ def get_ilb_admin_qs(user: User) -> chain[QuerySet]:
         ImporterAccessRequest.objects.filter(is_active=True, status=submitted)
         .annotate(
             annotation_open_fir_pks=open_fir_pks_annotation,
-            annotation_has_open_approval_request=open_importer_approval_requests,
+            annotation_has_open_approval_request=_get_approval_request_annotation(
+                ImporterApprovalRequest, ApprovalRequest.Statuses.OPEN
+            ),
+            annotation_has_complete_approval_request=_get_approval_request_annotation(
+                ImporterApprovalRequest, ApprovalRequest.Statuses.COMPLETED
+            ),
         )
         .select_related("submitted_by")
     )
@@ -173,6 +172,13 @@ def get_ilb_admin_qs(user: User) -> chain[QuerySet]:
         export_applications,
         import_applications,
     )
+
+
+def _get_approval_request_annotation(
+    approval_cls: type[ExporterApprovalRequest | ImporterApprovalRequest],
+    status: ApprovalRequest.Statuses,
+) -> Subquery:
+    return Exists(approval_cls.objects.filter(access_request=OuterRef("pk"), status=status))
 
 
 def get_sanctions_case_officer_qs(user: User) -> chain[QuerySet]:
