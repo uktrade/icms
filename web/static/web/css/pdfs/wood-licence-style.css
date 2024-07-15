@@ -1,74 +1,31 @@
 @page {
     size: A4;
-    margin: 60px 40px 60px 80px;
-
+    margin: 68px 40px 60px 80px;
 
     @top-center {
         content: element(header);
         width: 100%;
     }
-
 }
 
-p {
-    font-size: 10px;
-    margin: 1px;
+* {
+    color: black;
+    -webkit-print-color-adjust: exact;
 }
 
-header {
-    font-size: 14px;
-    position: running(header);
-}
-
-header > div {
-    align-content: flex-end;
-    margin-top: 24px;
-}
-
-header > div > p {
+body {
+    margin-top: 0;
     font-size: 12px;
-}
-
-.eu {
-    padding-left: 16px;
-}
-
-.quota {
-    padding-left: 24px;
-}
-
-footer {
-    position: fixed;
-    left: -172.8px;
-    top: 206px;
-    transform: rotate(270deg);
-
 }
 
 main {
     box-decoration-break: clone;
+    margin: -1px -1px -1px 40px;
 }
 
-.holders {
-    padding: 10px 103px 11px 135px;
-    font-size: 14px;
-}
-
-.holder-number {
-    padding: 4px 9px 20px 8px;
-    height: 20px;
-    width: 18px;
-    position: fixed;
-    left: -28px;
-    text-align: center;
-}
-
-.holder-number-first {
-    top: 8px;
-}
-
-.holder-number-last {
-    top: 376px;
+p {
+    margin: 1px;
+    font-weight: 5;
 }
 
 .content-block {
@@ -76,19 +33,99 @@ main {
     min-height: 40px;
 }
 
-.details-text {
-    font-size: 10px;
-}
-
-.commodity-code {
-    min-height: 60px;
-}
-
-.goods, .endorsements {
+.min-height-150 {
     min-height: 150px;
+}
+
+.third-block {
+    max-width: 194px;
+}
+
+.third-block > .quantity {
+    min-height: 80px;
+}
+
+
+.header-block {
+    display: inline-block;
+    vertical-align: top;
+    height: 80px;
+    width: 160px;
+
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+
+li {
+    font-weight: 5;
+}
+
+strong {
+    font-weight: bold;
+}
+
+.endorsements {
+    min-height: 150px;
+    max-width: 98%;
+    padding-bottom: 20px;
 }
 
 #dbt-logo {
     width: 330px;
     margin: -40px 0 -35px -40px;
+}
+
+.signature-block {
+   break-inside: avoid;
+   max-width: 624px
+}
+
+div[name="signature-widget"] {
+    display: flex;
+    flex-wrap: wrap;
+    width: 200px;
+    height: 110px;
+}
+
+div[name="signature-widget"] > span {
+    flex: 0 0 100%;
+    display: block;
+    font-size: 11px;
+    margin: 0;
+}
+
+
+#signature-widget-image-container {
+    flex: 0 0 100%;
+    display: block;
+    margin: 0;
+}
+
+#signature-widget-image {
+    width: 165px;
+    max-height: 100px;
+}
+
+#signature > p {
+    color: black;
+}
+
+#signature > img {
+    padding-left: 5px;
+}
+
+#not_signed_image{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    max-width: 175px;
+}
+
+.b-bottom-extended {
+    left: -42px;
+    padding-left: 42px;
+    position: relative;
+    border-bottom: 1px solid #000;
 }

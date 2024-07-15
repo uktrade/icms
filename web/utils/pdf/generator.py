@@ -171,6 +171,8 @@ class PdfGenerator(PdfGenBase):
                 return pages.format_gmp_pages(pdf_data, self.get_document_context())
             case ProcessTypes.COM:
                 return pages.format_com_pages(pdf_data)
+            case ProcessTypes.WOOD:
+                return pages.format_wood_pages(pdf_data)
             case _:
                 return pdf_data
 
