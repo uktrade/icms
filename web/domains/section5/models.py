@@ -3,7 +3,6 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
 
-from web.models.mixins import Archivable
 from web.models.shared import ArchiveReasonChoices
 
 
@@ -56,7 +55,7 @@ class Section5Authority(models.Model):
     other_archive_reason = models.TextField(null=True, blank=True, verbose_name="Other")
 
 
-class Section5Clause(Archivable, models.Model):
+class Section5Clause(models.Model):
     clause = models.CharField(max_length=100)
     description = models.TextField()
     is_active = models.BooleanField(default=True)

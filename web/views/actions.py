@@ -7,8 +7,40 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from web.models import Template
-from web.models.mixins import Archivable
+from web.models import (
+    Commodity,
+    CommodityGroup,
+    Constabulary,
+    CountryTranslationSet,
+    Exporter,
+    File,
+    FirearmsAct,
+    Importer,
+    ObsoleteCalibre,
+    ObsoleteCalibreGroup,
+    ProductLegislation,
+    SanctionEmail,
+    Section5Clause,
+    Template,
+)
+
+# Classes that previously inherited from Archivable.
+ARCHIVABLE_MODEL = (
+    Commodity,
+    CommodityGroup,
+    Constabulary,
+    CountryTranslationSet,
+    Exporter,
+    File,
+    FirearmsAct,
+    Importer,
+    ObsoleteCalibre,
+    ObsoleteCalibreGroup,
+    ProductLegislation,
+    SanctionEmail,
+    Section5Clause,
+    Template,
+)
 
 
 class ListAction:
@@ -114,7 +146,12 @@ class Edit(LinkAction):
         return f"{object.id}/edit/"
 
     def display(self, object):
-        if isinstance(object, Archivable) and self.hide_if_archived_object and not object.is_active:
+        if (
+            # The logic was previously if isinstance(object, Archivable)
+            isinstance(object, ARCHIVABLE_MODEL)
+            and self.hide_if_archived_object
+            and not object.is_active
+        ):
             return False
         return True
 
@@ -145,10 +182,14 @@ class Archive(PostAction):
     icon = "icon-bin"
 
     def display(self, object):
-        return isinstance(object, Archivable) and object.is_active
+        # The logic was previously if isinstance(object, Archivable)
+        return isinstance(object, ARCHIVABLE_MODEL) and object.is_active
 
     def handle(self, request, view):
-        self._get_item(request, view.model).archive()
+        model = self._get_item(request, view.model)
+        model.is_active = False
+        model.save()
+
         messages.success(request, "Record archived successfully")
 
 
@@ -159,13 +200,14 @@ class Unarchive(PostAction):
     icon = "icon-undo2"
 
     def display(self, object):
-        return isinstance(object, Archivable) and not object.is_active
+        # The logic was previously if isinstance(object, Archivable)
+        return isinstance(object, ARCHIVABLE_MODEL) and not object.is_active
 
     def handle(self, request, view):
-        # TODO: ICMSLST-2761 Revisit and remove Archivable.
-        # unarchive can be blocked, this function should probably return
-        # an error string if it fails?
-        self._get_item(request, view.model).unarchive()
+        model = self._get_item(request, view.model)
+        model.is_active = True
+        model.save()
+
         messages.success(request, "Record restored successfully")
 
 

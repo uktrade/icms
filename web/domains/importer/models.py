@@ -5,8 +5,6 @@ from django.db import models
 from django.urls import reverse
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
-from web.models.mixins import Archivable
-
 
 class ImporterObjectPerms:
     """Return object permissions linked to the importer model.
@@ -40,7 +38,7 @@ class ImporterManager(models.Manager):
         return self.filter(main_importer__isnull=False)
 
 
-class Importer(Archivable, models.Model):
+class Importer(models.Model):
     # Regions
     INDIVIDUAL = "INDIVIDUAL"
     ORGANISATION = "ORGANISATION"

@@ -5,8 +5,6 @@ from django.db import models
 from django.urls import reverse
 from guardian.models import GroupObjectPermissionBase, UserObjectPermissionBase
 
-from web.models.mixins import Archivable
-
 
 class ExporterObjectPerms:
     """Return object permissions linked to the exporter model.
@@ -40,7 +38,7 @@ class ExporterManager(models.Manager):
         return self.filter(main_exporter__isnull=False)
 
 
-class Exporter(Archivable, models.Model):
+class Exporter(models.Model):
     objects = ExporterManager()
 
     is_active = models.BooleanField(blank=False, null=False, default=True)

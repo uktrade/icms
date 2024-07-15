@@ -1,9 +1,7 @@
 from django.db import models
 
-from web.models.mixins import Archivable
 
-
-class ProductLegislation(Archivable, models.Model):
+class ProductLegislation(models.Model):
     name = models.CharField(max_length=500, verbose_name="Legislation Name")
     is_active = models.BooleanField(default=True)
 

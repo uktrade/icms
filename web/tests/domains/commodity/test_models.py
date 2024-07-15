@@ -32,16 +32,6 @@ class TestCommodity(TestCase):
         assert isinstance(commodity, Commodity)
         assert commodity.commodity_code == "1234567890"
 
-    def test_archive_commodity(self):
-        commodity = self.create_commodity()
-        commodity.archive()
-        assert commodity.is_active is False
-
-    def test_unarchive_commodity(self):
-        commodity = self.create_commodity()
-        commodity.unarchive()
-        assert commodity.is_active is True
-
 
 class TestCommodityGroup(TestCase):
     def create_commodity_group(
@@ -66,13 +56,3 @@ class TestCommodityGroup(TestCase):
         commodity_group = self.create_commodity_group()
         assert isinstance(commodity_group, CommodityGroup)
         assert commodity_group.group_code == "12"
-
-    def test_archive_commodity_group(self):
-        commodity_group = self.create_commodity_group()
-        commodity_group.archive()
-        assert commodity_group.is_active is False
-
-    def test_unarchive_commodity_group(self):
-        commodity_group = self.create_commodity_group()
-        commodity_group.unarchive()
-        assert commodity_group.is_active is True

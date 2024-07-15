@@ -14,7 +14,6 @@ import guardian.mixins
 from django.conf import settings
 from django.db import migrations, models
 
-import web.models.mixins
 import web.models.shared
 
 
@@ -1130,7 +1129,6 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ("-is_active", "commodity_code"),
             },
-            bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
             name="CommodityGroup",
@@ -1159,7 +1157,6 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ("-is_active", "group_code"),
             },
-            bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
             name="CommodityType",
@@ -1217,7 +1214,6 @@ class Migration(migrations.Migration):
                 ),
                 "default_permissions": [],
             },
-            bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
             name="Country",
@@ -1295,7 +1291,6 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ("-is_active", "name"),
             },
-            bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
             name="DerogationsChecklist",
@@ -1844,7 +1839,6 @@ class Migration(migrations.Migration):
                 ),
                 "default_permissions": [],
             },
-            bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
             name="ExporterContactInvite",
@@ -1909,7 +1903,6 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ["-created_datetime"],
             },
-            bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
             name="FirearmsAct",
@@ -1929,7 +1922,6 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ("act",),
             },
-            bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
             name="FirearmsAuthority",
@@ -2260,7 +2252,6 @@ class Migration(migrations.Migration):
                 ),
                 "default_permissions": [],
             },
-            bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
             name="ImporterContactInvite",
@@ -2456,7 +2447,6 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ("order",),
             },
-            bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
             name="ObsoleteCalibreGroup",
@@ -2474,7 +2464,6 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ("order", "-is_active"),
             },
-            bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
             name="Office",
@@ -2799,7 +2788,6 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ("-is_active", "name"),
             },
-            bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
             name="Report",
@@ -2846,7 +2834,6 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ("name",),
             },
-            bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
             name="SanctionsAndAdhocApplicationGoods",
@@ -2973,7 +2960,6 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ("clause",),
             },
-            bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
             name="SIGLTransmission",
@@ -3726,7 +3712,6 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ("-is_active", "template_name"),
             },
-            bases=(web.models.mixins.Archivable, models.Model),
         ),
         migrations.CreateModel(
             name="TextilesChecklist",

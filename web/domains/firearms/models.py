@@ -3,7 +3,6 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils import timezone
 
-from web.models.mixins import Archivable
 from web.models.shared import ArchiveReasonChoices
 
 
@@ -67,7 +66,7 @@ class FirearmsAuthority(models.Model):
     other_archive_reason = models.TextField(null=True, blank=True, verbose_name="Other")
 
 
-class FirearmsAct(Archivable, models.Model):
+class FirearmsAct(models.Model):
     act = models.CharField(max_length=100)
     description = models.TextField(null=True)
     is_active = models.BooleanField(default=True)
@@ -95,7 +94,7 @@ class ActQuantity(models.Model):
     infinity = models.BooleanField(default=False)
 
 
-class ObsoleteCalibreGroup(Archivable, models.Model):
+class ObsoleteCalibreGroup(models.Model):
     name = models.CharField(max_length=200, blank=False, null=False)
     is_active = models.BooleanField(blank=False, null=False, default=True)
     order = models.IntegerField(blank=False, null=False)
@@ -110,7 +109,7 @@ class ObsoleteCalibreGroup(Archivable, models.Model):
         ordering = ("order", "-is_active")
 
 
-class ObsoleteCalibre(Archivable, models.Model):
+class ObsoleteCalibre(models.Model):
     calibre_group = models.ForeignKey(
         "web.ObsoleteCalibreGroup",
         on_delete=models.CASCADE,

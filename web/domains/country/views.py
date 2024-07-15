@@ -233,13 +233,17 @@ class CountryTranslationSetListView(PostActionMixin, ModelCreateView):
 
     def archive(self, request):
         translation_set = CountryTranslationSet.objects.get(pk=request.POST.get("item"))
-        translation_set.archive()
+        translation_set.is_active = False
+        translation_set.save()
+
         messages.success(request, "Record archived successfully")
         return super().get(request)
 
     def unarchive(self, request):
         translation_set = CountryTranslationSet.objects.get(pk=request.POST.get("item"))
-        translation_set.unarchive()
+        translation_set.is_active = True
+        translation_set.save()
+
         messages.success(request, "Record restored successfully")
         return super().get(request)
 
@@ -315,7 +319,10 @@ class CountryTranslationSetEditView(PostActionMixin, ModelUpdateView):
         return f"Editing {self.object.name} Translation Set"
 
     def archive(self, request, pk):
-        super().get_object().archive()
+        obj: CountryTranslationSet = super().get_object()
+        obj.is_active = False
+        obj.save()
+
         return redirect(reverse("country:translation-set-list"))
 
 

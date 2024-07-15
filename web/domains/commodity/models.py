@@ -1,8 +1,6 @@
 from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
 
-from web.models.mixins import Archivable
-
 
 class Unit(models.Model):
     """Unit is a class used to describe a unit with various labels that ultimately have the same hmrc_code
@@ -28,7 +26,7 @@ class CommodityType(models.Model):
         return self.type
 
 
-class Commodity(Archivable, models.Model):
+class Commodity(models.Model):
     is_active = models.BooleanField(default=True)
     commodity_code = models.CharField(max_length=10)
     validity_start_date = models.DateField()
@@ -59,7 +57,7 @@ class Commodity(Archivable, models.Model):
         )
 
 
-class CommodityGroup(Archivable, models.Model):
+class CommodityGroup(models.Model):
     AUTO = "AUTO"
     CATEGORY = "CATEGORY"
 

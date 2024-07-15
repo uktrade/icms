@@ -1,12 +1,11 @@
 from django.db import models
 
-from web.models.mixins import Archivable
 from web.types import TypedTextChoices
 
 TEMPLATE_CONTENT_REGEX = r"\[\[{}\]\]"
 
 
-class Template(Archivable, models.Model):
+class Template(models.Model):
     # Template types
     ENDORSEMENT = "ENDORSEMENT"
     LETTER_TEMPLATE = "LETTER_TEMPLATE"

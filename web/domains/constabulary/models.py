@@ -1,7 +1,5 @@
 from django.db import models
 
-from web.models.mixins import Archivable
-
 
 class ConstabularyObjectPerms:
     """Return object permissions linked to the constabulary model.
@@ -30,7 +28,7 @@ class ConstabularyObjectPerms:
         self._perms = constabulary_object_permissions
 
 
-class Constabulary(Archivable, models.Model):
+class Constabulary(models.Model):
     EAST_MIDLANDS = "EM"
     EASTERN = "ER"
     ISLE_OF_MAN = "IM"

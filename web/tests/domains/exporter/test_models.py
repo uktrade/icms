@@ -11,14 +11,3 @@ class TestExporter(TestCase):
         exporter = self.create_exporter()
         assert isinstance(exporter, Exporter)
         assert exporter.name == "The Exporters Ltd."
-
-    def test_archive_exporter(self):
-        exporter = self.create_exporter()
-        exporter.archive()
-        assert exporter.is_active is False
-
-    def test_unarchive_exporter(self):
-        exporter = self.create_exporter(is_active=False)
-        assert exporter.is_active is False
-        exporter.unarchive()
-        assert exporter.is_active is True
