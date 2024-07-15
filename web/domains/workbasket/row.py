@@ -113,6 +113,7 @@ def _get_access_wb_row(
 
     r.reference = app.reference
 
+    # TODO: ICMSLST-2779 Fix this as it currently displays as "[Importer|Exporter]AccessRequest"
     r.subject = app.process_type
 
     r.company = "\n".join(
@@ -134,6 +135,9 @@ def _get_access_wb_row(
 
     if is_ilb_admin and app.annotation_has_open_approval_request:
         info_rows.append("Approval Requested")
+
+    if is_ilb_admin and app.annotation_has_complete_approval_request:
+        info_rows.append("Approval Complete")
 
     information = "\n".join(info_rows)
 
@@ -192,6 +196,7 @@ def _get_approval_wb_row(
 
     r.reference = app.access_request.reference
 
+    # TODO: ICMSLST-2779 Fix this as it currently displays as "[Importer|Exporter]ApprovalRequest"
     r.subject = app.process_type
 
     acc_req: AccessRequest = app.access_request

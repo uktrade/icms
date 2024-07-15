@@ -222,8 +222,8 @@ class Command(BaseCommand):
     def create_import_access_request(self, user):
         iar, _ = ImporterAccessRequest.objects.get_or_create(
             process_type=ImporterAccessRequest.PROCESS_TYPE,
-            request_type="MAIN_IMPORTER_ACCESS",
-            status="SUBMITTED",
+            request_type=ImporterAccessRequest.MAIN_IMPORTER_ACCESS,
+            status=ImporterAccessRequest.Statuses.SUBMITTED,
             submitted_by=user,
             last_updated_by=user,
             reference="iar/1",
@@ -238,8 +238,8 @@ class Command(BaseCommand):
     def create_export_access_request(self, user):
         ear, _ = ExporterAccessRequest.objects.get_or_create(
             process_type=ExporterAccessRequest.PROCESS_TYPE,
-            request_type="MAIN_EXPORTER_ACCESS",
-            status="SUBMITTED",
+            request_type=ExporterAccessRequest.MAIN_EXPORTER_ACCESS,
+            status=ExporterAccessRequest.Statuses.SUBMITTED,
             submitted_by=user,
             last_updated_by=user,
             reference="ear/1",

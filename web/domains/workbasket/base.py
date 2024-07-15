@@ -52,11 +52,7 @@ class WorkbasketRow:
     # status
     status: str | None = None
 
-    # not sure whether this is create or last-update time
     timestamp: dt.datetime | None = None
-
-    # not clear to me how this is different to status...
-    # information: Optional[str] = None
 
     # admin/applicant/etc actions go into their own block
     sections: list[WorkbasketSection] = field(default_factory=list)

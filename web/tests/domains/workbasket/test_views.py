@@ -14,9 +14,13 @@ from web.domains.workbasket.base import WorkbasketRow
 from web.forms.fields import JQUERY_DATE_FORMAT
 from web.models import (
     AccessRequest,
+    ApprovalRequest,
     Exporter,
+    ExporterAccessRequest,
+    FurtherInformationRequest,
     ImportApplication,
     Importer,
+    ImporterAccessRequest,
     Mailshot,
     Template,
     User,
@@ -24,7 +28,7 @@ from web.models import (
 from web.models.shared import YesNoNAChoices
 from web.permissions import Perms
 from web.tests.auth.auth import AuthTestCase
-from web.tests.helpers import CaseURLS
+from web.tests.helpers import CaseURLS, add_approval_request, get_linked_access_request
 
 
 class TestApplicationInProgressWorkbasket(AuthTestCase):
@@ -1682,6 +1686,252 @@ class TestMailshotsAppearInWorkbasket(AuthTestCase):
         mailshot.save()
 
         return mailshot
+
+
+class TestAccessRequestsWorkbasket(AuthTestCase):
+    ar_user: User
+    ar_user_client: Client
+    iar: ImporterAccessRequest
+    ear: ExporterAccessRequest
+
+    @pytest.fixture(autouse=True)
+    def setup(
+        self,
+        _setup,
+        importer_access_request,
+        exporter_access_request,
+        access_request_user_client,
+        access_request_user,
+    ):
+        self.ar_user_client = access_request_user_client
+        self.ar_user = access_request_user
+        self.iar = get_linked_access_request(importer_access_request, self.importer)
+        self.ear = get_linked_access_request(exporter_access_request, self.exporter)
+
+    def test_access_request_submitted(self):
+        ar_user_expected_rows = {
+            "ear/1": {"Submitted": {"Access Request": ["View"]}},
+            "iar/1": {"Submitted": {"Access Request": ["View"]}},
+        }
+        check_expected_rows(self.ar_user_client, ar_user_expected_rows)
+
+        ilb_expected_rows = {
+            "ear/1": {"Submitted": {"Access Request": ["Manage"]}},
+            "iar/1": {"Submitted": {"Access Request": ["Manage"]}},
+        }
+        check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+
+    def test_access_request_submitted_further_information_requested(self):
+        self._add_fir(self.iar, FurtherInformationRequest.OPEN)
+        self._add_fir(self.ear, FurtherInformationRequest.OPEN)
+
+        ar_user_expected_rows = {
+            "ear/1": {
+                "Submitted": {
+                    "Access Request\nFurther Information Requested": ["View", "Respond FIR"]
+                }
+            },
+            "iar/1": {
+                "Submitted": {
+                    "Access Request\nFurther Information Requested": ["View", "Respond FIR"]
+                }
+            },
+        }
+        check_expected_rows(self.ar_user_client, ar_user_expected_rows)
+
+        ilb_expected_rows = {
+            "ear/1": {"Submitted": {"Access Request\nFurther Information Requested": ["Manage"]}},
+            "iar/1": {"Submitted": {"Access Request\nFurther Information Requested": ["Manage"]}},
+        }
+        check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+
+    def test_access_request_submitted_further_information_responded(self):
+        self._add_fir(
+            self.iar,
+            FurtherInformationRequest.RESPONDED,
+            response_datetime=timezone.now(),
+            response_by=self.ar_user,
+        )
+        self._add_fir(
+            self.ear,
+            FurtherInformationRequest.RESPONDED,
+            response_datetime=timezone.now(),
+            response_by=self.ar_user,
+        )
+
+        ar_user_expected_rows = {
+            "ear/1": {"Submitted": {"Access Request": ["View"]}},
+            "iar/1": {"Submitted": {"Access Request": ["View"]}},
+        }
+        check_expected_rows(self.ar_user_client, ar_user_expected_rows)
+
+        ilb_expected_rows = {
+            "ear/1": {"Submitted": {"Access Request": ["Manage"]}},
+            "iar/1": {"Submitted": {"Access Request": ["Manage"]}},
+        }
+        check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+
+    def test_access_request_approval_requested_not_assigned(self):
+        add_approval_request(self.iar, self.ilb_admin_user)
+        add_approval_request(self.ear, self.ilb_admin_user)
+
+        ar_user_expected_rows = {
+            "ear/1": {"Submitted": {"Access Request": ["View"]}},
+            "iar/1": {"Submitted": {"Access Request": ["View"]}},
+        }
+        check_expected_rows(self.ar_user_client, ar_user_expected_rows)
+
+        ilb_expected_rows = {
+            "ear/1": {"Submitted": {"Access Request\nApproval Requested": ["Manage"]}},
+            "iar/1": {"Submitted": {"Access Request\nApproval Requested": ["Manage"]}},
+        }
+        check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+
+        importer_user_expected_rows = {"iar/1": {"OPEN": {"Approval Request": ["Take Ownership"]}}}
+        check_expected_rows(self.importer_client, importer_user_expected_rows)
+
+        exporter_user_expected_rows = {
+            "ear/1": {"OPEN": {"Approval Request": ["Take Ownership"]}},
+        }
+        check_expected_rows(self.exporter_client, exporter_user_expected_rows)
+
+    def test_access_request_approval_requested_by_user(self):
+        add_approval_request(self.iar, self.ilb_admin_user, self.importer_user)
+        add_approval_request(self.ear, self.ilb_admin_user, self.exporter_user)
+
+        ar_user_expected_rows = {
+            "ear/1": {"Submitted": {"Access Request": ["View"]}},
+            "iar/1": {"Submitted": {"Access Request": ["View"]}},
+        }
+        check_expected_rows(self.ar_user_client, ar_user_expected_rows)
+
+        ilb_expected_rows = {
+            "ear/1": {"Submitted": {"Access Request\nApproval Requested": ["Manage"]}},
+            "iar/1": {"Submitted": {"Access Request\nApproval Requested": ["Manage"]}},
+        }
+        check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+
+        importer_user_expected_rows = {"iar/1": {"OPEN": {"Approval Request": ["Manage"]}}}
+        check_expected_rows(self.importer_client, importer_user_expected_rows)
+
+        exporter_user_expected_rows = {
+            "ear/1": {"OPEN": {"Approval Request": ["Manage"]}},
+        }
+        check_expected_rows(self.exporter_client, exporter_user_expected_rows)
+
+    def test_access_request_approval_confirmed(self):
+        add_approval_request(
+            self.iar, self.ilb_admin_user, self.importer_user, ApprovalRequest.Statuses.COMPLETED
+        )
+        self.iar.response = ApprovalRequest.Responses.APPROVE
+        self.iar.response_by = self.importer_user
+        self.iar.response_date = timezone.now()
+        self.iar.save()
+
+        add_approval_request(
+            self.ear, self.ilb_admin_user, self.exporter_user, ApprovalRequest.Statuses.COMPLETED
+        )
+        self.ear.response = ApprovalRequest.Responses.APPROVE
+        self.ear.response_by = self.importer_user
+        self.ear.response_date = timezone.now()
+        self.ear.save()
+
+        ar_user_expected_rows = {
+            "ear/1": {"Submitted": {"Access Request": ["View"]}},
+            "iar/1": {"Submitted": {"Access Request": ["View"]}},
+        }
+        check_expected_rows(self.ar_user_client, ar_user_expected_rows)
+
+        ilb_expected_rows = {
+            "ear/1": {"Submitted": {"Access Request\nApproval Complete": ["Manage"]}},
+            "iar/1": {"Submitted": {"Access Request\nApproval Complete": ["Manage"]}},
+        }
+        check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+
+        importer_user_expected_rows = {}
+        check_expected_rows(self.importer_client, importer_user_expected_rows)
+
+        exporter_user_expected_rows = {}
+        check_expected_rows(self.exporter_client, exporter_user_expected_rows)
+
+    def test_access_request_approval_rejected(self):
+        add_approval_request(
+            self.iar, self.ilb_admin_user, self.importer_user, ApprovalRequest.Statuses.COMPLETED
+        )
+        self.iar.response = ApprovalRequest.Responses.APPROVE
+        self.iar.response_by = self.importer_user
+        self.iar.response_date = timezone.now()
+        self.iar.response_reason = "test reason"
+        self.iar.save()
+
+        add_approval_request(
+            self.ear, self.ilb_admin_user, self.exporter_user, ApprovalRequest.Statuses.COMPLETED
+        )
+        self.ear.response = ApprovalRequest.Responses.APPROVE
+        self.ear.response_by = self.importer_user
+        self.ear.response_date = timezone.now()
+        self.ear.response_reason = "test reason"
+        self.ear.save()
+
+        ar_user_expected_rows = {
+            "ear/1": {"Submitted": {"Access Request": ["View"]}},
+            "iar/1": {"Submitted": {"Access Request": ["View"]}},
+        }
+        check_expected_rows(self.ar_user_client, ar_user_expected_rows)
+
+        ilb_expected_rows = {
+            "ear/1": {"Submitted": {"Access Request\nApproval Complete": ["Manage"]}},
+            "iar/1": {"Submitted": {"Access Request\nApproval Complete": ["Manage"]}},
+        }
+        check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+
+        importer_user_expected_rows = {}
+        check_expected_rows(self.importer_client, importer_user_expected_rows)
+
+        exporter_user_expected_rows = {}
+        check_expected_rows(self.exporter_client, exporter_user_expected_rows)
+
+    def test_access_request_complete_approved(self):
+        self.iar.status = AccessRequest.Statuses.CLOSED
+        self.iar.response = AccessRequest.APPROVED
+        self.iar.save()
+
+        self.ear.status = AccessRequest.Statuses.CLOSED
+        self.ear.response = AccessRequest.APPROVED
+        self.ear.save()
+
+        ar_user_expected_rows = {}
+        check_expected_rows(self.ar_user_client, ar_user_expected_rows)
+
+        ilb_expected_rows = {}
+        check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+
+    def test_access_request_complete_rejected(self):
+        self.iar.status = AccessRequest.Statuses.CLOSED
+        self.iar.response = AccessRequest.REFUSED
+        self.iar.response_reason = "test reason"
+        self.iar.save()
+
+        self.ear.status = AccessRequest.Statuses.CLOSED
+        self.ear.response = AccessRequest.REFUSED
+        self.ear.response_reason = "test reason"
+        self.ear.save()
+
+        ar_user_expected_rows = {}
+        check_expected_rows(self.ar_user_client, ar_user_expected_rows)
+
+        ilb_expected_rows = {}
+        check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
+
+    def _add_fir(self, ar: AccessRequest, status: str, **kwargs) -> None:
+        ar.further_information_requests.create(
+            status=status,
+            requested_by=self.ilb_admin_user,
+            request_subject="Test subject",
+            request_detail="Test detail",
+            process_type=FurtherInformationRequest.PROCESS_TYPE,
+            **kwargs,
+        )
 
 
 def check_expected_rows(
