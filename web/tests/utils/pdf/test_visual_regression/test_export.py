@@ -8,7 +8,12 @@ class BaseTestExportPDFVisualRegression(BaseTestPDFVisualRegression):
         kwargs = super().get_generator_kwargs()
         kwargs["country"] = self.application.countries.first()
         kwargs["doc_type"] = DocumentTypes.CERTIFICATE_SIGNED
-        kwargs["doc_pack"] = self.application.certificates.first()
+
+        # Set the certificate completion date to the benchmark PDF creation date
+        certificate = self.application.certificates.first()
+        certificate.case_completion_datetime = None
+        certificate.save()
+        kwargs["doc_pack"] = certificate
         return kwargs
 
 

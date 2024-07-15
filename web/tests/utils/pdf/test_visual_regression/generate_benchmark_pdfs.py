@@ -41,6 +41,10 @@ def test_generate_benchmark_cfs_certificate(completed_cfs_app):
 
     country = completed_cfs_app.countries.first()
     certificate = completed_cfs_app.certificates.first()
+
+    certificate.case_completion_datetime = None
+    certificate.save()
+
     generator = PdfGenerator(
         DocumentTypes.CERTIFICATE_SIGNED, completed_cfs_app, certificate, country
     )
