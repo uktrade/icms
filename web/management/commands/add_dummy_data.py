@@ -6,23 +6,31 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
+from django.db import models
+from django.utils import timezone
 
 from web.domains.country.models import Country
 from web.management.commands.utils.load_data import load_app_test_data
 from web.models import (
+    ActQuantity,
     CertificateApplicationTemplate,
     CertificateOfFreeSaleApplicationTemplate,
     CertificateOfGoodManufacturingPracticeApplicationTemplate,
     CertificateOfManufactureApplicationTemplate,
     CFSScheduleTemplate,
+    ClauseQuantity,
     Constabulary,
     Email,
     ExportApplicationType,
     Exporter,
+    File,
+    FirearmsAct,
+    FirearmsAuthority,
     ImportApplicationType,
     Importer,
     Office,
     ProductLegislation,
+    Section5Authority,
     Section5Clause,
     Signature,
     User,
@@ -253,6 +261,55 @@ class Command(BaseCommand):
             )
             importer.offices.add(office)
 
+            # Add verified firearms authority to importer
+            firearms_authority = FirearmsAuthority.objects.create(
+                importer=importer,
+                reference=f"ref/{index}",
+                certificate_type=FirearmsAuthority.REGISTERED_FIREARMS_DEALER,
+                postcode=f"S{index}{index+1}SS",  # /PS-IGNORE
+                address="Address line 1",
+                address_entry_type=FirearmsAuthority.MANUAL,
+                start_date=timezone.now().date(),
+                end_date=dt.date(dt.date.today().year + 3, 1, 1),
+                further_details="",
+                issuing_constabulary=Constabulary.objects.filter(is_active=True)[index],
+            )
+            firearms_authority.linked_offices.set(importer.offices.all())
+
+            for act in FirearmsAct.objects.all():
+                ActQuantity.objects.create(
+                    firearmsauthority=firearms_authority,
+                    firearmsact=act,
+                    quantity=100 * index,
+                )
+
+            ilb_admin_user = User.objects.get(username="ilb_admin")
+
+            firearms_authority.files.add(create_dummy_file(firearms_authority, ilb_admin_user))
+
+            # Add verified section 5 authority to importer.
+            section5_authority = Section5Authority.objects.create(
+                importer=importer,
+                reference=f"section-5-ref/{index}",
+                postcode=f"S{index}{index+1}SS",  # /PS-IGNORE
+                address="Address line 1",
+                address_entry_type=FirearmsAuthority.MANUAL,
+                start_date=timezone.now().date(),
+                end_date=dt.date(dt.date.today().year + 3, 1, 1),
+                further_details="",
+            )
+
+            section5_authority.linked_offices.set(importer.offices.all())
+
+            for clause in Section5Clause.objects.all():
+                ClauseQuantity.objects.create(
+                    section5authority=section5_authority,
+                    section5clause=clause,
+                    quantity=100 * index,
+                )
+
+            section5_authority.files.add(create_dummy_file(section5_authority, ilb_admin_user))
+
             self.stdout.write(f"Created dummy importer {index}")
 
             # agent for importer
@@ -393,9 +450,9 @@ class Command(BaseCommand):
             ImportApplicationType.objects.update(is_active=True)
             ExportApplicationType.objects.update(is_active=True)
 
+        self.add_ilb_admin_users(options["password"])
         self.add_importers_and_users(options["password"])
         self.add_exporters_and_users(options["password"])
-        self.add_ilb_admin_users(options["password"])
 
         self.create_user(
             username="nca_admin",
@@ -679,3 +736,27 @@ def create_dummy_signature(user: User) -> None:
         file_size=file_size,
         is_active=True,
     )
+
+
+def create_dummy_file(model: models.Model, user: User) -> File:
+    file_path = settings.BASE_DIR / "dummy-file.txt"
+    with file_path.open("w") as file:
+        file.write("sometext\n")
+
+    # model id - timestamp - filename
+    time_stamp = f'{timezone.now().strftime("%Y%m%d%H%M%S")}'
+    key = f"{model.pk}_{time_stamp}_{file_path.name}"
+
+    file_size = upload_file_obj_to_s3(file_path.open("rb"), key)
+
+    file = File.objects.create(
+        is_active=True,
+        filename=file_path.name,
+        content_type=file_path.suffix,
+        file_size=file_size,
+        path=key,
+        created_by=user,
+    )
+    file_path.unlink()
+
+    return file
