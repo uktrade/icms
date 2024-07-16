@@ -14,7 +14,10 @@ from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import end_process_task, get_case_page_title
 from web.domains.template.utils import get_application_update_template_data
-from web.mail.emails import send_application_update_email
+from web.mail.emails import (
+    send_application_update_email,
+    send_application_update_withdrawn_email,
+)
 from web.models import Task, UpdateRequest, User
 from web.permissions import AppChecker, Perms
 from web.types import AuthenticatedHttpRequest
@@ -292,8 +295,7 @@ def close_update_request(
             task = case_progress.get_expected_task(application, Task.TaskType.PREPARE)
             end_process_task(task, request.user)
 
-            # TODO: ICMSLST-2742 Send Withdraw Application Update email here
-            #       Or at the end of the view (as it's a task).
+            send_application_update_withdrawn_email(update_request)
 
         # Close the responded update request.
         else:

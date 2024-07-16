@@ -124,7 +124,7 @@ def test_respond_update_request(
     assert wood_app_submitted.status == ImportApplication.Statuses.PROCESSING
 
 
-def test_close_update_request(
+def test_close_update_request_applicant_responded(
     importer_client: Client, ilb_admin_client: Client, wood_app_submitted: ImportApplication
 ):
     update_request = get_open_update_request(ilb_admin_client, wood_app_submitted)
@@ -165,6 +165,38 @@ def test_close_update_request(
     assert update_request.status == UpdateRequest.Status.CLOSED
     wood_app_submitted.refresh_from_db()
     assert wood_app_submitted.status == ImportApplication.Statuses.PROCESSING
+
+
+def test_close_update_request_when_ilb_withdraws(
+    importer_client: Client, ilb_admin_client: Client, wood_app_submitted: ImportApplication
+):
+    update_request = get_open_update_request(ilb_admin_client, wood_app_submitted)
+    assert update_request.status == UpdateRequest.Status.OPEN
+
+    # Empty the test outbox
+    # calling get_open_update_request sends a EmailTypes.APPLICATION_UPDATE email.
+    mail.outbox = []
+
+    resp = ilb_admin_client.post(
+        CaseURLS.close_update_request(wood_app_submitted.pk, update_request.pk, "import"),
+        data={},
+    )
+
+    assert resp.status_code == 302
+    update_request.refresh_from_db()
+    assert update_request.status == UpdateRequest.Status.DRAFT
+
+    check_gov_notify_email_was_sent(
+        1,
+        ["I1_main_contact@example.com"],  # /PS-IGNORE
+        EmailTypes.APPLICATION_UPDATE_WITHDRAWN,
+        {
+            "reference": wood_app_submitted.reference,
+            "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
+            "application_url": get_case_view_url(wood_app_submitted, get_importer_site_domain()),
+            "icms_url": get_importer_site_domain(),
+        },
+    )
 
 
 def test_withdraw_update_request(

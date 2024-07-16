@@ -620,6 +620,11 @@ class ApplicationUpdateEmail(BaseApplicationEmail):
 
 
 @final
+class ApplicationUpdateWithdrawnEmail(BaseApplicationEmail):
+    name = EmailTypes.APPLICATION_UPDATE_WITHDRAWN
+
+
+@final
 class AuthorityArchivedEmail(GOVNotifyEmailMessage):
     name = EmailTypes.AUTHORITY_ARCHIVED
 
