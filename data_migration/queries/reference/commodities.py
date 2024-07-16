@@ -27,7 +27,7 @@ AND (status <> 'ARCHIVED' OR start_datetime > TO_DATE('2023-01-01', 'yyyy-mm-dd'
 commodity = """
 SELECT
   com_id id
-  , CASE status WHEN 'ACTIVE' THEN 1 ELSE 0 END is_active
+  , CASE status WHEN 'CURRENT' THEN 1 ELSE 0 END is_active
   , commodity_code
   , commodity_type commodity_type_id
   , validity_start_date
