@@ -100,7 +100,7 @@ class Command(MigrationBaseCommand):
                         self.log(f"\t\t {cursor.rowcount} records added..")
                         export_start_time = tm.perf_counter()
 
-            self._log_time()
+                self._log_time(count=cursor.rowcount)
 
         self.log(f"{name} Data Export Complete!")
 

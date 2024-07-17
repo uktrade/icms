@@ -41,6 +41,7 @@ class Command(MigrationBaseCommand):
         for idx, parser in enumerate(parser_list, start=start):
             self.log("\t" + parser.log_message(idx))
             objs = parser.get_queryset()
+            count = 0
 
             while True:
                 batch = list(islice(objs, self.batch_size))
@@ -49,8 +50,9 @@ class Command(MigrationBaseCommand):
                     break
 
                 for model, data in parser.parse_xml(batch).items():
-                    model.objects.bulk_create(data)
+                    created = model.objects.bulk_create(data)
+                    count += len(created)
 
-            self._log_time()
+            self._log_time(count=count)
 
         self.log("XML extraction complete")

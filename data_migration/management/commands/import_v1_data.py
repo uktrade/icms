@@ -78,6 +78,7 @@ class Command(MigrationBaseCommand):
 
         for idx, (source, target) in enumerate(source_target_list, start=start):
             self.log(f"\t{idx} - Importing {target.__name__} from {source.__name__}")
+            count = 0
 
             objs = source.get_source_data()
 
@@ -87,8 +88,9 @@ class Command(MigrationBaseCommand):
                     break
 
                 bulk_create(target, batch)
+                count += len(batch)
 
-            self._log_time()
+            self._log_time(count=count)
 
     def _import_m2m(self, data_type: DATA_TYPE) -> None:
         start, m2m_list = self._get_data_list(DATA_TYPE_M2M[data_type])
@@ -97,6 +99,7 @@ class Command(MigrationBaseCommand):
 
         for idx, (source, target, field) in enumerate(m2m_list, start=start):
             self.log(f"\t{idx} - Importing {target.__name__}_{field} from {source.__name__}")
+            count = 0
 
             through_table = getattr(target, field).through
             objs = source.get_m2m_data(target)
@@ -109,8 +112,9 @@ class Command(MigrationBaseCommand):
                     break
 
                 bulk_create(through_table, batch)
+                count += len(batch)
 
-            self._log_time()
+            self._log_time(count=count)
 
     def _create_tasks(self, skip: bool) -> None:
         if skip:

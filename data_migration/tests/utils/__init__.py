@@ -49,6 +49,10 @@ class MockCursor:
         self.fetched = False
         yield None
 
+    @property
+    def rowcount(self) -> int:
+        return len(self.data[0])
+
 
 class MockConnect:
     def __enter__(self, *args, **kwargs):

@@ -69,12 +69,14 @@ class MigrationBaseCommand(BaseCommand):
         if self.print_log:
             self.stdout.write(message, ending=ending)
 
-    def _log_time(self) -> None:
+    def _log_time(self, count: int | None = None) -> None:
         time_taken = tm.perf_counter() - self.split_time
+        prefix = "\t\t--> " if count is None else f"\t\t{count} records --> "
+
         if time_taken // 60 > 0:
-            self.log(f"\t\t--> {time_taken // 60:.0f} mins {time_taken % 60:.0f} seconds", "\n\n")
+            self.log(f"{prefix}{time_taken // 60:.0f} mins {time_taken % 60:.0f} seconds", "\n\n")
         else:
-            self.log(f"\t\t--> {time_taken:.2f} seconds", "\n\n")
+            self.log(f"{prefix}{time_taken:.2f} seconds", "\n\n")
         self.split_time = tm.perf_counter()
 
     def _log_script_end(self) -> None:
