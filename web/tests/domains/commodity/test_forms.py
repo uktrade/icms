@@ -42,7 +42,7 @@ class TestCommodityFilter(TestCase):
 
     def test_archived_filter(self):
         results = self.run_filter({"is_archived": True})
-        assert results.count() > 1
+        assert results.count() == 1
 
     def test_validity_start_filter(self):
         results = self.run_filter({"validy_start": dt.datetime(1985, 12, 12)})

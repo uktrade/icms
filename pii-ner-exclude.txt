@@ -4841,3 +4841,4 @@ Holder
 new_page.rotate(90
 90 degrees'
 Helvetica-Bold
+Belarus BY

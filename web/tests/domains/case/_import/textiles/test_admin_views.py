@@ -44,8 +44,8 @@ def _add_goods_to_app(importer_client, textiles_app_pk, importer_one_contact):
         "shipping_year": 2021,
         "origin_country": belarus.pk,
         "consignment_country": ghana.pk,
-        "category_commodity_group": 122,
-        "commodity": 1634,
+        "category_commodity_group": 159,
+        "commodity": 1099,
         "goods_description": "A lot of textiles",
         "quantity": 5,
     }

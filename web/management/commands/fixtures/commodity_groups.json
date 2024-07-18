@@ -1,0 +1,2558 @@
+[
+    {
+        "model": "web.commoditygroup",
+        "pk": 1,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7201",
+            "group_name": null,
+            "group_description": "Pig iron and spiegeleisen in pigs, blocks or other primary forms.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 2,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7202",
+            "group_name": null,
+            "group_description": "Ferro-alloys.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 3,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7203",
+            "group_name": null,
+            "group_description": "Ferrous products obtained by direct reduction of iron ore and other spongy ferrous products, in lumps, pellets or similar forms; iron having a minimum purity by weight of 99,94 %, in lumps, pellets or similar forms.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 4,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7204",
+            "group_name": null,
+            "group_description": "Ferrous waste and scrap; remelting scrap ingots of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 5,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7205",
+            "group_name": null,
+            "group_description": "Granules and powders, of pig iron, spiegeleisen, iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 6,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7206",
+            "group_name": null,
+            "group_description": "Iron and non-alloy steel in ingots or other primary forms (excluding iron of heading 7203).",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 7,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7207",
+            "group_name": null,
+            "group_description": "Semi-finished products of iron or non-alloy steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 8,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7208",
+            "group_name": null,
+            "group_description": "Flat-rolled products of iron or non-alloy steel, of a width of 600 mm or more, hot-rolled, not clad, plated or coated.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 9,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7209",
+            "group_name": null,
+            "group_description": "Flat-rolled products of iron or non-alloy steel, of a width of 600 mm or more, cold-rolled (cold-reduced), not clad, plated or coated.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 10,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7210",
+            "group_name": null,
+            "group_description": "Flat-rolled products of iron or non-alloy steel, of a width of 600 mm or more, clad, plated or coated.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 11,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7211",
+            "group_name": null,
+            "group_description": "Flat-rolled products of iron or non-alloy steel, of a width of less than 600 mm, not clad, plated or coated.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 12,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7212",
+            "group_name": null,
+            "group_description": "Flat-rolled products of iron or non-alloy steel, of a width of less than 600 mm, clad, plated or coated.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 13,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7213",
+            "group_name": null,
+            "group_description": "Bars and rods, hot-rolled, in irregularly wound coils, of iron or non-alloy steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 14,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7214",
+            "group_name": null,
+            "group_description": "Other bars and rods of iron or non-alloy steel, not further worked than forged, hot-rolled, hot-drawn or hot-extruded, but including those twisted after rolling.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 15,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7215",
+            "group_name": null,
+            "group_description": "Other bars and rods of iron or non-alloy steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 16,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7216",
+            "group_name": null,
+            "group_description": "Angles, shapes and sections of iron or non-alloy steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 17,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7217",
+            "group_name": null,
+            "group_description": "Wire of iron or non-alloy steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 18,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7218",
+            "group_name": null,
+            "group_description": "Stainless steel in ingots or other primary forms; semi-finished products of stainless steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 19,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7219",
+            "group_name": null,
+            "group_description": "Flat-rolled products of stainless steel, of a width of 600 mm or more.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 20,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7220",
+            "group_name": null,
+            "group_description": "Flat-rolled products of stainless steel, of a width of less than 600 mm.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 21,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7221",
+            "group_name": null,
+            "group_description": "Bars and rods, hot-rolled, in irregularly wound coils, of stainless steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 22,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7222",
+            "group_name": null,
+            "group_description": "Other bars and rods of stainless steel; angles, shapes and sections of stainless steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 23,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7223",
+            "group_name": null,
+            "group_description": "Wire of stainless steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 24,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7224",
+            "group_name": null,
+            "group_description": "Other alloy steel in ingots or other primary forms; semi-finished products of other alloy steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 25,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7225",
+            "group_name": null,
+            "group_description": "Flat-rolled products of other alloy steel, of a width of 600 mm or more.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 26,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7226",
+            "group_name": null,
+            "group_description": "Flat-rolled products of other alloy steel, of a width of less than 600 mm.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 27,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7227",
+            "group_name": null,
+            "group_description": "Bars and rods, hot-rolled, in irregularly wound coils, of other alloy steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 28,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7228",
+            "group_name": null,
+            "group_description": "Other bars and rods of other alloy steel; angles, shapes and sections, of other alloy steel; hollow drill bars and rods, of alloy or non-alloy steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 29,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7229",
+            "group_name": null,
+            "group_description": "Wire of other alloy steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 30,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7301",
+            "group_name": null,
+            "group_description": "Sheet piling of iron or steel, whether or not drilled, punched or made from assembled elements; welded angles, shapes and sections, of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 31,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7302",
+            "group_name": null,
+            "group_description": "Railway or tramway track construction material of iron or steel, the following: rails, check-rails and rack rails, switch blades, crossing frogs, point rods and other crossing pieces, sleepers (cross-ties), fish-plates, chairs, chair wedges, sole plates (base plates), rail clips, bedplates, ties and other material specialised for jointing or fixing rails.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 32,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7303",
+            "group_name": null,
+            "group_description": "Tubes, pipes and hollow profiles, of cast iron.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 33,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7304",
+            "group_name": null,
+            "group_description": "Tubes, pipes and hollow profiles, seamless, of iron (other than cast iron) or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 34,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7305",
+            "group_name": null,
+            "group_description": "Other tubes and pipes (for example, welded, riveted or similarly closed), having circular cross-sections, the external diameter of which exceeds 406,4 mm, of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 35,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7306",
+            "group_name": null,
+            "group_description": "Other tubes, pipes and hollow profiles (for example, open seam or welded, riveted or similarly closed), of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 36,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7307",
+            "group_name": null,
+            "group_description": "Tube or pipe fittings (for example, couplings, elbows, sleeves), of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 37,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7308",
+            "group_name": null,
+            "group_description": "Structures (excluding prefabricated buildings of heading 9406) and parts of structures (for example, bridges and bridge-sections, lock-gates, towers, lattice masts, roofs, roofing frameworks, doors and windows and their frames and thresholds for doors, shutters, balustrades, pillars and columns), of iron or steel; plates, rods, angles, shapes, sections, tubes and the like, prepared for use in structures, of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.323Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 38,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7309",
+            "group_name": null,
+            "group_description": "Reservoirs, tanks, vats and similar containers for any material (other than compressed or liquefied gas), of iron or steel, of a capacity exceeding 300 l, whether or not lined or heat-insulated, but not fitted with mechanical or thermal equipment.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 39,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7310",
+            "group_name": null,
+            "group_description": "Tanks, casks, drums, cans, boxes and similar containers, for any material (other than compressed or liquefied gas), of iron or steel, of a capacity not exceeding 300 l, whether or not lined or heat-insulated, but not fitted with mechanical or thermal equipment.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 40,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7311",
+            "group_name": null,
+            "group_description": "Containers for compressed or liquefied gas, of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 41,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7312",
+            "group_name": null,
+            "group_description": "Stranded wire, ropes, cables, plaited bands, slings and the like, of iron or steel, not electrically insulated.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 42,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7313",
+            "group_name": null,
+            "group_description": "Barbed wire of iron or steel; twisted hoop or single flat wire, barbed or not, and loosely twisted double wire, of a kind used for fencing, of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 43,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7314",
+            "group_name": null,
+            "group_description": "Cloth (including endless bands), grill, netting and fencing, of iron or steel wire; expanded metal of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 44,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7315",
+            "group_name": null,
+            "group_description": "Chain and parts thereof, of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 45,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7316",
+            "group_name": null,
+            "group_description": "Anchors, grapnels and parts thereof, of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 46,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7317",
+            "group_name": null,
+            "group_description": "Nails, tacks, drawing pins, corrugated nails, staples (other than those of heading 8305) and similar articles, of iron or steel, whether or not with heads of other material, but excluding such articles with heads of copper.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 47,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7318",
+            "group_name": null,
+            "group_description": "Screws, bolts, nuts, coach screws, screw hooks, rivets, cotters, cotter pins, washers (including spring washers) and similar articles, of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 48,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7319",
+            "group_name": null,
+            "group_description": "Sewing needles, knitting needles, bodkins, crochet hooks, embroidery stilettos and similar articles, for use in the hand, of iron or steel; safety pins and other pins of iron or steel, not elsewhere specified or included.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 49,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7320",
+            "group_name": null,
+            "group_description": "Springs and leaves for springs, of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 50,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7321",
+            "group_name": null,
+            "group_description": "Stoves, ranges, grates, cookers (including those with subsidiary boilers for central heating), barbecues, braziers, gas rings, plate warmers and similar non-electric domestic appliances, and parts thereof, of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 51,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7322",
+            "group_name": null,
+            "group_description": "Radiators for central heating, not electrically heated, and parts thereof, of iron or steel; air heaters and hot-air distributors (including distributors which can also distribute fresh or conditioned air), not electrically heated, incorporating a motor-driven fan or blower, and parts thereof, of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 52,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7323",
+            "group_name": null,
+            "group_description": "Table, kitchen or other household articles and parts thereof, of iron or steel; iron or steel wool; pot scourers and scouring or polishing pads, gloves and the like, of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 53,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7324",
+            "group_name": null,
+            "group_description": "Sanitary ware and parts thereof, of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 54,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7325",
+            "group_name": null,
+            "group_description": "Other cast articles of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 55,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7326",
+            "group_name": null,
+            "group_description": "Other articles of iron or steel.",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 56,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "M1",
+            "group_name": "ex Chapter 93",
+            "group_description": null,
+            "commodity_type": 21,
+            "unit": 4,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 95,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "78",
+            "group_name": null,
+            "group_description": "Garments, other than knitted or crocheted, excluding garments of categories 6, 7, 8, 14, 15, 16, 17, 18, 21, 26, 27, 29, 68, 72, 76 and 77.",
+            "commodity_type": 19,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                1285,
+                1292,
+                1297,
+                1302,
+                1365,
+                1366,
+                1367,
+                1374,
+                1375,
+                1376,
+                1377,
+                1382,
+                1383,
+                1384,
+                1385,
+                1452,
+                1453,
+                1463,
+                1468,
+                2809,
+                1475,
+                1480
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 134,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SA1",
+            "group_name": null,
+            "group_description": "Hot-rolled coils, excluding coils for re-rolling.",
+            "commodity_type": 20,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                1679,
+                1680,
+                1681,
+                1682,
+                1683,
+                1684,
+                1685,
+                1686,
+                1687,
+                1688,
+                1689,
+                1779,
+                1788,
+                1952,
+                1953,
+                1954,
+                1955,
+                1956,
+                1957,
+                1958,
+                2054,
+                2055,
+                2057,
+                2067
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 135,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SA3",
+            "group_name": null,
+            "group_description": "Other flat-rolled products.",
+            "commodity_type": 20,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                1691,
+                1710,
+                1711,
+                1713,
+                1716,
+                1717,
+                1720,
+                1721,
+                1724,
+                1725,
+                1728,
+                1729,
+                1730,
+                1731,
+                1732,
+                1733,
+                1738,
+                1741,
+                1744,
+                1746,
+                1748,
+                1750,
+                1756,
+                1762,
+                2862,
+                2863,
+                1766,
+                1768,
+                1773,
+                1780,
+                1789,
+                1800,
+                1802,
+                1803,
+                1812,
+                1815,
+                1817,
+                1823,
+                1832,
+                1833,
+                2864,
+                2865,
+                1840,
+                1843,
+                1846,
+                1856,
+                1864,
+                1866,
+                1959,
+                1960,
+                1961,
+                1962,
+                1963,
+                1964,
+                1965,
+                1967,
+                1971,
+                1972,
+                1982,
+                1983,
+                1993,
+                1994,
+                1995,
+                2064
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 141,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "6",
+            "group_name": null,
+            "group_description": "Men's or boys' woven breeches, shorts other than swimwear and trousers (incl. slacks); women's or girls woven trousers and slacks, of wool, of cotton or of man made fibres; lower parts of track suits with lining, others than category 16 or 29, of cotton or of man-made fibres.",
+            "commodity_type": 19,
+            "unit": 2,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                1284,
+                1286,
+                1288,
+                1289,
+                1290,
+                1293,
+                1295,
+                1298,
+                1300,
+                1303,
+                1357,
+                1359,
+                1360,
+                1362,
+                1370,
+                1379,
+                1462,
+                1467,
+                1474,
+                1479
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 149,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "15",
+            "group_name": null,
+            "group_description": "Women's or girls woven overcoats, raincoats and other coats, cloaks and capes; jackets and blazers, of wool, of cotton or of man-made textile fibres (other than parkas) (of category 21).",
+            "commodity_type": 19,
+            "unit": 2,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                1245,
+                1246,
+                1247,
+                1249,
+                1251,
+                1253,
+                1255,
+                1325,
+                1326,
+                1328,
+                1330,
+                1451
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 159,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "26",
+            "group_name": null,
+            "group_description": "Women's or girls dresses, of wool, of cotton or of man-made fibres.",
+            "commodity_type": 19,
+            "unit": 2,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                1099,
+                1100,
+                1101,
+                1102,
+                1334,
+                1336,
+                1337
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 160,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "27",
+            "group_name": null,
+            "group_description": "Women's or girls skirts, including divided skirts.",
+            "commodity_type": 19,
+            "unit": 2,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                1104,
+                1105,
+                1106,
+                1107,
+                1343,
+                1345,
+                1346,
+                1348,
+                1350
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 198,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "159",
+            "group_name": null,
+            "group_description": "Dresses, blouses and shirt-blouses, not knitted or crocheted, of silk or silk waste. Shawls, scarves, mufflers, mantillas, veils and the like, not knitted or crocheted, of silk or silk waste. Ties, bow ties and cravats of silk or silk waste.",
+            "commodity_type": 19,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                1396,
+                1493,
+                1494,
+                1509,
+                1510
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 200,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "161",
+            "group_name": null,
+            "group_description": "Garments, not knitted or crocheted, other than those of categories 1 to 123 and category 159.",
+            "commodity_type": 19,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                1238,
+                1243,
+                1244,
+                1256,
+                1261,
+                1262,
+                1267,
+                1275,
+                1283,
+                1304,
+                1310,
+                1321,
+                1322,
+                1331,
+                1341,
+                1352,
+                1386,
+                1393,
+                1394,
+                2796,
+                1401,
+                1402,
+                1403,
+                1457,
+                2810,
+                1481
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 201,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN01",
+            "group_name": null,
+            "group_description": "Wood Charcoal (Somalia - Derogation of Sanctions).",
+            "commodity_type": 24,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                2547,
+                2548,
+                2549,
+                2550
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 202,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN02",
+            "group_name": null,
+            "group_description": "Precious Metals and Stones (Iran and Syria - Derogation of Sanctions).",
+            "commodity_type": 25,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                2838,
+                2839,
+                2840,
+                2841,
+                2842,
+                2843,
+                2844,
+                2845,
+                2846,
+                2847,
+                2848,
+                2849,
+                2850,
+                2851,
+                2852,
+                2853,
+                2854,
+                2855,
+                2856,
+                2857,
+                2858,
+                2859,
+                2860,
+                2861
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 203,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN03",
+            "group_name": null,
+            "group_description": "Oil and Petrochemicals (Iran - Derogation of Sanctions).",
+            "commodity_type": 26,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                2322,
+                2323,
+                2324,
+                2325,
+                2326,
+                2327,
+                2328,
+                2336,
+                2339,
+                2340,
+                2341,
+                2342,
+                2343,
+                2344,
+                2345,
+                2346,
+                2347,
+                2348,
+                2349,
+                2350,
+                2351,
+                2352,
+                2353,
+                2354,
+                2355,
+                2356,
+                2357,
+                2358,
+                2359,
+                2360,
+                2361,
+                2362,
+                2363,
+                2364,
+                2365,
+                2366,
+                2367,
+                2368,
+                2369,
+                2370,
+                2371,
+                2372,
+                2373,
+                2374,
+                2375,
+                2376,
+                2377,
+                2378,
+                2379,
+                2380,
+                2381,
+                2382,
+                2383,
+                2384,
+                2385,
+                2386,
+                2387,
+                2388,
+                2389,
+                2390,
+                2391,
+                2392,
+                2393,
+                2394,
+                2395,
+                2396,
+                2397,
+                2398,
+                2399,
+                2400,
+                2401,
+                2402,
+                2403,
+                2404,
+                2405,
+                2406,
+                2407,
+                2408,
+                2409,
+                2410,
+                2411,
+                2412,
+                2413,
+                2414,
+                2415,
+                2416,
+                2417,
+                2418,
+                2419,
+                2420,
+                2421,
+                2422,
+                2423,
+                2424,
+                2425,
+                2426,
+                2427,
+                2428,
+                2429,
+                2430,
+                2431,
+                2432,
+                2433,
+                2434,
+                2435,
+                2436,
+                2437,
+                2438,
+                2439,
+                2440,
+                2441,
+                2442,
+                2443,
+                2444,
+                2445,
+                2446,
+                2447,
+                2448,
+                2449,
+                2450,
+                2451,
+                2452,
+                2453,
+                2454,
+                2455,
+                2456,
+                2457,
+                2458,
+                2459,
+                2460,
+                2461,
+                2462,
+                2463,
+                2464,
+                2465,
+                2466,
+                2467,
+                2468,
+                2469,
+                2470,
+                2471,
+                2472,
+                2473,
+                2474,
+                2475,
+                2476,
+                2477,
+                2478,
+                2479,
+                2480,
+                2481,
+                2482,
+                2483,
+                2484,
+                2485,
+                2486,
+                2487,
+                2488,
+                2489,
+                2490,
+                2491,
+                2492,
+                2493,
+                2494,
+                2495,
+                2496,
+                2497,
+                2498,
+                2499,
+                2500,
+                2501,
+                2502,
+                2503,
+                2504,
+                2505,
+                2506,
+                2507,
+                2508,
+                2509,
+                2510,
+                2511,
+                2512,
+                2513,
+                2514,
+                2515,
+                2516,
+                2517,
+                2518,
+                2519,
+                2520,
+                2521,
+                2522,
+                2523,
+                2524,
+                2525,
+                2526,
+                2527,
+                2528,
+                2529,
+                2530,
+                2531,
+                2532,
+                2533,
+                2534,
+                2535,
+                2536,
+                2537,
+                2538,
+                2539,
+                2540,
+                2541,
+                2542,
+                2543,
+                2544,
+                2545,
+                2546
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 204,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN04",
+            "group_name": null,
+            "group_description": "Oil and Petrochemicals (Syria - Derogation of Sanctions).",
+            "commodity_type": 26,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                2322,
+                2323,
+                2324,
+                2325,
+                2326,
+                2327,
+                2328,
+                2329,
+                2330,
+                2331,
+                2332,
+                2333,
+                2334,
+                2335,
+                2336,
+                2337,
+                2338,
+                2339,
+                2340,
+                2341,
+                2342,
+                2343,
+                2344,
+                2345,
+                2346,
+                2347,
+                2348,
+                2349,
+                2350,
+                2351,
+                2352,
+                2353,
+                2354,
+                2355,
+                2356,
+                2357,
+                2358,
+                2359,
+                2360,
+                2361,
+                2362,
+                2363,
+                2364,
+                2365,
+                2366,
+                2367,
+                2368,
+                2369,
+                2370,
+                2371,
+                2372,
+                2373,
+                2374,
+                2375,
+                2376,
+                2377,
+                2378,
+                2379,
+                2380,
+                2381,
+                2382,
+                2383,
+                2384,
+                2385,
+                2386,
+                2387,
+                2388,
+                2389,
+                2390,
+                2391,
+                2392,
+                2393,
+                2394,
+                2395,
+                2396,
+                2397,
+                2398,
+                2399,
+                2400,
+                2401,
+                2402,
+                2403,
+                2404,
+                2405,
+                2406,
+                2407,
+                2408,
+                2409,
+                2410,
+                2411,
+                2412,
+                2413,
+                2414,
+                2415,
+                2416,
+                2417,
+                2419,
+                2420,
+                2421,
+                2422,
+                2423,
+                2424,
+                2425,
+                2426,
+                2427,
+                2428,
+                2429,
+                2430,
+                2431,
+                2432,
+                2433,
+                2434,
+                2435,
+                2436,
+                2437,
+                2438
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 205,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "M2",
+            "group_name": "ex Chapter 97",
+            "group_description": null,
+            "commodity_type": 21,
+            "unit": 4,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 206,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7601",
+            "group_name": null,
+            "group_description": "Unwrought aluminium",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 207,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7604",
+            "group_name": null,
+            "group_description": "Aluminium bars, rods and profiles",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 208,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7605",
+            "group_name": null,
+            "group_description": "Aluminium wire",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 209,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7606",
+            "group_name": null,
+            "group_description": "Aluminium plates, sheets and strip of a thickness exceeding 0.2mm",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 210,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7607",
+            "group_name": null,
+            "group_description": "Aluminium foil of a thickness not exceeding 0.2mm",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 211,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7608",
+            "group_name": null,
+            "group_description": "Aluminium tubes and pipes",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 212,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7609",
+            "group_name": null,
+            "group_description": "Aluminium tube or pipe fittings",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 213,
+        "fields": {
+            "is_active": true,
+            "group_type": "AUTO",
+            "group_code": "7616",
+            "group_name": null,
+            "group_description": "Other articles of aluminium",
+            "commodity_type": 20,
+            "unit": null,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 214,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN05",
+            "group_name": "Sanction Firearms & Ammunition",
+            "group_description": "Arms and related materiel-this includes all military goods, and anything which falls within chapter 93 of the Goods Classification table, other than military goods.",
+            "commodity_type": 21,
+            "unit": 4,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                3531,
+                3433,
+                3432,
+                3431,
+                3434
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 215,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN06",
+            "group_name": "Sanction Potash Products (Belarus)",
+            "group_description": "Potash Products (Belarus Sanctions)\n\nGoods which fall within the following commodity codes: 31042010; 31042090; 31052010; 31052090; 31056000; and ex. 31059020 or ex. 31059080, provided in each case that this is a fertiliser containing potassium chloride",
+            "commodity_type": 29,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 216,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN07",
+            "group_name": "Sanction Petroleum Products (Belarus)",
+            "group_description": "Petroleum Products (Belarus Sanctions)\n\npetroleum products goods which fall within the following commodity codes: 2710; 2711; 2712; 2713; 2715",
+            "commodity_type": 26,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": []
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 217,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN08",
+            "group_name": "Russian  and Belarus iron and steel ban",
+            "group_description": "This group will contain all commodity codes for Russian and Belarus iron and steel ban from 14 April 2022",
+            "commodity_type": 20,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                2920,
+                3162,
+                3163,
+                1900,
+                1901,
+                1903,
+                1904,
+                2924,
+                2925,
+                2926,
+                2960,
+                2961,
+                2900,
+                2901,
+                2965,
+                2113,
+                3479,
+                3191,
+                2167,
+                2210,
+                3468,
+                3533,
+                3469
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 218,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN09",
+            "group_name": "Sanction Revenue Generating Goods: Wood",
+            "group_description": "Russia Sanctions revenue generating goods- wood",
+            "commodity_type": 22,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                3482,
+                3455,
+                3523,
+                3524,
+                3458,
+                3446,
+                3440,
+                3456,
+                3442,
+                3441,
+                3438,
+                3452,
+                3439,
+                3450
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 219,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN10",
+            "group_name": "Revenue Generating Goods: Glass and glassware",
+            "group_description": null,
+            "commodity_type": 8,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.324Z",
+            "end_datetime": null,
+            "commodities": [
+                3459,
+                3467,
+                3443,
+                3460,
+                3465
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 220,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN11",
+            "group_name": "Revenue Generation Goods: Furniture and parts thereof",
+            "group_description": null,
+            "commodity_type": 13,
+            "unit": 4,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3454,
+                3444,
+                3445,
+                3466,
+                3453
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 221,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN12",
+            "group_name": "Revenue Generating Goods: Oil, Petrochemicals and Plastics",
+            "group_description": "Oil, Petrochemicals and Plastics - Russian Sanctions",
+            "commodity_type": 26,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3457,
+                3471,
+                2473,
+                3449,
+                2485,
+                2492
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 223,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN13",
+            "group_name": "Revenue Generating Goods: Machinery and Mechanical Appliances",
+            "group_description": null,
+            "commodity_type": 11,
+            "unit": 4,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3461
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 224,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN14",
+            "group_name": "Revenue Generating Goods: Rubber Tyres",
+            "group_description": null,
+            "commodity_type": 4,
+            "unit": 4,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3462,
+                3463,
+                3464
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 225,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN15",
+            "group_name": "Military Goods",
+            "group_description": null,
+            "commodity_type": 14,
+            "unit": 4,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3472
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 226,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN16",
+            "group_name": "Belarus cases and bags",
+            "group_description": null,
+            "commodity_type": 27,
+            "unit": 2,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3473
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 229,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN17",
+            "group_name": null,
+            "group_description": null,
+            "commodity_type": 1,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3474
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 230,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "2303",
+            "group_name": null,
+            "group_description": null,
+            "commodity_type": 18,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3476,
+                3475
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 231,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN18",
+            "group_name": null,
+            "group_description": null,
+            "commodity_type": 18,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3476,
+                3475
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 232,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN19",
+            "group_name": null,
+            "group_description": null,
+            "commodity_type": 17,
+            "unit": 4,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3477
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 234,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN20",
+            "group_name": "Turbojets, turbopropellers and other gas turbines",
+            "group_description": null,
+            "commodity_type": 10,
+            "unit": 4,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3478
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 235,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN21",
+            "group_name": "Women's or girls' suits, ensembles, jackets, blazers, dresses, skirts, divided skirts, trousers, bib and brace overalls, breeches and shorts (other than swimwear)",
+            "group_description": null,
+            "commodity_type": 19,
+            "unit": 2,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                1323,
+                1332,
+                1333,
+                1335,
+                1338,
+                1340,
+                1342,
+                1344,
+                1345,
+                1347,
+                1349,
+                1351,
+                1353,
+                1354,
+                1355,
+                1358,
+                1363,
+                1368,
+                1371,
+                1380,
+                1387
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 236,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN22",
+            "group_name": "Russia Cases and Bags",
+            "group_description": null,
+            "commodity_type": 27,
+            "unit": 2,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3483,
+                3484,
+                3485,
+                3486,
+                3487,
+                3488,
+                3489,
+                3490,
+                3491,
+                3492,
+                3493,
+                3494,
+                3495,
+                3496,
+                3497,
+                3498,
+                3499
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 237,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN23",
+            "group_name": "Russia Footwear, gaiters and the like",
+            "group_description": null,
+            "commodity_type": 28,
+            "unit": 1,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3501,
+                3502,
+                3503,
+                3504,
+                3534,
+                3505,
+                3506,
+                3535,
+                3507,
+                3508,
+                3509,
+                3510,
+                3511,
+                3512,
+                3536,
+                3513
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 238,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN24",
+            "group_name": "Other articles of plastics and articles of other materials of headings 3901 to 3914",
+            "group_description": null,
+            "commodity_type": 26,
+            "unit": 2,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3500
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 240,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN25",
+            "group_name": null,
+            "group_description": null,
+            "commodity_type": 29,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3530
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 241,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN26",
+            "group_name": null,
+            "group_description": null,
+            "commodity_type": 11,
+            "unit": 4,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3515,
+                3516
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 242,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN27",
+            "group_name": null,
+            "group_description": "Relates to import of item mfg with RU steel.",
+            "commodity_type": 20,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3518,
+                3085,
+                3086,
+                3517
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 243,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN28",
+            "group_name": null,
+            "group_description": null,
+            "commodity_type": 30,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3519
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 244,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN29",
+            "group_name": null,
+            "group_description": null,
+            "commodity_type": 15,
+            "unit": 4,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3520,
+                3521
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 245,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN30",
+            "group_name": null,
+            "group_description": null,
+            "commodity_type": 31,
+            "unit": 4,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3522
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 246,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN31",
+            "group_name": "Belarus wood",
+            "group_description": null,
+            "commodity_type": 22,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3528,
+                3523,
+                3524
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 247,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN32",
+            "group_name": "Nuclear reactors, boilers, machinery; parts",
+            "group_description": null,
+            "commodity_type": 33,
+            "unit": 4,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3525
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 248,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN33",
+            "group_name": "Precious Metals and Stones",
+            "group_description": null,
+            "commodity_type": 25,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3526
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 249,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN34",
+            "group_name": null,
+            "group_description": null,
+            "commodity_type": 32,
+            "unit": 4,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3527,
+                3539,
+                3538,
+                3537
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 250,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN35",
+            "group_name": null,
+            "group_description": null,
+            "commodity_type": 29,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3529
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 251,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN36",
+            "group_name": "Lead and articles thereof - Russian Sanctions",
+            "group_description": "Lead and articles thereof",
+            "commodity_type": 9,
+            "unit": 4,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3532
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 252,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN37",
+            "group_name": null,
+            "group_description": null,
+            "commodity_type": 16,
+            "unit": 4,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3540
+            ]
+        }
+    },
+    {
+        "model": "web.commoditygroup",
+        "pk": 253,
+        "fields": {
+            "is_active": true,
+            "group_type": "CATEGORY",
+            "group_code": "SAN38",
+            "group_name": "Aluminium Belarus",
+            "group_description": null,
+            "commodity_type": 20,
+            "unit": 3,
+            "start_datetime": "2024-07-18T09:46:11.325Z",
+            "end_datetime": null,
+            "commodities": [
+                3267,
+                3276,
+                3541,
+                3360
+            ]
+        }
+    }
+]

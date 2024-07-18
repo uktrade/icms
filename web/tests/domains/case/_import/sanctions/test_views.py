@@ -189,11 +189,11 @@ class TestSanctionsAndAdhocImportAppplicationAddEditGoods(AuthTestCase):
             importer=self.importer,
             created_by=self.importer_user,
             last_updated_by=self.importer_user,
-            origin_country=Country.objects.get(name="Iran"),
+            origin_country=Country.objects.get(name="Belarus"),
         )
         Task.objects.create(process=self.process, task_type=Task.TaskType.PREPARE)
 
-        self.valid_commodity = Commodity.objects.get(commodity_code="2709009000")
+        self.valid_commodity = Commodity.objects.get(commodity_code="4202199090")
         self.goods = SanctionsAndAdhocApplicationGoodsFactory.create(
             commodity=self.valid_commodity,
             goods_description="old desc",
