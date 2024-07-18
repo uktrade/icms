@@ -190,3 +190,79 @@ def format_dfl_pages(pdf_data: bytes, context: dict[str, Any]) -> bytes:
     with io.BytesIO() as bytes_stream:
         writer.write(bytes_stream)
         return bytes_stream.getvalue()
+
+
+def format_sanctions_pages(pdf_data: bytes, context: dict[str, Any]) -> bytes:
+    start_date = context["licence_start_date"]
+
+    reader = pypdf.PdfReader(io.BytesIO(pdf_data))
+    writer = pypdf.PdfWriter()
+
+    top_margin = 810
+    left_margin = 53
+    right_margin = 565
+    page_total = len(reader.pages)
+    for page_number, page in enumerate(reader.pages):
+        packet = io.BytesIO()
+        new_page = canvas.Canvas(packet, pagesize=portrait(A4))
+
+        if page_number == 0:
+            # Header
+            new_page.setFont("Helvetica-Bold", 10)
+            new_page.drawRightString(165, top_margin, "ELECTRONIC LICENCE")
+            new_page.setFont("Helvetica", 10)
+            new_page.drawRightString(
+                455,
+                top_margin,
+                f"issued on {start_date} and sent to HM Revenue and Customs",
+            )
+
+            # Numbers in holders copy box
+            new_page.setFontSize(14)
+            new_page.drawRightString(left_margin - 8, 770, "1")
+            new_page.drawRightString(left_margin - 8, 519, "1")
+
+            # holders copy text
+            new_page.saveState()
+            new_page.rotate(90)
+            new_page.setFontSize(12)
+            new_page.drawString(610, -45, "Holder's copy")
+            new_page.restoreState()
+
+            # holders copy box
+            new_page.setLineWidth(0.4)
+            # holders copy box - vertical line
+            new_page.line(left_margin - 25, 791, left_margin - 25, 499)
+            # holders copy box - top box - horizontal line
+            new_page.line(left_margin - 25, 791, left_margin, 791)
+            # holders copy box - top box - bottom horizontal line
+            new_page.line(left_margin - 25, 750, left_margin, 750)
+            # holders copy box - bottom box - top horizontal line
+            new_page.line(left_margin - 25, 539, left_margin, 539)
+            # holders copy box - bottom box - bottom horizontal line
+            new_page.line(left_margin - 25, 499, left_margin, 499)
+        else:
+            # On secondary pages - Lift top horizontal line a few pixels so the line does not crash into text
+            new_page.setLineWidth(0.7)
+            # Top Horizontal line across the full page
+            new_page.line(left_margin, 794, right_margin, 794)
+            # Small vertical line on left to extend border
+            new_page.line(left_margin, 794, left_margin, 791)
+            # Small vertical line on right to extend border
+            new_page.line(right_margin, 794, right_margin, 791)
+
+        if page_total > 0 and page_number != page_total - 1:
+            # if more than one page add a horizontal line at the end of each page
+            new_page.setLineWidth(0.7)
+            new_page.line(left_margin, 45, right_margin, 45)
+
+        new_page.save()
+
+        packet.seek(0)
+        new_pdf = pypdf.PdfReader(packet)
+        page.merge_page(new_pdf.pages[0])
+        writer.add_page(page)
+
+    with io.BytesIO() as bytes_stream:
+        writer.write(bytes_stream)
+        return bytes_stream.getvalue()

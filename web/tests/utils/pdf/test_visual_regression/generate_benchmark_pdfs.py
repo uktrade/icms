@@ -76,7 +76,7 @@ def test_generate_benchmark_gmp_certificate(completed_gmp_app):
     update_timestamp(file_name)
 
 
-def test_generate_oil_licence(completed_oil_app):
+def test_generate_benchmark_oil_licence(completed_oil_app):
     file_name = "oil_licence.pdf"
 
     generator = PdfGenerator(
@@ -86,7 +86,7 @@ def test_generate_oil_licence(completed_oil_app):
     update_timestamp(file_name)
 
 
-def test_generate_dfl_licence(completed_dfl_app):
+def test_generate_benchmark_dfl_licence(completed_dfl_app):
     file_name = "dfl_licence.pdf"
 
     generator = PdfGenerator(
@@ -96,7 +96,7 @@ def test_generate_dfl_licence(completed_dfl_app):
     update_timestamp(file_name)
 
 
-def test_generate_sil_licence(completed_sil_app):
+def test_generate_benchmark_sil_licence(completed_sil_app):
     file_name = "sil_licence.pdf"
 
     generator = PdfGenerator(
@@ -106,7 +106,7 @@ def test_generate_sil_licence(completed_sil_app):
     update_timestamp(file_name)
 
 
-def test_generate_cfs_cover_letter():
+def test_generate_benchmark_cfs_cover_letter():
     file_name = "cfs_cover_letter.pdf"
 
     generator = StaticPdfGenerator(DocumentTypes.CFS_COVER_LETTER)
@@ -114,7 +114,18 @@ def test_generate_cfs_cover_letter():
     update_timestamp(file_name)
 
 
-def test_generate_cover_letter(completed_dfl_app):
+def test_generate_benchmark_sanctions_licence(completed_sanctions_app):
+    file_name = "sanctions_licence.pdf"
+    generator = PdfGenerator(
+        DocumentTypes.LICENCE_SIGNED,
+        completed_sanctions_app,
+        completed_sanctions_app.licences.first(),
+    )
+    (BENCHMARK_PDF_DIRECTORY / file_name).write_bytes(generator.get_pdf())
+    update_timestamp(file_name)
+
+
+def test_generate_benchmark_cover_letter(completed_dfl_app):
     file_name = "cover_letter.pdf"
 
     completed_dfl_app.cover_letter_text = "ABC"

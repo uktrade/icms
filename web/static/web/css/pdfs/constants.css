@@ -153,6 +153,14 @@
     padding-left: 1em;
 }
 
+.pr-0-5 {
+    padding-right: 0.5em;
+}
+
+.pr-1 {
+    padding-right: 1em;
+}
+
 .avoid-break {
     break-inside: avoid;
 }
