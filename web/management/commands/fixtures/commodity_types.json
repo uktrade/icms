@@ -1,0 +1,266 @@
+[
+    {
+        "model": "web.commoditytype",
+        "pk": 1,
+        "fields": {
+            "type_code": "CRUSTACEANS",
+            "type": "Crustaceans"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 2,
+        "fields": {
+            "type_code": "CAVIAR",
+            "type": "Caviar and caviar substitutes"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 3,
+        "fields": {
+            "type_code": "CEMENT",
+            "type": "Cement"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 4,
+        "fields": {
+            "type_code": "RUBBER_TYRES",
+            "type": "Rubber tyres"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 5,
+        "fields": {
+            "type_code": "WOOD_PULP",
+            "type": "Wood pulp"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 6,
+        "fields": {
+            "type_code": "KRAFT_PAPER",
+            "type": "Kraft paper and paperboard"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 7,
+        "fields": {
+            "type_code": "CEMENT_STONE",
+            "type": "Articles of cement, concrete or artificial stone"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 8,
+        "fields": {
+            "type_code": "GLASS",
+            "type": "Glass and glassware"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 9,
+        "fields": {
+            "type_code": "LEAD",
+            "type": "Lead and articles thereof"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 10,
+        "fields": {
+            "type_code": "TURBOJETS",
+            "type": "Turbojets, turbopropellers and other gas turbines"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 11,
+        "fields": {
+            "type_code": "MACHINERY",
+            "type": "Machinery parts"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 12,
+        "fields": {
+            "type_code": "SHIPS_BOATS",
+            "type": "Ships, boats and floating structures"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 13,
+        "fields": {
+            "type_code": "FURNITURE",
+            "type": "Furniture and parts thereof"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 14,
+        "fields": {
+            "type_code": "LASERS",
+            "type": "Lasers, other optical appliances and instruments"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 15,
+        "fields": {
+            "type_code": "MACHINE_BALANCE",
+            "type": "Machines for balancing mechanical parts"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 16,
+        "fields": {
+            "type_code": "FURNITURE_LUMINAIRES",
+            "type": "Furniture, luminaires and light fittings"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 17,
+        "fields": {
+            "type_code": "SPIRITS",
+            "type": "Spirits"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 18,
+        "fields": {
+            "type_code": "SUGAR_WASTE",
+            "type": "Waste of sugar manufacture"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 19,
+        "fields": {
+            "type_code": "TEXTILES",
+            "type": "Textiles"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 20,
+        "fields": {
+            "type_code": "IRON_STEEL",
+            "type": "Iron, Steel and Aluminium"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 21,
+        "fields": {
+            "type_code": "FIREARMS_AMMO",
+            "type": "Firearms and Ammunition"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 22,
+        "fields": {
+            "type_code": "WOOD",
+            "type": "Wood"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 23,
+        "fields": {
+            "type_code": "VEHICLES",
+            "type": "Vehicles"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 24,
+        "fields": {
+            "type_code": "WOOD_CHARCOAL",
+            "type": "Wood Charcoal"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 25,
+        "fields": {
+            "type_code": "PRECIOUS_METAL_STONE",
+            "type": "Precious Metals and Stones"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 26,
+        "fields": {
+            "type_code": "OIL_PETROCHEMICALS",
+            "type": "Oil, Petrochemicals and Plastics"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 27,
+        "fields": {
+            "type_code": "CASES_BAGS",
+            "type": "Cases and Bags"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 28,
+        "fields": {
+            "type_code": "FOOTWEAR",
+            "type": "Footwear, gaiters and the like"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 29,
+        "fields": {
+            "type_code": "CHEMICALS",
+            "type": "Chemicals"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 30,
+        "fields": {
+            "type_code": "CARBON",
+            "type": "Carbon"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 31,
+        "fields": {
+            "type_code": "OPTICAL",
+            "type": "Optical measuring instruments"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 32,
+        "fields": {
+            "type_code": "ELECTRICAL",
+            "type": "Electrical machinery; recorders and reproducers"
+        }
+    },
+    {
+        "model": "web.commoditytype",
+        "pk": 33,
+        "fields": {
+            "type_code": "NUCLEAR",
+            "type": "Nuclear reactors, boilers, machinery; parts"
+        }
+    }
+]

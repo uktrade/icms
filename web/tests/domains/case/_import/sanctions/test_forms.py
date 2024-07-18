@@ -22,7 +22,7 @@ class TestSanctionsAndAdhocImportAppplicationForm(AuthTestCase):
             importer=self.importer,
             created_by=self.importer_user,
             last_updated_by=self.importer_user,
-            origin_country=Country.objects.get(name="Iran"),
+            origin_country=Country.objects.get(name="Belarus"),
         )
         Task.objects.create(process=self.process, task_type=Task.TaskType.PREPARE)
 
@@ -50,7 +50,7 @@ class TestSanctionsAndAdhocImportAppplicationForm(AuthTestCase):
 
     def test_goods_form_valid(self):
         data = {
-            "commodity": Commodity.objects.get(commodity_code="2709009000").pk,
+            "commodity": Commodity.objects.get(commodity_code="9013109000").pk,
             "goods_description": "test desc",
             "quantity_amount": 5,
             "value": 5,
@@ -116,7 +116,7 @@ class TestSanctionsAndAdhocImportAppplicationForm(AuthTestCase):
 
         #
         # Setting origin country to sanctioned country == commodities available
-        self.process.origin_country = Country.app.get_sanctions_countries().get(name="Iran")
+        self.process.origin_country = Country.app.get_sanctions_countries().get(name="Belarus")
         self.process.consignment_country = None
         self.process.save()
 
@@ -126,7 +126,9 @@ class TestSanctionsAndAdhocImportAppplicationForm(AuthTestCase):
         #
         # Setting consignment country to sanctioned country == commodities available
         self.process.origin_country = None
-        self.process.consignment_country = Country.app.get_sanctions_countries().get(name="Syria")
+        self.process.consignment_country = Country.app.get_sanctions_countries().get(
+            name="Russian Federation"
+        )
         self.process.save()
 
         form = GoodsForm(application=self.process)

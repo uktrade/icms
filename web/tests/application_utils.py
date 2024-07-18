@@ -322,7 +322,7 @@ def create_in_progress_sanctions_app(
         agent_office_pk=agent_office.pk if agent_office else None,
     )
     # Save a valid set of data.
-    origin_country = Country.util.get_all_countries().get(name="Iran")
+    origin_country = Country.util.get_all_countries().get(name="Belarus")
     consignment_country = Country.util.get_all_countries().first()
 
     form_data = {
