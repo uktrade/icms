@@ -14,6 +14,7 @@ from django.views.decorators.http import require_POST
 from web.domains.case import forms, models
 from web.domains.case.services import case_progress
 from web.domains.case.types import ApplicationsWithCaseEmail, CaseEmailConfig, ImpOrExp
+from web.domains.case.utils import case_documents_metadata
 from web.flow.models import ProcessTypes
 from web.mail.constants import EmailTypes
 from web.mail.emails import create_case_email, send_case_email
@@ -55,16 +56,16 @@ def manage_case_emails(
     email_title = "Emails"
     email_subtitle = ""
     no_emails_msg = "There aren't any emails."
+    # Used in template to change how case email attachments get displayed.
+    is_firearms_application = False
 
-    if application.process_type in [
-        OpenIndividualLicenceApplication.PROCESS_TYPE,
-        DFLApplication.PROCESS_TYPE,
-        SILApplication.PROCESS_TYPE,
-    ]:
+    if application.process_type in [ProcessTypes.FA_OIL, ProcessTypes.FA_DFL, ProcessTypes.FA_SIL]:
         info_email = (
             "This screen is used to email relevant constabularies. You may attach multiple"
             " firearms certificates to a single email. You can also record responses from the constabulary."
         )
+        is_firearms_application = True
+
     elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
         email_title = "Health and Safety Executive (HSE) Checks"
         email_subtitle = "HSE Emails"
@@ -103,10 +104,14 @@ def manage_case_emails(
         .annotate(email_num=Window(expression=RowNumber(), order_by="pk"))
     )
 
+    file_metadata = case_documents_metadata(application.get_specific_model())
+
     context = {
         "process": application,
         "page_title": "Manage Emails",
         "case_emails": case_emails,
+        "is_firearms_application": is_firearms_application,
+        "file_metadata": file_metadata,
         "case_type": case_type,
         "email_title": email_title,
         "email_subtitle": email_subtitle,
@@ -298,8 +303,17 @@ def add_response_case_email(
         else:
             form = forms.CaseEmailResponseForm(instance=case_email)
 
+        file_metadata = case_documents_metadata(application.get_specific_model())
+        is_firearms_application = application.process_type in [
+            ProcessTypes.FA_OIL,
+            ProcessTypes.FA_DFL,
+            ProcessTypes.FA_SIL,
+        ]
+
         context = {
             "process": application,
+            "is_firearms_application": is_firearms_application,
+            "file_metadata": file_metadata,
             "page_title": "Add Response for Email",
             "form": form,
             "object": case_email,
@@ -320,13 +334,16 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
             (c.email, f"{c.name} ({c.email})") for c in Constabulary.objects.filter(is_active=True)
         ]
         files = File.objects.filter(
+            # Verified Firearms Authority
             Q(firearmsauthority__oil_application=application)
-            | Q(userimportcertificate__oil_application=application)
+            | Q(userimportcertificate__oil_application=application),
+            is_active=True,
         )
 
         return CaseEmailConfig(
             application=application,
             to_choices=choices,
+            file_metadata=case_documents_metadata(application),
             file_qs=files,
         )
 
@@ -339,6 +356,7 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
         return CaseEmailConfig(
             application=application,
             to_choices=choices,
+            file_metadata=case_documents_metadata(application),
             file_qs=files,
         )
 
@@ -347,14 +365,19 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
             (c.email, f"{c.name} ({c.email})") for c in Constabulary.objects.filter(is_active=True)
         ]
         files = File.objects.filter(
+            # Verified Firearms Authority
             Q(firearmsauthority__sil_application=application)
             | Q(userimportcertificate__sil_application=application)
-            | Q(silusersection5__sil_application=application)
+            # Section 5 Authority
+            | Q(section5authority__sil_application=application)
+            | Q(silusersection5__sil_application=application),
+            is_active=True,
         )
 
         return CaseEmailConfig(
             application=application,
             to_choices=choices,
+            file_metadata=case_documents_metadata(application),
             file_qs=files,
         )
 
@@ -364,13 +387,19 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
         ]
         files = application.supporting_documents.filter(is_active=True)
 
-        return CaseEmailConfig(application=application, to_choices=choices, file_qs=files)
+        return CaseEmailConfig(
+            application=application,
+            to_choices=choices,
+            file_metadata=case_documents_metadata(application),
+            file_qs=files,
+        )
 
     # certificate application
     elif application.process_type == CertificateOfFreeSaleApplication.PROCESS_TYPE:
         files = File.objects.none()
+        file_metadata = case_documents_metadata(application)
 
-        return CaseEmailConfig(application=application, file_qs=files)
+        return CaseEmailConfig(application=application, file_qs=files, file_metadata=file_metadata)
 
     elif application.process_type == CertificateOfGoodManufacturingPracticeApplication.PROCESS_TYPE:
         app_files: "QuerySet[GMPFile]" = application.supporting_documents.filter(is_active=True)
@@ -384,7 +413,11 @@ def _get_case_email_config(application: ApplicationsWithCaseEmail) -> CaseEmailC
         else:
             files = File.objects.none()
 
-        return CaseEmailConfig(application=application, file_qs=files)
+        return CaseEmailConfig(
+            application=application,
+            file_qs=files,
+            file_metadata=case_documents_metadata(application),
+        )
 
     else:
         raise ValueError(f"CaseEmail for application not supported {application.process_type}")

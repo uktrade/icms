@@ -1,0 +1,32 @@
+<table id="{{ widget.attrs.id}}" class="setoutList">
+  <thead>
+    <tr>
+      <th></th>
+      <th>File</th>
+      <th>Title</th>
+      <th>Certificate Reference</th>
+      <th>Certificate Type</th>
+      <th>Issuing Constabulary</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for _, options, index in widget.optgroups %}
+      {% for widget in options %}
+        {% with file = qs[index] %}
+          {% set metadata = file_metadata[file.pk] %}
+          <tr>
+            <td>{% include widget.template_name %}</td>
+            <td>
+              <a href="{{ metadata["url"] }}">{{ file.filename }}</a>
+              <span class="filesize">{{ file.human_readable_file_size() }}</span>
+            </td>
+            <td>{{ metadata["title"] }}</td>
+            <td>{{ metadata["reference"] }}</td>
+            <td>{{ metadata["certificate_type"] }}</td>
+            <td>{{ metadata["issuing_constabulary"] }}</td>
+        </tr>
+        {% endwith %}
+      {% endfor %}
+    {% endfor %}
+  </tbody>
+</table>

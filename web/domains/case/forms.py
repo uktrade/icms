@@ -8,7 +8,10 @@ from django.db.models import QuerySet
 from django.utils import timezone
 from django_select2 import forms as s2forms
 
-from web.domains.case.widgets import CheckboxSelectMultipleTable
+from web.domains.case.widgets import (
+    CaseEmailAttachmentsWidget,
+    FirearmsApplicationCaseEmailAttachmentsWidget,
+)
 from web.domains.file.utils import ICMSFileField
 from web.forms.fields import JqueryDateField
 from web.forms.mixins import OptionalFormMixin
@@ -17,8 +20,11 @@ from web.models import (
     CaseEmailDownloadLink,
     Constabulary,
     ConstabularyLicenceDownloadLink,
+    DFLApplication,
     ExportApplication,
     ImportApplication,
+    OpenIndividualLicenceApplication,
+    SILApplication,
     User,
 )
 from web.permissions import get_all_case_officers, organisation_get_contacts
@@ -184,10 +190,7 @@ class CaseEmailForm(forms.ModelForm):
             "attachments",
             "body",
         )
-        widgets = {
-            "body": forms.Textarea,
-            "attachments": CheckboxSelectMultipleTable(attrs={"class": "radio-relative"}),
-        }
+        widgets = {"body": forms.Textarea}
         error_messages = {"cc_address_list": {"item_invalid": "Email number %(nth)s is not valid:"}}
 
     def __init__(self, *args: Any, case_email_config: CaseEmailConfig, **kwargs: Any):
@@ -199,13 +202,27 @@ class CaseEmailForm(forms.ModelForm):
                 choices=case_email_config.to_choices,
             )
 
-        if case_email_config.file_qs:
-            self.fields["attachments"].required = False
-            self.fields["attachments"].queryset = case_email_config.file_qs
+        widget_kwargs = {
+            "attrs": {"class": "radio-relative"},
             # set files and process on the widget to make them available in the widget's template
-            self.fields["attachments"].widget.qs = case_email_config.file_qs
-            self.fields["attachments"].widget.process = case_email_config.application
+            "qs": case_email_config.file_qs,
+            "process": case_email_config.application,
+            "file_metadata": case_email_config.file_metadata,
+        }
+
+        match case_email_config.application:
+            case OpenIndividualLicenceApplication() | DFLApplication() | SILApplication():
+                self.fields["attachments"].widget = FirearmsApplicationCaseEmailAttachmentsWidget(
+                    **widget_kwargs
+                )
+            case _:
+                self.fields["attachments"].widget = CaseEmailAttachmentsWidget(**widget_kwargs)
+
+        if case_email_config.file_qs:
+            self.fields["attachments"].queryset = case_email_config.file_qs
+            self.fields["attachments"].required = False
         else:
+            # There are no attachments for CFS.
             self.fields.pop("attachments")
 
 

@@ -1,4 +1,4 @@
-from typing import NamedTuple, Union
+from typing import NamedTuple, TypeAlias, Union
 
 from django.db.models import QuerySet
 
@@ -86,7 +86,11 @@ DocumentPack = Union[ImportApplicationLicence, ExportApplicationCertificate]
 DownloadLink = Union[ConstabularyLicenceDownloadLink, CaseEmailDownloadLink]
 
 
+CaseDocumentsMetadata: TypeAlias = dict[int, dict[str, str]]
+
+
 class CaseEmailConfig(NamedTuple):
     application: ApplicationsWithCaseEmail
     file_qs: QuerySet[File]
+    file_metadata: CaseDocumentsMetadata
     to_choices: list[tuple[str, str]] | None = None

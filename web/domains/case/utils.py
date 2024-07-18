@@ -1,4 +1,5 @@
-from typing import Any, Optional
+from collections.abc import Iterator
+from typing import Any, Optional, TypeAlias
 
 from django import forms
 from django.contrib import messages
@@ -12,12 +13,29 @@ from django.utils import timezone
 from web.domains.case.services import document_pack, reference
 from web.flow.models import ProcessTypes
 from web.mail.emails import send_application_update_response_email
-from web.models import ExportApplication, ImportApplication, Task, UpdateRequest, User
+from web.models import (
+    CertificateOfFreeSaleApplication,
+    CertificateOfGoodManufacturingPracticeApplication,
+    DFLApplication,
+    ExportApplication,
+    ImportApplication,
+    OpenIndividualLicenceApplication,
+    SanctionsAndAdhocApplication,
+    SILApplication,
+    Task,
+    UpdateRequest,
+    User,
+)
 from web.permissions import AppChecker
 from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import get_file_from_s3
 
-from .types import ImpOrExp, ImpOrExpOrAccess
+from .types import (
+    ApplicationsWithCaseEmail,
+    CaseDocumentsMetadata,
+    ImpOrExp,
+    ImpOrExpOrAccess,
+)
 
 
 def end_process_task(task: Task, user: Optional["User"] = None) -> None:
@@ -178,3 +196,192 @@ def application_history(app_reference: str, is_import: bool = True) -> None:
 
     for p in document_pack._get_qm(app).order_by("created_at"):
         print(f"DocumentPack: {p}")
+
+
+def case_documents_metadata(application: ApplicationsWithCaseEmail) -> CaseDocumentsMetadata:
+    """Return metadata for all the documents linked to a case.
+
+    Useful when only the File.pk is known (as they are in CaseEmail.attachments)
+    This should always include all file, not just active ones, in case we are looking at old cases.
+    """
+
+    match application:
+        case SILApplication():
+            file_metadata = get_fa_sil_file_data(application)
+
+        case OpenIndividualLicenceApplication():
+            file_metadata = get_fa_oil_file_data(application)
+
+        case DFLApplication():
+            file_metadata = get_fa_dfl_file_data(application)
+
+        case SanctionsAndAdhocApplication():
+            file_metadata = get_sanctions_file_data(application)
+
+        case CertificateOfFreeSaleApplication():
+            # CFS uses case emails however it has no linked files.
+            return {}
+
+        case CertificateOfGoodManufacturingPracticeApplication():
+            file_metadata = get_gmp_file_data(application)
+
+        case _:
+            raise ValueError(
+                f"Application {application.application_type.get_type_display()} not supported."
+            )
+
+    return {pk: metadata for pk, metadata in file_metadata}
+
+
+FileMetadata: TypeAlias = Iterator[tuple[int, dict[str, str]]]
+
+
+def get_fa_sil_file_data(app: SILApplication) -> FileMetadata:
+    #
+    # Section 5 authority documents
+    #
+    for cert in app.verified_section5.all():
+        for f in cert.files.all():
+            yield (
+                f.pk,
+                {
+                    "title": "Verified Section 5 Authority",
+                    "reference": cert.reference,
+                    "certificate_type": "Section 5 Authority",
+                    "issuing_constabulary": "",
+                    "url": reverse(
+                        "importer-section5-view-document",
+                        kwargs={"section5_pk": cert.pk, "document_pk": f.pk},
+                    ),
+                },
+            )
+
+    for f in app.user_section5.all():
+        yield (
+            f.pk,
+            {
+                "title": "User Uploaded Section 5 Authority",
+                "reference": "",
+                "certificate_type": "Section 5 Authority",
+                "issuing_constabulary": "",
+                "url": reverse(
+                    "import:fa-sil:view-section5-document",
+                    kwargs={"application_pk": app.pk, "section5_pk": f.pk},
+                ),
+            },
+        )
+
+    #
+    # Verified authority documents
+    #
+    for cert in app.verified_certificates.all():
+        for f in cert.files.all():
+            yield (
+                f.pk,
+                {
+                    "title": "Verified Firearms Authority",
+                    "reference": cert.reference,
+                    "certificate_type": cert.get_certificate_type_display(),
+                    "issuing_constabulary": cert.issuing_constabulary.name,
+                    "url": reverse(
+                        "importer-firearms-view-document",
+                        kwargs={"firearms_pk": cert.pk, "document_pk": f.pk},
+                    ),
+                },
+            )
+
+    for f in app.user_imported_certificates.all():
+        yield (
+            f.pk,
+            {
+                "title": "User Uploaded Verified Firearms Authority",
+                "reference": f.reference,
+                "certificate_type": f.get_certificate_type_display(),
+                "issuing_constabulary": f.constabulary.name,
+                "url": reverse(
+                    "import:fa:view-certificate-document",
+                    kwargs={"application_pk": app.pk, "certificate_pk": f.pk},
+                ),
+            },
+        )
+
+
+def get_fa_oil_file_data(app: OpenIndividualLicenceApplication) -> FileMetadata:
+    #
+    # Verified authority documents
+    #
+    for cert in app.verified_certificates.all():
+        for f in cert.files.all():
+            yield (
+                f.pk,
+                {
+                    "title": "Verified Firearms Authority",
+                    "reference": cert.reference,
+                    "certificate_type": cert.get_certificate_type_display(),
+                    "issuing_constabulary": cert.issuing_constabulary.name,
+                    "url": reverse(
+                        "importer-firearms-view-document",
+                        kwargs={"firearms_pk": cert.pk, "document_pk": f.pk},
+                    ),
+                },
+            )
+
+    for f in app.user_imported_certificates.all():
+        yield (
+            f.pk,
+            {
+                "title": "User Uploaded Verified Firearms Authority",
+                "reference": f.reference,
+                "certificate_type": f.get_certificate_type_display(),
+                "issuing_constabulary": f.constabulary.name,
+                "url": reverse(
+                    "import:fa:view-certificate-document",
+                    kwargs={"application_pk": app.pk, "certificate_pk": f.pk},
+                ),
+            },
+        )
+
+
+def get_fa_dfl_file_data(app: DFLApplication) -> FileMetadata:
+    for f in app.goods_certificates.all():
+        yield (
+            f.pk,
+            {
+                "title": "Firearms Certificate",
+                "reference": f.deactivated_certificate_reference,
+                "certificate_type": "Deactivation Certificate",
+                "issuing_constabulary": app.constabulary.name,
+                "url": reverse(
+                    "import:fa-dfl:view-goods",
+                    kwargs={"application_pk": app.pk, "document_pk": f.pk},
+                ),
+            },
+        )
+
+
+def get_sanctions_file_data(app: SanctionsAndAdhocApplication) -> FileMetadata:
+    for f in app.supporting_documents.all():
+        yield (
+            f.pk,
+            {
+                "file_type": "Supporting Documents",
+                "url": reverse(
+                    "import:sanctions:view-supporting-document",
+                    kwargs={"application_pk": app.pk, "document_pk": f.pk},
+                ),
+            },
+        )
+
+
+def get_gmp_file_data(app: CertificateOfGoodManufacturingPracticeApplication) -> FileMetadata:
+    for f in app.supporting_documents.all():
+        yield (
+            f.pk,
+            {
+                "file_type": f.get_file_type_display(),
+                "url": reverse(
+                    "export:gmp-view-document",
+                    kwargs={"application_pk": app.pk, "document_pk": f.pk},
+                ),
+            },
+        )
