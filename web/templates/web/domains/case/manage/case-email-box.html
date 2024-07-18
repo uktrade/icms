@@ -119,30 +119,56 @@
         {% if not attachments %}
           There is no document attached to this email.
         {% else %}
-          <table class="setoutList">
-            <thead>
-              <tr>
-                <th>File</th>
-                <th>Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for attachment in attachments %}
+
+          {% if is_firearms_application %}
+            <table class="setoutList">
+              <thead>
+                <tr>
+                  <th>File</th>
+                  <th>Title</th>
+                  <th>Certificate Reference</th>
+                  <th>Certificate Type</th>
+                  <th>Issuing Constabulary</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for file in attachments %}
+                {% set metadata = file_metadata[file.pk] %}
                 <tr>
                   <td>
-                    <a
-                      href="{{ icms_url('import:sanctions:view-supporting-document', kwargs={'application_pk': process.pk, 'document_pk': attachment.pk}) }}">
-                      {{ attachment.filename }}
-                    </a>
-                    {{ attachment.human_readable_file_size() }}
+                    <a href="{{ metadata["url"] }}">{{ file.filename }}</a>
+                    <span class="filesize">{{ file.human_readable_file_size() }}</span>
                   </td>
-                  <td>
-                    Supporting Documents
-                  </td>
+                  <td>{{ metadata["title"] }}</td>
+                  <td>{{ metadata["reference"] }}</td>
+                  <td>{{ metadata["certificate_type"] }}</td>
+                  <td>{{ metadata["issuing_constabulary"] }}</td>
                 </tr>
               {% endfor %}
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          {% else %}
+            <table class="setoutList">
+              <thead>
+                <tr>
+                  <th>File</th>
+                  <th>Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for file in attachments %}
+                  {% set metadata = file_metadata[file.pk] %}
+                  <tr>
+                    <td>
+                      <a href="{{ metadata["url"] }}">{{ file.filename }}</a>
+                      <span class="filesize">{{ file.human_readable_file_size() }}</span>
+                    </td>
+                    <td>{{ metadata["file_type"] }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% endif %}
         {% endif %}
       {% endwith %}
     </div>

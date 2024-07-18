@@ -103,15 +103,17 @@ class SILApplication(ImportApplication):
     additional_comments = models.CharField(max_length=4000, blank=True, null=True)
 
     # section 5
+    verified_section5 = models.ManyToManyField(
+        "web.Section5Authority", related_name="sil_application"
+    )
     user_section5 = models.ManyToManyField("web.SILUserSection5", related_name="sil_application")
-    verified_section5 = models.ManyToManyField("web.Section5Authority", related_name="+")
 
     # certificates
-    user_imported_certificates = models.ManyToManyField(
-        "UserImportCertificate", related_name="sil_application"
-    )
     verified_certificates = models.ManyToManyField(
         "FirearmsAuthority", related_name="sil_application"
+    )
+    user_imported_certificates = models.ManyToManyField(
+        "UserImportCertificate", related_name="sil_application"
     )
 
 

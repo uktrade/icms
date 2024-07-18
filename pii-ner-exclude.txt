@@ -4842,3 +4842,6 @@ new_page.rotate(90
 90 degrees'
 Helvetica-Bold
 Belarus BY
+User Uploaded Section 5 Authority
+{{ meta
+firearms_pk

@@ -1,0 +1,28 @@
+<table id="{{ widget.attrs.id}}" class="setoutList">
+  <thead>
+    <tr>
+      <th>&nbsp;</th>
+      <th>File</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for _, options, index in widget.optgroups %}
+      {% for widget in options %}
+        {% with file = qs[index] %}
+          {% set metadata = file_metadata[file.pk] %}
+          <tr>
+            <td>
+              {% include widget.template_name %}
+            </td>
+            <td>
+              <a href="{{ metadata["url"] }}">{{ file.filename }}</a>
+              <span class="filesize">{{ file.human_readable_file_size() }}</span>
+            </td>
+            <td>{{ metadata["file_type"] }}</td>
+        </tr>
+        {% endwith %}
+      {% endfor %}
+    {% endfor %}
+  </tbody>
+</table>

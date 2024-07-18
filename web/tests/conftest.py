@@ -14,6 +14,7 @@ from django.core.management import call_command
 from django.test import override_settings, signals
 from django.test.client import Client
 from django.urls import reverse
+from django.utils import timezone
 from freezegun import freeze_time
 from jinja2 import Template as Jinja2Template
 from notifications_python_client import NotificationsAPIClient
@@ -27,6 +28,7 @@ from web.domains.case.utils import end_process_task
 from web.domains.signature import utils as signature_utils
 from web.flow.models import ProcessTypes
 from web.models import (
+    ActQuantity,
     CertificateApplicationTemplate,
     CertificateOfFreeSaleApplication,
     CertificateOfFreeSaleApplicationTemplate,
@@ -35,6 +37,8 @@ from web.models import (
     CertificateOfManufactureApplication,
     CertificateOfManufactureApplicationTemplate,
     ChecklistFirearmsOILApplication,
+    ClauseQuantity,
+    Constabulary,
     Country,
     DFLApplication,
     DFLChecklist,
@@ -42,6 +46,7 @@ from web.models import (
     Exporter,
     ExporterAccessRequest,
     File,
+    FirearmsAct,
     FirearmsAuthority,
     ImportContact,
     Importer,
@@ -53,6 +58,7 @@ from web.models import (
     SanctionsAndAdhocApplication,
     ScheduleReport,
     Section5Authority,
+    Section5Clause,
     Signature,
     SILApplication,
     SILChecklist,
@@ -1566,24 +1572,98 @@ def gmp_cat(exporter_one_contact) -> CertificateApplicationTemplate:
 
 
 @pytest.fixture()
-def section5_authority(importer) -> Section5Authority:
-    return Section5Authority.objects.create(
-        reference="Test Reference",
+def section5_authority(importer, ilb_admin_user) -> Section5Authority:
+    s5_authority = Section5Authority.objects.create(
         importer=importer,
+        reference="Test Reference",
+        postcode="S12SS",  # /PS-IGNORE
         address="Test Address",
-        is_active=True,
+        address_entry_type=FirearmsAuthority.MANUAL,
+        start_date=timezone.now().date(),
+        end_date=dt.date(dt.date.today().year + 3, 1, 1),
+        further_details="",
     )
+
+    s5_authority.linked_offices.set(importer.offices.all())
+
+    for clause in Section5Clause.objects.all():
+        ClauseQuantity.objects.create(
+            section5authority=s5_authority,
+            section5clause=clause,
+            quantity=100,
+        )
+
+    s5_authority.files.add(
+        File.objects.create(
+            is_active=True,
+            filename="section5-dummy-file",
+            content_type=".txt",
+            file_size=1,
+            path="section5-dummy-file-path",
+            created_by=ilb_admin_user,
+        )
+    )
+
+    s5_authority.files.add(
+        File.objects.create(
+            is_active=True,
+            filename="section5-dummy-file-2",
+            content_type=".txt",
+            file_size=2,
+            path="section5-dummy-file-path-2",
+            created_by=ilb_admin_user,
+        )
+    )
+
+    return s5_authority
 
 
 @pytest.fixture()
-def firearms_authority(importer) -> FirearmsAuthority:
-    return FirearmsAuthority.objects.create(
-        reference="Test Reference",
+def firearms_authority(importer, ilb_admin_user) -> FirearmsAuthority:
+    verified_firearms_authority = FirearmsAuthority.objects.create(
         importer=importer,
-        address="Test Address",
-        is_active=True,
+        reference="Test Reference",
         certificate_type=FirearmsAuthority.DEACTIVATED_FIREARMS,
+        postcode="S12SS",  # /PS-IGNORE
+        address="Test Address",
+        address_entry_type=FirearmsAuthority.MANUAL,
+        start_date=timezone.now().date(),
+        end_date=dt.date(dt.date.today().year + 3, 1, 1),
+        further_details="",
+        issuing_constabulary=Constabulary.objects.get(name="Derbyshire"),
     )
+    verified_firearms_authority.linked_offices.set(importer.offices.all())
+
+    for act in FirearmsAct.objects.all():
+        ActQuantity.objects.create(
+            firearmsauthority=verified_firearms_authority,
+            firearmsact=act,
+            quantity=200,
+        )
+
+    verified_firearms_authority.files.add(
+        File.objects.create(
+            is_active=True,
+            filename="verified-firearms-dummy-file",
+            content_type=".txt",
+            file_size=1,
+            path="verified-firearms-dummy-file-path",
+            created_by=ilb_admin_user,
+        )
+    )
+
+    verified_firearms_authority.files.add(
+        File.objects.create(
+            is_active=True,
+            filename="verified-firearms-dummy-file-2",
+            content_type=".txt",
+            file_size=2,
+            path="verified-firearms-dummy-file-path-2",
+            created_by=ilb_admin_user,
+        )
+    )
+
+    return verified_firearms_authority
 
 
 @pytest.fixture()
