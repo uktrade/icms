@@ -1,6 +1,6 @@
 {% from "web/domains/signature/macros.html" import document_signature_placeholder %}
-{% from "web/domains/signature/macros.html" import dbt_logo %}
 {% from "web/domains/signature/macros.html" import not_signed_image %}
+{% from "web/domains/signature/macros.html" import dbt_logo %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,45 +8,25 @@
     <meta name="description" content="{{ importer_site_name }} import licence">
     <title>{{ page_title }}</title>
     <style>
-      {{ get_css_rules_as_string("web/css/pdfs/licence-and-certificate-common-style.css")|safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/fonts.css')|safe }}
+      {{ get_css_rules_as_string('web/css/pdfs/constants.css')|safe }}
       {{ get_css_rules_as_string("web/css/pdfs/sanctions-licence-style.css")|safe }}
-      {{ get_css_rules_as_string("web/css/components/signature.css")|safe }}
       {% if preview_licence %}
         {{ get_css_rules_as_string("web/css/pdfs/preview.css")|safe }}
       {% endif %}
     </style>
   </head>
   <body>
-    <header>
-      {% if paper_licence_only %}
-        <h3>DIT IMPORT LICENCE</h3>
-        <p class="content">under Article 2, Import of Goods (Control) Order 1954</p>
-      {% else %}
-        <p><strong>ELECTRONIC LICENCE</strong> issued on {{ licence_start_date }} and sent to HM Revenue and Customs.</p>
-      {% endif %}
-    </header>
-    <div class="holder-number holder-number-first b-top b-left b-right">
-      <span>1</span>
-    </div>
-    <footer>
-      <span class="holders bordered">Holder's copy</span>
-    </footer>
-    <div class="holder-number holder-number-last bordered"><span>1</span></div>
     <main class="bordered flex-row wrap">
       <div class="flex-row row b-bottom">
-        <div class="consignee half content-block b-right">
-          <p class="details-text"><strong>1. </strong>Consignee (name, full address, country, VAT number)</p>
+        <div class="half content-block b-right">
+          <p class="title"><strong>1. </strong>Consignee (name, full address, country, VAT number)</p>
           <p class="content">{{ importer_name | upper }}</p>
           {% for line in importer_address %}
             <p class="content">{{ line | upper }}</p>
           {% endfor %}
           <p class="content">{{ importer_postcode | upper }}</p>
-          {% if ref and preview_licence %}
-            <div class="flex-row space-between">
-              <p class="content">Your ref: {{ ref }}</p>
-          {% else %}
             <div class="flex-row flex-end">
-          {% endif %}
               <div class="flex-column">
                 {% for eori in eori_numbers %}
                   <p class="content text-right">{{ eori }}</p>
@@ -54,104 +34,97 @@
               </div>
             </div>
         </div>
-        <div class="flex-column" style="flex:49 0 0;">
-          <div class="issue-number content-block b-bottom">
-            <p class="details-text"><strong>2. </strong>Issue number</p>
+        <div>
+          <div class="content-block b-bottom row">
+            <p class="title"><strong>2. </strong>Issue number</p>
             <p class="{{ 'preview-orange' if preview_licence }}">{{ licence_number }}</p>
           </div>
-          <div class="port content-block b-bottom">
-            <p class="details-text"><strong>3. </strong>Proposed place and date of import</p>
-            <div class="flex-row space-between">
-              <p style="align-self: flex-start">Any UK Port</p>
-              <p style="align-self: flex-end">{{ licence_start_date }}</p>
-            </div>
+          <div class="content-block b-bottom row">
+            <p class="title"><strong>3. </strong>Proposed place and date of import</p>
+            
+          <div class="flex-row space-between">
+               <p style="align-self: flex-start">Any UK Port</p>
+               <p style="align-self: flex-end">{{ licence_start_date }}</p>
           </div>
-          <div class="authority content-block">
-            <p class="details-text"><strong>4. </strong>Authority responsible for issue</p>
-            <p class="address-line">Department for Business and Trade</p>
-            <p class="address-line">Queensway House, West Precinct</p>
-            <p class="address-line">Billingham, United Kingdom, TS23 2NF</p>  <!-- /PS-IGNORE -->
-            <p>Email: {{ ilb_contact_email }}</p>
+          </div>
+          <div class="content-block row flex-row wrap">
+            <p class="row title"><strong>4. </strong>Authority responsible for issue</p>
+            <p class="address-line row">Department for Business and Trade</p>
+            <p class="address-line row">Queensway House, West Precinct</p>
+            <p class="address-line row">Billingham, United Kingdom, TS23 2NF</p>  <!-- /PS-IGNORE -->
+            <p class="row min-height-40">Email: {{ ilb_contact_email }}</p>
           </div>
         </div>
       </div>
       <div class="flex-row row b-bottom">
-        <div class="declarant half content-block b-right">
-          <p class="details-text"><strong>5. </strong>Declarant/representative as applicable (name and full address)</p>
+        <div class="half content-block b-right">
+          <p class="title"><strong>5. </strong>Declarant/representative as applicable (name and full address)</p>
           <p class="content">{{ importer_name | upper }}</p>
           {% for line in importer_address %}
-            <p>{{ line | upper}}</p>
+            <p class="content">{{ line | upper }}</p>
           {% endfor %}
           <p class="content">{{ importer_postcode | upper }}</p>
-          <div class="flex-row flex-end">
-            <div class="flex-column">
-              {% for eori in eori_numbers %}
-                <p class="content text-right">{{ eori }}</p>
-              {% endfor %}
+            <div class="flex-row flex-end">
+              <div class="flex-column">
+                {% for eori in eori_numbers %}
+                  <p class="content text-right">{{ eori }}</p>
+                {% endfor %}
+              </div>
             </div>
-          </div>
         </div>
-        <div class="half flex-column">
-          <div class="manufacture content-block b-bottom">
-            <p class="details-text"><strong>6. </strong>Country of manufacture (and geonomeclature code)</p>
+        <div class="half">
+          <div class="content-block b-bottom row">
+            <p class="title"><strong>6. </strong>Country of manufacture (and geonomeclature code)</p>
             <p>{{ country_of_manufacture }}</p>
           </div>
-          <div class="shipment content-block b-bottom">
-            <p class="details-text"><strong>7. </strong>Country of shipment (and geonomenclature code)</p>
-            <p>{{ country_of_shipment }}</p>
+          <div class="content-block b-bottom row">
+            <p class="title"><strong>7. </strong>Country of shipment (and geonomenclature code)</p>
+             <p>{{ country_of_shipment }}</p>
           </div>
-          <div class="validity content-block">
-            <p class="details-text"><strong>8. </strong>Last day of validity</p>
+          <div class="content-block row">
+            <p class="title"><strong>8. </strong>Last day of validity</p>
             <p>{{ licence_end_date }}</p>
           </div>
         </div>
       </div>
-      <div class="goods content-block row b-bottom">
-        <p class="details-text"><strong>9. </strong>Description of goods, commodity code and category, quantity, and value in GBP (cif at UK frontier)</p>
-        {% for goods in goods_list %}
-          {% for goods_line in goods %}
-            <p>{{ goods_line }}</p>
-          {% endfor %}
-        {% endfor %}
-      </div>
-
-      <div class="endorsements content-block b-bottom">
-        <p class="details-text"><strong>10. </strong>Additional remarks</p>
-        {% if endorsements %}
-          {% set character_count = namespace(value=0) %}
-          {% for endorsement in endorsements %}
-            {% for endorsement_line in endorsement %}
-              {# 
-                We want to break the div after 2500 characters (just below the amount that will run over 1 page)
-                So we count the characters and if we are over 2500 we add a page break and reset the count 
-              #}
-              {% set character_count.value = character_count.value + endorsement_line|length %}
-              {% if character_count.value >= 2500 %}
-                <div class="break_endorsement"></div>
-                <div class="break_endorsement_after"></div>
-                <p>{{ endorsement_line }}</p>
-                {% set character_count.value = 0 %}
-              {% else %}
-                <p>{{ endorsement_line }}</p>
-              {% endif %}
-              <br>
+      <div class="flex-row row">
+        <div class="large-text-box content-block row">
+          <p class="title"><strong>9. </strong>Description of goods, commodity code and category, quantity, and value in GBP (cif at UK frontier)</p>
+          {% for goods in goods_list %}
+            {% for goods_line in goods %}
+              <p>{{ goods_line }}</p>
             {% endfor %}
           {% endfor %}
-        {% elif preview_licence %}
-          <p class="additional-remarks">[[ADDITIONAL_REMARKS]]</p>
-        {% endif %}
-      </div>
-      <div class="signature content-block flex-row row wrap">
-        <p class="details-text row"><strong>11. </strong>Competent authority's endorsement</p>
-        <div class="digital-signature half">
-          {% if preview_licence %}
-            {{ not_signed_image() }}
-          {% else %}
-            {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory)  }}
-          {% endif %}
         </div>
-        <div class="dbt-logo-block half">
-          {{ dbt_logo(classes="header-block") }}
+      </div>
+      <div class="flex-row row b-top">
+          <div class="large-text-box min-height-150 content-block row">
+            <p class="title"><strong>10. </strong>Additional remarks</p>
+            {% if endorsements %}
+              {% for endorsement in endorsements %}
+                {% for endorsement_line in endorsement %}
+                  <p>{{ endorsement_line }}</p>
+                {% endfor %}
+              {% endfor %}
+            {% elif preview_licence %}
+              <p class="preview-green">[[ADDITIONAL_REMARKS]]</p>
+            {% endif %}
+          </div>
+        </div>
+      <div class="signature-block content-block flex-row row b-top">
+        <div class="flex-row row wrap">
+          <p class="row title"><strong>11. </strong>Competent authority's endorsement</p>
+          <div class="digital-signature half">
+              {% if preview_licence %}
+                  {{ not_signed_image() }}
+              {% else %}
+                  {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory)  }}
+              {% endif %}
+          </div>
+          <div class="dbt-logo-block half">
+              {{ dbt_logo(classes="header-block") }}
+          </div>
+        </div>
       </div>
     </main>
   </body>

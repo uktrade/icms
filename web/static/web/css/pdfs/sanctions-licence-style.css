@@ -1,118 +1,124 @@
-* {
-    color: black;
-}
-
 @page {
     size: A4;
-    margin: 48px 36px 60px 72px;
-
-
-    @top-left {
-        content: element(header);
-    }
-
+    margin: 68px 40px 60px 70px;
 }
 
-
-header {
-    font-size: 10px;
-    position: running(header);
-    margin-bottom: 15px;
+* {
+    color: black;
+    -webkit-print-color-adjust: exact;
 }
 
-footer {
-    position: fixed;
-    left: -172.8px;
-    top: 206px;
-    transform: rotate(270deg);
-
+body {
+    margin: 0 0 0 0;
+    font-size: 12px;
 }
 
 main {
     box-decoration-break: clone;
 }
 
-
 p {
-    font-size: 14px;
-    margin: 2px;
-}
-
-.holders {
-    padding: 10px 103px 11px 135px;
-    font-size: 14px;
-}
-
-.holder-number {
-    padding: 4px 9px 20px 8px;
-    height: 20px;
-    width: 18px;
-    position: fixed;
-    left: -28px;
-    text-align: center;
-}
-
-.holder-number-first {
-    top: 8px;
-}
-
-.holder-number-last {
-    top: 376px;
+    margin: 1px;
+    font-weight: 5;
 }
 
 .content-block {
     padding: 8px;
+    min-height: 40px;
 }
 
-.flex-column {
-    display: flex;
-    flex-direction: column;
-}
-
-.flex-row {
-    display: flex;
-    flex-direction: row;
-}
-
-.details-text {
-    font-size: 10px;
-}
-
-.issue-number, .port {
-    flex-basis: 50px;
-    padding-top: 0;
-}
-
-.authority {
-    flex: 100px 0 0;
-    padding-top: 0;
-}
-
-.manufacture, .shipment, .validity {
-    padding-top: 0;
-}
-
-.endorsements {
+.min-height-150 {
     min-height: 150px;
 }
 
-#dbt-logo {
+.min-height-40 {
+    min-height: 40px;
+}
+
+.large-text-box {
+    max-width: 98%;
+    padding-bottom: 10px;
+    overflow-wrap: anywhere;
+}
+
+.header-block {
+    display: inline-block;
+    vertical-align: top;
+    height: 80px;
+    width: 160px;
+
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+
+li {
+    font-weight: 5;
+}
+
+strong {
+    font-weight: bold;
+}
+
+
+.dbt-logo-block {
     width: 330px;
-    margin: -40px 0 -35px -40px;
+    margin: 20px 0 20px 0px;
 }
 
-@media print {
-    .break_endorsement {
-        page-break-after: always;
-        border-bottom: 1px solid black;
-        margin-left: -8px;
-        margin-right: -8px;
-    }
-
-    .break_endorsement_after {
-        border-top: 1px solid black;
-        margin-left: -8px;
-        margin-right: -8px;
-    }
+.signature-block {
+    break-inside: avoid;
+    width: 100%;
 }
 
+div[name="signature-widget"] {
+    display: flex;
+    flex-wrap: wrap;
+    width: 200px;
+}
+
+div[name="signature-widget"] > span {
+    flex: 0 0 100%;
+    display: block;
+    font-size: 11px;
+    margin: 0;
+}
+
+
+#signature-widget-image-container {
+    flex: 0 0 100%;
+    display: block;
+    margin: 0;
+}
+
+#signature-widget-image {
+    width: 165px;
+    max-height: 100px;
+}
+
+#signature > p {
+    color: black;
+}
+
+#signature > img {
+    padding-left: 5px;
+}
+
+#not_signed_image{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    max-width: 175px;
+}
+
+.b-bottom-extended {
+    left: -42px;
+    padding-left: 42px;
+    position: relative;
+    border-bottom: 1px solid #000;
+}
+
+.title {
+    font-size: 10px;
+}
