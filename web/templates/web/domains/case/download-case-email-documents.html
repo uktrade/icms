@@ -1,8 +1,6 @@
 {% extends "web/domains/case/download-documents-base.html" %}
 {% from "display/fields.html" import application_section, application_field %}
 
-{% set regenerate_link = "case:regenerate-case-email-documents-link" %}
-
 {% block main_content %}
   {{ super() }}
 
@@ -16,33 +14,65 @@
 
   {% if importer %}
     {% call display.application_section("Importer") %}
-      {{ display.application_field(exporter.name, "Importer Name")}}
-      {{ display.application_field(exporter.office_address, "Office Address")}}
-      {{ display.application_field(exporter.office_postcode, "Office Postcode")}}
+      {{ display.application_field(importer.name, "Importer Name")}}
+      {{ display.application_field(importer.office_address, "Office Address")}}
+      {{ display.application_field(importer.office_postcode, "Office Postcode")}}
     {% endcall %}
   {% endif %}
 
   {% if documents %}
     {% call display.application_section("") %}
-      <table class="setoutList">
-        <thead>
-        <tr>
-          <th scope="col">Document Type</th>
-          <th scope="col">Document</th>
-        </tr>
-        </thead>
-        <tbody>
-          {% for doc in documents %}
-            <td>{{ doc.name }}</td>
-            <td>
-              <a href="{{ doc.url }}">
-                  View Document
-              </a>
-            </td>
+      {% if is_firearms_application %}
+        <table class="setoutList">
+          <thead>
+          <tr>
+            <th>File</th>
+            <th>Title</th>
+            <th>Certificate Reference</th>
+            <th>Certificate Type</th>
+            <th>Issuing Constabulary</th>
           </tr>
+          </thead>
+          <tbody>
+          {% for doc in documents %}
+            {% set file = doc.file %}
+            {% set metadata = file_metadata[file.pk] %}
+            <tr>
+              <td>
+                <a href="{{ doc.url }}" target="_blank" rel="noopener noreferrer">{{ file.filename }}</a>
+                <span class="filesize">{{ file.human_readable_file_size() }}</span>
+              </td>
+              <td>{{ metadata["title"] }}</td>
+              <td>{{ metadata["reference"] }}</td>
+              <td>{{ metadata["certificate_type"] }}</td>
+              <td>{{ metadata["issuing_constabulary"] }}</td>
+            </tr>
           {% endfor %}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      {% else %}
+        <table class="setoutList">
+          <thead>
+          <tr>
+            <th scope="col">File</th>
+            <th scope="col">Document Type</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for doc in documents %}
+            {% set file = doc.file %}
+            {% set metadata = file_metadata[file.pk] %}
+            <tr>
+              <td>
+                <a href="{{ doc.url }}" target="_blank" rel="noopener noreferrer">{{ file.filename }}</a>
+                <span class="filesize">{{ file.human_readable_file_size() }}</span>
+              </td>
+              <td>{{ metadata["file_type"] }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      {% endif %}
     {% endcall %}
   {% endif %}
 {% endblock %}

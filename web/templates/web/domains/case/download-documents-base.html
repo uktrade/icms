@@ -49,7 +49,7 @@
   {% if form.errors %}
     <div class="row">
       <p>If you are having issues downloading the documents click the Regenerate Link button below to resend the email.</p>
-      {% call forms.form(action=icms_url(regenerate_link, kwargs={"code": form.code}), method='post', csrf_input=csrf_input) %}
+      {% call forms.form(action=regenerate_documents_link, method='post', csrf_input=csrf_input) %}
         {{ forms.submit_button(padding_cols="two", btn_label="Regenerate Link") }}
       {% endcall %}
     </div>

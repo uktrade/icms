@@ -1,4 +1,4 @@
-from typing import Any, ClassVar
+from typing import Any, ClassVar, TypeAlias
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -16,11 +16,10 @@ from guardian.shortcuts import get_objects_for_user
 from web.domains.case.forms import (
     DownloadCaseEmailDocumentsForm,
     DownloadDFLCaseDocumentsForm,
-    DownloadDocumentsFormBase,
 )
 from web.domains.case.services import document_pack
-from web.domains.case.types import DocumentPack, DownloadLink, ImpOrExp
-from web.domains.case.utils import get_case_page_title
+from web.domains.case.types import ApplicationsWithCaseEmail, DocumentPack, DownloadLink
+from web.domains.case.utils import case_documents_metadata, get_case_page_title
 from web.flow.models import ProcessTypes
 from web.mail.constants import EmailTypes
 from web.mail.emails import (
@@ -32,11 +31,9 @@ from web.models import (
     CaseDocumentReference,
     CaseEmail,
     CaseEmailDownloadLink,
-    CertificateOfGoodManufacturingPracticeApplication,
     Constabulary,
     ConstabularyLicenceDownloadLink,
     ExportApplication,
-    GMPFile,
     ImportApplication,
     ImportApplicationLicence,
 )
@@ -45,19 +42,18 @@ from web.types import AuthenticatedHttpRequest
 from web.utils.s3 import create_presigned_url, get_file_from_s3
 from web.utils.sentry import capture_exception
 
+DownloadLinkForm: TypeAlias = DownloadCaseEmailDocumentsForm | DownloadDFLCaseDocumentsForm
 
-@method_decorator(ratelimit(key="ip", rate="10/m", method=UNSAFE, block=True), name="post")
-@method_decorator(ratelimit(key="ip", rate="20/m", method="GET", block=True), name="get")
-class DownloadCaseDocumentsFormView(FormView):
-    """View to see all documents relating to an import application.
 
-    View does not require a logged-in user, it instead asks a user to enter information
-    relating to the case.
+@method_decorator(ratelimit(key="ip", rate="10/m", method="GET", block=True), name="get")
+@method_decorator(ratelimit(key="ip", rate="20/m", method=UNSAFE, block=True), name="post")
+class DownloadLinkFormViewBase(FormView):
+    """Base class for views that allow users to download documents without logging in to ICMS.
+
+    User are asked to enter information relating to the case before seeing the documents.
     """
 
     # FormView config
-    template_name = "web/domains/case/download-case-documents.html"
-    form_class: type[DownloadDocumentsFormBase]
     http_method_names = ["get", "post"]
 
     # We don't want to see the cookie banner / enable the JS
@@ -81,20 +77,20 @@ class DownloadCaseDocumentsFormView(FormView):
             "code": self.kwargs["code"],
         }
 
-    def get_extra_context(self, form: DownloadDocumentsFormBase) -> dict[str, Any]:
-        return {}
-
-    def form_valid(self, form: DownloadDocumentsFormBase) -> HttpResponse:
+    def form_valid(self, form: DownloadLinkForm) -> HttpResponse:
         link: DownloadLink = form.link  # type: ignore[assignment]
 
         # Reset the failure count
         link.failure_count = 0
         link.save()
 
-        context = self.get_extra_context(form)
+        context = self.get_form_valid_context(form)
         return self.render_to_response(self.get_context_data(**context))
 
-    def form_invalid(self, form: DownloadDocumentsFormBase) -> HttpResponse:
+    def get_form_valid_context(self, form: DownloadLinkForm) -> dict[str, Any]:
+        return {}
+
+    def form_invalid(self, form: DownloadLinkForm) -> HttpResponse:
         if form.link:
             link = form.link
 
@@ -111,8 +107,15 @@ class DownloadCaseDocumentsFormView(FormView):
         return super().form_invalid(form)
 
 
-class DownloadCaseEmailDocumentsFormView(DownloadCaseDocumentsFormView):
-    """View to see supporting documents relating to a gmp application.
+class DownloadCaseEmailDocumentsFormView(DownloadLinkFormViewBase):
+    """View to see supporting documents relating to an application with case emails.
+
+    The application types that support case emails with attachments are as follows:
+        - OpenIndividualLicenceApplication
+        - DFLApplication
+        - SILApplication
+        - SanctionsAndAdhocApplication
+        - CertificateOfGoodManufacturingPracticeApplication
 
     View does not require a logged-in user, it instead asks a user to enter information
     relating to the case.
@@ -121,16 +124,15 @@ class DownloadCaseEmailDocumentsFormView(DownloadCaseDocumentsFormView):
     form_class = DownloadCaseEmailDocumentsForm
     template_name = "web/domains/case/download-case-email-documents.html"
 
-    def get_application(self, case_email: CaseEmail) -> ImpOrExp:
-        match case_email.template_code:
-            case EmailTypes.BEIS_CASE_EMAIL:
-                return ExportApplication.objects.get(case_emails=case_email).get_specific_model()
-            case EmailTypes.CONSTABULARY_CASE_EMAIL:
-                return ImportApplication.objects.get(case_emails=case_email).get_specific_model()
-            case _:
-                raise ValueError(f"Email attachments not supported for {case_email.template_code}.")
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        return context | {
+            "regenerate_documents_link": reverse(
+                "case:regenerate-case-email-documents-link", kwargs={"code": self.kwargs["code"]}
+            )
+        }
 
-    def get_extra_context(self, form: DownloadCaseEmailDocumentsForm) -> dict[str, Any]:
+    def get_form_valid_context(self, form: DownloadCaseEmailDocumentsForm) -> dict[str, Any]:
         link: CaseEmailDownloadLink = form.link  # type: ignore[assignment]
         application = self.get_application(link.case_email)
 
@@ -155,23 +157,36 @@ class DownloadCaseEmailDocumentsFormView(DownloadCaseDocumentsFormView):
             case _:
                 raise ValueError("Email attachments not supported for {case_email.template_code}.")
 
-        # Documents
-        match application:
-            case CertificateOfGoodManufacturingPracticeApplication():
-                return context | {
-                    "documents": [
-                        {
-                            "name": GMPFile.Type(doc.gmpfile.file_type).label,
-                            "url": create_presigned_url(doc.path),
-                        }
-                        for doc in link.case_email.attachments.all()
-                    ],
+        is_firearms_application = application.process_type in [
+            ProcessTypes.FA_OIL,
+            ProcessTypes.FA_DFL,
+            ProcessTypes.FA_SIL,
+        ]
+
+        return context | {
+            "is_firearms_application": is_firearms_application,
+            "file_metadata": case_documents_metadata(application),
+            "documents": [
+                {
+                    "file": doc,
+                    "url": create_presigned_url(doc.path),
                 }
+                for doc in link.case_email.attachments.all()
+            ],
+        }
 
-        return context
+    @staticmethod
+    def get_application(case_email: CaseEmail) -> ApplicationsWithCaseEmail:
+        match case_email.template_code:
+            case EmailTypes.BEIS_CASE_EMAIL:
+                return ExportApplication.objects.get(case_emails=case_email).get_specific_model()
+            case EmailTypes.CONSTABULARY_CASE_EMAIL | EmailTypes.SANCTIONS_CASE_EMAIL:
+                return ImportApplication.objects.get(case_emails=case_email).get_specific_model()
+            case _:
+                raise ValueError(f"Email attachments not supported for {case_email.template_code}.")
 
 
-class DownloadDFLCaseDocumentsFormView(DownloadCaseDocumentsFormView):
+class DownloadDFLCaseDocumentsFormView(DownloadLinkFormViewBase):
     """View to see all documents relating to an import application.
 
     View does not require a logged-in user, it instead asks a user to enter information
@@ -180,6 +195,7 @@ class DownloadDFLCaseDocumentsFormView(DownloadCaseDocumentsFormView):
 
     # FormView config
     form_class = DownloadDFLCaseDocumentsForm
+    template_name = "web/domains/case/download-case-documents.html"
     licence_date_format = "%d %b %Y"
 
     def get_initial(self) -> dict:
@@ -193,15 +209,18 @@ class DownloadDFLCaseDocumentsFormView(DownloadCaseDocumentsFormView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        return context | {"regenerate_link": "case:regenerate-dfl-case-documents-link"}
+        return context | {
+            "regenerate_documents_link": reverse(
+                "case:regenerate-dfl-case-documents-link", kwargs={"code": self.kwargs["code"]}
+            )
+        }
 
-    def get_extra_context(self, form: DownloadDFLCaseDocumentsForm) -> dict[str, Any]:
+    def get_form_valid_context(self, form: DownloadDFLCaseDocumentsForm) -> dict[str, Any]:
         link: ConstabularyLicenceDownloadLink = form.link  # type: ignore[assignment]
         pack: ImportApplicationLicence = link.licence
         application = link.licence.import_application.get_specific_model()
 
         return {
-            "regenerate_link": "case:regenerate-dfl-case-documents-link",
             "doc_pack": pack,
             "process": application,
             "application_type": ProcessTypes(application.process_type).label,
@@ -227,10 +246,10 @@ class DownloadDFLCaseDocumentsFormView(DownloadCaseDocumentsFormView):
 
 
 @method_decorator(ratelimit(key="ip", rate="10/m", method=UNSAFE, block=True), name="post")
-class RegenerateDownloadLinkView(View):
+class RegenerateDownloadLinkViewBase(View):
     http_method_names = ["post"]
     link_class: ClassVar[type[ConstabularyLicenceDownloadLink | CaseEmailDownloadLink]]
-    download_url_name: str
+    download_url_name: ClassVar[str]
 
     def resend_email(self, link: DownloadLink) -> None:
         raise NotImplementedError("Method to resend email must be defined.")
@@ -258,7 +277,7 @@ class RegenerateDownloadLinkView(View):
         return redirect(reverse(self.download_url_name, kwargs={"code": self.kwargs.get("code")}))
 
 
-class RegenerateDFLCaseDocumentsDownloadLinkView(RegenerateDownloadLinkView):
+class RegenerateDFLCaseDocumentsDownloadLinkView(RegenerateDownloadLinkViewBase):
     download_url_name = "case:download-dfl-case-documents"
     link_class = ConstabularyLicenceDownloadLink
 
@@ -267,7 +286,7 @@ class RegenerateDFLCaseDocumentsDownloadLinkView(RegenerateDownloadLinkView):
         send_constabulary_deactivated_firearms_email(application)
 
 
-class RegenerateCaseEmailDocumentsDownloadLinkView(RegenerateDownloadLinkView):
+class RegenerateCaseEmailDocumentsDownloadLinkView(RegenerateDownloadLinkViewBase):
     download_url_name = "case:download-case-email-documents"
     link_class = CaseEmailDownloadLink
 

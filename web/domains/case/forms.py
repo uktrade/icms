@@ -353,7 +353,7 @@ class DownloadDocumentsFormBase(forms.Form):
         self.link = None
 
     email = forms.EmailField(help_text="Enter the associated email address.")
-    check_code = forms.CharField(max_length=8, help_text="Enter the check code found in the email")
+    check_code = forms.CharField(max_length=8, help_text="Enter the check code found in the email.")
 
     def clean(self):
         # Load and store the link record if valid, display error if not.
