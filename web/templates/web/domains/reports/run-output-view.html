@@ -62,26 +62,34 @@
     <dd>{{ object.title }}</dd>
     <dt class="bold">Status</dt>
     <dd>{{ object.get_status_display() }}</dd>
-    <dt class="bold">Scheduled by</dt>
-    <dd>{{ object.scheduled_by }}</dd>
+    {% if object.scheduled_by_id != 0 %}
+      <dt class="bold">Scheduled by</dt>
+      <dd>{{ object.scheduled_by }}</dd>
+    {% endif %}
     <dt class="bold">Started Date</dt>
     <dd>{% if object.started_at %}{{ object.started_at.strftime('%d %b %Y %H:%M:%S') }}{% else %}&nbsp;{% endif %}</dd>
     <dt class="bold">Completed Date</dt>
     <dd>{% if object.finished_at %}{{ object.finished_at.strftime('%d %b %Y %H:%M:%S') }}{% else %}&nbsp;{% endif %}</dd>
     {% if object.is_deleted %}
-      <dt class="bold">Deleted by</dt>
-      <dd>{{ object.deleted_by }}</dd>
+      {% if object.deleted_by_id != 0 %}
+        <dt class="bold">Deleted by</dt>
+        <dd>{{ object.deleted_by }}</dd>
+      {% endif %}
       <dt class="bold">Deleted Date</dt>
       <dd>{% if object.deleted_at %}{{ object.deleted_at.strftime('%d %b %Y %H:%M:%S') }}{% else %}&nbsp;{% endif %}</dd>
     {% endif %}
-    <dt class="bold">Notes</dt>
-    <dd>{{ object.notes }}</dd>
+    {% if notes %}
+      <dt class="bold">Notes</dt>
+      <dd>{{ object.notes }}</dd>
+    {% endif %}
   </dl>
   <h4>Parameters</h4>
   <dl>
     {% for desc, value in parameters.items() %}
-      <dt class="bold">{{ desc }}</dt>
-      <dd>{{ value|safe }}</dd>
+      {% if value %}
+        <dt class="bold">{{ desc }}</dt>
+        <dd>{{ value|safe }}</dd>
+      {% endif %}
     {% endfor %}
   </dl>
   {% if not object.is_deleted %}

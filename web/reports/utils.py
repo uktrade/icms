@@ -99,13 +99,23 @@ def format_contact_name(title: str | None, first_name: str | None, last_name: st
 def format_parameters_used(schedule_report: ScheduleReport) -> dict[str, str]:
     parameters = {}
     for desc, value in schedule_report.parameters.items():
-        if desc in ["date_from", "date_to"]:
+        if desc in [
+            "date_from",
+            "date_to",
+            "case_closed_date_from",
+            "case_closed_date_to",
+            "case_submitted_date_from",
+            "case_submitted_date_to",
+        ]:
             value = dt.datetime.strptime(value, "%Y-%m-%d").strftime("%d %b %Y") if value else ""
         elif desc == "application_type":
-            if schedule_report.report.report_type == ReportType.IMPORT_LICENCES:
-                value = ImportApplicationType.Types(value).label if value else "All"
-            else:
-                value = ExportApplicationType.Types(value).label if value else "All"
+            try:
+                if schedule_report.report.report_type == ReportType.IMPORT_LICENCES:
+                    value = ImportApplicationType.Types(value).label if value else "All"
+                else:
+                    value = ExportApplicationType.Types(value).label if value else "All"
+            except ValueError:
+                pass
         elif desc == "date_filter_type":
             value = DateFilterType(value).label
         elif desc == "legislation":
@@ -116,6 +126,8 @@ def format_parameters_used(schedule_report: ScheduleReport) -> dict[str, str]:
                 if value
                 else "All"
             )
+        elif desc == "is_legacy_report":
+            value = "Yes" if value else "No"
         parameters[format_label(desc)] = value
     return parameters
 

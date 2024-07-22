@@ -1,4 +1,5 @@
 import datetime as dt
+import json
 
 from data_migration import queries
 
@@ -950,6 +951,214 @@ file_query_result = {
                 "Test Mailshot 4.pdf",  # filename
                 "pdf",  # content_type
                 12345,  # file_size
+            ),
+        ],
+    ),
+    queries.report_files: (
+        [
+            ("report_output_id",),
+            ("schedule_id",),
+            ("filename",),
+            ("content_type",),
+            ("file_size",),
+            ("path",),
+            ("created_datetime",),
+            ("created_by_id",),
+            ("clob_data",),
+        ],
+        [
+            (
+                500,  # report_output_id
+                1001,  # schedule_id
+                "200204271223_ISSUED_CERTS.csv",  # filename
+                "text/csv",  # content_type
+                12345,  # file_size
+                "REPORTS/LEGACY/200204271223_ISSUED_CERTS.csv",  # path
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
+                0,  # created_by_id
+                "DATA",  # clob_data
+            ),
+            (
+                501,  # report_output_id
+                1002,  # schedule_id
+                "200204271223_ISSUED_LICENCES.csv",  # filename
+                "text/csv",  # content_type
+                22223332,  # file_size
+                "REPORTS/LEGACY/200204271223_ISSUED_LICENCES.csv",  # path
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
+                0,  # created_by_id
+                "DATA",  # clob_data
+            ),
+            (
+                502,  # report_output_id
+                1003,  # schedule_id
+                "200204271223_ACCESS_REQUESTS.csv",  # filename
+                "text/csv",  # content_type
+                12345,  # file_size
+                "REPORTS/LEGACY/200204271223_ACCESS_REQUESTS.csv",  # path
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
+                0,  # created_by_id
+                "DATA",  # clob_data
+            ),
+            (
+                503,  # report_output_id
+                1004,  # schedule_id
+                "200204271223_NCA_REPORT.csv",  # filename
+                "text/csv",  # content_type
+                12345,  # file_size
+                "REPORTS/LEGACY/200204271223_NCA_REPORT.csv",  # path
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
+                0,  # created_by_id
+                "DATA",  # clob_data
+            ),
+            (
+                504,  # report_output_id
+                1005,  # schedule_id
+                "200204271223_FIREARMS.csv",  # filename
+                "text/csv",  # content_type
+                12345,  # file_size
+                "REPORTS/LEGACY/200204271223_FIREARMS.csv",  # path
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
+                0,  # created_by_id
+                "DATA",  # clob_data
+            ),
+        ],
+    ),
+    queries.schedule_reports: (
+        [
+            ("id",),
+            ("report_domain",),
+            ("title",),
+            ("notes",),
+            ("parameter_xml",),
+            ("scheduled_by_id",),
+            ("created_datetime",),
+            ("started_at",),
+            ("finished_at",),
+            ("deleted_at",),
+            ("deleted_by_id",),
+            ("parameters",),
+        ],
+        [
+            (
+                1001,  # id
+                "IMP_ISSUED_CERTIFICATES",  # report_domain
+                "Issued certs report",  # title
+                "first report test",  # notes
+                "",  # parameter_xml
+                2,  # scheduled_by_id
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
+                dt.datetime(2022, 4, 27, 12, 23),  # started_at
+                dt.datetime(2022, 4, 27, 12, 25),  # finished_at
+                None,  # deleted_at
+                None,  # deleted_by_id
+                json.dumps(
+                    {
+                        "application_type": None,
+                        "date_from": "2017-06-01",
+                        "date_to": "2017-06-30",
+                        "case_submitted_date_from": None,
+                        "case_submitted_date_to": None,
+                        "case_closed_date_from": None,
+                        "case_closed_date_to": None,
+                    }
+                ),  # parameters
+            ),
+            (
+                1002,  # id
+                "IMP_DATA_EXTRACT",  # report_domain
+                "Issued licences report",  # title
+                "second report test",  # notes
+                "",  # parameter_xml
+                2,  # scheduled_by_id
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
+                dt.datetime(2022, 4, 27, 12, 23),  # started_at
+                dt.datetime(2022, 4, 27, 12, 25),  # finished_at
+                None,  # deleted_at
+                None,  # deleted_by_id
+                json.dumps(
+                    {
+                        "application_type": None,
+                        "date_from": None,
+                        "date_to": None,
+                        "case_submitted_date_from": "2017-06-01",
+                        "case_submitted_date_to": "2017-06-30",
+                        "case_closed_date_from": "2017-06-01",
+                        "case_closed_date_to": "2017-06-30",
+                    }
+                ),  # parameters
+            ),
+            (
+                1003,  # id
+                "ACCESS_REQUEST_REPORT",  # report_domain
+                "Access request report",  # title
+                None,  # notes
+                "",  # parameter_xml
+                2,  # scheduled_by_id
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
+                dt.datetime(2022, 4, 27, 12, 23),  # started_at
+                dt.datetime(2022, 4, 27, 12, 25),  # finished_at
+                dt.datetime(2022, 4, 30, 9, 0),  # deleted_at
+                3,  # deleted_by_id
+                json.dumps(
+                    {
+                        "application_type": None,
+                        "date_from": "2020-02-01",
+                        "date_to": "2020-03-30",
+                        "case_submitted_date_from": None,
+                        "case_submitted_date_to": None,
+                        "case_closed_date_from": None,
+                        "case_closed_date_to": None,
+                    }
+                ),  # parameters
+            ),
+            (
+                1004,  # id
+                "IMP_FA_SUPPLEMENTARY_REPORTS_NCA",  # report_domain
+                "NCA report",  # title
+                None,  # notes
+                "",  # parameter_xml
+                2,  # scheduled_by_id
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
+                dt.datetime(2022, 4, 27, 12, 23),  # started_at
+                dt.datetime(2022, 4, 27, 12, 25),  # finished_at
+                None,  # deleted_at
+                None,  # deleted_by_id
+                json.dumps(
+                    {
+                        "application_type": None,
+                        "date_from": "2017-06-01",
+                        "date_to": "2017-06-30",
+                        "case_submitted_date_from": None,
+                        "case_submitted_date_to": None,
+                        "case_closed_date_from": None,
+                        "case_closed_date_to": None,
+                    }
+                ),  # parameters
+            ),
+            (
+                1005,  # id
+                "IMP_FIREARMS_LICENCES",  # report_domain
+                "Firearms report",  # title
+                None,  # notes
+                "",  # parameter_xml
+                3,  # scheduled_by_id
+                dt.datetime(2022, 4, 27, 12, 23),  # created_date
+                dt.datetime(2022, 4, 27, 12, 23),  # started_at
+                dt.datetime(2022, 4, 27, 12, 25),  # finished_at
+                None,  # deleted_at
+                None,  # deleted_by_id
+                json.dumps(
+                    {
+                        "application_type": None,
+                        "date_from": "2023-04-10",
+                        "date_to": "2023-04-20",
+                        "case_submitted_date_from": None,
+                        "case_submitted_date_to": None,
+                        "case_closed_date_from": None,
+                        "case_closed_date_to": None,
+                    }
+                ),  # parameters
             ),
         ],
     ),

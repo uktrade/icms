@@ -5,6 +5,8 @@ from web import models as web
 
 DEFAULT_FILE_CREATED_DATETIME = "2013-01-01 01:00:00"
 DEFAULT_SECURE_LOB_REF_ID = 0
+DEFAULT_REPORT_OUTPUT_ID = 0
+
 
 file_folder_query_model = [
     QueryModel(
@@ -372,6 +374,18 @@ file_query_model = [
             "secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID,
         },
     ),
+    QueryModel(
+        queries.schedule_reports,
+        "Schedule Reports",
+        dm.ScheduleReport,
+    ),
+    QueryModel(
+        queries.report_files,
+        "Generated Report Files",
+        dm.GeneratedReport,
+        {"report_output_id": DEFAULT_REPORT_OUTPUT_ID},
+        "report_output_id",
+    ),
 ]
 
 file_m2m = [
@@ -473,4 +487,6 @@ file_source_target = [
         dm.ExportCertificateCaseDocumentReferenceData,
         web.ExportCertificateCaseDocumentReferenceData,
     ),
+    SourceTarget(dm.ScheduleReport, web.ScheduleReport),
+    SourceTarget(dm.GeneratedReport, web.GeneratedReport),
 ]
