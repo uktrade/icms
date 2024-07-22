@@ -77,7 +77,7 @@
                   </button>
                 </li>
                 <li>
-                  <button type="button" onclick="$('.modal-popover-container').hide()" class="link-button button">
+                  <button type="button" class="link-button button hide-modal-button">
                     Cancel
                   </button>
                 </li>
@@ -89,9 +89,14 @@
           {{ fields.field(form.no_report_reason) }}
         {% endif %}
       {%- endcall %}
-      <button type="button" onclick="$('.modal-popover-container').show()" class="button primary-button">
+      <button type="button" class="button primary-button show-modal-button">
         Confirm Reporting Complete
       </button>
     {% endif %}
   {% endif %}
 {% endblock %}
+
+{% block page_js %}
+  {{ super() }}
+  <script type="text/javascript" src="{{ static('web/js/components/show-hide-modal-event-handler.js') }}"></script>
+{% endblock page_js %}
