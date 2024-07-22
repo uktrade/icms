@@ -1,0 +1,56 @@
+[
+{
+  "model": "web.report",
+  "pk": 1,
+  "fields": {
+    "name": "Issued Certificates",
+    "description": "Reports relating to issued Certificates of Free Sale, Certificates of Manufacture and Certificates of Good Manufacturing Practice",
+    "report_type": "ISSUED_CERTIFICATES"
+  }
+},
+{
+  "model": "web.report",
+  "pk": 2,
+  "fields": {
+    "name": "Access Request Report for Importers and Exporters",
+    "description": "Report for Importer / Exporter access request filtering on dates",
+    "report_type": "ACCESS_REQUESTS"
+  }
+},
+{
+  "model": "web.report",
+  "pk": 3,
+  "fields": {
+    "name": "Import Licence Data Extract Report",
+    "description": "Data extract of import licences filtering on licence type, submitted date and issued date",
+    "report_type": "IMPORT_LICENCES"
+  }
+},
+{
+  "model": "web.report",
+  "pk": 4,
+  "fields": {
+    "name": "Supplementary firearms information",
+    "description": "Data extract of import licences filtering on licence type, submitted date and issued date",
+    "report_type": "SUPPLEMENTARY_FIREARMS"
+  }
+},
+{
+  "model": "web.report",
+  "pk": 5,
+  "fields": {
+    "name": "Firearms Licences",
+    "description": "Reports relating to Firearms licences",
+    "report_type": "FIREARMS_LICENCES"
+  }
+},
+{
+  "model": "web.report",
+  "pk": 6,
+  "fields": {
+    "name": "Active Users",
+    "description": "Data extract of active users",
+    "report_type": "ACTIVE_USERS"
+  }
+}
+]

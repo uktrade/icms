@@ -57,6 +57,8 @@ class File(MigrationBase):
     # firearms supplementary report file id
     sr_goods_file_id = models.CharField(max_length=20, null=True, unique=True)
 
+    report_output_id = models.IntegerField(null=True, unique=True)
+
     @classmethod
     def data_export(cls, data: dict[str, Any]) -> dict[str, Any]:
         # Data fix for pdf files without content_type set, fixing so the metadata can be migrated
@@ -81,6 +83,7 @@ class File(MigrationBase):
             "document_legacy_id",
             "created_by_str",
             "sr_goods_file_id",
+            "report_output_id",
         ]
 
 

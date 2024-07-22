@@ -84,7 +84,7 @@ class MigrationBaseCommand(BaseCommand):
         mins = time_taken // 60
         secs = time_taken % 60
 
-        self.log(f"Execuction Time --> {mins:.0f} minutes {secs:.0f} seconds", "\n\n")
+        self.log(f"Execution Time --> {mins:.0f} minutes {secs:.0f} seconds", "\n\n")
 
     def _get_data_list(self, data_list: list[Any]) -> tuple[int, list[Any]]:
         start = (self.start_index and int(self.start_index)) or 1

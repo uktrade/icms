@@ -23,5 +23,6 @@ from .permissions import (  # NOQA
     users_without_roles_count,
 )
 from .reference import *  # NOQA
+from .reports import *  # NOQA
 from .template import *  # NOQA
 from .user import *  # NOQA

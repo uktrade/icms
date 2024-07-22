@@ -1,7 +1,5 @@
 from django.core.management import call_command
 
-from web.management.commands.add_reports_data import add_reports
-
 from .add_application_type_data import (
     add_export_application_type_data,
     add_import_application_type_data,
@@ -55,4 +53,3 @@ def load_app_test_data():
     call_command("loaddata", "product_legislations")
     add_sanction_data()
     add_email_gov_notify_templates()
-    add_reports()
