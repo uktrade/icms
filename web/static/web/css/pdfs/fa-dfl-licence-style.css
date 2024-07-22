@@ -1,0 +1,291 @@
+@page {
+    size: A4;
+    margin-right: 20px;
+    margin-left: 40px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+@page :first {
+    margin-top: 5px;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.bordered {
+    border: 1px solid #000;
+    box-decoration-break: clone;
+    border-collapse: collapse;
+}
+
+.small-text {
+    font-size: 10px;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+
+.preview-orange {
+    color: darkorange;
+}
+
+.preview-green {
+    color: #0B8433;
+}
+
+p, li {
+    font-weight: 5;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+p, li {
+    font-size: 13px;
+}
+
+p.content,
+ul {
+    margin: 0;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.bold {
+    font-weight: bold
+}
+
+/* Default flex for each flex item (equal spacing) */
+.flex-row > div,
+.flex-column > div {
+    flex: 1;
+}
+
+/* Padding for all p elements */
+div > p.content, .post_endorsement_statement p {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+/* Padding for first child in each section */
+div > p.content:first-child {
+    padding-top: 5px;
+}
+
+/* Ensure spacing after initial line */
+#reference-and-licence {
+    margin-top: 40px;
+}
+
+/* Minimum height for reference and licence divs */
+#reference-and-licence > div {
+    min-height: 55px;
+}
+
+
+#commodities > div {
+    min-height: 65px;
+}
+
+main {
+    margin-top: 55px;
+}
+
+footer {
+    margin-top: 5px;
+}
+
+footer p,
+footer li {
+    font-size: 10px;
+}
+
+/* Add padding to the last container */
+#signature-and-date-issued {
+    padding-bottom: 2em;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+#signature > p {
+    color: black;
+}
+
+#signature > img {
+    padding-left: 5px;
+}
+
+ul li {
+    list-style-type: '-';
+}
+
+div[name="signature-widget"] {
+    display: flex;
+    flex-wrap: wrap;
+    width: 200px;
+    height: 110px;
+}
+
+div[name="signature-widget"] > span {
+    flex: 0 0 100%;
+    display: block;
+    font-size: 11px;
+    margin: 0;
+}
+
+#signature-widget-image-container {
+    flex: 0 0 100%;
+    display: block;
+    margin: 0;
+}
+
+#signature-widget-image {
+    width: 175px;
+    max-height: 100px;
+}
+
+@media print {
+    #signature-and-date-issued {
+        break-inside: avoid;
+    }
+}
+
+.signature_image {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+}
+
+/* Add padding to the last container */
+#signature-and-date-issued {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+#signature > p {
+    color: black;
+}
+
+#signature > img {
+    padding-left: 5px;
+}
+
+#not_signed_image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    max-width: 175px;
+}
+
+.footer_signature {
+    width: 300px;
+    height: 150px;
+}
+
+
+#quantity-section {
+    display: flex;
+    flex-direction: column;
+    page-break-before: always;
+}
+
+#quantity-section > main {
+    flex: 4;
+}
+
+#quantity-section > footer {
+    flex: 1
+}
+
+#quantity-table {
+    width: 100%;
+    height: 750px;
+
+}
+
+#quantity-table tr:first-child {
+    height: 5%;
+}
+
+#quantity-table tr:nth-child(n+2) {
+    height: 9.5%;
+}
+
+#quantity-table td {
+    font-size: 12px;
+    width: 25%;
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+td[rowspan] {
+    vertical-align: top;
+    text-align: left;
+}
+
+#name_and_address_importer {
+    flex: 37;
+}
+
+#dbt_logo {
+    flex: 63;
+    align-content: start;
+}
+
+#name_and_address_importer_header {
+    margin-bottom: 2px;
+    margin-top: 20px;
+}
+
+#this-licence-bullets > li:not(:first-child) {
+    margin-top: 8px;
+}
+
+#date-issued {
+    margin-left: 80px;
+}
+
+#quote-both-text {
+    padding-top: 18px;
+    padding-left: 40px;
+    padding-right: 10px;
+}
+
+.float-right {
+    float: right;
+}
+
+.large-header-logo {
+    height: 125px;
+    width: 250px;
+}
+
+#text-content .content {
+    line-height: 1.3;
+}
+
+#text-content {
+    border-top: none;
+}
+
+.bordered + .bordered {
+    border-left: none;
+}
+
+#is-hereby-authorised {
+    margin-bottom: 2px;
+}
+
+.medium-text {
+    font-size: 12px;
+}

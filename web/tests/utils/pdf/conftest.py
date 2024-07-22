@@ -1,4 +1,5 @@
 import pytest
+from django.conf import settings
 from django.utils import timezone
 
 from web.models import (
@@ -102,6 +103,7 @@ def oil_expected_preview_context(active_signature):
         "page_title": "Licence Preview",
         "signature": active_signature,
         "signature_file": "",
+        "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
     }
 
 
@@ -126,6 +128,7 @@ def dfl_expected_preview_context(active_signature):
         "page_title": "Licence Preview",
         "signature": active_signature,
         "signature_file": "",
+        "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
     }
 
 
@@ -152,6 +155,7 @@ def sil_expected_preview_context(active_signature):
         "page_title": "Licence Preview",
         "signature": active_signature,
         "signature_file": "",
+        "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
     }
 
 
