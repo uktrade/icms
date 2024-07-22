@@ -372,6 +372,16 @@ file_query_model = [
             "secure_lob_ref_id": DEFAULT_SECURE_LOB_REF_ID,
         },
     ),
+    QueryModel(
+        queries.schedule_reports,
+        "Schedule Reports",
+        dm.ScheduleReport,
+    ),
+    QueryModel(
+        queries.report_files,
+        "Generated Report Files",
+        dm.GeneratedReport,
+    ),
 ]
 
 file_m2m = [
@@ -473,4 +483,6 @@ file_source_target = [
         dm.ExportCertificateCaseDocumentReferenceData,
         web.ExportCertificateCaseDocumentReferenceData,
     ),
+    SourceTarget(dm.ScheduleReport, web.ScheduleReport),
+    SourceTarget(dm.GeneratedReport, web.GeneratedReport),
 ]

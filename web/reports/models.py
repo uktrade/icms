@@ -45,6 +45,7 @@ class ScheduleReport(models.Model):
         default=ReportStatus.SUBMITTED,
     )
     errors = models.BooleanField(null=True)
+    legacy_report_id = models.IntegerField(null=True)
 
     @property
     def is_deleted(self) -> bool:

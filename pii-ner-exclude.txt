@@ -4864,3 +4864,25 @@ class="paper-header"><strong
 div class="mb-0-5
 Chapter 93</p
 Department for Business and Trade,<br/
+ScheduleReport
+GeneratedReport
+f"Execution Time
+Generated Report
+report_output_id
+rs.id AS
+PART_LABEL
+rr.id
+ON rpo
+REPORTMGR.REPORT_RUNS
+SELECT rs.id AS id, rr."DOMAIN
+rs.title
+DESCRIPTION AS
+PARAMETER_XML
+submit_end_date VARCHAR2(50
+closed_start_date VARCHAR2(50
+closed_end_date VARCHAR2(50
+"My Report
+Case Closed Date
+Case Submitted Date From"
+Case Submitted Date
+Is Legacy Report

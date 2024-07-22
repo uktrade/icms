@@ -58,7 +58,7 @@ ORDER BY created_datetime
     def test_get_query_list(self):
         db = OracleDBProcessor(100, None, 1)
         result = [query_model for query_model in db.get_query_list()]
-        assert len(result) == 17
+        assert len(result) == 19
 
     def test_get_filtered_query_list(self):
         db = OracleDBProcessor(

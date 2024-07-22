@@ -28,6 +28,29 @@ from web.reports.utils import (
             },
         ),
         (
+            ReportType.ACCESS_REQUESTS,
+            {
+                "date_from": None,
+                "date_to": None,
+                "case_closed_date_from": "2015-02-01",
+                "case_closed_date_to": "2015-02-01",
+                "case_submitted_date_from": "2015-02-01",
+                "case_submitted_date_to": "2015-02-01",
+                "application_type": "My Report",
+                "is_legacy_report": True,
+            },
+            {
+                "Date From": "",
+                "Date to": "",
+                "Case Closed Date From": "01 Feb 2015",
+                "Case Closed Date to": "01 Feb 2015",
+                "Case Submitted Date From": "01 Feb 2015",
+                "Case Submitted Date to": "01 Feb 2015",
+                "Application Type": "My Report",
+                "Is Legacy Report": "Yes",
+            },
+        ),
+        (
             ReportType.IMPORT_LICENCES,
             {
                 "date_from": "2011-02-03",

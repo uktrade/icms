@@ -29,7 +29,9 @@ def format_row(
             continue
 
         if value and (
-            column.endswith("_datetime") or column in ("created", "created_at", "updated_at")
+            column.endswith("_datetime")
+            or column
+            in ("created", "created_at", "updated_at", "started_at", "finished_at", "deleted_at")
         ):
             if isinstance(value, str):
                 value = datetime_or_none(value)
