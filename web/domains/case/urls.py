@@ -4,6 +4,7 @@ from web.types import DocumentTypes
 
 from .views import (
     views_case_history,
+    views_constabulary,
     views_documents,
     views_email,
     views_fir,
@@ -450,12 +451,12 @@ urlpatterns = [
                             ),
                             path(
                                 "documents/<int:doc_pack_pk>/",
-                                views_documents.ConstabularyDocumentView.as_view(),
+                                views_constabulary.ConstabularyDocumentView.as_view(),
                                 name="constabulary-doc",
                             ),
                             path(
                                 "documents/<int:doc_pack_pk>/download/<int:cdr_pk>/",
-                                views_documents.ConstabularyDocumentDownloadView.as_view(),
+                                views_constabulary.ConstabularyDocumentDownloadView.as_view(),
                                 name="constabulary-doc-download",
                             ),
                             path(
