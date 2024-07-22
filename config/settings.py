@@ -471,9 +471,9 @@ CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = (
     "'self'",
     "'unsafe-eval'",
-    "sentry.ci.uktrade.digital",
-    "cdnjs.cloudflare.com",
-    "googletagmanager.com",
+    "*.sentry.ci.uktrade.digital",
+    "*.cdnjs.cloudflare.com",
+    "*.googletagmanager.com",
     "*.google-analytics.com",
 )
 
@@ -484,22 +484,22 @@ CSP_CONNECT_SRC = CSP_SCRIPT_SRC
 CSP_STYLE_SRC = (
     "'self'",
     "'unsafe-inline'",
-    "fonts.gstatic.com",
-    "fonts.googleapis.com",
-    "googletagmanager.com",
+    "*.fonts.gstatic.com",
+    "*.fonts.googleapis.com",
+    "*.googletagmanager.com",
 )
 # Fonts can only be loaded from ICMS itself, google, or data URIs
 CSP_FONT_SRC = (
     "'self'",
     "data:",
-    "fonts.gstatic.com",
+    "*.fonts.gstatic.com",
 )
 # Images can only be loaded from ICMS itself, google, or data URIs
 CSP_IMG_SRC = (
     "'self'",
     "data:",
-    "googletagmanager.com",
-    "fonts.gstatic.com",
+    "*.googletagmanager.com",
+    "*.fonts.gstatic.com",
 )
 
 # CSP meta-settings
