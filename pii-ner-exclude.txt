@@ -4850,3 +4850,5 @@ class="small-text">Name of importer
 the Department for Business and Trade.</li
 Department for Business and Trade<
 f"ELECTRONIC LICENCE
+class="icon-pencil
+hide_modal_buttons[i].addEventListener('click
