@@ -173,6 +173,8 @@ class PdfGenerator(PdfGenBase):
                 return pages.format_com_pages(pdf_data)
             case ProcessTypes.WOOD:
                 return pages.format_wood_pages(pdf_data)
+            case ProcessTypes.FA_DFL:
+                return pages.format_dfl_pages(pdf_data, self.get_document_context())
             case _:
                 return pdf_data
 

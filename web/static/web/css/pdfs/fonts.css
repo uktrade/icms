@@ -23,7 +23,7 @@ when using playwright
     font-weight: 300;  /* 300 == light */
 }
 
-/* everything by default is 17px and normal Helvetica */
+/* everything by default is normal Helvetica */
 * {
     font-family: 'Helvetica', sans-serif;
     font-weight: normal;

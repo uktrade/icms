@@ -83,6 +83,7 @@ def get_licence_context(
         "licence_end_date": _get_licence_end_date(licence),
         "signature": signature,
         "signature_file": signature_file,
+        "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
     }
 
 
@@ -164,7 +165,6 @@ def get_sanctions_licence_context(
     ]
 
     return context | {
-        "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
         "country_of_manufacture": get_country_and_geo_code(application.origin_country),
         "country_of_shipment": get_country_and_geo_code(application.consignment_country),
         "ref": application.applicant_reference,

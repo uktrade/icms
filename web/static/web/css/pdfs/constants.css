@@ -106,11 +106,11 @@
 }
 
 .mb-0-5 {
-    margin-bottom: 0.5em;
+    margin-bottom: 0.5em !important;
 }
 
 .mb-1 {
-    margin-bottom: 1em;
+    margin-bottom: 1em !important;
 }
 
 .mb-2 {

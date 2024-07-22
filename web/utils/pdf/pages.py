@@ -143,3 +143,50 @@ def format_wood_pages(pdf_data: bytes) -> bytes:
     with io.BytesIO() as bytes_stream:
         writer.write(bytes_stream)
         return bytes_stream.getvalue()
+
+
+def format_dfl_pages(pdf_data: bytes, context: dict[str, Any]) -> bytes:
+    """Function to draw the top/bottom border lines to DFL licences"""
+    left_margin = 36
+    right_margin = 574
+
+    reader = pypdf.PdfReader(io.BytesIO(pdf_data))
+    writer = pypdf.PdfWriter()
+    page_total = len(reader.pages)
+
+    if page_total == 1:
+        # don't bother with any borders if the entire licence is on 1 page
+        return pdf_data
+
+    signature_page_seen = False
+
+    for page_number, page in enumerate(reader.pages):
+        packet = io.BytesIO()
+        new_page = canvas.Canvas(packet, pagesize=portrait(A4))
+
+        if page_number >= 1 and not signature_page_seen:
+            # add the top closing line to all pages except the first
+            new_page.line(left_margin, 813, right_margin, 813)
+
+        if f"Date Issued: {context['licence_start_date']}" in page.extract_text():
+            # we're at the signature page, mark it as seen, so we don't add any more lines
+            # as we know the box has already been closed with CSS
+            signature_page_seen = True
+
+        if page_total > 1 and page_number < page_total - 1 and not signature_page_seen:
+            # if there is more than one page, add the bottom closing line unless it's the last page.
+            # this is because the last page already has the bottom line in CSS
+            new_page.line(left_margin, 31, right_margin, 31)
+
+        new_page.save()
+        packet.seek(0)
+        new_pdf = pypdf.PdfReader(packet)
+
+        if new_pdf.pages:
+            page.merge_page(new_pdf.pages[0])
+
+        writer.add_page(page)
+
+    with io.BytesIO() as bytes_stream:
+        writer.write(bytes_stream)
+        return bytes_stream.getvalue()
