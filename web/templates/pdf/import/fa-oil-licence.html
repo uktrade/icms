@@ -1,13 +1,232 @@
-{% extends "pdf/shared/fa-licence-base.html" %}
-
-{% block css %}
+{% from "web/domains/signature/macros.html" import document_signature_placeholder %}
+{% from "web/domains/signature/macros.html" import not_signed_image %}
+{% from "web/domains/signature/macros.html" import dbt_logo %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="description" content="{{ importer_site_name }} import licence">
+    <title>{{ page_title }}</title>
+    <style>
+      {{ get_css_rules_as_string("web/css/pdfs/fonts.css")|safe }}
+      {{ get_css_rules_as_string("web/css/pdfs/constants.css")|safe }}
+    </style>
     <style>
       {{ get_css_rules_as_string("web/css/pdfs/fa-oil-licence-style.css")|safe }}
+      {% if preview_licence %}
+        {{ get_css_rules_as_string("web/css/pdfs/preview.css")|safe }}
+      {% endif %}
     </style>
-{% endblock %}
+  </head>
+  <body>
+    <header>
+      <div id="header-block">
+        {% if paper_licence_only %}
+          <h3>DBT IMPORT LICENCE</h3>
+          <p class="content">under Article 2, Import of Goods (Control) Order 1954</p>
+        {% else %}
+          <p><strong>ELECTRONIC LICENCE</strong> issued on {{ licence_start_date }} and sent to HM Revenue and Customs.
+          </p>
+        {% endif %}
+      </div>
 
-{% block goods_section %}
-  <p class="content">Description of goods</p>
-  <p class="content">{{ goods_description }}</p>
-  <p class="content">Unlimited</p>
-{% endblock %}
+      <div class="flex-row" id="reference-and-licence">
+        <div class="quarter"></div>
+        <div class="bordered quarter">
+          <p class="content small-text">Applicant's own reference</p>
+          {% if applicant_reference %}
+            <p class="content">{{ applicant_reference }}</p>
+          {% elif preview_licence %}
+            <p class="content {{ 'preview-green' if preview_licence }}" id="applicant-reference">
+              [[APPLICANT_REFERENCE]]</p>
+          {% endif %}
+        </div>
+        <div class="quarter">
+          <p class="content small-text" id="quote-both-text">Quote both references<br>in all correspondence</p>
+        </div>
+        <div class="bordered quarter">
+          <p class="content small-text">Licence No.</p>
+          <p class="content {{ 'preview-orange' if preview_licence }}" id="licence-number">{{ licence_number }}</p>
+        </div>
+      </div>
+
+      <p id="name_and_address_importer_header" class="small-text">Name of importer and address for licence.</p>
+      <div class="flex-row" id="address-and-logo">
+        <div id="name_and_address_importer">
+          <div class="bordered">
+            <p class="content medium-text">{{ importer_name|upper }}</p>
+            {% for line in importer_address %}
+              <p class="content medium-text">{{ line|upper }}</p>
+            {% endfor %}
+            <p class="content medium-text">{{ importer_postcode|upper }}</p>
+            {% for number in eori_numbers %}
+              <p class="content text-right medium-text mb-0-5">{{ number|upper }}</p>
+            {% endfor %}
+          </div>
+        </div>
+        <div id="dbt_logo">
+          {{ dbt_logo(classes="large-header-logo ml-1") }}
+        </div>
+      </div>
+
+    </header>
+    <main>
+      <p class="content small-text" id="is-hereby-authorised">is hereby authorised by the Secretary of State to import into the United Kingdom in
+        accordance with
+        the conditions set out below</p>
+      <div class="flex-row" id="commodities">
+        <div class="bordered">
+          <p class="content small-text">Commodity Code</p>
+          <p class="content">ex Chapter 93</p>
+        </div>
+        <div class="bordered">
+          <p class="content small-text">Country from which consigned</p>
+          <p class="content">{{ consignment_country }}</p>
+        </div>
+        <div class="bordered">
+          <p class="content small-text">Country of origin</p>
+          <p class="content">{{ origin_country }}</p>
+        </div>
+      </div>
+      <div class="flex-row bordered" id="text-content">
+        <div>
+            <p class="content">Description of goods</p>
+            <p class="content">{{ goods_description }}</p>
+            <p class="content">Unlimited</p>
+            <br/>
+          {% if endorsements %}
+            {% for endorsement in endorsements %}
+              {% for line in endorsement %}
+                <p class="content mb-0">{{ line }}</p>
+              {% endfor %}
+            {% endfor %}
+          {% elif preview_licence %}
+            <p class="content" id="additional-remarks">[[ADDITIONAL_REMARKS]]</p>
+          {% endif %}
+
+          <br/>
+
+          <p class="content">This licence will cease to be valid for importations after {{ licence_end_date }}.</p>
+          <br>
+          <div class="flex-row" id="signature-and-date-issued">
+            <div id="signature">
+              {% if preview_licence %}
+                {{ not_signed_image() }}
+              {% else %}
+                {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory) }}
+              {% endif %}
+            </div>
+            <div>
+              <p class="content" id="date-issued">Date Issued: {{ licence_start_date }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <footer>
+      {% if paper_licence_only %}
+        <p class="content">ENQUIRIES TO IMPORT LICENSING BRANCH, DETAILS OVERLEAF.</p>
+      {% endif %}
+      <p class="content">
+        The issue of this licence does not provide any guarantee that any additional Government permit or approval which
+        may
+        be necessary to effect importation will be granted.
+      </p>
+      <br/>
+      <div class="avoid-break">
+        <p class="content mb-1">This licence</p>
+        <ul id="this-licence-bullets">
+          <li>is not transferable and may be used only for importations by the holder named above.</li>
+          <li>may be revoked at any time without reason given.</li>
+          <li>may be altered only by the Department for Business and Trade.</li>
+        </ul>
+      </div>
+    </footer>
+
+    {% if paper_licence_only %}
+      <div id="quantity-section" class="mt-1">
+        <table id="quantity-table" class="mt-2">
+          <tbody>
+            <tr>
+              <td>Quantity or value imported</td>
+              <td>Balance outstanding*</td>
+              <td colspan="2">Collector's No. and Date</td>
+            </tr>
+            <tr>
+              <td>1.</td>
+              <td></td>
+              <td rowspan="2">1.</td>
+              <td rowspan="2">2.</td>
+            </tr>
+            <tr>
+              <td>2.</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>3.</td>
+              <td></td>
+              <td rowspan="2">3.</td>
+              <td rowspan="2">4.</td>
+            </tr>
+            <tr>
+              <td>4.</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>5.</td>
+              <td></td>
+              <td rowspan="2">5.</td>
+              <td rowspan="2">6.</td>
+            </tr>
+            <tr>
+              <td>6.</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>7.</td>
+              <td></td>
+              <td rowspan="2">7.</td>
+              <td rowspan="2">8.</td>
+            </tr>
+            <tr>
+              <td>8.</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>9.</td>
+              <td></td>
+              <td rowspan="2">9.</td>
+              <td rowspan="2">10.</td>
+            </tr>
+            <tr>
+              <td>10.</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <footer>
+          <p>* When exhausted, this licence will be returned by H.M. Revenue and Customs to the Import Licensing Branch
+            at
+            the address below.</p>
+          <p class="bold">NOTES FOR IMPORTERS</p>
+          <ol>
+            <li>If 10 consignments have been imported but the licence is not exhausted, the importer or his agent should
+              return it to Import Licensing Branch with a request for issue of a new licence for the outstanding
+              balance.
+            </li>
+            <li class="mt-1">When the licence is no longer required (whether it has expired or not), or if it is
+              revoked, then
+              return
+              it to<br/>
+              Department for Business and Trade<br/>
+              Queensway House, West Precinct<br/>
+              Billingham, United Kingdom TS23 2NF<br/>{# /PS-IGNORE #}
+              Email: {{ ilb_contact_email }}
+            </li>
+          </ol>
+        </footer>
+      </div>
+
+    {% endif %}
+  </body>
+</html>
