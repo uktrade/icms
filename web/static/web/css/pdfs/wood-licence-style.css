@@ -26,6 +26,7 @@ main {
 p {
     margin: 1px;
     font-weight: 5;
+    overflow-wrap: anywhere;
 }
 
 .content-block {
@@ -128,4 +129,8 @@ div[name="signature-widget"] > span {
     padding-left: 42px;
     position: relative;
     border-bottom: 1px solid #000;
+}
+
+.applicant-reference {
+    max-width: 180px;
 }
