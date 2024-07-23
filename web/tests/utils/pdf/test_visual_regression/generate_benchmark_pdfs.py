@@ -36,74 +36,50 @@ def update_timestamp(file_name: str) -> None:
     date_created_json_file.write_text(json.dumps(date_stamp_dict))
 
 
-def test_generate_benchmark_cfs_certificate(completed_cfs_app):
-    file_name = "cfs_certificate.pdf"
+def _generate_licence_benchmark_pdf(app, file_name):
+    generator = PdfGenerator(DocumentTypes.LICENCE_SIGNED, app, app.licences.first())
+    (BENCHMARK_PDF_DIRECTORY / file_name).write_bytes(generator.get_pdf())
+    update_timestamp(file_name)
 
-    country = completed_cfs_app.countries.first()
-    certificate = completed_cfs_app.certificates.first()
+
+def _generate_certificate_benchmark_pdf(app, file_name):
+    country = app.countries.first()
+    certificate = app.certificates.first()
 
     certificate.case_completion_datetime = None
     certificate.save()
 
-    generator = PdfGenerator(
-        DocumentTypes.CERTIFICATE_SIGNED, completed_cfs_app, certificate, country
-    )
+    generator = PdfGenerator(DocumentTypes.CERTIFICATE_SIGNED, app, certificate, country)
     (BENCHMARK_PDF_DIRECTORY / file_name).write_bytes(generator.get_pdf())
     update_timestamp(file_name)
+
+
+def test_generate_benchmark_cfs_certificate(completed_cfs_app):
+    _generate_certificate_benchmark_pdf(completed_cfs_app, "cfs_certificate.pdf")
 
 
 def test_generate_benchmark_com_certificate(completed_com_app):
-    file_name = "com_certificate.pdf"
-
-    country = completed_com_app.countries.first()
-    certificate = completed_com_app.certificates.first()
-    generator = PdfGenerator(
-        DocumentTypes.CERTIFICATE_SIGNED, completed_com_app, certificate, country
-    )
-    (BENCHMARK_PDF_DIRECTORY / file_name).write_bytes(generator.get_pdf())
-    update_timestamp(file_name)
+    _generate_certificate_benchmark_pdf(completed_com_app, "com_certificate.pdf")
 
 
 def test_generate_benchmark_gmp_certificate(completed_gmp_app):
-    file_name = "gmp_certificate.pdf"
-
-    country = completed_gmp_app.countries.first()
-    certificate = completed_gmp_app.certificates.first()
-    generator = PdfGenerator(
-        DocumentTypes.CERTIFICATE_SIGNED, completed_gmp_app, certificate, country
-    )
-    (BENCHMARK_PDF_DIRECTORY / file_name).write_bytes(generator.get_pdf())
-    update_timestamp(file_name)
+    _generate_certificate_benchmark_pdf(completed_gmp_app, "gmp_certificate.pdf")
 
 
 def test_generate_benchmark_oil_licence(completed_oil_app):
-    file_name = "oil_licence.pdf"
-
-    generator = PdfGenerator(
-        DocumentTypes.LICENCE_SIGNED, completed_oil_app, completed_oil_app.licences.first()
-    )
-    (BENCHMARK_PDF_DIRECTORY / file_name).write_bytes(generator.get_pdf())
-    update_timestamp(file_name)
+    _generate_licence_benchmark_pdf(completed_oil_app, "oil_licence.pdf")
 
 
 def test_generate_benchmark_dfl_licence(completed_dfl_app):
-    file_name = "dfl_licence.pdf"
-
-    generator = PdfGenerator(
-        DocumentTypes.LICENCE_SIGNED, completed_dfl_app, completed_dfl_app.licences.first()
-    )
-    (BENCHMARK_PDF_DIRECTORY / file_name).write_bytes(generator.get_pdf())
-    update_timestamp(file_name)
+    _generate_licence_benchmark_pdf(completed_dfl_app, "dfl_licence.pdf")
 
 
 def test_generate_benchmark_sil_licence(completed_sil_app):
-    file_name = "sil_licence.pdf"
+    _generate_licence_benchmark_pdf(completed_sil_app, "sil_licence.pdf")
 
-    generator = PdfGenerator(
-        DocumentTypes.LICENCE_SIGNED, completed_sil_app, completed_sil_app.licences.first()
-    )
-    (BENCHMARK_PDF_DIRECTORY / file_name).write_bytes(generator.get_pdf())
-    update_timestamp(file_name)
+
+def test_generate_benchmark_sanctions_licence(completed_sanctions_app):
+    _generate_licence_benchmark_pdf(completed_sanctions_app, "sanctions_licence.pdf")
 
 
 def test_generate_benchmark_cfs_cover_letter():
@@ -114,21 +90,10 @@ def test_generate_benchmark_cfs_cover_letter():
     update_timestamp(file_name)
 
 
-def test_generate_benchmark_sanctions_licence(completed_sanctions_app):
-    file_name = "sanctions_licence.pdf"
-    generator = PdfGenerator(
-        DocumentTypes.LICENCE_SIGNED,
-        completed_sanctions_app,
-        completed_sanctions_app.licences.first(),
-    )
-    (BENCHMARK_PDF_DIRECTORY / file_name).write_bytes(generator.get_pdf())
-    update_timestamp(file_name)
-
-
 def test_generate_benchmark_cover_letter(completed_dfl_app):
     file_name = "cover_letter.pdf"
 
-    completed_dfl_app.cover_letter_text = "ABC"
+    completed_dfl_app.cover_letter_text = "Hello\n" * 500
     generator = PdfGenerator(
         DocumentTypes.COVER_LETTER_SIGNED,
         completed_dfl_app,

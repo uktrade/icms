@@ -43,6 +43,6 @@ class TestCoverLetter(BaseTestImportPDFVisualRegression):
         return kwargs
 
     def test_pdf(self, completed_dfl_app):
-        completed_dfl_app.cover_letter_text = "ABC"
+        completed_dfl_app.cover_letter_text = "Hello\n" * 500
         self.application = completed_dfl_app
         self.compare_pdf()
