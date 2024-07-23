@@ -4858,3 +4858,5 @@ Department for Business and Trade<
 {{ display.application_field(importer.office_postcode
 class="icon-pencil
 hide_modal_buttons[i].addEventListener('click
+{{ application_field(acc_req.organisation_registered_number
+Registered Number

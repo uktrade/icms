@@ -7,11 +7,20 @@
   {% if acc_req.process_type == "ExporterAccessRequest" %}
     {{ application_field(acc_req.organisation_name, "Exporter Name") }}
     {{ application_field(acc_req.organisation_address, "Exporter Address") }}
+    {% if acc_req.organisation_registered_number %}
+      {{ application_field(acc_req.organisation_registered_number, "Registered Number") }}
+    {% endif %}
     {{ application_field(acc_req.link|default('Not Linked', True), "Linked Exporter") }}
   {% else %}
     {{ application_field(acc_req.organisation_name, "Importer Name") }}
     {{ application_field(acc_req.organisation_address, "Importer Address") }}
     {{ application_field(acc_req.link|default('Not Linked', True), "Linked Importer") }}
+    {% if acc_req.organisation_registered_number %}
+      {{ application_field(acc_req.organisation_registered_number, "Registered Number") }}
+    {% endif %}
+    {% if acc_req.eori_number %}
+      {{ application_field(acc_req.eori_number, "EORI Number") }}
+    {% endif %}
     {{ application_field(acc_req.request_reason, "What are you importing and where are you importing it from?") }}
   {% endif %}
 
