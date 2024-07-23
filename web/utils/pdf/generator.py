@@ -65,14 +65,19 @@ class PdfGenerator(PdfGenBase):
     doc_pack: DocumentPack
     country: Country | None = None
 
-    def get_template(self) -> str:
-        """Returns the correct template"""
-
+    @property
+    def is_cover_letter(self) -> bool:
         if self.doc_type in [
             DocumentTypes.COVER_LETTER_PREVIEW,
             DocumentTypes.COVER_LETTER_PRE_SIGN,
             DocumentTypes.COVER_LETTER_SIGNED,
         ]:
+            return True
+        return False
+
+    def get_template(self) -> str:
+        """Returns the correct template"""
+        if self.is_cover_letter:
             return "pdf/import/cover-letter.html"
         else:
             match self.application.process_type:
@@ -97,12 +102,7 @@ class PdfGenerator(PdfGenBase):
 
     def get_document_context(self) -> dict[str, Any]:
         """Return the document context"""
-
-        if self.doc_type in [
-            DocumentTypes.COVER_LETTER_PREVIEW,
-            DocumentTypes.COVER_LETTER_PRE_SIGN,
-            DocumentTypes.COVER_LETTER_SIGNED,
-        ]:
+        if self.is_cover_letter:
             return utils.get_cover_letter_context(self.application, self.doc_type)
 
         if (
@@ -164,6 +164,9 @@ class PdfGenerator(PdfGenBase):
         return context
 
     def format_pages(self, pdf_data: bytes) -> bytes:
+        if self.is_cover_letter:
+            return pdf_data
+
         match self.application.process_type:
             case ProcessTypes.CFS:
                 return pages.format_cfs_pages(pdf_data, self.get_document_context())
