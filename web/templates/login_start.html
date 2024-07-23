@@ -2,12 +2,13 @@
 
 {% block main_content %}
   <style>
-      a#authLogin {
+      a#login-link {
           text-decoration: none;
-          color: black;
+          color: white;
       }
-      a#authLogin:link, a:visited {
-          color: black;
+
+      a#login-link:link, a:visited {
+          color: white;
       }
   </style>
 
@@ -17,5 +18,11 @@
   </div>
   <div class="clearBoth"></div>
   <p>{{ service_description }}</p>
-  <button><a id="authLogin" href="{{ auth_login_url }}">Start Now</a></button>
+  <button class="positive-button"><a id="login-link" href="{{ auth_login_url }}">Start Now</a>
+  </button>
+  {% if show_one_login_msg %}
+    <p class="mt-1">‘Start now’ will take you to GOV.UK One Login.</p>
+    <p>Existing users need to sign up to GOV.UK One Login with the same email address used for ICMS. Your existing data will then be moved over.</p>
+    <p>Get in touch with <a href="mailto:{{ ilb_contact_email }}">{{ ilb_contact_email }}</a> if you need help.</p>
+  {% endif %}
 {% endblock %}
