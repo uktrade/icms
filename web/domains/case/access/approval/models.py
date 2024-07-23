@@ -21,11 +21,10 @@ class ApprovalRequest(Process):
         REFUSE = ("REFUSE", "Refuse")
 
     class Statuses(TypedTextChoices):
-        # TODO: ICMSLST-2779 Fix labels (e.g. OPEN to Open)
-        DRAFT = ("DRAFT", "DRAFT")
-        OPEN = ("OPEN", "OPEN")
-        CANCELLED = ("CANCELLED", "CANCELLED")
-        COMPLETED = ("COMPLETED", "COMPLETED")
+        DRAFT = ("DRAFT", "Draft")
+        OPEN = ("OPEN", "Open")
+        CANCELLED = ("CANCELLED", "Cancelled")
+        COMPLETED = ("COMPLETED", "Completed")
 
     access_request = models.ForeignKey(
         "web.AccessRequest",

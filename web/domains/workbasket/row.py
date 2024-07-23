@@ -113,8 +113,7 @@ def _get_access_wb_row(
 
     r.reference = app.reference
 
-    # TODO: ICMSLST-2779 Fix this as it currently displays as "[Importer|Exporter]AccessRequest"
-    r.subject = app.process_type
+    r.subject = ProcessTypes(app.process_type).label
 
     r.company = "\n".join(
         [
@@ -144,9 +143,9 @@ def _get_access_wb_row(
     if is_ilb_admin:
         admin_actions: list[WorkbasketAction] = []
 
-        if app.process_type == "ExporterAccessRequest":
+        if app.process_type == ProcessTypes.EAR:
             entity = "exporter"
-        elif app.process_type == "ImporterAccessRequest":
+        elif app.process_type == ProcessTypes.IAR:
             entity = "importer"
         else:
             raise NotImplementedError(f"process_type: {app.process_type} not supported")
@@ -196,8 +195,7 @@ def _get_approval_wb_row(
 
     r.reference = app.access_request.reference
 
-    # TODO: ICMSLST-2779 Fix this as it currently displays as "[Importer|Exporter]ApprovalRequest"
-    r.subject = app.process_type
+    r.subject = ProcessTypes(app.process_type).label
 
     acc_req: AccessRequest = app.access_request
 

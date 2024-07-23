@@ -1811,11 +1811,11 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
         }
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
 
-        importer_user_expected_rows = {"iar/1": {"OPEN": {"Approval Request": ["Take Ownership"]}}}
+        importer_user_expected_rows = {"iar/1": {"Open": {"Approval Request": ["Take Ownership"]}}}
         check_expected_rows(self.importer_client, importer_user_expected_rows)
 
         exporter_user_expected_rows = {
-            "ear/1": {"OPEN": {"Approval Request": ["Take Ownership"]}},
+            "ear/1": {"Open": {"Approval Request": ["Take Ownership"]}},
         }
         check_expected_rows(self.exporter_client, exporter_user_expected_rows)
 
@@ -1835,11 +1835,11 @@ class TestAccessRequestsWorkbasket(AuthTestCase):
         }
         check_expected_rows(self.ilb_admin_client, ilb_expected_rows)
 
-        importer_user_expected_rows = {"iar/1": {"OPEN": {"Approval Request": ["Manage"]}}}
+        importer_user_expected_rows = {"iar/1": {"Open": {"Approval Request": ["Manage"]}}}
         check_expected_rows(self.importer_client, importer_user_expected_rows)
 
         exporter_user_expected_rows = {
-            "ear/1": {"OPEN": {"Approval Request": ["Manage"]}},
+            "ear/1": {"Open": {"Approval Request": ["Manage"]}},
         }
         check_expected_rows(self.exporter_client, exporter_user_expected_rows)
 
