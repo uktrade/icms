@@ -77,21 +77,27 @@ def login_start_view(request: HttpRequest) -> HttpResponse:
         extra = {
             "service_description": "Use this service to apply for an import licence",
             "auth_login_url": one_login_login_url,
+            "show_one_login_msg": True,
         }
     elif is_exporter_site(request.site):
         extra = {
             "service_description": "Use this service to apply for an export certificate",
             "auth_login_url": one_login_login_url,
+            "show_one_login_msg": True,
         }
     elif is_caseworker_site(request.site):
         extra = {
             "service_description": "",
             "auth_login_url": staff_sso_login_url,
+            "show_one_login_msg": False,
         }
     else:
         raise PermissionDenied
 
-    context = {"service_title": request.site.name} | extra
+    context = {
+        "service_title": request.site.name,
+        "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+    } | extra
 
     return render(request, "login_start.html", context)
 
