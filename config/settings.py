@@ -470,9 +470,11 @@ CSP_DEFAULT_SRC = ("'self'",)
 # JS tags with a src attribute can only be loaded from ICMS itself or the DBT Sentry instance
 CSP_SCRIPT_SRC = (
     "'self'",
+    # we need to allow unsafe-eval for the google tag manager
+    # https://developers.google.com/tag-platform/security/guides/csp#custom_javascript_variables
     "'unsafe-eval'",
     "*.sentry.ci.uktrade.digital",
-    "*.cdnjs.cloudflare.com",
+    "*.cloudflare.com",
     "*.googletagmanager.com",
     "*.google-analytics.com",
 )
