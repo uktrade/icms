@@ -3,14 +3,9 @@
     margin: 68px 40px 60px 70px;
 }
 
-* {
-    color: black;
-    -webkit-print-color-adjust: exact;
-}
-
 body {
     margin: 0 0 0 0;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 main {
@@ -19,11 +14,11 @@ main {
 
 p {
     margin: 1px;
-    font-weight: 5;
+    font-weight: normal;
 }
 
 .content-block {
-    padding: 8px;
+    padding: 10px;
     min-height: 40px;
 }
 
@@ -120,5 +115,5 @@ div[name="signature-widget"] > span {
 }
 
 .title {
-    font-size: 10px;
+    font-size: 11px;
 }

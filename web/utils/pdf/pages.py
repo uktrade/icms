@@ -229,7 +229,7 @@ def format_sanctions_pages(pdf_data: bytes, context: dict[str, Any]) -> bytes:
             # Numbers in holders copy box
             new_page.setFontSize(14)
             new_page.drawRightString(left_margin - 8, 770, "1")
-            new_page.drawRightString(left_margin - 8, 519, "1")
+            new_page.drawRightString(left_margin - 8, 498, "1")
 
             # holders copy text
             new_page.saveState()
@@ -241,15 +241,15 @@ def format_sanctions_pages(pdf_data: bytes, context: dict[str, Any]) -> bytes:
             # holders copy box
             new_page.setLineWidth(0.4)
             # holders copy box - vertical line
-            new_page.line(left_margin - 25, 791, left_margin - 25, 499)
+            new_page.line(left_margin - 25, 791, left_margin - 25, 478)
             # holders copy box - top box - horizontal line
             new_page.line(left_margin - 25, 791, left_margin, 791)
             # holders copy box - top box - bottom horizontal line
             new_page.line(left_margin - 25, 750, left_margin, 750)
             # holders copy box - bottom box - top horizontal line
-            new_page.line(left_margin - 25, 539, left_margin, 539)
+            new_page.line(left_margin - 25, 518, left_margin, 518)
             # holders copy box - bottom box - bottom horizontal line
-            new_page.line(left_margin - 25, 499, left_margin, 499)
+            new_page.line(left_margin - 25, 478, left_margin, 478)
         else:
             # On secondary pages - Lift top horizontal line a few pixels so the line does not crash into text
             new_page.setLineWidth(0.7)
