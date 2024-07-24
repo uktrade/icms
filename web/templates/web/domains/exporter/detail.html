@@ -31,7 +31,7 @@
       Registered Number
     </dt>
     <dd>
-      {{ object.registered_number }}
+      {{ object.registered_number|default("", True) }}
     </dd>
     <dt class="bold">
       Comments

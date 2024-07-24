@@ -94,7 +94,9 @@ def create_exporter(request: AuthenticatedHttpRequest) -> HttpResponse:
         if form.is_valid():
             exporter: Exporter = form.save()
             messages.info(request, "Exporter created successfully."),
-            return redirect(reverse("exporter-list") + "?" + urlencode({"name": exporter.name}))
+            return redirect(
+                reverse("exporter-list") + "?" + urlencode({"exporter_name": exporter.name})
+            )
     else:
         form = ExporterForm()
 
@@ -119,7 +121,9 @@ def edit_exporter(request: AuthenticatedHttpRequest, *, pk: int) -> HttpResponse
         exporter = form.save()
         messages.info(request, "Updated exporter details have been saved.")
         if request.user.has_perm(Perms.sys.exporter_admin):
-            return redirect(reverse("exporter-list") + "?" + urlencode({"name": exporter.name}))
+            return redirect(
+                reverse("exporter-list") + "?" + urlencode({"exporter_name": exporter.name})
+            )
         else:
             return redirect(reverse("user-exporter-list"))
 
