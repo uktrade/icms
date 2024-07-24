@@ -3,15 +3,12 @@
 {% block main_content %}
 
   <div id="header">
-    <h1>Account Recovery</h1>
+    <h1>Link your existing account</h1>
     <p class="subheading">{{ request.site.name }}</p>
   </div>
   <div class="clearBoth"></div>
-  <p>Please enter the email address and password you used in the old version of {{ request.site.name }} (This was previously called ICMS).</p>
-  <p>Doing this will link all your old data to your GOV.UK One Login user.</p>
-  <p>If successful you will be logged out of {{ request.site.name }}, when you log in again you will be linked to all your old data.</p>
-  <div class="info-box info-box-warning">Any data currently linked to your user will be replaced by the old data</div>
-
+  <p>To link all your existing data to your new account, use the email address and password you used for ICMS.</p>
+  <p>You will be automatically signed out. When you sign back in, you will be able to see all your old information.</p>
   {% call forms.form(method='post', csrf_input=csrf_input) %}
     {% for field in form %}
       {{ fields.field(field) }}
@@ -24,8 +21,7 @@
         <div class="eight columns">
           <ul class="menu-out flow-across">
             <li>
-              <button type="submit" value="save" class="primary-button button">Recover Account
-              </button>
+              <button type="submit" value="save" class="primary-button button">Link existing account</button>
             </li>
           </ul>
         </div>
