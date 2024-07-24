@@ -103,7 +103,7 @@ class TestExporterCreateView(AuthTestCase):
             self.url, {"name": "test exporter", "registered_number": "42"}
         )
         exporter = Exporter.objects.first()
-        assertRedirects(response, reverse("exporter-list") + f"?name={exporter.name}")
+        assertRedirects(response, reverse("exporter-list") + f"?exporter_name={exporter.name}")
         assert "Exporter created successfully." in get_messages_from_response(response)
         assert exporter.name == "test exporter"
 
@@ -164,7 +164,7 @@ class TestEditExporterView(AuthTestCase):
             {"name": "test exporter", "registered_number": "42", "exclusive_correspondence": False},
         )
         exporter = Exporter.objects.first()
-        assertRedirects(response, reverse("exporter-list") + f"?name={exporter.name}")
+        assertRedirects(response, reverse("exporter-list") + f"?exporter_name={exporter.name}")
         assert "Updated exporter details have been saved." in get_messages_from_response(response)
         assert exporter.name == "test exporter"
         assert exporter.exclusive_correspondence is False

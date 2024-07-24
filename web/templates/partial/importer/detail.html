@@ -11,7 +11,7 @@
     <dt class="bold">Organisation Name</dt>
     <dd>{{ importer.name }}</dd>
     <dt class="bold">Registered Number</dt>
-    <dd>{{ importer.registered_number }}</dd>
+    <dd>{{ importer.registered_number|default("", True) }}</dd>
     <dt class="bold">Importer EORI Number</dt>
     <dd>{{ importer.eori_number|default("N/A", True) }}</dd>
     <dt class="bold">Importer Region Origin</dt>

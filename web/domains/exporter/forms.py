@@ -56,24 +56,28 @@ class ExporterForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["name"].required = True
-        self.fields["registered_number"].required = True
 
-    def clean_registered_number(self):
-        registered_number = self.cleaned_data["registered_number"]
+        # Set in clean_registered_number if a company is found
+        self.company = None
 
-        # this is parsed in save()
-        try:
-            self.company = api_get_company(registered_number)
-        except APIError as e:
-            raise ValidationError(e.error_msg)
-        except CompanyNotFound:
-            self.company = None
+    def clean_registered_number(self) -> str | None:
+        if registered_number := self.cleaned_data.get("registered_number"):
+            # this is parsed in save()
+            try:
+                self.company = api_get_company(registered_number)
+            except APIError as e:
+                raise ValidationError(e.error_msg)
+            except CompanyNotFound:
+                self.company = None
 
-        return registered_number
+            return registered_number
+
+        return None
 
     def save(self, commit=True):
         instance = super().save(commit)
 
+        # Creates an office if registered_number was set and returned a company.
         if commit and self.company:
             office_address = self.company.get("registered_office_address", {})
             address_line_1 = office_address.get("address_line_1")
@@ -123,7 +127,6 @@ class AgentForm(forms.ModelForm):
 
         self.fields["main_exporter"].required = True
         self.fields["name"].required = True
-        self.fields["registered_number"].required = False
 
 
 class AgentNonILBForm(AgentForm):
