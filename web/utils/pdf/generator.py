@@ -180,6 +180,8 @@ class PdfGenerator(PdfGenBase):
                 return pages.format_dfl_pages(pdf_data, self.get_document_context())
             case ProcessTypes.FA_OIL:
                 return pages.format_oil_pages(pdf_data, self.get_document_context())
+            case ProcessTypes.FA_SIL:
+                return pages.format_oil_pages(pdf_data, self.get_document_context())
             case ProcessTypes.SANCTIONS:
                 return pages.format_sanctions_pages(pdf_data, self.get_document_context())
             case _:

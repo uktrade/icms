@@ -145,10 +145,10 @@ def format_wood_pages(pdf_data: bytes) -> bytes:
         return bytes_stream.getvalue()
 
 
-def format_firearm_license_pages(
+def format_firearm_licence_pages(
     pdf_data: bytes, context: dict[str, Any], left_margin: int = 36, right_margin: int = 574
 ) -> bytes:
-    """Function to draw the top/bottom border lines on firearm licenses"""
+    """Function to draw the top/bottom border lines on firearm licences"""
     reader = pypdf.PdfReader(io.BytesIO(pdf_data))
     writer = pypdf.PdfWriter()
     page_total = len(reader.pages)
@@ -192,13 +192,18 @@ def format_firearm_license_pages(
 
 
 def format_dfl_pages(pdf_data: bytes, context: dict[str, Any]) -> bytes:
-    """Function to draw the top/bottom border lines on DFL licenses"""
-    return format_firearm_license_pages(pdf_data, context)
+    """Function to draw the top/bottom border lines on DFL licences"""
+    return format_firearm_licence_pages(pdf_data, context)
 
 
 def format_oil_pages(pdf_data: bytes, context: dict[str, Any]) -> bytes:
-    """Function to draw the top/bottom border lines on OIL licenses"""
-    return format_firearm_license_pages(pdf_data, context)
+    """Function to draw the top/bottom border lines on OIL licences"""
+    return format_firearm_licence_pages(pdf_data, context)
+
+
+def format_sil_pages(pdf_data: bytes, context: dict[str, Any]) -> bytes:
+    """Function to draw the top/bottom border lines on SIL licences"""
+    return format_firearm_licence_pages(pdf_data, context)
 
 
 def format_sanctions_pages(pdf_data: bytes, context: dict[str, Any]) -> bytes:
