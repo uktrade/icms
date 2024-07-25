@@ -23,12 +23,9 @@
         {{ dbt_logo() }}
       </div>
       <div class="flex-column quarter">
-        {% for line in ilb_contact_address_split %}
-          <p class="address-line">{{ line }}</p>
-        {% endfor %}
       </div>
       <div class="flex-column quarter">
-        <span class="url">www.gov.uk/dbt</span>
+        <span class="url" id="gov-uk-url">www.gov.uk</span>
       </div>
     </div>
 
@@ -42,7 +39,7 @@
     </div>
 
     <div class="content-block page-margin">
-      <p class="issue-date">{{ issue_date }}</p>
+      <p class="issue-date small-text">{{ issue_date }}</p>
       <div class="letter-content">{{ content|safe }}</div>
     </div>
 
