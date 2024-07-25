@@ -1,9 +1,9 @@
 @page {
     size: A4;
     margin-top: 40px;
-    margin-right: 65px;
+    margin-right: 85px;
     margin-bottom: 20px;
-    margin-left: 65px;
+    margin-left: 85px;
 }
 
 .url {
@@ -81,4 +81,24 @@ p {
 
 .quarter .url{
     margin-top: 35px;
+}
+
+.default-dbt-logo {
+    width: 156px;
+    height: 78px;
+    margin-top: 25px;
+}
+
+#gov-uk-url {
+    font-size: 14px;
+    margin-top: 40px;
+}
+
+.small-text {
+    font-size: 14px;
+}
+
+b {
+    font-weight: bold;
+    font-size: inherit;
 }

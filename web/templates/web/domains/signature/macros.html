@@ -18,5 +18,5 @@
 {%- endmacro %}
 
 {% macro dbt_logo(classes) -%}
-    <img alt="DBT Logo" class="{% if classes %}{{ classes }}{% endif %}" src="data:image/png;base64,{{ get_file_base64('web/img/dbt_logo.png') }}"/>
+    <img alt="DBT Logo" class="{% if classes %}{{ classes }}{% endif %} default-dbt-logo" src="data:image/png;base64,{{ get_file_base64('web/img/dbt_logo.png') }}"/>
 {%- endmacro %}
