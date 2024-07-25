@@ -27,18 +27,21 @@
     height: 9.5%;
 }
 
-#quantity-table td {
-    font-size: 12px;
-    width: 25%;
-}
-
 table, th, td {
     border: 1px solid black;
     border-collapse: collapse;
+    padding-left: 4px;
 }
 
-td[rowspan] {
-  vertical-align: top;
+#quantity-table td {
+  font-size: 12px;
+  padding-top: 4px;
   text-align: left;
+  vertical-align: top;
+  width: 25%;
 }
 
+#paper-importer-notes {
+    margin-block-start: 8px;
+    padding-inline-start: 20px;
+}

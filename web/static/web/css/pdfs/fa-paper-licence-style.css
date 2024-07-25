@@ -1,0 +1,16 @@
+@page:first {
+    margin-top: 32px;
+}
+
+.paper-header {
+    font-size: 28px;
+    margin-bottom: 4px;
+}
+
+#reference-and-licence {
+    margin-top: 20px;
+}
+
+main {
+    margin-top: 10px;
+}

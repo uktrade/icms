@@ -10,9 +10,11 @@
     <style>
       {{ get_css_rules_as_string("web/css/pdfs/fonts.css")|safe }}
       {{ get_css_rules_as_string("web/css/pdfs/constants.css")|safe }}
-    </style>
-    <style>
       {{ get_css_rules_as_string("web/css/pdfs/fa-dfl-licence-style.css")|safe }}
+      {% if paper_licence_only %}
+        {{ get_css_rules_as_string("web/css/pdfs/fa-paper-licence-style.css")|safe }}
+        {{ get_css_rules_as_string("web/css/pdfs/fa-paper-licence-quantity-table-style.css")|safe }}
+      {% endif %}
       {% if preview_licence %}
         {{ get_css_rules_as_string("web/css/pdfs/preview.css")|safe }}
       {% endif %}
@@ -22,8 +24,8 @@
     <header>
       <div id="header-block">
         {% if paper_licence_only %}
-          <h3>DBT IMPORT LICENCE</h3>
-          <p class="content">under Article 2, Import of Goods (Control) Order 1954</p>
+          <h3 class="paper-header"><strong>DBT</strong> IMPORT LICENCE</h3>
+          <p class="content small-text">under Article 2, Import of Goods (Control) Order 1954</p>
         {% else %}
           <p><strong>ELECTRONIC LICENCE</strong> issued on {{ licence_start_date }} and sent to HM Revenue and Customs.
           </p>
@@ -72,8 +74,7 @@
     </header>
     <main>
       <p class="content small-text" id="is-hereby-authorised">is hereby authorised by the Secretary of State to import into the United Kingdom in
-        accordance with
-        the conditions set out below</p>
+        accordance with the conditions set out below</p>
       <div class="flex-row" id="commodities">
         <div class="bordered">
           <p class="content small-text">Commodity Code</p>
@@ -110,7 +111,7 @@
           <br/>
 
           <p class="content">This licence will cease to be valid for importations after {{ licence_end_date }}.</p>
-          <br>
+          <br/>
           <div class="flex-row" id="signature-and-date-issued">
             <div id="signature">
               {% if preview_licence %}
@@ -147,89 +148,7 @@
     </footer>
 
     {% if paper_licence_only %}
-      <div id="quantity-section" class="mt-1">
-        <table id="quantity-table" class="mt-2">
-          <tbody>
-            <tr>
-              <td>Quantity or value imported</td>
-              <td>Balance outstanding*</td>
-              <td colspan="2">Collector's No. and Date</td>
-            </tr>
-            <tr>
-              <td>1.</td>
-              <td></td>
-              <td rowspan="2">1.</td>
-              <td rowspan="2">2.</td>
-            </tr>
-            <tr>
-              <td>2.</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>3.</td>
-              <td></td>
-              <td rowspan="2">3.</td>
-              <td rowspan="2">4.</td>
-            </tr>
-            <tr>
-              <td>4.</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>5.</td>
-              <td></td>
-              <td rowspan="2">5.</td>
-              <td rowspan="2">6.</td>
-            </tr>
-            <tr>
-              <td>6.</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>7.</td>
-              <td></td>
-              <td rowspan="2">7.</td>
-              <td rowspan="2">8.</td>
-            </tr>
-            <tr>
-              <td>8.</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>9.</td>
-              <td></td>
-              <td rowspan="2">9.</td>
-              <td rowspan="2">10.</td>
-            </tr>
-            <tr>
-              <td>10.</td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-        <footer>
-          <p>* When exhausted, this licence will be returned by H.M. Revenue and Customs to the Import Licensing Branch
-            at
-            the address below.</p>
-          <p class="bold">NOTES FOR IMPORTERS</p>
-          <ol>
-            <li>If 10 consignments have been imported but the licence is not exhausted, the importer or his agent should
-              return it to Import Licensing Branch with a request for issue of a new licence for the outstanding
-              balance.
-            </li>
-            <li class="mt-1">When the licence is no longer required (whether it has expired or not), or if it is
-              revoked, then
-              return
-              it to<br/>
-              Department for Business and Trade<br/>
-              Queensway House, West Precinct<br/>
-              Billingham, United Kingdom TS23 2NF<br/>{# /PS-IGNORE #}
-              Email: {{ ilb_contact_email }}
-            </li>
-          </ol>
-        </footer>
-      </div>
-
+        {% include 'pdf/shared/fa-paper-licence-quantity-table.html' %}
     {% endif %}
   </body>
 </html>

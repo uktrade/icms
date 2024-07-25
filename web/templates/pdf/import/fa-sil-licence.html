@@ -1,34 +1,159 @@
-{% extends "pdf/shared/fa-licence-base.html" %}
+{% from "web/domains/signature/macros.html" import document_signature_placeholder %}
+{% from "web/domains/signature/macros.html" import not_signed_image %}
+{% from "web/domains/signature/macros.html" import dbt_logo %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="description" content="{{ importer_site_name }} import licence">
+    <title>{{ page_title }}</title>
+    <style>
+      {{ get_css_rules_as_string("web/css/pdfs/fonts.css")|safe }}
+      {{ get_css_rules_as_string("web/css/pdfs/constants.css")|safe }}
+      {{ get_css_rules_as_string("web/css/pdfs/fa-sil-licence-style.css")|safe }}
+      {% if paper_licence_only %}
+        {{ get_css_rules_as_string("web/css/pdfs/fa-paper-licence-style.css")|safe }}
+        {{ get_css_rules_as_string("web/css/pdfs/fa-paper-licence-quantity-table-style.css")|safe }}
+      {% endif %}
+      {% if preview_licence %}
+        {{ get_css_rules_as_string("web/css/pdfs/preview.css")|safe }}
+      {% endif %}
+    </style>
+  </head>
+  <body>
+  <header>
+    {% if paper_licence_only %}
+      <h3 class="paper-header"><strong>DBT</strong> IMPORT LICENCE</h3>
+      <p class="content small-text">under Article 2, Import of Goods (Control) Order 1954</p>
+    {% else %}
+      <p><strong>ELECTRONIC LICENCE</strong> issued on {{ licence_start_date }} and sent to HM Revenue and Customs.</p>
+    {% endif %}
 
-{% block css %}
-  <style>
-      {{ get_css_rules_as_string("web/css/pdfs/fa-paper-licence-quantity-table-style.css")|safe }}
-  </style>
-{% endblock %}
+    <div class="flex-row" id="reference-and-licence">
+      <div></div>
+      <div class="bordered">
+        <p class="content small-text">Applicant's own reference</p>
+        {% if applicant_reference %}
+          <p class="content">{{ applicant_reference }}</p>
+        {% elif preview_licence %}
+          <p class="content {{ 'preview-green' if preview_licence }}" id="applicant-reference">[[APPLICANT_REFERENCE]]</p>
+        {% endif %}
+      </div>
 
-{% block goods_section %}
-  <p class="content">Description of goods</p>
+      <div>
+        <p class="content small-text" id="quote-both-text">Quote both references in all correspondence</p>
+      </div>
 
-  {% for description, quantity in goods %}
-    <p class="content">{{ description }}</p>
+      <div class="bordered">
+        <p class="content small-text">Licence No.</p>
+        <p class="content {{ 'preview-orange' if preview_licence }}" id="licence-number">{{ licence_number }}</p>
+      </div>
+    </div>
+
+    <p id="name_and_address_importer_header" class="small-text">Name of importer and address for licence.</p>
+    <div class="flex-row" id="address-and-logo">
+      <div id="name_and_address_importer">
+        <div class="bordered">
+          <p class="content  medium-text">{{ importer_name|upper }}</p>
+          {% for line in importer_address %}
+            <p class="content medium-text">{{ line|upper }}</p>
+          {% endfor %}
+          <p class="content medium-text">{{ importer_postcode|upper }}</p>
+          <div class="mb-0-5">
+            {% for number in eori_numbers %}
+              <p class="content text-right medium-text">{{ number|upper }}</p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div id="dbt_logo">
+        {{ dbt_logo(classes="large-header-logo ml-1") }}
+      </div>
+    </div>
+
+  </header>
+  <main>
+    <p class="content small-text" id="is-hereby-authorised">is hereby authorised by the Secretary of State to import into the United Kingdom in
+      accordance with the conditions set out below</p>
+    <div class="flex-row" id="commodities">
+      <div class="bordered">
+        <p class="content small-text">Commodity Code</p>
+        <p class="content">ex Chapter 93</p>
+      </div>
+      <div class="bordered">
+        <p class="content small-text">Country from which consigned</p>
+        <p class="content">{{ consignment_country }}</p>
+      </div>
+      <div class="bordered">
+        <p class="content small-text">Country of origin</p>
+        <p class="content">{{ origin_country }}</p>
+      </div>
+    </div>
+    <div class="flex-row bordered" id="text-content">
+      <div>
+        <p class="content small-text">Description of goods</p>
+        {% for description, quantity in goods %}
+          <p class="content">{{ description }}</p>
+          <p class="content">
+            {{ quantity }} {% if quantity != "Unlimited" %} units {% endif %}
+          </p>
+          {% if not loop.last %}<br/>{% endif %}
+        {% endfor %}
+        <br/>
+        {% if endorsements %}
+          {% for endorsement in endorsements %}
+            {% for line in endorsement %}
+              <p class="content">{{ line }}</p>
+            {% endfor %}
+            {% if not loop.last %}<br/>{% endif %}
+          {% endfor %}
+        {% elif preview_licence %}
+          <p class="content" id="additional-remarks">[[ADDITIONAL_REMARKS]]</p>
+        {% endif %}
+
+        <p class="content">This licence is only valid for section 5 goods when they are imported using a carrier authorised to carry Section 5 goods.</p>
+        <div class="post_endorsement_statement">
+          {{ markings_text | safe }}
+        </div>
+        <br/>
+
+        <p class="content">This licence will cease to be valid for importations after {{ licence_end_date }}.</p>
+        <br/>
+        <div class="flex-row" id="signature-and-date-issued">
+          <div id="signature">
+            {% if preview_licence %}
+              {{ not_signed_image() }}
+            {% else %}
+              {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory) }}
+            {% endif %}
+          </div>
+          <div>
+            <p class="content" id="date-issued">Date Issued: {{ licence_start_date }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    {% if paper_licence_only %}
+      <p class="content">ENQUIRIES TO IMPORT LICENSING BRANCH, DETAILS OVERLEAF.</p>
+    {% endif %}
     <p class="content">
-      {{ quantity }} {% if quantity != "Unlimited" %} units {% endif %}
+      The issue of this licence does not provide any guarantee that any additional Government permit or approval which may
+      be necessary to effect importation will be granted.
     </p>
-    {% if not loop.last %}<br/>{% endif %}
-  {% endfor %}
-{% endblock %}
-
-
-{% block post_endorsement_statement %}
-  <p class="content">This licence is only valid for section 5 goods when they are imported using a carrier authorised to carry Section 5 goods.</p>
-  <div class="post_endorsement_statement">
-    {{ markings_text | safe }}
-  </div>
-{% endblock %}
-
-
-{% block extra_section %}
+    <br/>
+    <div class="avoid-break">
+      <p class="content mb-1">This licence</p>
+      <ul id="this-licence-bullets">
+        <li>is not transferable and may be used only for importations by the holder named above.</li>
+        <li>may be revoked at any time without reason given.</li>
+        <li>may be altered only by the Department for Business and Trade.</li>
+      </ul>
+    </div>
+  </footer>
   {% if paper_licence_only %}
       {% include 'pdf/shared/fa-paper-licence-quantity-table.html' %}
   {% endif %}
-{% endblock %}
+  </body>
+</html>

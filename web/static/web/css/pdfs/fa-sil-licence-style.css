@@ -6,18 +6,23 @@
     margin-bottom: 40px;
 }
 
-@page :first {
+@page:first {
     margin-top: 5px;
 }
 
-.flex-row {
-    display: flex;
-    flex-direction: row;
+* {
+    color: black;
+}
+
+.additional-remarks {
+    color: #0B8433;
+}
+
+.certificate-header {
+    margin-bottom: 40px;
 }
 
 .bordered {
-    border: 1px solid #000;
-    box-decoration-break: clone;
     border-collapse: collapse;
 }
 
@@ -29,24 +34,10 @@ ul, ol {
     list-style-position: outside;
 }
 
-.preview-orange {
-    color: darkorange;
-}
-
-.preview-green {
-    color: #0B8433;
-}
-
-p, li {
-    font-weight: 5;
-}
-
-.bold {
-    font-weight: bold;
-}
 
 p, li {
     font-size: 13px;
+    font-weight: 5;
 }
 
 p.content,
@@ -55,12 +46,8 @@ ul {
     overflow-wrap: anywhere;
 }
 
-.text-right {
-    text-align: right;
-}
-
-.bold {
-    font-weight: bold
+.section-description {
+    margin-bottom: 2px;
 }
 
 /* Default flex for each flex item (equal spacing) */
@@ -190,50 +177,6 @@ div[name="signature-widget"] > span {
     height: 150px;
 }
 
-
-#quantity-section {
-    display: flex;
-    flex-direction: column;
-    page-break-before: always;
-}
-
-#quantity-section > main {
-    flex: 4;
-}
-
-#quantity-section > footer {
-    flex: 1
-}
-
-#quantity-table {
-    width: 100%;
-    height: 750px;
-
-}
-
-#quantity-table tr:first-child {
-    height: 5%;
-}
-
-#quantity-table tr:nth-child(n+2) {
-    height: 9.5%;
-}
-
-#quantity-table td {
-    font-size: 12px;
-    width: 25%;
-}
-
-table, th, td {
-    border: 1px solid black;
-    border-collapse: collapse;
-}
-
-td[rowspan] {
-    vertical-align: top;
-    text-align: left;
-}
-
 #name_and_address_importer {
     flex: 37;
 }
@@ -241,6 +184,7 @@ td[rowspan] {
 #dbt_logo {
     flex: 63;
     align-content: start;
+    margin-top: 8px;
 }
 
 #name_and_address_importer_header {
@@ -277,6 +221,11 @@ td[rowspan] {
 
 #text-content {
     border-top: none;
+}
+
+#name_and_address_importer_header {
+    margin-bottom: 2px;
+    margin-top: 20px;
 }
 
 .bordered + .bordered {
