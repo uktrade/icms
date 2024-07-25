@@ -58,9 +58,9 @@ def get_signature_coordinates(
             # PyMuPDF uses the top left corner as 0,0 and endesive uses the bottom left corner as 0,0
             page_size = page.bound()
             signature_image_coordinates = (
-                # we add and subtract 5 for the top-left and top-bottom
-                # to give a little bit of padding around the signature image and ensure there is no overlap
-                signature_footer_text_rect.x0 - 5,
+                # we add to the top-right to give a little bit of padding around the signature image
+                # and ensure there is no overlap
+                signature_footer_text_rect.x0,
                 page_size.y1 - signature_footer_text_rect.y0,
                 signature_footer_text_rect.x1 + 5,
                 page_size.y1 - signature_header_text_rect.y1,
