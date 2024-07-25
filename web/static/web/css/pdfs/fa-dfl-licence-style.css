@@ -10,6 +10,10 @@
     margin-top: 5px;
 }
 
+* {
+    color: black;
+}
+
 .flex-row {
     display: flex;
     flex-direction: row;
@@ -35,14 +39,6 @@ ul, ol {
 
 .preview-green {
     color: #0B8433;
-}
-
-p, li {
-    font-weight: 5;
-}
-
-.bold {
-    font-weight: bold;
 }
 
 p, li {
