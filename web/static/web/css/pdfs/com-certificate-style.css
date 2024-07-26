@@ -20,6 +20,7 @@
 
 p {
     line-height: 1.2em;
+    overflow-wrap: anywhere;
 }
 
 .blank-page {
@@ -49,6 +50,7 @@ body {
     font-size: 14px;
     margin-top: 20px;
     margin-right: 0;
+    overflow-wrap: normal;
 }
 
 .issue-date {
@@ -73,6 +75,7 @@ ol li:not(:last-child) {
 
 li {
     line-height: 1.2em;
+    overflow-wrap: anywhere;
 }
 
 ul, ol {

@@ -67,6 +67,7 @@ hr {
 
 p {
     line-height: 1.2em;
+    overflow-wrap: anywhere;
 }
 
 .signature-block {
