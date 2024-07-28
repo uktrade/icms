@@ -2,3 +2,11 @@
     color: rgb(128, 128, 128) !important;
     -webkit-print-color-adjust: exact;
 }
+
+.preview-orange {
+    color: darkorange !important;
+}
+
+.preview-green {
+    color: #0B8433 !important;
+}

@@ -33,14 +33,6 @@ ul, ol {
     list-style-position: outside;
 }
 
-.preview-orange {
-    color: darkorange;
-}
-
-.preview-green {
-    color: #0B8433;
-}
-
 p, li {
     font-size: 13px;
 }
