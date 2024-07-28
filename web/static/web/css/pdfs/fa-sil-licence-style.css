@@ -46,6 +46,10 @@ ul {
     overflow-wrap: anywhere;
 }
 
+.content.mt-tiny {
+    margin-top: 2px;
+}
+
 .section-description {
     margin-bottom: 2px;
 }

@@ -9,8 +9,8 @@
     <title>{{ page_title }}</title>
     <style>
       {{ get_css_rules_as_string("web/css/pdfs/fonts.css")|safe }}
-      {{ get_css_rules_as_string("web/css/pdfs/constants.css")|safe }}
       {{ get_css_rules_as_string("web/css/pdfs/fa-sil-licence-style.css")|safe }}
+      {{ get_css_rules_as_string("web/css/pdfs/constants.css")|safe }}
       {% if paper_licence_only %}
         {{ get_css_rules_as_string("web/css/pdfs/fa-paper-licence-style.css")|safe }}
         {{ get_css_rules_as_string("web/css/pdfs/fa-paper-licence-quantity-table-style.css")|safe }}
@@ -34,9 +34,9 @@
       <div class="bordered">
         <p class="content small-text">Applicant's own reference</p>
         {% if applicant_reference %}
-          <p class="content">{{ applicant_reference }}</p>
+          <p class="content mt-tiny">{{ applicant_reference }}</p>
         {% elif preview_licence %}
-          <p class="content {{ 'preview-green' if preview_licence }}" id="applicant-reference">[[APPLICANT_REFERENCE]]</p>
+          <p class="content mt-tiny {{ 'preview-green' if preview_licence }}" id="applicant-reference">[[APPLICANT_REFERENCE]]</p>
         {% endif %}
       </div>
 
@@ -46,7 +46,7 @@
 
       <div class="bordered">
         <p class="content small-text">Licence No.</p>
-        <p class="content {{ 'preview-orange' if preview_licence }}" id="licence-number">{{ licence_number }}</p>
+        <p class="content mt-tiny {{ 'preview-orange' if preview_licence }}" id="licence-number">{{ licence_number }}</p>
       </div>
     </div>
 
@@ -78,15 +78,15 @@
     <div class="flex-row" id="commodities">
       <div class="bordered">
         <p class="content small-text">Commodity Code</p>
-        <p class="content">ex Chapter 93</p>
+        <p class="content mt-tiny">ex Chapter 93</p>
       </div>
       <div class="bordered">
         <p class="content small-text">Country from which consigned</p>
-        <p class="content">{{ consignment_country }}</p>
+        <p class="content mt-tiny">{{ consignment_country }}</p>
       </div>
       <div class="bordered">
         <p class="content small-text">Country of origin</p>
-        <p class="content">{{ origin_country }}</p>
+        <p class="content mt-tiny">{{ origin_country }}</p>
       </div>
     </div>
     <div class="flex-row bordered" id="text-content">
