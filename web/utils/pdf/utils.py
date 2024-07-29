@@ -169,6 +169,7 @@ def get_sanctions_licence_context(
         "country_of_shipment": get_country_and_geo_code(application.consignment_country),
         "ref": application.applicant_reference,
         "goods_list": goods_list,
+        "sanctions_contact_email": settings.ICMS_SANCTIONS_EMAIL,
     }
 
 
