@@ -19,7 +19,7 @@ from web.models import (
     Task,
     UpdateRequest,
 )
-from web.sites import get_caseworker_site_domain
+from web.sites import SiteName, get_caseworker_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 from web.tests.domains.case._import.factory import (
@@ -500,5 +500,6 @@ class TestSubmitSanctions:
                 ),
                 "application_url": get_case_manage_view_url(self.app),
                 "icms_url": get_caseworker_site_domain(),
+                "service_name": SiteName.CASEWORKER.label,
             },
         )

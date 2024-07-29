@@ -7,6 +7,7 @@ from pytest_django.asserts import assertRedirects
 from web.mail.constants import EmailTypes
 from web.models import ApprovalRequest
 from web.sites import (
+    SiteName,
     get_caseworker_site_domain,
     get_exporter_site_domain,
     get_importer_site_domain,
@@ -90,7 +91,11 @@ class TestManageAccessApprovalView(AuthTestCase):
             1,
             [self.importer_user.email],
             EmailTypes.IMPORTER_ACCESS_REQUEST_APPROVAL_OPENED,
-            {"user_type": "user", "icms_url": get_importer_site_domain()},
+            {
+                "user_type": "user",
+                "icms_url": get_importer_site_domain(),
+                "service_name": SiteName.IMPORTER.label,
+            },
         )
 
     def test_post_exporter(self):
@@ -111,7 +116,11 @@ class TestManageAccessApprovalView(AuthTestCase):
             2,
             [self.exporter_user.email, self.exporter_secondary_contact.email],
             EmailTypes.EXPORTER_ACCESS_REQUEST_APPROVAL_OPENED,
-            {"user_type": "user", "icms_url": get_exporter_site_domain()},
+            {
+                "user_type": "user",
+                "icms_url": get_exporter_site_domain(),
+                "service_name": SiteName.EXPORTER.label,
+            },
         )
 
 
@@ -398,7 +407,11 @@ class TestCloseAccessApprovalView(AuthTestCase):
             2,
             ["ilb_admin_user@example.com", "ilb_admin_two@example.com"],  # /PS-IGNORE
             EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE,
-            {"user_type": "user", "icms_url": get_caseworker_site_domain()},
+            {
+                "user_type": "user",
+                "icms_url": get_caseworker_site_domain(),
+                "service_name": SiteName.CASEWORKER.label,
+            },
         )
 
     def test_post_approve_exporter(self):
@@ -416,7 +429,11 @@ class TestCloseAccessApprovalView(AuthTestCase):
             2,
             ["ilb_admin_user@example.com", "ilb_admin_two@example.com"],  # /PS-IGNORE
             EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE,
-            {"user_type": "user", "icms_url": get_caseworker_site_domain()},
+            {
+                "user_type": "user",
+                "icms_url": get_caseworker_site_domain(),
+                "service_name": SiteName.CASEWORKER.label,
+            },
         )
 
     def test_post_refuse_importer(self):
@@ -436,7 +453,11 @@ class TestCloseAccessApprovalView(AuthTestCase):
             2,
             ["ilb_admin_user@example.com", "ilb_admin_two@example.com"],  # /PS-IGNORE
             EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE,
-            {"user_type": "user", "icms_url": get_caseworker_site_domain()},
+            {
+                "user_type": "user",
+                "icms_url": get_caseworker_site_domain(),
+                "service_name": SiteName.CASEWORKER.label,
+            },
         )
 
     def test_post_refuse_exporter(self):
@@ -456,5 +477,9 @@ class TestCloseAccessApprovalView(AuthTestCase):
             2,
             ["ilb_admin_user@example.com", "ilb_admin_two@example.com"],  # /PS-IGNORE
             EmailTypes.ACCESS_REQUEST_APPROVAL_COMPLETE,
-            {"user_type": "user", "icms_url": get_caseworker_site_domain()},
+            {
+                "user_type": "user",
+                "icms_url": get_caseworker_site_domain(),
+                "service_name": SiteName.CASEWORKER.label,
+            },
         )

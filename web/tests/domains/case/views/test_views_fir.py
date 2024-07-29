@@ -8,7 +8,7 @@ from django.urls import reverse
 from web.mail.constants import EmailTypes
 from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import FurtherInformationRequest
-from web.sites import get_exporter_site_domain, get_importer_site_domain
+from web.sites import SiteName, get_exporter_site_domain, get_importer_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.helpers import CaseURLS, check_gov_notify_email_was_sent
 
@@ -54,6 +54,7 @@ class TestImporterAccessRequestFIRView(AuthTestCase):
         self.fir_type = "access request"
         self.client = self.importer_client
         self.expected_site = get_importer_site_domain()
+        self.expected_service_name = SiteName.IMPORTER.label
 
     @pytest.fixture(autouse=True)
     def setup(self, _setup, setup_process):
@@ -106,6 +107,7 @@ class TestImporterAccessRequestFIRView(AuthTestCase):
         return {
             "reference": self.process.reference,
             "icms_url": self.expected_site,
+            "service_name": self.expected_service_name,
             "fir_type": self.fir_type,
         }
 
@@ -244,6 +246,7 @@ class TestExportAccessRequestFIRView(TestImporterAccessRequestFIRView):
         self.fir_type = "access request"
         self.client = self.exporter_client
         self.expected_site = get_exporter_site_domain()
+        self.expected_service_name = SiteName.EXPORTER.label
 
 
 class TestExportApplicationFIRView(TestImporterAccessRequestFIRView):
@@ -258,6 +261,7 @@ class TestExportApplicationFIRView(TestImporterAccessRequestFIRView):
         self.fir_type = "case"
         self.client = self.exporter_client
         self.expected_site = get_exporter_site_domain()
+        self.expected_service_name = SiteName.EXPORTER.label
 
     def assert_request_email_sent(self):
         check_gov_notify_email_was_sent(
@@ -293,6 +297,7 @@ class TestExportApplicationFIRView(TestImporterAccessRequestFIRView):
         return {
             "reference": self.process.reference,
             "icms_url": self.expected_site,
+            "service_name": self.expected_service_name,
             "fir_type": self.fir_type,
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
             "application_url": get_case_view_url(self.process, self.expected_site),
@@ -311,6 +316,7 @@ class TestImportApplicationFIRView(TestExportApplicationFIRView):
         self.fir_type = "case"
         self.client = self.importer_client
         self.expected_site = get_importer_site_domain()
+        self.expected_service_name = SiteName.IMPORTER.label
 
 
 def test_add_fir_retain_ownership_of_application(ilb_admin_client, fa_dfl_app_submitted):

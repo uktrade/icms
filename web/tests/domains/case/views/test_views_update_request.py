@@ -10,7 +10,7 @@ from web.mail.url_helpers import (
     get_validate_digital_signatures_url,
 )
 from web.models import ImportApplication, UpdateRequest, User
-from web.sites import get_importer_site_domain
+from web.sites import SiteName, get_importer_site_domain
 from web.tests.application_utils import resubmit_app
 from web.tests.helpers import CaseURLS, check_gov_notify_email_was_sent
 
@@ -73,6 +73,7 @@ def test_manage_update_requests(ilb_admin_client: Client, wood_app_submitted: Im
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
             "application_url": get_case_view_url(wood_app_submitted, get_importer_site_domain()),
             "icms_url": get_importer_site_domain(),
+            "service_name": SiteName.IMPORTER.label,
             "application_update_url": get_update_request_view_url(
                 wood_app_submitted, update_request, get_importer_site_domain()
             ),
@@ -195,6 +196,7 @@ def test_close_update_request_when_ilb_withdraws(
             "validate_digital_signatures_url": get_validate_digital_signatures_url(full_url=True),
             "application_url": get_case_view_url(wood_app_submitted, get_importer_site_domain()),
             "icms_url": get_importer_site_domain(),
+            "service_name": SiteName.IMPORTER.label,
         },
     )
 

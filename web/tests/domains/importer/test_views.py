@@ -13,7 +13,7 @@ from web.domains.importer import views
 from web.mail.constants import EmailTypes
 from web.models import Importer, Section5Authority
 from web.permissions import Perms
-from web.sites import get_caseworker_site_domain
+from web.sites import SiteName, get_caseworker_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 from web.tests.domains.importer.factory import ImporterFactory
@@ -532,6 +532,7 @@ class TestArchiveSection5View(AuthTestCase):
                 ),
                 "date": "1 January 2020",
                 "icms_url": get_caseworker_site_domain(),
+                "service_name": SiteName.CASEWORKER.label,
                 "importer_name": self.importer.name,
                 "importer_url": urljoin(
                     get_caseworker_site_domain(),

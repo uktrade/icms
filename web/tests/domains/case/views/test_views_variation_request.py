@@ -11,7 +11,7 @@ from web.forms.fields import JQUERY_DATE_FORMAT
 from web.mail.constants import EmailTypes
 from web.mail.url_helpers import get_case_view_url, get_validate_digital_signatures_url
 from web.models import Task, VariationRequest
-from web.sites import get_caseworker_site_domain, get_importer_site_domain
+from web.sites import SiteName, get_caseworker_site_domain, get_importer_site_domain
 from web.tests.helpers import (
     CaseURLS,
     add_variation_request_to_app,
@@ -158,6 +158,7 @@ class TestVariationRequestCancelView:
                 "application_url": get_case_view_url(self.wood_app, get_importer_site_domain()),
                 "reason": "Test cancellation reason",
                 "icms_url": get_importer_site_domain(),
+                "service_name": SiteName.IMPORTER.label,
             },
         )
 
@@ -220,6 +221,7 @@ class TestVariationRequestCancelViewForExportApplication:
                 "application_url": get_case_view_url(self.app, get_caseworker_site_domain()),
                 "reason": None,
                 "icms_url": get_caseworker_site_domain(),
+                "service_name": SiteName.CASEWORKER.label,
             },
         )
 
@@ -272,6 +274,7 @@ class TestVariationRequestRequestUpdateView:
                 "application_url": get_case_view_url(self.wood_app, get_importer_site_domain()),
                 "reason": "Dummy update request reason",
                 "icms_url": get_importer_site_domain(),
+                "service_name": SiteName.IMPORTER.label,
             },
         )
 
@@ -311,6 +314,7 @@ class TestVariationRequestCancelUpdateRequestView:
                 "application_url": get_case_view_url(self.app, get_importer_site_domain()),
                 "reason": "Dummy update request reason",
                 "icms_url": get_importer_site_domain(),
+                "service_name": SiteName.IMPORTER.label,
             },
         )
         mail.outbox = []
@@ -354,6 +358,7 @@ class TestVariationRequestCancelUpdateRequestView:
                 ),
                 "application_url": get_case_view_url(self.app, get_importer_site_domain()),
                 "icms_url": get_importer_site_domain(),
+                "service_name": SiteName.IMPORTER.label,
             },
         )
 
@@ -394,6 +399,7 @@ class TestVariationRequestRespondToUpdateRequestView:
                 "application_url": get_case_view_url(self.wood_app, get_importer_site_domain()),
                 "reason": "Dummy update request reason",
                 "icms_url": get_importer_site_domain(),
+                "service_name": SiteName.IMPORTER.label,
             },
         )
         mail.outbox = []
@@ -444,5 +450,6 @@ class TestVariationRequestRespondToUpdateRequestView:
                 ),
                 "application_url": get_case_view_url(self.wood_app, get_caseworker_site_domain()),
                 "icms_url": get_caseworker_site_domain(),
+                "service_name": SiteName.CASEWORKER.label,
             },
         )

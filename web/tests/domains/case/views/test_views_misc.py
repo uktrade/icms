@@ -28,7 +28,7 @@ from web.models import (
     WoodQuotaChecklist,
 )
 from web.models.shared import YesNoNAChoices
-from web.sites import get_caseworker_site_domain, get_importer_site_domain
+from web.sites import SiteName, get_caseworker_site_domain, get_importer_site_domain
 from web.tests.conftest import _add_valid_checklist as generic_add_valid_checklist
 from web.tests.conftest import _set_valid_licence as generic_set_valid_licence
 from web.tests.helpers import (
@@ -180,6 +180,7 @@ def test_manage_withdrawals_reject(
             "reason": "",
             "reason_rejected": "Withdrawn",
             "icms_url": get_importer_site_domain(),
+            "service_name": SiteName.IMPORTER.label,
         },
     )
 
@@ -205,6 +206,7 @@ def test_manage_withdrawals_accept(
             "reference": wood_app_submitted.reference,
             "reason": "",
             "icms_url": get_importer_site_domain(),
+            "service_name": SiteName.IMPORTER.label,
         },
     )
 
@@ -249,6 +251,7 @@ def test_request_withdrawal(importer_client, wood_app_submitted, importer_one_co
             "reference": wood_app_submitted.reference,
             "reason": "No longer required",
             "icms_url": get_caseworker_site_domain(),
+            "service_name": SiteName.CASEWORKER.label,
         },
     )
 
@@ -280,6 +283,7 @@ def test_archive_withdrawal(importer_client, wood_app_submitted, importer_one_co
             "reference": wood_app_submitted.reference,
             "reason": "",
             "icms_url": get_caseworker_site_domain(),
+            "service_name": SiteName.CASEWORKER.label,
         },
     )
 
@@ -518,6 +522,7 @@ def test_start_authorisation_rejected_variation_requested_application(
             "application_url": get_case_view_url(wood_application, get_importer_site_domain()),
             "reason": "test refuse reason",
             "icms_url": get_importer_site_domain(),
+            "service_name": SiteName.IMPORTER.label,
         },
     )
 
