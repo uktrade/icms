@@ -207,6 +207,7 @@ ILB_CONTACT_ADDRESS = env.ilb_contact_address
 ICMS_FIREARMS_HOMEOFFICE_EMAIL = env.firearms_homeoffice_email
 ICMS_CFS_HSE_EMAIL = env.cfs_hse_email
 ICMS_GMP_BEIS_EMAIL = env.gmp_beis_email
+ICMS_SANCTIONS_EMAIL = env.sanctions_email
 
 # File storage
 # for https://github.com/uktrade/django-chunk-s3-av-upload-handlers

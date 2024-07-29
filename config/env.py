@@ -78,6 +78,7 @@ class DBTPlatformEnvironment(BaseSettings):
     firearms_homeoffice_email: str
     cfs_hse_email: str
     gmp_beis_email: str
+    sanctions_email: str
 
     # Anti-virus django-chunk-s3-av-upload-handlers settings
     # https://github.com/uktrade/django-chunk-s3-av-upload-handlers#clamav

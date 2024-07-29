@@ -291,6 +291,7 @@ def test_get_sanctions_preview_licence_context(
     expected_context = sanctions_expected_preview_context | {
         "process": app,
         "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
+        "sanctions_contact_email": settings.ICMS_SANCTIONS_EMAIL,
     }
 
     actual_context = generator.get_document_context()
@@ -326,6 +327,7 @@ def test_get_sanctions_pre_sign_licence_context(
         "licence_number": "GBSAN0000001B",
         "licence_end_date": "1st March 2024",
         "licence_start_date": "1st September 2023",
+        "sanctions_contact_email": settings.ICMS_SANCTIONS_EMAIL,
     }
 
     actual_context = generator.get_document_context()

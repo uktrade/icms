@@ -108,6 +108,7 @@ class CloudFoundryEnvironment(BaseSettings):
     firearms_homeoffice_email: str = Field(alias="icms_firearms_homeoffice_email")
     cfs_hse_email: str = Field(alias="icms_cfs_hse_email")
     gmp_beis_email: str = Field(alias="icms_gmp_beis_email")
+    sanctions_email: str = Field(alias="icms_sanctions_email")
 
     # Anti-virus django-chunk-s3-av-upload-handlers settings
     # https://github.com/uktrade/django-chunk-s3-av-upload-handlers#clamav
