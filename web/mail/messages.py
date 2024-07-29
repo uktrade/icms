@@ -89,6 +89,7 @@ class GOVNotifyEmailMessage(EmailMessage):
             "icms_contact_phone": settings.ILB_CONTACT_PHONE,
             "subject": self.subject,
             "body": self.body,
+            "service_name": self.get_service_name(),
         } | self.get_context()
 
     def get_context(self) -> dict[str, Any]:
@@ -96,6 +97,16 @@ class GOVNotifyEmailMessage(EmailMessage):
 
     def get_site_domain(self) -> str:
         raise NotImplementedError
+
+    def get_service_name(self) -> str:
+        site_domain = self.get_site_domain()
+        if site_domain == get_importer_site_domain():
+            return SiteName.IMPORTER.label
+        if site_domain == get_exporter_site_domain():
+            return SiteName.EXPORTER.label
+        if site_domain == get_caseworker_site_domain():
+            return SiteName.CASEWORKER.label
+        raise ValueError(f"Unknown site domain: {site_domain}")
 
 
 @final
@@ -110,7 +121,6 @@ class NewUserWelcomeEmail(GOVNotifyEmailMessage):
     def get_context(self) -> dict[str, Any]:
         site_domain = self.get_site_domain()
         context = {
-            "service_name": self.site.name,
             "account_recovery_url": get_account_recovery_url(site_domain),
         }
 
@@ -225,15 +235,6 @@ class AccessRequestClosedEmail(GOVNotifyEmailMessage):
         if not self.access_request.response_reason:
             return ""
         return f"Reason: {self.access_request.response_reason}"
-
-    def get_service_name(self) -> str:
-        match self.access_request.REQUEST_TYPE:
-            case "importer":
-                return SiteName.IMPORTER.label
-            case "exporter":
-                return SiteName.EXPORTER.label
-            case _:
-                raise ValueError(f"Unknown access request type: {self.access_request.REQUEST_TYPE}")
 
     def get_site_domain(self) -> str:
         match self.access_request.REQUEST_TYPE:
@@ -772,20 +773,11 @@ class OrganisationContactInviteEmail(GOVNotifyEmailMessage):
         self.invite = invite
 
     def get_context(self) -> dict[str, Any]:
-        match self.organisation:
-            case Importer():
-                service_name = SiteName.IMPORTER.label
-            case Exporter():
-                service_name = SiteName.EXPORTER.label
-            case _:
-                raise ValueError(f"Unknown organisation: {self.organisation}")
-
         # importer display_name or name (common to exporter and importer)
         org = self.invite.organisation
         organisation_name = getattr(org, "display_name", org.name)
 
         return {
-            "service_name": service_name,
             "organisation_name": organisation_name,
             "first_name": self.invite.first_name,
             "last_name": self.invite.last_name,

@@ -10,7 +10,7 @@ from web.mail.constants import EmailTypes
 from web.mail.url_helpers import get_mailshot_detail_view_url
 from web.middleware.common import ICMSMiddlewareContext
 from web.models import Mailshot, User
-from web.sites import get_importer_site_domain
+from web.sites import SiteName, get_importer_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 from web.tests.helpers import check_gov_notify_email_was_sent
@@ -231,6 +231,7 @@ class TestMailshotPublishDraftView(AuthTestCase):
             EmailTypes.MAILSHOT,
             {
                 "icms_url": get_importer_site_domain(),
+                "service_name": SiteName.IMPORTER.label,
                 "mailshot_url": get_mailshot_detail_view_url(
                     self.mailshot, get_importer_site_domain()
                 ),

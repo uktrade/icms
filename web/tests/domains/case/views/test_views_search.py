@@ -26,7 +26,7 @@ from web.models import (
     WoodQuotaApplication,
 )
 from web.permissions import Perms
-from web.sites import get_exporter_site_domain, get_importer_site_domain
+from web.sites import SiteName, get_exporter_site_domain, get_importer_site_domain
 from web.tests.helpers import CaseURLS, SearchURLS, check_gov_notify_email_was_sent
 from web.utils.search.types import ExportResultRow, ImportResultRow
 
@@ -352,6 +352,7 @@ class TestReopenApplicationViewImportApplication:
                 ),
                 "application_url": get_case_view_url(application, get_importer_site_domain()),
                 "icms_url": get_importer_site_domain(),
+                "service_name": SiteName.IMPORTER.label,
             },
         )
 
@@ -452,6 +453,7 @@ class TestReopenApplicationViewExportApplication:
                 ),
                 "application_url": get_case_view_url(application, get_exporter_site_domain()),
                 "icms_url": get_exporter_site_domain(),
+                "service_name": SiteName.EXPORTER.label,
             },
         )
 
@@ -708,6 +710,7 @@ class TestRevokeCaseView:
                 ),
                 "application_url": get_case_view_url(app, get_exporter_site_domain()),
                 "icms_url": get_exporter_site_domain(),
+                "service_name": SiteName.EXPORTER.label,
                 "certificate_references": f"CFS/{year}/00001,CFS/{year}/00002",
             },
         )
@@ -748,6 +751,7 @@ class TestRevokeCaseView:
                 ),
                 "application_url": get_case_view_url(self.app, get_importer_site_domain()),
                 "icms_url": get_importer_site_domain(),
+                "service_name": SiteName.IMPORTER.label,
                 "licence_number": licence.reference,
             },
         )

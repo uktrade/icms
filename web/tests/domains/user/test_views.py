@@ -9,7 +9,7 @@ from web.forms.fields import JQUERY_DATE_FORMAT
 from web.mail.constants import EmailTypes
 from web.models import Email, PhoneNumber, User
 from web.one_login.constants import ONE_LOGIN_UNSET_NAME
-from web.sites import get_exporter_site_domain
+from web.sites import SiteName, get_exporter_site_domain
 from web.tests.auth import AuthTestCase
 from web.tests.conftest import LOGIN_URL
 from web.tests.helpers import check_gov_notify_email_was_sent
@@ -353,7 +353,7 @@ class TestReactivateUserView(AuthTestCase):
                 1,
                 [self.importer_user.email],
                 EmailTypes.CASE_EMAIL,
-                {"icms_url": get_exporter_site_domain()},
+                {"icms_url": get_exporter_site_domain(), "service_name": SiteName.EXPORTER.label},
                 exp_subject="hello",
                 exp_in_body="dd",
             )
@@ -397,7 +397,7 @@ class TestDeactivateUserView(AuthTestCase):
                 1,
                 [self.importer_user.email],
                 EmailTypes.CASE_EMAIL,
-                {"icms_url": get_exporter_site_domain()},
+                {"icms_url": get_exporter_site_domain(), "service_name": SiteName.EXPORTER.label},
                 exp_subject="hello",
                 exp_in_body="dd",
             )

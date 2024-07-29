@@ -6,7 +6,7 @@ from web.mail.constants import EmailTypes
 from web.mail.emails import create_case_email, send_case_email
 from web.models import CaseEmail as CaseEmailModel
 from web.models import EmailTemplate
-from web.sites import get_exporter_site_domain, get_importer_site_domain
+from web.sites import SiteName, get_exporter_site_domain, get_importer_site_domain
 from web.tests.auth.auth import AuthTestCase
 from web.tests.helpers import CaseURLS
 
@@ -63,6 +63,7 @@ class TestExportCaseEmails(AuthTestCase):
                 "subject": "Good Manufacturing Practice Application Enquiry",
                 "body": case_email.body,
                 "icms_url": get_exporter_site_domain(),
+                "service_name": SiteName.EXPORTER.label,
                 "icms_contact_email": settings.ILB_CONTACT_EMAIL,
                 "icms_contact_phone": settings.ILB_CONTACT_PHONE,
             },
@@ -128,6 +129,7 @@ class TestImportCaseEmails(AuthTestCase):
                 "subject": "Import Licence RFD Enquiry",
                 "body": case_email.body,
                 "icms_url": get_importer_site_domain(),
+                "service_name": SiteName.IMPORTER.label,
                 "icms_contact_email": settings.ILB_CONTACT_EMAIL,
                 "icms_contact_phone": settings.ILB_CONTACT_PHONE,
             },

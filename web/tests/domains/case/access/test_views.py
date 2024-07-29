@@ -8,6 +8,7 @@ from web.mail.constants import EmailTypes
 from web.models import AccessRequest, ExporterAccessRequest, ImporterAccessRequest
 from web.permissions import organisation_get_contacts
 from web.sites import (
+    SiteName,
     get_caseworker_site_domain,
     get_exporter_site_domain,
     get_importer_site_domain,
@@ -125,7 +126,11 @@ class TestImporterAccessRequestView(AuthTestCase):
                 "ilb_admin_two@example.com",  # /PS-IGNORE
             ],
             EmailTypes.ACCESS_REQUEST,
-            {"reference": "IAR/1", "icms_url": get_caseworker_site_domain()},
+            {
+                "reference": "IAR/1",
+                "icms_url": get_caseworker_site_domain(),
+                "service_name": SiteName.CASEWORKER.label,
+            },
         )
 
 
@@ -187,7 +192,11 @@ class TestExporterAccessRequestView(AuthTestCase):
                 "ilb_admin_two@example.com",  # /PS-IGNORE
             ],
             EmailTypes.ACCESS_REQUEST,
-            {"reference": "EAR/1", "icms_url": get_caseworker_site_domain()},
+            {
+                "reference": "EAR/1",
+                "icms_url": get_caseworker_site_domain(),
+                "service_name": SiteName.CASEWORKER.label,
+            },
         )
 
 
