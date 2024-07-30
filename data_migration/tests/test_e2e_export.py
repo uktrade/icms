@@ -248,6 +248,11 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
     assert ea3.update_requests.count() == 0
     assert ea4.update_requests.count() == 0
 
+    upr1: web.UpdateRequest = ea2.update_requests.first()
+    assert upr1.response_detail == "update request response info"
+    assert upr1.response_datetime == dt.datetime(2022, 9, 21, 8, 31, 34, tzinfo=dt.UTC)
+    assert upr1.response_by_id == 2
+
     assert ea1.case_notes.count() == 0
     assert ea2.case_notes.count() == 2
     assert ea2.case_notes.filter(is_active=True).count() == 1
@@ -557,6 +562,9 @@ def test_import_export_data(mock_connect, dummy_dm_settings):
 
     fir1 = ea6.further_information_requests.first()
     assert fir1.status == "CLOSED"
+    assert fir1.response_detail == "Further Information Request Data"
+    assert fir1.response_datetime == dt.datetime(2022, 9, 21, 8, 31, 34, tzinfo=dt.UTC)
+    assert fir1.response_by_id == 2
 
     assert ea4.certificates.count() == 0
     assert ea5.certificates.count() == 1
