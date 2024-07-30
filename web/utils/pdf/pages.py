@@ -220,6 +220,45 @@ def format_sanctions_pages(pdf_data: bytes, context: dict[str, Any]) -> bytes:
         packet = io.BytesIO()
         new_page = canvas.Canvas(packet, pagesize=portrait(A4))
 
+        # holders copy box
+        new_page.setLineWidth(0.5)
+
+        # Numbers in holders copy box
+        new_page.setFontSize(14)
+        new_page.drawRightString(left_margin - 8, 770, "1")
+        new_page.drawRightString(left_margin - 8, 489, "1")
+
+        # holders copy text
+        new_page.saveState()
+        new_page.rotate(90)
+        new_page.setFontSize(12)
+        new_page.drawString(610, -45, "Holder's copy")
+        new_page.restoreState()
+
+        # some margins are different on the first page
+        if page_number == 0:
+            y_coordinate = 790.8
+        else:
+            y_coordinate = 794
+
+        # holders copy box - left vertical line.
+        new_page.line(left_margin - 25, y_coordinate, left_margin - 25, 468.6)
+
+        # holders copy box - right vertical line.
+        new_page.line(left_margin, y_coordinate, left_margin, 468.6)
+
+        # holders copy box - top box - top horizontal line
+        new_page.line(left_margin - 25, y_coordinate, left_margin, y_coordinate)
+
+        # holders copy box - top box - bottom horizontal line
+        new_page.line(left_margin - 25, 750, left_margin, 750)
+
+        # holders copy box - bottom box - top horizontal line
+        new_page.line(left_margin - 25, 513.2, left_margin, 513.2)
+
+        # holders copy box - bottom box - bottom horizontal line
+        new_page.line(left_margin - 25, 468.7, left_margin, 468.7)
+
         if page_number == 0:
             # Header
             new_page.setFont("Helvetica-Bold", 10)
@@ -230,31 +269,6 @@ def format_sanctions_pages(pdf_data: bytes, context: dict[str, Any]) -> bytes:
                 top_margin,
                 f"issued on {start_date} and sent to HM Revenue and Customs",
             )
-
-            # Numbers in holders copy box
-            new_page.setFontSize(14)
-            new_page.drawRightString(left_margin - 8, 770, "1")
-            new_page.drawRightString(left_margin - 8, 498, "1")
-
-            # holders copy text
-            new_page.saveState()
-            new_page.rotate(90)
-            new_page.setFontSize(12)
-            new_page.drawString(610, -45, "Holder's copy")
-            new_page.restoreState()
-
-            # holders copy box
-            new_page.setLineWidth(0.4)
-            # holders copy box - vertical line
-            new_page.line(left_margin - 25, 791, left_margin - 25, 478)
-            # holders copy box - top box - horizontal line
-            new_page.line(left_margin - 25, 791, left_margin, 791)
-            # holders copy box - top box - bottom horizontal line
-            new_page.line(left_margin - 25, 750, left_margin, 750)
-            # holders copy box - bottom box - top horizontal line
-            new_page.line(left_margin - 25, 518, left_margin, 518)
-            # holders copy box - bottom box - bottom horizontal line
-            new_page.line(left_margin - 25, 478, left_margin, 478)
         else:
             # On secondary pages - Lift top horizontal line a few pixels so the line does not crash into text
             new_page.setLineWidth(0.7)

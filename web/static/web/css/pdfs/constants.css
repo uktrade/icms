@@ -138,7 +138,7 @@
 }
 
 .preview-orange {
-    color: darkorange;
+    color: darkorange !important;
 }
 
 .preview-green {

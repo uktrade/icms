@@ -117,3 +117,17 @@ div[name="signature-widget"] > span {
 .title {
     font-size: 11px;
 }
+
+.default-dbt-logo {
+    width: 250px;
+    height: 125px;
+}
+
+#licence-start-date {
+    align-self: flex-end;
+    margin-right:35px;
+}
+
+.flex-start{
+    align-self: flex-start;
+}
