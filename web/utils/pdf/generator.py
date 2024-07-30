@@ -27,7 +27,7 @@ class PdfGenBase:
         document_html = self.get_document_html()
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(headless=True)
-            context = browser.new_context(viewport={"width": 1600, "height": 1200})
+            context = browser.new_context()
             page = context.new_page()
             page.set_content(document_html)
 

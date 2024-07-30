@@ -43,15 +43,12 @@
             <p class="title"><strong>3. </strong>Proposed place and date of import</p>
             
           <div class="flex-row space-between">
-               <p style="align-self: flex-start">Any UK Port</p>
-               <p style="align-self: flex-end">{{ licence_start_date }}</p>
+               <p class="flex-start">Any UK Port</p>
+               <p id="licence-start-date">{{ licence_start_date }}</p>
           </div>
           </div>
           <div class="content-block row flex-row wrap">
             <p class="row title"><strong>4. </strong>Authority responsible for issue</p>
-            <p class="address-line row">Department for Business and Trade</p>
-            <p class="address-line row">Queensway House, West Precinct</p>
-            <p class="address-line row">Billingham, United Kingdom, TS23 2NF</p>  <!-- /PS-IGNORE -->
             <p class="row min-height-40">Email: {{ sanctions_contact_email }}</p>
           </div>
         </div>
@@ -121,7 +118,7 @@
                   {{ document_signature_placeholder(signature_file, signature.content_type, signature.signatory)  }}
               {% endif %}
           </div>
-          <div class="dbt-logo-block half">
+          <div class="half">
               {{ dbt_logo(classes="header-block") }}
           </div>
         </div>
