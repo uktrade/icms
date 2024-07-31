@@ -124,7 +124,7 @@ def sanction_serializer(
         start_date=doc_pack.licence_start_date,
         end_date=doc_pack.licence_end_date,
         organisation=organisation,
-        restrictions=_get_restrictions(application),
+        restrictions=get_restrictions(application),
         goods=goods,
         **country_kwargs,
     )
@@ -159,7 +159,7 @@ def fa_dfl_serializer(
         start_date=doc_pack.licence_start_date,
         end_date=doc_pack.licence_end_date,
         organisation=organisation,
-        restrictions=_get_restrictions(application),
+        restrictions=get_restrictions(application),
         goods=goods,
         **country_kwargs,
     )
@@ -180,7 +180,7 @@ def fa_oil_serializer(
 
     # fa-oil hard codes the value to any country therefore it is a group
     country_group_code = application.origin_country.hmrc_code
-    restrictions = _get_restrictions(application)
+    restrictions = get_restrictions(application)
 
     licence_data = types.FirearmLicenceData(
         type=_get_type(application),  # type:ignore[arg-type]
@@ -246,7 +246,7 @@ def fa_sil_serializer(
         start_date=doc_pack.licence_start_date,
         end_date=doc_pack.licence_end_date,
         organisation=organisation,
-        restrictions=_get_restrictions(application),
+        restrictions=get_restrictions(application),
         goods=goods,
         **country_kwargs,
     )
@@ -410,10 +410,18 @@ def _get_address_line(line: str | None) -> str:
     return line[:35]
 
 
-def _get_restrictions(application: "ImportApplication") -> str:
-    endorsements = [e.content for e in application.endorsements.all()]
+def get_restrictions(application: "ImportApplication", *, limit: int = 2000) -> str:
+    """Return application restrictions.
 
-    return "\n\n".join(endorsements)
+    :param application: Application being sent to CHIEF
+    :param limit: The max number of characters we can send to CHIEF, it can never be more than 2000.
+    """
+
+    endorsements = application.endorsements.values_list("content", flat=True)
+    text = "\n".join(endorsements)
+
+    # "<trc>" matches what ICMS V1 does when sending endorsements to CHIEF.
+    return text if len(text) <= limit else text[: limit - 5] + "<trc>"
 
 
 def _get_country_kwargs(code: str) -> dict[str, str]:
