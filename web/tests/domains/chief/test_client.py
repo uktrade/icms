@@ -1,6 +1,8 @@
+import json
 from unittest import mock
 
 import pytest
+import requests
 from django.test import override_settings
 from django.utils import timezone
 
@@ -119,6 +121,51 @@ class TestChiefClient:
         assert app.chief_references.count() == 1
         assert (
             app.chief_references.first().status == ICMSHMRCChiefRequest.CHIEFStatus.INTERNAL_ERROR
+        )
+
+    def test_send_application_to_chief_errors_and_stores_error(
+        self, fa_sil_app_doc_signing, monkeypatch
+    ):
+        # Setup
+        app = fa_sil_app_doc_signing
+        current_task = case_progress.get_expected_task(app, Task.TaskType.DOCUMENT_SIGNING)
+
+        response_mock = mock.create_autospec(requests.Response)
+        response_mock.status_code = 400
+        response_mock.json.return_value = {
+            "errors": [
+                {
+                    "licence": {
+                        "restrictions": ["Ensure this field has no more than 2000 characters."]
+                    }
+                }
+            ]
+        }
+
+        # make request_licence fail after the ICMSHMRCChiefRequest object is created
+        request_license_mock = mock.create_autospec(
+            spec=client.request_license,
+            side_effect=requests.HTTPError(response=response_mock),
+        )
+        monkeypatch.setattr(client, "request_license", request_license_mock)
+
+        # Test
+        client.send_application_to_chief(app, current_task)
+
+        # Asserts
+        app.refresh_from_db()
+        case_progress.check_expected_task(app, Task.TaskType.CHIEF_ERROR)
+
+        assert app.chief_references.count() == 1
+        chief_request = app.chief_references.first()
+        assert chief_request.status == ICMSHMRCChiefRequest.CHIEFStatus.INTERNAL_ERROR
+
+        assert chief_request.response_errors.count() == 1
+        response_error = chief_request.response_errors.first()
+
+        assert response_error.error_code == "400"
+        assert response_error.error_msg == json.dumps(
+            {"licence": {"restrictions": ["Ensure this field has no more than 2000 characters."]}}
         )
 
     def test_send_application_to_chief_variation_request(self, fa_sil_app_doc_signing, monkeypatch):

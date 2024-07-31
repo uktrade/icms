@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import TYPE_CHECKING, Any, Literal
 from urllib.parse import urljoin
@@ -77,12 +78,25 @@ def send_application_to_chief(
                 request_sent_datetime=timezone.now(),
             )
 
-    except Exception:
+    except Exception as e:
         capture_exception()
         next_task = Task.TaskType.CHIEF_ERROR
 
         if chief_req:
             chief_req.status = ICMSHMRCChiefRequest.CHIEFStatus.INTERNAL_ERROR
+
+            if isinstance(e, requests.HTTPError):
+                try:
+                    if errors := e.response.json().get("errors"):
+                        for error in errors:
+                            chief_req.response_errors.create(
+                                error_code=e.response.status_code, error_msg=json.dumps(error)
+                            )
+
+                # It doesn't have the expected "errors" key
+                except requests.JSONDecodeError:  # type: ignore[attr-defined]
+                    pass
+
             chief_req.save()
 
     Task.objects.create(process=application, task_type=next_task, previous=previous_task)
