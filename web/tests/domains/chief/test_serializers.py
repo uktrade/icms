@@ -1,6 +1,6 @@
 import pytest
 
-from web.domains.chief.serializers import fix_licence_reference
+from web.domains.chief.serializers import fix_licence_reference, get_restrictions
 from web.flow.models import ProcessTypes
 
 
@@ -29,3 +29,29 @@ def test_fix_licence_reference(process_type, licence_reference, expected_licence
     chief_lr = fix_licence_reference(process_type, licence_reference)
 
     assert chief_lr == expected_licence_ref
+
+
+class TestGetRestrictions:
+    @pytest.fixture(autouse=True)
+    def setup(self, _fa_sil):
+        self.app = _fa_sil
+        self.app.endorsements.create(content="This is some content")
+        self.app.endorsements.create(content="This is some more content")
+
+    def test_get_restrictions_content_below_limit(self):
+        expected = "This is some content\nThis is some more content"
+        actual = get_restrictions(self.app)
+
+        assert expected == actual
+
+    def test_get_restrictions_truncates_content_when_limit_exceeded(self):
+        expected = "This is some content\nThis<trc>"
+        actual = get_restrictions(self.app, limit=30)
+
+        assert expected == actual
+
+    def test_get_restrictions_when_content_equal_to_limit(self):
+        expected = "This is some content\nThis is some more content"
+        actual = get_restrictions(self.app, limit=46)
+
+        assert expected == actual
