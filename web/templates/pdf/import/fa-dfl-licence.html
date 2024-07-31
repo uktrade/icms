@@ -37,9 +37,9 @@
         <div class="bordered quarter">
           <p class="content small-text">Applicant's own reference</p>
           {% if applicant_reference %}
-            <p class="content">{{ applicant_reference }}</p>
+            <p class="content mt-tiny">{{ applicant_reference }}</p>
           {% elif preview_licence %}
-            <p class="content {{ 'preview-green' if preview_licence }}" id="applicant-reference">
+            <p class="content mt-tiny {{ 'preview-green' if preview_licence }}" id="applicant-reference">
               [[APPLICANT_REFERENCE]]</p>
           {% endif %}
         </div>
@@ -48,7 +48,7 @@
         </div>
         <div class="bordered quarter">
           <p class="content small-text">Licence No.</p>
-          <p class="content {{ 'preview-orange' if preview_licence }}" id="licence-number">{{ licence_number }}</p>
+          <p class="content mt-tiny {{ 'preview-orange' if preview_licence }}" id="licence-number">{{ licence_number }}</p>
         </div>
       </div>
 
@@ -61,9 +61,11 @@
               <p class="content medium-text">{{ line|upper }}</p>
             {% endfor %}
             <p class="content medium-text">{{ importer_postcode|upper }}</p>
-            {% for number in eori_numbers %}
-              <p class="content text-right medium-text mb-0-5">{{ number|upper }}</p>
-            {% endfor %}
+            <div class="mb-0-5">
+              {% for number in eori_numbers %}
+                <p class="content text-right medium-text">{{ number|upper }}</p>
+              {% endfor %}
+            </div>
           </div>
         </div>
         <div id="dbt_logo">
@@ -78,15 +80,15 @@
       <div class="flex-row" id="commodities">
         <div class="bordered">
           <p class="content small-text">Commodity Code</p>
-          <p class="content">ex Chapter 93</p>
+          <p class="content mt-tiny">{{ commodity_code }}</p>
         </div>
         <div class="bordered">
           <p class="content small-text">Country from which consigned</p>
-          <p class="content">{{ consignment_country }}</p>
+          <p class="content mt-tiny">{{ consignment_country }}</p>
         </div>
         <div class="bordered">
           <p class="content small-text">Country of origin</p>
-          <p class="content">{{ origin_country }}</p>
+          <p class="content mt-tiny">{{ origin_country }}</p>
         </div>
       </div>
       <div class="flex-row bordered" id="text-content">
