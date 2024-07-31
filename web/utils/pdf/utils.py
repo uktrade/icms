@@ -96,6 +96,7 @@ def _get_fa_licence_context(
         "applicant_reference": application.applicant_reference,
         "issue_date": day_ordinal_date(timezone.now().date()),
         "paper_licence_only": licence.issue_paper_licence_only or False,
+        "commodity_code": application.commodity_code,
     }
 
 
@@ -250,15 +251,15 @@ def _get_fa_sil_goods(application: SILApplication) -> Iterable[tuple[str, int | 
 
         yield description, _get_unlimited_or_quantity(g)
 
-    for g in application.goods_section582_others.filter(is_active=True):
-        description = _get_description(g.description, "58(2)")
-
-        yield description, g.quantity
-
     for g in application.goods_section582_obsoletes.filter(is_active=True):
         description = _get_description(
             f"{g.description} chambered in the obsolete calibre {g.obsolete_calibre}", "58(2)"
         )
+
+        yield description, g.quantity
+
+    for g in application.goods_section582_others.filter(is_active=True):
+        description = _get_description(g.description, "58(2)")
 
         yield description, g.quantity
 

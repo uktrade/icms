@@ -85,6 +85,7 @@ def oil_expected_preview_context(active_signature):
     return {
         "applicant_reference": "Applicant Reference",
         "importer_name": "Test Importer 1",
+        "commodity_code": "ex Chapter 93",
         "consignment_country": "Any Country",
         "origin_country": "Any Country",
         "goods_description": (
@@ -114,6 +115,7 @@ def dfl_expected_preview_context(active_signature):
     return {
         "applicant_reference": "Applicant Reference",
         "importer_name": "Test Importer 1",
+        "commodity_code": "ex Chapter 93",
         "consignment_country": "Spain",
         "origin_country": "Italy",
         "goods": [],
@@ -140,6 +142,7 @@ def sil_expected_preview_context(active_signature):
     return {
         "applicant_reference": "Applicant Reference",
         "importer_name": "Test Importer 1",
+        "commodity_code": "ex Chapter 93",
         "consignment_country": "Poland",
         "origin_country": "Ireland",
         "goods": [],

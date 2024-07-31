@@ -54,7 +54,7 @@
     <div class="flex-row" id="address-and-logo">
       <div id="name_and_address_importer">
         <div class="bordered">
-          <p class="content  medium-text">{{ importer_name|upper }}</p>
+          <p class="content medium-text">{{ importer_name|upper }}</p>
           {% for line in importer_address %}
             <p class="content medium-text">{{ line|upper }}</p>
           {% endfor %}
@@ -78,7 +78,7 @@
     <div class="flex-row" id="commodities">
       <div class="bordered">
         <p class="content small-text">Commodity Code</p>
-        <p class="content mt-tiny">ex Chapter 93</p>
+        <p class="content mt-tiny">{{ commodity_code }}</p>
       </div>
       <div class="bordered">
         <p class="content small-text">Country from which consigned</p>
@@ -103,7 +103,7 @@
         {% if endorsements %}
           {% for endorsement in endorsements %}
             {% for line in endorsement %}
-              <p class="content">{{ line }}</p>
+              <p class="content mb-0">{{ line }}</p>
             {% endfor %}
             {% if not loop.last %}<br/>{% endif %}
           {% endfor %}

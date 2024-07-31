@@ -40,6 +40,11 @@ p, li {
     font-weight: 5;
 }
 
+li {
+    padding-left: 4px;
+}
+
+
 p.content,
 ul {
     margin: 0;

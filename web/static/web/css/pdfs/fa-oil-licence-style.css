@@ -36,14 +36,11 @@ ul, ol {
 
 p, li {
     font-weight: 5;
-}
-
-.bold {
-    font-weight: bold;
-}
-
-p, li {
     font-size: 13px;
+}
+
+li {
+    padding-left: 4px;
 }
 
 p.content,
@@ -52,12 +49,8 @@ ul {
     overflow-wrap: anywhere;
 }
 
-.text-right {
-    text-align: right;
-}
-
-.bold {
-    font-weight: bold
+.content.mt-tiny {
+    margin-top: 2px;
 }
 
 /* Default flex for each flex item (equal spacing) */
