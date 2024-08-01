@@ -76,6 +76,7 @@ class CheckFileQuery:
     exclude_params: Params = field(default_factory=dict)
     adjustment: int = 0
     path_prefixes: list[Any] = field(default_factory=list)
+    count_uploaded_files: bool = True
 
     @property
     def query(self) -> str:

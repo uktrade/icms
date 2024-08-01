@@ -271,6 +271,7 @@ class TestImportV1FilesToS3:
             {"query_name": "test_query", "number_of_files_to_be_processed": 2},
             2,
             FAKE_DB_RESPONSE[0],
+            "secure_lob_ref_id",
         )
         assert mock_put_object_in_s3.called is True
         mock_put_object_in_s3.assert_called_with(
@@ -295,6 +296,7 @@ class TestImportV1FilesToS3:
             {"query_name": "test_query", "number_of_files_to_be_processed": 3},
             2,
             FAKE_DB_RESPONSE[0],
+            "secure_lob_ref_id",
         )
         assert mock_put_object_in_s3.called is False
 

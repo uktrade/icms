@@ -10,8 +10,16 @@ from data_migration.management.commands.config.run_order import (
 from data_migration.management.commands.utils.db import CONNECTION_CONFIG
 
 
+def filtered_file_query_model() -> list[QueryModel]:
+    queries = []
+    for query in file_query_model:
+        if query.query_name != "Schedule Reports":
+            queries.append(query)
+    return queries
+
+
 class OracleDBProcessor:
-    QUERIES: list[QueryModel] = file_query_model
+    QUERIES: list[QueryModel] = filtered_file_query_model()
 
     def __init__(self, limit: int, selected_queries: list[str], batchsize: int):
         self.limit = limit
@@ -80,7 +88,7 @@ class OracleDBProcessor:
             return result["COUNT"] or 0, result["FILE_SIZE"] or 0
 
 
-AVAILABLE_QUERIES: list[str] = [query.query_name for query in file_query_model]
+AVAILABLE_QUERIES: list[str] = [query.query_name for query in filtered_file_query_model()]
 LARGE_QUERIES: list[str] = [
     "SPS Application Files",
     "FA-SIL Import Application Files",

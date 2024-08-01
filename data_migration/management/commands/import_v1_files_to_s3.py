@@ -1,5 +1,6 @@
 import datetime as dt
 import json
+from io import BytesIO
 from typing import Any
 
 from botocore.exceptions import ClientError
@@ -107,12 +108,16 @@ class Command(BaseCommand):
             try:
                 while True:
                     obj = next(rows)
+                    if "CLOB_DATA" in obj:
+                        # Required for report files, coverts clob to bytes stream so can be treated like other files
+                        data = obj["CLOB_DATA"].read().encode()
+                        obj["BLOB_DATA"] = BytesIO(data)
                     if obj["FILE_SIZE"] > file_size_limit:
                         s3_web.upload_file_obj_to_s3_in_parts(obj["BLOB_DATA"], obj["PATH"])
                     else:
                         s3_web.upload_file_obj_to_s3(obj["BLOB_DATA"], obj["PATH"])
                     pbar.update(1)
-                    self.save_run_data(data_dict, pbar.n, obj)
+                    self.save_run_data(data_dict, pbar.n, obj, query_model.limit_by_field)
             except StopIteration:
                 pass
         pbar.close()
@@ -137,7 +142,11 @@ class Command(BaseCommand):
         return False
 
     def save_run_data(
-        self, data_dict: dict, number_of_files_processed: int, last_file_processed: dict
+        self,
+        data_dict: dict,
+        number_of_files_processed: int,
+        last_file_processed: dict,
+        limited_by_field: str,
     ) -> None:
         """If required save the run data including the created_datetime of the last file processed to s3"""
         if self.should_save_run_data(
@@ -148,7 +157,7 @@ class Command(BaseCommand):
                 self.DATETIME_FORMAT
             )
             data_dict["finished_at"] = dt.datetime.now().strftime(self.DATETIME_FORMAT)
-            data_dict["secure_lob_ref_id"] = last_file_processed["SECURE_LOB_REF_ID"]
+            data_dict[limited_by_field] = last_file_processed[limited_by_field.upper()]
             self.write_run_data_to_s3(data_dict)
 
     def process_queries(self, ignore_last_run: bool, count_only: bool) -> None:
