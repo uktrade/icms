@@ -67,6 +67,9 @@
       </div>
       <div>
         <p>{{ process.case_owner.full_name }}</p>
+        {% if process.case_owner.job_title %}
+          <p>{{ process.case_owner.job_title|upper }}</p>
+        {% endif %}
         <p>E {{ ilb_contact_email }}</p>
       </div>
     </div>
