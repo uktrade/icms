@@ -4886,3 +4886,6 @@ Case Closed Date
 Case Submitted Date From"
 Case Submitted Date
 Is Legacy Report
+SELECT rs.id AS id , rr.
+JSON_OBJECT
+closed_end_date VARCHAR2(10

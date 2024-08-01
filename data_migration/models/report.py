@@ -3,9 +3,11 @@ from typing import Any
 from django.db import models
 from django.db.models import F
 
-from data_migration.models import File
+from data_migration.models import File, User
 
 from .base import MigrationBase
+
+ANONYMOUS_USER_PK = 0
 
 
 class ScheduleReport(MigrationBase):
@@ -13,12 +15,11 @@ class ScheduleReport(MigrationBase):
     title = models.CharField(max_length=400)
     notes = models.TextField(blank=True, null=True)
     parameters_xml = models.TextField(null=True)
-    scheduled_by_id = models.IntegerField(null=True)
-
+    scheduled_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
     started_at = models.DateTimeField(null=True)
     finished_at = models.DateTimeField(null=True)
     deleted_at = models.DateTimeField(null=True)
-    deleted_by_id = models.IntegerField(null=True)
+    deleted_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True, related_name="+")
     parameters = models.JSONField(null=True)
 
     @classmethod
@@ -35,6 +36,10 @@ class ScheduleReport(MigrationBase):
         data["status"] = "COMPLETED"
         data["legacy_report_id"] = data["id"]
         data["parameters"]["is_legacy_report"] = True
+
+        data["scheduled_by_id"] = ANONYMOUS_USER_PK
+        if data["deleted_by_id"]:
+            data["deleted_by_id"] = ANONYMOUS_USER_PK
         return data
 
 

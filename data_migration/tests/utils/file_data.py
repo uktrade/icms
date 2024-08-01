@@ -974,7 +974,7 @@ file_query_result = {
                 12345,  # file_size
                 "REPORTS/LEGACY/200204271223_ISSUED_CERTS.csv",  # path
                 dt.datetime(2022, 4, 27, 12, 23),  # created_date
-                2,  # created_by_id
+                0,  # created_by_id
                 "DATA",  # clob_data
             ),
             (
@@ -985,7 +985,7 @@ file_query_result = {
                 22223332,  # file_size
                 "REPORTS/LEGACY/200204271223_ISSUED_LICENCES.csv",  # path
                 dt.datetime(2022, 4, 27, 12, 23),  # created_date
-                3,  # created_by_id
+                0,  # created_by_id
                 "DATA",  # clob_data
             ),
             (
@@ -996,7 +996,7 @@ file_query_result = {
                 12345,  # file_size
                 "REPORTS/LEGACY/200204271223_ACCESS_REQUESTS.csv",  # path
                 dt.datetime(2022, 4, 27, 12, 23),  # created_date
-                2,  # created_by_id
+                0,  # created_by_id
                 "DATA",  # clob_data
             ),
             (
@@ -1007,7 +1007,7 @@ file_query_result = {
                 12345,  # file_size
                 "REPORTS/LEGACY/200204271223_NCA_REPORT.csv",  # path
                 dt.datetime(2022, 4, 27, 12, 23),  # created_date
-                2,  # created_by_id
+                0,  # created_by_id
                 "DATA",  # clob_data
             ),
             (
@@ -1018,7 +1018,7 @@ file_query_result = {
                 12345,  # file_size
                 "REPORTS/LEGACY/200204271223_FIREARMS.csv",  # path
                 dt.datetime(2022, 4, 27, 12, 23),  # created_date
-                2,  # created_by_id
+                0,  # created_by_id
                 "DATA",  # clob_data
             ),
         ],
@@ -1133,7 +1133,7 @@ file_query_result = {
                 "Firearms report",  # title
                 None,  # notes
                 "",  # parameter_xml
-                2,  # scheduled_by_id
+                3,  # scheduled_by_id
                 dt.datetime(2022, 4, 27, 12, 23),  # created_date
                 dt.datetime(2022, 4, 27, 12, 23),  # started_at
                 dt.datetime(2022, 4, 27, 12, 25),  # finished_at
