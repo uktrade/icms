@@ -20,6 +20,7 @@ def get_signature_file_base64(signature: Signature) -> str:  # /PS-IGNORE
     :param signature: Signature object:
     :return: base64 file string
     """
+
     signature_file_bytes = get_signature_file_bytes(signature)
     encoded_bytes = base64.b64encode(signature_file_bytes)  # /PS-IGNORE
     return encoded_bytes.decode()

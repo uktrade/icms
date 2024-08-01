@@ -18,10 +18,15 @@ class BaseTestExportPDFVisualRegression(BaseTestPDFVisualRegression):
 
 
 class TestComCertificate(BaseTestExportPDFVisualRegression):
-    benchmark_pdf_image_file_path = "com_certificate.pdf"
 
     def test_pdf(self, completed_com_app):
+        self.benchmark_pdf_image_file_path = "com_certificate.pdf"
         self.application = completed_com_app
+        self.compare_pdf()
+
+    def test_pdf_long(self, pdf_long_com_app):
+        self.benchmark_pdf_image_file_path = "com_long_certificate.pdf"
+        self.application = pdf_long_com_app
         self.compare_pdf()
 
 

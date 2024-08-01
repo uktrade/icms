@@ -213,4 +213,4 @@ pdf_visual_regression_test:
 		web/tests/utils/pdf/test_visual_regression/test_export.py
 
 create_benchmark_pdfs:
-	./run-tests.sh web/tests/utils/pdf/test_visual_regression/generate_benchmark_pdfs.py
+	./web/tests/utils/pdf/test_visual_regression/generate_benchmark_pdfs/generate.sh ${app}

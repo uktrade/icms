@@ -102,3 +102,65 @@ b {
     font-weight: bold;
     font-size: inherit;
 }
+
+div[name="signature-widget"] {
+    display: flex;
+    flex-wrap: wrap;
+    width: 200px;
+}
+
+div[name="signature-widget"] > span {
+    flex: 0 0 100%;
+    display: block;
+    font-size: 11px;
+    margin: 0;
+}
+
+#signature-widget-image-container {
+    flex: 0 0 100%;
+    display: block;
+    margin: 0;
+}
+
+#signature-widget-image {
+    width: 175px;
+    max-height: 100px;
+}
+
+@media print {
+  #signature-and-date-issued {
+    break-inside: avoid;
+  }
+}
+
+.signature_image {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+}
+
+/* Add padding to the last container */
+#signature-and-date-issued {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+#signature > p {
+    color: black;
+}
+
+#signature > img {
+    padding-left: 5px;
+}
+
+#not_signed_image{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    max-width: 175px;
+}
+
+.footer_signature{
+    width: 300px;
+    height: 150px;
+}
