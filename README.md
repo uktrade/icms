@@ -141,6 +141,12 @@ Whenever changes are made to the PDF styling, you should update the benchmark PD
 
 `make create_benchmark_pdfs`
 
+Or alternatively you can specify which PDF to update by passing the 'app' parameter to the make command, e.g.:
+
+`make create_benchmark_pdfs app=cfs`
+
+`make create_benchmark_pdfs app=sil`
+
 ## Code style
 
 ICMS uses [Black](https://pypi.org/project/black/) for code formatting and

@@ -64,7 +64,8 @@ class BaseTestPDFVisualRegression:
         This needs to be subclassed so that we can pass the relevant application fixture to the test method.
         """
         raise NotImplementedError(
-            "You must implement this method in a subclass. Assign the application fixture to self.application and call self.compare_pdf() in this method."
+            "You must implement at least this method in a subclass. Assign the application fixture "
+            "to self.application and call self.compare_pdf() in this method."
         )
 
     @property

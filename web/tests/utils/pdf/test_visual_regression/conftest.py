@@ -5,6 +5,8 @@ from unittest import mock
 import PIL
 import pytest
 
+from web.domains.case._import.models import EndorsementImportApplication
+from web.domains.case.services import document_pack
 from web.domains.signature import utils as signature_utils
 from web.utils.pdf import utils as pdf_utils
 
@@ -42,3 +44,89 @@ def dummy_certificate_document_context(monkeypatch, block_image):
         "reference": "CFS/2024342/299929",
     }
     monkeypatch.setattr(pdf_utils, "_certificate_document_context", mock_get_certificate_context)
+
+
+@pytest.fixture(autouse=True)
+def configure_settings(settings):
+    """Manually fixes some settings that are inserted into the PDFs so that there is consistency between
+    the benchmark and generated PDFs."""
+    settings.ICMS_SANCTIONS_EMAIL = "sanctions@example.com"  # /PS-IGNORE
+    settings.ILB_CONTACT_EMAIL = "contact@example.com"  # /PS-IGNORE
+    settings.ILB_CONTACT_ADDRESS = "Import Licencing Branch, Queensway House, West Precinct, Billingham, TS23 2NF"  # /PS-IGNORE
+
+
+@pytest.fixture
+def pdf_long_oil_app(completed_oil_app):
+    EndorsementImportApplication.objects.create(
+        import_application=completed_oil_app, content="This is an endorsement" * 100
+    )
+    return completed_oil_app
+
+
+@pytest.fixture
+def pdf_paper_licence_only_oil_app(completed_oil_app):
+    licence = document_pack.pack_active_get(completed_oil_app)
+    licence.issue_paper_licence_only = True
+    licence.save()
+    return completed_oil_app
+
+
+@pytest.fixture
+def pdf_long_sil_app(completed_sil_app):
+    EndorsementImportApplication.objects.create(
+        import_application=completed_sil_app, content="This is an endorsement" * 100
+    )
+    return completed_sil_app
+
+
+@pytest.fixture
+def pdf_paper_licence_only_sil_app(completed_sil_app):
+    licence = document_pack.pack_active_get(completed_sil_app)
+    licence.issue_paper_licence_only = True
+    licence.save()
+    return completed_sil_app
+
+
+@pytest.fixture
+def pdf_long_dfl_app(completed_dfl_app):
+    EndorsementImportApplication.objects.create(
+        import_application=completed_dfl_app, content="This is an endorsement" * 100
+    )
+    return completed_dfl_app
+
+
+@pytest.fixture
+def pdf_paper_licence_only_dfl_app(completed_dfl_app):
+    licence = document_pack.pack_active_get(completed_dfl_app)
+    licence.issue_paper_licence_only = True
+    licence.save()
+    return completed_dfl_app
+
+
+@pytest.fixture
+def pdf_long_sanctions_app(completed_sanctions_app):
+    EndorsementImportApplication.objects.create(
+        import_application=completed_sanctions_app, content="This is an endorsement" * 100
+    )
+    return completed_sanctions_app
+
+
+@pytest.fixture
+def pdf_long_com_app(completed_com_app):
+    completed_com_app.manufacturing_process = "This is a long manufacturing process" * 100
+    completed_com_app.save()
+    return completed_com_app
+
+
+@pytest.fixture
+def pdf_dfl_cover_letter_app(completed_dfl_app):
+    completed_dfl_app.cover_letter_text = "Hello\n" * 10
+    completed_dfl_app.save()
+    return completed_dfl_app
+
+
+@pytest.fixture
+def pdf_long_dfl_cover_letter_app(completed_dfl_app):
+    completed_dfl_app.cover_letter_text = "Hello\n" * 3000
+    completed_dfl_app.save()
+    return completed_dfl_app
