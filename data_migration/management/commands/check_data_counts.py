@@ -112,10 +112,13 @@ class Command(BaseCommand):
         s3_resource = get_s3_resource()
         with oracledb.connect(**CONNECTION_CONFIG) as connection:
             for check in CHECK_FILE_COUNTS:
-                expected = self.run_query(connection, check.query, check.bind_vars)
-                actual = get_s3_file_count(s3_resource, check.get_path_prefixes())
-                actual += check.adjustment  # Adjust to account for excluded data. See check.note
-                self._log_result(check.name, expected, actual)
+                if check.count_uploaded_files:
+                    expected = self.run_query(connection, check.query, check.bind_vars)
+                    actual = get_s3_file_count(s3_resource, check.get_path_prefixes())
+                    actual += (
+                        check.adjustment
+                    )  # Adjust to account for excluded data. See check.note
+                    self._log_result(check.name, expected, actual)
 
     def run_queries(self, queries: list[CheckQuery] | list[CheckFileQuery]) -> None:
         """Iterates over CHECK_DATA_QUERIES and CHECK_FILE_COUNTS and runs queries in V1 to retrieve the data counts prior to data migration"""

@@ -813,4 +813,16 @@ CHECK_FILE_COUNTS: list[CheckFileQuery] = [
         filter_params={"document_type": web.CaseDocumentReference.Type.CERTIFICATE},
         path_prefixes=["export_certificate"],
     ),
+    CheckFileQuery(
+        name="Schedule Reports",
+        query_model=FILE_QUERY_DICT["Schedule Reports"],
+        model=web.ScheduleReport,
+        count_uploaded_files=False,
+    ),
+    CheckFileQuery(
+        name="Historical Report Files",
+        query_model=FILE_QUERY_DICT["Generated Report Files"],
+        model=web.GeneratedReport,
+        path_prefixes=["REPORTS/LEGACY"],
+    ),
 ]
