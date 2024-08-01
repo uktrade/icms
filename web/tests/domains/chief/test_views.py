@@ -10,6 +10,7 @@ from mohawk.util import parse_authorization_header
 from pytest_django.asserts import assertTemplateUsed
 
 from web.domains.case import tasks
+from web.domains.case.services import case_progress
 from web.domains.case.shared import ImpExpStatus
 from web.domains.chief import client, types
 from web.domains.chief import views as chief_views
@@ -428,3 +429,47 @@ class TestCheckChiefProgressView:
         task.save()
 
         Task.objects.create(process=self.app, task_type=new_task, previous=task)
+
+
+class TestRevertLicenceToProcessingView:
+    @pytest.fixture(autouse=True)
+    def setup(self, ilb_admin_client, fa_sil_app_with_chief, monkeypatch):
+        # We just need any application - not specifically with chief
+        self.app = fa_sil_app_with_chief
+        self.client = ilb_admin_client
+        self.url = reverse(
+            "chief:revert-licence-to-processing", kwargs={"application_pk": self.app.pk}
+        )
+
+        self.app.tasks.update(is_active=False)
+        Task.objects.create(process=self.app, task_type=Task.TaskType.CHIEF_ERROR)
+
+    def test_revert_licence_to_processing(self):
+        # Test resending an application being processed
+        self.app.status = ImpExpStatus.PROCESSING
+        self.app.save()
+
+        response = self.client.post(self.url, follow=True)
+
+        messages = list(response.context["messages"])
+        success_msg = str(messages[0])
+
+        assert success_msg == "Licence now back in processing so the error can be corrected."
+
+        case_progress.check_expected_status(self.app, [ImpExpStatus.PROCESSING])
+        case_progress.check_expected_task(self.app, Task.TaskType.PROCESS)
+
+    def test_revert_licence_to_processing_variation_request(self):
+        # Test resending an application being processed
+        self.app.status = ImpExpStatus.VARIATION_REQUESTED
+        self.app.save()
+
+        response = self.client.post(self.url, follow=True)
+
+        messages = list(response.context["messages"])
+        success_msg = str(messages[0])
+
+        assert success_msg == "Licence now back in processing so the error can be corrected."
+
+        case_progress.check_expected_status(self.app, [ImpExpStatus.VARIATION_REQUESTED])
+        case_progress.check_expected_task(self.app, Task.TaskType.PROCESS)

@@ -414,7 +414,7 @@ class ImportApplicationLicence(DocumentPackBase):
         ia_pk = self.import_application_id
         st = self.status
         cr = self.case_reference
-        ca = self.created_at
+        ca = self.created_at.strftime("%Y/%m/%d %H:%M:%S")
 
         return (
             f"ImportApplicationLicence("
