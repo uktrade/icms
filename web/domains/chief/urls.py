@@ -17,6 +17,11 @@ urlpatterns = [
         name="resend-licence",
     ),
     path(
+        "revert-licence-to-processing/<int:application_pk>",
+        views.RevertLicenceToProcessingView.as_view(),
+        name="revert-licence-to-processing",
+    ),
+    path(
         "check-progress/<int:application_pk>",
         views.CheckChiefProgressView.as_view(),
         name="check-progress",

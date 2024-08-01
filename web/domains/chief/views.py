@@ -250,6 +250,39 @@ class ResendLicenceToChiefView(
         return redirect("chief:failed-licences")
 
 
+@method_decorator(transaction.atomic, name="post")
+class RevertLicenceToProcessingView(
+    ApplicationTaskMixin, PermissionRequiredMixin, LoginRequiredMixin, View
+):
+    """View to revert an application with a chief error back to being processed by ILB.
+
+    This can be useful if there is an error in the data and ICMS-HMRC has rejected it.
+    """
+
+    # ApplicationTaskMixin
+    current_status = [ImpExpStatus.VARIATION_REQUESTED, ImpExpStatus.PROCESSING]
+    current_task_type = Task.TaskType.CHIEF_ERROR
+
+    next_task_type = Task.TaskType.PROCESS
+
+    # PermissionRequiredMixin
+    permission_required = [Perms.sys.ilb_admin]
+
+    # View
+    http_method_names = ["post"]
+
+    def post(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        self.set_application_and_task()
+
+        self.update_application_tasks()
+        self.application.update_order_datetime()
+        self.application.save()
+
+        messages.success(request, "Licence now back in processing so the error can be corrected.")
+
+        return redirect("chief:failed-licences")
+
+
 class _BaseTemplateView(PermissionRequiredMixin, TemplateView):
     permission_required = Perms.sys.ilb_admin
 

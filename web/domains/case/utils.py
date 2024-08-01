@@ -165,10 +165,10 @@ def redirect_after_submit(app: ImpOrExp, request: AuthenticatedHttpRequest) -> H
 
 
 def application_history(app_reference: str, is_import: bool = True) -> None:
-    """Debug method to print the history of the application
+    """Debug method to print the history of the application.
 
-    >>> import importlib as im; from web.domains.case import utils
-    >>> im.reload(utils); utils.application_history("IMA/2023/00001")
+    >>> import os; import importlib as im; from web.domains.case import utils
+    >>> os.system("clear"); im.reload(utils); utils.application_history("IMA/2024/00001")
     """
 
     if is_import:
@@ -186,16 +186,26 @@ def application_history(app_reference: str, is_import: bool = True) -> None:
 
     print("\nActive Tasks in order:")
     for t in active:
-        print(f"Task: {t.get_task_type_display()}, created={t.created}, finished={t.finished}")
+        _print_task(t)
 
     print("\nAll tasks in order:")
     for t in all_tasks:
-        print(f"Task: {t.get_task_type_display()}, created={t.created}, finished={t.finished}")
+        _print_task(t)
 
     print("*-" * 40)
-
+    print("Document Packs:")
     for p in document_pack._get_qm(app).order_by("created_at"):
-        print(f"DocumentPack: {p}")
+        print(f"\t- {p}")
+        for df in p.document_references.all():
+            print(f"\t\t- {df}")
+
+
+def _print_task(t: Task) -> None:
+    task_type = t.get_task_type_display()
+    created = t.created.strftime("%Y/%m/%d %H:%M:%S")
+    finished = t.finished.strftime("%Y-%m-%d %H:%M:%S") if t.finished else ""
+
+    print(f"\tTask: {task_type}, created={created}, finished={finished}")
 
 
 def case_documents_metadata(application: ApplicationsWithCaseEmail) -> CaseDocumentsMetadata:

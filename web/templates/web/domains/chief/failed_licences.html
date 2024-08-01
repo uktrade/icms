@@ -76,6 +76,19 @@
                   Update importer details
                 </a>
               </li>
+              {% if app.status in ["PROCESSING", "VARIATION_REQUESTED"] %}
+                <li>
+                  <form method="post" action="{{ icms_url("chief:revert-licence-to-processing", kwargs={"application_pk": app.pk}) }}">
+                    {{ csrf_input }}
+                    <button
+                        type="submit" class="button link-button icon-redo2"
+                        data-confirm="Are you sure you want to revert this application to the processing state?"
+                    >
+                      Revert to Processing
+                    </button>
+                  </form>
+                </li>
+              {% endif %}
             </ul>
           </td>
         </tr>
