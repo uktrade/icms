@@ -688,7 +688,6 @@ def get_document_context(
 
         context = {
             "cover_letter_flag": at.cover_letter_flag,
-            "type_label": at.Types(at.type).label,
             "customs_copy": at.type == at.Types.OPT,
             "is_cfs": False,
             "document_reference": licence_doc.reference,
@@ -702,6 +701,9 @@ def get_document_context(
             ProcessTypes.FA_SIL,
         ]:
             cover_letter = document_pack.doc_ref_cover_letter_get(licence)
+
+            # Firearms application label
+            type_label = "Firearms"
 
             if application.status == ImpExpStatus.COMPLETED or issued_document:
                 cover_letter_url = reverse(
@@ -721,6 +723,11 @@ def get_document_context(
 
             context["cover_letter_url"] = cover_letter_url
 
+        else:
+            # if not a firearms application, default to the application type label
+            type_label = at.Types(at.type).label
+
+        context["type_label"] = type_label
     else:
         # A supplied document pack or the current draft pack
         certificate = issued_document or document_pack.pack_draft_get(application)
