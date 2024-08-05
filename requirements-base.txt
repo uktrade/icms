@@ -14,7 +14,7 @@ django-phonenumber-field==7.2.0
 django-ratelimit==4.1.0
 django-redis==5.4.0
 django-select2==8.1.2
-django-staff-sso-client==4.2.1
+django-staff-sso-client==4.3.0
 Django==4.2.*
 gunicorn[gevent]==22.0.0
 html2text==2020.1.16
