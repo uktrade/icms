@@ -1,0 +1,32 @@
+{% extends "layout/public.html" %}
+
+{% block main_content %}
+  <div class="clearBoth"></div>
+  <div class="container">
+    <div class="row">
+      <h2></h2>
+      <p>Import Case Management System (ICMS) has changed its name to Apply for an import licence or export certificate. Make sure to bookmark the new URLs.</p>
+      <ul class="circleList">
+        <li><a href="{{ import_a_licence_url }}">Apply for an import licence</a></li>
+        <li><a href="{{ export_a_certificate_url }}">Apply for an export certificate</a></li>
+      </ul>
+      <h3 class="h3_header mt-1">GOV.UK One Login?</h3>
+      <p>You will need to create a GOV.UK One Login account to access the new service.</p>
+      <p>GOV.UK One Login gives you access to all services that use GOV.UK and stores them all in one place.</p>
+
+      <h3 class="h3_header mt-1">Using GOV.UK One Login</h3>
+      <p>It is important that you use the same email address to create your GOV.UK One Login account as you have previously used to access ICMS.</p>
+      <p>Using the same email address will mean all your data will be moved over automatically.</p>
+      <p>You will be redirected to the GOV.UK One Login page one you have selected “Start Now” from the homepage.</p>
+      <p>You will then need to:</p>
+      <ul class="circleList">
+        <li>use the same email address you previously used to sign in with</li>
+        <li>create a GOV.UK One Login account</li>
+        <li>choose a password</li>
+      </ul>
+      <p>In future, you should then always use your GOV.UK One Login to sign in to this service.</p>
+      <h3 class="h3_header mt-1">GOV.UK One Login help</h3>
+      <p>If you need any additional help with GOV.UK One Login, contact the GOV.UK One Login team.</p>
+    </div>
+  </div>
+{% endblock %}
