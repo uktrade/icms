@@ -4871,3 +4871,5 @@ Generating Sanctions
 Generating Cover
 Start Now”
 SEARCH
+Approve Application
+Refuse Application
