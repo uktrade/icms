@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
     dependencies = [
         (
             "web",
-            "0023_alter_certificateofgoodmanufacturingpracticeapplication_manufacturer_address_and_more",
+            "0022_alter_approvalrequest_status",
         ),
     ]
 

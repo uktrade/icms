@@ -54,7 +54,7 @@ class CertificateOfGoodManufacturingPracticeApplicationABC(models.Model):
     )
 
     responsible_person_address = models.CharField(
-        max_length=300,
+        max_length=4000,
         verbose_name="Address",
         null=True,
     )
@@ -92,7 +92,7 @@ class CertificateOfGoodManufacturingPracticeApplicationABC(models.Model):
     )
 
     manufacturer_address = models.CharField(
-        max_length=300,
+        max_length=4000,
         verbose_name="Address",
         null=True,
     )
