@@ -776,8 +776,8 @@ class TestViewIssuedCaseDocumentsView:
             "Firearms and Ammunition (Specific Individual Import Licence) - Issued Documents",
         )
         assertContains(response, "<h3>Issued documents (15-Jun-2020 11:44)</h3>")
-        assertContains(response, "Firearms and Ammunition Cover Letter")
-        assertContains(response, "Firearms and Ammunition Licence")
+        assertContains(response, "Firearms Cover Letter")
+        assertContains(response, "Firearms Licence")
 
 
 def _test_reassign_ownership_view(ilb_admin_client, ilb_admin_user, ilb_admin_two, app, case_type):
