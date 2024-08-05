@@ -148,7 +148,7 @@ class CFSScheduleABC(models.Model):
     )
 
     manufacturer_address = models.CharField(
-        max_length=4000, verbose_name="Address", null=True, blank=True
+        max_length=300, verbose_name="Address", null=True, blank=True
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
