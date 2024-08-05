@@ -6,12 +6,13 @@ from web.domains.case.export.forms import (
     CFSActiveIngredientForm,
     EditCFSScheduleForm,
     EditCOMForm,
+    EditGMPForm,
     SubmitCFSScheduleForm,
     SubmitGMPForm,
 )
 from web.forms.widgets import RadioSelectInline
 from web.models import ProductLegislation
-from web.models.shared import YesNoChoices
+from web.models.shared import AddressEntryType, YesNoChoices
 
 
 @pytest.mark.django_db
@@ -171,3 +172,20 @@ def test_cas_number_validation(cas_numer: str, is_valid: bool, cfs_app_in_progre
     form = CFSActiveIngredientForm(data=data, product=product)
 
     assert form.is_valid() == is_valid
+
+
+def test_edit_gmp_form_readonly_address_input(gmp_app_in_progress):
+    gmp_app_in_progress.manufacturer_address_entry_type = AddressEntryType.SEARCH
+    gmp_app_in_progress.save()
+
+    form = EditGMPForm(instance=gmp_app_in_progress)
+    assert form.fields["manufacturer_address"].widget.attrs["readonly"]
+
+    form = EditGMPForm(
+        instance=gmp_app_in_progress,
+        data={
+            "manufacturer_address_entry_type": AddressEntryType.SEARCH,
+            "manufacturer_address": "Test Address",
+        },
+    )
+    assert "readonly" not in form.fields["manufacturer_address"].widget.attrs
