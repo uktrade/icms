@@ -208,7 +208,7 @@ class ApplicationBase(Process):
     # Decision
     REFUSE = "REFUSE"
     APPROVE = "APPROVE"
-    DECISIONS = ((APPROVE, "Approve"), (REFUSE, "Refuse"))
+    DECISIONS = ((APPROVE, "Approve Application"), (REFUSE, "Refuse Application"))
 
     # Note: There are too many places to refactor this in this pr.
     # At some point it would be better if everything called ImpExpStatus directly.
