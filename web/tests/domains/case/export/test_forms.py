@@ -4,6 +4,7 @@ from django.template.loader import render_to_string
 
 from web.domains.case.export.forms import (
     CFSActiveIngredientForm,
+    CFSManufacturerDetailsForm,
     EditCFSScheduleForm,
     EditCOMForm,
     EditGMPForm,
@@ -183,6 +184,24 @@ def test_edit_gmp_form_readonly_address_input(gmp_app_in_progress):
 
     form = EditGMPForm(
         instance=gmp_app_in_progress,
+        data={
+            "manufacturer_address_entry_type": AddressEntryType.SEARCH,
+            "manufacturer_address": "Test Address",
+        },
+    )
+    assert "readonly" not in form.fields["manufacturer_address"].widget.attrs
+
+
+def test_edit_cfs_schedule_manufacturer_form_readonly_address_input(cfs_app_in_progress):
+    schedule = cfs_app_in_progress.schedules.first()
+    schedule.manufacturer_address_entry_type = AddressEntryType.SEARCH
+    schedule.save()
+
+    form = CFSManufacturerDetailsForm(instance=schedule)
+    assert form.fields["manufacturer_address"].widget.attrs["readonly"]
+
+    form = CFSManufacturerDetailsForm(
+        instance=schedule,
         data={
             "manufacturer_address_entry_type": AddressEntryType.SEARCH,
             "manufacturer_address": "Test Address",
