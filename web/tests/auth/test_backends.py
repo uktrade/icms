@@ -16,11 +16,31 @@ from web.sites import SiteName
 # We want the same functionality just with extra logic for ICMS.
 
 
+@pytest.fixture()
+def caseworker_rf(db, rf):
+    rf.site = Site.objects.get(name=SiteName.CASEWORKER)
+    return rf
+
+
+@pytest.fixture()
+def exporter_rf(db, rf):
+    rf.site = Site.objects.get(name=SiteName.EXPORTER)
+    return rf
+
+
+@pytest.fixture()
+def importer_rf(db, rf):
+    rf.site = Site.objects.get(name=SiteName.IMPORTER)
+    return rf
+
+
 @pytest.mark.django_db
 @mock.patch("authbroker_client.backends.get_client")
 @mock.patch("authbroker_client.backends.get_profile")
 @mock.patch("authbroker_client.backends.has_valid_token")
-def test_user_valid_user_create(mocked_has_valid_token, mocked_get_profile, mocked_get_client, rf):
+def test_user_valid_user_create(
+    mocked_has_valid_token, mocked_get_profile, mocked_get_client, caseworker_rf
+):
     mocked_has_valid_token.return_value = True
     mocked_get_profile.return_value = {
         "email": "user@test.com",  # /PS-IGNORE
@@ -29,7 +49,7 @@ def test_user_valid_user_create(mocked_has_valid_token, mocked_get_profile, mock
         "email_user_id": "an-email_user_id@id.test.com",  # /PS-IGNORE
     }
 
-    user = ICMSStaffSSOBackend().authenticate(request=rf)
+    user = ICMSStaffSSOBackend().authenticate(request=caseworker_rf)
     assert user is not None
 
     assert user.first_name == "Testo"
@@ -38,7 +58,7 @@ def test_user_valid_user_create(mocked_has_valid_token, mocked_get_profile, mock
     assert user.username == "an-email_user_id@id.test.com"  # /PS-IGNORE
     assert user.has_usable_password() is False
     assert mocked_get_client.called is True
-    assert mocked_get_client.call_args == mock.call(rf)
+    assert mocked_get_client.call_args == mock.call(caseworker_rf)
     assert mocked_get_profile.call_args == mock.call(mocked_get_client())
 
     assert user.emails.first().email == "user@test.com"  # /PS-IGNORE
@@ -48,7 +68,7 @@ def test_user_valid_user_create(mocked_has_valid_token, mocked_get_profile, mock
 @mock.patch("authbroker_client.backends.get_client", mock.Mock())
 @mock.patch("authbroker_client.backends.get_profile")
 @mock.patch("authbroker_client.backends.has_valid_token")
-def test_user_valid_user_not_create(mocked_has_valid_token, mocked_get_profile, rf):
+def test_user_valid_user_not_create(mocked_has_valid_token, mocked_get_profile, caseworker_rf):
     User = get_user_model()
     user = User(
         username="an-email_user_id@id.test.com",  # /PS-IGNORE
@@ -66,7 +86,7 @@ def test_user_valid_user_not_create(mocked_has_valid_token, mocked_get_profile, 
         "last_name": "Useri",
     }
 
-    user = ICMSStaffSSOBackend().authenticate(request=rf)
+    user = ICMSStaffSSOBackend().authenticate(request=caseworker_rf)
     assert user is not None
 
     assert user.first_name == "Testo"
@@ -79,7 +99,9 @@ def test_user_valid_user_not_create(mocked_has_valid_token, mocked_get_profile, 
 @mock.patch("authbroker_client.backends.get_client", mock.Mock())
 @mock.patch("authbroker_client.backends.get_profile")
 @mock.patch("authbroker_client.backends.has_valid_token")
-def test_user_valid_legacy_user_not_create(mocked_has_valid_token, mocked_get_profile, rf):
+def test_user_valid_legacy_user_not_create(
+    mocked_has_valid_token, mocked_get_profile, caseworker_rf
+):
     User = get_user_model()
     user = User(
         username="user@test.com",  # /PS-IGNORE
@@ -98,7 +120,7 @@ def test_user_valid_legacy_user_not_create(mocked_has_valid_token, mocked_get_pr
         "last_name": "Useri",
     }
 
-    user = ICMSStaffSSOBackend().authenticate(request=rf)
+    user = ICMSStaffSSOBackend().authenticate(request=caseworker_rf)
     assert user is not None
 
     # Username has been migrated to email_user_id value
@@ -113,10 +135,36 @@ def test_user_valid_legacy_user_not_create(mocked_has_valid_token, mocked_get_pr
 
 
 @pytest.mark.django_db
+@mock.patch("authbroker_client.backends.get_client")
+@mock.patch("authbroker_client.backends.get_profile")
+@mock.patch("authbroker_client.backends.has_valid_token")
+def test_user_valid_does_not_authenticate_on_invalid_site(
+    mocked_has_valid_token, mocked_get_profile, mocked_get_client, importer_rf, exporter_rf
+):
+    mocked_has_valid_token.return_value = True
+    mocked_get_profile.return_value = {
+        "email": "user@test.com",  # /PS-IGNORE
+        "first_name": "Testo",
+        "last_name": "Useri",
+        "email_user_id": "an-email_user_id@id.test.com",  # /PS-IGNORE
+    }
+
+    user = ICMSStaffSSOBackend().authenticate(request=importer_rf)
+    assert user is None
+    assert not mocked_get_client.called
+    assert not mocked_get_profile.called
+
+    user = ICMSStaffSSOBackend().authenticate(request=exporter_rf)
+    assert user is None
+    assert not mocked_get_client.called
+    assert not mocked_get_profile.called
+
+
+@pytest.mark.django_db
 @mock.patch("authbroker_client.backends.get_client", mock.Mock())
 @mock.patch("authbroker_client.backends.get_profile")
 @mock.patch("authbroker_client.backends.has_valid_token")
-def test_user_inactive(mocked_has_valid_token, mocked_get_profile, rf):
+def test_user_inactive(mocked_has_valid_token, mocked_get_profile, caseworker_rf):
     User = get_user_model()
     user = User(
         username="an-email_user_id@id.test.com",  # /PS-IGNORE
@@ -134,7 +182,7 @@ def test_user_inactive(mocked_has_valid_token, mocked_get_profile, rf):
         "first_name": "Testo",
         "last_name": "Useri",
     }
-    user = ICMSStaffSSOBackend().authenticate(request=rf)
+    user = ICMSStaffSSOBackend().authenticate(request=caseworker_rf)
 
     # Although the above user has a valid sso token they are inactive so do not authenticate.
     assert user is None
@@ -144,9 +192,9 @@ def test_user_inactive(mocked_has_valid_token, mocked_get_profile, rf):
 @mock.patch("authbroker_client.backends.get_client", mock.Mock())
 @mock.patch("authbroker_client.backends.get_profile", mock.Mock())
 @mock.patch("authbroker_client.backends.has_valid_token")
-def test_invalid_user(mocked_has_valid_token, rf):
+def test_invalid_user(mocked_has_valid_token, caseworker_rf):
     mocked_has_valid_token.return_value = False
-    assert ICMSStaffSSOBackend().authenticate(request=rf) is None
+    assert ICMSStaffSSOBackend().authenticate(request=caseworker_rf) is None
 
 
 @pytest.mark.django_db
@@ -177,15 +225,15 @@ class TestICMSGovUKOneLoginBackend:
         autospec=True,
     )
     @mock.patch("web.auth.backends.send_new_user_welcome_email", autospec=True)
-    def test_user_valid_user_create(self, mock_send_new_user_welcome_email, db, rf, **mocks):
-        rf.site = Site.objects.get(name=SiteName.EXPORTER)
-
+    def test_user_valid_user_create(
+        self, mock_send_new_user_welcome_email, db, exporter_rf, **mocks
+    ):
         mocks["has_valid_token"].return_value = True
         mocks["get_userinfo"].return_value = UserInfo(
             sub="some-unique-key", email="user@test.com", email_verified=True  # /PS-IGNORE
         )
 
-        user = ICMSGovUKOneLoginBackend().authenticate(rf)
+        user = ICMSGovUKOneLoginBackend().authenticate(exporter_rf)
         assert user is not None
         assert user.email == "user@test.com"  # /PS-IGNORE
         assert user.username == "some-unique-key"
@@ -193,7 +241,7 @@ class TestICMSGovUKOneLoginBackend:
         assert user.emails.first().email == "user@test.com"  # /PS-IGNORE
         assert user.importer_last_login is None
         assert user.exporter_last_login == make_aware(dt.datetime(2024, 1, 1, 12, 0, 0))
-        assert mock_send_new_user_welcome_email.call_args == mock.call(user, rf.site)
+        assert mock_send_new_user_welcome_email.call_args == mock.call(user, exporter_rf.site)
 
     @freeze_time("2024-01-01 12:00:00")
     @mock.patch.multiple(
@@ -205,9 +253,8 @@ class TestICMSGovUKOneLoginBackend:
     )
     @mock.patch("web.auth.backends.send_new_user_welcome_email", autospec=True)
     def test_user_valid_legacy_user_not_create(
-        self, mock_send_new_user_welcome_email, db, rf, **mocks
+        self, mock_send_new_user_welcome_email, db, importer_rf, **mocks
     ):
-        rf.site = Site.objects.get(name=SiteName.IMPORTER)
         User = get_user_model()
         user = User(
             username="user@test.com",  # /PS-IGNORE
@@ -225,7 +272,7 @@ class TestICMSGovUKOneLoginBackend:
             sub="some-unique-key", email="user@test.com", email_verified=True  # /PS-IGNORE
         )
 
-        user = ICMSGovUKOneLoginBackend().authenticate(request=rf)
+        user = ICMSGovUKOneLoginBackend().authenticate(request=importer_rf)
         assert user is not None
 
         # Username has been migrated to sub value
@@ -237,4 +284,25 @@ class TestICMSGovUKOneLoginBackend:
         assert user.emails.first().email == "user@test.com"  # /PS-IGNORE
         assert user.importer_last_login == make_aware(dt.datetime(2024, 1, 1, 12, 0, 0))
         assert user.exporter_last_login is None
-        assert mock_send_new_user_welcome_email.call_count == 0
+        assert not mock_send_new_user_welcome_email.called
+
+    @freeze_time("2024-01-01 12:00:00")
+    @mock.patch.multiple(
+        "web.one_login.backends",
+        get_client=mock.DEFAULT,
+        has_valid_token=mock.DEFAULT,
+        get_userinfo=mock.DEFAULT,
+        autospec=True,
+    )
+    @mock.patch("web.auth.backends.send_new_user_welcome_email", autospec=True)
+    def test_user_valid_does_not_authenticate_on_invalid_site(
+        self, mock_send_new_user_welcome_email, db, caseworker_rf, **mocks
+    ):
+        mocks["has_valid_token"].return_value = True
+        mocks["get_userinfo"].return_value = UserInfo(
+            sub="some-unique-key", email="user@test.com", email_verified=True  # /PS-IGNORE
+        )
+
+        user = ICMSGovUKOneLoginBackend().authenticate(caseworker_rf)
+        assert user is None
+        assert not mock_send_new_user_welcome_email.called
