@@ -353,4 +353,20 @@ class ModelDetailView(PermissionRequiredMixin, LoginRequiredMixin, PageTitleMixi
 
 
 class AccessibilityStatementView(TemplateView):
+    http_method_names = ["get"]
     template_name = "web/accessibility_statement.html"
+
+
+class V1ToV2ServiceRenameView(TemplateView):
+    """View detailing service name change for users who have bookmarked the V1 URL."""
+
+    http_method_names = ["get"]
+    template_name = "web/v1_user_bookmark_info.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        return context | {
+            "import_a_licence_url": get_importer_site_domain(),
+            "export_a_certificate_url": get_exporter_site_domain(),
+        }

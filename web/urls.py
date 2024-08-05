@@ -8,6 +8,7 @@ from web.views import (
     AccessibilityStatementView,
     LoginRequiredSelect2AutoResponseView,
     RedirectBaseDomainView,
+    V1ToV2ServiceRenameView,
     cookie_consent_view,
     health_check,
     home,
@@ -89,6 +90,11 @@ urlpatterns = [
     path(
         "icms/fox/icms/IMP_CERT_CERTIFICATE_CHECKER/check/",
         V1ToV2RedirectCheckCertificateView.as_view(),
+    ),
+    # Users who have bookmarked the old V1 url
+    path(
+        "icms/fox/icms/",
+        V1ToV2ServiceRenameView.as_view(),
     ),
 ]
 
