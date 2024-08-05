@@ -12,6 +12,7 @@ from web.mail.emails import send_new_user_welcome_email
 from web.models import User
 from web.one_login.backends import OneLoginBackend
 from web.one_login.types import UserInfo as OneLoginUserInfo
+from web.sites import is_caseworker_site
 
 from .types import STAFF_SSO_ID, StaffSSOProfile, StaffSSOUserCreateData
 from .utils import get_or_create_icms_user, set_site_last_login
@@ -117,6 +118,10 @@ class ICMSStaffSSOBackend(AuthbrokerBackend):
     """
 
     def authenticate(self, request: HttpRequest, **kwargs: Any) -> User | None:
+        # staff-sso is only enabled on the caseworker site.
+        if not is_caseworker_site(request.site):
+            return None
+
         user = super().authenticate(request, **kwargs)
 
         if user and self.user_can_authenticate(user):
@@ -149,6 +154,10 @@ class ICMSGovUKOneLoginBackend(OneLoginBackend):
         self.site = None
 
     def authenticate(self, request: HttpRequest, **credentials: Any) -> User | None:
+        # GOV.UK One Login is only enabled on the importer / exporter sites.
+        if is_caseworker_site(request.site):
+            return None
+
         # Store the site attribute so that get_or_create_user can use it.
         # Done here instead of OneLoginBackend as that class is ICMS agnostic.
         self.site = request.site
