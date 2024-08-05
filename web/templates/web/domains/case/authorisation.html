@@ -5,11 +5,9 @@
   <h3>Authorisation</h3>
   <div class="info-box info-box-info">
     {% if case_type == "import" %}
-      <p>After authorisation, generated documents (including licence documents, cover letters and schedules) will be digitally signed and filed into Matrix.</p>
-      <p>If you have selected an electronic licence, the documents will be issued to the applicant immediately.</p>
-      <p>If you have selected a paper licence, you will receive a link in your workbasket to print the documents after they have been signed and filed.</p>
+      <p>Once authorised, generated documents, including licence documents, cover letters and schedules will be digitally signed and issued to the applicant immediately.</p>
     {% elif case_type == "export" %}
-      <p>After authorisation, generated documents will be digitally signed, filed into Matrix and issued to the applicant.</p>
+      <p>Once authorised, generated documents will be digitally signed and issued to the applicant immediately.</p>
     {% endif %}
   </div>
   {% if errors %}
