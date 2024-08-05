@@ -824,20 +824,30 @@ def com_agent_app_submitted(
 
 
 @pytest.fixture()
-def gmp_app_submitted(
+def gmp_app_in_progress(
     exporter_client, exporter, exporter_office, exporter_one_contact
 ) -> CertificateOfGoodManufacturingPracticeApplication:
     app = create_in_progress_gmp_app(
         exporter_client, exporter, exporter_office, exporter_one_contact
     )
-    submit_app(client=exporter_client, view_name="export:gmp-submit", app_pk=app.pk)
-
-    app.refresh_from_db()
-
-    case_progress.check_expected_status(app, [ImpExpStatus.SUBMITTED])
-    case_progress.check_expected_task(app, Task.TaskType.PROCESS)
+    case_progress.check_expected_status(app, [ImpExpStatus.IN_PROGRESS])
+    case_progress.check_expected_task(app, Task.TaskType.PREPARE)
 
     return app
+
+
+@pytest.fixture()
+def gmp_app_submitted(
+    exporter_client, gmp_app_in_progress
+) -> CertificateOfGoodManufacturingPracticeApplication:
+    submit_app(client=exporter_client, view_name="export:gmp-submit", app_pk=gmp_app_in_progress.pk)
+
+    gmp_app_in_progress.refresh_from_db()
+
+    case_progress.check_expected_status(gmp_app_in_progress, [ImpExpStatus.SUBMITTED])
+    case_progress.check_expected_task(gmp_app_in_progress, Task.TaskType.PROCESS)
+
+    return gmp_app_in_progress
 
 
 @pytest.fixture()

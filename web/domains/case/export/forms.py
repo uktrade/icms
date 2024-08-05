@@ -731,7 +731,9 @@ class EditGMPFormBase(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if self.instance.pk:
+        # if the instance is already saved, and the form is being loaded with no data, then we need to disable the
+        # address fields if they are set to SEARCH
+        if self.instance.pk and not self.data:
             if self.instance.manufacturer_address_entry_type == AddressEntryType.SEARCH:
                 self.fields["manufacturer_address"].widget.attrs["readonly"] = True
 
