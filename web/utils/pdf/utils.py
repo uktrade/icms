@@ -71,7 +71,6 @@ def get_licence_context(
 
     return {
         "process": application,
-        "page_title": "Licence Preview",
         "preview_licence": doc_type == DocumentTypes.LICENCE_PREVIEW,
         "importer_name": importer.display_name,
         "eori_numbers": _get_importer_eori_numbers(application),

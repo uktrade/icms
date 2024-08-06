@@ -13,7 +13,7 @@ from web.domains.case.services import document_pack
 from web.domains.case.shared import ImpExpStatus
 from web.domains.case.types import ImpOrExp
 from web.domains.case.utils import view_application_file
-from web.flow.models import Task
+from web.flow.models import ProcessTypes, Task
 from web.models import Country, File, Process
 from web.permissions import Perms
 from web.types import AuthenticatedHttpRequest, DocumentTypes
@@ -38,7 +38,24 @@ class DocumentPreviewBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRe
     http_method_names = ["get"]
 
     document_types: ClassVar[list[DocumentTypes]]
-    output_filename: ClassVar[str]
+
+    @property
+    def output_filename(self) -> str:
+        """Return the output filename for the PDF."""
+        at = self.application.application_type
+
+        if self.application.process_type in [
+            ProcessTypes.FA_OIL,
+            ProcessTypes.FA_DFL,
+            ProcessTypes.FA_SIL,
+        ]:
+            filename = at.SubTypes(at.sub_type).label
+        elif self.application.is_import_application():
+            filename = at.Types(at.type).label
+        else:
+            filename = at.Types(at.type_code).label
+
+        return f"{filename}.pdf"
 
     def get(self, request: AuthenticatedHttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.set_application_and_task()
@@ -77,7 +94,6 @@ class DocumentPreviewBase(ApplicationTaskMixin, PermissionRequiredMixin, LoginRe
 
 class PreviewLicenceView(DocumentPreviewBase):
     document_types = [DocumentTypes.LICENCE_PREVIEW]
-    output_filename = "Licence-Preview.pdf"
 
 
 class PresignLicenceView(PreviewLicenceView):
@@ -88,7 +104,6 @@ class PresignLicenceView(PreviewLicenceView):
 
 class PreviewCoverLetterView(DocumentPreviewBase):
     document_types = [DocumentTypes.COVER_LETTER_PREVIEW]
-    output_filename = "CoverLetter-Preview.pdf"
 
 
 class PresignCoverLetterView(PreviewCoverLetterView):
@@ -99,7 +114,6 @@ class PresignCoverLetterView(PreviewCoverLetterView):
 
 class PreviewCertificateView(DocumentPreviewBase):
     document_types = [DocumentTypes.CERTIFICATE_PREVIEW]
-    output_filename = "Certificate-Preview.pdf"
 
 
 class PresignCertificateView(PreviewCertificateView):

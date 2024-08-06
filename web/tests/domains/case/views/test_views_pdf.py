@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from django.http import HttpResponse
+from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
 from web.domains.case.services import document_pack
@@ -39,7 +40,6 @@ def _test_licence_preview(app, ilb_admin_client):
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
-    assert response["Content-Disposition"] == "filename=Licence-Preview.pdf"
 
     pdf = response.content
 
@@ -52,7 +52,6 @@ def _test_licence_pre_sign(app, ilb_admin_client):
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
-    assert response["Content-Disposition"] == "filename=Licence-Preview.pdf"
 
     pdf = response.content
 
@@ -66,7 +65,6 @@ def test_preview_cover_letter_view(fa_oil_app_submitted, ilb_admin_client):
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
-    assert response["Content-Disposition"] == "filename=CoverLetter-Preview.pdf"
 
     pdf = response.content
 
@@ -130,3 +128,25 @@ def test_preview_certificate_unauthorised_wrong_tasks(
         ilb_admin_client.get(url)
     except TaskError:
         pass
+
+
+def test_pdf_file_name(
+    ilb_admin_client, fa_oil_app_submitted, sanctions_app_submitted, cfs_app_submitted
+):
+    response = ilb_admin_client.get(CaseURLS.preview_cover_letter(fa_oil_app_submitted.pk))
+    assert response["Content-Disposition"] == "filename=Open Individual Import Licence.pdf"
+
+    response = ilb_admin_client.get(CaseURLS.licence_preview(sanctions_app_submitted.pk))
+    assert response["Content-Disposition"] == "filename=Sanctions and Adhoc Licence Application.pdf"
+
+    country = cfs_app_submitted.countries.first()
+    url = reverse(
+        "case:certificate-preview",
+        kwargs={
+            "application_pk": cfs_app_submitted.pk,
+            "case_type": "export",
+            "country_pk": country.pk,
+        },
+    )
+    response = ilb_admin_client.get(url)
+    assert response["Content-Disposition"] == "filename=Certificate of Free Sale.pdf"
