@@ -49,7 +49,6 @@ def test_preview_cover_letter(
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
-    assert response["Content-Disposition"] == "filename=CoverLetter-Preview.pdf"
 
     pdf = response.content
     assert pdf.startswith(b"%PDF-")
@@ -85,7 +84,6 @@ def test_preview_licence(
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
-    assert response["Content-Disposition"] == "filename=Licence-Preview.pdf"
 
     pdf = response.content
     assert pdf.startswith(b"%PDF-")
@@ -106,7 +104,6 @@ def test_preview_cfs_certificate(ilb_admin_client, cfs_app_submitted):
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
-    assert response["Content-Disposition"] == "filename=Certificate-Preview.pdf"
 
     pdf = response.content
     assert pdf.startswith(b"%PDF-")
@@ -127,7 +124,6 @@ def test_preview_com_certificate(ilb_admin_client, com_app_submitted):
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
-    assert response["Content-Disposition"] == "filename=Certificate-Preview.pdf"
 
     pdf = response.content
     assert pdf.startswith(b"%PDF-")
@@ -148,7 +144,6 @@ def test_preview_gmp_certificate(ilb_admin_client, gmp_app_submitted):
 
     assert response.status_code == 200
     assert response["Content-Type"] == "application/pdf"
-    assert response["Content-Disposition"] == "filename=Certificate-Preview.pdf"
 
     pdf = response.content
     assert pdf.startswith(b"%PDF-")

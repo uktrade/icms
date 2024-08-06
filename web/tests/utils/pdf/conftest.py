@@ -101,7 +101,6 @@ def oil_expected_preview_context(active_signature):
         "importer_postcode": "S93bl",  # /PS-IGNORE
         "endorsements": [],
         "issue_date": day_ordinal_date(timezone.now().date()),
-        "page_title": "Licence Preview",
         "signature": active_signature,
         "signature_file": "",
         "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
@@ -127,7 +126,6 @@ def dfl_expected_preview_context(active_signature):
         "importer_postcode": "S93bl",  # /PS-IGNORE
         "endorsements": [],
         "issue_date": day_ordinal_date(timezone.now().date()),
-        "page_title": "Licence Preview",
         "signature": active_signature,
         "signature_file": "",
         "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
@@ -155,7 +153,6 @@ def sil_expected_preview_context(active_signature):
         "endorsements": [],
         "markings_text": template.template_content,
         "issue_date": day_ordinal_date(timezone.now().date()),
-        "page_title": "Licence Preview",
         "signature": active_signature,
         "signature_file": "",
         "ilb_contact_email": settings.ILB_CONTACT_EMAIL,
@@ -166,7 +163,6 @@ def sil_expected_preview_context(active_signature):
 def sanctions_expected_preview_context(active_signature):
     """Returns the minimum expected context values - tests then override the different keys in the tests."""
     return {
-        "page_title": "Licence Preview",
         "preview_licence": True,
         "importer_name": "Test Importer 1",
         "eori_numbers": ["GB0123456789ABCDE"],
@@ -192,7 +188,6 @@ def sanctions_expected_preview_context(active_signature):
 def wood_expected_preview_context(active_signature):
     """Returns the minimum expected context values - tests then override the different keys in the tests."""
     return {
-        "page_title": "Licence Preview",
         "preview_licence": True,
         "importer_name": "Test Importer 1",
         "eori_numbers": ["GB0123456789ABCDE"],
