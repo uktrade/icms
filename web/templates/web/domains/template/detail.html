@@ -73,7 +73,7 @@
             <dt class="bold">Endorsement Name</dt>
             <dd>{{ object.template_name }}</dd>
             <dt class="bold">Endorsement Text</dt>
-            <dd>{{ object.template_content }}</dd>
+            <dd>{{ object.template_content|nl2br }}</dd>
           </dl>
         {% else %}
           <dl>

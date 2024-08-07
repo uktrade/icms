@@ -17,7 +17,7 @@ SELECT
     WHEN xtd.template_type = 'DECLARATION' THEN TO_CLOB(xtd.declaration_text)
     WHEN xtd.template_type = 'ENDORSEMENT' THEN TO_CLOB(xtd.endorsement_text)
     WHEN xtd.template_type = 'EMAIL_TEMPLATE' THEN TO_CLOB(xtd.email_body)
-    WHEN xtd.template_type = 'CFS_DECLARATION_TRANSLATION' THEN TO_CLOB(EXTRACT(xtd.translation_body, '/TRANSLATION_BODY/p/text()'))
+    WHEN xtd.template_type = 'CFS_DECLARATION_TRANSLATION' THEN TO_CLOB(EXTRACT(xtd.translation_body, '/TRANSLATION_BODY/*'))
   END template_content
   , ctry_translation_set_id country_translation_set_id
 FROM impmgr.xview_template_details xtd
