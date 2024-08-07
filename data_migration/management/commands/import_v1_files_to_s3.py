@@ -5,6 +5,7 @@ from typing import Any
 
 from botocore.exceptions import ClientError
 from django.core.management.base import BaseCommand
+from django.core.serializers.json import DjangoJSONEncoder
 from tqdm import tqdm
 
 from data_migration.management.commands.config.run_order import QueryModel
@@ -153,11 +154,11 @@ class Command(BaseCommand):
             number_of_files_processed, data_dict["number_of_files_to_be_processed"]
         ):
             data_dict["number_of_files_processed"] = number_of_files_processed
+            data_dict[limited_by_field] = last_file_processed[limited_by_field.upper()]
             data_dict["created_datetime"] = last_file_processed["CREATED_DATETIME"].strftime(
                 self.DATETIME_FORMAT
             )
             data_dict["finished_at"] = dt.datetime.now().strftime(self.DATETIME_FORMAT)
-            data_dict[limited_by_field] = last_file_processed[limited_by_field.upper()]
             self.write_run_data_to_s3(data_dict)
 
     def process_queries(self, ignore_last_run: bool, count_only: bool) -> None:
@@ -199,7 +200,7 @@ class Command(BaseCommand):
 
     def write_run_data_to_s3(self, result: dict[str, Any]) -> None:
         """Writes a (json) file to s3, which contains the details of the completed or partial run."""
-        data = json.dumps(result)
+        data = json.dumps(result, cls=DjangoJSONEncoder)
         s3_web.put_object_in_s3(data, get_query_last_run_key(result["query_name"]))
 
     def get_last_run_data(self, query_model: QueryModel) -> dict:

@@ -280,9 +280,9 @@ class TestImportV1FilesToS3:
                     "query_name": "test_query",
                     "number_of_files_to_be_processed": 2,
                     "number_of_files_processed": 2,
+                    "secure_lob_ref_id": 1,
                     "created_datetime": "2023-01-01 01:00:00",
                     "finished_at": "2023-01-01 01:00:00",
-                    "secure_lob_ref_id": 1,
                 }
             ),
             "test_query-last-run.json",
