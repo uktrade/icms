@@ -266,7 +266,7 @@ def _get_result_row(
         applicant_details=types.ApplicantDetails(
             organisation_name=rec.importer.name,
             agent_name=rec.agent.name if rec.agent else None,
-            application_contact=rec.contact.full_name,
+            application_contact=rec.contact.full_name if rec.contact else "",
         ),
         commodity_details=commodity_details,
         assignee_details=_get_assignee_details(rec),
