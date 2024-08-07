@@ -700,7 +700,7 @@ def countries_data() -> Generator[tuple, None, None]:
         (23, "British Virgin Islands", "VG", ST, "468", True, LATIN_AMERICA),
         (24, "Brunei", "BN", ST, "703", True, ASIA),
         (25, "Bulgaria", "BG", ST, "68", True, EUROPE),
-        (184, "Burkina Faso (formerly Upper Volta)", "BF", ST, "236", True, AFRICA),
+        (184, "Burkina Faso", "BF", ST, "236", True, AFRICA),
         (None, "Burundi", "BI", ST, "328", False, AFRICA),
         (27, "Cambodia (Kampuchea)", "KH", ST, "696", True, ASIA),
         (183, "Cameroon", "CM", ST, "302", True, AFRICA),
