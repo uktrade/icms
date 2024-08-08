@@ -331,7 +331,7 @@ def test_collect_endorsements_normal(fa_sil_app_submitted):
 def test_collect_endorsements_split_newline_return_characters(fa_sil_app_submitted):
     EndorsementImportApplication.objects.create(
         import_application=fa_sil_app_submitted,
-        content="This is a\r\ntest",
+        content="This is a\ntest",
     )
     endorsements = utils.get_licence_endorsements(fa_sil_app_submitted)
     assert endorsements

@@ -165,8 +165,8 @@ Responsible person:
 [[RESPONSIBLE_PERSON_ADDRESS]]
 [[RESPONSIBLE_PERSON_POSTCODE]]
 
-Name of brands:
-[[BRAND_NAMES]]
+Name of brand:
+[[BRAND_NAME]]
 
 Yours sincerely
 
@@ -360,9 +360,51 @@ class Command(BaseCommand):
     help = """Upon sign off update email content inline with V2 terminology."""
 
     def handle(self, *args, **options):
+        add_user_management_email_templates()
         update_database_email_templates(self.stdout)
         archive_database_email_templates()
         update_gov_notify_template_ids()
+
+
+def add_user_management_email_templates():
+    Template.objects.create(
+        template_title="Your [[PLATFORM]] account has been deactivated",
+        template_name="User account deactivated",
+        template_code=EmailTypes.DEACTIVATE_USER_EMAIL,
+        template_type="EMAIL_TEMPLATE",
+        application_domain="UM",
+        template_content="""Dear [[FIRST_NAME]],
+
+Your [[PLATFORM]] account has been deactivated.
+
+Contact [[CASE_OFFICER_EMAIL]] if you have any questions.
+
+Yours sincerely
+
+Import Licensing Branch
+""",
+    )
+    Template.objects.create(
+        template_title="Your [[PLATFORM]] account has been reactivated",
+        template_name="User account reactivated",
+        template_code=EmailTypes.REACTIVATE_USER_EMAIL,
+        template_type="EMAIL_TEMPLATE",
+        application_domain="UM",
+        template_content="""Dear [[FIRST_NAME]],
+
+Welcome back to [[PLATFORM]].
+
+Your account has been reactivated.
+
+You can now sign in to your account here [[PLATFORM_LINK]]
+
+Contact [[CASE_OFFICER_EMAIL]] if you have any questions.
+
+Yours sincerely,
+
+Import Licencing Branch
+""",
+    )
 
 
 def update_database_email_templates(stdout):

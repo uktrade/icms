@@ -307,34 +307,16 @@ def add_import_application_type_data():
 
 
 def add_import_application_type_endorsements():
-    # WD / IS / DERO
-    endorsement_1 = Template.objects.get(
-        template_name="Endorsement 1 (must be updated each year)",
-        template_type=Template.ENDORSEMENT,
-    )
-
-    for iat in ImportApplicationType.objects.filter(type__in=["WD", "IS", "SAN"]):
-        iat.endorsements.add(endorsement_1)
-
-        if iat.type == "SAN":
-            endorsement = Template.objects.get(
-                template_type=Template.ENDORSEMENT,
-                template_name="Endorsement 15",
-            )
-            iat.endorsements.add(endorsement)
-
-    # SIL
-    iat = ImportApplicationType.objects.get(sub_type="SIL")
-    endorsement = Template.objects.get(
-        template_type=Template.ENDORSEMENT,
-        template_name="Firearms Sanctions COO & COC (AC & AY)",
-    )
+    # OIL
+    iat = ImportApplicationType.objects.get(sub_type=ImportApplicationType.SubTypes.OIL)
+    endorsement = Template.objects.get(pk=21)
     iat.endorsements.add(endorsement)
 
-    # OIL
-    iat = ImportApplicationType.objects.get(sub_type="OIL")
-    endorsement = Template.objects.get(
-        template_type=Template.ENDORSEMENT,
-        template_name="Open Individual Licence endorsement",
-    )
+    # SIL
+    iat = ImportApplicationType.objects.get(sub_type=ImportApplicationType.SubTypes.SIL)
+    endorsement = Template.objects.get(pk=57)
+    iat.endorsements.add(endorsement)
+
+    # DFL
+    iat = ImportApplicationType.objects.get(sub_type=ImportApplicationType.SubTypes.DFL)
     iat.endorsements.add(endorsement)

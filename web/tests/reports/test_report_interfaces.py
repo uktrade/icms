@@ -884,35 +884,35 @@ class TestSupplementaryFirearmsInterface:
         data = interface.get_data()
         assert data["results"] == [
             {
-                "Licence Reference": "GBSIL0000001B",
+                "Calibre": "1mm",
                 "Case Reference": "IMA/2024/00001",
                 "Case Type": "SIL",
-                "Importer": "Test Importer 1",
-                "Eori Number": "GB1111111111ABCDE",
-                "Importer Address": "I1 address line 1, I1 address line 2, BT180LZ",  # /PS-IGNORE
-                "Licence Start Date": "01/06/2020",
-                "Licence Expiry Date": "31/12/2024",
-                "Country of Origin": "Afghanistan",
-                "Country of Consignment": "Afghanistan",
-                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria or the Russian Federation."
-                "(including any previous name by which these territories have been known).",
                 "Constabularies": "Avon & Somerset",
-                "Report Date": "13/02/2024",
+                "Country of Consignment": "Afghanistan",
+                "Country of Origin": "Afghanistan",
+                "Date Firearms Received": "13/02/2024",
+                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation "
+                "(including any previous name by which these territories have been known).",
+                "Eori Number": "GB1111111111ABCDE",
+                "Firearms Document": "",
+                "Firearms Exceed Quantity": "No",
+                "Frame Serial Number": "11111111111",
+                "Goods Description with Subsection": "Section 1 goods",
                 "Goods Description": "Section 1 goods",
                 "Goods Quantity": 111,
-                "Firearms Exceed Quantity": "No",
-                "Goods Description with Subsection": "Section 1 goods",
+                "Gun Barrel Proofing meets CIP": "Yes",
+                "Importer Address": "I1 address line 1, I1 address line 2, BT180LZ",  # /PS-IGNORE
+                "Importer": "Test Importer 1",
+                "Licence Expiry Date": "31/12/2024",
+                "Licence Reference": "GBSIL0000001B",
+                "Licence Start Date": "01/06/2020",
+                "Make/Model": "Test-Section1",
+                "Means of Transport": "air",
+                "Report Date": "13/02/2024",
+                "Reported all firearms for licence": "No",
+                "Who Bought From Address": "street value, city value, postcode value, region value, Afghanistan",
                 "Who Bought From Name": "first_name value",
                 "Who Bought From Reg No": "registration_number value",
-                "Who Bought From Address": "street value, city value, postcode value, region value, Afghanistan",
-                "Frame Serial Number": "11111111111",
-                "Make/Model": "Test-Section1",
-                "Calibre": "1mm",
-                "Gun Barrel Proofing meets CIP": "Yes",
-                "Firearms Document": "",
-                "Date Firearms Received": "13/02/2024",
-                "Means of Transport": "air",
-                "Reported all firearms for licence": "No",
             },
             {
                 "Licence Reference": "GBSIL0000001B",
@@ -925,7 +925,7 @@ class TestSupplementaryFirearmsInterface:
                 "Licence Expiry Date": "31/12/2024",
                 "Country of Origin": "Afghanistan",
                 "Country of Consignment": "Afghanistan",
-                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria or the Russian Federation."
+                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation "
                 "(including any previous name by which these territories have been known).",
                 "Constabularies": "Avon & Somerset",
                 "Report Date": "13/02/2024",
@@ -956,7 +956,7 @@ class TestSupplementaryFirearmsInterface:
                 "Licence Expiry Date": "31/12/2024",
                 "Country of Origin": "Afghanistan",
                 "Country of Consignment": "Afghanistan",
-                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria or the Russian Federation."
+                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation "
                 "(including any previous name by which these territories have been known).",
                 "Constabularies": "Avon & Somerset",
                 "Report Date": "13/02/2024",
@@ -987,7 +987,7 @@ class TestSupplementaryFirearmsInterface:
                 "Licence Expiry Date": "31/12/2024",
                 "Country of Origin": "Afghanistan",
                 "Country of Consignment": "Afghanistan",
-                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria or the Russian Federation."
+                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation "
                 "(including any previous name by which these territories have been known).",
                 "Constabularies": "Avon & Somerset",
                 "Report Date": "13/02/2024",
@@ -1018,7 +1018,7 @@ class TestSupplementaryFirearmsInterface:
                 "Licence Expiry Date": "31/12/2024",
                 "Country of Origin": "Afghanistan",
                 "Country of Consignment": "Afghanistan",
-                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria or the Russian Federation."
+                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation "
                 "(including any previous name by which these territories have been known).",
                 "Constabularies": "Avon & Somerset",
                 "Report Date": "13/02/2024",
@@ -1045,32 +1045,50 @@ class TestSupplementaryFirearmsInterface:
         data = interface.get_data()
         assert data["results"] == [
             {
-                "Licence Reference": "GBOIL0000001B",
+                "Calibre": "",
                 "Case Reference": "IMA/2024/00001",
                 "Case Type": "OIL",
-                "Importer": "Test Importer 1",
-                "Eori Number": "GB1111111111ABCDE",
-                "Importer Address": "I1 address line 1, I1 address line 2, BT180LZ",  # /PS-IGNORE
-                "Licence Start Date": "01/06/2020",
-                "Licence Expiry Date": "31/12/2024",
-                "Country of Origin": "Any Country",
+                "Constabularies": "Avon & Somerset",
                 "Country of Consignment": "Any Country",
+                "Country of Origin": "Any Country",
+                "Date Firearms Received": "13/02/2024",
                 "Endorsements": (
                     "OPEN INDIVIDUAL LICENCE Not valid for goods originating in "
-                    "or consigned from Iran, North Korea, Libya, Syria or the "
-                    "Russian Federation.(including any previous name by which "
-                    "these territories have been known).\n"
+                    "or consigned from Iran, North Korea, Libya, Syria, Belarus "
+                    "or the Russian Federation (including any previous name by "
+                    "which these territories have been known). \n\n"
                     "This licence is only valid if the firearm and its essential "
                     "component parts (Barrel, frame, receiver (including both "
                     "upper or lower receiver), slide, cylinder, bolt or breech "
                     "block) are marked with name of manufacturer or brand, "
-                    "country or place of manufacturer, serial number, year of "
-                    "manufacture and model (if an essential component is too "
+                    "country or place of manufacturer, serial number and the  "
+                    "year of manufacture (if not part of the serial number) and "
+                    "model (where feasible). If an essential component is too "
                     "small to be fully marked it must at least be marked with a "
-                    "serial number or alpha-numeric or digital code)."
+                    "serial number or alpha-numeric or digital code. If the item "
+                    "is not marked as set out above you have 1 month from entry "
+                    "into the UK to comply with this requirement. If the item is "
+                    "being imported for deactivation, you have three months to "
+                    "either comply or have the item deactivated.\n"
+                    "Items must be marked using the Latin alphabet and the "
+                    "Arabic numeral system. The font size must be at least 1,6 "
+                    "mm unless the relevant component parts are too small to be "
+                    "marked to this size, in which case a smaller font size may "
+                    "be used. \n"
+                    "For frames or receivers made from a non-metallic material, "
+                    "the marking should be applied to a metal plate that is "
+                    "permanently embedded in the material of the frame or "
+                    "receiver in such a way that the plate cannot be easily or "
+                    "readily removed; and removing the plate would destroy a "
+                    "portion of the frame or receiver.  Other techniques for "
+                    "marking such frames or receivers are permitted, provided "
+                    "those techniques ensure an equivalent level of clarity and "
+                    "permanence for the marking."
                 ),
-                "Constabularies": "Avon & Somerset",
-                "Report Date": "13/02/2024",
+                "Eori Number": "GB1111111111ABCDE",
+                "Firearms Document": "See uploaded files on report",
+                "Firearms Exceed Quantity": "No",
+                "Frame Serial Number": "",
                 "Goods Description": (
                     "Firearms, component parts thereof, or ammunition of any applicable commodity code, "
                     "other than those falling under Section 5 of the Firearms Act 1968 as amended."
@@ -1080,18 +1098,19 @@ class TestSupplementaryFirearmsInterface:
                     "other than those falling under Section 5 of the Firearms Act 1968 as amended."
                 ),
                 "Goods Quantity": 0,
-                "Firearms Exceed Quantity": "No",
+                "Gun Barrel Proofing meets CIP": "",
+                "Importer Address": "I1 address line 1, I1 address line 2, BT180LZ",  # /PS-IGNORE
+                "Importer": "Test Importer 1",
+                "Licence Expiry Date": "31/12/2024",
+                "Licence Reference": "GBOIL0000001B",
+                "Licence Start Date": "01/06/2020",
+                "Make/Model": "",
+                "Means of Transport": "air",
+                "Report Date": "13/02/2024",
+                "Reported all firearms for licence": "No",
+                "Who Bought From Address": "street value, city value, postcode value, region value, Afghanistan",
                 "Who Bought From Name": "first_name value",
                 "Who Bought From Reg No": "registration_number value",
-                "Who Bought From Address": "street value, city value, postcode value, region value, Afghanistan",
-                "Frame Serial Number": "",
-                "Make/Model": "",
-                "Calibre": "",
-                "Gun Barrel Proofing meets CIP": "",
-                "Firearms Document": "See uploaded files on report",
-                "Date Firearms Received": "13/02/2024",
-                "Means of Transport": "air",
-                "Reported all firearms for licence": "No",
             },
         ]
 
@@ -1110,7 +1129,8 @@ class TestSupplementaryFirearmsInterface:
                 "Licence Expiry Date": "31/12/2024",
                 "Country of Origin": "Afghanistan",
                 "Country of Consignment": "Albania",
-                "Endorsements": "",
+                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation "
+                "(including any previous name by which these territories have been known).",
                 "Constabularies": "Derbyshire",
                 "Report Date": "13/02/2024",
                 "Goods Description": "goods_description value",
@@ -1193,7 +1213,8 @@ class TestFirearmsLicencesInterface:
                 "Country of Origin": "Afghanistan",
                 "Country of Consignment": "Albania",
                 "Goods Description": "goods_description value",
-                "Endorsements": "",
+                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation "
+                "(including any previous name by which these territories have been known).",
                 "Revoked": "No",
             }
         ]
@@ -1217,17 +1238,36 @@ class TestFirearmsLicencesInterface:
                 "Country of Consignment": "Any Country",
                 "Endorsements": (
                     "OPEN INDIVIDUAL LICENCE Not valid for goods originating in "
-                    "or consigned from Iran, North Korea, Libya, Syria or the "
-                    "Russian Federation.(including any previous name by which "
-                    "these territories have been known).\n"
+                    "or consigned from Iran, North Korea, Libya, Syria, Belarus "
+                    "or the Russian Federation (including any previous name by "
+                    "which these territories have been known). \n\n"
                     "This licence is only valid if the firearm and its essential "
                     "component parts (Barrel, frame, receiver (including both "
                     "upper or lower receiver), slide, cylinder, bolt or breech "
                     "block) are marked with name of manufacturer or brand, "
-                    "country or place of manufacturer, serial number, year of "
-                    "manufacture and model (if an essential component is too "
+                    "country or place of manufacturer, serial number and the  "
+                    "year of manufacture (if not part of the serial number) and "
+                    "model (where feasible). If an essential component is too "
                     "small to be fully marked it must at least be marked with a "
-                    "serial number or alpha-numeric or digital code)."
+                    "serial number or alpha-numeric or digital code. If the item "
+                    "is not marked as set out above you have 1 month from entry "
+                    "into the UK to comply with this requirement. If the item is "
+                    "being imported for deactivation, you have three months to "
+                    "either comply or have the item deactivated.\n"
+                    "Items must be marked using the Latin alphabet and the "
+                    "Arabic numeral system. The font size must be at least 1,6 "
+                    "mm unless the relevant component parts are too small to be "
+                    "marked to this size, in which case a smaller font size may "
+                    "be used. \n"
+                    "For frames or receivers made from a non-metallic material, "
+                    "the marking should be applied to a metal plate that is "
+                    "permanently embedded in the material of the frame or "
+                    "receiver in such a way that the plate cannot be easily or "
+                    "readily removed; and removing the plate would destroy a "
+                    "portion of the frame or receiver.  Other techniques for "
+                    "marking such frames or receivers are permitted, provided "
+                    "those techniques ensure an equivalent level of clarity and "
+                    "permanence for the marking."
                 ),
                 "Revoked": "No",
                 "Constabularies": "Avon & Somerset",
@@ -1275,7 +1315,7 @@ class TestFirearmsLicencesInterface:
                     "444 x Section 58 obsoletes goods chambered in the obsolete calibre Obsolete calibre value to which Section 58(2)"
                     " of the Firearms Act 1968, as amended, applies."
                 ),
-                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria or the Russian Federation."
+                "Endorsements": "Not valid for items originating in or consigned from Iran, North Korea, Libya, Syria, Belarus or the Russian Federation "
                 "(including any previous name by which these territories have been known).",
                 "Revoked": "No",
                 "Constabularies": "Avon & Somerset",

@@ -31,7 +31,7 @@ def get_open_update_request(
 
     resp = client.get(CaseURLS.edit_update_requests(app.pk, update_request_pk))
     assert resp.status_code == 200
-    assertContains(resp, "I am writing to ask you for application updates regarding")
+    assertContains(resp, "You need to update your application with the following information")
 
     resp = client.post(CaseURLS.edit_update_requests(app.pk, update_request_pk), data=post)
     assert resp.status_code == 302
