@@ -1,17 +1,29 @@
+from typing import Any
+
 from django.core.exceptions import PermissionDenied
 
-
-class ProcessError(PermissionDenied):
-    pass
-
-
-class ProcessInactiveError(ProcessError):
-    pass
+from web.domains.case.shared import ImpExpStatus
+from web.models import Task
 
 
-class ProcessStateError(ProcessError):
-    pass
+class ProcessError(PermissionDenied): ...  # noqa: E701
+
+
+class ProcessInactiveError(ProcessError): ...  # noqa: E701
+
+
+class ProcessStatusError(ProcessError):
+    app_status: ImpExpStatus
+
+    def __init__(self, *args: Any, app_status: ImpExpStatus, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.app_status = app_status
 
 
 class TaskError(ProcessError):
-    pass
+    def __init__(
+        self, *args: Any, app_status: ImpExpStatus, task: Task.TaskType, **kwargs: Any
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.app_status = app_status
+        self.expected_task = task

@@ -165,6 +165,7 @@ class TestHandler403CaptureProcessErrorView:  # /PS-IGNORE
         response = importer_client.get(url)
 
         assert response.status_code == HTTPStatus.FORBIDDEN
+        assert "<h1>403 Forbidden</h1>" in response.content.decode()
 
         # Only subclasses of ProcessError are sent to sentry
         mock_capture_exception.assert_not_called()
@@ -179,9 +180,43 @@ class TestHandler403CaptureProcessErrorView:  # /PS-IGNORE
         response = importer_client.get(url)
 
         assert response.status_code == HTTPStatus.FORBIDDEN
+        assert "<h1>403 Forbidden</h1>" in response.content.decode()
 
         # capture_exception called as a ProcessError was raised
         mock_capture_exception.assert_called_once()
+
+    @mock.patch("web.views.views.capture_exception")
+    def test_capture_process_error_custom_403_page(
+        self, mock_capture_exception, fa_dfl_app_submitted, importer_client
+    ):
+        # This URL should raise a ProcessError when called as the app is submitted
+        url = reverse("import:fa-dfl:submit", kwargs={"application_pk": fa_dfl_app_submitted.pk})
+
+        response = importer_client.get(url)
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
+        assert "<p>This page is no longer available.</p>" in response.content.decode()
+
+        # capture_exception is not called as we want to ignore this scenario
+        mock_capture_exception.assert_not_called()
+
+    @mock.patch("web.views.views.capture_exception")
+    def test_capture_process_error_custom_403_page_authorise_documents(
+        self, mock_capture_exception, fa_dfl_app_pre_sign, ilb_admin_client
+    ):
+        # This URL should raise a ProcessError when called as the app is submitted
+        url = reverse(
+            "case:start-authorisation",
+            kwargs={"application_pk": fa_dfl_app_pre_sign.pk, "case_type": "import"},
+        )
+
+        response = ilb_admin_client.get(url)
+
+        assert response.status_code == HTTPStatus.FORBIDDEN
+        assert "<p>This page is no longer available.</p>" in response.content.decode()
+
+        # capture_exception is not called as we want to ignore this scenario
+        mock_capture_exception.assert_not_called()
 
 
 class TestLoginRequiredSelect2AutoResponseView(AuthTestCase):
