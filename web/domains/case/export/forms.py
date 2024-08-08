@@ -596,6 +596,15 @@ class CFSProductTypeForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.product = product
 
+        existing_product_numbers = product.product_type_numbers.values_list(
+            "product_type_number", flat=True
+        )
+        self.fields["product_type_number"].choices = [
+            each
+            for each in self.fields["product_type_number"].choices
+            if each[0] not in existing_product_numbers
+        ]
+
     def clean_product_type_number(self):
         product_type_number = self.cleaned_data["product_type_number"]
 

@@ -5,12 +5,14 @@ from django.template.loader import render_to_string
 from web.domains.case.export.forms import (
     CFSActiveIngredientForm,
     CFSManufacturerDetailsForm,
+    CFSProductTypeForm,
     EditCFSScheduleForm,
     EditCOMForm,
     EditGMPForm,
     SubmitCFSScheduleForm,
     SubmitGMPForm,
 )
+from web.domains.case.export.models import CFSProductType
 from web.forms.widgets import RadioSelectInline
 from web.models import ProductLegislation
 from web.models.shared import AddressEntryType, YesNoChoices
@@ -208,3 +210,22 @@ def test_edit_cfs_schedule_manufacturer_form_readonly_address_input(cfs_app_in_p
         },
     )
     assert "readonly" not in form.fields["manufacturer_address"].widget.attrs
+
+
+def test_add_cfs_product_type_number_no_duplicates(cfs_app_in_progress):
+    cfs_product = cfs_app_in_progress.schedules.first().products.first()
+    cfs_product_type = cfs_product.product_type_numbers.first()
+
+    form = CFSProductTypeForm(product=cfs_product)
+    assert len(form.fields["product_type_number"].choices) == 22
+    flat_choices = [choice[0] for choice in form.fields["product_type_number"].choices]
+    assert cfs_product.product_type_numbers.first().product_type_number not in flat_choices
+
+    new_product_type = CFSProductType.objects.create(product=cfs_product, product_type_number=2)
+    cfs_product.product_type_numbers.add(new_product_type)
+    form = CFSProductTypeForm(product=cfs_product)
+    assert len(form.fields["product_type_number"].choices) == 21
+
+    flat_choices = [choice[0] for choice in form.fields["product_type_number"].choices]
+    assert cfs_product_type.product_type_number not in flat_choices
+    assert 2 not in flat_choices
