@@ -145,13 +145,14 @@ class Command(BaseCommand):
 
     def add_ilb_admin_users(self, password: str) -> None:
         ilb_admin_group = Group.objects.get(name="ILB Case Officer")
+        ilb_admin_site_group = Group.objects.get(name="ICMS Admin Site User")
         for index, user in enumerate(ADMIN_USERS, start=1):
             ilb_admin_user = self.create_user(
                 username="ilb_admin" if index == 1 else f"ilb_admin_{index}",
                 password=password,
                 first_name=user["first_name"],
                 last_name=user["last_name"],
-                groups=[ilb_admin_group],
+                groups=[ilb_admin_group, ilb_admin_site_group],
             )
             if index == 1:
                 create_dummy_signature(ilb_admin_user)
