@@ -8,26 +8,23 @@ elements.
 */
 'use strict';
 
-const doubleSubmitClass = {
-    formSelector: 'no-double-submit',
-    formBlocked: 'double-submit-blocked'
-};
+const formBlocked = 'double-submit-blocked';
 
 const blockDoubleSubmit = function(event) {
     let form = event.target;
 
-    if (form.classList.contains(doubleSubmitClass.formBlocked)) {
+    if (form.classList.contains(formBlocked)) {
         event.preventDefault();
         return;
     }
 
-    form.classList.add(doubleSubmitClass.formBlocked);
+    form.classList.add(formBlocked);
 };
 
 window.addEventListener('load', function() {
-    let elements = this.document.getElementsByClassName(doubleSubmitClass.formSelector);
-
-    Array.from(elements).forEach(function(el) {
+    // Add event handler to all form submissions preventing double submission
+    let forms = this.document.getElementsByTagName("form")
+    Array.from(forms).forEach(function(el) {
         // Form.method is normalized, i.e. <form method='POST'> === 'post'.
         if (el.method === 'post') {
             el.addEventListener('submit', blockDoubleSubmit);
