@@ -46,21 +46,24 @@ const Dialogue = function () {
                   }
               });
         },
-
+        formSubmitted: false,
         bindTo: function (el, message) {
             let that = this;
-
             el.on('click', function (evt) {
                 evt.preventDefault();
                 that.show(message, function () {
                     var form = el.closest('form');
-                    console.log('running default callback');
                     var input = $("<input>")
                       .attr("type", "hidden")
                       .attr("name", el.attr('name'))
                       .attr("value", el.attr('value'));
                     form.append(input);
-                    form.submit();
+
+                    // Prevent double submission of the form.
+                    if (!that.formSubmitted) {
+                        that.formSubmitted = true;
+                        form.submit();
+                    }
                 });
             });
         },
