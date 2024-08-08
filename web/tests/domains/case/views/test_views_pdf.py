@@ -5,7 +5,7 @@ from django.urls import reverse
 from pytest_django.asserts import assertRedirects
 
 from web.domains.case.services import document_pack
-from web.flow.errors import ProcessStateError, TaskError
+from web.flow.errors import ProcessStatusError, TaskError
 from web.tests.conftest import LOGIN_URL
 from web.tests.helpers import CaseURLS
 
@@ -114,7 +114,7 @@ def test_preview_certificate_application_not_authorised(fa_sil_app_submitted, il
     url = CaseURLS.licence_pre_sign(fa_sil_app_submitted.pk)
     try:
         ilb_admin_client.get(url)
-    except ProcessStateError:
+    except ProcessStatusError:
         pass
 
 

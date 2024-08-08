@@ -48,7 +48,7 @@ def application_in_progress(application: ImpOrExp) -> None:
 
     try:
         check_expected_status(application, expected_status)
-    except errors.ProcessStateError as e:
+    except errors.ProcessStatusError as e:
         # Special case where a case officer creates an update request and then releases ownership.
         # Release ownership will change the status to SUBMITTED and therefore the
         # check_expected_status call will raise an exception.
@@ -123,25 +123,29 @@ def check_expected_status(application: Process, expected_statuses: list[ImpExpSt
     """Check the process has one of the expected statuses."""
 
     # status is set as a model field on all derived classes
-    status: str = application.status
+    status = application.status
 
     if status not in expected_statuses:
-        raise errors.ProcessStateError(f"Process is in the wrong state: {status}")
+        raise errors.ProcessStatusError(
+            f"Process is in the wrong state: {status}", app_status=status
+        )
 
 
-def check_expected_task(application: Process, expected_task: str) -> None:
+def check_expected_task(application: Process, expected_task: Task.TaskType) -> None:
     """Check the expected task is in the applications active task list"""
 
     active_tasks = get_active_task_list(application)
 
     if expected_task not in active_tasks:
         raise errors.TaskError(
-            f"{expected_task} not in active task list {active_tasks} for Process {application.pk}"
+            f"{expected_task} not in active task list {active_tasks} for Process {application.pk}",
+            app_status=application.status,
+            task=expected_task,
         )
 
 
 def get_expected_task(
-    application: Process, task_type: str, *, select_for_update: bool = True
+    application: Process, task_type: Task.TaskType, *, select_for_update: bool = True
 ) -> Task:
     """Get the expected active current task"""
 
@@ -152,7 +156,11 @@ def get_expected_task(
         task = get_active_tasks(application, select_for_update).get(task_type=task_type)
 
     except (ObjectDoesNotExist, MultipleObjectsReturned) as exc:
-        raise errors.TaskError(f"Failed to get expected task: {task_type}") from exc
+        raise errors.TaskError(
+            f"Failed to get expected task: {task_type}",
+            app_status=application.status,
+            task=task_type,
+        ) from exc
 
     return task
 

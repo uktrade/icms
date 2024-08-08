@@ -13,7 +13,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect, render
-from django.urls import reverse
+from django.urls import resolve, reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 from django.views.defaults import permission_denied
@@ -24,7 +24,9 @@ from django.views.generic.list import ListView
 from django_filters import FilterSet
 from django_select2.views import AutoResponseView
 
-from web.flow.errors import ProcessError
+from web.domains.case.shared import ImpExpStatus
+from web.flow.errors import ProcessError, ProcessStatusError, TaskError
+from web.models import Task
 from web.one_login.utils import get_one_login_logout_url
 from web.sites import (
     get_exporter_site_domain,
@@ -214,11 +216,87 @@ def handler403_capture_process_error_view(
     #        after an application has been submitted.
     # We care about the first scenario as it will require a code change, e.g. change the expected
     # status a view is checking for.
-    # We do not care about the second, and the user will correctly see a 403 error.
-    if isinstance(exception, ProcessError):
-        capture_exception()
+    # We do not care about the second, and the user will see a custom 403 error page.
+    # We don't strictly need request.user.is_anonymous as the login required decorator / mixin
+    # should have returned them to the login page before now.
+    # I am just being paranoid about returning different templates for valid requests.
+    if isinstance(exception, ProcessError) and not request.user.is_anonymous:
+        view_name = resolve(request.path).view_name
+
+        # ProcessStatusError is a subclass of ProcessError
+        if isinstance(exception, ProcessStatusError):
+            if can_ignore_process_status_error(exception, view_name):
+                # The handler403 function must return a HttpResponseForbidden instance
+                # Therefore the only option we have is to override the template.
+                return permission_denied(
+                    request, exception, template_name="403_view_no_longer_available.html"
+                )
+
+            # Capture ProcessErrors that we haven't handled above.
+            capture_exception()
+
+        # TaskError is a subclass of ProcessError
+        if isinstance(exception, TaskError):
+            if can_ignore_task_error(exception, view_name):
+                # The handler403 function must return a HttpResponseForbidden instance
+                # Therefore the only option we have is to override the template.
+                return permission_denied(
+                    request, exception, template_name="403_view_no_longer_available.html"
+                )
+
+            # Capture TaskError that we haven't handled above.
+            capture_exception()
 
     return permission_denied(request, exception)
+
+
+def can_ignore_process_status_error(exception: ProcessStatusError, view_name: str) -> bool:
+    """Returns True if the status / view_name can be safely ignored.
+
+    This doesn't capture every view possible, just the views that change the status.
+    e.g. a user presses submit and then presses back.
+
+    :param exception: ProcessStatusError instance raised
+    :param view_name: name of the view being requested
+    """
+
+    # Importer / Exporter user has pressed back after pressing submit
+    if exception.app_status == ImpExpStatus.SUBMITTED and view_name in [
+        # Import application submit views
+        "import:fa-oil:submit-oil",
+        "import:fa-dfl:submit",
+        "import:fa-sil:submit",
+        "import:sanctions:submit-sanctions",
+        "import:wood:submit-quota",
+        # Export application submit views
+        "export:com-submit",
+        "export:cfs-submit",
+        "export:gmp-submit",
+    ]:
+        return True
+
+    return False
+
+
+def can_ignore_task_error(exception: TaskError, view_name: str) -> bool:
+    """Returns True if the status, task & view_name can be safely ignored.
+
+    This doesn't capture every view possible, just the views that change the an expected task.
+    e.g. A case officer presses authorise and then presses back.
+
+    :param exception: TaskError instance raised
+    :param view_name: name of the view being requested
+    """
+
+    # Caseworker has pressed back after pressing Authorise
+    if (
+        exception.app_status in [ImpExpStatus.PROCESSING, ImpExpStatus.VARIATION_REQUESTED]
+        and exception.expected_task == Task.TaskType.PROCESS
+        and view_name == "case:start-authorisation"
+    ):
+        return True
+
+    return False
 
 
 class LoginRequiredSelect2AutoResponseView(LoginRequiredMixin, AutoResponseView):

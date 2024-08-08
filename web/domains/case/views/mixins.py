@@ -36,7 +36,7 @@ class ApplicationTaskMixin(SingleObjectMixin, View):
     current_status: ClassVar[list[ImpExpStatus]]
 
     # The expected current active task of the process record
-    current_task_type: ClassVar[str | None] = None
+    current_task_type: ClassVar[Task.TaskType | None] = None
 
     # The next status to set.
     next_status: ClassVar[str | None] = None
@@ -145,7 +145,7 @@ class ApplicationAndTaskRelatedObjectMixin:
     current_status: ClassVar[list[ImpExpStatus]]
 
     # The expected current active task of the process record
-    current_task_type: ClassVar[str | None] = None
+    current_task_type: ClassVar[Task.TaskType | None] = None
 
     # The next status to set.
     next_status: ClassVar[str | None] = None

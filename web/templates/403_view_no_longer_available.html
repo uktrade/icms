@@ -1,0 +1,7 @@
+{% extends "layout/no-sidebar.html" %}
+{% block main_content %}
+  <p>This page is no longer available.</p>
+  {% if app_env != "production" %}
+    {{ exception }}
+  {% endif %}
+{% endblock %}

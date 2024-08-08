@@ -14,7 +14,7 @@ def test_application_in_progress(fa_sil):
     _setup_application(fa_sil, ST.IN_PROGRESS, TT.PREPARE)
     case_progress.application_in_progress(fa_sil)
 
-    with pytest.raises(errors.ProcessStateError):
+    with pytest.raises(errors.ProcessStatusError):
         _setup_application(fa_sil, ST.COMPLETED, TT.PREPARE)
         case_progress.application_in_progress(fa_sil)
 
@@ -44,13 +44,13 @@ def test_application_in_progress_update_request_no_case_owner(fa_sil, ilb_admin_
     case_progress.application_in_progress(fa_sil)
 
     # if the case officer is set it is incorrect.
-    with pytest.raises(errors.ProcessStateError):
+    with pytest.raises(errors.ProcessStatusError):
         fa_sil.case_owner = ilb_admin_user
         fa_sil.save()
         case_progress.application_in_progress(fa_sil)
 
     # If submitted without an update request it is incorrect
-    with pytest.raises(errors.ProcessStateError):
+    with pytest.raises(errors.ProcessStatusError):
         fa_sil.case_owner = None
         fa_sil.save()
         fa_sil.current_update_requests().delete()
@@ -61,7 +61,7 @@ def test_application_in_processing(fa_sil):
     _setup_application(fa_sil, ST.PROCESSING, TT.PROCESS)
     case_progress.application_in_processing(fa_sil)
 
-    with pytest.raises(errors.ProcessStateError):
+    with pytest.raises(errors.ProcessStatusError):
         _setup_application(fa_sil, ST.COMPLETED, TT.PROCESS)
         case_progress.application_in_processing(fa_sil)
 
@@ -74,7 +74,7 @@ def test_access_request_in_processing(iar):
     _setup_application(iar, ST.SUBMITTED, TT.PROCESS)
     case_progress.access_request_in_processing(iar)
 
-    with pytest.raises(errors.ProcessStateError):
+    with pytest.raises(errors.ProcessStatusError):
         _setup_application(iar, ST.COMPLETED, TT.PROCESS)
         case_progress.access_request_in_processing(iar)
 
@@ -87,7 +87,7 @@ def test_application_is_authorised(fa_sil):
     _setup_application(fa_sil, ST.VARIATION_REQUESTED, TT.AUTHORISE)
     case_progress.application_is_authorised(fa_sil)
 
-    with pytest.raises(errors.ProcessStateError):
+    with pytest.raises(errors.ProcessStatusError):
         _setup_application(fa_sil, ST.COMPLETED, TT.AUTHORISE)
         case_progress.application_is_authorised(fa_sil)
 
@@ -100,7 +100,7 @@ def test_application_is_with_chief(fa_sil):
     _setup_application(fa_sil, ST.PROCESSING, TT.CHIEF_WAIT)
     case_progress.application_is_with_chief(fa_sil)
 
-    with pytest.raises(errors.ProcessStateError):
+    with pytest.raises(errors.ProcessStatusError):
         _setup_application(fa_sil, ST.COMPLETED, TT.CHIEF_WAIT)
         case_progress.application_is_with_chief(fa_sil)
 
@@ -114,7 +114,7 @@ def test_check_expected_status(fa_sil):
     expected_statuses = [ST.COMPLETED]
     case_progress.check_expected_status(fa_sil, expected_statuses)
 
-    with pytest.raises(errors.ProcessStateError):
+    with pytest.raises(errors.ProcessStatusError):
         fa_sil.status = ST.REVOKED
         case_progress.check_expected_status(fa_sil, expected_statuses)
 
