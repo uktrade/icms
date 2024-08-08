@@ -22,6 +22,7 @@ from web.models import (
 from web.permissions import organisation_add_contact
 from web.reports.interfaces import (
     AccessRequestTotalsInterface,
+    ActiveStaffUserInterface,
     ActiveUserInterface,
     DFLFirearmsLicenceInterface,
     ExporterAccessRequestInterface,
@@ -178,6 +179,12 @@ EXPECTED_ACTIVE_USER_HEADER = [
     "Is Importer",
     "Is Exporter",
     "Businesses",
+]
+
+EXPECTED_ACTIVE_STAFF_USER_HEADER = [
+    "First Name",  # /PS-IGNORE
+    "Last Name",  # /PS-IGNORE
+    "Email Address",
 ]
 
 
@@ -1360,5 +1367,59 @@ class TestActiveUserInterface:
                 "Is Exporter": "Yes",
                 "Is Importer": "No",
                 "Last Name": "E2_main_contact_last_name",  # /PS-IGNORE
+            },
+        ]
+
+
+class TestActiveStaffUserInterface:
+    @pytest.fixture(autouse=True)
+    def _setup(self, report_schedule, ilb_admin_user):
+        self.report_schedule = report_schedule
+        self.ilb_admin_user = ilb_admin_user
+
+    def test_get_data_header(self):
+        interface = ActiveStaffUserInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["header"] == EXPECTED_ACTIVE_STAFF_USER_HEADER
+        assert data["errors"] == []
+
+    def test_get_data(self):
+        interface = ActiveStaffUserInterface(self.report_schedule)
+        data = interface.get_data()
+        assert data["results"] == [
+            {
+                "Email Address": "ilb_admin_user@example.com",  # /PS-IGNORE
+                "First Name": "ilb_admin_user_first_name",  # /PS-IGNORE
+                "Last Name": "ilb_admin_user_last_name",  # /PS-IGNORE
+            },
+            {
+                "Email Address": "ilb_admin_two@example.com",  # /PS-IGNORE
+                "First Name": "ilb_admin_two_first_name",  # /PS-IGNORE
+                "Last Name": "ilb_admin_two_last_name",  # /PS-IGNORE
+            },
+            {
+                "Email Address": "nca_admin_user@example.com",  # /PS-IGNORE
+                "First Name": "nca_admin_user_first_name",  # /PS-IGNORE
+                "Last Name": "nca_admin_user_last_name",  # /PS-IGNORE
+            },
+            {
+                "Email Address": "ho_admin_user@example.com",  # /PS-IGNORE
+                "First Name": "ho_admin_user_first_name",  # /PS-IGNORE
+                "Last Name": "ho_admin_user_last_name",  # /PS-IGNORE
+            },
+            {
+                "Email Address": "san_admin_user@example.com",  # /PS-IGNORE
+                "First Name": "san_admin_user_first_name",  # /PS-IGNORE
+                "Last Name": "san_admin_user_last_name",  # /PS-IGNORE
+            },
+            {
+                "Email Address": "import_search_user@example.com",  # /PS-IGNORE
+                "First Name": "import_search_user_first_name",  # /PS-IGNORE
+                "Last Name": "import_search_user_last_name",  # /PS-IGNORE
+            },
+            {
+                "Email Address": "con_user@example.com",  # /PS-IGNORE
+                "First Name": "con_user_first_name",  # /PS-IGNORE
+                "Last Name": "con_user_last_name",  # /PS-IGNORE
             },
         ]

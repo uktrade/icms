@@ -4,12 +4,8 @@ from unittest import mock
 from freezegun import freeze_time
 
 from web.models import GeneratedReport
-from web.reports import generate
+from web.reports import generate, interfaces
 from web.reports.constants import ReportStatus
-from web.reports.interfaces import (
-    ExporterAccessRequestInterface,
-    ImporterAccessRequestInterface,
-)
 
 
 @freeze_time("2024-01-01 12:00:00")
@@ -17,7 +13,9 @@ from web.reports.interfaces import (
 def test_generate_issued_certificate_report(mock_write_files, report_schedule):
     mock_write_files.return_value = None
     generate.generate_issued_certificate_report(report_schedule)
-    assert mock_write_files.called is True
+    mock_write_files.called_once_with(
+        [report_schedule], [interfaces.IssuedCertificateReportInterface(report_schedule)]
+    )
     report_schedule.refresh_from_db()
     assert report_schedule.status == ReportStatus.COMPLETED
     assert report_schedule.started_at == dt.datetime(2024, 1, 1, 12, 0, 0, tzinfo=dt.UTC)
@@ -29,7 +27,14 @@ def test_generate_issued_certificate_report(mock_write_files, report_schedule):
 def test_access_request_report(mock_write_files, report_schedule):
     mock_write_files.return_value = None
     generate.generate_access_request_report(report_schedule)
-    assert mock_write_files.called is True
+    mock_write_files.called_once_with(
+        [report_schedule],
+        [
+            interfaces.ImporterAccessRequestInterface(report_schedule),
+            interfaces.ExporterAccessRequestInterface(report_schedule),
+            interfaces.AccessRequestTotalsInterface(report_schedule),
+        ],
+    )
     report_schedule.refresh_from_db()
     assert report_schedule.status == ReportStatus.COMPLETED
     assert report_schedule.started_at == dt.datetime(2024, 1, 1, 12, 0, 0, tzinfo=dt.UTC)
@@ -41,7 +46,14 @@ def test_access_request_report(mock_write_files, report_schedule):
 def test_generate_firearms_licences_report(mock_write_files, report_schedule):
     mock_write_files.return_value = None
     generate.generate_firearms_licences_report(report_schedule)
-    assert mock_write_files.called is True
+    mock_write_files.called_once_with(
+        [report_schedule],
+        [
+            interfaces.DFLFirearmsLicenceInterface(report_schedule),
+            interfaces.SILFirearmsLicenceInterface(report_schedule),
+            interfaces.OILFirearmsLicenceInterface(report_schedule),
+        ],
+    )
     report_schedule.refresh_from_db()
     assert report_schedule.status == ReportStatus.COMPLETED
     assert report_schedule.started_at == dt.datetime(2024, 1, 1, 12, 0, 0, tzinfo=dt.UTC)
@@ -53,7 +65,13 @@ def test_generate_firearms_licences_report(mock_write_files, report_schedule):
 def test_generate_active_users_report(mock_write_files, report_schedule):
     mock_write_files.return_value = None
     generate.generate_active_users_report(report_schedule)
-    assert mock_write_files.called is True
+    mock_write_files.called_once_with(
+        [report_schedule],
+        [
+            interfaces.ActiveUserInterface(report_schedule),
+            interfaces.ActiveStaffUserInterface(report_schedule),
+        ],
+    )
     report_schedule.refresh_from_db()
     assert report_schedule.status == ReportStatus.COMPLETED
     assert report_schedule.started_at == dt.datetime(2024, 1, 1, 12, 0, 0, tzinfo=dt.UTC)
@@ -65,7 +83,9 @@ def test_generate_active_users_report(mock_write_files, report_schedule):
 def test_import_licence_report(mock_write_files, report_schedule):
     mock_write_files.return_value = None
     generate.generate_import_licence_report(report_schedule)
-    assert mock_write_files.called is True
+    mock_write_files.called_once_with(
+        [report_schedule], [interfaces.ImportLicenceInterface(report_schedule)]
+    )
     report_schedule.refresh_from_db()
     assert report_schedule.status == ReportStatus.COMPLETED
     assert report_schedule.started_at == dt.datetime(2024, 1, 1, 12, 0, 0, tzinfo=dt.UTC)
@@ -77,8 +97,8 @@ def test_import_licence_report(mock_write_files, report_schedule):
 def test_write_files(mock_write_csv, mock_write_xlsx, report_schedule):
     mock_write_csv.return_value = None
     mock_write_xlsx.return_value = None
-    importer_report_interface = ImporterAccessRequestInterface(report_schedule)
-    exporter_report_interface = ExporterAccessRequestInterface(report_schedule)
+    importer_report_interface = interfaces.ImporterAccessRequestInterface(report_schedule)
+    exporter_report_interface = interfaces.ExporterAccessRequestInterface(report_schedule)
     generate.write_files(report_schedule, [importer_report_interface, exporter_report_interface])
     assert mock_write_csv.call_count == 2
     assert mock_write_xlsx.call_count == 1

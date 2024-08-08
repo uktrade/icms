@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group, Permission
 from django.core.management.base import BaseCommand
 
-from web.permissions import Perms
+from web.permissions import Perms, StaffUserGroups
 
 
 class Command(BaseCommand):
@@ -24,7 +24,7 @@ def create_groups():
 
 def get_groups():
     return {
-        "ILB Case Officer": [
+        StaffUserGroups.ILB_CASE_OFFICER.value: [
             #
             # Page permissions
             Perms.page.view_permission_harness,
@@ -73,7 +73,7 @@ def get_groups():
             # Sys permissions
             Perms.sys.exporter_access,
         ],
-        "NCA Case Officer": [
+        StaffUserGroups.NCA_CASE_OFFICER.value: [
             # Page permissions
             Perms.sys.importer_regulator,
             Perms.page.view_import_case_search,
@@ -83,7 +83,7 @@ def get_groups():
             Perms.sys.search_all_cases,
             Perms.sys.access_reports,
         ],
-        "Home Office Case Officer": {
+        StaffUserGroups.HOME_OFFICE_CASE_OFFICER.value: {
             # Page permissions
             Perms.page.view_import_case_search,
             # Sys permissions
@@ -91,7 +91,7 @@ def get_groups():
             Perms.sys.importer_regulator,
             Perms.sys.edit_section_5_firearm_authorities,
         },
-        "Sanctions Case Officer": {
+        StaffUserGroups.SANCTIONS_CASE_OFFICER.value: {
             #
             # Page permissions
             Perms.page.view_import_case_search,
@@ -118,7 +118,7 @@ def get_groups():
             Perms.sys.importer_regulator,
             Perms.sys.edit_firearm_authorities,
         },
-        "Import Search User": {
+        StaffUserGroups.IMPORT_SEARCH_USER.value: {
             #
             # Page permissions
             Perms.page.view_import_case_search,

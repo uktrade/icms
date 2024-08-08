@@ -67,7 +67,7 @@ from web.models import (
     User,
     UserImportCertificate,
 )
-from web.permissions import Perms
+from web.permissions import Perms, StaffUserGroups
 from web.utils.pdf.utils import get_fa_sil_goods_item
 from web.utils.search.app_data import _add_import_licence_data
 from web.utils.sentry import capture_exception
@@ -85,6 +85,7 @@ from .serializers import (
     IssuedCertificateReportSerializer,
     OILFirearmsLicenceSerializer,
     SILFirearmsLicenceSerializer,
+    StaffUserSerializer,
     SupplementaryFirearmsSerializer,
     UserSerializer,
 )
@@ -1193,9 +1194,7 @@ class ActiveUserInterface(ReportInterface):
         return (
             user_list_view_qs()
             .filter(_filter, _permissions_filter, is_active=True)
-            .exclude(
-                groups__permissions__codename=Perms.sys.ilb_admin.codename,
-            )
+            .exclude(groups__name__in=StaffUserGroups)
             .annotate(
                 exporters=ArraySubquery(
                     ExporterUserObjectPermission.objects.filter(user__pk=OuterRef("pk"))
@@ -1227,6 +1226,43 @@ class ActiveUserInterface(ReportInterface):
             is_importer=True if user["importers"] else False,
             is_exporter=True if user["exporters"] else False,
             businesses=", ".join(user["exporters"] + user["importers"]),
+        )
+
+    def get_row_identifier(self, user: User) -> str:
+        return user["email"]
+
+
+class ActiveStaffUserInterface(ReportInterface):
+    name = "Active Staff Users"
+    ReportSerializer = StaffUserSerializer
+    ReportFilter = BasicReportFilter
+    filters: BasicReportFilter
+
+    def get_queryset(self) -> QuerySet:
+        _filter = Q(
+            date_joined__date__range=(
+                self.filters.date_from,
+                self.filters.date_to,
+            )
+        )
+        _permissions_filter = Q(groups__name__in=StaffUserGroups)
+        return (
+            user_list_view_qs()
+            .filter(_filter, _permissions_filter, is_active=True)
+            .distinct()
+            .values(
+                "first_name",
+                "last_name",
+                "email",
+            )
+            .order_by("pk")
+        )
+
+    def serialize_row(self, user: dict) -> StaffUserSerializer:
+        return self.ReportSerializer(
+            first_name=user["first_name"],
+            last_name=user["last_name"],
+            email_address=user["email"],
         )
 
     def get_row_identifier(self, user: User) -> str:
