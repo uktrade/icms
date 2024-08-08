@@ -223,7 +223,7 @@ class Command(BaseCommand):
             self.stdout.write(f"Created {exporter_username} & agent")
             if index == 1:
                 self.create_user(
-                    username="migrated-user-2@example.com",  # /PS-IGNORE
+                    username="migrated-user-2",  # /PS-IGNORE
                     password=password,
                     first_name="Dani",
                     last_name="Winslow",
@@ -366,7 +366,7 @@ class Command(BaseCommand):
             self.stdout.write(f"Created {importer_username} & agent")
             if index == 1:
                 self.create_user(
-                    username="migrated-user-1@example.com",  # /PS-IGNORE
+                    username="migrated-user-1",  # /PS-IGNORE
                     password=password,
                     first_name="Bill",
                     last_name="Wesley",

@@ -4,6 +4,7 @@ from .perms import (
     ImporterObjectPermissions,
     PagePermissions,
     Perms,
+    StaffUserGroups,
     SysPerms,
 )
 from .service import (
@@ -46,6 +47,7 @@ __all__ = [
     "ImporterObjectPermissions",
     "PagePermissions",
     "Perms",
+    "StaffUserGroups",
     "SysPerms",
     "AppChecker",
     "is_user_org_admin",

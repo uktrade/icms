@@ -1,4 +1,15 @@
+from enum import StrEnum
+
 from .types import PermissionTextChoice
+
+
+class StaffUserGroups(StrEnum):
+    ILB_CASE_OFFICER = "ILB Case Officer"
+    NCA_CASE_OFFICER = "NCA Case Officer"
+    HOME_OFFICE_CASE_OFFICER = "Home Office Case Officer"
+    SANCTIONS_CASE_OFFICER = "Sanctions Case Officer"
+    IMPORT_SEARCH_USER = "Import Search User"
+    CONSTABULARY_CONTACT = "Constabulary Contact"
 
 
 class PagePermissions(PermissionTextChoice):
@@ -133,7 +144,7 @@ class ConstabularyObjectPermissions(PermissionTextChoice):
 
     @staticmethod
     def get_group_name():
-        return "Constabulary Contact"
+        return StaffUserGroups.CONSTABULARY_CONTACT.value
 
 
 class ObjectPerms:

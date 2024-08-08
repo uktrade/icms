@@ -234,6 +234,12 @@ class UserSerializer(BaseSerializer):
     businesses: str_or_empty
 
 
+class StaffUserSerializer(BaseSerializer):
+    first_name: str
+    last_name: str
+    email_address: str
+
+
 class ErrorSerializer(BaseSerializer):
     report_name: str
     identifier: str
