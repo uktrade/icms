@@ -284,8 +284,7 @@ class EmailTemplateContext:
                 return self.process.responsible_person_name
             case "RESPONSIBLE_PERSON_POSTCODE":
                 return self.process.responsible_person_postcode
-            case "BRAND_NAMES":
-                # No longer a list of values
+            case "BRAND_NAME":
                 return self.process.brand_name
 
         return self._application_context(item)

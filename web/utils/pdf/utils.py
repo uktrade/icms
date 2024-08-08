@@ -213,7 +213,7 @@ def get_cover_letter_context(application: FaImportApplication, doc_type: Documen
 def get_licence_endorsements(application: ImportApplication) -> list[list[str]] | list[str]:
     """Return a list of endorsements for the application."""
     endorsements = [
-        content.split("\r\n")
+        content.split("\n")
         for content in application.endorsements.values_list("content", flat=True)
     ]
 

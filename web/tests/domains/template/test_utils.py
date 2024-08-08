@@ -142,12 +142,12 @@ def test_add_endorsements_from_application_type(importer_one_contact, importer, 
         type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.DFL
     )
 
-    active_endorsements = Template.objects.filter(
-        template_name__startswith="Test Endorsement", is_active=True
-    )
+    active_endorsement = Template.objects.filter(
+        template_type=Template.ENDORSEMENT, is_active=True
+    ).first()
 
     # Add active endorsement to application type
-    application_type.endorsements.add(*active_endorsements)
+    application_type.endorsements.add(active_endorsement)
 
     inactive_endorsement = Template.objects.filter(
         template_type=Template.ENDORSEMENT, is_active=False
@@ -160,20 +160,11 @@ def test_add_endorsements_from_application_type(importer_one_contact, importer, 
 
     # Check application only includes active endorsements from application type
     assert app.endorsements.count() == 2
-    assert list(app.endorsements.values_list("content", flat=True).order_by("content")) == list(
-        active_endorsements.values_list("template_content", flat=True).order_by("template_content")
-    )
+    assert active_endorsement.template_content in app.endorsements.values_list("content", flat=True)
 
 
 def test_add_endorsements_from_application_type_added(importer_one_contact, importer, office):
-    application_type = ImportApplicationType.objects.get(
-        type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.DFL
-    )
-
-    endorsements = Template.objects.filter(template_name__startswith="Test Endorsement")
-
     # Add active endorsements to application type
-    application_type.endorsements.add(*endorsements)
     app = _create_dfl_app(importer_one_contact, importer, office)
 
     # Add endorsement to application
@@ -188,27 +179,13 @@ def test_add_endorsements_from_application_type_added(importer_one_contact, impo
 
 
 def test_add_template_data_on_submit(importer_one_contact, importer, office):
-    application_type = ImportApplicationType.objects.get(
-        type=ImportApplicationType.Types.FIREARMS, sub_type=ImportApplicationType.SubTypes.DFL
-    )
-
-    active_endorsements = Template.objects.filter(
-        template_name__startswith="Test Endorsement", is_active=True
-    )
-
-    # Add active endorsement to application type
-    application_type.endorsements.add(*active_endorsements)
     app = _create_dfl_app(importer_one_contact, importer, office)
     template = Template.objects.get(template_code="COVER_FIREARMS_DEACTIVATED_FIREARMS")
 
     add_template_data_on_submit(app)
 
     # Check application only includes active endorsements from application type
-    assert app.endorsements.count() == 2
-    assert list(app.endorsements.values_list("content", flat=True).order_by("content")) == list(
-        active_endorsements.values_list("template_content", flat=True).order_by("template_content")
-    )
-
+    assert app.endorsements.count() == 1
     assert app.cover_letter_text == template.template_content
 
 
@@ -423,8 +400,8 @@ def test_get_export_application_update_request_contents(com_app_submitted, ilb_a
 def _check_get_export_application_update_request_contents(app, case_owner):
     app.case_owner = case_owner
     actual_subject, actual_body = get_application_update_template_data(app)
-    assert actual_subject == f"{app.reference} Request for Application Update"
-    assert "I am writing to ask you for application updates regarding" in actual_body
+    assert actual_subject == f"Request for updates to your application {app.reference}"
+    assert "You need to update your application with the following information" in actual_body
 
 
 def test_get_error_application_update_request_contents(ilb_admin_user):
@@ -450,8 +427,8 @@ def test_get_fir_template_data_import(fa_sil_app_submitted, ilb_admin_client, il
 
     subject, body = get_fir_template_data(app, ilb_admin_user)
 
-    assert subject == f"{app.reference} Further Information Request"
-    assert "ask you for [FURTHER INFORMATION / CLARIFICATION] regarding" in body
+    assert subject == f"Request for more information {app.reference}"
+    assert "You need to provide some more information" in body
 
 
 def test_get_fir_template_data_export(gmp_app_submitted, ilb_admin_client, ilb_admin_user):
@@ -461,24 +438,24 @@ def test_get_fir_template_data_export(gmp_app_submitted, ilb_admin_client, ilb_a
 
     subject, body = get_fir_template_data(app, ilb_admin_user)
 
-    assert subject == f"{app.reference} Further Information Request"
-    assert "ask you for [FURTHER INFORMATION / CLARIFICATION] regarding" in body
+    assert subject == f"Request for more information {app.reference}"
+    assert "Some more information is needed" in body
 
 
 def test_get_fir_template_data_importer_access(importer_access_request, ilb_admin_user):
     app = importer_access_request
     subject, body = get_fir_template_data(app, ilb_admin_user)
 
-    assert subject == f"{app.reference} Further Information Request"
-    assert "ask you for [FURTHER INFORMATION / CLARIFICATION] regarding" in body
+    assert subject == f"Request for more information {app.reference}"
+    assert "Some more information is needed" in body
 
 
 def test_get_fir_template_data_exporter_access(exporter_access_request, ilb_admin_user):
     app = exporter_access_request
     subject, body = get_fir_template_data(app, ilb_admin_user)
 
-    assert subject == f"{app.reference} Further Information Request"
-    assert "ask you for [FURTHER INFORMATION / CLARIFICATION] regarding" in body
+    assert subject == f"Request for more information {app.reference}"
+    assert "Some more information is needed" in body
 
 
 def test_get_fir_template_data_error(ilb_admin_user):
@@ -663,7 +640,11 @@ class TestCreateSchedule:
         schedule.legislations.add(self.aerosol_pl)
         schedule.legislations.add(self.biocide_pl)
 
-        template = Template.objects.get(template_type=Template.CFS_SCHEDULE_TRANSLATION)
+        template = Template.objects.get(
+            template_type=Template.CFS_SCHEDULE_TRANSLATION,
+            template_code="CFS_SCHEDULE_TRANSLATION",
+            template_name="Spanish CFS Schedule",
+        )
         sp = ScheduleParagraphs(schedule, template)
 
         assert sp.header == "Horario para el Certificado de Libre Venta"
